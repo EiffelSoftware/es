@@ -2010,9 +2010,6 @@ Delivery/studio/wizards/new_projects/wizard/resources/eiffel_wizard.png -text
 Delivery/studio/wizards/new_projects/wizard/resources/eiffel_wizard_icon.png -text
 Delivery/studio/wizards/new_projects/wizard/unix_resources/eiffel_wizard.png svneol=native#unset
 Delivery/studio/wizards/new_projects/wizard/unix_resources/eiffel_wizard_icon.png svneol=native#unset
-Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard.png -text
-Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard_icon.png -text
-Delivery/studio/wizards/others/precompile/pixmaps/wizard.png -text
 Delivery/studio/wizards/precompile/pixmaps/eiffel_wizard.png -text
 Delivery/studio/wizards/precompile/pixmaps/eiffel_wizard_icon.png -text
 Delivery/studio/wizards/precompile/pixmaps/wizard.png -text
@@ -2042,9 +2039,6 @@ Src/bench/Eiffel/doc/debugging/debugger_files/image002.gif -text
 Src/bench/Eiffel/extra/finish_freezing/appl.ico -text
 Src/bench/Eiffel/interface/new_graphical/help/Clib/htmlhelp.lib -text
 Src/bench/com_compiler/ace_file/cec.ico -text
-Src/build/Clib/motif/efb.a svneol=native#unset
-Src/build/Clib/openlook/efb.a svneol=native#unset
-Src/build/Clib/openlook/efb_openlook svneol=native#unset
 Src/build2/build.ico -text
 Src/com_wizard/Doc/com.book -text
 Src/com_wizard/Doc/com.fm -text
