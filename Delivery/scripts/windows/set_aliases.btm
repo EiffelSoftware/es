@@ -7,7 +7,7 @@ set FINALIZATION_DIR=g:\54dev_deliv
 REM NB: The following directory must contain document.exe
 set DOCUMENT_DIR=g:\Deliv_54
 REM Tag to export files in CVS
-set DEFAULT_CVS_TAG=HEAD
+set DEFAULT_CVS_TAG=Eiffel_54
 REM NB: The following directory will be erased!
 set TMP_EIFFEL_SRC=g:\tmpdev
 REM Where the new delivery is set up. Warning: if it exists, the directory will be erased!
