@@ -1,46 +1,29 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML XMLNS:MSHelp="http://msdn.microsoft.com/mshelp">
-	<XML>
-			<MSHelp:Keyword INDEX="K" TERM="EiffelVision, Kernel" />
-			<MSHelp:Keyword INDEX="F" TERM="!!DYNAMIC HELP ACTIVATION ENVIRONMENT KEY GOES HERE!! " />
-			<MSHelp:Attr NAME="LinkGroup" VALUE="!!DYNAMIC HELP LINK GROUP TITLE GOES HERE!!" />
-			<MSHelp:Attr NAME="TopicType" VALUE="!!DYNAMIC HELP LINK LABEL GOES HERE!!"/>
-			<MSHelp:Attr NAME="Product" VALUE="Eiffel"/>
-			<MSHelp:Attr NAME="Locale" VALUE="kbEnglish"/>
-	</XML>
+<!DOCTYPE HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+
+<HTML>
 	<HEAD>
-		<TITLE>EiffelVision Kernel</TITLE>
-		<LINK HREF="/default.css" TYPE="text/css" REL="STYLESHEET"></LINK>
+		<TITLE>Kernel</TITLE>
+		<LINK REL=StyleSheet HREF="/default.css">
 	</HEAD>
+
 	<BODY>
-		<TABLE CLASS="HEADER" ID="Table1">
-			<TR>
-				<TD CLASS="HEADER">Eiffel ENViSioN!</TD>
-			</TR>
-			<TR>
-				<TD CLASS="SUBHEADER">EiffelVision Kernel</TD>
-			</TR>
-		</TABLE>
-		<TABLE CLASS="FRAME" ID="Table2">
-			<TR>
-				<TD>
-					
-       <P>The kernel cluster contains classes that provide functionality that
+		<H1>Kernel Overview</H1>
+        <p>The kernel cluster contains classes that provide functionality that
         are common to most Windowed application.&nbsp; These classes are
         considered the core, or kernel of any Vision2 application.&nbsp; The
         most important of these classes is
 			<A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A>.&nbsp; This is used to
         initialize the graphical toolkit and event loop of your Vision2
-        application.&nbsp; Kernel also includes classes such as <A href="../../reference/interface/kernel/ev_timeout_chart.html"> EV_TIMEOUT</A> that
-        calls procedures (via agents) at a set interval, and <A href="../../reference/interface/kernel/ev_color_chart.html"> EV_COLOR</A> which is used for
+        application.&nbsp; Kernel also includes classes such as <a href="../../reference/interface/kernel/ev_timeout_chart.html"> EV_TIMEOUT</a> that
+        calls procedures (via agents) at a set interval, and <a href="../../reference/interface/kernel/ev_color_chart.html"> EV_COLOR</a> which is used for
         coloring widgets and items.&nbsp; For a complete list of the classes
         contained in the Kernel cluster, click <A HREF="/libraries/vision2/reference/interface/kernel/index.html">here</A>.&nbsp;
         To start programming with Vision2, you first have to correctly
         initialize
-			<A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A>.</P>
-        <P>&nbsp;</P>
-        <H2>Launching your application with EV_APPLICATION - The heart of all
-        Vision2 systems</H2>
+			<A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A>.</p>
+        <p>&nbsp;</p>
+        <h2>Launching your application with EV_APPLICATION - The heart of all
+        Vision2 systems</h2>
 			
         <P>
 			<A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A> is the basis for every
@@ -51,9 +34,9 @@
         that drives your application is executed.
 			</P>
 
-			<P CLASS="note"><B>Note:</B> It is <B> not</B> possible to create a
+			<P CLASS="note"><B>Note:</B> It is <b> not</b> possible to create a
             Vision2 component unless an application exists (query
-            <A HREF="/libraries/vision2/reference/interface/kernel/ev_environment_chart.html">EV_ENVIRONMENT</A>).</P>
+            <a HREF="/libraries/vision2/reference/interface/kernel/ev_environment_chart.html">EV_ENVIRONMENT</a>).</P>
 			You may inherit <A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A> or use it as a client in order to create your vision2
 			application. A simple method of using <A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A> is as follows:
 				<OL>
@@ -61,9 +44,9 @@
 					<LI>Create one or more windows for your application.
 					<LI>Launch the application.
 				</OL>
-        <P>An example of a Vision2 application using inheritance from <A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A> is
-        shown below.</P>
-        <P>&nbsp;</P>
+        <p>An example of a Vision2 application using inheritance from <A CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A> is
+        shown below.</p>
+        <p>&nbsp;</p>
         <P CLASS="code">
         <SPAN CLASS="ekeyword">class</SPAN><BR>
         &nbsp;&nbsp;&nbsp; <SPAN CLASS="eclass">HELLOWORLD_APP</SPAN><BR><BR>
@@ -73,7 +56,7 @@
         &nbsp;&nbsp;&nbsp; <SPAN CLASS="efeature">make</SPAN><BR><BR>
         <SPAN CLASS="ekeyword">feature</SPAN><BR>
         <BR>
-        &nbsp;&nbsp;&nbsp; <SPAN CLASS="efeature">make</SPAN><SPAN CLASS="ekeyword"> is</SPAN><BR>
+        &nbsp;&nbsp;&nbsp; <SPAN CLASS="efeature">make</SPAN><SPAN CLASS="ekeyword"> is</SPAN><br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN CLASS="ecomment"> -- Create the application.</SPAN><BR>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <SPAN CLASS="ekeyword">local</SPAN><BR>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -88,12 +71,12 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <SPAN CLASS="efeature">launch</SPAN><BR>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <SPAN CLASS="ekeyword">end</SPAN><BR>
         <BR>
-        <SPAN CLASS="ekeyword">end</SPAN><BR>
+        <SPAN CLASS="ekeyword">end</SPAN><br>
 </p>
-        <P>&nbsp;</P>
-        <P>This is the same Vision2 application but instead using <SPAN CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html"><A href="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</A></SPAN> 
-        in a client/supplier relationship.</P>
-        <P>&nbsp;</P>
+        <p>&nbsp;</p>
+        <p>This is the same Vision2 application but instead using <SPAN CLASS="eclass" HREF="/libraries/vision2/reference/interface/kernel/ev_application_chart.html"><a href="/libraries/vision2/reference/interface/kernel/ev_application_chart.html">EV_APPLICATION</a></SPAN> 
+        in a client/supplier relationship.</p>
+        <p>&nbsp;</p>
         <P Class="code">
         <SPAN CLASS="ekeyword">class</SPAN><BR>
         &nbsp;&nbsp;&nbsp; <SPAN CLASS="eclass">HELLOWORLD_APP</SPAN><BR><BR>
@@ -133,29 +116,21 @@
 			</P>
         &nbsp;
         <H2>Building your application skeleton</H2>
-        <P>Now that you have a basic application skeleton set up you can now go
-        about</P>
-        <P>&nbsp;</P>
-        <UL>
-        <LI><A href="../10_widgets/index.html">Creating widgets and setting their properties.</A> </LI>
-        <LI><A href="../10_widgets/10_containers/index.html">Adding containers to your
+        <p>Now that you have a basic application skeleton set up you can now go
+        about</p>
+        <p>&nbsp;</p>
+        <ul>
+        <LI><a href="../10_widgets/index.html">Creating widgets and setting their properties.</a> </LI>
+        <LI><a href="../10_widgets/10_containers/index.html">Adding containers to your
           window(s), then place your created widgets
-        in those containers.</A></LI>
-        <LI><A href="../30_events/index.html">Add code to respond to user actions with agents and action sequences.</A></LI>
-        </UL>
-        <P>Once you have learnt the basics of GUI programming within Vision2,
+        in those containers.</a></LI>
+        <LI><a href="../30_events/index.html">Add code to respond to user actions with agents and action sequences.</a></LI>
+        </ul>
+        <p>Once you have learnt the basics of GUI programming within Vision2,
         you are well on the way to creating powerful multi-platform
         applications.&nbsp; The Application Programming Interface (API) of
         Vision2 has been designed in a way to ensure that the library is as
         intuitive, consistent and stylistic as possible, heavy reuse of components from
-        EiffelBase has been one of the main reasons that made this possible.</P>
-				</TD>
-			</TR>
-		</TABLE>
-		<TABLE CLASS="FOOTER" ID="Table3">
-			<TR>
-				<TD>© 2003-2004 Eiffel Software. All rights reserved.</TD>
-			</TR>
-		</TABLE>
+        EiffelBase has been one of the main reasons that made this possible.</p>
 	</BODY>
 </HTML>
