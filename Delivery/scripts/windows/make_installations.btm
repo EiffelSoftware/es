@@ -102,7 +102,7 @@ mkdir setups\Free\setup
 
 remtrace Preparing Free edition
 WfWI "D:\Installations\Eiffel54\Eiffel5.wsi" /c /p FREEVERSION="TRUE"
-copy D:\Installations\Eiffel54\Eiffel54.single.exe setups\Free\setup\
+copy D:\Installations\Eiffel54\Eiffel54_single.exe setups\Free\setup\
 copy D:\Installations\Eiffel54\Eiffel54.exe setups\Free\setup\
 copy D:\Installations\Eiffel54\Eiffel54.ini setups\Free\setup\
 copy D:\Installations\Eiffel54\Eiffel54.msi setups\Free\setup\
