@@ -32,7 +32,7 @@
 						will want to respond to this event by calling a routine that deals with
 						the request. Vision2 contains action sequences for all kinds of
 						widget events, to view the kind of events available to every widget,
-						click <A href="../../reference/interface/events/ev_widget_action_sequences_chart.html">here</A>.
+						click <A HREF="../../reference/interface/events/ev_widget_action_sequences_chart.html">here</A>.
 					</P>
 					<H2>How do I connect to an event?</H2>
 
@@ -42,15 +42,15 @@
 						select_actions action sequence. This gets fired when the user
 						clicks/selects the button. To have a procedure called on this
 						event, you need to create an agent based on this procedure, and then add
-						this to the action sequence (via extend). For a more detailed description of agents and their uses click <A href="/general/guided_tour/language/invitation-09.html">here</A>.
+						this to the action sequence (via extend). For a more detailed description of agents and their uses click <A href="/general/guided_tour/language/tutorial-12.html">here</A>.
 					</P>
 					
 					<P>
 						An example of adding an agent to an action_sequence is as follows.
 					</P>
 					
-					<P Class ="code">
-						<SPAN Class="eclass">button</SPAN>.<SPAN Class="efeature">select_actions.extend</SPAN> (<SPAN Class="ekeyword">agent</SPAN> <SPAN Class = "efeature">print </SPAN>(<SPAN Class="estring">&quot;Button Clicked!%N&quot;</SPAN>))
+					<P CLASS="code">
+						<SPAN CLASS"eclass">button</SPAN>.<SPAN CLASS="efeature">select_actions.extend</SPAN> (<SPAN CLASS="ekeyword">agent</SPAN> <SPAN CLASS = "efeature">print </SPAN>(<SPAN CLASS="estring">&quot;Button Clicked!%N&quot;</SPAN>))
 					</P>
 					
 					<P>
@@ -60,7 +60,7 @@
 					
 					<P>
 						When you want an agent to be called from a certain action sequence and
-						the signatures do not match, you may use <A href="../../reference/interface/events/ev_action_sequence.html#f_force_extend">force_extend</A>, this will call
+						the signatures do not match, you may use <A HREF="../../reference/interface/events/ev_action_sequence.html#f_force_extend">force_extend</A>, this will call
 						your agent but has no guarantees on the arguments passed to your
 						procedure.
 					</P>
