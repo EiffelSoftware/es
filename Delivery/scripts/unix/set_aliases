@@ -14,12 +14,12 @@ DOCUMENT_DIR=`pwd`
 # Where all.tar.gz files should be stored
 EXPORT_DIR=`pwd`/PorterPackage
 # What tag to use to CVS export everything
-DEFAULT_CVS_TAG=HEAD
+DEFAULT_CVS_TAG=Eiffel_55
 # Version of GTK
 GTK_DIR=gtk2
 
 # Used only when making PorterPackage to checkout the sources
-NEW_EIFFEL_SRC=`pwd`/tmp52dev
+NEW_EIFFEL_SRC=`pwd`/tmpdev
 # The following directory is going to be used to compile the compiler
 FINALIZATION_DIR=`pwd`/finalized
 
