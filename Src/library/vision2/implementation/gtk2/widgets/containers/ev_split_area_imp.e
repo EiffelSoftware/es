@@ -37,7 +37,6 @@ feature {NONE} -- Initialization
 		do
 			Precursor
 			feature {EV_GTK_EXTERNALS}.gtk_widget_show (container_widget)
-			update_splitter
 			second_expandable := True
 			user_split_position := -1
 			feature {EV_GTK_EXTERNALS}.gtk_container_set_border_width (container_widget, 0)
@@ -69,7 +68,6 @@ feature -- Access
 			feature {EV_GTK_EXTERNALS}.gtk_paned_pack1 (container_widget, item_imp.c_object, False, False)
 			first := an_item
 			set_item_resize (first, False)
-			update_splitter
 		end
 
 	set_second (an_item: like item) is
@@ -83,7 +81,6 @@ feature -- Access
 			feature {EV_GTK_EXTERNALS}.gtk_paned_pack2 (container_widget, item_imp.c_object, True, False)
 			second := an_item
 			set_item_resize (second, True)
-			update_splitter
 		end
 
 	prune (an_item: like item) is
@@ -111,7 +108,6 @@ feature -- Access
 						set_item_resize (first, True)
 					end
 				end
-				update_splitter
 			end
 		end
 
@@ -147,6 +143,7 @@ feature -- Access
 			--| Do nothing (Win32 Implementation only)
 		end
 
+<<<<<<< ev_split_area_imp.e
 	show_separator is
 			-- Make separator visible.
 		local
@@ -185,6 +182,8 @@ feature -- Access
 			end
 		end
 
+=======
+>>>>>>> 1.6
 feature {NONE} -- Implementation
 
 	internal_set_split_position (a_split_position: INTEGER) is
@@ -224,24 +223,6 @@ feature {NONE} -- Implementation
 			end
 			set_gtk_paned_struct_child1_resize (container_widget, first_expandable)
 			set_gtk_paned_struct_child2_resize (container_widget, second_expandable)
-		end
-
-	update_splitter is
-			-- Update splitter to account for different configurations
-		do
-			if first /= Void and second = Void then
-				set_split_position (maximum_split_position)
-				hide_separator
-			elseif first = Void and second /= Void then
-				set_split_position (0)
-				hide_separator
-			elseif first = Void and second = Void then
-				set_split_position (0)
-				hide_separator
-			else
-				-- Both first and second are visible
-				show_separator
-			end
 		end
 
 feature {NONE} -- Externals.
