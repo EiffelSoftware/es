@@ -98,14 +98,10 @@ feature -- Access
 							
 								-- If match is false here
 							if not l_match then
-								if l_filename_arr.count > l_url_arr.count then
-									l_no_parents := l_filename_arr.count - (l_last_match_index)
-								else
-									l_no_parents := cnt - l_last_match_index
-								end
 								from									
+									l_no_parents := l_filename_arr.count - (l_last_match_index)
 								until
-									l_no_parents = 0
+									l_no_parents <= 0
 								loop				
 									l_filename.extend ("..")	
 									l_no_parents := l_no_parents - 1
@@ -177,9 +173,13 @@ feature -- Access
 			l_filename: FILE_NAME
 		do
 			if relative_from_root then
-					-- Prepend `root_directory' to `url' to get absolute file name			
-				create l_filename.make_from_string (root_directory)								
-				l_filename.extend (url.substring (2, url.count))
+						-- Prepend `root_directory' to `url' to get absolute file name			
+--				if (create {PLATFORM}).is_windows then
+					create l_filename.make_from_string (root_directory)								
+					l_filename.extend (url.substring (2, url.count))	   							  				
+--  				else
+--					create l_filename.make_from_string (url)
+--  				end
    				Result := l_filename.string	
 			elseif relative_from_document then
 						-- Determine number of directory parents specified in relative url
