@@ -235,6 +235,9 @@ else
 		cdd %FINALIZATION_DIR
 		sed -e "s/free/enterprise/g" finalizedbench.ace >> newace.ace
 		move newace.ace finalizedbench.ace
+		cdd %EIFFEL_SRC\Eiffel\library\activation\free
+		sed -e "s/is_evaluating\ := \True/is_evaluating\ :=\ False/g" activation_checker.e >> tmp.e
+		move tmp.e activation_checker.e
 		cdd %EIFFEL_SRC\Eiffel\API\constants
 		sed -e "s/Version_type_name:\ STRING\ is\ \"Enterprise\ Edition\"/Version_type_name:\ STRING\ is\ \"University\ Edition\"/g" system_constants.e >> new_system_constants.e
 		move new_system_constants.e system_constants.e
@@ -262,6 +265,9 @@ else
 		sed -e "s/free/enterprise/g" finalizedbench.ace >> newace.ace
 		move newace.ace finalizedbench.ace
 
+		cdd %EIFFEL_SRC\Eiffel\library\activation\free
+		sed -e "s/is_evaluating\ := \False/is_evaluating\ :=\ True/g" activation_checker.e >> tmp.e
+		move tmp.e activation_checker.e
 		cdd %EIFFEL_SRC\Eiffel\API\constants
 		sed -e "s/Version_type_name:\ STRING\ is\ \"University\ Edition\"/Version_type_name:\ STRING\ is\ \"Free\ Edition\"/g" system_constants.e >> new_system_constants.e
 		move new_system_constants.e system_constants.e
