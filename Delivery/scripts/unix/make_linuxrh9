@@ -14,6 +14,7 @@ open rh9.ise
 user manus manus 
 binary
 get local/TEST_DELIV/PorterPackage/Eiffel54_enterprise.tgz Eiffel54_rh9.tgz
+get local/TEST_DELIV/PorterPackage/Eiffel54_free.tgz Eiffel54_free_rh9.tgz
 get local/TEST_DELIV/PorterPackage/Eiffel54_enterprise.iso.gz Eiffel54_enterprise_rh9.iso.gz
 get local/TEST_DELIV/PorterPackage/Eiffel54_university.iso.gz Eiffel54_university_rh9.iso.gz
 get local/TEST_DELIV/PorterPackage/Eiffel54_free.iso.gz Eiffel54_free_rh9.iso.gz
