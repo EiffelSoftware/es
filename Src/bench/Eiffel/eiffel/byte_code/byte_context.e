@@ -28,6 +28,7 @@ feature -- Initialization
 			create local_list.make
 			create old_expressions.make
 			create inherited_assertion.make
+			create global_onces.make (5)
 		end
 
 feature -- Access
@@ -37,6 +38,10 @@ feature -- Access
 
 	il_external_creation: BOOLEAN
 			-- Is current call to external feature a creation one?
+			
+	global_onces: ARRAYED_LIST [INTEGER]
+			-- List of body indexes which represent all global onces for current
+			-- generated type
 
 	workbench_mode: BOOLEAN
 			-- Mode of generation: if set to True, generation of C code
@@ -251,6 +256,16 @@ feature -- Setting
 		do
 			assertion_type := a
 		end
+
+	reset_global_onces is
+			-- Wipe out content of `global_onces'
+		do
+			global_onces.wipe_out
+		ensure
+			global_onces_is_empty: global_onces.is_empty
+		end
+		
+feature -- Access
 
 	Current_register: REGISTRABLE is
 			-- An instance of Current register for local var index computation
@@ -1354,5 +1369,8 @@ feature -- Concurrent Eiffel
 			buf.putstring ("res_label_")
 			buf.putint (reservation_label)
 		end
+
+invariant
+	global_onces_not_void: global_onces /= Void
 
 end
