@@ -630,9 +630,15 @@ feature {EV_ANY_I} -- Implementation
 	lock_update is
 			-- Lock drawing updates for `Current'
 		do
+<<<<<<< ev_window_imp.e
 			Precursor {EV_WINDOW_I}
 			--feature {EV_GTK_EXTERNALS}.gtk_widget_set_app_paintable (c_object, True)
 			--feature {EV_GTK_DEPENDENT_EXTERNALS}.gdk_window_freeze_updates (feature {EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object))
+=======
+			Precursor {EV_WINDOW_I}
+			feature {EV_GTK_EXTERNALS}.gtk_widget_set_app_paintable (c_object, True)
+			feature {EV_GTK_DEPENDENT_EXTERNALS}.gdk_window_freeze_updates (feature {EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object))
+>>>>>>> 1.8
 		end
 		
 	event_mask: INTEGER
@@ -642,8 +648,13 @@ feature {EV_ANY_I} -- Implementation
 			-- Restore drawing updates for `Current'
 		do
 			Precursor {EV_WINDOW_I}
+<<<<<<< ev_window_imp.e
 			--feature {EV_GTK_EXTERNALS}.gtk_widget_set_app_paintable (c_object, False)
 			--feature {EV_GTK_DEPENDENT_EXTERNALS}.gdk_window_thaw_updates (feature {EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object))
+=======
+			feature {EV_GTK_EXTERNALS}.gtk_widget_set_app_paintable (c_object, False)
+			feature {EV_GTK_DEPENDENT_EXTERNALS}.gdk_window_thaw_updates (feature {EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object))
+>>>>>>> 1.8
 		end
 
 feature {EV_INTERMEDIARY_ROUTINES}
