@@ -1165,6 +1165,8 @@ rt_public void reclaim(void)
 	struct chunk *c, *cn;
 #endif
 
+	GC_THREAD_PROTECT(eif_terminate_all_other_threads());
+
 		/* Mark final collection */
 	eif_is_in_final_collect = EIF_TRUE;
 
