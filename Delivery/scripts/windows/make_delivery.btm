@@ -97,6 +97,7 @@ call convert_10_to_11.btm
 del convert_10_to_11.btm
 del ace_10_to_11.btm
 fullrd studio
+fullrd winforms\data\simple_binding
 cd ..
 cd vision2
 fullrd Boxes
