@@ -158,9 +158,9 @@ feature {APPLICATION_EXECUTION} -- Properties
 			-- Is object address `addr' valid?
 			-- (i.e Does bench know about it)
 		do
-			Result := True
-		end -- FIXME: JFIAT
-
+			Result := know_about_kept_object (addr)
+		end
+		
 feature -- Bridge to Debugger
 
 	exit_process_occurred: BOOLEAN is
