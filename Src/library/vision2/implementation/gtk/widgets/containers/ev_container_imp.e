@@ -299,7 +299,7 @@ feature -- Status setting
 			i: INTEGER
 		do	
 			pix_imp ?= background_pixmap.implementation
-
+			set_background_color ((create {EV_STOCK_COLORS}).gray)
 			a_style := feature {EV_GTK_EXTERNALS}.gtk_style_copy (feature {EV_GTK_EXTERNALS}.gtk_widget_struct_style (c_object))
 			pix_ptr := feature {EV_GTK_EXTERNALS}.gdk_pixmap_ref (pix_imp.drawable)
 			from
@@ -394,8 +394,8 @@ feature -- Event handling
 	on_new_item (an_item_imp: EV_WIDGET_IMP) is
 			-- Called after `an_item' is added.
 		do
-			an_item_imp.set_parent_imp (Current)
 			add_radio_button (an_item_imp)
+			an_item_imp.set_parent_imp (Current)
 --			if new_item_actions_internal /= Void then
 --				new_item_actions_internal.call ([an_item])
 --			end
