@@ -213,6 +213,11 @@ rt_public typedef struct {
 
 RT_LNK void eif_thr_panic(char *);
 
+#ifndef EIF_WINDOWS
+/* Forking, only support on Unix platform on which `fork' is supported. */
+extern pid_t eif_thread_fork(void);
+#endif
+
 /* Exported functions */
 RT_LNK void eif_thr_init_root(void);
 RT_LNK void eif_thr_register(void);
