@@ -63,6 +63,9 @@ feature -- Basic Operations
 				end
 				create cr.make (clr_version)
 				create dir.make (cr.absolute_assembly_path (assembly.get_name))
+					-- given version of assembly and loaded targetted version of runtime,
+					-- assembly name may change
+				name := assembly.get_name
 
 				create consumer
 					-- only consume the assembly if it has been modified or the
@@ -81,17 +84,17 @@ feature -- Basic Operations
 					consumer.consume (assembly)
 					
 					if not consumer.successful then
-						set_error (Consume_error, create {STRING}.make_from_cil (aname.name))
+						set_error (Consume_error, create {STRING}.make_from_cil (name.name))
 					elseif l_new_assembly then
 							-- Only add it in `info' if not yet added.
 						info := cr.info
-		 				info.add_assembly (Consumed_assembly_factory.consumed_assembly_from_name (aname))
+		 				info.add_assembly (Consumed_assembly_factory.consumed_assembly_from_name (name))
 						update_info (info)
 					end
 				else
 					if status_printer /= Void then
 						create l_string_tuple
-						l_string_tuple.put ("Up-to-date check: '" +	create {STRING}.make_from_cil (aname.full_name) +
+						l_string_tuple.put ("Up-to-date check: '" +	create {STRING}.make_from_cil (name.full_name) +
 							"' has not been modified since last consumption.%N", 1)
 						status_printer.call (l_string_tuple)
 					end
