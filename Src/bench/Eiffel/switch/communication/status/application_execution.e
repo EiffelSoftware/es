@@ -239,7 +239,7 @@ feature -- Access
 			Result := status.where.count
 		end
 
-	call_stack_is_empty: BOOLEAN
+	call_stack_is_empty: BOOLEAN is
 			-- Is Classstack empty ?
 		do
 			Result := number_of_stack_elements = 0
