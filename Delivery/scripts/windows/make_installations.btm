@@ -114,13 +114,13 @@ copy D:\Installations\Eiffel54\Eiffel54.ini setups\Free\
 copy D:\Installations\Eiffel54\Eiffel54.msi setups\Free\
 
 remtrace Preparing University edition
-WfWI "D:\Installations\Eiffel54\Eiffel5.wsi" /c /p FREEVERSION="FALSE"
 copy D:\Installations\Eiffel54\Eiffel54_university.exe setups\University\install.exe
 copy D:\Installations\Eiffel54\Eiffel54_university.ini setups\University\install.ini
 copy D:\Installations\Eiffel54\Eiffel54_university.msi setups\University\
 
 
 remtrace Preparing Enterprise edition
+WfWI "D:\Installations\Eiffel54\Eiffel5.wsi" /c /p FREEVERSION="FALSE"
 move setup.exe setups\Enterprise
 copy D:\Installations\Eiffel54\Eiffel54_enterprise.exe setups\Enterprise\setup\install.exe
 copy D:\Installations\Eiffel54\Eiffel54_enterprise.ini setups\Enterprise\setup\install.ini
