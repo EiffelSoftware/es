@@ -324,7 +324,6 @@ feature -- Status setting
 			end
 			feature {EV_GTK_EXTERNALS}.gtk_widget_set_style (visual_widget, a_style)
 			feature {EV_GTK_EXTERNALS}.gtk_style_unref (a_style)
-			feature {EV_GTK_EXTERNALS}.gtk_style_apply_default_background (a_style, feature {EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object), True, feature {EV_GTK_EXTERNALS}.gtk_state_normal_enum, default_pointer, 0, 0, 0, 0)
 		end
 		
 	set_background_pixmap (a_pixmap: EV_PIXMAP) is
@@ -386,10 +385,9 @@ feature -- Command
 	destroy is
 			-- Render `Current' unusable.
 		do
-			Precursor {EV_WIDGET_IMP}
 			interface.wipe_out
+			Precursor {EV_WIDGET_IMP}
 		end
-
 
 feature -- Event handling
 
