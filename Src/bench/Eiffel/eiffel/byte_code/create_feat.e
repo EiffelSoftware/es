@@ -81,6 +81,7 @@ feature -- C code generation
 				entry := Eiffel_table.poly_table (routine_id)
 				if entry /= Void and then (not entry.has_one_type or else is_generic) then
 						-- We are in polymorphic case
+					context.mark_current_used
 					context.add_dftype_current
 				end
 			else
