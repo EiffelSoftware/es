@@ -259,7 +259,9 @@ feature -- Status setting
 					end
 					call_stack_tool.update
 					create cst.make (pos)
-					launch_stone (cst)
+					if cst.is_valid then
+						launch_stone (cst)
+					end
 				end
 			end
 		end
