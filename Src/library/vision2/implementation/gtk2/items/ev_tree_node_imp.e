@@ -410,9 +410,13 @@ feature {EV_TREE_IMP} -- Implementation
 		local
 			par_tree: EV_TREE_IMP
 		do
-			if gdk_pixbuf /= default_pointer then
+			if gdk_pixmap /= default_pointer then
 				feature {EV_GTK_EXTERNALS}.object_unref (gdk_pixbuf)
-				gdk_pixbuf := default_pointer				
+				gdk_pixbuf := default_pointer			
+				if gdk_mask /= default_pointer then
+					feature {EV_GTK_EXTERNALS}.object_unref (gdk_mask)
+					gdk_mask := default_pointer
+				end
 			end
 			par_tree := parent_tree_imp
 			if par_tree /= Void then
