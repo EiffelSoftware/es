@@ -206,6 +206,7 @@ feature {NONE} -- Execution
 			list_width: INTEGER
 		do
 			if not ((create {PLATFORM}).is_windows) then
+				clear
 				right_list.remove_selection
 			elseif  not inside_on_resize_right_list_column then
 				inside_on_resize_right_list_column := True
@@ -244,8 +245,6 @@ feature {NONE} -- Execution
 		do
 			clear
 			it ?= l_item
-			if it /= Void then
-
 			check
 				correct_type: it /= Void
 			end
@@ -265,7 +264,6 @@ feature {NONE} -- Execution
 			current_edition_window.set_position (edition_window_x, edition_window_y)
 			current_edition_window.set_size (column2_width - 2, right_list.row_height - 5)
 			current_edition_window.show_relative_to_window (Current)
-			end
 		end
 		
 	on_window_move_and_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
