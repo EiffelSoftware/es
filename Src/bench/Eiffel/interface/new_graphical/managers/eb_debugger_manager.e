@@ -301,12 +301,8 @@ feature -- Status setting
 			i: INTEGER
 			rl, rr: ARRAY_RESOURCE
 		do
-<<<<<<< eb_debugger_manager.e
-			initialize_debugging_window
-=======
 			disable_debugging_commands
 			initialize_debugging_window
->>>>>>> 1.45
 			debugging_window.window.lock_update
 
 			normal_left_layout := debugging_window.left_panel.save_to_resource
