@@ -153,19 +153,18 @@ feature -- Status setting
 			parent_imp.deselect_item (parent_imp.index_of (interface, 1))
 		end
 
-
 	text: STRING is
 			-- 
 		do
 			Result := internal_text.twin
 		end
-		
 
 feature -- Element change
 
 	set_tooltip (a_tooltip: STRING) is
 			-- Assign `a_tooltip' to `tooltip'.
 		do
+			tooltip := a_tooltip.twin
 		end
 
 	tooltip: STRING
@@ -176,7 +175,7 @@ feature -- Element change
 		do
 			internal_text := txt.twin
 			if parent_imp /= Void then
-				
+				parent_imp.set_text_on_position (parent_imp.index_of (interface, 1) , txt)
 			end
 		end
 		
