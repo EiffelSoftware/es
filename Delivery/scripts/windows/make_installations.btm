@@ -80,6 +80,12 @@ iff not exist "D:\Installations\Eiffel54\enterprise_studio.msm" then
 	echo Couldnt Enterprise EiffelStudio Merge module.
 	CANCEL
 endiff
+remtrace University EiffelStudio merge module
+WfWI "D:\Installations\Eiffel54\university_studio.wsm" /c
+iff not exist "D:\Installations\Eiffel54\university_studio.msm" then
+	echo Couldnt University EiffelStudio Merge module.
+	CANCEL
+endiff
 remtrace Free EiffelStudio merge module
 WfWI "D:\Installations\Eiffel54\free_studio.wsm" /c
 iff not exist "D:\Installations\Eiffel54\free_studio.msm" then
@@ -95,20 +101,26 @@ endiff
 
 cdd %INSTALL_DIR
 mkdir setups
+mkdir setups\University
 mkdir setups\Enterprise
 mkdir setups\Enterprise\setup
 mkdir setups\Free
-mkdir setups\Free\setup
 
 remtrace Preparing Free edition
 WfWI "D:\Installations\Eiffel54\Eiffel5.wsi" /c /p FREEVERSION="TRUE"
-copy D:\Installations\Eiffel54\Eiffel54_single.exe setups\Free\setup\
-copy D:\Installations\Eiffel54\Eiffel54.exe setups\Free\setup\
-copy D:\Installations\Eiffel54\Eiffel54.ini setups\Free\setup\
-copy D:\Installations\Eiffel54\Eiffel54.msi setups\Free\setup\
+copy D:\Installations\Eiffel54\Eiffel54_single.exe setups\Free\
+copy D:\Installations\Eiffel54\Eiffel54.exe setups\Free\
+copy D:\Installations\Eiffel54\Eiffel54.ini setups\Free\
+copy D:\Installations\Eiffel54\Eiffel54.msi setups\Free\
+
+remtrace Preparing University edition
+WfWI "D:\Installations\Eiffel54\Eiffel5.wsi" /c /p FREEVERSION="FALSE"
+copy D:\Installations\Eiffel54\Eiffel54_university.exe setups\University\install.exe
+copy D:\Installations\Eiffel54\Eiffel54_university.ini setups\University\install.ini
+copy D:\Installations\Eiffel54\Eiffel54_university.msi setups\University\
+
 
 remtrace Preparing Enterprise edition
-WfWI "D:\Installations\Eiffel54\Eiffel5.wsi" /c /p FREEVERSION="FALSE"
 move setup.exe setups\Enterprise
 copy D:\Installations\Eiffel54\Eiffel54_enterprise.exe setups\Enterprise\setup\install.exe
 copy D:\Installations\Eiffel54\Eiffel54_enterprise.ini setups\Enterprise\setup\install.ini
