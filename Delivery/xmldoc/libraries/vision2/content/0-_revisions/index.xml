@@ -134,6 +134,9 @@
 					<item>
 						<bold>EV_TOOL_BAR</bold> - Fixed a number of serious GDI leaks, the worst of which occurred when items that had a pixmap were removed from a tool bar.
 					</item>
+					<item> 
+                                                   <bold>EV_PROGRESS_BAR</bold> - Fixed bug which was limiting values in the range 0 to 65535. 
+                                           </item> 
 				</list>
 			</item>
 			<item>
