@@ -301,7 +301,12 @@ feature -- Status setting
 			i: INTEGER
 			rl, rr: ARRAY_RESOURCE
 		do
+<<<<<<< eb_debugger_manager.e
 			initialize_debugging_window
+=======
+			disable_debugging_commands
+			initialize_debugging_window
+>>>>>>> 1.45
 			debugging_window.window.lock_update
 
 			normal_left_layout := debugging_window.left_panel.save_to_resource
@@ -704,6 +709,7 @@ feature -- Debugging events
 			-- Application just quit.
 		do
 			if Application /= Void and then Application.is_running then
+				disable_debugging_commands
 				Window_manager.display_message (Interface_names.E_not_running)
 					-- Make all debugging tools disappear.
 				if not debugging_window.destroyed then
@@ -711,17 +717,6 @@ feature -- Debugging events
 				else
 					raised := False
 				end
-					-- Make related buttons insensitive.
-				stop_cmd.disable_sensitive
-				quit_cmd.disable_sensitive
-				no_stop_cmd.enable_sensitive
-				debug_cmd.enable_sensitive
-				debug_cmd.set_launched (False)
-				
-				step_cmd.enable_sensitive
-				into_cmd.enable_sensitive
-				out_cmd.disable_sensitive
-				set_critical_stack_depth_cmd.enable_sensitive
 					-- Modify the debugging window display.
 				window_manager.quick_refresh_all
 				debugging_window := Void
@@ -736,6 +731,18 @@ feature -- Debugging events
 					observers.item.on_application_killed
 					observers.forth
 				end
+
+					-- Make related buttons insensitive.
+				stop_cmd.disable_sensitive
+				quit_cmd.disable_sensitive
+				no_stop_cmd.enable_sensitive
+				debug_cmd.enable_sensitive
+				debug_cmd.set_launched (False)
+				
+				step_cmd.enable_sensitive
+				into_cmd.enable_sensitive
+				out_cmd.disable_sensitive
+				set_critical_stack_depth_cmd.enable_sensitive
 			end
 		end
 
