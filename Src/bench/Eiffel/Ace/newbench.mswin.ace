@@ -103,7 +103,7 @@ default
 	array_optimization (no)
 	dead_code_removal (yes)
 	dynamic_runtime (no)
-	exception_trace (yes)
+	exception_trace (no)
 	inlining (yes)
 	inlining_size ("0")
 	multithreaded (no)
