@@ -56,7 +56,8 @@ inherit
 			create_pointer_double_press_actions,
 			select_actions,
 			on_focus_changed,
-			destroy
+			destroy,
+			enable_sensitive
 		redefine
 			make,
 			initialize,
