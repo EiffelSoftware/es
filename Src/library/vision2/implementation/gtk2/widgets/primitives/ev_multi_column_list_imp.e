@@ -141,7 +141,7 @@ feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 			if selection_signal_id /= 0 then
 				a_selection := feature {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_selection (tree_view)
-				feature {EV_GTK_EXTERNALS}.signal_disconnect (a_selection, last_signal_connection_id)
+				feature {EV_GTK_EXTERNALS}.signal_disconnect (a_selection, selection_signal_id)
 				selection_signal_id := 0				
 			end
 		end
@@ -233,6 +233,12 @@ feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Event handling
 			if a_type = feature {EV_GTK_EXTERNALS}.gDK_BUTTON_PRESS_ENUM then
 				if pointer_button_press_actions_internal /= Void then
 					pointer_button_press_actions_internal.call (t)
+				end
+				if
+					clicked_row /= Void and then 
+					clicked_row.pointer_button_press_actions_internal /= Void
+				then
+					clicked_row.pointer_button_press_actions_internal.call (t)
 				end
 			elseif a_type = feature {EV_GTK_EXTERNALS}.gDK_2BUTTON_PRESS_ENUM then
 				if pointer_double_press_actions_internal /= Void then
