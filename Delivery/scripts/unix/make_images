@@ -62,8 +62,28 @@ if [ "$MULTIPLE_EDITIONS" ]; then
 	mv Eiffel54 cdrom
 	cp cdrom/Eiffel54/INSTALL cdrom	
 	make_cd_image Eiffel54_free Eiffel54_free.iso cdrom
+	gzip Eiffel54_free.iso
 	mv cdrom/Eiffel54 Eiffel54
 	tar -c Eiffel54 | gzip -c > Eiffel54_free.tgz
+
+	remtrace Preparing University version
+	cp -r commercial_rt/* $INSTALL_DIR/studio/spec/$ISE_PLATFORM/lib
+	gunzip -c $EXPORT_DIR/ecs/ec_university.gz > $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec
+	chmod a+rx $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec
+	chmod go-w $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/ec 
+
+	remtrace copying Build
+	gunzip -c $EXPORT_DIR/build/build_enterprise.gz > $INSTALL_DIR/build/spec/$ISE_PLATFORM/bin/build
+	chmod a+rx $INSTALL_DIR/build/spec/$ISE_PLATFORM/bin/build
+	chmod go-w $INSTALL_DIR/build/spec/$ISE_PLATFORM/bin/build 
+
+	remtrace Building Home CD image
+	mv Eiffel54 cdrom
+	cp cdrom/Eiffel54/INSTALL cdrom	
+	make_cd_image Eiffel54_university Eiffel54_university.iso cdrom
+	gzip Eiffel54_university.iso
+	mv cdrom/Eiffel54 Eiffel54
+	tar -c Eiffel54 | gzip -c > Eiffel54_university.tgz
 fi
 
 remtrace Preparing Enterprise version
@@ -88,5 +108,6 @@ remtrace Building Enterprise CD image
 mv Eiffel54 cdrom
 cp cdrom/Eiffel54/INSTALL cdrom	
 make_cd_image Eiffel54_enterprise Eiffel54_enterprise.iso cdrom
+gzip Eiffel54_enterprise.iso
 mv cdrom/Eiffel54 Eiffel54
 tar -c Eiffel54 | gzip -c > Eiffel54_enterprise.tgz
