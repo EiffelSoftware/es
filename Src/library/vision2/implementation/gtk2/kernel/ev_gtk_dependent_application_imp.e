@@ -3,13 +3,8 @@ indexing
 		"EiffelVision application, GTK+ implementation."
 	status: "See notice at end of class"
 	keywords: "application"
-<<<<<<< ev_gtk_dependent_application_imp.e
 	date: "$Date$"
 	revision: "$Revision$"
-=======
-	date: "$Date$"
-	revision: "$Revision$"
->>>>>>> 1.12
 	
 deferred class 
 	EV_GTK_DEPENDENT_APPLICATION_IMP
