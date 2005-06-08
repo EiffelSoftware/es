@@ -2,20 +2,18 @@
 	<meta_data>
 		<help>
 			<toc>
-				<envision_pseudo_name>30</envision_pseudo_name>
-				<envision_location>Eiffel\Eiffel for .NET\Conventions</envision_location>
 				<envision_title>Naming Conventions</envision_title>
-				<studio_location/>
-				<studio_title/>
+				<envision_location>EiffelEnvision\A Guide to Eiffel for .NET\The Eiffel for .NET Language\Conventions</envision_location>
+				<envision_pseudo_name>20</envision_pseudo_name>
 			</toc>
 		</help>
 	</meta_data>
 	<paragraph>
-		<paragraph>Certain naming conventions are respected by Eiffel programmers. Although Eiffel is not case-sensitive, convention dictates the use of upper and lower case in particular situations. When you program in ENViSioN!, you create new Eiffel classes, but you also use types from .NET assemblies. These .NET types are presented to you in a view that is consistent with Eiffel conventions. </paragraph>
+		<paragraph>Certain naming conventions are respected by Eiffel programmers. Although Eiffel is not case-sensitive, convention dictates the use of upper and lower case in particular situations. When you program in EiffelEnvision, you create new Eiffel classes, but you also use types from .NET assemblies. These .NET types are presented to you in a view that is consistent with Eiffel conventions. </paragraph>
 		<heading>
 			<size>2</size>Eiffel Class Names
 		</heading>
-		<paragraph>Convention dictates that Eiffel class names are always all upper case characters with words separated by the underscore ("_") character. Eiffel classes are not qualified by "namespace" as in some other languages. This means that Eiffel class names must be unique with in a system. It also means that any types from existing .NET assemblies will have their names mapped to conventional Eiffel class names in order to be used by Eiffel classes in ENViSioN!</paragraph>
+		<paragraph>Convention dictates that Eiffel class names are always all upper case characters with words separated by the underscore ("_") character. Eiffel classes are not qualified by "namespace" as in some other languages. This means that Eiffel class names must be unique with in a system. It also means that any types from existing .NET assemblies will have their names mapped to conventional Eiffel class names in order to be used by Eiffel classes in EiffelEnvision</paragraph>
 		<paragraph>Here are some class names and their descriptions from the Eiffel Base Library. These class names comply with the Eiffel class naming convention. </paragraph>
 		<code_block>
 <class_name>STRING</class_name>
@@ -75,6 +73,18 @@ SYSTEM_QUEUE</class_name>
 			</code>.
 		</paragraph>
 		<paragraph>The other cases in the example are not quite so simple. If the basic derivation produces a name which conflicts with a classname in the Eiffel Base Library, then it will be disambiguated. The simple derivation of 
+<<<<<<< 20_names.xml
+			<class_name>System.String</class_name> would be 
+			<class_name>STRING</class_name>, but this would conflict with Eiffel's 
+			<class_name>STRING</class_name> class, so 
+			<class_name>System.String</class_name> becomes available to Eiffel for .NET programmers as 
+			<class_name>SYSTEM_STRING</class_name>.
+		</paragraph>
+		<paragraph>Sometimes it is better to disambiguate an entire assembly rather than handling individual exceptions to the simple derivation. This is done by specifying a common prefix for all types in the assembly. For example, EiffelEnvision uses a prefix of " 
+			<class_name>DATA_</class_name>" for all classes in the .NET assembly System.Data. As a result, the type 
+			<class_name>System.Data.Constraint</class_name> is available in Eiffel as class 
+			<class_name>DATA_CONSTRAINT</class_name>.
+=======
 			<code>
 				<class_name>System.String</class_name>
 			</code> would be 
@@ -101,6 +111,7 @@ SYSTEM_QUEUE</class_name>
 			<code>
 				<class_name>DATA_CONSTRAINT</class_name>
 			</code>.
+>>>>>>> 1.6
 		</paragraph>
 		<paragraph>You'll see a little more about namespaces, assemblies, and Eiffel clusters in 
 			<link>

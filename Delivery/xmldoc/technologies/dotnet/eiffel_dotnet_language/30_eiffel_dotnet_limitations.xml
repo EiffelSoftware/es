@@ -1,13 +1,21 @@
-<document title="Eiffel for .NET Limitations" output="studio">
-	<meta_data/>
+<document title="Eiffel for .NET Limitations">
+	<meta_data>
+		<help>
+			<toc>
+				<envision_title>Eiffel for .NET Limitations</envision_title>
+				<envision_location>EiffelEnvision\A Guide to Eiffel for .NET\The Eiffel for .NET Language</envision_location>
+				<envision_pseudo_name>30</envision_pseudo_name>
+			</toc>
+		</help>
+	</meta_data>
 	<paragraph>
 		<heading>
 			<size>2</size>Differences between Eiffel and Eiffel for .NET
 		</heading>
 		<heading>
-			<size>3</size>Limitation of Eiffel for .NET in version 5. 2
+			<size>3</size>Limitation of Eiffel for .NET in version 5. 5
 		</heading>
-		<paragraph>Most of the Eiffel mechanisms are supported in 5. 2. All missing features listed below are planned for addition in future releases: </paragraph>
+		<paragraph>Most of the Eiffel mechanisms are supported in 5. 5. All missing features listed below are planned for addition in future releases: </paragraph>
 		<list ordered="false">
 			<item>No creation of Eiffel expanded class support</item>
 			<item>Partial implementation of generic conformance (same as what was supported up to and including the 4.2 release of the Eiffel development environment). </item>
@@ -29,7 +37,7 @@
 	<feature_name>empty</feature_name><symbol>:</symbol> <class_name>BOOLEAN</class_name> <keyword>is</keyword>
 		<keyword>indexing</keyword>
 			<comment>description</comment><symbol>:</symbol> "<string>Is Current empty?</string>"
-			<comment>attribute</comment><symbol>:</symbol> <keyword>create</keyword> <symbol>{</symbol><class_name>SYSTEM_OBSOLETEATTRIBUTE</class_name><symbol>}</symbol><feature_name></feature_name>.<feature_name>make_obsoleteattribute_1</feature_name> <symbol>(</symbol>"<string>Use `is_empty</string><symbol>'</symbol> instead"<symbol>)</symbol> <keyword>end</keyword>
+			<comment>attribute</comment><symbol>:</symbol> <keyword>create</keyword> <symbol>{</symbol><class_name>OBSOLETE_ATTRIBUTE</class_name><symbol>}</symbol><feature_name></feature_name>.<feature_name>make_obsoleteattribute_1</feature_name> <symbol>(</symbol>"<string>Use `is_empty</string><symbol>'</symbol> instead"<symbol>)</symbol> <keyword>end</keyword>
 		<keyword>obsolete</keyword>
 			"<string>Use is_empty instead</string>"
 		<keyword>do</keyword>
@@ -41,7 +49,7 @@
 				<feature_name>empty</feature_name>
 			</code> . The custom attribute defined by 
 			<code>
-				<class_name>SYSTEM_OBSOLETEATTRIBUTE</class_name>
+				<class_name>OBSOLETE_ATTRIBUTE</class_name>
 			</code> is used to ensure that any consumer of the resulting assembly will see the feature as being obsolete. The custom attribute is defined in the indexing clause 
 			<code>
 				<contract_tag>attribute</contract_tag>
