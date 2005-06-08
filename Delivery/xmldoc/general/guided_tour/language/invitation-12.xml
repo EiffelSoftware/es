@@ -2,8 +2,11 @@
 	<meta_data>
 		<help>
 			<toc>
-				<envision_location>20_Language\20_Tutorials\10_Invitation</envision_location>
+				<envision_location>EiffelEnvision\A Guide to Eiffel for .NET\Invitation to Eiffel</envision_location>
+				<envision_pseudo_name>91</envision_pseudo_name>
 				<envision_title>Polymorphism and Dynamic Binding</envision_title>
+				<studio_location/>
+				<studio_title/>
 			</toc>
 		</help>
 	</meta_data>
