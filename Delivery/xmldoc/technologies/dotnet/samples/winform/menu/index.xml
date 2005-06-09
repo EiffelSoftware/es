@@ -2,8 +2,7 @@
 	<meta_data>
 		<help>
 			<toc>
-				<envision_location>Samples\.NET Framework Samples\Windows Forms</envision_location>
-				<envision_pseudo_name>50</envision_pseudo_name>
+				<envision_location>EiffelEnvision\Examples\.NET Framework\Windows Forms</envision_location>
 			</toc>
 		</help>
 	</meta_data>
@@ -25,6 +24,16 @@
 		<heading>
 			<size>2</size>Compiling
 		</heading>
+		<paragraph>To compile the example:
+			<output output="envision">
+				<list ordered="true">
+					<item>Start Visual Studio .NET</item>
+					<item>Choose Open Project from the File menu.</item>
+					<item>Navigate to <italic>&lt;EiffelEnvision_installation_path&gt;\envision\examples\dotnet\winforms\menus\</italic> and select <italic>progress_bar_ctl.eifp</italic></item>
+					<item>Clicking open loads the selected project</item>
+				</list>
+			</output>
+		</paragraph>
 		<heading>
 			<size>2</size>Running
 		</heading>

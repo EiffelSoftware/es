@@ -32,7 +32,7 @@
 					<bold>OK</bold>
 				</item>
 				<item>Browse to 
-					<output output="envision">ENViSioN! root directory</output>
+					<output output="envision">EiffelEnvision root directory</output>
 					<output output="studio">$ISE_EIFFEL</output>\examples\dotnet\winforms\control_reference\?????????.
 					<italic/>
 				</item>

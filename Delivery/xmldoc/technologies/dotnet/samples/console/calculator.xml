@@ -2,7 +2,7 @@
 	<meta_data>
 		<help>
 			<toc>
-				<envision_location>Samples\Eiffel Class Libraries Samples</envision_location>
+				<envision_location>EiffelEnvision\Examples\Eiffel Class Library</envision_location>
 			</toc>
 		</help>
 	</meta_data>
@@ -20,25 +20,35 @@
 					<size>2</size>Compiling
 				</heading>
 				<paragraph>To compile the example:
-			<list ordered="false">
-				<item>Launch EiffelStudio.</item>
-				<item>Select 
-					<bold>Use existing Ace (control file)</bold> and click 
-					<bold>OK</bold>
-				</item>
-				<item>Browse to 
-					<output output="envision">ENViSioN! root directory</output>
-					<output output="studio">$ISE_EIFFEL</output>\examples\dotnet\calculator\.
-					<italic/>
-				</item>
-				<item>Choose
-					<italic/>.ace
-				</item>
-				<item>Choose the directory where the project will be compiled, by default the same directory containing the Ace file.</item>
-				<item>Click 
-					<bold>OK</bold>.
-				</item>
-			</list>
+			<output output="envision">
+				<list ordered="true">
+					<item>Start Visual Studio .NET</item>
+					<item>Choose Open Project from the File menu.</item>
+					<item>Navigate to <italic>&lt;EiffelEnvision_installation_path&gt;\envision\examples\dotnet\calculator\</italic> and select <italic>progress_bar_ctl.eifp</italic></item>
+					<item>Clicking open loads the selected project</item>
+				</list>
+			</output>
+			<output output="studio">
+				<list ordered="false">
+					<item>Launch EiffelStudio.</item>
+					<item>Select 
+						<bold>Use existing Ace (control file)</bold> and click 
+						<bold>OK</bold>
+					</item>
+					<item>Browse to 
+						<output output="envision">EiffelEnvision root directory</output>
+						<output output="studio">$ISE_EIFFEL</output>\examples\dotnet\calculator\.
+						<italic/>
+					</item>
+					<item>Choose
+						<italic/>.ace
+					</item>
+					<item>Choose the directory where the project will be compiled, by default the same directory containing the Ace file.</item>
+					<item>Click 
+						<bold>OK</bold>.
+					</item>
+				</list>
+			</output>
 		</paragraph>
 				<paragraph>
 					<heading>
