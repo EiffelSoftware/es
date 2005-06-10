@@ -1,5 +1,13 @@
-<document output="studio" title="Obtaining a finer degree of control">
-	<meta_data/>
+<document title="Obtaining a finer degree of control">
+	<meta_data>
+		<help>
+			<toc>
+				<envision_location>EiffelEnvision\Class Library Reference\EiffelNet\Content</envision_location>
+				<envision_pseudo_name>60</envision_pseudo_name>
+				<envision_title>Obtaining a Finer Degree of Control</envision_title>
+			</toc>
+		</help>
+	</meta_data>
 	<paragraph>
 		<paragraph>Let us now take a more internal look at the workings of EiffelNet.    The two examples that follow have the same behavior as the preceding    one; since their text is less simple, they are only interesting as an    illustration of the lower-level facilities that you may want to use in    specific cases. If you are already familiar with socket programming,    they will also give you a more precise idea of how EiffelNet    encapsulates the basic socket mechanisms.</paragraph>
 		<paragraph>As before, we have a client and a server class, still called    <code><class_name>OUR_CLIENT</class_name></code>

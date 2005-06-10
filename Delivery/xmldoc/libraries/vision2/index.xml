@@ -1,5 +1,11 @@
 <document title="EiffelVision 2">
-	<meta_data/>
+	<meta_data>
+		<help>
+			<toc>
+				<envision_location>EiffelEnvision/Class Library Reference</envision_location>
+			</toc>
+		</help>
+	</meta_data>
 	<paragraph>
 		<paragraph>  Type: Library
 			<line_break/>  Platform: Any

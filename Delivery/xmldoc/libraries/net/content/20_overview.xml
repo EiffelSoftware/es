@@ -1,5 +1,13 @@
-<document output="studio" title="An overview of EiffelNet Mechanisms">
-	<meta_data/>
+<document title="An overview of EiffelNet Mechanisms">
+	<meta_data>
+		<help>
+			<toc>
+				<envision_location>EiffelEnvision\Class Library Reference\EiffelNet\Content</envision_location>
+				<envision_pseudo_name>20</envision_pseudo_name>
+				<envision_title>An Overview of EiffelNet Mechanisms</envision_title>
+			</toc>
+		</help>
+	</meta_data>
 	<paragraph>
 		<paragraph>To enable clients and servers to exchange objects, you will have to    ensure that they can refer to a common 
 			<bold>address</bold>. At the predefined    level this is really the only notion that you need to know, although it    is useful to get the bigger picture, in particular the concept of 

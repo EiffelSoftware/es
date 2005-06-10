@@ -1,5 +1,12 @@
-<document output="studio" title="Duration">
-	<meta_data/>
+<document title="Duration">
+	<meta_data>
+		<help>
+			<toc>
+				<envision_location>EiffelEnvision\Class Library Reference\EiffelTime\Content</envision_location>
+				<envision_pseudo_name>20</envision_pseudo_name>
+			</toc>
+		</help>
+	</meta_data>
 	<paragraph>
 		<paragraph>
 			<code>

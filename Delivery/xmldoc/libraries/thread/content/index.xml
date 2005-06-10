@@ -1,27 +1,52 @@
-<document output="studio" title="EiffelThread Content">
-	<meta_data/>
+<document title="EiffelThread Content">
+	<meta_data>
+		<help>
+			<toc>
+				<envision_location>EiffelEnvision/Class Library Reference/EiffelThread</envision_location>
+				<envision_title>Content</envision_title>
+			</toc>
+		</help>
+	</meta_data>
 	<paragraph>
 		<paragraph> The EiffelThread library includes the main components needed to build multithreaded systems.
-			<line_break/> See:    
-			<list ordered="false">
-				<item>
-					<link>
-						<url>00_introduction.xml</url>
-						<label>Introduction</label>
-					</link>
-				</item>
-				<item>
-					<link>
-						<url>10_thread_library.xml</url>
-						<label>Library description</label>
-					</link>
-				</item>
-				<item>
-					<link>
-						<url>20_faq.xml</url>
-						<label>FAQ</label>
-					</link>
-				</item>
-			</list>
+			<line_break/> See: 
+			<output output="studio">
+				<list ordered="false">
+					<item>
+						<link>
+							<url>00_introduction.xml</url>
+							<label>Introduction</label>
+						</link>
+					</item>
+					<item>
+						<link>
+							<url>10_thread_library.xml</url>
+							<label>Library description</label>
+						</link>
+					</item>
+					<item>
+						<link>
+							<url>20_faq.xml</url>
+							<label>FAQ</label>
+						</link>
+					</item>
+				</list>
+			</output>
+			<output output="envision">
+				<list ordered="false">
+					<item>
+						<link>
+							<url>00_introduction.xml</url>
+							<label>Introduction</label>
+						</link>
+					</item>
+					<item>
+						<link>
+							<url>10_thread_library.xml</url>
+							<label>Library description</label>
+						</link>
+					</item>
+				</list>
+			</output>
 		</paragraph>
 	</paragraph></document>

@@ -1,5 +1,12 @@
-<document output="studio" title="Parsing: The Parse Library">
-	<meta_data/>
+<document title="Parsing: The Parse Library">
+	<meta_data>
+		<help>
+			<toc>
+				<envision_location>EiffelEnvision/Class Library Reference\EiffelParse</envision_location>
+				<envision_title>Parsing: The Parse Library</envision_title>
+			</toc>
+		</help>
+	</meta_data>
 	<paragraph>
 		<heading>
 			<size>2</size>OVERVIEW
