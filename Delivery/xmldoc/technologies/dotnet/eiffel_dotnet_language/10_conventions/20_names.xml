@@ -73,7 +73,6 @@ SYSTEM_QUEUE</class_name>
 			</code>.
 		</paragraph>
 		<paragraph>The other cases in the example are not quite so simple. If the basic derivation produces a name which conflicts with a classname in the Eiffel Base Library, then it will be disambiguated. The simple derivation of 
-<<<<<<< 20_names.xml
 			<class_name>System.String</class_name> would be 
 			<class_name>STRING</class_name>, but this would conflict with Eiffel's 
 			<class_name>STRING</class_name> class, so 
@@ -84,34 +83,6 @@ SYSTEM_QUEUE</class_name>
 			<class_name>DATA_</class_name>" for all classes in the .NET assembly System.Data. As a result, the type 
 			<class_name>System.Data.Constraint</class_name> is available in Eiffel as class 
 			<class_name>DATA_CONSTRAINT</class_name>.
-=======
-			<code>
-				<class_name>System.String</class_name>
-			</code> would be 
-			<code>
-				<class_name>STRING</class_name>
-			</code>, but this would conflict with Eiffel's 
-			<code>
-				<class_name>STRING</class_name>
-			</code> class, so 
-			<code>
-				<class_name>System.String</class_name>
-			</code> becomes available to Eiffel for .NET programmers as 
-			<code>
-				<class_name>SYSTEM_STRING</class_name>
-			</code>.
-		</paragraph>
-		<paragraph>Sometimes it is better to disambiguate an entire assembly rather than handling individual exceptions to the simple derivation. This is done by specifying a common prefix for all types in the assembly. For example, ENViSioN! uses a prefix of " 
-			<code>
-				<class_name>DATA_</class_name>
-			</code>" for all classes in the .NET assembly System.Data. As a result, the type 
-			<code>
-				<class_name>System.Data.Constraint</class_name>
-			</code> is available in Eiffel as class 
-			<code>
-				<class_name>DATA_CONSTRAINT</class_name>
-			</code>.
->>>>>>> 1.6
 		</paragraph>
 		<paragraph>You'll see a little more about namespaces, assemblies, and Eiffel clusters in 
 			<link>
