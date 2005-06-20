@@ -20,12 +20,6 @@
 						<label>Content</label>
 					</link>
 				</item>
-				<item>
-					<link>
-						<url>reference/index.xml</url>
-						<label>Reference</label>
-					</link>
-				</item>
 			</list>
 		</paragraph>
 	</paragraph></document>

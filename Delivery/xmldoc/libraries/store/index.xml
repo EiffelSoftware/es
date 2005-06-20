@@ -7,31 +7,49 @@
 			<line_break/>
 		</paragraph>
 		<paragraph> See: 
-			<list ordered="false">
-				<item>
-					<link>
-						<url>00_introduction.xml</url>
-						<label>Introduction</label>
-					</link>
-				</item>
-				<item>
-					<link>
-						<url>content/index.xml</url>
-						<label>Content</label>
-					</link>
-				</item>
-				<item>
-					<link>
-						<url>samples/index.xml</url>
-						<label>Samples</label>
-					</link>
-				</item>
-				<item>
-					<link>
-						<url>reference/index.xml</url>
-						<label>Reference</label>
-					</link>
-				</item>
-			</list>
+			<output output="studio">
+				<list ordered="false">
+					<item>
+						<link>
+							<url>00_introduction.xml</url>
+							<label>Introduction</label>
+						</link>
+					</item>
+					<item>
+						<link>
+							<url>content/index.xml</url>
+							<label>Content</label>
+						</link>
+					</item>
+					<item>
+						<link>
+							<url>samples/index.xml</url>
+							<label>Samples</label>
+						</link>
+					</item>
+					<item>
+						<link>
+							<url>reference/index.xml</url>
+							<label>Reference</label>
+						</link>
+					</item>
+				</list>
+			</output>
+			<output output="envision">
+				<list ordered="false">
+					<item>
+						<link>
+							<url>00_introduction.xml</url>
+							<label>Introduction</label>
+						</link>
+					</item>
+					<item>
+						<link>
+							<url>content/index.xml</url>
+							<label>Content</label>
+						</link>
+					</item>
+				</list>
+			</output>
 		</paragraph>
 	</paragraph></document>
