@@ -14,7 +14,7 @@ DOCUMENT_DIR=`pwd`
 # Where all.tar.gz files should be stored
 EXPORT_DIR=`pwd`/PorterPackage
 # What tag to use to CVS export everything
-DEFAULT_CVS_TAG=HEAD
+DEFAULT_CVS_TAG=Eiffel_56
 # Version of GTK
 GTK_DIR=gtk2
 
