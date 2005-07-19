@@ -1502,10 +1502,6 @@ Src/bench/Eiffel/doc/debugger_files/image002.gif svneol=native#unset
 Src/bench/Eiffel/doc/debugging/debugger_files/image001.png -text svneol=unset#application/octet-stream
 Src/bench/Eiffel/doc/debugging/debugger_files/image002.gif -text
 Src/bench/Eiffel/extra/finish_freezing/appl.ico -text
-Src/bench/com_compiler/ace_file/cec.ico -text
-Src/build/Clib/motif/efb.a svneol=native#unset
-Src/build/Clib/openlook/efb.a svneol=native#unset
-Src/build/Clib/openlook/efb_openlook svneol=native#unset
 Src/build2/build.ico -text
 Src/com_wizard/root/resources/eiffel_software.png -text
 Src/com_wizard/root/resources/help.png -text
