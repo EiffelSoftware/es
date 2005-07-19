@@ -31,6 +31,8 @@ feature {NONE}-- Initialization
 			create l_ev_vertical_box_2
 			create split_area
 			create grid_container
+			grid_container.set_border_width (1)
+			grid_container.set_background_color ((create {EV_STOCK_COLORS}).grey)
 			create description_frame
 			create l_ev_vertical_box_3
 			create description_text
