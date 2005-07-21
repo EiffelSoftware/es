@@ -105,7 +105,10 @@ feature {NONE} -- Initialization
 
 				-- Set up the screen.
 			buffered_line.set_background_color (editor_preferences.normal_background_color)	
-			
+
+				-- Ensure line numbers are displayed
+			refresh_line_number_agent := agent refresh_line_number_display
+			editor_preferences.show_line_numbers_preference.change_actions.extend (refresh_line_number_agent)
 			refresh_line_number_display
 			editor_preferences.show_line_numbers_preference.change_actions.extend (agent refresh_line_number_display)
 		end
@@ -1322,6 +1325,11 @@ feature {MARGIN} -- Implementation
 
 	right_buffer_width: INTEGER is 50
 
+feature {NONE} -- Implementation
+
+	refresh_line_number_agent: PROCEDURE [ANY, TUPLE]
+			-- Agent called when `show_line_numbers' preferences is changed.
+	
 feature -- Memory management
 
 	recycle is
@@ -1334,8 +1342,14 @@ feature -- Memory management
 			if ev_application.idle_actions.has (update_scroll_agent) then
 				ev_application.idle_actions.prune_all (update_scroll_agent)
 			end
-			update_scroll_agent := Void
 			
+				-- Remove `refresh_line_number_agent' from `change_actions' for `show_line_numbers'.
+			editor_preferences.show_line_numbers_preference.change_actions.prune_all (refresh_line_number_agent)
+			refresh_line_number_agent := Void
+			
+				-- Reset scrolling agent.
+			update_scroll_agent := Void
+						
 			if editor_drawing_area /= Void then
 				editor_drawing_area.destroy
 				editor_drawing_area := Void
