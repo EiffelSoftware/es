@@ -1,5 +1,6 @@
 indexing
 	description: "Window that displays a text area and a list of possible features for automatic completion"
+	author: "Etienne Amodeo"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -198,9 +199,6 @@ feature {NONE} -- Events handling
 			end
 		end
 
-	prev_item_index: INTEGER
-		-- Index of last selected item before current one.
-
 	on_key_released (ev_key: EV_KEY) is
 			-- process user input in `choice_list'
 		do			
@@ -242,11 +240,6 @@ feature {NONE} -- Events handling
 					-- Do nothing
 				end
 				
-				if not choice_list.selected_rows.is_empty then
-					prev_item_index := choice_list.selected_rows.first.index
-				else	
-					prev_item_index := 0			
-				end				
 			end			
 		end
 		
@@ -264,7 +257,7 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix:= choice_list.selected_rows.first.index
 							if ix <= nb_items_to_scroll then
-								if prev_item_index = 1 then
+								if ix = 1 then
 									choice_list.remove_selection
 									choice_list.row (choice_list.row_count).enable_select
 								else
@@ -276,6 +269,7 @@ feature {NONE} -- Events handling
 								choice_list.row (ix - nb_items_to_scroll).enable_select
 							end
 						end
+						
 						if not choice_list.selected_rows.is_empty then
 							choice_list.selected_rows.first.ensure_visible	
 						end
@@ -286,7 +280,7 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix:= choice_list.selected_rows.first.index
 							if ix > choice_list.row_count - nb_items_to_scroll then
-								if prev_item_index = choice_list.row_count then
+								if ix = choice_list.row_count then
 									choice_list.remove_selection
 									choice_list.row (1).enable_select
 								else
@@ -309,10 +303,10 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix := choice_list.selected_rows.first.index
 							choice_list.remove_selection
-							if ix <= 1 and prev_item_index = 1 then							
+							if ix = 1 then							
 								choice_list.row (choice_list.row_count).enable_select														
 							else					
-								choice_list.row (prev_item_index - 1).enable_select
+								choice_list.row (ix - 1).enable_select
 							end
 						end	
 						if not choice_list.selected_rows.is_empty then
@@ -324,10 +318,10 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix := choice_list.selected_rows.first.index
 							choice_list.remove_selection
-							if ix >= choice_list.row_count and prev_item_index = choice_list.row_count then								
+							if ix = choice_list.row_count then								
 								choice_list.row (1).enable_select
 							else					
-								choice_list.row (prev_item_index + 1).enable_select
+								choice_list.row (ix + 1).enable_select
 							end		
 						end
 						if not choice_list.selected_rows.is_empty then
@@ -355,12 +349,6 @@ feature {NONE} -- Events handling
 				else
 					-- Do nothing
 				end
-				
-				if not choice_list.selected_rows.is_empty then
-					prev_item_index := choice_list.selected_rows.first.index
-				else	
-					prev_item_index := 0
-				end				
 			end			
 		end
 		
@@ -454,6 +442,7 @@ feature {NONE} -- Implementation
 			l_upper: INTEGER
 		do			
 			choice_list.wipe_out
+			
 			if rebuild_list_during_matching then
 				matches := matches_based_on_name (name)
 			else
@@ -899,7 +888,14 @@ feature {NONE} -- String matching
 		require
 			choice_list_not_void: choice_list /= Void
 		do
-			Result := choice_list.last_visible_row.index - choice_list.first_visible_row.index - preferences.editor_data.scrolling_common_line_count
+			if choice_list.viewable_height > choice_list.row_count * choice_list.row_height then
+					-- In this situation, all of the rows are displayed in the grid so we wish to scroll
+					-- by the number of rows (less one as one is already be selected).
+				Result := choice_list.row_count - 1
+			else
+					-- Calculate the number of rows to scroll based on `scrolling_common_line_count' preference.
+				Result := choice_list.last_visible_row.index - choice_list.first_visible_row.index - preferences.editor_data.scrolling_common_line_count
+			end
 		end
 
 end -- class EB_COMPLETION_CHOICE_WINDOW
