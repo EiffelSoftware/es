@@ -45,7 +45,9 @@ feature -- Status setting
 			a_value_valid: valid_value_string (a_value)
 		do
 			default_value := a_value
-			change_actions.call ([Current])
+			if internal_change_actions /= Void then
+				internal_change_actions.call ([Current])
+			end
 		ensure		
 			default_value_set: default_value = a_value
 		end		
@@ -67,6 +69,14 @@ feature -- Status setting
 		ensure
 			is_reset: is_default_value
 		end		
+
+	set_restart_required (is_required: BOOLEAN) is
+			-- Set 'restart_required'
+		do
+			restart_required := is_required
+		ensure
+			restart_required_set: restart_required = is_required
+		end	
 
 feature -- Access
 
@@ -135,6 +145,9 @@ feature -- Query
 			string_not_void: a_string /= Void
 		deferred
 		end	
+
+	restart_required: BOOLEAN
+			-- Is a restart required to apply the preference when changed? (Default: False)
 
 feature -- Actions
 
