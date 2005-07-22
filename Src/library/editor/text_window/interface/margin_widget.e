@@ -180,22 +180,12 @@ feature {NONE} -- Implementation
 
 	default_line_number_area_width_cell: CELL [INTEGER] is
 			-- Value of line number area width for files with less than 100,000 lines).
-<<<<<<< margin_widget.e
 		once		
 			create Result
 		end
 
 	update_width_cell is
 			-- Update `default_line_number_area_width_cell'.
-=======
-		once		
-			create Result
-			update_width_cell			
-		end
-
-	update_width_cell is
-			-- Update `default_line_number_area_width_cell'.
->>>>>>> 1.9
 		local
 			l_max_token: EDITOR_TOKEN_LINE_NUMBER
 			l_spacer: STRING
