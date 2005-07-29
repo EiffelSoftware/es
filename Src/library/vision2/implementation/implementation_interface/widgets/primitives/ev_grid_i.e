@@ -1390,9 +1390,11 @@ feature -- Status setting
 			-- Resize `Current' to have `a_row_count' columns.
 		require
 			a_row_count_positive: a_row_count >= 1
+		local
+			l_count: INTEGER
 		do
+			set_vertical_computation_required (internal_row_data.count)
 			resize_row_lists (a_row_count)
-			set_vertical_computation_required (1)
 			redraw_client_area
 		ensure
 			row_count_set: row_count = a_row_count
@@ -2142,6 +2144,8 @@ feature -- Removal
 
 	clear is
 			-- Remove all items from `Current'.
+		require
+			is_parented: parent /= Void
 		local
 			i, a_row_count: INTEGER
 			temp_rows: like rows
@@ -2166,6 +2170,8 @@ feature -- Removal
 
 	wipe_out is
 			-- Remove all columns and rows from `Current'.
+		require
+			is_parented: parent /= Void
 		local
 			current_row_data: SPECIAL [EV_GRID_ITEM_I]
 			current_item: EV_GRID_ITEM_I
