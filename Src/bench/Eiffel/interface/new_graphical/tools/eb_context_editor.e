@@ -1082,7 +1082,7 @@ feature -- Memory management
 			if cluster_graph /= Void then
 				cluster_graph.manager.remove_observer (cluster_graph)
 			end
-			world.recycle
+			world_cell.recycle
 		end
 
 feature {EB_CONTEXT_EDITOR, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- Toolbar actions
