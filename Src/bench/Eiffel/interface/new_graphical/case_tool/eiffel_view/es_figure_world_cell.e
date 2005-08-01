@@ -14,10 +14,17 @@ inherit
 			on_pointer_button_press_on_drawing_area,
 			on_pointer_button_release_on_drawing_area,
 			initialize,
-			on_mouse_wheel_on_drawing_area
+			on_mouse_wheel_on_drawing_area,
+			world
 		end
 		
 	EB_CONSTANTS
+		undefine
+			copy,
+			default_create
+		end
+		
+	EB_RECYCLABLE
 		undefine
 			copy,
 			default_create
@@ -71,6 +78,26 @@ feature -- Access
 			
 	tool: EB_CONTEXT_EDITOR
 			-- Tool the `world' is displayed in.
+
+	world: EIFFEL_WORLD
+			-- World shown in Current.
+
+feature -- Recycling
+
+	recycle is
+			-- Recycle `Current' and leave `Current' in an unstable state.
+		do
+			preferences.diagram_tool_data.remove_observer (Current)
+			world.recycle
+			world := Void
+			drawing_area := Void
+			tool := Void
+			projector := Void
+			autoscroll.destroy
+			autoscroll := Void
+			horizontal_scrollbar := Void
+			vertical_scrollbar := Void
+		end
 
 feature {NONE} -- Implementation
 
