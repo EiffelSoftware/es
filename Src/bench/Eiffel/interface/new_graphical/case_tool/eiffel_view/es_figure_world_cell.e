@@ -18,13 +18,13 @@ inherit
 			world
 		end
 		
-	EB_CONSTANTS
+	EB_RECYCLABLE
 		undefine
 			copy,
 			default_create
 		end
-		
-	EB_RECYCLABLE
+
+	EB_CONSTANTS
 		undefine
 			copy,
 			default_create
@@ -53,8 +53,8 @@ feature {NONE} -- Initialization
 	make_with_world_and_tool (a_world: like world; a_tool: like tool) is
 			-- Make an EIFFEL_FIGURE_WORLD_CELL displaying `a_world' inside `a_tool'.
 		require
-			a_world_not_Void: a_world /= Void
-			a_tool_not_Void: a_tool /= Void
+			a_world_not_void: a_world /= Void
+			a_tool_not_void: a_tool /= Void
 		do
 			make_with_world (a_world)
 			tool := a_tool
@@ -89,16 +89,8 @@ feature -- Recycling
 		do
 			preferences.diagram_tool_data.remove_observer (Current)
 			world.recycle
-			world := Void
-			drawing_area := Void
-			tool := Void
-			projector := Void
-			autoscroll.destroy
-			autoscroll := Void
-			horizontal_scrollbar := Void
-			vertical_scrollbar := Void
 		end
-
+		
 feature {NONE} -- Implementation
 
 	on_pointer_button_press_on_drawing_area (ax, ay, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; ascreen_x, ascreen_y: INTEGER) is
