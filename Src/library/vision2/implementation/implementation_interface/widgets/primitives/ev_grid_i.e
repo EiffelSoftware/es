@@ -805,7 +805,7 @@ feature -- Status setting
 
 			if not activate_window.is_destroyed and then not activate_window.is_empty and then not activate_window.is_show_requested then
 				-- If some processing has been performed on `activate_window' then show it.
-				ev_application.do_once_on_idle (agent activate_window.show)
+				activate_window.show
 			end
 		end
 
