@@ -24,7 +24,9 @@ inherit
 			pick_actions,
 			pick_ended_actions,
 			set_accept_cursor,
-			set_deny_cursor
+			set_deny_cursor,
+			enable_capture,
+			disable_capture
 		end
 
 	EV_GRID_ACTION_SEQUENCES_I
@@ -1890,6 +1892,18 @@ feature -- Status report
 			-- If `True', for all cells within `Current' whose `column' and `row' have non-Void
 			-- foreground or background colors, the column colors are given priority.
 			-- If `False', the colors of the row are given priority.
+			
+	enable_capture is 	                         
+			-- Grab the user input.
+		do
+			drawable.enable_capture
+		end
+	 
+	disable_capture is
+			-- Release the user input.
+		do
+			drawable.disable_capture
+		end
 				
 feature -- Element change
 
