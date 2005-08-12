@@ -28,7 +28,8 @@ inherit
 			set_accept_cursor,
 			set_deny_cursor,
 			enable_capture,
-			disable_capture
+			disable_capture,
+			has_capture
 		redefine
 			initialize,
 			destroy,
