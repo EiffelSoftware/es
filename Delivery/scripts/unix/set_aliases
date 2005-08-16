@@ -151,7 +151,7 @@ cd $TMP_PATH
 mac_ranlib ()
 {
 if [ ! -d $1 ]; then
-if [ "$ISE_PLATFORM" = "macosx" ]; then ranlib $1; fi
+if echo "$ISE_PLATFORM" | grep "macosx" >/dev/null 2>&1; then ranlib $1; fi
 fi
 }
 # Eiffel Compilation
