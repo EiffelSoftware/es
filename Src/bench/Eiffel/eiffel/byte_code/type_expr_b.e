@@ -115,6 +115,10 @@ feature -- Byte code generation
 
 			create l_type_creator.make (context.real_type (type_data))
 			l_type_creator.make_byte_code (ba)
+
+				-- Runtime is in charge to make sure that newly created object
+				-- has been duplicated so that we can check the invariant.
+			ba.append (bc_create_inv)			
 		end
 
 feature -- Code analyzis
@@ -123,7 +127,7 @@ feature -- Code analyzis
 			-- Propagate `r'
 		do
 			if not context.propagated then
-				if r = No_register or r.c_type.same_class_type (c_type) then
+				if r = No_register and r.c_type.same_class_type (c_type) then
 					register := r
 					context.set_propagated
 				end
@@ -155,18 +159,16 @@ feature -- C code generation
 			l_type_creator: CREATE_TYPE
 		do
 			fixme ("Instance should be unique.")
-			if register /= No_register then
-				buf := buffer
-				create l_type_creator.make (context.real_type (type_data))
-				l_type_creator.generate_start (Current)
-				l_type_creator.generate_gen_type_conversion (Current)
-				register.print_register
-				buf.put_string (" = ")
-				l_type_creator.generate
-				buf.put_character (';')
-				buf.put_new_line
-				l_type_creator.generate_end (Current)
-			end
+			buf := buffer
+			create l_type_creator.make (context.real_type (type_data))
+			l_type_creator.generate_start (Current)
+			l_type_creator.generate_gen_type_conversion (Current)
+			register.print_register
+			buf.put_string (" = ")
+			l_type_creator.generate
+			buf.put_character (';')
+			buf.put_new_line
+			l_type_creator.generate_end (Current)
 		end
 
 	print_register is

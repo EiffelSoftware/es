@@ -92,9 +92,7 @@ feature
 				cecil_basket.extend ("bits.o"); cecil_basket.finish
 				cecil_basket.extend ("file.o"); cecil_basket.finish
 				cecil_basket.extend ("dir.o"); cecil_basket.finish
-				cecil_basket.extend ("string.o"); cecil_basket.finish
 				cecil_basket.extend ("misc.o"); cecil_basket.finish
-				cecil_basket.extend ("pattern.o"); cecil_basket.finish
 				cecil_basket.extend ("error.o"); cecil_basket.finish
 				cecil_basket.extend ("umain.o"); cecil_basket.finish
 				cecil_basket.extend ("memory.o"); cecil_basket.finish
@@ -114,6 +112,7 @@ feature
 				cecil_basket.extend ("eif_type_id.o"); cecil_basket.finish
 				cecil_basket.extend ("rout_obj.o"); cecil_basket.finish
 				cecil_basket.extend ("eif_project.o"); cecil_basket.finish
+				cecil_basket.extend ("idrs.o"); cecil_basket.finish
 			else
 				cecil_basket := cecil_rt_basket
 				cecil_basket.extend ("MTmalloc.o"); cecil_basket.finish
@@ -140,9 +139,7 @@ feature
 				cecil_basket.extend ("MTbits.o"); cecil_basket.finish
 				cecil_basket.extend ("MTfile.o"); cecil_basket.finish
 				cecil_basket.extend ("MTdir.o"); cecil_basket.finish
-				cecil_basket.extend ("MTstring.o"); cecil_basket.finish
 				cecil_basket.extend ("MTmisc.o"); cecil_basket.finish
-				cecil_basket.extend ("MTpattern.o"); cecil_basket.finish
 				cecil_basket.extend ("MTerror.o"); cecil_basket.finish
 				cecil_basket.extend ("MTumain.o"); cecil_basket.finish
 				cecil_basket.extend ("MTmemory.o"); cecil_basket.finish
@@ -163,6 +160,7 @@ feature
 				cecil_basket.extend ("MTrout_obj.o"); cecil_basket.finish
 				cecil_basket.extend ("MTeif_project.o"); cecil_basket.finish
 				cecil_basket.extend ("MTeif_special_table.o"); cecil_basket.finish
+				cecil_basket.extend ("MTidrs.o"); cecil_basket.finish
 			end
 		end;
 

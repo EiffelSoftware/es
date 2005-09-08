@@ -1,2 +1,0 @@
-.xml</url> || .html</url>
-.html([^<]*)</url> || .xml\1\</url>

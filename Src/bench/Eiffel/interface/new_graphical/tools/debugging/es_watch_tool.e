@@ -855,7 +855,11 @@ feature {NONE} -- Event handling
 					then
 						empty_expression_cell ?= row.item (col_name_index)
 						if empty_expression_cell /= Void then
-							empty_expression_cell.activate_with_string (s)
+							if s.is_equal ("%N") then
+								empty_expression_cell.activate
+							else								
+								empty_expression_cell.activate_with_string (s)
+							end
 						end
 					end
 				end
@@ -946,7 +950,12 @@ feature {NONE} -- Event handling on notebook item
 		require
 			notebook_item /= Void
 		do
-			if ab = 3 then
+			if 
+				ab = 3
+				and then not Ev_application.ctrl_pressed
+				and then not Ev_application.shift_pressed
+				and then not Ev_application.alt_pressed
+			then
 				open_watch_menu (notebook_item.parent.widget, ax, ay)
 			end
 		end
@@ -1076,6 +1085,7 @@ feature {NONE} -- Implementation
 				watched_items.forth
 			end
 			ensure_last_row_is_new_expression_row
+			on_row_deselected (Void) -- Reset toolbar buttons
 		end
 
 	standard_grid_label (s: STRING): EV_GRID_LABEL_ITEM is

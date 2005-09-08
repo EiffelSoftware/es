@@ -88,6 +88,9 @@ feature -- Analysis preparation
 							split_string := False
 						elseif token.image @ token.image.count /= '%"' then
 							split_string := True
+						else
+								-- It might be an operator name
+							token.set_pos_in_text (pos_in_file)						
 						end
 					else
 						if not split_string then
@@ -349,6 +352,9 @@ feature -- Click list update
 									token := Void
 								end
 							end
+						else
+								-- It might be an operator name
+							token.set_pos_in_text (pos_in_file)
 						end
 					else
 							-- "Normal" text token
@@ -370,7 +376,7 @@ feature -- Click list update
 							end
 							features_position.forth
 						else
-							token.set_pos_in_text (pos_in_file)						
+							token.set_pos_in_text (pos_in_file)
 						end
 					end
 				end
@@ -452,7 +458,10 @@ feature -- Basic Operations
 							until
 								crtrs.after
 							loop
-								if feat_table.has (crtrs.key_for_iteration) then
+								if 
+									feat_table.has (crtrs.key_for_iteration) and then
+									crtrs.item_for_iteration.is_exported_to (l_current_class_c)
+								then
 									add_feature_to_completion_possibilities	(feat_table.item (crtrs.key_for_iteration))
 								end								
 								crtrs.forth
@@ -618,13 +627,25 @@ feature -- Basic Operations
 			if Result = Void then
 				if exploring_current_class then								
 					Result := a_compiled_class
-				elseif prev_token /= Void and not is_static and not is_parenthesized then
+				elseif prev_token /= Void and not is_create and not is_static and not is_parenthesized then
 					current_feature_as := feature_containing (prev_token, cursor.line)
 					type := type_from (prev_token, cursor.line)
 					if type /= Void then
 						Result := type.associated_class
 					end
-				elseif is_create or is_static or is_parenthesized then
+				elseif is_create then
+					if found_class /= Void then
+							-- Looks like it was a creation expression since `found_class' was computed.
+						Result := found_class
+					else
+							-- Looks like it was a creation instruction since `found_class' was not set.
+						current_feature_as := feature_containing (prev_token, cursor.line)
+						type := type_from (prev_token, cursor.line)
+						if type /= Void then
+							Result := type.associated_class
+						end
+					end
+				elseif is_static or is_parenthesized then
 					Result := found_class
 				end					
 			end
@@ -666,16 +687,21 @@ feature -- Basic Operations
 										-- Previous token is an Eiffel identifier
 										-- Happens when completing 'a.b|.c'
 									insertion.put (prev_token.image)
-									insertion_remainder := 0		
 								else
 										-- Happens when completing '|.b.c' or '(|.b.c)'
 								end
 							end
 						else
-							if token.is_blank then
-								-- Previous token is a partially completed term.
-								-- Happens when completing 'a.b.c| '
-								insertion.put (prev_token.image)
+							if token.is_blank and not prev_token.is_blank then
+									-- Previous token is a partially completed term.
+									-- Happens when completing 'a.b.c| '
+								if not prev_token.image.is_empty then
+									l_char := prev_token.image.item (prev_token.image.count)
+									if l_char.is_alpha or l_char.is_digit or l_char = '_' then
+											-- Previous token is an Eiffel identifier
+										insertion.put (prev_token.image)		
+									end
+								end
 --							elseif prev_token.is_blank then
 --									-- There is blank or a token separator before cursor
 --									-- Happens when completing ' |a.b.c'
@@ -700,14 +726,17 @@ feature -- Basic Operations
 --										insertion_remainder := token.image.count		
 --									end
 --								end
-								
 							end	
 						end
 					elseif cursor.pos_in_token > 1 then
 							-- Cursor is current in a token at `cursor.pos_in_token'
-							-- Happens when completing 'a.bb|bbbb.c'
-						insertion.put (token.image.substring (1, cursor.pos_in_token - 1))
-						insertion_remainder := token.length - (cursor.pos_in_token - 1)
+						if not token.is_blank then
+								-- Happens when completing 'a.bb|bbbb.c'						
+							insertion.put (token.image.substring (1, cursor.pos_in_token - 1))
+							insertion_remainder := token.length - (cursor.pos_in_token - 1)							
+						else
+							-- Happens when completing 'if | then'
+						end
 					else
 						check
 							not_reachable: False
@@ -715,8 +744,17 @@ feature -- Basic Operations
 					end
 				else
 						-- The token is not text so the insertion must be taken from the previous token IF that is text
-					if token.previous /= Void and then token.previous.is_text and then not token_image_is_in_array (token.previous, feature_call_separators) then
-						insertion.put (token.previous.image)
+					prev_token := token.previous
+					if prev_token /= Void and then prev_token.is_text and then not token_image_is_in_array (prev_token, feature_call_separators) then
+						l_char := prev_token.image.item (prev_token.image.count)
+						if l_char.is_alpha or l_char.is_digit or l_char = '_' then
+								-- Previous token is an Eiffel identifier
+								-- Happens when completing 'p|'
+							insertion.put (prev_token.image)
+							insertion_remainder := 0		
+						else
+								-- Happens when completing ')|.b.c'
+						end
 					end
 				end
 			end
@@ -1258,7 +1296,7 @@ feature {EB_ADDRESS_MANAGER}-- Implementation
 			current_token := a_token
 			go_to_previous_token
 			Result := token_image_is_same_as_word (current_token, Create_word)
-			if not Result and then token_image_is_same_as_word (a_token, closing_brace) then
+			if not Result and then token_image_is_same_as_word (current_token, closing_brace) then
 				from
 					par_cnt := 1
 				until

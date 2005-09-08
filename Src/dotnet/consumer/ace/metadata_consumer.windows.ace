@@ -25,9 +25,8 @@ default
 	use_all_cluster_name_as_namespace (no)
 	msil_generation_type ("dll")
 	namespace ("EiffelSoftware.MetadataConsumer")
-	version ("5.6.1014")
+	version ("5.7.0201")
 	msil_key_file_name ("$EIFFEL_SRC\dotnet\helpers\isekey.snk")
-	msil_clr_version ("v1.0.3705")
 	msil_assembly_compatibility ("None")
 	check_vape (yes)
 	console_application (yes)
@@ -75,6 +74,13 @@ cluster
 		exclude
 			"CVS"; "example"; 
 		end
+		
+	all compliance_checker:		"$EIFFEL_SRC\tools\compliance_checker\engine"
+		exclude
+			"CVS"; "reporting";
+		default
+			namespace ("ComplianceChecker")
+		end
 
 assembly
 	"mscorlib":	"${ISE_DOTNET_FRAMEWORK}\mscorlib.dll"
@@ -90,5 +96,6 @@ assembly
 		end
 
 	"eiffelsoftware_runtime":	"$ISE_EIFFEL\studio\spec\$ISE_PLATFORM\bin\EiffelSoftware.Runtime.dll"
+
 
 end

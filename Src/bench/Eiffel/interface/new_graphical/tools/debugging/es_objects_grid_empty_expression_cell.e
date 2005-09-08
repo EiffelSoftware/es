@@ -10,7 +10,8 @@ class
 inherit
 	EV_GRID_EDITABLE_ITEM
 		redefine
-			activate_action, deactivate, make_with_text
+			activate_action, deactivate, make_with_text,
+			initialize_actions
 		end
 
 create
@@ -46,17 +47,12 @@ feature -- Query
 				remove_text
 			end
 			Precursor (popup_window)
-			if use_text /= Void then
-				text_field.set_caret_position (use_text.count + 1)
-			end
-			use_text := Void
-			popup_window.show_actions.extend_kamikaze (agent text_field.set_focus)
 		end
 
 	deactivate is
 		do
 			Precursor
-			if not text.is_empty then
+			if not user_cancelled_activation and then not text.is_empty then
 				apply_actions.call ([text])
 			end
 			set_text (empty_text)
@@ -65,5 +61,13 @@ feature -- Query
 	apply_actions: EV_NOTIFY_ACTION_SEQUENCE
 		-- Action to perform when applying the changes
 
+	initialize_actions is
+		do
+			Precursor
+			if use_text /= Void then
+				text_field.set_caret_position (use_text.count + 1)
+			end
+			use_text := Void
+		end
 
 end

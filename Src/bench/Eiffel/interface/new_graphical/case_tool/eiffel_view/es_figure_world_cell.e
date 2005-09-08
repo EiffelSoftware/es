@@ -14,9 +14,17 @@ inherit
 			on_pointer_button_press_on_drawing_area,
 			on_pointer_button_release_on_drawing_area,
 			initialize,
-			on_mouse_wheel_on_drawing_area
+			on_mouse_wheel_on_drawing_area,
+			world,
+			set_world
 		end
 		
+	EB_RECYCLABLE
+		undefine
+			copy,
+			default_create
+		end
+
 	EB_CONSTANTS
 		undefine
 			copy,
@@ -46,8 +54,8 @@ feature {NONE} -- Initialization
 	make_with_world_and_tool (a_world: like world; a_tool: like tool) is
 			-- Make an EIFFEL_FIGURE_WORLD_CELL displaying `a_world' inside `a_tool'.
 		require
-			a_world_not_Void: a_world /= Void
-			a_tool_not_Void: a_tool /= Void
+			a_world_not_void: a_world /= Void
+			a_tool_not_void: a_tool /= Void
 		do
 			make_with_world (a_world)
 			tool := a_tool
@@ -72,6 +80,31 @@ feature -- Access
 	tool: EB_CONTEXT_EDITOR
 			-- Tool the `world' is displayed in.
 
+	world: EIFFEL_WORLD
+			-- World shown in Current.
+
+feature -- Element change
+
+	set_world (a_world: like world) is
+			-- Set `world' to `a_world'.
+		do
+			if world /= Void then
+					-- `recycle' former world to avoid memory leak.
+				world.recycle
+			end
+			world := a_world
+			projector.set_world (a_world)
+		end
+
+feature -- Recycling
+
+	recycle is
+			-- Recycle `Current' and leave `Current' in an unstable state.
+		do
+			preferences.diagram_tool_data.remove_observer (Current)
+			world.recycle
+		end
+		
 feature {NONE} -- Implementation
 
 	on_pointer_button_press_on_drawing_area (ax, ay, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; ascreen_x, ascreen_y: INTEGER) is

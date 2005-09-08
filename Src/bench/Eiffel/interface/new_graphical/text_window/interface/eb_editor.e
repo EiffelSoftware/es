@@ -65,8 +65,7 @@ feature {NONE} -- Initialization
 			-- Initialize the editor.
 		do
 			default_create
-			register_documents				
-			unwanted_characters.extend ('%N')
+			register_documents
 		end
 
 	initialize_editor_context is
@@ -98,9 +97,7 @@ feature -- Warning messages display
 			w: EB_TEXT_LOADING_WARNING_DIALOG
 		do
 			if text_displayed /= Void then
-				if open_backup then
-					show_warning_message (Warning_messages.w_Backup_file_not_editable)
-				elseif is_read_only and then not allow_edition then
+				if is_read_only and then not allow_edition then
 					if not_editable_warning_message = Void or else not_editable_warning_message.is_empty then
 						wm := Warning_messages.w_Text_not_editable
 					else

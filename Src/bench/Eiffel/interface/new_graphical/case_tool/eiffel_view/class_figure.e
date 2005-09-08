@@ -85,7 +85,9 @@ feature -- Element change
 			end_actions.prune_all (agent extend_history)
 			move_actions.prune_all (agent on_move)
 			pointer_double_press_actions.prune_all (agent on_pointer_double_pressed)
-			model.needed_on_diagram_changed_actions.prune_all (agent on_needed_on_diagram_changed)
+			if model /= Void then
+				model.needed_on_diagram_changed_actions.prune_all (agent on_needed_on_diagram_changed)
+			end
 		end
 		
 	apply_right_angles is
@@ -242,69 +244,75 @@ feature {NONE} -- Implementation
 			new_classes: LIST [ES_CLASS]
 			layout: EIFFEL_INHERITANCE_LAYOUT
 		do
-			ce := world.context_editor
-			cg := ce.class_graph
-			if cg /= Void then
-				old_es_center := cg.center_class
-				old_center ?= world.figure_from_model (old_es_center)
-				check
-					old_center_exists: old_center /= Void
-				end
-				old_center.set_is_fixed (False)
-				cg.set_new_center_class (model)
-				
-				new_classes := cg.last_created_classes
-				cg.reset_last_created_classes
-				
-				if ce.is_force_directed_used then
-					arrange_around (new_classes, port_x, port_y, 200)
-					fdl := ce.force_directed_layout
-					ce.restart_force_directed
-					fdl.set_center (port_x, port_y)
-					set_is_fixed (True)
-					world.context_editor.history.remove_last
-					world.context_editor.history.register_named_undoable (
-					interface_names.t_diagram_set_center_class + ": " + model.name,
-					[<<
-						agent old_center.set_is_fixed (False),
-						agent cg.set_new_center_class (model),
-						agent set_is_fixed (True),
-						agent fdl.set_center (port_x, port_y),
-						agent ce.restart_force_directed,
-						agent world.update_cluster_legend
-					>>],
-					[<<
-						agent set_is_fixed (False),
-						agent cg.set_new_center_class (old_es_center),
-						agent old_center.set_is_fixed (True),
-						agent fdl.set_center (old_center.port_x, old_center.port_y),
-						agent ce.restart_force_directed,
-						agent world.update_cluster_legend
-					>>])
-				else
-					create layout.make_with_world (world)
-					if world.is_uml then
-						layout.set_spacing (150, 150)
-					else
-						layout.set_spacing (40, 40)
+			if button = 1 then
+				ce := world.context_editor
+				cg := ce.class_graph
+				if cg /= Void then
+					old_es_center := cg.center_class
+					old_center ?= world.figure_from_model (old_es_center)
+					check
+						old_center_exists: old_center /= Void
 					end
-					layout.layout
-					world.context_editor.history.remove_last
-					world.context_editor.history.register_named_undoable (
-					interface_names.t_diagram_set_center_class + ": " + model.name,
-					[<<
-						agent cg.set_new_center_class (model),
-						agent layout.layout,
-						agent world.update_cluster_legend
-					>>],
-					[<<
-						agent cg.set_new_center_class (old_es_center),
-						agent layout.layout,
-						agent world.update_cluster_legend
-					>>])
+					old_center.set_is_fixed (False)
+					cg.set_new_center_class (model)
+					
+					new_classes := cg.last_created_classes
+					cg.reset_last_created_classes
+					
+					if ce.is_force_directed_used then
+						arrange_around (new_classes, port_x, port_y, 200)
+						fdl := ce.force_directed_layout
+						ce.restart_force_directed
+						fdl.set_center (port_x, port_y)
+						set_is_fixed (True)
+						if not world.context_editor.history.undo_list.is_empty then
+							world.context_editor.history.remove_last
+						end
+						world.context_editor.history.register_named_undoable (
+						interface_names.t_diagram_set_center_class + ": " + model.name,
+						[<<
+							agent old_center.set_is_fixed (False),
+							agent cg.set_new_center_class (model),
+							agent set_is_fixed (True),
+							agent fdl.set_center (port_x, port_y),
+							agent ce.restart_force_directed,
+							agent world.update_cluster_legend
+						>>],
+						[<<
+							agent set_is_fixed (False),
+							agent cg.set_new_center_class (old_es_center),
+							agent old_center.set_is_fixed (True),
+							agent fdl.set_center (old_center.port_x, old_center.port_y),
+							agent ce.restart_force_directed,
+							agent world.update_cluster_legend
+						>>])
+					else
+						create layout.make_with_world (world)
+						if world.is_uml then
+							layout.set_spacing (150, 150)
+						else
+							layout.set_spacing (40, 40)
+						end
+						layout.layout
+						if not world.context_editor.history.undo_list.is_empty then
+							world.context_editor.history.remove_last
+						end
+						world.context_editor.history.register_named_undoable (
+						interface_names.t_diagram_set_center_class + ": " + model.name,
+						[<<
+							agent cg.set_new_center_class (model),
+							agent layout.layout,
+							agent world.update_cluster_legend
+						>>],
+						[<<
+							agent cg.set_new_center_class (old_es_center),
+							agent layout.layout,
+							agent world.update_cluster_legend
+						>>])
+					end
+					world.update_cluster_legend
+					world.context_editor.tool.set_stone (create {CLASSI_STONE}.make (model.class_i))
 				end
-				world.update_cluster_legend
-				world.context_editor.tool.set_stone (create {CLASSI_STONE}.make (model.class_i))
 			end
 		end
 		
@@ -342,7 +350,11 @@ feature {NONE} -- Implementation (adding relations)
 			l_error_window: EV_WARNING_DIALOG
 		do
 			create class_file.make (a_stone.class_i.file_name)
-			if class_file.is_writable and then not a_stone.class_i.cluster.is_library then
+			if not class_file.exists then
+				create l_error_window.make_with_text ("Class is not editable.%N" +
+					 warning_messages.w_file_not_exist (a_stone.class_i.file_name))
+				l_error_window.show_modal_to_window (world.context_editor.development_window.window)
+			elseif class_file.is_writable and then not a_stone.class_i.cluster.is_library then
 				if world.context_editor.is_link_inheritance then
 					if drop_allowed (a_stone) then
 						add_inheritance_relation (a_stone.source)

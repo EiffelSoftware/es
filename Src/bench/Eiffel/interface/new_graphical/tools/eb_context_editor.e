@@ -558,12 +558,16 @@ feature -- Status settings.
 			is_force_directed_used := True
 			if class_graph = Void then
 				fig ?= world.figure_from_model (cluster_graph.center_cluster)
-				min_box := fig.minimum_size
-				force_directed_layout.set_center (min_box.left + min_box.width // 2, min_box.top + min_box.height // 2)
+				if fig /= Void then
+					min_box := fig.minimum_size
+					force_directed_layout.set_center (min_box.left + min_box.width // 2, min_box.top + min_box.height // 2)
+				end
 			else
 				fig ?= world.figure_from_model (class_graph.center_class)
-				force_directed_layout.set_center (fig.port_x, fig.port_y)
-				fig.set_is_fixed (True)
+				if fig /= Void then
+					force_directed_layout.set_center (fig.port_x, fig.port_y)
+					fig.set_is_fixed (True)
+				end
 			end
 			if world.is_right_angles then
 				world.remove_right_angles
@@ -720,7 +724,6 @@ feature -- Element change
 				progress_dialog.enable_cancel
 				progress_dialog.set_value (0)
 				progress_dialog.show
-				progress_dialog.show_relative_to_window (Window_manager.last_focused_window.window)
 				
 				update_excluded_class_figures
 				world_cell.disable_resize
@@ -865,7 +868,6 @@ feature -- Element change
 				progress_dialog.enable_cancel
 				progress_dialog.set_value (0)
 				progress_dialog.show
-				progress_dialog.show_relative_to_window (Window_manager.last_focused_window.window)
 				
 				update_excluded_class_figures
 				world_cell.disable_resize
@@ -1078,7 +1080,7 @@ feature -- Memory management
 			if cluster_graph /= Void then
 				cluster_graph.manager.remove_observer (cluster_graph)
 			end
-			world.recycle
+			world_cell.recycle
 		end
 
 feature {EB_CONTEXT_EDITOR, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- Toolbar actions
@@ -1455,7 +1457,6 @@ feature {NONE} -- Events
 				progress_dialog.set_degree ("Calculating size:")
 				progress_dialog.enable_cancel
 				progress_dialog.show
-				progress_dialog.show_relative_to_window (Window_manager.last_focused_window.window)
 				
 				progress_dialog.start (0)
 				
@@ -1553,7 +1554,6 @@ feature {EB_DELETE_VIEW_COMMAND} -- View selector
 				progress_dialog.set_message ("Diagram for " + view_selector.text)
 				progress_dialog.enable_cancel
 				progress_dialog.show
-				progress_dialog.show_relative_to_window (Window_manager.last_focused_window.window)
 				
 				if is_force_directed_used then
 					disable_force_directed
