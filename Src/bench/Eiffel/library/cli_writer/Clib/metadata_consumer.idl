@@ -3,7 +3,7 @@
 // typelib filename: EiffelSoftware.MetadataConsumer.tlb
 
 [
-  uuid(DF2958B2-37AF-3FBE-BF80-95D27D7723B0),
+  uuid(D5714119-7213-34EF-A943-2ED2B05DC6F8),
   version(5.6)
 ]
 library EiffelSoftware_MetadataConsumer
@@ -17,7 +17,7 @@ library EiffelSoftware_MetadataConsumer
 
     [
       odl,
-      uuid(E1FFE1A4-412E-4517-8BD0-56F31E07E879),
+      uuid(E1FFE1AC-6D07-41B7-B9BE-A69AC58F7763),
       version(1.0),
       dual,
       oleautomation
@@ -68,7 +68,7 @@ library EiffelSoftware_MetadataConsumer
 
     [
       odl,
-      uuid(E1FFE140-552A-432A-A066-86E24073A90C),
+      uuid(E1FFE1AC-393B-44C1-B906-81CB7EF0A5E4),
       version(1.0),
       dual,
       oleautomation
@@ -91,11 +91,10 @@ library EiffelSoftware_MetadataConsumer
     };
 
     [
-      uuid(E1FFE1ED-1F90-4D3C-BAC6-68B74B00F5CB),
+      uuid(E1FFE1AC-3446-4197-86AB-D08803231204),
       version(1.0)
     ]
     coclass EiffelSoftware_MetadataConsumer_Interop_Impl_COM_CACHE_MANAGER {
         [default] interface EiffelSoftware_MetadataConsumer_Interop_I_COM_CACHE_MANAGER;
     };
 };
-
