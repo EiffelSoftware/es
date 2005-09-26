@@ -12,6 +12,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_LOGGER
+		export
+			{NONE} all
+		end
+
 feature -- Basic Operations
 
 	load_assembly_from_path (a_path: STRING): ASSEMBLY is
@@ -34,6 +39,9 @@ feature -- Basic Operations
 				end
 			end
 		rescue
+			debug ("log_exceptions")
+				log_last_exception
+			end
 			l_retried := True
 			retry
 		end
@@ -67,6 +75,9 @@ feature -- Basic Operations
 				end
 			end
 		rescue
+			debug ("log_exceptions")
+				log_last_exception
+			end
 			l_retried := True
 			retry
 		end
@@ -160,6 +171,9 @@ feature {NONE} -- Implementation
 				feature {APP_DOMAIN}.unload (l_new_domain)
 			end
 		rescue
+			debug ("log_exceptions")
+				log_last_exception
+			end
 			retried := True
 			retry
 		end
