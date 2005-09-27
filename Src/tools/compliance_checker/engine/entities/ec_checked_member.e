@@ -41,17 +41,12 @@ feature {NONE} -- Basic Operations {EC_CHECKED_ENTITY}
 			-- Checks entity's CLS-compliance.
 		local
 			l_checked_type: EC_CHECKED_TYPE
-			l_type: SYSTEM_TYPE
 		do
 			Precursor {EC_CHECKED_ENTITY}
 			if internal_is_compliant and then not internal_is_marked then
 					-- No CLS-compliant attribute was set on member so we need to check parent
 					-- container type.
-				l_type := member.declaring_type
-				l_checked_type ?= checked_entities.item (l_type)
-				if l_checked_type = Void then
-					create l_checked_type.make (l_type)
-				end
+				l_checked_type ?= checked_type (member.declaring_type)
 				internal_is_compliant := l_checked_type.is_compliant
 				internal_is_marked := l_checked_type.is_marked
 				non_compliant_reason := l_checked_type.non_compliant_reason
