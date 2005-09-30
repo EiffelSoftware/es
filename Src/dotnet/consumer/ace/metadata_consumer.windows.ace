@@ -26,6 +26,7 @@ default
 	msil_generation_type ("dll")
 	namespace ("EiffelSoftware.MetadataConsumer")
 	version ("5.6.1308")
+	msil_clr_verion ("v1.0.3705")
 	msil_key_file_name ("$EIFFEL_SRC\dotnet\helpers\isekey.snk")
 	msil_assembly_compatibility ("None")
 	check_vape (yes)
