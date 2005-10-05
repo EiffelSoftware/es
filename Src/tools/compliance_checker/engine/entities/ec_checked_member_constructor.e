@@ -56,7 +56,7 @@ feature {NONE} -- Basic Operations {EC_CHECKED_MEMBER}
 			l_compliant: BOOLEAN
 		do
 			l_member := member
-			if (not internal_is_compliant or not internal_is_marked) and then (l_member.is_public or l_member.is_family or l_member.is_family_or_assembly) then
+			if (l_member.is_public or l_member.is_family or l_member.is_family_or_assembly) then
 				Precursor {EC_CHECKED_MEMBER_METHOD_BASE}
 				if internal_is_eiffel_compliant then
 					l_compliant := are_parameters_compliant (True)
@@ -65,8 +65,6 @@ feature {NONE} -- Basic Operations {EC_CHECKED_MEMBER}
 					end
 					internal_is_eiffel_compliant := l_compliant
 				end
-			else
-				internal_is_eiffel_compliant := True
 			end
 		end
 			

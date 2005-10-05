@@ -12,7 +12,13 @@ class
 inherit		
 	EC_CHECKED_ENTITY
 		redefine
-			check_extended_compliance
+			check_extended_compliance,
+			check_eiffel_compliance
+		end
+		
+	EC_CHECKED_ENTITY_FACTORY
+		export
+			{NONE} all
 		end
 
 create
@@ -54,13 +60,38 @@ feature {NONE} -- Basic Operations {EC_CHECKED_ENTITY}
 				non_compliant_reason := non_compliant_reasons.reason_member_marked_non_cls_compliant
 			end
 		end
-
+		
 	check_eiffel_compliance is
 			-- Checks entity to see if it is Eiffel-compliant.
+		local
+			l_checked_type: EC_CHECKED_TYPE
+			l_member_name: SYSTEM_STRING
+			l_compliant: BOOLEAN
 		do
-			internal_is_eiffel_compliant := True
+			Precursor {EC_CHECKED_ENTITY}
+			if internal_is_eiffel_compliant then
+				l_member_name := member.name
+				l_compliant := l_member_name /= Void and then (l_member_name.index_of_character ('`') < 0)
+				if l_compliant then
+					l_checked_type ?= checked_type (member.declaring_type)
+					l_compliant := l_checked_type.is_eiffel_compliant
+					if not l_compliant then
+						if l_checked_type.non_eiffel_compliant_reason.is_equal (non_compliant_reasons.reason_type_is_generic) then
+							non_eiffel_compliant_reason := non_compliant_reasons.reason_member_is_generic
+						else
+							non_eiffel_compliant_reason := l_checked_type.non_eiffel_compliant_reason
+						end
+					end
+					internal_is_eiffel_compliant := l_compliant
+				else
+					internal_is_eiffel_compliant := False
+					non_eiffel_compliant_reason := non_compliant_reasons.reason_member_is_generic
+				end
+			else
+				non_eiffel_compliant_reason := non_compliant_reasons.reason_member_marked_non_eiffel_consumable
+			end
 		end
-		
+	
 feature {NONE} -- Query {EC_CHECKED_ENTITY}
 
 	custom_attribute_provider: ICUSTOM_ATTRIBUTE_PROVIDER is
