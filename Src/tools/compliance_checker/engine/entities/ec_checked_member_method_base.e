@@ -62,10 +62,7 @@ feature {NONE} -- Basic Operations {EC_CHECKED_MEMBER}
 					end
 					internal_is_eiffel_compliant := l_compliant
 				end
-			else
-				internal_is_eiffel_compliant := True
 			end
-			
 		end
 
 feature -- Access

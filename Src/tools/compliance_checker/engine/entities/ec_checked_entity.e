@@ -115,7 +115,8 @@ feature {NONE} -- Basic Operations
 			-- Checks entity to see if it is Eiffel-compliant.
 		indexing
 			metadata: create {SYNCHRONIZATION_ATTRIBUTE}.make end
-		deferred
+		do
+			--| Do nothing...
 		end
 			
 feature {NONE} -- Query
