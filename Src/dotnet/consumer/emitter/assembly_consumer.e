@@ -350,7 +350,6 @@ feature {NONE} -- Implementation
 		require
 			non_void_destination_path: destination_path /= Void
 			valid_destination_path: not destination_path.is_empty
-			destination_path_not_exists: not (create {RAW_FILE}.make (destination_path)).exists
 		local
 			l_dir: DIRECTORY
 		do
