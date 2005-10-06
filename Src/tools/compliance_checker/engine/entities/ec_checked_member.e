@@ -88,7 +88,7 @@ feature {NONE} -- Basic Operations {EC_CHECKED_ENTITY}
 					non_eiffel_compliant_reason := non_compliant_reasons.reason_member_is_generic
 				end
 			else
-				non_eiffel_compliant_reason := non_compliant_reasons.reason_member_marked_non_eiffel_consumable
+				non_eiffel_compliant_reason := non_compliant_reasons.reason_member_marked_non_cls_compliant
 			end
 		end
 	
