@@ -39,6 +39,7 @@ feature -- Basic Operations
 	log_message (a_message: STRING) is
 			-- Log `a_message'.
 		require
+			source_ready: source_ready
 			attached_message: a_message /= Void
 		local
 			l_log: SYSTEM_DLL_EVENT_LOG
