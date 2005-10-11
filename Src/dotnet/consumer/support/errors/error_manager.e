@@ -42,7 +42,7 @@ feature -- Status Report
 	is_valid_error_code (code: INTEGER): BOOLEAN is
 			-- Is `code' a valid error code?
 		do
-			if code & 0xFF000000 = error_category then
+			if (code & 0xFF000000) |>> 24 = error_category then
 				Result := error_message_table.has (code)
 			else
 				Result := code = No_error
