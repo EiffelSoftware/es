@@ -144,11 +144,11 @@ feature {NONE} -- Basic Operations {EC_CHECKED_ENTITY}
 						non_eiffel_compliant_reason := non_compliant_reasons.reason_type_is_generic
 					end
 				else
-					non_eiffel_compliant_reason := non_compliant_reasons.reason_assembly_marked_non_cls_compliant
+					non_eiffel_compliant_reason := non_compliant_reasons.reason_assembly_marked_non_eiffel_consumable
 				end
 				internal_is_eiffel_compliant := l_compliant
 			else
-				non_eiffel_compliant_reason := non_compliant_reasons.reason_type_marked_non_cls_compliant
+				non_eiffel_compliant_reason := non_compliant_reasons.reason_type_marked_non_eiffel_consumable
 			end
 		end
 		
