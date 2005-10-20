@@ -34,7 +34,14 @@ feature -- Basic Exportations
 			not_already_initialized: not is_initialized
 			not_void_clr_version: a_clr_version /= Void
 			valid_clr_version: a_clr_version.length > 0
+		local
+			l_sub: AR_RESOLVE_SUBSCRIBER
+			l_resolver: AR_RESOLVER
 		do
+			create l_sub.make
+			create l_resolver.make_with_name ("Initializing Resolver for Marshalled cache manager")
+			l_sub.subscribe ({APP_DOMAIN}.current_domain, l_resolver)
+			
 			create implementation.make
 			is_initialized := True
 		ensure
@@ -52,7 +59,13 @@ feature -- Basic Exportations
 			path_exists: (create {DIRECTORY}.make (create {STRING}.make_from_cil (a_path))).exists
 		local
 			cr: CACHE_READER
+			l_sub: AR_RESOLVE_SUBSCRIBER
+			l_resolver: AR_RESOLVER
 		do
+			create l_sub.make
+			create l_resolver.make_with_name ("Initializing Resolver for Marshalled cache manager")
+			l_sub.subscribe ({APP_DOMAIN}.current_domain, l_resolver)
+			
 			create implementation.make_with_path (a_path)
 			create cr
 			if not cr.is_initialized then
