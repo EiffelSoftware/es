@@ -13,7 +13,7 @@
 		feature adaptations.
 		
 		<paragraph>
-			As a result, EiffelASP.NET introduces <bold>inheritance snippets</bold>. Each Eiffel ASP.NET page may include at 
+			As a result, Eiffel for ASP.NET introduces <bold>inheritance snippets</bold>. Each Eiffel ASP.NET page may include at 
 			most one inheritance snippet. Such a snippet must start with the <bold>inherit</bold> keyword and may then list any 
 			valid Eiffel feature adaptation.
 		</paragraph>
@@ -60,7 +60,7 @@
 			<content>Compilation and Timeouts</content>
 		</heading>
 
-		Eiffel compilations can take longer than the default timouts set in ASP.NET. In particular ASP.NET will run batch compilations on the entire directory 
+		Eiffel compilations can take longer than the default timeouts set in ASP.NET. In particular ASP.NET will run batch compilations on the entire directory 
 		that is being accessed by IIS each time the time stamp of that directory changes. If the batch compilation takes longer than the 
 		<italic>batchTimeout</italic> property defined in the machine wide configuration file (<italic>machine.config</italic>) then ASP.NET will 
 		start another compilation just for the requested file. This can be quite resource intensive for the Web server and thus it might be 

@@ -1,29 +1,29 @@
 <document title="Writing ASP.NET pages in Eiffel">
 	<meta_data/>
 	<paragraph>
-		EiffelASP.NET allows running ASP.NET pages written in Eiffel. It should be installed both the web server 
-		and on the ASP.NET page developer's machine. This documentation includes the following sections:
+		Eiffel for ASP.NET allows running ASP.NET pages written in Eiffel. It should be installed on both the web server 
+		and the developer's machine. This documentation includes the following sections:
 		<list ordered="false">
 			<item>
 				<link>
 					<url>installation.xml</url>
 					<label>Installation</label> 
 				</link>
-				describes the steps involved in installing EiffelASP.NET.
+				describes the steps involved in installing Eiffel for ASP.NET.
 			</item>
 			<item>
 				<link>
 					<url>getting_started.xml</url>
 					<label>Getting started</label>
 				</link> 
-				lists resources that will help getting started with EiffelASP.NET.
+				lists resources that will help getting started with Eiffel for ASP.NET.
 			</item>
 			<item>
 				<link>
 					<url>using_eiffel.xml</url>
 					<label>Using Eiffel</label> 
 				</link>
-				lists a few points that are specific to using Eiffel for writting ASP.NET pages.
+				lists a few points that are specific to using Eiffel for writing ASP.NET pages.
 			</item>
 			<item>
 				<link>
