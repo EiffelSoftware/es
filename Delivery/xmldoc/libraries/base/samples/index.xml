@@ -1,9 +1,0 @@
-<document output="studio" title="EiffelBase Samples">
-	<meta_data/>
-	<paragraph>
-		<paragraph> Version: 5.4</paragraph>
-		<paragraph> Availability: Basic Package.</paragraph>
-		<list ordered="false">
-			<item><link><url>10_calculator/index.xml</url><label>Calculator</label></link></item>
-		</list>
-	</paragraph></document>

@@ -282,7 +282,7 @@ feature {NONE} -- Implementation
 			l_precompiler: CODE_PRECOMPILER
 			l_precompile_assemblies: NATIVE_ARRAY [ASSEMBLY_NAME]
 			l_references_list: CODE_REFERENCES_LIST
-			l_assembly_name: ASSEMBLY_NAME
+			l_assembly_name, l_name: ASSEMBLY_NAME
 		do
 			if not l_retried then
 				-- First create temporary directory if needed
@@ -308,8 +308,10 @@ feature {NONE} -- Implementation
 				-- Finally initialize compiler
 				create l_ace_file.make
  				ace_file_path := temp_files.add_extension ("ace")
-					
-				system_path := a_options.output_assembly
+				
+				if a_options.output_assembly /= Void then
+					system_path := a_options.output_assembly
+				end
 				if system_path = Void or else system_path.is_empty then
 					if a_options.generate_executable then
 						system_path := temp_files.add_extension ("exe")
@@ -328,7 +330,9 @@ feature {NONE} -- Implementation
 				l_root_class := Compilation_context.root_class_name
 				l_creation_routine := Compilation_context.root_creation_routine_name
 				if l_root_class = Void or else l_root_class.is_empty then
-					l_root_class := a_options.main_class
+					if a_options.main_class /= Void then
+						l_root_class := a_options.main_class
+					end
 					if l_root_class = Void or else l_root_class.is_empty then
 						if not Resolver.generated_types.is_empty then
 							from
@@ -438,7 +442,10 @@ feature {NONE} -- Implementation
 					until
 						l_references_list.after
 					loop
-						Referenced_assemblies.remove_name (l_references_list.item.assembly.get_name)
+						l_name := l_references_list.item.assembly.get_name
+						if Referenced_assemblies.has_name (l_name) then
+							Referenced_assemblies.remove_name (l_name)
+						end
 						l_references_list.forth
 					end
 				end
@@ -458,6 +465,11 @@ feature {NONE} -- Implementation
 				l_cluster.set_is_library
 				l_ace_file.add_cluster (l_cluster)
 				
+				create l_cluster.make ("codedom", "$ISE_EIFFEL\library.net\codedom")
+				l_cluster.set_namespace ("EiffelSoftware.Library.CodeDom")
+				l_cluster.set_is_library
+				l_ace_file.add_cluster (l_cluster)
+
 				-- Add referenced assemblies
 				from
 					Referenced_assemblies.start
@@ -479,8 +491,8 @@ feature {NONE} -- Implementation
 				end
 				
 				-- Setup miscelleaneous settings
-				if metadata_cache /= Void then
-					l_ace_file.set_metadata_cache_path (metadata_cache)
+				if compiler_metadata_cache /= Void then
+					l_ace_file.set_metadata_cache_path (compiler_metadata_cache)
 				end
 	
 				l_ace_file.set_generate_debug_info (a_options.include_debug_information)

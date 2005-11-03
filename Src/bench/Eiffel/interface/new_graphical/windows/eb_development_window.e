@@ -2,7 +2,6 @@ indexing
 	description	: "Window holding a project tool"
 	date		: "$Date$"
 	revision	: "$Revision$"
-	author		: "Arnaud PICHERY [ aranud@mail.dotcom.fr ]"
 
 class
 	EB_DEVELOPMENT_WINDOW
@@ -772,6 +771,11 @@ feature -- Update
 			cluster_tool.synchronize
 			history_manager.synchronize
 			features_tool.synchronize
+				-- Update main views
+			managed_main_formatters.i_th (2).invalidate
+			managed_main_formatters.i_th (3).invalidate
+			managed_main_formatters.i_th (4).invalidate
+			managed_main_formatters.i_th (5).invalidate
 			if stone /= Void then
 				st := stone.synchronized_stone
 			end
@@ -1173,6 +1177,7 @@ feature {NONE} -- Menu Building
 			cmd: EB_EDITOR_COMMAND
 			os_cmd: EB_ON_SELECTION_COMMAND
 			editor: EB_SMART_EDITOR
+			ln_cmd: EB_TOGGLE_LINE_NUMBERS_COMMAND
 		do
 			editor := editor_tool.text_area
 			create command_controller.make
@@ -1243,14 +1248,12 @@ feature {NONE} -- Menu Building
 			edit_menu.extend (create {EV_MENU_SEPARATOR})
 
 				-- Line numbers
-			create cmd.make
-			cmd.set_menu_name (Interface_names.m_line_numbers)
-			cmd.add_agent (agent toggle_line_number_display)
-			cmd.set_needs_editable (True)
-			command_menu_item := cmd.new_menu_item
-			command_controller.add_edition_command (cmd)
+			create ln_cmd.make
+			command_menu_item := ln_cmd.new_menu_item
 			add_recyclable (command_menu_item)
 			edit_menu.extend (command_menu_item)
+			window.accelerators.extend (ln_cmd.accelerator)
+			
 
 				-- Separator --------------------------------------
 			edit_menu.extend (create {EV_MENU_SEPARATOR})
@@ -2621,7 +2624,7 @@ feature {NONE} -- Implementation
 					end
 				else
 						-- not a class text : cannot be edited
-					editor_tool.text_area.disable_editable
+					editor_tool.text_area.set_read_only (True)
 					address_manager.disable_formatters
 
 						--| Disable all formatters.

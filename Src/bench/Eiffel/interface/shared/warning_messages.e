@@ -641,10 +641,11 @@ feature -- Backup warnings
 								%The state of the system was too damaged."
 
 	w_Found_backup: STRING is "A backed up version of the file was found.%N%
-							%Do you want to open the normal file or the backup file?%N%
-							%If you choose the normal file, the backup file will be%N%
-							%deleted. If choose the backup file, the text will not be%N%
-							%editable. To modify it, you will have to save it first.%N"
+							%Do you want to open the original file or the backup file?%N%
+							%If you choose the original file, the backup file will be%N%
+							%deleted. If choose the backup file, then the original file%N%
+							%will be overwritten with the contents of the backup file%N%
+							%when you save.%N"
 
 	w_Save_backup: STRING is "You are about to overwrite the original file with%N%
 					%the backup file. Previous content will be lost%N%
@@ -839,6 +840,8 @@ feature -- Warning messages
 		"Moving a feature favorite is not supported by the favorite manager."
 
 	w_Class_not_modifiable: STRING is "The text of this class cannot be modified."
+
+	w_could_not_modify_class: STRING is "The text of this class could not be modified."
 
 	w_Could_not_save_all: STRING is "Some files could not be saved.%N%
 									%Exit was cancelled."

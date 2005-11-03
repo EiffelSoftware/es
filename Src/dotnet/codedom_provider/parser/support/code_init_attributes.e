@@ -201,6 +201,10 @@ feature {AST_YACC} -- Initialization
 		do
 		end
 
+	process_assigner_call_as (l_as: ASSIGNER_CALL_AS) is
+		do
+		end
+
 	process_type_expr_as (l_as: TYPE_EXPR_AS) is
 		do
 		end
@@ -542,6 +546,10 @@ feature {AST_YACC} -- Initialization
 		end
 
 	process_void_as (l_as: VOID_AS) is
+		do
+		end
+
+	process_bracket_as (l_as: BRACKET_AS) is
 		do
 		end
 

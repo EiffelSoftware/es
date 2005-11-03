@@ -1,3 +1,0 @@
-Error: target of assigner call has no associated assigner command.
-What to do: add an assigner mark to the declaration of the target feature
-  or use a dot form of a call.

@@ -5,7 +5,7 @@ indexing
 	class_metadata:
 		create {COM_VISIBLE_ATTRIBUTE}.make (True) end,
 		create {CLASS_INTERFACE_ATTRIBUTE}.make (feature {CLASS_INTERFACE_TYPE}.none) end,
-		create {GUID_ATTRIBUTE}.make ("E1FFE1ED-1F90-4D3C-BAC6-68B74B00F5CB") end
+		create {GUID_ATTRIBUTE}.make ("E1FFE185-67CA-4EC0-B000-4D73C1D2977F") end
 
 class
 	COM_CACHE_MANAGER
@@ -46,7 +46,14 @@ feature -- Basic Exportations
 
 	initialize (a_clr_version: SYSTEM_STRING) is
 			-- initialize the object using default path to EAC
+		local
+			l_sub: AR_RESOLVE_SUBSCRIBER
+			l_resolver: AR_RESOLVER
 		do
+			create l_sub.make
+			create l_resolver.make_with_name ("Initializing Resolver")
+			l_sub.subscribe ({APP_DOMAIN}.current_domain, l_resolver)
+		
 			clr_version := a_clr_version
 
 				-- Turn of all security to prevent any security exceptions

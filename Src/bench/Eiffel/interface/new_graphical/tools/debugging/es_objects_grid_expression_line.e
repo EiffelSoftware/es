@@ -69,6 +69,8 @@ feature -- Recycling
 			if expression /= Void then
 				expression.recycle
 			end
+			evaluation_requested := False
+			refresh_requested := False
 		end		
 
 feature -- Refresh management
@@ -253,8 +255,8 @@ feature -- Graphical changes
 			if gedit = Void then
 				create gedit
 				grid_cell_set_text (gedit, v)
-				gedit.pointer_double_press_actions.force_extend (agent gedit.activate)
-				gedit.pointer_button_press_actions.extend (agent grid_activate_item_if_row_selected (gedit, ?,?,?,?,?,?,?,?))
+				gedit.pointer_double_press_actions.extend (agent grid_activate_item_if_row_selected (gedit, False, ?,?,?,?,?,?,?,?))
+				gedit.pointer_button_press_actions.extend (agent grid_activate_item_if_row_selected (gedit, True, ?,?,?,?,?,?,?,?))
 				gedit.deactivate_actions.extend (agent update_expression_on_deactivate (gedit))
 				apply_cell_expression_text_properties_on (gedit)
 
@@ -332,6 +334,7 @@ feature -- Graphical changes
 		end
 		
 	grid_activate_item_if_row_selected (a_item: EV_GRID_ITEM; 
+				check_if_row_selected: BOOLEAN;
 				ax, ay, abutton: INTEGER; 
 				ax_tilt, ay_tilt, apressure: DOUBLE;
 				ascreen_x, ascreen_y: INTEGER
@@ -350,7 +353,7 @@ feature -- Graphical changes
 				r := a_item.row
 				if 	
 					r /= Void 
-					and then r.is_selected
+					and then (not check_if_row_selected or else r.is_selected)
 				then
 					a_item.activate
 				end
@@ -375,7 +378,6 @@ feature -- Graphical changes
 					compute_grid_display_done := True
 
 					create l_tooltip.make (20)
-					l_tooltip.append_string ("--< CONTEXT >--%N  " + expression.context + "%N")
 
 					if expression.as_object and then expression.context_address /= Void then
 						if expression.name /= Void then
@@ -383,11 +385,12 @@ feature -- Graphical changes
 						else
 							set_title (expression.context_address)
 						end
-						l_tooltip.append_string ("--< OBJECT NAME >--%N  " + title + "%N%N")
+						l_tooltip.append_string ("OBJECT NAME : " + title)
 					else
 						set_expression_text (expression.expression)
-						l_tooltip.append_string ("--< EXPRESSION >--%N  " + expression.expression + "%N%N")
+						l_tooltip.append_string ("EXPRESSION : " + expression.expression)
 					end
+					l_tooltip.append_string ("%NCONTEXT : " + expression.context + "%N")
 
 					if expression.evaluation_disabled then
 						set_expression_info ("Disabled")
@@ -406,7 +409,7 @@ feature -- Graphical changes
 						if expression_evaluator.error_occurred then
 							l_error_message := expression_evaluator.text_from_error_messages
 							l_error_tag := expression_evaluator.short_text_from_error_messages
-							l_tooltip.prepend_string ("Error occurred : %N" + l_error_message + "%N%N")
+							l_tooltip.prepend_string ("ERROR OCCURRED : %N" + l_error_message + "%N%N")
 							if l_error_tag /= Void then
 								l_error_tag := "[" + l_error_tag + "] "
 							else
@@ -434,8 +437,8 @@ feature -- Graphical changes
 								add := object_address
 								res := object_value
 								typ := object_type_representation
-								l_tooltip.append_string ("--< TYPE >--%N  " + typ + "%N")
-								l_tooltip.append_string ("--< VALUE >--%N  " + res + "%N")
+								l_tooltip.append_string ("TYPE  : " + typ + "%N")
+								l_tooltip.append_string ("VALUE : " + res + "%N")
 								if not last_dump_value.is_basic and not last_dump_value.is_void then
 									row.ensure_expandable
 									expand_actions.extend (agent on_row_expand)

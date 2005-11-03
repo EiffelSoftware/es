@@ -55,7 +55,7 @@ feature -- Access
 		    Result := Precursor
 			if not hidden_breakpoints then					
 				create l_bptok.make
-				Result := Result + l_bptok.width
+				Result := Result + l_bptok.width + separator_width
 			end
 		end
 		
@@ -132,7 +132,10 @@ feature {NONE} -- Implementation
 				end
 				a_line.forth 				
 				curr_token := a_line.item
-			end
+			end			
+			margin_area.set_background_color (separator_color)
+			margin_area.clear_rectangle (width - separator_width, y, separator_width, editor_preferences.line_height)
+			margin_area.set_background_color (editor_preferences.margin_background_color)
 		end
 		
 feature {NONE} -- Events
@@ -156,7 +159,9 @@ feature {NONE} -- Events
 					text_panel.on_mouse_button_down (abs_x_pos, y_pos, 1, 0, 0, 0, a_screen_x, a_screen_y)
 				end
 			elseif button = 3 then
-				text_panel.on_click_in_text (abs_x_pos - width, y_pos, 3, a_screen_x, a_screen_y)
+				if not text_panel.text_displayed.is_empty then
+					text_panel.on_click_in_text (abs_x_pos - width, y_pos, 3, a_screen_x, a_screen_y)
+				end
 			end
 		end
 

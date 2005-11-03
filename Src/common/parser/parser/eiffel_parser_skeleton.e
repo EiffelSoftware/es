@@ -129,7 +129,6 @@ feature -- Initialization
 			create suppliers.make
 			formal_parameters.wipe_out
 			id_level := Normal_level
-			is_frozen := False
 			has_externals := False
 			once_manifest_string_count := 0
 			counters.wipe_out
@@ -295,9 +294,6 @@ feature {NONE} -- Implementation
 
 	is_separate: BOOLEAN
 			-- Boolean mark for separate class
-
-	is_frozen: BOOLEAN
-			-- Boolean mark for frozen feature names
 
 	has_convert_mark: BOOLEAN
 			-- Boolean mark for alias names with convert mark
@@ -593,6 +589,9 @@ feature {NONE} -- Basic type factory
 				if not l_type.is_integer and not l_type.is_natural then
 					report_invalid_type_for_integer_error (a_type, buffer)
 				end
+			elseif a_type /= Void then
+					-- A type was specified but did not result in a valid type
+				report_invalid_type_for_integer_error (a_type, buffer)
 			end
 				-- Remember original token
 			token_value := buffer
@@ -638,6 +637,9 @@ feature {NONE} -- Basic type factory
 				if not l_type.is_real_32 and not l_type.is_real_64 then
 					report_invalid_type_for_real_error (a_type, buffer)
 				end
+			elseif a_type /= Void then
+					-- A type was specified but did not result in a valid type
+				report_invalid_type_for_real_error (a_type, buffer)				
 			end
 			if is_signed and sign_symbol = '-' then
 				buffer.precede ('-')

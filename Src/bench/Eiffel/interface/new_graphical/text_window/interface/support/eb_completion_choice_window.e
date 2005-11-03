@@ -1,6 +1,5 @@
 indexing
 	description: "Window that displays a text area and a list of possible features for automatic completion"
-	author: "Etienne Amodeo"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -62,7 +61,6 @@ feature {NONE} -- Initialization
 			create vbox
 			vbox.extend (choice_list)
 			extend (vbox)
-			enable_user_resize
 			choice_list.focus_out_actions.extend (agent on_lose_focus)
 			choice_list.mouse_wheel_actions.extend (agent on_mouse_wheel)
 			focus_out_actions.extend (agent on_lose_focus)			
@@ -159,10 +157,11 @@ feature -- Status Setting
 			check
 				show_needed: show_needed
 			end
+			enable_user_resize
 			Precursor {EV_WINDOW}
 			choice_list.set_focus
-			select_closest_match
 			resize_column_to_window_width
+			select_closest_match
 		end		
 
 feature -- Query
@@ -199,9 +198,6 @@ feature {NONE} -- Events handling
 			end
 		end
 
-	prev_item_index: INTEGER
-		-- Index of last selected item before current one.
-
 	on_key_released (ev_key: EV_KEY) is
 			-- process user input in `choice_list'
 		do			
@@ -230,16 +226,19 @@ feature {NONE} -- Events handling
 					else
 						exit
 					end
+					select_closest_match
+				when key_v then
+					if ev_application.ctrl_pressed then
+						editor.handle_extended_ctrled_key (ev_key)
+						buffered_input.append (ev_application.clipboard.text)
+					else	
+						editor.handle_extended_key (ev_key)
+					end
 					select_closest_match					
 				else
 					-- Do nothing
 				end
 				
-				if not choice_list.selected_rows.is_empty then
-					prev_item_index := choice_list.selected_rows.first.index
-				else	
-					prev_item_index := 0			
-				end				
 			end			
 		end
 		
@@ -257,7 +256,7 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix:= choice_list.selected_rows.first.index
 							if ix <= nb_items_to_scroll then
-								if prev_item_index = 1 then
+								if ix = 1 then
 									choice_list.remove_selection
 									choice_list.row (choice_list.row_count).enable_select
 								else
@@ -269,6 +268,7 @@ feature {NONE} -- Events handling
 								choice_list.row (ix - nb_items_to_scroll).enable_select
 							end
 						end
+						
 						if not choice_list.selected_rows.is_empty then
 							choice_list.selected_rows.first.ensure_visible	
 						end
@@ -279,7 +279,7 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix:= choice_list.selected_rows.first.index
 							if ix > choice_list.row_count - nb_items_to_scroll then
-								if prev_item_index = choice_list.row_count then
+								if ix = choice_list.row_count then
 									choice_list.remove_selection
 									choice_list.row (1).enable_select
 								else
@@ -302,10 +302,10 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix := choice_list.selected_rows.first.index
 							choice_list.remove_selection
-							if ix <= 1 and prev_item_index = 1 then							
+							if ix = 1 then							
 								choice_list.row (choice_list.row_count).enable_select														
 							else					
-								choice_list.row (prev_item_index - 1).enable_select
+								choice_list.row (ix - 1).enable_select
 							end
 						end	
 						if not choice_list.selected_rows.is_empty then
@@ -317,10 +317,10 @@ feature {NONE} -- Events handling
 						if not choice_list.selected_items.is_empty then
 							ix := choice_list.selected_rows.first.index
 							choice_list.remove_selection
-							if ix >= choice_list.row_count and prev_item_index = choice_list.row_count then								
+							if ix = choice_list.row_count then								
 								choice_list.row (1).enable_select
 							else					
-								choice_list.row (prev_item_index + 1).enable_select
+								choice_list.row (ix + 1).enable_select
 							end		
 						end
 						if not choice_list.selected_rows.is_empty then
@@ -348,12 +348,6 @@ feature {NONE} -- Events handling
 				else
 					-- Do nothing
 				end
-				
-				if not choice_list.selected_rows.is_empty then
-					prev_item_index := choice_list.selected_rows.first.index
-				else	
-					prev_item_index := 0
-				end				
 			end			
 		end
 		
@@ -372,7 +366,7 @@ feature {NONE} -- Events handling
 					select_closest_match					
 				elseif c = ' ' and ev_application.ctrl_pressed then
 						-- Do nothing, we don't want to close the completion window when CTRL+SPACE is pressed
-				elseif not editor.unwanted_characters.has (c) then
+				elseif not editor.unwanted_characters.item (c.code) then
 					close_and_complete
 					if not editor.has_selection then
 							-- Don't want to add character over first argument			
@@ -447,6 +441,7 @@ feature {NONE} -- Implementation
 			l_upper: INTEGER
 		do			
 			choice_list.wipe_out
+			
 			if rebuild_list_during_matching then
 				matches := matches_based_on_name (name)
 			else
@@ -727,71 +722,76 @@ feature {NONE} -- String matching
 	index_of_closest_match: INTEGER is
 			-- The index of the closest name match to `buffered_input' in `sorted_names'.  If there is no part or full
 			-- match return -1.
-		local
-			index_count,
-			iteration_count,
-			max_iterations,
-			buffered_input_count,
-			match_index,
-			last_best_match_index: INTEGER
-			item_name: STRING
-			buffered_char: CHARACTER
-			done: BOOLEAN
+		local			
+			l_input: like buffered_input
+			l_input_count: INTEGER
+			l_names: like sorted_names
+			l_names_count: INTEGER
+			l_item: STRING
+			l_match_index: INTEGER
+			l_last_match: INTEGER
+			l_stop: BOOLEAN
+			c: CHARACTER
+			i: INTEGER		
 		do
 			if not buffered_input.is_empty then
-				buffered_input_count := buffered_input.count
-				max_iterations := sorted_names.count
-				buffered_char := buffered_input.item (1)										
+				l_input := buffered_input.as_lower			
+				l_input_count := l_input.count
+				l_names := sorted_names
+				l_names_count := l_names.count
+				c := l_input.item (1)
 				from
-					iteration_count := 1					
-					index_count := 1
+					i := 1
 				until
-					iteration_count > max_iterations or done
+					i > l_names_count or l_stop
 				loop
-					item_name := sorted_names.item (iteration_count).name
-					match_index := match_names_until_done (item_name, buffered_input)
-					if match_index > 0 and match_index > last_best_match_index then
-							-- At least one char matched so store match index
-						last_best_match_index := match_index
-						Result := iteration_count
-						if last_best_match_index < buffered_input_count then
-							if iteration_count < max_iterations then
-								from
-								until
-									iteration_count = max_iterations or done
-								loop
-									match_index := match_names_until_done (sorted_names.item (iteration_count + 1).name, buffered_input)
-									if match_index < last_best_match_index then
-										Result := iteration_count
-										done := True
-									elseif match_index = buffered_input_count then
-										Result := iteration_count + 1
-										done := True
-									end
-									iteration_count := iteration_count + 1
-								end
+					l_item := (l_names[i]).name
+					
+					l_match_index := match_names_until_done (l_item, l_input)
+					if l_match_index = l_input_count then
+							-- Exact match
+						Result := i
+						l_stop := True
+					elseif l_match_index > l_last_match then
+							-- Better match than last
+						l_last_match := l_match_index
+						Result := i
+					elseif Result = 0 then
+							-- There have been no matches yet.
+						if l_item.item (1) > c then
+								-- The first character of the current item is greater that the requested match
+								-- so we can stop here.
+							Result := i
+							l_stop := True
+						elseif i = l_names_count then
+								-- No match found and we are at the end
+							Result := i
+						end
+					elseif i > 1 and l_match_index = l_last_match and l_match_index < l_input_count then
+							-- This match was the same as the last
+						if l_item.item (l_match_index + 1) > l_input.item (l_match_index + 1) then
+							l_item := (l_names[i - 1]).name
+							if l_item.item (l_match_index + 1) < l_input.item (l_match_index + 1) then
+									-- Ensures `deep_twin' is chosen over `deep_equals' if l_input is `deep_f'
+									-- and ensures `deep_copy' is *NOT* chosen over `deep_clone' when l_input is `deef'
+								l_last_match := l_last_match + 1
+								Result := i
 							end
 						end
-					elseif Result = 0 then
-						if item_name.item (1) > buffered_char then
-							Result := iteration_count
-							done := True
-						end		
-					else
-						done := True
-					end					
-					iteration_count := iteration_count + 1
+					end
+					
+					i := i + 1
 				end
 			else
 				Result := 0
 			end
-			if Result > sorted_names.count then
-				Result := sorted_names.count	
+			if Result > l_names_count then
+				Result := l_names_count	
 			end
 		ensure
 			result_greater_than_zero: Result >= 0
 			result_too_big: Result <= sorted_names.count
-		end		
+		end	
 
 	select_closest_match is
 			-- Select the closest match in the list
@@ -825,31 +825,34 @@ feature {NONE} -- String matching
 	match_names_until_done (a_name, a_name2: STRING): INTEGER is
 			-- Match the characters of `a_name2' against `a_name' from the start of `a_name2' until no match is
 			-- found or all characters match.  Return the index where the match failed.
+		require
+			a_name_not_void: a_name /= Void
+			not_a_name_is_empty: not a_name.is_empty
+			a_name2_not_void: a_name2 /= Void
+			not_a_name2_is_empty: not a_name2.is_empty
+			a_name2_formatted: a_name2.as_lower.is_equal (a_name2)
 		local
-			cnt,
-			const_count: INTEGER
+			i: INTEGER
+			cnt: INTEGER
 			done: BOOLEAN
 			c: CHARACTER
-			l_name2: STRING
+			l_count: INTEGER
 		do
-			l_name2 := a_name2.twin
-			if not feature_mode then
-				l_name2.to_upper
-			end
 			from
-				cnt := 0
-				const_count := a_name.count
+				i := 0
+				cnt := a_name.count
+				l_count := a_name2.count
 			until
-				cnt >= const_count or done
+				i = cnt or done
 			loop
-				c := a_name.item (cnt + 1)
-				if (cnt + 1) > l_name2.count or c /= l_name2.item (cnt + 1) then
+				c := a_name.item (i + 1).as_lower
+				if (i + 1) > l_count or c /= a_name2.item (i + 1) then
 					done := True
 				else
-					cnt := cnt + 1
+					i := i + 1
 				end
 			end
-			Result := cnt
+			Result := i
 		ensure
 			index_returned_makes_sense: Result >= 0
 		end
@@ -892,7 +895,14 @@ feature {NONE} -- String matching
 		require
 			choice_list_not_void: choice_list /= Void
 		do
-			Result := choice_list.last_visible_row.index - choice_list.first_visible_row.index - preferences.editor_data.scrolling_common_line_count
+			if choice_list.viewable_height > choice_list.row_count * choice_list.row_height then
+					-- In this situation, all of the rows are displayed in the grid so we wish to scroll
+					-- by the number of rows (less one as one is already be selected).
+				Result := choice_list.row_count - 1
+			else
+					-- Calculate the number of rows to scroll based on `scrolling_common_line_count' preference.
+				Result := choice_list.last_visible_row.index - choice_list.first_visible_row.index - preferences.editor_data.scrolling_common_line_count
+			end
 		end
 
 end -- class EB_COMPLETION_CHOICE_WINDOW

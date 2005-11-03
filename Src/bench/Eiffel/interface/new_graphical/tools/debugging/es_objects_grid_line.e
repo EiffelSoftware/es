@@ -107,11 +107,15 @@ feature -- Recycling
 				end
 				onces_row := Void
 			end
+			row_items_filled := False
+			row_attributes_filled := False
+			row_onces_filled := False
 			
-			last_dump_value := Void
 			internal_object_stone := Void
 			internal_object_stone_accept_cursor := Void
 			internal_object_stone_deny_cursor := Void
+			object_stone_properties_computed := False
+			last_dump_value := Void
 		end
 
 feature {ES_OBJECTS_GRID_MANAGER} -- Row attachement
@@ -159,6 +163,7 @@ feature {ES_OBJECTS_GRID_MANAGER} -- Row attachement
 			row.set_data (Void)
 			reset_row_actions
 			row := Void
+			compute_grid_display_done := False
 		ensure
 			is_not_attached_to_row: not is_attached_to_row
 		end
@@ -183,11 +188,11 @@ feature {ES_OBJECTS_GRID_MANAGER} -- Row attachement
 			attributes_row := Void
 			onces_row := Void
 
+			object_stone_properties_computed := False
 			compute_grid_display_done := False
 			compute_grid_display
 		ensure
 			is_attached_to_row: is_attached_to_row
-			grid_display_recomputed: compute_grid_display_done --| implies old compute_grid_display_done
 		end
 
 feature -- Status
@@ -299,6 +304,11 @@ feature -- Pick and Drop
 			ostn: STRING
 		do
 			object_stone_properties_computed := True
+			
+			internal_object_stone := Void
+			internal_object_stone_accept_cursor := Void
+			internal_object_stone_deny_cursor := Void
+			
 			if object_address /= Void then
 					--| For now we don't support this for external type
 				ostn := object_name
@@ -401,6 +411,7 @@ feature -- Graphical changes
 	reset_compute_grid_display_done is
 			-- Reset value of `compute_grid_display_done'
 		do
+			object_stone_properties_computed := False
 			compute_grid_display_done := False
 		end
 		
@@ -426,8 +437,6 @@ feature -- Graphical changes
 		require
 			not_computed: not compute_grid_display_done
 		deferred
-		ensure
-			compute_grid_display_done
 		end
 
 	title: STRING

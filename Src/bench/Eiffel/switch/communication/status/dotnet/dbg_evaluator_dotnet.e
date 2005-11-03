@@ -207,6 +207,9 @@ feature -- Access
 			l_icd_value: ICOR_DEBUG_VALUE
 			l_adv: ABSTRACT_DEBUG_VALUE
 		do
+				--| Reset error status
+			reset_error
+
 			fixme ("JFIAT: maybe we should call with the parameters ...")
 			debug ("debugger_trace_eval")
 				print (generating_type + ".dotnet_evaluate_once_function : ")
@@ -329,6 +332,9 @@ feature -- Access
 			l_icd_function: ICOR_DEBUG_FUNCTION
 			edvi: EIFNET_DEBUG_VALUE_INFO
 		do
+				--| Reset error status
+			reset_error
+
 				--| Get the target object : `l_icdv_obj'
 			l_icdv_obj := target_icor_debug_value (addr, dvalue)
 			if l_icdv_obj = Void then

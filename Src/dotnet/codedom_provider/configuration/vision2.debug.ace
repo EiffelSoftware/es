@@ -18,7 +18,8 @@ default
  	use_all_cluster_name_as_namespace (yes)
  	use_cluster_name_as_namespace (no)
  	precompiled ("$EIFFEL_SRC\dotnet\codedom_provider\build_studio_debug\EiffelSoftware.CodeDom")
-  	version ("2.0.1.1704")
+  	version ("5.6.1102.0")
+ 	msil_clr_version ("v1.1.4322")
 
 cluster
 		-- WEL
@@ -52,7 +53,7 @@ cluster
 
 	all vision2_extensions:		"$EIFFEL_SRC\library\vision2_extension"
 		exclude
-			"CVS";
+			"CVS"; "gtk"; "gtk2";
  		default
  			namespace ("EiffelSoftware.Library.Vision2Extension")
 		end

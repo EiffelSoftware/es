@@ -295,6 +295,9 @@ feature -- Basic Operation
 			non_void_properties: consumed_type.properties /= Void
 			non_void_events: consumed_type.events /= Void
 		rescue
+			debug ("log_exceptions")
+				log_last_exception
+			end
 			rescued := True
 			retry
 		end
@@ -380,7 +383,7 @@ feature {NONE} -- Implementation
 			create dotnet_name.make_from_cil (info.name)
 			l_type := info.declaring_type
 			if info.is_literal then
-				if l_type.is_enum then
+				if info.field_type.is_enum then
 						-- Conversion to integer is required to get associated value of `info',
 						-- Otherwise we simply get an object where calling `ToString' on it
 						-- will print out field name.
@@ -1132,7 +1135,7 @@ feature {NONE} -- Added features for ENUM types.
 		do		
 			l_eiffel_name := "set_" + a_field_name + "_field"
 			create l_arg.make ("a_value", "a_value", referenced_type_from_type (a_field.field_type))
-			create Result.make_attribute_setter (l_eiffel_name,
+			create Result.make_attribute_setter (l_eiffel_name, a_field.name,
 												l_arg,
 												internal_referenced_type,
 												a_field.is_static)

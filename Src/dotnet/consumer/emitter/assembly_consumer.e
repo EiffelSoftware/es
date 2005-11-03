@@ -350,7 +350,6 @@ feature {NONE} -- Implementation
 		require
 			non_void_destination_path: destination_path /= Void
 			valid_destination_path: not destination_path.is_empty
-			destination_path_not_exists: not (create {RAW_FILE}.make (destination_path)).exists
 		local
 			l_dir: DIRECTORY
 		do
@@ -392,16 +391,23 @@ feature {NONE} -- Constants
 	base_types: ARRAY [STRING] is
 			-- base types.
 		once
-			create Result.make (1, 9)
+			create Result.make (1, 16)
 			Result.put ("System.Byte", 1)
 			Result.put ("System.Int16", 2)
 			Result.put ("System.Int32", 3)
 			Result.put ("System.Int64", 4)
 			Result.put ("System.IntPtr", 5)
-			Result.put ("System.Single", 6)
-			Result.put ("System.Double", 7)
-			Result.put ("System.Char", 8)
-			Result.put ("System.Boolean", 9)
+			Result.put ("System.UInt16", 6)
+			Result.put ("System.UInt32", 7)
+			Result.put ("System.UInt64", 8)
+			Result.put ("System.UIntPtr", 9)
+			Result.put ("System.Single", 10)
+			Result.put ("System.Double", 11)
+			Result.put ("System.Char", 12)
+			Result.put ("System.Boolean", 13)
+			Result.put ("System.SByte", 14)
+			Result.put ("EiffelSoftware.Runtime.ANY", 15)
+			Result.put ("EiffelSoftware.Runtime.CA.INTERFACE_TYPE_ATTRIBUTE", 16)
 			Result.compare_objects
 		end
 		
