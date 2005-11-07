@@ -510,6 +510,7 @@ feature {NONE} -- Implementation
 			valid_system_path: is_initialized implies not system_path.is_empty
 		rescue
 			l_retried := True
+			Event_manager.process_exception
 			retry
 		end
 	
