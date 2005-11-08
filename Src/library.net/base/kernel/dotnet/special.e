@@ -21,7 +21,7 @@ create
 	make,
 	make_from_native_array
 
-feature {NONE} -- Initialization
+feature {INTERNAL} -- Initialization
 
 	frozen make (n: INTEGER) is
 			-- Creates a special object for `n' entries.
@@ -32,6 +32,8 @@ feature {NONE} -- Initialization
 		ensure
 			area_allocated: count = n
 		end
+
+feature {NONE} -- Initialization
 
 	frozen make_from_native_array (an_array: like native_array) is
 			-- Creates a special object from `an_array'.
