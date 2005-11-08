@@ -98,13 +98,9 @@ feature -- Creation
 			count_valid: count >= 0
 			type_id_nonnegative: type_id >= 0
 			special_type: is_special_any_type (type_id)
-		local
-			l_gen_type, l_current_gen_type: RT_GENERIC_TYPE
 		do
-			create Result.make (count)
-			l_gen_type ?= id_to_eiffel_type.item (type_id)
-			l_current_gen_type := {ISE_RUNTIME}.generic_type (Result)
-			l_current_gen_type.set_generics (l_gen_type.generics)
+			Result ?= {ISE_RUNTIME}.create_type (pure_implementation_type (type_id)) 
+ 			Result.make (count) 
 		ensure
 			special_type: is_special (Result)
 			dynamic_type_set: dynamic_type (Result) = type_id
@@ -1839,7 +1835,7 @@ feature {NONE} -- Implementation
 	marked_objects: HASHTABLE is
 			-- Contains all objects marked.
 		once
-			create Result.make_from_capacity (chunk_size)
+			create Result.make (chunk_size, Void, create {RT_REFERENCE_COMPARER}.make)
 		end
 
 	chunk_size: INTEGER is 50;
