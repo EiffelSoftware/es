@@ -40,8 +40,14 @@ feature -- Basic Operations
 			retried: BOOLEAN
 			l_raw_file: RAW_FILE
 			l_reader: SED_MEDIUM_READER_WRITER
+			l_object: SYSTEM_OBJECT
 		do
 			if not retried then
+				-- The next 2 lines force the loading of the current assembly to workaround
+				-- a bug in AppDomain.GetAssemblies which would not return the assembly
+				-- otherwise
+				l_object := current
+				l_object := {APP_DOMAIN}.current_domain.load (l_object.get_type.assembly.get_name)
 				create l_raw_file.make_open_read (path)
 				l_raw_file.go (a_pos)
 				create l_reader.make (l_raw_file)

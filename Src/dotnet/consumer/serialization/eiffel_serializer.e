@@ -43,8 +43,14 @@ feature -- Basic Operations
 			l_raw_file: RAW_FILE
 			l_writer: SED_MEDIUM_READER_WRITER
 			retried: BOOLEAN
+			l_object: SYSTEM_OBJECT
 		do
 			if not retried then
+				-- The next 2 lines force the loading of the current assembly to workaround
+				-- a bug in AppDomain.GetAssemblies which would not return the assembly
+				-- otherwise
+				l_object := current
+				l_object := {APP_DOMAIN}.current_domain.load (l_object.get_type.assembly.get_name)
 				if is_appending then
 					create l_raw_file.make_open_append (path)
 				else
