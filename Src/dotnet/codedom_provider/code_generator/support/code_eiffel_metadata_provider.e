@@ -41,6 +41,7 @@ feature -- Access
 		require
 			non_void_type: a_type /= Void
 		do
+			load_current_assembly
 			if Name_formatter.has_special_type_name (a_type.full_name) then
 				Result := Name_formatter.special_type_name.twin
 			elseif a_type.full_name.equals (("System.Void").to_cil) then
@@ -62,6 +63,7 @@ feature -- Access
 			non_void_name: a_name /= Void
 			non_void_type: a_type /= Void
 		do
+			load_current_assembly
 			check_eac_for_type (a_type)
 			Result := cache_reflection.feature_name (a_type, a_name, a_arguments)
 			if Result = Void and a_arguments /= Void then
@@ -83,6 +85,7 @@ feature -- Access
 		local
 			l_entities: LIST [CONSUMED_ENTITY]
 		do
+			load_current_assembly
 			check_eac_for_type (a_type)
 			l_entities := cache_reflection.entities (a_type, a_name)
 			if l_entities /= Void and then not l_entities.is_empty then
@@ -102,6 +105,7 @@ feature -- Access
 			l_entity: CONSUMED_ENTITY
 			l_type: CONSUMED_REFERENCED_TYPE
 		do
+			load_current_assembly
 			check_eac_for_type (a_type)
 			l_entities := cache_reflection.entities (a_type, a_name)
 			if l_entities /= Void then
@@ -140,6 +144,7 @@ feature -- Access
 		local
 			l_entities: LIST [CONSUMED_ENTITY]
 		do
+			load_current_assembly
 			check_eac_for_type (a_type)
 			l_entities := cache_reflection.entities (a_type, a_name)
 			if l_entities /= Void then
@@ -163,6 +168,7 @@ feature -- Access
 			l_entities: LIST [CONSUMED_ENTITY]
 			l_consumed_type: CONSUMED_TYPE
 		do
+			load_current_assembly
 			internal_all_features.search (a_type.full_name)
 			if internal_all_features.found then
 				Result := internal_all_features.found_item
@@ -194,6 +200,7 @@ feature -- Access
 			l_entities: LIST [CONSUMED_ENTITY]
 			l_entity: CONSUMED_ENTITY
 		do
+			load_current_assembly
 			check_eac_for_type (a_type)
 			l_entities := cache_reflection.entities (a_type, a_name)
 			if l_entities /= Void then
@@ -205,6 +212,16 @@ feature -- Access
 		end
 		
 feature {NONE} -- Implementation
+
+	load_current_assembly is
+			-- Workaround to guarentee that {APP_DOMAIN}.current_domain.get_assemblies include 
+			-- current assembly.
+		local
+			l_object: SYSTEM_OBJECT
+		do
+			l_object := Current
+			l_object := {APP_DOMAIN}.current_domain.load (l_object.get_type.assembly.get_name)
+		end
 
 	static_arguments_types (a_caller_type: SYSTEM_TYPE; a_dotnet_feature_name: STRING; a_arguments_types: NATIVE_ARRAY [SYSTEM_TYPE]): NATIVE_ARRAY [SYSTEM_TYPE] is
 			-- Static signature of `a_dotnet_feature_name' from `a_caller_type' with dynamic arguments `arguments_types'

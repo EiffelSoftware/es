@@ -1415,7 +1415,10 @@ feature {NONE} -- Implementation
 			l_assemblies: NATIVE_ARRAY [ASSEMBLY]
 			i, nb: INTEGER
 			l_handler: ASSEMBLY_LOAD_EVENT_HANDLER
+			l_object: SYSTEM_OBJECT
 		once
+			l_object := Current
+			l_object := {APP_DOMAIN}.current_domain.load (l_object.get_type.assembly.get_name)
 			l_assemblies := {APP_DOMAIN}.current_domain.get_assemblies
 			create l_handler.make (Current, $assembly_load_event)
 			{APP_DOMAIN}.current_domain.add_assembly_load (l_handler)
