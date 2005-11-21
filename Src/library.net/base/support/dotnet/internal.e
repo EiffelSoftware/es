@@ -1415,10 +1415,7 @@ feature {NONE} -- Implementation
 			l_assemblies: NATIVE_ARRAY [ASSEMBLY]
 			i, nb: INTEGER
 			l_handler: ASSEMBLY_LOAD_EVENT_HANDLER
-			l_object: SYSTEM_OBJECT
 		once
-			l_object := Current
-			l_object := {APP_DOMAIN}.current_domain.load (l_object.get_type.assembly.get_name)
 			l_assemblies := {APP_DOMAIN}.current_domain.get_assemblies
 			create l_handler.make (Current, $assembly_load_event)
 			{APP_DOMAIN}.current_domain.add_assembly_load (l_handler)
@@ -1442,7 +1439,17 @@ feature {NONE} -- Implementation
 				load_eiffel_types_from_assembly (args.loaded_assembly)
 			end
 		end
-		
+	
+	assembly_names: HASHTABLE is
+			-- Prevent same assembly to be loaded more than once by `load_eiffel_types_from_assembly'
+		once
+			create Result.make (10)
+		ensure
+			assembly_names_not_void: Result /= Void
+		end
+
+feature -- Hack
+
 	load_eiffel_types_from_assembly (an_assembly: ASSEMBLY) is
 			-- Load all Eiffel types from `an_assembly'.
 		require
@@ -1450,6 +1457,7 @@ feature {NONE} -- Implementation
 		local
 			l_types: NATIVE_ARRAY [SYSTEM_TYPE]
 			l_name: EIFFEL_NAME_ATTRIBUTE
+			l_assembly_name: ASSEMBLY_NAME
 			l_cas: NATIVE_ARRAY [SYSTEM_OBJECT]
 			i, j, nb, l_count: INTEGER
 			retried: BOOLEAN
@@ -1462,78 +1470,82 @@ feature {NONE} -- Implementation
 			l_list: ARRAYED_LIST [RT_CLASS_TYPE]
 		do
 			if not retried then
-				l_types := an_assembly.get_types
-				from
-					nb := l_types.count
-				until
-					i = nb
-				loop
-					l_type := l_types.item (i)
-					l_cas := l_type.get_custom_attributes_type ({EIFFEL_NAME_ATTRIBUTE}, False)
-					if l_cas /= Void and then l_cas.count > 0 then
-						l_name ?= l_cas.item (0)
-						check
-							l_name_not_void: l_name /= Void
-						end
-						if l_name.is_generic then
+				l_assembly_name := an_assembly.get_name
+				if not assembly_names.contains (l_assembly_name) then
+					assembly_names.add (l_assembly_name, l_assembly_name)
+					l_types := an_assembly.get_types
+					from
+						nb := l_types.count
+					until
+						i = nb
+					loop
+						l_type := l_types.item (i)
+						l_cas := l_type.get_custom_attributes_type ({EIFFEL_NAME_ATTRIBUTE}, False)
+						if l_cas /= Void and then l_cas.count > 0 then
+							l_name ?= l_cas.item (0)
 							check
-								has_generics: l_name.generics /= Void
+								l_name_not_void: l_name /= Void
 							end
-							l_array := l_name.generics
-							l_count := l_array.count
-							create l_rt_array.make (l_count)
-							from
-								l_any_type := {ANY}
-								j := 0
-							until
-								j = l_count
-							loop
-								l_param_type := l_array.item (j)
-								if l_param_type.equals (l_any_type) then
-										-- It is a formal
-									create l_formal_type.make
-									l_formal_type.set_position (j)
-									l_rt_array.put (j, l_formal_type)
-								else
-										-- It is an expanded type
-									l_rt_array.put (j,
-										associated_runtime_type (interface_type (l_param_type)))
-								end
-								j := j + 1
-							end
-							if l_count = 0 then
-									-- It should be a TUPLE type.
+							if l_name.is_generic then
 								check
-									tuple_name: l_name.name.is_equal ("TUPLE")
+									has_generics: l_name.generics /= Void
 								end
-								create {RT_TUPLE_TYPE} l_gen_type.make
+								l_array := l_name.generics
+								l_count := l_array.count
+								create l_rt_array.make (l_count)
+								from
+									l_any_type := {ANY}
+									j := 0
+								until
+									j = l_count
+								loop
+									l_param_type := l_array.item (j)
+									if l_param_type.equals (l_any_type) then
+											-- It is a formal
+										create l_formal_type.make
+										l_formal_type.set_position (j)
+										l_rt_array.put (j, l_formal_type)
+									else
+											-- It is an expanded type
+										l_rt_array.put (j,
+											associated_runtime_type (interface_type (l_param_type)))
+									end
+									j := j + 1
+								end
+								if l_count = 0 then
+										-- It should be a TUPLE type.
+									check
+										tuple_name: l_name.name.is_equal ("TUPLE")
+									end
+									create {RT_TUPLE_TYPE} l_gen_type.make
+								else
+									create l_gen_type.make
+								end
+								l_interface_type := interface_type (l_type)
+								l_gen_type.set_type (l_interface_type.type_handle)
+								l_gen_type.set_generics (l_rt_array)
+								l_class_type := l_gen_type
 							else
-								create l_gen_type.make
+								create l_class_type.make
+								l_interface_type := interface_type (l_type)
+								l_class_type.set_type (l_interface_type.type_handle)
 							end
-							l_interface_type := interface_type (l_type)
-							l_gen_type.set_type (l_interface_type.type_handle)
-							l_gen_type.set_generics (l_rt_array)
-							l_class_type := l_gen_type
-						else
-							create l_class_type.make
-							l_interface_type := interface_type (l_type)
-							l_class_type.set_type (l_interface_type.type_handle)
-						end
 
-							-- Update `interface_to_implementation'
-						interface_to_implementation.add (l_interface_type, l_type)
+								-- Update `interface_to_implementation'
+							interface_to_implementation.add (l_interface_type, l_type)
 
-							-- Update `eiffel_meta_type_mapping'
-						eiffel_meta_type_mapping.search (l_name.name)
-						if eiffel_meta_type_mapping.found then
-							eiffel_meta_type_mapping.found_item.extend (l_class_type)
-						else
-							create l_list.make (1)
-							l_list.extend (l_class_type)
-							eiffel_meta_type_mapping.force (l_list, l_name.name)
+								-- Update `eiffel_meta_type_mapping'
+							eiffel_meta_type_mapping.search (l_name.name)
+							if eiffel_meta_type_mapping.found then
+								eiffel_meta_type_mapping.found_item.extend (l_class_type)
+							else
+								create l_list.make (1)
+								l_list.extend (l_class_type)
+								eiffel_meta_type_mapping.force (l_list, l_name.name)
+							end
 						end
+						i := i + 1
 					end
-					i := i + 1
 				end
 			end
 		rescue
@@ -1542,7 +1554,9 @@ feature {NONE} -- Implementation
 			retried := True
 			retry
 		end
-		
+
+feature {NONE} -- Implementation
+
 	associated_runtime_type (a_type: SYSTEM_TYPE): RT_CLASS_TYPE is
 			-- Associated Eiffel runtime type for an expanded `a_type'.
 		require
