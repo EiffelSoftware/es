@@ -8,6 +8,7 @@ Src/bench/Eiffel/doc/debugger_files/image002.gif svneol=native#unset
 Src/bench/Eiffel/doc/debugging/debugger_files/image001.png -text svneol=unset#application/octet-stream
 Src/bench/Eiffel/doc/debugging/debugger_files/image002.gif -text
 Src/bench/Eiffel/extra/finish_freezing/appl.ico -text
+Src/dotnet/codedom_provider/common/code_internal.e -text
 Src/dotnet/codedom_provider/test/tester/icons/tester.png -text
 Src/dotnet/codedom_provider/tools/manager/ecdpman.ico -text
 Src/dotnet/codedom_provider/tools/manager/icons/application.png -text
