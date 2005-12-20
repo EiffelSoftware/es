@@ -106,12 +106,14 @@ feature {NONE} -- Implementation
 			-- to workaround .NET bug where an assembly might not be returned
 			-- by {APP_DOMAIN}.GetAssemblies
 		local
-			l_int: INTERNAL
+			l_int: CODE_INTERNAL
 			l_object: SYSTEM_OBJECT
+			l_string: STRING
 			l_metadata_access: CODE_SHARED_METADATA_ACCESS
 		once
 			create l_int
-			l_object := ""
+			create l_string.make_empty
+			l_object := l_string
 			l_int.load_eiffel_types_from_assembly (l_object.get_type.assembly)
 			create l_metadata_access
 			l_object := l_metadata_access
