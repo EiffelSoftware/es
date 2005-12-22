@@ -153,13 +153,18 @@ feature {NONE} -- Implementation
 
 	load_default_assemblies is
 			-- Load assemblies in `Startup_assemblies' list.
+		local
+			l_asm: STRING
 		do
 			from
 				Startup_assemblies.start
 			until
 				Startup_assemblies.after
 			loop
-				Referenced_assemblies.extend_file (Startup_assemblies.item)
+				l_asm := Startup_assemblies.item
+				if not referenced_assemblies.has_file (l_asm) then
+					Referenced_assemblies.extend_file (l_asm)
+				end
 				Startup_assemblies.forth
 			end
 		end
