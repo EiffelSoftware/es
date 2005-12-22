@@ -21,6 +21,8 @@ feature -- Access
 
 	Referenced_assemblies: CODE_REFERENCES_LIST is
 			-- List of assemblies used by codeDOM
+		indexing
+			once_status: global
 		once
 			create Result.make (16)
 		ensure
