@@ -16,6 +16,8 @@ feature -- Access
 
 	cache_manager: CACHE_MANAGER is
 			-- Access to Eiffel assemblies cache
+		indexing
+			once_status: global
 		once
 			if metadata_cache /= Void and then not metadata_cache.is_empty then
 				create Result.make_with_path (metadata_cache)
@@ -26,12 +28,16 @@ feature -- Access
 
 	cache_reflection: CACHE_REFLECTION is
 			-- Access to Eiffel Assemblies Cache
+		indexing
+			once_status: global
 		once
 			Result := cache_manager.cache_reader
 		end
 		
 	cache_writer: CACHE_WRITER is
 			-- Access to Eiffel Assemblies Cache
+		indexing
+			once_status: global
 		once
 			Result := cache_manager.cache_writer
 		end
