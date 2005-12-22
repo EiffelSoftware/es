@@ -55,7 +55,7 @@ feature {NONE} -- Initialization
 			-- Disable logging
 			config_values.put ("0", "log_level")
 			close_request_actions.extend (agent on_close)
-			input_type_combo_box.set_focus
+			show_actions.extend (agent input_type_combo_box.set_focus)
 			assemblies_list.set_column_titles (<<"Prefix", "Name", "Path">>)
 			load_assemblies
 			from
@@ -234,7 +234,7 @@ feature {NONE} -- Events Handling
 			-- Make sure second column always take up rest of space
 		do
 			if a_column /= 3 then
-				assemblies_list.set_column_width (assemblies_list.width - assemblies_list.column_width (1) - assemblies_list.column_width (2), 3)
+				assemblies_list.set_column_width ((assemblies_list.width - assemblies_list.column_width (1) - assemblies_list.column_width (2)).max (0), 3)
 			end
 		end
 
