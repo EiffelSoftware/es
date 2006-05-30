@@ -34,6 +34,9 @@ feature -- Initialisation
 			image := text
 			length := text.count
 			pos_in_text := -1
+
+			-- by default, tokens are correct
+			is_correct := true
 		ensure
 			image_not_void: image /= Void
 		end
@@ -42,6 +45,9 @@ feature -- Miscellaneous
 
 	width: INTEGER
 			-- Width in pixel of the entire token.
+
+	is_correct: BOOLEAN
+			-- Is this token syntacitacaly correct or has it been invalidated by parser?
 
 	get_substring_width (n: INTEGER): INTEGER is
 			-- Compute the width in pixels of the first
@@ -328,6 +334,7 @@ feature {NONE} -- Implementation
 	display_with_colors(d_y: INTEGER; a_text_color: EV_COLOR; a_background_color: EV_COLOR; device: EV_DRAWABLE) is
 		local
 			text_to_be_drawn: STRING
+			line_y: INTEGER
 		do
 			if image.has ('%T') then
 				text_to_be_drawn := expanded_image_substring (1, image.count)
@@ -335,7 +342,7 @@ feature {NONE} -- Implementation
 				text_to_be_drawn := image
 			end
 
- 				-- Change drawing style here.
+ 			-- Change drawing style here.
  			device.set_font (font)
 			device.set_foreground_color (a_text_color)
 
@@ -344,8 +351,14 @@ feature {NONE} -- Implementation
 				device.clear_rectangle (position, d_y, get_substring_width (image.count), height)
 			end
 
- 				-- Display the text.
+			-- Display the text.
  			draw_text_top_left (position, d_y, text_to_be_drawn, device)
+
+ 			-- Draw the underline if incorrect token
+ 			if not is_correct then
+	 			line_y := d_y+font_offset
+	 			draw_wavy_line(position, line_y, device)
+ 			end
 		end
 
 	display_with_colors_offset (x_offset, d_y: INTEGER; a_text_color: EV_COLOR; a_background_color: EV_COLOR; device: EV_DRAWABLE) is
@@ -370,6 +383,44 @@ feature {NONE} -- Implementation
  				-- Display the text.
  			draw_text_top_left (x_offset, d_y, text_to_be_drawn, device)
 		end
+
+	draw_wavy_line (x, y: INTEGER; device: EV_DRAWABLE) is
+			-- Draws a wavy red line starting at `x', `y' of the text's width.
+			-- 2006 by Oliver L. Clerc, Janick M. Bernet
+		require
+			width_non_negative: width >= 0
+			device_not_void: device /= void
+		local
+			i, ordinate: INTEGER
+			color: EV_COLOR
+		do
+			-- set color
+ 			create color.make_with_8_bit_rgb (255, 0, 0)
+ 			device.set_foreground_color (color)
+
+			-- draw line
+			from
+				i := 0
+			invariant
+				i >= 0
+				i < width
+			variant
+				width - i + 1
+			until
+				i >= width
+			loop
+				inspect i \\ 4
+					when 0 then ordinate := y + 1
+					when 1 then ordinate := y
+					when 2 then ordinate := y + 1
+					when 3 then ordinate := y + 2
+				end
+
+				device.draw_point(x + i, ordinate)
+				i := i + 1
+			end
+		end
+
 
 feature {NONE} -- Implementation
 
