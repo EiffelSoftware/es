@@ -1978,6 +1978,7 @@ Src/library/editor/bitmaps/cut_selection.png -text
 Src/library/editor/bitmaps/icon_close_color.png -text
 Src/library/editor/bitmaps/left_scroll_arrow.png -text
 Src/library/editor/bitmaps/right_scroll_arrow.png -text
+Src/library/i18n/mo_files/cin.mo -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/library/preferences/storage/preferences_storage_i.e -text
 Src/library/preferences/storage/registry/preference_storage_registry.e -text
