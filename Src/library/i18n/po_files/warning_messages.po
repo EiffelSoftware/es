@@ -1,0 +1,453 @@
+# WARNING_MESSAGES.E
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0\n"
+"Report-Msgid-Bugs-To: leof@student.ethz.ch\n"
+"Content-Type: text/plain, charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Unicode-Works: 真 愛\n"
+
+#. Name: w_Feature_is_not_compiled
+msgid "An error occurred on breakpoints because a feature%N was not correctly compiled.%N%N Recompiling the project completely will solve the problem."
+msgstr ""
+
+#. Name: w_Fill_in_ace_field
+msgid "Please fill in the 'Ace file' field."
+msgstr ""
+
+#. Name: w_Class_syntax_error
+msgid "Current class text has a syntax error.%NCode generation was cancelled."
+msgstr ""
+
+#. Name: w_could_not_modify_class
+msgid "The text of this class could not be modified."
+msgstr ""
+
+#. Name: w_Invalid_alias
+msgid "Alias is invalid.%N Please check that it is a valid C identifier."
+msgstr ""
+
+#. Name: w_Internal_error
+msgid "An internal error occurred.%N%N 1 - Check that you have enough space to compile.%N 2 - If this happens even after relaunching the environment%N      delete your EIFGEN and recompile from scratch.%N%N Follow the instructions at http://support.eiffel.com/submit.html in%N order to submit a bug report at http://support.eiffel.com"
+msgstr ""
+
+#. Name: 
+msgid "Unable to execute the wizard.%N Check that `\"+wizard_file+\"' exists and is executable.%N"
+msgstr ""
+
+#. Name: w_Backup_succeeded
+msgid "Backup was successful.%N Class files were saved with a .swp extension."
+msgstr ""
+
+#. Name: w_Fill_in_project_name_field
+msgid "Please fill in the 'Project Name' field."
+msgstr ""
+
+#. Name: w_No_internet_browser_selected
+msgid "No browser was given in the preferences"
+msgstr ""
+
+#. Name: w_cannot_save_when_c_compilation_running
+msgid "Please save output after c compilation has exited."
+msgstr ""
+
+#. Name: w_Feature_cannot_be_exported
+msgid "This feature cannot be exported.%N Deferred features, external ones,%N and attributes cannot be exported."
+msgstr ""
+
+#. Name: w_Inheritance_from_any
+msgid "Cannot remove inheritance from ANY."
+msgstr ""
+
+#. Name: w_Feature_not_written_in_class
+msgid "Feature is not written in selected class."
+msgstr ""
+
+#. Name: w_Select_project_to_load
+msgid "Please select a project in the list or Click%N on the %\"Browse%\" button to open a project."
+msgstr ""
+
+#. Name: w_cluster_name_not_valid
+msgid "Cluster name is not valid."
+msgstr ""
+
+#. Name: w_Fill_in_location_field
+msgid "Please fill in the 'Location' field."
+msgstr ""
+
+#. Name: w_Select_class_feature_to_rename
+msgid "Select class or feature to rename."
+msgstr ""
+
+#. Name: w_No_system_defined
+msgid "No system was defined.%N"
+msgstr ""
+
+#. Name: w_No_ise_eiffel
+msgid "Environment variable ISE_EIFFEL is not defined."
+msgstr ""
+
+#. Name: w_Cannot_move_favorite_to_a_child
+msgid "Moving a folder to one of its children%N is not possible."
+msgstr ""
+
+#. Name: w_None_system
+msgid "A system whose root class is NONE is not runnable."
+msgstr ""
+
+#. Name: w_Must_finalize_first
+msgid "You must finalize your project first."
+msgstr ""
+
+#. Name: w_Closing_stops_debugger
+msgid "Closing the window will stop the debugger."
+msgstr ""
+
+#. Name: w_Not_an_integer
+msgid "Please enter an integer value."
+msgstr ""
+
+#. Name: w_Class_not_modifiable
+msgid "The text of this class cannot be modified."
+msgstr ""
+
+#. Name: w_Cannot_compile
+msgid "Read-only project: cannot compile."
+msgstr ""
+
+#. Name: w_Select_parent_cluster
+msgid "Please select a cluster from the list.%N A parent cluster is needed."
+msgstr ""
+
+#. Name: w_Files_not_saved_before_compiling
+msgid "Some files have not been saved.%N Do you want to save them before compiling?%N"
+msgstr ""
+
+#. Name: w_Project_not_compiled
+msgid "Command cannot be executed because the project%N has never been compiled.%N Please compile the project before calling this command."
+msgstr ""
+
+#. Name: w_Freeze_warning
+msgid "Freezing implies some C compilation and linking.%N  - Click Yes to compile the Eiffel system (including C compilation)%N  - Click No  to compile the Eiffel system (no C compilation)%N  - Click Cancel to abort%N %N"
+msgstr ""
+
+#. Name: w_Found_backup
+msgid "A backed up version of the file was found.%N Do you want to open the original file or the backup file?%N If you choose the original file, the backup file will be%N deleted. If choose the backup file, then the original file%N will be overwritten with the contents of the backup file%N when you save.%N"
+msgstr ""
+
+#. Name: w_Debug_not_compiled
+msgid "The last compilation was not complete.%N Running the last compiled application in these conditions%N may lead to inconsistent information, or to an unexpected behavior."
+msgstr ""
+
+#. Name: w_File_does_not_exist_execution_impossible
+msgid " does not exist.%NExecution impossible.%N"
+msgstr ""
+
+#. Name: w_Overflow_detected
+msgid "Possible stack overflow detected.%N The application was paused to let you%N examine its current status."
+msgstr ""
+
+#. Name: w_Profiler_select_one_language
+msgid "Select at least one language."
+msgstr ""
+
+#. Name: w_Could_not_save_all
+msgid "Some files could not be saved.%N Exit was cancelled."
+msgstr ""
+
+#. Name: w_Text_not_editable
+msgid "Current text is not editable."
+msgstr ""
+
+#. Name: w_MakefileSH_more_recent
+msgid "The Makefile.SH is more recent than the system."
+msgstr ""
+
+#. Name: w_Command_needs_file
+msgid "This command requires a file name.%N It cannot be executed."
+msgstr ""
+
+#. Name: w_Cannot_delete_need_recompile
+msgid "Compiled configuration is not up to date, please recompile."
+msgstr ""
+
+#. Name: w_Freezing_running
+msgid "Freezing is in progress, start Eiffel compilation%N may terminate currernt freezing.%NContinue?"
+msgstr ""
+
+#. Name: w_No_valid_creation_routine
+msgid "No valid creation routine%N could be found for this class.%N Please make sure the chosen class%N has a creation routine taking no argument."
+msgstr ""
+
+#. Name: w_Class_name_changed
+msgid "Class name has changed since last compilation.%NCurrent text will not be clickable.%N Recompile to make it clickable again."
+msgstr ""
+
+#. Name: w_Invalid_feature_exportation
+msgid "This feature export clause contains errors.%N Try editing it to have more information."
+msgstr ""
+
+#. Name: w_cannot_clear_when_c_compilation_running
+msgid "Please clear this window after c compilation has exited."
+msgstr ""
+
+#. Name: w_Exiting_stops_debugger
+msgid "Exiting will stop the debugger."
+msgstr ""
+
+#. Name: w_Formatter_failed
+msgid "Format could not be generated.%N Please make sure that the system is not being compiled  and that the last compilation was successful."
+msgstr ""
+
+#. Name: w_Error_parsing_the_library_file
+msgid "This file seems to be corrupted.%N Not all items inside could be loaded."
+msgstr ""
+
+#. Name: w_Unexisting_system
+msgid "System doesn't exist."
+msgstr ""
+
+#. Name: w_Finalizing_running
+msgid "Finalizing is in progress, start Eiffel compilation%N may terminate current finalizing.%NContinue?"
+msgstr ""
+
+#. Name: w_No_class_matches
+msgid "No class in any cluster matches this name."
+msgstr ""
+
+#. Name: w_Profiler_select_one_output_switch
+msgid "Select at least one output switch."
+msgstr ""
+
+#. Name: w_Stop_debugger
+msgid "This command will stop the debugger."
+msgstr ""
+
+#. Name: w_cannot_generate_png
+msgid "Could not generate PNG file.%NInsufficient video memory."
+msgstr ""
+
+#. Name: w_Save_invalid_definition
+msgid "There are problems in this library definition.%N Call 'Check' to have more information.%N Save anyway?"
+msgstr ""
+
+#. Name: w_Save_before_closing
+msgid "Do you want to save your changes%N before closing the window?"
+msgstr ""
+
+#. Name: w_Select_feature_to_pull
+msgid "Select a feature to pull up."
+msgstr ""
+
+#. Name: w_Must_compile_first
+msgid "You must compile a project first."
+msgstr ""
+
+#. Name: w_Invalid_index
+msgid "Index is out of range.%N Indices should be positive integers."
+msgstr ""
+
+#. Name: w_No_cluster_matches
+msgid "No cluster in the system matches this name."
+msgstr ""
+
+#. Name: w_Load_configuration
+msgid "An error occurred while loading the  configuration for your profiler.%N Please check with your system  administrator whether your profiler is  supported.%N"
+msgstr ""
+
+#. Name: w_Specify_a_class
+msgid "Please specify a compiled class (or * for all classes)."
+msgstr ""
+
+#. Name: w_Select_object_to_remove
+msgid "Please select a top-level item%N different from the current object%N (i.e. the first one) in the object tree%N to have it removed."
+msgstr ""
+
+#. Name: w_File_modified_by_another_editor
+msgid "This file has been modified by another editor."
+msgstr ""
+
+#. Name: w_New_feature_syntax_error
+msgid "New feature has syntax error.%NCode generation cancelled."
+msgstr ""
+
+#. Name: w_Exiting_stops_c_compilation
+msgid "It is not possible to exit EiffelStudio%N while c compilation is running."
+msgstr ""
+
+#. Name: w_Could_not_parse_ace
+msgid "An error occurred while parsing the Ace file.%N Please try using the system configuration tool."
+msgstr ""
+
+#. Name: w_No_feature_matches
+msgid "No feature in this class matches this name."
+msgstr ""
+
+#. Name: w_Unable_to_retrieve_project
+msgid "Unable to retrieve the project, it may be corrupted."
+msgstr ""
+
+#. Name: w_Finalize_warning
+msgid "Finalizing implies some C compilation and linking.%N  - Click Yes to compile the C code after finalizing the system%N  - Click No  to skip the C compilation (no executable will be generated)%N  - Click Cancel to abort%N %N"
+msgstr ""
+
+#. Name: w_Invalid_options
+msgid "The selected options are invalid.%N Please select different ones."
+msgstr ""
+
+#. Name: w_Class_already_edited
+msgid "This class is already being edited%N in another editor.%N Editing a class in several editors%N may cause loss of data."
+msgstr ""
+
+#. Name: w_Exiting_stops_external
+msgid "It is not possible to exit EiffelStudio%N while an external command is running."
+msgstr ""
+
+#. Name: w_Backup_failed
+msgid "Backup failed for some files.%N The state of the system was too damaged."
+msgstr ""
+
+#. Name: w_Invalid_cluster
+msgid "One of the clusters is invalid.%N%N Please check that none is precompiled or a library,%N and that the corresponding directories have sufficient rights."
+msgstr ""
+
+#. Name: w_cannot_clear_when_external_running
+msgid "Please clear this window after external command has exited."
+msgstr ""
+
+#. Name: w_cluster_with_name_exists
+msgid "A cluster with this name already exists. Please use another name."
+msgstr ""
+
+#. Name: w_Assertion_warning
+msgid "By default assertions enabled in the Ace file are kept%N in final mode.%N %N Keeping assertion checking inhibits any optimization%N specified in the Ace (inlining, array optimization,%N dead-code removal) and will produce a final executable%N that is not optimal in speed and size.%N %N Are you sure you want to keep the assertions in your%N finalized executable?"
+msgstr ""
+
+#. Name: w_cannot_save_when_external_running
+msgid "Please save output after external command has exited."
+msgstr ""
+
+#. Name: w_Enter_path
+msgid "Please enter a folder%Nto receive the new cluster."
+msgstr ""
+
+#. Name: w_Backup_file_not_editable
+msgid "Backup file cannot be modified.%NTo edit it, save it first."
+msgstr ""
+
+#. Name: w_Environment_not_initialized
+msgid "$ISE_EIFFEL is not initialized. Execution impossible%N"
+msgstr ""
+
+#. Name: w_No_system_generated
+msgid "No system was generated.%N Please make sure the C compilation ended correctly."
+msgstr ""
+
+#. Name: w_Command_needs_directory
+msgid "This command requires a directory.%N It cannot be executed."
+msgstr ""
+
+#. Name: w_Cannot_debug
+msgid "Current version of system has not been successfully compiled.%N Cannot use debugging facilities."
+msgstr ""
+
+#. Name: w_cluster_path_not_valid
+msgid "Cluster path is not valid."
+msgstr ""
+
+#. Name: w_Cannot_open_any_file
+msgid "Only files representing known%N classes can be opened."
+msgstr ""
+
+#. Name: w_Exiting_stops_compilation
+msgid "It is not possible to exit EiffelStudio%N while the project is being compiled."
+msgstr ""
+
+#. Name: w_Select_class_cluster_to_remove
+msgid "Please select a class or a cluster %N before calling this command.%N It will then be removed."
+msgstr ""
+
+#. Name: w_Page_not_exist
+msgid "The requested page does not exist.%N Please check your ISE Eiffel installation."
+msgstr ""
+
+#. Name: w_Finalize_precompile
+msgid ".NET precompiled libraries can be finalized to create%N an optimized version as well as a workbench version.%N Would you like to create a finalized verion?"
+msgstr ""
+
+#. Name: w_Cannot_move_class
+msgid "Source file cannot be moved.%N Please make sure that:%N the source file exists,%N the source file is not being edited,%N the destination directory can be written in."
+msgstr ""
+
+#. Name: w_Replace_all
+msgid "This operation can not be undone %N to files not loaded to the editor.%N Would you like to continue replacing all?"
+msgstr ""
+
+#. Name: w_No_system
+msgid "No system was defined.%NCannot launch the application."
+msgstr ""
+
+#. Name: w_Save_backup
+msgid "You are about to overwrite the original file with%N the backup file. Previous content will be lost%N and the backup file deleted."
+msgstr ""
+
+#. Name: w_does_not_have_enclosing_cluster
+msgid "This cluster does not have an enclosing cluster."
+msgstr ""
+
+#. Name: w_Invalid_folder_name
+msgid "Invalid folder name"
+msgstr ""
+
+#. Name: w_Command_needs_class
+msgid "This command requires a class name.%N It cannot be executed."
+msgstr ""
+
+#. Name: w_No_url_to_replace
+msgid "There is no $url part in the browser preference.%N Please fix your preferences."
+msgstr ""
+
+#. Name: w_Syntax_error
+msgid "Class has syntax error.%NText will not be clickable.%NSee highlighted area."
+msgstr ""
+
+#. Name: w_Class_modified_outside_diagram
+msgid "Class was modified outside the diagram.%N Previous commands are not undoable any longer."
+msgstr ""
+
+#. Name: w_Incorrect_ace_configuration
+msgid "Some values are invalid,  please correct the corresponding entries"
+msgstr ""
+
+#. Name: w_Clear_breakpoints
+msgid "Forget all breakpoints?"
+msgstr ""
+
+#. Name: w_No_feature_to_display
+msgid "No features in this file"
+msgstr ""
+
+#. Name: w_Conflicting_exports
+msgid "Some feature export clauses are conflicting.%N Please make sure that export clauses do not share%N either their indices or their exported names."
+msgstr ""
+
+#. Name: w_Class_cannot_export
+msgid "This class cannot export features.%N Please make sure that it is neither deferred nor generic%N and that the system is correctly compiled."
+msgstr ""
+
+#. Name: w_Index_already_taken
+msgid "This index is already used.%N Please select another one."
+msgstr ""
+
+#. Name: w_Wrong_class_name
+msgid "Syntax error in name or generics"
+msgstr ""
+
+#. Name: w_Removed_class_debug
+msgid "Classes were manually removed since last compilation.%N Running the last compiled application in these conditions%N may lead to inconsistent information, or to an unexpected behavior."
+msgstr ""
+
+#. Name: w_Ignoring_all_stop_points
+msgid "Application will ignore all breakpoints."
+msgstr ""
+
