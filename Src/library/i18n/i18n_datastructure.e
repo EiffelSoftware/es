@@ -123,15 +123,16 @@ feature {NONE} -- Implementation
 			variant
 				i18n_mo_parser.string_count + 1 - i
 			until
-				i <= i18n_mo_parser.string_count
+				i > i18n_mo_parser.string_count
 			loop
 				--if i18n_mo_parser.using_hash_table then
 				--	array.item(i).set_hash(i18n_mo_parser.get_hash(i))
 				--else
 				--	array.item(i).set_hash(hash_string(array.item(i).original))
 				--end
-				array.item(i).set_hash(hash_string(array.item(i).original.item(0)))
+				array.item(i).set_hash(hash_string(array.item(i).originals.i_th(0)))
 				hash_table.put(array.item(i), array.item(i).hash)
+				i := i + 1
 			end
 		end
 
@@ -152,11 +153,12 @@ feature {NONE} -- Implementation
 			variant
 				i18n_mo_parser.string_count + 1 - i
 			until
-				i <= i18n_mo_parser.string_count
+				i > i18n_mo_parser.string_count
 			loop
 				create temp_string.make_with_id (i)
 				temp_string.set_originals(i18n_mo_parser.get_originals(i))
 				array.put(temp_string, i)
+				i := i + 1
 			end
 			from -- spatial locality
 				i := 1
@@ -166,9 +168,10 @@ feature {NONE} -- Implementation
 			variant
 				i18n_mo_parser.string_count + 1 - i
 			until
-				i <= i18n_mo_parser.string_count
+				i > i18n_mo_parser.string_count
 			loop
 				array.item(i).set_translateds(i18n_mo_parser.get_translateds(i))
+				i := i + 1
 			end
 		end
 

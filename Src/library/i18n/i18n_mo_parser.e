@@ -55,7 +55,7 @@ feature -- Initialization
 			mo_file_open: mo_file.is_open_read
 		end
 
-feature -- Status reporT
+feature -- Status report
 	valid_index(a_index: INTEGER): BOOLEAN is
 			-- Is the index in valid range?
 		do
@@ -72,7 +72,6 @@ feature -- Status setting
 		end
 
 feature -- File information
-
 	is_big_endian,
 	is_little_endian: BOOLEAN
 
@@ -105,7 +104,6 @@ feature -- File information
 		do
 			Result := extract_string(translated_table_offset, 0)
 		end
-
 
 feature -- Basic operation
 	get_original(i_th: INTEGER): STRING_32 is

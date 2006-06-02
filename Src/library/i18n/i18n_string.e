@@ -25,26 +25,26 @@ feature -- Access
 	hash: INTEGER
 		-- Hash of the string
 
-	original: ARRAY[STRING_32]
+	originals: LIST[STRING_32]
 		-- Original string
 
-	translated: ARRAY[STRING_32]
+	translateds: LIST[STRING_32]
 		-- Translated string
 
 feature -- Status report
 	has_plural: BOOLEAN is
 			-- Has this string a plural form?
 		require
-			valid_original: original /= Void
+			valid_originals: originals /= Void
 		do
-			Result := original.count > 1
+			Result := originals.count > 1
 		end
 
 	has_translation(i_th: INTEGER): BOOLEAN is
 			-- Is there the i_th translated version?
 		do
-			if i_th <= translated.upper then
-				Result := (translated /= Void) and then (translated.item(i_th) /= Void)
+			if i_th <= translateds.count then
+				Result := (translateds /= Void) and then (translateds.i_th(i_th) /= Void)
 			end
 		end
 
@@ -52,25 +52,26 @@ feature -- Basic operations
 	get_original(i_th: INTEGER): STRING_32 is
 			-- Which is the i_th plural of the original string?
 		require
-			valid_original: original /= Void
+			valid_originals: originals /= Void
 		do
-			if i_th = 1 then
-				Result := original.item(1)
+			if i_th = 1 or not has_plural then
+				Result := originals.i_th(1)
 			else
-				Result := original.item(2)
+				Result := originals.i_th(2)
 			end
 		end
 
 	get_translated(i_th: INTEGER): STRING_32 is
 			-- Which is the i_th plural of the translated string?
 		require
-			valid_translated: translated /= Void
+			valid_translateds: translateds /= Void
 		do
-			if (i_th <= translated.upper and then translated.item(i_th) /= Void) then
-				Result := translated.item(i_th)
+			if (i_th <= translateds.count and then translateds.i_th(i_th) /= Void) then
+				Result := translateds.i_th(i_th)
+			else
+				Result := translateds.i_th(translateds.count)
 			end
 		end
-
 
 	set_hash(a_hash: INTEGER) is
 			-- Set the hash of the original string.
@@ -80,37 +81,25 @@ feature -- Basic operations
 			hash_set: hash = a_hash
 		end
 
-	set_originals(a_strings: LIST[STRING_32]) is
+	set_originals(a_originals: LIST[STRING_32]) is
 			-- Set the i_th original string.
 		require
-			valid_string: a_strings /= Void
+			valid_string: a_originals /= Void
 		do
-			create original.make(1, 2)
-			original.put(a_strings.i_th(1), 1)
-			original.put(a_strings.i_th(2), 2)
+			originals := a_originals
 		ensure
-			original_set: original.count = a_strings.count
+			originals_set: originals.count = a_originals.count
 		end
 
-	set_translateds(a_strings: LIST[STRING_32]) is
+	set_translateds(a_translateds: LIST[STRING_32]) is
 			-- Set the i_th translated string.
 		require
-			valid_string: a_strings /= Void
+			valid_string: a_translateds /= Void
 		do
-			create translated.make(0, (a_strings.count -1))
-			translated.fill(a_strings)
---			from
---				a_strings.start
---			until
---				a_strings.after
---			loop
---				translated.put(a_strings.item, a_strings.index)
---				a_strings.forth
---			end
+			translateds := a_translateds
 		ensure
-			translated_set: translated.count = a_strings.count
+			translateds_set: translateds.count = a_translateds.count
 		end
-
 
 feature {NONE} -- Implementation
 	id: INTEGER

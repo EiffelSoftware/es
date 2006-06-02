@@ -59,15 +59,12 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-
-
 feature {NONE} -- Implementation
 	localizator: I18N_LOCALIZATOR is
 			-- Unique instance of the localizator
 		once
 			create Result.make
 		end
-
 
 invariant
 	invariant_clause: True -- Your invariant here

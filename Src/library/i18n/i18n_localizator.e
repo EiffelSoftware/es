@@ -18,7 +18,8 @@ feature {NONE} -- Initialization
 			path_to_file: STRING
 				-- Remove this!
 		do
-			path_to_file := "Find the right path!"
+			-- NOTE: For the moment, should set path manually!
+			path_to_file := ""
 			create datastructure.make_with_file(path_to_file)
 		ensure
 			valid_datastructure: datastructure /= Void
