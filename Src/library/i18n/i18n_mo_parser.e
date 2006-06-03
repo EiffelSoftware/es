@@ -72,6 +72,12 @@ feature -- Status setting
 		end
 
 feature -- File information
+	plural_forms: INTEGER
+		-- Number of plural forms
+
+	plural_form_identifier: STRING
+		-- Identifier of the plural form function
+
 	is_big_endian,
 	is_little_endian: BOOLEAN
 

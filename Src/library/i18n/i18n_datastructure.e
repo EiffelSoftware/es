@@ -22,6 +22,7 @@ feature {NONE} -- Initialization
 			populate_array
 			populate_hash_table
 			i18n_mo_parser.close_file
+			create i18n_plural_forms.make_with_identifier (i18n_mo_parser.plural_forms, i18n_mo_parser.plural_form_identifier)
 		end
 
 feature -- Measurement
@@ -68,7 +69,7 @@ feature {NONE} -- Basic operations
 			-- Which string is the translation of the a_hash-hashed one?
 		do
 			-- Simply get it from the hash table.
-			Result := hash_table.item(a_hash).get_translated(i_th)
+			Result := hash_table.item(a_hash).get_translated(i18n_plural_forms.get_plural_form(i_th))
 		end
 
 	search(a_string: STRING_GENERAL): STRING_32 is
@@ -107,6 +108,9 @@ feature {NONE} -- Implementation
 
 	i18n_mo_parser: I18N_MO_PARSER
 		-- Reference to the parser
+
+	i18n_plural_forms: I18N_PLURAL_FORMS
+		-- Reference to the plural form resolver
 
 	populate_hash_table is
 			-- Populates the hash table.
