@@ -25,13 +25,6 @@ feature {NONE} -- Initialization
 			create i18n_plural_forms.make_with_identifier (i18n_mo_parser.plural_forms, i18n_mo_parser.plural_form_identifier)
 		end
 
-feature -- Measurement
-	count: INTEGER is
-			-- How many strings are there?
-		do
-			Result := i18n_mo_parser.string_count
-		end
-
 feature {NONE} -- Miscellaneous
     hash_string(a_string: STRING_GENERAL): INTEGER is
 			-- What is the hash of a_string?

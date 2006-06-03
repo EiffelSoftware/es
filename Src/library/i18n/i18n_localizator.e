@@ -31,7 +31,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		require
 			valid_string: a_string /= Void
 		do
-
+			Result := datastructure.translate(a_string, 1)
 		ensure
 			valid_result: Result /= Void
 		end
@@ -40,14 +40,21 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			-- What's the a_num-th translated plural of the string?
 		require
 			valid_string: a_string /= Void
+		local
+			temp_string: STRING_GENERAL
+				-- Temporary string
 		do
-
+			temp_string ?= a_string.item(1)
+			if temp_string /= Void then
+				Result := datastructure.translate(temp_string, a_num)
+			end
 		ensure
 			valid_result: Result /= Void
 		end
 
 	translate_template(a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
 			-- What's the completed form of the template?
+			-- NOTE: this feature doesn't connect to the datastructure!
 		require
 			valid_string: a_string /= Void
 			valid_args: a_args /= Void
