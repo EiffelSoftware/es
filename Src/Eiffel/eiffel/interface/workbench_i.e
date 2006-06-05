@@ -31,6 +31,8 @@ inherit
 
 	CONF_ACCESS
 
+	SYSTEM_CONSTANTS
+
 feature -- Attributes
 
 	universe: UNIVERSE_I
@@ -226,6 +228,7 @@ feature -- Commands
 			l_prc_factory:  PROCESS_FACTORY
 			l_prc_launcher: PROCESS
 			l_success: BOOLEAN
+			l_wd: STRING
 		do
 			create l_prc_factory
 			from
@@ -234,7 +237,10 @@ feature -- Commands
 				an_actions.after
 			loop
 				l_action := an_actions.item
-				l_prc_launcher := l_prc_factory.process_launcher_with_command_line (l_action.command, l_action.working_directory.evaluated_path)
+				if l_action.working_directory /= Void then
+					l_wd := l_action.working_directory.evaluated_path
+				end
+				l_prc_launcher := l_prc_factory.process_launcher_with_command_line (l_action.command, l_wd)
 				l_prc_launcher.set_separate_console (is_gui)
 				l_prc_launcher.launch
 				if l_prc_launcher.launched then
@@ -450,7 +456,7 @@ feature -- Commands
 				classes.after
 			loop
 				cl := classes.item_for_iteration
-				if not cl.is_compiled and not cl.is_external_class then
+				if not cl.is_compiled and not cl.is_external_class and not cl.config_class.does_override then
 					change_class (cl)
 				end
 				classes.forth
@@ -496,7 +502,7 @@ feature -- Automatic backup
 			d: DIRECTORY
 		do
 				-- Create the EIFGEN/BACKUP directory
-			create d.make (Backup_path)
+			create d.make (project_location.backup_path)
 			if not d.exists then
 				d.create_dir
 			end
@@ -513,7 +519,7 @@ feature -- Automatic backup
 		local
 			temp: STRING
 		do
-			create Result.make_from_string (Backup_path)
+			create Result.make_from_string (project_location.backup_path)
 			create temp.make (9)
 			temp.append (Comp)
 			temp.append_integer (backup_counter)

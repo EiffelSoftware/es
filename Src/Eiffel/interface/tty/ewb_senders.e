@@ -1,28 +1,44 @@
 indexing
 
-	description: 
+	description:
 		"Displays the senders of a feature in output_window."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision $"
 
-class EWB_SENDERS 
+class EWB_SENDERS
 
 inherit
 	EWB_FEATURE
-		rename
-			name as callers_cmd_name,
-			help_message as callers_help,
-			abbreviation as callers_abb
 		redefine
 			loop_action
 		end
-	
+
 	EB_SHARED_PREFERENCES
 
 create
 	make, default_create
+
+feature -- Access
+
+	name: STRING is
+			-- Name of current command
+		do
+			Result := callers_cmd_name
+		end
+
+	help_message: STRING is
+			-- Help message for current command
+		do
+			Result := callers_help
+		end
+
+	abbreviation: CHARACTER is
+			-- Abbreviation for current command
+		do
+			Result := callers_abb
+		end
 
 feature -- Setting
 

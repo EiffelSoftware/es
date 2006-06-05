@@ -289,7 +289,7 @@ feature -- Execution
 		io.error.put_string (generator)
 		io.error.put_string ("(DEBUG_RUN): Start execution%N")
 	end
-					create makefile_sh_name.make_from_string (Workbench_generation_path)
+					create makefile_sh_name.make_from_string (project_location.workbench_path)
 					makefile_sh_name.set_file_name (Makefile_SH)
 
 					create uf.make (Eiffel_system.application_name (True))
@@ -440,8 +440,14 @@ feature -- Execution
 					-- First time we launch the program, we clear the output tool.
 				output_manager.clear
 			end
+
+				--| Getting well formatted workind directory path
 			working_dir := application_working_directory
+
+				--| Building the command line argument
 			l_cmd_line_arg := current_cmd_line_argument
+
+				--| Display information
 			output_manager.add_string ("Launching system :")
 			output_manager.add_new_line
 			output_manager.add_comment ("  - directory = ")

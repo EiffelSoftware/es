@@ -399,13 +399,16 @@ feature {NONE} -- Initialization
 			toggle_feature_assigner_cmd.disable_sensitive
 
 			create editors.make (5)
-			estudio_debug_cmd.set_main_window (window)
+				--|FIXME: Uncomment following line to activate debug menu.
+				--|Search estudio_debug_cmd to reach the other place.
+--			estudio_debug_cmd.set_main_window (window)
 		end
 
 	set_up_accelerators is
 			-- Fill the accelerator of `window' with the accelerators of the `toolbarable_commands'.
 		local
 			cmds: ARRAYED_LIST [EB_TOOLBARABLE_COMMAND]
+			i: INTEGER
 		do
 				--| Accelerators related to toolbarable_commands
 			from
@@ -433,6 +436,16 @@ feature {NONE} -- Initialization
 					window.accelerators.extend (cmds.item.accelerator)
 				end
 				cmds.forth
+			end
+
+				--| Accelerators related to external commands
+			from
+				i := 0
+			until
+				i > 9
+			loop
+				window.accelerators.extend (edit_external_commands_cmd.accelerators.item (i))
+				i := i + 1
 			end
 		end
 
@@ -472,6 +485,14 @@ feature {NONE} -- Initialization
 			managed_feature_formatters.extend (create {EB_CALLERS_FORMATTER}.make (Current,
 				{DEPEND_UNIT}.is_in_creation_flag))
 			managed_feature_formatters.extend (Void)
+
+			managed_feature_formatters.extend (create {EB_CALLEES_FORMATTER}.make (Current, 0))
+			managed_feature_formatters.extend (create {EB_CALLEES_FORMATTER}.make (Current,
+				{DEPEND_UNIT}.is_in_assignment_flag))
+			managed_feature_formatters.extend (create {EB_CALLEES_FORMATTER}.make (Current,
+				{DEPEND_UNIT}.is_in_creation_flag))
+			managed_feature_formatters.extend (Void)
+
 			managed_feature_formatters.extend (create {EB_IMPLEMENTERS_FORMATTER}.make (Current))
 			managed_feature_formatters.extend (create {EB_ROUTINE_ANCESTORS_FORMATTER}.make (Current))
 			managed_feature_formatters.extend (create {EB_ROUTINE_DESCENDANTS_FORMATTER}.make (Current))
@@ -986,7 +1007,9 @@ feature -- Update
 			mb.extend (tools_menu)
 			mb.extend (window_menu)
 			mb.extend (help_menu)
-			estudio_debug_cmd.build_menu_bar
+				--|FIXME: Uncomment following line to activate debug menu.
+				--|Search estudio_debug_cmd to reach the other place.
+--			estudio_debug_cmd.build_menu_bar
 		end
 
 feature -- Graphical Interface
@@ -2774,8 +2797,6 @@ feature {EB_WINDOW_MANAGER} -- Window management / Implementation
 				development_window_data.save_size (window.width, window.height)
 				development_window_data.save_window_state (window.is_minimized, window.is_maximized)
 				development_window_data.save_position (window.x_position, window.y_position)
-				left_panel.wipe_out
-				right_panel.wipe_out
 				development_window_data.save_show_search_options (search_tool.options_shown)
 				hide
 
@@ -2787,12 +2808,14 @@ feature {EB_WINDOW_MANAGER} -- Window management / Implementation
 				project_customizable_toolbar.recycle
 				refactoring_customizable_toolbar.recycle
 				Precursor {EB_TOOL_MANAGER}
-
+				left_panel.recycle
+				right_panel.recycle
 				managed_class_formatters.wipe_out
 				managed_feature_formatters.wipe_out
 				managed_main_formatters.wipe_out
 				toolbarable_commands.wipe_out
 				editors.wipe_out
+				editors := Void
 				stone := Void
 			end
 		end
@@ -3078,6 +3101,8 @@ feature {NONE} -- Implementation
 					end
 					if not managed_main_formatters.first.selected then
 						editor_tool.text_area.set_read_only (true)
+					elseif new_class_stone /= Void and then new_class_stone.class_i.is_read_only then
+						editor_tool.text_area.set_read_only (true)
 					end
 				else
 						-- not a class text : cannot be edited
@@ -3095,7 +3120,7 @@ feature {NONE} -- Implementation
 					end
 					if cluster_st /= Void and then cluster_st.is_cluster then
 	--| FIXME XR: Really manage cluster display in the main editor
-						formatted_context_for_cluster (cluster_st.cluster_i)
+						formatted_context_for_cluster (cluster_st.cluster_i, cluster_st.path)
 						if cluster_st.position > 0 then
 							editor_tool.text_area.display_line_at_top_when_ready (cluster_st.position)
 						end
@@ -3165,14 +3190,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	formatted_context_for_cluster (a_cluster: CLUSTER_I) is
+	formatted_context_for_cluster (a_cluster: CLUSTER_I; a_path: STRING) is
 			-- Formatted context representing the list of classes inside `a_cluster'.
 		require
 			a_cluster_not_void: a_cluster /= Void
+			a_path_not_void: a_path /= Void
 		local
 			l_assembly: ASSEMBLY_I
 			l_sorted_cluster: EB_SORTED_CLUSTER
 			l_classes: DS_ARRAYED_LIST [CLASS_I]
+			l_in_classes: DS_ARRAYED_LIST [CLASS_I]
+			l_out_classes: DS_ARRAYED_LIST [CLASS_I]
+			l_over_classes: DS_ARRAYED_LIST [CLASS_I]
 			l_subclu: DS_LIST [EB_SORTED_CLUSTER]
 			l_cl_i, l_overridden_class: CLASS_I
 			l_cluster: CLUSTER_I
@@ -3181,7 +3210,7 @@ feature {NONE} -- Implementation
 			l_description: STRING
 		do
 			create l_format_context.make_for_case (editor_tool.text_area.text_displayed)
-			editor_tool.text_area.handle_before_processing (false)
+			editor_tool.text_area.handle_before_processing (False)
 			l_format_context.process_keyword_text (ti_indexing_keyword, Void)
 			l_format_context.put_new_line
 			l_format_context.indent
@@ -3206,7 +3235,7 @@ feature {NONE} -- Implementation
 			l_format_context.set_without_tabs
 			l_format_context.process_symbol_text (ti_colon)
 			l_format_context.put_space
-			l_format_context.put_quoted_string_item (a_cluster.cluster_name)
+			l_format_context.add_group (a_cluster, a_cluster.cluster_name)
 
 			l_format_context.put_new_line
 			l_format_context.process_indexing_tag_text ("cluster_path")
@@ -3214,6 +3243,15 @@ feature {NONE} -- Implementation
 			l_format_context.process_symbol_text (ti_colon)
 			l_format_context.put_space
 			l_format_context.put_quoted_string_item (a_cluster.path)
+
+			if a_path /= Void and then not a_path.is_empty then
+				l_format_context.put_space
+				l_format_context.set_without_tabs
+				l_format_context.process_symbol_text (ti_l_parenthesis)
+				l_format_context.put_quoted_string_item (a_path)
+				l_format_context.set_without_tabs
+				l_format_context.process_symbol_text (ti_r_parenthesis)
+			end
 			l_format_context.put_new_line
 
 				-- Now try to get the description of the cluster, and if not
@@ -3298,24 +3336,54 @@ feature {NONE} -- Implementation
 			end
 
 			if not l_sorted_cluster.classes.is_empty then
-				l_format_context.process_indexing_tag_text ("class(es)")
-				l_format_context.set_without_tabs
-				l_format_context.process_symbol_text (ti_colon)
-				l_format_context.put_new_line
-				l_format_context.indent
+				l_classes := l_sorted_cluster.classes
 				from
-					l_classes := l_sorted_cluster.classes
 					l_classes.start
+					create l_in_classes.make (l_classes.count)
+					create l_out_classes.make (l_classes.count)
+					create l_over_classes.make (l_classes.count)
 				until
 					l_classes.after
 				loop
 					l_cl_i := l_classes.item_for_iteration
-					l_assert_level := l_cl_i.assertion_level
-					l_format_context.put_manifest_string (" - ")
-					l_format_context.put_classi (l_cl_i)
+					if
+						a_path.is_empty
+						or else is_string_started_by (l_cl_i.path, a_path)
+					then
+						if l_cl_i.compiled then
+							l_in_classes.put_last (l_cl_i)
+							if l_cl_i.config_class.is_overriden then
+								l_over_classes.put_last (l_cl_i)
+							end
+						else
+							l_out_classes.put_last (l_cl_i)
+						end
+					end
+					l_classes.forth
+				end
+				l_classes := Void
+
+				if l_in_classes.count > 0 then
+					l_format_context.put_new_line
+					l_format_context.process_indexing_tag_text (l_in_classes.count.out + " compiled class(es)")
 					l_format_context.set_without_tabs
 					l_format_context.process_symbol_text (ti_colon)
-					if l_cl_i.compiled then
+					l_format_context.put_new_line
+					l_format_context.indent
+
+					from
+						l_in_classes.start
+					until
+						l_in_classes.after
+					loop
+						l_cl_i := l_in_classes.item_for_iteration
+						check compiled: l_cl_i.compiled end
+
+						l_assert_level := l_cl_i.assertion_level
+						l_format_context.put_manifest_string (" - ")
+						l_format_context.put_classi (l_cl_i)
+						l_format_context.set_without_tabs
+						l_format_context.process_symbol_text (ti_colon)
 						if l_assert_level.check_all then
 							l_format_context.put_space
 							l_format_context.set_without_tabs
@@ -3350,49 +3418,73 @@ feature {NONE} -- Implementation
 								l_format_context.process_keyword_text (ti_Invariant_keyword, Void)
 							end
 						end
-					else
-						l_format_context.process_comment_text (" Not in system.", Void)
+						l_format_context.put_new_line
+						l_in_classes.forth
 					end
-					l_format_context.put_new_line
-					l_classes.forth
+					l_format_context.exdent
 				end
-				l_format_context.exdent
-			end
+				l_in_classes := Void
 
-			if
-				not l_sorted_cluster.classes.is_empty and then
-				a_cluster.overriders /= Void and not a_cluster.overriders.is_empty
-			then
-				l_format_context.process_indexing_tag_text ("overriden class(es)")
-				l_format_context.set_without_tabs
-				l_format_context.process_symbol_text (ti_colon)
-				l_format_context.put_new_line
-				l_format_context.indent
-				from
-					l_classes := l_sorted_cluster.classes
-					l_classes.start
-				until
-					l_classes.after
-				loop
-					l_cl_i := l_classes.item_for_iteration
-					if l_cl_i.config_class.is_overriden then
+				if l_out_classes.count > 0 then
+					l_format_context.put_new_line
+					l_format_context.process_indexing_tag_text (l_out_classes.count.out + " class(es) not in system")
+					l_format_context.set_without_tabs
+					l_format_context.process_symbol_text (ti_colon)
+					l_format_context.put_new_line
+					l_format_context.indent
+					from
+						l_out_classes.start
+					until
+						l_out_classes.after
+					loop
+						l_cl_i := l_out_classes.item_for_iteration
+						check not_in_system: not l_cl_i.compiled end
+						l_format_context.put_manifest_string (" - ")
+						l_format_context.put_classi (l_cl_i)
+						l_format_context.put_new_line
+						l_out_classes.forth
+					end
+					l_format_context.exdent
+				end
+				l_out_classes := Void
+
+				if
+					l_over_classes.count > 0 and then
+					a_cluster.overriders /= Void and then not a_cluster.overriders.is_empty
+				then
+					l_format_context.put_new_line
+					l_format_context.process_indexing_tag_text ("Overriden")
+					l_format_context.set_without_tabs
+					l_format_context.process_symbol_text (ti_colon)
+					l_format_context.put_new_line
+					l_format_context.indent
+					from
+						l_over_classes.start
+					until
+						l_over_classes.after
+					loop
+						l_cl_i := l_over_classes.item_for_iteration
+						check is_overriden_class: l_cl_i.config_class.is_overriden end
+
+						l_format_context.put_manifest_string (" - ")
+						l_format_context.put_classi (l_cl_i)
+						l_format_context.process_comment_text (" overriden by", Void)
+						l_format_context.process_symbol_text (ti_colon)
+						l_format_context.put_space
+
 						l_overridden_class ?= l_cl_i.config_class.overriden_by
 						if l_overridden_class /= Void then
-							l_format_context.put_manifest_string (" - ")
-							l_format_context.put_classi (l_cl_i)
-							l_format_context.process_comment_text (" overriden by", Void)
-							l_format_context.process_symbol_text (ti_colon)
-							l_format_context.put_space
 							l_format_context.put_classi (l_overridden_class)
 							l_format_context.put_manifest_string (" in ")
 							l_format_context.add_group (l_cl_i.config_class.overriden_by.group, l_cl_i.config_class.overriden_by.group.name)
 							l_format_context.put_new_line
 						end
+						l_over_classes.forth
 					end
-					l_classes.forth
+					l_format_context.exdent
+					l_format_context.put_new_line
 				end
-				l_format_context.exdent
-				l_format_context.put_new_line
+				l_over_classes := Void
 			end
 
 			l_format_context.exdent
@@ -3781,15 +3873,155 @@ feature {NONE} -- Implementation
 
 	context_refreshing_timer: EV_TIMEOUT
 
+feature -- Recycle
+
 	recycle is
 			-- Call the precursors.
 		do
+			recycle_command
+			recycle_formatters
+			recycle_menu
 			Precursor {EB_TOOL_MANAGER}
+			save_as_cmd.recycle
+			open_cmd.recycle
+			save_cmd.recycle
+			save_as_cmd := Void
+			open_cmd := Void
+			save_cmd := Void
 			command_controller.recycle
 			if refactoring_manager /= Void then
 				refactoring_manager.destroy
 			end
+			editor_tool := Void
+			favorites_tool := Void
+			history_manager := Void
+			features_tool := Void
+			breakpoints_tool := Void
+			favorites_manager := Void
+			cluster_manager := Void
+			search_tool := Void
+			editors.wipe_out
 		end
+
+	recycle_command is
+			-- Recycle command
+		local
+			os_cmd: EB_ON_SELECTION_COMMAND
+		do
+			c_finalized_compilation_cmd.recycle
+			c_workbench_compilation_cmd.recycle
+			editor_paste_cmd.recycle
+			new_class_cmd.recycle
+			new_cluster_cmd.recycle
+			new_feature_cmd.recycle
+			shell_cmd.recycle
+			toggle_feature_alias_cmd.recycle
+			toggle_feature_assigner_cmd.recycle
+			toggle_feature_signature_cmd.recycle
+			undo_cmd.recycle
+			redo_cmd.recycle
+			toggle_stone_cmd.recycle
+			delete_class_cluster_cmd.recycle
+			print_cmd.recycle
+			from
+				show_tool_commands.start
+			until
+				show_tool_commands.after
+			loop
+				show_tool_commands.item.recycle
+				show_tool_commands.forth
+			end
+			show_tool_commands.wipe_out
+			show_tool_commands := Void
+
+			from
+				toolbarable_commands.start
+			until
+				toolbarable_commands.after
+			loop
+				os_cmd ?= toolbarable_commands.item
+				if os_cmd /= Void then
+					os_cmd.recycle
+				end
+				toolbarable_commands.forth
+			end
+
+			c_finalized_compilation_cmd := Void
+			c_finalized_compilation_cmd := Void
+			new_class_cmd := Void
+			new_cluster_cmd := Void
+			new_feature_cmd := Void
+			shell_cmd := Void
+			toggle_feature_alias_cmd := Void
+			toggle_feature_assigner_cmd := Void
+			toggle_feature_signature_cmd := Void
+			undo_cmd := Void
+			redo_cmd := Void
+			toggle_stone_cmd := Void
+			delete_class_cluster_cmd := Void
+			print_cmd := Void
+		end
+
+	recycle_formatters is
+			-- Recycle formatters
+		do
+			from
+				managed_class_formatters.start
+			until
+				managed_class_formatters.after
+			loop
+				if managed_class_formatters.item /= Void then
+					managed_class_formatters.item.recycle
+				end
+				managed_class_formatters.forth
+			end
+
+			from
+				managed_feature_formatters.start
+			until
+				managed_feature_formatters.after
+			loop
+				if managed_feature_formatters.item /= Void then
+					managed_feature_formatters.item.recycle
+				end
+				managed_feature_formatters.forth
+			end
+
+			from
+				managed_main_formatters.start
+			until
+				managed_main_formatters.after
+			loop
+				if managed_main_formatters.item /= Void then
+					managed_main_formatters.item.recycle
+				end
+				managed_main_formatters.forth
+			end
+		end
+
+	recycle_menu is
+			--
+		do
+			tools_menu.destroy
+			window_menu.destroy
+			metric_menu.destroy
+--			compile_menu.destroy
+			debug_menu.destroy
+			debugging_tools_menu.destroy
+			favorites_menu.destroy
+			view_menu.destroy
+
+			tools_menu := Void
+			window_menu := Void
+			metric_menu := Void
+			format_menu := Void
+			compile_menu := Void
+			debug_menu := Void
+			debugging_tools_menu := Void
+			favorites_menu := Void
+			view_menu := Void
+		end
+
 
 feature {NONE} -- Implementation: Editor commands
 
@@ -3992,12 +4224,6 @@ feature {EB_TOOL} -- Implementation / Commands
 
 	redo_cmd: EB_REDO_COMMAND
 			-- Command to redo in the editor.
-
-	editor_cut_cmd: EB_ON_SELECTION_COMMAND
-			-- Command to cut text in the editor.
-
-	editor_copy_cmd: EB_ON_SELECTION_COMMAND
-			-- Command to copy text in the editor.
 
 	editor_paste_cmd: EB_EDITOR_PASTE_COMMAND
 			-- Command to paste text in the editor.
@@ -4282,6 +4508,28 @@ feature {NONE} -- Access
 
 	internal_development_window_data: EB_DEVELOPMENT_WINDOW_SESSION_DATA;
 		-- Internal custom meta data for `Current'.
+
+feature {NONE} -- Implementation
+
+	is_string_started_by (s1, s2: STRING_GENERAL): BOOLEAN is
+			-- Is `s1' starting by `s2' characters
+		require
+			s2_not_void: s2 /= Void
+		local
+			i: INTEGER
+		do
+			if s1 /= Void and then s1.count >= s2.count then
+				from
+					i := 1
+					Result := True
+				until
+					i > s2.count or not Result
+				loop
+					Result := s1.code (i) = s2.code (i)
+					i := i + 1
+				end
+			end
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

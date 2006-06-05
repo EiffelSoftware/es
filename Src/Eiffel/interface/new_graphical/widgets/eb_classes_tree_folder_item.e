@@ -13,7 +13,8 @@ inherit
 	EB_CLASSES_TREE_ITEM
 		redefine
 			data,
-			set_data
+			set_data,
+			recycle
 		end
 
 	EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
@@ -80,7 +81,7 @@ feature -- Access
 		do
 			l_group := data.actual_group
 			if l_group.is_cluster then
-				create Result.make_subfolder (data.actual_group, path)
+				create Result.make_subfolder (data.actual_group, path, name)
 			else
 				create Result.make (data.actual_group)
 			end
@@ -96,7 +97,6 @@ feature -- Status setting
 		do
 			data := a_cluster
 			l_group := a_cluster.actual_group
-			set_pebble (stone)
 			if not path.is_empty then
 				l_pos := path.last_index_of ('/', path.count)
 				if l_pos > 0 then
@@ -108,6 +108,7 @@ feature -- Status setting
 			if name = Void then
 				name := l_group.name
 			end
+			set_pebble (stone)
 			set_text (name)
 			set_tooltip (tooltip_text)
 			set_accept_cursor (Cursors.cur_Cluster)
@@ -209,7 +210,7 @@ feature {EB_CLASSES_TREE_CLASS_ITEM} -- Interactivity
 					create subfolders.make_from_array (l_set)
 					subfolders.sort
 					from
-						l_fr := cluster.file_rule
+					l_fr := cluster.active_file_rule (universe.conf_state)
 						i := subfolders.lower
 						up := subfolders.upper
 					until
@@ -432,6 +433,15 @@ feature -- Interactivity
 			end
 		end
 
+feature -- Recyclable
+
+	recycle is
+			-- Recycle
+		do
+			Precursor {EB_CLASSES_TREE_ITEM}
+			associated_window := Void
+		end
+
 feature {NONE} -- Implementation
 
 	associated_textable: EV_TEXT_COMPONENT
@@ -474,7 +484,7 @@ feature {EB_CLASSES_TREE} -- Implementation
 						l_sub_dirs := l_dir.directory_names
 						if l_sub_dirs /= Void then
 							from
-								l_fr := data.actual_cluster.file_rule
+								l_fr := data.actual_cluster.active_file_rule (universe.conf_state)
 								i := l_sub_dirs.lower
 								up := l_sub_dirs.upper
 							until

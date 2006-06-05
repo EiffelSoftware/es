@@ -54,6 +54,7 @@ feature {NONE} -- Initialization
 
 				l_cluster ?= a_group
 			end
+			is_renamed := False
 		ensure
 			is_valid: is_valid
 		end
@@ -101,9 +102,6 @@ feature -- Access, in compiled only, not stored to configuration file
 			Result := visible /= Void
 		end
 
-	is_precompiled: BOOLEAN
-			-- Is the class precompiled?
-
 	is_partial: BOOLEAN
 			-- Is the class generated out of partial classes?
 
@@ -112,7 +110,7 @@ feature -- Access, in compiled only, not stored to configuration file
 		local
 			l_file: RAW_FILE
 		do
-			Result := is_precompiled or is_partial or group.is_readonly
+			Result := is_partial or group.is_readonly
 			if not Result then
 					-- check if the file itself is read only
 				create l_file.make (full_file_name)
@@ -177,11 +175,9 @@ feature -- Status report
 	has_modification_date_changed: BOOLEAN is
 			-- Did modification date changed since last call to `check_changed'?
 		local
-			l_str: ANY
 			l_date: INTEGER
 		do
-			l_str := full_file_name.to_c
-			eif_date ($l_str, $l_date)
+			l_date := file_modified_date (full_file_name)
 			Result := (l_date = -1) or (l_date /= date)
 		end
 
@@ -338,6 +334,8 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			l_cluster: CONF_CLUSTER
 			l_old_ren, l_ren: CONF_HASH_TABLE [STRING, STRING]
 		do
+			is_rebuilding := True
+
 			l_old_ren := group.renaming
 			l_ren := a_group.renaming
 			if
@@ -362,24 +360,17 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			overrides := Void
 			old_overriden_by := overriden_by
 			overriden_by := Void
-		end
 
-
-	enable_precompiled is
-			-- Set `is_precompiled' to true.
-		do
-			is_precompiled := True
+			is_rebuilding := False
 		end
 
 	check_changed is
 			-- Check if the file was changed.
 			-- And update name if necessary
 		local
-			l_str: ANY
 			l_date: INTEGER
 		do
-			l_str := full_file_name.to_c
-			eif_date ($l_str, $l_date)
+			l_date := file_modified_date (full_file_name)
 			if l_date = -1 then
 				is_removed := True
 				date := 0
@@ -393,7 +384,7 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 		end
 
 	set_name is
-			-- Compute and set `name' and `renamed_name'.
+			-- Compute and set (if we are not rebuilding) `name' and `renamed_name'.
 		local
 			l_file: KL_BINARY_INPUT_FILE
 			l_name: like name
@@ -412,21 +403,22 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 					l_name.to_upper
 					if name = Void or else not name.is_equal (l_name) then
 						is_renamed := True
-						l_old_name := renamed_name
-						name := l_name.as_upper
-						renamed_name := name.twin
-						l_renamings := group.renaming
-						if l_renamings /= Void and then l_renamings.has (name) then
-							renamed_name := l_renamings.item (name)
-						end
-						if group.name_prefix /= Void then
-							renamed_name.prepend (group.name_prefix)
+						if not is_rebuilding then
+							l_old_name := renamed_name
+							name := l_name.as_upper
+							renamed_name := name.twin
+							l_renamings := group.renaming
+							if l_renamings /= Void and then l_renamings.has (name) then
+								renamed_name := l_renamings.item (name)
+							end
+							if group.name_prefix /= Void then
+								renamed_name.prepend (group.name_prefix)
+							end
 						end
 					end
 				end
 			end
 		end
-
 
 	set_overriden_by (a_class: like class_type) is
 			-- `a_class' overrides `Current'.
@@ -460,6 +452,9 @@ feature -- Comparison
 		end
 
 feature {NONE} -- Implementation
+
+	is_rebuilding: BOOLEAN
+			-- Are we currently rebuilding an old class?
 
 	internal_hash_code: like hash_code
 			-- Computed `hash_code'.

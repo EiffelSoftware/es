@@ -62,6 +62,17 @@ feature {NONE}-- Initialization
 			make
 		end
 
+feature -- Clean Up
+
+	unload is
+			-- Unloads all loaded assemblies and releases any
+			-- resources. This is not a dispose so and cleaned up
+			-- resources should be able to be resurected.
+		do
+			cache_writer.dispose
+			release_cached_assemblies
+		end
+
 feature -- Access
 
 	is_successful: BOOLEAN

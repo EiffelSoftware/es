@@ -29,11 +29,6 @@ inherit
 
 	EB_SHARED_WINDOW_MANAGER
 
-	PROJECT_CONTEXT
-		export {EB_CONTEXT_DIAGRAM_COMMAND}
-			Project_directory_name
-		end
-
 	EB_CONSTANTS
 		undefine
 			pixmaps
@@ -143,8 +138,6 @@ feature {NONE} -- Initialization
 			change_color_cmd.enable_displayed
 			create trash_cmd.make (Current)
 			trash_cmd.enable_displayed
-			create change_header_cmd.make (Current)
-			change_header_cmd.enable_displayed
 			create toggle_inherit_cmd.make (Current)
 			toggle_inherit_cmd.enable_displayed
 			create toggle_supplier_cmd.make (Current)
@@ -246,7 +239,6 @@ feature {NONE} -- Initialization
 			draw_commands.extend (delete_cmd)
 			draw_commands.extend (trash_cmd)
 			draw_commands.extend (change_color_cmd)
-			draw_commands.extend (change_header_cmd)
 			draw_commands.extend (link_tool_cmd)
 			draw_commands.extend (fill_cluster_cmd)
 			draw_commands.extend (diagram_to_ps_cmd)
@@ -589,7 +581,6 @@ feature -- Status settings.
 			create_new_links_cmd.disable_sensitive
 			change_color_cmd.disable_sensitive
 			trash_cmd.disable_sensitive
-			change_header_cmd.disable_sensitive
 			link_tool_cmd.disable_sensitive
 			toggle_inherit_cmd.disable_sensitive
 			toggle_supplier_cmd.disable_sensitive
@@ -1160,8 +1151,16 @@ feature -- Memory management
 			if development_window.editor_tool.text_area /= Void then
 				development_window.editor_tool.text_area.remove_observer (Current)
 			end
+			recycle_commands
 			world_cell.recycle
 			world_cell := Void
+			tool := Void
+		end
+
+	recycle_commands is
+			-- Recycle commands
+		do
+			delete_cmd.recycle
 		end
 
 feature {EB_CONTEXT_EDITOR, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- Toolbar actions
@@ -1333,9 +1332,6 @@ feature {NONE} -- Commands
 
 	trash_cmd: EB_DELETE_FIGURE_COMMAND
 			-- Command to hide an element.
-
-	change_header_cmd: EB_CLASS_HEADER_COMMAND
-			-- Command to rename classes.
 
 	toggle_inherit_cmd: EB_TOGGLE_INHERIT_COMMAND
 			-- Command to show/hide inheritance links.
@@ -1873,7 +1869,6 @@ feature {NONE} -- Implementation
 			delete_cmd.enable_sensitive
 			create_new_links_cmd.enable_sensitive
 			trash_cmd.enable_sensitive
-			change_header_cmd.enable_sensitive
 			link_tool_cmd.enable_sensitive
 			toggle_inherit_cmd.enable_sensitive
 			toggle_supplier_cmd.enable_sensitive

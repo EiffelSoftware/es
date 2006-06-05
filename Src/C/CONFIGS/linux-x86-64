@@ -140,10 +140,18 @@ spitshell='cat'
 
 #Compiler/Preprocessor
 add_log='undef'
-cc='gcc'
+if [ -n "$CC" ]; then
+	cc=$CC
+else
+	cc='gcc'
+fi
 ccflags='-pipe -fPIC'
 ccldflags=''
-cpp='g++'
+if [ -n "$CPP" ]; then
+	cpp=$CPP
+else
+	cpp='g++'
+fi
 cppflags='$ccflags'
 cpp_stuff='42'
 defvoidused='15'
@@ -176,7 +184,7 @@ ldsharedflags="$ldflags -shared -o"
 libs='-lm'
 ln='/bin/ln'
 make='make'
-mkdep='/home/manus/local/56dev/C/mkdep'
+mkdep='\$(EIFFEL_SRC)/C/mkdep'
 mkdir='mkdir'
 mtldflags="$ldflags"
 mtldsharedflags="$ldsharedflags"

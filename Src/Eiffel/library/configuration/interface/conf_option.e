@@ -30,6 +30,13 @@ feature -- Status
 	is_warning_configured: BOOLEAN
 			-- Is `is_warning' configured?
 
+	is_empty: BOOLEAN is
+			-- Is `Current' empty? No settings are set?
+		do
+			Result := not (is_profile_configured or is_trace_configured or is_optimize_configured or is_debug_configured or
+				is_warning_configured or assertions /= Void or namespace /= Void or warnings /= Void or debugs /= Void )
+		end
+
 feature -- Status update
 
 	unset_profile is
@@ -160,113 +167,66 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 	set_namespace (a_namespace: like namespace) is
 			-- Set `namespace' to `a_namespace'.
 		do
-			namespace := a_namespace
+			if a_namespace /= Void and then a_namespace.is_empty then
+				namespace := Void
+			else
+				namespace := a_namespace
+			end
 		ensure
-			namespace_set: namespace = a_namespace
+			namespace_set: a_namespace = Void or else not a_namespace.is_empty implies namespace = a_namespace
+			namespace_set: a_namespace /= Void and then a_namespace.is_empty implies namespace = Void
 		end
 
-	enable_profile is
-			-- Set `is_profile' to true.
+	set_profile (a_enabled: BOOLEAN) is
+			-- Set `is_profile' to `a_enabled'.
 		do
 			is_profile_configured := True
-			is_profile := True
+			is_profile := a_enabled
 		ensure
-			is_profile: is_profile
+			is_profile_set: is_profile = a_enabled
 			is_profile_configured: is_profile_configured
 		end
 
-	disable_profile is
-			-- Disable `is_profile'
-		do
-			is_profile_configured := True
-			is_profile := False
-		ensure
-			not_is_profile: not is_profile
-			is_profile_configured: is_profile_configured
-		end
-
-	enable_trace is
-			-- Set `is_trace' to true.
+	set_trace (a_enabled: BOOLEAN) is
+			-- Set `is_trace' to `a_enabled'.
 		do
 			is_trace_configured := True
-			is_trace := True
+			is_trace := a_enabled
 		ensure
+			is_trace_set: is_trace = a_enabled
 			is_trace_configured: is_trace_configured
-			is_trace: is_trace
 		end
 
-	disable_trace is
-			-- Set `is_trace' to false.
-		do
-			is_trace_configured := True
-			is_trace := False
-		ensure
-			is_trace_configured: is_trace_configured
-			not_is_trace: not is_trace
-		end
-
-	enable_optimize is
-			-- Set `is_optimize' to true.
+	set_optimize (a_enabled: BOOLEAN) is
+			-- Set `is_optimize' to `a_enabled'.
 		do
 			is_optimize_configured := True
-			is_optimize := True
+			is_optimize := a_enabled
 		ensure
+			is_optimize_set: is_optimize = a_enabled
 			is_optimize_configured: is_optimize_configured
-			is_optimize: is_optimize
 		end
 
-	disable_optimize is
-			-- Set `is_optimize' to false.
-		do
-			is_optimize_configured := True
-			is_optimize := False
-		ensure
-			is_optimize_configured: is_optimize_configured
-			not_is_optimize: not is_optimize
-		end
-
-	enable_debug is
-			-- Set `is_debug' to true.
-			-- Enables debug clauses in general.
+	set_debug (a_enabled: BOOLEAN) is
+			-- Set `is_debug' to `a_enabled'.
+			-- Enables/disables debug clauses in general.
 		do
 			is_debug_configured := True
-			is_debug := True
+			is_debug := a_enabled
 		ensure
+			is_debug_set: is_debug = a_enabled
 			is_debug_configured: is_debug_configured
-			is_debug: is_debug
 		end
 
-	disable_debug is
-			-- Set `is_debug' to false.
-			-- Disables all debug clauses.
-		do
-			is_debug_configured := True
-			is_debug := False
-		ensure
-			is_debug_configured: is_debug_configured
-			not_is_debug: not is_debug
-		end
-
-	enable_warning is
-			-- Set `is_warning' to true.
-			-- Enables warning clauses in general.
+	set_warning (a_enabled: BOOLEAN) is
+			-- Set `is_warning' to `a_enabled'.
+			-- Enables/disables warning clauses in general.
 		do
 			is_warning_configured := True
-			is_warning := True
+			is_warning := a_enabled
 		ensure
+			is_warning_set: is_warning = a_enabled
 			is_warning_configured: is_warning_configured
-			is_warning: is_warning
-		end
-
-	disable_warning is
-			-- Set `is_warning' to false.
-			-- Disables all warning clauses.
-		do
-			is_warning_configured := True
-			is_warning := False
-		ensure
-			is_warning_configured: is_warning_configured
-			not_is_warning: not is_warning
 		end
 
 	set_description (a_description: like description) is
@@ -315,6 +275,8 @@ feature -- Merging
 				end
 				if namespace = Void then
 					namespace := other.namespace
+				elseif other.namespace /= Void then
+					namespace := other.namespace + "." + namespace
 				end
 				if not is_profile_configured then
 					is_profile_configured := other.is_profile_configured
@@ -338,6 +300,9 @@ feature -- Merging
 				end
 			end
 		end
+
+invariant
+	namespace_not_empty: namespace = Void or else not namespace.is_empty
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

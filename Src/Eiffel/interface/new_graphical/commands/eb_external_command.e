@@ -222,17 +222,19 @@ feature{NONE} -- Command substitution
 			Result.extend ("$directory_name")
 			Result.extend ("$w_code")
 			Result.extend ("$f_code")
+			Result.extend ("$group_path")
 		end
 
 	sub_action_list: ARRAYED_LIST [ PROCEDURE [ANY, TUPLE]] is
 			-- List of actions used for command substitution
 		once
-			create Result.make (5)
+			create Result.make (6)
 			Result.extend (agent on_substitute_class_name)
 			Result.extend (agent on_substitute_file_name)
 			Result.extend (agent on_substitute_directory_name)
 			Result.extend (agent on_substitute_w_code)
 			Result.extend (agent on_substitute_f_code)
+			Result.extend (agent on_substitute_group_path)
 		end
 
 	sub_class_name: INTEGER is 1
@@ -240,6 +242,7 @@ feature{NONE} -- Command substitution
 	sub_directory_name: INTEGER is 3
 	sub_w_code: INTEGER is 4
 	sub_f_code: INTEGER is 5
+	sub_group_path: INTEGER is 6
 
 	show_warning_dialog (msg: STRING) is
 			-- Show a warning dialog to display `msg'.
@@ -248,6 +251,31 @@ feature{NONE} -- Command substitution
 		do
 			create wdlg.make_with_text (msg)
 			wdlg.show_modal_to_window (window_manager.last_focused_development_window.window)
+		end
+
+	on_substitute_group_path (cmd: STRING; sub_str: STRING) is
+			-- If `cmd' has substring (case insensitive' `sub_str',
+			-- call an agent to substitute it.
+		require
+			is_command_ok_is_true: is_command_ok = True
+		local
+			cv_cst: CLASSI_STONE
+			dev: EB_DEVELOPMENT_WINDOW
+			l_dir: STRING
+		do
+			dev := Window_manager.last_focused_development_window
+			if dev /= Void then
+				cv_cst ?= dev.stone
+				if cv_cst /= Void then
+					l_dir := cv_cst.class_i.group.location.evaluated_directory
+					cmd.replace_substring_all (sub_string_list.i_th (sub_group_path), l_dir)
+				else
+					set_is_command_ok (False)
+					show_warning_dialog (Warning_messages.w_Command_needs_directory)
+				end
+			else
+				set_is_command_ok (False)
+			end
 		end
 
 	on_substitute_class_name (cmd: STRING; sub_str: STRING) is
@@ -304,12 +332,18 @@ feature{NONE} -- Command substitution
 		local
 			cv_cst: CLASSI_STONE
 			dev: EB_DEVELOPMENT_WINDOW
+			l_dir: STRING
+			l_path: STRING
 		do
 			dev := Window_manager.last_focused_development_window
 			if dev /= Void then
 				cv_cst ?= dev.stone
 				if cv_cst /= Void then
-					cmd.replace_substring_all (sub_string_list.i_th (sub_directory_name), cv_cst.class_i.group.location.evaluated_directory)
+					l_dir := cv_cst.class_i.group.location.evaluated_directory
+					l_path := cv_cst.class_i.config_class.path
+					l_path.replace_substring_all ("/", directory_separator.out)
+					l_dir.append (l_path)
+					cmd.replace_substring_all (sub_string_list.i_th (sub_directory_name), l_dir)
 				else
 					set_is_command_ok (False)
 					show_warning_dialog (Warning_messages.w_Command_needs_directory)
@@ -326,7 +360,7 @@ feature{NONE} -- Command substitution
 			is_command_ok_is_true: is_command_ok = True
 		do
 			if workbench.system_defined then
-				cmd.replace_substring_all (sub_string_list.i_th (sub_w_code), workbench_generation_path)
+				cmd.replace_substring_all (sub_string_list.i_th (sub_w_code), project_location.workbench_path)
 			else
 				show_warning_dialog (Warning_messages.w_no_system_defined)
 				set_is_command_ok (False)
@@ -340,7 +374,7 @@ feature{NONE} -- Command substitution
 			is_command_ok_is_true: is_command_ok = True
 		do
 			if workbench.system_defined then
-				cmd.replace_substring_all (sub_string_list.i_th (sub_f_code), final_generation_path)
+				cmd.replace_substring_all (sub_string_list.i_th (sub_f_code), project_location.final_path)
 			else
 				show_warning_dialog (Warning_messages.w_no_system_defined)
 				set_is_command_ok (False)
@@ -400,7 +434,7 @@ feature -- Execution
 			use_argument: BOOLEAN
 		do
 			if external_launcher.launched and then not external_launcher.has_exited then
-				show_warning_dialog ("An external command is running now. %NPlease wait until it exits.")
+				show_warning_dialog (interface_names.e_external_command_is_running)
 			else
 				create cl.make (external_command.count + 20)
 				if working_directory /= Void then
@@ -454,6 +488,8 @@ feature -- Properties
 			Result.append (index.out)
 			Result.append_character (' ')
 			Result.append (name)
+			Result.append (Tabulation)
+			Result.append ((create {EB_EXTERNAL_COMMANDS_EDITOR}.make).accelerators.item (index).out)
 		end
 
 	name: STRING
@@ -528,6 +564,12 @@ feature{EB_EXTERNAL_OUTPUT_TOOL} -- Status setting
 			working_directory_set:
 				((dir /= Void) implies working_directory.is_equal (dir)) and
 				((dir = Void) implies working_directory = Void)
+		end
+
+	set_accelerator (accel: EV_ACCELERATOR) is
+			-- Set `accelerator' to `accel'.
+		do
+			accelerator := accel
 		end
 
 feature -- Status report
@@ -635,7 +677,7 @@ feature {NONE} -- Implementation
 			create dialog
 			create okb.make_with_text (Interface_names.B_ok)
 			create cb.make_with_text (Interface_names.B_cancel)
-			create nl.make_with_text (Interface_names.l_name)
+			create nl.make_with_text (Interface_names.l_name_colon)
 			create il.make_with_text (Interface_names.l_index)
 			create cl.make_with_text (Interface_names.l_Command_line)
 			create name_field
@@ -758,8 +800,17 @@ feature {NONE} -- Implementation
 			command_field := Void
 		end
 
-	old_index: INTEGER;
+	old_index: INTEGER
 			-- Index of `Current' before we edited its properties.
+
+	directory_separator: CHARACTER is
+			-- Directory separator
+		local
+			l_obj: ANY
+		once
+			create l_obj
+			Result := l_obj.operating_environment.directory_separator
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

@@ -58,6 +58,48 @@ feature {NONE} -- Implementation
 			set_is_initialized (True)
 		end
 
+feature {EV_ANY_I, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Position retrieval
+
+	screen_x: INTEGER is
+			-- Horizontal position of the client area on screen,
+		local
+			a_x: INTEGER
+			a_aux_info: POINTER
+			i: INTEGER
+		do
+			if is_displayed then
+					i := {EV_GTK_EXTERNALS}.gdk_window_get_origin (
+						{EV_GTK_EXTERNALS}.gtk_widget_struct_window (visual_widget),
+				    	$a_x, NULL)
+					Result := a_x
+			else
+				a_aux_info := aux_info_struct
+				if a_aux_info /= NULL then
+					Result := {EV_GTK_EXTERNALS}.gtk_widget_aux_info_struct_x (a_aux_info)
+				end
+			end
+		end
+
+	screen_y: INTEGER is
+			-- Vertical position of the client area on screen,
+		local
+			a_y: INTEGER
+			a_aux_info: POINTER
+			i: INTEGER
+		do
+			if is_displayed then
+					i := {EV_GTK_EXTERNALS}.gdk_window_get_origin (
+						{EV_GTK_EXTERNALS}.gtk_widget_struct_window (visual_widget),
+				    	NULL, $a_y)
+					Result := a_y
+			else
+				a_aux_info := aux_info_struct
+				if a_aux_info /= NULL then
+					Result := {EV_GTK_EXTERNALS}.gtk_widget_aux_info_struct_y (a_aux_info)
+				end
+			end
+		end
+
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	widget_imp_at_pointer_position: EV_WIDGET_IMP is
@@ -68,14 +110,14 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	width_request_string: EV_GTK_C_STRING is
 			-- Once string to pass to gtk.
-		once
-			Result := "width-request"
+		do
+			Result := once "width-request"
 		end
 
 	height_request_string: EV_GTK_C_STRING is
 			-- Once string to pass to gtk.
-		once
-			Result := "height-request"
+		do
+			Result := once "height-request"
 		end
 
 	minimum_width, real_minimum_width: INTEGER is
@@ -155,21 +197,10 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			-- Assign `a_cursor' to `pointer_style', used for PND
 		local
 			a_cursor_ptr: POINTER
-		do
-			a_cursor_ptr := app_implementation.gdk_cursor_from_pixmap (a_cursor)
-			set_composite_widget_pointer_style (a_cursor_ptr)
-		end
-
-	set_composite_widget_pointer_style (a_cursor_ptr: POINTER) is
-			-- Used to set the gdkcursor for composite widgets.
-		local
 			a_window: POINTER
 		do
+			a_cursor_ptr := app_implementation.gdk_cursor_from_pixmap (a_cursor)
 			a_window := {EV_GTK_EXTERNALS}.gtk_widget_struct_window (visual_widget)
-			if a_window /= default_pointer then
-				{EV_GTK_EXTERNALS}.gdk_window_set_cursor (a_window, a_cursor_ptr)
-			end
-			a_window := {EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object)
 			if a_window /= default_pointer then
 				{EV_GTK_EXTERNALS}.gdk_window_set_cursor (a_window, a_cursor_ptr)
 			end
@@ -194,7 +225,8 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			l_widget_imp: EV_WIDGET_IMP
 		do
 			l_window := {EV_GTK_EXTERNALS}.gtk_widget_get_toplevel (c_object)
-			if l_window /= default_pointer and then {EV_GTK_EXTERNALS}.gtk_window_has_toplevel_focus (l_window) then
+				-- This will return `c_object' if not toplevel window is found in hierarchy.
+			if l_window /= default_pointer and then {EV_GTK_EXTERNALS}.gtk_widget_toplevel (l_window) and then {EV_GTK_EXTERNALS}.gtk_window_has_toplevel_focus (l_window) then
 				l_widget := {EV_GTK_EXTERNALS}.gtk_window_get_focus (l_window)
 				if l_widget /= default_pointer then
 					l_widget_imp ?= app_implementation.eif_object_from_gtk_object (l_widget)

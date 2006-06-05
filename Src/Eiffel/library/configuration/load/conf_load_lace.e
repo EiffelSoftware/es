@@ -18,22 +18,30 @@ inherit
 
 	CONF_VALIDITY
 
+	CONF_CONSTANTS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-		make (a_factory: like factory) is
-				-- Create.
-			require
-				a_factory_not_void: a_factory /= Void
-			do
-				factory := a_factory
-				create current_overrides.make (1)
-			ensure
-				factory_set: factory = a_factory
-			end
-
+	make (a_factory: like factory; an_extension: like extension_name) is
+			-- Create.
+		require
+			a_factory_not_void: a_factory /= Void
+			an_extension_not_void: an_extension /= Void
+			an_extension_not_empty: not an_extension.is_empty
+		do
+			factory := a_factory
+			extension_name := an_extension
+			create current_overrides.make (1)
+		ensure
+			factory_set: factory = a_factory
+			extension_name_set: extension_name = an_extension
+		end
 
 feature -- Status
 
@@ -49,6 +57,9 @@ feature -- Status
 	warnings: ARRAYED_LIST [STRING]
 			-- The warnings.
 
+	extension_name: STRING
+			-- Name of the config file extension.
+
 feature -- Access
 
 	last_system: CONF_SYSTEM
@@ -63,6 +74,7 @@ feature -- Basic operation
 		local
 			l_parser: LACE_PARSER
 			l_ast: ACE_SD
+			l_desc: STRING
 		do
 			create l_parser.make
 			l_parser.parse_file (a_file, False)
@@ -80,17 +92,20 @@ feature -- Basic operation
 
 				process_defaults (l_ast.defaults)
 				if not l_parser.comments.is_empty then
-					if current_target.description /= Void then
-						current_target.set_description (l_parser.comments + current_target.description)
-					else
-						current_target.set_description (l_parser.comments)
-					end
 
+					if current_target.description /= Void then
+						l_desc := l_parser.comments + current_target.description
+					else
+						l_desc := l_parser.comments
+					end
+					l_desc.replace_substring_all ("<", "&lt;")
+					l_desc.replace_substring_all (">", "&gt;")
+					current_target.set_description (l_desc)
 				end
 				if current_options = Void then
 					create current_options
 				end
-				current_options.enable_warning
+				current_options.set_warning (True)
 				current_target.set_options (current_options)
 				current_options := Void
 
@@ -147,7 +162,7 @@ feature {NONE} -- Implementation of data retrieval
 		local
 			l_over: CONF_OVERRIDE
 			l_name: STRING
-			l_location: CONF_LOCATION
+			l_location: CONF_DIRECTORY_LOCATION
 		do
 			l_name := a_cluster.cluster_name
 			l_location := factory.new_location_from_path (a_cluster.directory_name, current_target)
@@ -267,7 +282,7 @@ feature {NONE} -- Implementation of data retrieval
 						end
 						l_excludes.forth
 					end
-					current_cluster.set_file_rule (l_fr)
+					current_cluster.add_file_rule (l_fr)
 				end
 
 					-- handle class defaults
@@ -405,7 +420,7 @@ feature {NONE} -- Implementation of data retrieval
 						end
 							-- because the old config had debugs enabled by default we enable them
 						if not current_options.is_debug_configured then
-							current_options.enable_debug
+							current_options.set_debug (True)
 						end
 
 
@@ -414,10 +429,10 @@ feature {NONE} -- Implementation of data retrieval
 						else
 							l_name := l_value.value
 							if l_name.is_case_insensitive_equal ("yes") then
-								l_name := "__unnamed_debug__"
+								l_name := unnamed_debug
 								current_options.add_debug (l_name, l_debug.enabled)
 							elseif l_name.is_case_insensitive_equal ("no") then
-								current_options.disable_debug
+								current_options.set_debug (False)
 							else
 								current_options.add_debug (l_name.as_lower, l_debug.enabled)
 							end
@@ -429,11 +444,7 @@ feature {NONE} -- Implementation of data retrieval
 						if l_value = Void then
 							set_error (create {CONF_ERROR_PARSE}.make ("Empty trace value."))
 						else
-							if l_value.is_yes then
-								current_options.enable_trace
-							else
-								current_options.disable_trace
-							end
+							current_options.set_trace (l_value.is_yes)
 						end
 					elseif l_option.is_optimize then
 						if current_options = Void then
@@ -442,11 +453,7 @@ feature {NONE} -- Implementation of data retrieval
 						if l_value = Void then
 							set_error (create {CONF_ERROR_PARSE}.make ("Empty optimize value."))
 						else
-							if l_value.is_yes then
-								current_options.enable_optimize
-							else
-								current_options.disable_optimize
-							end
+							current_options.set_optimize (l_value.is_yes)
 						end
 					elseif l_option.is_assertion then
 						if current_options = Void then
@@ -491,7 +498,7 @@ feature {NONE} -- Implementation of data retrieval
 						else
 								-- we try to guess the correct configuration location, may not always work
 								-- what we guess is that the path looks like this something/base and
-								-- we convert it into somethings/base/base.acex
+								-- we convert it into somethings/base/base.`extension_name'.
 							l_str := l_precomp.value.value
 							if l_str.count > 2 then
 								i := l_str.last_index_of ('/', l_str.count)
@@ -499,7 +506,7 @@ feature {NONE} -- Implementation of data retrieval
 									i := l_str.last_index_of ('\', l_str.count)
 								end
 								if i > 0 then
-									l_str := l_str + "\" + l_str.substring (i+1, l_str.count) + ".acex"
+									l_str := l_str + "\" + l_str.substring (i+1, l_str.count) + "." + extension_name
 								end
 							end
 
@@ -544,11 +551,7 @@ feature {NONE} -- Implementation of data retrieval
 							if current_options = Void then
 								create current_options
 							end
-							if l_value.is_yes then
-								current_options.enable_profile
-							else
-								current_options.disable_profile
-							end
+							current_options.set_profile (l_value.is_yes)
 						elseif l_name.is_equal ("trademark") then
 							if l_conf_vers = Void then
 								create l_conf_vers.make
@@ -686,7 +689,7 @@ feature {NONE} -- Implementation of data retrieval
 						until
 							l_files.after
 						loop
-							current_target.add_external_ressource (factory.new_external_ressource (l_files.item))
+							current_target.add_external_resource (factory.new_external_resource (l_files.item))
 							l_files.forth
 						end
 					elseif l_type.is_make then
@@ -725,19 +728,16 @@ feature {NONE} -- Implementation of data retrieval
 				if boolean_settings.has (l_name) then
 					l_value := l_settings.item_for_iteration
 					if l_value.is_case_insensitive_equal ("yes") then
-						l_settings.force ("True", l_name)
+						l_settings.force ("true", l_name)
 					elseif l_value.is_case_insensitive_equal ("no") then
-						l_settings.force ("False", l_name)
+						l_settings.force ("false", l_name)
 					else
 						set_error (create {CONF_ERROR_PARSE}.make ("Invalid value for option, must be yes or no: "+l_name))
 					end
 				end
 				l_settings.forth
 			end
-
 		end
-
-
 
 feature {NONE} -- Implementation
 
@@ -758,6 +758,8 @@ feature {NONE} -- Implementation
 
 invariant
 	factory_not_void: factory /= Void
+	extension_name_not_void: extension_name /= Void
+	extension_name_not_empty: not extension_name.is_empty
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

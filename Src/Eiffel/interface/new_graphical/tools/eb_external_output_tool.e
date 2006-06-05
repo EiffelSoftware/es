@@ -48,7 +48,7 @@ feature{NONE} -- Initialization
 		end
 
 	initialization (a_tool: EB_DEVELOPMENT_WINDOW) is
-			--
+			-- Initialize interface.
 		local
 			l_ev_horizontal_box_1: EV_HORIZONTAL_BOX
 			l_ev_horizontal_box_2: EV_HORIZONTAL_BOX
@@ -59,6 +59,7 @@ feature{NONE} -- Initialization
 			l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
 			l_ev_vertical_box_1: EV_VERTICAL_BOX
 			l_ev_vertical_box_2: EV_VERTICAL_BOX
+
 			l_ev_cmd_lbl: EV_LABEL
 			l_ev_output_lbl: EV_LABEL
 			l_ev_input_lbl: EV_LABEL
@@ -68,6 +69,7 @@ feature{NONE} -- Initialization
 			clear_output_toolbar: EV_TOOL_BAR
 			input_toolbar: EV_TOOL_BAR
 			tbs: EV_TOOL_BAR_SEPARATOR
+			l_del_tool_bar: EV_TOOL_BAR
 		do
 			create del_cmd_btn
 			create tbs.default_create
@@ -99,6 +101,8 @@ feature{NONE} -- Initialization
 			create save_output_btn
 			create clear_output_btn
 			create clear_output_toolbar
+			create toolbar
+			create l_del_tool_bar
 
 			l_ev_empty_lbl.set_minimum_height (State_bar_height)
 			l_ev_empty_lbl.set_minimum_width (State_bar_height * 2)
@@ -126,12 +130,19 @@ feature{NONE} -- Initialization
 			l_ev_horizontal_box_2.extend (cmd_lst)
 			l_ev_horizontal_box_2.set_padding_width (5)
 			l_ev_horizontal_box_5.extend (cmd_toolbar)
+			l_ev_horizontal_box_5.extend (toolbar.widget)
+			l_ev_horizontal_box_5.disable_item_expand (toolbar.widget)
+			l_ev_horizontal_box_5.extend (l_del_tool_bar)
 			l_ev_horizontal_box_5.disable_item_expand (cmd_toolbar)
 			cmd_toolbar.extend (run_btn)
 			cmd_toolbar.extend (terminate_btn)
 			cmd_toolbar.extend (tbs)
 			cmd_toolbar.extend (edit_cmd_detail_btn)
-			cmd_toolbar.extend (del_cmd_btn)
+
+			toolbar.extend (a_tool.edit_external_commands_cmd)
+			toolbar.update_toolbar
+
+			l_del_tool_bar.extend (del_cmd_btn)
 			l_ev_horizontal_box_2.extend (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_2.disable_item_expand (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_2.disable_item_expand (l_ev_cmd_lbl)
@@ -178,6 +189,7 @@ feature{NONE} -- Initialization
 
 			state_label.set_minimum_height (State_bar_height)
 			state_label.align_text_right
+
 			state_label.drop_actions.extend (agent drop_class)
 			state_label.drop_actions.extend (agent drop_feature)
 			state_label.drop_actions.extend (agent drop_cluster)
@@ -252,7 +264,7 @@ feature -- Basic operation
 			cmd_lst.disable_sensitive
 			del_cmd_btn.disable_sensitive
 			owner.Edit_external_commands_cmd.disable_sensitive
-
+			save_output_btn.disable_sensitive
 			if external_output_manager.target_development_window /= Void then
 				if owner = external_output_manager.target_development_window then
 					send_input_btn.enable_sensitive
@@ -283,8 +295,8 @@ feature -- Basic operation
 			edit_cmd_detail_btn.enable_sensitive
 			hidden_btn.enable_sensitive
 			cmd_lst.enable_sensitive
-			owner.Edit_external_commands_cmd.disable_sensitive
-
+			owner.Edit_external_commands_cmd.enable_sensitive
+			save_output_btn.enable_sensitive
 			input_field.disable_sensitive
 			send_input_btn.disable_sensitive
 			terminate_btn.disable_sensitive
@@ -315,6 +327,44 @@ feature -- Basic operation
 			-- To be called before destroying this objects
 		do
 			external_output_manager.prune (Current)
+			toolbar.recycle
+			toolbar := Void
+			widget.destroy
+			widget := Void
+			text_area := Void
+			owner := Void
+			stone_manager := Void
+			recycle_widgets
+		end
+
+	recycle_widgets is
+			--
+		do
+			terminate_btn.destroy
+			run_btn.destroy
+			state_label.destroy
+			main_frame.destroy
+			cmd_lst.destroy
+			edit_cmd_detail_btn.destroy
+			hidden_btn.destroy
+			input_field.destroy
+			send_input_btn.destroy
+			save_output_btn.destroy
+			clear_output_btn.destroy
+			del_cmd_btn.destroy
+
+			terminate_btn := Void
+			run_btn := Void
+			state_label := Void
+			main_frame := Void
+			cmd_lst := Void
+			edit_cmd_detail_btn := Void
+			hidden_btn := Void
+			input_field := Void
+			send_input_btn := Void
+			save_output_btn := Void
+			clear_output_btn := Void
+			del_cmd_btn := Void
 		end
 
 	scroll_to_end is
@@ -487,7 +537,7 @@ feature{NONE} -- Actions
 					-- If user has just input a new external command,
 					-- first check whether we have room for this command.
 				if owner.edit_external_commands_cmd.menus.count = 10 then
-					create warn_dlg.make_with_text ("Your external command list is full.%NUse Tools->External Command... to delete one.")
+					create warn_dlg.make_with_text (interface_names.e_external_command_list_full)
 					warn_dlg.show_modal_to_window (owner.window)
 				else
 						-- If we have room for this command, pop up a new command
@@ -700,6 +750,8 @@ feature{NONE}
 		end
 
 feature{NONE} -- Implementation
+
+	toolbar: EB_TOOLBAR
 
 	terminate_btn: EV_TOOL_BAR_BUTTON
 			-- Button to terminate running process

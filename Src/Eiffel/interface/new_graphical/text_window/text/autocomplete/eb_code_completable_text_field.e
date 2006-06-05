@@ -10,7 +10,7 @@ class
 	EB_CODE_COMPLETABLE_TEXT_FIELD
 
 inherit
-	CODE_COMPLETABLE
+	EB_TAB_CODE_COMPLETABLE
 		export
 			{ANY}
 				set_completion_possibilities_provider,
@@ -55,7 +55,7 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			initialize_code_complete
-			can_complete_by_key := agent can_complete
+			key_completable := agent can_complete
 			set_discard_feature_signature (true)
 		end
 
@@ -334,7 +334,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- Interact with code completion window.
 			if show_below then
 				Result := Result + height
 			else
-				Result := Result - preferred_height - height
+				Result := Result - preferred_height
 			end
 		end
 
@@ -597,15 +597,6 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	ev_application: EV_APPLICATION is
-			-- The application
-		local
-			ev_eviron: EV_ENVIRONMENT
-		do
-			create ev_eviron
-			Result := ev_eviron.application
-		end
-
 	auto_complete_after_dot: BOOLEAN is
 	        -- Should build autocomplete dialog after call on valid target?
 	  	do
@@ -623,8 +614,12 @@ feature {NONE} -- Lexer
 	line_from_lexer: EDITOR_LINE is
 			-- Editor line from lexer.
 		do
-			scanner.execute (text)
-			create Result.make_from_lexer (scanner)
+			if text.is_empty then
+				create Result.make_empty_line
+			else
+				scanner.execute (text)
+				create Result.make_from_lexer (scanner)
+			end
 		end
 
 invariant

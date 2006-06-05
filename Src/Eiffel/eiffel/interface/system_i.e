@@ -269,6 +269,10 @@ feature -- Properties
 			-- Table indexed by missing classnames where elements are
 			-- classes referencing the missing classname.
 
+	missing_classes_warning: HASH_TABLE [SEARCH_TABLE [CLASS_C], STRING]
+			-- Table indexed by missing classnames for which we only generate a
+			-- warning where elements are classes referencing the missing classname.
+
 	moved: BOOLEAN
 			-- Has the system potentially moved in terms of classes ?
 			-- [Each time a new class is inserted/removed in/from the system
@@ -626,6 +630,27 @@ end
 			l_table.put (a_class)
 		end
 
+	record_potential_vtcm_warning (a_class: CLASS_C; a_name: STRING) is
+			-- Record missing class name `a_name' in `a_class'.
+		require
+			a_class_not_void: a_class /= Void
+			a_name_not_void: a_name /= Void
+		local
+			l_table: SEARCH_TABLE [CLASS_C]
+		do
+			if missing_classes_warning = Void then
+				create missing_classes_warning.make (5)
+			end
+			missing_classes_warning.search (a_name)
+			if missing_classes_warning.found then
+				l_table := missing_classes_warning.found_item
+			else
+				create l_table.make (1)
+				missing_classes_warning.put (l_table, a_name)
+			end
+			l_table.put (a_class)
+		end
+
 	report_vtct_errors is
 			-- Report any remaining VTCT errors at the end of degree 5
 		local
@@ -660,11 +685,11 @@ end
 							-- At this stage classes have not yet been removed, so we simply
 							-- look into `removed_classes'.
 						if
-							l_class.lace_class.is_compiled and
+							l_class.original_class.is_compiled and
 							not (removed_classes /= Void and then removed_classes.has (l_class))
 						then
 							check
-								same_compiled_class: l_class.lace_class.compiled_class = l_class
+								same_compiled_class: l_class.original_class.compiled_class = l_class
 							end
 								-- If class is still compiled then we should report the error.
 							create l_vtct
@@ -674,7 +699,7 @@ end
 
 								-- But since it is an invalid class, then we need to force
 								-- a compilation again to check for the VTCT error again.
-							workbench.add_class_to_recompile (l_class.lace_class)
+							workbench.add_class_to_recompile (l_class.original_class)
 							l_has_error := True
 						end
 						l_table.forth
@@ -698,6 +723,77 @@ end
 					end
 						-- Cannot go on here
 					Error_handler.raise_error
+				end
+			end
+		end
+
+	report_vtcm_warnings is
+			-- Report any remaining VTCM warnings at the end of degree 5
+		local
+			l_vtcm: VTCM
+			l_name: STRING
+			l_class: CLASS_C
+			l_table: SEARCH_TABLE [CLASS_C]
+			l_has_error: BOOLEAN
+			l_agent_sorter: AGENT_BASED_EQUALITY_TESTER [VTCM]
+			l_sorter: DS_QUICK_SORTER [VTCM]
+			l_list: DS_ARRAYED_LIST [VTCM]
+		do
+			if missing_classes_warning /= Void then
+				from
+						-- `l_list' is used to display errors in alphabetical order
+						-- This is mostly interesting for eweasel as the compiler does
+						-- not always give you the same order depending on the way
+						-- classes are written.
+					create l_list.make (missing_classes_warning.count)
+					missing_classes_warning.start
+				until
+					missing_classes_warning.after
+				loop
+					l_table := missing_classes_warning.item_for_iteration
+					l_name := missing_classes_warning.key_for_iteration
+					from
+						l_table.start
+					until
+						l_table.after
+					loop
+						l_class := l_table.item_for_iteration
+							-- At this stage classes have not yet been removed, so we simply
+							-- look into `removed_classes'.
+						if
+							l_class.original_class.is_compiled and
+							not (removed_classes /= Void and then removed_classes.has (l_class))
+						then
+							check
+								same_compiled_class: l_class.original_class.compiled_class = l_class
+							end
+								-- If class is still compiled then we should report the error.
+							create l_vtcm
+							l_vtcm.set_class (l_class)
+							l_vtcm.set_class_name (l_name)
+							l_list.force_last (l_vtcm)
+
+							l_has_error := True
+						end
+						l_table.forth
+					end
+					missing_classes_warning.forth
+				end
+
+				missing_classes_warning := Void
+
+				if l_has_error then
+					create l_agent_sorter.make (agent {VTCM}.less_than)
+					create l_sorter.make (l_agent_sorter)
+					l_sorter.sort (l_list)
+					from
+						l_list.start
+					until
+						l_list.after
+					loop
+						Error_handler.insert_warning (l_list.item_for_iteration)
+						l_list.forth
+					end
 				end
 			end
 		end
@@ -787,7 +883,7 @@ end
 
 				-- let the configuration system build "everything"
 			create l_factory
-			create l_state.make (universe.platform, universe.build, has_multithreaded, il_generation, l_target.variables)
+			l_state := universe.conf_state_from_target (l_target)
 			if universe.target /= Void then
 				create l_vis_build.make_build_from_old (l_state,
 					l_target, universe.target, l_factory)
@@ -799,7 +895,7 @@ end
 				l_vis_build.set_il_version (clr_runtime_version)
 			end
 			l_vis_build.set_partial_location (
-				l_factory.new_location_from_path (partial_generation_path, l_target))
+				l_factory.new_location_from_path (project_location.partial_generation_path, l_target))
 
 				-- set observers
 			l_vis_build.consume_assembly_observer.extend (agent degree_output.put_consume_assemblies)
@@ -842,16 +938,15 @@ end
 			loop
 				l_conf_class := l_classes.item_for_iteration
 					-- FIXME: Patrickr 03/14/2006 for now the compiler can't deal with changed external or precompiled classes
-				if not l_conf_class.is_class_assembly and not l_conf_class.is_precompiled then
+				if not l_conf_class.is_class_assembly then
 					l_class_i ?= l_conf_class
 					check l_class_i_not_void: l_class_i /= Void end
-					workbench.change_class (l_class_i)
-					if l_conf_class.is_renamed then
-						l_class_i.compiled_class.recompile_syntactical_clients
+					if not l_class_i.compiled_class.is_precompiled then
+						workbench.change_class (l_class_i)
+						if l_conf_class.is_renamed then
+							l_class_i.compiled_class.recompile_syntactical_clients
+						end
 					end
-				end
-				if compilation_modes.is_precompiling then
-					l_conf_class.enable_precompiled
 				end
 				l_conf_class.set_up_to_date
 				l_classes.forth
@@ -871,9 +966,6 @@ end
 						class_i: l_class_i /= Void
 					end
 					record_new_class_i (l_class_i)
-					if compilation_modes.is_precompiling then
-						l_conf_class.enable_precompiled
-					end
 					l_classes.forth
 				end
 			end
@@ -922,8 +1014,10 @@ end
 				-- Try to reconnect removed classes with new classes
 			revive_moved_classes
 
-				-- check the universe
-			universe.check_universe
+				-- check the universe if we don't use a precompile
+			if not uses_precompiled then
+				universe.check_universe
+			end
 
 				-- update/check root class
 			update_root_class
@@ -943,6 +1037,7 @@ end
 			vd19: VD19
 			vd20: VD20
 			vd29: VD29
+			l_class: CLASS_I
 		do
 			l_target := universe.target
 				-- update root class/feature
@@ -974,11 +1069,14 @@ end
 						vd19.set_root_cluster_name (l_root.cluster_name)
 						Error_handler.insert_error (vd19)
 						Error_handler.raise_error
-					elseif l_group.classes.item (root_class_name) = Void then
-						create vd20
-						vd20.set_class_name (l_root.class_name.as_upper)
-						Error_handler.insert_error (vd20)
-						Error_handler.raise_error
+					else
+						l_class := universe.class_named (root_class_name, l_group)
+						if l_class = Void or else not l_group.classes.has (root_class_name) then
+							create vd20
+							vd20.set_class_name (l_root.class_name.as_upper)
+							Error_handler.insert_error (vd20)
+							Error_handler.raise_error
+						end
 					end
 				end
 
@@ -1004,8 +1102,6 @@ end
 			l_errors: LIST [CONF_ERROR]
 			vd80: VD80
 			vd71: VD71
-			l_file: PLAIN_TEXT_FILE
-			l_file_name: FILE_NAME
 			l_classdbl: CONF_ERROR_CLASSDBL
 		do
 			degree_output.put_start_degree_6
@@ -1040,12 +1136,6 @@ end
 					l_vis_modified.process_group_observer.extend (agent degree_output.put_process_group)
 					universe.target.process (l_vis_modified)
 
-						-- removed classes
-					if workbench.automatic_backup then
-						create l_file_name.make_from_string (workbench.backup_subdirectory)
-						l_file_name.set_file_name (backup_info)
-						create l_file.make_open_write (l_file_name)
-					end
 					if l_vis_modified.is_error then
 						if l_vis_modified.last_errors.count = 1 then
 							l_classdbl ?= l_vis_modified.last_errors.first
@@ -1067,40 +1157,27 @@ end
 						end
 					end
 
-					l_classes := l_vis_modified.modified_classes
-					from
-						l_classes.start
-					until
-						l_rebuild or l_classes.after
-					loop
-						l_conf_class := l_classes.item
-						l_grp := l_conf_class.group
-						l_class ?= l_conf_class
-						check
-							class_i: l_class /= Void
-						end
-						l_rebuild := l_conf_class.is_renamed and then (l_grp.is_overriden or l_grp.is_override)
-						if l_conf_class.is_renamed then
-							l_class.compiled_class.recompile_syntactical_clients
-						end
-						if l_conf_class.is_removed then
-							l_class.compiled_class.recompile_syntactical_clients
-							if workbench.automatic_backup then
-								l_file.put_string (l_class.name+": "+l_class.group.name+": "+l_class.file_name+"%N")
+					if not (l_vis_modified.is_force_rebuild or l_rebuild) then
+						from
+							l_classes := l_vis_modified.modified_classes
+							l_classes.start
+						until
+							l_rebuild or l_classes.after
+						loop
+							l_conf_class := l_classes.item
+							l_grp := l_conf_class.group
+							l_class ?= l_conf_class
+							check
+								class_i: l_class /= Void
 							end
-							remove_class (l_class.compiled_class)
-							real_removed_classes.force (l_class)
-						else
 							workbench.change_class (l_class)
+							l_conf_class.set_up_to_date
+							l_classes.forth
 						end
-						l_conf_class.set_up_to_date
-						l_classes.forth
-					end
-					if l_rebuild then
+						update_root_class
+					else
 						rebuild_configuration
 						is_rebuild := True
-					else
-						update_root_class
 					end
 				end
 
@@ -1386,7 +1463,8 @@ feature -- Recompilation
 				workbench.create_backup_directory
 				create l_file.make (lace.file_name)
 				create l_file_name.make_from_string (workbench.backup_subdirectory)
-				l_file_name.set_file_name ("config.acex")
+				l_file_name.set_file_name ("config")
+				l_file_name.add_extension (config_extension)
 				l_file.copy_file (l_file_name)
 			end
 
@@ -1496,6 +1574,7 @@ end
 					-- Let's report VTCT errors for classes not found at degree 5
 					-- It cannot be done at degree 5 (see eweasel test incr233 for why).
 				report_vtct_errors
+				report_vtcm_warnings
 
 					-- Fill parents.
 				process_post_degree_5
@@ -1590,18 +1669,16 @@ end
 					create d1.make_now
 				end
 
-				if not Lace.compile_all_classes then
-						-- Melt the changed features
-					melt
+					-- Melt the changed features
+				melt
 
-					debug ("Timing")
-						create d2.make_now
-						print ("Degree 2 duration: ")
-						print (d2.relative_duration (d1).fine_seconds_count)
-						print ("%N")
-						print_memory_statistics
-						create d1.make_now
-					end
+				debug ("Timing")
+					create d2.make_now
+					print ("Degree 2 duration: ")
+					print (d2.relative_duration (d1).fine_seconds_count)
+					print ("%N")
+					print_memory_statistics
+					create d1.make_now
 				end
 
 					-- Finalize a successful compilation
@@ -1616,7 +1693,7 @@ end
 				end
 
 					-- Produce the update file
-				if not il_generation and then not freeze then
+				if not il_generation and then not freeze and then not lace.compile_all_classes then
 					Degree_output.put_melting_changes_message
 
 						-- Create a non-empty melted file
@@ -1794,7 +1871,9 @@ end
 				until
 					removed_classes.after
 				loop
-					internal_remove_class (removed_classes.key_for_iteration, 0)
+					if removed_classes.key_for_iteration.is_removable then
+						internal_remove_class (removed_classes.key_for_iteration, 0)
+					end
 					removed_classes.forth
 				end
 				removed_classes := Void
@@ -2069,7 +2148,7 @@ end
 
 				-- The execution table are now updated.
 
-			if not il_generation and then not freeze then
+			if not il_generation and then not freeze and then not lace.compile_all_classes then
 					-- Melt the feature tables
 					-- Open first the file for writing on disk melted feature
 					-- tables
@@ -2114,7 +2193,7 @@ end
 			end
 
 			l_name.append (".melted")
-			create file_name.make_from_string (Workbench_generation_path)
+			create file_name.make_from_string (project_location.workbench_path)
 			file_name.set_file_name (l_name)
 			create melted_file.make_open_write (file_name)
 
@@ -3016,7 +3095,9 @@ feature {NONE} -- Implementation
 							-- Cannot propagate for a protected class
 						supplier.class_id > protected_classes_level and then
 							-- A recursion may occur when removing a cluster
-						class_of_id (supplier.class_id) /= Void
+						class_of_id (supplier.class_id) /= Void and then
+							-- removable
+						supplier.is_removable
 					then
 							-- Recursively remove class.
 						internal_remove_class (supplier, a_depth + 1)
@@ -3141,7 +3222,7 @@ feature {NONE} -- Finalization implementation
 			j: INTEGER
 			deg_output: DEGREE_OUTPUT
 		do
-			Eiffel_project.delete_generation_directory (Final_generation_path, Void, Void) -- No agent
+			Eiffel_project.delete_generation_directory (project_location.final_path, Void, Void) -- No agent
 			create {FINAL_MAKER} makefile_generator.make
 			open_log_files
 			j := classes.count
@@ -4077,7 +4158,7 @@ end
 				create temp.make (2)
 				temp.append_character (System_object_prefix)
 				temp.append_integer (1)
-				create dir_name.make_from_string (Final_generation_path)
+				create dir_name.make_from_string (project_location.final_path)
 				dir_name.extend (temp)
 				create subdir.make (dir_name)
 				if not subdir.exists then
@@ -4801,11 +4882,11 @@ feature -- Log files
 		do
 			if in_final_mode then
 					-- removed_log_file is used only in final mode
-				create f_name.make_from_string (Final_generation_path)
+				create f_name.make_from_string (project_location.final_path)
 				f_name.set_file_name (Removed_log_file_name)
 				create removed_log_file.make (f_name)
 
-				create f_name.make_from_string (Final_generation_path)
+				create f_name.make_from_string (project_location.final_path)
 				f_name.set_file_name (Translation_log_file_name)
 				create used_features_log_file.make (f_name)
 
@@ -4813,7 +4894,7 @@ feature -- Log files
 				removed_log_file.open_write
 				used_features_log_file.open_write
 			else
-				create f_name.make_from_string (Workbench_generation_path)
+				create f_name.make_from_string (project_location.workbench_path)
 				f_name.set_file_name (Translation_log_file_name)
 				create used_features_log_file.make (f_name)
 

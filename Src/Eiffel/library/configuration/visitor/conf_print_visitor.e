@@ -92,16 +92,16 @@ feature -- Visit nodes
 			if l_root /= Void then
 				create l_a_name.make (4)
 				create l_a_val.make (4)
-				l_a_name.force ("cluster")
-				l_a_val.force (l_root.cluster_name)
-				l_a_name.force ("feature")
-				l_a_val.force (l_root.feature_name)
 				if l_root.is_all_root then
 					l_a_name.force ("all_classes")
 					l_a_val.force (l_root.is_all_root.out.as_lower)
 				else
+					l_a_name.force ("cluster")
+					l_a_val.force (l_root.cluster_name)
 					l_a_name.force ("class")
 					l_a_val.force (l_root.class_name)
+					l_a_name.force ("feature")
+					l_a_val.force (l_root.feature_name)
 				end
 				append_tag ("root", Void, l_a_name, l_a_val)
 			end
@@ -150,7 +150,7 @@ feature -- Visit nodes
 			append_mapping (a_target.internal_mapping)
 			append_externals (a_target.internal_external_include, "include")
 			append_externals (a_target.internal_external_object, "object")
-			append_externals (a_target.internal_external_ressource, "ressource")
+			append_externals (a_target.internal_external_resource, "resource")
 			append_externals (a_target.internal_external_make, "make")
 			append_actions (a_target.internal_pre_compile_action, "pre")
 			append_actions (a_target.internal_post_compile_action, "post")
@@ -391,66 +391,93 @@ feature {NONE} -- Implementation
 		local
 			l_condition: CONF_CONDITION
 			l_done: BOOLEAN
-			l_platforms, l_builds: ARRAYED_LIST [TUPLE [value: INTEGER; invert: BOOLEAN]]
+			l_platforms, l_builds: ARRAYED_LIST [INTEGER]
 			l_custs: HASH_TABLE [TUPLE [value: STRING; invert: BOOLEAN], STRING]
-			l_pf, l_build: TUPLE [value: INTEGER; invert: BOOLEAN]
 			l_custom: TUPLE [value: STRING; invert: BOOLEAN]
+			l_versions: HASH_TABLE [TUPLE [min: CONF_VERSION; max: CONF_VERSION], STRING]
 			l_name: STRING
+			l_ver: TUPLE [min: CONF_VERSION; max: CONF_VERSION]
 		do
 			if a_conditions /= Void then
 					-- assembly and only the default rule? => don't print it
 				if is_assembly and then a_conditions.count = 1 then
 					l_condition := a_conditions.first
-					l_done := l_condition.build.is_empty and l_condition.multithreaded = Void and l_condition.custom.is_empty
+					l_done := l_condition.build = Void and l_condition.platform = Void and l_condition.multithreaded = Void and l_condition.version.is_empty and l_condition.custom.is_empty
 				end
 				if not l_done then
-					append_text_indent ("<condition>%N")
-					indent := indent + 1
 					from
 						a_conditions.start
 					until
 						a_conditions.after
 					loop
+						append_text_indent ("<condition>%N")
+						indent := indent + 1
+
 						l_condition := a_conditions.item
-						from
-							l_platforms := l_condition.platform
-							l_platforms.start
-						until
-							l_platforms.after
-						loop
-							l_pf := l_platforms.item
-							if l_pf.invert then
-								l_name := "excluded-value"
+						if l_condition.platform /= Void then
+							if l_condition.platform.invert then
+								append_text_indent ("<platform excluded_value=%"")
 							else
-								l_name := "value"
+								append_text_indent ("<platform value=%"")
 							end
-							append_text_indent ("<platform "+l_name+"=%""+get_platform_name (l_pf.value)+"%"/>")
-							l_platforms.forth
+							from
+								l_platforms := l_condition.platform.value
+								l_platforms.start
+							until
+								l_platforms.after
+							loop
+								append_text (get_platform_name (l_platforms.item).as_lower + " ")
+								l_platforms.forth
+							end
+							text.remove_tail (1)
+							append_text ("%"/>%N")
 						end
 
-						from
-							l_builds := l_condition.build
-							l_builds.start
-						until
-							l_builds.after
-						loop
-							l_build := l_builds.item
-							if l_build.invert then
-								l_name := "excluded-value"
+						if l_condition.build /= Void then
+							if l_condition.build.invert then
+								append_text_indent ("<build excluded_value=%"")
 							else
-								l_name := "value"
+								append_text_indent ("<build value=%"")
 							end
-							append_text_indent ("<build "+l_name+"=%""+get_build_name (l_build.value)+"%"/>")
-							l_builds.forth
+							from
+								l_builds := l_condition.build.value
+								l_builds.start
+							until
+								l_builds.after
+							loop
+								append_text (get_build_name (l_builds.item).as_lower + " ")
+								l_builds.forth
+							end
+							text.remove_tail (1)
+							append_text ("%"/>%N")
 						end
 
 						if l_condition.multithreaded /= Void then
-							append_text_indent ("<multithreaded value=%""+l_condition.multithreaded.item.out.as_lower+"%"")
+							append_text_indent ("<multithreaded value=%""+l_condition.multithreaded.item.out.as_lower+"%"/>%N")
 						end
 
 							-- don't print dotnet for assemblies
 						if not is_assembly and then l_condition.dotnet /= Void then
-							append_text_indent ("<dotnet value=%""+l_condition.dotnet.item.out.as_lower+"%"")
+							append_text_indent ("<dotnet value=%""+l_condition.dotnet.item.out.as_lower+"%"/>%N")
+						end
+
+						from
+							l_versions := l_condition.version
+							l_versions.start
+						until
+							l_versions.after
+						loop
+							l_ver := l_versions.item_for_iteration
+							append_text_indent ("<version type=%""+l_versions.key_for_iteration+"%"")
+							if l_ver.min /= Void then
+								append_text (" min=%""+l_ver.min.version+"%"")
+							end
+							if l_ver.max /= Void then
+								append_text (" max=%""+l_ver.max.version+"%"")
+							end
+							append_text ("/>%N")
+
+							l_versions.forth
 						end
 
 						from
@@ -461,18 +488,18 @@ feature {NONE} -- Implementation
 						loop
 							l_custom := l_custs.item_for_iteration
 							if l_custom.invert then
-								l_name := "excluded-value"
+								l_name := "excluded_value"
 							else
 								l_name := "value"
 							end
-							append_text_indent ("<build name=%""+l_custs.key_for_iteration+"%" "+l_name+"=%""+l_custom.value+"%"/>")
+							append_text_indent ("<custom name=%""+l_custs.key_for_iteration+"%" "+l_name+"=%""+l_custom.value+"%"/>%N")
 							l_custs.forth
 						end
 
+						indent := indent - 1
+						append_text_indent ("</condition>%N")
 						a_conditions.forth
 					end
-					indent := indent - 1
-					append_text_indent ("</condition>%N")
 				end
 			end
 		ensure
@@ -547,6 +574,9 @@ feature {NONE} -- Implementation
 			loop
 				l_action := an_actions.item
 				append_text_indent ("<"+a_name+"_compile_action")
+				if l_action.working_directory /= Void then
+					append_text (" working_directory=%""+l_action.working_directory.original_path+"%"")
+				end
 				append_text (" command=%""+l_action.command+"%">%N")
 				indent := indent + 1
 				append_description_tag (l_action.description)
@@ -557,39 +587,51 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	append_file_rule (a_file_rule: CONF_FILE_RULE) is
+	append_file_rule (a_file_rules: ARRAYED_LIST [CONF_FILE_RULE]) is
 			-- Append `a_file_rule'
 		local
 			l_pattern: LINKED_SET [STRING]
+			l_rule: CONF_FILE_RULE
 		do
-			if not a_file_rule.is_empty then
-				append_text_indent ("<file_rule>%N")
-				indent := indent + 1
-				append_description_tag (a_file_rule.description)
-				l_pattern := a_file_rule.exclude
-				if l_pattern /= Void then
-					from
-						l_pattern.start
-					until
-						l_pattern.after
-					loop
-						append_tag ("exclude", l_pattern.item, Void, Void)
-						l_pattern.forth
+			from
+				a_file_rules.start
+			until
+				a_file_rules.after
+			loop
+				l_rule := a_file_rules.item
+
+				if not l_rule.is_empty then
+					append_text_indent ("<file_rule>%N")
+					indent := indent + 1
+					append_description_tag (l_rule.description)
+					l_pattern := l_rule.exclude
+					if l_pattern /= Void then
+						from
+							l_pattern.start
+						until
+							l_pattern.after
+						loop
+							append_tag ("exclude", l_pattern.item, Void, Void)
+							l_pattern.forth
+						end
 					end
-				end
-				l_pattern := a_file_rule.include
-				if l_pattern /= Void then
-					from
-						l_pattern.start
-					until
-						l_pattern.after
-					loop
-						append_tag ("include", l_pattern.item, Void, Void)
-						l_pattern.forth
+					l_pattern := l_rule.include
+					if l_pattern /= Void then
+						from
+							l_pattern.start
+						until
+							l_pattern.after
+						loop
+							append_tag ("include", l_pattern.item, Void, Void)
+							l_pattern.forth
+						end
 					end
+					append_conditionals (l_rule.internal_conditions, False)
+					indent := indent - 1
+					append_text_indent ("</file_rule>%N")
 				end
-				indent := indent - 1
-				append_text_indent ("</file_rule>%N")
+
+				a_file_rules.forth
 			end
 		end
 
@@ -603,7 +645,7 @@ feature {NONE} -- Implementation
 			l_a_name, l_a_val: ARRAYED_LIST [STRING]
 			l_sort_lst: SORTED_TWO_WAY_LIST [STRING]
 		do
-			if an_options /= Void then
+			if an_options /= Void and then not an_options.is_empty then
 				if a_class /= Void and then not a_class.is_empty then
 					append_text_indent ("<class_option class=%""+a_class+"%"")
 				else
@@ -644,8 +686,11 @@ feature {NONE} -- Implementation
 					until
 						l_sort_lst.after
 					loop
-						append_text_indent ("<debug name=%""+l_sort_lst.item+"%"")
-						append_text (" enabled=%""+l_debugs.item (l_sort_lst.item).out.as_lower+"%"/>%N")
+							-- only append enabled debugs
+						if l_debugs.item (l_sort_lst.item) then
+							append_text_indent ("<debug name=%""+l_sort_lst.item+"%"")
+							append_text (" enabled=%""+l_debugs.item (l_sort_lst.item).out.as_lower+"%"/>%N")
+						end
 						l_sort_lst.forth
 					end
 				end
@@ -838,7 +883,7 @@ feature {NONE} -- Implementation
 		require
 			a_cluster_not_void: a_cluster /= Void
 		local
-			l_deps: LINKED_SET [CONF_GROUP]
+			l_deps: DS_HASH_SET [CONF_GROUP]
 			l_visible: CONF_HASH_TABLE [TUPLE [STRING, CONF_HASH_TABLE [STRING, STRING]], STRING]
 			l_clusters: HASH_TABLE [CONF_CLUSTER, STRING]
 			l_cluster: CONF_CLUSTER
@@ -854,7 +899,7 @@ feature {NONE} -- Implementation
 				until
 					l_deps.after
 				loop
-					append_text_indent ("<uses group=%""+l_deps.item.name+"%"/>%N")
+					append_text_indent ("<uses group=%""+l_deps.item_for_iteration.name+"%"/>%N")
 					l_deps.forth
 				end
 			end

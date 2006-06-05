@@ -60,13 +60,14 @@ feature -- Status Report
 			l_content, l_new_pragma: STRING
 			l_index, l_index2: INTEGER
 			l_match_list: LEAF_AS_LIST
+			l_retried: BOOLEAN
+			l_file: KL_BINARY_INPUT_FILE
 		do
-			l_content := file_content (a_file)
-			if l_content = Void then
-				successful := False
-				error_message := "Could not read content of file " + a_file
-			else
-				roundtrip_eiffel_parser.parse_from_string (l_content)
+			if not l_retried then
+				create l_file.make (a_file)
+				l_file.open_read
+				roundtrip_eiffel_parser.parse (l_file)
+				l_file.close
 				Result := roundtrip_eiffel_parser.root_node
 				if Result = Void then
 					successful := False
@@ -88,6 +89,7 @@ feature -- Status Report
 						error_message := "Syntax error"
 					end
 				else
+					l_content := file_content (a_file)
 					if l_content.substring (1, 8).is_equal ("--#line ") then
 						l_index := l_content.index_of ('"', 1)
 						if l_index > 0 then
@@ -105,7 +107,13 @@ feature -- Status Report
 					successful := True
 					error_message := Void
 				end
+			else
+				successful := False
+				error_message := "Could not open file " + a_file
 			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 	merge (a_file_names: LIST [STRING]) is
@@ -281,18 +289,20 @@ feature {NONE} -- Implementation
 						l_index := equiv_client_index (l_new_creator, l_creators)
 						if l_index > 0 then
 							l_list := l_creators.i_th (l_index).feature_list
-							create l_mod.make (l_list, a_match_list)
-							l_mod.set_separator (", ")
-							l_new_list := l_new_creator.feature_list
-							from
-								l_new_list.start
-							until
-								l_new_list.after
-							loop
-								l_mod.append (l_new_list.item.text (a_new_match_list))
-								l_new_list.forth
+							if l_list /= Void then
+								create l_mod.make (l_list, a_match_list)
+								l_mod.set_separator (", ")
+								l_new_list := l_new_creator.feature_list
+								from
+									l_new_list.start
+								until
+									l_new_list.after
+								loop
+									l_mod.append (l_new_list.item.text (a_new_match_list))
+									l_new_list.forth
+								end
+								l_mod.apply
 							end
-							l_mod.apply
 						else
 							create l_mod.make (l_creators, a_match_list)
 							l_mod.set_separator ("%N")

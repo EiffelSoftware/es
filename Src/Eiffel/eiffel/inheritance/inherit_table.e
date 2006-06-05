@@ -69,6 +69,13 @@ inherit
 			copy, is_equal
 		end
 
+	SHARED_IL_CASING
+		export
+			{NONE} all
+		undefine
+			copy, is_equal
+		end
+
 	SHARED_NAMES_HEAP
 		export
 			{NONE} all
@@ -664,9 +671,14 @@ end;
 			feat_name: FEATURE_NAME;
 			clauses: EIFFEL_LIST [FEATURE_CLAUSE_AS];
 			l_export_status: EXPORT_I;
+			property_name: STRING
+			property_names: HASH_TABLE [FEATURE_I, STRING]
 		do
 			clauses := class_info.features;
 			if clauses /= Void then
+				if system.il_generation then
+					create property_names.make (0)
+				end
 				from
 					clauses.start
 				until
@@ -702,6 +714,31 @@ end;
 							analyze_local (feature_i, feature_i.feature_name_id)
 								-- Set the export status
 							feature_i.set_export_status (l_export_status);
+							if property_names /= Void then
+									-- Check that there are no property name clashes
+								if feature_i.has_property then
+									property_name := single_feature.property_name
+									if property_name = Void then
+										property_name := il_casing.pascal_casing
+											(system.dotnet_naming_convention, feature_i.feature_name, {IL_CASING_CONVERSION}.lower_case)
+									end
+									if property_names.has (property_name) then
+										error_handler.insert_error (create {VIPM}.make
+											(a_class, feature_i, property_names.item (property_name), property_name))
+									else
+										property_names.put (feature_i, property_name)
+									end
+										-- Check that there are no property setters with
+										-- several arguments as order of the arguments is
+										-- different in Eiffel and IL.
+									if feature_i.has_property_setter and then
+										(feature_i.type.is_void and then feature_i.argument_count /= 1 or else
+										not feature_i.type.is_void and then feature_i.argument_count > 0)
+									then
+										error_handler.insert_error (create {VIPS}.make (a_class, feature_i))
+									end
+								end
+							end
 							name_list.forth;
 						end;
 
@@ -1256,6 +1293,7 @@ end;
 			f_not_void: f /= Void
 			inherit_feat_not_void: inherit_feat /= Void
 		local
+			inherit_info: INHERIT_INFO
 			rout_ids: ROUT_ID_SET
 			old_feature: FEATURE_I
 			feature_name_id: INTEGER
@@ -1265,7 +1303,8 @@ end;
 			f.set_has_property (False)
 			if a_class.is_single then
 					-- Feature getters and setters may have been generated.
-				if inherit_feat.inherited_info.parent.parent.is_single then
+				inherit_info := inherit_feat.inherited_info
+				if inherit_info /= Void and then inherit_info.parent.parent.is_single then
 					f.set_has_property_getter (False)
 					f.set_has_property_setter (False)
 				end

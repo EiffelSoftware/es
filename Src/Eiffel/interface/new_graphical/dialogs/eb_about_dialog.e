@@ -166,6 +166,7 @@ feature {NONE} -- Implementation
 			create Result.make (50)
 			Result.append ("%NInstallation information:%N")
 			Result.append ("$ISE_EIFFEL = " + eiffel_installation_dir_name + "%N")
+			Result.append ("$ISE_LIBRARY = " + eiffel_library + "%N")
 			Result.append ("$ISE_PLATFORM = " + eiffel_platform)
 			if platform_constants.is_windows then
 				Result.append ("%N$ISE_C_COMPILER = " + eiffel_c_compiler)
@@ -183,6 +184,10 @@ feature {NONE} -- Constant strings
 			Result.append (" (")
 			Result.append (Version_number)
 			Result.append (")")
+			if Version_info /= Void and then not Version_info.is_empty then
+				Result.append ("%N")
+				Result.append (Version_info)
+			end
 		end
 
 	t_Copyright_info: STRING is
@@ -203,7 +208,6 @@ feature {NONE} -- Constant strings
 				%356 Storke Road, Goleta, CA 93117 USA%N%
 				%Telephone: 805-685-1006%N%
 				%Fax: 805-685-6869%N%
-				%Electronic mail: <info@eiffel.com>%N%
 				% %N%
 				%Web Customer Support: http://support.eiffel.com%N%
 				%Visit Eiffel on the Web: http://www.eiffel.com%N"

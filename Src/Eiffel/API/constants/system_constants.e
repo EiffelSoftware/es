@@ -37,7 +37,7 @@ feature {NONE}
 
 	Comp: STRING is "COMP"
 
-	Default_config_file: STRING is "default.acex"
+	Default_config_file: STRING is "default.ecf"
 
 	Default_class_filename: STRING is "default.cls"
 
@@ -139,7 +139,7 @@ feature {NONE}
 
 	project_extension: STRING is "epr"
 
-	config_extension: STRING is "acex"
+	config_extension: STRING is "ecf"
 
 	ace_file_extension: STRING is "ace"
 
@@ -168,9 +168,25 @@ feature {NONE, AUXILIARY_FILES} -- Versioning
 	Ace_file_path_tag: STRING is "ace_file_path"
 			-- Tags used in project file header.
 
-	Major_version_number: INTEGER is 5
-	Minor_version_number: INTEGER is 7
-	Build_version_number: STRING is "1005"
+	Compiler_version_number: CONF_VERSION is
+			-- Version of the compiler
+		once
+				-- 0000 because it will be replace by the svn version number by the build script
+			create Result.make_version (5, 7, 0000, 0)
+		end
+
+	Major_version_number: INTEGER is
+		once
+			Result := compiler_version_number.major
+		end
+	Minor_version_number: INTEGER is
+		once
+			Result := compiler_version_number.minor
+		end
+	Build_version_number: INTEGER is
+		once
+			Result := compiler_version_number.release
+		end
 			-- Version number
 
 	Version_number: STRING is
@@ -182,16 +198,22 @@ feature {NONE, AUXILIARY_FILES} -- Versioning
 			Result.append_character ('.')
 			Result.append_integer (Minor_version_number)
 			Result.append_character ('.')
-			Result.append_string (Build_version_number)
+			Result.append_integer (Build_version_number)
 			Result.append_character (' ')
 			Result.append_string (version_type_name)
 		end
 
-	Version_tag: INTEGER is 0x00000026
+	Version_tag: INTEGER is 0x026
 
 	Version_type_name: STRING is "GPL Edition";
 			-- Name of version, e.g. GPL edition, Enterprise Edition,...
 			-- Default: "GPL Edition"
+	
+	Version_info: STRING is "";
+			-- Information on the version
+			-- Default: ""
+			-- This can be used by developper to add specific information
+			-- displayed on About dialog
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

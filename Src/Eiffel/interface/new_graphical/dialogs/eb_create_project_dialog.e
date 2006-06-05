@@ -44,7 +44,8 @@ inherit
 
 	COMMAND_EXECUTOR
 		rename
-			execute as launch_ebench
+			execute as launch_ebench,
+			project_location as compiler_project_location
 		export
 			{NONE} all
 		undefine
@@ -221,9 +222,7 @@ feature -- Execution
 				l_project_loader.set_is_project_location_requested (False)
 				l_project_loader.open_project_file (ace_file_name, Void, directory_name, True)
 				if not l_project_loader.has_error and then compile_project then
-					check
-						project_is_new: l_project_loader.is_new_project
-					end
+					check not eiffel_project.initialized end
 					l_project_loader.set_is_compilation_requested (compile_project)
 					l_project_loader.compile_project
 				end
@@ -352,7 +351,7 @@ feature {NONE} -- Implementation
 			end
 
 				-- Project directory
-			create project_directory_frame.make_with_text (Interface_names.l_Location)
+			create project_directory_frame.make_with_text (Interface_names.l_location_colon)
 			create vb
 			vb.set_border_width (Layout_constants.Small_border_size)
 			vb.set_padding (Layout_constants.Small_padding_size)
@@ -375,7 +374,7 @@ feature {NONE} -- Implementation
 			project_directory_frame.extend (vb)
 
 				-- "Compile project" Check box
-			create compile_project_check_button.make_with_text (Interface_names.l_Compile_generated_project)
+			create compile_project_check_button.make_with_text (Interface_names.l_compile_project)
 			if compile_project then
 				compile_project_check_button.enable_select
 			else
@@ -490,8 +489,6 @@ feature {NONE} -- Implementation
 		local
 			fod: EV_FILE_OPEN_DIALOG
 			existing_path: STRING
-			l_env: EXECUTION_ENVIRONMENT
-			l_dir: STRING
 		do
 			existing_path := directory_field.text
 			create fod
@@ -501,10 +498,7 @@ feature {NONE} -- Implementation
 			fod.set_title (Interface_names.t_Select_a_file)
 			set_dialog_filters_and_add_all (fod, <<ace_files_filter>>)
 			fod.open_actions.extend (agent retrieve_ace_file (fod))
-			create l_env
-			l_dir := l_env.current_working_directory
 			fod.show_modal_to_window (Current)
-			l_env.change_working_directory (l_dir)
 		end
 
 	check_and_create_directory (a_directory_name: DIRECTORY_NAME) is

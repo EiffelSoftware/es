@@ -50,7 +50,8 @@ feature {NONE} -- Initialization
 			box: EV_VERTICAL_BOX
 		do
 			row_highlight_bg_color := Preferences.debug_tool_data.row_highlight_background_color
-			Preferences.debug_tool_data.row_highlight_background_color_preference.change_actions.extend (agent set_row_highlight_bg_color)
+			set_row_highlight_bg_color_agent := agent set_row_highlight_bg_color
+			Preferences.debug_tool_data.row_highlight_background_color_preference.change_actions.extend (set_row_highlight_bg_color_agent)
 
 			create box
 			box.set_padding (3)
@@ -100,6 +101,18 @@ feature {NONE} -- Initialization
 			mini_toolbar.extend (tb)
 			toggle_layout_cmd := scmd
 
+			if eb_debugger_manager.enable_bkpt /= Void then
+				tb := eb_debugger_manager.enable_bkpt.new_mini_toolbar_item
+				mini_toolbar.extend (tb)
+			end
+			if eb_debugger_manager.disable_bkpt /= Void then
+				tb := eb_debugger_manager.disable_bkpt.new_mini_toolbar_item
+				mini_toolbar.extend (tb)
+			end
+			if eb_debugger_manager.clear_bkpt /= Void then
+				tb := eb_debugger_manager.clear_bkpt.new_mini_toolbar_item
+				mini_toolbar.extend (tb)
+			end
 		ensure
 			mini_toolbar_exists: mini_toolbar /= Void
 		end
@@ -248,6 +261,8 @@ feature -- Memory management
 			if explorer_bar_item /= Void then
 				explorer_bar_item.recycle
 			end
+			Preferences.debug_tool_data.row_highlight_background_color_preference.change_actions.prune_all (set_row_highlight_bg_color_agent)
+			manager := Void
 		end
 
 feature {NONE} -- Grid layout Implementation
@@ -615,6 +630,8 @@ feature {NONE} -- Implementation, cosmetic
 			create Result
 			Result.set_shape ({EV_FONT_CONSTANTS}.shape_italic)
 		end
+
+	set_row_highlight_bg_color_agent : PROCEDURE [ANY, TUPLE]
 
 	set_row_highlight_bg_color (v: COLOR_PREFERENCE) is
 		do

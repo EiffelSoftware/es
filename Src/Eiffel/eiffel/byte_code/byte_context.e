@@ -36,6 +36,7 @@ feature -- Initialization
 			create once_manifest_string_count_table.make (100)
 			create once_manifest_string_table.make (100)
 			create {LINKED_STACK [PAIR [CLASS_TYPE, CLASS_TYPE]]} class_type_stack.make
+			create generated_inlines.make (5)
 		end
 
 feature -- Access
@@ -86,8 +87,13 @@ feature -- Access
 	buffer: GENERATION_BUFFER
 			-- Buffer used for code generation
 
+	ext_inline_buffer: GENERATION_BUFFER
+			-- Buffer used for the generation of inlined externals
+
 	header_buffer: GENERATION_BUFFER
 			-- Buffer used for extern declaration generation
+
+	generated_inlines: SEARCH_TABLE [STRING]
 
 	inherited_assertion: INHERITED_ASSERTION
 			-- Used to record inherited assertions
@@ -909,7 +915,7 @@ feature -- Access
 			end
 			f := feature_table.item_id ({PREDEFINED_NAMES}.twin_name_id)
 			if f = Void then
-					-- "copy" is not found in ANY
+					-- "twin" is not found in ANY
 				twin_body_index := -1
 			else
 				twin_body_index := f.body_index
@@ -1677,10 +1683,12 @@ feature -- Clearing
 				-- Wipe out once manifest strings records.
 			once_manifest_string_table.wipe_out
 			class_type_stack.wipe_out
+			generated_inlines.wipe_out
 		ensure
 			global_onces_is_empty: workbench_mode implies global_onces.is_empty
 			onces_is_empty: workbench_mode implies onces.is_empty
 			once_manifest_string_table_is_empty: once_manifest_string_table.is_empty
+			generated_inlines_empty: generated_inlines.is_empty
 		end
 
 	clear_system_data is

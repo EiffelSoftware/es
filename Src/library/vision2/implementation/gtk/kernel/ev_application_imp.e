@@ -26,6 +26,8 @@ inherit
 
 	EV_GTK_EVENT_STRINGS
 
+	EXCEPTIONS
+
 create
 	make
 
@@ -42,7 +44,7 @@ feature {NONE} -- Initialization
 --				{EV_GTK_DEPENDENT_EXTERNALS}.g_mem_set_vtable ({EV_GTK_EXTERNALS}.glib_mem_profiler_table)
 --			end
 
-			--put ("localhost:0", "DISPLAY")
+--			put ("localhost:0", "DISPLAY")
 				-- This line may be uncommented to allow for display redirection to another machine for debugging purposes
 
 			create locale_str.make_from_c ({EV_GTK_EXTERNALS}.gtk_set_locale)
@@ -51,9 +53,9 @@ feature {NONE} -- Initialization
 			if
 				gtk_is_launchable
 			then
-					-- Disable then re-enable the debugger so that its static debugger value gets set correctly
-				disable_debugger
-				enable_debugger
+				initialize_threading
+					-- Store the value of the debug mode.
+				saved_debug_mode := debug_mode
 				enable_ev_gtk_log (0)
 					-- 0 = No messages, 1 = Gtk Log Messages, 2 = Gtk Log Messages with Eiffel exception.
 				{EV_GTK_EXTERNALS}.gdk_set_show_events (False)
@@ -92,7 +94,7 @@ feature {NONE} -- Event loop
 			if gtk_is_launchable then
 				from
 					gtk_dependent_launch_initialize
-					interface.post_launch_actions.call (Void)
+					call_post_launch_actions
 				until
 					is_destroyed
 				loop
@@ -106,29 +108,39 @@ feature {NONE} -- Event loop
 
 feature {EV_ANY_IMP} -- Implementation
 
-	event_loop_iteration (a_relinquish: BOOLEAN) is
+	event_loop_iteration (a_relinquish_cpu: BOOLEAN) is
 			-- Run a single iteration of the event loop.
-			-- CPU will be relinquished if `a_relinquish'.
+			-- CPU will be relinquished if `a_relinquish_cpu'.
+		local
+			retried: BOOLEAN
 		do
-			process_gdk_events
-			if {EV_GTK_EXTERNALS}.g_main_context_pending ({EV_GTK_EXTERNALS}.g_main_context_default) then
-					-- This handles remaining idle handling such as timeouts, internal gtk/gdk idles and expose events.
-				if locked_window = Void then
-					{EV_GTK_EXTERNALS}.g_main_context_dispatch ({EV_GTK_EXTERNALS}.g_main_context_default)
+			if not retried then
+				process_gdk_events
+				if {EV_GTK_EXTERNALS}.g_main_context_pending ({EV_GTK_EXTERNALS}.g_main_context_default) then
+						-- This handles remaining idle handling such as timeouts, internal gtk/gdk idles and expose events.
+					if locked_window = Void then
+						{EV_GTK_EXTERNALS}.g_main_context_dispatch ({EV_GTK_EXTERNALS}.g_main_context_default)
+					end
+				else
+					if a_relinquish_cpu then
+							-- Idle actions only need to be called just before CPU relinquishment.
+						call_idle_actions
+						relinquish_cpu_slice
+					end
 				end
 			else
-				call_idle_actions
-				if a_relinquish then
-					relinquish_cpu_slice
-				end
+				on_exception_action (new_exception)
 			end
+		rescue
+			retried := True
+			retry
 		end
 
 	gtk_marshal: EV_GTK_CALLBACK_MARSHAL
 		-- Marshal object for all gtk signal emission event handling.
 
 	gtk_dependent_routines: EV_GTK_DEPENDENT_ROUTINES
-		-- Object used for exporting gtk version dependent routines to independent implementation
+		-- Object used for exporting gtk version dependent routines to independent implementation.
 
 feature -- Access
 
@@ -221,11 +233,27 @@ feature -- Basic operation
 			a_gdkevent_not_null: a_gdk_event /= default_pointer
 		local
 			l_pnd_item: EV_PICK_AND_DROPABLE_IMP
+			l_gdk_window, l_gtk_widget: POINTER
 		do
-			if captured_widget /= Void then
+			if pebble_transporter /= Void then
+				l_pnd_item := pebble_transporter
+			elseif captured_widget /= Void then
 				l_pnd_item ?= captured_widget.implementation
 			else
-				l_pnd_item ?= gtk_widget_imp_at_pointer_position
+				if {EV_GTK_EXTERNALS}.gdk_event_any_struct_type (a_gdk_event) = GDK_BUTTON_RELEASE then
+						-- Button release events need to be handled directly as they can occur on other widgets
+						-- an on non client areas.
+					l_gdk_window := {EV_GTK_EXTERNALS}.gdk_event_button_struct_window (a_gdk_event)
+					if l_gdk_window /= default_pointer then
+						{EV_GTK_EXTERNALS}.gdk_window_get_user_data (l_gdk_window, $l_gtk_widget)
+						if l_gtk_widget /= default_pointer then
+							l_pnd_item ?= eif_object_from_gtk_object (l_gtk_widget)
+						end
+					end
+				else
+						-- We retrieve the appropriate Vision2 widget that the mouse pointer is above.
+					l_pnd_item ?= gtk_widget_imp_at_pointer_position
+				end
 			end
 			if
 				l_pnd_item /= Void and then
@@ -251,12 +279,13 @@ feature -- Basic operation
 			gdk_event: POINTER
 			event_widget, grab_widget: POINTER
 			l_call_event, l_propagate_event, l_event_handled: BOOLEAN
+			l_pnd_imp: EV_PICK_AND_DROPABLE_IMP
 			l_widget_imp: EV_WIDGET_IMP
-			l_widget_motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
+			l_motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
 			l_no_more_events: BOOLEAN
 		do
 			from
-				l_widget_motion_tuple := motion_tuple
+				l_motion_tuple := motion_tuple
 			until
 				l_no_more_events
 			loop
@@ -279,32 +308,41 @@ feature -- Basic operation
 							l_call_event := False
 							{EV_GTK_EXTERNALS}.gtk_main_do_event (gdk_event)
 								-- This will force another motion notify as we have the motion hint flag set for all widgets.
-							l_widget_imp ?= gtk_widget_imp_at_pointer_position
-							if captured_widget /= Void then
-								l_widget_imp ?= captured_widget.implementation
+							l_pnd_imp ?= gtk_widget_imp_at_pointer_position
+							if is_in_transport then
+								l_pnd_imp := pebble_transporter
+							elseif
+								captured_widget /= Void
+							then
+								l_pnd_imp ?= captured_widget.implementation
 							end
-							if l_widget_imp /= Void then
+
+							if l_pnd_imp /= Void then
 								if pointer_motion_actions_internal /= Void then
-									pointer_motion_actions_internal.call (
-										[
-											l_widget_imp.interface,
-											{EV_GTK_EXTERNALS}.gdk_event_motion_struct_x_root (gdk_event).truncated_to_integer,
-											{EV_GTK_EXTERNALS}.gdk_event_motion_struct_y_root (gdk_event).truncated_to_integer
-										]
-									)
+									l_widget_imp ?= l_pnd_imp
+									if l_widget_imp /= Void then
+											pointer_motion_actions_internal.call (
+											[
+												l_widget_imp.interface,
+												{EV_GTK_EXTERNALS}.gdk_event_motion_struct_x_root (gdk_event).truncated_to_integer,
+												{EV_GTK_EXTERNALS}.gdk_event_motion_struct_y_root (gdk_event).truncated_to_integer
+											]
+										)
+									end
 								end
-								if l_widget_imp.is_sensitive then
-									l_widget_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_x_root (gdk_event).truncated_to_integer - l_widget_imp.screen_x, 1)
-									l_widget_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_y_root (gdk_event).truncated_to_integer - l_widget_imp.screen_y, 2)
-									l_widget_motion_tuple.put_double (0.5, 3)
-									l_widget_motion_tuple.put_double (0.5, 4)
-									l_widget_motion_tuple.put_double (0.5, 5)
-									l_widget_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_x_root (gdk_event).truncated_to_integer, 6)
-									l_widget_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_y_root (gdk_event).truncated_to_integer, 7)
-									l_widget_imp.on_pointer_motion (l_widget_motion_tuple)
+								if l_pnd_imp.has_struct_flag (l_pnd_imp.c_object, {EV_GTK_EXTERNALS}.GTK_SENSITIVE_ENUM) then
+									l_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_x_root (gdk_event).truncated_to_integer - l_pnd_imp.screen_x, 1)
+									l_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_y_root (gdk_event).truncated_to_integer - l_pnd_imp.screen_y, 2)
+									l_motion_tuple.put_double (0.5, 3)
+									l_motion_tuple.put_double (0.5, 4)
+									l_motion_tuple.put_double (0.5, 5)
+									l_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_x_root (gdk_event).truncated_to_integer, 6)
+									l_motion_tuple.put_integer ({EV_GTK_EXTERNALS}.gdk_event_motion_struct_y_root (gdk_event).truncated_to_integer, 7)
+									l_pnd_imp.on_pointer_motion (l_motion_tuple)
 								end
 							end
 							l_widget_imp := Void
+							l_pnd_imp := Void
 						when GDK_BUTTON_PRESS then
 							debug ("GDK_EVENT")
 								print ("GDK_BUTTON_PRESS%N")
@@ -484,13 +522,15 @@ feature -- Basic operation
 			a_context: POINTER
 			a_target_list: POINTER
 			a_target: POINTER
-			src_window, a_selection: POINTER
+			src_window, dest_window, a_selection, gtkwid: POINTER
 			a_time: NATURAL_32
 			prop_data: POINTER
 			prop_type, prop_format, prop_length: INTEGER
 			a_string: STRING_32
 			l_file_list: LIST [STRING_32]
 			l_success: BOOLEAN
+			l_widget_imp: EV_WIDGET_IMP
+			l_string, l_file: STRING_32
 		do
 			from
 				a_context := {EV_GTK_EXTERNALS}.gdk_event_dnd_struct_context (a_event)
@@ -498,6 +538,8 @@ feature -- Basic operation
 				a_selection := {EV_GTK_EXTERNALS}.gdk_drag_get_selection (a_context)
 				a_time := {EV_GTK_EXTERNALS}.gdk_event_dnd_struct_time (a_event)
 				a_target_list := {EV_GTK_EXTERNALS}.gdk_drag_context_struct_targets (a_context)
+				l_string := "STRING"
+				l_file := "file://"
 			until
 				a_target_list = default_pointer
 			loop
@@ -508,7 +550,7 @@ feature -- Basic operation
 					prop_length := {EV_GTK_EXTERNALS}.gdk_selection_property_get (src_window, $prop_data, $prop_type, $prop_format)
 					if prop_data /= default_pointer then
 						create a_string.make_from_c ({EV_GTK_EXTERNALS}.gdk_atom_name (a_target))
-						if a_string.is_equal ("STRING") then
+						if a_string.is_equal (l_string) then
 							create a_string.make_from_c (prop_data)
 							l_file_list := a_string.split ('%N')
 							from
@@ -516,9 +558,8 @@ feature -- Basic operation
 							until
 								l_file_list.after
 							loop
-								if l_file_list.item.substring_index ("file://", 1) = 1 then
+								if l_file_list.item.substring_index (l_file, 1) = 1 then
 									l_file_list.replace (l_file_list.item.substring (8, l_file_list.item.count))
-									print (l_file_list.item + "%N")
 									l_success := True
 									l_file_list.forth
 								else
@@ -529,6 +570,22 @@ feature -- Basic operation
 					end
 				end
 				a_target_list := {EV_GTK_EXTERNALS}.glist_struct_next (a_target_list)
+			end
+			if l_success then
+				dest_window := {EV_GTK_EXTERNALS}.gdk_drag_context_struct_dest_window (a_context)
+				if dest_window /= default_pointer then
+					{EV_GTK_EXTERNALS}.gdk_window_get_user_data (dest_window, $gtkwid)
+					if gtkwid /= default_pointer then
+						l_widget_imp ?= eif_object_from_gtk_object (gtkwid)
+						if
+							l_widget_imp /= Void and then
+							not l_widget_imp.is_destroyed and then
+							l_widget_imp.file_drop_actions_internal /= Void
+						then
+							l_widget_imp.file_drop_actions.call ([l_file_list])
+						end
+					end
+				end
 			end
 			{EV_GTK_EXTERNALS}.gdk_drop_finish (a_context, l_success, a_time)
 		end
@@ -604,31 +661,33 @@ feature -- Status setting
 
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
 
-	on_pick (a_pebble: ANY) is
+	on_pick (a_source: EV_PICK_AND_DROPABLE_IMP; a_pebble: ANY) is
 			-- Called by EV_PICK_AND_DROPABLE_IMP.start_transport
 		local
 			cur: CURSOR
 			trg: EV_PICK_AND_DROPABLE
 			i: INTEGER
+			l_pnd_targets: like pnd_targets
 		do
-			enable_is_in_transport
-			cur := pnd_targets.cursor
+			pebble_transporter := a_source
+			l_pnd_targets := pnd_targets
+			cur := l_pnd_targets.cursor
 			from
-				pnd_targets.start
+				l_pnd_targets.start
 			until
-				pnd_targets.after
+				l_pnd_targets.after
 			loop
-				trg ?= id_object (pnd_targets.item)
+				trg ?= id_object (l_pnd_targets.item)
 				if trg = Void or else trg.is_destroyed then
-					i := pnd_targets.index
-					pnd_targets.remove
-					pnd_targets.go_i_th (i)
+					i := l_pnd_targets.index
+					l_pnd_targets.remove
+					l_pnd_targets.go_i_th (i)
 				else
-					pnd_targets.forth
+					l_pnd_targets.forth
 				end
 			end
-			if pnd_targets.valid_cursor (cur) then
-				pnd_targets.go_to (cur)
+			if l_pnd_targets.valid_cursor (cur) then
+				l_pnd_targets.go_to (cur)
 			end
 			interface.pick_actions.call ([a_pebble])
 		end
@@ -636,7 +695,7 @@ feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
 	on_drop (a_pebble: ANY) is
 			-- Called by EV_PICK_AND_DROPABLE_IMP.end_transport
 		do
-			disable_is_in_transport
+			pebble_transporter := Void
 		end
 
 feature {EV_ANY_IMP} -- Implementation
@@ -646,24 +705,14 @@ feature {EV_ANY_IMP} -- Implementation
 
 feature -- Implementation
 
-	is_in_transport: BOOLEAN
-		-- Is application currently in transport (either PND or docking)?
-
-	enable_is_in_transport is
-			-- Set `is_in_transport' to True.
-		require
-			not_in_transport: not is_in_transport
+	is_in_transport: BOOLEAN is
+			-- Is application currently in transport (either PND or docking)?
 		do
-			is_in_transport := True
+			Result := pebble_transporter /= Void
 		end
 
-	disable_is_in_transport is
-			-- Set `is_in_transport' to False.
-		require
-			in_transport: is_in_transport
-		do
-			is_in_transport := False
-		end
+	pebble_transporter: EV_PICK_AND_DROPABLE_IMP
+		-- Transporter object if any.
 
 	keyboard_modifier_mask: INTEGER is
 			-- Mask representing current keyboard modifiers state.
@@ -678,13 +727,14 @@ feature -- Implementation
 	enable_debugger is
 			-- Enable the Eiffel debugger.
 		do
-			set_debug_mode (1)
+			internal_set_debug_mode (saved_debug_mode)
 		end
 
 	disable_debugger is
 			-- Disable the Eiffel debugger.
 		do
-			set_debug_mode (0)
+			saved_debug_mode := debug_mode
+			internal_set_debug_mode (0)
 		end
 
 feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} -- Implementation
@@ -863,10 +913,52 @@ feature {EV_PICK_AND_DROPABLE_IMP} -- Pnd Handling
 		-- Position of pointer on previous PND draw.
 
 	set_old_pointer_x_y_origin (a_old_pointer_x, a_old_pointer_y: INTEGER) is
-			--
+			-- Set PND pointer origins to `a_old_pointer_x' and `a_old_pointer_y'.
 		do
 			old_pointer_x := a_old_pointer_x
 			old_pointer_y := a_old_pointer_y
+		end
+
+feature -- Thread Handling.
+
+	initialize_threading is
+			-- Initialize thread support.
+		do
+			if {PLATFORM}.is_thread_capable then
+				if not g_thread_supported then
+					g_thread_init
+				end
+				check
+					threading_supported: g_thread_supported
+				end
+					-- Initialize the recursive mutex.
+				static_mutex := new_g_static_rec_mutex
+				g_static_rec_mutex_init (static_mutex)
+			end
+		end
+
+	lock is
+			-- Lock the Mutex.
+		do
+			if {PLATFORM}.is_thread_capable then
+				g_static_rec_mutex_lock (static_mutex)
+			end
+		end
+
+	try_lock: BOOLEAN is
+			-- Try to see if we can lock, False means no lock could be attained
+		do
+			if {PLATFORM}.is_thread_capable then
+				Result := g_static_rec_mutex_trylock (static_mutex)
+			end
+		end
+
+	unlock is
+			-- Unlock the Mutex.
+		do
+			if {PLATFORM}.is_thread_capable then
+				g_static_rec_mutex_unlock (static_mutex)
+			end
 		end
 
 feature {NONE} -- External implementation
@@ -874,12 +966,23 @@ feature {NONE} -- External implementation
 	default_c_string_size: INTEGER is 1000
 		-- Default size to set the reusable gtk C string.
 
-	set_debug_mode (a_mode: INTEGER) is
-			-- Set the value of run time value `debug_mode' to turn Eiffel debugger on or off
-		require
-			valid_mode: a_mode = 0 or a_mode = 1
+	internal_set_debug_mode (a_debug_mode: INTEGER) is
+			-- Set `debug_mode' to `a_debug_mode'.
 		external
-			"C use %"ev_any_imp.h%""
+			"C inline use %"ev_any_imp.h%""
+		alias
+			"debug_mode = $a_debug_mode"
+		end
+
+	saved_debug_mode: INTEGER
+		-- Debug mode before debugger was disabled
+
+	debug_mode: INTEGER is
+			-- State of debugger.
+		external
+			"C inline use %"ev_any_imp.h%""
+		alias
+			"debug_mode"
 		end
 
 	enable_ev_gtk_log (a_mode: INTEGER) is
@@ -906,6 +1009,58 @@ feature {NONE} -- External implementation
 			"C [macro <gtk/gtk.h>] | %"eif_argv.h%""
 		alias
     		"gtk_init_check (&eif_argc, &eif_argv)"
+		end
+
+feature {NONE} -- Externals
+
+	static_mutex: POINTER
+		-- Pointer to the global static mutex
+
+	new_g_static_rec_mutex: POINTER is
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"malloc (sizeof(GStaticRecMutex))"
+		end
+
+	frozen g_static_rec_mutex_init (a_static_mutex: POINTER) is
+		external
+			"C signature (GStaticRecMutex*) use <gtk/gtk.h>"
+		end
+
+	frozen g_static_rec_mutex_lock (a_static_mutex: POINTER) is
+		external
+			"C blocking signature (GStaticRecMutex*) use <gtk/gtk.h>"
+		end
+
+	frozen g_static_rec_mutex_trylock (a_static_mutex: POINTER): BOOLEAN is
+		external
+			"C blocking signature (GStaticRecMutex*): gboolean use <gtk/gtk.h>"
+		end
+
+	frozen g_static_rec_mutex_unlock (a_static_mutex: POINTER) is
+		external
+			"C signature (GStaticRecMutex*) use <gtk/gtk.h>"
+		end
+
+	frozen g_thread_supported: BOOLEAN is
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"g_thread_supported()"
+		end
+
+	frozen g_thread_init is
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"[
+			{
+				#ifdef EIF_THREADS
+					g_thread_init (NULL);
+				#endif
+			}
+			]"
 		end
 
 invariant

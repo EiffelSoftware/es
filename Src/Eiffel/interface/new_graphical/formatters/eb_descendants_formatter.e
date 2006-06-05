@@ -9,10 +9,9 @@ class
 	EB_DESCENDANTS_FORMATTER
 
 inherit
-	EB_CLASS_TEXT_FORMATTER
+	EB_CLASS_HIERARCHY_FORMATTER
 		redefine
-			class_cmd,
-			is_dotnet_formatter
+			is_tree_node_highlight_enabled
 		end
 
 create
@@ -37,6 +36,9 @@ feature -- Properties
 			Result := Interface_names.m_Showdescendants
 		end
 
+	is_tree_node_highlight_enabled: BOOLEAN is True
+			-- Is tree node highlight enabled?
+
 feature {NONE} -- Properties
 
 	command_name: STRING is
@@ -48,27 +50,26 @@ feature {NONE} -- Properties
 	post_fix: STRING is "des"
 			-- String symbol of the command, used as an extension when saving.
 
-	is_dotnet_formatter: BOOLEAN is
-			-- Is Current able to format .NET XML types?
-		do
-			Result := True
-		end
-
 feature {NONE} -- Implementation
 
-	create_class_cmd is
-			-- Create `class_cmd'.
-		require else
-			associated_class_non_void: associated_class /= Void
+	start_class: QL_CLASS is
+			-- Start class
 		do
-			create class_cmd.make (editor.text_displayed, associated_class)
+			check associated_class /= Void end
+			Result := query_class_item_from_class_c (associated_class)
+		ensure then
+			result_attached: Result /= Void
 		end
 
-	has_breakpoints: BOOLEAN is False
-		-- Should `Current' display breakpoints?
-
-	line_numbers_allowed: BOOLEAN is False;
-		-- Does it make sense to show line numbers in Current?		
+	criterion: QL_CRITERION is
+			-- Criterion of current formatter
+		local
+			l_class: QL_CLASS
+		do
+			check associated_class /= Void end
+			l_class := query_class_item_from_class_c (associated_class)
+			create {QL_CLASS_DESCENDANT_RELATION_CRI}Result.make (l_class.wrapped_domain, class_descendant_relation)
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

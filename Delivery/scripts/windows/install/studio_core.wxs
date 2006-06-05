@@ -141,7 +141,7 @@
 								<Directory Id="resources" Name="RESOUR~1" LongName="resources">
 									<Component Id="resources" Guid="B94CC7FC-908D-4EEF-8F46-98C803789C73">
 										<File Id="template_application.e" Name="TEMPLA~1.E" LongName="template_application.e" />
-										<File Id="template_config.acex" Name="TEMPLA~1.ACE" LongName="template_config.acex" />
+										<File Id="template_config.ecf" Name="TEMPLA~1.ECF" LongName="template_config.ecf" />
 									</Component>
 								</Directory>
 								<Directory Id="spec11" Name="spec">
@@ -182,7 +182,7 @@
 										<File Id="template_menubar_add.e" Name="TEMPLA~3.E" LongName="template_menubar_add.e" />
 										<File Id="template_aboutdialog_init.e116" Name="TEMPLA~5.E" LongName="template_aboutdialog_init.e" />
 										<File Id="open.png117" Name="open.png" />
-										<File Id="template_config.acex120" Name="TEMPLA~4.ACE" LongName="template_config.acex" />
+										<File Id="template_config.ecf120" Name="TEMPLA~4.ECF" LongName="template_config.ecf" />
 										<File Id="template_toolbar_add.e" Name="TE5CD2~1.E" LongName="template_toolbar_add.e" />
 										<File Id="template_statusbar_add.e" Name="TECB26~1.E" LongName="template_statusbar_add.e" />
 										<File Id="interface_names.e121" Name="INTERF~2.E" LongName="interface_names.e" />
@@ -207,7 +207,7 @@
 							<Directory Id="wel" Name="wel">
 								<Directory Id="resources19" Name="RESOUR~3" LongName="resources">
 									<Component Id="resources19" Guid="D0D33C7B-AFA8-47CE-BFFA-9AA87EC62E96">
-										<File Id="templace_config.acex121" Name="TEMPLA~1.ACE" LongName="template_config.acex" />
+										<File Id="templace_config.ecf121" Name="TEMPLA~1.ECF" LongName="template_config.ecf" />
 										<File Id="dialog_resource.h" Name="DIALOG~1.H" LongName="dialog_resource.h" />
 										<File Id="frame_template.rc" Name="FRAME_~1.RC" LongName="frame_template.rc" />
 										<File Id="frame_main_window.e" Name="FRAME_~2.E" LongName="frame_main_window.e" />
@@ -470,61 +470,34 @@
 									<File Id="VCFG2" Name="VCFG2" />
 									<File Id="VCFG3" Name="VCFG3" />
 									<File Id="VCRN99" Name="VCRN" />
-									<File Id="VD01" Name="VD01" />
-									<File Id="VD02" Name="VD02" />
-									<File Id="VD03" Name="VD03" />
-									<File Id="VD04" Name="VD04" />
-									<File Id="VD05" Name="VD05" />
-									<File Id="VD07" Name="VD07" />
-									<File Id="VD08" Name="VD08" />
-									<File Id="VD09" Name="VD09" />
-									<File Id="VD10" Name="VD10" />
-									<File Id="VD12" Name="VD12" />
-									<File Id="VD13" Name="VD13" />
-									<File Id="VD14" Name="VD14" />
+									<File Id="VD00" Name="VD00" />
 									<File Id="VD15" Name="VD15" />
-									<File Id="VD16" Name="VD16" />
-									<File Id="VD17" Name="VD17" />
-									<File Id="VD18" Name="VD18" />
 									<File Id="VD19" Name="VD19" />
 									<File Id="VD20" Name="VD20" />
 									<File Id="VD21" Name="VD21" />
 									<File Id="VD23" Name="VD23" />
 									<File Id="VD24" Name="VD24" />
-									<File Id="VD25" Name="VD25" />
-									<File Id="VD26" Name="VD26" />
 									<File Id="VD27" Name="VD27" />
-									<File Id="VD28" Name="VD28" />
 									<File Id="VD29" Name="VD29" />
-									<File Id="VD30" Name="VD30" />
-									<File Id="VD31" Name="VD31" />
-									<File Id="VD32" Name="VD32" />
-									<File Id="VD33" Name="VD33" />
-									<File Id="VD34" Name="VD34" />
-									<File Id="VD35" Name="VD35" />
-									<File Id="VD36" Name="VD36" />
-									<File Id="VD38" Name="VD38" />
-									<File Id="VD39" Name="VD39" />
-									<File Id="VD40" Name="VD40" />
 									<File Id="VD41" Name="VD41" />
 									<File Id="VD42" Name="VD42" />
 									<File Id="VD43" Name="VD43" />
-									<File Id="VD44" Name="VD44" />
-									<File Id="VD46" Name="VD46" />
-									<File Id="VD47" Name="VD47" />
-									<File Id="VD51" Name="VD51" />
+									<File Id="VD45" Name="VD45" />
 									<File Id="VD52" Name="VD52" />
 									<File Id="VD53" Name="VD53" />
-									<File Id="VD54" Name="VD54" />
-									<File Id="VD60" Name="VD60" />
-									<File Id="VD61" Name="VD61" />
-									<File Id="VD62" Name="VD62" />
-									<File Id="VD63" Name="VD63" />
-									<File Id="VD64" Name="VD64" />
-									<File Id="VD65" Name="VD65" />
-									<File Id="VD66" Name="VD66" />
-									<File Id="VD67" Name="VD67" />
-									<File Id="VDCN94" Name="VDCN" />
+									<File Id="VD69" Name="VD69" />
+									<File Id="VD70" Name="VD70" />
+									<File Id="VD71" Name="VD71" />
+									<File Id="VD72" Name="VD72" />
+									<File Id="VD73" Name="VD73" />
+									<File Id="VD74" Name="VD74" />
+									<File Id="VD75" Name="VD75" />
+									<File Id="VD77" Name="VD77" />
+									<File Id="VD78" Name="VD78" />
+									<File Id="VD80" Name="VD80" />
+									<File Id="VD83" Name="VD83" />
+									<File Id="VD84" Name="VD84" />
+									<File Id="VD85" Name="VD85" />
 									<File Id="VDJR71" Name="VDJR" />
 									<File Id="VDOC65" Name="VDOC" />
 									<File Id="VDRD1" Name="VDRD1" />
@@ -538,7 +511,6 @@
 									<File Id="VDRS2" Name="VDRS2" />
 									<File Id="VDRS3" Name="VDRS3" />
 									<File Id="VDRS4" Name="VDRS4" />
-									<File Id="VDUC_2" Name="VDUC" />
 									<File Id="VDUS1" Name="VDUS1" />
 									<File Id="VDUS2" Name="VDUS2" />
 									<File Id="VDUS3" Name="VDUS3" />
@@ -598,6 +570,8 @@
 									<File Id="VIIK" Name="VIIK" />
 									<File Id="VIOF" Name="VIOF" />
 									<File Id="VIOP" Name="VIOP" />
+									<File Id="VIPM" Name="VIPM" />
+									<File Id="VIPS" Name="VIPS" />
 									<File Id="VIRC" Name="VIRC" />
 									<File Id="VIRW85" Name="VIRW" />
 									<File Id="VISM" Name="VISM" />
@@ -657,6 +631,7 @@
 									<File Id="VTAT2" Name="VTAT2" />
 									<File Id="VTBT2" Name="VTBT" />
 									<File Id="VTCG_2" Name="VTCG" />
+									<File Id="VTCM" Name="VTCM" />
 									<File Id="VTCT2" Name="VTCT" />
 									<File Id="VTEC1" Name="VTEC1" />
 									<File Id="VTEC2" Name="VTEC2" />
@@ -697,7 +672,7 @@
 							<Component Id="defaults" Guid="345FD620-3BB3-4A7D-8C76-C860972E4D22">
 								<File Id="full.cls" Name="full.cls" KeyPath="yes" />
 								<File Id="default.cls" Name="default.cls" />
-								<File Id="default.acex" Name="DEFAUL~1.ACE" LongName="default.acex" />
+								<File Id="default.ecf" Name="default.ecf" />
 								<File Id="empty.cls" Name="empty.cls" />
 							</Component>
 						</Directory>
@@ -825,46 +800,28 @@
 				<Directory Id="precomp" Name="precomp">
 					<Directory Id="spec22" Name="spec">
 						<Directory Id="windows23" Name="$(env.ISE_PLATFORM)">
-							<Directory Id="vision224" Name="vision2">
-								<Component Id="vision224" Guid="F7EEAA67-0F78-48A8-85DE-3E90F58C5AC1">
-									<File Id="ace.ace140" Name="ACE~1.ACE" LongName="Ace.acex"/>
-								</Component>
-							</Directory>
-							<Directory Id="basemt" Name="base-mt">
-								<Component Id="basemt" Guid="DD937DAD-9136-4553-8E64-CCDFE8519EE0">
-									<File Id="ace_acex144" Name="ACE~1.ACE" LongName="Ace.acex"/>
-								</Component>
-							</Directory>
-							<Directory Id="welmt" Name="wel-mt">
-								<Component Id="welmt" Guid="6DF2EC23-1E26-465B-8397-DE4A1FD118FB">
-									<File Id="ace.ace141" Name="ACE~1.ACE" LongName="Ace.acex"/>
-								</Component>
-							</Directory>
-							<Directory Id="wel25" Name="wel">
-								<Component Id="wel25" Guid="B1F73FE5-ED9C-4B4A-A121-5B9E6A683841">
-									<File Id="ace.ace142" Name="ACE~1.ACE" LongName="Ace.acex"/>
-								</Component>
-							</Directory>
-							<Directory Id="base" Name="base">
-								<Component Id="base" Guid="3E24F992-00C3-4EAD-A6D9-7290FE36B408">
-									<File Id="ace_acex143" Name="ACE~1.ACE" LongName="Ace.acex"/>
-								</Component>
-							</Directory>
+							<Component Id="vision224" Guid="F7EEAA67-0F78-48A8-85DE-3E90F58C5AC1">
+								<File Id="ace_ecf144" Name="base-mt.ecf"/>
+								<File Id="ace_ecf143" Name="base.ecf"/>
+								<File Id="ace.ace140" Name="vision2.ecf"/>
+								<File Id="ace.ace141" Name="wel-mt.ecf"/>
+								<File Id="ace.ace142" Name="wel.ecf"/>
+							</Component>
 						</Directory>
 						<Directory Id="dotnet1" Name="dotnet">
 							<Directory Id="vision23" Name="vision2">
 								<Component Id="vision23" Guid="6111AE70-9E78-40D7-B4A2-FD8CD7DFB517">
-									<File Id="ace.ace2" Name="ace.ace" KeyPath="yes" />
+									<File Id="ace.ace2" Name="vision2.ace"/>
 								</Component>
 							</Directory>
 							<Directory Id="wel2" Name="wel">
 								<Component Id="wel2" Guid="7B4957D5-F93E-4CB4-BF19-8F185BB0FF5E">
-									<File Id="ace.ace3" Name="ace.ace" KeyPath="yes" />
+									<File Id="ace.ace3" Name="wel.ace" />
 								</Component>
 							</Directory>
 							<Directory Id="base4" Name="base">
 								<Component Id="base4" Guid="23CFD01E-AE9F-40DE-96E5-2005039047B6">
-									<File Id="ace.acex4" Name="ACE~1.ACE" LongName="ace.acex"/>
+									<File Id="ace_ecf4" Name="base.ecf"/>
 								</Component>
 							</Directory>
 						</Directory>

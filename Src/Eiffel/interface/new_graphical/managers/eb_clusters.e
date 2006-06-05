@@ -550,6 +550,10 @@ feature -- Element change
 				l_target := a_parent.target
 			end
 			last_added_cluster := l_fact.new_cluster (a_name, l_fact.new_location_from_path (a_path, l_target), l_target)
+				-- create empty class list, so that the folder can be displayed
+			last_added_cluster.set_classes (create {HASH_TABLE [EIFFEL_CLASS_I, STRING]}.make (0))
+			last_added_cluster.set_classes_by_filename (create {HASH_TABLE [EIFFEL_CLASS_I, STRING]}.make (0))
+
 			if a_parent /= Void and then a_parent.is_cluster then
 				l_clu ?= a_parent
 				last_added_cluster.set_parent (l_clu)
@@ -705,7 +709,6 @@ feature {NONE} -- Implementation
 		local
 			l_group, l_next_group: CONF_GROUP
 			l_cluster: CONF_CLUSTER
-			l_libuse: ARRAYED_LIST [CONF_LIBRARY]
 			l_sys: CONF_SYSTEM
 		do
 			l_sys := universe.target.system
@@ -723,22 +726,8 @@ feature {NONE} -- Implementation
 				else
 					l_next_group := Void
 				end
-				l_libuse := l_group.target.used_in_libraries
-				if l_next_group = Void and l_libuse /= Void and then not l_libuse.is_empty then
-						-- if one of the libraries is used in the application target use this one, else just take one
-					from
-						l_libuse.start
-					until
-						l_next_group /= Void or l_libuse.after
-					loop
-						if l_libuse.item.target.system = l_sys then
-							l_next_group := l_libuse.item
-						end
-						l_libuse.forth
-					end
-					if l_next_group = Void then
-						l_next_group := l_libuse.first
-					end
+				if l_next_group = Void then
+					l_next_group := l_group.target.lowest_used_in_library
 				end
 				l_group := l_next_group
 			end
@@ -837,12 +826,9 @@ feature {NONE} -- Implementation
 					a_group.invalidate
 				else
 					l_cl ?= a_group
-					l_fr := l_cl.internal_file_rule
-					if l_fr = Void then
-						create l_fr.make
-					end
+					create l_fr.make
 					l_fr.add_exclude (build_pattern (a_path))
-					l_cl.set_file_rule (l_fr)
+					l_cl.add_file_rule (l_fr)
 				end
 					-- store it to disk
 				l_sys.store

@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_from_partial (a_partial_classes: ARRAYED_LIST [STRING]; a_group: like group; a_base_location: CONF_LOCATION) is
+	make_from_partial (a_partial_classes: ARRAYED_LIST [STRING]; a_group: like group; a_base_location: like base_location) is
 			-- Create.
 		require
 			a_partial_classes_not_void: a_partial_classes /= Void
@@ -70,7 +70,7 @@ feature -- Access
 			Result := base_location.build_path (path, file_name)
 		end
 
-	base_location: CONF_LOCATION
+	base_location: CONF_DIRECTORY_LOCATION
 			-- Base location where the generated files are stored.
 
 	partial_classes: HASH_TABLE [INTEGER, STRING]
@@ -78,7 +78,7 @@ feature -- Access
 
 feature {CONF_ACCESS} -- Update, in compiled only
 
-	set_base_location (a_location: CONF_LOCATION) is
+	set_base_location (a_location: like base_location) is
 			-- Set `base_location' to `a_location'.
 		require
 			a_location_not_void: a_location /= Void
@@ -88,7 +88,7 @@ feature {CONF_ACCESS} -- Update, in compiled only
 			base_location_set: base_location = a_location
 		end
 
-	rebuild_partial (a_partial_classes: ARRAYED_LIST [STRING]; a_group: CONF_CLUSTER; a_base_location: CONF_LOCATION) is
+	rebuild_partial (a_partial_classes: ARRAYED_LIST [STRING]; a_group: CONF_CLUSTER; a_base_location: like base_location) is
 			-- Rebuild.
 		require
 			a_partial_classes_not_void: a_partial_classes /= Void
@@ -125,7 +125,6 @@ feature {CONF_ACCESS} -- Update, in compiled only
 	check_changed is
 			-- Check if any of the partial classes that build this class have changed.
 		local
-			l_str: ANY
 			l_date: INTEGER
 			l_key: STRING
 		do
@@ -136,8 +135,7 @@ feature {CONF_ACCESS} -- Update, in compiled only
 				partial_classes.after
 			loop
 				l_key := partial_classes.key_for_iteration
-				l_str := l_key.to_c
-				eif_date ($l_str, $l_date)
+				l_date := file_modified_date (l_key)
 				is_modified := partial_classes.item_for_iteration /= l_date
 				if is_modified then
 					partial_classes.replace (l_date, l_key)

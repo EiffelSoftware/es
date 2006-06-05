@@ -10,7 +10,12 @@ class
 	EB_EXTERNAL_COMMANDS_EDITOR
 
 inherit
-	EB_MENUABLE_COMMAND
+	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
+		redefine
+			name,
+			executable,
+			new_toolbar_item
+		end
 
 	EB_CONSTANTS
 		export
@@ -49,6 +54,7 @@ feature {NONE} -- Initialization
 					i := i + 1
 				end
 			end
+			enable_displayed
 		end
 
 	loaded: BOOLEAN_REF is
@@ -82,6 +88,79 @@ feature -- Status report
 			create Result.make (0, 9)
 		end
 
+	accelerators: ARRAY [EV_ACCELERATOR] is
+			-- Accelerators for `commands'.
+		local
+			l_shortcut: SHORTCUT_PREFERENCE
+			i: INTEGER
+		once
+			create Result.make (0, 9)
+			from
+				i := 0
+			until
+				i > 9
+			loop
+				l_shortcut := preferences.editor_data.shortcuts.item ("external_command_" + i.out)
+				l_shortcut.change_actions.extend (agent on_shortcut_change (i))
+				Result.put (create{EV_ACCELERATOR}.make_with_key_combination (l_shortcut.key, l_shortcut.is_ctrl, l_shortcut.is_alt, l_shortcut.is_shift), i)
+				Result.item (i).actions.extend (agent execute_command_at_position (i))
+				i := i + 1
+			end
+		ensure
+			Result_attached: Result /= Void
+		end
+
+	pixmap: EV_PIXMAP is
+			-- Pixmap representing the command.
+		do
+			Result := pixmaps.icon_external_command_icon
+		end
+
+	tooltip: STRING is
+			-- Tooltip for the toolbar button.
+		do
+			Result := description
+		end
+
+	name: STRING is "External commands"
+			-- Name of the command. Use to store the command in the
+			-- preferences.
+
+	description: STRING is
+			-- Pop up help on the toolbar button.
+		do
+			Result := Interface_names.l_manage_external_commands
+		end
+
+	executable: BOOLEAN is
+			-- Is Current command executable?
+			-- (True by default)
+		do
+			Result := is_sensitive
+		end
+
+	new_toolbar_item (display_text: BOOLEAN): EB_COMMAND_TOOL_BAR_BUTTON is
+			-- Create a new toolbar button for this command.
+		do
+			Result := Precursor (display_text)
+			Result.set_pixmap (pixmap)
+			Result.set_tooltip (tooltip)
+		end
+
+feature -- Actions
+
+	on_shortcut_change (i: INTEGER) is
+			-- Action to be performed when shortcut for an external command changes
+		require
+			i_valid: i >= 0 and i <= 9
+		local
+			l_shortcut: SHORTCUT_PREFERENCE
+		do
+			l_shortcut := preferences.editor_data.shortcuts.item ("external_command_" + i.out)
+			accelerators.put (create{EV_ACCELERATOR}.make_with_key_combination (l_shortcut.key, l_shortcut.is_ctrl, l_shortcut.is_alt, l_shortcut.is_shift), i)
+			accelerators.item (i).actions.extend (agent execute_command_at_position (i))
+		end
+
 feature -- Basic operations
 
 	execute is
@@ -93,6 +172,16 @@ feature -- Basic operations
 			else
 				dialog.hide
 				dialog.show_modal_to_window (Window_manager.last_focused_development_window.window)
+			end
+		end
+
+	execute_command_at_position (a_pos: INTEGER) is
+			-- Execute command at position `a_pos'.
+		require
+			a_pos_valid: a_pos >=0 and a_pos <= 9
+		do
+			if commands.item (a_pos) /= Void then
+				commands.item (a_pos).execute
 			end
 		end
 

@@ -183,6 +183,8 @@ feature {NONE} -- Access
 
 	processing_locals: BOOLEAN;
 
+	processing_creation_target: BOOLEAN
+
 	has_error_internal: BOOLEAN
 			-- If error when processing.
 			-- For the case we only have old AST,
@@ -317,7 +319,7 @@ feature {NONE} -- Implementation
 				l_rout_ids_not_void: l_rout_ids /= Void
 			end
 			if not has_error_internal then
-				l_feat := feature_in_class (l_static_type.actual_type.associated_class, l_rout_ids)
+				l_feat := feature_in_class (system.class_of_id (l_as.class_id), l_rout_ids)
 			end
 			if not expr_type_visiting then
 				text_formatter_decorator.process_symbol_text (ti_dot)
@@ -609,7 +611,12 @@ feature {NONE} -- Implementation
 			if not has_error_internal then
 				l_feat := feature_in_class (current_class, current_feature.rout_id_set)
 				if not has_error_internal then
-					last_type := l_feat.type
+					if not processing_creation_target or else last_type = Void then
+						last_type := l_feat.type
+					end
+					check
+						last_type_not_void: last_type /= Void
+					end
 				end
 			end
 		end
@@ -656,13 +663,23 @@ feature {NONE} -- Implementation
 					end
 					l_rout_id_set := l_as.routine_ids
 					if l_rout_id_set /= Void then
-						if last_class /= Void then
-							l_feat := feature_in_class (last_class, l_rout_id_set)
-						else
+						if processing_creation_target then
 							l_feat := feature_in_class (current_class, l_rout_id_set)
-							last_type := current_class.actual_type
-							last_class := current_class
+							if last_type /= Void then
+								last_class := last_type.associated_class
+							else
+								last_class := current_class
+							end
+						else
+							if last_type /= Void then
+								l_feat := feature_in_class (last_class, l_rout_id_set)
+							else
+								l_feat := feature_in_class (current_class, l_rout_id_set)
+								last_type := current_class.actual_type
+								last_class := current_class
+							end
 						end
+						check last_class_not_void: last_class /= Void end
 					end
 				end
 				if not expr_type_visiting then
@@ -701,8 +718,10 @@ feature {NONE} -- Implementation
 			if l_as.is_argument then
 				last_type := current_feature.arguments.i_th (l_as.argument_position)
 			elseif l_as.is_local then
-				if locals_for_current_feature.has (l_as.access_name) then
-					last_type := locals_for_current_feature.found_item
+				if last_type = Void then
+					if locals_for_current_feature.has (l_as.access_name) then
+						last_type := locals_for_current_feature.found_item
+					end
 				end
 			elseif l_as.is_tuple_access then
 				if not has_error_internal then
@@ -724,7 +743,17 @@ feature {NONE} -- Implementation
 					if l_feat.is_procedure then
 						reset_last_class_and_type
 					else
-						l_type := l_feat.type.actual_type
+						if processing_creation_target then
+							if last_type = Void then
+								l_type := l_feat.type.actual_type
+								last_type := current_class.actual_type
+							else
+									-- A static type in creation as.
+								l_type := last_type
+							end
+						else
+							l_type := l_feat.type.actual_type
+						end
 						if l_type.is_loose then
 							last_type := l_type.instantiation_in (last_type, last_class.class_id)
 						else
@@ -853,6 +882,8 @@ feature {NONE} -- Implementation
 		end
 
 	process_creation_expr_as (l_as: CREATION_EXPR_AS) is
+		local
+			l_type: TYPE_A
 		do
 			if not expr_type_visiting then
 				text_formatter_decorator.process_keyword_text (ti_create_keyword, Void)
@@ -860,6 +891,7 @@ feature {NONE} -- Implementation
 				text_formatter_decorator.process_symbol_text (ti_l_curly)
 			end
 			l_as.type.process (Current)
+			l_type := last_type
 			if not expr_type_visiting then
 				text_formatter_decorator.process_symbol_text (ti_r_curly)
 			end
@@ -869,6 +901,7 @@ feature {NONE} -- Implementation
 				end
 				l_as.call.process (Current)
 			end
+			last_type := l_type
 		end
 
 	process_type_expr_as (l_as: TYPE_EXPR_AS) is
@@ -1042,8 +1075,6 @@ feature {NONE} -- Implementation
 				l_as.class_type.process (Current)
 				if not expr_type_visiting then
 					text_formatter_decorator.process_symbol_text (ti_r_curly)
-					text_formatter_decorator.put_space
-					text_formatter_decorator.process_symbol_text (ti_question)
 				end
 			else
 				if l_as.expression /= Void then
@@ -1851,6 +1882,7 @@ feature {NONE} -- Implementation
 				text_formatter_decorator.put_space
 				text_formatter_decorator.new_expression
 			end
+			reset_last_class_and_type
 			l_as.source.process (Current)
 		end
 
@@ -1924,13 +1956,16 @@ feature {NONE} -- Implementation
 					text_formatter_decorator.put_space
 				end
 			end
+			processing_creation_target := True
 			l_as.target.process (Current)
+			processing_creation_target := False
 			if l_as.call /= Void then
 				if not expr_type_visiting then
 					text_formatter_decorator.need_dot
 				end
 				l_as.call.process (Current)
 			end
+
 		end
 
 	process_debug_as (l_as: DEBUG_AS) is
@@ -2693,6 +2728,11 @@ feature {NONE} -- Implementation
 		end
 
 	process_type_list_as (l_as: TYPE_LIST_AS) is
+		do
+			process_eiffel_list (l_as)
+		end
+
+	process_type_dec_list_as (l_as: TYPE_DEC_LIST_AS) is
 		do
 			process_eiffel_list (l_as)
 		end

@@ -22,6 +22,8 @@ inherit
 
 	EB_STONABLE
 
+	EB_RECYCLABLE
+
 feature -- Properties
 
 	manager: EB_STONABLE
@@ -37,6 +39,11 @@ feature -- Properties
 
 	stone: STONE
 			-- Stone representing Current
+
+	is_editor_formatter: BOOLEAN is
+			-- Is current formatter use an editor to display information?
+		do
+		end
 
 feature -- Initialization
 
@@ -164,6 +171,9 @@ feature -- Pop up
 			-- Make `widget' visible.
 		do
 			if widget_owner /= Void then
+				if widget_owner.last_widget /= widget then
+					widget_owner.set_widget (widget)
+				end
 				widget_owner.force_display
 			end
 			display_header
@@ -280,6 +290,15 @@ feature {NONE} -- Location
 				manager.set_previous_position (manager.position)
 			end
 			manager.set_previous_pos_container (Current)
+		end
+
+feature -- Recyclable
+
+	recycle is
+			-- Recycle
+		do
+			manager := Void
+			editor := Void
 		end
 
 feature {NONE} -- Implementation

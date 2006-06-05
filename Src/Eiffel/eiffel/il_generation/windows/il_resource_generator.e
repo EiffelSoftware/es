@@ -54,8 +54,9 @@ feature -- Generation
 			l_new_name: STRING
 			nb: INTEGER
 			l_not_is_resource_generated: BOOLEAN
-			l_res: CONF_EXTERNAL_RESSOURCE
+			l_res: CONF_EXTERNAL_RESOURCE
 			l_res_added: SEARCH_TABLE [STRING]
+			l_loc: CONF_FILE_LOCATION
 		do
 			from
 				last_resource_offset := 0
@@ -66,7 +67,8 @@ feature -- Generation
 				create l_res_added.make (10)
 				l_res := resources.item
 				if l_res.is_enabled (universe.conf_state) then
-					l_name := l_res.location
+					create l_loc.make (l_res.location, universe.target)
+					l_name := l_loc.evaluated_path
 					if not l_res_added.has (l_name) then
 						l_res_added.force (l_name)
 						nb := l_name.count
@@ -76,7 +78,7 @@ feature -- Generation
 						if l_not_is_resource_generated then
 							l_new_name := new_compiled_resource_file_name (l_name)
 							generate_resource (l_name, l_new_name)
-							if (create {RAW_FILE}.make (l_new_name)).exists then
+							if is_file_readable (l_new_name) then
 								l_name := resource_name (l_name, True)
 								l_name.append_character ('.')
 								l_name.append (resources_extension)
@@ -85,9 +87,13 @@ feature -- Generation
 								Error_handler.insert_warning (create {VIRC}.make_failed (l_name))
 							end
 						else
-								-- It is either a compiled resource or another type of files,
-								-- we simply embed them in the generated assembly.
-							define_resource (module, l_name, resource_name (l_name, False))
+							if is_file_readable (l_name) then
+									-- It is either a compiled resource or another type of files,
+									-- we simply embed them in the generated assembly.
+								define_resource (module, l_name, resource_name (l_name, False))
+							else
+								error_handler.insert_warning (create {VIRC}.make_resource_file_not_found (l_name))
+							end
 						end
 					end
 				end
@@ -100,7 +106,7 @@ feature -- Access
 	module: IL_MODULE
 			-- PE file in which `resources' will be generated.
 
-	resources: LIST [CONF_EXTERNAL_RESSOURCE]
+	resources: LIST [CONF_EXTERNAL_RESOURCE]
 			-- List of resources.
 
 	last_resource_offset: INTEGER
@@ -124,8 +130,8 @@ feature {NONE} -- Implementation
 			create l_env.make (System.clr_runtime_version)
 			l_rc := l_env.resource_compiler
 
-			if l_rc /= Void and then (create {RAW_FILE}.make (l_rc)).exists then
-				if not (create {RAW_FILE}.make (a_resource)).exists then
+			if l_rc /= Void and then is_file_readable (l_rc) then
+				if not is_file_readable (a_resource) then
 					create l_virc.make_resource_file_not_found (a_resource)
 				else
 					create l_launch
@@ -181,12 +187,14 @@ feature {NONE} -- Implementation
 			a_resource_not_void: a_resource /= Void
 		do
 			if System.in_final_mode then
-				create Result.make_from_string (System.Final_generation_path)
+				create Result.make_from_string (System.project_location.final_path)
 			else
-				create Result.make_from_string (System.Workbench_generation_path)
+				create Result.make_from_string (System.project_location.workbench_path)
 			end
 			Result.set_file_name (resource_name (a_resource, True))
 			Result.add_extension (resources_extension)
+		ensure
+			new_compiled_resource_file_name_not_void: Result /= Void
 		end
 
 	define_resource (a_module: IL_MODULE; a_file, a_name: STRING) is
@@ -194,7 +202,7 @@ feature {NONE} -- Implementation
 		require
 			a_module_not_void: a_module /= Void
 			a_file_not_void: a_file /= Void
-			a_file_exists: (create {RAW_FILE}.make (a_file)).exists
+			a_file_exists: is_file_readable (a_file)
 			a_name_not_void: a_name /= Void
 		local
 			l_token: INTEGER
@@ -202,6 +210,7 @@ feature {NONE} -- Implementation
 			l_data: MANAGED_POINTER
 			l_platform: PLATFORM
 			l_raw_file: RAW_FILE
+			virc: VIRC
 		do
 				-- Get resources of `a_module' if already initialized,
 				-- otherwise create a new one.
@@ -215,7 +224,6 @@ feature {NONE} -- Implementation
 				-- Read content of `a_file' and add it to the list of known resources
 				-- of `a_module'.
 			create l_raw_file.make_open_read (a_file)
-
 				-- Before putting the resource data in `l_data', we need to insert
 				-- the number of bytes in the first 4 bytes of `l_data' so that
 				-- we know exactly how long is the current resource entry.
@@ -238,6 +246,19 @@ feature {NONE} -- Implementation: constants
 
 	resources_extension: STRING is "resources"
 			-- Compiled resources extension.
+
+	is_file_readable (a_filename: STRING): BOOLEAN is
+			-- Is file `a_filename' readable?
+		require
+			a_filename_not_void: a_filename /= Void
+		local
+			l_file: RAW_FILE
+		do
+			if not a_filename.is_empty then
+				create l_file.make (a_filename)
+				Result := l_file.exists and then l_file.is_readable
+			end
+		end
 
 invariant
 	module_not_void: module /= Void

@@ -24,6 +24,8 @@ inherit
 			y_position,
 			screen_x,
 			screen_y,
+			minimum_width,
+			minimum_height,
 			width,
 			height,
 			is_parentable,
@@ -46,9 +48,7 @@ inherit
 		undefine
 			initialize,
 			destroy,
-			parent_imp,
-			minimum_width,
-			minimum_height
+			parent_imp
 		redefine
 			interface,
 			on_key_event,
@@ -110,7 +110,7 @@ feature {NONE} -- Initialization
 
 			signal_connect (l_c_object, app_imp.focus_in_event_string, agent (l_gtk_marshal).window_focus_intermediary (internal_id, True), Void, True)
 			signal_connect (l_c_object, app_imp.focus_out_event_string, agent (l_gtk_marshal).window_focus_intermediary (internal_id, False), Void, True)
-				--Used to handle explicit Window focus handling.
+				-- Used to handle explicit Window focus handling.
 
 			signal_connect (l_c_object, app_imp.configure_event_string, agent (l_gtk_marshal).on_size_allocate_intermediate (internal_id, ?, ?, ?, ?), configure_translate_agent, False)
 
@@ -425,6 +425,7 @@ feature {NONE} -- Implementation
 			a_cs: EV_GTK_C_STRING
 			l_app_imp: like app_implementation
 			a_focus_widget: EV_WIDGET_IMP
+			l_pnd_transporter: EV_PICK_AND_DROPABLE_IMP
 		do
 			Precursor {EV_CONTAINER_IMP} (a_key, a_key_string, a_key_press)
 			l_app_imp := app_implementation
@@ -441,7 +442,11 @@ feature {NONE} -- Implementation
 					end
 					{EV_GTK_EXTERNALS}.signal_emit_stop_by_name (c_object, a_cs.item)
 				end
-				a_focus_widget.on_key_event (a_key, a_key_string, a_key_press)
+				if l_app_imp.pebble_transporter /= Void and then a_key_press and then a_key /= Void and then a_key.code = {EV_KEY_CONSTANTS}.key_escape then
+					l_app_imp.pebble_transporter.end_transport (0, 0, 0, 0, 0, 0, 0, 0)
+				else
+					a_focus_widget.on_key_event (a_key, a_key_string, a_key_press)
+				end
 			end
 		end
 

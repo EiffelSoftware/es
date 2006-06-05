@@ -16,13 +16,13 @@ feature -- Basic validity queries
 	valid_platform (a_platform: INTEGER): BOOLEAN is
 			-- Is `a_platform' a valid platform?
 		do
-			Result := a_platform = Pf_windows or a_platform = Pf_unix or a_platform = Pf_mac
+			Result := platform_names.has (a_platform)
 		end
 
 	valid_build (a_build: INTEGER): BOOLEAN is
 			-- Is `a_build' a valid build?
 		do
-			Result := a_build = Build_workbench or a_build = Build_finalize
+			Result := build_names.has (a_build)
 		end
 
 	valid_warning (a_warning: STRING): BOOLEAN is
@@ -38,15 +38,15 @@ feature -- Basic validity queries
 
 	valid_setting (a_setting: STRING): BOOLEAN is
 			-- Is `a_setting' a valid setting?
-		require
-			a_setting_not_void: a_setting /= Void
-			a_setting_lower: a_setting.is_equal (a_setting.as_lower)
 		do
-			if not a_setting.is_empty then
-				Result := valid_settings.has (a_setting)
-			end
+			Result := a_setting /= Void and then valid_settings.has (a_setting)
 		end
 
+	valid_version_type (a_version_type: STRING): BOOLEAN is
+			-- Is `a_version_type' valid?
+		do
+			Result := a_version_type /= Void and then valid_version_types.has (a_version_type)
+		end
 
 feature {NONE} -- Basic operation
 
@@ -85,6 +85,8 @@ feature {NONE} -- Basic operation
 					platform_names.forth
 				end
 			end
+		ensure
+			Result_valid: Result = 0 or else valid_platform (Result)
 		end
 
 	get_build (a_name: STRING): INTEGER is
@@ -102,6 +104,8 @@ feature {NONE} -- Basic operation
 					build_names.forth
 				end
 			end
+		ensure
+			Result_valid: Result = 0 or else valid_build (Result)
 		end
 
 feature {NONE} -- Onces
@@ -133,7 +137,7 @@ feature {NONE} -- Implementation
 	valid_warnings: SEARCH_TABLE [STRING] is
 			-- The codes of valid warnings.
 		once
-			create Result.make (7)
+			create Result.make (8)
 			Result.force (w_unused_local)
 			Result.force (w_obsolete_class)
 			Result.force (w_obsolete_feature)
@@ -141,6 +145,17 @@ feature {NONE} -- Implementation
 			Result.force (w_syntax)
 			Result.force (w_old_verbatim_strings)
 			Result.force (w_same_uuid)
+			Result.force (w_export_class_missing)
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	valid_version_types: SEARCH_TABLE [STRING] is
+			-- The codes of valid version types.
+		once
+			create Result.make (2)
+			Result.force (v_compiler)
+			Result.force (v_msil_clr)
 		ensure
 			Result_not_void: Result /= Void
 		end

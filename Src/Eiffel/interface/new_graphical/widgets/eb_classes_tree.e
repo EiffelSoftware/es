@@ -356,8 +356,21 @@ feature -- Memory management
 	recycle is
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
+		local
+			l_item: EB_CLASSES_TREE_ITEM
 		do
 			manager.remove_observer (Current)
+			from
+				start
+			until
+				after
+			loop
+				l_item ?= item
+				if l_item /= Void then
+					l_item.recycle
+				end
+				forth
+			end
 			window := Void
 		end
 
@@ -597,7 +610,6 @@ feature {NONE} -- Implementation
 		local
 			l_group, l_next_group: CONF_GROUP
 			l_cluster: CONF_CLUSTER
-			l_libuse: ARRAYED_LIST [CONF_LIBRARY]
 			l_sys: CONF_SYSTEM
 		do
 			l_sys := universe.target.system
@@ -615,22 +627,8 @@ feature {NONE} -- Implementation
 				else
 					l_next_group := Void
 				end
-				l_libuse := l_group.target.used_in_libraries
-				if l_next_group = Void and l_libuse /= Void and then not l_libuse.is_empty then
-						-- if one of the libraries is used in the application target use this one, else just take one
-					from
-						l_libuse.start
-					until
-						l_next_group /= Void or l_libuse.after
-					loop
-						if l_libuse.item.target.system = l_sys then
-							l_next_group := l_libuse.item
-						end
-						l_libuse.forth
-					end
-					if l_next_group = Void then
-						l_next_group := l_libuse.first
-					end
+				if l_next_group = Void then
+					l_next_group := l_group.target.lowest_used_in_library
 				end
 				l_group := l_next_group
 			end

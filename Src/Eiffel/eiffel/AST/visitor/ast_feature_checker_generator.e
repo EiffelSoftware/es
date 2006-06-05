@@ -631,7 +631,7 @@ feature -- Implementation
 			l_type := last_type
 
 				-- Check validity of type declaration for static access
-			if l_type.is_formal or l_type.has_like or l_type.is_none then
+			if l_type.is_none then
 				create l_vsta1.make (l_type.dump, l_as.feature_name)
 				l_vsta1.set_class (context.current_class)
 				l_vsta1.set_location (l_as.class_type.start_location)
@@ -646,6 +646,8 @@ feature -- Implementation
 
 			if not is_inherited then
 				l_as.set_routine_ids (last_routine_id_set)
+				l_type := l_type.actual_type
+				l_type := constrained_type (l_type)
 				l_as.set_class_id (l_type.associated_class.class_id)
 			end
 		end
@@ -1095,8 +1097,7 @@ feature -- Implementation
 								l_access := l_feature.access (l_result_type.type_i)
 							end
 						else
-							l_cl_type_i ?= a_type.type_i
-							l_access := l_feature.access_for_feature (l_result_type.type_i, l_cl_type_i)
+							l_access := l_feature.access_for_feature (l_result_type.type_i, a_type.type_i)
 							l_ext ?= l_access
 							if l_ext /= Void then
 								l_ext.enable_static_call
@@ -3344,6 +3345,7 @@ feature -- Implementation
 			binary_b: BINARY_B
 			unary_b: UNARY_B
 			call_b: CALL_B
+			external_b: EXTERNAL_B
 			arguments: BYTE_LIST [PARAMETER_B]
 			argument: PARAMETER_B
 			assigner_arguments: BYTE_LIST [PARAMETER_B]
@@ -3392,7 +3394,10 @@ feature -- Implementation
 				outer_nested_b ?= target_byte_node
 				binary_b ?= target_byte_node
 				unary_b ?= target_byte_node
-				if outer_nested_b /= Void then
+				external_b ?= target_byte_node
+				if external_b /= Void then
+					--| Do nothing (for external static calls)
+				elseif outer_nested_b /= Void then
 					call_b := outer_nested_b
 						-- Find end of call chain
 					from
@@ -3455,9 +3460,15 @@ feature -- Implementation
 						-- Evaluate assigner command byte node
 					access_b := target_assigner.access (void_type.type_i)
 					access_b.set_parameters (assigner_arguments)
-						-- Replace end of call chain with an assigner command
-					access_b.set_parent (outer_nested_b)
-					outer_nested_b.set_message (access_b)
+					if external_b = Void then
+							-- Replace end of call chain with an assigner command
+						access_b.set_parent (outer_nested_b)
+						outer_nested_b.set_message (access_b)
+					else
+							-- Set external static assigner
+						check call_b_unattached: call_b = Void end
+						call_b := access_b
+					end
 					create l_instr.make (call_b, l_as.start_location.line)
 					l_instr.set_line_pragma (l_as.line_pragma)
 					last_byte_node := l_instr
@@ -4102,7 +4113,7 @@ feature -- Implementation
 			l_constrained_type := constrained_type (last_type.actual_type)
 			if
 				not l_constrained_type.is_integer and then not l_constrained_type.is_character and then
-				not l_constrained_type.is_natural
+				not l_constrained_type.is_natural and then not l_constrained_type.is_enum
 			then
 					-- Error
 				create l_vomb1
@@ -4620,6 +4631,12 @@ feature -- Implementation
 		end
 
 	process_type_list_as (l_as: TYPE_LIST_AS) is
+			-- Process `l_as'.
+		do
+			process_eiffel_list (l_as)
+		end
+
+	process_type_dec_list_as (l_as: TYPE_DEC_LIST_AS) is
 			-- Process `l_as'.
 		do
 			process_eiffel_list (l_as)

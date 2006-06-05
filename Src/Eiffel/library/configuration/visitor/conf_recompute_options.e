@@ -40,8 +40,17 @@ feature -- Visit nodes
 			new_target_group_equivalent: new_target.is_group_equivalent (a_target)
 		local
 			l_pre, l_old_pre: CONF_PRECOMPILE
+			l_new_target: like new_target
 		do
 			if not is_error then
+					-- process parent target
+				if a_target.extends /= Void then
+					l_new_target := new_target
+					new_target := new_target.system.targets.item (a_target.extends.name)
+					a_target.extends.process (Current)
+					new_target := l_new_target
+				end
+
 				a_target.system.set_name (new_target.system.name)
 				a_target.system.set_description (new_target.system.description)
 				a_target.set_version (new_target.internal_version)
@@ -52,11 +61,11 @@ feature -- Visit nodes
 				a_target.set_description (new_target.description)
 				a_target.set_external_includes (new_target.internal_external_include)
 				a_target.set_external_objects (new_target.internal_external_object)
-				a_target.set_external_ressources (new_target.internal_external_ressource)
+				a_target.set_external_ressources (new_target.internal_external_resource)
 				a_target.set_external_make (new_target.internal_external_make)
 				a_target.set_pre_compile (new_target.internal_pre_compile_action)
 				a_target.set_post_compile (new_target.internal_post_compile_action)
-				a_target.set_file_rule (new_target.internal_file_rule)
+				a_target.set_file_rules (new_target.internal_file_rule)
 
 				l_pre := a_target.precompile
 				if l_pre /= Void then

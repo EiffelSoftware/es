@@ -48,13 +48,8 @@ feature -- Status
 			-- Was the last `store' operation successful?
 
 	date_has_changed: BOOLEAN is
-		local
-			str: ANY
-			new_date: INTEGER
 		do
-			str := file_name.to_c
-			eif_date ($str, $new_date)
-			Result := new_date /= file_date
+			Result := file_modified_date (file_name) /= file_date
 		end
 
 feature -- Access, stored in configuration file
@@ -85,6 +80,9 @@ feature -- Access, in compiled only
 	application_target: CONF_TARGET
 			-- Target of application this system is part of.
 
+	level: NATURAL_32
+			-- Level, used for path finding to root of configuration system.
+
 feature -- Update, in compiled only
 
 	set_file_name (a_file_name: like file_name) is
@@ -99,11 +97,8 @@ feature -- Update, in compiled only
 
 	set_file_date is
 			-- Set `file_date' to last modified date of `file_name'.
-		local
-			str: ANY
 		do
-			str := file_name.to_c
-			eif_date ($str, $file_date)
+			file_date := file_modified_date (file_name)
 		end
 
 	set_application_target (a_target: CONF_TARGET) is
@@ -115,6 +110,14 @@ feature -- Update, in compiled only
 			application_target := a_target
 		ensure
 			application_target_set: application_target = a_target
+		end
+
+	set_level (a_level: like level) is
+			-- Set `level' to `level'.
+		do
+			level := a_level
+		ensure
+			level_set: level = a_level
 		end
 
 feature -- Store to disk
@@ -170,11 +173,10 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			-- Set `name' to `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
-			a_name_lower: a_name.is_equal (a_name.as_lower)
 		do
-			name := a_name
+			name := a_name.as_lower
 		ensure
-			name_set: name = a_name
+			name_set: name.is_equal (a_name)
 		end
 
 	set_description (a_description: like description) is
@@ -222,8 +224,52 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	set_library_target (a_target: like library_target) is
 			-- Set `library_target' to `a_target'.
+		require
+			no_overrides: a_target /= Void implies a_target.overrides.is_empty
 		do
 			library_target := a_target
+		end
+
+	set_library_target_by_name (a_target: STRING) is
+			-- Set `library_target' to `a_target'.
+		require
+			a_target_valid: a_target /= Void and then not a_target.is_empty implies targets.has (a_target)
+		do
+			if a_target /= Void and then not a_target.is_empty then
+				set_library_target (targets.item (a_target))
+			else
+				set_library_target (Void)
+			end
+		end
+
+	update_targets (a_target_list: LIST [STRING]; a_factory: CONF_FACTORY) is
+			-- add/remove/reorder targets so that we get the targets in `a_target_list'
+			-- use `a_factory' to create new targets.
+		require
+			a_factory_not_void: a_factory /= Void
+		local
+			l_old_targets: like targets
+		do
+			target_order.wipe_out
+			if a_target_list = Void then
+				targets.clear_all
+			else
+				l_old_targets := targets
+				create targets.make (l_old_targets.count)
+				from
+					a_target_list.start
+				until
+					a_target_list.after
+				loop
+					l_old_targets.search (a_target_list.item)
+					if l_old_targets.found then
+						add_target (l_old_targets.found_item)
+					else
+						add_target (a_factory.new_target (a_target_list.item, Current))
+					end
+					a_target_list.forth
+				end
+			end
 		end
 
 feature -- Equality
@@ -235,7 +281,8 @@ feature -- Equality
 			l_o_target: CONF_TARGET
 		do
 			if targets.count = other.targets.count then
-				Result := True
+				Result := (library_target = Void and other.library_target = Void) or
+					(library_target /= Void and other.library_target /= Void and then library_target.name.is_equal (other.library_target.name) )
 				from
 					targets.start
 					l_o_targets := other.targets
@@ -263,7 +310,7 @@ feature -- Dummy
 
 	compile_all_classes: BOOLEAN
 
-feature {CONF_VISITOR} -- Implementation
+feature {CONF_VISITOR, CONF_ACCESS} -- Implementation
 
 	target_order: ARRAYED_LIST [CONF_TARGET]
 			-- Order the targets appear in configuration file.

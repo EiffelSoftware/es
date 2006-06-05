@@ -56,14 +56,14 @@ feature -- Visit nodes
 					-- set all libraries
 				a_target.set_all_libraries (libraries)
 
-					-- if it is the library or application target, add the target to the libraries
-				if a_target = a_target.system.library_target or a_target = application_target then
-					libraries.force (a_target, a_target.system.uuid)
-				end
-
 				l_pre := a_target.precompile
 				if l_pre /= Void then
 					l_pre.process (Current)
+				end
+
+					-- if it is the library or application target, add the target to the libraries
+				if a_target = a_target.system.library_target or a_target = application_target then
+					libraries.force (a_target, a_target.system.uuid)
 				end
 
 				a_target.libraries.linear_representation.do_if (agent {CONF_LIBRARY}.process (Current), agent {CONF_LIBRARY}.is_enabled (state))
@@ -90,6 +90,9 @@ feature -- Visit nodes
 					l_uuid := l_load.last_uuid
 					l_target := libraries.item (l_uuid)
 					if l_target /= Void then
+						if level + 1 < l_target.system.level then
+							l_target.system.set_level (level + 1)
+						end
 						a_library.set_library_target (l_target)
 						a_library.set_uuid (l_uuid)
 						if a_library.options.is_warning_enabled (w_same_uuid) and not l_path.is_case_insensitive_equal (l_target.system.file_name) then
@@ -106,17 +109,24 @@ feature -- Visit nodes
 							if l_target = Void then
 								add_error (create {CONF_ERROR_NOLIB}.make (a_library.name))
 							else
-									-- set environment to our global environment
-								l_target.set_environ_variables (application_target.environ_variables)
+								if l_target.precompile /= Void and then not a_library.is_precompile then
+									add_error (create {CONF_ERROR_PREINLIB}.make (a_library.name))
+								else
+										-- set environment to our global environment
+									l_target.set_environ_variables (application_target.environ_variables)
 
-								check
-									uuid_correct: l_uuid.is_equal (l_target.system.uuid)
+									check
+										uuid_correct: l_uuid.is_equal (l_target.system.uuid)
+									end
+									libraries.force (l_target, l_uuid)
+
+									level := level + 1
+									l_target.system.set_level (level)
+									l_target.process (Current)
+									level := level - 1
+									a_library.set_library_target (l_target)
+									a_library.set_uuid (l_uuid)
 								end
-								libraries.force (l_target, l_uuid)
-
-								l_target.process (Current)
-								a_library.set_library_target (l_target)
-								a_library.set_uuid (l_uuid)
 							end
 						end
 					end
@@ -152,6 +162,9 @@ feature {NONE} -- Implementation
 
 	libraries: HASH_TABLE [CONF_TARGET, UUID]
 			-- Mapping of processed library targets, mapped with their uuid.
+
+	level: NATURAL_32
+			-- Current system level (application itself is 0, libraries of application 1, ...)
 
 feature {NONE} -- Size constants
 

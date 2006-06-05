@@ -64,7 +64,7 @@ feature -- File creation
 		do
 			if internal_metric_file_name = Void then
 				create directory.make ("Metrics")
-				create internal_metric_file_name.make_from_string (Project_directory_name)
+				create internal_metric_file_name.make_from_string (project_location.location)
 				if not directory.exists then
 					directory.create_dir
 				end
@@ -89,7 +89,7 @@ feature -- File creation
 		do
 			create metric_file.make (name)
 			if not metric_file.exists then
-				create metric_file.make_open_write (name)
+				metric_file.create_read_write
 				metric_file.close
 			end
 		end
@@ -294,7 +294,7 @@ feature -- Recorded_measures
 			metric_file.close
 		rescue
 		end
-		
+
 	measure_notify_all_but (tool: EB_METRIC_OBSERVER) is
 			-- Notify all observers of a change in recorded measures.
 		do
@@ -308,13 +308,13 @@ feature -- Recorded_measures
 			loop
 				if not equal (observer_list.item, tool) then
 					observer_list.item.notify_measure
-				end				
+				end
 				observer_list.forth
 			end
 			metric_file.close
 		rescue
 		end
-	
+
 	set_recompiled (bool: BOOLEAN) is
 			-- Assign `bool' to `is_recompiled' of each_observer.
 		do
@@ -327,7 +327,7 @@ feature -- Recorded_measures
 				observer_list.forth
 			end
 		end
-		
+
 feature -- Observer
 
 	observer_list: ARRAYED_LIST [EB_METRIC_OBSERVER]

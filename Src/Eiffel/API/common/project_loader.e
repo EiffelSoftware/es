@@ -19,9 +19,17 @@ inherit
 	SHARED_EIFFEL_PROJECT
 		export
 			{NONE} all
+			{ANY} eiffel_project
 		end
 
 	PROJECT_CONTEXT
+		rename
+			project_location as compiler_project_location
+		export
+			{NONE} all
+		end
+
+	SYSTEM_CONSTANTS
 		export
 			{NONE} all
 		end
@@ -57,11 +65,13 @@ feature -- Loading
 			create l_factory
 			reset
 			is_recompile_from_scrach := from_scratch
+			project_location := a_project_path
 			if a_file_name = Void or else a_file_name.is_empty then
 					-- We are in the case where no file was specified, so we will try either to read
-					-- Ace or Ace.acex from the current working directory.
+					-- Ace or Ace.ecf from the current working directory.
 				create l_default_file_name.make_from_string (file_system.current_working_directory)
-				l_default_file_name.set_file_name ("Ace.acex")
+				l_default_file_name.set_file_name ("Ace")
+				l_default_file_name.add_extension (config_extension)
 				if is_file_readable (l_default_file_name.string) then
 					config_file_name := l_default_file_name.string
 				else
@@ -70,7 +80,7 @@ feature -- Loading
 					l_default_file_name.set_file_name ("Ace")
 					if is_file_readable (l_default_file_name) then
 							-- Special case where `Ace' can mean either the old or new format.
-						create l_load_ace.make (l_factory)
+						create l_load_ace.make (l_factory, config_extension)
 						l_load_ace.retrieve_configuration (l_default_file_name)
 						if l_load_ace.is_error then
 								-- Most likely it is not an Ace file, so it must be in the new format.
@@ -83,10 +93,11 @@ feature -- Loading
 								agent store_converted ((l_load_ace.last_system), ?))
 						end
 					else
-							-- Report error stating that we could not find `Ace.acex'
+							-- Report error stating that we could not find `Ace.ecf'
 							-- in the current working directory.
 						create l_default_file_name.make_from_string (file_system.current_working_directory)
-						l_default_file_name.set_file_name ("Ace.acex")
+						l_default_file_name.set_file_name ("Ace")
+						l_default_file_name.add_extension (config_extension)
 						report_non_readable_configuration_file (l_default_file_name.string)
 					end
 				end
@@ -101,7 +112,7 @@ feature -- Loading
 					elseif l_ext.is_equal (ace_file_extension) then
 						convert_ace (a_file_name)
 					else
-							-- Case where it is a `acex' extension or another one.
+							-- Case where it is a `ecf' extension or another one.
 						config_file_name := a_file_name.twin
 					end
 				else
@@ -127,17 +138,52 @@ feature -- Loading
 					if not has_error then
 						lace.set_conf_system (l_load_config.last_system)
 						lace.set_target_name (target_name)
-						internal_project_target_name.set_name (target_name)
+						compiler_project_location.set_target (target_name)
 						lace.set_file_name (config_file_name)
 
-							-- Try to retrieve project if already compiled.
-						retrieve_or_create_project (a_project_path)
-
-						if not has_error and then is_compilation_requested then
-							compile_project
+						if not is_project_creation_or_opening_not_requested then
+								-- Try to retrieve project if already compiled.
+							retrieve_or_create_project (a_project_path)
+							if not has_error and then is_compilation_requested then
+								compile_project
+							end
+						else
+							is_project_ok := True
 						end
 					end
 				end
+			end
+		end
+
+	convert_project (a_file_name: STRING) is
+			-- Try to convert `a_filename' from 5.6 format to current without compilation.
+			-- Converted file is stored in `converted_file_name'.
+		require
+			a_file_name_not_void: a_file_name /= Void
+			a_file_name_not_empty: not a_file_name.is_empty
+		local
+			l_pos: INTEGER
+			l_ext: STRING
+			l_convertion_done: BOOLEAN
+		do
+			if is_file_readable (a_file_name) then
+				l_pos := a_file_name.last_index_of ('.', a_file_name.count)
+				if l_pos > 0 and then l_pos < a_file_name.count then
+					l_ext := a_file_name.substring (l_pos + 1, a_file_name.count)
+					if l_ext.is_equal (project_extension) then
+						convert_epr (a_file_name)
+						l_convertion_done := True
+					end
+				end
+				if not l_convertion_done then
+						-- Try to read an Ace file.
+					convert_ace (a_file_name)
+				end
+			else
+				report_cannot_convert_project (a_file_name)
+			end
+			if not has_error then
+				converted_file_name := config_file_name.twin
 			end
 		end
 
@@ -146,8 +192,9 @@ feature -- Access
 	has_error: BOOLEAN
 			-- Did an error occur while trying to load a project file?
 
-	is_new_project: BOOLEAN
-			-- Did the loading of the project resulted in creating a new project?
+	is_project_ok: BOOLEAN
+			-- If `is_project_creation_or_opening_not_requested' is not set, `is_project_ok' states
+			-- whether or not current is properly set for a compilation.
 
 	is_recompile_from_scrach: BOOLEAN
 			-- Is a recompilation from scratch requested?
@@ -158,8 +205,17 @@ feature -- Access
 		do
 		end
 
+	is_project_creation_or_opening_not_requested: BOOLEAN
+			-- Will project be open or created when calling `open_project_file'.
+
 	is_compilation_requested: BOOLEAN
 			-- Is a compilation requested after loading the project?
+
+	ignore_user_configuration_file: BOOLEAN
+			-- Will user configuration file be used for current compilation?
+
+	converted_file_name: STRING
+			-- Name of new format config file chosen by user.
 
 feature -- Settings
 
@@ -169,6 +225,25 @@ feature -- Settings
 			is_compilation_requested := v
 		ensure
 			is_compilation_requested_set: is_compilation_requested = v
+		end
+
+	enable_project_creation_or_opening_not_requested is
+			-- Ensure `is_project_creation_or_opening_not_requested'. This is of course
+			-- only possible if a compilation was not requested.
+		require
+			not_is_compilation_requested: not is_compilation_requested
+		do
+			is_project_creation_or_opening_not_requested := True
+		ensure
+			is_project_creation_or_opening_not_requested_set: is_project_creation_or_opening_not_requested
+		end
+
+	set_ignore_user_configuration_file (v: like ignore_user_configuration_file) is
+			-- Set `ignore_user_configuration_file' with `v'.
+		do
+			ignore_user_configuration_file := v
+		ensure
+			ignore_user_configuration_file_set: ignore_user_configuration_file = v
 		end
 
 feature {NONE} -- Settings
@@ -193,13 +268,11 @@ feature {NONE} -- Settings
 			-- Reset variabes.
 		do
 			has_error := False
-			is_new_project := False
 			is_compilation_requested := False
+			is_project_ok := False
 			config_file_name := Void
 			target_name := Void
 			project_location := Void
-			project_dir := Void
-			project_file := Void
 			should_override_project := False
 		end
 
@@ -214,13 +287,6 @@ feature {NONE} -- Implementation: access
 	project_location: STRING
 			-- Location of project chosen by user.
 
-	project_dir: PROJECT_DIRECTORY
-			-- Location of the project directory.
-
-	project_file: PROJECT_EIFFEL_FILE
-			-- Location of the file where all the information
-			-- about the current project are saved.
-
 	should_override_project: BOOLEAN
 			-- If project was incompatible, did user want to override it
 			-- and create a new one instead?
@@ -228,7 +294,7 @@ feature {NONE} -- Implementation: access
 	is_deletion_cancelled: BOOLEAN
 			-- Was last deletion operation cancelled?
 
-feature {NONE} -- Status report
+feature -- Status report
 
 	is_file_readable (a_file_name: STRING): BOOLEAN is
 			-- Does file of path `a_file_name' exist and is readable?
@@ -266,6 +332,8 @@ feature {NONE} -- Status report
 			Result := l_dir.exists and then l_dir.is_readable
 		end
 
+feature {NONE} -- Status report
+
 	is_config_file_name_valid: BOOLEAN is
 			-- Is `config_file_name' valid? That is to say exist, and is readable?
 		do
@@ -277,7 +345,7 @@ feature {NONE} -- Settings
 
 	convert_epr (a_file_name: STRING) is
 			-- Convert `a_file_name' which is supposely in the `epr' format to the
-			-- new `acex' format.
+			-- new configuration format.
 		require
 			a_file_name_not_void: a_file_name /= Void
 			a_file_name_not_empty: not a_file_name.is_empty
@@ -297,7 +365,7 @@ feature {NONE} -- Settings
 
 	convert_ace (a_file_name: STRING) is
 			-- Convert `a_file_name' which is supposely in the `ace' format to the
-			-- new `acex' format.
+			-- new configuration format.
 		require
 			a_file_name_not_void: a_file_name /= Void
 			a_file_name_not_empty: not a_file_name.is_empty
@@ -309,7 +377,7 @@ feature {NONE} -- Settings
 		do
 				-- load config from ace
 			create l_factory
-			create l_load.make (l_factory)
+			create l_load.make (l_factory, config_extension)
 			l_load.retrieve_configuration (a_file_name)
 			if l_load.is_error then
 				report_cannot_read_ace_file (a_file_name, l_load.last_error)
@@ -356,23 +424,17 @@ feature {NONE} -- Settings
 			-- Retrieve or create project.
 		local
 			msg: STRING
-			l_project_file_name: FILE_NAME
 		do
 				--| Define temporary default directory structure for project
-			lace.process_user_file (a_project_path)
+			lace.process_user_file (a_project_path, not ignore_user_configuration_file)
 
-			Project_directory_name.wipe_out
-			Project_directory_name.set_directory (lace.project_path)
-			create l_project_file_name.make_from_string (temp_target_path)
-			l_project_file_name.set_file_name (project_file_name)
-			create project_file.make (l_project_file_name)
-			create project_dir.make (temp_eiffel_gen_path, project_file)
+			compiler_project_location.set_location (lace.project_path)
 
-				-- If `project_file' actually exists we will try to retrieve it.
+				-- If `compiler_project_location.project_file' actually exists we will try to retrieve it.
 				-- Otherwise, it means that we are trying to compile a new project.
-			if project_file.exists and not is_recompile_from_scrach then
+			if compiler_project_location.project_file.exists and not is_recompile_from_scrach then
 					-- Retrieve the project
-				Eiffel_project.make (project_dir)
+				Eiffel_project.make (compiler_project_location)
 
 				if not eiffel_project.error_occurred then
 						-- Nothing to be done here
@@ -389,16 +451,16 @@ feature {NONE} -- Settings
 							report_incompatible_project (msg)
 						else
 							if Eiffel_project.is_corrupted then
-								msg := Warning_messages.w_project_corrupted (project_dir.name)
+								msg := Warning_messages.w_project_corrupted (compiler_project_location.path)
 								report_project_corrupted (msg)
 							elseif Eiffel_project.retrieval_interrupted then
-								msg := Warning_messages.w_project_interrupted (project_dir.name)
+								msg := Warning_messages.w_project_interrupted (compiler_project_location.path)
 								report_project_retrieval_interrupted (msg)
 							end
 						end
 
 					elseif Eiffel_project.incomplete_project then
-						msg := Warning_messages.w_project_directory_not_exist (project_file.name, project_dir.name)
+						msg := Warning_messages.w_project_directory_not_exist (compiler_project_location.project_file_name, compiler_project_location.path)
 						report_project_incomplete (msg)
 
 					elseif Eiffel_project.read_write_error then
@@ -426,31 +488,23 @@ feature {NONE} -- Settings
 			a_project_path_not_empty: not a_project_path.is_empty
 		local
 			retried: BOOLEAN
-			l_project_file_name: FILE_NAME
 			l_dir: DIRECTORY
 		do
 			if not retried then
 				if a_should_prompt_for_project_location then
 					ask_for_new_project_location (a_project_path)
 					if not has_error then
-						lace.process_user_file (project_location)
-						Project_directory_name.wipe_out
-						Project_directory_name.set_directory (lace.project_path)
-						create l_project_file_name.make_from_string (temp_target_path)
-						l_project_file_name.set_file_name (project_file_name)
-						create project_file.make (l_project_file_name)
-						create project_dir.make (temp_eiffel_gen_path, project_file)
+						lace.process_user_file (project_location, not ignore_user_configuration_file)
+						compiler_project_location.set_location (lace.project_path)
 					end
 				else
 					project_location := a_project_path
 				end
 				if not has_error then
 					create l_dir.make (project_location)
-					eiffel_project.make_new (l_dir, project_dir, True, deletion_agent, cancel_agent)
+					eiffel_project.make_new (l_dir, compiler_project_location, True, deletion_agent, cancel_agent)
 					if is_deletion_cancelled then
 						set_has_error
-					else
-						is_new_project := True
 					end
 				end
 			else
@@ -473,8 +527,9 @@ feature {NONE} -- Settings
 	compile_project is
 			-- Compile newly created project.
 		require
-			is_new_project: is_new_project
+			not_has_error: not has_error
 			is_compilation_requested: is_compilation_requested
+			is_project_ready_for_compilation: not is_project_creation_or_opening_not_requested
 		deferred
 		end
 
@@ -485,6 +540,7 @@ feature {NONE} -- Settings
 			a_targets_not_void: a_targets /= Void
 		local
 			l_not_found: BOOLEAN
+			l_list: DS_ARRAYED_LIST [STRING]
 		do
 			if a_proposed_target /= Void then
 				a_targets.search (a_proposed_target)
@@ -497,7 +553,18 @@ feature {NONE} -- Settings
 				l_not_found := True
 			end
 			if l_not_found then
-				ask_for_target_name (a_targets)
+					-- Order targets in alphabetical order.
+				from
+					create l_list.make_equal (a_targets.count)
+					a_targets.start
+				until
+					a_targets.after
+				loop
+					l_list.put_last (a_targets.key_for_iteration)
+					a_targets.forth
+				end
+				l_list.sort (create {DS_QUICK_SORTER [STRING]}.make (create {KL_COMPARABLE_COMPARATOR [STRING]}.make))
+				ask_for_target_name (l_list)
 			end
 		ensure
 			target_name_set: not has_error implies target_name /= Void and then not target_name.is_empty
@@ -551,8 +618,18 @@ feature {NONE} -- Error reporting
 		end
 
 	report_cannot_save_converted_file (a_file_name: STRING) is
-			-- Report an error when result of a conversion from ace to acex cannot be stored
+			-- Report an error when result of a conversion from ace to new format cannot be stored
 			-- in file `a_file_name'.
+		require
+			a_file_name_not_void: a_file_name /= Void
+			a_file_name_not_empty: not a_file_name.is_empty
+		deferred
+		ensure
+			has_error_set: has_error
+		end
+
+	report_cannot_convert_project (a_file_name: STRING) is
+			-- Report an error when result of a conversion from ace `a_file_name' to new format failed.
 		require
 			a_file_name_not_void: a_file_name /= Void
 			a_file_name_not_empty: not a_file_name.is_empty
@@ -622,7 +699,7 @@ feature {NONE} -- Error reporting
 feature {NONE} -- User interaction
 
 	ask_for_config_name (a_dir_name, a_file_name: STRING; a_action: PROCEDURE [ANY, TUPLE [STRING]]) is
-			-- Given `a_dir_name' and a proposed `a_file_name' name for the new acex format, ask the
+			-- Given `a_dir_name' and a proposed `a_file_name' name for the new format, ask the
 			-- user if he wants to create `a_file_name' or a different name. If he said yes, then
 			-- execute `a_action' with chosen file_name, otherwise do nothing.
 		require
@@ -634,11 +711,13 @@ feature {NONE} -- User interaction
 		deferred
 		end
 
-	ask_for_target_name (a_targets: HASH_TABLE [CONF_TARGET, STRING]) is
+	ask_for_target_name (a_targets: DS_ARRAYED_LIST [STRING]) is
 			-- Ask user to choose one target among `a_targets'.
 		require
 			a_targets_not_void: a_targets /= Void
 		deferred
+		ensure
+			target_name_set: not has_error implies target_name /= Void
 		end
 
 	ask_for_new_project_location (a_project_path: STRING) is
@@ -684,7 +763,7 @@ feature {NONE} -- Implementation
 			a_file_name_not_void: a_file_name /= Void
 			a_file_name_not_empty: not a_file_name.is_empty
 		local
-			line, string_tag, value: STRING
+			line, value: STRING
 			index, line_number: INTEGER
 			retried: BOOLEAN
 			l_storage: RAW_FILE

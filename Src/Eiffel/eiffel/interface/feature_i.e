@@ -1648,7 +1648,12 @@ end
 			current_class := System.current_class
 
 				-- Check if an attribute is redefined in an attribute
-			if old_feature.is_attribute and then not is_attribute then
+				-- of the same expandedness status
+			if old_feature.is_attribute and then
+				(not is_attribute or else
+				old_feature.type.is_expanded /= type.is_expanded or else
+				old_feature.type.is_reference /= type.is_reference)
+			then
 				create vdrd6
 				vdrd6.init (old_feature, Current)
 				Error_handler.insert_error (vdrd6)
@@ -2267,7 +2272,7 @@ feature -- Byte code access
 			Result_exists: Result /= Void
 		end
 
-	access_for_feature (access_type: TYPE_I; static_type: CL_TYPE_I): ACCESS_B is
+	access_for_feature (access_type: TYPE_I; static_type: TYPE_I): ACCESS_B is
 			-- Byte code access for current feature. Dynamic binding if
 			-- `static_type' is Void, otherwise static binding on `static_type'.
 		require

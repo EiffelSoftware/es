@@ -117,6 +117,7 @@ feature -- Initialization
 							-- Load project
 						create l_loader
 						l_loader.set_should_stop_on_prompt (stop_on_error)
+						l_loader.set_ignore_user_configuration_file (is_local_compilation_requested)
 						if old_project_file /= Void then
 							l_loader.open_project_file (old_project_file, Void, Void, is_clean_requested)
 						elseif old_ace_file /= Void then
@@ -132,7 +133,6 @@ feature -- Initialization
 							end
 							ewb_loop ?= command
 							if
-								l_loader.is_new_project and then
 								compilation = Void and then ewb_loop = Void
 							then
 								create {EWB_QUICK_MELT} compilation
@@ -231,6 +231,9 @@ feature -- Properties
 	is_clean_requested: BOOLEAN
 			-- Should we recompile from scratch?
 
+	is_local_compilation_requested: BOOLEAN
+			-- Should we compile without using the configuration file?
+
 	help_messages: HASH_TABLE [STRING, STRING] is
 			-- Help message table
 		once
@@ -240,6 +243,7 @@ feature -- Properties
 			Result.put (aversions_help, aversions_cmd_name)
 			Result.put (config_help, config_cmd_name)
 			Result.put (callers_help, callers_cmd_name)
+			Result.put (callees_help, callees_cmd_name)
 			Result.put (clients_help, clients_cmd_name)
 			Result.put (descendants_help, descendants_cmd_name)
 			Result.put (dversions_help, dversions_cmd_name)
@@ -320,7 +324,7 @@ feature -- Output
 		do
 			io.put_string ("Usage:%N%T")
 			io.put_string (argument (0))
-			io.put_string (" [-help | -version | -batch | -clean | ")
+			io.put_string (" [-help | -version | -batch | -clean | -local | ")
 			add_usage_special_cmds
 			io.put_string ("-loop | -quick_melt | -melt | ")
 			if Has_documentation_generation then
@@ -336,10 +340,11 @@ feature -- Output
 					%%T-aversions [-filter filtername] class feature |%N%
 					%%T-dversions [-filter filtername] class feature |%N%
 					%%T-implementers [-filter filtername] class feature |%N%
-					%%T-callers [-filter filtername] [-show_all] [-assigners | -creators] class feature |%N")
+					%%T-callers [-filter filtername] [-show_all] [-assigners | -creators] class feature |%N%
+					%%T-callees [-filter filtername] [-show_all] [-assignees | -creators] class feature |%N")
 			end
 			io.put_string ("%
-				%%T-config config.acex | -target target |%N%
+				%%T-config config.ecf | -target target |%N%
 				%%T(obsolete) -ace Ace | (obsolete) -project Project_file_name|%N%
 				%%T-stop |%N%
 				%%T-project_path Project_directory_path | -file File]%N")
@@ -440,6 +445,7 @@ feature -- Update
 			show_assigners: BOOLEAN
 			show_creators: BOOLEAN
 			ewb_senders: EWB_SENDERS
+			ewb_callees: EWB_CALLEES
 			l_arg: STRING
 		do
 			filter_name := ""
@@ -593,6 +599,55 @@ feature -- Update
 									ewb_senders.set_assigners_only
 								elseif show_creators then
 									ewb_senders.set_creators_only
+								end
+								command := ewb_senders
+							else
+								option_error := True
+							end
+						end
+					end
+				else
+					option_error := True
+				end
+			elseif has_documentation_generation and then option.is_equal ("-callees") then
+				if current_option < argument_count then
+					if command /= Void then
+						option_error := True
+					else
+						current_option := current_option + 1
+						if argument (current_option).is_equal ("-filter") then
+							if current_option + 1 < argument_count then
+								current_option := current_option + 1
+								filter_name := argument (current_option)
+								current_option := current_option + 1
+							else
+								option_error := True
+							end
+						end
+						if argument (current_option).is_equal ("-show_all") then
+							show_all := True
+							current_option := current_option + 1
+						end
+						if argument (current_option).is_equal ("-assignees") then
+							show_assigners := True
+							current_option := current_option + 1
+						elseif argument (current_option).is_equal ("-creators") then
+							show_creators := True
+							current_option := current_option + 1
+						end
+						if not option_error then
+							if current_option < argument_count then
+								cn := argument (current_option)
+								current_option := current_option + 1
+								fn := argument (current_option)
+								create ewb_callees.make (cn, fn, filter_name)
+								if show_all then
+									ewb_callees.set_all_callees
+								end
+								if show_assigners then
+									ewb_callees.set_assignees_only
+								elseif show_creators then
+									ewb_callees.set_creations_only
 								end
 								command := ewb_senders
 							else
@@ -877,6 +932,10 @@ feature -- Update
 					-- Compiler will delete project and recompile from scratch without
 					-- asking.
 				is_clean_requested := True
+			elseif option.is_equal ("-local") then
+					-- Compiler will not read user configuration file for that project
+				is_local_compilation_requested := True
+
 			elseif option.is_equal ("-file") then
 				if current_option < argument_count then
 					current_option := current_option + 1

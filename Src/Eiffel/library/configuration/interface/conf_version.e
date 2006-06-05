@@ -9,11 +9,15 @@ class
 	CONF_VERSION
 
 inherit
-	comparable
+	COMPARABLE
+		redefine
+			out
+		end
 
 create
 	make,
-	make_version
+	make_version,
+	make_from_string
 
 feature {NONE} -- Initialization
 
@@ -34,6 +38,45 @@ feature {NONE} -- Initialization
 			release := a_release
 			build := a_build
 		end
+
+	make_from_string (a_version: STRING) is
+			-- Parse `a_version' or set an error
+			-- Has to be of format XXX.XXX.XXX.XXX where only the first part is obligatory.
+			-- regexp to match it is \d*(\.\d*){0,3}
+		require
+			a_version_not_void: a_version /= Void
+		local
+			l_parts: LIST [STRING]
+			l_version: ARRAY [NATURAL_16]
+		do
+			create l_version.make (1, 4)
+			l_parts := a_version.split ('.')
+			if l_parts.count = 0 or l_parts.count > 4 then
+				is_error := True
+			else
+				from
+					l_parts.start
+				until
+					is_error or l_parts.after
+				loop
+					if l_parts.item.is_natural_16 then
+						l_version[l_parts.index] := l_parts.item.to_natural_16
+					else
+						is_error := True
+					end
+					l_parts.forth
+				end
+			end
+
+			if not is_error then
+				make_version (l_version[1], l_version[2], l_version[3], l_version[4])
+			end
+		end
+
+feature -- Status
+
+	is_error: BOOLEAN
+			-- Was there an error?
 
 feature -- Access, stored in configuration file
 
@@ -182,6 +225,34 @@ feature -- Comparison
 				(major = other.major and minor < other.minor) or
 				(major = other.major and minor = other.minor and release < other.release) or
 				(major = other.major and minor = other.minor and release = other.release and build < other.build)
+		end
+
+feature -- Output
+
+	out: STRING is
+			-- New string with printable representation.
+		local
+			l_ext: STRING
+		do
+			Result := version
+
+			create l_ext.make_empty
+			if product /= Void and then not product.is_empty then
+				l_ext.append (product+" ")
+			end
+			if company /= Void and then not company.is_empty then
+				l_ext.append (company+" ")
+			end
+			if copyright /= Void and then not copyright.is_empty then
+				l_ext.append ("(c) "+copyright+" ")
+			end
+			if trademark /= Void and then not trademark.is_empty then
+				l_ext.append ("(tm) "+trademark+" ")
+			end
+			if not l_ext.is_empty then
+				l_ext.prune_all_trailing (' ')
+				Result.append (" ("+l_ext+")")
+			end
 		end
 
 indexing

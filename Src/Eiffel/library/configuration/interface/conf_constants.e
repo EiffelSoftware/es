@@ -28,6 +28,11 @@ feature -- Builds
 	build_workbench_name: STRING is "Workbench"
 	build_finalize_name: STRING is "Finalize"
 
+feature -- Version types
+
+	v_compiler: STRING is "compiler"
+	v_msil_clr: STRING is "msil_clr"
+
 feature -- Warnings
 
 	w_unused_local: STRING is "unused_local"
@@ -37,6 +42,7 @@ feature -- Warnings
 	w_syntax: STRING is "syntax"
 	w_old_verbatim_strings: STRING is "old_verbatim_strings"
 	w_same_uuid: STRING is "same_uuid"
+	w_export_class_missing: STRING is "export_class_missing"
 
 feature -- Settings
 
@@ -73,5 +79,9 @@ feature -- Settings
 	s_shared_library_definition: STRING is "shared_library_definition"
 	s_use_cluster_name_as_namespace: STRING is "use_cluster_name_as_namespace"
 	s_use_all_cluster_name_as_namespace: STRING is "use_all_cluster_name_as_namespace"
+
+feature -- Debug
+
+	unnamed_debug: STRING is "__unnamed_debug__"
 
 end

@@ -168,6 +168,7 @@ Src/C_library/zlib/zdll.exp
 Src/C_library/zlib/zlib1.dll
 Src/C_library/zlib/zlib1.res
 Src/Eiffel/Ace/*.epr
+Src/Eiffel/Ace/*.rc
 Src/Eiffel/Ace/*.user
 Src/Eiffel/Ace/*.wb
 Src/Eiffel/Ace/Diagrams
@@ -176,7 +177,6 @@ Src/Eiffel/Ace/EIFGENS
 Src/Eiffel/Ace/EIFGENs
 Src/Eiffel/Ace/Metrics
 Src/Eiffel/Ace/exception_trace.log
-Src/Eiffel/common
 Src/Eiffel/doc/GC/_private
 Src/Eiffel/doc/GC/_vti_cnf
 Src/Eiffel/doc/GC/_vti_pvt
@@ -259,9 +259,7 @@ Src/Eiffel/library/cli_writer/Clib/*.obj
 Src/Eiffel/library/cli_writer/Clib/*.pdb
 Src/Eiffel/library/cli_writer/spec
 Src/Eiffel/parser/parser/output.txt
-Src/dotnet/consumer/ace/*.epr
-Src/dotnet/consumer/ace/*.wb
-Src/dotnet/consumer/ace/EIFGEN
+Src/library/com/spec/msc
 Src/library/gobo
 Src/library/net/spec
 Src/library/vision2/spec/msc

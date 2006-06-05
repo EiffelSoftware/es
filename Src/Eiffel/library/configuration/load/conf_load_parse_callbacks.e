@@ -137,7 +137,7 @@ feature -- Callbacks
 					process_external_attributes
 				when t_external_object then
 					process_external_attributes
-				when t_external_ressource then
+				when t_external_resource then
 					process_external_attributes
 				when t_external_make then
 					process_external_attributes
@@ -185,6 +185,8 @@ feature -- Callbacks
 					process_multithreaded_attributes
 				when t_dotnet then
 					process_dotnet_attributes
+				when t_version_condition then
+					process_version_condition_attributes
 				when t_custom then
 					process_custom_attributes
 				when t_mapping then
@@ -285,7 +287,7 @@ feature -- Callbacks
 					current_external := Void
 				when t_external_object then
 					current_external := Void
-				when t_external_ressource then
+				when t_external_resource then
 					current_external := Void
 				when t_pre_compile_action then
 					current_action := Void
@@ -370,6 +372,7 @@ feature {NONE} -- Implementation attribute processing
 					l_target := last_system.targets.item (l_extends)
 					if l_target /= Void then
 						current_target.set_parent (l_target)
+						group_list := l_target.groups
 					else
 						set_parse_error_message ("Missing parent target: "+l_extends)
 					end
@@ -487,17 +490,9 @@ feature {NONE} -- Implementation attribute processing
 		do
 			current_file_rule := factory.new_file_rule
 			if current_cluster /= Void then
-				if current_cluster.internal_file_rule.is_empty then
-					current_cluster.set_file_rule (current_file_rule)
-				else
-					set_parse_error_message ("Multiple file_rule tags on cluster "+current_cluster.name)
-				end
+				current_cluster.add_file_rule (current_file_rule)
 			elseif current_target /= Void then
-				if current_target.internal_file_rule.is_empty then
-					current_target.set_file_rule (current_file_rule)
-				else
-					set_parse_error_message ("Multiple file_rule tags on target "+current_target.name)
-				end
+				current_target.add_file_rule (current_file_rule)
 			else
 				set_parse_error_message ("Invalid file_rule tag.")
 			end
@@ -507,14 +502,14 @@ feature {NONE} -- Implementation attribute processing
 
 
 	process_external_attributes is
-			-- Process attributes of external_(include|object|ressource) tags.
+			-- Process attributes of external_(include|object|resource) tags.
 		require
 			current_target_not_void: current_target /= Void
 		local
 			l_location: STRING
 			l_inc: CONF_EXTERNAL_INCLUDE
 			l_obj: CONF_EXTERNAL_OBJECT
-			l_res: CONF_EXTERNAL_RESSOURCE
+			l_res: CONF_EXTERNAL_RESOURCE
 			l_make: CONF_EXTERNAL_MAKE
 		do
 			l_location := current_attributes.item (at_location)
@@ -529,14 +524,14 @@ feature {NONE} -- Implementation attribute processing
 					l_obj := factory.new_external_object (l_location)
 					current_target.add_external_object (l_obj)
 					current_external := l_obj
-				when t_external_ressource then
-					l_res := factory.new_external_ressource (l_location)
-					current_target.add_external_ressource (l_res)
+				when t_external_resource then
+					l_res := factory.new_external_resource (l_location)
+					current_target.add_external_resource (l_res)
 					current_external := l_res
 				when t_external_make then
 					l_make := factory.new_external_make (l_location)
 					current_target.add_external_make (l_make)
-					current_external := l_res
+					current_external := l_make
 				else
 					set_parse_error_message ("Invalid external tag.")
 				end
@@ -560,12 +555,14 @@ feature {NONE} -- Implementation attribute processing
 			if l_succeed = Void then
 				l_succeed := "false"
 			end
-			if l_wd = Void then
-				create l_wd.make_empty
-			end
 			if l_command /= Void then
 				if l_succeed.is_boolean then
-					current_action :=  factory.new_action (l_command, l_succeed.to_boolean, factory.new_location_from_path (l_wd, current_target))
+					if l_wd = Void then
+						current_action :=  factory.new_action (l_command, l_succeed.to_boolean, Void)
+					else
+						current_action :=  factory.new_action (l_command, l_succeed.to_boolean, factory.new_location_from_path (l_wd, current_target))
+					end
+
 					inspect
 						current_tag.item
 					when t_pre_compile_action then
@@ -701,8 +698,14 @@ feature {NONE} -- Implementation attribute processing
 				end
 				group_list.force (current_group, l_name)
 				current_target.add_assembly (current_assembly)
+			elseif l_name = Void then
+				set_parse_error_message ("Invalid assembly tag no name specified.")
+			elseif l_location = Void then
+				set_parse_error_message ("Invalid assembly tag "+l_name+" no location specified.")
+			elseif group_list.has (l_name) then
+				set_parse_error_message ("Invalid assembly tag there is already an assembly with the name "+l_name+".")
 			else
-				set_parse_error_message ("Invalid assembly tag.")
+				check should_not_reach: False end
 			end
 		ensure
 			assembly_and_group: not is_error implies current_assembly /= Void and current_group /= Void
@@ -715,7 +718,7 @@ feature {NONE} -- Implementation attribute processing
 		local
 			l_name, l_location, l_readonly, l_prefix, l_recursive: STRING
 			l_parent: CONF_CLUSTER
-			l_loc: CONF_LOCATION
+			l_loc: CONF_DIRECTORY_LOCATION
 		do
 			l_name := current_attributes.item (at_name)
 			l_location := current_attributes.item (at_location)
@@ -898,35 +901,19 @@ feature {NONE} -- Implementation attribute processing
 
 			current_option := factory.new_option
 			if l_trace /= Void and then l_trace.is_boolean then
-				if l_trace.to_boolean then
-					current_option.enable_trace
-				end
+				current_option.set_trace (l_trace.to_boolean)
 			end
 			if l_profile /= Void and then l_profile.is_boolean then
-				if l_profile.to_boolean then
-					current_option.enable_profile
-				end
+				current_option.set_profile (l_profile.to_boolean)
 			end
 			if l_optimize /= Void and then l_optimize.is_boolean then
-				if l_optimize.to_boolean then
-					current_option.enable_optimize
-				else
-					current_option.disable_optimize
-				end
+				current_option.set_optimize (l_optimize.to_boolean)
 			end
 			if l_debug /= Void and then l_debug.is_boolean then
-				if l_debug.to_boolean then
-					current_option.enable_debug
-				else
-					current_option.disable_debug
-				end
+				current_option.set_debug (l_debug.to_boolean)
 			end
 			if l_warning /= Void and then l_warning.is_boolean then
-				if l_warning.to_boolean then
-					current_option.enable_warning
-				else
-					current_option.disable_warning
-				end
+				current_option.set_warning (l_warning.to_boolean)
 			end
 			if l_namespace /= Void then
 				current_option.set_namespace (l_namespace)
@@ -996,7 +983,7 @@ feature {NONE} -- Implementation attribute processing
 			l_group := current_attributes.item (at_group)
 			if l_group /= Void then
 				if l_group.is_equal ("none") then
-					current_cluster.set_dependencies (create {LINKED_SET [CONF_GROUP]}.make)
+					current_cluster.set_dependencies (create {DS_HASH_SET [CONF_GROUP]}.make (0))
 				else
 					ll := uses_list.item (l_group)
 					if ll = Void then
@@ -1038,12 +1025,14 @@ feature {NONE} -- Implementation attribute processing
 	process_condition_attributes is
 			-- Process attributes of a condition tag.
 		require
-			external_or_action_or_group: current_external /= Void or current_action /= Void or current_group /= Void
+			external_or_action_or_group_or_file_rule: current_external /= Void or current_action /= Void or current_group /= Void or current_file_rule /= Void
 		do
 			create current_condition.make
 
 			if not is_error then
-				if current_external /= Void then
+				if current_file_rule /= Void then
+					current_file_rule.add_condition (current_condition)
+				elseif current_external /= Void then
 					current_external.add_condition (current_condition)
 				elseif current_action /= Void then
 					current_action.add_condition (current_condition)
@@ -1064,27 +1053,41 @@ feature {NONE} -- Implementation attribute processing
 		local
 			l_value, l_excluded_value: STRING
 			l_pf: INTEGER
+			l_platforms: LIST [STRING]
+			l_invert: BOOLEAN
 		do
 			l_value := current_attributes.item (at_value)
 			l_excluded_value := current_attributes.item (at_excluded_value)
-			if l_value /= Void and l_excluded_value /= Void then
+			if current_condition.platform /= Void then
+				set_parse_error_message ("Can not have multiple platform specifications in one condition.")
+			elseif l_value /= Void and l_excluded_value /= Void then
 				set_parse_error_message ("Value and exclude attribute in platform condition can not appear at the same time.")
 			elseif l_value = Void and l_excluded_value = Void then
 				set_parse_error_message ("No value or excluded-value specified in platform condition.")
 			elseif l_value /= Void then
-				l_pf := get_platform (l_value)
-				if valid_platform (l_pf) then
-					current_condition.add_platform (l_pf)
-				else
-					set_parse_error_message ("Invalid platform "+l_value+".")
-				end
+				l_platforms := l_value.split (' ')
 			else
-				check l_excluded_value /= Void end
-				l_pf := get_platform (l_excluded_value)
-				if valid_platform (l_pf) then
-					current_condition.exclude_platform (l_pf)
-				else
-					set_parse_error_message ("Invalid platform "+l_excluded_value+".")
+				l_platforms := l_excluded_value.split (' ')
+				l_invert := True
+			end
+
+			if not is_error then
+				from
+					l_platforms.start
+				until
+					l_platforms.after or is_error
+				loop
+					l_pf := get_platform (l_platforms.item)
+					if not valid_platform (l_pf) then
+						set_parse_error_message ("Invalid platform "+l_platforms.item+".")
+					else
+						if l_invert then
+							current_condition.exclude_platform (l_pf)
+						else
+							current_condition.add_platform (l_pf)
+						end
+					end
+					l_platforms.forth
 				end
 			end
 		end
@@ -1095,28 +1098,42 @@ feature {NONE} -- Implementation attribute processing
 			current_condition: current_condition /= Void
 		local
 			l_value, l_excluded_value: STRING
-			l_build: INTEGER
+			l_bld: INTEGER
+			l_builds: LIST [STRING]
+			l_invert: BOOLEAN
 		do
 			l_value := current_attributes.item (at_value)
 			l_excluded_value := current_attributes.item (at_excluded_value)
-			if l_value /= Void and l_excluded_value /= Void then
+			if current_condition.build /= Void then
+				set_parse_error_message ("Can not have multiple build specifications in one condition.")
+			elseif l_value /= Void and l_excluded_value /= Void then
 				set_parse_error_message ("Value and exclude attribute in build condition can not appear at the same time.")
 			elseif l_value = Void and l_excluded_value = Void then
 				set_parse_error_message ("No value or excluded-value specified in build condition.")
 			elseif l_value /= Void then
-				l_build := get_build (l_value)
-				if valid_build (l_build) then
-					current_condition.add_build (l_build)
-				else
-					set_parse_error_message ("Invalid build "+l_value+".")
-				end
+				l_builds := l_value.split (' ')
 			else
-				check l_excluded_value /= Void end
-				l_build := get_build (l_excluded_value)
-				if valid_build (l_build) then
-					current_condition.exclude_build (l_build)
-				else
-					set_parse_error_message ("Invalid build "+l_excluded_value+".")
+				l_builds := l_excluded_value.split (' ')
+				l_invert := True
+			end
+
+			if not is_error then
+				from
+					l_builds.start
+				until
+					l_builds.after or is_error
+				loop
+					l_bld := get_build (l_builds.item)
+					if not valid_build (l_bld) then
+						set_parse_error_message ("Invalid platform "+l_builds.item+".")
+					else
+						if l_invert then
+							current_condition.exclude_build (l_bld)
+						else
+							current_condition.add_build (l_bld)
+						end
+					end
+					l_builds.forth
 				end
 			end
 		end
@@ -1150,6 +1167,45 @@ feature {NONE} -- Implementation attribute processing
 				current_condition.set_dotnet (l_value.to_boolean)
 			end
 		end
+
+	process_version_condition_attributes is
+			-- Process attributes of a condition version tag.
+		require
+			current_condition: current_condition /= Void
+		local
+			l_min, l_max, l_type: STRING
+			l_vers_min, l_vers_max: CONF_VERSION
+		do
+			l_min := current_attributes.item (at_min)
+			l_max := current_attributes.item (at_max)
+			l_type := current_attributes.item (at_type)
+			if l_min /= Void then
+				create l_vers_min.make_from_string (l_min)
+				if l_vers_min.is_error then
+					set_parse_error_message ("Invalid version number in version condition: "+l_min)
+				end
+			end
+			if l_max /= Void then
+				create l_vers_max.make_from_string (l_max)
+				if l_vers_max.is_error then
+					set_parse_error_message ("Invalid version number in version condition: "+l_max)
+				end
+			end
+			if not is_error then
+				if l_min = Void and l_max = Void then
+					set_parse_error_message ("No minimum or maximum version in version condition specified.")
+				elseif l_min /= Void and l_max /= Void and then l_min > l_max then
+					set_parse_error_message ("Minimum version can not be greater than maximum version in version condition.")
+				elseif l_type = Void then
+					set_parse_error_message ("No version type specified in version condition.")
+				elseif not valid_version_type (l_type) then
+					set_parse_error_message ("Invalid version type "+l_type+" in version condition.")
+				else
+					current_condition.add_version (l_vers_min, l_vers_max, l_type)
+				end
+			end
+		end
+
 
 	process_custom_attributes is
 			-- Process attributes of a custom tag.
@@ -1311,7 +1367,7 @@ feature {NONE} -- Implementation state transitions
 				-- => mapping
 				-- => external_include
 				-- => external_object
-				-- => external_ressource
+				-- => external_rssource
 				-- => external_make
 				-- => pre_compile_action
 				-- => post_compile_action
@@ -1331,7 +1387,7 @@ feature {NONE} -- Implementation state transitions
 			l_trans.force (t_mapping, "mapping")
 			l_trans.force (t_external_include, "external_include")
 			l_trans.force (t_external_object, "external_object")
-			l_trans.force (t_external_ressource, "external_ressource")
+			l_trans.force (t_external_resource, "external_resource")
 			l_trans.force (t_external_make, "external_make")
 			l_trans.force (t_pre_compile_action, "pre_compile_action")
 			l_trans.force (t_post_compile_action, "post_compile_action")
@@ -1347,10 +1403,12 @@ feature {NONE} -- Implementation state transitions
 				-- => description
 				-- => exclude
 				-- => include
-			create l_trans.make (3)
+				-- => condition
+			create l_trans.make (4)
 			l_trans.force (t_description, "description")
 			l_trans.force (t_exclude, "exclude")
 			l_trans.force (t_include, "include")
+			l_trans.force (t_condition, "condition")
 			Result.force (l_trans, t_file_rule)
 
 				-- option/class_option
@@ -1375,7 +1433,7 @@ feature {NONE} -- Implementation state transitions
 			Result.force (l_trans, t_pre_compile_action)
 			Result.force (l_trans, t_post_compile_action)
 
-				-- external_(include|object|ressource|make)
+				-- external_(include|object|resource|make)
 				-- => description
 				-- => condition
 			create l_trans.make (2)
@@ -1383,7 +1441,7 @@ feature {NONE} -- Implementation state transitions
 			l_trans.force (t_condition, "condition")
 			Result.force (l_trans, t_external_include)
 			Result.force (l_trans, t_external_object)
-			Result.force (l_trans, t_external_ressource)
+			Result.force (l_trans, t_external_resource)
 			Result.force (l_trans, t_external_make)
 
 				-- assembly
@@ -1430,12 +1488,14 @@ feature {NONE} -- Implementation state transitions
 				-- => build
 				-- => multithreaded
 				-- => dotnet
+				-- => version
 				-- => custom
-			create l_trans.make (5)
+			create l_trans.make (6)
 			l_trans.force (t_platform, "platform")
 			l_trans.force (t_build, "build")
 			l_trans.force (t_multithreaded, "multithreaded")
 			l_trans.force (t_dotnet, "dotnet")
+			l_trans.force (t_version_condition, "version")
 			l_trans.force (t_custom, "custom")
 			Result.force (l_trans, t_condition)
 		ensure
@@ -1531,13 +1591,13 @@ feature {NONE} -- Implementation state transitions
 			l_attr.force (at_class, "class")
 			Result.force (l_attr, t_class_option)
 
-				-- external_(include|object|ressource|make)
+				-- external_(include|object|resource|make)
 				-- * location
 			create l_attr.make (1)
 			l_attr.force (at_location, "location")
 			Result.force (l_attr, t_external_include)
 			Result.force (l_attr, t_external_object)
-			Result.force (l_attr, t_external_ressource)
+			Result.force (l_attr, t_external_resource)
 			Result.force (l_attr, t_external_make)
 
 				-- (pre|post)_compile_action
@@ -1638,6 +1698,13 @@ feature {NONE} -- Implementation state transitions
 			l_attr.force (at_value, "value")
 			Result.force (l_attr, t_dotnet)
 
+				-- version
+			create l_attr.make (3)
+			l_attr.force (at_min, "min")
+			l_attr.force (at_max, "max")
+			l_attr.force (at_type, "type")
+			Result.force (l_attr, t_version_condition)
+
 				-- custom
 				-- * name
 				-- * value
@@ -1698,7 +1765,7 @@ feature {NONE} -- Implementation constants
 	t_setting,
 	t_external_include,
 	t_external_object,
-	t_external_ressource,
+	t_external_resource,
 	t_external_make,
 	t_pre_compile_action,
 	t_post_compile_action,
@@ -1718,6 +1785,7 @@ feature {NONE} -- Implementation constants
 	t_build,
 	t_multithreaded,
 	t_dotnet,
+	t_version_condition,
 	t_custom,
 	t_renaming,
 	t_class_option,
@@ -1770,11 +1838,14 @@ feature {NONE} -- Implementation constants
 	at_invariant,
 	at_loop,
 	at_platform,
+	at_min,
+	at_max,
 	at_old_name,
 	at_new_name,
 	at_group,
 	at_succeed,
 	at_working_directory,
+	at_type,
 	at_warning: INTEGER is unique
 
 feature -- Assertions

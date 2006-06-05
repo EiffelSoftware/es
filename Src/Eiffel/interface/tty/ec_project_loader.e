@@ -81,10 +81,19 @@ feature {NONE} -- Error reporting
 		end
 
 	report_cannot_save_converted_file (a_file_name: STRING) is
-			-- Report an error when result of a conversion from ace to acex cannot be stored
+			-- Report an error when result of a conversion from ace to new format cannot be stored
 			-- in file `a_file_name'.
 		do
 			io.put_string (warning_messages.w_cannot_save_file (a_file_name))
+			io.put_new_line
+			set_has_error
+		end
+
+	report_cannot_convert_project (a_file_name: STRING) is
+			-- Report an error when result of a conversion from ace to new format cannot be stored
+			-- in file `a_file_name'.
+		do
+			io.put_string (warning_messages.w_cannot_convert_file (a_file_name))
 			io.put_new_line
 			set_has_error
 		end
@@ -169,7 +178,7 @@ feature {NONE} -- Error reporting
 feature {NONE} -- User interaction
 
 	ask_for_config_name (a_dir_name, a_file_name: STRING; a_action: PROCEDURE [ANY, TUPLE [STRING]]) is
-			-- Given `a_dir_name' and a proposed `a_file_name' name for the new acex format, ask the
+			-- Given `a_dir_name' and a proposed `a_file_name' name for the new format, ask the
 			-- user if he wants to create `a_file_name' or a different name. If he said yes, then
 			-- execute `a_action' with chosen file_name, otherwise do nothing.
 		local
@@ -177,11 +186,13 @@ feature {NONE} -- User interaction
 			l_answered: BOOLEAN
 		do
 			if should_stop_on_prompt then
-				io.put_string ("You cannot choose the name of the new configuration")
+				io.put_string ("Batch/Stop mode: saving new configuration format as '")
+				io.put_string (a_file_name)
+				io.put_string ("'.")
 				io.put_new_line
-				io.put_string ("because of the -stop/-batch option.")
-				io.put_new_line
-				set_has_error
+				create l_file_name.make_from_string (a_dir_name)
+				l_file_name.set_file_name (a_file_name)
+				a_action.call ([l_file_name.string])
 			else
 				from
 				until
@@ -216,14 +227,14 @@ feature {NONE} -- User interaction
 			end
 		end
 
-	ask_for_target_name (a_targets: HASH_TABLE [CONF_TARGET, STRING]) is
+	ask_for_target_name (a_targets: DS_ARRAYED_LIST [STRING]) is
 			-- Ask user to choose one target among `a_targets'.
 		local
 			l_answered: BOOLEAN
 		do
 			if a_targets.count = 1 then
 				a_targets.start
-				target_name := a_targets.key_for_iteration.twin
+				target_name := a_targets.item_for_iteration.twin
 			else
 				io.put_string ("This project has more than one target: ")
 				io.put_new_line
@@ -233,7 +244,7 @@ feature {NONE} -- User interaction
 					a_targets.after
 				loop
 					io.put_string (" - ")
-					io.put_string (a_targets.key_for_iteration)
+					io.put_string (a_targets.item_for_iteration)
 					io.put_new_line
 					a_targets.forth
 				end

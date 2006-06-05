@@ -23,27 +23,24 @@ create
 
 feature -- Initialization
 
-	initialize (a_content: CLICKABLE_TEXT; a_class_name: STRING; a_group: like group; after_save: BOOLEAN) is
+	initialize (a_content: CLICKABLE_TEXT; a_class: CLASS_I; a_group: like group; after_save: BOOLEAN) is
 			-- initialize the tool before analyzing a class called `a_classname' located in cluster called `a_cluster_name'
 			-- `a_content' is text of this class
 		require
 			a_content_is_not_void: a_content /= Void
-			a_class_name_is_not_void: a_class_name /= Void
+			a_class_is_not_void: a_class /= Void
 			a_group_is_not_void: a_group /= Void
 			a_group_is_vaild: a_group.is_valid
-		local
-			class_c: CLASS_C
 		do
-			current_class_name := a_class_name
+			current_class_i := a_class
 			group := a_group
 			content := a_content
 			is_ready := False
 			can_analyze_current_class := False
 			if not Workbench.is_compiling then
 				initialize_context
-				if current_class_i /= Void and then current_class_i.compiled then
-					class_c := current_class_i.compiled_class
-					generate_ast (class_c, after_save)
+				if current_class_c /= Void then
+					generate_ast (current_class_c, after_save)
 					can_analyze_current_class := last_syntax_error = Void and then current_class_as /= Void
 				end
 			end
@@ -416,6 +413,9 @@ feature {NONE} -- Private Access : indexes
 	invariant_index: INTEGER
 			-- index of "invariant" keyword in text
 
+	last_type : TYPE_A
+			-- Last type stores when `class_c_to_complete_from'
+
 feature {NONE} -- Private Access
 
 	split_string: BOOLEAN
@@ -439,16 +439,18 @@ feature -- Basic Operations
 			l_current_class_c	: CLASS_C
 			l_class_as          : CLASS_AS
 			l_feature_as        : FEATURE_AS
+			l_named_tuple_type	: NAMED_TUPLE_TYPE_A
 		do
 			create insertion
 			insertion.put ("")
 			is_create := False
 			is_static := False
+			last_was_constrained := False
 			create completion_possibilities.make (1, 30)
 			cp_index := 1
 			initialize_context
-			if current_class_i /= Void and then current_class_i.is_compiled then
-				l_current_class_c := current_class_i.compiled_class
+			if current_class_i /= Void and then current_class_c /= Void then
+				l_current_class_c := current_class_c
 				token := cursor.token
 				if token /= Void then
 					cls_c := class_c_to_complete_from (token, cursor, l_current_class_c, False, False)
@@ -469,23 +471,35 @@ feature -- Basic Operations
 
 					-- Build the completion list based on data mined from
 				if cls_c /= Void and then cls_c.has_feature_table then
+
+						-- Add named tuple generics.
+						-- A class c should have been found.
+					l_named_tuple_type ?= last_type
+					if l_named_tuple_type /= Void then
+						add_named_tuple_generics (l_named_tuple_type)
+					end
+
 					feat_table := cls_c.api_feature_table
 					if is_create then
-							-- Creators
-						crtrs := cls_c.creators
-						if crtrs /= Void then
-							from
-								crtrs.start
-							until
-								crtrs.after
-							loop
-								if
-									feat_table.has (crtrs.key_for_iteration) and then
-									crtrs.item_for_iteration.is_exported_to (l_current_class_c)
-								then
-									add_feature_to_completion_possibilities	(feat_table.item (crtrs.key_for_iteration))
+						if last_was_constrained then
+							add_generics_creation_list (cls_c)
+						else
+								-- Creators
+							crtrs := cls_c.creators
+							if crtrs /= Void then
+								from
+									crtrs.start
+								until
+									crtrs.after
+								loop
+									if
+										feat_table.has (crtrs.key_for_iteration) and then
+										crtrs.item_for_iteration.is_exported_to (l_current_class_c)
+									then
+										add_feature_to_completion_possibilities	(feat_table.item (crtrs.key_for_iteration))
+									end
+									crtrs.forth
 								end
-								crtrs.forth
 							end
 						end
 					elseif is_static then
@@ -559,7 +573,7 @@ feature -- Basic Operations
 				if Result = Void or else token_image_is_same_as_word (token, "precursor") then
 					if a_position >= invariant_index then
 						feat := described_feature (token, line, Void)
-					else
+					elseif click_possible (token) then
 						ft := feature_containing (token, line)
 						if ft /= Void then
 							inspect
@@ -654,6 +668,7 @@ feature -- Basic Operations
 					if type /= Void then
 						Result := type.associated_class
 					end
+					last_type := type
 				elseif is_create then
 					if found_class /= Void then
 							-- Looks like it was a creation expression since `found_class' was computed.
@@ -666,6 +681,7 @@ feature -- Basic Operations
 							Result := type.associated_class
 						end
 					end
+					last_type := type
 				elseif is_static or is_parenthesized then
 					Result := found_class
 				end
@@ -788,15 +804,17 @@ feature -- Class names completion
 			-- associated with `cursor'
 		require
 			cursor_not_void: cursor /= Void
+			group_not_void: group /= Void
 		local
 			cname				: STRING
 			class_list			: ARRAYED_LIST [EB_NAME_FOR_COMPLETION]
-			classes				: DS_HASH_SET [CLASS_I]
+			classes				: HASH_TABLE [CONF_CLASS, STRING]
 			token				: EDITOR_TOKEN
 			show_all	: BOOLEAN
 			class_name			: EB_CLASS_FOR_COMPLETION
 			name_name			: EB_NAME_FOR_COMPLETION
 			cnt, i				: INTEGER
+			l_class_i			: CLASS_I
 		do
 			create insertion
 			insertion.put ("")
@@ -815,20 +833,20 @@ feature -- Class names completion
 				end
 			end
 			cname := ""
-
-			classes := universe.all_classes
+			classes := group.accessible_classes
 			create class_list.make (100)
 			from
 				classes.start
 			until
 				classes.after
 			loop
+				l_class_i ?= classes.item_for_iteration
 				if show_all then
-					create class_name.make (classes.item_for_iteration)
+					create class_name.make (l_class_i)
 				 	class_list.extend (class_name)
 				else
-					if matches (classes.item_for_iteration.name, cname) then
-						create class_name.make (classes.item_for_iteration)
+					if matches (l_class_i.name, cname) then
+						create class_name.make (l_class_i)
 					 	class_list.extend (class_name)
 					end
 				end
@@ -843,7 +861,7 @@ feature -- Class names completion
 				until
 					current_class_as.generics.after
 				loop
-					create name_name.make_with_name (current_class_as.generics.item.name)
+					create name_name.make (current_class_as.generics.item.name)
 					class_list.put_front (name_name)
 					current_class_as.generics.forth
 				end
@@ -935,8 +953,7 @@ feature {NONE} -- Completion implementation
 			token_not_void: token /= Void
 			line_not_void: line /= Void
 			token_in_line: line.has_token (token)
-			current_class_i_not_void: current_class_i /= Void
-			current_class_i_compiled: current_class_i.is_compiled
+			current_class_c_not_void: current_class_c /= Void
 		do
 			current_token := token
 			searched_token := token
@@ -953,19 +970,20 @@ feature {NONE} -- Completion implementation
 			-- analyze class text from `current_token' to find type associated with `searched_token'
 		require
 			current_class_i_not_void: current_class_i /= Void
-			current_class_i_compiled: current_class_i.is_compiled
+			current_class_c_not_void: current_class_c /= Void
 		local
 			exp: LINKED_LIST [EDITOR_TOKEN]
 			name: STRING
 			par_cnt: INTEGER
 			processed_class: CLASS_C
 			type: TYPE_A
-			formal: FORMAL_A
 			feat: E_FEATURE
 			l_current_class_c: CLASS_C
+			l_named_tuple_type: NAMED_TUPLE_TYPE_A
+			l_pos: INTEGER
 		do
 			from
-				l_current_class_c := current_class_i.compiled_class
+				l_current_class_c := current_class_c
 				Result := l_current_class_c.actual_type
 				if token_image_is_same_as_word (current_token, "create") then
 					go_to_next_token
@@ -1045,26 +1063,29 @@ feature {NONE} -- Completion implementation
 					end
 					if feat = Void then
 							-- Could not find feature, may be a local or argument
-						Result := type_of_local_entity_named (name)
-						if Result = Void then
-							Result := type_of_constants_or_reserved_word (current_token)
+						type := type_of_local_entity_named (name)
+						if type = Void then
+							type := type_of_constants_or_reserved_word (current_token)
 						end
 					else
-							-- Found feature						
-						error := True
-						Result := feat.type
+							-- Found feature
+						error := False
+						type := feat.type
 					end
 
-					if Result /= Void then
-						if Result.is_like and then Result.actual_type.is_formal then
-								-- Get type from like formal
-							Result := Result.actual_type
+					if type /= Void then
+						if type.is_loose then
+							Result := type.instantiation_in (Result, Result.associated_class.class_id)
+							if Result /= Void then
+								Result := Result.actual_type
+								error := False
+							end
+						else
+							Result := type
+							error := False
 						end
-						if Result.is_formal then
-							formal ?= Result
-							Result := type_from_formal_type (l_current_class_c, formal)
-						end
-						error := False
+					else
+						error := True
 					end
 				end
 				go_to_next_token
@@ -1080,31 +1101,56 @@ feature {NONE} -- Completion implementation
 						go_to_next_token
 					end
 				end
+				if Result /= Void then
+					last_was_constrained := Result.is_formal
+					last_constained_type ?= Result
+					Result := constrained_type (Result)
+				end
 			until
 				error or else after_searched_token
 			loop
 				name := current_token.image.as_lower
+				last_was_constrained := Result.is_formal
+				last_constained_type ?= Result
+				Result := constrained_type (Result)
+				l_named_tuple_type ?= Result
+				check
+					Result_has_associated_class: Result.has_associated_class
+				end
 				processed_class := Result.associated_class
 				error := True
-				if processed_class /= Void and then processed_class.has_feature_table then
-					feat := processed_class.feature_with_name (name)
-					if feat /= Void then
-						if feat.type /= Void then
+				if processed_class /= Void and then processed_class.has_feature_table or l_named_tuple_type /= Void then
+					type := Void
+					if l_named_tuple_type /= Void then
+						l_pos := l_named_tuple_type.label_position (name)
+						if l_pos > 0 then
+							type := l_named_tuple_type.generics.item (l_pos)
+						end
+						if type = Void then
+							feat := processed_class.feature_with_name (name)
+							if feat /= Void and then feat.type /= Void then
+								type := feat.type
+							end
+						end
+					else
+						feat := processed_class.feature_with_name (name)
+						if feat /= Void and then feat.type /= Void then
 							type := feat.type
-							if type.is_formal then
-								formal ?= type
-								if
-									Result /= Void and then
-									Result.has_generics and then
-									Result.generics.valid_index (formal.position)
-								then
-									Result := Result.generics.item (formal.position)
-									error := False
-								end
-							else
-								Result := type
+						end
+					end
+					if type /= Void then
+						if type.is_loose then
+							Result := type.instantiation_in (Result, Result.associated_class.class_id)
+							if Result /= Void then
+								Result := Result.actual_type
+								last_was_constrained := Result.is_formal
+								last_constained_type ?= Result
+								Result := constrained_type (Result)
 								error := False
 							end
+						else
+							Result := type
+							error := False
 						end
 					end
 				end
@@ -1122,18 +1168,6 @@ feature {NONE} -- Completion implementation
 			end
 		end
 
-	type_from_formal_type (a_class_c: CLASS_C; a_formal: FORMAL_A): TYPE_A is
-			-- For `_a_class_c' get actual type of `a_formal'.
-		do
-			if
-				a_class_c /= Void and then
-				a_class_c.generics /= Void and then
-				a_class_c.generics.valid_index (a_formal.position)
-			then
-				Result := a_class_c.constraint (a_formal.position)
-			end
-		end
-
 	add_names_to_completion_list (a_analyser: EB_LOCAL_ENTITIES_FINDER; a_current: CLASS_C) is
 			-- Adds locals and arguments to completion list and adds 'Current' based on `a_current'
 		require
@@ -1142,14 +1176,14 @@ feature {NONE} -- Completion implementation
 			l_basic: EB_NAME_FOR_COMPLETION
 			l_names: DYNAMIC_LIST [STRING]
 		do
-			create l_basic.make_with_name ("Current")
+			create l_basic.make ("Current")
 			insert_in_completion_possibilities (l_basic)
 			if a_analyser.has_return_type then
-				create l_basic.make_with_name ("Result")
+				create l_basic.make ("Result")
 				insert_in_completion_possibilities (l_basic)
 			end
 			if preferences.editor_data.show_any_features then
-				create l_basic.make_with_name ("Void")
+				create l_basic.make ("Void")
 				insert_in_completion_possibilities (l_basic)
 			end
 
@@ -1160,7 +1194,7 @@ feature {NONE} -- Completion implementation
 				until
 					l_names.after
 				loop
-					create l_basic.make_with_name (l_names.item)
+					create l_basic.make (l_names.item)
 					insert_in_completion_possibilities (l_basic)
 
 					l_names.forth
@@ -1240,7 +1274,7 @@ feature {NONE} -- Completion implementation
 			end
 		end
 
-feature {EB_ADDRESS_MANAGER}-- Implementation
+feature {EB_ADDRESS_MANAGER} -- Implementation
 
 	insert_in_completion_possibilities (name: EB_NAME_FOR_COMPLETION) is
 			--
@@ -1411,6 +1445,7 @@ feature {EB_ADDRESS_MANAGER}-- Implementation
 	            	current_feature_as := feature_containing (token, a_cursor.line)
 	            	type := type_from (token, a_cursor.line)
 	            	if type /= Void then
+	            		last_type := type
 		            	found_class := type.associated_class
 		            else
 		            	found_class := Void
@@ -1461,7 +1496,7 @@ feature {EB_ADDRESS_MANAGER}-- Implementation
 								l_continue := l_feat_name.visual_name.is_case_insensitive_equal (l_name)
 								if l_continue then
 										-- Found a precursor match
-									create l_completion_name.make_with_name (once "Precursor")
+									create l_completion_name.make (once "Precursor")
 									if l_parent.type /= Void then
 										l_completion_name.append (" {")
 										l_completion_name.append (l_parent.type.class_name)
@@ -1500,6 +1535,103 @@ feature {EB_ADDRESS_MANAGER}-- Implementation
 					l_parents.forth
 				end
 				l_parents.go_to (l_cursor)
+			end
+		end
+
+	add_named_tuple_generics (a_type: NAMED_TUPLE_TYPE_A) is
+			-- Add named tuple generics to completion possibilities.
+		require
+			a_type_not_void: a_type /= Void
+		local
+			l_feat_name: EB_NAME_WITH_TYPE_FOR_COMPLETION
+			l_array: ARRAY [TYPE_A]
+			i: INTEGER
+			l_type: TYPE_A
+		do
+			from
+				l_array := a_type.generics
+				i := l_array.lower
+			until
+				i > l_array.upper
+			loop
+				l_type := a_type.generics.item (i).actual_type
+				if l_type.is_loose then
+					l_type := l_type.instantiation_in (a_type, a_type.associated_class.class_id)
+						-- Do we need to solve the type?	
+					--l_type := l_type.actual_type
+					--l_type := constrained_type (l_type)
+				end
+				create l_feat_name.make (a_type.label_name (i).twin, l_type)
+				insert_in_completion_possibilities (l_feat_name)
+				i := i + 1
+			end
+		end
+
+	add_generics_creation_list (a_class_c: CLASS_C) is
+			-- Add constrained generics creation to completion possiblities.
+		local
+			l_generics: EIFFEL_LIST [FORMAL_DEC_AS]
+			l_formal_as: FORMAL_DEC_AS
+			l_list: EIFFEL_LIST [FEATURE_NAME]
+			l_table: E_FEATURE_TABLE
+			l_feat: E_FEATURE
+		do
+			check
+				current_class_c /= Void
+			end
+			l_generics := current_class_c.generics
+			l_table := a_class_c.api_feature_table
+			check
+				last_constained_type_not_void: last_constained_type /= Void
+			end
+			l_formal_as := l_generics.i_th (last_constained_type.position)
+			if l_formal_as /= Void then
+				from
+					l_list := l_formal_as.creation_feature_list
+					l_list.start
+				until
+					l_list.after
+				loop
+					if l_table.has (l_list.item.visual_name) then
+						l_feat := l_table.found_item
+						if l_feat.is_exported_to (current_class_c) then
+							add_feature_to_completion_possibilities (l_feat)
+						end
+					end
+					l_list.forth
+				end
+			end
+		end
+
+	click_possible (a_token: EDITOR_TOKEN): BOOLEAN is
+			-- Is `a_token' possibly clickable?
+			-- Does the same checking as `setup_line'
+			-- But here we only check if current token can possibly clickable.
+			-- Take into account that the line have not set up yet.
+		require
+			a_token_not_void: a_token /= Void
+		local
+			token: EDITOR_TOKEN
+		do
+			token := a_token
+			if token.pos_in_text > 0 then
+					-- pos_in_text has already been setup.
+				Result := True
+			elseif token.is_text then
+				if is_keyword (token) then
+					-- no interesting token except precursor
+					if token_image_is_same_as_word (token, "precursor") then
+						Result := True
+					end
+				elseif is_comment (token) then
+					-- no interesting token : skip
+				elseif is_string (token) then
+					-- no interesting token : skip
+					-- We do not care the operator case here.
+				else
+						-- "Normal" text token
+					Result := True
+				end
 			end
 		end
 

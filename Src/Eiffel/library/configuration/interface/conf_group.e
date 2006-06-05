@@ -83,6 +83,8 @@ feature -- Status
 
 	is_used_library: BOOLEAN is
 			-- Is this this cluster used in a library? (as opposed to directly in the application system)
+		require
+			application_target_set: target.application_target /= Void
 		do
 			Result := target.application_target.system /= target.system
 		end
@@ -183,18 +185,18 @@ feature -- Access queries
 		do
 			create Result.make
 			l_class := classes.item (a_class)
-			if l_class /= Void then
+			if l_class /= Void and then not l_class.does_override then
 				Result.extend (l_class)
 			end
 		ensure
 			Result_not_void: Result /= Void
 		end
 
-	accessible_groups: LINKED_SET [CONF_GROUP] is
+	accessible_groups: DS_HASH_SET [CONF_GROUP] is
 			-- Groups that are accessible within `Current'.
 			-- Dependencies if we have them, else everything except `Current'.
-		do
-			create Result.make
+		once
+			create Result.make_default
 		ensure
 			Result_not_void: Result /= Void
 		end
@@ -232,6 +234,16 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			-- Set `is_valid' to False.
 		do
 			is_valid := False
+		ensure
+			not_valid: not is_valid
+		end
+
+	revalidate is
+			-- Set `is_valid' to True.
+		do
+			is_valid := True
+		ensure
+			is_valid: is_valid
 		end
 
 	set_name (a_name: like name) is
@@ -387,11 +399,13 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			overriders_set: overriders = an_overriders
 		end
 
-	add_overriders (an_overrider: CONF_OVERRIDE; a_modified_classes: DS_HASH_SET [CONF_CLASS]) is
-			-- Add `an_overrider' to `overriders', track classes with a changed override in `a_modified_classes'.
+	add_overriders (an_overrider: CONF_OVERRIDE; a_modified_classes, a_removed_classes: DS_HASH_SET [CONF_CLASS]) is
+			-- Add `an_overrider' to `overriders', track classes with a changed override in `a_modified_classes'
+			-- and classes that where compiled but do now override something in `a_removed_classes'.
 		require
 			an_overrider_not_void: an_overrider /= Void
 			a_modified_classes_not_void: a_modified_classes /= Void
+			a_removed_classes_not_void: a_removed_classes /= Void
 			classes_set: classes_set
 		local
 			l_classes: like classes
@@ -431,6 +445,9 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 							else
 								a_modified_classes.remove (l_overridee)
 							end
+							if l_overrider.is_compiled then
+								a_removed_classes.force (l_overrider)
+							end
 						end
 					end
 					l_classes.forth
@@ -446,7 +463,8 @@ feature -- Equality
 			-- Is `other' and `Current' the same with respect to the group layout?
 		do
 			Result := name.is_equal (other.name) and then location.is_equal (other.location) and then
-						equal (name_prefix, other.name_prefix) and then equal (renaming, other.renaming)
+						equal (name_prefix, other.name_prefix) and then equal (renaming, other.renaming) and then
+						equal (internal_conditions, other.internal_conditions)
 		end
 
 feature -- Visit

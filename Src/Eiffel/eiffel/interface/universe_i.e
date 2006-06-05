@@ -22,6 +22,8 @@ inherit
 
 	PROJECT_CONTEXT
 
+	SYSTEM_CONSTANTS
+
 	REFACTORING_HELPER
 
 	CONF_VALIDITY
@@ -62,7 +64,30 @@ feature -- Properties
 		require
 			target_not_void: target /= Void
 		do
-			create Result.make (platform, build, system.has_multithreaded, system.il_generation, target.variables)
+			Result := conf_state_from_target (target)
+		end
+
+	conf_state_from_target (a_target: CONF_TARGET): CONF_STATE is
+			-- Current state, according to `a_target', needed for conditioning.
+		require
+			a_target_not_void: a_target /= Void
+		local
+			l_version: HASH_TABLE [CONF_VERSION, STRING]
+			l_ver: STRING
+			l_clr_version: CONF_VERSION
+		do
+			create l_version.make (1)
+			l_version.force (compiler_version_number, v_compiler)
+			if system.il_generation then
+				l_ver := system.clr_runtime_version.twin
+				l_ver.prune_all_leading ('v')
+				create l_clr_version.make_from_string (l_ver)
+				check
+					valid_clr_version: not l_clr_version.is_error
+				end
+				l_version.force (l_clr_version, v_msil_clr)
+			end
+			create Result.make (platform, build, system.has_multithreaded, system.il_generation, a_target.variables, l_version)
 		end
 
 	platform: INTEGER is
@@ -165,7 +190,7 @@ feature -- Access
 			-- account, but not renamings because of the use as a library.
 			-- We also look at classes in libraries of libraries.
 		require
-			class_name_not_void: class_name /= Void
+			class_name_not_void: class_name /= Void and then not class_name.is_empty
 			class_name_upper: class_name.is_equal (class_name.as_upper)
 		local
 			l_vis: CONF_FIND_CLASS_VISITOR
@@ -190,7 +215,7 @@ feature -- Access
 	compiled_classes_with_name (class_name: STRING): LIST [CLASS_I] is
 			-- Compiled classes with name `class_name' found in the Universe
 		require
-			class_name_not_void: class_name /= Void
+			class_name_not_void: class_name /= Void and then not class_name.is_empty
 			class_name_upper: class_name.is_equal (class_name.as_upper)
 		do
 			Result := classes_with_name (class_name.as_upper)

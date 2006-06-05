@@ -409,6 +409,7 @@ feature -- Memory management
 			feature_view.recycle
 			error_output_view.recycle
 			warning_output_view.recycle
+			address_manager.recycle
 			if has_case then
 					-- Save the diagram
 				editor.store
@@ -421,7 +422,11 @@ feature -- Memory management
 				explorer_bar_item.recycle
 			end
 			notebook.selection_actions.block
+			notebook.selection_actions.wipe_out
+			notebook.drop_actions.wipe_out
+			notebook.drop_actions.set_veto_pebble_function (Void)
 			notebook.destroy
+			address_manager := Void
 			notebook := Void
 			manager := Void
 		end
@@ -528,12 +533,12 @@ feature -- C output pixmap management
 	draw_pixmap_on_tab (a_tab: EV_NOTEBOOK_TAB; a_pixmap: EV_PIXMAP) is
 			-- Draw `a_pixmap' on `a_tab'.
 			-- If `a_pixmap' is Void, clear any existing pixmap on `a_tab'.
-		require
-			a_tab_not_void: a_tab /= Void
 		do
-			a_tab.remove_pixmap
-			if a_pixmap /= Void then
-				a_tab.set_pixmap (a_pixmap)
+			if a_tab /= Void then
+				a_tab.remove_pixmap
+				if a_pixmap /= Void then
+					a_tab.set_pixmap (a_pixmap)
+				end
 			end
 		end
 

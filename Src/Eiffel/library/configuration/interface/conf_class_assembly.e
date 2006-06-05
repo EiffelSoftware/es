@@ -34,9 +34,10 @@ feature {NONE} -- Implementation
 		do
 			group := an_assembly
 			name := a_name
+				-- assembly classes are shared between different assemblies and the renamings are only on the assemblies
+			renamed_name := a_name
 			dotnet_name := a_dotnet_name
 			type_position := a_position
-			set_name
 			create file_name.make_empty
 			create path.make_empty
 			is_valid := True
@@ -55,29 +56,20 @@ feature -- Access
 
 feature {CONF_ACCESS} -- Update
 
+		set_group (a_group: like group) is
+				-- Set `group' to `a_group'.
+			require
+				a_group_ok: a_group /= Void and then a_group.is_valid
+			do
+				group := a_group
+			ensure
+				group_set: group = a_group
+			end
+
 		set_name is
 				-- Compute `renamed_name' from `name'.
-			require else
-				name_set: name /= Void and then not name.is_empty
-			local
-				l_renamings: HASH_TABLE [STRING, STRING]
-				l_old_name: like renamed_name
 			do
-				l_old_name := renamed_name
-				renamed_name := name.twin
-				l_renamings := group.renaming
-				if l_renamings /= Void and then l_renamings.has (name) then
-					renamed_name := l_renamings.item (name)
-				end
-				if group.name_prefix /= Void then
-					renamed_name.prepend (group.name_prefix)
-				end
-					-- if applicable, add new entry and remove old
-				if group.classes /= Void and then l_old_name /= Void and then group.classes.has (l_old_name) then
-					is_renamed := True
-					group.classes.remove (l_old_name)
-					group.classes.force (Current, renamed_name)
-				end
+				-- do nothing
 			end
 
 		set_type_position (a_position: INTEGER) is
@@ -122,7 +114,6 @@ feature {NONE} -- Implementation
 				Result := ""
 			end
 		end
-
 
 	type_position: INTEGER
 			-- Position of class type description.

@@ -13,7 +13,8 @@ inherit
 		redefine
 			is_precompile,
 			process,
-			make
+			make,
+			is_readonly
 		end
 
 create
@@ -37,6 +38,9 @@ feature -- Status
 		once
 			Result := True
 		end
+
+	is_readonly: BOOLEAN is True
+			-- Precompiles are always readonly.
 
 feature -- Visit
 

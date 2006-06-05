@@ -30,6 +30,8 @@ inherit
 			eac_path
 		end
 
+	ISPONSOR
+
 create {COM_CACHE_MANAGER}
 	default_create
 
@@ -62,6 +64,8 @@ feature -- Basic Exportations
 			{SECURITY_MANAGER}.set_security_enabled (False)
 
 			is_initialized := True
+
+			{APP_DOMAIN}.current_domain.add_domain_unload (create {EVENT_HANDLER}.make (Current, $on_unload_top_level_domain))
 		end
 
 	initialize_with_path (a_path, a_clr_version: SYSTEM_STRING) is
@@ -86,14 +90,16 @@ feature -- Basic Exportations
 		local
 			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl ?= new_marshalled_cache_manager.unwrap
-			l_impl.prepare_for_unload
-			if app_domain /= Void then
-				internal_marshalled_cache_manager := Void
-				if not app_domain.is_finalizing_for_unload then
-					{APP_DOMAIN}.unload (app_domain)
+			if internal_marshalled_cache_manager /= Void then
+				l_impl := new_marshalled_cache_manager
+				l_impl.prepare_for_unload
+				if app_domain /= Void then
+					internal_marshalled_cache_manager := Void
+					if not app_domain.is_finalizing_for_unload then
+						{APP_DOMAIN}.unload (app_domain)
+					end
+					app_domain := Void
 				end
-				app_domain := Void
 			end
 		end
 
@@ -103,7 +109,7 @@ feature -- Basic Exportations
 		local
 			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl ?= new_marshalled_cache_manager.unwrap
+			l_impl := new_marshalled_cache_manager
 			l_impl.consume_assembly (a_name, a_version, a_culture, a_key)
 			update_current (l_impl)
 		end
@@ -113,7 +119,7 @@ feature -- Basic Exportations
 		local
 			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl ?= new_marshalled_cache_manager.unwrap
+			l_impl := new_marshalled_cache_manager
 			l_impl.consume_assembly_from_path (a_path)
 			update_current (l_impl)
 		end
@@ -123,7 +129,7 @@ feature -- Basic Exportations
 		local
 			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl ?= new_marshalled_cache_manager.unwrap
+			l_impl := new_marshalled_cache_manager
 			Result := l_impl.relative_folder_name (a_name, a_version, a_culture, a_key)
 
 			update_current (l_impl)
@@ -134,7 +140,7 @@ feature -- Basic Exportations
 		local
 			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl ?= new_marshalled_cache_manager.unwrap
+			l_impl := new_marshalled_cache_manager
 			Result := l_impl.relative_folder_name_from_path (a_path)
 
 			update_current (l_impl)
@@ -145,7 +151,7 @@ feature -- Basic Exportations
 		local
 			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl ?= new_marshalled_cache_manager.unwrap
+			l_impl := new_marshalled_cache_manager
 			Result := l_impl.assembly_info_from_path (a_path)
 
 			update_current (l_impl)
@@ -159,13 +165,32 @@ feature -- Basic Exportations
 		local
 			l_impl: MARSHAL_CACHE_MANAGER
 		do
-			l_impl ?= new_marshalled_cache_manager.unwrap
+			l_impl := new_marshalled_cache_manager
 			Result := l_impl.assembly_info (a_name, a_version, a_culture, a_key)
 
 			update_current (l_impl)
 			if Result = Void then
 				{ISE_RUNTIME}.raise (create {COM_EXCEPTION}.make ("No assembly found", e_fail_code))
 			end
+		end
+
+feature {NONE} -- Event Handlers
+
+	on_unload_top_level_domain (a_sender: SYSTEM_OBJECT; a_args: EVENT_ARGS) is
+			-- Called when top level domain is unloaded.
+		do
+				-- Exits notifier
+			{WINFORMS_APPLICATION}.exit
+		end
+
+feature {NONE} -- Lifetime Service Sponsorship
+
+	renewal (lease: ILEASE): TIME_SPAN is
+			-- Renews lease.
+		do
+			Result := {TIME_SPAN}.from_days (1)
+		ensure then
+			result_not_zero: Result /= {TIME_SPAN}.zero
 		end
 
 feature {NONE} -- Implementation
@@ -181,8 +206,25 @@ feature {NONE} -- Implementation
 			last_error_message := a_impl.last_error_message
 		end
 
-	new_marshalled_cache_manager: OBJECT_HANDLE is
-			-- New instance of `MARSHAL_CACHE_MANAGER' created in `a_app_domain'.
+	new_marshalled_cache_manager: MARSHAL_CACHE_MANAGER is
+			-- New instance of {MARSHAL_CACHE_MANAGER} created in `a_app_domain'.
+		local
+			retried_count: INTEGER
+		do
+			if retried_count = 0 then
+				Result ?= new_marshalled_cache_manager_object.unwrap
+			else
+					-- Resets cached internal manager
+				internal_marshalled_cache_manager := Void
+				Result ?= new_marshalled_cache_manager_object.unwrap
+			end
+		rescue
+			retried_count := retried_count + 1
+			retry
+		end
+
+	new_marshalled_cache_manager_object: OBJECT_HANDLE is
+			-- New instance of {MARSHAL_CACHE_MANAGER} created in `a_app_domain'.
 		indexing
 			metadata: create {COM_VISIBLE_ATTRIBUTE}.make (False) end
 		local
@@ -212,14 +254,11 @@ feature {NONE} -- Implementation
 				l_full_name := l_type.full_name
 				l_inst_obj_handle ?= app_domain.create_instance_from (l_location, l_full_name)
 
-				check
-					created_new_cache_manager: l_inst_obj_handle /= Void
-				end
-				l_lifetime_lease ?= l_inst_obj_handle.initialize_lifetime_service
-				check
-					l_lifetime_lease_not_void: l_lifetime_lease /= Void
-				end
-				l_time_span := l_lifetime_lease.renew ({TIME_SPAN}.from_days (356))
+					-- Add a lifetime lease sponsor for {OBJECT_HANDLER}.
+				check l_inst_obj_handle_attached: l_inst_obj_handle /= Void end
+				l_lifetime_lease ?= l_inst_obj_handle.get_lifetime_service
+				check l_lifetime_lease_attached: l_lifetime_lease /= Void end
+				l_lifetime_lease.register (Current)
 
 					-- Note: When trying to unwrap a dynamically created object using
 					-- APP_DOMAIN.create_instance_from, OBJECT_HANDLE.unwrap will try

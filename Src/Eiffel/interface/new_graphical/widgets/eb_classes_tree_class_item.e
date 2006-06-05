@@ -13,7 +13,8 @@ inherit
 	EB_CLASSES_TREE_ITEM
 		redefine
 			data,
-			set_data
+			set_data,
+			recycle
 		end
 
 	EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
@@ -40,9 +41,12 @@ feature -- Status report
 
 	stone: CLASSI_STONE is
 			-- Class stone representing `Current', can be a classi_stone or a classc_stone.
+		local
+			l_classc: CLASS_C
 		do
-			if data.compiled then
-				create {CLASSC_STONE} Result.make (data.compiled_class)
+			l_classc := data.compiled_representation
+			if l_classc /= Void then
+				create {CLASSC_STONE} Result.make (l_classc)
 			else
 				create {CLASSI_STONE} Result.make (data)
 			end
@@ -92,6 +96,15 @@ feature -- Status setting
 			-- Add a double click action `p' on `Current'.
 		do
 			pointer_double_press_actions.extend (p)
+		end
+
+feature -- Recycle
+
+	recycle is
+			-- Recycle
+		do
+			Precursor {EB_CLASSES_TREE_ITEM}
+			associated_window := Void
 		end
 
 feature {NONE} -- Implementation

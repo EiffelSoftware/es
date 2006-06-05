@@ -67,24 +67,32 @@ feature -- Access: environment variable
 			-- Installation of ISE Eiffel name.
 		once
 			Result := Execution_environment.get ("ISE_EIFFEL")
+		ensure
+			eiffel_installation_dir_name_not_void: Result /= Void
 		end
 
 	Eiffel_library: STRING is
 			-- ISE_LIBRARY name.
 		once
 			Result := Execution_environment.get ("ISE_LIBRARY")
+		ensure
+			eiffel_library_not_void: Result /= Void
 		end
 
 	Eiffel_c_compiler: STRING is
 			-- ISE_C_COMPILER name.
 		once
 			Result := Execution_environment.get ("ISE_C_COMPILER")
+		ensure
+			eiffel_c_compiler_not_void: platform_constants.is_windows implies Result /= Void
 		end
 
 	Eiffel_platform: STRING is
 			-- ISE_PLATFORM name.
 		once
 			Result := Execution_environment.get ("ISE_PLATFORM")
+		ensure
+			eiffel_platform_not_void: Result /= Void
 		end
 
 	Eiffel_defaults: STRING is
@@ -99,10 +107,28 @@ feature -- Access: environment variable
 			Result := Execution_environment.get ("ISE_PROJECTS")
 		end
 
+	eiffel_home: DIRECTORY_NAME is
+			-- Name of directory containing Eiffel specific data.
+		once
+			create Result.make_from_string (Home)
+			if platform_constants.is_windows then
+				Result.extend ("EiffelStudio")
+			else
+				Result.extend (".ec")
+			end
+		ensure
+			Eiffel_home_not_empty: Result /= Void
+		end
+
 	Home: STRING is
 			-- HOME name.
 		once
-			Result := Execution_environment.get ("HOME")
+			Result := execution_environment.home_directory_name
+			if Result = Void then
+				Result := ""
+			end
+		ensure
+			home_not_void: Result /= Void
 		end
 
 	Platform_abstraction: STRING is
@@ -113,6 +139,8 @@ feature -- Access: environment variable
 			else
 				Result := "unix"
 			end
+		ensure
+			platform_abstraction_not_void: Result /= Void
 		end
 
 	short_studio_name: STRING is "studio"
@@ -129,7 +157,7 @@ feature -- Access: file name
 				Result := "HKEY_CURRENT_USER\Software\ISE\Eiffel" +
 					Major_version_number.out + Minor_version_number.out + "\ec\Preferences"
 			else
-				create fname.make_from_string (Execution_environment.home_directory_name)
+				create fname.make_from_string (eiffel_home)
 				fname.set_file_name (".ecrc" + Major_version_number.out + Minor_version_number.out)
 				Result := fname
 			end

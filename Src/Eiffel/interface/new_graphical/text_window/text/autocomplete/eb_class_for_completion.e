@@ -11,6 +11,8 @@ class
 
 inherit
 	EB_NAME_FOR_COMPLETION
+		rename
+			make as make_old
 		redefine
 			icon,
 			tooltip_text,
@@ -31,7 +33,7 @@ feature {NONE} -- Initialization
 		require
 			a_class_not_void: a_class /= Void
 		do
-			make_with_name (a_class.name)
+			make_old (a_class.name)
 			associated_class := a_class
 		ensure
 			associated_class_set: associated_class = a_class

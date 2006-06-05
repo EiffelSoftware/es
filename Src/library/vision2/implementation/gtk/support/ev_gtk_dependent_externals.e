@@ -10,9 +10,21 @@ class
 
 feature -- Externals
 
+	frozen gtk_widget_toplevel (a_widget: POINTER): BOOLEAN is
+		external
+			"C macro use <gtk/gtk.h>"
+		alias
+			"GTK_WIDGET_TOPLEVEL"
+		end
+
+	frozen gtk_fixed_set_has_window (a_fixed: POINTER; has_window: BOOLEAN) is
+		external
+			"C signature (GtkFixed*, gboolean) use <gtk/gtk.h>"
+		end
+
 	frozen gdk_selection_property_get (a_window: POINTER; a_data: TYPED_POINTER [POINTER]; a_target: POINTER; prop_type: TYPED_POINTER [INTEGER]): INTEGER is
 		external
-			"C signature (GdkWindow*, GdkAtom, GdkAtom*, gint*): gint use <gtk/gtk.h>"
+			"C signature (GdkWindow*, guchar**, GdkAtom*, gint*): gint use <gtk/gtk.h>"
 		end
 
 	frozen gdk_selection_convert (a_requestor, a_selection, a_target: POINTER; a_time: NATURAL_32) is
@@ -3136,6 +3148,11 @@ feature -- Externals
 	frozen gtk_image_set_from_pixmap (a_image: POINTER; a_pixmap: POINTER; a_mask: POINTER) is
 		external
 			"C signature (GtkImage*, GdkPixmap*, GdkBitmap*) use <gtk/gtk.h>"
+		end
+
+	frozen gtk_image_set_from_pixbuf (a_image: POINTER; a_pixbuf: POINTER) is
+		external
+			"C signature (GtkImage*, GdkPixbuf*) use <gtk/gtk.h>"
 		end
 
 	frozen gtk_image_get_pixmap (a_image: POINTER; a_pixmap: POINTER; a_mask: POINTER) is

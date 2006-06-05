@@ -351,6 +351,22 @@ Delivery/studio/config/vxworks/templates/emain.template -text
 Delivery/studio/config/windows/bcb/appl.ico -text
 Delivery/studio/config/windows/gnu/gnu.ico -text
 Delivery/studio/config/windows/msc/appl.ico -text
+Delivery/studio/help/errors/short/VD00 -text
+Delivery/studio/help/errors/short/VD45 -text
+Delivery/studio/help/errors/short/VD69 -text
+Delivery/studio/help/errors/short/VD70 -text
+Delivery/studio/help/errors/short/VD71 -text
+Delivery/studio/help/errors/short/VD72 -text
+Delivery/studio/help/errors/short/VD73 -text
+Delivery/studio/help/errors/short/VD74 -text
+Delivery/studio/help/errors/short/VD75 -text
+Delivery/studio/help/errors/short/VD77 -text
+Delivery/studio/help/errors/short/VD78 -text
+Delivery/studio/help/errors/short/VD80 -text
+Delivery/studio/help/errors/short/VD83 -text
+Delivery/studio/help/errors/short/VD84 -text
+Delivery/studio/help/errors/short/VD85 -text
+Delivery/studio/help/errors/short/VTCM -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/Eiffel_tower.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/eiffel_wizard.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/eiffel_wizard_icon.png -text
@@ -1527,6 +1543,7 @@ Delivery/xmldoc/tools/wizards/com/images/wizard-1.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-12.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-13.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-8.gif -text
+Src/C/CONFIGS/macosx-x86 -text
 Src/C/ipc/daemon/estudio.ico -text
 Src/C/ipc/daemon/splash.bmp -text
 Src/C/rt_converter.exe -text
@@ -1575,7 +1592,6 @@ Src/Eiffel/interface/new_graphical/tools/debugging/es_objects_grid_row.e -text
 Src/Eiffel/interface/new_graphical/tools/eb_error_output_tool.e -text
 Src/Eiffel/interface/new_graphical/tools/eb_warning_output_tool.e -text
 Src/Eiffel/interface/new_graphical/widgets/eb_add_remove_class_list.e -text
-Src/Eiffel/interface/new_graphical/widgets/es_grid_scrolling_behavior.e -text
 Src/Eiffel/library/configuration/lace/lace_compile/classname_finder.l -text
 Src/Eiffel/library/configuration/lace/lace_compile/lace.l -text
 Src/Eiffel/library/configuration/lace/lace_compile/make.cmd -text
@@ -1659,6 +1675,8 @@ Src/dotnet/codedom_provider_2.0/tools/manager/icons/new.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/new_wizard.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/revert.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/save.png -text
+Src/dotnet/consumer/resources/consumer.resx -text
+Src/dotnet/consumer/resources/tray_icon.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_all_features.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_ancestors.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_assembly.ico -text
@@ -1909,6 +1927,7 @@ Src/examples/wel/xcell/spades9.bmp svneol=native#unset
 Src/examples/wel/xcell/start.bmp svneol=native#unset
 Src/examples/wel/xcell/xcell.bmp svneol=native#unset
 Src/examples/wel/xcell/xcell_demo.ico svneol=native#unset
+Src/framework/README.TXT -text
 Src/help/wizards/estore1/bmp/essai.bmp -text
 Src/help/wizards/estore1/bmp/essai2.bmp -text
 Src/help/wizards/estore2/bmp/Eiffel_wizard_new.bmp svneol=native#unset
@@ -1924,6 +1943,7 @@ Src/help/wizards/eweb/pixmaps/Eiffel_wizard_new.bmp -text
 Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/wizard.ico -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
+Src/library/base_extension/base_extension.ecf -text
 Src/library/diff/diff.e -text
 Src/library/diff/diff_index_link.e -text
 Src/library/diff/diff_line.e -text
@@ -1978,6 +1998,7 @@ Src/library/editor/bitmaps/cut_selection.png -text
 Src/library/editor/bitmaps/icon_close_color.png -text
 Src/library/editor/bitmaps/left_scroll_arrow.png -text
 Src/library/editor/bitmaps/right_scroll_arrow.png -text
+Src/library/gobo_extension/gobo_extension.ecf -text
 Src/library/i18n/mo_files/cin.mo -text
 Src/library/i18n/mo_files/it.mo -text
 Src/library/i18n/po_files/interface_names.po -text

@@ -13,6 +13,12 @@ inherit
 
 	CONF_ACCESS
 
+	CONF_CONSTANTS
+
+	CONF_VALIDITY
+
+	REFACTORING_HELPER
+
 create
 	make
 
@@ -30,11 +36,11 @@ feature {NONE} -- Initialization
 			create internal_clusters.make (1)
 			create internal_assemblies.make (0)
 
-			create internal_file_rule.make
+			create internal_file_rule.make (0)
 
 			create internal_external_include.make (1)
 			create internal_external_object.make (1)
-			create internal_external_ressource.make (1)
+			create internal_external_resource.make (1)
 			create internal_external_make.make (1)
 			create internal_pre_compile_action.make (1)
 			create internal_post_compile_action.make (1)
@@ -88,6 +94,27 @@ feature -- Access, in compiled only, not stored to configuration file
 
 	used_in_libraries: ARRAYED_LIST [CONF_LIBRARY]
 			-- Libraries this target is used in.
+
+	lowest_used_in_library: CONF_LIBRARY is
+			-- Library which uses this target and has the lowest level.
+		local
+			l_level: NATURAL_32
+		do
+			if used_in_libraries /= Void then
+				l_level := {NATURAL_32}.max_value
+				from
+					used_in_libraries.start
+				until
+					used_in_libraries.after
+				loop
+					if l_level > used_in_libraries.item.target.system.level then
+						Result := used_in_libraries.item
+						l_level := used_in_libraries.item.target.system.level
+					end
+					used_in_libraries.forth
+				end
+			end
+		end
 
 	all_libraries: HASH_TABLE [CONF_TARGET, UUID]
 			-- All libraries in current system.
@@ -200,19 +227,18 @@ feature -- Access queries
 			end
 		end
 
-	file_rule: CONF_FILE_RULE is
+	file_rule: like internal_file_rule is
 			-- Rules for files to be included or excluded.
 		do
-			create Result.make
-			Result.merge (internal_file_rule)
+			Result := internal_file_rule.twin
 			if extends /= Void then
-				Result.merge (extends.file_rule)
+				Result.append (extends.file_rule)
 			end
 		ensure
 			Result_not_void: Result /= Void
 		end
 
-	options: CONF_OPTION is
+	options: like internal_options is
 			-- Options (Debuglevel, assertions, ...)
 		do
 			if internal_options /= Void then
@@ -274,7 +300,7 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	all_external_ressource: like internal_external_ressource is
+	all_external_resource: like internal_external_resource is
 			-- All external ressource files including the ones from libraries.
 		require
 			all_libraries_set: all_libraries /= Void
@@ -285,7 +311,7 @@ feature -- Access queries
 			until
 				all_libraries.after
 			loop
-				Result.append (all_libraries.item_for_iteration.external_ressource)
+				Result.append (all_libraries.item_for_iteration.external_resource)
 				all_libraries.forth
 			end
 		ensure
@@ -343,12 +369,12 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	external_ressource: like internal_external_ressource is
+	external_resource: like internal_external_resource is
 			-- Global external ressource files.
 		do
-			Result := internal_external_ressource.twin
+			Result := internal_external_resource.twin
 			if extends /= Void then
-				Result.append (extends.external_ressource)
+				Result.append (extends.external_resource)
 			end
 		ensure
 			Result_not_void: Result /= Void
@@ -456,6 +482,310 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
+feature -- Access queries for settings
+
+	setting_boolean (a_name: STRING): BOOLEAN is
+			-- Get value of boolean setting with `a_name'.
+		require
+			a_name_valid: valid_setting (a_name)
+		local
+			l_settings: like settings
+		do
+			l_settings := settings
+			l_settings.search (a_name)
+			if l_settings.found then
+				check l_settings.found_item.is_boolean end
+				if not a_name.is_equal (s_array_optimization) then
+					Result := l_settings.found_item.to_boolean
+				end
+			else
+				if
+					a_name.is_equal (s_check_generic_creation_constraint) or
+					a_name.is_equal (s_il_verifiable) or
+					a_name.is_equal (s_use_cluster_name_as_namespace) or
+					a_name.is_equal (s_use_all_cluster_name_as_namespace)
+				then
+					Result := True
+				else
+					Result := False
+				end
+			end
+		end
+
+	setting_address_expression: BOOLEAN is
+			-- Value of the address_expression setting.
+		do
+			Result := setting_boolean (s_address_expression)
+		end
+
+	setting_array_optimization: BOOLEAN is
+			-- Value of the array_optimization setting.
+		do
+			Result := setting_boolean (s_array_optimization)
+		end
+
+	setting_check_generic_creation_constraint: BOOLEAN is
+			-- Value of the check_generic_creation_constraint setting.
+		do
+			Result := setting_boolean (s_check_generic_creation_constraint)
+		end
+
+	setting_check_vape: BOOLEAN is
+			-- Value for the check_vape setting.
+		do
+			Result := setting_boolean (s_check_vape)
+		end
+
+	setting_console_application: BOOLEAN is
+			-- Value for the console_application setting.
+		do
+			Result := setting_boolean (s_console_application)
+		end
+
+	setting_cls_compliant: BOOLEAN is
+			-- Value for the cls_compliant setting.
+		do
+			Result := setting_boolean (s_cls_compliant)
+		end
+
+	setting_dead_code_removal: BOOLEAN is
+			-- Value for the dead_code_removal setting.
+		do
+			Result := setting_boolean (s_dead_code_removal)
+		end
+
+	setting_dotnet_naming_convention: BOOLEAN is
+			-- Value for the dotnet_naming_convention setting.
+		do
+			Result := setting_boolean (s_dotnet_naming_convention)
+		end
+
+	setting_dynamic_runtime: BOOLEAN is
+			-- Value for the dynamic_runtime setting.
+		do
+			Result := setting_boolean (s_dynamic_runtime)
+		end
+
+	setting_executable_name: STRING is
+			-- Value for the executable_name setting.
+		do
+			Result := settings.item (s_executable_name)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_exception_trace: BOOLEAN is
+			-- Value for the exception_trace setting.
+		do
+			Result := setting_boolean (s_exception_trace)
+		end
+
+	setting_full_type_checking: BOOLEAN is
+			-- Value for the full_type_checking setting.
+		do
+			Result := setting_boolean (s_full_type_checking)
+		end
+
+	setting_il_verifiable: BOOLEAN is
+			-- Value for the console_application setting.
+		do
+			Result := setting_boolean (s_il_verifiable)
+		end
+
+	setting_inlining: BOOLEAN is
+			-- Value for the inlining setting.
+		do
+			Result := setting_boolean (s_inlining)
+		end
+
+	setting_inlining_size: NATURAL_8 is
+			-- Value for the inlining_size setting.
+		local
+			l_settings: like settings
+		do
+			l_settings := settings
+			l_settings.search (s_inlining_size)
+			if l_settings.found then
+				check l_settings.found_item.is_natural_8 and then l_settings.found_item.to_natural_8 <= 100 end
+				Result := l_settings.found_item.to_natural_8
+			else
+				Result := 4
+			end
+		end
+
+	setting_java_generation: BOOLEAN is
+			-- Value for the java_generation setting.
+		do
+			Result := setting_boolean (s_java_generation)
+		end
+
+	setting_line_generation: BOOLEAN is
+			-- Value for the line_generation setting.
+		do
+			Result := setting_boolean (s_line_generation)
+		end
+
+	setting_metadata_cache_path: STRING is
+			-- Value for the metadata_cache_path setting.
+		do
+			Result := settings.item (s_metadata_cache_path)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_msil_assembly_compatibility: STRING is
+			-- Value for the msil_assembly_compatibility setting.
+		do
+			Result := settings.item (s_msil_assembly_compatibility)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_msil_classes_per_module: NATURAL_16 is
+			-- Value for the msil_classes_per_module setting.
+		local
+			l_settings: like settings
+		do
+			l_settings := settings
+			l_settings.search (s_msil_classes_per_module)
+			if l_settings.found then
+				check l_settings.found_item.is_natural_16 and then l_settings.found_item.to_natural_16 > 0 end
+				Result := l_settings.found_item.to_natural_16
+			else
+				Result := 0
+			end
+		end
+
+	setting_msil_clr_version: STRING is
+			-- Value for the msil_clr_version setting.
+		do
+			Result := settings.item (s_msil_clr_version)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_msil_culture: STRING is
+			-- Value for the msil_culture setting.
+		do
+			Result := settings.item (s_msil_culture)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_msil_generation: BOOLEAN is
+			-- Value for the msil_generation setting.
+		do
+			Result := setting_boolean (s_msil_generation)
+		end
+
+	setting_msil_generation_type: STRING is
+			-- Value for the msil_generation_type setting.
+		local
+			l_settings: like settings
+		do
+			l_settings := settings
+			l_settings.search (s_msil_generation_type)
+			if l_settings.found then
+				check l_settings.found_item.is_case_insensitive_equal ("exe") or l_settings.found_item.is_case_insensitive_equal ("dll") end
+				Result := l_settings.found_item
+			else
+				Result := "exe"
+			end
+		end
+
+	setting_msil_key_file_name: STRING is
+			-- Value for the msil_key_file_name setting.
+		do
+			Result := settings.item (s_msil_key_file_name)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_msil_use_optimized_precompile: BOOLEAN is
+			-- Value for the msil_use_optimized_precompile setting.
+		do
+			Result := setting_boolean (s_msil_use_optimized_precompile)
+		end
+
+	setting_multithreaded: BOOLEAN is
+			-- Value for the multithreaded setting.
+		do
+			Result := setting_boolean (s_multithreaded)
+		end
+
+	setting_old_verbatim_strings: BOOLEAN is
+			-- Value for the old_verbatim_strings setting.
+		do
+			Result := setting_boolean (s_old_verbatim_strings)
+		end
+
+	setting_platform: STRING is
+			-- Value for the platform setting.
+		local
+			l_settings: like settings
+		do
+			l_settings := settings
+			l_settings.search (s_platform)
+			if l_settings.found then
+				check get_platform (l_settings.found_item) /= 0 end
+				Result := l_settings.found_item.as_lower
+			else
+				Result := ""
+			end
+		end
+
+	setting_external_runtime: STRING is
+			-- Value for the external_runtime setting.
+		do
+			Result := settings.item (s_external_runtime)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_shared_library_definition: STRING is
+			-- Value for the shared_library_definition setting.
+		do
+			Result := settings.item (s_shared_library_definition)
+			if Result = Void then
+				create Result.make_empty
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	setting_use_cluster_name_as_namespace: BOOLEAN is
+			-- Value for the use_cluster_name_as_namespace setting.
+		do
+			Result := setting_boolean (s_use_cluster_name_as_namespace)
+		end
+
+	setting_use_all_cluster_name_as_namespace: BOOLEAN is
+			-- Value for the use_all_cluster_name_as_namespace setting.
+		do
+			Result := setting_boolean (s_use_all_cluster_name_as_namespace)
+		end
+
 feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	set_name (a_name: like name) is
@@ -464,6 +794,9 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			a_name_ok: a_name /= Void and then not a_name.is_empty
 			a_name_lowoer: a_name.is_equal (a_name.as_lower)
 		do
+			if system /= Void then
+				system.targets.replace_key (a_name, name)
+			end
 			name := a_name
 		ensure
 			name_set: name = a_name
@@ -485,6 +818,19 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			extends := a_target
 		ensure
 			parent_set: extends = a_target
+		end
+
+	set_parent_by_name (a_target: STRING) is
+			-- Set `parent' to `a_target'.
+		require
+			system: system /= Void
+			a_target_ok: a_target /= Void and then not a_target.is_empty implies system.targets.has (a_target)
+		do
+			if a_target /= Void and then not a_target.is_empty then
+				set_parent (system.targets.item (a_target))
+			else
+				extends := Void
+			end
 		end
 
 	remove_parent is
@@ -589,8 +935,6 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 
 	set_root (a_root: like root) is
 			-- Set `a_root'.
-		require
-			a_root_not_void: a_root /= Void
 		do
 			internal_root := a_root
 		ensure
@@ -605,14 +949,27 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			root_removed: internal_root = Void
 		end
 
-	set_file_rule (a_file_rule: like internal_file_rule) is
-			-- Set `a_file_rule'.
+	set_file_rules (a_file_rules: like internal_file_rule) is
+			-- Set `internal_file_rule' to `a_file_rules'.
+		do
+			if a_file_rules /= Void then
+				internal_file_rule := a_file_rules
+			else
+				create internal_file_rule.make (0)
+			end
+		ensure
+			file_rules_set: a_file_rules /= Void implies internal_file_rule = a_file_rules
+			file_rules_set: a_file_rules = Void implies internal_file_rule.is_empty
+		end
+
+	add_file_rule (a_file_rule: CONF_FILE_RULE) is
+			-- Add `a_file_rule'.
 		require
 			a_file_rule_not_void: a_file_rule /= Void
 		do
-			internal_file_rule := a_file_rule
+			internal_file_rule.force (a_file_rule)
 		ensure
-			file_rule_set: internal_file_rule = a_file_rule
+			file_rule_added: internal_file_rule.has (a_file_rule)
 		end
 
 	set_options (an_option: like internal_options) is
@@ -646,6 +1003,21 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			added: internal_settings.item (a_name) = a_value
 		end
 
+	update_setting (a_name, a_value: STRING) is
+			-- Update/add/remove a setting.
+		require
+			a_name_valid: a_name /= Void and then valid_setting (a_name)
+		do
+			if a_value = Void or else a_value.is_empty then
+					internal_settings.remove (a_name)
+				else
+				add_setting (a_name, a_value)
+			end
+		ensure
+			updated_removed: a_value = Void or else a_value.is_empty implies not internal_settings.has (a_name)
+			updated_added_set: a_value /= Void and then not a_value.is_empty implies internal_settings.item (a_name) = a_value
+		end
+
 	set_external_includes (an_includes: like internal_external_include) is
 			-- Set `an_includes'.
 		require
@@ -666,14 +1038,14 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			objects_set: internal_external_object = an_objects
 		end
 
-	set_external_ressources (a_ressources: like internal_external_ressource) is
+	set_external_ressources (a_ressources: like internal_external_resource) is
 			-- Set `a_ressources'.
 		require
 			a_ressources_not_void: a_ressources /= Void
 		do
-			internal_external_ressource := a_ressources
+			internal_external_resource := a_ressources
 		ensure
-			ressources_set: internal_external_ressource = a_ressources
+			ressources_set: internal_external_resource = a_ressources
 		end
 
 	set_external_make (a_makes: like internal_external_make) is
@@ -691,9 +1063,6 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 		require
 			an_include_not_void: an_include /= Void
 		do
-			if internal_external_include = Void then
-				create internal_external_include.make (1)
-			end
 			internal_external_include.extend (an_include)
 		ensure
 			added: internal_external_include.has (an_include)
@@ -704,25 +1073,22 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 		require
 			an_object_not_void: an_object /= Void
 		do
-			if internal_external_object = Void then
-				create internal_external_object.make (1)
-			end
 			internal_external_object.extend (an_object)
 		ensure
 			added: internal_external_object.has (an_object)
 		end
 
-	add_external_ressource (a_ressource: CONF_EXTERNAL_RESSOURCE) is
-			-- Add `a_ressource'.
+	add_external_resource (a_resource: CONF_EXTERNAL_RESOURCE) is
+			-- Add `a_resource'.
 		require
-			a_ressource_not_void: a_ressource /= Void
+			a_resource_not_void: a_resource /= Void
 		do
-			if internal_external_ressource = Void then
-				create internal_external_ressource.make (1)
+			if internal_external_resource = Void then
+				create internal_external_resource.make (1)
 			end
-			internal_external_ressource.extend (a_ressource)
+			internal_external_resource.extend (a_resource)
 		ensure
-			added: internal_external_ressource.has (a_ressource)
+			added: internal_external_resource.has (a_resource)
 		end
 
 	add_external_make (a_make: CONF_EXTERNAL_MAKE) is
@@ -730,12 +1096,61 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 		require
 			a_make_not_void: a_make /= Void
 		do
-			if internal_external_make = Void then
-				create internal_external_make.make (1)
-			end
 			internal_external_make.extend (a_make)
 		ensure
 			added: internal_external_make.has (a_make)
+		end
+
+	remove_external_include (an_include: CONF_EXTERNAL_INCLUDE) is
+			-- Remove `an_include'.
+		require
+			an_include_not_void: an_include /= Void
+			has_an_include: internal_external_include.has (an_include)
+		do
+			internal_external_include.start
+			internal_external_include.search (an_include)
+			internal_external_include.remove
+		ensure
+			removed: not internal_external_include.has (an_include)
+		end
+
+	remove_external_object (an_object: CONF_EXTERNAL_OBJECT) is
+			-- Remove `an_object'.
+		require
+			an_object_not_void: an_object /= Void
+			has_an_object: internal_external_object.has (an_object)
+		do
+			internal_external_object.start
+			internal_external_object.search (an_object)
+			internal_external_object.remove
+		ensure
+			removed: not internal_external_object.has (an_object)
+		end
+
+	remove_external_resource (a_resource: CONF_EXTERNAL_RESOURCE) is
+			-- Remove `a_ressource'.
+		require
+			a_ressource_not_void: a_resource /= Void
+			has_a_resource: internal_external_resource.has (a_resource)
+		do
+			internal_external_resource.start
+			internal_external_resource.search (a_resource)
+			internal_external_resource.remove
+		ensure
+			removed: not internal_external_resource.has (a_resource)
+		end
+
+	remove_external_make (a_make: CONF_EXTERNAL_MAKE) is
+			-- Remove `a_make'.
+		require
+			a_make_not_void: a_make /= Void
+			has_a_make: internal_external_make.has (a_make)
+		do
+			internal_external_make.start
+			internal_external_make.search (a_make)
+			internal_external_make.remove
+		ensure
+			removed: not internal_external_make.has (a_make)
 		end
 
 	set_pre_compile (a_pre_compile: like internal_pre_compile_action) is
@@ -776,46 +1191,70 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			internal_post_compile_action.extend (an_action)
 		end
 
+	remove_pre_action (an_action: CONF_ACTION) is
+			-- Remove `an_action'.
+		require
+			an_action_not_void: an_action /= Void
+		do
+			internal_pre_compile_action.start
+			internal_pre_compile_action.search (an_action)
+			if not internal_pre_compile_action.exhausted then
+				internal_pre_compile_action.remove
+			end
+		ensure
+			removed: not internal_pre_compile_action.has (an_action)
+		end
+
+	remove_post_action (an_action: CONF_ACTION) is
+			-- Remove `an_action'.
+		require
+			an_action_not_void: an_action /= Void
+		do
+			internal_post_compile_action.start
+			internal_post_compile_action.search (an_action)
+			if not internal_post_compile_action.exhausted then
+				internal_post_compile_action.remove
+			end
+		ensure
+			removed: not internal_post_compile_action.has (an_action)
+		end
 
 	add_variable (a_name, a_value: STRING) is
 			-- Add a variable with `a_name' and `a_value'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
-			a_name_lower: a_name.is_equal (a_name.as_lower)
 			a_value_not_void: a_value /= Void
-			name_not_used: not variables.has (a_name)
+			name_not_used: not variables.has (a_name.as_lower)
 		do
-			internal_variables.put (a_value, a_name)
+			internal_variables.put (a_value, a_name.as_lower)
 		ensure
-			variable_added: internal_variables.has (a_name) and then internal_variables.item (a_name) = a_value
+			variable_added: internal_variables.has (a_name.as_lower) and then internal_variables.item (a_name.as_lower) = a_value
 		end
 
 	remove_variable (a_name: STRING) is
 			-- Remove a variable with `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
-			a_name_lower: a_name.is_equal (a_name.as_lower)
 		do
-			internal_variables.remove (a_name)
+			internal_variables.remove (a_name.as_lower)
 		ensure
-			variable_removed: not internal_variables.has (a_name)
+			variable_removed: not internal_variables.has (a_name.as_lower)
 		end
 
 	update_variable (a_name, a_value: STRING) is
 			-- Update a variable with `a_name' and `a_value'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
-			a_name_lower: a_name.is_equal (a_name.as_lower)
 			a_value_not_void: a_value /= Void
-			entry_exists: variables.has (a_name)
+			entry_exists: variables.has (a_name.as_lower)
 		do
-			internal_variables.force (a_value, a_name)
+			internal_variables.force (a_value, a_name.as_lower)
 		ensure
-			variable_added: internal_variables.has (a_name) and then internal_variables.item (a_name) = a_value
+			variable_added: internal_variables.has (a_name.as_lower) and then internal_variables.item (a_name.as_lower) = a_value
 		end
 
 	add_mapping (a_old_name, a_new_name: STRING) is
-			-- Add a new mapping from `a_old_name' to `a_new_name'.
+			-- Add/replace  mapping from `a_old_name' to `a_new_name'.
 		require
 			a_old_name_ok: a_old_name /= Void and then not a_old_name.is_empty
 			a_new_name_ok: a_new_name /= Void and then not a_new_name.is_empty
@@ -824,6 +1263,18 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 				create internal_mapping.make (1)
 			end
 			internal_mapping.force (a_new_name.as_upper, a_old_name.as_upper)
+		end
+
+	remove_mapping (a_name: STRING) is
+			-- Remove a mapping with `a_name'.
+		require
+			a_name_ok: a_name /= Void and then not a_name.is_empty
+		do
+			if internal_mapping /= Void then
+				internal_mapping.remove (a_name.as_upper)
+			end
+		ensure
+			mapping_removed: not internal_mapping.has (a_name.as_upper)
 		end
 
 feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration file
@@ -935,7 +1386,7 @@ feature {CONF_VISITOR, CONF_ACCESS} -- Implementation, attributes that are store
 	internal_assemblies: HASH_TABLE [CONF_ASSEMBLY, STRING]
 			-- The assemblies of this target itself.
 
-	internal_file_rule: CONF_FILE_RULE
+	internal_file_rule: ARRAYED_LIST [CONF_FILE_RULE]
 			-- Rules for files to be included or excluded of this target itself.
 
 	internal_options: CONF_OPTION
@@ -964,7 +1415,7 @@ feature {CONF_VISITOR, CONF_ACCESS} -- Implementation, attributes that are store
 	internal_external_object: ARRAYED_LIST [CONF_EXTERNAL_OBJECT]
 			-- Global external object files of this target itself.
 
-	internal_external_ressource: ARRAYED_LIST [CONF_EXTERNAL_RESSOURCE]
+	internal_external_resource: ARRAYED_LIST [CONF_EXTERNAL_RESOURCE]
 			-- Global external ressource files of this target itself.
 
 	internal_external_make: ARRAYED_LIST [CONF_EXTERNAL_MAKE]
@@ -999,6 +1450,31 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature {NONE} -- Contract helper
+
+	valid_level: BOOLEAN is
+			-- Is the current level valid?
+			-- It has to be either 0 or the target has to be used in a library whose system has a lower level.
+		local
+			l_level: NATURAL_32
+		do
+			l_level := system.level
+			if l_level = 0 then
+				Result := True
+			else
+				if used_in_libraries /= Void then
+					from
+						used_in_libraries.start
+					until
+						Result or used_in_libraries.after
+					loop
+						Result := used_in_libraries.item.target.system.level < l_level
+						used_in_libraries.forth
+					end
+				end
+			end
+		end
+
 invariant
 	name_ok: name /= Void and not name.is_empty
 	name_lower: name.is_equal (name.as_lower)
@@ -1010,13 +1486,14 @@ invariant
 	internal_file_rule_not_void: internal_file_rule /= Void
 	internal_external_include_not_void: internal_external_include /= Void
 	internal_external_object_not_void: internal_external_object /= Void
-	internal_external_ressource_not_void: internal_external_ressource /= Void
+	internal_external_ressource_not_void: internal_external_resource /= Void
 	internal_external_make_not_void: internal_external_make /= Void
 	internal_pre_compile_not_void: internal_pre_compile_action /= Void
 	internal_post_compile_not_void: internal_post_compile_action /= Void
 	internal_variables_not_void: internal_variables /= Void
 	internal_settings_not_void: internal_settings /= Void
 	environ_variables_not_void: environ_variables /= Void
+	valid_level: valid_level
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

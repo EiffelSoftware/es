@@ -84,25 +84,25 @@ feature -- Status setting
 		local
 			a_cs: EV_GTK_C_STRING
 		do
-			a_cs := App_implementation.c_string_from_eiffel_string (a_text)
+			a_cs := a_text
 			{EV_GTK_EXTERNALS}.gtk_entry_set_text (entry_widget, a_cs.item)
 		end
 
-	append_text (txt: STRING_GENERAL) is
-			-- Append `txt' to the end of the text.
+	append_text (a_text: STRING_GENERAL) is
+			-- Append `a_text' to the end of the text.
 		local
 			a_cs: EV_GTK_C_STRING
 		do
-			a_cs := App_implementation.c_string_from_eiffel_string (txt)
+			a_cs := a_text
 			{EV_GTK_EXTERNALS}.gtk_entry_append_text (entry_widget, a_cs.item)
 		end
 
-	prepend_text (txt: STRING_GENERAL) is
-			-- Prepend `txt' to the end of the text.
+	prepend_text (a_text: STRING_GENERAL) is
+			-- Prepend `a_text' to the end of the text.
 		local
 			a_cs: EV_GTK_C_STRING
 		do
-			a_cs := App_implementation.c_string_from_eiffel_string (txt)
+			a_cs := a_text
 			{EV_GTK_EXTERNALS}.gtk_entry_prepend_text (entry_widget, a_cs.item)
 		end
 
@@ -124,16 +124,17 @@ feature -- Status Report
 	caret_position: INTEGER is
 			-- Current position of the caret.
 		do
-			if in_change_action and not last_key_backspace then
-				Result := {EV_GTK_EXTERNALS}.gtk_editable_get_position (entry_widget) + 2
-			else
-				Result := {EV_GTK_EXTERNALS}.gtk_editable_get_position (entry_widget) + 1
+			Result := {EV_GTK_EXTERNALS}.gtk_editable_get_position (entry_widget) + 1
+			if in_change_action and then not last_key_backspace then
+					-- Hack needed for autocompletion in EiffelStudio
+				Result := Result + 1
 			end
 		end
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	create_return_actions: EV_NOTIFY_ACTION_SEQUENCE is
+			-- Create an initialize return actions for `Current'.
 		do
 			create Result
 			real_signal_connect_after (entry_widget, once "activate", agent (App_implementation.gtk_marshal).text_field_return_intermediary (c_object), Void)
@@ -162,7 +163,7 @@ feature -- Status report
 			has_sel: BOOLEAN
 		do
 			has_sel := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_editable_get_selection_bounds (entry_widget, $a_start, $a_end)
-			Result := a_start
+			Result := a_start + 1
 		end
 
 	selection_end: INTEGER is
@@ -189,17 +190,16 @@ feature -- status settings
 			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_entry_set_has_frame (entry_widget, False)
 		end
 
-	set_editable (flag: BOOLEAN) is
-			-- `flag' true make the component read-write and
-			-- `flag' false make the component read-only.
+	set_editable (a_editable: BOOLEAN) is
+			-- Set editable state to `a_editable'.
 		do
-			{EV_GTK_EXTERNALS}.gtk_editable_set_editable (entry_widget, flag)
+			{EV_GTK_EXTERNALS}.gtk_editable_set_editable (entry_widget, a_editable)
 		end
 
 	set_caret_position (pos: INTEGER) is
 			-- Set the position of the caret to `pos'.
 		do
-			internal_set_caret_position (pos)
+			{EV_GTK_EXTERNALS}.gtk_editable_set_position (entry_widget, pos - 1)
 		end
 
 feature -- Basic operation
@@ -230,8 +230,7 @@ feature -- Basic operation
 			-- Select (highlight) the text between
 			-- 'start_pos' and 'end_pos'.
 		do
-			internal_set_caret_position (end_pos.max (start_pos) + 1)
-			select_region_internal (start_pos, end_pos)
+			{EV_GTK_EXTERNALS}.gtk_editable_select_region (entry_widget, start_pos.min (end_pos) - 1, end_pos.max (start_pos))
 
 				-- Hack to ensure text field is selected when called from change actions
 			if not last_key_backspace and then change_actions_internal /= Void and then change_actions_internal.state = change_actions_internal.blocked_state and then end_pos = text.count then
@@ -244,19 +243,15 @@ feature -- Basic operation
 		local
 			a_start, a_end, text_count: INTEGER
 		do
-			a_start := start_pos.min (end_pos)
-			a_end := end_pos.max (start_pos)
-			text_count := text.count
-			if a_end < text_count then
-				a_start := a_start + (text_count - a_end)
+			if not is_destroyed then
+				a_start := start_pos.min (end_pos)
+				a_end := end_pos.max (start_pos)
+				text_count := text.count
+				if a_end < text_count then
+					a_start := a_start + (text_count - a_end)
+				end
+				{EV_GTK_EXTERNALS}.gtk_editable_select_region (entry_widget, a_start - 1, -1)
 			end
-			{EV_GTK_EXTERNALS}.gtk_editable_select_region (entry_widget, a_start - 1, -1)
-		end
-
-	select_region_internal (start_pos, end_pos: INTEGER) is
-			-- Select region
-		do
-			{EV_GTK_EXTERNALS}.gtk_editable_select_region (entry_widget, start_pos.min (end_pos) - 1, end_pos.max (start_pos))
 		end
 
 	deselect_all is
@@ -301,16 +296,10 @@ feature -- Basic operation
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
-	internal_set_caret_position (pos: INTEGER) is
-			-- Set the position of the caret to `pos'.
-		do
-			{EV_GTK_EXTERNALS}.gtk_editable_set_position (entry_widget, pos - 1)
-		end
-
 	create_change_actions: EV_NOTIFY_ACTION_SEQUENCE is
 		do
 			create Result
-			real_signal_connect_after  (entry_widget, once "changed", agent  (App_implementation.gtk_marshal).text_component_change_intermediary (c_object), Void)
+			real_signal_connect (entry_widget, once "changed", agent  (App_implementation.gtk_marshal).text_component_change_intermediary (c_object), Void)
 		end
 
 	stored_text: STRING_32
@@ -339,20 +328,17 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		-- Is `Current' in the process of calling `on_change_actions'
 
 	last_key_backspace: BOOLEAN
+		-- Was the last key pressed a backspace, used for select region hack for EiffelStudio.
 
 	on_key_event (a_key: EV_KEY; a_key_string: STRING_32; a_key_press: BOOLEAN) is
 			-- A key event has occurred
 		do
-			Precursor {EV_TEXT_COMPONENT_IMP} (a_key, a_key_string, a_key_press)
 			if a_key_press then
 				if a_key /= Void then
-					if a_key.code = {EV_KEY_CONSTANTS}.key_back_space then
-						last_key_backspace := True
-					else
-						last_key_backspace := False
-					end
+					last_key_backspace := a_key.code = {EV_KEY_CONSTANTS}.key_back_space
 				end
 			end
+			Precursor {EV_TEXT_COMPONENT_IMP} (a_key, a_key_string, a_key_press)
 		end
 
 feature {NONE} -- Implementation
@@ -368,12 +354,9 @@ feature {NONE} -- Implementation
 
 feature {EV_TEXT_FIELD_I} -- Implementation
 
-	interface: EV_TEXT_FIELD
+	interface: EV_TEXT_FIELD;
 			--Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
-
-invariant
-	entry_widget_set: entry_widget /= NULL
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

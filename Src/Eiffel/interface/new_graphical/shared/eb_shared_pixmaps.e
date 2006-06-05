@@ -1243,6 +1243,66 @@ feature -- Icons
 			Result := pixmap_from_constant (Icon_first_result_reached_icon_value)
 		end
 
+	Icon_expand_all: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_expand_all_value)
+		end
+
+	Icon_collapse_all: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_collapse_all_value)
+		end
+
+	Icon_assigner: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_assigner_value)
+		end
+
+	Icon_frozen_assigner: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_frozen_assigner_value)
+		end
+
+	Icon_obsolete_assigner: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_obsolete_assigner_value)
+		end
+
+	Icon_deferred_assigner: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_deferred_assigner_value)
+		end
+
+	Icon_deferred_obsolete_assigner: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_deferred_obsolete_assigner_value)
+		end
+
+	Icon_invisible_icon: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_invisible_value)
+		end
+
+	Icon_external_command_icon: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_external_command_icon_value)
+		end
+
+	Icon_normal_callee_icon: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_normal_callee_icon_value)
+		end
+
+	Icon_creator_callee_icon: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_creator_callee_icon_value)
+		end
+
+	Icon_assigner_callee_icon: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (Icon_assigner_callee_icon_value)
+		end
+
 feature -- Reading
 
 	pixmap_path: DIRECTORY_NAME is
@@ -1280,6 +1340,9 @@ feature {NONE} -- Implementation
 			Result.add_pixmap (7, 1, icon_center_diagram_color_value)
 			Result.add_pixmap (8, 1, icon_check_exports_color_value)
 			Result.add_pixmap (9, 1, icon_class_header_color_value)
+			Result.add_pixmap (10, 1, icon_expand_all_value)
+			Result.add_pixmap (11, 1, icon_collapse_all_value)
+			Result.add_pixmap (12, 1, icon_invisible_value)
 			Result.add_pixmap (15, 1, icon_cmd_history_color_value)
 			Result.add_pixmap (16, 1, icon_color_color_value)
 			Result.add_pixmap (1, 2, icon_compilation_error_value)
@@ -1458,6 +1521,11 @@ feature {NONE} -- Implementation
 			Result.add_pixmap (3, 13, icon_quick_search_next_color_value)
 			Result.add_pixmap (4, 13, icon_quick_search_previous_color_value)
 			Result.add_pixmap (6, 13, icon_trash_can_color_value)
+			Result.add_pixmap (7, 13, icon_assigner_value)
+			Result.add_pixmap (8, 13, icon_frozen_assigner_value)
+			Result.add_pixmap (9, 13, icon_obsolete_assigner_value)
+			Result.add_pixmap (10, 13, icon_deferred_assigner_value)
+			Result.add_pixmap (11, 13, icon_deferred_obsolete_assigner_value)
 			Result.add_pixmap (12, 13, icon_ascending_sort_color_value)
 			Result.add_pixmap (13, 13, icon_descending_sort_color_value)
 			Result.add_pixmap (1, 14, icon_folder_symbol_color_value)
@@ -1498,6 +1566,10 @@ feature {NONE} -- Implementation
 			Result.add_pixmap (4, 16, Icon_output_view_icon_value)
 			Result.add_pixmap (5, 16, Icon_bottom_reached_icon_value)
 			Result.add_pixmap (6, 16, Icon_first_result_reached_icon_value)
+			Result.add_pixmap (7, 16, Icon_external_command_icon_value)
+			Result.add_pixmap (8, 16, Icon_normal_callee_icon_value)
+			Result.add_pixmap (9, 16, Icon_creator_callee_icon_value)
+			Result.add_pixmap (10, 16, Icon_assigner_callee_icon_value)
 		end
 
 feature {NONE} -- Constants
@@ -1725,7 +1797,19 @@ feature {NONE} -- Constants
 			Icon_warning_output_view_icon_value,
 			Icon_diagram_tool_icon_value,
 			Icon_bottom_reached_icon_value,
-			Icon_first_result_reached_icon_value: INTEGER is unique;
+			Icon_first_result_reached_icon_value,
+			Icon_expand_all_value,
+			Icon_collapse_all_value,
+			icon_assigner_value,
+			icon_frozen_assigner_value,
+			icon_obsolete_assigner_value,
+			icon_deferred_assigner_value,
+			icon_deferred_obsolete_assigner_value,
+			icon_invisible_value,
+			icon_external_command_icon_value,
+			icon_normal_callee_icon_value,
+			icon_creator_callee_icon_value,
+			icon_assigner_callee_icon_value: INTEGER is unique;
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

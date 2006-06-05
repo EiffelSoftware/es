@@ -37,7 +37,7 @@
 			<xs:element name="description" type="xs:string" minOccurs="0"/>
 			<xs:element name="root" type="root" minOccurs="0"/>
 			<xs:element name="version" type="version" minOccurs="0"/>
-			<xs:element name="file_rule" type="file_rule" minOccurs="0"/>
+			<xs:element name="file_rule" type="file_rule" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="option" type="option" minOccurs="0"/>
 			<xs:element name="setting" type="setting" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="mapping" type="mapping" minOccurs="0" maxOccurs="unbounded"/>
@@ -45,7 +45,7 @@
 				maxOccurs="unbounded"/>
 			<xs:element name="external_object" type="external" minOccurs="0"
 				maxOccurs="unbounded"/>
-			<xs:element name="external_ressource" type="external" minOccurs="0"
+			<xs:element name="external_resource" type="external" minOccurs="0"
 				maxOccurs="unbounded"/>
 			<xs:element name="external_make" type="external" minOccurs="0"
 				maxOccurs="unbounded"/>
@@ -95,6 +95,7 @@
 				maxOccurs="unbounded"/>
 			<xs:element name="include" type="regexp" minOccurs="0"
 				maxOccurs="unbounded"/>
+			<xs:element name="condition" type="condition" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	
@@ -205,19 +206,24 @@
 	
 	<xs:complexType name="condition">
 		<xs:sequence>
-			<xs:element name="platform" type="platform" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="build" type="build" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="platform" type="platform" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="build" type="build" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="multithreaded" type="multithreaded" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="dotnet" type="dotnet" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="version" type="version_condition" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="custom" type="custom" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="platform">
-		<xs:attribute name="value" type="available_platforms"/>
-		<xs:attribute name="excluded_value" type="available_platforms"/>
+		<xs:attribute name="value" type="platform_list"/>
+		<xs:attribute name="excluded_value" type="platform_list"/>
 	</xs:complexType>
-	
+
+	<xs:simpleType name="platform_list">
+		<xs:list itemType="available_platforms"/>
+	</xs:simpleType> 
+		
 	<xs:simpleType name="available_platforms">
 		<xs:restriction base = "xs:string">
 			  <xs:enumeration value = "windows"/>
@@ -228,11 +234,15 @@
 	</xs:simpleType>	
 
 	<xs:complexType name="build">
-		<xs:attribute name="value" type="available_builds"/>
-		<xs:attribute name="excluded_value" type="xs:string"/>
+		<xs:attribute name="value" type="build_list"/>
+		<xs:attribute name="excluded_value" type="build_list"/>
 	</xs:complexType>
 
-		<xs:simpleType name="available_builds">
+	<xs:simpleType name="build_list">
+		<xs:list itemType="available_builds"/>
+	</xs:simpleType> 
+	
+	<xs:simpleType name="available_builds">
 		<xs:restriction base = "xs:string">
 			  <xs:enumeration value = "workbench"/>
 			  <xs:enumeration value = "finalize"/>
@@ -247,10 +257,30 @@
 		<xs:attribute name="value" type="xs:boolean"/>
 	</xs:complexType>
 	
+	<xs:complexType name="version_condition">
+		<xs:attribute type="version_type" name="type"/>
+		<xs:attribute type="version_number" name="min" use="optional"/>
+		<xs:attribute type="version_number" name="max" use="optional"/>
+	</xs:complexType>
+
+	<xs:simpleType name="version_type">
+		<xs:restriction base = "xs:string">
+			  <xs:enumeration value = "compiler"/>
+			  <xs:enumeration value = "msil_clr"/>
+	    </xs:restriction>
+	</xs:simpleType>	
+		
+	<xs:simpleType name="version_number">
+		<xs:restriction base="xs:string">
+			<xs:pattern
+				value="\d*(\.\d*){0,2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<xs:complexType name="custom">
 		<xs:attribute name="name" type="xs:string"/>
-		<xs:attribute name="value" type="xs:string"/>
-		<xs:attribute name="excluded_value" type="xs:string"/>
+		<xs:attribute name="value" type="xs:string" use="optional"/>
+		<xs:attribute name="excluded_value" type="xs:string" use="optional"/>
 	</xs:complexType>
 	
 	<xs:complexType name="external">
@@ -320,7 +350,7 @@
 		<xs:complexContent>
 			<xs:extension base="group">
 				<xs:sequence>
-					<xs:element name="file_rule" type="file_rule" minOccurs="0"/>
+					<xs:element name="file_rule" type="file_rule" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="uses" type="uses" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="visible" type="visible" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="cluster" type="cluster" minOccurs="0" maxOccurs="unbounded"/>

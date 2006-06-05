@@ -23,6 +23,8 @@ inherit
 		end
 
 	EB_SHARED_MANAGERS
+		rename
+			project_location as compiler_project_location
 		export
 			{NONE} all
 		end
@@ -48,6 +50,13 @@ inherit
 		end
 
 	EB_LAYOUT_CONSTANTS
+		export
+			{NONE} all
+		end
+
+	COMMAND_EXECUTOR
+		rename
+			project_location as compiler_project_location
 		export
 			{NONE} all
 		end
@@ -101,6 +110,77 @@ feature -- Settings
 				agent (window_manager.last_focused_development_window.quick_melt_project_cmd).execute)
 		end
 
+	open_project (in_new_studio: BOOLEAN) is
+			-- Open project.
+		require
+			not_has_error: not has_error
+			is_project_ready_for_compilation: not is_project_creation_or_opening_not_requested or is_project_ok
+		do
+			if in_new_studio then
+				execute (estudio_cmd_line)
+			end
+		end
+
+	melt_project (in_new_studio: BOOLEAN) is
+			-- Open project.
+		require
+			not_has_error: not has_error
+			is_compilation_requested: is_compilation_requested
+			is_project_ready_for_compilation: not is_project_creation_or_opening_not_requested or is_project_ok
+		do
+			if not in_new_studio then
+				ev_application.do_once_on_idle (
+					agent (window_manager.last_focused_development_window.quick_melt_project_cmd).execute)
+			else
+				execute (estudio_cmd_line + " -melt")
+			end
+		end
+
+	precompile_project (in_new_studio: BOOLEAN) is
+			-- Compile newly created project.
+		require
+			not_has_error: not has_error
+			is_compilation_requested: is_compilation_requested
+			is_project_ready_for_compilation: not is_project_creation_or_opening_not_requested or is_project_ok
+		do
+			if not in_new_studio then
+				ev_application.do_once_on_idle (
+					agent (window_manager.last_focused_development_window.precompilation_cmd).execute)
+			else
+				execute (estudio_cmd_line + " -precompile")
+			end
+		end
+
+	freeze_project (in_new_studio: BOOLEAN) is
+			-- Compile newly created project.
+		require
+			not_has_error: not has_error
+			is_compilation_requested: is_compilation_requested
+			is_project_ready_for_compilation: not is_project_creation_or_opening_not_requested or is_project_ok
+		do
+			if not in_new_studio then
+				ev_application.do_once_on_idle (
+					agent (window_manager.last_focused_development_window.freeze_project_cmd).execute)
+			else
+				execute (estudio_cmd_line + " -freeze")
+			end
+		end
+
+	finalize_project (in_new_studio: BOOLEAN) is
+			-- Compile newly created project.
+		require
+			not_has_error: not has_error
+			is_compilation_requested: is_compilation_requested
+			is_project_ready_for_compilation: not is_project_creation_or_opening_not_requested or is_project_ok
+		do
+			if not in_new_studio then
+				ev_application.do_once_on_idle (
+					agent (window_manager.last_focused_development_window.finalize_project_cmd).execute)
+			else
+				execute (estudio_cmd_line + " -finalize")
+			end
+		end
+
 feature {NONE} -- Actions
 
 	post_create_project is
@@ -110,6 +190,25 @@ feature {NONE} -- Actions
 			if deleting_dialog /= Void and then not deleting_dialog.is_destroyed then
 				deleting_dialog.destroy
 				deleting_dialog := Void
+			end
+		end
+
+	estudio_cmd_line: STRING is
+			-- Command line to open/compile currently selected project.
+		require
+			not_has_error: not has_error
+		do
+			create Result.make (1024)
+			Result.append (estudio_command_name)
+			Result.append (" -config %"")
+			Result.append (config_file_name)
+			Result.append ("%" -project_path %"")
+			Result.append (project_location)
+			Result.append ("%" -target %"")
+			Result.append (target_name)
+			Result.append ("%"")
+			if is_recompile_from_scrach then
+				Result.append (" -clean ")
 			end
 		end
 
@@ -181,13 +280,25 @@ feature {NONE} -- Error reporting
 		end
 
 	report_cannot_save_converted_file (a_file_name: STRING) is
-			-- Report an error when result of a conversion from ace to acex cannot be stored
+			-- Report an error when result of a conversion from ace to new format cannot be stored
 			-- in file `a_file_name'.
 		local
 			l_ev: EV_ERROR_DIALOG
 		do
 			l_ev := new_error_dialog
 			l_ev.set_text (warning_messages.w_cannot_save_file (a_file_name))
+			l_ev.show_modal_to_window (parent_window)
+			set_has_error
+		end
+
+
+	report_cannot_convert_project (a_file_name: STRING) is
+			-- Report an error when result of a conversion from ace `a_file_name' to new format failed.
+		local
+			l_ev: EV_ERROR_DIALOG
+		do
+			l_ev := new_error_dialog
+			l_ev.set_text (warning_messages.w_cannot_convert_file (a_file_name))
 			l_ev.show_modal_to_window (parent_window)
 			set_has_error
 		end
@@ -282,7 +393,8 @@ feature {NONE} -- Error reporting
 				l_title.append ("  (precompiled)")
 			end
 			window_manager.display_message (l_title)
-			Recent_projects_manager.save_environment
+			recent_projects_manager.add_recent_project (config_file_name)
+			Recent_projects_manager.save_recent_projects
 
 				--| IEK With project session handling this code is no longer needed, remove when fully integrated.
 				-- We print text in the project_tool text concerning the system
@@ -294,7 +406,7 @@ feature {NONE} -- Error reporting
 feature {NONE} -- User interaction
 
 	ask_for_config_name (a_dir_name, a_file_name: STRING; a_action: PROCEDURE [ANY, TUPLE [STRING]]) is
-			-- Given `a_dir_name' and a proposed `a_file_name' name for the new acex format, ask the
+			-- Given `a_dir_name' and a proposed `a_file_name' name for the new format, ask the
 			-- user if he wants to create `a_file_name' or a different name. If he said yes, then
 			-- execute `a_action' with chosen file_name, otherwise do nothing.
 		local
@@ -302,7 +414,6 @@ feature {NONE} -- User interaction
 			l_file_name: FILE_NAME
 			l_ev: EV_MESSAGE_DIALOG
 			l_save_as_msg: STRING
-			l_dir: STRING
 		do
 			create l_file_name.make_from_string (a_dir_name)
 			l_file_name.set_file_name (a_file_name)
@@ -317,7 +428,6 @@ feature {NONE} -- User interaction
 				%The default name for the new configuration is '" + a_file_name + "'.%N%
 				%Select OK if you want to keep this name, or 'Save As...' to choose a different name.")
 
-			l_dir := execution_environment.current_working_directory
 			create l_save_as.make_with_title ("Choose name for new configuration file")
 			l_save_as.set_start_directory (a_dir_name)
 			l_save_as.set_file_name (a_file_name)
@@ -329,10 +439,6 @@ feature {NONE} -- User interaction
 			l_ev.button (ev_cancel).select_actions.extend (agent on_cancelled (l_ev))
 			l_ev.button (ev_ok).select_actions.extend (agent a_action.call ([l_file_name.string]))
 			l_ev.show_modal_to_window (parent_window)
-
-				-- Due to a bug in EV_FILE_DIALOG which changes the current working directory,
-				-- we manually set it back to what it was before.
-			execution_environment.change_working_directory (l_dir)
 		end
 
 	select_config_file (a_dlg: EV_FILE_SAVE_DIALOG; a_action: PROCEDURE [ANY, TUPLE]) is
@@ -369,7 +475,7 @@ feature {NONE} -- User interaction
 			end
 		end
 
-	ask_for_target_name (a_targets: HASH_TABLE [CONF_TARGET, STRING]) is
+	ask_for_target_name (a_targets: DS_ARRAYED_LIST [STRING]) is
 			-- Ask user to choose one target among `a_targets'.
 		local
 			l_dialog: EV_DIALOG
@@ -381,7 +487,7 @@ feature {NONE} -- User interaction
 		do
 			if a_targets.count = 1 then
 				a_targets.start
-				target_name := a_targets.key_for_iteration
+				target_name := a_targets.item_for_iteration
 			else
 				create l_dialog.make_with_title ("Select a target")
 				create l_list
@@ -390,7 +496,7 @@ feature {NONE} -- User interaction
 				until
 					a_targets.after
 				loop
-					create l_item.make_with_text (a_targets.key_for_iteration)
+					create l_item.make_with_text (a_targets.item_for_iteration)
 					l_item.pointer_double_press_actions.force_extend (agent on_target_selected (l_dialog, l_item))
 					l_list.extend (l_item)
 					a_targets.forth

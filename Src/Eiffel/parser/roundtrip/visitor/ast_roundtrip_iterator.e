@@ -1109,6 +1109,13 @@ feature
 			safe_process (l_as.closing_bracket_as)
 		end
 
+	process_type_dec_list_as (l_as: TYPE_DEC_LIST_AS) is
+		do
+			safe_process (l_as.opening_bracket_as)
+			process_eiffel_list (l_as)
+			safe_process (l_as.closing_bracket_as)
+		end
+
 	process_convert_feat_list_as (l_as: CONVERT_FEAT_LIST_AS) is
 			-- Process `l_as'.
 		do
@@ -1166,7 +1173,7 @@ feature
 			-- Process `l_as'.
 		do
 			safe_process (l_as.lparan_symbol)
-			process_eiffel_list (l_as.parameters)
+			safe_process (l_as.parameters)
 			safe_process (l_as.rparan_symbol)
 		end
 

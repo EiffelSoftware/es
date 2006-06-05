@@ -266,8 +266,6 @@ feature {EV_ANY_I} -- Status setting
 			tmp_bitmap: WEL_BITMAP
 			l_mask_dc, l_old_mask_dc: WEL_MEMORY_DC
 			l_mask, l_old_mask: WEL_BITMAP
-			l_wel_rect: WEL_RECT
-			l_brush: WEL_BRUSH
 			l_old_width, l_old_height: INTEGER
 		do
 			update_content
@@ -1311,8 +1309,8 @@ feature {NONE} -- Implementation
 
 				when Loadpixmap_rgb_data then
 						-- Compute the size of a row in bytes (here
-						-- we have 24 bits/color)
-					size_row := 4 * ((pixmap_width * 24 + 31) // 32)
+						-- we have 32 bits/color)
+					size_row := 4 * pixmap_width
 					create dib.make_by_content_pointer (
 						rgb_data,
 						size_row * pixmap_height + 40

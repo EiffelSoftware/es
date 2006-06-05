@@ -878,7 +878,7 @@ feature -- Generation Structure
 			Il_debug_info_recorder.end_recording_session
 		end
 
-	generate_resources (a_resources: LIST [CONF_EXTERNAL_RESSOURCE]) is
+	generate_resources (a_resources: LIST [CONF_EXTERNAL_RESOURCE]) is
 			-- Generate all resources in assembly.
 		require
 			a_resources_not_void: a_resources /= Void
@@ -1809,7 +1809,7 @@ feature {NONE} -- SYSTEM_OBJECT features
 
 				generate_current
 				generate_feature_access (type_i, feature_i.feature_id, 0, True, True)
-				internal_generate_feature_access (string_type_id, to_cil_feat_id, 0, True, True)
+				internal_generate_feature_access (to_cil_feat.static_type_id, to_cil_feat.feature_id, 0, True, True)
 
 				generate_return (True)
 				method_writer.write_current_body
@@ -2069,7 +2069,7 @@ feature -- Features info
 							l_naming_convention, l_feat.feature_name,
 							{IL_CASING_CONVERSION}.lower_case)
 						if l_feat.has_property_getter then
-							prepare_property_getter (l_name, l_return_type)
+							prepare_property_getter (l_feat, l_name, l_return_type, l_class_type)
 							current_module.insert_property_getter (md_emit.define_member_ref
 								(uni_string, l_class_token, method_sig), a_type_id, l_feat.feature_id)
 						end
@@ -2078,7 +2078,7 @@ feature -- Features info
 							if l_type_i.is_void then
 								l_type_i := argument_actual_type_in (l_feat.arguments.first.type_i, l_class_type)
 							end
-							prepare_property_setter (l_name, l_type_i)
+							prepare_property_setter (l_feat, l_name, l_type_i, l_class_type)
 							current_module.insert_property_setter (md_emit.define_member_ref
 								(uni_string, l_class_token, method_sig), a_type_id, l_feat.feature_id)
 						end
@@ -2389,7 +2389,7 @@ feature -- Features info
 								l_type_i := argument_actual_type_in (l_feat_arg.first.type_i, signature_declaration_type)
 							end
 								-- Define setter method.
-							prepare_property_setter (l_property_name, l_type_i)
+							prepare_property_setter (feat, l_property_name, l_type_i, signature_declaration_type)
 							l_setter := md_emit.define_method (uni_string, current_class_token,
 								l_meth_attr | {MD_METHOD_ATTRIBUTES}.New_slot, l_meth_sig, {MD_METHOD_ATTRIBUTES}.Managed)
 							if is_override_or_c_external then
@@ -2408,7 +2408,7 @@ feature -- Features info
 							l_property_name := Override_prefix + l_property_name + override_counter.value.out
 						end
 							-- Define getter method.
-						prepare_property_getter (l_property_name, l_return_type)
+						prepare_property_getter (feat, l_property_name, l_return_type, signature_declaration_type)
 						l_getter := md_emit.define_method (uni_string, current_class_token,
 							l_meth_attr | {MD_METHOD_ATTRIBUTES}.New_slot, l_meth_sig, {MD_METHOD_ATTRIBUTES}.Managed)
 						if is_override_or_c_external then
@@ -2741,31 +2741,44 @@ feature -- Features info
 			end
 		end
 
-	prepare_property_getter (name: STRING; return_type: TYPE_I) is
-			-- Fill `uni_string' and `method_sig' with a property getter data.
+	prepare_property_getter (f: FEATURE_I; property_name: STRING; return_type: TYPE_I; t: CLASS_TYPE) is
+			-- Fill `uni_string' and `method_sig' with a property getter data
+			-- in class type `t'.
 		require
-			name_not_void: name /= Void
-			name_not_empty: not name.is_empty
-			return_type_not_void: return_type /= Void
+			f_attached: f /= Void
+			property_name_attached: property_name /= Void
+			property_name_not_empty: not property_name.is_empty
+			return_type_attached: return_type /= Void
+			t_attached: t /= Void
 		local
 			l_meth_sig: like method_sig
+			n: STRING
 		do
 			l_meth_sig := method_sig
 			l_meth_sig.reset
 			l_meth_sig.set_method_type ({MD_SIGNATURE_CONSTANTS}.has_current)
 			l_meth_sig.set_parameter_count (0)
 			set_signature_type (l_meth_sig, return_type)
-			uni_string.set_string (property_getter_prefix + name)
+			n := property_getter_prefix + property_name
+			if current_class.feature_named (n) /= Void then
+					-- Property getter name conflicts with the feature name.
+				n := property_getter_prefix + t.associated_class.name + "." + f.feature_name
+			end
+			uni_string.set_string (n)
 		end
 
-	prepare_property_setter (name: STRING; return_type: TYPE_I) is
-			-- Fill `uni_string' and `method_sig' with a property setter data.
+	prepare_property_setter (f: FEATURE_I; property_name: STRING; return_type: TYPE_I; t: CLASS_TYPE) is
+			-- Fill `uni_string' and `method_sig' with a property setter data
+			-- in class type `t'.
 		require
-			name_not_void: name /= Void
-			name_not_empty: not name.is_empty
-			return_type_not_void: return_type /= Void
+			f_attached: f /= Void
+			property_name_attached: property_name /= Void
+			property_name_not_empty: not property_name.is_empty
+			return_type_attached: return_type /= Void
+			t_attached: t /= Void
 		local
 			l_meth_sig: like method_sig
+			n: STRING
 		do
 			l_meth_sig := method_sig
 			l_meth_sig.reset
@@ -2773,7 +2786,12 @@ feature -- Features info
 			l_meth_sig.set_parameter_count (1)
 			l_meth_sig.set_return_type ({MD_SIGNATURE_CONSTANTS}.element_type_void, 0)
 			set_signature_type (l_meth_sig, return_type)
-			uni_string.set_string (property_setter_prefix + name)
+			n := property_setter_prefix + property_name
+			if t.associated_class.feature_named (n) /= Void then
+					-- Property setter name conflicts with the feature name.
+				n := property_setter_prefix + t.associated_class.name + "." + f.feature_name
+			end
+			uni_string.set_string (n)
 		end
 
 	is_property_setter_generated (f: FEATURE_I; t: CLASS_TYPE): BOOLEAN is
@@ -2787,11 +2805,13 @@ feature -- Features info
 		do
 			if f.has_property_setter then
 				s := f.property_setter_in (t)
-				sn := il_casing.pascal_casing (t.is_dotnet_name, s.feature_name, {IL_CASING_CONVERSION}.lower_case)
-				if sn.is_equal (property_setter_prefix + f.property_name) then
-					Result := s.written_class.is_single and then s.written_in /= t.type.class_id
-				else
-					Result := True
+				if s /= Void then
+					sn := il_casing.pascal_casing (t.is_dotnet_name, s.feature_name, {IL_CASING_CONVERSION}.lower_case)
+					if sn.is_equal (property_setter_prefix + f.property_name) then
+						Result := s.written_class.is_single and then s.written_in /= t.type.class_id
+					else
+						Result := True
+					end
 				end
 			end
 		end
@@ -2951,7 +2971,7 @@ feature -- IL Generation
 			end
 
 			if l_is_il_external then
-				create_object_with_args (current_class_type.implementation_id, feat.argument_count)
+				create_object_with_args (current_class_type.implementation_id, feat.feature_id, feat.argument_count)
 			else
 				create_object (current_class_type.implementation_id)
 			end
@@ -3340,7 +3360,7 @@ feature -- IL Generation
 					target_type := implemented_type (f.origin_class_id, target_type)
 				end
 			end
-			target_feature := target_type.base_class.feature_of_rout_id (f.rout_id_set.first)
+			target_feature := target_type.base_class.feature_table.feature_of_rout_id_set (f.rout_id_set)
 			generate_current
 			if f.is_attribute then
 				generate_attribute (true, target_type, target_feature.feature_id)
@@ -4021,13 +4041,13 @@ feature -- Object creation
 			method_body.put_newobj (constructor_token (a_type_id), 0)
 		end
 
-	create_object_with_args (a_type_id: INTEGER; a_arg_count: INTEGER) is
+	create_object_with_args (a_type_id: INTEGER; a_feature_id: INTEGER; a_arg_count: INTEGER) is
 			-- Create object of `a_type_id'.
 		require
 			valid_type_id: a_type_id > 0
 			a_arg_count_not_negative: a_arg_count >= 0
 		do
-			method_body.put_newobj (constructor_token (a_type_id), a_arg_count)
+			method_body.put_newobj (inherited_constructor_token (a_type_id, a_feature_id), a_arg_count)
 		end
 
 	create_like_object is
@@ -6797,13 +6817,19 @@ feature {CIL_CODE_GENERATOR} -- Implementation: convenience
 			out_feat_id_positive: Result > 0
 		end
 
-	to_cil_feat_id: INTEGER is
+	to_cil_feat: TUPLE [static_type_id: INTEGER; feature_id: INTEGER] is
 			-- Feature ID of `to_cil' of STRING.
+		local
+			l_class: CLASS_C
 		once
-			Result := system.string_class.compiled_class.feature_table.
-				item_id ({PREDEFINED_NAMES}.to_cil_name_id).feature_id
+			l_class := system.string_class.compiled_class.feature_table.
+				item_id ({PREDEFINED_NAMES}.to_cil_name_id).written_class
+
+			Result := [l_class.types.first.static_type_id,
+				l_class.feature_table.item_id ({PREDEFINED_NAMES}.to_cil_name_id).feature_id]
 		ensure
-			to_cil_feat_id_positive: Result > 0
+			to_cil_feat_valid: Result /= Void and then (Result.static_type_id > 0 and
+				Result.feature_id > 0)
 		end
 
 	hashable_class_id: INTEGER is
@@ -6974,6 +7000,18 @@ feature -- Mapping between Eiffel compiler and generated tokens
 			Result := current_module.constructor_token (a_type_id)
 		ensure
 			constructor_token_valid: Result /= 0
+		end
+
+	inherited_constructor_token (a_type_id, a_feature_id: INTEGER): INTEGER is
+			-- Given a `a_feature_id' in `a_type_id' return associated
+			-- constructor token.
+		require
+			valid_type_id: a_type_id > 0
+			valid_feature_id: a_feature_id > 0
+		do
+			Result := current_module.inherited_constructor_token (a_type_id, a_feature_id)
+		ensure
+			feature_token_valid: Result /= 0
 		end
 
 	actual_class_type_token (a_type_id: INTEGER): INTEGER is

@@ -40,7 +40,7 @@ feature{NONE} -- Generation path
 			-- Path on which c compiler will be launched.
 			-- Used when we need to open a console there.
 		do
-			Result := final_generation_path
+			Result := project_location.final_path
 		end
 
 feature -- Message
@@ -73,6 +73,16 @@ feature -- Message
 			-- Message to indicate c compilation has been terminated
 		do
 			Result := interface_names.e_finalizing_terminated
+		end
+
+feature -- Setting
+
+	set_c_compilation_type is
+			-- Set c compilation type, either freezing or finalizing.
+		do
+			set_is_last_c_compilation_freezing (False)
+		ensure then
+			compilation_type_set: is_last_c_compilation_finalizing
 		end
 
 indexing
