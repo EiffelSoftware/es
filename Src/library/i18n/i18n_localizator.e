@@ -1,7 +1,7 @@
 indexing
 	description: "Provides functions for translation and templates solving."
 	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
-	author: "Skeleton created by Martino Trosi, ETH Zurich"
+	author: "Originally created by Martino Trosi, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -19,10 +19,14 @@ feature {NONE} -- Initialization
 				-- Remove this!
 		do
 			-- NOTE: For the moment, should set path manually!
+			-- Feel free to suggest a way for determining the path
+			-- (Wiki: http://eiffersoftware.origo.ethz.ch/index.php/Internationalization)
 			path_to_file := ""
-			create datastructure.make_with_file(path_to_file)
+			create i18n_datastructure.make_with_file(path_to_file)
+			create i18n_template_formatter.make
 		ensure
-			valid_datastructure: datastructure /= Void
+			valid_datastructure: i18n_datastructure /= Void
+			valid_template_formatter: i18n_template_formatter /= Void
 		end
 
 feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
@@ -31,7 +35,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		require
 			valid_string: a_string /= Void
 		do
-			Result := datastructure.translate(a_string, 1)
+			Result := i18n_datastructure.translate(a_string, 1)
 		ensure
 			valid_result: Result /= Void
 		end
@@ -46,7 +50,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		do
 			temp_string ?= a_string.item(1)
 			if temp_string /= Void then
-				Result := datastructure.translate(temp_string, a_num)
+				Result := i18n_datastructure.translate(temp_string, a_num)
 			end
 		ensure
 			valid_result: Result /= Void
@@ -59,16 +63,20 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			valid_string: a_string /= Void
 			valid_args: a_args /= Void
 		do
-
+			Result := i18n_template_formatter.solve_template(a_string, a_args)
 		ensure
 			valid_result: Result /= Void
 		end
 
 feature {NONE} -- Implementation
-	datastructure: I18N_DATASTRUCTURE
+	i18n_datastructure: I18N_DATASTRUCTURE
 		-- Reference to the datastructure
 
+	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
+		-- Reference to the template formatter
+
 invariant
-	invariant_clause: True -- Your invariant here
+	valid_datastructure: i18n_datastructure /= Void
+	valid_template_formatter: i18n_template_formatter /= Void
 
 end

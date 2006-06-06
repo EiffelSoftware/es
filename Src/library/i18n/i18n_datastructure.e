@@ -8,7 +8,7 @@ indexing
 class
 	I18N_DATASTRUCTURE
 
-create
+create {I18N_LOCALIZATOR}
 	make_with_file
 
 feature {NONE} -- Initialization
@@ -173,6 +173,9 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	invariant_clause: True -- Your invariant here
+	valid_array: array /= Void
+	valid_hash_table: hash_table /= Void
+	valid_mo_parser: i18n_mo_parser /= Void
+	valid_plural_forms: i18n_plural_forms /= Void
 
 end

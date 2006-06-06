@@ -67,6 +67,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	invariant_clause: True -- Your invariant here
+	valid_localizator: localizator /= Void
 
 end

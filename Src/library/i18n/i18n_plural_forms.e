@@ -1,6 +1,6 @@
 indexing
 	description: "Class containing the functions to determine which plural form should be used for every language, used by I18N_DATASTRUCTURE"
-	author: "Originally written by Martino Trosi, ETH Zurich."
+	author: "Originally created by Martino Trosi, ETH Zurich."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -15,7 +15,7 @@ feature {NONE} -- Initialization
 	make_with_identifier(a_n: INTEGER; a_identifier: STRING) is
 			-- Initialize `Current'.
 			-- NOTE: Should check the identifiers!
-			-- PLEASE: see the wiki page for this purpose (http://eiffelsoftware.origo.ethz.ch/index.php/Internationalization/plural_forms)!
+			-- PLEASE: see the wiki page for this purpose (http://eiffelsoftware.origo.ethz.ch/index.php/Internationalization)!
 		require
 			valid_identifier: a_identifier /= Void
 			valid_form_number: a_n >= 1 and a_n <= 4

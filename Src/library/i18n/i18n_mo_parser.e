@@ -1,17 +1,17 @@
 indexing
 	description: "Parser for accessing MO files."
 	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
-	author: "Originally created byEtienne Reichenbach, ETH Zurich"
+	author: "Originally created by Etienne Reichenbach, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	I18N_MO_PARSER
 
-create
+create {I18N_DATASTRUCTURE}
 	make_with_path
 
-feature -- Initialization
+feature {NONE} -- Initialization
 	make_with_path(a_path: STRING) is
 			-- Open the mo_file located in a_path
 			-- and extract information from it.
