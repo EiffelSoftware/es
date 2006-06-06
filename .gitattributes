@@ -2189,9 +2189,6 @@ Src/tools/resource_bench/RB_documentation/examples/icon_2.ico svneol=native#unse
 Src/tools/resource_bench/RB_documentation/examples/toolbar.bmp svneol=native#unset
 Src/tools/resource_bench/rb.ico svneol=native#unset
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
-TeamMultiScreenSupport/wel/version.txt -text
-TeamMultiScreenSupport/wel/wel.ecf -text
-TeamMultiScreenSupport/wel/wel.txt -text
 free_add_ons/eclop/doc/eclop.pdf -text
 free_add_ons/gobo/gobo_34_unix.tgz -text
 free_add_ons/gobo/gobo_34_win.tgz -text
