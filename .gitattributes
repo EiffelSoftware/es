@@ -1999,6 +1999,7 @@ Src/library/editor/bitmaps/icon_close_color.png -text
 Src/library/editor/bitmaps/left_scroll_arrow.png -text
 Src/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/library/gobo_extension/gobo_extension.ecf -text
+Src/library/i18n/i18n.ecf -text
 Src/library/i18n/mo_files/cin.mo -text
 Src/library/i18n/mo_files/it.mo -text
 Src/library/i18n/po_files/interface_names.po -text
