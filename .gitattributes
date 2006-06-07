@@ -2005,8 +2005,8 @@ Src/library/i18n/example/cin.po -text
 Src/library/i18n/example/it.mo -text
 Src/library/i18n/example/it.po -text
 Src/library/i18n/i18n.ecf -text
-Src/library/i18n/mo_files/cin.mo -text
 Src/library/i18n/mo_files/it.mo -text
+Src/library/i18n/mo_files/zh.mo -text
 Src/library/i18n/po_files/interface_names.po -text
 Src/library/i18n/po_files/warning_messages.po -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
