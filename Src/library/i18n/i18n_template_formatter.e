@@ -50,6 +50,11 @@ feature -- Basic operations
 			create Result.make_empty
 			from
 				i := 1
+			invariant
+				i >= 1
+				i <= a_string.count + 1
+			variant
+				a_string.count + 1 - i
 			until
 				i > a_string.count
 			loop

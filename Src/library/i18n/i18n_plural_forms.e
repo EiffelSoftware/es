@@ -1,5 +1,6 @@
 indexing
 	description: "Class containing the functions to determine which plural form should be used for every language, used by I18N_DATASTRUCTURE"
+	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
 	author: "Originally created by Martino Trosi, ETH Zurich."
 	date: "$Date$"
 	revision: "$Revision$"
@@ -194,7 +195,7 @@ feature {NONE} -- Implementation
 		-- Agent to plural form function
 
 invariant
-	plural_function_aget: plural_function_agent /= Void
+	plural_function_agent_set: plural_function_agent /= Void
 		-- Should always be set
 
 end
