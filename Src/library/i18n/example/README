@@ -1,0 +1,10 @@
+HI
+
+This is a simple test application, if you want to use it,
+you have to do the following things:
+
+1) modify the path in the ACE file, or better, do a better ACE file, commit it and change this README
+2) you have to set a path in the creation procedure (make) of 
+the class I18N_LOCALIZATOR, the path should point to cin.mo or it.mo
+
+Etienne

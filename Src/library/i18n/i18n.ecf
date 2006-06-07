@@ -9,6 +9,7 @@
 			<exclude>/mo_files$</exclude>
 			<exclude>/po_files$</exclude>
 			<exclude>/EIFGENs$</exclude>
+			<exclude>/example$</exclude>
 		</file_rule>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="True"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo.ecf" readonly="True"/>

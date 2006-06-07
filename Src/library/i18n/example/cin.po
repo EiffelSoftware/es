@@ -1,0 +1,40 @@
+# translation of test application to Chinese
+# the chinese strigs have no sence!! 
+# Etienne Reichenbach
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: str1
+msgid "File"
+msgstr "使用线条图形的"
+
+#: str1
+msgid "Do you count?"
+msgstr "形均衡器"
+
+
+#: str1
+msgid "Open"
+msgstr "帧速率"
+
+
+#: str1
+msgid "Close"
+msgstr "是否有正在运行的"
+
+
+#: str1
+msgid "Save"
+msgstr "法初始化"
+
+
+#: str1
+msgid "A string?"
+msgstr "建新的"
+
+#: str1
+msgid "English version?"
+msgstr "您的安装"
