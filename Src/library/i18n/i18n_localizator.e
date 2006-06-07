@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 			-- NOTE: For the moment, should set path manually!
 			-- Feel free to suggest a way for determining the path
 			-- (Wiki: http://eiffersoftware.origo.ethz.ch/index.php/Internationalization)
-			path_to_file := ""
+			path_to_file := "/home/etienne/messages.mo"
 			create i18n_datastructure.make_with_file(path_to_file)
 			create i18n_template_formatter.make
 		ensure
