@@ -2209,6 +2209,16 @@ TeamMultiScreenSupport/vision2/implementation/mswin/developer_notes/to_be_implem
 TeamMultiScreenSupport/vision2/implementation/mswin/doc/sizing_how_to.txt -text
 TeamMultiScreenSupport/vision2/interface/events/gen_action_sequences -text
 TeamMultiScreenSupport/vision2/interface/events/gen_event_sensitive -text
+TeamMultiScreenSupport/vision2/spec/bcb/lib/ilvision2.lib -text
+TeamMultiScreenSupport/vision2/spec/bcb/lib/libpng.lib -text
+TeamMultiScreenSupport/vision2/spec/bcb/lib/mtvision2.lib -text
+TeamMultiScreenSupport/vision2/spec/bcb/lib/vision2.lib -text
+TeamMultiScreenSupport/vision2/spec/bcb/lib/zlib.lib -text
+TeamMultiScreenSupport/vision2/spec/msc/lib/ilvision2.lib -text
+TeamMultiScreenSupport/vision2/spec/msc/lib/libpng.lib -text
+TeamMultiScreenSupport/vision2/spec/msc/lib/mtvision2.lib -text
+TeamMultiScreenSupport/vision2/spec/msc/lib/vision2.lib -text
+TeamMultiScreenSupport/vision2/spec/msc/lib/zlib.lib -text
 TeamMultiScreenSupport/vision2/vision2.ecf -text
 TeamMultiScreenSupport/wel/clib/makefile.bcb -text
 TeamMultiScreenSupport/wel/clib/makefile.bcb.il -text
