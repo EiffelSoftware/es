@@ -122,12 +122,7 @@ feature {NONE} -- Implementation
 			until
 				i > i18n_mo_parser.string_count
 			loop
-				--if i18n_mo_parser.using_hash_table then
-				--	array.item(i).set_hash(i18n_mo_parser.get_hash(i))
-				--else
-				--	array.item(i).set_hash(hash_string(array.item(i).original))
-				--end
-				array.item(i).set_hash(hash_string(array.item(i).originals.i_th(0)))
+				array.item(i).set_hash(hash_string(array.item(i).originals.i_th(1)))
 				hash_table.put(array.item(i), array.item(i).hash)
 				i := i + 1
 			end
