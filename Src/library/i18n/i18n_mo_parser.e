@@ -20,7 +20,8 @@ feature {NONE} -- Initialization
 			non_empty_path: not a_path.is_empty
 		do
 			create mo_file.make(a_path)
-			if mo_file.exists then
+			file_exists:= mo_file.exists
+			if file_exists then
 				mo_file.make_open_read(a_path)
 
 				-- Read magic number.
@@ -49,6 +50,8 @@ feature {NONE} -- Initialization
 					-- Read offset of hashing table.
 					mo_file.read_integer
 					hash_table_offset := mo_file.last_integer
+
+					extract_plural_informations
 				end
 			end
 		ensure
@@ -73,7 +76,7 @@ feature -- Status setting
 
 feature -- File information
 	plural_forms: INTEGER
-		-- Number of plural forms
+			-- Number of plural forms
 
 	plural_form_identifier: STRING
 		-- Identifier of the plural form function
@@ -202,7 +205,9 @@ feature --Errors
 	file_exists: BOOLEAN
 		-- Does the file exist?
 
+
 feature {NONE} --Implementation
+
 	extract_string (a_offset, a_number: INTEGER): STRING_32 is
 			-- Which is the a_number-th string into the table at a_offset?
 		require
@@ -221,6 +226,44 @@ feature {NONE} --Implementation
 			mo_file.read_stream(string_length)
 			create Result.make_from_string(mo_file.last_string)
 		end
+
+		extract_plural_informations is
+			-- extract from the mo file
+			-- the informations abount the plural forms
+		local
+			t_list : LIST[STRING_32]
+			t_string : STRING_32
+			index : INTEGER
+		do
+			t_list := get_translated (0).split ('%N')
+			 -- Search the informations
+			from
+				t_list.start
+			until
+				t_string /= Void or t_list.after
+			loop
+				if t_list.item.has_substring ("Plural-Forms") then
+					t_string := t_list.item
+				end
+				t_list.forth
+			end
+			if t_string /= Void then
+				-- Informations found
+				index := t_string.index_of (';', 1)
+				if index > 1 and t_string.has_substring ("nplurals=") then
+					plural_forms := t_string.item_code (index-1)
+						-- ?????? Does this give the integer representation of a character???
+					plural_form_identifier := t_string.substring (index+1, t_string.count)
+				end
+			end
+			if t_string = Void or plural_form_identifier = Void then
+				--no infrmations found or invalid
+				-- set to default values
+				plural_forms := 2
+				create plural_form_identifier.make_from_string ("plural=n != 1;")
+			end
+		end
+
 
 	mo_file: RAW_FILE
 		-- Reference to the mo file
