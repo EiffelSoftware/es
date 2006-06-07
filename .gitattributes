@@ -2236,6 +2236,14 @@ TeamMultiScreenSupport/wel/extra/h2e.rc -text
 TeamMultiScreenSupport/wel/extra/h2e.txt -text
 TeamMultiScreenSupport/wel/extra/h2e1.ico -text
 TeamMultiScreenSupport/wel/extra/h2e2.ico -text
+TeamMultiScreenSupport/wel/spec/bcb/dll/wel_hook.dll -text
+TeamMultiScreenSupport/wel/spec/bcb/lib/ilwel.lib -text
+TeamMultiScreenSupport/wel/spec/bcb/lib/mtwel.lib -text
+TeamMultiScreenSupport/wel/spec/bcb/lib/wel.lib -text
+TeamMultiScreenSupport/wel/spec/msc/dll/wel_hook.dll -text
+TeamMultiScreenSupport/wel/spec/msc/lib/ilwel.lib -text
+TeamMultiScreenSupport/wel/spec/msc/lib/mtwel.lib -text
+TeamMultiScreenSupport/wel/spec/msc/lib/wel.lib -text
 TeamMultiScreenSupport/wel/version.txt -text
 TeamMultiScreenSupport/wel/wel.ecf -text
 TeamMultiScreenSupport/wel/wel.txt -text
