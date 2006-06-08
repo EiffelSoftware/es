@@ -26,7 +26,7 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Miscellaneous
-    hash_string(a_string: STRING_GENERAL): INTEGER is
+    hash_string(a_string: STRING_32): INTEGER is
 			-- What is the hash of a_string?
 		require
 			valid_string: a_string /= Void
@@ -62,10 +62,10 @@ feature {NONE} -- Basic operations
 			-- Which string is the translation of the a_hash-hashed one?
 		do
 			-- Simply get it from the hash table.
-			Result := hash_table.item(a_hash).get_translated(i18n_plural_forms.get_plural_form(i_th))
+			Result := hash_table.item(a_hash).get_translated(i_th)
 		end
 
-	search(a_string: STRING_GENERAL): STRING_32 is
+	search(a_string: STRING_32): STRING_32 is
 			-- What is the translation of a_string?
 			-- actually not required (hashing strings on load if no hash-table found
 		obsolete
@@ -82,13 +82,27 @@ feature -- Translation
 			-- aka interface to the TRANSLATOR class
 		require
 			valid_string: a_string /= Void
+		local
+			l_hash: INTEGER
+				-- Temporary hash
+			l_plural: INTEGER
+				-- Plural form
+			l_string: STRING_32
+				-- STRING_32 representation
 		do
-			if hash_table.has(hash_string(a_string)) then
-				-- The string is into the hashing table.
-				Result := take_from_hash(hash_string(a_string), i_th)
+			if a_string.is_equal("") then
+				Result := ""
 			else
-				-- No string found, serve the argument.
-				Result := a_string
+				l_string := a_string.as_string_32
+				l_hash := hash_string(a_string.as_string_32)
+				l_plural := i18n_plural_forms.get_plural_form(i_th)
+				if hash_table.has(l_hash) then
+					-- The string is into the hashing table.
+					Result := take_from_hash(l_hash, l_plural)
+				else
+					-- No string found, serve the argument.
+					Result := l_string
+				end
 			end
 		end
 

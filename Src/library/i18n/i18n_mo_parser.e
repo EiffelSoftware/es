@@ -234,7 +234,11 @@ feature {NONE} --Implementation
 			t_list : LIST[STRING_32]
 			t_string : STRING_32
 			index : INTEGER
+			char0: WIDE_CHARACTER
+			code0: INTEGER -- used to get an integer
 		do
+			char0 := '0'
+			code0 := char0.code
 			t_list := get_translated (0).split ('%N')
 			 -- Search the informations
 			from
@@ -251,8 +255,8 @@ feature {NONE} --Implementation
 				-- Informations found
 				index := t_string.index_of (';', 1)
 				if index > 1 and t_string.has_substring ("nplurals=") then
-					plural_forms := t_string.item_code (index-1)
-						-- ?????? Does this give the integer representation of a character???
+					plural_forms := (t_string.item_code(index-1) - code0)
+						-- ?????? Does this find out the integer value of the represented character???
 					plural_form_identifier := t_string.substring (index+1, t_string.count)
 				end
 			end
