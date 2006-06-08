@@ -39,7 +39,17 @@ msgid "English version?"
 msgstr "Versione inglese"
 
 #: str8
-msgid "singular: #/1"
-msgid_plural "plura: #/1"
-msgstr[0] "singolare: #/1"
-msgstr[1] "plurale: #/1"
+msgid "singular: $1"
+msgid_plural "plura: $1"
+msgstr[0] "singolare: $1"
+msgstr[1] "plurale: $1"
+
+#: str9
+msgid "Application"
+msgstr "App"
+
+#: str10
+msgid "singular"
+msgid_plural "plural"
+msgstr[0] "singolare"
+msgstr[1] "plurale"

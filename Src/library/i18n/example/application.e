@@ -54,10 +54,10 @@ feature -- Create window elements
 			create open.make_with_text (i18n("Open"))
 			create close.make_with_text (i18n("Close"))
 			create save.make_with_text (i18n("Save"))
-			create plural.make_with_text (i18n_comp_pl (["singular: \1","plura: \1"], [n], n))
+			create plural.make_with_text (i18n_comp_pl (["singular: $1","plura: $1"], [n], n))
 			plural.select_actions.extend (agent increment)
 			plural.select_actions.extend (agent disp)
-			close.select_actions.extend (agent io.put_string (i18n_comp_pl (["singular: \1","plura: \1"], [n], n)+"%N"))
+			close.select_actions.extend (agent disp_3)
 			create plural_2.make_with_text (i18n_pl (["singular","plural"], n))
 			plural_2.select_actions.extend (agent disp_2)
 			create m_item_1.make_with_text (i18n("Inglish version?"))
@@ -90,6 +90,13 @@ feature -- Create window elements
 		do
 			io.put_string (i18n_pl (["singular","plural"], n)+"%N")
 		end
+
+	disp_3 is
+			--
+		do
+			io.put_string (i18n_comp_pl (["singular: $1","plura: $1"], [n], n)+"%N")
+		end
+
 
 
 
