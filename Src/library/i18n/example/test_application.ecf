@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="test_application" uuid="FB2AB07F-DA2D-44CE-A22C-25F986B81FC1">
+	<target name="test_application">
+		<description>i18n and Unicode support test application</description>
+		<root cluster="root_cluster" class="APPLICATION" feature="make_and_launch"/>
+		<option profile="false" debug="false" warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+		</option>
+		<setting name="array_optimization" value="false"/>
+		<setting name="console_application" value="false"/>
+		<setting name="dead_code_removal" value="true"/>
+		<setting name="dynamic_runtime" value="false"/>
+		<setting name="inlining" value="false"/>
+		<setting name="inlining_size" value="4"/>
+		<setting name="line_generation" value="false"/>
+		<setting name="multithreaded" value="false"/>
+		<external_include location="\$(ISE_LIBRARY)/library/event/Clib"/>
+		<external_include location="\$(ISE_LIBRARY)/library/vision2/spec/include"/>
+		<external_include location="\$(ISE_LIBRARY)/library/vision2/implementation/gtk/Clib `$ISE_LIBRARY/library/vision2/implementation/gtk/Clib/vision2-gtk-config --include_path`"/>
+		<external_object location="`$(ISE_LIBRARY)/library/vision2/implementation/gtk/Clib/vision2-gtk-config --object`"/>
+		<cluster name="base" location="$ISE_LIBRARY\library\base\" recursive="true"/>
+		<cluster name="i18n" location="$ISE_LIBRARY\library\i18n\"/>
+		<cluster name="root_cluster" location="$ISE_LIBRARY\library\i18n\example\"/>
+		<cluster name="vision2" location="$ISE_LIBRARY\library\vision2\" recursive="true">
+			<file_rule>
+				<exclude>/mswin$</exclude>
+				<exclude>/contrib$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

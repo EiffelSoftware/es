@@ -25,7 +25,7 @@ default
 
 cluster 
 		-- The application
-	root_cluster: "/home/etienne/Scuola/SS06/Berty/Progetto/Eiffel/Src/library/i18n/example/"
+	root_cluster: "$EIFFEL_SRC/Src/library/i18n/example/"
 
 -- Change this path...
 	i18n: "$EIFFEL_SRC/library/i18n"
