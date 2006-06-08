@@ -55,10 +55,12 @@ feature -- Create window elements
 			create close.make_with_text (i18n("Close"))
 			create save.make_with_text (i18n("Save"))
 			create plural.make_with_text (i18n_comp_pl (["singular: $1","plura: $1"], [n], n))
+			create plural_2.make_with_text (i18n_pl (["singular","plural"], n))
 			plural.select_actions.extend (agent increment)
 			plural.select_actions.extend (agent disp)
+			plural.select_actions.extend (agent update(plural))
+			plural.select_actions.extend (agent update_2(plural_2))
 			close.select_actions.extend (agent disp_3)
-			create plural_2.make_with_text (i18n_pl (["singular","plural"], n))
 			plural_2.select_actions.extend (agent disp_2)
 			create m_item_1.make_with_text (i18n("Inglish version?"))
 			create m_item_2.make_with_text (i18n("Copirighted by Kiwiz"))
@@ -97,6 +99,23 @@ feature -- Create window elements
 			io.put_string (i18n_comp_pl (["singular: $1","plura: $1"], [n], n)+"%N")
 		end
 
+
+	update (item: EV_MENU_ITEM) is
+			--
+		require
+			item /= Void
+		do
+			item.set_text(i18n_comp_pl (["singular: $1","plura: $1"], [n], n))
+		end
+
+
+	update_2 (item: EV_MENU_ITEM) is
+			-- update menu item's text
+		require
+			item /= Void
+		do
+			item.set_text (i18n_pl (["singular","plural"], n))
+		end
 
 
 
