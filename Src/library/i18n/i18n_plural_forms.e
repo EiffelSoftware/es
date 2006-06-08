@@ -13,7 +13,7 @@ create {I18N_DATASTRUCTURE}
 
 feature {NONE} -- Initialization
 
-	make_with_identifier(a_n: INTEGER; a_identifier: STRING) is
+	make_with_identifier(a_n: INTEGER; a_identifier: STRING_32) is
 			-- Initialize `Current'.
 			-- NOTE: Should check the identifiers!
 			-- PLEASE: see the wiki page for this purpose (http://eiffelsoftware.origo.ethz.ch/index.php/Internationalization)!
@@ -41,8 +41,10 @@ feature {NONE} -- Initialization
 				else
 					plural_function_agent := agent three_forms_spec1_spec24(?)
 				end
-			else
+			elseif a_n = 4 then
 				plural_function_agent := agent four_forms_spec1_spec02_spec0304(?)
+			else
+				plural_function_agent := agent two_forms_spec1(?)
 			end
 		ensure
 			plural_function_agent_set: plural_function_agent /= Void

@@ -78,7 +78,7 @@ feature -- File information
 	plural_forms: INTEGER
 			-- Number of plural forms
 
-	plural_form_identifier: STRING
+	plural_form_identifier: STRING_32
 		-- Identifier of the plural form function
 
 	is_big_endian,

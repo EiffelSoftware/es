@@ -15,6 +15,7 @@ feature {NONE} -- Basic operations
 		require
 			valid_string: a_string /= Void
 		do
+
 			Result := localizator.translate(a_string)
 		ensure
 			valid_result: Result /= Void
@@ -37,8 +38,12 @@ feature {NONE} -- Basic operations
 		require
 			valid_string: a_string /= Void
 			valid_args: a_args /= Void
+		local
+			l_string: STRING_32
+				-- Temporary string
 		do
-			Result := localizator.translate_template(a_string, a_args)
+			l_string := localizator.translate(a_string)
+			Result := localizator.translate_template(l_string, a_args)
 		ensure
 			valid_result: Result /= Void
 		end
@@ -50,11 +55,11 @@ feature {NONE} -- Basic operations
 			valid_string: a_string /= Void
 			valid_args: a_args /= Void
 		local
-			temp_string: STRING_32
+			l_string: STRING_32
 				-- Temporary string
 		do
-			temp_string := localizator.translate_plural(a_string, i_th)
-			Result := localizator.translate_template(temp_string, a_args)
+			l_string := localizator.translate_plural(a_string, i_th)
+			Result := localizator.translate_template(l_string, a_args)
 		ensure
 			valid_result: Result /= Void
 		end

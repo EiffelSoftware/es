@@ -19,9 +19,11 @@ feature {NONE} -- Initialization
 			not_empty_path: not a_path.is_empty
 		do
 			create i18n_mo_parser.make_with_path(a_path)
-			populate_array
-			populate_hash_table
-			i18n_mo_parser.close_file
+			if i18n_mo_parser.file_exists and then i18n_mo_parser.is_valid then
+				populate_array
+				populate_hash_table
+				i18n_mo_parser.close_file
+			end
 			create i18n_plural_forms.make_with_identifier (i18n_mo_parser.plural_forms, i18n_mo_parser.plural_form_identifier)
 		end
 
@@ -161,7 +163,7 @@ feature {NONE} -- Implementation
 			until
 				i > i18n_mo_parser.string_count
 			loop
-				create temp_string.make_with_id (i)
+				create temp_string.make_with_id(i)
 				temp_string.set_originals(i18n_mo_parser.get_originals(i))
 				array.put(temp_string, i)
 				i := i + 1
