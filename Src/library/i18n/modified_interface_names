@@ -31,9 +31,6 @@ inherit
 
 feature -- Button texts
 
---	definito da me:
-	Workbench_name : STRING_32
-
 	b_Abort: STRING_32							is do Result := i18n ("Abort") end
 	b_Add: STRING_32							is do Result := i18n ("Add") end
 	b_Add_text: STRING_32			 			is do Result := i18n("Add ->") end
