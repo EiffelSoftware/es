@@ -50,7 +50,6 @@ feature {NONE} -- Initialization
 					-- Read offset of hashing table.
 					mo_file.read_integer
 					hash_table_offset := mo_file.last_integer
-
 					extract_plural_informations
 				end
 			end
@@ -227,7 +226,7 @@ feature {NONE} --Implementation
 			create Result.make_from_string(mo_file.last_string)
 		end
 
-		extract_plural_informations is
+	extract_plural_informations is
 			-- extract from the mo file
 			-- the informations abount the plural forms
 		local
@@ -262,7 +261,7 @@ feature {NONE} --Implementation
 				end
 			end
 			if t_string = Void or plural_form_identifier = Void then
-				--no infrmations found or invalid
+				-- No informations found or invalid
 				-- set to default values
 				plural_forms := 2
 				create plural_form_identifier.make_from_string ("n != 1;")

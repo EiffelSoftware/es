@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 	make is
 			-- Initialize `Current', with default escape character '\'.
 		do
-			make_with_escape('\')
+			make_with_escape('$')
 		end
 
 	make_with_escape(a_escape: WIDE_CHARACTER) is
@@ -43,9 +43,14 @@ feature -- Basic operations
 			valid_args: a_args /= Void
 		local
 			last_escape_character: BOOLEAN
+			last_code_pre: BOOLEAN
+			last_no_number: BOOLEAN
 			temp_code: INTEGER
-			i: INTEGER
+			i, j: INTEGER
 				-- Counter
+			l_string: STRING_32
+			l_multiplier: DOUBLE
+			l_code: INTEGER
 		do
 			create Result.make_empty
 			from
@@ -58,7 +63,11 @@ feature -- Basic operations
 			until
 				i > a_string.count
 			loop
-				if a_string.code(i) = escape_character.code.as_natural_32 then
+				if last_code_pre then
+					if a_string.code(i) = code_post then
+						last_code_pre := false
+					end
+				elseif a_string.code(i) = escape_character.code.as_natural_32 then
 					if last_escape_character then
 						-- Last characted was escape_character, print escaped escape_character
 						Result.append_character(escape_character)
@@ -74,6 +83,37 @@ feature -- Basic operations
 						if temp_code >= 1 and temp_code <= 9 then
 							-- Valid index, insert argument
 							Result.append(a_args.item(temp_code).out.to_string_32)
+						elseif a_string.code(i) = code_pre then
+							temp_code := 0
+							l_string := a_string.substring((i+1),a_string.count).to_string_32.split('}').i_th(1)
+							from
+								j := 1
+							invariant
+								j >= 1
+								j <= l_string.count + 1
+							variant
+								l_string.count + 1 - j
+							until
+								j > l_string.count or last_no_number
+							loop
+								l_multiplier := 10 ^ (l_string.count - j)
+								l_code := (9 - (code9.as_integer_32 - l_string.code(j).as_integer_32))
+								if l_code >= 0 and l_code <= 9 then
+									temp_code := (temp_code + (l_code * l_multiplier.ceiling))
+								else
+									last_no_number := true
+								end
+								j := j + 1
+							end
+							if last_no_number then
+								Result.append_character(escape_character)
+								Result.append_code(a_string.code(i))
+							else
+								if temp_code > 0 and temp_code <= a_args.count then
+									Result.append(a_args.item(temp_code).out.to_string_32)
+								end
+								last_code_pre := true
+							end
 						else
 							-- Invalid index, print escape_character and current character
 							Result.append_code(escape_character.code.as_natural_32)
@@ -95,22 +135,40 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+	code_pre: NATURAL_32 is
+			-- Code for character '1'
+		local
+			l_char: WIDE_CHARACTER
+		once
+			l_char := '{'
+			Result := l_char.code.as_natural_32
+		end
+
+	code_post: NATURAL_32 is
+			-- Code for character '9'
+		local
+			l_char: WIDE_CHARACTER
+		once
+			l_char := '}'
+			Result := l_char.code.as_natural_32
+		end
+
 	code1: NATURAL_32 is
 			-- Code for character '1'
 		local
-			char1: WIDE_CHARACTER
+			l_char: WIDE_CHARACTER
 		once
-			char1 := '1'
-			Result := char1.code.as_natural_32
+			l_char := '1'
+			Result := l_char.code.as_natural_32
 		end
 
 	code9: NATURAL_32 is
 			-- Code for character '9'
 		local
-			char1: WIDE_CHARACTER
+			l_char: WIDE_CHARACTER
 		once
-			char1 := '9'
-			Result := char1.code.as_natural_32
+			l_char := '9'
+			Result := l_char.code.as_natural_32
 		end
 
 invariant
