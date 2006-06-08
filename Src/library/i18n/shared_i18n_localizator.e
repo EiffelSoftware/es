@@ -31,7 +31,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_comp(a_string: STRING; a_args: TUPLE): STRING_32 is
+	i18n_comp(a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
 			-- What's the completed form of the template?
 			-- NOTE: Should change the name!
 		require
@@ -50,7 +50,7 @@ feature {NONE} -- Basic operations
 			valid_string: a_string /= Void
 			valid_args: a_args /= Void
 		local
-			temp_string: STRING
+			temp_string: STRING_32
 				-- Temporary string
 		do
 			temp_string := localizator.translate_plural(a_string, i_th)

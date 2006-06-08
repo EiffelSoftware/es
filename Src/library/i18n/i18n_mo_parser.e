@@ -98,7 +98,7 @@ feature -- File information
 			Result := (hash_table_size > 0)
 		end
 
-	original_system_information: STRING is
+	original_system_information: STRING_32 is
 			-- Which original system information is attached to the mo file?
 		require
 			correct_file: file_exists and then is_valid
@@ -106,7 +106,7 @@ feature -- File information
 			Result := extract_string(original_table_offset, 0)
 		end
 
-	translated_system_information : STRING is
+	translated_system_information : STRING_32 is
 			-- Which translated system information is attached to the mo file?
 		require
 			correct_file: file_exists and then is_valid
