@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 			if a_n = 1 then
 				plural_function_agent := agent one_form(?)
 			elseif a_n = 2 then
-				if a_identifier.is_equal("!=") then
+				if a_identifier.is_equal("n != 1;") then
 					plural_function_agent := agent two_forms_spec1(?)
 				else
 					plural_function_agent := agent two_forms_spec01(?)

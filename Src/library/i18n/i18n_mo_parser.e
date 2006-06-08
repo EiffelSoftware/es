@@ -257,14 +257,15 @@ feature {NONE} --Implementation
 				if index > 1 and t_string.has_substring ("nplurals=") then
 					plural_forms := (t_string.item_code(index-1) - code0)
 						-- ?????? Does this find out the integer value of the represented character???
-					plural_form_identifier := t_string.substring (index+1, t_string.count)
+					index := t_string.index_of ('=', index)+1
+					plural_form_identifier := t_string.substring (index, t_string.count)
 				end
 			end
 			if t_string = Void or plural_form_identifier = Void then
 				--no infrmations found or invalid
 				-- set to default values
 				plural_forms := 2
-				create plural_form_identifier.make_from_string ("plural=n != 1;")
+				create plural_form_identifier.make_from_string ("n != 1;")
 			end
 		end
 
