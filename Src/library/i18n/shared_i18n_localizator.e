@@ -48,7 +48,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_comp_pl(a_string: TUPLE[STRING_GENERAL, STRING_GENERAL]; i_th: INTEGER; a_args: TUPLE): STRING_32 is
+	i18n_comp_pl(a_string: TUPLE[STRING_GENERAL, STRING_GENERAL]; a_args: TUPLE; i_th: INTEGER): STRING_32 is
 			-- What's the i_th completed form of the template?
 			-- NOTE: Should change the name!
 		require
