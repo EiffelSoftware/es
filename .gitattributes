@@ -2008,6 +2008,7 @@ Src/library/i18n/i18n.ecf -text
 Src/library/i18n/mo_files/it.mo -text
 Src/library/i18n/mo_files/zh.mo -text
 Src/library/i18n/modified_interface_names -text
+Src/library/i18n/modified_warning_messages -text
 Src/library/i18n/po_files/interface_names.po -text
 Src/library/i18n/po_files/warning_messages.po -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
