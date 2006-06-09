@@ -33,7 +33,9 @@ feature {NONE} -- Initialization
 			first_window.close_request_actions.extend (agent destroy)
 			first_window.set_size (500,500)
 			build_menu_bar
+			build_lables
 			first_window.set_menu_bar (standard_menu_bar)
+			first_window.extend (vertical_box)
 			first_window.show
 		end
 
@@ -44,42 +46,71 @@ feature -- Create window elements
 	build_menu_bar is
 			-- build the menu bar
 		local
-			open,close,save, plural, plural_2:EV_MENU_ITEM
-			m_item_1,m_item_2:EV_MENU_ITEM
-			first, file: EV_MENU
+			increase,decrease,save : EV_MENU_ITEM
+			file: EV_MENU
 		do
 			create standard_menu_bar.default_create
 			create file.make_with_text (i18n ("File"))
-			create first.make_with_text (i18n("Do you count?"))
-			create open.make_with_text (i18n("Open"))
-			create close.make_with_text (i18n("Close"))
+
+			create increase.make_with_text (i18n("Increase n"))
+			increase.select_actions.extend (agent increment)
+			increase.select_actions.extend (agent update_labels)
+
+			create decrease.make_with_text (i18n("Decrease n"))
+			decrease.select_actions.extend (agent decrement)
+			decrease.select_actions.extend (agent update_labels)
+			decrease.select_actions.extend (agent disp_3)
+
 			create save.make_with_text (i18n("Save"))
-			create plural.make_with_text (i18n_comp_pl (["singular: $1","plura: $1"], [n], n))
-			create plural_2.make_with_text (i18n_pl (["singular","plural"], n))
-			plural.select_actions.extend (agent increment)
-			plural.select_actions.extend (agent disp)
-			plural.select_actions.extend (agent update(plural))
-			plural.select_actions.extend (agent update_2(plural_2))
-			close.select_actions.extend (agent disp_3)
-			plural_2.select_actions.extend (agent disp_2)
-			create m_item_1.make_with_text (i18n("Inglish version?"))
-			create m_item_2.make_with_text (i18n("Copirighted by Kiwiz"))
-			file.extend (open)
-			file.extend (close)
+
+			file.extend (increase)
+			file.extend (decrease)
 			file.extend (save)
-			first.extend (m_item_1)
-			first.extend (plural)
-			first.extend (plural_2)
-			first.extend (m_item_2)
 			standard_menu_bar.extend (file)
-			standard_menu_bar.extend (first)
 		end
+
+	build_lables is
+			--
+		do
+			create vertical_box
+			create label
+			create simple_label
+			create simple_comp_label
+			create plural_comp_label
+			update_labels
+			vertical_box.extend (label)
+			vertical_box.extend (simple_label)
+			vertical_box.extend (simple_comp_label)
+			vertical_box.extend (plural_comp_label)
+		end
+
+	update_labels is
+			--
+		do
+			label.set_text (i18n_comp ("n is now equal $1", [n]))
+			simple_label.set_text (i18n ("Simple label"))
+			simple_comp_label.set_text (i18n_pl (["This is singular","This is plural"],n))
+			plural_comp_label.set_text (i18n_comp_pl (["There is 1 file","There are $1 files"], [n], n))
+			first_window.refresh_now
+			io.put_string (label.text+"%N"+simple_label.text+"%N"+simple_comp_label.text+"%N"+plural_comp_label.text+"%N")
+		end
+
+
 
 	increment is
 			--
 		do
 			n := n + 1
 		end
+
+	decrement is
+			--
+		do
+			if n > 1 then
+				n := n - 1
+			end
+		end
+
 
 	disp is
 			--
@@ -100,25 +131,6 @@ feature -- Create window elements
 		end
 
 
-	update (item: EV_MENU_ITEM) is
-			--
-		require
-			item /= Void
-		do
-			item.set_text(i18n_comp_pl (["singular: $1","plura: $1"], [n], n))
-		end
-
-
-	update_2 (item: EV_MENU_ITEM) is
-			-- update menu item's text
-		require
-			item /= Void
-		do
-			item.set_text (i18n_pl (["singular","plural"], n))
-		end
-
-
-
 	n : INTEGER
 
 
@@ -127,4 +139,13 @@ feature {NONE} -- Implementation
 			-- Main window.
 	standard_menu_bar: EV_MENU_BAR
 			-- Menu bar
+
+	vertical_box : EV_VERTICAL_BOX
+
+	label,
+	simple_label,
+	simple_comp_label,
+	plural_comp_label  : EV_LABEL
+
+
 end -- class APPLICATION
