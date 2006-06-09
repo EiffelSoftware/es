@@ -596,6 +596,11 @@ U		([0-9]|[0-9][0-9]|[0-9][0-9][0-9])
 				last_token := TE_REAL
 			}
 
+-- Bad Identifier
+
+{X}+		{
+				last_token := TE_BAD_ID
+			}
 
 -- Characters
 
