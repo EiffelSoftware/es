@@ -1,7 +1,7 @@
 indexing
 	description: "Parser for accessing MO files."
 	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
-	author: "Originally created by Etienne Reichenbach, ETH Zurich"
+	author: "i18n team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 				end
 			end
 		ensure
-			mo_file_open: mo_file.is_open_read
+			mo_file_open: file_exists implies mo_file.is_open_read
 		end
 
 feature -- Status report
@@ -103,6 +103,8 @@ feature -- File information
 			correct_file: file_exists and then is_valid
 		do
 			Result := extract_string(original_table_offset, 0)
+		ensure
+			result_exists : Result /= Void
 		end
 
 	translated_system_information : STRING_32 is
@@ -111,6 +113,8 @@ feature -- File information
 			correct_file: file_exists and then is_valid
 		do
 			Result := extract_string(translated_table_offset, 0)
+		ensure
+			result_exists : Result /= Void
 		end
 
 feature -- Basic operation
@@ -212,6 +216,7 @@ feature {NONE} --Implementation
 		require
 			valid_offset: (a_offset = translated_table_offset) or (a_offset = original_table_offset)
 			valid_number: (0 <= a_number) and (a_number <= string_count)
+			correct_file: file_exists and then is_valid
 		local
 			string_length,
 			string_offset: INTEGER
@@ -224,11 +229,15 @@ feature {NONE} --Implementation
 			mo_file.go(string_offset)
 			mo_file.read_stream(string_length)
 			create Result.make_from_string(mo_file.last_string)
+		ensure
+			result_exists : Result /= Void
 		end
 
 	extract_plural_informations is
 			-- extract from the mo file
 			-- the informations abount the plural forms
+		require
+			correct_file: file_exists and then is_valid
 		local
 			t_list : LIST[STRING_32]
 			t_string : STRING_32
@@ -266,6 +275,8 @@ feature {NONE} --Implementation
 				plural_forms := 2
 				create plural_form_identifier.make_from_string ("n != 1;")
 			end
+		ensure
+			plural_form_identifier_exists : plural_form_identifier /= Void
 		end
 
 
