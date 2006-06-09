@@ -96,7 +96,7 @@ feature -- Translation
 				Result := ""
 			else
 				l_string := a_string.as_string_32
-				l_hash := hash_string(a_string.as_string_32)
+				l_hash := hash_string(l_string)
 				l_plural := i18n_plural_forms.get_plural_form(i_th)
 				if hash_table.has(l_hash) then
 					-- The string is into the hashing table.
