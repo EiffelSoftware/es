@@ -386,7 +386,7 @@ feature -- Cluster tree warnings
 		require
 			cluster_name_not_void: cluster_name /= Void
 		do
-			create Result.make (100)
+--			create Result.make (100)?
 			Result.append ("Cannot delete cluster ")
 			Result.append (cluster_name.as_upper)
 			Result.append ("%Nbecause it is read only.")
