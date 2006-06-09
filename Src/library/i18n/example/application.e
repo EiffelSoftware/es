@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 
 	prepare is
 		do
-			create first_window.make_with_title (i18n ("Application"))
+			create first_window.make_with_title (names.application)
 			first_window.close_request_actions.extend (agent destroy)
 			first_window.set_size (500,500)
 			build_menu_bar
@@ -50,18 +50,18 @@ feature -- Create window elements
 			file: EV_MENU
 		do
 			create standard_menu_bar.default_create
-			create file.make_with_text (i18n ("File"))
+			create file.make_with_text (names.file)
 
-			create increase.make_with_text (i18n("Increase n"))
+			create increase.make_with_text (names.increase)
 			increase.select_actions.extend (agent increment)
 			increase.select_actions.extend (agent update_labels)
 
-			create decrease.make_with_text (i18n("Decrease n"))
+			create decrease.make_with_text (names.decrease)
 			decrease.select_actions.extend (agent decrement)
 			decrease.select_actions.extend (agent update_labels)
 			decrease.select_actions.extend (agent disp_3)
 
-			create save.make_with_text (i18n("Save"))
+			create save.make_with_text (names.save)
 
 			file.extend (increase)
 			file.extend (decrease)
@@ -88,7 +88,7 @@ feature -- Create window elements
 			--
 		do
 			label.set_text (i18n_comp ("n is now equal $1", [n]))
-			simple_label.set_text (i18n ("Simple label"))
+			simple_label.set_text (names.simple)
 			simple_comp_label.set_text (i18n_pl (["This is singular","This is plural"],n))
 			plural_comp_label.set_text (i18n_comp_pl (["There is 1 file","There are $1 files"], [n], n))
 			first_window.refresh_now
@@ -146,6 +146,11 @@ feature {NONE} -- Implementation
 	simple_label,
 	simple_comp_label,
 	plural_comp_label  : EV_LABEL
+
+	names: NAMES is
+		once
+			create Result
+		end
 
 
 end -- class APPLICATION
