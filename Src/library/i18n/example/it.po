@@ -7,22 +7,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: str1
+msgid "Application"
+msgstr "Applicazione"
+
+#: str2
 msgid "File"
 msgstr "File"
 
-#: str2
-msgid "Do you count?"
-msgstr "Ci conti?"
-
 
 #: str3
-msgid "Open"
-msgstr "Apri"
+msgid "Increase n"
+msgstr "Incrementa n"
 
 
 #: str4
-msgid "Close"
-msgstr "Chiudi"
+msgid "Decrease n"
+msgstr "Decrementa n"
 
 
 #: str5
@@ -31,22 +31,24 @@ msgstr "Salva"
 
 
 #: str6
-msgid "A string?"
-msgstr "Una stringa?"
+msgid "n is now equal $1"
+msgstr "n è uguale a $1"
 
 #: str7
-msgid "English version?"
-msgstr "Versione inglese"
+msgid "Simple label"
+msgstr "etichetta semplice"
 
 #: str8
-msgid "singular: $1"
-msgid_plural "plura: $1"
-msgstr[0] "singolare: $1"
-msgstr[1] "plurale: $1"
+msgid "This is singular"
+msgid_plural "This is plural"
+msgstr[0] "Questo è singolare"
+msgstr[1] "Questo è plurale"
 
 #: str9
-msgid "Application"
-msgstr "App"
+msgid "There is 1 file"
+msgid_plural "There are $1 files"
+msgstr[0] "C'è un file"
+msgstr[1] "Ci sono $1 file"
 
 #: str10
 msgid "singular"
