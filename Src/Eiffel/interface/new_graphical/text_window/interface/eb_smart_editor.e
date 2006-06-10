@@ -213,7 +213,7 @@ feature -- Autocomplete
 
 feature {NONE} -- Text folding
 
-	folding_areas: ARRAYED_LIST[EB_FOLDING_AREA]
+	folding_areas: EB_FOLDING_AREA_TREE[INTEGER, FEATURE_AS]
 		-- structure containing all folding regions
 
 	initialize_folding_areas is
@@ -223,8 +223,7 @@ feature {NONE} -- Text folding
 			the_features:EIFFEL_LIST[FEATURE_AS]
 		do
 			-- init the folding_area datastructure
-			create folding_areas.make (5)
-
+			create folding_areas.make
 
 			if text_displayed.click_tool_enabled then
 				-- a list of feature clauses
@@ -239,11 +238,7 @@ feature {NONE} -- Text folding
 					from the_features.start
 					until the_features.after
 					loop
-						folding_areas.extend (create {EB_FOLDING_AREA}.make_with_element (the_features.item))
-
-						-- let's see something!
-						folding_areas.last.trace
-
+						folding_areas.extend (the_features.item.start_location.line, the_features.item)
 
 						--inc
 						the_features.forth
@@ -251,9 +246,16 @@ feature {NONE} -- Text folding
 					-- inc
 					the_feature_clauses.forth
 				end
+
+				debug
+					-- let's see something!
+					folding_areas.traverse_list_printout
+				end
 			else
 				-- we cant do anything.
-				io.put_string("click-tool not enabled, folding_areas not generated%N")
+				debug
+					io.put_string("click-tool not enabled, folding_areas not generated%N")
+				end
 			end
 		end
 
@@ -269,7 +271,7 @@ feature {NONE} -- Text folding
 --
 --		end
 
- 
+
 feature {NONE} -- Text loading
 
 	string_loading_setup, file_loading_setup is
@@ -884,6 +886,7 @@ feature -- Text Loading
 				dev_window.save_and (agent load_text (s))
 			else
 				Precursor {EB_CLICKABLE_EDITOR} (s)
+				initialize_folding_areas
 			end
 			load_without_save := False
 		end
