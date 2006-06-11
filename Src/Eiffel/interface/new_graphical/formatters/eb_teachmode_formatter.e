@@ -11,11 +11,14 @@ class
 
 inherit
 	EB_BASIC_TEXT_FORMATTER
+	--EB_BASIC_FEATURE_FORMATTER
 		redefine
 			command_name,
 			symbol,
 			menu_name,
-			format
+			format,
+			generate_text
+
 		end
 
 create
@@ -51,19 +54,45 @@ feature -- Formatting
 		local
 			class_file: RAW_FILE
 			f_name: STRING
+			ebw : EB_DEVELOPMENT_WINDOW
+			fs: FEATURE_STONE
+			teaching_mode : BOOLEAN
 		do
 			if
 				classi /= Void and then
 				selected and then
 				displayed
 			then
+
+				teaching_mode := False
+				ebw ?= manager
+				fs ?= stone
+				if ebw /= Void AND fs /= Void then
+					associated_feature := fs.e_feature
+					if associated_feature /= Void then
+						teaching_mode := True
+--					else
+--						editor.load_text (fs.origin_text)
+					end
+					--editor.display_message ("Yes: both")
+--				elseif ebw /= Void then
+--					editor.display_message ("Yes: ebw")
+--				elseif fs /= Void then
+--					editor.display_message ("Yes: fs")
+--				else
+--					editor.display_message ("ERROR")
+				end
+
+
 				display_temp_header
 				create class_file.make (classi.file_name)
 				if class_file.exists then
 					if not equal (classi.file_name, editor.file_name) then
 						editor.set_stone (stone)
-						editor.load_file (classi.file_name)
-						go_to_position
+						if NOT teaching_mode then
+							editor.load_file (classi.file_name)
+							go_to_position
+						end
 					end
 					if editor.load_file_error then
 						f_name := editor.file_name
@@ -77,6 +106,11 @@ feature -- Formatting
 					editor.clear_window
 					editor.display_message (Warning_messages.w_file_not_exist (classi.file_name))
 				end
+
+				if teaching_mode then
+					generate_text
+				end
+
 				editable :=	not classi.is_read_only and not editor.load_file_error
 				editor.set_read_only (not editable)
 				if has_breakpoints then
@@ -84,9 +118,40 @@ feature -- Formatting
 				else
 					editor.disable_has_breakable_slots
 				end
+
 				display_header
 			end
 		end
+
+
+feature {NONE} -- Implementation
+
+	associated_feature: E_FEATURE
+			-- Feature about which information is displayed.
+
+	generate_text is
+			-- Create `formatted_text'.
+		local
+			retried: BOOLEAN
+			ynk_win: YANK_STRING_WINDOW
+		do
+			if associated_feature /= Void then
+				create ynk_win.make
+				if not retried then
+					last_was_error := associated_feature.text (ynk_win)
+				else
+					last_was_error := True
+				end
+				if not last_was_error then
+					editor.set_stone (stone)
+					editor.load_text (ynk_win.stored_output)
+				end
+			end
+		rescue
+			retried := True
+			retry
+		end
+
 
 
 indexing

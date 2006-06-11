@@ -303,6 +303,7 @@ feature {EB_FEATURES_TREE} -- Status setting
 			a_feature_not_void: a_feature /= Void
 		local
 			feature_stone: FEATURE_STONE
+			etf : EB_TEACHMODE_FORMATTER
 		do
 --			if current_compiled_class /= Void and then current_compiled_class.has_feature_table then
 --				ef := current_compiled_class.feature_with_name (a_feature.feature_name)
@@ -310,6 +311,12 @@ feature {EB_FEATURES_TREE} -- Status setting
 				development_window.set_feature_locating (true)
 				development_window.set_stone (feature_stone)
 				development_window.set_feature_locating (false)
+
+				etf ?= development_window.pos_container
+				if etf /= Void then
+					etf.set_stone (feature_stone)
+					--etf.format
+				end
 --			end
 		end
 
