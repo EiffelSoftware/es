@@ -52,7 +52,10 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			if temp_string /= Void then
 				Result := i18n_datastructure.translate(temp_string, a_num)
 				if a_num /= 1 and Result.is_equal(temp_string) then
-					Result ?= a_string.item(2)
+					temp_string ?= a_string.item(2)
+					if temp_string /= Void then
+						Result := temp_string.as_string_32
+					end
 				end
 			end
 			if Result = Void then
