@@ -1,7 +1,7 @@
 indexing
 	description: "[
 				Structure containing all information of a area which can be folded, 
-				Objects of this class are nodes of an AVL-tree used by 
+				Objects of this class are nodes of an AVL-tree used by
 				]"
 	author: "bherlig"
 	date: "$06/06/06$"
@@ -25,6 +25,26 @@ feature -- Initialization
 		ensure
 			key_set: key = k
 			item_set: item = d
+		end
+
+feature -- hidden states
+
+	hide is
+			-- hides 'current'
+		do
+			hidden := true
+		end
+
+	show is
+		-- shows 'current'
+		do
+			hidden := false
+		end
+
+	toggle_hidden_status is
+			-- changes 'hidden' to the opposite
+		do
+			hidden := not hidden
 		end
 
 feature -- Access
@@ -53,6 +73,15 @@ feature -- Access
 		-- line on which the area starts
 	end_line: INTEGER
 		-- line on which the area ends
+
+	height: INTEGER is
+		-- height of the text inside the folding area
+		do
+			result :=  start_line - end_line
+		end
+
+	hidden: BOOLEAN
+		-- is 'current' hidden?
 
 feature {EB_FOLDING_AREA_TREE} -- Element change
 
