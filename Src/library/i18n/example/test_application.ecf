@@ -17,14 +17,9 @@
 		<external_include location="\$(ISE_LIBRARY)/library/vision2/spec/include"/>
 		<external_include location="\$(ISE_LIBRARY)/library/vision2/implementation/gtk/Clib `$ISE_LIBRARY/library/vision2/implementation/gtk/Clib/vision2-gtk-config --include_path`"/>
 		<external_object location="`$(ISE_LIBRARY)/library/vision2/implementation/gtk/Clib/vision2-gtk-config --object`"/>
-		<cluster name="base" location="$ISE_LIBRARY\library\base\" recursive="true"/>
-		<cluster name="i18n" location="$ISE_LIBRARY\library\i18n\"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="true"/>
+		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf" readonly="false"/>
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="true"/>
 		<cluster name="root_cluster" location="$ISE_LIBRARY\library\i18n\example\"/>
-		<cluster name="vision2" location="$ISE_LIBRARY\library\vision2\" recursive="true">
-			<file_rule>
-				<exclude>/mswin$</exclude>
-				<exclude>/contrib$</exclude>
-			</file_rule>
-		</cluster>
 	</target>
 </system>
