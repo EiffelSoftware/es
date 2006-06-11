@@ -186,6 +186,36 @@ feature -- Icons
 		once
 			Result := pixmap_from_constant (icon_format_text_color_value)
 		end
+	Icon_teach: EV_PIXMAP is
+		once
+			Result := load_pixmap_teach
+		end
+	load_pixmap_teach: EV_PIXMAP is
+			-- Load a pixmap with name `fn' located in `pixmap_path'.
+		local
+			full_path: FILE_NAME
+			retried: BOOLEAN
+			warning_dialog: EV_WARNING_DIALOG
+		do
+			if not retried then
+				create Result
+				create full_path.make_from_string ("D:\57dev\library\teaching\")
+				full_path.set_file_name ("teach")
+				full_path.add_extension (Pixmap_suffix)
+				Result.set_with_named_file (full_path)
+			else
+				create warning_dialog.make_with_text (
+					"Cannot read pixmap file:%N" + full_path + ".%N%
+					%Please make sure the installation is not corrupted.")
+				warning_dialog.show
+				create Result.make_with_size (pixmap_width, pixmap_height)
+			end
+		ensure
+			result_not_void: Result /= Void
+		rescue
+			retried := True
+			retry
+		end
 
 	Icon_format_clickable: EV_PIXMAP is
 		once
@@ -1648,8 +1678,11 @@ feature {NONE} -- Constants
 			icon_format_flat_color_value,
 			icon_format_interface_color_value,
 			icon_format_onces_color_value,
+
 			icon_format_routines_color_value,
+
 			icon_format_suppliers_color_value,
+
 			icon_format_text_color_value,
 			icon_forth_color_value,
 			icon_freeze_color_value,

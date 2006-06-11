@@ -34,8 +34,8 @@ feature {NONE} -- Properties
 			-- Graphical representation of the command.
 		once
 			create Result.make (1, 2)
-			Result.put (Pixmaps.Icon_format_text, 1)
-			Result.put (Pixmaps.Icon_format_text, 2)
+			Result.put (Pixmaps.Icon_teach, 1) -- an erste stelle
+			Result.put (Pixmaps.Icon_teach, 2) -- an zweite stelle
 		end
 
 	menu_name: STRING is
