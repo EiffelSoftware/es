@@ -471,12 +471,14 @@ feature -- Menu mnenomics
 	m_Set_slice_size: STRING is			"&Alter size"
 	m_Special: STRING is				"&Special"
 	m_Separate_stone: STRING is			"Unlin&k Context Tool"
+	m_teachmode: STRING is				"Teachmode"
 	m_Tools: STRING is					"&Tools"
 	m_Unify_stone: STRING is			"Lin&k Context Tool"
 	m_View: STRING is					"&View"
 	m_Window: STRING is					"&Window"
 
 feature -- Label texts
+
 
 	l_Ace_file_for_frame: STRING is		"Ace file"
 	l_action_colon: STRING is			"Action:"
@@ -679,6 +681,7 @@ feature -- Label texts
 	l_Tab_diagram: STRING is 			"Diagram"
 	l_Tab_metrics: STRING is 			"Metrics"
 	l_target: STRING is					"Target"
+	l_teachmode: STRING is				"teaching mode"
 	l_Text_loaded: STRING is			"Text finished loading"
 	l_Text_saved: STRING is				"Text was saved"
 	l_Three_dots: STRING is				"..."

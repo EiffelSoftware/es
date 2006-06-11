@@ -500,7 +500,7 @@ feature {NONE} -- Initialization
 			managed_feature_formatters.extend (create {EB_HOMONYMS_FORMATTER}.make (Current))
 
 
-			create managed_main_formatters.make (6)
+			create managed_main_formatters.make (7)
 
 			create {EB_BASIC_TEXT_FORMATTER} form.make (Current)
 			create accel.make_with_key_combination (
@@ -537,6 +537,14 @@ feature {NONE} -- Initialization
 			create {EB_FLAT_SHORT_FORMATTER} form.make (Current)
 			create accel.make_with_key_combination (
 					create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.Key_i),
+					True, False, True)
+			accel.actions.extend (agent form.execute)
+			form.set_accelerator (accel)
+			managed_main_formatters.extend (form)
+
+			create {EB_TEACHMODE_FORMATTER} form.make (Current)
+			create accel.make_with_key_combination (
+					create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.Key_j),
 					True, False, True)
 			accel.actions.extend (agent form.execute)
 			form.set_accelerator (accel)
@@ -902,6 +910,7 @@ feature -- Update
 			managed_main_formatters.i_th (3).invalidate
 			managed_main_formatters.i_th (4).invalidate
 			managed_main_formatters.i_th (5).invalidate
+			managed_main_formatters.i_th (6).invalidate
 			if stone /= Void then
 				st := stone.synchronized_stone
 			end

@@ -1,44 +1,34 @@
 indexing
-	description: "Formatter to display the text a class with no analysis."
+	description: "Formatter that displays the text of a feature with no analysis."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	author: "Xavier Rousselot"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 58663 $"
 
 class
-	EB_BASIC_TEXT_FORMATTER
+	EB_TEACHMODE_FORMATTER
 
 inherit
-	EB_CLASS_TEXT_FORMATTER
+	EB_BASIC_TEXT_FORMATTER
 		redefine
-			set_stone,
-			generate_text,
-			class_cmd,
-			editable,
-			set_class,
-			format,
-			make,
-			set_accelerator
+			command_name,
+			symbol,
+			menu_name,
+			format
 		end
 
 create
 	make
 
-feature -- Initialization
 
-	make (a_manager: like manager) is
-			-- Create a formatter associated with `a_manager'.
+feature {NONE} -- Properties
+
+	command_name: STRING is
+			-- Name of the command.
 		do
-			Precursor {EB_CLASS_TEXT_FORMATTER} (a_manager)
-			create_class_cmd
-			editable := True
+			Result := Interface_names.l_teachmode
 		end
-
-feature -- Properties
-
-	editable: BOOLEAN
-			-- Can the generated text be edited?
 
 	symbol: ARRAY [EV_PIXMAP] is
 			-- Graphical representation of the command.
@@ -51,7 +41,7 @@ feature -- Properties
 	menu_name: STRING is
 			-- Identifier of `Current' in menus.
 		do
-			Result := Interface_names.m_Showtext_new
+			Result := Interface_names.m_teachmode
 		end
 
 feature -- Formatting
@@ -99,101 +89,6 @@ feature -- Formatting
 		end
 
 
-feature -- Status setting
-
-	set_accelerator (accel: EV_ACCELERATOR) is
-			-- Changes the accelerator.
-		do
-			Precursor {EB_CLASS_TEXT_FORMATTER} (accel)
-			accelerator.actions.put_front (agent invalidate)
-		end
-
-	set_class (a_class: CLASS_C) is
-			-- Associate `Current' with `a_class'.
-		do
-			set_classi (a_class.lace_class)
-		end
-
-	set_stone (new_stone: CLASSI_STONE) is
-			-- Associate `Current' with class contained in `new_stone'.
-		local
-			a_stone: CLASSI_STONE
-		do
-			force_stone (new_stone)
-			a_stone ?= new_stone
-			if a_stone /= Void then
-				if not new_stone.class_i.is_external_class then
-					set_classi (a_stone.class_i)
-				end
-			else
-				classi := Void
-				if selected then
-					if widget_owner /= Void then
-						widget_owner.set_widget (widget)
-					end
-					editor.clear_window
-					display_header
-				end
-			end
-		end
-
-	set_classi (a_class: CLASS_I) is
-			-- Associate current formatter with `a_class'.
-		do
-			classi := a_class
-			if a_class = Void then
-				class_cmd := Void
-			else
-				create_class_cmd
-			end
-			must_format := True
-			format
-			if selected then
-				if widget_owner /= Void then
-					widget_owner.set_widget (widget)
-				end
-				display_header
-			end
-		end
-
-feature {EB_TEACHMODE_FORMATTER} -- Properties
-
-	class_cmd: E_SHOW_FLAT
-			-- Just needed for compatibility, do not use.
-
-	classi: CLASS_I
-			-- Class currently associated with `Current'.
-
-	command_name: STRING is
-			-- Name of the command.
-		do
-			Result := Interface_names.l_Basic_text
-		end
-
-	post_fix: STRING is "txt"
-			-- String symbol of the command, used as an extension when saving.
-
-feature {EB_TEACHMODE_FORMATTER} -- Implementation
-
-	generate_text is
-			-- Create `formatted_text'.
-		do
-		end
-
-	create_class_cmd is
-			-- Create `class_cmd'.
-		require else
-			True
-		do
-			create class_cmd
-		end
-
-	has_breakpoints: BOOLEAN is False
-		-- Should `Current' display breakpoints?
-
-	line_numbers_allowed: BOOLEAN is True;
-		-- Does it make sense to show line numbers in Current?
-
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
@@ -226,4 +121,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class EB_BASIC_TEXT_FORMATTER
+end -- class EB_TEACHMODE_FORMATTER

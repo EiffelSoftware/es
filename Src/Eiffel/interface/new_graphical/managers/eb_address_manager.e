@@ -252,7 +252,7 @@ feature -- Element change
 			from
 				l_cnt := 1
 			until
-				l_cnt > 5
+				l_cnt > 6
 			loop
 				but := known_formatters.i_th (l_cnt).new_button
 				but.drop_actions.set_veto_pebble_function (agent is_not_feature_stone (?))
