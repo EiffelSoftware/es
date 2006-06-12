@@ -8,6 +8,9 @@ indexing
 class
 	I18N_MO_PARSER
 
+inherit
+	UC_IMPORTED_UTF8_ROUTINES
+
 create {I18N_DATASTRUCTURE}
 	make_with_path
 
@@ -220,6 +223,13 @@ feature {NONE} --Implementation
 		local
 			string_length,
 			string_offset: INTEGER
+			c_str: POINTER
+			i: INTEGER
+			ptr: MANAGED_POINTER
+			uc_str: UC_STRING
+			l_ch: CHARACTER
+			ch_len: INTEGER
+			code: NATURAL_32
 		do
 			mo_file.go(a_offset + (a_number - 1) * 8)
 			mo_file.read_integer_32
@@ -227,8 +237,60 @@ feature {NONE} --Implementation
 			mo_file.read_integer_32
 			string_offset := mo_file.last_integer_32
 			mo_file.go(string_offset)
-			mo_file.read_stream(string_length)
-			create Result.make_from_string(mo_file.last_string)
+	-- try 1
+--			mo_file.read_stream(string_length)
+--			create Result.make_from_string(mo_file.last_string)
+	-- try 2
+--			create ptr.make (string_length+2)
+--			mo_file.read_to_managed_pointer (ptr, 0, string_length)
+--			create Result.make_from_c (ptr.item)
+	-- try 3
+--			create Result.make_empty
+--			c_str ?= {POINTER} mo_file.last_string.to_c
+--			Result.make_from_c (c_str)
+	-- try 4
+--			create Result.make (string_length*2)
+--			create ptr.share_from_pointer (Result.area.base_address, string_length+1)
+--			mo_file.read_to_managed_pointer (ptr, 0, string_length+1)
+	-- try 5
+--			mo_file.read_stream(string_length)
+--			create uc_str.make_from_string (mo_file.last_string)
+--			create Result.make_from_string (uc_str.to_utf8)
+	-- try 6
+			create Result.make_empty
+			from
+				i := 1
+				ch_len := 0
+			until
+				i > string_length or mo_file.end_of_file
+			loop
+				mo_file.read_character
+				l_ch := mo_file.last_character
+				if ch_len > 0 then
+					-- we are in the middle of a multi-byte char
+					ch_len := ch_len - 1 -- one byte fewer to decode
+					code := code + l_ch.natural_32_code.bit_and (127) * (2^(6*ch_len)).truncated_to_integer.as_natural_32
+					if ch_len <= 0 then
+						-- this was last byte
+						Result.append_character (code.to_character_32)
+						code := code.zero
+					end
+				elseif utf8.is_encoded_first_byte (l_ch) then
+					ch_len := utf8.character_byte_count (l_ch)
+					if ch_len = 1 then
+						-- this is an ascii character
+						Result.append_character (l_ch.to_character_32)
+					else
+						-- first byte of a multibyte character
+						code := l_ch.natural_32_code.bit_and ({NATURAL_8}.max_value.bit_shift_right (ch_len).as_natural_32).bit_shift_left (6*(ch_len-1))
+						ch_len := ch_len - 1
+					end
+				else
+					-- something was wrong in the bytes sequence
+					-- just discard the character
+				end
+				i := i+1
+			end
 		ensure
 			result_exists : Result /= Void
 		end
