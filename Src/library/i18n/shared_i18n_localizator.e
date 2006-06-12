@@ -43,7 +43,7 @@ feature {NONE} -- Basic operations
 				-- Temporary string
 		do
 			l_string := localizator.translate(a_string)
-			Result := localizator.translate_template(l_string, a_args)
+			Result := localizator.solve_template(l_string, a_args)
 		ensure
 			valid_result: Result /= Void
 		end
@@ -59,7 +59,7 @@ feature {NONE} -- Basic operations
 				-- Temporary string
 		do
 			l_string := localizator.translate_plural(a_string, i_th)
-			Result := localizator.translate_template(l_string, a_args)
+			Result := localizator.solve_template(l_string, a_args)
 		ensure
 			valid_result: Result /= Void
 		end

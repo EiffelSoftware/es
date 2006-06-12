@@ -65,7 +65,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	translate_template(a_string: STRING_32; a_args: TUPLE): STRING_32 is
+	solve_template(a_string: STRING_32; a_args: TUPLE): STRING_32 is
 			-- What's the completed form of the template?
 			-- NOTE: this feature doesn't connect to the datastructure!
 		require
