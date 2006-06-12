@@ -164,6 +164,7 @@ feature {NONE} -- Implementation
 				i > i18n_mo_parser.string_count
 			loop
 				create temp_string.make_with_id(i)
+				temp_string.set_plural_forms(i18n_mo_parser.plural_forms)
 				temp_string.set_originals(i18n_mo_parser.get_originals(i))
 				array.put(temp_string, i)
 				i := i + 1

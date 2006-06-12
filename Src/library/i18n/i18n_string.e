@@ -17,6 +17,7 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'.
 		do
 			id := a_id
+			set_plural_forms(4)
 		ensure
 			id_set: id = a_id
 		end
@@ -32,6 +33,12 @@ feature -- Access
 		-- Translated string
 
 feature -- Status report
+	valid_plural_form(i_th: INTEGER): BOOLEAN is
+			-- Is i_th a valid plural form?
+		do
+			Result := (i_th >= 1) and (i_th <= plural_forms)
+		end
+
 	has_plural: BOOLEAN is
 			-- Has this string a plural form?
 		require
@@ -42,6 +49,8 @@ feature -- Status report
 
 	has_translation(i_th: INTEGER): BOOLEAN is
 			-- Is there the i_th translated version?
+		require
+			valid_plural_form(i_th)
 		do
 			if i_th <= translateds.count then
 				Result := (translateds /= Void) and then (translateds.i_th(i_th) /= Void)
@@ -65,6 +74,7 @@ feature -- Basic operations
 			-- Which is the i_th plural of the translated string?
 		require
 			valid_translateds: translateds /= Void
+			valid_plural_form(i_th)
 		do
 			if (i_th <= translateds.count and then translateds.i_th(i_th) /= Void) then
 				Result := translateds.i_th(i_th)
@@ -101,11 +111,26 @@ feature -- Basic operations
 			translateds_set: translateds.count = a_translateds.count
 		end
 
+feature {NONE} -- Status setting
+	set_plural_forms(a_num: INTEGER) is
+			-- Set plural_forms to a_num.
+		require
+			valid_num: (a_num >= 1) and (a_num <= 4)
+		do
+			plural_forms := a_num
+		ensure
+			plural_forms_set: plural_forms = a_num
+		end
+
+
 feature {NONE} -- Implementation
 	id: INTEGER
 		-- Sequence number into the mo file
 
+	plural_forms: INTEGER
+		-- Number of plural forms of the language in which this string is translated
+
 invariant
-	invariant_clause: True -- Your invariant here
+	valid_plural_forms: plural_forms >= 1 and plural_forms <= 4
 
 end

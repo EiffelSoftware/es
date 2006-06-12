@@ -15,7 +15,6 @@ feature {NONE} -- Basic operations
 		require
 			valid_string: a_string /= Void
 		do
-
 			Result := localizator.translate(a_string)
 		ensure
 			valid_result: Result /= Void
@@ -65,6 +64,15 @@ feature {NONE} -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+	set_path(a_path: STRING) is
+			-- Set the path to the localization file.
+		require
+			valid_path: a_path /= Void
+			non_empty_path: not a_path.is_empty
+		do
+			localizator.set_path(a_path)
+		end
+
 	localizator: I18N_LOCALIZATOR is
 			-- Unique instance of the localizator
 		once

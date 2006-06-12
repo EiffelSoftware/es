@@ -1,13 +1,13 @@
 indexing
 	description: "This class supplies functions for filling templates strings with other dinamically generated objects' representations."
 	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
+	remark: "Feel free to use other template engines instead of this, by not using the i18n_comp* functions."
 	author: "Originally created from Martino Trosi, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	I18N_TEMPLATE_FORMATTER
-
 -- Should this class inherit from the ST_FORMATTER from the gobo library?
 -- Let us know your opinion on the wiki: http://eiffelsoftware.origo.ethz.ch/index.php/Internationalization/translation_function
 
