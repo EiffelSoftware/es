@@ -320,7 +320,7 @@ feature {NONE} --Implementation
 		do
 			char0 := '0'
 			code0 := char0.code
-			t_list := get_translated (0).split ('%N')
+			t_list := get_translated (1).split ('%N')
 			 -- Search the informations
 			from
 				t_list.start
