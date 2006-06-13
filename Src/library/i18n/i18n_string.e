@@ -111,7 +111,7 @@ feature -- Basic operations
 			translateds_set: translateds.count = a_translateds.count
 		end
 
-feature {NONE} -- Status setting
+feature -- Status setting
 	set_plural_forms(a_num: INTEGER) is
 			-- Set plural_forms to a_num.
 		require
