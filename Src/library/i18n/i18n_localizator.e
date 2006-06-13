@@ -32,7 +32,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		require
 			valid_string: a_string /= Void
 		do
-			Result := i18n_datastructure.translate(a_string, 1)
+			Result := i18n_datastructure.translate([a_string, ""], 1)
 		ensure
 			valid_result: Result /= Void
 		end
@@ -45,19 +45,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			temp_string: STRING_GENERAL
 				-- Temporary string
 		do
-			temp_string ?= a_string.item(1)
-			if temp_string /= Void then
-				Result := i18n_datastructure.translate(temp_string, a_num)
-				if a_num /= 1 and Result.is_equal(temp_string) then
-					temp_string ?= a_string.item(2)
-					if temp_string /= Void then
-						Result := temp_string.as_string_32
-					end
-				end
-			end
-			if Result = Void then
-				Result := ""
-			end
+			Result := i18n_datastructure.translate(a_string, a_num)
 		ensure
 			valid_result: Result /= Void
 		end
