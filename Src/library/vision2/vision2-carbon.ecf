@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="vision2" uuid="ff177272-9e24-4282-941e-60889fc503eb" library_target="vision2">
+	<target name="vision2">
+		<description>EiffelVision2: Multiplatform graphical library of reusable components for Eiffel.
+Copyright (c) 1984-2006, Eiffel Software and others.
+Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt).</description>
+		<option>
+			<assertions precondition="true" postcondition="false" check="false" invariant="false" loop="false"/>
+		</option>
+
+		<file_rule>
+			<exclude>/\.svn</exclude>
+			<exclude>/EIFGEN.{0,1}$</exclude>
+			<exclude>/tmp$</exclude>
+			<exclude>/temp$</exclude>
+			<exclude>/release$</exclude>
+			<exclude>/obsolete$</exclude>
+		</file_rule>
+
+		<library name="carbon_api" location="$ISE_LIBRARY/library/vision2/implementation/carbon/wrapper/carbon_api.ecf" readonly="True"/>
+		<library name="base" location="$ISE_LIBRARY/library/base/base.ecf" readonly="true"/>
+		
+		<cluster name="contrib_carbon" location="contrib" recursive="true">
+			<condition><platform excluded_value="windows"/></condition>
+			<file_rule>
+				<exclude>/mswin$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="implementation_carbon" location="implementation" recursive="true">
+			<file_rule>
+				<exclude>/gtk.?$</exclude>
+				<exclude>/mswin$</exclude>
+				<exclude>/carbon/wrapper$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="components" location="components" recursive="true"/>
+		<cluster name="interface" location="interface" recursive="true"/>
+		<cluster name="obsolete" location="obsolete" recursive="true"/>
+		<cluster name="perlscript" location="perlscript" recursive="true"/>
+		<cluster name="release" location="release" recursive="true"/>
+	</target>
+</system>
