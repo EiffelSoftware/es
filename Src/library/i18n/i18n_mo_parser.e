@@ -36,23 +36,17 @@ feature {NONE} -- Initialization
 				end
 				if is_valid then
 					-- Read mo file version.
-					mo_file.read_integer
-					version := mo_file.last_integer
+					version := read_integer
 					-- Read number of strings.
-					mo_file.read_integer
-					string_count := mo_file.last_integer
+					string_count := read_integer
 					-- Read offset of original strings' table.
-					mo_file.read_integer
-					original_table_offset := mo_file.last_integer
+					original_table_offset := read_integer
 					-- Read offset of translated strings' table.
-					mo_file.read_integer
-					translated_table_offset := mo_file.last_integer
+					translated_table_offset := read_integer
 					-- Read size of hashing table.
-					mo_file.read_integer
-					hash_table_size := mo_file.last_integer
+					hash_table_size := read_integer
 					-- Read offset of hashing table.
-					mo_file.read_integer
-					hash_table_offset := mo_file.last_integer
+					hash_table_offset := read_integer
 					extract_plural_informations
 				end
 			end
@@ -132,10 +126,8 @@ feature -- Basic operation
 			string_length, string_offset: INTEGER
 		do
 			mo_file.go(original_table_offset + (i_th - 1) * 8)
-			mo_file.read_integer_32
-			string_length := mo_file.last_integer_32
-			mo_file.read_integer_32
-			string_offset := mo_file.last_integer_32
+			string_length := read_integer
+			string_offset := read_integer
 			mo_file.go(string_offset)
 			mo_file.read_stream(string_length)
 			create Result.make_from_string(mo_file.last_string)
@@ -154,10 +146,8 @@ feature -- Basic operation
 			string_length, string_offset: INTEGER
 		do
 			mo_file.go(translated_table_offset + (i_th - 1) * 8)
-			mo_file.read_integer_32
-			string_length := mo_file.last_integer_32
-			mo_file.read_integer_32
-			string_offset := mo_file.last_integer_32
+			string_length := read_integer
+			string_offset := read_integer
 			mo_file.go(string_offset)
 			mo_file.read_stream(string_length)
 			create Result.make_from_string(mo_file.last_string)
@@ -232,10 +222,8 @@ feature {NONE} --Implementation
 			code: NATURAL_32
 		do
 			mo_file.go(a_offset + (a_number - 1) * 8)
-			mo_file.read_integer_32
-			string_length := mo_file.last_integer_32
-			mo_file.read_integer_32
-			string_offset := mo_file.last_integer_32
+			string_length := read_integer
+			string_offset := read_integer
 			mo_file.go(string_offset)
 	-- try 1
 --			mo_file.read_stream(string_length)
@@ -294,6 +282,29 @@ feature {NONE} --Implementation
 		ensure
 			result_exists : Result /= Void
 		end
+
+	read_integer : INTEGER is
+			-- read an integer from the current
+			-- position in the mo file
+			-- it moves the cursor
+		local
+			b0, b1, b2, b3 : NATURAL_8
+		do
+			mo_file.read_natural_8
+			b0 := mo_file.last_natural_8
+			mo_file.read_natural_8
+			b1 := mo_file.last_natural_8
+			mo_file.read_natural_8
+			b2 := mo_file.last_natural_8
+			mo_file.read_natural_8
+			b3 := mo_file.last_natural_8
+			if is_big_endian then
+				Result :=  (b0 |<< 24) | (b1 |<< 16) | (b2 |<< 8) | b3;
+			else
+				Result :=  b0 | (b1 |<< 8) | (b2 |<< 16) | (b3 |<< 24);
+			end
+		end
+
 
 	extract_plural_informations is
 			-- extract from the mo file
