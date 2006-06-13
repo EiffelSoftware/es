@@ -1,0 +1,179 @@
+indexing
+	description:
+		"Eiffel Vision button. GTK implementation."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	keywords: "press, push, label, pixmap"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	EV_BUTTON_IMP
+
+inherit
+	EV_BUTTON_I
+		redefine
+			interface
+		end
+
+	EV_PRIMITIVE_IMP
+		redefine
+			interface,
+			initialize,
+			make,
+			set_foreground_color,
+			foreground_color_pointer,
+			on_focus_changed,
+			needs_event_box,
+			event_widget
+		end
+
+	EV_PIXMAPABLE_IMP
+		redefine
+			interface,
+			initialize
+		end
+
+	EV_TEXTABLE_IMP
+		redefine
+			interface,
+			initialize,
+			align_text_left,
+			align_text_center,
+			align_text_right
+		end
+
+	EV_FONTABLE_IMP
+		redefine
+			interface,
+			initialize,
+			fontable_widget
+		end
+
+	EV_BUTTON_ACTION_SEQUENCES_IMP
+		export
+			{EV_INTERMEDIARY_ROUTINES} select_actions_internal
+		redefine
+			interface
+		end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (an_interface: like interface) is
+			-- Connect interface and initialize `c_object'.
+		do
+		end
+
+	initialize is
+			-- `Precursor' initialization,
+			-- create button box to hold label and pixmap.
+		do
+		end
+
+	initialize_button_box is
+			-- Create and initialize button box.
+		do
+		ensure
+			button_box /= NULL
+		end
+
+	fontable_widget: POINTER is
+			-- Pointer to the widget that may have fonts set.
+		do
+		end
+
+	event_widget: POINTER is
+			-- Widget that handles the events.
+		do
+		end
+
+	needs_event_box: BOOLEAN is True
+		-- Make sure `Current' is placed within a GtkEventBox.
+
+feature -- Access
+
+	is_default_push_button: BOOLEAN
+			-- Is this button currently a default push button
+			-- for a particular container?
+
+feature -- Status Setting
+
+	align_text_center is
+			-- Display `text' centered.
+		do		end
+
+	align_text_left is
+			-- Display `text' left aligned.
+		do		end
+
+	align_text_right is
+			-- Display `text' right aligned.
+		do		end
+
+	enable_default_push_button is
+			-- Set the style of the button corresponding
+			-- to the default push button.
+		do
+		end
+
+	disable_default_push_button is
+			-- Remove the style of the button corresponding
+			-- to the default push button.
+		do
+		end
+
+	enable_can_default is
+			-- Allow the style of the button to be the default push button.
+		do
+		end
+
+	set_foreground_color (a_color: EV_COLOR) is
+		do
+		end
+
+feature {NONE} -- implementation
+
+	on_focus_changed (a_has_focus: BOOLEAN) is
+			-- Called from focus intermediary agents when focus for `Current' has changed.
+			-- if `a_has_focus' then `Current' has just received focus.
+		do
+		end
+
+	foreground_color_pointer: POINTER is
+		do
+		end
+
+	button_box: POINTER is
+			-- GtkHBox in button.
+			-- Holds label and pixmap.
+		do
+		end
+
+feature {EV_ANY_I} -- implementation
+
+	interface: EV_BUTTON
+			-- Provides a common user interface to platform dependent
+			-- functionality implemented by `Current'
+
+invariant
+	button_box_not_null: is_usable implies button_box /= NULL
+
+indexing
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+
+
+
+
+end -- class EV_BUTTON_IMP
+
