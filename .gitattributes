@@ -2053,6 +2053,12 @@ Src/library/process/classic/windows/wel_thread_entry_32.e -text
 Src/library/process/classic/windows/wel_toolhelp.e -text
 Src/library/teaching/teach.png -text
 Src/library/vision2/Clib/default_vision2_icon.ico -text
+Src/library/vision2/implementation/carbon/.DS_Store -text
+Src/library/vision2/implementation/carbon/events/.DS_Store -text
+Src/library/vision2/implementation/carbon/kernel/.DS_Store -text
+Src/library/vision2/implementation/carbon/kernel/ev_any_imp.fig -text
+Src/library/vision2/implementation/carbon/properties/.DS_Store -text
+Src/library/vision2/implementation/carbon/support/.DS_Store -text
 Src/library/wel/extra/h2e.ico svneol=native#unset
 Src/library/wel/extra/h2e1.ico svneol=native#unset
 Src/library/wel/extra/h2e2.ico svneol=native#unset
