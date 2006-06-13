@@ -720,7 +720,7 @@ feature -- Label texts
 	l_collapse_layer: STRING is "Collapse selected level(s)"
 	l_collapse_all_layers: STRING is "Collapse all selected level(s)"
 	l_searching_selected_file: STRING is "Searching selected file..."
-	l_selected_file_not_found: STRING is "Selected text is not a valid file name or the file can not be found."
+	l_selected_file_not_found: STRING is "Selected text is not a valid file name or the file can not be found"
 	l_manage_external_commands: STRING is "Add, remove or edit external commands"
 	l_add_scope: STRING is "Add scope"
 	l_remove_scope: STRING is "Remove selected scope(s)"
@@ -977,6 +977,7 @@ feature -- Description texts
 	e_C_compilation_succeeded: STRING is "Background C compilation succeeded"
 	e_C_compilation_running: STRING is  "Background C compilation in progress"
 	e_Compiling: STRING is				"System is being compiled"
+	e_Copy_call_stack_to_clipboard: STRING is "Copy call stack to clipboard"
 	e_Cursor_position: STRING is		"Cursor position (line:column)"
 	e_Diagram_hole: STRING is			"Please drop a class or a cluster on this button %N%
 										%to view its diagram.%N%

@@ -398,7 +398,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- Interact with code completion window.
 				Result := preferences.development_window_data.completion_list_width
 			else
 					-- Calculate correct size to fit
-				Result := choices.choice_list.column (1).required_width_of_item_span (1, choices.choice_list.row_count) + completion_border_size
+				Result := Precursor {EB_TAB_CODE_COMPLETABLE}
 			end
 		end
 
@@ -494,6 +494,14 @@ feature {EB_COMPLETION_POSSIBILITIES_PROVIDER} -- Cursor operation and selection
 		do
 			if text_length > 0 and then caret_position <= text_length then
 				set_caret_position (caret_position + 1)
+			end
+		end
+
+	go_left_char is
+			-- Go to right character.
+		do
+			if text_length > 0 and then caret_position >= 1 then
+				set_caret_position (caret_position - 1)
 			end
 		end
 

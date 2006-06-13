@@ -90,7 +90,7 @@ feature -- Status Report
 					end
 				else
 					l_content := file_content (a_file)
-					if l_content.substring (1, 8).is_equal ("--#line ") then
+					if l_content.substring (1, 8).is_equal ("--#line ") and Result.features /= Void then
 						l_index := l_content.index_of ('"', 1)
 						if l_index > 0 then
 							l_index2 := l_content.index_of ('%N', l_index + 1)
@@ -183,8 +183,39 @@ feature {NONE} -- Implementation
 			attached_new_match_list: a_new_match_list /= Void
 			attached_ast: a_ast /= Void
 			attached_new_ast: a_new_ast /= Void
+		local
+			l_ast: AST_EIFFEL
 		do
-			a_ast.features.append_text (a_new_ast.features.text (a_new_match_list), a_match_list)
+			if a_ast.features /= Void then
+				if a_new_ast.features /= Void then
+					a_ast.features.append_text (a_new_ast.features.text (a_new_match_list), a_match_list)
+				end
+			elseif a_new_ast.features /= Void then
+				if a_ast.invariant_part /= Void then
+					l_ast := a_ast.invariant_part
+				elseif a_ast.bottom_indexes /= Void then
+					l_ast := a_ast.bottom_indexes
+				else
+					l_ast := a_ast.end_keyword
+				end
+				l_ast.prepend_text (a_new_ast.features.text (a_new_match_list), a_match_list)
+			end
+		end
+
+	post_features_ast (a_ast: CLASS_AS): AST_EIFFEL is
+			-- First node after 'feature' keyword
+		require
+			attached_ast: a_ast /= Void
+		do
+			if a_ast.invariant_part /= Void then
+				Result := a_ast.invariant_part
+			elseif a_ast.bottom_indexes /= Void then
+				Result := a_ast.bottom_indexes
+			else
+				Result := a_ast.end_keyword
+			end
+		ensure
+			attached_ast: Result /= Void
 		end
 
 	append_invariants (a_match_list, a_new_match_list: LEAF_AS_LIST; a_ast, a_new_ast: CLASS_AS) is

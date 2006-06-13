@@ -37,11 +37,12 @@ feature {NONE} -- Initlization
 			l_colors: EV_STOCK_COLORS
 		do
 			default_create
-			internal_row_height := 23
+			internal_row_height := standard_height
 			create internal_items.make (1)
 			expose_actions.extend (agent on_expose)
 			pointer_motion_actions.extend (agent on_pointer_motion)
 			pointer_button_press_actions.extend (agent on_pointer_press)
+			pointer_button_press_actions.extend (agent on_pointer_press_forwarding)
 			pointer_double_press_actions.extend (agent on_pointer_press)
 			pointer_button_release_actions.extend (agent on_pointer_release)
 			pointer_leave_actions.extend (agent on_pointer_leave)
@@ -77,10 +78,9 @@ feature -- Properties
 feature -- Command
 
 	extend (a_item: SD_TOOL_BAR_ITEM) is
-			-- Extend `a_item'
+			-- Extend `a_item' to the end.
 		require
 			not_void: a_item /= Void
---			parent_void: a_item.tool_bar = Void
 			valid: is_item_valid (a_item)
 		do
 			internal_items.extend (a_item)
@@ -88,6 +88,19 @@ feature -- Command
 		ensure
 			has: has (a_item)
 			is_parent_set: is_parent_set (a_item)
+		end
+
+	force (a_item: SD_TOOL_BAR_ITEM; a_index: INTEGER) is
+			-- Assign item `a_item' to `a_index'-th entry.
+			-- Always applicable: resize the array if `a_index' falls out of
+			-- currently defined bounds; preserve existing items.
+		require
+			not_void: a_item /= Void
+			valid: is_item_valid (a_item)
+		do
+			internal_items.go_i_th (a_index)
+			internal_items.put_left (a_item)
+			a_item.set_tool_bar (Current)
 		end
 
 	prune (a_item: SD_TOOL_BAR_ITEM) is
@@ -172,11 +185,14 @@ feature -- Query
 			Result := internal_items.has (a_item)
 		end
 
-	border_width: INTEGER is 2
+	border_width: INTEGER is 4
 			-- Border width.
 
-	padding_width: INTEGER is 2
+	padding_width: INTEGER is 4
 			-- Padding width.
+
+	standard_height: INTEGER is 23
+			-- Standard tool bar height.
 
 feature -- Contract support
 
@@ -276,7 +292,7 @@ feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR} -- Internal issu
 				l_separator ?= l_items.item
 				if l_items.item /= a_item then
 					if l_items.item.is_wrap then
-						Result := Result + row_height
+						Result := Result + l_items.item.height
 					end
 					if l_separator /= Void and then l_separator.is_wrap then
 						Result := Result + l_separator.width
@@ -284,7 +300,7 @@ feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR} -- Internal issu
 				else
 					l_stop := True
 					if l_separator /= Void and then l_separator.is_wrap then
-						Result := Result + row_height
+						Result := Result + l_items.item.height
 					end
 				end
 				l_items.forth
@@ -414,6 +430,22 @@ feature {NONE} -- Agents
 					end
 					l_items.forth
 				end
+			end
+		end
+
+	on_pointer_press_forwarding (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
+			-- Handle pointer press actions for forwarding.
+		local
+			l_items: like internal_items
+		do
+			from
+				l_items := items
+				l_items.start
+			until
+				l_items.after
+			loop
+				l_items.item.on_pointer_press_forwarding (a_x, a_y, a_button, a_x_tilt, a_y_tilt, a_pressure, a_screen_x, a_screen_y)
+				l_items.forth
 			end
 		end
 

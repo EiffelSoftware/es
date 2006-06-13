@@ -21,7 +21,7 @@ feature -- Access
 			refactoring_correct: Result.is_equal (old_char_text (char))
 		end
 
-	wchar_text (wchar: WIDE_CHARACTER): STRING is
+	wchar_text (wchar: WIDE_CHARACTER): STRING_32 is
 			-- "Readable" representation of `wchar' using
 			-- special character convention when necessary;
 			-- Syntactically correct when quoted
@@ -37,21 +37,44 @@ feature -- Access
 		require
 			s_not_void: s /= Void
 		local
-			value_area: SPECIAL [CHARACTER];
+			value_char_area: SPECIAL [CHARACTER];
 			i, value_count: INTEGER;
 		do
 			from
-				value_area := s.area;
+				value_char_area := s.area;
 				value_count := s.count
 				create Result.make (value_count);
 			until
 				i >= value_count
 			loop
-				Result.append (char_to_string (value_area.item (i), True));
+				Result.append (char_to_string (value_char_area.item (i), True));
 				i := i + 1
 			end
 		ensure
 			eiffel_string_not_void: Result /= Void
+		end
+
+	eiffel_string_32 (s: STRING_32): STRING_32 is
+			-- "eiffel" representation of `s'
+			-- Translation of special characters
+		require
+			s_not_void: s /= Void
+		local
+			value_wchar_area: SPECIAL [WIDE_CHARACTER];
+			i, value_count: INTEGER;
+		do
+			from
+				value_wchar_area := s.area;
+				value_count := s.count
+				create Result.make (value_count)
+			until
+				i >= value_count
+			loop
+				Result.append (code_to_string_32 (value_wchar_area.item (i).natural_32_code, True));
+				i := i + 1
+			end
+		ensure
+			eiffel_string_32_not_void: Result /= Void
 		end
 
 feature {NONE} -- Implementation
@@ -78,6 +101,7 @@ feature {NONE} -- Implementation
 				or else code = ('%B').natural_32_code
 				or else code = esc_char.natural_32_code
 			then
+					-- Conversion is taking place here, no need for twin.
 				Result := special_chars.item (code)
 			elseif code = ('%U').natural_32_code then
 				Result := "%%U"
@@ -94,6 +118,7 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			Result_not_void: Result /= Void
+			Result_different: Result /= code_to_string_32 (code, for_string)
 		end
 
 	char_to_string (char: CHARACTER; for_string: BOOLEAN): STRING is
@@ -113,10 +138,12 @@ feature {NONE} -- Implementation
 			if
 				char = '%N' or else char = '%T'
 				or else char = '%%'
-				or else char = '%R' or else char = '%F'
-				or else char = '%B' or else char = esc_char
+				or else char = '%R'
+				or else char = '%F'
+				or else char = '%B'
+				or else char = esc_char
 			then
-				Result := special_chars.item (char.natural_32_code)
+				create Result.make_from_string (special_chars.item (char.natural_32_code))
 			elseif char = '%U' then
 				Result := "%%U"
 			else
@@ -132,6 +159,7 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			Result_not_void: Result /= Void
+			Result_different: Result /= char_to_string (char, for_string)
 		end
 
 	special_chars: HASH_TABLE [STRING, NATURAL_32] is

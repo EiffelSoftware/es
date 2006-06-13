@@ -13,6 +13,8 @@ inherit
 	EB_NAME_FOR_COMPLETION
 		rename
 			make as old_make
+		redefine
+			grid_item
 		end
 
 create
@@ -31,6 +33,26 @@ feature {NONE} -- Initialization
 			if show_type then
 				append (completion_type)
 			end
+		end
+
+feature -- Access
+
+	grid_item: EB_GRID_LOCAL_ITEM is
+			-- Grid item
+		local
+			l_style: EB_GRID_LOCAL_ITEM_STYLE
+		do
+			if show_type then
+					-- We don't yet have a way to print colorized dumy.
+				create {EB_GRID_LOCAL_ITEM_NAME_STYLE}l_style
+			else
+				create {EB_GRID_LOCAL_ITEM_NAME_STYLE}l_style
+			end
+			create Result.make_with_type (name, return_type, l_style)
+			Result.set_tooltip_display_function (agent display_colorized_tooltip)
+			Result.enable_pixmap
+			Result.editor_token_text.set_overriden_font (label_font_table)
+			Result.set_data (Current)
 		end
 
 indexing

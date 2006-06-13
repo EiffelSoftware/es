@@ -56,7 +56,7 @@ feature {NONE} -- Output
 			st.add_string (char_text (value))
 		end;
 
-	type_and_value: STRING is
+	type_and_value: STRING_32 is
 			-- Return a string representing `Current'.
 		do
 			create Result.make (30)

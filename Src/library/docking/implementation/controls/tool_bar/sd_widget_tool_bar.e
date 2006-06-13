@@ -22,6 +22,7 @@ inherit
 			set_row_height,
 			row_height,
 			extend,
+			force,
 			prune,
 			compute_minmum_size,
 			wipe_out,
@@ -50,7 +51,8 @@ inherit
 			set_start_y,
 			start_x,
 			start_y,
-			redraw_item
+			redraw_item,
+			is_displayed
 		end
 
 	EV_FIXED
@@ -58,7 +60,8 @@ inherit
 			extend as extend_fixed,
 			wipe_out as wipe_out_fixed,
 			has as has_fixed,
-			prune as prune_fixed
+			prune as prune_fixed,
+			force as force_fixed
 		export
 			{NONE} all
 			{ANY} is_destroyed
@@ -69,7 +72,8 @@ inherit
 			pointer_motion_actions,
 			pointer_button_release_actions,
 			pointer_button_press_actions,
-			pointer_double_press_actions
+			pointer_double_press_actions,
+			is_displayed
 		select
 			implementation
 		end
@@ -123,6 +127,19 @@ feature -- Command
 			end
 		end
 
+	force (a_item: SD_TOOL_BAR_ITEM; a_index: INTEGER) is
+			-- Extend `a_item' at `a_index'
+		local
+			l_widget_item: SD_TOOL_BAR_WIDGET_ITEM
+		do
+			tool_bar.force (a_item, a_index)
+			l_widget_item ?= a_item
+			if l_widget_item /= Void then
+				extend_fixed (l_widget_item.widget)
+				set_item_size (l_widget_item.widget, l_widget_item.widget.minimum_width, l_widget_item.widget.minimum_height)
+			end
+		end
+
 	prune (a_item: SD_TOOL_BAR_ITEM) is
 			-- Prune `a_item'
 		local
@@ -139,6 +156,7 @@ feature -- Command
 			-- Compute minimum size.
 		do
 			tool_bar.compute_minmum_size
+			check has: has_fixed (tool_bar) end
 			set_minimum_size (tool_bar.minimum_width, tool_bar.minimum_height)
 			set_item_size (tool_bar, minimum_width, minimum_height)
 		end
@@ -147,7 +165,6 @@ feature -- Command
 			-- Wipe out.
 		do
 			tool_bar.wipe_out
-			wipe_out_fixed
 		end
 
 	enable_capture is
@@ -206,12 +223,6 @@ feature -- Query
 			Result := tool_bar.expose_actions
 		end
 
-	has_capture: BOOLEAN is
-			-- If Current has capture?
-		do
-			Result := tool_bar.has_capture
-		end
-
 feature {SD_TOOL_BAR_DRAWER_I, SD_TOOL_BAR_ZONE}
 
 	draw_pixmap (a_x, a_y: INTEGER; a_pixmap: EV_PIXMAP) is
@@ -262,6 +273,18 @@ feature -- Contract support
 			-- If `a_y' equal `start_y' of `tool_bar'?
 		do
 			Result := tool_bar.is_start_y_set (a_y)
+		end
+
+	is_displayed: BOOLEAN is
+			-- If Current displayed?
+		do
+			Result := tool_bar.is_displayed
+		end
+
+	has_capture: BOOLEAN is
+			-- If Current has capture?
+		do
+			Result := tool_bar.has_capture
 		end
 
 feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR} -- Internal issues

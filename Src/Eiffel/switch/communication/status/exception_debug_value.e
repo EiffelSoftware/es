@@ -17,7 +17,7 @@ create {RECV_VALUE, ATTR_REQUEST, CALL_STACK_ELEMENT, DEBUG_VALUE_EXPORTER}
 
 feature {NONE} -- Initialization
 
-	make_with_name (a_name: STRING) is
+	make_with_name (a_name: like name) is
 			-- Create current
 		do
 			set_name (a_name)
@@ -39,14 +39,26 @@ feature -- change
 			code := a_code
 		end
 
-	set_tag (a_tag: STRING) is
+	set_tag (a_tag: STRING_GENERAL) is
 		do
-			tag := a_tag
+			if a_tag /= Void then
+				if a_tag.is_string_32 then
+					tag := a_tag
+				else
+					tag := a_tag.as_string_32
+				end
+			end
 		end
 
-	set_message (a_mesg: STRING) is
+	set_message (a_mesg: STRING_GENERAL) is
 		do
-			message := a_mesg
+			if a_mesg /= Void then
+				if a_mesg.is_string_32 then
+					message := a_mesg
+				else
+					message := a_mesg.as_string_32
+				end
+			end
 		end
 
 	set_exception_value	(a_dbg_value: ABSTRACT_DEBUG_VALUE) is
@@ -63,26 +75,28 @@ feature -- Access
 	code: INTEGER
 			-- Exception code
 
-	tag: STRING
+	tag: STRING_32
 			-- Exception tag
 
-	message: STRING
+	message: STRING_32
 			-- Exception message to display in object tool
 
-	display_tag: STRING is
+	display_tag: STRING_32 is
 			-- Computed information message to display in object tool
 		do
-			Result := tag
-			if Result = Void then
+			if tag /= Void then
+				Result := tag.as_string_32
+			else
 				Result := "Exception occurred"
 			end
 		end
 
-	display_message: STRING is
+	display_message: STRING_32 is
 			-- Computed information message to display in object tool
 		do
-			Result := message
-			if Result = Void then
+			if message /= Void then
+				Result := message.as_string_32
+			else
 				Result := display_tag
 			end
 		end
@@ -115,13 +129,13 @@ feature {NONE} -- Output
 			st.add_string (display_tag)
 		end
 
-	output_value: STRING is
+	output_value: STRING_32 is
 			-- A STRING representation of the value of `Current'.
 		do
 			Result := address
 		end
 
-	type_and_value: STRING is
+	type_and_value: STRING_32 is
 			-- Return a string representing `Current'.
 		do
 			Result := display_tag

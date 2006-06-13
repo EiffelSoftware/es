@@ -948,7 +948,6 @@ end
 						end
 					end
 				end
-				l_conf_class.set_up_to_date
 				l_classes.forth
 			end
 				-- added classes
@@ -1171,7 +1170,6 @@ end
 								class_i: l_class /= Void
 							end
 							workbench.change_class (l_class)
-							l_conf_class.set_up_to_date
 							l_classes.forth
 						end
 						update_root_class
@@ -1402,10 +1400,10 @@ feature -- Recompilation
 					loop
 						l_cli := new_classes.item
 						if l_cli.name.is_equal (l_clc.name) then
+							removed_classes.remove (l_clc)
+							real_removed_classes.remove (l_clc.original_class)
 							l_cli.reset_class_c_information (l_clc)
 							new_classes.remove
-							removed_classes.remove (l_clc)
-							l_cli.config_class.resurect
 							workbench.change_class (l_cli)
 							l_class_i_found := True
 						else
@@ -1768,10 +1766,15 @@ end
 				unref_classes.after
 			loop
 				class_i := unref_classes.item
-				if class_i.compiled_class = Void then
-					Workbench.change_class (class_i)
+					-- remove class if it has become invalid
+				if not class_i.is_valid then
+					unref_classes.remove
+				else
+					if class_i.compiled_class = Void then
+						Workbench.change_class (class_i)
+					end
+					unref_classes.forth
 				end
-				unref_classes.forth
 			end
 
 				-- Launch syntax analyzis of modified/added classes to system.

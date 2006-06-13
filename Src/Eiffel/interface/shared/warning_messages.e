@@ -310,6 +310,16 @@ feature -- File warnings
 									%classes can be opened."
 			-- An attempt was made to open a file that does not correspond to a class in the universe.
 
+	w_Not_rename_swp (a_file_name, a_new_name: STRING): STRING is
+			-- Can not rename the swp file into the original file during a save operation.
+		require
+			a_file_name_not_void: a_file_name /= Void
+			a_new_name_not_void: a_new_name /= Void
+		do
+			Result := "Could not rename "+a_file_name+" into "+a_new_name+"."
+		end
+
+
 feature -- Project settings warnings
 
 	w_cluster_with_name_exists: STRING is "A cluster with this name already exists. Please use another name."
@@ -319,6 +329,8 @@ feature -- Project settings warnings
 	w_cluster_path_not_valid: STRING is "Cluster path is not valid."
 
 feature -- Debug warnings
+
+	w_Compile_before_debug: STRING is "Do you want to compile before debugging?"
 
 	w_Cannot_debug: STRING is "Current version of system has not been successfully compiled.%N%
 						%Cannot use debugging facilities."
@@ -343,12 +355,15 @@ feature -- Debug warnings
 			Result := "Could not launch system in %"" + wd + "%"."
 		end
 
-	w_Not_a_condition (expr: STRING): STRING is
+	w_Not_a_condition (expr: STRING_GENERAL): STRING_32 is
 			-- Message when an expression is not a condition.
 		require
 			expr_not_void: expr /= Void
 		do
-			Result := "%'" + expr + "%' is not a condition."
+			create Result.make_empty
+			Result.append_character ('%'')
+			Result.append (expr)
+			Result.append_string ("%' is not a condition.")
 		end
 
 	w_Invalid_address (addr: STRING): STRING is
@@ -368,12 +383,16 @@ feature -- Debug warnings
 									%The application was paused to let you%N%
 									%examine its current status."
 
-	w_Syntax_error_in_expression (expr: STRING): STRING is
+	w_Syntax_error_in_expression (expr: STRING_GENERAL): STRING_32 is
 			-- Message when an expression has an invalid syntax.
 		require
 			expr_not_void: expr /= Void
 		do
-			Result := "%'" + expr + "%' is an invalid or not supported syntax."
+			create Result.make (expr.count + 44)
+			Result.append_character ('%'')
+			Result.append_string (expr)
+			Result.append_character ('%'')
+			Result.append_string (" is an invalid or not supported syntax.")
 		end
 
 feature -- Cluster tree warnings

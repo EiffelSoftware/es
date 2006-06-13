@@ -68,6 +68,7 @@ create
 
 %token <KEYWORD_AS> TE_END
 %token <KEYWORD_AS> TE_FROZEN
+%token <KEYWORD_AS> TE_PARTIAL_CLASS	
 %token <KEYWORD_AS> TE_INFIX
 %token <KEYWORD_AS> TE_CREATION
 %token <KEYWORD_AS> TE_PRECURSOR
@@ -119,6 +120,7 @@ create
 %type <CASE_AS>				When_part
 %type <CHAR_AS>				Character_constant
 %type <CHECK_AS>			Check
+%type <KEYWORD_AS>			Class_mark
 %type <CLIENT_AS>			Clients Feature_client_clause
 %type <CONSTANT_AS>			Constant_attribute
 %type <CONVERT_FEAT_AS>		Convert_feature
@@ -225,41 +227,55 @@ create
 Eiffel_parser:
 		Class_declaration
 			{
-				if type_parser or expression_parser or indexing_parser or entity_declaration_parser then
+				if type_parser or expression_parser or feature_parser or indexing_parser or entity_declaration_parser or invariant_parser then
 					raise_error
 				end
 			}
 	|	Identifier_as_lower Type
 			{
-				if not type_parser or expression_parser or indexing_parser or entity_declaration_parser then
+				if not type_parser or expression_parser or feature_parser or indexing_parser or entity_declaration_parser or invariant_parser then
 					raise_error
 				end
 				type_node := $2
 			}
-	|	TE_FEATURE Expression
+	|	TE_FEATURE Feature_declaration
 			{
-				if not expression_parser or type_parser or indexing_parser or entity_declaration_parser then
+				if not feature_parser or type_parser or expression_parser or indexing_parser or entity_declaration_parser or invariant_parser then
+					raise_error
+				end
+				feature_node := $2
+			}
+	|	TE_CHECK Expression
+			{
+				if not expression_parser or type_parser or feature_parser or indexing_parser or entity_declaration_parser or invariant_parser then
 					raise_error
 				end
 				expression_node := $2
 			}
 	|	Indexing
 			{
-				if not indexing_parser or type_parser or expression_parser or entity_declaration_parser then
+				if not indexing_parser or type_parser or expression_parser or feature_parser or entity_declaration_parser or invariant_parser then
 					raise_error
 				end
 				indexing_node := $1
 			}
+	|	TE_INVARIANT Class_invariant
+			{
+				if not invariant_parser or type_parser or expression_parser or feature_parser or indexing_parser or entity_declaration_parser then
+					raise_error
+				end
+				invariant_node := $2
+			}
 	|	TE_LOCAL
 			{
-				if not entity_declaration_parser or type_parser or expression_parser or indexing_parser then
+				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
 					raise_error
 				end
 				entity_declaration_node := Void
 			}
 	|	TE_LOCAL Add_counter Entity_declaration_list Remove_counter
 			{
-				if not entity_declaration_parser or type_parser or expression_parser or indexing_parser then
+				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
 					raise_error
 				end
 				entity_declaration_node := $3
@@ -269,7 +285,7 @@ Eiffel_parser:
 Class_declaration:
 		Indexing									-- $1
 		Header_mark								-- $2
-		TE_CLASS									-- $3
+		Class_mark								-- $3
 		Class_or_tuple_identifier					-- $4
 		Formal_generics						-- $5
 		External_name							-- $6
@@ -294,7 +310,7 @@ Class_declaration:
 				end
 				
 				root_node := new_class_description ($4, temp_string_as1,
-					is_deferred, is_expanded, is_separate, is_frozen_class, is_external_class,
+					is_deferred, is_expanded, is_separate, is_frozen_class, is_external_class, is_partial_class,
 					$1, $15, $5, $8, $10, $11, $12, $14, suppliers, temp_string_as2, $16)
 				if root_node /= Void then
 					root_node.set_text_positions (
@@ -408,7 +424,7 @@ Index_clause_impl: Identifier_as_lower TE_COLON Index_terms ASemi
 					Error_handler.insert_warning (
 						create {SYNTAX_WARNING}.make ($1.start_location.line,
 						$1.start_location.column, filename,
-						"Missing `Index' part of `Index_clause'."))
+						once "Missing `Index' part of `Index_clause'."))
 				end
 			}
 	;
@@ -446,14 +462,12 @@ Index_value: Identifier_as_lower
 	;
 
 
--- Header mark
-
-
 Header_mark: Frozen_mark External_mark
 			{
 				is_deferred := False
 				is_expanded := False
 				is_separate := False
+
 				deferred_keyword := Void
 				expanded_keyword := Void
 				separate_keyword := Void
@@ -525,7 +539,18 @@ External_mark: -- Empty
 				end
 			}
 	;
-
+	
+Class_mark: TE_CLASS
+			{
+				$$ := $1;
+				is_partial_class := false;
+			}
+	| TE_PARTIAL_CLASS
+		{
+			$$ := $1;
+			is_partial_class := true;
+		}
+	;
 
 -- Obsolete
 
@@ -828,7 +853,7 @@ Inheritance: -- Empty
 				if has_syntax_warning then
 					Error_handler.insert_warning (
 						create {SYNTAX_WARNING}.make (line, column, filename,
-						"Use `inherit ANY' or do not specify an empty inherit clause"))
+						once "Use `inherit ANY' or do not specify an empty inherit clause"))
 				end
 				--- $$ := Void
 				$$ := ast_factory.new_eiffel_list_parent_as (0)
@@ -1238,7 +1263,12 @@ Instruction_list: Instruction
 	;
 
 Instruction: Instruction_impl Optional_semicolons
-			{ $$ := $1 }
+			{
+				$$ := $1 
+				if $$ /= Void then
+					$$.set_line_pragma (last_line_pragma)
+				end
+			}
 	;
 
 Optional_semicolons: -- Empty
@@ -1251,7 +1281,12 @@ Instruction_impl: Creation
 			{
 					-- Call production should be used instead,
 					-- but this complicates the grammar.
-				$$ := new_call_instruction_from_expression ($1)
+				if has_type then
+					error_handler.insert_error (create {SYNTAX_ERROR}.make (line, column, filename, "Expression cannot be used as an instruction", False))
+					error_handler.raise_error
+				else
+					$$ := new_call_instruction_from_expression ($1)
+				end
 			}
 	|	Assigner_call
 			{ $$ := $1 }
@@ -1388,7 +1423,7 @@ Non_class_type: TE_EXPANDED Class_type
 				if has_syntax_warning and $2 /= Void then
 					Error_handler.insert_warning (
 						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						"Make an expanded version of the base class associated with this type."))
+						once "Make an expanded version of the base class associated with this type."))
 				end
 			}
 	|	TE_SEPARATE Class_or_tuple_type
@@ -2005,7 +2040,7 @@ Creation_clause:
 				if has_syntax_warning and $1 /= Void then
 					Error_handler.insert_warning (
 						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						"Use keyword `create' instead."))
+						once "Use keyword `create' instead."))
 				end
 			}
 	|	TE_CREATION Clients Feature_list
@@ -2014,7 +2049,7 @@ Creation_clause:
 				if has_syntax_warning and $1 /= Void then
 					Error_handler.insert_warning (
 						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						"Use keyword `create' instead."))
+						once "Use keyword `create' instead."))
 				end
 			}
 	|	TE_CREATION Client_list
@@ -2023,7 +2058,7 @@ Creation_clause:
 				if has_syntax_warning and $1 /= Void then
 					Error_handler.insert_warning (
 						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						"Use keyword `create' instead."))
+						once "Use keyword `create' instead."))
 				end
 			}
 	;
@@ -2031,7 +2066,7 @@ Creation_clause:
 Agent_call: TE_AGENT Feature_name_for_call Delayed_actuals
 		{
 			$$ := ast_factory.new_agent_routine_creation_as (
-				ast_factory.new_operand_as (Void, Void, Void), $2, $3, False, $1, Void)
+				Void, $2, $3, False, $1, Void)
 		}
 	|	TE_AGENT Agent_target TE_DOT Feature_name_for_call Delayed_actuals
 		{
@@ -2052,7 +2087,7 @@ Agent_call: TE_AGENT Feature_name_for_call Delayed_actuals
 				if has_syntax_warning and $1.second /= Void then
 					Error_handler.insert_warning (
 						create {SYNTAX_WARNING}.make ($1.second.line,
-						$1.second.column, filename, "Use keyword `agent' instead."))
+						$1.second.column, filename, once "Use keyword `agent' instead."))
 				end
 			end
 		}
@@ -2067,7 +2102,7 @@ Agent_call: TE_AGENT Feature_name_for_call Delayed_actuals
 --	;
 Tilda_agent_call: TE_TILDE Identifier_as_lower Delayed_actuals
 		{
-			$$ := ast_factory.new_old_routine_creation_as ($2, ast_factory.new_operand_as (Void, Void, Void), $2, $3, False, $1)
+			$$ := ast_factory.new_old_routine_creation_as ($2, Void, $2, $3, False, $1)
 		}
 	|	Identifier_as_lower TE_TILDE Identifier_as_lower Delayed_actuals
 		{
@@ -2117,7 +2152,7 @@ Agent_target: Identifier_as_lower
 	|	Typed
 		{ $$ := ast_factory.new_agent_target_triple (Void, Void, ast_factory.new_operand_as ($1, Void, Void))}
 	|	TE_QUESTION
-		{ --- $$ := Void
+		{
 			temp_operand_as := ast_factory.new_operand_as (Void, Void, Void)
 			if temp_operand_as /= Void then
 				temp_operand_as.set_question_mark_symbol ($1)
@@ -2215,18 +2250,16 @@ Creation_target: Identifier_as_lower
 	;
 
 Creation_call: -- Empty
+			-- { $$ := Void }
 	|	TE_DOT Identifier_as_lower Parameters
 			{ $$ := ast_factory.new_access_inv_as ($2, $3, $1) }
-	|	TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $1, parser_errors.a_creation_routine, True) }
 	;
 
 
 -- Instruction call
 
 
-Call: 
-		A_feature
+Call: A_feature
 			{ $$ := $1 }
 	|	A_precursor
 			{ $$ := $1 }
@@ -2236,57 +2269,37 @@ Call:
 			{ $$ := $1 }
 	;
 
-Check: 
-		TE_CHECK Assertion TE_END
+Check: TE_CHECK Assertion TE_END
 			{ $$ := ast_factory.new_check_as ($2, $1, $3) }
-	|	TE_CHECK Assertion
-			error { report_expected_match_error (parser_errors.check_keyword, $1, parser_errors.end_keyword, Void, True) }
 	;
 
 
 -- Expression
 
-Typed: 
-		TE_LCURLY Type TE_RCURLY
-			{ 
-				$$ := $2
+Typed: TE_LCURLY Type TE_RCURLY
+			{ $$ := $2
 				if $$ /= Void then
 					$$.set_lcurly_symbol ($1)
 					$$.set_rcurly_symbol ($3)
 				end
 			}
-	|	TE_LCURLY TE_RCURLY error
-			{
-				report_expected_after_error (parser_errors.open_curley_symbol, $1, parser_errors.a_class_name, True)
-			}
-	|	TE_LCURLY Type error
-			{ report_expected_match_error (parser_errors.open_curley_symbol, $1, parser_errors.close_curley_symbol, Void, True) }
-	|	TE_LCURLY error
-			{ 
-				report_expected_after_error (parser_errors.open_curley_symbol, $1, parser_errors.a_class_name, False) 
-				report_expected_match_error (parser_errors.open_curley_symbol, $1, parser_errors.close_curley_symbol, Void, True)
-			}
 	;
 
 Expression:
 		Nosigned_integer
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	|	Nosigned_real
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	|	Factor
 			{ $$ := $1 }
 	|	Typed_expression
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	|	Expression TE_EQ Expression
-			{ $$ := ast_factory.new_bin_eq_as ($1, $3, $2) }
-	|	Expression TE_EQ error
-			{ report_expected_after_error (parser_errors.eq_symbol, $2, parser_errors.a_right_hand_expression, True) }
+			{ $$ := ast_factory.new_bin_eq_as ($1, $3, $2); has_type := True }
 	|	Expression TE_NE Expression
-			{ $$ := ast_factory.new_bin_ne_as ($1, $3, $2) }
-	|	Expression TE_NE error
-			{ report_expected_after_error (parser_errors.ne_symbol, $2, parser_errors.a_right_hand_expression, True) }
+			{ $$ := ast_factory.new_bin_ne_as ($1, $3, $2); has_type := True }
 	|	Qualified_binary_expression
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	;
 
 Qualified_binary_expression:
@@ -2326,111 +2339,55 @@ Qualified_binary_expression:
 			{ $$ := ast_factory.new_bin_lt_as ($1, $3, $2) }
 	|	Expression Free_operator Expression %prec TE_FREE
 			{ $$ := ast_factory.new_bin_free_as ($1, $2, $3) }
-	|	Expression TE_PLUS error
-			{ report_expected_after_error (parser_errors.plus_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_MINUS error
-			{ report_expected_after_error (parser_errors.minus_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_STAR error
-			{ report_expected_after_error (parser_errors.star_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_SLASH error
-			{ report_expected_after_error (parser_errors.slash_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_MOD error
-			{ report_expected_after_error (parser_errors.mod_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_DIV error
-			{ report_expected_after_error (parser_errors.div_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_POWER error
-			{ report_expected_after_error (parser_errors.power_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_AND error
-			{ report_expected_after_error (parser_errors.and_keyword, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_OR error
-			{ report_expected_after_error (parser_errors.or_keyword, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_IMPLIES error
-			{ report_expected_after_error (parser_errors.implies_keyword, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_XOR error
-			{ report_expected_after_error (parser_errors.xor_keyword, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_GE error
-			{ report_expected_after_error (parser_errors.ge_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_GT error
-			{ report_expected_after_error (parser_errors.gt_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_LE error
-			{ report_expected_after_error (parser_errors.le_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression TE_LT error
-			{ report_expected_after_error (parser_errors.lt_symbol, $2, parser_errors.a_right_hand_expression, True) }
-	|	Expression Free_operator error
-			{ report_expected_after_error (parser_errors.free_operator_symbol, $2, parser_errors.a_right_hand_expression, True) }
 	;
 
-Factor:
-		TE_VOID
-			{ $$ := $1 }
+Factor: TE_VOID
+			{ $$ := $1; has_type := True }
 	|	Manifest_array
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	|	Agent_call
-			{ $$ := $1 }
+			{ $$ := $1; has_type := False }
 	|	TE_OLD Expression
-			{ $$ := ast_factory.new_un_old_as ($2, $1) }
-	|	TE_OLD error 
-			{ report_expected_after_error (parser_errors.old_keyword, $1, parser_errors.an_expression, True) }
+			{ $$ := ast_factory.new_un_old_as ($2, $1); has_type := True }
 	|	TE_STRIP TE_LPARAN Strip_identifier_list TE_RPARAN
-			{ $$ := ast_factory.new_un_strip_as ($3, $1, $2, $4) }
-	|	TE_STRIP TE_LPARAN Strip_identifier_list error 
-			{ report_expected_match_error (parser_errors.open_paran_symbol, $2, parser_errors.close_paran_symbol, Void, True) }
-	|	TE_STRIP TE_LPARAN error
-			{ 
-				report_expected_after_error (parser_errors.open_paran_symbol, $2, parser_errors.a_local_or_attribute, False) 
-				report_expected_match_error (parser_errors.open_paran_symbol, $2, parser_errors.close_paran_symbol, Void, True)
+			{
+				$$ := ast_factory.new_un_strip_as ($3, $1, $2, $4); has_type := True
 			}
-	|	TE_STRIP error
-			{ report_expected_after_error (parser_errors.strip_keyword, $1, parser_errors.open_paran_symbol, False) }
 	|	TE_ADDRESS Feature_name
-			{ $$ := ast_factory.new_address_as ($2, $1) }
+			{ $$ := ast_factory.new_address_as ($2, $1); has_type := True }
 	|	TE_ADDRESS TE_LPARAN Expression TE_RPARAN
-			{ $$ := ast_factory.new_expr_address_as ($3, $1, $2, $4) }
-	|	TE_ADDRESS TE_LPARAN Expression error
-			{ report_expected_match_error (parser_errors.open_paran_symbol, $2, parser_errors.close_paran_symbol, Void, True) }
-	|	TE_ADDRESS TE_LPARAN error
-			{ 
-				report_expected_after_error (parser_errors.open_paran_symbol, $2, parser_errors.an_expression, False)
-				report_expected_match_error (parser_errors.open_paran_symbol, $2, parser_errors.close_paran_symbol, Void, True)
+			{
+				$$ := ast_factory.new_expr_address_as ($3, $1, $2, $4); has_type := True
 			}
 	|	TE_ADDRESS TE_CURRENT
-			{ $$ := ast_factory.new_address_current_as ($2, $1) }
+			{
+				$$ := ast_factory.new_address_current_as ($2, $1); has_type := True
+			}
 	|	TE_ADDRESS TE_RESULT
-			{ $$ := ast_factory.new_address_result_as ($2, $1) }
-	|	TE_ADDRESS error
-			{ report_expected_after_error (parser_errors.address_symbol, $1, parser_errors.a_local_or_attribute_or_bracket_expression, False) }
+			{
+				$$ := ast_factory.new_address_result_as ($2, $1); has_type := True
+			}
 	|	Bracket_target
 			{ $$ := $1 }
 	|	Qualified_factor
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	;
 
 Qualified_factor:
-		Bracket_target TE_LSQURE Expression_list TE_RSQURE
-			{ $$ := ast_factory.new_bracket_as ($1, $3, $2, $4) }
-	|	Bracket_target TE_LSQURE Expression_list error
-			{ report_expected_match_error (parser_errors.open_square_symbol, $2, parser_errors.close_square_symbol, Void, True) }
-	|	Bracket_target TE_LSQURE error
-			{
-				report_expected_after_error (parser_errors.open_square_symbol, $2, parser_errors.an_expression, False)
-				report_expected_match_error (parser_errors.open_square_symbol, $2, parser_errors.close_square_symbol, Void, True)
-			}
+		Bracket_target TE_LSQURE Add_counter Expression_list Remove_counter TE_RSQURE
+			{ $$ := ast_factory.new_bracket_as ($1, $4, $2, $6) }
 	|	TE_MINUS Factor
 			{ $$ := ast_factory.new_un_minus_as ($2, $1) }
 	|	TE_PLUS Factor
 			{ $$ := ast_factory.new_un_plus_as ($2, $1) }
 	|	TE_NOT Expression
 			{ $$ := ast_factory.new_un_not_as ($2, $1) }
-	|	TE_NOT error
-			{ report_expected_after_error (parser_errors.not_keyword, $1, parser_errors.a_right_hand_expression, True) }
-	|	Free_operator Expression %prec TE_NOT error	
+	|	Free_operator Expression %prec TE_NOT
 			{ $$ := ast_factory.new_un_free_as ($1, $2) }
-	|	Free_operator error
-			{ report_expected_after_error (parser_errors.free_operator_symbol, $1, parser_errors.a_right_hand_expression, True) }
 	;
 
-Typed_expression:
-		Typed
+Typed_expression:	Typed
+			
 			{ $$ := ast_factory.new_type_expr_as ($1) }
 	|	Typed_nosigned_integer
 			{ $$ := $1 }
@@ -2438,8 +2395,7 @@ Typed_expression:
 			{ $$ := $1 }
 	;
 
-Free_operator: 
-		TE_FREE
+Free_operator: TE_FREE
 			{
 				if not case_sensitive and $1 /= Void then
 					$1.to_lower
@@ -2447,6 +2403,7 @@ Free_operator:
 				$$ := $1
 			}
 	;
+
 
 -- Expression call
 
@@ -2463,22 +2420,9 @@ Qualified_call:
 			{ $$ := ast_factory.new_nested_as ($1, $3, $2) }
 	|	A_static_call TE_DOT Remote_call
 			{ $$ := ast_factory.new_nested_as ($1, $3, $2) }
-	|	TE_CURRENT TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_feature_call, True) }
-	|	TE_RESULT TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_feature_call, True) }
-	|	A_feature TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_feature_call, True) }
-	|	TE_LPARAN Expression TE_RPARAN TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_feature_call, True) }
-	|	A_precursor TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_feature_call, True) }
-	|	A_static_call TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_static_feature_call, True) }
 	;
 
-A_precursor: 
-		TE_PRECURSOR Parameters
+A_precursor: TE_PRECURSOR Parameters
 			{ $$ := ast_factory.new_precursor_as ($1, Void, $2) }
 	|	TE_PRECURSOR TE_LCURLY Class_identifier TE_RCURLY Parameters
 			{
@@ -2489,19 +2433,9 @@ A_precursor:
 				end
 				$$ := ast_factory.new_precursor_as ($1, temp_class_type_as, $5)
 			}
-	|	TE_PRECURSOR TE_LCURLY Class_identifier error
-			{ report_expected_match_error (parser_errors.open_curley_symbol, $2, parser_errors.close_curley_symbol, Void, True) }
-	|	TE_PRECURSOR TE_LCURLY error
-			{ 
-				report_expected_after_error (parser_errors.open_curley_symbol, $2, parser_errors.a_class_name, False)
-				report_expected_match_error (parser_errors.open_curley_symbol, $2, parser_errors.close_curley_symbol, Void, True)
-			}
-	|	TE_PRECURSOR TE_LCURLY TE_RCURLY Parameters error
-			{ report_expected_after_error (parser_errors.open_curley_symbol, $2, parser_errors.a_class_name, False) }
 	;
 
-A_static_call: 
-		New_a_static_call
+A_static_call: New_a_static_call
 			{ $$ := $1 }
 	|	Old_a_static_call
 			{ $$ := $1 }
@@ -2510,57 +2444,38 @@ A_static_call:
 New_a_static_call:
 		Typed TE_DOT Identifier_as_lower Parameters
 			{ $$ := ast_factory.new_static_access_as ($1, $3, $4, Void, $2); }
-	|	Typed TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_static_feature_call, True) }
 	;
 
 Old_a_static_call:
 		TE_FEATURE Typed TE_DOT Identifier_as_lower Parameters
 			{
-				report_warning (parser_errors.static_feature_use_warning, $1)
 				$$ := ast_factory.new_static_access_as ($2, $4, $5, $1, $3);
-			}
-	|	TE_FEATURE Typed TE_DOT error
-			{ 
-				report_warning (parser_errors.static_feature_use_warning, $1)
-				report_expected_after_error (parser_errors.dot_symbol, $3, parser_errors.a_qualified_static_feature_call, True) 
-			}
-	|	TE_FEATURE TE_DOT error
-			{ 
-				report_warning (parser_errors.static_feature_use_warning, $1)
-				report_expected_after_error (parser_errors.feature_keyword, $1, parser_errors.a_braced_class_name, False) 
-				report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_static_feature_call, True)
-			}
-	|	TE_FEATURE Typed error
-			{
-				report_warning (parser_errors.static_feature_use_warning, $1)
-				report_expected_after_error (parser_errors.braced_class_name, $2, parser_errors.a_qualified_static_feature_call, False)
-			}
-	|	TE_FEATURE error
-			{
-				report_warning (parser_errors.static_feature_use_warning, $1)
-				report_expected_after_error (parser_errors.feature_keyword, $1, parser_errors.a_braced_static_call, False) 
+				if has_syntax_warning and ($1 /= Void or $2 /= Void) then
+					if $1 /= Void then
+						ast_location := $1.start_location
+					else
+						ast_location := $2.start_location
+					end
+					Error_handler.insert_warning (
+						create {SYNTAX_WARNING}.make (ast_location.line,
+							ast_location.column, filename, once "Remove the `feature' keyword."))
+				end
 			}
 	;
 
-Remote_call:
-		Call_on_feature_access
+Remote_call: Call_on_feature_access
 			{ $$ := $1 }
 	|	Feature_access
 			{ $$ := $1 }
 	;
 
-Call_on_feature_access: 
-		Feature_access TE_DOT Feature_access
+Call_on_feature_access: Feature_access TE_DOT Feature_access
 			{ $$ := ast_factory.new_nested_as ($1, $3, $2) }
 	|	Feature_access TE_DOT Call_on_feature_access
 			{ $$ := ast_factory.new_nested_as ($1, $3, $2) }
-	|	Feature_access TE_DOT error
-			{ report_expected_after_error (parser_errors.dot_symbol, $2, parser_errors.a_qualified_feature_call, False) }
 	;
 
-Feature_name_for_call: 
-		Identifier_as_lower
+Feature_name_for_call: Identifier_as_lower
 			{ $$ := $1}
 	|	Infix
 			{
@@ -2576,8 +2491,7 @@ Feature_name_for_call:
 			}
 	;
 
-A_feature: 
-		Feature_name_for_call Parameters
+A_feature: Feature_name_for_call Parameters
 			{
 				inspect id_level
 				when Normal_level then
@@ -2590,90 +2504,51 @@ A_feature:
 			}
 	;
 
-Feature_access: 
-		Feature_name_for_call Parameters
+Feature_access: Feature_name_for_call Parameters
 			{ $$ := ast_factory.new_access_feat_as ($1, $2) }
 	;
 
 Bracket_target:
 		Expression_constant
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	|	Manifest_tuple
-			{ $$ := $1 }
+			{ $$ := $1; has_type := True }
 	|	TE_CURRENT
-			{ $$ := ast_factory.new_expr_call_as ($1) }
+			{ $$ := ast_factory.new_expr_call_as ($1); has_type := True }
 	|	TE_RESULT
-			{ $$ := ast_factory.new_expr_call_as ($1) }
+			{ $$ := ast_factory.new_expr_call_as ($1); has_type := True }
 	|	Call
-			{ $$ := ast_factory.new_expr_call_as ($1) }
+			{ $$ := ast_factory.new_expr_call_as ($1); has_type := False }
 	|	Creation_expression
-			{ $$ := ast_factory.new_expr_call_as ($1) }
+			{ $$ := ast_factory.new_expr_call_as ($1); has_type := True }
 	|	TE_LPARAN Expression TE_RPARAN
-			{ $$ := ast_factory.new_paran_as ($2, $1, $3) }
-	|	TE_LPARAN Expression error
-			{ report_expected_match_error (parser_errors.open_paran_symbol, $1, parser_errors.close_paran_symbol, Void, True) }
-	|	TE_LPARAN error
-			{ report_expected_after_error (parser_errors.open_paran_symbol, $1, parser_errors.an_expression, True) }
+			{ $$ := ast_factory.new_paran_as ($2, $1, $3); has_type := True }
 	;
 
 Parameters: -- Empty
+			-- { $$ := Void }
 	|	TE_LPARAN TE_RPARAN
-			{ 
-				$$ := ast_factory.new_parameter_list_as (Void, $1, $2) 
-				report_warning (parser_errors.empty_paranthesis_warning, $1)
-			}
-	|	TE_LPARAN Expression_list TE_RPARAN
-			{ $$ := ast_factory.new_parameter_list_as ($2, $1, $3) }
-	|	TE_LPARAN Expression_list error
-			{ report_expected_match_error (parser_errors.open_paran_symbol, $1, parser_errors.close_paran_symbol, Void, True) }
-	|	TE_LPARAN error
-			{ report_expected_match_error (parser_errors.open_paran_symbol, $1, parser_errors.an_expression, Void, True) }
+			{ $$ := ast_factory.new_parameter_list_as (Void, $1, $2) }
+	|	TE_LPARAN Add_counter Expression_list Remove_counter TE_RPARAN
+			{ $$ := ast_factory.new_parameter_list_as ($3, $1, $5) }
 	;
 
-Expression_list:
-		Add_counter Expression_list_impl Remove_counter
-			{ $$ := $2 } 
-	|	Add_counter Expression_list_impl Remove_counter error
-			{ report_unexpected_error (text, Void, True) }
-	;
-
-Expression_list_impl: 
-		Expression
+Expression_list: Expression
 			{
 				$$ := ast_factory.new_eiffel_list_expr_as (counter_value + 1)
 				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
 				end
 			}
-	|	Expression_comma Expression_list_impl
+	|	Expression { increment_counter } TE_COMMA Expression_list
 			{
-				$$ := $2
-				if $$ /= Void and $1 /= Void and counter_value > 0 then
+				$$ := $4
+				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
-					ast_factory.reverse_extend_separator ($$, last_symbol_as_value)
+					ast_factory.reverse_extend_separator ($$, $3)
 				end
 			}
-	|	Expression_comma
-			{ report_expected_after_error (parser_errors.comma_symbol, last_symbol_as_value, parser_errors.an_expression, False) }
 	;
-
-Expression_comma:
-		Expression Expression_comma_list
-			{
-				increment_counter
-				$$ := $1
-			}
-	;
-	
-Expression_comma_list: 
-		TE_COMMA
-	|	TE_COMMA Expression_comma_list
-			{ report_expected_after_error (parser_errors.comma_symbol, $1, parser_errors.an_expression, False) }
-	;
-
---
--- End expression
---
 
 Class_or_tuple_identifier: TE_TUPLE
 			{
@@ -2699,15 +2574,17 @@ Class_identifier: TE_ID
 			{
 					-- Keyword used as identifier
 				process_id_as_with_existing_stub (last_keyword_as_id_index)
-				report_warning (parser_errors.assign_keyword_warning, $1)
+				if has_syntax_warning then
+					Error_handler.insert_warning (
+						create {SYNTAX_WARNING}.make (line, column, filename,
+							once "Use of `assign', possibly a new keyword in future definition of `Eiffel'."))
+				end
 
 				if not case_sensitive and last_id_as_value /= Void then
 					last_id_as_value.to_upper
 				end
 				$$ := last_id_as_value
 			}
-	|	TE_BAD_ID
-			{ report_expected_error (parser_errors.valid_eiffel_class_name, True, Void, False) }
 	;
 
 Identifier_as_lower: TE_ID
@@ -2728,14 +2605,16 @@ Identifier_as_lower: TE_ID
 			{
 					-- Keyword used as identifier
 				process_id_as_with_existing_stub (last_keyword_as_id_index)
-				report_warning (parser_errors.assign_keyword_warning, $1)
+				if has_syntax_warning then
+					Error_handler.insert_warning (
+						create {SYNTAX_WARNING}.make (line, column, filename,
+							once "Use of `assign', possibly a new keyword in future definition of `Eiffel'."))
+				end
 				if not case_sensitive and last_id_as_value /= Void then
 					last_id_as_value.to_lower
 				end
 				$$ := last_id_as_value
 			}
-	|	TE_BAD_ID
-			{ report_expected_error (parser_errors.a_valid_feature_name, True, Void, False) }
 	;
 
 Manifest_constant: Boolean_constant
@@ -2779,8 +2658,6 @@ Expression_constant:
 				once_manifest_string_count := once_manifest_string_count + 1
 				$$ := $2
 			}
-	|	TE_ONCE_STRING error
-			{ report_expected_after_error (parser_errors.once_keyword, $1, parser_errors.a_string, False) }
 	;
 
 Boolean_constant: TE_FALSE
@@ -2822,10 +2699,6 @@ Signed_integer: TE_PLUS TE_INTEGER
 			{
 				$$ := ast_factory.new_integer_value (Current, '-', Void, token_buffer, $1)
 			}
-	|	TE_PLUS
-			error { report_expected_after_error (parser_errors.plus_symbol, $1, parser_errors.an_integer_constant, False) }
-	|	TE_MINUS
-			error { report_expected_after_error (parser_errors.minus_symbol, $1, parser_errors.an_integer_constant, False) }
 	;
 
 Nosigned_integer: TE_INTEGER
@@ -2854,10 +2727,6 @@ Typed_signed_integer:	Typed TE_PLUS TE_INTEGER
 			{
 				$$ := ast_factory.new_integer_value (Current, '-', $1, token_buffer, $2)
 			}
-	|	Typed TE_PLUS
-			error { report_expected_after_error (parser_errors.plus_symbol, $1, parser_errors.an_integer_constant, False) }
-	|	Typed TE_MINUS
-			error { report_expected_after_error (parser_errors.minus_symbol, $1, parser_errors.an_integer_constant, False) }
 	;
 
 --###################################################################
@@ -2919,167 +2788,244 @@ Bit_constant: TE_A_BIT
 --###################################################################
 --# Manifest string constants
 --###################################################################
-Manifest_string: 
-		Default_manifest_string
+Manifest_string: Default_manifest_string
 			{ $$ := $1 }
 	|	Typed_manifest_string
 			{ $$ := $1 }
 	;
 
-Default_manifest_string: 
-		Non_empty_string
+Default_manifest_string: Non_empty_string
 			{ $$ := $1 }
-	|	Empty_string
-			{ $$ := $1 }
+	|	TE_EMPTY_STRING
+			{
+				$$ := ast_factory.new_string_as ("", line, column, string_position, position + text_count - string_position, token_buffer2)
+			}
+	|	TE_EMPTY_VERBATIM_STRING
+			{
+				$$ := ast_factory.new_verbatim_string_as ("", verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
+			}
 	;
 
-Typed_manifest_string: 
-		Typed Default_manifest_string
+Typed_manifest_string: TE_RCURLY Type TE_RCURLY Default_manifest_string
 			{
 				fixme (once "We should handle `Type' instead of ignoring it.")
-				$$ := $2
+				$$ := $4
+				if $2 /= Void then
+					$2.set_lcurly_symbol ($1)
+					$2.set_rcurly_symbol ($3)
+				end
 				if $$ /= Void then
-					$$.set_type ($1)
+					$$.set_type ($2)
 				end
 			}
-	|	Typed error
-			{ report_expected_after_error (parser_errors.close_curley_symbol, $1, parser_errors.a_manifest_string, False) }
 	;
 
-Non_empty_string: 
-		TE_STRING
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, string_position, position + text_count - string_position, token_buffer2) }
+Non_empty_string: TE_STRING
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, string_position, position + text_count - string_position, token_buffer2)
+			}
 	|	TE_VERBATIM_STRING
-			{ $$ := ast_factory.new_verbatim_string_as (cloned_string (token_buffer), verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2) }
+			{
+				$$ := ast_factory.new_verbatim_string_as (cloned_string (token_buffer), verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
+			}
 	|	TE_STR_LT
-			{ $$ := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_LE
-			{ $$ := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_GT
-			{ $$ := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_GE
-			{ $$ := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_MINUS
-			{ $$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_PLUS
-			{ $$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_STAR
-			{ $$ := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_SLASH
-			{ $$ := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_MOD
-			{ $$ := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_DIV
-			{ $$ := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_POWER
-			{ $$ := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_BRACKET
-			{ $$ := ast_factory.new_string_as ("[]", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("[]", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_AND
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
+			}
 	|	TE_STR_AND_THEN
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 10, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 10, token_buffer2)
+			}
 	|	TE_STR_IMPLIES
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2)
+			}
 	|	TE_STR_OR
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_OR_ELSE
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2)
+			}
 	|	TE_STR_XOR
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
+			}
 	|	TE_STR_NOT
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
+			}
 	|	TE_STR_FREE
-			{ $$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
+			}
 	;
 
-Error_non_empty_string: 
-		Non_empty_String
-			{ $$ := $1 }
-	| 	Empty_string error 
-			{ report_expected_error (parser_errors.a_non_empty_string, True, $1, False) }
+Prefix_operator: TE_STR_MINUS
+			{
+				$$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
+			}
+	|	TE_STR_PLUS
+			{
+				$$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
+			}
+	|	TE_STR_NOT
+			{
+				$$ := ast_factory.new_string_as ("not", line, column, position, 5, token_buffer2)
+			}
+	|	TE_STR_FREE
+			{
+				$$ := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
+			}
 	;
 
-Empty_string: 
-		TE_EMPTY_STRING
-			{ $$ := ast_factory.new_string_as ("", line, column, string_position, position + text_count - string_position, token_buffer2) }
-	|	TE_EMPTY_VERBATIM_STRING
-			{ $$ := ast_factory.new_verbatim_string_as ("", verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2) }
-	;
-
-Infix_operator: 
-		TE_STR_LT
-			{ $$ := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2) }
+Infix_operator: TE_STR_LT
+			{
+				$$ := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_LE
-			{ $$ := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_GT
-			{ $$ := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_GE
-			{ $$ := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_MINUS
-			{ $$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_PLUS
-			{ $$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_STAR
-			{ $$ := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_SLASH
-			{ $$ := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_MOD
-			{ $$ := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_DIV
-			{ $$ := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_POWER
-			{ $$ := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2)
+			}
 	|	TE_STR_AND
-			{ $$ := ast_factory.new_string_as ("and", line, column, position, 5, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("and", line, column, position, 5, token_buffer2)
+			}
 	|	TE_STR_AND_THEN
-			{ $$ := ast_factory.new_string_as ("and then", line, column, position, 10, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("and then", line, column, position, 10, token_buffer2)
+			}
 	|	TE_STR_IMPLIES
-			{ $$ := ast_factory.new_string_as ("implies", line, column, position, 9, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("implies", line, column, position, 9, token_buffer2)
+			}
 	|	TE_STR_OR
-			{ $$ := ast_factory.new_string_as ("or", line, column, position, 4, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("or", line, column, position, 4, token_buffer2)
+			}
 	|	TE_STR_OR_ELSE
-			{ $$ := ast_factory.new_string_as ("or else", line, column, position, 9, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("or else", line, column, position, 9, token_buffer2)
+			}
 	|	TE_STR_XOR
-			{ $$ := ast_factory.new_string_as ("xor", line, column, position, 5, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as ("xor", line, column, position, 5, token_buffer2)
+			}
 	|	TE_STR_FREE
-			{ $$ := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2) }
+			{
+				$$ := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
+			}
 	;
 
-Prefix_operator: 
-		TE_STR_MINUS
-			{ $$ := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2) }
-	|	TE_STR_PLUS
-			{ $$ := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2) }
-	|	TE_STR_NOT
-			{ $$ := ast_factory.new_string_as ("not", line, column, position, 5, token_buffer2) }
-	|	TE_STR_FREE
-			{ $$ := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2) }
+Manifest_array: TE_LARRAY TE_RARRAY
+			{
+				$$ := ast_factory.new_array_as (ast_factory.new_eiffel_list_expr_as (0), $1, $2)
+			}
+	|	TE_LARRAY Add_counter Expression_list Remove_counter TE_RARRAY
+			{ $$ := ast_factory.new_array_as ($3, $1, $5) }
 	;
 
-Manifest_array: 
-		TE_LARRAY TE_RARRAY
-			{ $$ := ast_factory.new_array_as (ast_factory.new_eiffel_list_expr_as (0), $1, $2) }
-	|	TE_LARRAY Expression_list TE_RARRAY
-			{ $$ := ast_factory.new_array_as ($2, $1, $3) }		
-	|	TE_LARRAY Expression_list error 
-			{ report_expected_match_error (parser_errors.open_array_symbol, $1, parser_errors.close_array_symbol, Void, True) }
-	|	TE_LARRAY error
-			{ report_expected_match_error (parser_errors.open_array_symbol, $1, parser_errors.close_array_symbol, Void, True) }
-	;
-
-Manifest_tuple: 
-		TE_LSQURE TE_RSQURE
+Manifest_tuple: TE_LSQURE TE_RSQURE
 			{ $$ := ast_factory.new_tuple_as (ast_factory.new_eiffel_list_expr_as (0), $1, $2) }
-	|	TE_LSQURE Expression_list TE_RSQURE
-			{ $$ := ast_factory.new_tuple_as ($2, $1, $3) }
-	|	TE_LSQURE Expression_list error
-			{ report_expected_match_error (parser_errors.open_square_symbol, $1, parser_errors.close_square_symbol, Void, True) }
-	|	TE_LSQURE error 
-			{ report_expected_match_error (parser_errors.open_square_symbol, $1, parser_errors.close_square_symbol, Void, True) }
+	|	TE_LSQURE Add_counter Expression_list Remove_counter TE_RSQURE
+			{ $$ := ast_factory.new_tuple_as ($3, $1, $5) }
 	;
 
 Add_counter: { add_counter }
+	;
+
+Add_counter2: { add_counter2 }
+	;
+	
+Increment: { increment_counter }
+	;
+
+Increment2: { increment_counter2 }
 	;
 
 Remove_counter: { remove_counter }

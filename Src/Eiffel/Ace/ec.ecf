@@ -226,9 +226,10 @@
 				<build value="finalize"/>
 			</condition>
 		</external_object>
-		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libipc.a">
+		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libmtipc.a">
 			<condition>
 				<platform excluded_value="windows"/>
+				<build value="finalize"/>
 			</condition>
 		</external_object>
 		<external_object location="$(EIFFEL_SRC)\C\ipc\ewb\mtwewb.lib">
@@ -243,9 +244,10 @@
 				<build value="finalize"/>
 			</condition>
 		</external_object>
-		<external_object location="$(EIFFEL_SRC)\C\ipc\shared\ipc.lib">
+		<external_object location="$(EIFFEL_SRC)\C\ipc\shared\mtipc.lib">
 			<condition>
 				<platform value="windows"/>
+				<build value="finalize"/>
 			</condition>
 		</external_object>
 		<external_object location="htmlhelp.lib">
@@ -258,6 +260,7 @@
 				<platform value="windows"/>
 			</condition>
 		</external_object>
+		<variable name="batch_framework" value="false"/>
 		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf"/>
 		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf"/>
 		<library name="event" location="$ISE_LIBRARY\library\event\event.ecf">
@@ -265,6 +268,7 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
+		<library name="framework" location="$EIFFEL_SRC\framework\framework.ecf"/>
 		<library name="graph" location="$ISE_LIBRARY\library\graph\graph.ecf"/>
 		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
@@ -339,9 +343,6 @@
 		<cluster name="eac_documentation" location="$EIFFEL_SRC\dotnet\eac_browser\src\deserialization\assembly_informations\"/>
 		<cluster name="eiffel_support" location="$EIFFEL_SRC\Eiffel\support\" recursive="true"/>
 		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
-		<cluster name="framework" location="$EIFFEL_SRC\framework\">
-			<cluster name="fmwk_vision2" location="$|vision2\"/>
-		</cluster>
 		<cluster name="interface_unix" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<condition>
 				<platform excluded_value="windows"/>

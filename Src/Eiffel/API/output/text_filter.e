@@ -481,14 +481,20 @@ feature -- Text processing
 			format: CELL2 [STRING, STRING]
 			cluster_generated: BOOLEAN
 			path_pre: STRING
+			l_string: STRING
 		do
+			if a_quote then
+				l_string := text_quoted (text)
+			else
+				l_string := text
+			end
 			if not skipping then
 				cluster_generated := doc_universe.is_group_generated (a_cluster)
 				if cluster_generated then
 					if format_table.has (f_Cluster_name) then
 						format := format_table.found_item
 						path_pre := path_representation (file_separator.out, a_cluster.name, a_cluster, False)
-						set_keyword (kw_File, relative_to_base (path_pre + file_separator.out + a_cluster.name) + "." + file_suffix)
+						set_keyword (kw_File, relative_to_base (path_pre + file_separator.out + "index") + "." + file_suffix)
 					end
 				else
 					if format_table.has (f_Non_generated_Cluster) then
@@ -498,14 +504,14 @@ feature -- Text processing
 				if format /= Void then
 					image_append (format.item1)
 					if format.item2 /= Void then
-						print_escaped_text (text)
+						print_escaped_text (l_string)
 						image_append (format.item2)
 					end
 					if cluster_generated then
 						set_keyword (kw_File, Void)
 					end
 				else
-					print_escaped_text (text_quoted (text))
+					print_escaped_text (l_string)
 				end
 			end
 		end
@@ -516,7 +522,13 @@ feature -- Text processing
 			class_generated: BOOLEAN
 			l_group: CONF_GROUP
 			path_pre: STRING
+			l_string: STRING
 		do
+			if a_quote then
+				l_string := text_quoted (text)
+			else
+				l_string := text
+			end
 			if not skipping then
 				class_generated := doc_universe.is_class_generated (a_class)
 				if class_generated then
@@ -539,14 +551,14 @@ feature -- Text processing
 				if format /= Void then
 					image_append (format.item1)
 					if format.item2 /= Void then
-						print_escaped_text (text)
+						print_escaped_text (l_string)
 						image_append (format.item2)
 					end
 					if class_generated then
 						set_keyword (kw_File, Void)
 					end
 				else
-					print_escaped_text (text_quoted (text))
+					print_escaped_text (l_string)
 				end
 			end
 		end
@@ -783,6 +795,7 @@ feature -- Text processing
 			feat_suffix: STRING
 			l_class_i : CLASS_I
 			path_pre: STRING
+			l_name: STRING
 		do
 			written_class := f.written_class
 
@@ -800,7 +813,12 @@ feature -- Text processing
 			l_class_i := f.written_class.lace_class
 			path_pre := path_representation (file_separator.out, a_group.name, a_group, False)
 			set_keyword (kw_File, relative_to_base (path_pre + file_separator.out + l_class_i.name.as_lower + feat_suffix))
-			set_keyword (kw_Feature, escaped_text (real_feature.name))
+			if real_feature = Void then
+				l_name := f.name
+			else
+				l_name := real_feature.name
+			end
+			set_keyword (kw_Feature, escaped_text (l_name))
 		end
 
 	process_feature_text (text: STRING; a_feature: E_FEATURE; a_quote: BOOLEAN) is
@@ -808,7 +826,13 @@ feature -- Text processing
 		local
 			format: CELL2 [STRING, STRING]
 			feature_generated: BOOLEAN
+			l_string: STRING
 		do
+			if a_quote then
+				l_string := text_quoted (text)
+			else
+				l_string := text
+			end
 			if not skipping then
 				feature_generated := doc_universe.is_feature_generated (a_feature)
 				if feature_generated then
@@ -824,7 +848,7 @@ feature -- Text processing
 				if format /= Void then
 					image_append (format.item1)
 					if format.item2 /= Void then
-						print_escaped_text (text)
+						print_escaped_text (l_string)
 						image_append (format.item2)
 					end
 					if feature_generated then
@@ -832,7 +856,7 @@ feature -- Text processing
 						set_keyword (kw_Feature, Void)
 					end
 				else
-					print_escaped_text (text_quoted (text))
+					print_escaped_text (l_string)
 				end
 			end
 		end

@@ -31,7 +31,7 @@ feature -- Properties
 	address: STRING;
 			-- Address of referenced object (Void if no object)
 
-	string_value: STRING;
+	string_value: STRING_32
 			-- Value if the reference object is a STRING
 
 	is_null: BOOLEAN
@@ -60,7 +60,7 @@ feature {ABSTRACT_DEBUG_VALUE} -- Output
 					st.add_string ("]");
 					if string_value /= Void then
 						st.add_string (" = ");
-						st.add_string (string_value)
+						st.add_string (string_value.as_string_8)
 					end
 				else
 					Any_class.append_name (st);
@@ -91,7 +91,7 @@ feature {NONE} -- Output
 					st.add_string ("]");
 					if string_value /= Void then
 						st.add_new_line
-						st.add_string (string_value)
+						st.add_string (string_value.as_string_8)
 					end
 				else
 					Any_class.append_name (st);
@@ -100,7 +100,7 @@ feature {NONE} -- Output
 			end
 		end;
 
-	output_value: STRING is
+	output_value: STRING_32 is
 			-- Return a string representing `Current'.
 		do
 			if is_null then

@@ -192,6 +192,7 @@ feature -- Access
 		require
 			class_name_not_void: class_name /= Void and then not class_name.is_empty
 			class_name_upper: class_name.is_equal (class_name.as_upper)
+			target_not_void: target /= Void
 		local
 			l_vis: CONF_FIND_CLASS_VISITOR
 		do
@@ -418,6 +419,7 @@ feature {COMPILER_EXPORTER} -- Implementation
 			l_actions.put (agent system.set_pointer_class, "POINTER")
 			l_actions.put (agent system.set_typed_pointer_class, "TYPED_POINTER")
 			l_actions.put (agent system.set_string_class, "STRING")
+			l_actions.put (agent system.set_string_32_class, "STRING_32")
 			l_actions.put (agent system.set_array_class, "ARRAY")
 			l_actions.put (agent system.set_special_class, "SPECIAL")
 			l_actions.put (agent system.set_tuple_class, "TUPLE")
