@@ -9,6 +9,11 @@ class
 	I18N_MO_PARSER
 
 inherit
+	I18N_DATASOURCE
+		rename
+			close as close_file,
+			open as open_file
+		end
 	UC_IMPORTED_UTF8_ROUTINES
 
 create {I18N_DATASTRUCTURE}
@@ -25,7 +30,7 @@ feature {NONE} -- Initialization
 			create mo_file.make(a_path)
 			file_exists:= mo_file.exists
 			if file_exists then
-				mo_file.make_open_read(a_path)
+				open_file
 
 				-- Read magic number.
 				mo_file.read_integer
@@ -54,37 +59,27 @@ feature {NONE} -- Initialization
 			mo_file_open: file_exists implies mo_file.is_open_read
 		end
 
-feature -- Status report
-	valid_index(a_index: INTEGER): BOOLEAN is
-			-- Is the index in valid range?
+feature -- Status setting
+	open_file is
+			-- Open mo_file.
 		do
-			Result := (a_index >= 0) and (a_index <= string_count)
+			mo_file.open_read
+			is_open := mo_file.is_open_read
 		end
 
-feature -- Status setting
 	close_file is
 			-- Close mo_file.
 		do
 			mo_file.close
-		ensure
-			mo_file.is_closed
+			is_open := mo_file.is_closed
 		end
 
 feature -- File information
-	plural_forms: INTEGER
-			-- Number of plural forms
-
-	plural_form_identifier: STRING_32
-		-- Identifier of the plural form function
-
 	is_big_endian,
 	is_little_endian: BOOLEAN
 
 	version: INTEGER
 		-- Version of the mo file
-
-	string_count: INTEGER
-		-- Number of strings in the file
 
 	using_hash_table: BOOLEAN is
 			-- Are we using an hash table?
@@ -157,24 +152,18 @@ feature -- Basic operation
 
 	get_originals(i_th: INTEGER): LIST[STRING_32] is
 			-- get `i_th' original string in the file
-		require
-			valid_index: valid_index(i_th)
+		require else
 			correct_file: file_exists and then is_valid
 		do
 			Result := extract_string(original_table_offset, i_th).split('%U')
-		ensure
-			result_exists: Result /= Void
 		end
 
 	get_translateds(i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i-th' translated string?
-		require
-			valid_index: valid_index(i_th)
+		require else
 			correct_file: file_exists and is_valid
 		do
 			Result := extract_string(translated_table_offset, i_th).split('%U')
-		ensure
-			result_exists: Result /= Void
 		end
 
 	get_hash(i_th: INTEGER): INTEGER is
@@ -249,6 +238,11 @@ feature {NONE} --Implementation
 			from
 				i := 1
 				ch_len := 0
+			invariant
+				i >= 1
+				i <= string_length + 1
+			variant
+				string_length + 1 - i
 			until
 				i > string_length or mo_file.end_of_file
 			loop
@@ -277,7 +271,7 @@ feature {NONE} --Implementation
 					-- something was wrong in the bytes sequence
 					-- just discard the character
 				end
-				i := i+1
+				i := i + 1
 			end
 		ensure
 			result_exists : Result /= Void
@@ -320,7 +314,7 @@ feature {NONE} --Implementation
 		do
 			char0 := '0'
 			code0 := char0.code
-			t_list := get_translated (1).split ('%N')
+			t_list := get_translated (0).split ('%N')
 			 -- Search the informations
 			from
 				t_list.start
