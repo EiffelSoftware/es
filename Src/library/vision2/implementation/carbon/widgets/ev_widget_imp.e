@@ -151,6 +151,13 @@ feature -- Status setting
 		do
 		end
 
+	is_show_requested: BOOLEAN is
+			-- Will `Current' be displayed when its parent is?
+			-- See also `is_displayed'.
+		do
+			Result := true
+		end
+
 feature -- Element change
 
 	set_minimum_width (a_minimum_width: INTEGER) is

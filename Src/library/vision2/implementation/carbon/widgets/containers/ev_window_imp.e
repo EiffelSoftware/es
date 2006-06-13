@@ -61,6 +61,8 @@ inherit
 			interface
 		end
 
+	MACWINDOWS_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -80,6 +82,8 @@ feature {NONE} -- Initialization
 			-- The `hbox' will contain the child of the window.
 		do
 			carbon_c_magic
+			set_is_initialized (true)
+			--set_is_initialized
 		end
 
 		carbon_c_magic is
@@ -98,6 +102,7 @@ feature {NONE} -- Initialization
 					CreateNewWindow (kDocumentWindowClass, windowAttrs, &contentRect, &theWindow);
 
 					ShowWindow (theWindow);
+					BringToFront (theWindow);
 				}
 			]"
 		end
@@ -111,6 +116,16 @@ feature  -- Access
 
 	item: EV_WIDGET
 			-- Current item.
+
+	width: INTEGER is
+			-- Horizontal size measured in pixels.
+		do
+		end
+
+	height: INTEGER is
+			-- Vertical size measured in pixels.
+		do
+		end
 
  	maximum_width: INTEGER
 			-- Maximum width that application wishes widget
@@ -154,11 +169,13 @@ feature -- Status setting
 	allow_resize is
 			-- Allow the resize of the window.
 		do
+			-- Shouldn't this return a BOOLEAN?
 		end
 
 	show is
 			-- Map the Window to the screen.
 		do
+
 		end
 
 	is_positioned: BOOLEAN
@@ -189,9 +206,34 @@ feature -- Element change
 		do
 		end
 
+	set_width (a_width: INTEGER) is
+			-- Set the horizontal size to `a_width'.
+		local
+			a_rect: RECT_STRUCT
+			ret: INTEGER
+		do
+			ret := get_window_bounds_external(c_object, 33, a_rect.item)
+			a_rect.set_right(a_rect.left + a_width)
+			ret := set_window_bounds_external(c_object, 33, a_rect.item) -- kWindowContentRgn
+		end
+
+	set_height (a_height: INTEGER) is
+			-- Set the vertical size to `a_height'.
+		do
+		end
+
 	set_title (new_title: STRING_GENERAL) is
 			-- Set `title' to `new_title'.
-		do
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{	
+					WindowRef aWindow;
+					aWindow = GetWindowList();
+					SetWindowAlternateTitle(aWindow, "dongdong");
+				}
+			]"
 		end
 
 	set_menu_bar (a_menu_bar: EV_MENU_BAR) is
