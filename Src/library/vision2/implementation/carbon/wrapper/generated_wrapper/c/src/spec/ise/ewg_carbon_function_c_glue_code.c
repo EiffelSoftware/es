@@ -1,0 +1,21300 @@
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEInstallEventHandler'
+// For ise
+OSErr  ewg_function_AEInstallEventHandler (AEEventClass ewg_theAEEventClass, AEEventID ewg_theAEEventID, AEEventHandlerUPP ewg_handler, long ewg_handlerRefcon, Boolean ewg_isSysHandler)
+{
+	return AEInstallEventHandler ((AEEventClass)ewg_theAEEventClass, (AEEventID)ewg_theAEEventID, (AEEventHandlerUPP)ewg_handler, (long)ewg_handlerRefcon, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AEInstallEventHandler'
+void* ewg_get_function_address_AEInstallEventHandler (void)
+{
+	return (void*) AEInstallEventHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AERemoveEventHandler'
+// For ise
+OSErr  ewg_function_AERemoveEventHandler (AEEventClass ewg_theAEEventClass, AEEventID ewg_theAEEventID, AEEventHandlerUPP ewg_handler, Boolean ewg_isSysHandler)
+{
+	return AERemoveEventHandler ((AEEventClass)ewg_theAEEventClass, (AEEventID)ewg_theAEEventID, (AEEventHandlerUPP)ewg_handler, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AERemoveEventHandler'
+void* ewg_get_function_address_AERemoveEventHandler (void)
+{
+	return (void*) AERemoveEventHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetEventHandler'
+// For ise
+OSErr  ewg_function_AEGetEventHandler (AEEventClass ewg_theAEEventClass, AEEventID ewg_theAEEventID, AEEventHandlerUPP *ewg_handler, long *ewg_handlerRefcon, Boolean ewg_isSysHandler)
+{
+	return AEGetEventHandler ((AEEventClass)ewg_theAEEventClass, (AEEventID)ewg_theAEEventID, (AEEventHandlerUPP*)ewg_handler, (long*)ewg_handlerRefcon, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AEGetEventHandler'
+void* ewg_get_function_address_AEGetEventHandler (void)
+{
+	return (void*) AEGetEventHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEInstallSpecialHandler'
+// For ise
+OSErr  ewg_function_AEInstallSpecialHandler (AEKeyword ewg_functionClass, AEEventHandlerUPP ewg_handler, Boolean ewg_isSysHandler)
+{
+	return AEInstallSpecialHandler ((AEKeyword)ewg_functionClass, (AEEventHandlerUPP)ewg_handler, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AEInstallSpecialHandler'
+void* ewg_get_function_address_AEInstallSpecialHandler (void)
+{
+	return (void*) AEInstallSpecialHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AERemoveSpecialHandler'
+// For ise
+OSErr  ewg_function_AERemoveSpecialHandler (AEKeyword ewg_functionClass, AEEventHandlerUPP ewg_handler, Boolean ewg_isSysHandler)
+{
+	return AERemoveSpecialHandler ((AEKeyword)ewg_functionClass, (AEEventHandlerUPP)ewg_handler, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AERemoveSpecialHandler'
+void* ewg_get_function_address_AERemoveSpecialHandler (void)
+{
+	return (void*) AERemoveSpecialHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetSpecialHandler'
+// For ise
+OSErr  ewg_function_AEGetSpecialHandler (AEKeyword ewg_functionClass, AEEventHandlerUPP *ewg_handler, Boolean ewg_isSysHandler)
+{
+	return AEGetSpecialHandler ((AEKeyword)ewg_functionClass, (AEEventHandlerUPP*)ewg_handler, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AEGetSpecialHandler'
+void* ewg_get_function_address_AEGetSpecialHandler (void)
+{
+	return (void*) AEGetSpecialHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEManagerInfo'
+// For ise
+OSErr  ewg_function_AEManagerInfo (AEKeyword ewg_keyWord, long *ewg_result)
+{
+	return AEManagerInfo ((AEKeyword)ewg_keyWord, (long*)ewg_result);
+}
+
+// Return address of function 'AEManagerInfo'
+void* ewg_get_function_address_AEManagerInfo (void)
+{
+	return (void*) AEManagerInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECreateRemoteProcessResolver'
+// For ise
+AERemoteProcessResolverRef  ewg_function_AECreateRemoteProcessResolver (CFAllocatorRef ewg_allocator, CFURLRef ewg_url)
+{
+	return AECreateRemoteProcessResolver ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_url);
+}
+
+// Return address of function 'AECreateRemoteProcessResolver'
+void* ewg_get_function_address_AECreateRemoteProcessResolver (void)
+{
+	return (void*) AECreateRemoteProcessResolver;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEDisposeRemoteProcessResolver'
+// For ise
+void  ewg_function_AEDisposeRemoteProcessResolver (AERemoteProcessResolverRef ewg_ref)
+{
+	AEDisposeRemoteProcessResolver ((AERemoteProcessResolverRef)ewg_ref);
+}
+
+// Return address of function 'AEDisposeRemoteProcessResolver'
+void* ewg_get_function_address_AEDisposeRemoteProcessResolver (void)
+{
+	return (void*) AEDisposeRemoteProcessResolver;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AERemoteProcessResolverGetProcesses'
+// For ise
+CFArrayRef  ewg_function_AERemoteProcessResolverGetProcesses (AERemoteProcessResolverRef ewg_ref, CFStreamError *ewg_outError)
+{
+	return AERemoteProcessResolverGetProcesses ((AERemoteProcessResolverRef)ewg_ref, (CFStreamError*)ewg_outError);
+}
+
+// Return address of function 'AERemoteProcessResolverGetProcesses'
+void* ewg_get_function_address_AERemoteProcessResolverGetProcesses (void)
+{
+	return (void*) AERemoteProcessResolverGetProcesses;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AERemoteProcessResolverScheduleWithRunLoop'
+// For ise
+void  ewg_function_AERemoteProcessResolverScheduleWithRunLoop (AERemoteProcessResolverRef ewg_ref, CFRunLoopRef ewg_runLoop, CFStringRef ewg_runLoopMode, AERemoteProcessResolverCallback ewg_callback, AERemoteProcessResolverContext const *ewg_ctx)
+{
+	AERemoteProcessResolverScheduleWithRunLoop ((AERemoteProcessResolverRef)ewg_ref, (CFRunLoopRef)ewg_runLoop, (CFStringRef)ewg_runLoopMode, (AERemoteProcessResolverCallback)ewg_callback, (AERemoteProcessResolverContext const*)ewg_ctx);
+}
+
+// Return address of function 'AERemoteProcessResolverScheduleWithRunLoop'
+void* ewg_get_function_address_AERemoteProcessResolverScheduleWithRunLoop (void)
+{
+	return (void*) AERemoteProcessResolverScheduleWithRunLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDTextUPP'
+// For ise
+QDTextUPP  ewg_function_NewQDTextUPP (QDTextProcPtr ewg_userRoutine)
+{
+	return NewQDTextUPP ((QDTextProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDTextUPP'
+void* ewg_get_function_address_NewQDTextUPP (void)
+{
+	return (void*) NewQDTextUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDLineUPP'
+// For ise
+QDLineUPP  ewg_function_NewQDLineUPP (QDLineProcPtr ewg_userRoutine)
+{
+	return NewQDLineUPP ((QDLineProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDLineUPP'
+void* ewg_get_function_address_NewQDLineUPP (void)
+{
+	return (void*) NewQDLineUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDRectUPP'
+// For ise
+QDRectUPP  ewg_function_NewQDRectUPP (QDRectProcPtr ewg_userRoutine)
+{
+	return NewQDRectUPP ((QDRectProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDRectUPP'
+void* ewg_get_function_address_NewQDRectUPP (void)
+{
+	return (void*) NewQDRectUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDRRectUPP'
+// For ise
+QDRRectUPP  ewg_function_NewQDRRectUPP (QDRRectProcPtr ewg_userRoutine)
+{
+	return NewQDRRectUPP ((QDRRectProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDRRectUPP'
+void* ewg_get_function_address_NewQDRRectUPP (void)
+{
+	return (void*) NewQDRRectUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDOvalUPP'
+// For ise
+QDOvalUPP  ewg_function_NewQDOvalUPP (QDOvalProcPtr ewg_userRoutine)
+{
+	return NewQDOvalUPP ((QDOvalProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDOvalUPP'
+void* ewg_get_function_address_NewQDOvalUPP (void)
+{
+	return (void*) NewQDOvalUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDArcUPP'
+// For ise
+QDArcUPP  ewg_function_NewQDArcUPP (QDArcProcPtr ewg_userRoutine)
+{
+	return NewQDArcUPP ((QDArcProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDArcUPP'
+void* ewg_get_function_address_NewQDArcUPP (void)
+{
+	return (void*) NewQDArcUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDPolyUPP'
+// For ise
+QDPolyUPP  ewg_function_NewQDPolyUPP (QDPolyProcPtr ewg_userRoutine)
+{
+	return NewQDPolyUPP ((QDPolyProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDPolyUPP'
+void* ewg_get_function_address_NewQDPolyUPP (void)
+{
+	return (void*) NewQDPolyUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDRgnUPP'
+// For ise
+QDRgnUPP  ewg_function_NewQDRgnUPP (QDRgnProcPtr ewg_userRoutine)
+{
+	return NewQDRgnUPP ((QDRgnProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDRgnUPP'
+void* ewg_get_function_address_NewQDRgnUPP (void)
+{
+	return (void*) NewQDRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDBitsUPP'
+// For ise
+QDBitsUPP  ewg_function_NewQDBitsUPP (QDBitsProcPtr ewg_userRoutine)
+{
+	return NewQDBitsUPP ((QDBitsProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDBitsUPP'
+void* ewg_get_function_address_NewQDBitsUPP (void)
+{
+	return (void*) NewQDBitsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDCommentUPP'
+// For ise
+QDCommentUPP  ewg_function_NewQDCommentUPP (QDCommentProcPtr ewg_userRoutine)
+{
+	return NewQDCommentUPP ((QDCommentProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDCommentUPP'
+void* ewg_get_function_address_NewQDCommentUPP (void)
+{
+	return (void*) NewQDCommentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDTxMeasUPP'
+// For ise
+QDTxMeasUPP  ewg_function_NewQDTxMeasUPP (QDTxMeasProcPtr ewg_userRoutine)
+{
+	return NewQDTxMeasUPP ((QDTxMeasProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDTxMeasUPP'
+void* ewg_get_function_address_NewQDTxMeasUPP (void)
+{
+	return (void*) NewQDTxMeasUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDGetPicUPP'
+// For ise
+QDGetPicUPP  ewg_function_NewQDGetPicUPP (QDGetPicProcPtr ewg_userRoutine)
+{
+	return NewQDGetPicUPP ((QDGetPicProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDGetPicUPP'
+void* ewg_get_function_address_NewQDGetPicUPP (void)
+{
+	return (void*) NewQDGetPicUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDPutPicUPP'
+// For ise
+QDPutPicUPP  ewg_function_NewQDPutPicUPP (QDPutPicProcPtr ewg_userRoutine)
+{
+	return NewQDPutPicUPP ((QDPutPicProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDPutPicUPP'
+void* ewg_get_function_address_NewQDPutPicUPP (void)
+{
+	return (void*) NewQDPutPicUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDOpcodeUPP'
+// For ise
+QDOpcodeUPP  ewg_function_NewQDOpcodeUPP (QDOpcodeProcPtr ewg_userRoutine)
+{
+	return NewQDOpcodeUPP ((QDOpcodeProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDOpcodeUPP'
+void* ewg_get_function_address_NewQDOpcodeUPP (void)
+{
+	return (void*) NewQDOpcodeUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDStdGlyphsUPP'
+// For ise
+QDStdGlyphsUPP  ewg_function_NewQDStdGlyphsUPP (QDStdGlyphsProcPtr ewg_userRoutine)
+{
+	return NewQDStdGlyphsUPP ((QDStdGlyphsProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDStdGlyphsUPP'
+void* ewg_get_function_address_NewQDStdGlyphsUPP (void)
+{
+	return (void*) NewQDStdGlyphsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewQDJShieldCursorUPP'
+// For ise
+QDJShieldCursorUPP  ewg_function_NewQDJShieldCursorUPP (QDJShieldCursorProcPtr ewg_userRoutine)
+{
+	return NewQDJShieldCursorUPP ((QDJShieldCursorProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewQDJShieldCursorUPP'
+void* ewg_get_function_address_NewQDJShieldCursorUPP (void)
+{
+	return (void*) NewQDJShieldCursorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDTextUPP'
+// For ise
+void  ewg_function_DisposeQDTextUPP (QDTextUPP ewg_userUPP)
+{
+	DisposeQDTextUPP ((QDTextUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDTextUPP'
+void* ewg_get_function_address_DisposeQDTextUPP (void)
+{
+	return (void*) DisposeQDTextUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDLineUPP'
+// For ise
+void  ewg_function_DisposeQDLineUPP (QDLineUPP ewg_userUPP)
+{
+	DisposeQDLineUPP ((QDLineUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDLineUPP'
+void* ewg_get_function_address_DisposeQDLineUPP (void)
+{
+	return (void*) DisposeQDLineUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDRectUPP'
+// For ise
+void  ewg_function_DisposeQDRectUPP (QDRectUPP ewg_userUPP)
+{
+	DisposeQDRectUPP ((QDRectUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDRectUPP'
+void* ewg_get_function_address_DisposeQDRectUPP (void)
+{
+	return (void*) DisposeQDRectUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDRRectUPP'
+// For ise
+void  ewg_function_DisposeQDRRectUPP (QDRRectUPP ewg_userUPP)
+{
+	DisposeQDRRectUPP ((QDRRectUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDRRectUPP'
+void* ewg_get_function_address_DisposeQDRRectUPP (void)
+{
+	return (void*) DisposeQDRRectUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDOvalUPP'
+// For ise
+void  ewg_function_DisposeQDOvalUPP (QDOvalUPP ewg_userUPP)
+{
+	DisposeQDOvalUPP ((QDOvalUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDOvalUPP'
+void* ewg_get_function_address_DisposeQDOvalUPP (void)
+{
+	return (void*) DisposeQDOvalUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDArcUPP'
+// For ise
+void  ewg_function_DisposeQDArcUPP (QDArcUPP ewg_userUPP)
+{
+	DisposeQDArcUPP ((QDArcUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDArcUPP'
+void* ewg_get_function_address_DisposeQDArcUPP (void)
+{
+	return (void*) DisposeQDArcUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDPolyUPP'
+// For ise
+void  ewg_function_DisposeQDPolyUPP (QDPolyUPP ewg_userUPP)
+{
+	DisposeQDPolyUPP ((QDPolyUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDPolyUPP'
+void* ewg_get_function_address_DisposeQDPolyUPP (void)
+{
+	return (void*) DisposeQDPolyUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDRgnUPP'
+// For ise
+void  ewg_function_DisposeQDRgnUPP (QDRgnUPP ewg_userUPP)
+{
+	DisposeQDRgnUPP ((QDRgnUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDRgnUPP'
+void* ewg_get_function_address_DisposeQDRgnUPP (void)
+{
+	return (void*) DisposeQDRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDBitsUPP'
+// For ise
+void  ewg_function_DisposeQDBitsUPP (QDBitsUPP ewg_userUPP)
+{
+	DisposeQDBitsUPP ((QDBitsUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDBitsUPP'
+void* ewg_get_function_address_DisposeQDBitsUPP (void)
+{
+	return (void*) DisposeQDBitsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDCommentUPP'
+// For ise
+void  ewg_function_DisposeQDCommentUPP (QDCommentUPP ewg_userUPP)
+{
+	DisposeQDCommentUPP ((QDCommentUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDCommentUPP'
+void* ewg_get_function_address_DisposeQDCommentUPP (void)
+{
+	return (void*) DisposeQDCommentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDTxMeasUPP'
+// For ise
+void  ewg_function_DisposeQDTxMeasUPP (QDTxMeasUPP ewg_userUPP)
+{
+	DisposeQDTxMeasUPP ((QDTxMeasUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDTxMeasUPP'
+void* ewg_get_function_address_DisposeQDTxMeasUPP (void)
+{
+	return (void*) DisposeQDTxMeasUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDGetPicUPP'
+// For ise
+void  ewg_function_DisposeQDGetPicUPP (QDGetPicUPP ewg_userUPP)
+{
+	DisposeQDGetPicUPP ((QDGetPicUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDGetPicUPP'
+void* ewg_get_function_address_DisposeQDGetPicUPP (void)
+{
+	return (void*) DisposeQDGetPicUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDPutPicUPP'
+// For ise
+void  ewg_function_DisposeQDPutPicUPP (QDPutPicUPP ewg_userUPP)
+{
+	DisposeQDPutPicUPP ((QDPutPicUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDPutPicUPP'
+void* ewg_get_function_address_DisposeQDPutPicUPP (void)
+{
+	return (void*) DisposeQDPutPicUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDOpcodeUPP'
+// For ise
+void  ewg_function_DisposeQDOpcodeUPP (QDOpcodeUPP ewg_userUPP)
+{
+	DisposeQDOpcodeUPP ((QDOpcodeUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDOpcodeUPP'
+void* ewg_get_function_address_DisposeQDOpcodeUPP (void)
+{
+	return (void*) DisposeQDOpcodeUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDStdGlyphsUPP'
+// For ise
+void  ewg_function_DisposeQDStdGlyphsUPP (QDStdGlyphsUPP ewg_userUPP)
+{
+	DisposeQDStdGlyphsUPP ((QDStdGlyphsUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDStdGlyphsUPP'
+void* ewg_get_function_address_DisposeQDStdGlyphsUPP (void)
+{
+	return (void*) DisposeQDStdGlyphsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeQDJShieldCursorUPP'
+// For ise
+void  ewg_function_DisposeQDJShieldCursorUPP (QDJShieldCursorUPP ewg_userUPP)
+{
+	DisposeQDJShieldCursorUPP ((QDJShieldCursorUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeQDJShieldCursorUPP'
+void* ewg_get_function_address_DisposeQDJShieldCursorUPP (void)
+{
+	return (void*) DisposeQDJShieldCursorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDTextUPP'
+// For ise
+void  ewg_function_InvokeQDTextUPP (short ewg_byteCount, void const *ewg_textBuf, Point *ewg_numer, Point *ewg_denom, QDTextUPP ewg_userUPP)
+{
+	InvokeQDTextUPP ((short)ewg_byteCount, (void const*)ewg_textBuf, *(Point*)ewg_numer, *(Point*)ewg_denom, (QDTextUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDTextUPP'
+void* ewg_get_function_address_InvokeQDTextUPP (void)
+{
+	return (void*) InvokeQDTextUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDLineUPP'
+// For ise
+void  ewg_function_InvokeQDLineUPP (Point *ewg_newPt, QDLineUPP ewg_userUPP)
+{
+	InvokeQDLineUPP (*(Point*)ewg_newPt, (QDLineUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDLineUPP'
+void* ewg_get_function_address_InvokeQDLineUPP (void)
+{
+	return (void*) InvokeQDLineUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDRectUPP'
+// For ise
+void  ewg_function_InvokeQDRectUPP (GrafVerb ewg_verb, Rect const *ewg_r, QDRectUPP ewg_userUPP)
+{
+	InvokeQDRectUPP ((GrafVerb)ewg_verb, (Rect const*)ewg_r, (QDRectUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDRectUPP'
+void* ewg_get_function_address_InvokeQDRectUPP (void)
+{
+	return (void*) InvokeQDRectUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDRRectUPP'
+// For ise
+void  ewg_function_InvokeQDRRectUPP (GrafVerb ewg_verb, Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight, QDRRectUPP ewg_userUPP)
+{
+	InvokeQDRRectUPP ((GrafVerb)ewg_verb, (Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight, (QDRRectUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDRRectUPP'
+void* ewg_get_function_address_InvokeQDRRectUPP (void)
+{
+	return (void*) InvokeQDRRectUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDOvalUPP'
+// For ise
+void  ewg_function_InvokeQDOvalUPP (GrafVerb ewg_verb, Rect const *ewg_r, QDOvalUPP ewg_userUPP)
+{
+	InvokeQDOvalUPP ((GrafVerb)ewg_verb, (Rect const*)ewg_r, (QDOvalUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDOvalUPP'
+void* ewg_get_function_address_InvokeQDOvalUPP (void)
+{
+	return (void*) InvokeQDOvalUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDArcUPP'
+// For ise
+void  ewg_function_InvokeQDArcUPP (GrafVerb ewg_verb, Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle, QDArcUPP ewg_userUPP)
+{
+	InvokeQDArcUPP ((GrafVerb)ewg_verb, (Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle, (QDArcUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDArcUPP'
+void* ewg_get_function_address_InvokeQDArcUPP (void)
+{
+	return (void*) InvokeQDArcUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDPolyUPP'
+// For ise
+void  ewg_function_InvokeQDPolyUPP (GrafVerb ewg_verb, PolyHandle ewg_poly, QDPolyUPP ewg_userUPP)
+{
+	InvokeQDPolyUPP ((GrafVerb)ewg_verb, (PolyHandle)ewg_poly, (QDPolyUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDPolyUPP'
+void* ewg_get_function_address_InvokeQDPolyUPP (void)
+{
+	return (void*) InvokeQDPolyUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDRgnUPP'
+// For ise
+void  ewg_function_InvokeQDRgnUPP (GrafVerb ewg_verb, RgnHandle ewg_rgn, QDRgnUPP ewg_userUPP)
+{
+	InvokeQDRgnUPP ((GrafVerb)ewg_verb, (RgnHandle)ewg_rgn, (QDRgnUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDRgnUPP'
+void* ewg_get_function_address_InvokeQDRgnUPP (void)
+{
+	return (void*) InvokeQDRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDBitsUPP'
+// For ise
+void  ewg_function_InvokeQDBitsUPP (BitMap const *ewg_srcBits, Rect const *ewg_srcRect, Rect const *ewg_dstRect, short ewg_mode, RgnHandle ewg_maskRgn, QDBitsUPP ewg_userUPP)
+{
+	InvokeQDBitsUPP ((BitMap const*)ewg_srcBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect, (short)ewg_mode, (RgnHandle)ewg_maskRgn, (QDBitsUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDBitsUPP'
+void* ewg_get_function_address_InvokeQDBitsUPP (void)
+{
+	return (void*) InvokeQDBitsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDCommentUPP'
+// For ise
+void  ewg_function_InvokeQDCommentUPP (short ewg_kind, short ewg_dataSize, Handle ewg_dataHandle, QDCommentUPP ewg_userUPP)
+{
+	InvokeQDCommentUPP ((short)ewg_kind, (short)ewg_dataSize, (Handle)ewg_dataHandle, (QDCommentUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDCommentUPP'
+void* ewg_get_function_address_InvokeQDCommentUPP (void)
+{
+	return (void*) InvokeQDCommentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDTxMeasUPP'
+// For ise
+short  ewg_function_InvokeQDTxMeasUPP (short ewg_byteCount, void const *ewg_textAddr, Point *ewg_numer, Point *ewg_denom, FontInfo *ewg_info, QDTxMeasUPP ewg_userUPP)
+{
+	return InvokeQDTxMeasUPP ((short)ewg_byteCount, (void const*)ewg_textAddr, (Point*)ewg_numer, (Point*)ewg_denom, (FontInfo*)ewg_info, (QDTxMeasUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDTxMeasUPP'
+void* ewg_get_function_address_InvokeQDTxMeasUPP (void)
+{
+	return (void*) InvokeQDTxMeasUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDGetPicUPP'
+// For ise
+void  ewg_function_InvokeQDGetPicUPP (void *ewg_dataPtr, short ewg_byteCount, QDGetPicUPP ewg_userUPP)
+{
+	InvokeQDGetPicUPP ((void*)ewg_dataPtr, (short)ewg_byteCount, (QDGetPicUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDGetPicUPP'
+void* ewg_get_function_address_InvokeQDGetPicUPP (void)
+{
+	return (void*) InvokeQDGetPicUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDPutPicUPP'
+// For ise
+void  ewg_function_InvokeQDPutPicUPP (void const *ewg_dataPtr, short ewg_byteCount, QDPutPicUPP ewg_userUPP)
+{
+	InvokeQDPutPicUPP ((void const*)ewg_dataPtr, (short)ewg_byteCount, (QDPutPicUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDPutPicUPP'
+void* ewg_get_function_address_InvokeQDPutPicUPP (void)
+{
+	return (void*) InvokeQDPutPicUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDOpcodeUPP'
+// For ise
+void  ewg_function_InvokeQDOpcodeUPP (Rect const *ewg_fromRect, Rect const *ewg_toRect, UInt16 ewg_opcode, SInt16 ewg_version, QDOpcodeUPP ewg_userUPP)
+{
+	InvokeQDOpcodeUPP ((Rect const*)ewg_fromRect, (Rect const*)ewg_toRect, (UInt16)ewg_opcode, (SInt16)ewg_version, (QDOpcodeUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDOpcodeUPP'
+void* ewg_get_function_address_InvokeQDOpcodeUPP (void)
+{
+	return (void*) InvokeQDOpcodeUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDStdGlyphsUPP'
+// For ise
+OSStatus  ewg_function_InvokeQDStdGlyphsUPP (void *ewg_dataStream, ByteCount ewg_size, QDStdGlyphsUPP ewg_userUPP)
+{
+	return InvokeQDStdGlyphsUPP ((void*)ewg_dataStream, (ByteCount)ewg_size, (QDStdGlyphsUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDStdGlyphsUPP'
+void* ewg_get_function_address_InvokeQDStdGlyphsUPP (void)
+{
+	return (void*) InvokeQDStdGlyphsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeQDJShieldCursorUPP'
+// For ise
+void  ewg_function_InvokeQDJShieldCursorUPP (short ewg_left, short ewg_top, short ewg_right, short ewg_bottom, QDJShieldCursorUPP ewg_userUPP)
+{
+	InvokeQDJShieldCursorUPP ((short)ewg_left, (short)ewg_top, (short)ewg_right, (short)ewg_bottom, (QDJShieldCursorUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeQDJShieldCursorUPP'
+void* ewg_get_function_address_InvokeQDJShieldCursorUPP (void)
+{
+	return (void*) InvokeQDJShieldCursorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDragGrayRgnUPP'
+// For ise
+DragGrayRgnUPP  ewg_function_NewDragGrayRgnUPP (DragGrayRgnProcPtr ewg_userRoutine)
+{
+	return NewDragGrayRgnUPP ((DragGrayRgnProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDragGrayRgnUPP'
+void* ewg_get_function_address_NewDragGrayRgnUPP (void)
+{
+	return (void*) NewDragGrayRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewColorSearchUPP'
+// For ise
+ColorSearchUPP  ewg_function_NewColorSearchUPP (ColorSearchProcPtr ewg_userRoutine)
+{
+	return NewColorSearchUPP ((ColorSearchProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewColorSearchUPP'
+void* ewg_get_function_address_NewColorSearchUPP (void)
+{
+	return (void*) NewColorSearchUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewColorComplementUPP'
+// For ise
+ColorComplementUPP  ewg_function_NewColorComplementUPP (ColorComplementProcPtr ewg_userRoutine)
+{
+	return NewColorComplementUPP ((ColorComplementProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewColorComplementUPP'
+void* ewg_get_function_address_NewColorComplementUPP (void)
+{
+	return (void*) NewColorComplementUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDragGrayRgnUPP'
+// For ise
+void  ewg_function_DisposeDragGrayRgnUPP (DragGrayRgnUPP ewg_userUPP)
+{
+	DisposeDragGrayRgnUPP ((DragGrayRgnUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDragGrayRgnUPP'
+void* ewg_get_function_address_DisposeDragGrayRgnUPP (void)
+{
+	return (void*) DisposeDragGrayRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeColorSearchUPP'
+// For ise
+void  ewg_function_DisposeColorSearchUPP (ColorSearchUPP ewg_userUPP)
+{
+	DisposeColorSearchUPP ((ColorSearchUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeColorSearchUPP'
+void* ewg_get_function_address_DisposeColorSearchUPP (void)
+{
+	return (void*) DisposeColorSearchUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeColorComplementUPP'
+// For ise
+void  ewg_function_DisposeColorComplementUPP (ColorComplementUPP ewg_userUPP)
+{
+	DisposeColorComplementUPP ((ColorComplementUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeColorComplementUPP'
+void* ewg_get_function_address_DisposeColorComplementUPP (void)
+{
+	return (void*) DisposeColorComplementUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDragGrayRgnUPP'
+// For ise
+void  ewg_function_InvokeDragGrayRgnUPP (DragGrayRgnUPP ewg_userUPP)
+{
+	InvokeDragGrayRgnUPP ((DragGrayRgnUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDragGrayRgnUPP'
+void* ewg_get_function_address_InvokeDragGrayRgnUPP (void)
+{
+	return (void*) InvokeDragGrayRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeColorSearchUPP'
+// For ise
+Boolean  ewg_function_InvokeColorSearchUPP (RGBColor *ewg_rgb, long *ewg_position, ColorSearchUPP ewg_userUPP)
+{
+	return InvokeColorSearchUPP ((RGBColor*)ewg_rgb, (long*)ewg_position, (ColorSearchUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeColorSearchUPP'
+void* ewg_get_function_address_InvokeColorSearchUPP (void)
+{
+	return (void*) InvokeColorSearchUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeColorComplementUPP'
+// For ise
+Boolean  ewg_function_InvokeColorComplementUPP (RGBColor *ewg_rgb, ColorComplementUPP ewg_userUPP)
+{
+	return InvokeColorComplementUPP ((RGBColor*)ewg_rgb, (ColorComplementUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeColorComplementUPP'
+void* ewg_get_function_address_InvokeColorComplementUPP (void)
+{
+	return (void*) InvokeColorComplementUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDeviceLoopDrawingUPP'
+// For ise
+DeviceLoopDrawingUPP  ewg_function_NewDeviceLoopDrawingUPP (DeviceLoopDrawingProcPtr ewg_userRoutine)
+{
+	return NewDeviceLoopDrawingUPP ((DeviceLoopDrawingProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDeviceLoopDrawingUPP'
+void* ewg_get_function_address_NewDeviceLoopDrawingUPP (void)
+{
+	return (void*) NewDeviceLoopDrawingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDeviceLoopDrawingUPP'
+// For ise
+void  ewg_function_DisposeDeviceLoopDrawingUPP (DeviceLoopDrawingUPP ewg_userUPP)
+{
+	DisposeDeviceLoopDrawingUPP ((DeviceLoopDrawingUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDeviceLoopDrawingUPP'
+void* ewg_get_function_address_DisposeDeviceLoopDrawingUPP (void)
+{
+	return (void*) DisposeDeviceLoopDrawingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDeviceLoopDrawingUPP'
+// For ise
+void  ewg_function_InvokeDeviceLoopDrawingUPP (short ewg_depth, short ewg_deviceFlags, GDHandle ewg_targetDevice, long ewg_userData, DeviceLoopDrawingUPP ewg_userUPP)
+{
+	InvokeDeviceLoopDrawingUPP ((short)ewg_depth, (short)ewg_deviceFlags, (GDHandle)ewg_targetDevice, (long)ewg_userData, (DeviceLoopDrawingUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDeviceLoopDrawingUPP'
+void* ewg_get_function_address_InvokeDeviceLoopDrawingUPP (void)
+{
+	return (void*) InvokeDeviceLoopDrawingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LockPortBits'
+// For ise
+OSErr  ewg_function_LockPortBits (GrafPtr ewg_port)
+{
+	return LockPortBits ((GrafPtr)ewg_port);
+}
+
+// Return address of function 'LockPortBits'
+void* ewg_get_function_address_LockPortBits (void)
+{
+	return (void*) LockPortBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UnlockPortBits'
+// For ise
+OSErr  ewg_function_UnlockPortBits (GrafPtr ewg_port)
+{
+	return UnlockPortBits ((GrafPtr)ewg_port);
+}
+
+// Return address of function 'UnlockPortBits'
+void* ewg_get_function_address_UnlockPortBits (void)
+{
+	return (void*) UnlockPortBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewRegionToRectsUPP'
+// For ise
+RegionToRectsUPP  ewg_function_NewRegionToRectsUPP (RegionToRectsProcPtr ewg_userRoutine)
+{
+	return NewRegionToRectsUPP ((RegionToRectsProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewRegionToRectsUPP'
+void* ewg_get_function_address_NewRegionToRectsUPP (void)
+{
+	return (void*) NewRegionToRectsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeRegionToRectsUPP'
+// For ise
+void  ewg_function_DisposeRegionToRectsUPP (RegionToRectsUPP ewg_userUPP)
+{
+	DisposeRegionToRectsUPP ((RegionToRectsUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeRegionToRectsUPP'
+void* ewg_get_function_address_DisposeRegionToRectsUPP (void)
+{
+	return (void*) DisposeRegionToRectsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeRegionToRectsUPP'
+// For ise
+OSStatus  ewg_function_InvokeRegionToRectsUPP (UInt16 ewg_message, RgnHandle ewg_rgn, Rect const *ewg_rect, void *ewg_refCon, RegionToRectsUPP ewg_userUPP)
+{
+	return InvokeRegionToRectsUPP ((UInt16)ewg_message, (RgnHandle)ewg_rgn, (Rect const*)ewg_rect, (void*)ewg_refCon, (RegionToRectsUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeRegionToRectsUPP'
+void* ewg_get_function_address_InvokeRegionToRectsUPP (void)
+{
+	return (void*) InvokeRegionToRectsUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDRegionToRects'
+// For ise
+OSStatus  ewg_function_QDRegionToRects (RgnHandle ewg_rgn, QDRegionParseDirection ewg_dir, RegionToRectsUPP ewg_proc, void *ewg_userData)
+{
+	return QDRegionToRects ((RgnHandle)ewg_rgn, (QDRegionParseDirection)ewg_dir, (RegionToRectsUPP)ewg_proc, (void*)ewg_userData);
+}
+
+// Return address of function 'QDRegionToRects'
+void* ewg_get_function_address_QDRegionToRects (void)
+{
+	return (void*) QDRegionToRects;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPort'
+// For ise
+void  ewg_function_SetPort (GrafPtr ewg_port)
+{
+	SetPort ((GrafPtr)ewg_port);
+}
+
+// Return address of function 'SetPort'
+void* ewg_get_function_address_SetPort (void)
+{
+	return (void*) SetPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPort'
+// For ise
+void  ewg_function_GetPort (GrafPtr *ewg_port)
+{
+	GetPort ((GrafPtr*)ewg_port);
+}
+
+// Return address of function 'GetPort'
+void* ewg_get_function_address_GetPort (void)
+{
+	return (void*) GetPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSwapPort'
+// For ise
+Boolean  ewg_function_QDSwapPort (CGrafPtr ewg_inNewPort, CGrafPtr *ewg_outOldPort)
+{
+	return QDSwapPort ((CGrafPtr)ewg_inNewPort, (CGrafPtr*)ewg_outOldPort);
+}
+
+// Return address of function 'QDSwapPort'
+void* ewg_get_function_address_QDSwapPort (void)
+{
+	return (void*) QDSwapPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GrafDevice'
+// For ise
+void  ewg_function_GrafDevice (short ewg_device)
+{
+	GrafDevice ((short)ewg_device);
+}
+
+// Return address of function 'GrafDevice'
+void* ewg_get_function_address_GrafDevice (void)
+{
+	return (void*) GrafDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortBits'
+// For ise
+void  ewg_function_SetPortBits (BitMap const *ewg_bm)
+{
+	SetPortBits ((BitMap const*)ewg_bm);
+}
+
+// Return address of function 'SetPortBits'
+void* ewg_get_function_address_SetPortBits (void)
+{
+	return (void*) SetPortBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PortSize'
+// For ise
+void  ewg_function_PortSize (short ewg_width, short ewg_height)
+{
+	PortSize ((short)ewg_width, (short)ewg_height);
+}
+
+// Return address of function 'PortSize'
+void* ewg_get_function_address_PortSize (void)
+{
+	return (void*) PortSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MovePortTo'
+// For ise
+void  ewg_function_MovePortTo (short ewg_leftGlobal, short ewg_topGlobal)
+{
+	MovePortTo ((short)ewg_leftGlobal, (short)ewg_topGlobal);
+}
+
+// Return address of function 'MovePortTo'
+void* ewg_get_function_address_MovePortTo (void)
+{
+	return (void*) MovePortTo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetOrigin'
+// For ise
+void  ewg_function_SetOrigin (short ewg_h, short ewg_v)
+{
+	SetOrigin ((short)ewg_h, (short)ewg_v);
+}
+
+// Return address of function 'SetOrigin'
+void* ewg_get_function_address_SetOrigin (void)
+{
+	return (void*) SetOrigin;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetClip'
+// For ise
+void  ewg_function_SetClip (RgnHandle ewg_rgn)
+{
+	SetClip ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'SetClip'
+void* ewg_get_function_address_SetClip (void)
+{
+	return (void*) SetClip;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetClip'
+// For ise
+void  ewg_function_GetClip (RgnHandle ewg_rgn)
+{
+	GetClip ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'GetClip'
+void* ewg_get_function_address_GetClip (void)
+{
+	return (void*) GetClip;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClipRect'
+// For ise
+void  ewg_function_ClipRect (Rect const *ewg_r)
+{
+	ClipRect ((Rect const*)ewg_r);
+}
+
+// Return address of function 'ClipRect'
+void* ewg_get_function_address_ClipRect (void)
+{
+	return (void*) ClipRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BackPat'
+// For ise
+void  ewg_function_BackPat (Pattern const *ewg_pat)
+{
+	BackPat ((Pattern const*)ewg_pat);
+}
+
+// Return address of function 'BackPat'
+void* ewg_get_function_address_BackPat (void)
+{
+	return (void*) BackPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InitCursor'
+// For ise
+void  ewg_function_InitCursor (void)
+{
+	InitCursor ();
+}
+
+// Return address of function 'InitCursor'
+void* ewg_get_function_address_InitCursor (void)
+{
+	return (void*) InitCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetCursor'
+// For ise
+void  ewg_function_SetCursor (Cursor const *ewg_crsr)
+{
+	SetCursor ((Cursor const*)ewg_crsr);
+}
+
+// Return address of function 'SetCursor'
+void* ewg_get_function_address_SetCursor (void)
+{
+	return (void*) SetCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HideCursor'
+// For ise
+void  ewg_function_HideCursor (void)
+{
+	HideCursor ();
+}
+
+// Return address of function 'HideCursor'
+void* ewg_get_function_address_HideCursor (void)
+{
+	return (void*) HideCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowCursor'
+// For ise
+void  ewg_function_ShowCursor (void)
+{
+	ShowCursor ();
+}
+
+// Return address of function 'ShowCursor'
+void* ewg_get_function_address_ShowCursor (void)
+{
+	return (void*) ShowCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ObscureCursor'
+// For ise
+void  ewg_function_ObscureCursor (void)
+{
+	ObscureCursor ();
+}
+
+// Return address of function 'ObscureCursor'
+void* ewg_get_function_address_ObscureCursor (void)
+{
+	return (void*) ObscureCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HidePen'
+// For ise
+void  ewg_function_HidePen (void)
+{
+	HidePen ();
+}
+
+// Return address of function 'HidePen'
+void* ewg_get_function_address_HidePen (void)
+{
+	return (void*) HidePen;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowPen'
+// For ise
+void  ewg_function_ShowPen (void)
+{
+	ShowPen ();
+}
+
+// Return address of function 'ShowPen'
+void* ewg_get_function_address_ShowPen (void)
+{
+	return (void*) ShowPen;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPen'
+// For ise
+void  ewg_function_GetPen (Point *ewg_pt)
+{
+	GetPen ((Point*)ewg_pt);
+}
+
+// Return address of function 'GetPen'
+void* ewg_get_function_address_GetPen (void)
+{
+	return (void*) GetPen;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPenState'
+// For ise
+void  ewg_function_GetPenState (PenState *ewg_pnState)
+{
+	GetPenState ((PenState*)ewg_pnState);
+}
+
+// Return address of function 'GetPenState'
+void* ewg_get_function_address_GetPenState (void)
+{
+	return (void*) GetPenState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPenState'
+// For ise
+void  ewg_function_SetPenState (PenState const *ewg_pnState)
+{
+	SetPenState ((PenState const*)ewg_pnState);
+}
+
+// Return address of function 'SetPenState'
+void* ewg_get_function_address_SetPenState (void)
+{
+	return (void*) SetPenState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PenSize'
+// For ise
+void  ewg_function_PenSize (short ewg_width, short ewg_height)
+{
+	PenSize ((short)ewg_width, (short)ewg_height);
+}
+
+// Return address of function 'PenSize'
+void* ewg_get_function_address_PenSize (void)
+{
+	return (void*) PenSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PenMode'
+// For ise
+void  ewg_function_PenMode (short ewg_mode)
+{
+	PenMode ((short)ewg_mode);
+}
+
+// Return address of function 'PenMode'
+void* ewg_get_function_address_PenMode (void)
+{
+	return (void*) PenMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PenPat'
+// For ise
+void  ewg_function_PenPat (Pattern const *ewg_pat)
+{
+	PenPat ((Pattern const*)ewg_pat);
+}
+
+// Return address of function 'PenPat'
+void* ewg_get_function_address_PenPat (void)
+{
+	return (void*) PenPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PenNormal'
+// For ise
+void  ewg_function_PenNormal (void)
+{
+	PenNormal ();
+}
+
+// Return address of function 'PenNormal'
+void* ewg_get_function_address_PenNormal (void)
+{
+	return (void*) PenNormal;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MoveTo'
+// For ise
+void  ewg_function_MoveTo (short ewg_h, short ewg_v)
+{
+	MoveTo ((short)ewg_h, (short)ewg_v);
+}
+
+// Return address of function 'MoveTo'
+void* ewg_get_function_address_MoveTo (void)
+{
+	return (void*) MoveTo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Move'
+// For ise
+void  ewg_function_Move (short ewg_dh, short ewg_dv)
+{
+	Move ((short)ewg_dh, (short)ewg_dv);
+}
+
+// Return address of function 'Move'
+void* ewg_get_function_address_Move (void)
+{
+	return (void*) Move;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LineTo'
+// For ise
+void  ewg_function_LineTo (short ewg_h, short ewg_v)
+{
+	LineTo ((short)ewg_h, (short)ewg_v);
+}
+
+// Return address of function 'LineTo'
+void* ewg_get_function_address_LineTo (void)
+{
+	return (void*) LineTo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Line'
+// For ise
+void  ewg_function_Line (short ewg_dh, short ewg_dv)
+{
+	Line ((short)ewg_dh, (short)ewg_dv);
+}
+
+// Return address of function 'Line'
+void* ewg_get_function_address_Line (void)
+{
+	return (void*) Line;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ForeColor'
+// For ise
+void  ewg_function_ForeColor (long ewg_color)
+{
+	ForeColor ((long)ewg_color);
+}
+
+// Return address of function 'ForeColor'
+void* ewg_get_function_address_ForeColor (void)
+{
+	return (void*) ForeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BackColor'
+// For ise
+void  ewg_function_BackColor (long ewg_color)
+{
+	BackColor ((long)ewg_color);
+}
+
+// Return address of function 'BackColor'
+void* ewg_get_function_address_BackColor (void)
+{
+	return (void*) BackColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ColorBit'
+// For ise
+void  ewg_function_ColorBit (short ewg_whichBit)
+{
+	ColorBit ((short)ewg_whichBit);
+}
+
+// Return address of function 'ColorBit'
+void* ewg_get_function_address_ColorBit (void)
+{
+	return (void*) ColorBit;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetRect'
+// For ise
+void  ewg_function_SetRect (Rect *ewg_r, short ewg_left, short ewg_top, short ewg_right, short ewg_bottom)
+{
+	SetRect ((Rect*)ewg_r, (short)ewg_left, (short)ewg_top, (short)ewg_right, (short)ewg_bottom);
+}
+
+// Return address of function 'SetRect'
+void* ewg_get_function_address_SetRect (void)
+{
+	return (void*) SetRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OffsetRect'
+// For ise
+void  ewg_function_OffsetRect (Rect *ewg_r, short ewg_dh, short ewg_dv)
+{
+	OffsetRect ((Rect*)ewg_r, (short)ewg_dh, (short)ewg_dv);
+}
+
+// Return address of function 'OffsetRect'
+void* ewg_get_function_address_OffsetRect (void)
+{
+	return (void*) OffsetRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsetRect'
+// For ise
+void  ewg_function_InsetRect (Rect *ewg_r, short ewg_dh, short ewg_dv)
+{
+	InsetRect ((Rect*)ewg_r, (short)ewg_dh, (short)ewg_dv);
+}
+
+// Return address of function 'InsetRect'
+void* ewg_get_function_address_InsetRect (void)
+{
+	return (void*) InsetRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SectRect'
+// For ise
+Boolean  ewg_function_SectRect (Rect const *ewg_src1, Rect const *ewg_src2, Rect *ewg_dstRect)
+{
+	return SectRect ((Rect const*)ewg_src1, (Rect const*)ewg_src2, (Rect*)ewg_dstRect);
+}
+
+// Return address of function 'SectRect'
+void* ewg_get_function_address_SectRect (void)
+{
+	return (void*) SectRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UnionRect'
+// For ise
+void  ewg_function_UnionRect (Rect const *ewg_src1, Rect const *ewg_src2, Rect *ewg_dstRect)
+{
+	UnionRect ((Rect const*)ewg_src1, (Rect const*)ewg_src2, (Rect*)ewg_dstRect);
+}
+
+// Return address of function 'UnionRect'
+void* ewg_get_function_address_UnionRect (void)
+{
+	return (void*) UnionRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EqualRect'
+// For ise
+Boolean  ewg_function_EqualRect (Rect const *ewg_rect1, Rect const *ewg_rect2)
+{
+	return EqualRect ((Rect const*)ewg_rect1, (Rect const*)ewg_rect2);
+}
+
+// Return address of function 'EqualRect'
+void* ewg_get_function_address_EqualRect (void)
+{
+	return (void*) EqualRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EmptyRect'
+// For ise
+Boolean  ewg_function_EmptyRect (Rect const *ewg_r)
+{
+	return EmptyRect ((Rect const*)ewg_r);
+}
+
+// Return address of function 'EmptyRect'
+void* ewg_get_function_address_EmptyRect (void)
+{
+	return (void*) EmptyRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FrameRect'
+// For ise
+void  ewg_function_FrameRect (Rect const *ewg_r)
+{
+	FrameRect ((Rect const*)ewg_r);
+}
+
+// Return address of function 'FrameRect'
+void* ewg_get_function_address_FrameRect (void)
+{
+	return (void*) FrameRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintRect'
+// For ise
+void  ewg_function_PaintRect (Rect const *ewg_r)
+{
+	PaintRect ((Rect const*)ewg_r);
+}
+
+// Return address of function 'PaintRect'
+void* ewg_get_function_address_PaintRect (void)
+{
+	return (void*) PaintRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EraseRect'
+// For ise
+void  ewg_function_EraseRect (Rect const *ewg_r)
+{
+	EraseRect ((Rect const*)ewg_r);
+}
+
+// Return address of function 'EraseRect'
+void* ewg_get_function_address_EraseRect (void)
+{
+	return (void*) EraseRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvertRect'
+// For ise
+void  ewg_function_InvertRect (Rect const *ewg_r)
+{
+	InvertRect ((Rect const*)ewg_r);
+}
+
+// Return address of function 'InvertRect'
+void* ewg_get_function_address_InvertRect (void)
+{
+	return (void*) InvertRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillRect'
+// For ise
+void  ewg_function_FillRect (Rect const *ewg_r, Pattern const *ewg_pat)
+{
+	FillRect ((Rect const*)ewg_r, (Pattern const*)ewg_pat);
+}
+
+// Return address of function 'FillRect'
+void* ewg_get_function_address_FillRect (void)
+{
+	return (void*) FillRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FrameOval'
+// For ise
+void  ewg_function_FrameOval (Rect const *ewg_r)
+{
+	FrameOval ((Rect const*)ewg_r);
+}
+
+// Return address of function 'FrameOval'
+void* ewg_get_function_address_FrameOval (void)
+{
+	return (void*) FrameOval;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintOval'
+// For ise
+void  ewg_function_PaintOval (Rect const *ewg_r)
+{
+	PaintOval ((Rect const*)ewg_r);
+}
+
+// Return address of function 'PaintOval'
+void* ewg_get_function_address_PaintOval (void)
+{
+	return (void*) PaintOval;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EraseOval'
+// For ise
+void  ewg_function_EraseOval (Rect const *ewg_r)
+{
+	EraseOval ((Rect const*)ewg_r);
+}
+
+// Return address of function 'EraseOval'
+void* ewg_get_function_address_EraseOval (void)
+{
+	return (void*) EraseOval;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvertOval'
+// For ise
+void  ewg_function_InvertOval (Rect const *ewg_r)
+{
+	InvertOval ((Rect const*)ewg_r);
+}
+
+// Return address of function 'InvertOval'
+void* ewg_get_function_address_InvertOval (void)
+{
+	return (void*) InvertOval;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillOval'
+// For ise
+void  ewg_function_FillOval (Rect const *ewg_r, Pattern const *ewg_pat)
+{
+	FillOval ((Rect const*)ewg_r, (Pattern const*)ewg_pat);
+}
+
+// Return address of function 'FillOval'
+void* ewg_get_function_address_FillOval (void)
+{
+	return (void*) FillOval;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FrameRoundRect'
+// For ise
+void  ewg_function_FrameRoundRect (Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight)
+{
+	FrameRoundRect ((Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight);
+}
+
+// Return address of function 'FrameRoundRect'
+void* ewg_get_function_address_FrameRoundRect (void)
+{
+	return (void*) FrameRoundRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintRoundRect'
+// For ise
+void  ewg_function_PaintRoundRect (Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight)
+{
+	PaintRoundRect ((Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight);
+}
+
+// Return address of function 'PaintRoundRect'
+void* ewg_get_function_address_PaintRoundRect (void)
+{
+	return (void*) PaintRoundRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EraseRoundRect'
+// For ise
+void  ewg_function_EraseRoundRect (Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight)
+{
+	EraseRoundRect ((Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight);
+}
+
+// Return address of function 'EraseRoundRect'
+void* ewg_get_function_address_EraseRoundRect (void)
+{
+	return (void*) EraseRoundRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvertRoundRect'
+// For ise
+void  ewg_function_InvertRoundRect (Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight)
+{
+	InvertRoundRect ((Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight);
+}
+
+// Return address of function 'InvertRoundRect'
+void* ewg_get_function_address_InvertRoundRect (void)
+{
+	return (void*) InvertRoundRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillRoundRect'
+// For ise
+void  ewg_function_FillRoundRect (Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight, Pattern const *ewg_pat)
+{
+	FillRoundRect ((Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight, (Pattern const*)ewg_pat);
+}
+
+// Return address of function 'FillRoundRect'
+void* ewg_get_function_address_FillRoundRect (void)
+{
+	return (void*) FillRoundRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FrameArc'
+// For ise
+void  ewg_function_FrameArc (Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle)
+{
+	FrameArc ((Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle);
+}
+
+// Return address of function 'FrameArc'
+void* ewg_get_function_address_FrameArc (void)
+{
+	return (void*) FrameArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintArc'
+// For ise
+void  ewg_function_PaintArc (Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle)
+{
+	PaintArc ((Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle);
+}
+
+// Return address of function 'PaintArc'
+void* ewg_get_function_address_PaintArc (void)
+{
+	return (void*) PaintArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EraseArc'
+// For ise
+void  ewg_function_EraseArc (Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle)
+{
+	EraseArc ((Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle);
+}
+
+// Return address of function 'EraseArc'
+void* ewg_get_function_address_EraseArc (void)
+{
+	return (void*) EraseArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvertArc'
+// For ise
+void  ewg_function_InvertArc (Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle)
+{
+	InvertArc ((Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle);
+}
+
+// Return address of function 'InvertArc'
+void* ewg_get_function_address_InvertArc (void)
+{
+	return (void*) InvertArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillArc'
+// For ise
+void  ewg_function_FillArc (Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle, Pattern const *ewg_pat)
+{
+	FillArc ((Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle, (Pattern const*)ewg_pat);
+}
+
+// Return address of function 'FillArc'
+void* ewg_get_function_address_FillArc (void)
+{
+	return (void*) FillArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewRgn'
+// For ise
+RgnHandle  ewg_function_NewRgn (void)
+{
+	return NewRgn ();
+}
+
+// Return address of function 'NewRgn'
+void* ewg_get_function_address_NewRgn (void)
+{
+	return (void*) NewRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpenRgn'
+// For ise
+void  ewg_function_OpenRgn (void)
+{
+	OpenRgn ();
+}
+
+// Return address of function 'OpenRgn'
+void* ewg_get_function_address_OpenRgn (void)
+{
+	return (void*) OpenRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CloseRgn'
+// For ise
+void  ewg_function_CloseRgn (RgnHandle ewg_dstRgn)
+{
+	CloseRgn ((RgnHandle)ewg_dstRgn);
+}
+
+// Return address of function 'CloseRgn'
+void* ewg_get_function_address_CloseRgn (void)
+{
+	return (void*) CloseRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BitMapToRegion'
+// For ise
+OSErr  ewg_function_BitMapToRegion (RgnHandle ewg_region, BitMap const *ewg_bMap)
+{
+	return BitMapToRegion ((RgnHandle)ewg_region, (BitMap const*)ewg_bMap);
+}
+
+// Return address of function 'BitMapToRegion'
+void* ewg_get_function_address_BitMapToRegion (void)
+{
+	return (void*) BitMapToRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RgnToHandle'
+// For ise
+void  ewg_function_RgnToHandle (RgnHandle ewg_region, Handle ewg_flattenedRgnDataHdl)
+{
+	RgnToHandle ((RgnHandle)ewg_region, (Handle)ewg_flattenedRgnDataHdl);
+}
+
+// Return address of function 'RgnToHandle'
+void* ewg_get_function_address_RgnToHandle (void)
+{
+	return (void*) RgnToHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HandleToRgn'
+// For ise
+void  ewg_function_HandleToRgn (Handle ewg_oldRegion, RgnHandle ewg_region)
+{
+	HandleToRgn ((Handle)ewg_oldRegion, (RgnHandle)ewg_region);
+}
+
+// Return address of function 'HandleToRgn'
+void* ewg_get_function_address_HandleToRgn (void)
+{
+	return (void*) HandleToRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeRgn'
+// For ise
+void  ewg_function_DisposeRgn (RgnHandle ewg_rgn)
+{
+	DisposeRgn ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'DisposeRgn'
+void* ewg_get_function_address_DisposeRgn (void)
+{
+	return (void*) DisposeRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyRgn'
+// For ise
+void  ewg_function_CopyRgn (RgnHandle ewg_srcRgn, RgnHandle ewg_dstRgn)
+{
+	CopyRgn ((RgnHandle)ewg_srcRgn, (RgnHandle)ewg_dstRgn);
+}
+
+// Return address of function 'CopyRgn'
+void* ewg_get_function_address_CopyRgn (void)
+{
+	return (void*) CopyRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetEmptyRgn'
+// For ise
+void  ewg_function_SetEmptyRgn (RgnHandle ewg_rgn)
+{
+	SetEmptyRgn ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'SetEmptyRgn'
+void* ewg_get_function_address_SetEmptyRgn (void)
+{
+	return (void*) SetEmptyRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetRectRgn'
+// For ise
+void  ewg_function_SetRectRgn (RgnHandle ewg_rgn, short ewg_left, short ewg_top, short ewg_right, short ewg_bottom)
+{
+	SetRectRgn ((RgnHandle)ewg_rgn, (short)ewg_left, (short)ewg_top, (short)ewg_right, (short)ewg_bottom);
+}
+
+// Return address of function 'SetRectRgn'
+void* ewg_get_function_address_SetRectRgn (void)
+{
+	return (void*) SetRectRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RectRgn'
+// For ise
+void  ewg_function_RectRgn (RgnHandle ewg_rgn, Rect const *ewg_r)
+{
+	RectRgn ((RgnHandle)ewg_rgn, (Rect const*)ewg_r);
+}
+
+// Return address of function 'RectRgn'
+void* ewg_get_function_address_RectRgn (void)
+{
+	return (void*) RectRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OffsetRgn'
+// For ise
+void  ewg_function_OffsetRgn (RgnHandle ewg_rgn, short ewg_dh, short ewg_dv)
+{
+	OffsetRgn ((RgnHandle)ewg_rgn, (short)ewg_dh, (short)ewg_dv);
+}
+
+// Return address of function 'OffsetRgn'
+void* ewg_get_function_address_OffsetRgn (void)
+{
+	return (void*) OffsetRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsetRgn'
+// For ise
+void  ewg_function_InsetRgn (RgnHandle ewg_rgn, short ewg_dh, short ewg_dv)
+{
+	InsetRgn ((RgnHandle)ewg_rgn, (short)ewg_dh, (short)ewg_dv);
+}
+
+// Return address of function 'InsetRgn'
+void* ewg_get_function_address_InsetRgn (void)
+{
+	return (void*) InsetRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SectRgn'
+// For ise
+void  ewg_function_SectRgn (RgnHandle ewg_srcRgnA, RgnHandle ewg_srcRgnB, RgnHandle ewg_dstRgn)
+{
+	SectRgn ((RgnHandle)ewg_srcRgnA, (RgnHandle)ewg_srcRgnB, (RgnHandle)ewg_dstRgn);
+}
+
+// Return address of function 'SectRgn'
+void* ewg_get_function_address_SectRgn (void)
+{
+	return (void*) SectRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UnionRgn'
+// For ise
+void  ewg_function_UnionRgn (RgnHandle ewg_srcRgnA, RgnHandle ewg_srcRgnB, RgnHandle ewg_dstRgn)
+{
+	UnionRgn ((RgnHandle)ewg_srcRgnA, (RgnHandle)ewg_srcRgnB, (RgnHandle)ewg_dstRgn);
+}
+
+// Return address of function 'UnionRgn'
+void* ewg_get_function_address_UnionRgn (void)
+{
+	return (void*) UnionRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DiffRgn'
+// For ise
+void  ewg_function_DiffRgn (RgnHandle ewg_srcRgnA, RgnHandle ewg_srcRgnB, RgnHandle ewg_dstRgn)
+{
+	DiffRgn ((RgnHandle)ewg_srcRgnA, (RgnHandle)ewg_srcRgnB, (RgnHandle)ewg_dstRgn);
+}
+
+// Return address of function 'DiffRgn'
+void* ewg_get_function_address_DiffRgn (void)
+{
+	return (void*) DiffRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'XorRgn'
+// For ise
+void  ewg_function_XorRgn (RgnHandle ewg_srcRgnA, RgnHandle ewg_srcRgnB, RgnHandle ewg_dstRgn)
+{
+	XorRgn ((RgnHandle)ewg_srcRgnA, (RgnHandle)ewg_srcRgnB, (RgnHandle)ewg_dstRgn);
+}
+
+// Return address of function 'XorRgn'
+void* ewg_get_function_address_XorRgn (void)
+{
+	return (void*) XorRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RectInRgn'
+// For ise
+Boolean  ewg_function_RectInRgn (Rect const *ewg_r, RgnHandle ewg_rgn)
+{
+	return RectInRgn ((Rect const*)ewg_r, (RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'RectInRgn'
+void* ewg_get_function_address_RectInRgn (void)
+{
+	return (void*) RectInRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EqualRgn'
+// For ise
+Boolean  ewg_function_EqualRgn (RgnHandle ewg_rgnA, RgnHandle ewg_rgnB)
+{
+	return EqualRgn ((RgnHandle)ewg_rgnA, (RgnHandle)ewg_rgnB);
+}
+
+// Return address of function 'EqualRgn'
+void* ewg_get_function_address_EqualRgn (void)
+{
+	return (void*) EqualRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EmptyRgn'
+// For ise
+Boolean  ewg_function_EmptyRgn (RgnHandle ewg_rgn)
+{
+	return EmptyRgn ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'EmptyRgn'
+void* ewg_get_function_address_EmptyRgn (void)
+{
+	return (void*) EmptyRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FrameRgn'
+// For ise
+void  ewg_function_FrameRgn (RgnHandle ewg_rgn)
+{
+	FrameRgn ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'FrameRgn'
+void* ewg_get_function_address_FrameRgn (void)
+{
+	return (void*) FrameRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintRgn'
+// For ise
+void  ewg_function_PaintRgn (RgnHandle ewg_rgn)
+{
+	PaintRgn ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'PaintRgn'
+void* ewg_get_function_address_PaintRgn (void)
+{
+	return (void*) PaintRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EraseRgn'
+// For ise
+void  ewg_function_EraseRgn (RgnHandle ewg_rgn)
+{
+	EraseRgn ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'EraseRgn'
+void* ewg_get_function_address_EraseRgn (void)
+{
+	return (void*) EraseRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvertRgn'
+// For ise
+void  ewg_function_InvertRgn (RgnHandle ewg_rgn)
+{
+	InvertRgn ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'InvertRgn'
+void* ewg_get_function_address_InvertRgn (void)
+{
+	return (void*) InvertRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillRgn'
+// For ise
+void  ewg_function_FillRgn (RgnHandle ewg_rgn, Pattern const *ewg_pat)
+{
+	FillRgn ((RgnHandle)ewg_rgn, (Pattern const*)ewg_pat);
+}
+
+// Return address of function 'FillRgn'
+void* ewg_get_function_address_FillRgn (void)
+{
+	return (void*) FillRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ScrollRect'
+// For ise
+void  ewg_function_ScrollRect (Rect const *ewg_r, short ewg_dh, short ewg_dv, RgnHandle ewg_updateRgn)
+{
+	ScrollRect ((Rect const*)ewg_r, (short)ewg_dh, (short)ewg_dv, (RgnHandle)ewg_updateRgn);
+}
+
+// Return address of function 'ScrollRect'
+void* ewg_get_function_address_ScrollRect (void)
+{
+	return (void*) ScrollRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyBits'
+// For ise
+void  ewg_function_CopyBits (BitMap const *ewg_srcBits, BitMap const *ewg_dstBits, Rect const *ewg_srcRect, Rect const *ewg_dstRect, short ewg_mode, RgnHandle ewg_maskRgn)
+{
+	CopyBits ((BitMap const*)ewg_srcBits, (BitMap const*)ewg_dstBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect, (short)ewg_mode, (RgnHandle)ewg_maskRgn);
+}
+
+// Return address of function 'CopyBits'
+void* ewg_get_function_address_CopyBits (void)
+{
+	return (void*) CopyBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SeedFill'
+// For ise
+void  ewg_function_SeedFill (void const *ewg_srcPtr, void *ewg_dstPtr, short ewg_srcRow, short ewg_dstRow, short ewg_height, short ewg_words, short ewg_seedH, short ewg_seedV)
+{
+	SeedFill ((void const*)ewg_srcPtr, (void*)ewg_dstPtr, (short)ewg_srcRow, (short)ewg_dstRow, (short)ewg_height, (short)ewg_words, (short)ewg_seedH, (short)ewg_seedV);
+}
+
+// Return address of function 'SeedFill'
+void* ewg_get_function_address_SeedFill (void)
+{
+	return (void*) SeedFill;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CalcMask'
+// For ise
+void  ewg_function_CalcMask (void const *ewg_srcPtr, void *ewg_dstPtr, short ewg_srcRow, short ewg_dstRow, short ewg_height, short ewg_words)
+{
+	CalcMask ((void const*)ewg_srcPtr, (void*)ewg_dstPtr, (short)ewg_srcRow, (short)ewg_dstRow, (short)ewg_height, (short)ewg_words);
+}
+
+// Return address of function 'CalcMask'
+void* ewg_get_function_address_CalcMask (void)
+{
+	return (void*) CalcMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyMask'
+// For ise
+void  ewg_function_CopyMask (BitMap const *ewg_srcBits, BitMap const *ewg_maskBits, BitMap const *ewg_dstBits, Rect const *ewg_srcRect, Rect const *ewg_maskRect, Rect const *ewg_dstRect)
+{
+	CopyMask ((BitMap const*)ewg_srcBits, (BitMap const*)ewg_maskBits, (BitMap const*)ewg_dstBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_maskRect, (Rect const*)ewg_dstRect);
+}
+
+// Return address of function 'CopyMask'
+void* ewg_get_function_address_CopyMask (void)
+{
+	return (void*) CopyMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpenPicture'
+// For ise
+PicHandle  ewg_function_OpenPicture (Rect const *ewg_picFrame)
+{
+	return OpenPicture ((Rect const*)ewg_picFrame);
+}
+
+// Return address of function 'OpenPicture'
+void* ewg_get_function_address_OpenPicture (void)
+{
+	return (void*) OpenPicture;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PicComment'
+// For ise
+void  ewg_function_PicComment (short ewg_kind, short ewg_dataSize, Handle ewg_dataHandle)
+{
+	PicComment ((short)ewg_kind, (short)ewg_dataSize, (Handle)ewg_dataHandle);
+}
+
+// Return address of function 'PicComment'
+void* ewg_get_function_address_PicComment (void)
+{
+	return (void*) PicComment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClosePicture'
+// For ise
+void  ewg_function_ClosePicture (void)
+{
+	ClosePicture ();
+}
+
+// Return address of function 'ClosePicture'
+void* ewg_get_function_address_ClosePicture (void)
+{
+	return (void*) ClosePicture;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGetPictureBounds'
+// For ise
+Rect * ewg_function_QDGetPictureBounds (PicHandle ewg_picH, Rect *ewg_outRect)
+{
+	return QDGetPictureBounds ((PicHandle)ewg_picH, (Rect*)ewg_outRect);
+}
+
+// Return address of function 'QDGetPictureBounds'
+void* ewg_get_function_address_QDGetPictureBounds (void)
+{
+	return (void*) QDGetPictureBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DrawPicture'
+// For ise
+void  ewg_function_DrawPicture (PicHandle ewg_myPicture, Rect const *ewg_dstRect)
+{
+	DrawPicture ((PicHandle)ewg_myPicture, (Rect const*)ewg_dstRect);
+}
+
+// Return address of function 'DrawPicture'
+void* ewg_get_function_address_DrawPicture (void)
+{
+	return (void*) DrawPicture;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'KillPicture'
+// For ise
+void  ewg_function_KillPicture (PicHandle ewg_myPicture)
+{
+	KillPicture ((PicHandle)ewg_myPicture);
+}
+
+// Return address of function 'KillPicture'
+void* ewg_get_function_address_KillPicture (void)
+{
+	return (void*) KillPicture;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpenPoly'
+// For ise
+PolyHandle  ewg_function_OpenPoly (void)
+{
+	return OpenPoly ();
+}
+
+// Return address of function 'OpenPoly'
+void* ewg_get_function_address_OpenPoly (void)
+{
+	return (void*) OpenPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClosePoly'
+// For ise
+void  ewg_function_ClosePoly (void)
+{
+	ClosePoly ();
+}
+
+// Return address of function 'ClosePoly'
+void* ewg_get_function_address_ClosePoly (void)
+{
+	return (void*) ClosePoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'KillPoly'
+// For ise
+void  ewg_function_KillPoly (PolyHandle ewg_poly)
+{
+	KillPoly ((PolyHandle)ewg_poly);
+}
+
+// Return address of function 'KillPoly'
+void* ewg_get_function_address_KillPoly (void)
+{
+	return (void*) KillPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OffsetPoly'
+// For ise
+void  ewg_function_OffsetPoly (PolyHandle ewg_poly, short ewg_dh, short ewg_dv)
+{
+	OffsetPoly ((PolyHandle)ewg_poly, (short)ewg_dh, (short)ewg_dv);
+}
+
+// Return address of function 'OffsetPoly'
+void* ewg_get_function_address_OffsetPoly (void)
+{
+	return (void*) OffsetPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FramePoly'
+// For ise
+void  ewg_function_FramePoly (PolyHandle ewg_poly)
+{
+	FramePoly ((PolyHandle)ewg_poly);
+}
+
+// Return address of function 'FramePoly'
+void* ewg_get_function_address_FramePoly (void)
+{
+	return (void*) FramePoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintPoly'
+// For ise
+void  ewg_function_PaintPoly (PolyHandle ewg_poly)
+{
+	PaintPoly ((PolyHandle)ewg_poly);
+}
+
+// Return address of function 'PaintPoly'
+void* ewg_get_function_address_PaintPoly (void)
+{
+	return (void*) PaintPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ErasePoly'
+// For ise
+void  ewg_function_ErasePoly (PolyHandle ewg_poly)
+{
+	ErasePoly ((PolyHandle)ewg_poly);
+}
+
+// Return address of function 'ErasePoly'
+void* ewg_get_function_address_ErasePoly (void)
+{
+	return (void*) ErasePoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvertPoly'
+// For ise
+void  ewg_function_InvertPoly (PolyHandle ewg_poly)
+{
+	InvertPoly ((PolyHandle)ewg_poly);
+}
+
+// Return address of function 'InvertPoly'
+void* ewg_get_function_address_InvertPoly (void)
+{
+	return (void*) InvertPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillPoly'
+// For ise
+void  ewg_function_FillPoly (PolyHandle ewg_poly, Pattern const *ewg_pat)
+{
+	FillPoly ((PolyHandle)ewg_poly, (Pattern const*)ewg_pat);
+}
+
+// Return address of function 'FillPoly'
+void* ewg_get_function_address_FillPoly (void)
+{
+	return (void*) FillPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPt'
+// For ise
+void  ewg_function_SetPt (Point *ewg_pt, short ewg_h, short ewg_v)
+{
+	SetPt ((Point*)ewg_pt, (short)ewg_h, (short)ewg_v);
+}
+
+// Return address of function 'SetPt'
+void* ewg_get_function_address_SetPt (void)
+{
+	return (void*) SetPt;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LocalToGlobal'
+// For ise
+void  ewg_function_LocalToGlobal (Point *ewg_pt)
+{
+	LocalToGlobal ((Point*)ewg_pt);
+}
+
+// Return address of function 'LocalToGlobal'
+void* ewg_get_function_address_LocalToGlobal (void)
+{
+	return (void*) LocalToGlobal;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GlobalToLocal'
+// For ise
+void  ewg_function_GlobalToLocal (Point *ewg_pt)
+{
+	GlobalToLocal ((Point*)ewg_pt);
+}
+
+// Return address of function 'GlobalToLocal'
+void* ewg_get_function_address_GlobalToLocal (void)
+{
+	return (void*) GlobalToLocal;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Random'
+// For ise
+short  ewg_function_Random (void)
+{
+	return Random ();
+}
+
+// Return address of function 'Random'
+void* ewg_get_function_address_Random (void)
+{
+	return (void*) Random;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StuffHex'
+// For ise
+void  ewg_function_StuffHex (void *ewg_thingPtr, ConstStr255Param ewg_s)
+{
+	StuffHex ((void*)ewg_thingPtr, (ConstStr255Param)ewg_s);
+}
+
+// Return address of function 'StuffHex'
+void* ewg_get_function_address_StuffHex (void)
+{
+	return (void*) StuffHex;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPixel'
+// For ise
+Boolean  ewg_function_GetPixel (short ewg_h, short ewg_v)
+{
+	return GetPixel ((short)ewg_h, (short)ewg_v);
+}
+
+// Return address of function 'GetPixel'
+void* ewg_get_function_address_GetPixel (void)
+{
+	return (void*) GetPixel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ScalePt'
+// For ise
+void  ewg_function_ScalePt (Point *ewg_pt, Rect const *ewg_srcRect, Rect const *ewg_dstRect)
+{
+	ScalePt ((Point*)ewg_pt, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect);
+}
+
+// Return address of function 'ScalePt'
+void* ewg_get_function_address_ScalePt (void)
+{
+	return (void*) ScalePt;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MapPt'
+// For ise
+void  ewg_function_MapPt (Point *ewg_pt, Rect const *ewg_srcRect, Rect const *ewg_dstRect)
+{
+	MapPt ((Point*)ewg_pt, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect);
+}
+
+// Return address of function 'MapPt'
+void* ewg_get_function_address_MapPt (void)
+{
+	return (void*) MapPt;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MapRect'
+// For ise
+void  ewg_function_MapRect (Rect *ewg_r, Rect const *ewg_srcRect, Rect const *ewg_dstRect)
+{
+	MapRect ((Rect*)ewg_r, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect);
+}
+
+// Return address of function 'MapRect'
+void* ewg_get_function_address_MapRect (void)
+{
+	return (void*) MapRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MapRgn'
+// For ise
+void  ewg_function_MapRgn (RgnHandle ewg_rgn, Rect const *ewg_srcRect, Rect const *ewg_dstRect)
+{
+	MapRgn ((RgnHandle)ewg_rgn, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect);
+}
+
+// Return address of function 'MapRgn'
+void* ewg_get_function_address_MapRgn (void)
+{
+	return (void*) MapRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MapPoly'
+// For ise
+void  ewg_function_MapPoly (PolyHandle ewg_poly, Rect const *ewg_srcRect, Rect const *ewg_dstRect)
+{
+	MapPoly ((PolyHandle)ewg_poly, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect);
+}
+
+// Return address of function 'MapPoly'
+void* ewg_get_function_address_MapPoly (void)
+{
+	return (void*) MapPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetStdProcs'
+// For ise
+void  ewg_function_SetStdProcs (QDProcs *ewg_procs)
+{
+	SetStdProcs ((QDProcs*)ewg_procs);
+}
+
+// Return address of function 'SetStdProcs'
+void* ewg_get_function_address_SetStdProcs (void)
+{
+	return (void*) SetStdProcs;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdRect'
+// For ise
+void  ewg_function_StdRect (GrafVerb ewg_verb, Rect const *ewg_r)
+{
+	StdRect ((GrafVerb)ewg_verb, (Rect const*)ewg_r);
+}
+
+// Return address of function 'StdRect'
+void* ewg_get_function_address_StdRect (void)
+{
+	return (void*) StdRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdRRect'
+// For ise
+void  ewg_function_StdRRect (GrafVerb ewg_verb, Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight)
+{
+	StdRRect ((GrafVerb)ewg_verb, (Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight);
+}
+
+// Return address of function 'StdRRect'
+void* ewg_get_function_address_StdRRect (void)
+{
+	return (void*) StdRRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdOval'
+// For ise
+void  ewg_function_StdOval (GrafVerb ewg_verb, Rect const *ewg_r)
+{
+	StdOval ((GrafVerb)ewg_verb, (Rect const*)ewg_r);
+}
+
+// Return address of function 'StdOval'
+void* ewg_get_function_address_StdOval (void)
+{
+	return (void*) StdOval;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdArc'
+// For ise
+void  ewg_function_StdArc (GrafVerb ewg_verb, Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle)
+{
+	StdArc ((GrafVerb)ewg_verb, (Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle);
+}
+
+// Return address of function 'StdArc'
+void* ewg_get_function_address_StdArc (void)
+{
+	return (void*) StdArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdPoly'
+// For ise
+void  ewg_function_StdPoly (GrafVerb ewg_verb, PolyHandle ewg_poly)
+{
+	StdPoly ((GrafVerb)ewg_verb, (PolyHandle)ewg_poly);
+}
+
+// Return address of function 'StdPoly'
+void* ewg_get_function_address_StdPoly (void)
+{
+	return (void*) StdPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdRgn'
+// For ise
+void  ewg_function_StdRgn (GrafVerb ewg_verb, RgnHandle ewg_rgn)
+{
+	StdRgn ((GrafVerb)ewg_verb, (RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'StdRgn'
+void* ewg_get_function_address_StdRgn (void)
+{
+	return (void*) StdRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdBits'
+// For ise
+void  ewg_function_StdBits (BitMap const *ewg_srcBits, Rect const *ewg_srcRect, Rect const *ewg_dstRect, short ewg_mode, RgnHandle ewg_maskRgn)
+{
+	StdBits ((BitMap const*)ewg_srcBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect, (short)ewg_mode, (RgnHandle)ewg_maskRgn);
+}
+
+// Return address of function 'StdBits'
+void* ewg_get_function_address_StdBits (void)
+{
+	return (void*) StdBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdComment'
+// For ise
+void  ewg_function_StdComment (short ewg_kind, short ewg_dataSize, Handle ewg_dataHandle)
+{
+	StdComment ((short)ewg_kind, (short)ewg_dataSize, (Handle)ewg_dataHandle);
+}
+
+// Return address of function 'StdComment'
+void* ewg_get_function_address_StdComment (void)
+{
+	return (void*) StdComment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdGetPic'
+// For ise
+void  ewg_function_StdGetPic (void *ewg_dataPtr, short ewg_byteCount)
+{
+	StdGetPic ((void*)ewg_dataPtr, (short)ewg_byteCount);
+}
+
+// Return address of function 'StdGetPic'
+void* ewg_get_function_address_StdGetPic (void)
+{
+	return (void*) StdGetPic;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdPutPic'
+// For ise
+void  ewg_function_StdPutPic (void const *ewg_dataPtr, short ewg_byteCount)
+{
+	StdPutPic ((void const*)ewg_dataPtr, (short)ewg_byteCount);
+}
+
+// Return address of function 'StdPutPic'
+void* ewg_get_function_address_StdPutPic (void)
+{
+	return (void*) StdPutPic;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdOpcode'
+// For ise
+void  ewg_function_StdOpcode (Rect const *ewg_fromRect, Rect const *ewg_toRect, UInt16 ewg_opcode, SInt16 ewg_version)
+{
+	StdOpcode ((Rect const*)ewg_fromRect, (Rect const*)ewg_toRect, (UInt16)ewg_opcode, (SInt16)ewg_version);
+}
+
+// Return address of function 'StdOpcode'
+void* ewg_get_function_address_StdOpcode (void)
+{
+	return (void*) StdOpcode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AddPt'
+// For ise
+void  ewg_function_AddPt (Point *ewg_src, Point *ewg_dst)
+{
+	AddPt (*(Point*)ewg_src, (Point*)ewg_dst);
+}
+
+// Return address of function 'AddPt'
+void* ewg_get_function_address_AddPt (void)
+{
+	return (void*) AddPt;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EqualPt'
+// For ise
+Boolean  ewg_function_EqualPt (Point *ewg_pt1, Point *ewg_pt2)
+{
+	return EqualPt (*(Point*)ewg_pt1, *(Point*)ewg_pt2);
+}
+
+// Return address of function 'EqualPt'
+void* ewg_get_function_address_EqualPt (void)
+{
+	return (void*) EqualPt;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PtInRect'
+// For ise
+Boolean  ewg_function_PtInRect (Point *ewg_pt, Rect const *ewg_r)
+{
+	return PtInRect (*(Point*)ewg_pt, (Rect const*)ewg_r);
+}
+
+// Return address of function 'PtInRect'
+void* ewg_get_function_address_PtInRect (void)
+{
+	return (void*) PtInRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Pt2Rect'
+// For ise
+void  ewg_function_Pt2Rect (Point *ewg_pt1, Point *ewg_pt2, Rect *ewg_dstRect)
+{
+	Pt2Rect (*(Point*)ewg_pt1, *(Point*)ewg_pt2, (Rect*)ewg_dstRect);
+}
+
+// Return address of function 'Pt2Rect'
+void* ewg_get_function_address_Pt2Rect (void)
+{
+	return (void*) Pt2Rect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PtToAngle'
+// For ise
+void  ewg_function_PtToAngle (Rect const *ewg_r, Point *ewg_pt, short *ewg_angle)
+{
+	PtToAngle ((Rect const*)ewg_r, *(Point*)ewg_pt, (short*)ewg_angle);
+}
+
+// Return address of function 'PtToAngle'
+void* ewg_get_function_address_PtToAngle (void)
+{
+	return (void*) PtToAngle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SubPt'
+// For ise
+void  ewg_function_SubPt (Point *ewg_src, Point *ewg_dst)
+{
+	SubPt (*(Point*)ewg_src, (Point*)ewg_dst);
+}
+
+// Return address of function 'SubPt'
+void* ewg_get_function_address_SubPt (void)
+{
+	return (void*) SubPt;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PtInRgn'
+// For ise
+Boolean  ewg_function_PtInRgn (Point *ewg_pt, RgnHandle ewg_rgn)
+{
+	return PtInRgn (*(Point*)ewg_pt, (RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'PtInRgn'
+void* ewg_get_function_address_PtInRgn (void)
+{
+	return (void*) PtInRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StdLine'
+// For ise
+void  ewg_function_StdLine (Point *ewg_newPt)
+{
+	StdLine (*(Point*)ewg_newPt);
+}
+
+// Return address of function 'StdLine'
+void* ewg_get_function_address_StdLine (void)
+{
+	return (void*) StdLine;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewPixMap'
+// For ise
+PixMapHandle  ewg_function_NewPixMap (void)
+{
+	return NewPixMap ();
+}
+
+// Return address of function 'NewPixMap'
+void* ewg_get_function_address_NewPixMap (void)
+{
+	return (void*) NewPixMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposePixMap'
+// For ise
+void  ewg_function_DisposePixMap (PixMapHandle ewg_pm)
+{
+	DisposePixMap ((PixMapHandle)ewg_pm);
+}
+
+// Return address of function 'DisposePixMap'
+void* ewg_get_function_address_DisposePixMap (void)
+{
+	return (void*) DisposePixMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyPixMap'
+// For ise
+void  ewg_function_CopyPixMap (PixMapHandle ewg_srcPM, PixMapHandle ewg_dstPM)
+{
+	CopyPixMap ((PixMapHandle)ewg_srcPM, (PixMapHandle)ewg_dstPM);
+}
+
+// Return address of function 'CopyPixMap'
+void* ewg_get_function_address_CopyPixMap (void)
+{
+	return (void*) CopyPixMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewPixPat'
+// For ise
+PixPatHandle  ewg_function_NewPixPat (void)
+{
+	return NewPixPat ();
+}
+
+// Return address of function 'NewPixPat'
+void* ewg_get_function_address_NewPixPat (void)
+{
+	return (void*) NewPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposePixPat'
+// For ise
+void  ewg_function_DisposePixPat (PixPatHandle ewg_pp)
+{
+	DisposePixPat ((PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'DisposePixPat'
+void* ewg_get_function_address_DisposePixPat (void)
+{
+	return (void*) DisposePixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyPixPat'
+// For ise
+void  ewg_function_CopyPixPat (PixPatHandle ewg_srcPP, PixPatHandle ewg_dstPP)
+{
+	CopyPixPat ((PixPatHandle)ewg_srcPP, (PixPatHandle)ewg_dstPP);
+}
+
+// Return address of function 'CopyPixPat'
+void* ewg_get_function_address_CopyPixPat (void)
+{
+	return (void*) CopyPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PenPixPat'
+// For ise
+void  ewg_function_PenPixPat (PixPatHandle ewg_pp)
+{
+	PenPixPat ((PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'PenPixPat'
+void* ewg_get_function_address_PenPixPat (void)
+{
+	return (void*) PenPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BackPixPat'
+// For ise
+void  ewg_function_BackPixPat (PixPatHandle ewg_pp)
+{
+	BackPixPat ((PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'BackPixPat'
+void* ewg_get_function_address_BackPixPat (void)
+{
+	return (void*) BackPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPixPat'
+// For ise
+PixPatHandle  ewg_function_GetPixPat (short ewg_patID)
+{
+	return GetPixPat ((short)ewg_patID);
+}
+
+// Return address of function 'GetPixPat'
+void* ewg_get_function_address_GetPixPat (void)
+{
+	return (void*) GetPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MakeRGBPat'
+// For ise
+void  ewg_function_MakeRGBPat (PixPatHandle ewg_pp, RGBColor const *ewg_myColor)
+{
+	MakeRGBPat ((PixPatHandle)ewg_pp, (RGBColor const*)ewg_myColor);
+}
+
+// Return address of function 'MakeRGBPat'
+void* ewg_get_function_address_MakeRGBPat (void)
+{
+	return (void*) MakeRGBPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillCRect'
+// For ise
+void  ewg_function_FillCRect (Rect const *ewg_r, PixPatHandle ewg_pp)
+{
+	FillCRect ((Rect const*)ewg_r, (PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'FillCRect'
+void* ewg_get_function_address_FillCRect (void)
+{
+	return (void*) FillCRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillCOval'
+// For ise
+void  ewg_function_FillCOval (Rect const *ewg_r, PixPatHandle ewg_pp)
+{
+	FillCOval ((Rect const*)ewg_r, (PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'FillCOval'
+void* ewg_get_function_address_FillCOval (void)
+{
+	return (void*) FillCOval;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillCRoundRect'
+// For ise
+void  ewg_function_FillCRoundRect (Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight, PixPatHandle ewg_pp)
+{
+	FillCRoundRect ((Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight, (PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'FillCRoundRect'
+void* ewg_get_function_address_FillCRoundRect (void)
+{
+	return (void*) FillCRoundRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillCArc'
+// For ise
+void  ewg_function_FillCArc (Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle, PixPatHandle ewg_pp)
+{
+	FillCArc ((Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle, (PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'FillCArc'
+void* ewg_get_function_address_FillCArc (void)
+{
+	return (void*) FillCArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillCRgn'
+// For ise
+void  ewg_function_FillCRgn (RgnHandle ewg_rgn, PixPatHandle ewg_pp)
+{
+	FillCRgn ((RgnHandle)ewg_rgn, (PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'FillCRgn'
+void* ewg_get_function_address_FillCRgn (void)
+{
+	return (void*) FillCRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FillCPoly'
+// For ise
+void  ewg_function_FillCPoly (PolyHandle ewg_poly, PixPatHandle ewg_pp)
+{
+	FillCPoly ((PolyHandle)ewg_poly, (PixPatHandle)ewg_pp);
+}
+
+// Return address of function 'FillCPoly'
+void* ewg_get_function_address_FillCPoly (void)
+{
+	return (void*) FillCPoly;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RGBForeColor'
+// For ise
+void  ewg_function_RGBForeColor (RGBColor const *ewg_color)
+{
+	RGBForeColor ((RGBColor const*)ewg_color);
+}
+
+// Return address of function 'RGBForeColor'
+void* ewg_get_function_address_RGBForeColor (void)
+{
+	return (void*) RGBForeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RGBBackColor'
+// For ise
+void  ewg_function_RGBBackColor (RGBColor const *ewg_color)
+{
+	RGBBackColor ((RGBColor const*)ewg_color);
+}
+
+// Return address of function 'RGBBackColor'
+void* ewg_get_function_address_RGBBackColor (void)
+{
+	return (void*) RGBBackColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetCPixel'
+// For ise
+void  ewg_function_SetCPixel (short ewg_h, short ewg_v, RGBColor const *ewg_cPix)
+{
+	SetCPixel ((short)ewg_h, (short)ewg_v, (RGBColor const*)ewg_cPix);
+}
+
+// Return address of function 'SetCPixel'
+void* ewg_get_function_address_SetCPixel (void)
+{
+	return (void*) SetCPixel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortPix'
+// For ise
+void  ewg_function_SetPortPix (PixMapHandle ewg_pm)
+{
+	SetPortPix ((PixMapHandle)ewg_pm);
+}
+
+// Return address of function 'SetPortPix'
+void* ewg_get_function_address_SetPortPix (void)
+{
+	return (void*) SetPortPix;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCPixel'
+// For ise
+void  ewg_function_GetCPixel (short ewg_h, short ewg_v, RGBColor *ewg_cPix)
+{
+	GetCPixel ((short)ewg_h, (short)ewg_v, (RGBColor*)ewg_cPix);
+}
+
+// Return address of function 'GetCPixel'
+void* ewg_get_function_address_GetCPixel (void)
+{
+	return (void*) GetCPixel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetForeColor'
+// For ise
+void  ewg_function_GetForeColor (RGBColor *ewg_color)
+{
+	GetForeColor ((RGBColor*)ewg_color);
+}
+
+// Return address of function 'GetForeColor'
+void* ewg_get_function_address_GetForeColor (void)
+{
+	return (void*) GetForeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetBackColor'
+// For ise
+void  ewg_function_GetBackColor (RGBColor *ewg_color)
+{
+	GetBackColor ((RGBColor*)ewg_color);
+}
+
+// Return address of function 'GetBackColor'
+void* ewg_get_function_address_GetBackColor (void)
+{
+	return (void*) GetBackColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SeedCFill'
+// For ise
+void  ewg_function_SeedCFill (BitMap const *ewg_srcBits, BitMap const *ewg_dstBits, Rect const *ewg_srcRect, Rect const *ewg_dstRect, short ewg_seedH, short ewg_seedV, ColorSearchUPP ewg_matchProc, long ewg_matchData)
+{
+	SeedCFill ((BitMap const*)ewg_srcBits, (BitMap const*)ewg_dstBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect, (short)ewg_seedH, (short)ewg_seedV, (ColorSearchUPP)ewg_matchProc, (long)ewg_matchData);
+}
+
+// Return address of function 'SeedCFill'
+void* ewg_get_function_address_SeedCFill (void)
+{
+	return (void*) SeedCFill;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CalcCMask'
+// For ise
+void  ewg_function_CalcCMask (BitMap const *ewg_srcBits, BitMap const *ewg_dstBits, Rect const *ewg_srcRect, Rect const *ewg_dstRect, RGBColor const *ewg_seedRGB, ColorSearchUPP ewg_matchProc, long ewg_matchData)
+{
+	CalcCMask ((BitMap const*)ewg_srcBits, (BitMap const*)ewg_dstBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect, (RGBColor const*)ewg_seedRGB, (ColorSearchUPP)ewg_matchProc, (long)ewg_matchData);
+}
+
+// Return address of function 'CalcCMask'
+void* ewg_get_function_address_CalcCMask (void)
+{
+	return (void*) CalcCMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpenCPicture'
+// For ise
+PicHandle  ewg_function_OpenCPicture (OpenCPicParams const *ewg_newHeader)
+{
+	return OpenCPicture ((OpenCPicParams const*)ewg_newHeader);
+}
+
+// Return address of function 'OpenCPicture'
+void* ewg_get_function_address_OpenCPicture (void)
+{
+	return (void*) OpenCPicture;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpColor'
+// For ise
+void  ewg_function_OpColor (RGBColor const *ewg_color)
+{
+	OpColor ((RGBColor const*)ewg_color);
+}
+
+// Return address of function 'OpColor'
+void* ewg_get_function_address_OpColor (void)
+{
+	return (void*) OpColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HiliteColor'
+// For ise
+void  ewg_function_HiliteColor (RGBColor const *ewg_color)
+{
+	HiliteColor ((RGBColor const*)ewg_color);
+}
+
+// Return address of function 'HiliteColor'
+void* ewg_get_function_address_HiliteColor (void)
+{
+	return (void*) HiliteColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeCTable'
+// For ise
+void  ewg_function_DisposeCTable (CTabHandle ewg_cTable)
+{
+	DisposeCTable ((CTabHandle)ewg_cTable);
+}
+
+// Return address of function 'DisposeCTable'
+void* ewg_get_function_address_DisposeCTable (void)
+{
+	return (void*) DisposeCTable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCTable'
+// For ise
+CTabHandle  ewg_function_GetCTable (short ewg_ctID)
+{
+	return GetCTable ((short)ewg_ctID);
+}
+
+// Return address of function 'GetCTable'
+void* ewg_get_function_address_GetCTable (void)
+{
+	return (void*) GetCTable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCCursor'
+// For ise
+CCrsrHandle  ewg_function_GetCCursor (short ewg_crsrID)
+{
+	return GetCCursor ((short)ewg_crsrID);
+}
+
+// Return address of function 'GetCCursor'
+void* ewg_get_function_address_GetCCursor (void)
+{
+	return (void*) GetCCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetCCursor'
+// For ise
+void  ewg_function_SetCCursor (CCrsrHandle ewg_cCrsr)
+{
+	SetCCursor ((CCrsrHandle)ewg_cCrsr);
+}
+
+// Return address of function 'SetCCursor'
+void* ewg_get_function_address_SetCCursor (void)
+{
+	return (void*) SetCCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AllocCursor'
+// For ise
+void  ewg_function_AllocCursor (void)
+{
+	AllocCursor ();
+}
+
+// Return address of function 'AllocCursor'
+void* ewg_get_function_address_AllocCursor (void)
+{
+	return (void*) AllocCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeCCursor'
+// For ise
+void  ewg_function_DisposeCCursor (CCrsrHandle ewg_cCrsr)
+{
+	DisposeCCursor ((CCrsrHandle)ewg_cCrsr);
+}
+
+// Return address of function 'DisposeCCursor'
+void* ewg_get_function_address_DisposeCCursor (void)
+{
+	return (void*) DisposeCCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetStdCProcs'
+// For ise
+void  ewg_function_SetStdCProcs (CQDProcs *ewg_procs)
+{
+	SetStdCProcs ((CQDProcs*)ewg_procs);
+}
+
+// Return address of function 'SetStdCProcs'
+void* ewg_get_function_address_SetStdCProcs (void)
+{
+	return (void*) SetStdCProcs;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMaxDevice'
+// For ise
+GDHandle  ewg_function_GetMaxDevice (Rect const *ewg_globalRect)
+{
+	return GetMaxDevice ((Rect const*)ewg_globalRect);
+}
+
+// Return address of function 'GetMaxDevice'
+void* ewg_get_function_address_GetMaxDevice (void)
+{
+	return (void*) GetMaxDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCTSeed'
+// For ise
+long  ewg_function_GetCTSeed (void)
+{
+	return GetCTSeed ();
+}
+
+// Return address of function 'GetCTSeed'
+void* ewg_get_function_address_GetCTSeed (void)
+{
+	return (void*) GetCTSeed;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDeviceList'
+// For ise
+GDHandle  ewg_function_GetDeviceList (void)
+{
+	return GetDeviceList ();
+}
+
+// Return address of function 'GetDeviceList'
+void* ewg_get_function_address_GetDeviceList (void)
+{
+	return (void*) GetDeviceList;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMainDevice'
+// For ise
+GDHandle  ewg_function_GetMainDevice (void)
+{
+	return GetMainDevice ();
+}
+
+// Return address of function 'GetMainDevice'
+void* ewg_get_function_address_GetMainDevice (void)
+{
+	return (void*) GetMainDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNextDevice'
+// For ise
+GDHandle  ewg_function_GetNextDevice (GDHandle ewg_curDevice)
+{
+	return GetNextDevice ((GDHandle)ewg_curDevice);
+}
+
+// Return address of function 'GetNextDevice'
+void* ewg_get_function_address_GetNextDevice (void)
+{
+	return (void*) GetNextDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TestDeviceAttribute'
+// For ise
+Boolean  ewg_function_TestDeviceAttribute (GDHandle ewg_gdh, short ewg_attribute)
+{
+	return TestDeviceAttribute ((GDHandle)ewg_gdh, (short)ewg_attribute);
+}
+
+// Return address of function 'TestDeviceAttribute'
+void* ewg_get_function_address_TestDeviceAttribute (void)
+{
+	return (void*) TestDeviceAttribute;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDeviceAttribute'
+// For ise
+void  ewg_function_SetDeviceAttribute (GDHandle ewg_gdh, short ewg_attribute, Boolean ewg_value)
+{
+	SetDeviceAttribute ((GDHandle)ewg_gdh, (short)ewg_attribute, (Boolean)ewg_value);
+}
+
+// Return address of function 'SetDeviceAttribute'
+void* ewg_get_function_address_SetDeviceAttribute (void)
+{
+	return (void*) SetDeviceAttribute;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InitGDevice'
+// For ise
+void  ewg_function_InitGDevice (short ewg_qdRefNum, long ewg_mode, GDHandle ewg_gdh)
+{
+	InitGDevice ((short)ewg_qdRefNum, (long)ewg_mode, (GDHandle)ewg_gdh);
+}
+
+// Return address of function 'InitGDevice'
+void* ewg_get_function_address_InitGDevice (void)
+{
+	return (void*) InitGDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewGDevice'
+// For ise
+GDHandle  ewg_function_NewGDevice (short ewg_refNum, long ewg_mode)
+{
+	return NewGDevice ((short)ewg_refNum, (long)ewg_mode);
+}
+
+// Return address of function 'NewGDevice'
+void* ewg_get_function_address_NewGDevice (void)
+{
+	return (void*) NewGDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeGDevice'
+// For ise
+void  ewg_function_DisposeGDevice (GDHandle ewg_gdh)
+{
+	DisposeGDevice ((GDHandle)ewg_gdh);
+}
+
+// Return address of function 'DisposeGDevice'
+void* ewg_get_function_address_DisposeGDevice (void)
+{
+	return (void*) DisposeGDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetGDevice'
+// For ise
+void  ewg_function_SetGDevice (GDHandle ewg_gd)
+{
+	SetGDevice ((GDHandle)ewg_gd);
+}
+
+// Return address of function 'SetGDevice'
+void* ewg_get_function_address_SetGDevice (void)
+{
+	return (void*) SetGDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetGDevice'
+// For ise
+GDHandle  ewg_function_GetGDevice (void)
+{
+	return GetGDevice ();
+}
+
+// Return address of function 'GetGDevice'
+void* ewg_get_function_address_GetGDevice (void)
+{
+	return (void*) GetGDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Color2Index'
+// For ise
+long  ewg_function_Color2Index (RGBColor const *ewg_myColor)
+{
+	return Color2Index ((RGBColor const*)ewg_myColor);
+}
+
+// Return address of function 'Color2Index'
+void* ewg_get_function_address_Color2Index (void)
+{
+	return (void*) Color2Index;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Index2Color'
+// For ise
+void  ewg_function_Index2Color (long ewg_index, RGBColor *ewg_aColor)
+{
+	Index2Color ((long)ewg_index, (RGBColor*)ewg_aColor);
+}
+
+// Return address of function 'Index2Color'
+void* ewg_get_function_address_Index2Color (void)
+{
+	return (void*) Index2Color;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvertColor'
+// For ise
+void  ewg_function_InvertColor (RGBColor *ewg_myColor)
+{
+	InvertColor ((RGBColor*)ewg_myColor);
+}
+
+// Return address of function 'InvertColor'
+void* ewg_get_function_address_InvertColor (void)
+{
+	return (void*) InvertColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RealColor'
+// For ise
+Boolean  ewg_function_RealColor (RGBColor const *ewg_color)
+{
+	return RealColor ((RGBColor const*)ewg_color);
+}
+
+// Return address of function 'RealColor'
+void* ewg_get_function_address_RealColor (void)
+{
+	return (void*) RealColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetSubTable'
+// For ise
+void  ewg_function_GetSubTable (CTabHandle ewg_myColors, short ewg_iTabRes, CTabHandle ewg_targetTbl)
+{
+	GetSubTable ((CTabHandle)ewg_myColors, (short)ewg_iTabRes, (CTabHandle)ewg_targetTbl);
+}
+
+// Return address of function 'GetSubTable'
+void* ewg_get_function_address_GetSubTable (void)
+{
+	return (void*) GetSubTable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MakeITable'
+// For ise
+void  ewg_function_MakeITable (CTabHandle ewg_cTabH, ITabHandle ewg_iTabH, short ewg_res)
+{
+	MakeITable ((CTabHandle)ewg_cTabH, (ITabHandle)ewg_iTabH, (short)ewg_res);
+}
+
+// Return address of function 'MakeITable'
+void* ewg_get_function_address_MakeITable (void)
+{
+	return (void*) MakeITable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AddSearch'
+// For ise
+void  ewg_function_AddSearch (ColorSearchUPP ewg_searchProc)
+{
+	AddSearch ((ColorSearchUPP)ewg_searchProc);
+}
+
+// Return address of function 'AddSearch'
+void* ewg_get_function_address_AddSearch (void)
+{
+	return (void*) AddSearch;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AddComp'
+// For ise
+void  ewg_function_AddComp (ColorComplementUPP ewg_compProc)
+{
+	AddComp ((ColorComplementUPP)ewg_compProc);
+}
+
+// Return address of function 'AddComp'
+void* ewg_get_function_address_AddComp (void)
+{
+	return (void*) AddComp;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DelSearch'
+// For ise
+void  ewg_function_DelSearch (ColorSearchUPP ewg_searchProc)
+{
+	DelSearch ((ColorSearchUPP)ewg_searchProc);
+}
+
+// Return address of function 'DelSearch'
+void* ewg_get_function_address_DelSearch (void)
+{
+	return (void*) DelSearch;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DelComp'
+// For ise
+void  ewg_function_DelComp (ColorComplementUPP ewg_compProc)
+{
+	DelComp ((ColorComplementUPP)ewg_compProc);
+}
+
+// Return address of function 'DelComp'
+void* ewg_get_function_address_DelComp (void)
+{
+	return (void*) DelComp;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetClientID'
+// For ise
+void  ewg_function_SetClientID (short ewg_id)
+{
+	SetClientID ((short)ewg_id);
+}
+
+// Return address of function 'SetClientID'
+void* ewg_get_function_address_SetClientID (void)
+{
+	return (void*) SetClientID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ProtectEntry'
+// For ise
+void  ewg_function_ProtectEntry (short ewg_index, Boolean ewg_protect)
+{
+	ProtectEntry ((short)ewg_index, (Boolean)ewg_protect);
+}
+
+// Return address of function 'ProtectEntry'
+void* ewg_get_function_address_ProtectEntry (void)
+{
+	return (void*) ProtectEntry;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReserveEntry'
+// For ise
+void  ewg_function_ReserveEntry (short ewg_index, Boolean ewg_reserve)
+{
+	ReserveEntry ((short)ewg_index, (Boolean)ewg_reserve);
+}
+
+// Return address of function 'ReserveEntry'
+void* ewg_get_function_address_ReserveEntry (void)
+{
+	return (void*) ReserveEntry;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetEntries'
+// For ise
+void  ewg_function_SetEntries (short ewg_start, short ewg_count, void *ewg_aTable)
+{
+	SetEntries ((short)ewg_start, (short)ewg_count, ewg_aTable);
+}
+
+// Return address of function 'SetEntries'
+void* ewg_get_function_address_SetEntries (void)
+{
+	return (void*) SetEntries;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SaveEntries'
+// For ise
+void  ewg_function_SaveEntries (CTabHandle ewg_srcTable, CTabHandle ewg_resultTable, ReqListRec *ewg_selection)
+{
+	SaveEntries ((CTabHandle)ewg_srcTable, (CTabHandle)ewg_resultTable, (ReqListRec*)ewg_selection);
+}
+
+// Return address of function 'SaveEntries'
+void* ewg_get_function_address_SaveEntries (void)
+{
+	return (void*) SaveEntries;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RestoreEntries'
+// For ise
+void  ewg_function_RestoreEntries (CTabHandle ewg_srcTable, CTabHandle ewg_dstTable, ReqListRec *ewg_selection)
+{
+	RestoreEntries ((CTabHandle)ewg_srcTable, (CTabHandle)ewg_dstTable, (ReqListRec*)ewg_selection);
+}
+
+// Return address of function 'RestoreEntries'
+void* ewg_get_function_address_RestoreEntries (void)
+{
+	return (void*) RestoreEntries;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDError'
+// For ise
+short  ewg_function_QDError (void)
+{
+	return QDError ();
+}
+
+// Return address of function 'QDError'
+void* ewg_get_function_address_QDError (void)
+{
+	return (void*) QDError;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyDeepMask'
+// For ise
+void  ewg_function_CopyDeepMask (BitMap const *ewg_srcBits, BitMap const *ewg_maskBits, BitMap const *ewg_dstBits, Rect const *ewg_srcRect, Rect const *ewg_maskRect, Rect const *ewg_dstRect, short ewg_mode, RgnHandle ewg_maskRgn)
+{
+	CopyDeepMask ((BitMap const*)ewg_srcBits, (BitMap const*)ewg_maskBits, (BitMap const*)ewg_dstBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_maskRect, (Rect const*)ewg_dstRect, (short)ewg_mode, (RgnHandle)ewg_maskRgn);
+}
+
+// Return address of function 'CopyDeepMask'
+void* ewg_get_function_address_CopyDeepMask (void)
+{
+	return (void*) CopyDeepMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DeviceLoop'
+// For ise
+void  ewg_function_DeviceLoop (RgnHandle ewg_drawingRgn, DeviceLoopDrawingUPP ewg_drawingProc, long ewg_userData, DeviceLoopFlags ewg_flags)
+{
+	DeviceLoop ((RgnHandle)ewg_drawingRgn, (DeviceLoopDrawingUPP)ewg_drawingProc, (long)ewg_userData, (DeviceLoopFlags)ewg_flags);
+}
+
+// Return address of function 'DeviceLoop'
+void* ewg_get_function_address_DeviceLoop (void)
+{
+	return (void*) DeviceLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMaskTable'
+// For ise
+Ptr  ewg_function_GetMaskTable (void)
+{
+	return GetMaskTable ();
+}
+
+// Return address of function 'GetMaskTable'
+void* ewg_get_function_address_GetMaskTable (void)
+{
+	return (void*) GetMaskTable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPattern'
+// For ise
+PatHandle  ewg_function_GetPattern (short ewg_patternID)
+{
+	return GetPattern ((short)ewg_patternID);
+}
+
+// Return address of function 'GetPattern'
+void* ewg_get_function_address_GetPattern (void)
+{
+	return (void*) GetPattern;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCursor'
+// For ise
+CursHandle  ewg_function_GetCursor (short ewg_cursorID)
+{
+	return GetCursor ((short)ewg_cursorID);
+}
+
+// Return address of function 'GetCursor'
+void* ewg_get_function_address_GetCursor (void)
+{
+	return (void*) GetCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPicture'
+// For ise
+PicHandle  ewg_function_GetPicture (short ewg_pictureID)
+{
+	return GetPicture ((short)ewg_pictureID);
+}
+
+// Return address of function 'GetPicture'
+void* ewg_get_function_address_GetPicture (void)
+{
+	return (void*) GetPicture;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DeltaPoint'
+// For ise
+long  ewg_function_DeltaPoint (Point *ewg_ptA, Point *ewg_ptB)
+{
+	return DeltaPoint (*(Point*)ewg_ptA, *(Point*)ewg_ptB);
+}
+
+// Return address of function 'DeltaPoint'
+void* ewg_get_function_address_DeltaPoint (void)
+{
+	return (void*) DeltaPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShieldCursor'
+// For ise
+void  ewg_function_ShieldCursor (Rect const *ewg_shieldRect, Point *ewg_offsetPt)
+{
+	ShieldCursor ((Rect const*)ewg_shieldRect, *(Point*)ewg_offsetPt);
+}
+
+// Return address of function 'ShieldCursor'
+void* ewg_get_function_address_ShieldCursor (void)
+{
+	return (void*) ShieldCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ScreenRes'
+// For ise
+void  ewg_function_ScreenRes (short *ewg_scrnHRes, short *ewg_scrnVRes)
+{
+	ScreenRes ((short*)ewg_scrnHRes, (short*)ewg_scrnVRes);
+}
+
+// Return address of function 'ScreenRes'
+void* ewg_get_function_address_ScreenRes (void)
+{
+	return (void*) ScreenRes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetIndPattern'
+// For ise
+void  ewg_function_GetIndPattern (Pattern *ewg_thePat, short ewg_patternListID, short ewg_index)
+{
+	GetIndPattern ((Pattern*)ewg_thePat, (short)ewg_patternListID, (short)ewg_index);
+}
+
+// Return address of function 'GetIndPattern'
+void* ewg_get_function_address_GetIndPattern (void)
+{
+	return (void*) GetIndPattern;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'deltapoint'
+// For ise
+long  ewg_function_deltapoint (Point *ewg_ptA, Point *ewg_ptB)
+{
+	return deltapoint ((Point*)ewg_ptA, (Point*)ewg_ptB);
+}
+
+// Return address of function 'deltapoint'
+void* ewg_get_function_address_deltapoint (void)
+{
+	return (void*) deltapoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PackBits'
+// For ise
+void  ewg_function_PackBits (Ptr *ewg_srcPtr, Ptr *ewg_dstPtr, short ewg_srcBytes)
+{
+	PackBits ((Ptr*)ewg_srcPtr, (Ptr*)ewg_dstPtr, (short)ewg_srcBytes);
+}
+
+// Return address of function 'PackBits'
+void* ewg_get_function_address_PackBits (void)
+{
+	return (void*) PackBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UnpackBits'
+// For ise
+void  ewg_function_UnpackBits (Ptr *ewg_srcPtr, Ptr *ewg_dstPtr, short ewg_dstBytes)
+{
+	UnpackBits ((Ptr*)ewg_srcPtr, (Ptr*)ewg_dstPtr, (short)ewg_dstBytes);
+}
+
+// Return address of function 'UnpackBits'
+void* ewg_get_function_address_UnpackBits (void)
+{
+	return (void*) UnpackBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SlopeFromAngle'
+// For ise
+Fixed  ewg_function_SlopeFromAngle (short ewg_angle)
+{
+	return SlopeFromAngle ((short)ewg_angle);
+}
+
+// Return address of function 'SlopeFromAngle'
+void* ewg_get_function_address_SlopeFromAngle (void)
+{
+	return (void*) SlopeFromAngle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AngleFromSlope'
+// For ise
+short  ewg_function_AngleFromSlope (Fixed ewg_slope)
+{
+	return AngleFromSlope ((Fixed)ewg_slope);
+}
+
+// Return address of function 'AngleFromSlope'
+void* ewg_get_function_address_AngleFromSlope (void)
+{
+	return (void*) AngleFromSlope;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortCustomXFerProc'
+// For ise
+OSErr  ewg_function_GetPortCustomXFerProc (CGrafPtr ewg_port, CustomXFerProcPtr *ewg_proc, UInt32 *ewg_flags, UInt32 *ewg_refCon)
+{
+	return GetPortCustomXFerProc ((CGrafPtr)ewg_port, (CustomXFerProcPtr*)ewg_proc, (UInt32*)ewg_flags, (UInt32*)ewg_refCon);
+}
+
+// Return address of function 'GetPortCustomXFerProc'
+void* ewg_get_function_address_GetPortCustomXFerProc (void)
+{
+	return (void*) GetPortCustomXFerProc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortCustomXFerProc'
+// For ise
+OSErr  ewg_function_SetPortCustomXFerProc (CGrafPtr ewg_port, CustomXFerProcPtr ewg_proc, UInt32 ewg_flags, UInt32 ewg_refCon)
+{
+	return SetPortCustomXFerProc ((CGrafPtr)ewg_port, (CustomXFerProcPtr)ewg_proc, (UInt32)ewg_flags, (UInt32)ewg_refCon);
+}
+
+// Return address of function 'SetPortCustomXFerProc'
+void* ewg_get_function_address_SetPortCustomXFerProc (void)
+{
+	return (void*) SetPortCustomXFerProc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpenCursorComponent'
+// For ise
+OSErr  ewg_function_OpenCursorComponent (Component ewg_c, ComponentInstance *ewg_ci)
+{
+	return OpenCursorComponent ((Component)ewg_c, (ComponentInstance*)ewg_ci);
+}
+
+// Return address of function 'OpenCursorComponent'
+void* ewg_get_function_address_OpenCursorComponent (void)
+{
+	return (void*) OpenCursorComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CloseCursorComponent'
+// For ise
+OSErr  ewg_function_CloseCursorComponent (ComponentInstance ewg_ci)
+{
+	return CloseCursorComponent ((ComponentInstance)ewg_ci);
+}
+
+// Return address of function 'CloseCursorComponent'
+void* ewg_get_function_address_CloseCursorComponent (void)
+{
+	return (void*) CloseCursorComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetCursorComponent'
+// For ise
+OSErr  ewg_function_SetCursorComponent (ComponentInstance ewg_ci)
+{
+	return SetCursorComponent ((ComponentInstance)ewg_ci);
+}
+
+// Return address of function 'SetCursorComponent'
+void* ewg_get_function_address_SetCursorComponent (void)
+{
+	return (void*) SetCursorComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CursorComponentChanged'
+// For ise
+OSErr  ewg_function_CursorComponentChanged (ComponentInstance ewg_ci)
+{
+	return CursorComponentChanged ((ComponentInstance)ewg_ci);
+}
+
+// Return address of function 'CursorComponentChanged'
+void* ewg_get_function_address_CursorComponentChanged (void)
+{
+	return (void*) CursorComponentChanged;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CursorComponentSetData'
+// For ise
+OSErr  ewg_function_CursorComponentSetData (ComponentInstance ewg_ci, long ewg_data)
+{
+	return CursorComponentSetData ((ComponentInstance)ewg_ci, (long)ewg_data);
+}
+
+// Return address of function 'CursorComponentSetData'
+void* ewg_get_function_address_CursorComponentSetData (void)
+{
+	return (void*) CursorComponentSetData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CWMatchPixMap'
+// For ise
+CMError  ewg_function_CWMatchPixMap (CMWorldRef ewg_cw, PixMap *ewg_myPixMap, CMBitmapCallBackUPP ewg_progressProc, void *ewg_refCon)
+{
+	return CWMatchPixMap ((CMWorldRef)ewg_cw, (PixMap*)ewg_myPixMap, (CMBitmapCallBackUPP)ewg_progressProc, (void*)ewg_refCon);
+}
+
+// Return address of function 'CWMatchPixMap'
+void* ewg_get_function_address_CWMatchPixMap (void)
+{
+	return (void*) CWMatchPixMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CWCheckPixMap'
+// For ise
+CMError  ewg_function_CWCheckPixMap (CMWorldRef ewg_cw, PixMap *ewg_myPixMap, CMBitmapCallBackUPP ewg_progressProc, void *ewg_refCon, BitMap *ewg_resultBitMap)
+{
+	return CWCheckPixMap ((CMWorldRef)ewg_cw, (PixMap*)ewg_myPixMap, (CMBitmapCallBackUPP)ewg_progressProc, (void*)ewg_refCon, (BitMap*)ewg_resultBitMap);
+}
+
+// Return address of function 'CWCheckPixMap'
+void* ewg_get_function_address_CWCheckPixMap (void)
+{
+	return (void*) CWCheckPixMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NCMBeginMatching'
+// For ise
+CMError  ewg_function_NCMBeginMatching (CMProfileRef ewg_src, CMProfileRef ewg_dst, CMMatchRef *ewg_myRef)
+{
+	return NCMBeginMatching ((CMProfileRef)ewg_src, (CMProfileRef)ewg_dst, (CMMatchRef*)ewg_myRef);
+}
+
+// Return address of function 'NCMBeginMatching'
+void* ewg_get_function_address_NCMBeginMatching (void)
+{
+	return (void*) NCMBeginMatching;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CMEndMatching'
+// For ise
+void  ewg_function_CMEndMatching (CMMatchRef ewg_myRef)
+{
+	CMEndMatching ((CMMatchRef)ewg_myRef);
+}
+
+// Return address of function 'CMEndMatching'
+void* ewg_get_function_address_CMEndMatching (void)
+{
+	return (void*) CMEndMatching;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NCMDrawMatchedPicture'
+// For ise
+void  ewg_function_NCMDrawMatchedPicture (PicHandle ewg_myPicture, CMProfileRef ewg_dst, Rect *ewg_myRect)
+{
+	NCMDrawMatchedPicture ((PicHandle)ewg_myPicture, (CMProfileRef)ewg_dst, (Rect*)ewg_myRect);
+}
+
+// Return address of function 'NCMDrawMatchedPicture'
+void* ewg_get_function_address_NCMDrawMatchedPicture (void)
+{
+	return (void*) NCMDrawMatchedPicture;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CMEnableMatchingComment'
+// For ise
+void  ewg_function_CMEnableMatchingComment (Boolean ewg_enableIt)
+{
+	CMEnableMatchingComment ((Boolean)ewg_enableIt);
+}
+
+// Return address of function 'CMEnableMatchingComment'
+void* ewg_get_function_address_CMEnableMatchingComment (void)
+{
+	return (void*) CMEnableMatchingComment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NCMUseProfileComment'
+// For ise
+CMError  ewg_function_NCMUseProfileComment (CMProfileRef ewg_prof, UInt32 ewg_flags)
+{
+	return NCMUseProfileComment ((CMProfileRef)ewg_prof, (UInt32)ewg_flags);
+}
+
+// Return address of function 'NCMUseProfileComment'
+void* ewg_get_function_address_NCMUseProfileComment (void)
+{
+	return (void*) NCMUseProfileComment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsValidPort'
+// For ise
+Boolean  ewg_function_IsValidPort (CGrafPtr ewg_port)
+{
+	return IsValidPort ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsValidPort'
+void* ewg_get_function_address_IsValidPort (void)
+{
+	return (void*) IsValidPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsValidRgnHandle'
+// For ise
+Boolean  ewg_function_IsValidRgnHandle (RgnHandle ewg_rgn)
+{
+	return IsValidRgnHandle ((RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'IsValidRgnHandle'
+void* ewg_get_function_address_IsValidRgnHandle (void)
+{
+	return (void*) IsValidRgnHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortPixMap'
+// For ise
+PixMapHandle  ewg_function_GetPortPixMap (CGrafPtr ewg_port)
+{
+	return GetPortPixMap ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortPixMap'
+void* ewg_get_function_address_GetPortPixMap (void)
+{
+	return (void*) GetPortPixMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortBitMapForCopyBits'
+// For ise
+BitMap const * ewg_function_GetPortBitMapForCopyBits (CGrafPtr ewg_port)
+{
+	return GetPortBitMapForCopyBits ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortBitMapForCopyBits'
+void* ewg_get_function_address_GetPortBitMapForCopyBits (void)
+{
+	return (void*) GetPortBitMapForCopyBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortBounds'
+// For ise
+Rect * ewg_function_GetPortBounds (CGrafPtr ewg_port, Rect *ewg_rect)
+{
+	return GetPortBounds ((CGrafPtr)ewg_port, (Rect*)ewg_rect);
+}
+
+// Return address of function 'GetPortBounds'
+void* ewg_get_function_address_GetPortBounds (void)
+{
+	return (void*) GetPortBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortForeColor'
+// For ise
+RGBColor * ewg_function_GetPortForeColor (CGrafPtr ewg_port, RGBColor *ewg_foreColor)
+{
+	return GetPortForeColor ((CGrafPtr)ewg_port, (RGBColor*)ewg_foreColor);
+}
+
+// Return address of function 'GetPortForeColor'
+void* ewg_get_function_address_GetPortForeColor (void)
+{
+	return (void*) GetPortForeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortBackColor'
+// For ise
+RGBColor * ewg_function_GetPortBackColor (CGrafPtr ewg_port, RGBColor *ewg_backColor)
+{
+	return GetPortBackColor ((CGrafPtr)ewg_port, (RGBColor*)ewg_backColor);
+}
+
+// Return address of function 'GetPortBackColor'
+void* ewg_get_function_address_GetPortBackColor (void)
+{
+	return (void*) GetPortBackColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortOpColor'
+// For ise
+RGBColor * ewg_function_GetPortOpColor (CGrafPtr ewg_port, RGBColor *ewg_opColor)
+{
+	return GetPortOpColor ((CGrafPtr)ewg_port, (RGBColor*)ewg_opColor);
+}
+
+// Return address of function 'GetPortOpColor'
+void* ewg_get_function_address_GetPortOpColor (void)
+{
+	return (void*) GetPortOpColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortHiliteColor'
+// For ise
+RGBColor * ewg_function_GetPortHiliteColor (CGrafPtr ewg_port, RGBColor *ewg_hiliteColor)
+{
+	return GetPortHiliteColor ((CGrafPtr)ewg_port, (RGBColor*)ewg_hiliteColor);
+}
+
+// Return address of function 'GetPortHiliteColor'
+void* ewg_get_function_address_GetPortHiliteColor (void)
+{
+	return (void*) GetPortHiliteColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortGrafProcs'
+// For ise
+CQDProcsPtr  ewg_function_GetPortGrafProcs (CGrafPtr ewg_port)
+{
+	return GetPortGrafProcs ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortGrafProcs'
+void* ewg_get_function_address_GetPortGrafProcs (void)
+{
+	return (void*) GetPortGrafProcs;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortTextFont'
+// For ise
+short  ewg_function_GetPortTextFont (CGrafPtr ewg_port)
+{
+	return GetPortTextFont ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortTextFont'
+void* ewg_get_function_address_GetPortTextFont (void)
+{
+	return (void*) GetPortTextFont;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortTextFace'
+// For ise
+Style  ewg_function_GetPortTextFace (CGrafPtr ewg_port)
+{
+	return GetPortTextFace ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortTextFace'
+void* ewg_get_function_address_GetPortTextFace (void)
+{
+	return (void*) GetPortTextFace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortTextMode'
+// For ise
+short  ewg_function_GetPortTextMode (CGrafPtr ewg_port)
+{
+	return GetPortTextMode ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortTextMode'
+void* ewg_get_function_address_GetPortTextMode (void)
+{
+	return (void*) GetPortTextMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortTextSize'
+// For ise
+short  ewg_function_GetPortTextSize (CGrafPtr ewg_port)
+{
+	return GetPortTextSize ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortTextSize'
+void* ewg_get_function_address_GetPortTextSize (void)
+{
+	return (void*) GetPortTextSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortChExtra'
+// For ise
+short  ewg_function_GetPortChExtra (CGrafPtr ewg_port)
+{
+	return GetPortChExtra ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortChExtra'
+void* ewg_get_function_address_GetPortChExtra (void)
+{
+	return (void*) GetPortChExtra;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortFracHPenLocation'
+// For ise
+short  ewg_function_GetPortFracHPenLocation (CGrafPtr ewg_port)
+{
+	return GetPortFracHPenLocation ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortFracHPenLocation'
+void* ewg_get_function_address_GetPortFracHPenLocation (void)
+{
+	return (void*) GetPortFracHPenLocation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortSpExtra'
+// For ise
+Fixed  ewg_function_GetPortSpExtra (CGrafPtr ewg_port)
+{
+	return GetPortSpExtra ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortSpExtra'
+void* ewg_get_function_address_GetPortSpExtra (void)
+{
+	return (void*) GetPortSpExtra;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortPenVisibility'
+// For ise
+short  ewg_function_GetPortPenVisibility (CGrafPtr ewg_port)
+{
+	return GetPortPenVisibility ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortPenVisibility'
+void* ewg_get_function_address_GetPortPenVisibility (void)
+{
+	return (void*) GetPortPenVisibility;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortVisibleRegion'
+// For ise
+RgnHandle  ewg_function_GetPortVisibleRegion (CGrafPtr ewg_port, RgnHandle ewg_visRgn)
+{
+	return GetPortVisibleRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_visRgn);
+}
+
+// Return address of function 'GetPortVisibleRegion'
+void* ewg_get_function_address_GetPortVisibleRegion (void)
+{
+	return (void*) GetPortVisibleRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortClipRegion'
+// For ise
+RgnHandle  ewg_function_GetPortClipRegion (CGrafPtr ewg_port, RgnHandle ewg_clipRgn)
+{
+	return GetPortClipRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_clipRgn);
+}
+
+// Return address of function 'GetPortClipRegion'
+void* ewg_get_function_address_GetPortClipRegion (void)
+{
+	return (void*) GetPortClipRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortBackPixPat'
+// For ise
+PixPatHandle  ewg_function_GetPortBackPixPat (CGrafPtr ewg_port, PixPatHandle ewg_backPattern)
+{
+	return GetPortBackPixPat ((CGrafPtr)ewg_port, (PixPatHandle)ewg_backPattern);
+}
+
+// Return address of function 'GetPortBackPixPat'
+void* ewg_get_function_address_GetPortBackPixPat (void)
+{
+	return (void*) GetPortBackPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortPenPixPat'
+// For ise
+PixPatHandle  ewg_function_GetPortPenPixPat (CGrafPtr ewg_port, PixPatHandle ewg_penPattern)
+{
+	return GetPortPenPixPat ((CGrafPtr)ewg_port, (PixPatHandle)ewg_penPattern);
+}
+
+// Return address of function 'GetPortPenPixPat'
+void* ewg_get_function_address_GetPortPenPixPat (void)
+{
+	return (void*) GetPortPenPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortFillPixPat'
+// For ise
+PixPatHandle  ewg_function_GetPortFillPixPat (CGrafPtr ewg_port, PixPatHandle ewg_fillPattern)
+{
+	return GetPortFillPixPat ((CGrafPtr)ewg_port, (PixPatHandle)ewg_fillPattern);
+}
+
+// Return address of function 'GetPortFillPixPat'
+void* ewg_get_function_address_GetPortFillPixPat (void)
+{
+	return (void*) GetPortFillPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortPenSize'
+// For ise
+Point * ewg_function_GetPortPenSize (CGrafPtr ewg_port, Point *ewg_penSize)
+{
+	return GetPortPenSize ((CGrafPtr)ewg_port, (Point*)ewg_penSize);
+}
+
+// Return address of function 'GetPortPenSize'
+void* ewg_get_function_address_GetPortPenSize (void)
+{
+	return (void*) GetPortPenSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortPenMode'
+// For ise
+SInt32  ewg_function_GetPortPenMode (CGrafPtr ewg_port)
+{
+	return GetPortPenMode ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetPortPenMode'
+void* ewg_get_function_address_GetPortPenMode (void)
+{
+	return (void*) GetPortPenMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPortPenLocation'
+// For ise
+Point * ewg_function_GetPortPenLocation (CGrafPtr ewg_port, Point *ewg_penLocation)
+{
+	return GetPortPenLocation ((CGrafPtr)ewg_port, (Point*)ewg_penLocation);
+}
+
+// Return address of function 'GetPortPenLocation'
+void* ewg_get_function_address_GetPortPenLocation (void)
+{
+	return (void*) GetPortPenLocation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsPortRegionBeingDefined'
+// For ise
+Boolean  ewg_function_IsPortRegionBeingDefined (CGrafPtr ewg_port)
+{
+	return IsPortRegionBeingDefined ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsPortRegionBeingDefined'
+void* ewg_get_function_address_IsPortRegionBeingDefined (void)
+{
+	return (void*) IsPortRegionBeingDefined;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsPortPictureBeingDefined'
+// For ise
+Boolean  ewg_function_IsPortPictureBeingDefined (CGrafPtr ewg_port)
+{
+	return IsPortPictureBeingDefined ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsPortPictureBeingDefined'
+void* ewg_get_function_address_IsPortPictureBeingDefined (void)
+{
+	return (void*) IsPortPictureBeingDefined;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsPortPolyBeingDefined'
+// For ise
+Boolean  ewg_function_IsPortPolyBeingDefined (CGrafPtr ewg_port)
+{
+	return IsPortPolyBeingDefined ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsPortPolyBeingDefined'
+void* ewg_get_function_address_IsPortPolyBeingDefined (void)
+{
+	return (void*) IsPortPolyBeingDefined;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsPortOffscreen'
+// For ise
+Boolean  ewg_function_IsPortOffscreen (CGrafPtr ewg_port)
+{
+	return IsPortOffscreen ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsPortOffscreen'
+void* ewg_get_function_address_IsPortOffscreen (void)
+{
+	return (void*) IsPortOffscreen;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsPortColor'
+// For ise
+Boolean  ewg_function_IsPortColor (CGrafPtr ewg_port)
+{
+	return IsPortColor ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsPortColor'
+void* ewg_get_function_address_IsPortColor (void)
+{
+	return (void*) IsPortColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsPortVisibleRegionEmpty'
+// For ise
+Boolean  ewg_function_IsPortVisibleRegionEmpty (CGrafPtr ewg_port)
+{
+	return IsPortVisibleRegionEmpty ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsPortVisibleRegionEmpty'
+void* ewg_get_function_address_IsPortVisibleRegionEmpty (void)
+{
+	return (void*) IsPortVisibleRegionEmpty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsPortClipRegionEmpty'
+// For ise
+Boolean  ewg_function_IsPortClipRegionEmpty (CGrafPtr ewg_port)
+{
+	return IsPortClipRegionEmpty ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'IsPortClipRegionEmpty'
+void* ewg_get_function_address_IsPortClipRegionEmpty (void)
+{
+	return (void*) IsPortClipRegionEmpty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SectRegionWithPortClipRegion'
+// For ise
+void  ewg_function_SectRegionWithPortClipRegion (CGrafPtr ewg_port, RgnHandle ewg_ioRegion)
+{
+	SectRegionWithPortClipRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_ioRegion);
+}
+
+// Return address of function 'SectRegionWithPortClipRegion'
+void* ewg_get_function_address_SectRegionWithPortClipRegion (void)
+{
+	return (void*) SectRegionWithPortClipRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SectRegionWithPortVisibleRegion'
+// For ise
+void  ewg_function_SectRegionWithPortVisibleRegion (CGrafPtr ewg_port, RgnHandle ewg_ioRegion)
+{
+	SectRegionWithPortVisibleRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_ioRegion);
+}
+
+// Return address of function 'SectRegionWithPortVisibleRegion'
+void* ewg_get_function_address_SectRegionWithPortVisibleRegion (void)
+{
+	return (void*) SectRegionWithPortVisibleRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SwapPortPicSaveHandle'
+// For ise
+Handle  ewg_function_SwapPortPicSaveHandle (CGrafPtr ewg_port, Handle ewg_inPicSaveHdl)
+{
+	return SwapPortPicSaveHandle ((CGrafPtr)ewg_port, (Handle)ewg_inPicSaveHdl);
+}
+
+// Return address of function 'SwapPortPicSaveHandle'
+void* ewg_get_function_address_SwapPortPicSaveHandle (void)
+{
+	return (void*) SwapPortPicSaveHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SwapPortPolySaveHandle'
+// For ise
+Handle  ewg_function_SwapPortPolySaveHandle (CGrafPtr ewg_port, Handle ewg_inPolySaveHdl)
+{
+	return SwapPortPolySaveHandle ((CGrafPtr)ewg_port, (Handle)ewg_inPolySaveHdl);
+}
+
+// Return address of function 'SwapPortPolySaveHandle'
+void* ewg_get_function_address_SwapPortPolySaveHandle (void)
+{
+	return (void*) SwapPortPolySaveHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SwapPortRegionSaveHandle'
+// For ise
+Handle  ewg_function_SwapPortRegionSaveHandle (CGrafPtr ewg_port, Handle ewg_inRegionSaveHdl)
+{
+	return SwapPortRegionSaveHandle ((CGrafPtr)ewg_port, (Handle)ewg_inRegionSaveHdl);
+}
+
+// Return address of function 'SwapPortRegionSaveHandle'
+void* ewg_get_function_address_SwapPortRegionSaveHandle (void)
+{
+	return (void*) SwapPortRegionSaveHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortBounds'
+// For ise
+void  ewg_function_SetPortBounds (CGrafPtr ewg_port, Rect const *ewg_rect)
+{
+	SetPortBounds ((CGrafPtr)ewg_port, (Rect const*)ewg_rect);
+}
+
+// Return address of function 'SetPortBounds'
+void* ewg_get_function_address_SetPortBounds (void)
+{
+	return (void*) SetPortBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortOpColor'
+// For ise
+void  ewg_function_SetPortOpColor (CGrafPtr ewg_port, RGBColor const *ewg_opColor)
+{
+	SetPortOpColor ((CGrafPtr)ewg_port, (RGBColor const*)ewg_opColor);
+}
+
+// Return address of function 'SetPortOpColor'
+void* ewg_get_function_address_SetPortOpColor (void)
+{
+	return (void*) SetPortOpColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortGrafProcs'
+// For ise
+void  ewg_function_SetPortGrafProcs (CGrafPtr ewg_port, CQDProcsPtr ewg_procs)
+{
+	SetPortGrafProcs ((CGrafPtr)ewg_port, (CQDProcsPtr)ewg_procs);
+}
+
+// Return address of function 'SetPortGrafProcs'
+void* ewg_get_function_address_SetPortGrafProcs (void)
+{
+	return (void*) SetPortGrafProcs;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortTextFont'
+// For ise
+void  ewg_function_SetPortTextFont (CGrafPtr ewg_port, short ewg_txFont)
+{
+	SetPortTextFont ((CGrafPtr)ewg_port, (short)ewg_txFont);
+}
+
+// Return address of function 'SetPortTextFont'
+void* ewg_get_function_address_SetPortTextFont (void)
+{
+	return (void*) SetPortTextFont;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortTextSize'
+// For ise
+void  ewg_function_SetPortTextSize (CGrafPtr ewg_port, short ewg_txSize)
+{
+	SetPortTextSize ((CGrafPtr)ewg_port, (short)ewg_txSize);
+}
+
+// Return address of function 'SetPortTextSize'
+void* ewg_get_function_address_SetPortTextSize (void)
+{
+	return (void*) SetPortTextSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortTextFace'
+// For ise
+void  ewg_function_SetPortTextFace (CGrafPtr ewg_port, StyleParameter ewg_face)
+{
+	SetPortTextFace ((CGrafPtr)ewg_port, (StyleParameter)ewg_face);
+}
+
+// Return address of function 'SetPortTextFace'
+void* ewg_get_function_address_SetPortTextFace (void)
+{
+	return (void*) SetPortTextFace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortTextMode'
+// For ise
+void  ewg_function_SetPortTextMode (CGrafPtr ewg_port, short ewg_mode)
+{
+	SetPortTextMode ((CGrafPtr)ewg_port, (short)ewg_mode);
+}
+
+// Return address of function 'SetPortTextMode'
+void* ewg_get_function_address_SetPortTextMode (void)
+{
+	return (void*) SetPortTextMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortVisibleRegion'
+// For ise
+void  ewg_function_SetPortVisibleRegion (CGrafPtr ewg_port, RgnHandle ewg_visRgn)
+{
+	SetPortVisibleRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_visRgn);
+}
+
+// Return address of function 'SetPortVisibleRegion'
+void* ewg_get_function_address_SetPortVisibleRegion (void)
+{
+	return (void*) SetPortVisibleRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortClipRegion'
+// For ise
+void  ewg_function_SetPortClipRegion (CGrafPtr ewg_port, RgnHandle ewg_clipRgn)
+{
+	SetPortClipRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_clipRgn);
+}
+
+// Return address of function 'SetPortClipRegion'
+void* ewg_get_function_address_SetPortClipRegion (void)
+{
+	return (void*) SetPortClipRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortPenPixPat'
+// For ise
+void  ewg_function_SetPortPenPixPat (CGrafPtr ewg_port, PixPatHandle ewg_penPattern)
+{
+	SetPortPenPixPat ((CGrafPtr)ewg_port, (PixPatHandle)ewg_penPattern);
+}
+
+// Return address of function 'SetPortPenPixPat'
+void* ewg_get_function_address_SetPortPenPixPat (void)
+{
+	return (void*) SetPortPenPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortFillPixPat'
+// For ise
+void  ewg_function_SetPortFillPixPat (CGrafPtr ewg_port, PixPatHandle ewg_penPattern)
+{
+	SetPortFillPixPat ((CGrafPtr)ewg_port, (PixPatHandle)ewg_penPattern);
+}
+
+// Return address of function 'SetPortFillPixPat'
+void* ewg_get_function_address_SetPortFillPixPat (void)
+{
+	return (void*) SetPortFillPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortBackPixPat'
+// For ise
+void  ewg_function_SetPortBackPixPat (CGrafPtr ewg_port, PixPatHandle ewg_backPattern)
+{
+	SetPortBackPixPat ((CGrafPtr)ewg_port, (PixPatHandle)ewg_backPattern);
+}
+
+// Return address of function 'SetPortBackPixPat'
+void* ewg_get_function_address_SetPortBackPixPat (void)
+{
+	return (void*) SetPortBackPixPat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortPenSize'
+// For ise
+void  ewg_function_SetPortPenSize (CGrafPtr ewg_port, Point *ewg_penSize)
+{
+	SetPortPenSize ((CGrafPtr)ewg_port, *(Point*)ewg_penSize);
+}
+
+// Return address of function 'SetPortPenSize'
+void* ewg_get_function_address_SetPortPenSize (void)
+{
+	return (void*) SetPortPenSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortPenMode'
+// For ise
+void  ewg_function_SetPortPenMode (CGrafPtr ewg_port, SInt32 ewg_penMode)
+{
+	SetPortPenMode ((CGrafPtr)ewg_port, (SInt32)ewg_penMode);
+}
+
+// Return address of function 'SetPortPenMode'
+void* ewg_get_function_address_SetPortPenMode (void)
+{
+	return (void*) SetPortPenMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortFracHPenLocation'
+// For ise
+void  ewg_function_SetPortFracHPenLocation (CGrafPtr ewg_port, short ewg_pnLocHFrac)
+{
+	SetPortFracHPenLocation ((CGrafPtr)ewg_port, (short)ewg_pnLocHFrac);
+}
+
+// Return address of function 'SetPortFracHPenLocation'
+void* ewg_get_function_address_SetPortFracHPenLocation (void)
+{
+	return (void*) SetPortFracHPenLocation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPixBounds'
+// For ise
+Rect * ewg_function_GetPixBounds (PixMapHandle ewg_pixMap, Rect *ewg_bounds)
+{
+	return GetPixBounds ((PixMapHandle)ewg_pixMap, (Rect*)ewg_bounds);
+}
+
+// Return address of function 'GetPixBounds'
+void* ewg_get_function_address_GetPixBounds (void)
+{
+	return (void*) GetPixBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPixDepth'
+// For ise
+short  ewg_function_GetPixDepth (PixMapHandle ewg_pixMap)
+{
+	return GetPixDepth ((PixMapHandle)ewg_pixMap);
+}
+
+// Return address of function 'GetPixDepth'
+void* ewg_get_function_address_GetPixDepth (void)
+{
+	return (void*) GetPixDepth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsRandomSeed'
+// For ise
+long  ewg_function_GetQDGlobalsRandomSeed (void)
+{
+	return GetQDGlobalsRandomSeed ();
+}
+
+// Return address of function 'GetQDGlobalsRandomSeed'
+void* ewg_get_function_address_GetQDGlobalsRandomSeed (void)
+{
+	return (void*) GetQDGlobalsRandomSeed;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsScreenBits'
+// For ise
+BitMap * ewg_function_GetQDGlobalsScreenBits (BitMap *ewg_screenBits)
+{
+	return GetQDGlobalsScreenBits ((BitMap*)ewg_screenBits);
+}
+
+// Return address of function 'GetQDGlobalsScreenBits'
+void* ewg_get_function_address_GetQDGlobalsScreenBits (void)
+{
+	return (void*) GetQDGlobalsScreenBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsArrow'
+// For ise
+Cursor * ewg_function_GetQDGlobalsArrow (Cursor *ewg_arrow)
+{
+	return GetQDGlobalsArrow ((Cursor*)ewg_arrow);
+}
+
+// Return address of function 'GetQDGlobalsArrow'
+void* ewg_get_function_address_GetQDGlobalsArrow (void)
+{
+	return (void*) GetQDGlobalsArrow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsDarkGray'
+// For ise
+Pattern * ewg_function_GetQDGlobalsDarkGray (Pattern *ewg_dkGray)
+{
+	return GetQDGlobalsDarkGray ((Pattern*)ewg_dkGray);
+}
+
+// Return address of function 'GetQDGlobalsDarkGray'
+void* ewg_get_function_address_GetQDGlobalsDarkGray (void)
+{
+	return (void*) GetQDGlobalsDarkGray;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsLightGray'
+// For ise
+Pattern * ewg_function_GetQDGlobalsLightGray (Pattern *ewg_ltGray)
+{
+	return GetQDGlobalsLightGray ((Pattern*)ewg_ltGray);
+}
+
+// Return address of function 'GetQDGlobalsLightGray'
+void* ewg_get_function_address_GetQDGlobalsLightGray (void)
+{
+	return (void*) GetQDGlobalsLightGray;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsGray'
+// For ise
+Pattern * ewg_function_GetQDGlobalsGray (Pattern *ewg_gray)
+{
+	return GetQDGlobalsGray ((Pattern*)ewg_gray);
+}
+
+// Return address of function 'GetQDGlobalsGray'
+void* ewg_get_function_address_GetQDGlobalsGray (void)
+{
+	return (void*) GetQDGlobalsGray;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsBlack'
+// For ise
+Pattern * ewg_function_GetQDGlobalsBlack (Pattern *ewg_black)
+{
+	return GetQDGlobalsBlack ((Pattern*)ewg_black);
+}
+
+// Return address of function 'GetQDGlobalsBlack'
+void* ewg_get_function_address_GetQDGlobalsBlack (void)
+{
+	return (void*) GetQDGlobalsBlack;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsWhite'
+// For ise
+Pattern * ewg_function_GetQDGlobalsWhite (Pattern *ewg_white)
+{
+	return GetQDGlobalsWhite ((Pattern*)ewg_white);
+}
+
+// Return address of function 'GetQDGlobalsWhite'
+void* ewg_get_function_address_GetQDGlobalsWhite (void)
+{
+	return (void*) GetQDGlobalsWhite;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetQDGlobalsThePort'
+// For ise
+CGrafPtr  ewg_function_GetQDGlobalsThePort (void)
+{
+	return GetQDGlobalsThePort ();
+}
+
+// Return address of function 'GetQDGlobalsThePort'
+void* ewg_get_function_address_GetQDGlobalsThePort (void)
+{
+	return (void*) GetQDGlobalsThePort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetQDGlobalsRandomSeed'
+// For ise
+void  ewg_function_SetQDGlobalsRandomSeed (long ewg_randomSeed)
+{
+	SetQDGlobalsRandomSeed ((long)ewg_randomSeed);
+}
+
+// Return address of function 'SetQDGlobalsRandomSeed'
+void* ewg_get_function_address_SetQDGlobalsRandomSeed (void)
+{
+	return (void*) SetQDGlobalsRandomSeed;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetQDGlobalsArrow'
+// For ise
+void  ewg_function_SetQDGlobalsArrow (Cursor const *ewg_arrow)
+{
+	SetQDGlobalsArrow ((Cursor const*)ewg_arrow);
+}
+
+// Return address of function 'SetQDGlobalsArrow'
+void* ewg_get_function_address_SetQDGlobalsArrow (void)
+{
+	return (void*) SetQDGlobalsArrow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetRegionBounds'
+// For ise
+Rect * ewg_function_GetRegionBounds (RgnHandle ewg_region, Rect *ewg_bounds)
+{
+	return GetRegionBounds ((RgnHandle)ewg_region, (Rect*)ewg_bounds);
+}
+
+// Return address of function 'GetRegionBounds'
+void* ewg_get_function_address_GetRegionBounds (void)
+{
+	return (void*) GetRegionBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsRegionRectangular'
+// For ise
+Boolean  ewg_function_IsRegionRectangular (RgnHandle ewg_region)
+{
+	return IsRegionRectangular ((RgnHandle)ewg_region);
+}
+
+// Return address of function 'IsRegionRectangular'
+void* ewg_get_function_address_IsRegionRectangular (void)
+{
+	return (void*) IsRegionRectangular;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateNewPort'
+// For ise
+CGrafPtr  ewg_function_CreateNewPort (void)
+{
+	return CreateNewPort ();
+}
+
+// Return address of function 'CreateNewPort'
+void* ewg_get_function_address_CreateNewPort (void)
+{
+	return (void*) CreateNewPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposePort'
+// For ise
+void  ewg_function_DisposePort (CGrafPtr ewg_port)
+{
+	DisposePort ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'DisposePort'
+void* ewg_get_function_address_DisposePort (void)
+{
+	return (void*) DisposePort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetQDError'
+// For ise
+void  ewg_function_SetQDError (OSErr ewg_err)
+{
+	SetQDError ((OSErr)ewg_err);
+}
+
+// Return address of function 'SetQDError'
+void* ewg_get_function_address_SetQDError (void)
+{
+	return (void*) SetQDError;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDLocalToGlobalPoint'
+// For ise
+Point * ewg_function_QDLocalToGlobalPoint (CGrafPtr ewg_port, Point *ewg_point)
+{
+	return QDLocalToGlobalPoint ((CGrafPtr)ewg_port, (Point*)ewg_point);
+}
+
+// Return address of function 'QDLocalToGlobalPoint'
+void* ewg_get_function_address_QDLocalToGlobalPoint (void)
+{
+	return (void*) QDLocalToGlobalPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGlobalToLocalPoint'
+// For ise
+Point * ewg_function_QDGlobalToLocalPoint (CGrafPtr ewg_port, Point *ewg_point)
+{
+	return QDGlobalToLocalPoint ((CGrafPtr)ewg_port, (Point*)ewg_point);
+}
+
+// Return address of function 'QDGlobalToLocalPoint'
+void* ewg_get_function_address_QDGlobalToLocalPoint (void)
+{
+	return (void*) QDGlobalToLocalPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDLocalToGlobalRect'
+// For ise
+Rect * ewg_function_QDLocalToGlobalRect (CGrafPtr ewg_port, Rect *ewg_bounds)
+{
+	return QDLocalToGlobalRect ((CGrafPtr)ewg_port, (Rect*)ewg_bounds);
+}
+
+// Return address of function 'QDLocalToGlobalRect'
+void* ewg_get_function_address_QDLocalToGlobalRect (void)
+{
+	return (void*) QDLocalToGlobalRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGlobalToLocalRect'
+// For ise
+Rect * ewg_function_QDGlobalToLocalRect (CGrafPtr ewg_port, Rect *ewg_bounds)
+{
+	return QDGlobalToLocalRect ((CGrafPtr)ewg_port, (Rect*)ewg_bounds);
+}
+
+// Return address of function 'QDGlobalToLocalRect'
+void* ewg_get_function_address_QDGlobalToLocalRect (void)
+{
+	return (void*) QDGlobalToLocalRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDLocalToGlobalRegion'
+// For ise
+RgnHandle  ewg_function_QDLocalToGlobalRegion (CGrafPtr ewg_port, RgnHandle ewg_region)
+{
+	return QDLocalToGlobalRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_region);
+}
+
+// Return address of function 'QDLocalToGlobalRegion'
+void* ewg_get_function_address_QDLocalToGlobalRegion (void)
+{
+	return (void*) QDLocalToGlobalRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGlobalToLocalRegion'
+// For ise
+RgnHandle  ewg_function_QDGlobalToLocalRegion (CGrafPtr ewg_port, RgnHandle ewg_region)
+{
+	return QDGlobalToLocalRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_region);
+}
+
+// Return address of function 'QDGlobalToLocalRegion'
+void* ewg_get_function_address_QDGlobalToLocalRegion (void)
+{
+	return (void*) QDGlobalToLocalRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDIsPortBuffered'
+// For ise
+Boolean  ewg_function_QDIsPortBuffered (CGrafPtr ewg_port)
+{
+	return QDIsPortBuffered ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'QDIsPortBuffered'
+void* ewg_get_function_address_QDIsPortBuffered (void)
+{
+	return (void*) QDIsPortBuffered;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDIsPortBufferDirty'
+// For ise
+Boolean  ewg_function_QDIsPortBufferDirty (CGrafPtr ewg_port)
+{
+	return QDIsPortBufferDirty ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'QDIsPortBufferDirty'
+void* ewg_get_function_address_QDIsPortBufferDirty (void)
+{
+	return (void*) QDIsPortBufferDirty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDFlushPortBuffer'
+// For ise
+void  ewg_function_QDFlushPortBuffer (CGrafPtr ewg_port, RgnHandle ewg_region)
+{
+	QDFlushPortBuffer ((CGrafPtr)ewg_port, (RgnHandle)ewg_region);
+}
+
+// Return address of function 'QDFlushPortBuffer'
+void* ewg_get_function_address_QDFlushPortBuffer (void)
+{
+	return (void*) QDFlushPortBuffer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGetDirtyRegion'
+// For ise
+OSStatus  ewg_function_QDGetDirtyRegion (CGrafPtr ewg_port, RgnHandle ewg_rgn)
+{
+	return QDGetDirtyRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'QDGetDirtyRegion'
+void* ewg_get_function_address_QDGetDirtyRegion (void)
+{
+	return (void*) QDGetDirtyRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSetDirtyRegion'
+// For ise
+OSStatus  ewg_function_QDSetDirtyRegion (CGrafPtr ewg_port, RgnHandle ewg_rgn)
+{
+	return QDSetDirtyRegion ((CGrafPtr)ewg_port, (RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'QDSetDirtyRegion'
+void* ewg_get_function_address_QDSetDirtyRegion (void)
+{
+	return (void*) QDSetDirtyRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDAddRectToDirtyRegion'
+// For ise
+OSStatus  ewg_function_QDAddRectToDirtyRegion (CGrafPtr ewg_inPort, Rect const *ewg_inBounds)
+{
+	return QDAddRectToDirtyRegion ((CGrafPtr)ewg_inPort, (Rect const*)ewg_inBounds);
+}
+
+// Return address of function 'QDAddRectToDirtyRegion'
+void* ewg_get_function_address_QDAddRectToDirtyRegion (void)
+{
+	return (void*) QDAddRectToDirtyRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDAddRegionToDirtyRegion'
+// For ise
+OSStatus  ewg_function_QDAddRegionToDirtyRegion (CGrafPtr ewg_inPort, RgnHandle ewg_inRegion)
+{
+	return QDAddRegionToDirtyRegion ((CGrafPtr)ewg_inPort, (RgnHandle)ewg_inRegion);
+}
+
+// Return address of function 'QDAddRegionToDirtyRegion'
+void* ewg_get_function_address_QDAddRegionToDirtyRegion (void)
+{
+	return (void*) QDAddRegionToDirtyRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateCGContextForPort'
+// For ise
+OSStatus  ewg_function_CreateCGContextForPort (CGrafPtr ewg_inPort, CGContextRef *ewg_outContext)
+{
+	return CreateCGContextForPort ((CGrafPtr)ewg_inPort, (CGContextRef*)ewg_outContext);
+}
+
+// Return address of function 'CreateCGContextForPort'
+void* ewg_get_function_address_CreateCGContextForPort (void)
+{
+	return (void*) CreateCGContextForPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClipCGContextToRegion'
+// For ise
+OSStatus  ewg_function_ClipCGContextToRegion (CGContextRef ewg_gc, Rect const *ewg_portRect, RgnHandle ewg_region)
+{
+	return ClipCGContextToRegion ((CGContextRef)ewg_gc, (Rect const*)ewg_portRect, (RgnHandle)ewg_region);
+}
+
+// Return address of function 'ClipCGContextToRegion'
+void* ewg_get_function_address_ClipCGContextToRegion (void)
+{
+	return (void*) ClipCGContextToRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SyncCGContextOriginWithPort'
+// For ise
+OSStatus  ewg_function_SyncCGContextOriginWithPort (CGContextRef ewg_inContext, CGrafPtr ewg_port)
+{
+	return SyncCGContextOriginWithPort ((CGContextRef)ewg_inContext, (CGrafPtr)ewg_port);
+}
+
+// Return address of function 'SyncCGContextOriginWithPort'
+void* ewg_get_function_address_SyncCGContextOriginWithPort (void)
+{
+	return (void*) SyncCGContextOriginWithPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDBeginCGContext'
+// For ise
+OSStatus  ewg_function_QDBeginCGContext (CGrafPtr ewg_inPort, CGContextRef *ewg_outContext)
+{
+	return QDBeginCGContext ((CGrafPtr)ewg_inPort, (CGContextRef*)ewg_outContext);
+}
+
+// Return address of function 'QDBeginCGContext'
+void* ewg_get_function_address_QDBeginCGContext (void)
+{
+	return (void*) QDBeginCGContext;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDEndCGContext'
+// For ise
+OSStatus  ewg_function_QDEndCGContext (CGrafPtr ewg_inPort, CGContextRef *ewg_inoutContext)
+{
+	return QDEndCGContext ((CGrafPtr)ewg_inPort, (CGContextRef*)ewg_inoutContext);
+}
+
+// Return address of function 'QDEndCGContext'
+void* ewg_get_function_address_QDEndCGContext (void)
+{
+	return (void*) QDEndCGContext;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSaveRegionBits'
+// For ise
+QDRegionBitsRef  ewg_function_QDSaveRegionBits (RgnHandle ewg_region)
+{
+	return QDSaveRegionBits ((RgnHandle)ewg_region);
+}
+
+// Return address of function 'QDSaveRegionBits'
+void* ewg_get_function_address_QDSaveRegionBits (void)
+{
+	return (void*) QDSaveRegionBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDRestoreRegionBits'
+// For ise
+OSStatus  ewg_function_QDRestoreRegionBits (RgnHandle ewg_region, QDRegionBitsRef ewg_regionBits)
+{
+	return QDRestoreRegionBits ((RgnHandle)ewg_region, (QDRegionBitsRef)ewg_regionBits);
+}
+
+// Return address of function 'QDRestoreRegionBits'
+void* ewg_get_function_address_QDRestoreRegionBits (void)
+{
+	return (void*) QDRestoreRegionBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDDisposeRegionBits'
+// For ise
+OSStatus  ewg_function_QDDisposeRegionBits (QDRegionBitsRef ewg_regionBits)
+{
+	return QDDisposeRegionBits ((QDRegionBitsRef)ewg_regionBits);
+}
+
+// Return address of function 'QDDisposeRegionBits'
+void* ewg_get_function_address_QDDisposeRegionBits (void)
+{
+	return (void*) QDDisposeRegionBits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateNewPortForCGDisplayID'
+// For ise
+CGrafPtr  ewg_function_CreateNewPortForCGDisplayID (UInt32 ewg_inCGDisplayID)
+{
+	return CreateNewPortForCGDisplayID ((UInt32)ewg_inCGDisplayID);
+}
+
+// Return address of function 'CreateNewPortForCGDisplayID'
+void* ewg_get_function_address_CreateNewPortForCGDisplayID (void)
+{
+	return (void*) CreateNewPortForCGDisplayID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDDisplayWaitCursor'
+// For ise
+void  ewg_function_QDDisplayWaitCursor (Boolean ewg_forceWaitCursor)
+{
+	QDDisplayWaitCursor ((Boolean)ewg_forceWaitCursor);
+}
+
+// Return address of function 'QDDisplayWaitCursor'
+void* ewg_get_function_address_QDDisplayWaitCursor (void)
+{
+	return (void*) QDDisplayWaitCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSetPatternOrigin'
+// For ise
+void  ewg_function_QDSetPatternOrigin (Point *ewg_origin)
+{
+	QDSetPatternOrigin (*(Point*)ewg_origin);
+}
+
+// Return address of function 'QDSetPatternOrigin'
+void* ewg_get_function_address_QDSetPatternOrigin (void)
+{
+	return (void*) QDSetPatternOrigin;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGetPatternOrigin'
+// For ise
+void  ewg_function_QDGetPatternOrigin (Point *ewg_origin)
+{
+	QDGetPatternOrigin ((Point*)ewg_origin);
+}
+
+// Return address of function 'QDGetPatternOrigin'
+void* ewg_get_function_address_QDGetPatternOrigin (void)
+{
+	return (void*) QDGetPatternOrigin;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDIsNamedPixMapCursorRegistered'
+// For ise
+Boolean  ewg_function_QDIsNamedPixMapCursorRegistered (void *ewg_name)
+{
+	return QDIsNamedPixMapCursorRegistered (ewg_name);
+}
+
+// Return address of function 'QDIsNamedPixMapCursorRegistered'
+void* ewg_get_function_address_QDIsNamedPixMapCursorRegistered (void)
+{
+	return (void*) QDIsNamedPixMapCursorRegistered;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDRegisterNamedPixMapCursor'
+// For ise
+OSStatus  ewg_function_QDRegisterNamedPixMapCursor (PixMapHandle ewg_crsrData, PixMapHandle ewg_crsrMask, Point *ewg_hotSpot, void *ewg_name)
+{
+	return QDRegisterNamedPixMapCursor ((PixMapHandle)ewg_crsrData, (PixMapHandle)ewg_crsrMask, *(Point*)ewg_hotSpot, ewg_name);
+}
+
+// Return address of function 'QDRegisterNamedPixMapCursor'
+void* ewg_get_function_address_QDRegisterNamedPixMapCursor (void)
+{
+	return (void*) QDRegisterNamedPixMapCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDUnregisterNamedPixMapCursur'
+// For ise
+OSStatus  ewg_function_QDUnregisterNamedPixMapCursur (void *ewg_name)
+{
+	return QDUnregisterNamedPixMapCursur (ewg_name);
+}
+
+// Return address of function 'QDUnregisterNamedPixMapCursur'
+void* ewg_get_function_address_QDUnregisterNamedPixMapCursur (void)
+{
+	return (void*) QDUnregisterNamedPixMapCursur;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDUnregisterNamedPixMapCursor'
+// For ise
+OSStatus  ewg_function_QDUnregisterNamedPixMapCursor (void *ewg_name)
+{
+	return QDUnregisterNamedPixMapCursor (ewg_name);
+}
+
+// Return address of function 'QDUnregisterNamedPixMapCursor'
+void* ewg_get_function_address_QDUnregisterNamedPixMapCursor (void)
+{
+	return (void*) QDUnregisterNamedPixMapCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSetNamedPixMapCursor'
+// For ise
+OSStatus  ewg_function_QDSetNamedPixMapCursor (void *ewg_name)
+{
+	return QDSetNamedPixMapCursor (ewg_name);
+}
+
+// Return address of function 'QDSetNamedPixMapCursor'
+void* ewg_get_function_address_QDSetNamedPixMapCursor (void)
+{
+	return (void*) QDSetNamedPixMapCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGetCursorNameForSystemCursor'
+// For ise
+char const * ewg_function_QDGetCursorNameForSystemCursor (QDXSystemCursorID ewg_cursorID)
+{
+	return QDGetCursorNameForSystemCursor ((QDXSystemCursorID)ewg_cursorID);
+}
+
+// Return address of function 'QDGetCursorNameForSystemCursor'
+void* ewg_get_function_address_QDGetCursorNameForSystemCursor (void)
+{
+	return (void*) QDGetCursorNameForSystemCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSetCursorScale'
+// For ise
+OSStatus  ewg_function_QDSetCursorScale (float ewg_scale)
+{
+	return QDSetCursorScale ((float)ewg_scale);
+}
+
+// Return address of function 'QDSetCursorScale'
+void* ewg_get_function_address_QDSetCursorScale (void)
+{
+	return (void*) QDSetCursorScale;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGetCursorScale'
+// For ise
+OSStatus  ewg_function_QDGetCursorScale (float *ewg_outScale)
+{
+	return QDGetCursorScale ((float*)ewg_outScale);
+}
+
+// Return address of function 'QDGetCursorScale'
+void* ewg_get_function_address_QDGetCursorScale (void)
+{
+	return (void*) QDGetCursorScale;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGetCursorData'
+// For ise
+OSStatus  ewg_function_QDGetCursorData (Boolean ewg_contextCursor, PixMapHandle *ewg_crsrData, Point *ewg_hotSpot)
+{
+	return QDGetCursorData ((Boolean)ewg_contextCursor, (PixMapHandle*)ewg_crsrData, (Point*)ewg_hotSpot);
+}
+
+// Return address of function 'QDGetCursorData'
+void* ewg_get_function_address_QDGetCursorData (void)
+{
+	return (void*) QDGetCursorData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSwapTextFlags'
+// For ise
+UInt32  ewg_function_QDSwapTextFlags (UInt32 ewg_newFlags)
+{
+	return QDSwapTextFlags ((UInt32)ewg_newFlags);
+}
+
+// Return address of function 'QDSwapTextFlags'
+void* ewg_get_function_address_QDSwapTextFlags (void)
+{
+	return (void*) QDSwapTextFlags;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDSwapPortTextFlags'
+// For ise
+UInt32  ewg_function_QDSwapPortTextFlags (CGrafPtr ewg_port, UInt32 ewg_newFlags)
+{
+	return QDSwapPortTextFlags ((CGrafPtr)ewg_port, (UInt32)ewg_newFlags);
+}
+
+// Return address of function 'QDSwapPortTextFlags'
+void* ewg_get_function_address_QDSwapPortTextFlags (void)
+{
+	return (void*) QDSwapPortTextFlags;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDGetCGDirectDisplayID'
+// For ise
+CGDirectDisplayID  ewg_function_QDGetCGDirectDisplayID (GDHandle ewg_inGDevice)
+{
+	return QDGetCGDirectDisplayID ((GDHandle)ewg_inGDevice);
+}
+
+// Return address of function 'QDGetCGDirectDisplayID'
+void* ewg_get_function_address_QDGetCGDirectDisplayID (void)
+{
+	return (void*) QDGetCGDirectDisplayID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetScrVRes'
+// For ise
+SInt16  ewg_function_LMGetScrVRes (void)
+{
+	return LMGetScrVRes ();
+}
+
+// Return address of function 'LMGetScrVRes'
+void* ewg_get_function_address_LMGetScrVRes (void)
+{
+	return (void*) LMGetScrVRes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetScrVRes'
+// For ise
+void  ewg_function_LMSetScrVRes (SInt16 ewg_value)
+{
+	LMSetScrVRes ((SInt16)ewg_value);
+}
+
+// Return address of function 'LMSetScrVRes'
+void* ewg_get_function_address_LMSetScrVRes (void)
+{
+	return (void*) LMSetScrVRes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetScrHRes'
+// For ise
+SInt16  ewg_function_LMGetScrHRes (void)
+{
+	return LMGetScrHRes ();
+}
+
+// Return address of function 'LMGetScrHRes'
+void* ewg_get_function_address_LMGetScrHRes (void)
+{
+	return (void*) LMGetScrHRes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetScrHRes'
+// For ise
+void  ewg_function_LMSetScrHRes (SInt16 ewg_value)
+{
+	LMSetScrHRes ((SInt16)ewg_value);
+}
+
+// Return address of function 'LMSetScrHRes'
+void* ewg_get_function_address_LMSetScrHRes (void)
+{
+	return (void*) LMSetScrHRes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetMainDevice'
+// For ise
+GDHandle  ewg_function_LMGetMainDevice (void)
+{
+	return LMGetMainDevice ();
+}
+
+// Return address of function 'LMGetMainDevice'
+void* ewg_get_function_address_LMGetMainDevice (void)
+{
+	return (void*) LMGetMainDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetMainDevice'
+// For ise
+void  ewg_function_LMSetMainDevice (GDHandle ewg_value)
+{
+	LMSetMainDevice ((GDHandle)ewg_value);
+}
+
+// Return address of function 'LMSetMainDevice'
+void* ewg_get_function_address_LMSetMainDevice (void)
+{
+	return (void*) LMSetMainDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetDeviceList'
+// For ise
+GDHandle  ewg_function_LMGetDeviceList (void)
+{
+	return LMGetDeviceList ();
+}
+
+// Return address of function 'LMGetDeviceList'
+void* ewg_get_function_address_LMGetDeviceList (void)
+{
+	return (void*) LMGetDeviceList;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetDeviceList'
+// For ise
+void  ewg_function_LMSetDeviceList (GDHandle ewg_value)
+{
+	LMSetDeviceList ((GDHandle)ewg_value);
+}
+
+// Return address of function 'LMSetDeviceList'
+void* ewg_get_function_address_LMSetDeviceList (void)
+{
+	return (void*) LMSetDeviceList;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetQDColors'
+// For ise
+Handle  ewg_function_LMGetQDColors (void)
+{
+	return LMGetQDColors ();
+}
+
+// Return address of function 'LMGetQDColors'
+void* ewg_get_function_address_LMGetQDColors (void)
+{
+	return (void*) LMGetQDColors;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetQDColors'
+// For ise
+void  ewg_function_LMSetQDColors (Handle ewg_value)
+{
+	LMSetQDColors ((Handle)ewg_value);
+}
+
+// Return address of function 'LMSetQDColors'
+void* ewg_get_function_address_LMSetQDColors (void)
+{
+	return (void*) LMSetQDColors;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetWidthListHand'
+// For ise
+Handle  ewg_function_LMGetWidthListHand (void)
+{
+	return LMGetWidthListHand ();
+}
+
+// Return address of function 'LMGetWidthListHand'
+void* ewg_get_function_address_LMGetWidthListHand (void)
+{
+	return (void*) LMGetWidthListHand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetWidthListHand'
+// For ise
+void  ewg_function_LMSetWidthListHand (Handle ewg_value)
+{
+	LMSetWidthListHand ((Handle)ewg_value);
+}
+
+// Return address of function 'LMSetWidthListHand'
+void* ewg_get_function_address_LMSetWidthListHand (void)
+{
+	return (void*) LMSetWidthListHand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetHiliteMode'
+// For ise
+UInt8  ewg_function_LMGetHiliteMode (void)
+{
+	return LMGetHiliteMode ();
+}
+
+// Return address of function 'LMGetHiliteMode'
+void* ewg_get_function_address_LMGetHiliteMode (void)
+{
+	return (void*) LMGetHiliteMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetHiliteMode'
+// For ise
+void  ewg_function_LMSetHiliteMode (UInt8 ewg_value)
+{
+	LMSetHiliteMode ((UInt8)ewg_value);
+}
+
+// Return address of function 'LMSetHiliteMode'
+void* ewg_get_function_address_LMSetHiliteMode (void)
+{
+	return (void*) LMSetHiliteMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetWidthPtr'
+// For ise
+Ptr  ewg_function_LMGetWidthPtr (void)
+{
+	return LMGetWidthPtr ();
+}
+
+// Return address of function 'LMGetWidthPtr'
+void* ewg_get_function_address_LMGetWidthPtr (void)
+{
+	return (void*) LMGetWidthPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetWidthPtr'
+// For ise
+void  ewg_function_LMSetWidthPtr (Ptr ewg_value)
+{
+	LMSetWidthPtr ((Ptr)ewg_value);
+}
+
+// Return address of function 'LMSetWidthPtr'
+void* ewg_get_function_address_LMSetWidthPtr (void)
+{
+	return (void*) LMSetWidthPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetWidthTabHandle'
+// For ise
+Handle  ewg_function_LMGetWidthTabHandle (void)
+{
+	return LMGetWidthTabHandle ();
+}
+
+// Return address of function 'LMGetWidthTabHandle'
+void* ewg_get_function_address_LMGetWidthTabHandle (void)
+{
+	return (void*) LMGetWidthTabHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetWidthTabHandle'
+// For ise
+void  ewg_function_LMSetWidthTabHandle (Handle ewg_value)
+{
+	LMSetWidthTabHandle ((Handle)ewg_value);
+}
+
+// Return address of function 'LMSetWidthTabHandle'
+void* ewg_get_function_address_LMSetWidthTabHandle (void)
+{
+	return (void*) LMSetWidthTabHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetLastSPExtra'
+// For ise
+SInt32  ewg_function_LMGetLastSPExtra (void)
+{
+	return LMGetLastSPExtra ();
+}
+
+// Return address of function 'LMGetLastSPExtra'
+void* ewg_get_function_address_LMGetLastSPExtra (void)
+{
+	return (void*) LMGetLastSPExtra;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetLastSPExtra'
+// For ise
+void  ewg_function_LMSetLastSPExtra (SInt32 ewg_value)
+{
+	LMSetLastSPExtra ((SInt32)ewg_value);
+}
+
+// Return address of function 'LMSetLastSPExtra'
+void* ewg_get_function_address_LMSetLastSPExtra (void)
+{
+	return (void*) LMSetLastSPExtra;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetLastFOND'
+// For ise
+Handle  ewg_function_LMGetLastFOND (void)
+{
+	return LMGetLastFOND ();
+}
+
+// Return address of function 'LMGetLastFOND'
+void* ewg_get_function_address_LMGetLastFOND (void)
+{
+	return (void*) LMGetLastFOND;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetLastFOND'
+// For ise
+void  ewg_function_LMSetLastFOND (Handle ewg_value)
+{
+	LMSetLastFOND ((Handle)ewg_value);
+}
+
+// Return address of function 'LMSetLastFOND'
+void* ewg_get_function_address_LMSetLastFOND (void)
+{
+	return (void*) LMSetLastFOND;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetFractEnable'
+// For ise
+UInt8  ewg_function_LMGetFractEnable (void)
+{
+	return LMGetFractEnable ();
+}
+
+// Return address of function 'LMGetFractEnable'
+void* ewg_get_function_address_LMGetFractEnable (void)
+{
+	return (void*) LMGetFractEnable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetFractEnable'
+// For ise
+void  ewg_function_LMSetFractEnable (UInt8 ewg_value)
+{
+	LMSetFractEnable ((UInt8)ewg_value);
+}
+
+// Return address of function 'LMSetFractEnable'
+void* ewg_get_function_address_LMSetFractEnable (void)
+{
+	return (void*) LMSetFractEnable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetTheGDevice'
+// For ise
+GDHandle  ewg_function_LMGetTheGDevice (void)
+{
+	return LMGetTheGDevice ();
+}
+
+// Return address of function 'LMGetTheGDevice'
+void* ewg_get_function_address_LMGetTheGDevice (void)
+{
+	return (void*) LMGetTheGDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetTheGDevice'
+// For ise
+void  ewg_function_LMSetTheGDevice (GDHandle ewg_value)
+{
+	LMSetTheGDevice ((GDHandle)ewg_value);
+}
+
+// Return address of function 'LMSetTheGDevice'
+void* ewg_get_function_address_LMSetTheGDevice (void)
+{
+	return (void*) LMSetTheGDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetHiliteRGB'
+// For ise
+void  ewg_function_LMGetHiliteRGB (RGBColor *ewg_hiliteRGBValue)
+{
+	LMGetHiliteRGB ((RGBColor*)ewg_hiliteRGBValue);
+}
+
+// Return address of function 'LMGetHiliteRGB'
+void* ewg_get_function_address_LMGetHiliteRGB (void)
+{
+	return (void*) LMGetHiliteRGB;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetHiliteRGB'
+// For ise
+void  ewg_function_LMSetHiliteRGB (RGBColor const *ewg_hiliteRGBValue)
+{
+	LMSetHiliteRGB ((RGBColor const*)ewg_hiliteRGBValue);
+}
+
+// Return address of function 'LMSetHiliteRGB'
+void* ewg_get_function_address_LMSetHiliteRGB (void)
+{
+	return (void*) LMSetHiliteRGB;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetCursorNew'
+// For ise
+Boolean  ewg_function_LMGetCursorNew (void)
+{
+	return LMGetCursorNew ();
+}
+
+// Return address of function 'LMGetCursorNew'
+void* ewg_get_function_address_LMGetCursorNew (void)
+{
+	return (void*) LMGetCursorNew;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetCursorNew'
+// For ise
+void  ewg_function_LMSetCursorNew (Boolean ewg_value)
+{
+	LMSetCursorNew ((Boolean)ewg_value);
+}
+
+// Return address of function 'LMSetCursorNew'
+void* ewg_get_function_address_LMSetCursorNew (void)
+{
+	return (void*) LMSetCursorNew;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LaunchApplication'
+// For ise
+OSErr  ewg_function_LaunchApplication (LaunchPBPtr ewg_LaunchParams)
+{
+	return LaunchApplication ((LaunchPBPtr)ewg_LaunchParams);
+}
+
+// Return address of function 'LaunchApplication'
+void* ewg_get_function_address_LaunchApplication (void)
+{
+	return (void*) LaunchApplication;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentProcess'
+// For ise
+OSErr  ewg_function_GetCurrentProcess (ProcessSerialNumber *ewg_PSN)
+{
+	return GetCurrentProcess ((ProcessSerialNumber*)ewg_PSN);
+}
+
+// Return address of function 'GetCurrentProcess'
+void* ewg_get_function_address_GetCurrentProcess (void)
+{
+	return (void*) GetCurrentProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetFrontProcess'
+// For ise
+OSErr  ewg_function_GetFrontProcess (ProcessSerialNumber *ewg_PSN)
+{
+	return GetFrontProcess ((ProcessSerialNumber*)ewg_PSN);
+}
+
+// Return address of function 'GetFrontProcess'
+void* ewg_get_function_address_GetFrontProcess (void)
+{
+	return (void*) GetFrontProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNextProcess'
+// For ise
+OSErr  ewg_function_GetNextProcess (ProcessSerialNumber *ewg_PSN)
+{
+	return GetNextProcess ((ProcessSerialNumber*)ewg_PSN);
+}
+
+// Return address of function 'GetNextProcess'
+void* ewg_get_function_address_GetNextProcess (void)
+{
+	return (void*) GetNextProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetProcessInformation'
+// For ise
+OSErr  ewg_function_GetProcessInformation (ProcessSerialNumber const *ewg_PSN, ProcessInfoRec *ewg_info)
+{
+	return GetProcessInformation ((ProcessSerialNumber const*)ewg_PSN, (ProcessInfoRec*)ewg_info);
+}
+
+// Return address of function 'GetProcessInformation'
+void* ewg_get_function_address_GetProcessInformation (void)
+{
+	return (void*) GetProcessInformation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ProcessInformationCopyDictionary'
+// For ise
+CFDictionaryRef  ewg_function_ProcessInformationCopyDictionary (ProcessSerialNumber const *ewg_PSN, UInt32 ewg_infoToReturn)
+{
+	return ProcessInformationCopyDictionary ((ProcessSerialNumber const*)ewg_PSN, (UInt32)ewg_infoToReturn);
+}
+
+// Return address of function 'ProcessInformationCopyDictionary'
+void* ewg_get_function_address_ProcessInformationCopyDictionary (void)
+{
+	return (void*) ProcessInformationCopyDictionary;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetFrontProcess'
+// For ise
+OSErr  ewg_function_SetFrontProcess (ProcessSerialNumber const *ewg_PSN)
+{
+	return SetFrontProcess ((ProcessSerialNumber const*)ewg_PSN);
+}
+
+// Return address of function 'SetFrontProcess'
+void* ewg_get_function_address_SetFrontProcess (void)
+{
+	return (void*) SetFrontProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetFrontProcessWithOptions'
+// For ise
+OSStatus  ewg_function_SetFrontProcessWithOptions (ProcessSerialNumber const *ewg_inProcess, OptionBits ewg_inOptions)
+{
+	return SetFrontProcessWithOptions ((ProcessSerialNumber const*)ewg_inProcess, (OptionBits)ewg_inOptions);
+}
+
+// Return address of function 'SetFrontProcessWithOptions'
+void* ewg_get_function_address_SetFrontProcessWithOptions (void)
+{
+	return (void*) SetFrontProcessWithOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'WakeUpProcess'
+// For ise
+OSErr  ewg_function_WakeUpProcess (ProcessSerialNumber const *ewg_PSN)
+{
+	return WakeUpProcess ((ProcessSerialNumber const*)ewg_PSN);
+}
+
+// Return address of function 'WakeUpProcess'
+void* ewg_get_function_address_WakeUpProcess (void)
+{
+	return (void*) WakeUpProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SameProcess'
+// For ise
+OSErr  ewg_function_SameProcess (ProcessSerialNumber const *ewg_PSN1, ProcessSerialNumber const *ewg_PSN2, Boolean *ewg_result)
+{
+	return SameProcess ((ProcessSerialNumber const*)ewg_PSN1, (ProcessSerialNumber const*)ewg_PSN2, (Boolean*)ewg_result);
+}
+
+// Return address of function 'SameProcess'
+void* ewg_get_function_address_SameProcess (void)
+{
+	return (void*) SameProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ExitToShell'
+// For ise
+void  ewg_function_ExitToShell (void)
+{
+	ExitToShell ();
+}
+
+// Return address of function 'ExitToShell'
+void* ewg_get_function_address_ExitToShell (void)
+{
+	return (void*) ExitToShell;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'KillProcess'
+// For ise
+OSErr  ewg_function_KillProcess (ProcessSerialNumber const *ewg_inProcess)
+{
+	return KillProcess ((ProcessSerialNumber const*)ewg_inProcess);
+}
+
+// Return address of function 'KillProcess'
+void* ewg_get_function_address_KillProcess (void)
+{
+	return (void*) KillProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetProcessBundleLocation'
+// For ise
+OSStatus  ewg_function_GetProcessBundleLocation (ProcessSerialNumber const *ewg_psn, FSRef *ewg_location)
+{
+	return GetProcessBundleLocation ((ProcessSerialNumber const*)ewg_psn, (FSRef*)ewg_location);
+}
+
+// Return address of function 'GetProcessBundleLocation'
+void* ewg_get_function_address_GetProcessBundleLocation (void)
+{
+	return (void*) GetProcessBundleLocation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyProcessName'
+// For ise
+OSStatus  ewg_function_CopyProcessName (ProcessSerialNumber const *ewg_psn, CFStringRef *ewg_name)
+{
+	return CopyProcessName ((ProcessSerialNumber const*)ewg_psn, (CFStringRef*)ewg_name);
+}
+
+// Return address of function 'CopyProcessName'
+void* ewg_get_function_address_CopyProcessName (void)
+{
+	return (void*) CopyProcessName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetProcessPID'
+// For ise
+OSStatus  ewg_function_GetProcessPID (ProcessSerialNumber const *ewg_psn, pid_t *ewg_pid)
+{
+	return GetProcessPID ((ProcessSerialNumber const*)ewg_psn, (pid_t*)ewg_pid);
+}
+
+// Return address of function 'GetProcessPID'
+void* ewg_get_function_address_GetProcessPID (void)
+{
+	return (void*) GetProcessPID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetProcessForPID'
+// For ise
+OSStatus  ewg_function_GetProcessForPID (pid_t ewg_pid, ProcessSerialNumber *ewg_psn)
+{
+	return GetProcessForPID ((pid_t)ewg_pid, (ProcessSerialNumber*)ewg_psn);
+}
+
+// Return address of function 'GetProcessForPID'
+void* ewg_get_function_address_GetProcessForPID (void)
+{
+	return (void*) GetProcessForPID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsProcessVisible'
+// For ise
+Boolean  ewg_function_IsProcessVisible (ProcessSerialNumber const *ewg_psn)
+{
+	return IsProcessVisible ((ProcessSerialNumber const*)ewg_psn);
+}
+
+// Return address of function 'IsProcessVisible'
+void* ewg_get_function_address_IsProcessVisible (void)
+{
+	return (void*) IsProcessVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowHideProcess'
+// For ise
+OSErr  ewg_function_ShowHideProcess (ProcessSerialNumber const *ewg_psn, Boolean ewg_visible)
+{
+	return ShowHideProcess ((ProcessSerialNumber const*)ewg_psn, (Boolean)ewg_visible);
+}
+
+// Return address of function 'ShowHideProcess'
+void* ewg_get_function_address_ShowHideProcess (void)
+{
+	return (void*) ShowHideProcess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TransformProcessType'
+// For ise
+OSStatus  ewg_function_TransformProcessType (ProcessSerialNumber const *ewg_psn, ProcessApplicationTransformState ewg_transformState)
+{
+	return TransformProcessType ((ProcessSerialNumber const*)ewg_psn, (ProcessApplicationTransformState)ewg_transformState);
+}
+
+// Return address of function 'TransformProcessType'
+void* ewg_get_function_address_TransformProcessType (void)
+{
+	return (void*) TransformProcessType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentEventLoop'
+// For ise
+EventLoopRef  ewg_function_GetCurrentEventLoop (void)
+{
+	return GetCurrentEventLoop ();
+}
+
+// Return address of function 'GetCurrentEventLoop'
+void* ewg_get_function_address_GetCurrentEventLoop (void)
+{
+	return (void*) GetCurrentEventLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMainEventLoop'
+// For ise
+EventLoopRef  ewg_function_GetMainEventLoop (void)
+{
+	return GetMainEventLoop ();
+}
+
+// Return address of function 'GetMainEventLoop'
+void* ewg_get_function_address_GetMainEventLoop (void)
+{
+	return (void*) GetMainEventLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RunCurrentEventLoop'
+// For ise
+OSStatus  ewg_function_RunCurrentEventLoop (EventTimeout ewg_inTimeout)
+{
+	return RunCurrentEventLoop ((EventTimeout)ewg_inTimeout);
+}
+
+// Return address of function 'RunCurrentEventLoop'
+void* ewg_get_function_address_RunCurrentEventLoop (void)
+{
+	return (void*) RunCurrentEventLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QuitEventLoop'
+// For ise
+OSStatus  ewg_function_QuitEventLoop (EventLoopRef ewg_inEventLoop)
+{
+	return QuitEventLoop ((EventLoopRef)ewg_inEventLoop);
+}
+
+// Return address of function 'QuitEventLoop'
+void* ewg_get_function_address_QuitEventLoop (void)
+{
+	return (void*) QuitEventLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCFRunLoopFromEventLoop'
+// For ise
+CFTypeRef  ewg_function_GetCFRunLoopFromEventLoop (EventLoopRef ewg_inEventLoop)
+{
+	return GetCFRunLoopFromEventLoop ((EventLoopRef)ewg_inEventLoop);
+}
+
+// Return address of function 'GetCFRunLoopFromEventLoop'
+void* ewg_get_function_address_GetCFRunLoopFromEventLoop (void)
+{
+	return (void*) GetCFRunLoopFromEventLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReceiveNextEvent'
+// For ise
+OSStatus  ewg_function_ReceiveNextEvent (UInt32 ewg_inNumTypes, EventTypeSpec const *ewg_inList, EventTimeout ewg_inTimeout, Boolean ewg_inPullEvent, EventRef *ewg_outEvent)
+{
+	return ReceiveNextEvent ((UInt32)ewg_inNumTypes, (EventTypeSpec const*)ewg_inList, (EventTimeout)ewg_inTimeout, (Boolean)ewg_inPullEvent, (EventRef*)ewg_outEvent);
+}
+
+// Return address of function 'ReceiveNextEvent'
+void* ewg_get_function_address_ReceiveNextEvent (void)
+{
+	return (void*) ReceiveNextEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateEvent'
+// For ise
+OSStatus  ewg_function_CreateEvent (CFAllocatorRef ewg_inAllocator, UInt32 ewg_inClassID, UInt32 ewg_inKind, EventTime ewg_inWhen, EventAttributes ewg_inAttributes, EventRef *ewg_outEvent)
+{
+	return CreateEvent ((CFAllocatorRef)ewg_inAllocator, (UInt32)ewg_inClassID, (UInt32)ewg_inKind, (EventTime)ewg_inWhen, (EventAttributes)ewg_inAttributes, (EventRef*)ewg_outEvent);
+}
+
+// Return address of function 'CreateEvent'
+void* ewg_get_function_address_CreateEvent (void)
+{
+	return (void*) CreateEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyEvent'
+// For ise
+EventRef  ewg_function_CopyEvent (EventRef ewg_inOther)
+{
+	return CopyEvent ((EventRef)ewg_inOther);
+}
+
+// Return address of function 'CopyEvent'
+void* ewg_get_function_address_CopyEvent (void)
+{
+	return (void*) CopyEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyEventAs'
+// For ise
+EventRef  ewg_function_CopyEventAs (CFAllocatorRef ewg_inAllocator, EventRef ewg_inOther, UInt32 ewg_inEventClass, UInt32 ewg_inEventKind)
+{
+	return CopyEventAs ((CFAllocatorRef)ewg_inAllocator, (EventRef)ewg_inOther, (UInt32)ewg_inEventClass, (UInt32)ewg_inEventKind);
+}
+
+// Return address of function 'CopyEventAs'
+void* ewg_get_function_address_CopyEventAs (void)
+{
+	return (void*) CopyEventAs;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RetainEvent'
+// For ise
+EventRef  ewg_function_RetainEvent (EventRef ewg_inEvent)
+{
+	return RetainEvent ((EventRef)ewg_inEvent);
+}
+
+// Return address of function 'RetainEvent'
+void* ewg_get_function_address_RetainEvent (void)
+{
+	return (void*) RetainEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetEventRetainCount'
+// For ise
+UInt32  ewg_function_GetEventRetainCount (EventRef ewg_inEvent)
+{
+	return GetEventRetainCount ((EventRef)ewg_inEvent);
+}
+
+// Return address of function 'GetEventRetainCount'
+void* ewg_get_function_address_GetEventRetainCount (void)
+{
+	return (void*) GetEventRetainCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReleaseEvent'
+// For ise
+void  ewg_function_ReleaseEvent (EventRef ewg_inEvent)
+{
+	ReleaseEvent ((EventRef)ewg_inEvent);
+}
+
+// Return address of function 'ReleaseEvent'
+void* ewg_get_function_address_ReleaseEvent (void)
+{
+	return (void*) ReleaseEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetEventParameter'
+// For ise
+OSStatus  ewg_function_SetEventParameter (EventRef ewg_inEvent, EventParamName ewg_inName, EventParamType ewg_inType, UInt32 ewg_inSize, void const *ewg_inDataPtr)
+{
+	return SetEventParameter ((EventRef)ewg_inEvent, (EventParamName)ewg_inName, (EventParamType)ewg_inType, (UInt32)ewg_inSize, (void const*)ewg_inDataPtr);
+}
+
+// Return address of function 'SetEventParameter'
+void* ewg_get_function_address_SetEventParameter (void)
+{
+	return (void*) SetEventParameter;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetEventParameter'
+// For ise
+OSStatus  ewg_function_GetEventParameter (EventRef ewg_inEvent, EventParamName ewg_inName, EventParamType ewg_inDesiredType, EventParamType *ewg_outActualType, UInt32 ewg_inBufferSize, UInt32 *ewg_outActualSize, void *ewg_outData)
+{
+	return GetEventParameter ((EventRef)ewg_inEvent, (EventParamName)ewg_inName, (EventParamType)ewg_inDesiredType, (EventParamType*)ewg_outActualType, (UInt32)ewg_inBufferSize, (UInt32*)ewg_outActualSize, (void*)ewg_outData);
+}
+
+// Return address of function 'GetEventParameter'
+void* ewg_get_function_address_GetEventParameter (void)
+{
+	return (void*) GetEventParameter;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetEventClass'
+// For ise
+UInt32  ewg_function_GetEventClass (EventRef ewg_inEvent)
+{
+	return GetEventClass ((EventRef)ewg_inEvent);
+}
+
+// Return address of function 'GetEventClass'
+void* ewg_get_function_address_GetEventClass (void)
+{
+	return (void*) GetEventClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetEventKind'
+// For ise
+UInt32  ewg_function_GetEventKind (EventRef ewg_inEvent)
+{
+	return GetEventKind ((EventRef)ewg_inEvent);
+}
+
+// Return address of function 'GetEventKind'
+void* ewg_get_function_address_GetEventKind (void)
+{
+	return (void*) GetEventKind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetEventTime'
+// For ise
+EventTime  ewg_function_GetEventTime (EventRef ewg_inEvent)
+{
+	return GetEventTime ((EventRef)ewg_inEvent);
+}
+
+// Return address of function 'GetEventTime'
+void* ewg_get_function_address_GetEventTime (void)
+{
+	return (void*) GetEventTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetEventTime'
+// For ise
+OSStatus  ewg_function_SetEventTime (EventRef ewg_inEvent, EventTime ewg_inTime)
+{
+	return SetEventTime ((EventRef)ewg_inEvent, (EventTime)ewg_inTime);
+}
+
+// Return address of function 'SetEventTime'
+void* ewg_get_function_address_SetEventTime (void)
+{
+	return (void*) SetEventTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentEventQueue'
+// For ise
+EventQueueRef  ewg_function_GetCurrentEventQueue (void)
+{
+	return GetCurrentEventQueue ();
+}
+
+// Return address of function 'GetCurrentEventQueue'
+void* ewg_get_function_address_GetCurrentEventQueue (void)
+{
+	return (void*) GetCurrentEventQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMainEventQueue'
+// For ise
+EventQueueRef  ewg_function_GetMainEventQueue (void)
+{
+	return GetMainEventQueue ();
+}
+
+// Return address of function 'GetMainEventQueue'
+void* ewg_get_function_address_GetMainEventQueue (void)
+{
+	return (void*) GetMainEventQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewEventComparatorUPP'
+// For ise
+EventComparatorUPP  ewg_function_NewEventComparatorUPP (EventComparatorProcPtr ewg_userRoutine)
+{
+	return NewEventComparatorUPP ((EventComparatorProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewEventComparatorUPP'
+void* ewg_get_function_address_NewEventComparatorUPP (void)
+{
+	return (void*) NewEventComparatorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeEventComparatorUPP'
+// For ise
+void  ewg_function_DisposeEventComparatorUPP (EventComparatorUPP ewg_userUPP)
+{
+	DisposeEventComparatorUPP ((EventComparatorUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeEventComparatorUPP'
+void* ewg_get_function_address_DisposeEventComparatorUPP (void)
+{
+	return (void*) DisposeEventComparatorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeEventComparatorUPP'
+// For ise
+Boolean  ewg_function_InvokeEventComparatorUPP (EventRef ewg_inEvent, void *ewg_inCompareData, EventComparatorUPP ewg_userUPP)
+{
+	return InvokeEventComparatorUPP ((EventRef)ewg_inEvent, (void*)ewg_inCompareData, (EventComparatorUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeEventComparatorUPP'
+void* ewg_get_function_address_InvokeEventComparatorUPP (void)
+{
+	return (void*) InvokeEventComparatorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PostEventToQueue'
+// For ise
+OSStatus  ewg_function_PostEventToQueue (EventQueueRef ewg_inQueue, EventRef ewg_inEvent, EventPriority ewg_inPriority)
+{
+	return PostEventToQueue ((EventQueueRef)ewg_inQueue, (EventRef)ewg_inEvent, (EventPriority)ewg_inPriority);
+}
+
+// Return address of function 'PostEventToQueue'
+void* ewg_get_function_address_PostEventToQueue (void)
+{
+	return (void*) PostEventToQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FlushEventsMatchingListFromQueue'
+// For ise
+OSStatus  ewg_function_FlushEventsMatchingListFromQueue (EventQueueRef ewg_inQueue, UInt32 ewg_inNumTypes, EventTypeSpec const *ewg_inList)
+{
+	return FlushEventsMatchingListFromQueue ((EventQueueRef)ewg_inQueue, (UInt32)ewg_inNumTypes, (EventTypeSpec const*)ewg_inList);
+}
+
+// Return address of function 'FlushEventsMatchingListFromQueue'
+void* ewg_get_function_address_FlushEventsMatchingListFromQueue (void)
+{
+	return (void*) FlushEventsMatchingListFromQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FlushSpecificEventsFromQueue'
+// For ise
+OSStatus  ewg_function_FlushSpecificEventsFromQueue (EventQueueRef ewg_inQueue, EventComparatorUPP ewg_inComparator, void *ewg_inCompareData)
+{
+	return FlushSpecificEventsFromQueue ((EventQueueRef)ewg_inQueue, (EventComparatorUPP)ewg_inComparator, (void*)ewg_inCompareData);
+}
+
+// Return address of function 'FlushSpecificEventsFromQueue'
+void* ewg_get_function_address_FlushSpecificEventsFromQueue (void)
+{
+	return (void*) FlushSpecificEventsFromQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FlushEventQueue'
+// For ise
+OSStatus  ewg_function_FlushEventQueue (EventQueueRef ewg_inQueue)
+{
+	return FlushEventQueue ((EventQueueRef)ewg_inQueue);
+}
+
+// Return address of function 'FlushEventQueue'
+void* ewg_get_function_address_FlushEventQueue (void)
+{
+	return (void*) FlushEventQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FindSpecificEventInQueue'
+// For ise
+EventRef  ewg_function_FindSpecificEventInQueue (EventQueueRef ewg_inQueue, EventComparatorUPP ewg_inComparator, void *ewg_inCompareData)
+{
+	return FindSpecificEventInQueue ((EventQueueRef)ewg_inQueue, (EventComparatorUPP)ewg_inComparator, (void*)ewg_inCompareData);
+}
+
+// Return address of function 'FindSpecificEventInQueue'
+void* ewg_get_function_address_FindSpecificEventInQueue (void)
+{
+	return (void*) FindSpecificEventInQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNumEventsInQueue'
+// For ise
+UInt32  ewg_function_GetNumEventsInQueue (EventQueueRef ewg_inQueue)
+{
+	return GetNumEventsInQueue ((EventQueueRef)ewg_inQueue);
+}
+
+// Return address of function 'GetNumEventsInQueue'
+void* ewg_get_function_address_GetNumEventsInQueue (void)
+{
+	return (void*) GetNumEventsInQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveEventFromQueue'
+// For ise
+OSStatus  ewg_function_RemoveEventFromQueue (EventQueueRef ewg_inQueue, EventRef ewg_inEvent)
+{
+	return RemoveEventFromQueue ((EventQueueRef)ewg_inQueue, (EventRef)ewg_inEvent);
+}
+
+// Return address of function 'RemoveEventFromQueue'
+void* ewg_get_function_address_RemoveEventFromQueue (void)
+{
+	return (void*) RemoveEventFromQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsEventInQueue'
+// For ise
+Boolean  ewg_function_IsEventInQueue (EventQueueRef ewg_inQueue, EventRef ewg_inEvent)
+{
+	return IsEventInQueue ((EventQueueRef)ewg_inQueue, (EventRef)ewg_inEvent);
+}
+
+// Return address of function 'IsEventInQueue'
+void* ewg_get_function_address_IsEventInQueue (void)
+{
+	return (void*) IsEventInQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AcquireFirstMatchingEventInQueue'
+// For ise
+EventRef  ewg_function_AcquireFirstMatchingEventInQueue (EventQueueRef ewg_inQueue, UInt32 ewg_inNumTypes, EventTypeSpec const *ewg_inList, OptionBits ewg_inOptions)
+{
+	return AcquireFirstMatchingEventInQueue ((EventQueueRef)ewg_inQueue, (UInt32)ewg_inNumTypes, (EventTypeSpec const*)ewg_inList, (OptionBits)ewg_inOptions);
+}
+
+// Return address of function 'AcquireFirstMatchingEventInQueue'
+void* ewg_get_function_address_AcquireFirstMatchingEventInQueue (void)
+{
+	return (void*) AcquireFirstMatchingEventInQueue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentEvent'
+// For ise
+EventRef  ewg_function_GetCurrentEvent (void)
+{
+	return GetCurrentEvent ();
+}
+
+// Return address of function 'GetCurrentEvent'
+void* ewg_get_function_address_GetCurrentEvent (void)
+{
+	return (void*) GetCurrentEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentEventButtonState'
+// For ise
+UInt32  ewg_function_GetCurrentEventButtonState (void)
+{
+	return GetCurrentEventButtonState ();
+}
+
+// Return address of function 'GetCurrentEventButtonState'
+void* ewg_get_function_address_GetCurrentEventButtonState (void)
+{
+	return (void*) GetCurrentEventButtonState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentEventKeyModifiers'
+// For ise
+UInt32  ewg_function_GetCurrentEventKeyModifiers (void)
+{
+	return GetCurrentEventKeyModifiers ();
+}
+
+// Return address of function 'GetCurrentEventKeyModifiers'
+void* ewg_get_function_address_GetCurrentEventKeyModifiers (void)
+{
+	return (void*) GetCurrentEventKeyModifiers;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentButtonState'
+// For ise
+UInt32  ewg_function_GetCurrentButtonState (void)
+{
+	return GetCurrentButtonState ();
+}
+
+// Return address of function 'GetCurrentButtonState'
+void* ewg_get_function_address_GetCurrentButtonState (void)
+{
+	return (void*) GetCurrentButtonState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentEventTime'
+// For ise
+EventTime  ewg_function_GetCurrentEventTime (void)
+{
+	return GetCurrentEventTime ();
+}
+
+// Return address of function 'GetCurrentEventTime'
+void* ewg_get_function_address_GetCurrentEventTime (void)
+{
+	return (void*) GetCurrentEventTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewEventLoopTimerUPP'
+// For ise
+EventLoopTimerUPP  ewg_function_NewEventLoopTimerUPP (EventLoopTimerProcPtr ewg_userRoutine)
+{
+	return NewEventLoopTimerUPP ((EventLoopTimerProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewEventLoopTimerUPP'
+void* ewg_get_function_address_NewEventLoopTimerUPP (void)
+{
+	return (void*) NewEventLoopTimerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewEventLoopIdleTimerUPP'
+// For ise
+EventLoopIdleTimerUPP  ewg_function_NewEventLoopIdleTimerUPP (EventLoopIdleTimerProcPtr ewg_userRoutine)
+{
+	return NewEventLoopIdleTimerUPP ((EventLoopIdleTimerProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewEventLoopIdleTimerUPP'
+void* ewg_get_function_address_NewEventLoopIdleTimerUPP (void)
+{
+	return (void*) NewEventLoopIdleTimerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeEventLoopTimerUPP'
+// For ise
+void  ewg_function_DisposeEventLoopTimerUPP (EventLoopTimerUPP ewg_userUPP)
+{
+	DisposeEventLoopTimerUPP ((EventLoopTimerUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeEventLoopTimerUPP'
+void* ewg_get_function_address_DisposeEventLoopTimerUPP (void)
+{
+	return (void*) DisposeEventLoopTimerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeEventLoopIdleTimerUPP'
+// For ise
+void  ewg_function_DisposeEventLoopIdleTimerUPP (EventLoopIdleTimerUPP ewg_userUPP)
+{
+	DisposeEventLoopIdleTimerUPP ((EventLoopIdleTimerUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeEventLoopIdleTimerUPP'
+void* ewg_get_function_address_DisposeEventLoopIdleTimerUPP (void)
+{
+	return (void*) DisposeEventLoopIdleTimerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeEventLoopTimerUPP'
+// For ise
+void  ewg_function_InvokeEventLoopTimerUPP (EventLoopTimerRef ewg_inTimer, void *ewg_inUserData, EventLoopTimerUPP ewg_userUPP)
+{
+	InvokeEventLoopTimerUPP ((EventLoopTimerRef)ewg_inTimer, (void*)ewg_inUserData, (EventLoopTimerUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeEventLoopTimerUPP'
+void* ewg_get_function_address_InvokeEventLoopTimerUPP (void)
+{
+	return (void*) InvokeEventLoopTimerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeEventLoopIdleTimerUPP'
+// For ise
+void  ewg_function_InvokeEventLoopIdleTimerUPP (EventLoopTimerRef ewg_inTimer, EventLoopIdleTimerMessage ewg_inState, void *ewg_inUserData, EventLoopIdleTimerUPP ewg_userUPP)
+{
+	InvokeEventLoopIdleTimerUPP ((EventLoopTimerRef)ewg_inTimer, (EventLoopIdleTimerMessage)ewg_inState, (void*)ewg_inUserData, (EventLoopIdleTimerUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeEventLoopIdleTimerUPP'
+void* ewg_get_function_address_InvokeEventLoopIdleTimerUPP (void)
+{
+	return (void*) InvokeEventLoopIdleTimerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InstallEventLoopTimer'
+// For ise
+OSStatus  ewg_function_InstallEventLoopTimer (EventLoopRef ewg_inEventLoop, EventTimerInterval ewg_inFireDelay, EventTimerInterval ewg_inInterval, EventLoopTimerUPP ewg_inTimerProc, void *ewg_inTimerData, EventLoopTimerRef *ewg_outTimer)
+{
+	return InstallEventLoopTimer ((EventLoopRef)ewg_inEventLoop, (EventTimerInterval)ewg_inFireDelay, (EventTimerInterval)ewg_inInterval, (EventLoopTimerUPP)ewg_inTimerProc, (void*)ewg_inTimerData, (EventLoopTimerRef*)ewg_outTimer);
+}
+
+// Return address of function 'InstallEventLoopTimer'
+void* ewg_get_function_address_InstallEventLoopTimer (void)
+{
+	return (void*) InstallEventLoopTimer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InstallEventLoopIdleTimer'
+// For ise
+OSStatus  ewg_function_InstallEventLoopIdleTimer (EventLoopRef ewg_inEventLoop, EventTimerInterval ewg_inDelay, EventTimerInterval ewg_inInterval, EventLoopIdleTimerUPP ewg_inTimerProc, void *ewg_inTimerData, EventLoopTimerRef *ewg_outTimer)
+{
+	return InstallEventLoopIdleTimer ((EventLoopRef)ewg_inEventLoop, (EventTimerInterval)ewg_inDelay, (EventTimerInterval)ewg_inInterval, (EventLoopIdleTimerUPP)ewg_inTimerProc, (void*)ewg_inTimerData, (EventLoopTimerRef*)ewg_outTimer);
+}
+
+// Return address of function 'InstallEventLoopIdleTimer'
+void* ewg_get_function_address_InstallEventLoopIdleTimer (void)
+{
+	return (void*) InstallEventLoopIdleTimer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveEventLoopTimer'
+// For ise
+OSStatus  ewg_function_RemoveEventLoopTimer (EventLoopTimerRef ewg_inTimer)
+{
+	return RemoveEventLoopTimer ((EventLoopTimerRef)ewg_inTimer);
+}
+
+// Return address of function 'RemoveEventLoopTimer'
+void* ewg_get_function_address_RemoveEventLoopTimer (void)
+{
+	return (void*) RemoveEventLoopTimer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetEventLoopTimerNextFireTime'
+// For ise
+OSStatus  ewg_function_SetEventLoopTimerNextFireTime (EventLoopTimerRef ewg_inTimer, EventTimerInterval ewg_inNextFire)
+{
+	return SetEventLoopTimerNextFireTime ((EventLoopTimerRef)ewg_inTimer, (EventTimerInterval)ewg_inNextFire);
+}
+
+// Return address of function 'SetEventLoopTimerNextFireTime'
+void* ewg_get_function_address_SetEventLoopTimerNextFireTime (void)
+{
+	return (void*) SetEventLoopTimerNextFireTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewEventHandlerUPP'
+// For ise
+EventHandlerUPP  ewg_function_NewEventHandlerUPP (EventHandlerProcPtr ewg_userRoutine)
+{
+	return NewEventHandlerUPP ((EventHandlerProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewEventHandlerUPP'
+void* ewg_get_function_address_NewEventHandlerUPP (void)
+{
+	return (void*) NewEventHandlerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeEventHandlerUPP'
+// For ise
+void  ewg_function_DisposeEventHandlerUPP (EventHandlerUPP ewg_userUPP)
+{
+	DisposeEventHandlerUPP ((EventHandlerUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeEventHandlerUPP'
+void* ewg_get_function_address_DisposeEventHandlerUPP (void)
+{
+	return (void*) DisposeEventHandlerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeEventHandlerUPP'
+// For ise
+OSStatus  ewg_function_InvokeEventHandlerUPP (EventHandlerCallRef ewg_inHandlerCallRef, EventRef ewg_inEvent, void *ewg_inUserData, EventHandlerUPP ewg_userUPP)
+{
+	return InvokeEventHandlerUPP ((EventHandlerCallRef)ewg_inHandlerCallRef, (EventRef)ewg_inEvent, (void*)ewg_inUserData, (EventHandlerUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeEventHandlerUPP'
+void* ewg_get_function_address_InvokeEventHandlerUPP (void)
+{
+	return (void*) InvokeEventHandlerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InstallEventHandler'
+// For ise
+OSStatus  ewg_function_InstallEventHandler (EventTargetRef ewg_inTarget, EventHandlerUPP ewg_inHandler, UInt32 ewg_inNumTypes, EventTypeSpec const *ewg_inList, void *ewg_inUserData, EventHandlerRef *ewg_outRef)
+{
+	return InstallEventHandler ((EventTargetRef)ewg_inTarget, (EventHandlerUPP)ewg_inHandler, (UInt32)ewg_inNumTypes, (EventTypeSpec const*)ewg_inList, (void*)ewg_inUserData, (EventHandlerRef*)ewg_outRef);
+}
+
+// Return address of function 'InstallEventHandler'
+void* ewg_get_function_address_InstallEventHandler (void)
+{
+	return (void*) InstallEventHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InstallStandardEventHandler'
+// For ise
+OSStatus  ewg_function_InstallStandardEventHandler (EventTargetRef ewg_inTarget)
+{
+	return InstallStandardEventHandler ((EventTargetRef)ewg_inTarget);
+}
+
+// Return address of function 'InstallStandardEventHandler'
+void* ewg_get_function_address_InstallStandardEventHandler (void)
+{
+	return (void*) InstallStandardEventHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveEventHandler'
+// For ise
+OSStatus  ewg_function_RemoveEventHandler (EventHandlerRef ewg_inHandlerRef)
+{
+	return RemoveEventHandler ((EventHandlerRef)ewg_inHandlerRef);
+}
+
+// Return address of function 'RemoveEventHandler'
+void* ewg_get_function_address_RemoveEventHandler (void)
+{
+	return (void*) RemoveEventHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AddEventTypesToHandler'
+// For ise
+OSStatus  ewg_function_AddEventTypesToHandler (EventHandlerRef ewg_inHandlerRef, UInt32 ewg_inNumTypes, EventTypeSpec const *ewg_inList)
+{
+	return AddEventTypesToHandler ((EventHandlerRef)ewg_inHandlerRef, (UInt32)ewg_inNumTypes, (EventTypeSpec const*)ewg_inList);
+}
+
+// Return address of function 'AddEventTypesToHandler'
+void* ewg_get_function_address_AddEventTypesToHandler (void)
+{
+	return (void*) AddEventTypesToHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveEventTypesFromHandler'
+// For ise
+OSStatus  ewg_function_RemoveEventTypesFromHandler (EventHandlerRef ewg_inHandlerRef, UInt32 ewg_inNumTypes, EventTypeSpec const *ewg_inList)
+{
+	return RemoveEventTypesFromHandler ((EventHandlerRef)ewg_inHandlerRef, (UInt32)ewg_inNumTypes, (EventTypeSpec const*)ewg_inList);
+}
+
+// Return address of function 'RemoveEventTypesFromHandler'
+void* ewg_get_function_address_RemoveEventTypesFromHandler (void)
+{
+	return (void*) RemoveEventTypesFromHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CallNextEventHandler'
+// For ise
+OSStatus  ewg_function_CallNextEventHandler (EventHandlerCallRef ewg_inCallRef, EventRef ewg_inEvent)
+{
+	return CallNextEventHandler ((EventHandlerCallRef)ewg_inCallRef, (EventRef)ewg_inEvent);
+}
+
+// Return address of function 'CallNextEventHandler'
+void* ewg_get_function_address_CallNextEventHandler (void)
+{
+	return (void*) CallNextEventHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SendEventToEventTarget'
+// For ise
+OSStatus  ewg_function_SendEventToEventTarget (EventRef ewg_inEvent, EventTargetRef ewg_inTarget)
+{
+	return SendEventToEventTarget ((EventRef)ewg_inEvent, (EventTargetRef)ewg_inTarget);
+}
+
+// Return address of function 'SendEventToEventTarget'
+void* ewg_get_function_address_SendEventToEventTarget (void)
+{
+	return (void*) SendEventToEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SendEventToEventTargetWithOptions'
+// For ise
+OSStatus  ewg_function_SendEventToEventTargetWithOptions (EventRef ewg_inEvent, EventTargetRef ewg_inTarget, OptionBits ewg_inOptions)
+{
+	return SendEventToEventTargetWithOptions ((EventRef)ewg_inEvent, (EventTargetRef)ewg_inTarget, (OptionBits)ewg_inOptions);
+}
+
+// Return address of function 'SendEventToEventTargetWithOptions'
+void* ewg_get_function_address_SendEventToEventTargetWithOptions (void)
+{
+	return (void*) SendEventToEventTargetWithOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableSecureEventInput'
+// For ise
+OSStatus  ewg_function_EnableSecureEventInput (void)
+{
+	return EnableSecureEventInput ();
+}
+
+// Return address of function 'EnableSecureEventInput'
+void* ewg_get_function_address_EnableSecureEventInput (void)
+{
+	return (void*) EnableSecureEventInput;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisableSecureEventInput'
+// For ise
+OSStatus  ewg_function_DisableSecureEventInput (void)
+{
+	return DisableSecureEventInput ();
+}
+
+// Return address of function 'DisableSecureEventInput'
+void* ewg_get_function_address_DisableSecureEventInput (void)
+{
+	return (void*) DisableSecureEventInput;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsSecureEventInputEnabled'
+// For ise
+Boolean  ewg_function_IsSecureEventInputEnabled (void)
+{
+	return IsSecureEventInputEnabled ();
+}
+
+// Return address of function 'IsSecureEventInputEnabled'
+void* ewg_get_function_address_IsSecureEventInputEnabled (void)
+{
+	return (void*) IsSecureEventInputEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMouse'
+// For ise
+void  ewg_function_GetMouse (Point *ewg_mouseLoc)
+{
+	GetMouse ((Point*)ewg_mouseLoc);
+}
+
+// Return address of function 'GetMouse'
+void* ewg_get_function_address_GetMouse (void)
+{
+	return (void*) GetMouse;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Button'
+// For ise
+Boolean  ewg_function_Button (void)
+{
+	return Button ();
+}
+
+// Return address of function 'Button'
+void* ewg_get_function_address_Button (void)
+{
+	return (void*) Button;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StillDown'
+// For ise
+Boolean  ewg_function_StillDown (void)
+{
+	return StillDown ();
+}
+
+// Return address of function 'StillDown'
+void* ewg_get_function_address_StillDown (void)
+{
+	return (void*) StillDown;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'WaitMouseUp'
+// For ise
+Boolean  ewg_function_WaitMouseUp (void)
+{
+	return WaitMouseUp ();
+}
+
+// Return address of function 'WaitMouseUp'
+void* ewg_get_function_address_WaitMouseUp (void)
+{
+	return (void*) WaitMouseUp;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'KeyTranslate'
+// For ise
+UInt32  ewg_function_KeyTranslate (void const *ewg_transData, UInt16 ewg_keycode, UInt32 *ewg_state)
+{
+	return KeyTranslate ((void const*)ewg_transData, (UInt16)ewg_keycode, (UInt32*)ewg_state);
+}
+
+// Return address of function 'KeyTranslate'
+void* ewg_get_function_address_KeyTranslate (void)
+{
+	return (void*) KeyTranslate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCaretTime'
+// For ise
+UInt32  ewg_function_GetCaretTime (void)
+{
+	return GetCaretTime ();
+}
+
+// Return address of function 'GetCaretTime'
+void* ewg_get_function_address_GetCaretTime (void)
+{
+	return (void*) GetCaretTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetKeys'
+// For ise
+void  ewg_function_GetKeys (void *ewg_theKeys)
+{
+	GetKeys (ewg_theKeys);
+}
+
+// Return address of function 'GetKeys'
+void* ewg_get_function_address_GetKeys (void)
+{
+	return (void*) GetKeys;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDblTime'
+// For ise
+UInt32  ewg_function_GetDblTime (void)
+{
+	return GetDblTime ();
+}
+
+// Return address of function 'GetDblTime'
+void* ewg_get_function_address_GetDblTime (void)
+{
+	return (void*) GetDblTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetEventMask'
+// For ise
+void  ewg_function_SetEventMask (EventMask ewg_value)
+{
+	SetEventMask ((EventMask)ewg_value);
+}
+
+// Return address of function 'SetEventMask'
+void* ewg_get_function_address_SetEventMask (void)
+{
+	return (void*) SetEventMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNextEvent'
+// For ise
+Boolean  ewg_function_GetNextEvent (EventMask ewg_eventMask, EventRecord *ewg_theEvent)
+{
+	return GetNextEvent ((EventMask)ewg_eventMask, (EventRecord*)ewg_theEvent);
+}
+
+// Return address of function 'GetNextEvent'
+void* ewg_get_function_address_GetNextEvent (void)
+{
+	return (void*) GetNextEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'WaitNextEvent'
+// For ise
+Boolean  ewg_function_WaitNextEvent (EventMask ewg_eventMask, EventRecord *ewg_theEvent, UInt32 ewg_sleep, RgnHandle ewg_mouseRgn)
+{
+	return WaitNextEvent ((EventMask)ewg_eventMask, (EventRecord*)ewg_theEvent, (UInt32)ewg_sleep, (RgnHandle)ewg_mouseRgn);
+}
+
+// Return address of function 'WaitNextEvent'
+void* ewg_get_function_address_WaitNextEvent (void)
+{
+	return (void*) WaitNextEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EventAvail'
+// For ise
+Boolean  ewg_function_EventAvail (EventMask ewg_eventMask, EventRecord *ewg_theEvent)
+{
+	return EventAvail ((EventMask)ewg_eventMask, (EventRecord*)ewg_theEvent);
+}
+
+// Return address of function 'EventAvail'
+void* ewg_get_function_address_EventAvail (void)
+{
+	return (void*) EventAvail;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PostEvent'
+// For ise
+OSErr  ewg_function_PostEvent (EventKind ewg_eventNum, UInt32 ewg_eventMsg)
+{
+	return PostEvent ((EventKind)ewg_eventNum, (UInt32)ewg_eventMsg);
+}
+
+// Return address of function 'PostEvent'
+void* ewg_get_function_address_PostEvent (void)
+{
+	return (void*) PostEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FlushEvents'
+// For ise
+void  ewg_function_FlushEvents (EventMask ewg_whichMask, EventMask ewg_stopMask)
+{
+	FlushEvents ((EventMask)ewg_whichMask, (EventMask)ewg_stopMask);
+}
+
+// Return address of function 'FlushEvents'
+void* ewg_get_function_address_FlushEvents (void)
+{
+	return (void*) FlushEvents;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetGlobalMouse'
+// For ise
+void  ewg_function_GetGlobalMouse (Point *ewg_globalMouse)
+{
+	GetGlobalMouse ((Point*)ewg_globalMouse);
+}
+
+// Return address of function 'GetGlobalMouse'
+void* ewg_get_function_address_GetGlobalMouse (void)
+{
+	return (void*) GetGlobalMouse;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetCurrentKeyModifiers'
+// For ise
+UInt32  ewg_function_GetCurrentKeyModifiers (void)
+{
+	return GetCurrentKeyModifiers ();
+}
+
+// Return address of function 'GetCurrentKeyModifiers'
+void* ewg_get_function_address_GetCurrentKeyModifiers (void)
+{
+	return (void*) GetCurrentKeyModifiers;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CheckEventQueueForUserCancel'
+// For ise
+Boolean  ewg_function_CheckEventQueueForUserCancel (void)
+{
+	return CheckEventQueueForUserCancel ();
+}
+
+// Return address of function 'CheckEventQueueForUserCancel'
+void* ewg_get_function_address_CheckEventQueueForUserCancel (void)
+{
+	return (void*) CheckEventQueueForUserCancel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'KeyScript'
+// For ise
+void  ewg_function_KeyScript (short ewg_code)
+{
+	KeyScript ((short)ewg_code);
+}
+
+// Return address of function 'KeyScript'
+void* ewg_get_function_address_KeyScript (void)
+{
+	return (void*) KeyScript;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsCmdChar'
+// For ise
+Boolean  ewg_function_IsCmdChar (EventRecord const *ewg_event, short ewg_test)
+{
+	return IsCmdChar ((EventRecord const*)ewg_event, (short)ewg_test);
+}
+
+// Return address of function 'IsCmdChar'
+void* ewg_get_function_address_IsCmdChar (void)
+{
+	return (void*) IsCmdChar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetKeyThresh'
+// For ise
+SInt16  ewg_function_LMGetKeyThresh (void)
+{
+	return LMGetKeyThresh ();
+}
+
+// Return address of function 'LMGetKeyThresh'
+void* ewg_get_function_address_LMGetKeyThresh (void)
+{
+	return (void*) LMGetKeyThresh;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetKeyThresh'
+// For ise
+void  ewg_function_LMSetKeyThresh (SInt16 ewg_value)
+{
+	LMSetKeyThresh ((SInt16)ewg_value);
+}
+
+// Return address of function 'LMSetKeyThresh'
+void* ewg_get_function_address_LMSetKeyThresh (void)
+{
+	return (void*) LMSetKeyThresh;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetKeyRepThresh'
+// For ise
+SInt16  ewg_function_LMGetKeyRepThresh (void)
+{
+	return LMGetKeyRepThresh ();
+}
+
+// Return address of function 'LMGetKeyRepThresh'
+void* ewg_get_function_address_LMGetKeyRepThresh (void)
+{
+	return (void*) LMGetKeyRepThresh;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetKeyRepThresh'
+// For ise
+void  ewg_function_LMSetKeyRepThresh (SInt16 ewg_value)
+{
+	LMSetKeyRepThresh ((SInt16)ewg_value);
+}
+
+// Return address of function 'LMSetKeyRepThresh'
+void* ewg_get_function_address_LMSetKeyRepThresh (void)
+{
+	return (void*) LMSetKeyRepThresh;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetKbdLast'
+// For ise
+UInt8  ewg_function_LMGetKbdLast (void)
+{
+	return LMGetKbdLast ();
+}
+
+// Return address of function 'LMGetKbdLast'
+void* ewg_get_function_address_LMGetKbdLast (void)
+{
+	return (void*) LMGetKbdLast;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetKbdLast'
+// For ise
+void  ewg_function_LMSetKbdLast (UInt8 ewg_value)
+{
+	LMSetKbdLast ((UInt8)ewg_value);
+}
+
+// Return address of function 'LMSetKbdLast'
+void* ewg_get_function_address_LMSetKbdLast (void)
+{
+	return (void*) LMSetKbdLast;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetKbdType'
+// For ise
+UInt8  ewg_function_LMGetKbdType (void)
+{
+	return LMGetKbdType ();
+}
+
+// Return address of function 'LMGetKbdType'
+void* ewg_get_function_address_LMGetKbdType (void)
+{
+	return (void*) LMGetKbdType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMSetKbdType'
+// For ise
+void  ewg_function_LMSetKbdType (UInt8 ewg_value)
+{
+	LMSetKbdType ((UInt8)ewg_value);
+}
+
+// Return address of function 'LMSetKbdType'
+void* ewg_get_function_address_LMSetKbdType (void)
+{
+	return (void*) LMSetKbdType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewWindowDefUPP'
+// For ise
+WindowDefUPP  ewg_function_NewWindowDefUPP (WindowDefProcPtr ewg_userRoutine)
+{
+	return NewWindowDefUPP ((WindowDefProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewWindowDefUPP'
+void* ewg_get_function_address_NewWindowDefUPP (void)
+{
+	return (void*) NewWindowDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewWindowPaintUPP'
+// For ise
+WindowPaintUPP  ewg_function_NewWindowPaintUPP (WindowPaintProcPtr ewg_userRoutine)
+{
+	return NewWindowPaintUPP ((WindowPaintProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewWindowPaintUPP'
+void* ewg_get_function_address_NewWindowPaintUPP (void)
+{
+	return (void*) NewWindowPaintUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeWindowDefUPP'
+// For ise
+void  ewg_function_DisposeWindowDefUPP (WindowDefUPP ewg_userUPP)
+{
+	DisposeWindowDefUPP ((WindowDefUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeWindowDefUPP'
+void* ewg_get_function_address_DisposeWindowDefUPP (void)
+{
+	return (void*) DisposeWindowDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeWindowPaintUPP'
+// For ise
+void  ewg_function_DisposeWindowPaintUPP (WindowPaintUPP ewg_userUPP)
+{
+	DisposeWindowPaintUPP ((WindowPaintUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeWindowPaintUPP'
+void* ewg_get_function_address_DisposeWindowPaintUPP (void)
+{
+	return (void*) DisposeWindowPaintUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeWindowDefUPP'
+// For ise
+long  ewg_function_InvokeWindowDefUPP (short ewg_varCode, WindowRef ewg_window, short ewg_message, long ewg_param, WindowDefUPP ewg_userUPP)
+{
+	return InvokeWindowDefUPP ((short)ewg_varCode, (WindowRef)ewg_window, (short)ewg_message, (long)ewg_param, (WindowDefUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeWindowDefUPP'
+void* ewg_get_function_address_InvokeWindowDefUPP (void)
+{
+	return (void*) InvokeWindowDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeWindowPaintUPP'
+// For ise
+OSStatus  ewg_function_InvokeWindowPaintUPP (GDHandle ewg_device, GrafPtr ewg_qdContext, WindowRef ewg_window, RgnHandle ewg_inClientPaintRgn, RgnHandle ewg_outSystemPaintRgn, void *ewg_refCon, WindowPaintUPP ewg_userUPP)
+{
+	return InvokeWindowPaintUPP ((GDHandle)ewg_device, (GrafPtr)ewg_qdContext, (WindowRef)ewg_window, (RgnHandle)ewg_inClientPaintRgn, (RgnHandle)ewg_outSystemPaintRgn, (void*)ewg_refCon, (WindowPaintUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeWindowPaintUPP'
+void* ewg_get_function_address_InvokeWindowPaintUPP (void)
+{
+	return (void*) InvokeWindowPaintUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNewCWindow'
+// For ise
+WindowRef  ewg_function_GetNewCWindow (short ewg_windowID, void *ewg_wStorage, WindowRef ewg_behind)
+{
+	return GetNewCWindow ((short)ewg_windowID, (void*)ewg_wStorage, (WindowRef)ewg_behind);
+}
+
+// Return address of function 'GetNewCWindow'
+void* ewg_get_function_address_GetNewCWindow (void)
+{
+	return (void*) GetNewCWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewWindow'
+// For ise
+WindowRef  ewg_function_NewWindow (void *ewg_wStorage, Rect const *ewg_boundsRect, ConstStr255Param ewg_title, Boolean ewg_visible, short ewg_theProc, WindowRef ewg_behind, Boolean ewg_goAwayFlag, long ewg_refCon)
+{
+	return NewWindow ((void*)ewg_wStorage, (Rect const*)ewg_boundsRect, (ConstStr255Param)ewg_title, (Boolean)ewg_visible, (short)ewg_theProc, (WindowRef)ewg_behind, (Boolean)ewg_goAwayFlag, (long)ewg_refCon);
+}
+
+// Return address of function 'NewWindow'
+void* ewg_get_function_address_NewWindow (void)
+{
+	return (void*) NewWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNewWindow'
+// For ise
+WindowRef  ewg_function_GetNewWindow (short ewg_windowID, void *ewg_wStorage, WindowRef ewg_behind)
+{
+	return GetNewWindow ((short)ewg_windowID, (void*)ewg_wStorage, (WindowRef)ewg_behind);
+}
+
+// Return address of function 'GetNewWindow'
+void* ewg_get_function_address_GetNewWindow (void)
+{
+	return (void*) GetNewWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewCWindow'
+// For ise
+WindowRef  ewg_function_NewCWindow (void *ewg_wStorage, Rect const *ewg_boundsRect, ConstStr255Param ewg_title, Boolean ewg_visible, short ewg_procID, WindowRef ewg_behind, Boolean ewg_goAwayFlag, long ewg_refCon)
+{
+	return NewCWindow ((void*)ewg_wStorage, (Rect const*)ewg_boundsRect, (ConstStr255Param)ewg_title, (Boolean)ewg_visible, (short)ewg_procID, (WindowRef)ewg_behind, (Boolean)ewg_goAwayFlag, (long)ewg_refCon);
+}
+
+// Return address of function 'NewCWindow'
+void* ewg_get_function_address_NewCWindow (void)
+{
+	return (void*) NewCWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeWindow'
+// For ise
+void  ewg_function_DisposeWindow (WindowRef ewg_window)
+{
+	DisposeWindow ((WindowRef)ewg_window);
+}
+
+// Return address of function 'DisposeWindow'
+void* ewg_get_function_address_DisposeWindow (void)
+{
+	return (void*) DisposeWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateNewWindow'
+// For ise
+OSStatus  ewg_function_CreateNewWindow (WindowClass ewg_windowClass, WindowAttributes ewg_attributes, Rect const *ewg_contentBounds, WindowRef *ewg_outWindow)
+{
+	return CreateNewWindow ((WindowClass)ewg_windowClass, (WindowAttributes)ewg_attributes, (Rect const*)ewg_contentBounds, (WindowRef*)ewg_outWindow);
+}
+
+// Return address of function 'CreateNewWindow'
+void* ewg_get_function_address_CreateNewWindow (void)
+{
+	return (void*) CreateNewWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateWindowFromResource'
+// For ise
+OSStatus  ewg_function_CreateWindowFromResource (SInt16 ewg_resID, WindowRef *ewg_outWindow)
+{
+	return CreateWindowFromResource ((SInt16)ewg_resID, (WindowRef*)ewg_outWindow);
+}
+
+// Return address of function 'CreateWindowFromResource'
+void* ewg_get_function_address_CreateWindowFromResource (void)
+{
+	return (void*) CreateWindowFromResource;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'StoreWindowIntoCollection'
+// For ise
+OSStatus  ewg_function_StoreWindowIntoCollection (WindowRef ewg_window, Collection ewg_collection)
+{
+	return StoreWindowIntoCollection ((WindowRef)ewg_window, (Collection)ewg_collection);
+}
+
+// Return address of function 'StoreWindowIntoCollection'
+void* ewg_get_function_address_StoreWindowIntoCollection (void)
+{
+	return (void*) StoreWindowIntoCollection;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateWindowFromCollection'
+// For ise
+OSStatus  ewg_function_CreateWindowFromCollection (Collection ewg_collection, WindowRef *ewg_outWindow)
+{
+	return CreateWindowFromCollection ((Collection)ewg_collection, (WindowRef*)ewg_outWindow);
+}
+
+// Return address of function 'CreateWindowFromCollection'
+void* ewg_get_function_address_CreateWindowFromCollection (void)
+{
+	return (void*) CreateWindowFromCollection;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowOwnerCount'
+// For ise
+OSStatus  ewg_function_GetWindowOwnerCount (WindowRef ewg_window, UInt32 *ewg_outCount)
+{
+	return GetWindowOwnerCount ((WindowRef)ewg_window, (UInt32*)ewg_outCount);
+}
+
+// Return address of function 'GetWindowOwnerCount'
+void* ewg_get_function_address_GetWindowOwnerCount (void)
+{
+	return (void*) GetWindowOwnerCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CloneWindow'
+// For ise
+OSStatus  ewg_function_CloneWindow (WindowRef ewg_window)
+{
+	return CloneWindow ((WindowRef)ewg_window);
+}
+
+// Return address of function 'CloneWindow'
+void* ewg_get_function_address_CloneWindow (void)
+{
+	return (void*) CloneWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowRetainCount'
+// For ise
+ItemCount  ewg_function_GetWindowRetainCount (WindowRef ewg_inWindow)
+{
+	return GetWindowRetainCount ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'GetWindowRetainCount'
+void* ewg_get_function_address_GetWindowRetainCount (void)
+{
+	return (void*) GetWindowRetainCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RetainWindow'
+// For ise
+OSStatus  ewg_function_RetainWindow (WindowRef ewg_inWindow)
+{
+	return RetainWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'RetainWindow'
+void* ewg_get_function_address_RetainWindow (void)
+{
+	return (void*) RetainWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReleaseWindow'
+// For ise
+OSStatus  ewg_function_ReleaseWindow (WindowRef ewg_inWindow)
+{
+	return ReleaseWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'ReleaseWindow'
+void* ewg_get_function_address_ReleaseWindow (void)
+{
+	return (void*) ReleaseWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateCustomWindow'
+// For ise
+OSStatus  ewg_function_CreateCustomWindow (WindowDefSpec const *ewg_def, WindowClass ewg_windowClass, WindowAttributes ewg_attributes, Rect const *ewg_contentBounds, WindowRef *ewg_outWindow)
+{
+	return CreateCustomWindow ((WindowDefSpec const*)ewg_def, (WindowClass)ewg_windowClass, (WindowAttributes)ewg_attributes, (Rect const*)ewg_contentBounds, (WindowRef*)ewg_outWindow);
+}
+
+// Return address of function 'CreateCustomWindow'
+void* ewg_get_function_address_CreateCustomWindow (void)
+{
+	return (void*) CreateCustomWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReshapeCustomWindow'
+// For ise
+OSStatus  ewg_function_ReshapeCustomWindow (WindowRef ewg_window)
+{
+	return ReshapeCustomWindow ((WindowRef)ewg_window);
+}
+
+// Return address of function 'ReshapeCustomWindow'
+void* ewg_get_function_address_ReshapeCustomWindow (void)
+{
+	return (void*) ReshapeCustomWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RegisterWindowDefinition'
+// For ise
+OSStatus  ewg_function_RegisterWindowDefinition (SInt16 ewg_inResID, WindowDefSpec const *ewg_inDefSpec)
+{
+	return RegisterWindowDefinition ((SInt16)ewg_inResID, (WindowDefSpec const*)ewg_inDefSpec);
+}
+
+// Return address of function 'RegisterWindowDefinition'
+void* ewg_get_function_address_RegisterWindowDefinition (void)
+{
+	return (void*) RegisterWindowDefinition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowWidgetHilite'
+// For ise
+OSStatus  ewg_function_GetWindowWidgetHilite (WindowRef ewg_inWindow, WindowDefPartCode *ewg_outHilite)
+{
+	return GetWindowWidgetHilite ((WindowRef)ewg_inWindow, (WindowDefPartCode*)ewg_outHilite);
+}
+
+// Return address of function 'GetWindowWidgetHilite'
+void* ewg_get_function_address_GetWindowWidgetHilite (void)
+{
+	return (void*) GetWindowWidgetHilite;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsValidWindowClass'
+// For ise
+Boolean  ewg_function_IsValidWindowClass (WindowClass ewg_inClass)
+{
+	return IsValidWindowClass ((WindowClass)ewg_inClass);
+}
+
+// Return address of function 'IsValidWindowClass'
+void* ewg_get_function_address_IsValidWindowClass (void)
+{
+	return (void*) IsValidWindowClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetAvailableWindowAttributes'
+// For ise
+WindowAttributes  ewg_function_GetAvailableWindowAttributes (WindowClass ewg_inClass)
+{
+	return GetAvailableWindowAttributes ((WindowClass)ewg_inClass);
+}
+
+// Return address of function 'GetAvailableWindowAttributes'
+void* ewg_get_function_address_GetAvailableWindowAttributes (void)
+{
+	return (void*) GetAvailableWindowAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowClass'
+// For ise
+OSStatus  ewg_function_GetWindowClass (WindowRef ewg_window, WindowClass *ewg_outClass)
+{
+	return GetWindowClass ((WindowRef)ewg_window, (WindowClass*)ewg_outClass);
+}
+
+// Return address of function 'GetWindowClass'
+void* ewg_get_function_address_GetWindowClass (void)
+{
+	return (void*) GetWindowClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowAttributes'
+// For ise
+OSStatus  ewg_function_GetWindowAttributes (WindowRef ewg_window, WindowAttributes *ewg_outAttributes)
+{
+	return GetWindowAttributes ((WindowRef)ewg_window, (WindowAttributes*)ewg_outAttributes);
+}
+
+// Return address of function 'GetWindowAttributes'
+void* ewg_get_function_address_GetWindowAttributes (void)
+{
+	return (void*) GetWindowAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeWindowAttributes'
+// For ise
+OSStatus  ewg_function_ChangeWindowAttributes (WindowRef ewg_window, WindowAttributes ewg_setTheseAttributes, WindowAttributes ewg_clearTheseAttributes)
+{
+	return ChangeWindowAttributes ((WindowRef)ewg_window, (WindowAttributes)ewg_setTheseAttributes, (WindowAttributes)ewg_clearTheseAttributes);
+}
+
+// Return address of function 'ChangeWindowAttributes'
+void* ewg_get_function_address_ChangeWindowAttributes (void)
+{
+	return (void*) ChangeWindowAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowClass'
+// For ise
+OSStatus  ewg_function_SetWindowClass (WindowRef ewg_inWindow, WindowClass ewg_inWindowClass)
+{
+	return SetWindowClass ((WindowRef)ewg_inWindow, (WindowClass)ewg_inWindowClass);
+}
+
+// Return address of function 'SetWindowClass'
+void* ewg_get_function_address_SetWindowClass (void)
+{
+	return (void*) SetWindowClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowChangeClass'
+// For ise
+OSStatus  ewg_function_HIWindowChangeClass (HIWindowRef ewg_inWindow, WindowClass ewg_inWindowClass)
+{
+	return HIWindowChangeClass ((HIWindowRef)ewg_inWindow, (WindowClass)ewg_inWindowClass);
+}
+
+// Return address of function 'HIWindowChangeClass'
+void* ewg_get_function_address_HIWindowChangeClass (void)
+{
+	return (void*) HIWindowChangeClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowFlush'
+// For ise
+OSStatus  ewg_function_HIWindowFlush (HIWindowRef ewg_inWindow)
+{
+	return HIWindowFlush ((HIWindowRef)ewg_inWindow);
+}
+
+// Return address of function 'HIWindowFlush'
+void* ewg_get_function_address_HIWindowFlush (void)
+{
+	return (void*) HIWindowFlush;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowModality'
+// For ise
+OSStatus  ewg_function_SetWindowModality (WindowRef ewg_inWindow, WindowModality ewg_inModalKind, WindowRef ewg_inUnavailableWindow)
+{
+	return SetWindowModality ((WindowRef)ewg_inWindow, (WindowModality)ewg_inModalKind, (WindowRef)ewg_inUnavailableWindow);
+}
+
+// Return address of function 'SetWindowModality'
+void* ewg_get_function_address_SetWindowModality (void)
+{
+	return (void*) SetWindowModality;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowModality'
+// For ise
+OSStatus  ewg_function_GetWindowModality (WindowRef ewg_inWindow, WindowModality *ewg_outModalKind, WindowRef *ewg_outUnavailableWindow)
+{
+	return GetWindowModality ((WindowRef)ewg_inWindow, (WindowModality*)ewg_outModalKind, (WindowRef*)ewg_outUnavailableWindow);
+}
+
+// Return address of function 'GetWindowModality'
+void* ewg_get_function_address_GetWindowModality (void)
+{
+	return (void*) GetWindowModality;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowIsDocumentModalTarget'
+// For ise
+Boolean  ewg_function_HIWindowIsDocumentModalTarget (HIWindowRef ewg_inWindow, HIWindowRef *ewg_outOwner)
+{
+	return HIWindowIsDocumentModalTarget ((HIWindowRef)ewg_inWindow, (HIWindowRef*)ewg_outOwner);
+}
+
+// Return address of function 'HIWindowIsDocumentModalTarget'
+void* ewg_get_function_address_HIWindowIsDocumentModalTarget (void)
+{
+	return (void*) HIWindowIsDocumentModalTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowFloatingWindows'
+// For ise
+OSStatus  ewg_function_ShowFloatingWindows (void)
+{
+	return ShowFloatingWindows ();
+}
+
+// Return address of function 'ShowFloatingWindows'
+void* ewg_get_function_address_ShowFloatingWindows (void)
+{
+	return (void*) ShowFloatingWindows;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HideFloatingWindows'
+// For ise
+OSStatus  ewg_function_HideFloatingWindows (void)
+{
+	return HideFloatingWindows ();
+}
+
+// Return address of function 'HideFloatingWindows'
+void* ewg_get_function_address_HideFloatingWindows (void)
+{
+	return (void*) HideFloatingWindows;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AreFloatingWindowsVisible'
+// For ise
+Boolean  ewg_function_AreFloatingWindowsVisible (void)
+{
+	return AreFloatingWindowsVisible ();
+}
+
+// Return address of function 'AreFloatingWindowsVisible'
+void* ewg_get_function_address_AreFloatingWindowsVisible (void)
+{
+	return (void*) AreFloatingWindowsVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateWindowGroup'
+// For ise
+OSStatus  ewg_function_CreateWindowGroup (WindowGroupAttributes ewg_inAttributes, WindowGroupRef *ewg_outGroup)
+{
+	return CreateWindowGroup ((WindowGroupAttributes)ewg_inAttributes, (WindowGroupRef*)ewg_outGroup);
+}
+
+// Return address of function 'CreateWindowGroup'
+void* ewg_get_function_address_CreateWindowGroup (void)
+{
+	return (void*) CreateWindowGroup;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RetainWindowGroup'
+// For ise
+OSStatus  ewg_function_RetainWindowGroup (WindowGroupRef ewg_inGroup)
+{
+	return RetainWindowGroup ((WindowGroupRef)ewg_inGroup);
+}
+
+// Return address of function 'RetainWindowGroup'
+void* ewg_get_function_address_RetainWindowGroup (void)
+{
+	return (void*) RetainWindowGroup;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReleaseWindowGroup'
+// For ise
+OSStatus  ewg_function_ReleaseWindowGroup (WindowGroupRef ewg_inGroup)
+{
+	return ReleaseWindowGroup ((WindowGroupRef)ewg_inGroup);
+}
+
+// Return address of function 'ReleaseWindowGroup'
+void* ewg_get_function_address_ReleaseWindowGroup (void)
+{
+	return (void*) ReleaseWindowGroup;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupRetainCount'
+// For ise
+ItemCount  ewg_function_GetWindowGroupRetainCount (WindowGroupRef ewg_inGroup)
+{
+	return GetWindowGroupRetainCount ((WindowGroupRef)ewg_inGroup);
+}
+
+// Return address of function 'GetWindowGroupRetainCount'
+void* ewg_get_function_address_GetWindowGroupRetainCount (void)
+{
+	return (void*) GetWindowGroupRetainCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupOfClass'
+// For ise
+WindowGroupRef  ewg_function_GetWindowGroupOfClass (WindowClass ewg_windowClass)
+{
+	return GetWindowGroupOfClass ((WindowClass)ewg_windowClass);
+}
+
+// Return address of function 'GetWindowGroupOfClass'
+void* ewg_get_function_address_GetWindowGroupOfClass (void)
+{
+	return (void*) GetWindowGroupOfClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowGroupName'
+// For ise
+OSStatus  ewg_function_SetWindowGroupName (WindowGroupRef ewg_inGroup, CFStringRef ewg_inName)
+{
+	return SetWindowGroupName ((WindowGroupRef)ewg_inGroup, (CFStringRef)ewg_inName);
+}
+
+// Return address of function 'SetWindowGroupName'
+void* ewg_get_function_address_SetWindowGroupName (void)
+{
+	return (void*) SetWindowGroupName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyWindowGroupName'
+// For ise
+OSStatus  ewg_function_CopyWindowGroupName (WindowGroupRef ewg_inGroup, CFStringRef *ewg_outName)
+{
+	return CopyWindowGroupName ((WindowGroupRef)ewg_inGroup, (CFStringRef*)ewg_outName);
+}
+
+// Return address of function 'CopyWindowGroupName'
+void* ewg_get_function_address_CopyWindowGroupName (void)
+{
+	return (void*) CopyWindowGroupName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupAttributes'
+// For ise
+OSStatus  ewg_function_GetWindowGroupAttributes (WindowGroupRef ewg_inGroup, WindowGroupAttributes *ewg_outAttributes)
+{
+	return GetWindowGroupAttributes ((WindowGroupRef)ewg_inGroup, (WindowGroupAttributes*)ewg_outAttributes);
+}
+
+// Return address of function 'GetWindowGroupAttributes'
+void* ewg_get_function_address_GetWindowGroupAttributes (void)
+{
+	return (void*) GetWindowGroupAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeWindowGroupAttributes'
+// For ise
+OSStatus  ewg_function_ChangeWindowGroupAttributes (WindowGroupRef ewg_inGroup, WindowGroupAttributes ewg_setTheseAttributes, WindowGroupAttributes ewg_clearTheseAttributes)
+{
+	return ChangeWindowGroupAttributes ((WindowGroupRef)ewg_inGroup, (WindowGroupAttributes)ewg_setTheseAttributes, (WindowGroupAttributes)ewg_clearTheseAttributes);
+}
+
+// Return address of function 'ChangeWindowGroupAttributes'
+void* ewg_get_function_address_ChangeWindowGroupAttributes (void)
+{
+	return (void*) ChangeWindowGroupAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowGroupLevel'
+// For ise
+OSStatus  ewg_function_SetWindowGroupLevel (WindowGroupRef ewg_inGroup, SInt32 ewg_inLevel)
+{
+	return SetWindowGroupLevel ((WindowGroupRef)ewg_inGroup, (SInt32)ewg_inLevel);
+}
+
+// Return address of function 'SetWindowGroupLevel'
+void* ewg_get_function_address_SetWindowGroupLevel (void)
+{
+	return (void*) SetWindowGroupLevel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupLevel'
+// For ise
+OSStatus  ewg_function_GetWindowGroupLevel (WindowGroupRef ewg_inGroup, SInt32 *ewg_outLevel)
+{
+	return GetWindowGroupLevel ((WindowGroupRef)ewg_inGroup, (SInt32*)ewg_outLevel);
+}
+
+// Return address of function 'GetWindowGroupLevel'
+void* ewg_get_function_address_GetWindowGroupLevel (void)
+{
+	return (void*) GetWindowGroupLevel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowGroupLevelOfType'
+// For ise
+OSStatus  ewg_function_SetWindowGroupLevelOfType (WindowGroupRef ewg_inGroup, UInt32 ewg_inLevelType, CGWindowLevel ewg_inLevel)
+{
+	return SetWindowGroupLevelOfType ((WindowGroupRef)ewg_inGroup, (UInt32)ewg_inLevelType, (CGWindowLevel)ewg_inLevel);
+}
+
+// Return address of function 'SetWindowGroupLevelOfType'
+void* ewg_get_function_address_SetWindowGroupLevelOfType (void)
+{
+	return (void*) SetWindowGroupLevelOfType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupLevelOfType'
+// For ise
+OSStatus  ewg_function_GetWindowGroupLevelOfType (WindowGroupRef ewg_inGroup, UInt32 ewg_inLevelType, CGWindowLevel *ewg_outLevel)
+{
+	return GetWindowGroupLevelOfType ((WindowGroupRef)ewg_inGroup, (UInt32)ewg_inLevelType, (CGWindowLevel*)ewg_outLevel);
+}
+
+// Return address of function 'GetWindowGroupLevelOfType'
+void* ewg_get_function_address_GetWindowGroupLevelOfType (void)
+{
+	return (void*) GetWindowGroupLevelOfType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SendWindowGroupBehind'
+// For ise
+OSStatus  ewg_function_SendWindowGroupBehind (WindowGroupRef ewg_inGroup, WindowGroupRef ewg_behindGroup)
+{
+	return SendWindowGroupBehind ((WindowGroupRef)ewg_inGroup, (WindowGroupRef)ewg_behindGroup);
+}
+
+// Return address of function 'SendWindowGroupBehind'
+void* ewg_get_function_address_SendWindowGroupBehind (void)
+{
+	return (void*) SendWindowGroupBehind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroup'
+// For ise
+WindowGroupRef  ewg_function_GetWindowGroup (WindowRef ewg_inWindow)
+{
+	return GetWindowGroup ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'GetWindowGroup'
+void* ewg_get_function_address_GetWindowGroup (void)
+{
+	return (void*) GetWindowGroup;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowGroup'
+// For ise
+OSStatus  ewg_function_SetWindowGroup (WindowRef ewg_inWindow, WindowGroupRef ewg_inNewGroup)
+{
+	return SetWindowGroup ((WindowRef)ewg_inWindow, (WindowGroupRef)ewg_inNewGroup);
+}
+
+// Return address of function 'SetWindowGroup'
+void* ewg_get_function_address_SetWindowGroup (void)
+{
+	return (void*) SetWindowGroup;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowContainedInGroup'
+// For ise
+Boolean  ewg_function_IsWindowContainedInGroup (WindowRef ewg_inWindow, WindowGroupRef ewg_inGroup)
+{
+	return IsWindowContainedInGroup ((WindowRef)ewg_inWindow, (WindowGroupRef)ewg_inGroup);
+}
+
+// Return address of function 'IsWindowContainedInGroup'
+void* ewg_get_function_address_IsWindowContainedInGroup (void)
+{
+	return (void*) IsWindowContainedInGroup;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupParent'
+// For ise
+WindowGroupRef  ewg_function_GetWindowGroupParent (WindowGroupRef ewg_inGroup)
+{
+	return GetWindowGroupParent ((WindowGroupRef)ewg_inGroup);
+}
+
+// Return address of function 'GetWindowGroupParent'
+void* ewg_get_function_address_GetWindowGroupParent (void)
+{
+	return (void*) GetWindowGroupParent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowGroupParent'
+// For ise
+OSStatus  ewg_function_SetWindowGroupParent (WindowGroupRef ewg_inGroup, WindowGroupRef ewg_inNewGroup)
+{
+	return SetWindowGroupParent ((WindowGroupRef)ewg_inGroup, (WindowGroupRef)ewg_inNewGroup);
+}
+
+// Return address of function 'SetWindowGroupParent'
+void* ewg_get_function_address_SetWindowGroupParent (void)
+{
+	return (void*) SetWindowGroupParent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupSibling'
+// For ise
+WindowGroupRef  ewg_function_GetWindowGroupSibling (WindowGroupRef ewg_inGroup, Boolean ewg_inNextGroup)
+{
+	return GetWindowGroupSibling ((WindowGroupRef)ewg_inGroup, (Boolean)ewg_inNextGroup);
+}
+
+// Return address of function 'GetWindowGroupSibling'
+void* ewg_get_function_address_GetWindowGroupSibling (void)
+{
+	return (void*) GetWindowGroupSibling;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupOwner'
+// For ise
+WindowRef  ewg_function_GetWindowGroupOwner (WindowGroupRef ewg_inGroup)
+{
+	return GetWindowGroupOwner ((WindowGroupRef)ewg_inGroup);
+}
+
+// Return address of function 'GetWindowGroupOwner'
+void* ewg_get_function_address_GetWindowGroupOwner (void)
+{
+	return (void*) GetWindowGroupOwner;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowGroupOwner'
+// For ise
+OSStatus  ewg_function_SetWindowGroupOwner (WindowGroupRef ewg_inGroup, WindowRef ewg_inWindow)
+{
+	return SetWindowGroupOwner ((WindowGroupRef)ewg_inGroup, (WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'SetWindowGroupOwner'
+void* ewg_get_function_address_SetWindowGroupOwner (void)
+{
+	return (void*) SetWindowGroupOwner;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CountWindowGroupContents'
+// For ise
+ItemCount  ewg_function_CountWindowGroupContents (WindowGroupRef ewg_inGroup, WindowGroupContentOptions ewg_inOptions)
+{
+	return CountWindowGroupContents ((WindowGroupRef)ewg_inGroup, (WindowGroupContentOptions)ewg_inOptions);
+}
+
+// Return address of function 'CountWindowGroupContents'
+void* ewg_get_function_address_CountWindowGroupContents (void)
+{
+	return (void*) CountWindowGroupContents;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGroupContents'
+// For ise
+OSStatus  ewg_function_GetWindowGroupContents (WindowGroupRef ewg_inGroup, WindowGroupContentOptions ewg_inOptions, ItemCount ewg_inAllowedItems, ItemCount *ewg_outNumItems, void **ewg_outItems)
+{
+	return GetWindowGroupContents ((WindowGroupRef)ewg_inGroup, (WindowGroupContentOptions)ewg_inOptions, (ItemCount)ewg_inAllowedItems, (ItemCount*)ewg_outNumItems, (void**)ewg_outItems);
+}
+
+// Return address of function 'GetWindowGroupContents'
+void* ewg_get_function_address_GetWindowGroupContents (void)
+{
+	return (void*) GetWindowGroupContents;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetIndexedWindow'
+// For ise
+OSStatus  ewg_function_GetIndexedWindow (WindowGroupRef ewg_inGroup, UInt32 ewg_inIndex, WindowGroupContentOptions ewg_inOptions, WindowRef *ewg_outWindow)
+{
+	return GetIndexedWindow ((WindowGroupRef)ewg_inGroup, (UInt32)ewg_inIndex, (WindowGroupContentOptions)ewg_inOptions, (WindowRef*)ewg_outWindow);
+}
+
+// Return address of function 'GetIndexedWindow'
+void* ewg_get_function_address_GetIndexedWindow (void)
+{
+	return (void*) GetIndexedWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowIndex'
+// For ise
+OSStatus  ewg_function_GetWindowIndex (WindowRef ewg_inWindow, WindowGroupRef ewg_inStartGroup, WindowGroupContentOptions ewg_inOptions, UInt32 *ewg_outIndex)
+{
+	return GetWindowIndex ((WindowRef)ewg_inWindow, (WindowGroupRef)ewg_inStartGroup, (WindowGroupContentOptions)ewg_inOptions, (UInt32*)ewg_outIndex);
+}
+
+// Return address of function 'GetWindowIndex'
+void* ewg_get_function_address_GetWindowIndex (void)
+{
+	return (void*) GetWindowIndex;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ActiveNonFloatingWindow'
+// For ise
+WindowRef  ewg_function_ActiveNonFloatingWindow (void)
+{
+	return ActiveNonFloatingWindow ();
+}
+
+// Return address of function 'ActiveNonFloatingWindow'
+void* ewg_get_function_address_ActiveNonFloatingWindow (void)
+{
+	return (void*) ActiveNonFloatingWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowActive'
+// For ise
+Boolean  ewg_function_IsWindowActive (WindowRef ewg_inWindow)
+{
+	return IsWindowActive ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'IsWindowActive'
+void* ewg_get_function_address_IsWindowActive (void)
+{
+	return (void*) IsWindowActive;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ActivateWindow'
+// For ise
+OSStatus  ewg_function_ActivateWindow (WindowRef ewg_inWindow, Boolean ewg_inActivate)
+{
+	return ActivateWindow ((WindowRef)ewg_inWindow, (Boolean)ewg_inActivate);
+}
+
+// Return address of function 'ActivateWindow'
+void* ewg_get_function_address_ActivateWindow (void)
+{
+	return (void*) ActivateWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowActivationScope'
+// For ise
+OSStatus  ewg_function_GetWindowActivationScope (WindowRef ewg_inWindow, WindowActivationScope *ewg_outScope)
+{
+	return GetWindowActivationScope ((WindowRef)ewg_inWindow, (WindowActivationScope*)ewg_outScope);
+}
+
+// Return address of function 'GetWindowActivationScope'
+void* ewg_get_function_address_GetWindowActivationScope (void)
+{
+	return (void*) GetWindowActivationScope;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowActivationScope'
+// For ise
+OSStatus  ewg_function_SetWindowActivationScope (WindowRef ewg_inWindow, WindowActivationScope ewg_inScope)
+{
+	return SetWindowActivationScope ((WindowRef)ewg_inWindow, (WindowActivationScope)ewg_inScope);
+}
+
+// Return address of function 'SetWindowActivationScope'
+void* ewg_get_function_address_SetWindowActivationScope (void)
+{
+	return (void*) SetWindowActivationScope;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DebugPrintWindowGroup'
+// For ise
+void  ewg_function_DebugPrintWindowGroup (WindowGroupRef ewg_inGroup)
+{
+	DebugPrintWindowGroup ((WindowGroupRef)ewg_inGroup);
+}
+
+// Return address of function 'DebugPrintWindowGroup'
+void* ewg_get_function_address_DebugPrintWindowGroup (void)
+{
+	return (void*) DebugPrintWindowGroup;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DebugPrintAllWindowGroups'
+// For ise
+void  ewg_function_DebugPrintAllWindowGroups (void)
+{
+	DebugPrintAllWindowGroups ();
+}
+
+// Return address of function 'DebugPrintAllWindowGroups'
+void* ewg_get_function_address_DebugPrintAllWindowGroups (void)
+{
+	return (void*) DebugPrintAllWindowGroups;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetThemeWindowBackground'
+// For ise
+OSStatus  ewg_function_SetThemeWindowBackground (WindowRef ewg_inWindow, ThemeBrush ewg_inBrush, Boolean ewg_inUpdate)
+{
+	return SetThemeWindowBackground ((WindowRef)ewg_inWindow, (ThemeBrush)ewg_inBrush, (Boolean)ewg_inUpdate);
+}
+
+// Return address of function 'SetThemeWindowBackground'
+void* ewg_get_function_address_SetThemeWindowBackground (void)
+{
+	return (void*) SetThemeWindowBackground;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetThemeTextColorForWindow'
+// For ise
+OSStatus  ewg_function_SetThemeTextColorForWindow (WindowRef ewg_inWindow, Boolean ewg_inActive, SInt16 ewg_inDepth, Boolean ewg_inColorDev)
+{
+	return SetThemeTextColorForWindow ((WindowRef)ewg_inWindow, (Boolean)ewg_inActive, (SInt16)ewg_inDepth, (Boolean)ewg_inColorDev);
+}
+
+// Return address of function 'SetThemeTextColorForWindow'
+void* ewg_get_function_address_SetThemeTextColorForWindow (void)
+{
+	return (void*) SetThemeTextColorForWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowContentColor'
+// For ise
+OSStatus  ewg_function_SetWindowContentColor (WindowRef ewg_window, RGBColor const *ewg_color)
+{
+	return SetWindowContentColor ((WindowRef)ewg_window, (RGBColor const*)ewg_color);
+}
+
+// Return address of function 'SetWindowContentColor'
+void* ewg_get_function_address_SetWindowContentColor (void)
+{
+	return (void*) SetWindowContentColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowContentColor'
+// For ise
+OSStatus  ewg_function_GetWindowContentColor (WindowRef ewg_window, RGBColor *ewg_color)
+{
+	return GetWindowContentColor ((WindowRef)ewg_window, (RGBColor*)ewg_color);
+}
+
+// Return address of function 'GetWindowContentColor'
+void* ewg_get_function_address_GetWindowContentColor (void)
+{
+	return (void*) GetWindowContentColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowContentPattern'
+// For ise
+OSStatus  ewg_function_GetWindowContentPattern (WindowRef ewg_window, PixPatHandle ewg_outPixPat)
+{
+	return GetWindowContentPattern ((WindowRef)ewg_window, (PixPatHandle)ewg_outPixPat);
+}
+
+// Return address of function 'GetWindowContentPattern'
+void* ewg_get_function_address_GetWindowContentPattern (void)
+{
+	return (void*) GetWindowContentPattern;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowContentPattern'
+// For ise
+OSStatus  ewg_function_SetWindowContentPattern (WindowRef ewg_window, PixPatHandle ewg_pixPat)
+{
+	return SetWindowContentPattern ((WindowRef)ewg_window, (PixPatHandle)ewg_pixPat);
+}
+
+// Return address of function 'SetWindowContentPattern'
+void* ewg_get_function_address_SetWindowContentPattern (void)
+{
+	return (void*) SetWindowContentPattern;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InstallWindowContentPaintProc'
+// For ise
+OSStatus  ewg_function_InstallWindowContentPaintProc (WindowRef ewg_window, WindowPaintUPP ewg_paintProc, WindowPaintProcOptions ewg_options, void *ewg_refCon)
+{
+	return InstallWindowContentPaintProc ((WindowRef)ewg_window, (WindowPaintUPP)ewg_paintProc, (WindowPaintProcOptions)ewg_options, (void*)ewg_refCon);
+}
+
+// Return address of function 'InstallWindowContentPaintProc'
+void* ewg_get_function_address_InstallWindowContentPaintProc (void)
+{
+	return (void*) InstallWindowContentPaintProc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ScrollWindowRect'
+// For ise
+OSStatus  ewg_function_ScrollWindowRect (WindowRef ewg_inWindow, Rect const *ewg_inScrollRect, SInt16 ewg_inHPixels, SInt16 ewg_inVPixels, ScrollWindowOptions ewg_inOptions, RgnHandle ewg_outExposedRgn)
+{
+	return ScrollWindowRect ((WindowRef)ewg_inWindow, (Rect const*)ewg_inScrollRect, (SInt16)ewg_inHPixels, (SInt16)ewg_inVPixels, (ScrollWindowOptions)ewg_inOptions, (RgnHandle)ewg_outExposedRgn);
+}
+
+// Return address of function 'ScrollWindowRect'
+void* ewg_get_function_address_ScrollWindowRect (void)
+{
+	return (void*) ScrollWindowRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ScrollWindowRegion'
+// For ise
+OSStatus  ewg_function_ScrollWindowRegion (WindowRef ewg_inWindow, RgnHandle ewg_inScrollRgn, SInt16 ewg_inHPixels, SInt16 ewg_inVPixels, ScrollWindowOptions ewg_inOptions, RgnHandle ewg_outExposedRgn)
+{
+	return ScrollWindowRegion ((WindowRef)ewg_inWindow, (RgnHandle)ewg_inScrollRgn, (SInt16)ewg_inHPixels, (SInt16)ewg_inVPixels, (ScrollWindowOptions)ewg_inOptions, (RgnHandle)ewg_outExposedRgn);
+}
+
+// Return address of function 'ScrollWindowRegion'
+void* ewg_get_function_address_ScrollWindowRegion (void)
+{
+	return (void*) ScrollWindowRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClipAbove'
+// For ise
+void  ewg_function_ClipAbove (WindowRef ewg_window)
+{
+	ClipAbove ((WindowRef)ewg_window);
+}
+
+// Return address of function 'ClipAbove'
+void* ewg_get_function_address_ClipAbove (void)
+{
+	return (void*) ClipAbove;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintOne'
+// For ise
+void  ewg_function_PaintOne (WindowRef ewg_window, RgnHandle ewg_clobberedRgn)
+{
+	PaintOne ((WindowRef)ewg_window, (RgnHandle)ewg_clobberedRgn);
+}
+
+// Return address of function 'PaintOne'
+void* ewg_get_function_address_PaintOne (void)
+{
+	return (void*) PaintOne;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PaintBehind'
+// For ise
+void  ewg_function_PaintBehind (WindowRef ewg_startWindow, RgnHandle ewg_clobberedRgn)
+{
+	PaintBehind ((WindowRef)ewg_startWindow, (RgnHandle)ewg_clobberedRgn);
+}
+
+// Return address of function 'PaintBehind'
+void* ewg_get_function_address_PaintBehind (void)
+{
+	return (void*) PaintBehind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CalcVis'
+// For ise
+void  ewg_function_CalcVis (WindowRef ewg_window)
+{
+	CalcVis ((WindowRef)ewg_window);
+}
+
+// Return address of function 'CalcVis'
+void* ewg_get_function_address_CalcVis (void)
+{
+	return (void*) CalcVis;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CalcVisBehind'
+// For ise
+void  ewg_function_CalcVisBehind (WindowRef ewg_startWindow, RgnHandle ewg_clobberedRgn)
+{
+	CalcVisBehind ((WindowRef)ewg_startWindow, (RgnHandle)ewg_clobberedRgn);
+}
+
+// Return address of function 'CalcVisBehind'
+void* ewg_get_function_address_CalcVisBehind (void)
+{
+	return (void*) CalcVisBehind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CheckUpdate'
+// For ise
+Boolean  ewg_function_CheckUpdate (EventRecord *ewg_theEvent)
+{
+	return CheckUpdate ((EventRecord*)ewg_theEvent);
+}
+
+// Return address of function 'CheckUpdate'
+void* ewg_get_function_address_CheckUpdate (void)
+{
+	return (void*) CheckUpdate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FindWindow'
+// For ise
+WindowPartCode  ewg_function_FindWindow (Point *ewg_thePoint, WindowRef *ewg_window)
+{
+	return FindWindow (*(Point*)ewg_thePoint, (WindowRef*)ewg_window);
+}
+
+// Return address of function 'FindWindow'
+void* ewg_get_function_address_FindWindow (void)
+{
+	return (void*) FindWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FrontWindow'
+// For ise
+WindowRef  ewg_function_FrontWindow (void)
+{
+	return FrontWindow ();
+}
+
+// Return address of function 'FrontWindow'
+void* ewg_get_function_address_FrontWindow (void)
+{
+	return (void*) FrontWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BringToFront'
+// For ise
+void  ewg_function_BringToFront (WindowRef ewg_window)
+{
+	BringToFront ((WindowRef)ewg_window);
+}
+
+// Return address of function 'BringToFront'
+void* ewg_get_function_address_BringToFront (void)
+{
+	return (void*) BringToFront;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SendBehind'
+// For ise
+void  ewg_function_SendBehind (WindowRef ewg_window, WindowRef ewg_behindWindow)
+{
+	SendBehind ((WindowRef)ewg_window, (WindowRef)ewg_behindWindow);
+}
+
+// Return address of function 'SendBehind'
+void* ewg_get_function_address_SendBehind (void)
+{
+	return (void*) SendBehind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SelectWindow'
+// For ise
+void  ewg_function_SelectWindow (WindowRef ewg_window)
+{
+	SelectWindow ((WindowRef)ewg_window);
+}
+
+// Return address of function 'SelectWindow'
+void* ewg_get_function_address_SelectWindow (void)
+{
+	return (void*) SelectWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FrontNonFloatingWindow'
+// For ise
+WindowRef  ewg_function_FrontNonFloatingWindow (void)
+{
+	return FrontNonFloatingWindow ();
+}
+
+// Return address of function 'FrontNonFloatingWindow'
+void* ewg_get_function_address_FrontNonFloatingWindow (void)
+{
+	return (void*) FrontNonFloatingWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNextWindowOfClass'
+// For ise
+WindowRef  ewg_function_GetNextWindowOfClass (WindowRef ewg_inWindow, WindowClass ewg_inWindowClass, Boolean ewg_mustBeVisible)
+{
+	return GetNextWindowOfClass ((WindowRef)ewg_inWindow, (WindowClass)ewg_inWindowClass, (Boolean)ewg_mustBeVisible);
+}
+
+// Return address of function 'GetNextWindowOfClass'
+void* ewg_get_function_address_GetNextWindowOfClass (void)
+{
+	return (void*) GetNextWindowOfClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetFrontWindowOfClass'
+// For ise
+WindowRef  ewg_function_GetFrontWindowOfClass (WindowClass ewg_inWindowClass, Boolean ewg_mustBeVisible)
+{
+	return GetFrontWindowOfClass ((WindowClass)ewg_inWindowClass, (Boolean)ewg_mustBeVisible);
+}
+
+// Return address of function 'GetFrontWindowOfClass'
+void* ewg_get_function_address_GetFrontWindowOfClass (void)
+{
+	return (void*) GetFrontWindowOfClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FindWindowOfClass'
+// For ise
+OSStatus  ewg_function_FindWindowOfClass (Point const *ewg_where, WindowClass ewg_inWindowClass, WindowRef *ewg_outWindow, WindowPartCode *ewg_outWindowPart)
+{
+	return FindWindowOfClass ((Point const*)ewg_where, (WindowClass)ewg_inWindowClass, (WindowRef*)ewg_outWindow, (WindowPartCode*)ewg_outWindowPart);
+}
+
+// Return address of function 'FindWindowOfClass'
+void* ewg_get_function_address_FindWindowOfClass (void)
+{
+	return (void*) FindWindowOfClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateStandardWindowMenu'
+// For ise
+OSStatus  ewg_function_CreateStandardWindowMenu (OptionBits ewg_inOptions, MenuRef *ewg_outMenu)
+{
+	return CreateStandardWindowMenu ((OptionBits)ewg_inOptions, (MenuRef*)ewg_outMenu);
+}
+
+// Return address of function 'CreateStandardWindowMenu'
+void* ewg_get_function_address_CreateStandardWindowMenu (void)
+{
+	return (void*) CreateStandardWindowMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowAlternateTitle'
+// For ise
+OSStatus  ewg_function_SetWindowAlternateTitle (WindowRef ewg_inWindow, CFStringRef ewg_inTitle)
+{
+	return SetWindowAlternateTitle ((WindowRef)ewg_inWindow, (CFStringRef)ewg_inTitle);
+}
+
+// Return address of function 'SetWindowAlternateTitle'
+void* ewg_get_function_address_SetWindowAlternateTitle (void)
+{
+	return (void*) SetWindowAlternateTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyWindowAlternateTitle'
+// For ise
+OSStatus  ewg_function_CopyWindowAlternateTitle (WindowRef ewg_inWindow, CFStringRef *ewg_outTitle)
+{
+	return CopyWindowAlternateTitle ((WindowRef)ewg_inWindow, (CFStringRef*)ewg_outTitle);
+}
+
+// Return address of function 'CopyWindowAlternateTitle'
+void* ewg_get_function_address_CopyWindowAlternateTitle (void)
+{
+	return (void*) CopyWindowAlternateTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsValidWindowPtr'
+// For ise
+Boolean  ewg_function_IsValidWindowPtr (WindowRef ewg_possibleWindow)
+{
+	return IsValidWindowPtr ((WindowRef)ewg_possibleWindow);
+}
+
+// Return address of function 'IsValidWindowPtr'
+void* ewg_get_function_address_IsValidWindowPtr (void)
+{
+	return (void*) IsValidWindowPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HiliteWindow'
+// For ise
+void  ewg_function_HiliteWindow (WindowRef ewg_window, Boolean ewg_fHilite)
+{
+	HiliteWindow ((WindowRef)ewg_window, (Boolean)ewg_fHilite);
+}
+
+// Return address of function 'HiliteWindow'
+void* ewg_get_function_address_HiliteWindow (void)
+{
+	return (void*) HiliteWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWRefCon'
+// For ise
+void  ewg_function_SetWRefCon (WindowRef ewg_window, long ewg_data)
+{
+	SetWRefCon ((WindowRef)ewg_window, (long)ewg_data);
+}
+
+// Return address of function 'SetWRefCon'
+void* ewg_get_function_address_SetWRefCon (void)
+{
+	return (void*) SetWRefCon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWRefCon'
+// For ise
+long  ewg_function_GetWRefCon (WindowRef ewg_window)
+{
+	return GetWRefCon ((WindowRef)ewg_window);
+}
+
+// Return address of function 'GetWRefCon'
+void* ewg_get_function_address_GetWRefCon (void)
+{
+	return (void*) GetWRefCon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowPic'
+// For ise
+void  ewg_function_SetWindowPic (WindowRef ewg_window, PicHandle ewg_pic)
+{
+	SetWindowPic ((WindowRef)ewg_window, (PicHandle)ewg_pic);
+}
+
+// Return address of function 'SetWindowPic'
+void* ewg_get_function_address_SetWindowPic (void)
+{
+	return (void*) SetWindowPic;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowPic'
+// For ise
+PicHandle  ewg_function_GetWindowPic (WindowRef ewg_window)
+{
+	return GetWindowPic ((WindowRef)ewg_window);
+}
+
+// Return address of function 'GetWindowPic'
+void* ewg_get_function_address_GetWindowPic (void)
+{
+	return (void*) GetWindowPic;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWVariant'
+// For ise
+short  ewg_function_GetWVariant (WindowRef ewg_window)
+{
+	return GetWVariant ((WindowRef)ewg_window);
+}
+
+// Return address of function 'GetWVariant'
+void* ewg_get_function_address_GetWVariant (void)
+{
+	return (void*) GetWVariant;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowFeatures'
+// For ise
+OSStatus  ewg_function_GetWindowFeatures (WindowRef ewg_window, UInt32 *ewg_outFeatures)
+{
+	return GetWindowFeatures ((WindowRef)ewg_window, (UInt32*)ewg_outFeatures);
+}
+
+// Return address of function 'GetWindowFeatures'
+void* ewg_get_function_address_GetWindowFeatures (void)
+{
+	return (void*) GetWindowFeatures;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowRegion'
+// For ise
+OSStatus  ewg_function_GetWindowRegion (WindowRef ewg_window, WindowRegionCode ewg_inRegionCode, RgnHandle ewg_ioWinRgn)
+{
+	return GetWindowRegion ((WindowRef)ewg_window, (WindowRegionCode)ewg_inRegionCode, (RgnHandle)ewg_ioWinRgn);
+}
+
+// Return address of function 'GetWindowRegion'
+void* ewg_get_function_address_GetWindowRegion (void)
+{
+	return (void*) GetWindowRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowStructureWidths'
+// For ise
+OSStatus  ewg_function_GetWindowStructureWidths (WindowRef ewg_inWindow, Rect *ewg_outRect)
+{
+	return GetWindowStructureWidths ((WindowRef)ewg_inWindow, (Rect*)ewg_outRect);
+}
+
+// Return address of function 'GetWindowStructureWidths'
+void* ewg_get_function_address_GetWindowStructureWidths (void)
+{
+	return (void*) GetWindowStructureWidths;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowChangeFeatures'
+// For ise
+OSStatus  ewg_function_HIWindowChangeFeatures (WindowRef ewg_inWindow, UInt64 ewg_inSetThese, UInt64 ewg_inClearThese)
+{
+	return HIWindowChangeFeatures ((WindowRef)ewg_inWindow, (UInt64)ewg_inSetThese, (UInt64)ewg_inClearThese);
+}
+
+// Return address of function 'HIWindowChangeFeatures'
+void* ewg_get_function_address_HIWindowChangeFeatures (void)
+{
+	return (void*) HIWindowChangeFeatures;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BeginUpdate'
+// For ise
+void  ewg_function_BeginUpdate (WindowRef ewg_window)
+{
+	BeginUpdate ((WindowRef)ewg_window);
+}
+
+// Return address of function 'BeginUpdate'
+void* ewg_get_function_address_BeginUpdate (void)
+{
+	return (void*) BeginUpdate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EndUpdate'
+// For ise
+void  ewg_function_EndUpdate (WindowRef ewg_window)
+{
+	EndUpdate ((WindowRef)ewg_window);
+}
+
+// Return address of function 'EndUpdate'
+void* ewg_get_function_address_EndUpdate (void)
+{
+	return (void*) EndUpdate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvalWindowRgn'
+// For ise
+OSStatus  ewg_function_InvalWindowRgn (WindowRef ewg_window, RgnHandle ewg_region)
+{
+	return InvalWindowRgn ((WindowRef)ewg_window, (RgnHandle)ewg_region);
+}
+
+// Return address of function 'InvalWindowRgn'
+void* ewg_get_function_address_InvalWindowRgn (void)
+{
+	return (void*) InvalWindowRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvalWindowRect'
+// For ise
+OSStatus  ewg_function_InvalWindowRect (WindowRef ewg_window, Rect const *ewg_bounds)
+{
+	return InvalWindowRect ((WindowRef)ewg_window, (Rect const*)ewg_bounds);
+}
+
+// Return address of function 'InvalWindowRect'
+void* ewg_get_function_address_InvalWindowRect (void)
+{
+	return (void*) InvalWindowRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ValidWindowRgn'
+// For ise
+OSStatus  ewg_function_ValidWindowRgn (WindowRef ewg_window, RgnHandle ewg_region)
+{
+	return ValidWindowRgn ((WindowRef)ewg_window, (RgnHandle)ewg_region);
+}
+
+// Return address of function 'ValidWindowRgn'
+void* ewg_get_function_address_ValidWindowRgn (void)
+{
+	return (void*) ValidWindowRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ValidWindowRect'
+// For ise
+OSStatus  ewg_function_ValidWindowRect (WindowRef ewg_window, Rect const *ewg_bounds)
+{
+	return ValidWindowRect ((WindowRef)ewg_window, (Rect const*)ewg_bounds);
+}
+
+// Return address of function 'ValidWindowRect'
+void* ewg_get_function_address_ValidWindowRect (void)
+{
+	return (void*) ValidWindowRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DrawGrowIcon'
+// For ise
+void  ewg_function_DrawGrowIcon (WindowRef ewg_window)
+{
+	DrawGrowIcon ((WindowRef)ewg_window);
+}
+
+// Return address of function 'DrawGrowIcon'
+void* ewg_get_function_address_DrawGrowIcon (void)
+{
+	return (void*) DrawGrowIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWTitle'
+// For ise
+void  ewg_function_SetWTitle (WindowRef ewg_window, ConstStr255Param ewg_title)
+{
+	SetWTitle ((WindowRef)ewg_window, (ConstStr255Param)ewg_title);
+}
+
+// Return address of function 'SetWTitle'
+void* ewg_get_function_address_SetWTitle (void)
+{
+	return (void*) SetWTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWTitle'
+// For ise
+void  ewg_function_GetWTitle (WindowRef ewg_window, void *ewg_title)
+{
+	GetWTitle ((WindowRef)ewg_window, ewg_title);
+}
+
+// Return address of function 'GetWTitle'
+void* ewg_get_function_address_GetWTitle (void)
+{
+	return (void*) GetWTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowTitleWithCFString'
+// For ise
+OSStatus  ewg_function_SetWindowTitleWithCFString (WindowRef ewg_inWindow, CFStringRef ewg_inString)
+{
+	return SetWindowTitleWithCFString ((WindowRef)ewg_inWindow, (CFStringRef)ewg_inString);
+}
+
+// Return address of function 'SetWindowTitleWithCFString'
+void* ewg_get_function_address_SetWindowTitleWithCFString (void)
+{
+	return (void*) SetWindowTitleWithCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyWindowTitleAsCFString'
+// For ise
+OSStatus  ewg_function_CopyWindowTitleAsCFString (WindowRef ewg_inWindow, CFStringRef *ewg_outString)
+{
+	return CopyWindowTitleAsCFString ((WindowRef)ewg_inWindow, (CFStringRef*)ewg_outString);
+}
+
+// Return address of function 'CopyWindowTitleAsCFString'
+void* ewg_get_function_address_CopyWindowTitleAsCFString (void)
+{
+	return (void*) CopyWindowTitleAsCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowProxyFSSpec'
+// For ise
+OSStatus  ewg_function_SetWindowProxyFSSpec (WindowRef ewg_window, FSSpec const *ewg_inFile)
+{
+	return SetWindowProxyFSSpec ((WindowRef)ewg_window, (FSSpec const*)ewg_inFile);
+}
+
+// Return address of function 'SetWindowProxyFSSpec'
+void* ewg_get_function_address_SetWindowProxyFSSpec (void)
+{
+	return (void*) SetWindowProxyFSSpec;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowProxyFSSpec'
+// For ise
+OSStatus  ewg_function_GetWindowProxyFSSpec (WindowRef ewg_window, FSSpec *ewg_outFile)
+{
+	return GetWindowProxyFSSpec ((WindowRef)ewg_window, (FSSpec*)ewg_outFile);
+}
+
+// Return address of function 'GetWindowProxyFSSpec'
+void* ewg_get_function_address_GetWindowProxyFSSpec (void)
+{
+	return (void*) GetWindowProxyFSSpec;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowSetProxyFSRef'
+// For ise
+OSStatus  ewg_function_HIWindowSetProxyFSRef (WindowRef ewg_window, FSRef const *ewg_inRef)
+{
+	return HIWindowSetProxyFSRef ((WindowRef)ewg_window, (FSRef const*)ewg_inRef);
+}
+
+// Return address of function 'HIWindowSetProxyFSRef'
+void* ewg_get_function_address_HIWindowSetProxyFSRef (void)
+{
+	return (void*) HIWindowSetProxyFSRef;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowGetProxyFSRef'
+// For ise
+OSStatus  ewg_function_HIWindowGetProxyFSRef (WindowRef ewg_window, FSRef *ewg_outRef)
+{
+	return HIWindowGetProxyFSRef ((WindowRef)ewg_window, (FSRef*)ewg_outRef);
+}
+
+// Return address of function 'HIWindowGetProxyFSRef'
+void* ewg_get_function_address_HIWindowGetProxyFSRef (void)
+{
+	return (void*) HIWindowGetProxyFSRef;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowProxyAlias'
+// For ise
+OSStatus  ewg_function_SetWindowProxyAlias (WindowRef ewg_inWindow, AliasHandle ewg_inAlias)
+{
+	return SetWindowProxyAlias ((WindowRef)ewg_inWindow, (AliasHandle)ewg_inAlias);
+}
+
+// Return address of function 'SetWindowProxyAlias'
+void* ewg_get_function_address_SetWindowProxyAlias (void)
+{
+	return (void*) SetWindowProxyAlias;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowProxyAlias'
+// For ise
+OSStatus  ewg_function_GetWindowProxyAlias (WindowRef ewg_window, AliasHandle *ewg_alias)
+{
+	return GetWindowProxyAlias ((WindowRef)ewg_window, (AliasHandle*)ewg_alias);
+}
+
+// Return address of function 'GetWindowProxyAlias'
+void* ewg_get_function_address_GetWindowProxyAlias (void)
+{
+	return (void*) GetWindowProxyAlias;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowProxyCreatorAndType'
+// For ise
+OSStatus  ewg_function_SetWindowProxyCreatorAndType (WindowRef ewg_window, OSType ewg_fileCreator, OSType ewg_fileType, SInt16 ewg_vRefNum)
+{
+	return SetWindowProxyCreatorAndType ((WindowRef)ewg_window, (OSType)ewg_fileCreator, (OSType)ewg_fileType, (SInt16)ewg_vRefNum);
+}
+
+// Return address of function 'SetWindowProxyCreatorAndType'
+void* ewg_get_function_address_SetWindowProxyCreatorAndType (void)
+{
+	return (void*) SetWindowProxyCreatorAndType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowProxyIcon'
+// For ise
+OSStatus  ewg_function_GetWindowProxyIcon (WindowRef ewg_window, IconRef *ewg_outIcon)
+{
+	return GetWindowProxyIcon ((WindowRef)ewg_window, (IconRef*)ewg_outIcon);
+}
+
+// Return address of function 'GetWindowProxyIcon'
+void* ewg_get_function_address_GetWindowProxyIcon (void)
+{
+	return (void*) GetWindowProxyIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowProxyIcon'
+// For ise
+OSStatus  ewg_function_SetWindowProxyIcon (WindowRef ewg_window, IconRef ewg_icon)
+{
+	return SetWindowProxyIcon ((WindowRef)ewg_window, (IconRef)ewg_icon);
+}
+
+// Return address of function 'SetWindowProxyIcon'
+void* ewg_get_function_address_SetWindowProxyIcon (void)
+{
+	return (void*) SetWindowProxyIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveWindowProxy'
+// For ise
+OSStatus  ewg_function_RemoveWindowProxy (WindowRef ewg_window)
+{
+	return RemoveWindowProxy ((WindowRef)ewg_window);
+}
+
+// Return address of function 'RemoveWindowProxy'
+void* ewg_get_function_address_RemoveWindowProxy (void)
+{
+	return (void*) RemoveWindowProxy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BeginWindowProxyDrag'
+// For ise
+OSStatus  ewg_function_BeginWindowProxyDrag (WindowRef ewg_window, DragReference *ewg_outNewDrag, RgnHandle ewg_outDragOutlineRgn)
+{
+	return BeginWindowProxyDrag ((WindowRef)ewg_window, (DragReference*)ewg_outNewDrag, (RgnHandle)ewg_outDragOutlineRgn);
+}
+
+// Return address of function 'BeginWindowProxyDrag'
+void* ewg_get_function_address_BeginWindowProxyDrag (void)
+{
+	return (void*) BeginWindowProxyDrag;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EndWindowProxyDrag'
+// For ise
+OSStatus  ewg_function_EndWindowProxyDrag (WindowRef ewg_window, DragReference ewg_theDrag)
+{
+	return EndWindowProxyDrag ((WindowRef)ewg_window, (DragReference)ewg_theDrag);
+}
+
+// Return address of function 'EndWindowProxyDrag'
+void* ewg_get_function_address_EndWindowProxyDrag (void)
+{
+	return (void*) EndWindowProxyDrag;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackWindowProxyFromExistingDrag'
+// For ise
+OSStatus  ewg_function_TrackWindowProxyFromExistingDrag (WindowRef ewg_window, Point *ewg_startPt, DragReference ewg_drag, RgnHandle ewg_inDragOutlineRgn)
+{
+	return TrackWindowProxyFromExistingDrag ((WindowRef)ewg_window, *(Point*)ewg_startPt, (DragReference)ewg_drag, (RgnHandle)ewg_inDragOutlineRgn);
+}
+
+// Return address of function 'TrackWindowProxyFromExistingDrag'
+void* ewg_get_function_address_TrackWindowProxyFromExistingDrag (void)
+{
+	return (void*) TrackWindowProxyFromExistingDrag;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackWindowProxyDrag'
+// For ise
+OSStatus  ewg_function_TrackWindowProxyDrag (WindowRef ewg_window, Point *ewg_startPt)
+{
+	return TrackWindowProxyDrag ((WindowRef)ewg_window, *(Point*)ewg_startPt);
+}
+
+// Return address of function 'TrackWindowProxyDrag'
+void* ewg_get_function_address_TrackWindowProxyDrag (void)
+{
+	return (void*) TrackWindowProxyDrag;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowModified'
+// For ise
+Boolean  ewg_function_IsWindowModified (WindowRef ewg_window)
+{
+	return IsWindowModified ((WindowRef)ewg_window);
+}
+
+// Return address of function 'IsWindowModified'
+void* ewg_get_function_address_IsWindowModified (void)
+{
+	return (void*) IsWindowModified;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowModified'
+// For ise
+OSStatus  ewg_function_SetWindowModified (WindowRef ewg_window, Boolean ewg_modified)
+{
+	return SetWindowModified ((WindowRef)ewg_window, (Boolean)ewg_modified);
+}
+
+// Return address of function 'SetWindowModified'
+void* ewg_get_function_address_SetWindowModified (void)
+{
+	return (void*) SetWindowModified;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowPathSelectClick'
+// For ise
+Boolean  ewg_function_IsWindowPathSelectClick (WindowRef ewg_window, EventRecord const *ewg_event)
+{
+	return IsWindowPathSelectClick ((WindowRef)ewg_window, (EventRecord const*)ewg_event);
+}
+
+// Return address of function 'IsWindowPathSelectClick'
+void* ewg_get_function_address_IsWindowPathSelectClick (void)
+{
+	return (void*) IsWindowPathSelectClick;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowPathSelectEvent'
+// For ise
+Boolean  ewg_function_IsWindowPathSelectEvent (WindowRef ewg_window, EventRef ewg_inEvent)
+{
+	return IsWindowPathSelectEvent ((WindowRef)ewg_window, (EventRef)ewg_inEvent);
+}
+
+// Return address of function 'IsWindowPathSelectEvent'
+void* ewg_get_function_address_IsWindowPathSelectEvent (void)
+{
+	return (void*) IsWindowPathSelectEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'WindowPathSelect'
+// For ise
+OSStatus  ewg_function_WindowPathSelect (WindowRef ewg_window, MenuRef ewg_menu, SInt32 *ewg_outMenuResult)
+{
+	return WindowPathSelect ((WindowRef)ewg_window, (MenuRef)ewg_menu, (SInt32*)ewg_outMenuResult);
+}
+
+// Return address of function 'WindowPathSelect'
+void* ewg_get_function_address_WindowPathSelect (void)
+{
+	return (void*) WindowPathSelect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HiliteWindowFrameForDrag'
+// For ise
+OSStatus  ewg_function_HiliteWindowFrameForDrag (WindowRef ewg_window, Boolean ewg_hilited)
+{
+	return HiliteWindowFrameForDrag ((WindowRef)ewg_window, (Boolean)ewg_hilited);
+}
+
+// Return address of function 'HiliteWindowFrameForDrag'
+void* ewg_get_function_address_HiliteWindowFrameForDrag (void)
+{
+	return (void*) HiliteWindowFrameForDrag;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TransitionWindow'
+// For ise
+OSStatus  ewg_function_TransitionWindow (WindowRef ewg_inWindow, WindowTransitionEffect ewg_inEffect, WindowTransitionAction ewg_inAction, Rect const *ewg_inRect)
+{
+	return TransitionWindow ((WindowRef)ewg_inWindow, (WindowTransitionEffect)ewg_inEffect, (WindowTransitionAction)ewg_inAction, (Rect const*)ewg_inRect);
+}
+
+// Return address of function 'TransitionWindow'
+void* ewg_get_function_address_TransitionWindow (void)
+{
+	return (void*) TransitionWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TransitionWindowAndParent'
+// For ise
+OSStatus  ewg_function_TransitionWindowAndParent (WindowRef ewg_inWindow, WindowRef ewg_inParentWindow, WindowTransitionEffect ewg_inEffect, WindowTransitionAction ewg_inAction, Rect const *ewg_inRect)
+{
+	return TransitionWindowAndParent ((WindowRef)ewg_inWindow, (WindowRef)ewg_inParentWindow, (WindowTransitionEffect)ewg_inEffect, (WindowTransitionAction)ewg_inAction, (Rect const*)ewg_inRect);
+}
+
+// Return address of function 'TransitionWindowAndParent'
+void* ewg_get_function_address_TransitionWindowAndParent (void)
+{
+	return (void*) TransitionWindowAndParent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TransitionWindowWithOptions'
+// For ise
+OSStatus  ewg_function_TransitionWindowWithOptions (WindowRef ewg_inWindow, WindowTransitionEffect ewg_inEffect, WindowTransitionAction ewg_inAction, HIRect const *ewg_inBounds, Boolean ewg_inAsync, TransitionWindowOptions *ewg_inOptions)
+{
+	return TransitionWindowWithOptions ((WindowRef)ewg_inWindow, (WindowTransitionEffect)ewg_inEffect, (WindowTransitionAction)ewg_inAction, (HIRect const*)ewg_inBounds, (Boolean)ewg_inAsync, (TransitionWindowOptions*)ewg_inOptions);
+}
+
+// Return address of function 'TransitionWindowWithOptions'
+void* ewg_get_function_address_TransitionWindowWithOptions (void)
+{
+	return (void*) TransitionWindowWithOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MoveWindow'
+// For ise
+void  ewg_function_MoveWindow (WindowRef ewg_window, short ewg_hGlobal, short ewg_vGlobal, Boolean ewg_front)
+{
+	MoveWindow ((WindowRef)ewg_window, (short)ewg_hGlobal, (short)ewg_vGlobal, (Boolean)ewg_front);
+}
+
+// Return address of function 'MoveWindow'
+void* ewg_get_function_address_MoveWindow (void)
+{
+	return (void*) MoveWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SizeWindow'
+// For ise
+void  ewg_function_SizeWindow (WindowRef ewg_window, short ewg_w, short ewg_h, Boolean ewg_fUpdate)
+{
+	SizeWindow ((WindowRef)ewg_window, (short)ewg_w, (short)ewg_h, (Boolean)ewg_fUpdate);
+}
+
+// Return address of function 'SizeWindow'
+void* ewg_get_function_address_SizeWindow (void)
+{
+	return (void*) SizeWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GrowWindow'
+// For ise
+long  ewg_function_GrowWindow (WindowRef ewg_window, Point *ewg_startPt, Rect const *ewg_bBox)
+{
+	return GrowWindow ((WindowRef)ewg_window, *(Point*)ewg_startPt, (Rect const*)ewg_bBox);
+}
+
+// Return address of function 'GrowWindow'
+void* ewg_get_function_address_GrowWindow (void)
+{
+	return (void*) GrowWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DragWindow'
+// For ise
+void  ewg_function_DragWindow (WindowRef ewg_window, Point *ewg_startPt, Rect const *ewg_boundsRect)
+{
+	DragWindow ((WindowRef)ewg_window, *(Point*)ewg_startPt, (Rect const*)ewg_boundsRect);
+}
+
+// Return address of function 'DragWindow'
+void* ewg_get_function_address_DragWindow (void)
+{
+	return (void*) DragWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ZoomWindow'
+// For ise
+void  ewg_function_ZoomWindow (WindowRef ewg_window, WindowPartCode ewg_partCode, Boolean ewg_front)
+{
+	ZoomWindow ((WindowRef)ewg_window, (WindowPartCode)ewg_partCode, (Boolean)ewg_front);
+}
+
+// Return address of function 'ZoomWindow'
+void* ewg_get_function_address_ZoomWindow (void)
+{
+	return (void*) ZoomWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowCollapsable'
+// For ise
+Boolean  ewg_function_IsWindowCollapsable (WindowRef ewg_window)
+{
+	return IsWindowCollapsable ((WindowRef)ewg_window);
+}
+
+// Return address of function 'IsWindowCollapsable'
+void* ewg_get_function_address_IsWindowCollapsable (void)
+{
+	return (void*) IsWindowCollapsable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowCollapsed'
+// For ise
+Boolean  ewg_function_IsWindowCollapsed (WindowRef ewg_window)
+{
+	return IsWindowCollapsed ((WindowRef)ewg_window);
+}
+
+// Return address of function 'IsWindowCollapsed'
+void* ewg_get_function_address_IsWindowCollapsed (void)
+{
+	return (void*) IsWindowCollapsed;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CollapseWindow'
+// For ise
+OSStatus  ewg_function_CollapseWindow (WindowRef ewg_window, Boolean ewg_collapse)
+{
+	return CollapseWindow ((WindowRef)ewg_window, (Boolean)ewg_collapse);
+}
+
+// Return address of function 'CollapseWindow'
+void* ewg_get_function_address_CollapseWindow (void)
+{
+	return (void*) CollapseWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CollapseAllWindows'
+// For ise
+OSStatus  ewg_function_CollapseAllWindows (Boolean ewg_collapse)
+{
+	return CollapseAllWindows ((Boolean)ewg_collapse);
+}
+
+// Return address of function 'CollapseAllWindows'
+void* ewg_get_function_address_CollapseAllWindows (void)
+{
+	return (void*) CollapseAllWindows;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateQDContextForCollapsedWindowDockTile'
+// For ise
+OSStatus  ewg_function_CreateQDContextForCollapsedWindowDockTile (WindowRef ewg_inWindow, CGrafPtr *ewg_outContext)
+{
+	return CreateQDContextForCollapsedWindowDockTile ((WindowRef)ewg_inWindow, (CGrafPtr*)ewg_outContext);
+}
+
+// Return address of function 'CreateQDContextForCollapsedWindowDockTile'
+void* ewg_get_function_address_CreateQDContextForCollapsedWindowDockTile (void)
+{
+	return (void*) CreateQDContextForCollapsedWindowDockTile;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReleaseQDContextForCollapsedWindowDockTile'
+// For ise
+OSStatus  ewg_function_ReleaseQDContextForCollapsedWindowDockTile (WindowRef ewg_inWindow, CGrafPtr ewg_inContext)
+{
+	return ReleaseQDContextForCollapsedWindowDockTile ((WindowRef)ewg_inWindow, (CGrafPtr)ewg_inContext);
+}
+
+// Return address of function 'ReleaseQDContextForCollapsedWindowDockTile'
+void* ewg_get_function_address_ReleaseQDContextForCollapsedWindowDockTile (void)
+{
+	return (void*) ReleaseQDContextForCollapsedWindowDockTile;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UpdateCollapsedWindowDockTile'
+// For ise
+OSStatus  ewg_function_UpdateCollapsedWindowDockTile (WindowRef ewg_inWindow)
+{
+	return UpdateCollapsedWindowDockTile ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'UpdateCollapsedWindowDockTile'
+void* ewg_get_function_address_UpdateCollapsedWindowDockTile (void)
+{
+	return (void*) UpdateCollapsedWindowDockTile;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowDockTileMenu'
+// For ise
+OSStatus  ewg_function_SetWindowDockTileMenu (WindowRef ewg_inWindow, MenuRef ewg_inMenu)
+{
+	return SetWindowDockTileMenu ((WindowRef)ewg_inWindow, (MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'SetWindowDockTileMenu'
+void* ewg_get_function_address_SetWindowDockTileMenu (void)
+{
+	return (void*) SetWindowDockTileMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowDockTileMenu'
+// For ise
+MenuRef  ewg_function_GetWindowDockTileMenu (WindowRef ewg_inWindow)
+{
+	return GetWindowDockTileMenu ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'GetWindowDockTileMenu'
+void* ewg_get_function_address_GetWindowDockTileMenu (void)
+{
+	return (void*) GetWindowDockTileMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowBounds'
+// For ise
+OSStatus  ewg_function_GetWindowBounds (WindowRef ewg_window, WindowRegionCode ewg_regionCode, Rect *ewg_globalBounds)
+{
+	return GetWindowBounds ((WindowRef)ewg_window, (WindowRegionCode)ewg_regionCode, (Rect*)ewg_globalBounds);
+}
+
+// Return address of function 'GetWindowBounds'
+void* ewg_get_function_address_GetWindowBounds (void)
+{
+	return (void*) GetWindowBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowResizeLimits'
+// For ise
+OSStatus  ewg_function_SetWindowResizeLimits (WindowRef ewg_inWindow, HISize const *ewg_inMinLimits, HISize const *ewg_inMaxLimits)
+{
+	return SetWindowResizeLimits ((WindowRef)ewg_inWindow, (HISize const*)ewg_inMinLimits, (HISize const*)ewg_inMaxLimits);
+}
+
+// Return address of function 'SetWindowResizeLimits'
+void* ewg_get_function_address_SetWindowResizeLimits (void)
+{
+	return (void*) SetWindowResizeLimits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowResizeLimits'
+// For ise
+OSStatus  ewg_function_GetWindowResizeLimits (WindowRef ewg_inWindow, HISize *ewg_outMinLimits, HISize *ewg_outMaxLimits)
+{
+	return GetWindowResizeLimits ((WindowRef)ewg_inWindow, (HISize*)ewg_outMinLimits, (HISize*)ewg_outMaxLimits);
+}
+
+// Return address of function 'GetWindowResizeLimits'
+void* ewg_get_function_address_GetWindowResizeLimits (void)
+{
+	return (void*) GetWindowResizeLimits;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ResizeWindow'
+// For ise
+Boolean  ewg_function_ResizeWindow (WindowRef ewg_inWindow, Point *ewg_inStartPoint, Rect const *ewg_inSizeConstraints, Rect *ewg_outNewContentRect)
+{
+	return ResizeWindow ((WindowRef)ewg_inWindow, *(Point*)ewg_inStartPoint, (Rect const*)ewg_inSizeConstraints, (Rect*)ewg_outNewContentRect);
+}
+
+// Return address of function 'ResizeWindow'
+void* ewg_get_function_address_ResizeWindow (void)
+{
+	return (void*) ResizeWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowBounds'
+// For ise
+OSStatus  ewg_function_SetWindowBounds (WindowRef ewg_window, WindowRegionCode ewg_regionCode, Rect const *ewg_globalBounds)
+{
+	return SetWindowBounds ((WindowRef)ewg_window, (WindowRegionCode)ewg_regionCode, (Rect const*)ewg_globalBounds);
+}
+
+// Return address of function 'SetWindowBounds'
+void* ewg_get_function_address_SetWindowBounds (void)
+{
+	return (void*) SetWindowBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RepositionWindow'
+// For ise
+OSStatus  ewg_function_RepositionWindow (WindowRef ewg_window, WindowRef ewg_parentWindow, WindowPositionMethod ewg_method)
+{
+	return RepositionWindow ((WindowRef)ewg_window, (WindowRef)ewg_parentWindow, (WindowPositionMethod)ewg_method);
+}
+
+// Return address of function 'RepositionWindow'
+void* ewg_get_function_address_RepositionWindow (void)
+{
+	return (void*) RepositionWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MoveWindowStructure'
+// For ise
+OSStatus  ewg_function_MoveWindowStructure (WindowRef ewg_window, short ewg_hGlobal, short ewg_vGlobal)
+{
+	return MoveWindowStructure ((WindowRef)ewg_window, (short)ewg_hGlobal, (short)ewg_vGlobal);
+}
+
+// Return address of function 'MoveWindowStructure'
+void* ewg_get_function_address_MoveWindowStructure (void)
+{
+	return (void*) MoveWindowStructure;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowInStandardState'
+// For ise
+Boolean  ewg_function_IsWindowInStandardState (WindowRef ewg_inWindow, Point const *ewg_inIdealSize, Rect *ewg_outIdealStandardState)
+{
+	return IsWindowInStandardState ((WindowRef)ewg_inWindow, (Point const*)ewg_inIdealSize, (Rect*)ewg_outIdealStandardState);
+}
+
+// Return address of function 'IsWindowInStandardState'
+void* ewg_get_function_address_IsWindowInStandardState (void)
+{
+	return (void*) IsWindowInStandardState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ZoomWindowIdeal'
+// For ise
+OSStatus  ewg_function_ZoomWindowIdeal (WindowRef ewg_inWindow, WindowPartCode ewg_inPartCode, Point *ewg_ioIdealSize)
+{
+	return ZoomWindowIdeal ((WindowRef)ewg_inWindow, (WindowPartCode)ewg_inPartCode, (Point*)ewg_ioIdealSize);
+}
+
+// Return address of function 'ZoomWindowIdeal'
+void* ewg_get_function_address_ZoomWindowIdeal (void)
+{
+	return (void*) ZoomWindowIdeal;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowIdealUserState'
+// For ise
+OSStatus  ewg_function_GetWindowIdealUserState (WindowRef ewg_inWindow, Rect *ewg_outUserState)
+{
+	return GetWindowIdealUserState ((WindowRef)ewg_inWindow, (Rect*)ewg_outUserState);
+}
+
+// Return address of function 'GetWindowIdealUserState'
+void* ewg_get_function_address_GetWindowIdealUserState (void)
+{
+	return (void*) GetWindowIdealUserState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowIdealUserState'
+// For ise
+OSStatus  ewg_function_SetWindowIdealUserState (WindowRef ewg_inWindow, Rect const *ewg_inUserState)
+{
+	return SetWindowIdealUserState ((WindowRef)ewg_inWindow, (Rect const*)ewg_inUserState);
+}
+
+// Return address of function 'SetWindowIdealUserState'
+void* ewg_get_function_address_SetWindowIdealUserState (void)
+{
+	return (void*) SetWindowIdealUserState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowGreatestAreaDevice'
+// For ise
+OSStatus  ewg_function_GetWindowGreatestAreaDevice (WindowRef ewg_inWindow, WindowRegionCode ewg_inRegion, GDHandle *ewg_outGreatestDevice, Rect *ewg_outGreatestDeviceRect)
+{
+	return GetWindowGreatestAreaDevice ((WindowRef)ewg_inWindow, (WindowRegionCode)ewg_inRegion, (GDHandle*)ewg_outGreatestDevice, (Rect*)ewg_outGreatestDeviceRect);
+}
+
+// Return address of function 'GetWindowGreatestAreaDevice'
+void* ewg_get_function_address_GetWindowGreatestAreaDevice (void)
+{
+	return (void*) GetWindowGreatestAreaDevice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ConstrainWindowToScreen'
+// For ise
+OSStatus  ewg_function_ConstrainWindowToScreen (WindowRef ewg_inWindowRef, WindowRegionCode ewg_inRegionCode, WindowConstrainOptions ewg_inOptions, Rect const *ewg_inScreenRect, Rect *ewg_outStructure)
+{
+	return ConstrainWindowToScreen ((WindowRef)ewg_inWindowRef, (WindowRegionCode)ewg_inRegionCode, (WindowConstrainOptions)ewg_inOptions, (Rect const*)ewg_inScreenRect, (Rect*)ewg_outStructure);
+}
+
+// Return address of function 'ConstrainWindowToScreen'
+void* ewg_get_function_address_ConstrainWindowToScreen (void)
+{
+	return (void*) ConstrainWindowToScreen;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetAvailableWindowPositioningBounds'
+// For ise
+OSStatus  ewg_function_GetAvailableWindowPositioningBounds (GDHandle ewg_inDevice, Rect *ewg_outAvailableRect)
+{
+	return GetAvailableWindowPositioningBounds ((GDHandle)ewg_inDevice, (Rect*)ewg_outAvailableRect);
+}
+
+// Return address of function 'GetAvailableWindowPositioningBounds'
+void* ewg_get_function_address_GetAvailableWindowPositioningBounds (void)
+{
+	return (void*) GetAvailableWindowPositioningBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetAvailableWindowPositioningRegion'
+// For ise
+OSStatus  ewg_function_GetAvailableWindowPositioningRegion (GDHandle ewg_inDevice, RgnHandle ewg_ioRgn)
+{
+	return GetAvailableWindowPositioningRegion ((GDHandle)ewg_inDevice, (RgnHandle)ewg_ioRgn);
+}
+
+// Return address of function 'GetAvailableWindowPositioningRegion'
+void* ewg_get_function_address_GetAvailableWindowPositioningRegion (void)
+{
+	return (void*) GetAvailableWindowPositioningRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HideWindow'
+// For ise
+void  ewg_function_HideWindow (WindowRef ewg_window)
+{
+	HideWindow ((WindowRef)ewg_window);
+}
+
+// Return address of function 'HideWindow'
+void* ewg_get_function_address_HideWindow (void)
+{
+	return (void*) HideWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowWindow'
+// For ise
+void  ewg_function_ShowWindow (WindowRef ewg_window)
+{
+	ShowWindow ((WindowRef)ewg_window);
+}
+
+// Return address of function 'ShowWindow'
+void* ewg_get_function_address_ShowWindow (void)
+{
+	return (void*) ShowWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowHide'
+// For ise
+void  ewg_function_ShowHide (WindowRef ewg_window, Boolean ewg_showFlag)
+{
+	ShowHide ((WindowRef)ewg_window, (Boolean)ewg_showFlag);
+}
+
+// Return address of function 'ShowHide'
+void* ewg_get_function_address_ShowHide (void)
+{
+	return (void*) ShowHide;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowVisible'
+// For ise
+Boolean  ewg_function_IsWindowVisible (WindowRef ewg_window)
+{
+	return IsWindowVisible ((WindowRef)ewg_window);
+}
+
+// Return address of function 'IsWindowVisible'
+void* ewg_get_function_address_IsWindowVisible (void)
+{
+	return (void*) IsWindowVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowLatentVisible'
+// For ise
+Boolean  ewg_function_IsWindowLatentVisible (WindowRef ewg_inWindow, WindowLatentVisibility *ewg_outLatentVisible)
+{
+	return IsWindowLatentVisible ((WindowRef)ewg_inWindow, (WindowLatentVisibility*)ewg_outLatentVisible);
+}
+
+// Return address of function 'IsWindowLatentVisible'
+void* ewg_get_function_address_IsWindowLatentVisible (void)
+{
+	return (void*) IsWindowLatentVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowGetAvailability'
+// For ise
+OSStatus  ewg_function_HIWindowGetAvailability (HIWindowRef ewg_inWindow, HIWindowAvailability *ewg_outAvailability)
+{
+	return HIWindowGetAvailability ((HIWindowRef)ewg_inWindow, (HIWindowAvailability*)ewg_outAvailability);
+}
+
+// Return address of function 'HIWindowGetAvailability'
+void* ewg_get_function_address_HIWindowGetAvailability (void)
+{
+	return (void*) HIWindowGetAvailability;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowChangeAvailability'
+// For ise
+OSStatus  ewg_function_HIWindowChangeAvailability (HIWindowRef ewg_inWindow, HIWindowAvailability ewg_inSetAvailability, HIWindowAvailability ewg_inClearAvailability)
+{
+	return HIWindowChangeAvailability ((HIWindowRef)ewg_inWindow, (HIWindowAvailability)ewg_inSetAvailability, (HIWindowAvailability)ewg_inClearAvailability);
+}
+
+// Return address of function 'HIWindowChangeAvailability'
+void* ewg_get_function_address_HIWindowChangeAvailability (void)
+{
+	return (void*) HIWindowChangeAvailability;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowSheetWindow'
+// For ise
+OSStatus  ewg_function_ShowSheetWindow (WindowRef ewg_inSheet, WindowRef ewg_inParentWindow)
+{
+	return ShowSheetWindow ((WindowRef)ewg_inSheet, (WindowRef)ewg_inParentWindow);
+}
+
+// Return address of function 'ShowSheetWindow'
+void* ewg_get_function_address_ShowSheetWindow (void)
+{
+	return (void*) ShowSheetWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HideSheetWindow'
+// For ise
+OSStatus  ewg_function_HideSheetWindow (WindowRef ewg_inSheet)
+{
+	return HideSheetWindow ((WindowRef)ewg_inSheet);
+}
+
+// Return address of function 'HideSheetWindow'
+void* ewg_get_function_address_HideSheetWindow (void)
+{
+	return (void*) HideSheetWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DetachSheetWindow'
+// For ise
+OSStatus  ewg_function_DetachSheetWindow (WindowRef ewg_inSheet)
+{
+	return DetachSheetWindow ((WindowRef)ewg_inSheet);
+}
+
+// Return address of function 'DetachSheetWindow'
+void* ewg_get_function_address_DetachSheetWindow (void)
+{
+	return (void*) DetachSheetWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetSheetWindowParent'
+// For ise
+OSStatus  ewg_function_GetSheetWindowParent (WindowRef ewg_inSheet, WindowRef *ewg_outParentWindow)
+{
+	return GetSheetWindowParent ((WindowRef)ewg_inSheet, (WindowRef*)ewg_outParentWindow);
+}
+
+// Return address of function 'GetSheetWindowParent'
+void* ewg_get_function_address_GetSheetWindowParent (void)
+{
+	return (void*) GetSheetWindowParent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDrawerPreferredEdge'
+// For ise
+OptionBits  ewg_function_GetDrawerPreferredEdge (WindowRef ewg_inDrawerWindow)
+{
+	return GetDrawerPreferredEdge ((WindowRef)ewg_inDrawerWindow);
+}
+
+// Return address of function 'GetDrawerPreferredEdge'
+void* ewg_get_function_address_GetDrawerPreferredEdge (void)
+{
+	return (void*) GetDrawerPreferredEdge;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDrawerPreferredEdge'
+// For ise
+OSStatus  ewg_function_SetDrawerPreferredEdge (WindowRef ewg_inDrawerWindow, OptionBits ewg_inEdge)
+{
+	return SetDrawerPreferredEdge ((WindowRef)ewg_inDrawerWindow, (OptionBits)ewg_inEdge);
+}
+
+// Return address of function 'SetDrawerPreferredEdge'
+void* ewg_get_function_address_SetDrawerPreferredEdge (void)
+{
+	return (void*) SetDrawerPreferredEdge;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDrawerCurrentEdge'
+// For ise
+OptionBits  ewg_function_GetDrawerCurrentEdge (WindowRef ewg_inDrawerWindow)
+{
+	return GetDrawerCurrentEdge ((WindowRef)ewg_inDrawerWindow);
+}
+
+// Return address of function 'GetDrawerCurrentEdge'
+void* ewg_get_function_address_GetDrawerCurrentEdge (void)
+{
+	return (void*) GetDrawerCurrentEdge;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDrawerState'
+// For ise
+WindowDrawerState  ewg_function_GetDrawerState (WindowRef ewg_inDrawerWindow)
+{
+	return GetDrawerState ((WindowRef)ewg_inDrawerWindow);
+}
+
+// Return address of function 'GetDrawerState'
+void* ewg_get_function_address_GetDrawerState (void)
+{
+	return (void*) GetDrawerState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDrawerParent'
+// For ise
+WindowRef  ewg_function_GetDrawerParent (WindowRef ewg_inDrawerWindow)
+{
+	return GetDrawerParent ((WindowRef)ewg_inDrawerWindow);
+}
+
+// Return address of function 'GetDrawerParent'
+void* ewg_get_function_address_GetDrawerParent (void)
+{
+	return (void*) GetDrawerParent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDrawerParent'
+// For ise
+OSStatus  ewg_function_SetDrawerParent (WindowRef ewg_inDrawerWindow, WindowRef ewg_inParent)
+{
+	return SetDrawerParent ((WindowRef)ewg_inDrawerWindow, (WindowRef)ewg_inParent);
+}
+
+// Return address of function 'SetDrawerParent'
+void* ewg_get_function_address_SetDrawerParent (void)
+{
+	return (void*) SetDrawerParent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDrawerOffsets'
+// For ise
+OSStatus  ewg_function_SetDrawerOffsets (WindowRef ewg_inDrawerWindow, float ewg_inLeadingOffset, float ewg_inTrailingOffset)
+{
+	return SetDrawerOffsets ((WindowRef)ewg_inDrawerWindow, (float)ewg_inLeadingOffset, (float)ewg_inTrailingOffset);
+}
+
+// Return address of function 'SetDrawerOffsets'
+void* ewg_get_function_address_SetDrawerOffsets (void)
+{
+	return (void*) SetDrawerOffsets;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDrawerOffsets'
+// For ise
+OSStatus  ewg_function_GetDrawerOffsets (WindowRef ewg_inDrawerWindow, float *ewg_outLeadingOffset, float *ewg_outTrailingOffset)
+{
+	return GetDrawerOffsets ((WindowRef)ewg_inDrawerWindow, (float*)ewg_outLeadingOffset, (float*)ewg_outTrailingOffset);
+}
+
+// Return address of function 'GetDrawerOffsets'
+void* ewg_get_function_address_GetDrawerOffsets (void)
+{
+	return (void*) GetDrawerOffsets;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ToggleDrawer'
+// For ise
+OSStatus  ewg_function_ToggleDrawer (WindowRef ewg_inDrawerWindow)
+{
+	return ToggleDrawer ((WindowRef)ewg_inDrawerWindow);
+}
+
+// Return address of function 'ToggleDrawer'
+void* ewg_get_function_address_ToggleDrawer (void)
+{
+	return (void*) ToggleDrawer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpenDrawer'
+// For ise
+OSStatus  ewg_function_OpenDrawer (WindowRef ewg_inDrawerWindow, OptionBits ewg_inEdge, Boolean ewg_inAsync)
+{
+	return OpenDrawer ((WindowRef)ewg_inDrawerWindow, (OptionBits)ewg_inEdge, (Boolean)ewg_inAsync);
+}
+
+// Return address of function 'OpenDrawer'
+void* ewg_get_function_address_OpenDrawer (void)
+{
+	return (void*) OpenDrawer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CloseDrawer'
+// For ise
+OSStatus  ewg_function_CloseDrawer (WindowRef ewg_inDrawerWindow, Boolean ewg_inAsync)
+{
+	return CloseDrawer ((WindowRef)ewg_inDrawerWindow, (Boolean)ewg_inAsync);
+}
+
+// Return address of function 'CloseDrawer'
+void* ewg_get_function_address_CloseDrawer (void)
+{
+	return (void*) CloseDrawer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisableScreenUpdates'
+// For ise
+OSStatus  ewg_function_DisableScreenUpdates (void)
+{
+	return DisableScreenUpdates ();
+}
+
+// Return address of function 'DisableScreenUpdates'
+void* ewg_get_function_address_DisableScreenUpdates (void)
+{
+	return (void*) DisableScreenUpdates;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableScreenUpdates'
+// For ise
+OSStatus  ewg_function_EnableScreenUpdates (void)
+{
+	return EnableScreenUpdates ();
+}
+
+// Return address of function 'EnableScreenUpdates'
+void* ewg_get_function_address_EnableScreenUpdates (void)
+{
+	return (void*) EnableScreenUpdates;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowToolbar'
+// For ise
+OSStatus  ewg_function_SetWindowToolbar (WindowRef ewg_inWindow, HIToolbarRef ewg_inToolbar)
+{
+	return SetWindowToolbar ((WindowRef)ewg_inWindow, (HIToolbarRef)ewg_inToolbar);
+}
+
+// Return address of function 'SetWindowToolbar'
+void* ewg_get_function_address_SetWindowToolbar (void)
+{
+	return (void*) SetWindowToolbar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowToolbar'
+// For ise
+OSStatus  ewg_function_GetWindowToolbar (WindowRef ewg_inWindow, HIToolbarRef *ewg_outToolbar)
+{
+	return GetWindowToolbar ((WindowRef)ewg_inWindow, (HIToolbarRef*)ewg_outToolbar);
+}
+
+// Return address of function 'GetWindowToolbar'
+void* ewg_get_function_address_GetWindowToolbar (void)
+{
+	return (void*) GetWindowToolbar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowHideWindowToolbar'
+// For ise
+OSStatus  ewg_function_ShowHideWindowToolbar (WindowRef ewg_inWindow, Boolean ewg_inShow, Boolean ewg_inAnimate)
+{
+	return ShowHideWindowToolbar ((WindowRef)ewg_inWindow, (Boolean)ewg_inShow, (Boolean)ewg_inAnimate);
+}
+
+// Return address of function 'ShowHideWindowToolbar'
+void* ewg_get_function_address_ShowHideWindowToolbar (void)
+{
+	return (void*) ShowHideWindowToolbar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowToolbarVisible'
+// For ise
+Boolean  ewg_function_IsWindowToolbarVisible (WindowRef ewg_inWindow)
+{
+	return IsWindowToolbarVisible ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'IsWindowToolbarVisible'
+void* ewg_get_function_address_IsWindowToolbarVisible (void)
+{
+	return (void*) IsWindowToolbarVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowAlpha'
+// For ise
+OSStatus  ewg_function_SetWindowAlpha (WindowRef ewg_inWindow, float ewg_inAlpha)
+{
+	return SetWindowAlpha ((WindowRef)ewg_inWindow, (float)ewg_inAlpha);
+}
+
+// Return address of function 'SetWindowAlpha'
+void* ewg_get_function_address_SetWindowAlpha (void)
+{
+	return (void*) SetWindowAlpha;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowAlpha'
+// For ise
+OSStatus  ewg_function_GetWindowAlpha (WindowRef ewg_inWindow, float *ewg_outAlpha)
+{
+	return GetWindowAlpha ((WindowRef)ewg_inWindow, (float*)ewg_outAlpha);
+}
+
+// Return address of function 'GetWindowAlpha'
+void* ewg_get_function_address_GetWindowAlpha (void)
+{
+	return (void*) GetWindowAlpha;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowInvalidateShadow'
+// For ise
+OSStatus  ewg_function_HIWindowInvalidateShadow (HIWindowRef ewg_inWindow)
+{
+	return HIWindowInvalidateShadow ((HIWindowRef)ewg_inWindow);
+}
+
+// Return address of function 'HIWindowInvalidateShadow'
+void* ewg_get_function_address_HIWindowInvalidateShadow (void)
+{
+	return (void*) HIWindowInvalidateShadow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIWindowGetScaleMode'
+// For ise
+OSStatus  ewg_function_HIWindowGetScaleMode (HIWindowRef ewg_inWindow, HIWindowScaleMode *ewg_outMode, float *ewg_outScaleFactor)
+{
+	return HIWindowGetScaleMode ((HIWindowRef)ewg_inWindow, (HIWindowScaleMode*)ewg_outMode, (float*)ewg_outScaleFactor);
+}
+
+// Return address of function 'HIWindowGetScaleMode'
+void* ewg_get_function_address_HIWindowGetScaleMode (void)
+{
+	return (void*) HIWindowGetScaleMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowProperty'
+// For ise
+OSStatus  ewg_function_GetWindowProperty (WindowRef ewg_window, PropertyCreator ewg_propertyCreator, PropertyTag ewg_propertyTag, UInt32 ewg_bufferSize, UInt32 *ewg_actualSize, void *ewg_propertyBuffer)
+{
+	return GetWindowProperty ((WindowRef)ewg_window, (PropertyCreator)ewg_propertyCreator, (PropertyTag)ewg_propertyTag, (UInt32)ewg_bufferSize, (UInt32*)ewg_actualSize, (void*)ewg_propertyBuffer);
+}
+
+// Return address of function 'GetWindowProperty'
+void* ewg_get_function_address_GetWindowProperty (void)
+{
+	return (void*) GetWindowProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowPropertySize'
+// For ise
+OSStatus  ewg_function_GetWindowPropertySize (WindowRef ewg_window, PropertyCreator ewg_creator, PropertyTag ewg_tag, UInt32 *ewg_size)
+{
+	return GetWindowPropertySize ((WindowRef)ewg_window, (PropertyCreator)ewg_creator, (PropertyTag)ewg_tag, (UInt32*)ewg_size);
+}
+
+// Return address of function 'GetWindowPropertySize'
+void* ewg_get_function_address_GetWindowPropertySize (void)
+{
+	return (void*) GetWindowPropertySize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowProperty'
+// For ise
+OSStatus  ewg_function_SetWindowProperty (WindowRef ewg_window, PropertyCreator ewg_propertyCreator, PropertyTag ewg_propertyTag, UInt32 ewg_propertySize, void const *ewg_propertyBuffer)
+{
+	return SetWindowProperty ((WindowRef)ewg_window, (PropertyCreator)ewg_propertyCreator, (PropertyTag)ewg_propertyTag, (UInt32)ewg_propertySize, (void const*)ewg_propertyBuffer);
+}
+
+// Return address of function 'SetWindowProperty'
+void* ewg_get_function_address_SetWindowProperty (void)
+{
+	return (void*) SetWindowProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveWindowProperty'
+// For ise
+OSStatus  ewg_function_RemoveWindowProperty (WindowRef ewg_window, PropertyCreator ewg_propertyCreator, PropertyTag ewg_propertyTag)
+{
+	return RemoveWindowProperty ((WindowRef)ewg_window, (PropertyCreator)ewg_propertyCreator, (PropertyTag)ewg_propertyTag);
+}
+
+// Return address of function 'RemoveWindowProperty'
+void* ewg_get_function_address_RemoveWindowProperty (void)
+{
+	return (void*) RemoveWindowProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowPropertyAttributes'
+// For ise
+OSStatus  ewg_function_GetWindowPropertyAttributes (WindowRef ewg_window, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 *ewg_attributes)
+{
+	return GetWindowPropertyAttributes ((WindowRef)ewg_window, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32*)ewg_attributes);
+}
+
+// Return address of function 'GetWindowPropertyAttributes'
+void* ewg_get_function_address_GetWindowPropertyAttributes (void)
+{
+	return (void*) GetWindowPropertyAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeWindowPropertyAttributes'
+// For ise
+OSStatus  ewg_function_ChangeWindowPropertyAttributes (WindowRef ewg_window, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 ewg_attributesToSet, UInt32 ewg_attributesToClear)
+{
+	return ChangeWindowPropertyAttributes ((WindowRef)ewg_window, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32)ewg_attributesToSet, (UInt32)ewg_attributesToClear);
+}
+
+// Return address of function 'ChangeWindowPropertyAttributes'
+void* ewg_get_function_address_ChangeWindowPropertyAttributes (void)
+{
+	return (void*) ChangeWindowPropertyAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PinRect'
+// For ise
+long  ewg_function_PinRect (Rect const *ewg_theRect, Point *ewg_thePt)
+{
+	return PinRect ((Rect const*)ewg_theRect, *(Point*)ewg_thePt);
+}
+
+// Return address of function 'PinRect'
+void* ewg_get_function_address_PinRect (void)
+{
+	return (void*) PinRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetGrayRgn'
+// For ise
+RgnHandle  ewg_function_GetGrayRgn (void)
+{
+	return GetGrayRgn ();
+}
+
+// Return address of function 'GetGrayRgn'
+void* ewg_get_function_address_GetGrayRgn (void)
+{
+	return (void*) GetGrayRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackBox'
+// For ise
+Boolean  ewg_function_TrackBox (WindowRef ewg_window, Point *ewg_thePt, WindowPartCode ewg_partCode)
+{
+	return TrackBox ((WindowRef)ewg_window, *(Point*)ewg_thePt, (WindowPartCode)ewg_partCode);
+}
+
+// Return address of function 'TrackBox'
+void* ewg_get_function_address_TrackBox (void)
+{
+	return (void*) TrackBox;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackGoAway'
+// For ise
+Boolean  ewg_function_TrackGoAway (WindowRef ewg_window, Point *ewg_thePt)
+{
+	return TrackGoAway ((WindowRef)ewg_window, *(Point*)ewg_thePt);
+}
+
+// Return address of function 'TrackGoAway'
+void* ewg_get_function_address_TrackGoAway (void)
+{
+	return (void*) TrackGoAway;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DragGrayRgn'
+// For ise
+long  ewg_function_DragGrayRgn (RgnHandle ewg_theRgn, Point *ewg_startPt, Rect const *ewg_limitRect, Rect const *ewg_slopRect, short ewg_axis, DragGrayRgnUPP ewg_actionProc)
+{
+	return DragGrayRgn ((RgnHandle)ewg_theRgn, *(Point*)ewg_startPt, (Rect const*)ewg_limitRect, (Rect const*)ewg_slopRect, (short)ewg_axis, (DragGrayRgnUPP)ewg_actionProc);
+}
+
+// Return address of function 'DragGrayRgn'
+void* ewg_get_function_address_DragGrayRgn (void)
+{
+	return (void*) DragGrayRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DragTheRgn'
+// For ise
+long  ewg_function_DragTheRgn (RgnHandle ewg_theRgn, Point *ewg_startPt, Rect const *ewg_limitRect, Rect const *ewg_slopRect, short ewg_axis, DragGrayRgnUPP ewg_actionProc)
+{
+	return DragTheRgn ((RgnHandle)ewg_theRgn, *(Point*)ewg_startPt, (Rect const*)ewg_limitRect, (Rect const*)ewg_slopRect, (short)ewg_axis, (DragGrayRgnUPP)ewg_actionProc);
+}
+
+// Return address of function 'DragTheRgn'
+void* ewg_get_function_address_DragTheRgn (void)
+{
+	return (void*) DragTheRgn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowList'
+// For ise
+WindowRef  ewg_function_GetWindowList (void)
+{
+	return GetWindowList ();
+}
+
+// Return address of function 'GetWindowList'
+void* ewg_get_function_address_GetWindowList (void)
+{
+	return (void*) GetWindowList;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowPort'
+// For ise
+CGrafPtr  ewg_function_GetWindowPort (WindowRef ewg_window)
+{
+	return GetWindowPort ((WindowRef)ewg_window);
+}
+
+// Return address of function 'GetWindowPort'
+void* ewg_get_function_address_GetWindowPort (void)
+{
+	return (void*) GetWindowPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowStructurePort'
+// For ise
+CGrafPtr  ewg_function_GetWindowStructurePort (WindowRef ewg_inWindow)
+{
+	return GetWindowStructurePort ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'GetWindowStructurePort'
+void* ewg_get_function_address_GetWindowStructurePort (void)
+{
+	return (void*) GetWindowStructurePort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowKind'
+// For ise
+short  ewg_function_GetWindowKind (WindowRef ewg_window)
+{
+	return GetWindowKind ((WindowRef)ewg_window);
+}
+
+// Return address of function 'GetWindowKind'
+void* ewg_get_function_address_GetWindowKind (void)
+{
+	return (void*) GetWindowKind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowHilited'
+// For ise
+Boolean  ewg_function_IsWindowHilited (WindowRef ewg_window)
+{
+	return IsWindowHilited ((WindowRef)ewg_window);
+}
+
+// Return address of function 'IsWindowHilited'
+void* ewg_get_function_address_IsWindowHilited (void)
+{
+	return (void*) IsWindowHilited;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsWindowUpdatePending'
+// For ise
+Boolean  ewg_function_IsWindowUpdatePending (WindowRef ewg_window)
+{
+	return IsWindowUpdatePending ((WindowRef)ewg_window);
+}
+
+// Return address of function 'IsWindowUpdatePending'
+void* ewg_get_function_address_IsWindowUpdatePending (void)
+{
+	return (void*) IsWindowUpdatePending;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNextWindow'
+// For ise
+WindowRef  ewg_function_GetNextWindow (WindowRef ewg_window)
+{
+	return GetNextWindow ((WindowRef)ewg_window);
+}
+
+// Return address of function 'GetNextWindow'
+void* ewg_get_function_address_GetNextWindow (void)
+{
+	return (void*) GetNextWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetPreviousWindow'
+// For ise
+WindowRef  ewg_function_GetPreviousWindow (WindowRef ewg_inWindow)
+{
+	return GetPreviousWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'GetPreviousWindow'
+void* ewg_get_function_address_GetPreviousWindow (void)
+{
+	return (void*) GetPreviousWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowStandardState'
+// For ise
+Rect * ewg_function_GetWindowStandardState (WindowRef ewg_window, Rect *ewg_rect)
+{
+	return GetWindowStandardState ((WindowRef)ewg_window, (Rect*)ewg_rect);
+}
+
+// Return address of function 'GetWindowStandardState'
+void* ewg_get_function_address_GetWindowStandardState (void)
+{
+	return (void*) GetWindowStandardState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowUserState'
+// For ise
+Rect * ewg_function_GetWindowUserState (WindowRef ewg_window, Rect *ewg_rect)
+{
+	return GetWindowUserState ((WindowRef)ewg_window, (Rect*)ewg_rect);
+}
+
+// Return address of function 'GetWindowUserState'
+void* ewg_get_function_address_GetWindowUserState (void)
+{
+	return (void*) GetWindowUserState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowKind'
+// For ise
+void  ewg_function_SetWindowKind (WindowRef ewg_window, short ewg_kind)
+{
+	SetWindowKind ((WindowRef)ewg_window, (short)ewg_kind);
+}
+
+// Return address of function 'SetWindowKind'
+void* ewg_get_function_address_SetWindowKind (void)
+{
+	return (void*) SetWindowKind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowStandardState'
+// For ise
+void  ewg_function_SetWindowStandardState (WindowRef ewg_window, Rect const *ewg_rect)
+{
+	SetWindowStandardState ((WindowRef)ewg_window, (Rect const*)ewg_rect);
+}
+
+// Return address of function 'SetWindowStandardState'
+void* ewg_get_function_address_SetWindowStandardState (void)
+{
+	return (void*) SetWindowStandardState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowUserState'
+// For ise
+void  ewg_function_SetWindowUserState (WindowRef ewg_window, Rect const *ewg_rect)
+{
+	SetWindowUserState ((WindowRef)ewg_window, (Rect const*)ewg_rect);
+}
+
+// Return address of function 'SetWindowUserState'
+void* ewg_get_function_address_SetWindowUserState (void)
+{
+	return (void*) SetWindowUserState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetPortWindowPort'
+// For ise
+void  ewg_function_SetPortWindowPort (WindowRef ewg_window)
+{
+	SetPortWindowPort ((WindowRef)ewg_window);
+}
+
+// Return address of function 'SetPortWindowPort'
+void* ewg_get_function_address_SetPortWindowPort (void)
+{
+	return (void*) SetPortWindowPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowPortBounds'
+// For ise
+Rect * ewg_function_GetWindowPortBounds (WindowRef ewg_window, Rect *ewg_bounds)
+{
+	return GetWindowPortBounds ((WindowRef)ewg_window, (Rect*)ewg_bounds);
+}
+
+// Return address of function 'GetWindowPortBounds'
+void* ewg_get_function_address_GetWindowPortBounds (void)
+{
+	return (void*) GetWindowPortBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowFromPort'
+// For ise
+WindowRef  ewg_function_GetWindowFromPort (CGrafPtr ewg_port)
+{
+	return GetWindowFromPort ((CGrafPtr)ewg_port);
+}
+
+// Return address of function 'GetWindowFromPort'
+void* ewg_get_function_address_GetWindowFromPort (void)
+{
+	return (void*) GetWindowFromPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsUserCancelEventRef'
+// For ise
+Boolean  ewg_function_IsUserCancelEventRef (EventRef ewg_event)
+{
+	return IsUserCancelEventRef ((EventRef)ewg_event);
+}
+
+// Return address of function 'IsUserCancelEventRef'
+void* ewg_get_function_address_IsUserCancelEventRef (void)
+{
+	return (void*) IsUserCancelEventRef;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackMouseLocation'
+// For ise
+OSStatus  ewg_function_TrackMouseLocation (GrafPtr ewg_inPort, Point *ewg_outPt, MouseTrackingResult *ewg_outResult)
+{
+	return TrackMouseLocation ((GrafPtr)ewg_inPort, (Point*)ewg_outPt, (MouseTrackingResult*)ewg_outResult);
+}
+
+// Return address of function 'TrackMouseLocation'
+void* ewg_get_function_address_TrackMouseLocation (void)
+{
+	return (void*) TrackMouseLocation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackMouseLocationWithOptions'
+// For ise
+OSStatus  ewg_function_TrackMouseLocationWithOptions (GrafPtr ewg_inPort, OptionBits ewg_inOptions, EventTimeout ewg_inTimeout, Point *ewg_outPt, UInt32 *ewg_outModifiers, MouseTrackingResult *ewg_outResult)
+{
+	return TrackMouseLocationWithOptions ((GrafPtr)ewg_inPort, (OptionBits)ewg_inOptions, (EventTimeout)ewg_inTimeout, (Point*)ewg_outPt, (UInt32*)ewg_outModifiers, (MouseTrackingResult*)ewg_outResult);
+}
+
+// Return address of function 'TrackMouseLocationWithOptions'
+void* ewg_get_function_address_TrackMouseLocationWithOptions (void)
+{
+	return (void*) TrackMouseLocationWithOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackMouseRegion'
+// For ise
+OSStatus  ewg_function_TrackMouseRegion (GrafPtr ewg_inPort, RgnHandle ewg_inRegion, Boolean *ewg_ioWasInRgn, MouseTrackingResult *ewg_outResult)
+{
+	return TrackMouseRegion ((GrafPtr)ewg_inPort, (RgnHandle)ewg_inRegion, (Boolean*)ewg_ioWasInRgn, (MouseTrackingResult*)ewg_outResult);
+}
+
+// Return address of function 'TrackMouseRegion'
+void* ewg_get_function_address_TrackMouseRegion (void)
+{
+	return (void*) TrackMouseRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIMouseTrackingGetParameters'
+// For ise
+OSStatus  ewg_function_HIMouseTrackingGetParameters (OSType ewg_inSelector, EventTime *ewg_outTime, HISize *ewg_outDistance)
+{
+	return HIMouseTrackingGetParameters ((OSType)ewg_inSelector, (EventTime*)ewg_outTime, (HISize*)ewg_outDistance);
+}
+
+// Return address of function 'HIMouseTrackingGetParameters'
+void* ewg_get_function_address_HIMouseTrackingGetParameters (void)
+{
+	return (void*) HIMouseTrackingGetParameters;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ConvertEventRefToEventRecord'
+// For ise
+Boolean  ewg_function_ConvertEventRefToEventRecord (EventRef ewg_inEvent, EventRecord *ewg_outEvent)
+{
+	return ConvertEventRefToEventRecord ((EventRef)ewg_inEvent, (EventRecord*)ewg_outEvent);
+}
+
+// Return address of function 'ConvertEventRefToEventRecord'
+void* ewg_get_function_address_ConvertEventRefToEventRecord (void)
+{
+	return (void*) ConvertEventRefToEventRecord;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsEventInMask'
+// For ise
+Boolean  ewg_function_IsEventInMask (EventRef ewg_inEvent, EventMask ewg_inMask)
+{
+	return IsEventInMask ((EventRef)ewg_inEvent, (EventMask)ewg_inMask);
+}
+
+// Return address of function 'IsEventInMask'
+void* ewg_get_function_address_IsEventInMask (void)
+{
+	return (void*) IsEventInMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetLastUserEventTime'
+// For ise
+EventTime  ewg_function_GetLastUserEventTime (void)
+{
+	return GetLastUserEventTime ();
+}
+
+// Return address of function 'GetLastUserEventTime'
+void* ewg_get_function_address_GetLastUserEventTime (void)
+{
+	return (void*) GetLastUserEventTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMouseCoalescingEnabled'
+// For ise
+Boolean  ewg_function_IsMouseCoalescingEnabled (void)
+{
+	return IsMouseCoalescingEnabled ();
+}
+
+// Return address of function 'IsMouseCoalescingEnabled'
+void* ewg_get_function_address_IsMouseCoalescingEnabled (void)
+{
+	return (void*) IsMouseCoalescingEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMouseCoalescingEnabled'
+// For ise
+OSStatus  ewg_function_SetMouseCoalescingEnabled (Boolean ewg_inNewState, Boolean *ewg_outOldState)
+{
+	return SetMouseCoalescingEnabled ((Boolean)ewg_inNewState, (Boolean*)ewg_outOldState);
+}
+
+// Return address of function 'SetMouseCoalescingEnabled'
+void* ewg_get_function_address_SetMouseCoalescingEnabled (void)
+{
+	return (void*) SetMouseCoalescingEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateTypeStringWithOSType'
+// For ise
+CFStringRef  ewg_function_CreateTypeStringWithOSType (OSType ewg_inType)
+{
+	return CreateTypeStringWithOSType ((OSType)ewg_inType);
+}
+
+// Return address of function 'CreateTypeStringWithOSType'
+void* ewg_get_function_address_CreateTypeStringWithOSType (void)
+{
+	return (void*) CreateTypeStringWithOSType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyServicesMenuCommandKeys'
+// For ise
+OSStatus  ewg_function_CopyServicesMenuCommandKeys (CFArrayRef *ewg_outCommandKeyArray)
+{
+	return CopyServicesMenuCommandKeys ((CFArrayRef*)ewg_outCommandKeyArray);
+}
+
+// Return address of function 'CopyServicesMenuCommandKeys'
+void* ewg_get_function_address_CopyServicesMenuCommandKeys (void)
+{
+	return (void*) CopyServicesMenuCommandKeys;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AXUIElementCreateWithHIObjectAndIdentifier'
+// For ise
+AXUIElementRef  ewg_function_AXUIElementCreateWithHIObjectAndIdentifier (HIObjectRef ewg_inHIObject, UInt64 ewg_inIdentifier)
+{
+	return AXUIElementCreateWithHIObjectAndIdentifier ((HIObjectRef)ewg_inHIObject, (UInt64)ewg_inIdentifier);
+}
+
+// Return address of function 'AXUIElementCreateWithHIObjectAndIdentifier'
+void* ewg_get_function_address_AXUIElementCreateWithHIObjectAndIdentifier (void)
+{
+	return (void*) AXUIElementCreateWithHIObjectAndIdentifier;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AXUIElementGetHIObject'
+// For ise
+HIObjectRef  ewg_function_AXUIElementGetHIObject (AXUIElementRef ewg_inUIElement)
+{
+	return AXUIElementGetHIObject ((AXUIElementRef)ewg_inUIElement);
+}
+
+// Return address of function 'AXUIElementGetHIObject'
+void* ewg_get_function_address_AXUIElementGetHIObject (void)
+{
+	return (void*) AXUIElementGetHIObject;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AXUIElementGetIdentifier'
+// For ise
+void  ewg_function_AXUIElementGetIdentifier (AXUIElementRef ewg_inUIElement, UInt64 *ewg_outIdentifier)
+{
+	AXUIElementGetIdentifier ((AXUIElementRef)ewg_inUIElement, (UInt64*)ewg_outIdentifier);
+}
+
+// Return address of function 'AXUIElementGetIdentifier'
+void* ewg_get_function_address_AXUIElementGetIdentifier (void)
+{
+	return (void*) AXUIElementGetIdentifier;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AXNotificationHIObjectNotify'
+// For ise
+void  ewg_function_AXNotificationHIObjectNotify (CFStringRef ewg_inNotification, HIObjectRef ewg_inHIObject, UInt64 ewg_inIdentifier)
+{
+	AXNotificationHIObjectNotify ((CFStringRef)ewg_inNotification, (HIObjectRef)ewg_inHIObject, (UInt64)ewg_inIdentifier);
+}
+
+// Return address of function 'AXNotificationHIObjectNotify'
+void* ewg_get_function_address_AXNotificationHIObjectNotify (void)
+{
+	return (void*) AXNotificationHIObjectNotify;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HICopyAccessibilityRoleDescription'
+// For ise
+CFStringRef  ewg_function_HICopyAccessibilityRoleDescription (CFStringRef ewg_inRole, CFStringRef ewg_inSubrole)
+{
+	return HICopyAccessibilityRoleDescription ((CFStringRef)ewg_inRole, (CFStringRef)ewg_inSubrole);
+}
+
+// Return address of function 'HICopyAccessibilityRoleDescription'
+void* ewg_get_function_address_HICopyAccessibilityRoleDescription (void)
+{
+	return (void*) HICopyAccessibilityRoleDescription;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HICopyAccessibilityActionDescription'
+// For ise
+CFStringRef  ewg_function_HICopyAccessibilityActionDescription (CFStringRef ewg_inAction)
+{
+	return HICopyAccessibilityActionDescription ((CFStringRef)ewg_inAction);
+}
+
+// Return address of function 'HICopyAccessibilityActionDescription'
+void* ewg_get_function_address_HICopyAccessibilityActionDescription (void)
+{
+	return (void*) HICopyAccessibilityActionDescription;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowEventTarget'
+// For ise
+EventTargetRef  ewg_function_GetWindowEventTarget (WindowRef ewg_inWindow)
+{
+	return GetWindowEventTarget ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'GetWindowEventTarget'
+void* ewg_get_function_address_GetWindowEventTarget (void)
+{
+	return (void*) GetWindowEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlEventTarget'
+// For ise
+EventTargetRef  ewg_function_GetControlEventTarget (ControlRef ewg_inControl)
+{
+	return GetControlEventTarget ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'GetControlEventTarget'
+void* ewg_get_function_address_GetControlEventTarget (void)
+{
+	return (void*) GetControlEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuEventTarget'
+// For ise
+EventTargetRef  ewg_function_GetMenuEventTarget (MenuRef ewg_inMenu)
+{
+	return GetMenuEventTarget ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'GetMenuEventTarget'
+void* ewg_get_function_address_GetMenuEventTarget (void)
+{
+	return (void*) GetMenuEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetApplicationEventTarget'
+// For ise
+EventTargetRef  ewg_function_GetApplicationEventTarget (void)
+{
+	return GetApplicationEventTarget ();
+}
+
+// Return address of function 'GetApplicationEventTarget'
+void* ewg_get_function_address_GetApplicationEventTarget (void)
+{
+	return (void*) GetApplicationEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetUserFocusEventTarget'
+// For ise
+EventTargetRef  ewg_function_GetUserFocusEventTarget (void)
+{
+	return GetUserFocusEventTarget ();
+}
+
+// Return address of function 'GetUserFocusEventTarget'
+void* ewg_get_function_address_GetUserFocusEventTarget (void)
+{
+	return (void*) GetUserFocusEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetEventDispatcherTarget'
+// For ise
+EventTargetRef  ewg_function_GetEventDispatcherTarget (void)
+{
+	return GetEventDispatcherTarget ();
+}
+
+// Return address of function 'GetEventDispatcherTarget'
+void* ewg_get_function_address_GetEventDispatcherTarget (void)
+{
+	return (void*) GetEventDispatcherTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetEventMonitorTarget'
+// For ise
+EventTargetRef  ewg_function_GetEventMonitorTarget (void)
+{
+	return GetEventMonitorTarget ();
+}
+
+// Return address of function 'GetEventMonitorTarget'
+void* ewg_get_function_address_GetEventMonitorTarget (void)
+{
+	return (void*) GetEventMonitorTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ProcessHICommand'
+// For ise
+OSStatus  ewg_function_ProcessHICommand (HICommand const *ewg_inCommand)
+{
+	return ProcessHICommand ((HICommand const*)ewg_inCommand);
+}
+
+// Return address of function 'ProcessHICommand'
+void* ewg_get_function_address_ProcessHICommand (void)
+{
+	return (void*) ProcessHICommand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RunApplicationEventLoop'
+// For ise
+void  ewg_function_RunApplicationEventLoop (void)
+{
+	RunApplicationEventLoop ();
+}
+
+// Return address of function 'RunApplicationEventLoop'
+void* ewg_get_function_address_RunApplicationEventLoop (void)
+{
+	return (void*) RunApplicationEventLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QuitApplicationEventLoop'
+// For ise
+void  ewg_function_QuitApplicationEventLoop (void)
+{
+	QuitApplicationEventLoop ();
+}
+
+// Return address of function 'QuitApplicationEventLoop'
+void* ewg_get_function_address_QuitApplicationEventLoop (void)
+{
+	return (void*) QuitApplicationEventLoop;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RunAppModalLoopForWindow'
+// For ise
+OSStatus  ewg_function_RunAppModalLoopForWindow (WindowRef ewg_inWindow)
+{
+	return RunAppModalLoopForWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'RunAppModalLoopForWindow'
+void* ewg_get_function_address_RunAppModalLoopForWindow (void)
+{
+	return (void*) RunAppModalLoopForWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QuitAppModalLoopForWindow'
+// For ise
+OSStatus  ewg_function_QuitAppModalLoopForWindow (WindowRef ewg_inWindow)
+{
+	return QuitAppModalLoopForWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'QuitAppModalLoopForWindow'
+void* ewg_get_function_address_QuitAppModalLoopForWindow (void)
+{
+	return (void*) QuitAppModalLoopForWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'BeginAppModalStateForWindow'
+// For ise
+OSStatus  ewg_function_BeginAppModalStateForWindow (WindowRef ewg_inWindow)
+{
+	return BeginAppModalStateForWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'BeginAppModalStateForWindow'
+void* ewg_get_function_address_BeginAppModalStateForWindow (void)
+{
+	return (void*) BeginAppModalStateForWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EndAppModalStateForWindow'
+// For ise
+OSStatus  ewg_function_EndAppModalStateForWindow (WindowRef ewg_inWindow)
+{
+	return EndAppModalStateForWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'EndAppModalStateForWindow'
+void* ewg_get_function_address_EndAppModalStateForWindow (void)
+{
+	return (void*) EndAppModalStateForWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetUserFocusWindow'
+// For ise
+OSStatus  ewg_function_SetUserFocusWindow (WindowRef ewg_inWindow)
+{
+	return SetUserFocusWindow ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'SetUserFocusWindow'
+void* ewg_get_function_address_SetUserFocusWindow (void)
+{
+	return (void*) SetUserFocusWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetUserFocusWindow'
+// For ise
+WindowRef  ewg_function_GetUserFocusWindow (void)
+{
+	return GetUserFocusWindow ();
+}
+
+// Return address of function 'GetUserFocusWindow'
+void* ewg_get_function_address_GetUserFocusWindow (void)
+{
+	return (void*) GetUserFocusWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowDefaultButton'
+// For ise
+OSStatus  ewg_function_SetWindowDefaultButton (WindowRef ewg_inWindow, ControlRef ewg_inControl)
+{
+	return SetWindowDefaultButton ((WindowRef)ewg_inWindow, (ControlRef)ewg_inControl);
+}
+
+// Return address of function 'SetWindowDefaultButton'
+void* ewg_get_function_address_SetWindowDefaultButton (void)
+{
+	return (void*) SetWindowDefaultButton;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowCancelButton'
+// For ise
+OSStatus  ewg_function_SetWindowCancelButton (WindowRef ewg_inWindow, ControlRef ewg_inControl)
+{
+	return SetWindowCancelButton ((WindowRef)ewg_inWindow, (ControlRef)ewg_inControl);
+}
+
+// Return address of function 'SetWindowCancelButton'
+void* ewg_get_function_address_SetWindowCancelButton (void)
+{
+	return (void*) SetWindowCancelButton;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowDefaultButton'
+// For ise
+OSStatus  ewg_function_GetWindowDefaultButton (WindowRef ewg_inWindow, ControlRef *ewg_outControl)
+{
+	return GetWindowDefaultButton ((WindowRef)ewg_inWindow, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'GetWindowDefaultButton'
+void* ewg_get_function_address_GetWindowDefaultButton (void)
+{
+	return (void*) GetWindowDefaultButton;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetWindowCancelButton'
+// For ise
+OSStatus  ewg_function_GetWindowCancelButton (WindowRef ewg_inWindow, ControlRef *ewg_outControl)
+{
+	return GetWindowCancelButton ((WindowRef)ewg_inWindow, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'GetWindowCancelButton'
+void* ewg_get_function_address_GetWindowCancelButton (void)
+{
+	return (void*) GetWindowCancelButton;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RegisterEventHotKey'
+// For ise
+OSStatus  ewg_function_RegisterEventHotKey (UInt32 ewg_inHotKeyCode, UInt32 ewg_inHotKeyModifiers, EventHotKeyID *ewg_inHotKeyID, EventTargetRef ewg_inTarget, OptionBits ewg_inOptions, EventHotKeyRef *ewg_outRef)
+{
+	return RegisterEventHotKey ((UInt32)ewg_inHotKeyCode, (UInt32)ewg_inHotKeyModifiers, *(EventHotKeyID*)ewg_inHotKeyID, (EventTargetRef)ewg_inTarget, (OptionBits)ewg_inOptions, (EventHotKeyRef*)ewg_outRef);
+}
+
+// Return address of function 'RegisterEventHotKey'
+void* ewg_get_function_address_RegisterEventHotKey (void)
+{
+	return (void*) RegisterEventHotKey;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UnregisterEventHotKey'
+// For ise
+OSStatus  ewg_function_UnregisterEventHotKey (EventHotKeyRef ewg_inHotKey)
+{
+	return UnregisterEventHotKey ((EventHotKeyRef)ewg_inHotKey);
+}
+
+// Return address of function 'UnregisterEventHotKey'
+void* ewg_get_function_address_UnregisterEventHotKey (void)
+{
+	return (void*) UnregisterEventHotKey;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopySymbolicHotKeys'
+// For ise
+OSStatus  ewg_function_CopySymbolicHotKeys (CFArrayRef *ewg_outHotKeyArray)
+{
+	return CopySymbolicHotKeys ((CFArrayRef*)ewg_outHotKeyArray);
+}
+
+// Return address of function 'CopySymbolicHotKeys'
+void* ewg_get_function_address_CopySymbolicHotKeys (void)
+{
+	return (void*) CopySymbolicHotKeys;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PushSymbolicHotKeyMode'
+// For ise
+void * ewg_function_PushSymbolicHotKeyMode (OptionBits ewg_inOptions)
+{
+	return PushSymbolicHotKeyMode ((OptionBits)ewg_inOptions);
+}
+
+// Return address of function 'PushSymbolicHotKeyMode'
+void* ewg_get_function_address_PushSymbolicHotKeyMode (void)
+{
+	return (void*) PushSymbolicHotKeyMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PopSymbolicHotKeyMode'
+// For ise
+void  ewg_function_PopSymbolicHotKeyMode (void *ewg_inToken)
+{
+	PopSymbolicHotKeyMode ((void*)ewg_inToken);
+}
+
+// Return address of function 'PopSymbolicHotKeyMode'
+void* ewg_get_function_address_PopSymbolicHotKeyMode (void)
+{
+	return (void*) PopSymbolicHotKeyMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetSymbolicHotKeyMode'
+// For ise
+OptionBits  ewg_function_GetSymbolicHotKeyMode (void)
+{
+	return GetSymbolicHotKeyMode ();
+}
+
+// Return address of function 'GetSymbolicHotKeyMode'
+void* ewg_get_function_address_GetSymbolicHotKeyMode (void)
+{
+	return (void*) GetSymbolicHotKeyMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateMouseTrackingRegion'
+// For ise
+OSStatus  ewg_function_CreateMouseTrackingRegion (WindowRef ewg_inWindow, RgnHandle ewg_inRegion, RgnHandle ewg_inClip, MouseTrackingOptions ewg_inOptions, MouseTrackingRegionID *ewg_inID, void *ewg_inRefCon, EventTargetRef ewg_inTargetToNotify, MouseTrackingRef *ewg_outTrackingRef)
+{
+	return CreateMouseTrackingRegion ((WindowRef)ewg_inWindow, (RgnHandle)ewg_inRegion, (RgnHandle)ewg_inClip, (MouseTrackingOptions)ewg_inOptions, *(MouseTrackingRegionID*)ewg_inID, (void*)ewg_inRefCon, (EventTargetRef)ewg_inTargetToNotify, (MouseTrackingRef*)ewg_outTrackingRef);
+}
+
+// Return address of function 'CreateMouseTrackingRegion'
+void* ewg_get_function_address_CreateMouseTrackingRegion (void)
+{
+	return (void*) CreateMouseTrackingRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RetainMouseTrackingRegion'
+// For ise
+OSStatus  ewg_function_RetainMouseTrackingRegion (MouseTrackingRef ewg_inMouseRef)
+{
+	return RetainMouseTrackingRegion ((MouseTrackingRef)ewg_inMouseRef);
+}
+
+// Return address of function 'RetainMouseTrackingRegion'
+void* ewg_get_function_address_RetainMouseTrackingRegion (void)
+{
+	return (void*) RetainMouseTrackingRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReleaseMouseTrackingRegion'
+// For ise
+OSStatus  ewg_function_ReleaseMouseTrackingRegion (MouseTrackingRef ewg_inMouseRef)
+{
+	return ReleaseMouseTrackingRegion ((MouseTrackingRef)ewg_inMouseRef);
+}
+
+// Return address of function 'ReleaseMouseTrackingRegion'
+void* ewg_get_function_address_ReleaseMouseTrackingRegion (void)
+{
+	return (void*) ReleaseMouseTrackingRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeMouseTrackingRegion'
+// For ise
+OSStatus  ewg_function_ChangeMouseTrackingRegion (MouseTrackingRef ewg_inMouseRef, RgnHandle ewg_inRegion, RgnHandle ewg_inClip)
+{
+	return ChangeMouseTrackingRegion ((MouseTrackingRef)ewg_inMouseRef, (RgnHandle)ewg_inRegion, (RgnHandle)ewg_inClip);
+}
+
+// Return address of function 'ChangeMouseTrackingRegion'
+void* ewg_get_function_address_ChangeMouseTrackingRegion (void)
+{
+	return (void*) ChangeMouseTrackingRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClipMouseTrackingRegion'
+// For ise
+OSStatus  ewg_function_ClipMouseTrackingRegion (MouseTrackingRef ewg_inMouseRef, RgnHandle ewg_inRegion)
+{
+	return ClipMouseTrackingRegion ((MouseTrackingRef)ewg_inMouseRef, (RgnHandle)ewg_inRegion);
+}
+
+// Return address of function 'ClipMouseTrackingRegion'
+void* ewg_get_function_address_ClipMouseTrackingRegion (void)
+{
+	return (void*) ClipMouseTrackingRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMouseTrackingRegionID'
+// For ise
+OSStatus  ewg_function_GetMouseTrackingRegionID (MouseTrackingRef ewg_inMouseRef, MouseTrackingRegionID *ewg_outID)
+{
+	return GetMouseTrackingRegionID ((MouseTrackingRef)ewg_inMouseRef, (MouseTrackingRegionID*)ewg_outID);
+}
+
+// Return address of function 'GetMouseTrackingRegionID'
+void* ewg_get_function_address_GetMouseTrackingRegionID (void)
+{
+	return (void*) GetMouseTrackingRegionID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMouseTrackingRegionRefCon'
+// For ise
+OSStatus  ewg_function_GetMouseTrackingRegionRefCon (MouseTrackingRef ewg_inMouseRef, void **ewg_outRefCon)
+{
+	return GetMouseTrackingRegionRefCon ((MouseTrackingRef)ewg_inMouseRef, (void**)ewg_outRefCon);
+}
+
+// Return address of function 'GetMouseTrackingRegionRefCon'
+void* ewg_get_function_address_GetMouseTrackingRegionRefCon (void)
+{
+	return (void*) GetMouseTrackingRegionRefCon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MoveMouseTrackingRegion'
+// For ise
+OSStatus  ewg_function_MoveMouseTrackingRegion (MouseTrackingRef ewg_inMouseRef, SInt16 ewg_deltaH, SInt16 ewg_deltaV, RgnHandle ewg_inClip)
+{
+	return MoveMouseTrackingRegion ((MouseTrackingRef)ewg_inMouseRef, (SInt16)ewg_deltaH, (SInt16)ewg_deltaV, (RgnHandle)ewg_inClip);
+}
+
+// Return address of function 'MoveMouseTrackingRegion'
+void* ewg_get_function_address_MoveMouseTrackingRegion (void)
+{
+	return (void*) MoveMouseTrackingRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMouseTrackingRegionEnabled'
+// For ise
+OSStatus  ewg_function_SetMouseTrackingRegionEnabled (MouseTrackingRef ewg_inMouseRef, Boolean ewg_inEnabled)
+{
+	return SetMouseTrackingRegionEnabled ((MouseTrackingRef)ewg_inMouseRef, (Boolean)ewg_inEnabled);
+}
+
+// Return address of function 'SetMouseTrackingRegionEnabled'
+void* ewg_get_function_address_SetMouseTrackingRegionEnabled (void)
+{
+	return (void*) SetMouseTrackingRegionEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClipWindowMouseTrackingRegions'
+// For ise
+OSStatus  ewg_function_ClipWindowMouseTrackingRegions (WindowRef ewg_inWindow, OSType ewg_inSignature, RgnHandle ewg_inClip)
+{
+	return ClipWindowMouseTrackingRegions ((WindowRef)ewg_inWindow, (OSType)ewg_inSignature, (RgnHandle)ewg_inClip);
+}
+
+// Return address of function 'ClipWindowMouseTrackingRegions'
+void* ewg_get_function_address_ClipWindowMouseTrackingRegions (void)
+{
+	return (void*) ClipWindowMouseTrackingRegions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MoveWindowMouseTrackingRegions'
+// For ise
+OSStatus  ewg_function_MoveWindowMouseTrackingRegions (WindowRef ewg_inWindow, OSType ewg_inSignature, SInt16 ewg_deltaH, SInt16 ewg_deltaV, RgnHandle ewg_inClip)
+{
+	return MoveWindowMouseTrackingRegions ((WindowRef)ewg_inWindow, (OSType)ewg_inSignature, (SInt16)ewg_deltaH, (SInt16)ewg_deltaV, (RgnHandle)ewg_inClip);
+}
+
+// Return address of function 'MoveWindowMouseTrackingRegions'
+void* ewg_get_function_address_MoveWindowMouseTrackingRegions (void)
+{
+	return (void*) MoveWindowMouseTrackingRegions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetWindowMouseTrackingRegionsEnabled'
+// For ise
+OSStatus  ewg_function_SetWindowMouseTrackingRegionsEnabled (WindowRef ewg_inWindow, OSType ewg_inSignature, Boolean ewg_inEnabled)
+{
+	return SetWindowMouseTrackingRegionsEnabled ((WindowRef)ewg_inWindow, (OSType)ewg_inSignature, (Boolean)ewg_inEnabled);
+}
+
+// Return address of function 'SetWindowMouseTrackingRegionsEnabled'
+void* ewg_get_function_address_SetWindowMouseTrackingRegionsEnabled (void)
+{
+	return (void*) SetWindowMouseTrackingRegionsEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReleaseWindowMouseTrackingRegions'
+// For ise
+OSStatus  ewg_function_ReleaseWindowMouseTrackingRegions (WindowRef ewg_inWindow, OSType ewg_inSignature)
+{
+	return ReleaseWindowMouseTrackingRegions ((WindowRef)ewg_inWindow, (OSType)ewg_inSignature);
+}
+
+// Return address of function 'ReleaseWindowMouseTrackingRegions'
+void* ewg_get_function_address_ReleaseWindowMouseTrackingRegions (void)
+{
+	return (void*) ReleaseWindowMouseTrackingRegions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RegisterToolboxObjectClass'
+// For ise
+OSStatus  ewg_function_RegisterToolboxObjectClass (CFStringRef ewg_inClassID, ToolboxObjectClassRef ewg_inBaseClass, UInt32 ewg_inNumEvents, EventTypeSpec const *ewg_inEventList, EventHandlerUPP ewg_inEventHandler, void *ewg_inEventHandlerData, ToolboxObjectClassRef *ewg_outClassRef)
+{
+	return RegisterToolboxObjectClass ((CFStringRef)ewg_inClassID, (ToolboxObjectClassRef)ewg_inBaseClass, (UInt32)ewg_inNumEvents, (EventTypeSpec const*)ewg_inEventList, (EventHandlerUPP)ewg_inEventHandler, (void*)ewg_inEventHandlerData, (ToolboxObjectClassRef*)ewg_outClassRef);
+}
+
+// Return address of function 'RegisterToolboxObjectClass'
+void* ewg_get_function_address_RegisterToolboxObjectClass (void)
+{
+	return (void*) RegisterToolboxObjectClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UnregisterToolboxObjectClass'
+// For ise
+OSStatus  ewg_function_UnregisterToolboxObjectClass (ToolboxObjectClassRef ewg_inClassRef)
+{
+	return UnregisterToolboxObjectClass ((ToolboxObjectClassRef)ewg_inClassRef);
+}
+
+// Return address of function 'UnregisterToolboxObjectClass'
+void* ewg_get_function_address_UnregisterToolboxObjectClass (void)
+{
+	return (void*) UnregisterToolboxObjectClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetRoot'
+// For ise
+HIViewRef  ewg_function_HIViewGetRoot (WindowRef ewg_inWindow)
+{
+	return HIViewGetRoot ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'HIViewGetRoot'
+void* ewg_get_function_address_HIViewGetRoot (void)
+{
+	return (void*) HIViewGetRoot;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewAddSubview'
+// For ise
+OSStatus  ewg_function_HIViewAddSubview (HIViewRef ewg_inParent, HIViewRef ewg_inNewChild)
+{
+	return HIViewAddSubview ((HIViewRef)ewg_inParent, (HIViewRef)ewg_inNewChild);
+}
+
+// Return address of function 'HIViewAddSubview'
+void* ewg_get_function_address_HIViewAddSubview (void)
+{
+	return (void*) HIViewAddSubview;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewRemoveFromSuperview'
+// For ise
+OSStatus  ewg_function_HIViewRemoveFromSuperview (HIViewRef ewg_inView)
+{
+	return HIViewRemoveFromSuperview ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewRemoveFromSuperview'
+void* ewg_get_function_address_HIViewRemoveFromSuperview (void)
+{
+	return (void*) HIViewRemoveFromSuperview;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetSuperview'
+// For ise
+HIViewRef  ewg_function_HIViewGetSuperview (HIViewRef ewg_inView)
+{
+	return HIViewGetSuperview ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetSuperview'
+void* ewg_get_function_address_HIViewGetSuperview (void)
+{
+	return (void*) HIViewGetSuperview;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetFirstSubview'
+// For ise
+HIViewRef  ewg_function_HIViewGetFirstSubview (HIViewRef ewg_inView)
+{
+	return HIViewGetFirstSubview ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetFirstSubview'
+void* ewg_get_function_address_HIViewGetFirstSubview (void)
+{
+	return (void*) HIViewGetFirstSubview;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetLastSubview'
+// For ise
+HIViewRef  ewg_function_HIViewGetLastSubview (HIViewRef ewg_inView)
+{
+	return HIViewGetLastSubview ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetLastSubview'
+void* ewg_get_function_address_HIViewGetLastSubview (void)
+{
+	return (void*) HIViewGetLastSubview;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetNextView'
+// For ise
+HIViewRef  ewg_function_HIViewGetNextView (HIViewRef ewg_inView)
+{
+	return HIViewGetNextView ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetNextView'
+void* ewg_get_function_address_HIViewGetNextView (void)
+{
+	return (void*) HIViewGetNextView;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetPreviousView'
+// For ise
+HIViewRef  ewg_function_HIViewGetPreviousView (HIViewRef ewg_inView)
+{
+	return HIViewGetPreviousView ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetPreviousView'
+void* ewg_get_function_address_HIViewGetPreviousView (void)
+{
+	return (void*) HIViewGetPreviousView;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewCountSubviews'
+// For ise
+CFIndex  ewg_function_HIViewCountSubviews (HIViewRef ewg_inView)
+{
+	return HIViewCountSubviews ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewCountSubviews'
+void* ewg_get_function_address_HIViewCountSubviews (void)
+{
+	return (void*) HIViewCountSubviews;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetIndexedSubview'
+// For ise
+OSStatus  ewg_function_HIViewGetIndexedSubview (HIViewRef ewg_inView, CFIndex ewg_inSubviewIndex, HIViewRef *ewg_outSubview)
+{
+	return HIViewGetIndexedSubview ((HIViewRef)ewg_inView, (CFIndex)ewg_inSubviewIndex, (HIViewRef*)ewg_outSubview);
+}
+
+// Return address of function 'HIViewGetIndexedSubview'
+void* ewg_get_function_address_HIViewGetIndexedSubview (void)
+{
+	return (void*) HIViewGetIndexedSubview;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetZOrder'
+// For ise
+OSStatus  ewg_function_HIViewSetZOrder (HIViewRef ewg_inView, HIViewZOrderOp ewg_inOp, HIViewRef ewg_inOther)
+{
+	return HIViewSetZOrder ((HIViewRef)ewg_inView, (HIViewZOrderOp)ewg_inOp, (HIViewRef)ewg_inOther);
+}
+
+// Return address of function 'HIViewSetZOrder'
+void* ewg_get_function_address_HIViewSetZOrder (void)
+{
+	return (void*) HIViewSetZOrder;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetVisible'
+// For ise
+OSStatus  ewg_function_HIViewSetVisible (HIViewRef ewg_inView, Boolean ewg_inVisible)
+{
+	return HIViewSetVisible ((HIViewRef)ewg_inView, (Boolean)ewg_inVisible);
+}
+
+// Return address of function 'HIViewSetVisible'
+void* ewg_get_function_address_HIViewSetVisible (void)
+{
+	return (void*) HIViewSetVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsVisible'
+// For ise
+Boolean  ewg_function_HIViewIsVisible (HIViewRef ewg_inView)
+{
+	return HIViewIsVisible ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewIsVisible'
+void* ewg_get_function_address_HIViewIsVisible (void)
+{
+	return (void*) HIViewIsVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsLatentlyVisible'
+// For ise
+Boolean  ewg_function_HIViewIsLatentlyVisible (HIViewRef ewg_inView)
+{
+	return HIViewIsLatentlyVisible ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewIsLatentlyVisible'
+void* ewg_get_function_address_HIViewIsLatentlyVisible (void)
+{
+	return (void*) HIViewIsLatentlyVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetHilite'
+// For ise
+OSStatus  ewg_function_HIViewSetHilite (HIViewRef ewg_inView, HIViewPartCode ewg_inHilitePart)
+{
+	return HIViewSetHilite ((HIViewRef)ewg_inView, (HIViewPartCode)ewg_inHilitePart);
+}
+
+// Return address of function 'HIViewSetHilite'
+void* ewg_get_function_address_HIViewSetHilite (void)
+{
+	return (void*) HIViewSetHilite;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsActive'
+// For ise
+Boolean  ewg_function_HIViewIsActive (HIViewRef ewg_inView, Boolean *ewg_outIsLatentActive)
+{
+	return HIViewIsActive ((HIViewRef)ewg_inView, (Boolean*)ewg_outIsLatentActive);
+}
+
+// Return address of function 'HIViewIsActive'
+void* ewg_get_function_address_HIViewIsActive (void)
+{
+	return (void*) HIViewIsActive;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetActivated'
+// For ise
+OSStatus  ewg_function_HIViewSetActivated (HIViewRef ewg_inView, Boolean ewg_inSetActivated)
+{
+	return HIViewSetActivated ((HIViewRef)ewg_inView, (Boolean)ewg_inSetActivated);
+}
+
+// Return address of function 'HIViewSetActivated'
+void* ewg_get_function_address_HIViewSetActivated (void)
+{
+	return (void*) HIViewSetActivated;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsEnabled'
+// For ise
+Boolean  ewg_function_HIViewIsEnabled (HIViewRef ewg_inView, Boolean *ewg_outIsLatentEnabled)
+{
+	return HIViewIsEnabled ((HIViewRef)ewg_inView, (Boolean*)ewg_outIsLatentEnabled);
+}
+
+// Return address of function 'HIViewIsEnabled'
+void* ewg_get_function_address_HIViewIsEnabled (void)
+{
+	return (void*) HIViewIsEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetEnabled'
+// For ise
+OSStatus  ewg_function_HIViewSetEnabled (HIViewRef ewg_inView, Boolean ewg_inSetEnabled)
+{
+	return HIViewSetEnabled ((HIViewRef)ewg_inView, (Boolean)ewg_inSetEnabled);
+}
+
+// Return address of function 'HIViewSetEnabled'
+void* ewg_get_function_address_HIViewSetEnabled (void)
+{
+	return (void*) HIViewSetEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsCompositingEnabled'
+// For ise
+Boolean  ewg_function_HIViewIsCompositingEnabled (HIViewRef ewg_inView)
+{
+	return HIViewIsCompositingEnabled ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewIsCompositingEnabled'
+void* ewg_get_function_address_HIViewIsCompositingEnabled (void)
+{
+	return (void*) HIViewIsCompositingEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetText'
+// For ise
+OSStatus  ewg_function_HIViewSetText (HIViewRef ewg_inView, CFStringRef ewg_inText)
+{
+	return HIViewSetText ((HIViewRef)ewg_inView, (CFStringRef)ewg_inText);
+}
+
+// Return address of function 'HIViewSetText'
+void* ewg_get_function_address_HIViewSetText (void)
+{
+	return (void*) HIViewSetText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewCopyText'
+// For ise
+CFStringRef  ewg_function_HIViewCopyText (HIViewRef ewg_inView)
+{
+	return HIViewCopyText ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewCopyText'
+void* ewg_get_function_address_HIViewCopyText (void)
+{
+	return (void*) HIViewCopyText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetValue'
+// For ise
+SInt32  ewg_function_HIViewGetValue (HIViewRef ewg_inView)
+{
+	return HIViewGetValue ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetValue'
+void* ewg_get_function_address_HIViewGetValue (void)
+{
+	return (void*) HIViewGetValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetValue'
+// For ise
+OSStatus  ewg_function_HIViewSetValue (HIViewRef ewg_inView, SInt32 ewg_inValue)
+{
+	return HIViewSetValue ((HIViewRef)ewg_inView, (SInt32)ewg_inValue);
+}
+
+// Return address of function 'HIViewSetValue'
+void* ewg_get_function_address_HIViewSetValue (void)
+{
+	return (void*) HIViewSetValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetMinimum'
+// For ise
+SInt32  ewg_function_HIViewGetMinimum (HIViewRef ewg_inView)
+{
+	return HIViewGetMinimum ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetMinimum'
+void* ewg_get_function_address_HIViewGetMinimum (void)
+{
+	return (void*) HIViewGetMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetMinimum'
+// For ise
+OSStatus  ewg_function_HIViewSetMinimum (HIViewRef ewg_inView, SInt32 ewg_inMinimum)
+{
+	return HIViewSetMinimum ((HIViewRef)ewg_inView, (SInt32)ewg_inMinimum);
+}
+
+// Return address of function 'HIViewSetMinimum'
+void* ewg_get_function_address_HIViewSetMinimum (void)
+{
+	return (void*) HIViewSetMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetMaximum'
+// For ise
+SInt32  ewg_function_HIViewGetMaximum (HIViewRef ewg_inView)
+{
+	return HIViewGetMaximum ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetMaximum'
+void* ewg_get_function_address_HIViewGetMaximum (void)
+{
+	return (void*) HIViewGetMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetMaximum'
+// For ise
+OSStatus  ewg_function_HIViewSetMaximum (HIViewRef ewg_inView, SInt32 ewg_inMaximum)
+{
+	return HIViewSetMaximum ((HIViewRef)ewg_inView, (SInt32)ewg_inMaximum);
+}
+
+// Return address of function 'HIViewSetMaximum'
+void* ewg_get_function_address_HIViewSetMaximum (void)
+{
+	return (void*) HIViewSetMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetViewSize'
+// For ise
+SInt32  ewg_function_HIViewGetViewSize (HIViewRef ewg_inView)
+{
+	return HIViewGetViewSize ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetViewSize'
+void* ewg_get_function_address_HIViewGetViewSize (void)
+{
+	return (void*) HIViewGetViewSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetViewSize'
+// For ise
+OSStatus  ewg_function_HIViewSetViewSize (HIViewRef ewg_inView, SInt32 ewg_inViewSize)
+{
+	return HIViewSetViewSize ((HIViewRef)ewg_inView, (SInt32)ewg_inViewSize);
+}
+
+// Return address of function 'HIViewSetViewSize'
+void* ewg_get_function_address_HIViewSetViewSize (void)
+{
+	return (void*) HIViewSetViewSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsValid'
+// For ise
+Boolean  ewg_function_HIViewIsValid (HIViewRef ewg_inView)
+{
+	return HIViewIsValid ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewIsValid'
+void* ewg_get_function_address_HIViewIsValid (void)
+{
+	return (void*) HIViewIsValid;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetID'
+// For ise
+OSStatus  ewg_function_HIViewSetID (HIViewRef ewg_inView, HIViewID *ewg_inID)
+{
+	return HIViewSetID ((HIViewRef)ewg_inView, *(HIViewID*)ewg_inID);
+}
+
+// Return address of function 'HIViewSetID'
+void* ewg_get_function_address_HIViewSetID (void)
+{
+	return (void*) HIViewSetID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetID'
+// For ise
+OSStatus  ewg_function_HIViewGetID (HIViewRef ewg_inView, HIViewID *ewg_outID)
+{
+	return HIViewGetID ((HIViewRef)ewg_inView, (HIViewID*)ewg_outID);
+}
+
+// Return address of function 'HIViewGetID'
+void* ewg_get_function_address_HIViewGetID (void)
+{
+	return (void*) HIViewGetID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetCommandID'
+// For ise
+OSStatus  ewg_function_HIViewSetCommandID (HIViewRef ewg_inView, UInt32 ewg_inCommandID)
+{
+	return HIViewSetCommandID ((HIViewRef)ewg_inView, (UInt32)ewg_inCommandID);
+}
+
+// Return address of function 'HIViewSetCommandID'
+void* ewg_get_function_address_HIViewSetCommandID (void)
+{
+	return (void*) HIViewSetCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetCommandID'
+// For ise
+OSStatus  ewg_function_HIViewGetCommandID (HIViewRef ewg_inView, UInt32 *ewg_outCommandID)
+{
+	return HIViewGetCommandID ((HIViewRef)ewg_inView, (UInt32*)ewg_outCommandID);
+}
+
+// Return address of function 'HIViewGetCommandID'
+void* ewg_get_function_address_HIViewGetCommandID (void)
+{
+	return (void*) HIViewGetCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetKind'
+// For ise
+OSStatus  ewg_function_HIViewGetKind (HIViewRef ewg_inView, HIViewKind *ewg_outViewKind)
+{
+	return HIViewGetKind ((HIViewRef)ewg_inView, (HIViewKind*)ewg_outViewKind);
+}
+
+// Return address of function 'HIViewGetKind'
+void* ewg_get_function_address_HIViewGetKind (void)
+{
+	return (void*) HIViewGetKind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetBounds'
+// For ise
+OSStatus  ewg_function_HIViewGetBounds (HIViewRef ewg_inView, HIRect *ewg_outRect)
+{
+	return HIViewGetBounds ((HIViewRef)ewg_inView, (HIRect*)ewg_outRect);
+}
+
+// Return address of function 'HIViewGetBounds'
+void* ewg_get_function_address_HIViewGetBounds (void)
+{
+	return (void*) HIViewGetBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetFrame'
+// For ise
+OSStatus  ewg_function_HIViewGetFrame (HIViewRef ewg_inView, HIRect *ewg_outRect)
+{
+	return HIViewGetFrame ((HIViewRef)ewg_inView, (HIRect*)ewg_outRect);
+}
+
+// Return address of function 'HIViewGetFrame'
+void* ewg_get_function_address_HIViewGetFrame (void)
+{
+	return (void*) HIViewGetFrame;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetFrame'
+// For ise
+OSStatus  ewg_function_HIViewSetFrame (HIViewRef ewg_inView, HIRect const *ewg_inRect)
+{
+	return HIViewSetFrame ((HIViewRef)ewg_inView, (HIRect const*)ewg_inRect);
+}
+
+// Return address of function 'HIViewSetFrame'
+void* ewg_get_function_address_HIViewSetFrame (void)
+{
+	return (void*) HIViewSetFrame;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewMoveBy'
+// For ise
+OSStatus  ewg_function_HIViewMoveBy (HIViewRef ewg_inView, float ewg_inDX, float ewg_inDY)
+{
+	return HIViewMoveBy ((HIViewRef)ewg_inView, (float)ewg_inDX, (float)ewg_inDY);
+}
+
+// Return address of function 'HIViewMoveBy'
+void* ewg_get_function_address_HIViewMoveBy (void)
+{
+	return (void*) HIViewMoveBy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewPlaceInSuperviewAt'
+// For ise
+OSStatus  ewg_function_HIViewPlaceInSuperviewAt (HIViewRef ewg_inView, float ewg_inX, float ewg_inY)
+{
+	return HIViewPlaceInSuperviewAt ((HIViewRef)ewg_inView, (float)ewg_inX, (float)ewg_inY);
+}
+
+// Return address of function 'HIViewPlaceInSuperviewAt'
+void* ewg_get_function_address_HIViewPlaceInSuperviewAt (void)
+{
+	return (void*) HIViewPlaceInSuperviewAt;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewReshapeStructure'
+// For ise
+OSStatus  ewg_function_HIViewReshapeStructure (HIViewRef ewg_inView)
+{
+	return HIViewReshapeStructure ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewReshapeStructure'
+void* ewg_get_function_address_HIViewReshapeStructure (void)
+{
+	return (void*) HIViewReshapeStructure;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewRegionChanged'
+// For ise
+OSStatus  ewg_function_HIViewRegionChanged (HIViewRef ewg_inView, HIViewPartCode ewg_inRegionCode)
+{
+	return HIViewRegionChanged ((HIViewRef)ewg_inView, (HIViewPartCode)ewg_inRegionCode);
+}
+
+// Return address of function 'HIViewRegionChanged'
+void* ewg_get_function_address_HIViewRegionChanged (void)
+{
+	return (void*) HIViewRegionChanged;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewCopyShape'
+// For ise
+OSStatus  ewg_function_HIViewCopyShape (HIViewRef ewg_inView, HIViewPartCode ewg_inPart, HIShapeRef *ewg_outShape)
+{
+	return HIViewCopyShape ((HIViewRef)ewg_inView, (HIViewPartCode)ewg_inPart, (HIShapeRef*)ewg_outShape);
+}
+
+// Return address of function 'HIViewCopyShape'
+void* ewg_get_function_address_HIViewCopyShape (void)
+{
+	return (void*) HIViewCopyShape;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetOptimalBounds'
+// For ise
+OSStatus  ewg_function_HIViewGetOptimalBounds (HIViewRef ewg_inView, HIRect *ewg_outBounds, float *ewg_outBaseLineOffset)
+{
+	return HIViewGetOptimalBounds ((HIViewRef)ewg_inView, (HIRect*)ewg_outBounds, (float*)ewg_outBaseLineOffset);
+}
+
+// Return address of function 'HIViewGetOptimalBounds'
+void* ewg_get_function_address_HIViewGetOptimalBounds (void)
+{
+	return (void*) HIViewGetOptimalBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetViewForMouseEvent'
+// For ise
+OSStatus  ewg_function_HIViewGetViewForMouseEvent (HIViewRef ewg_inView, EventRef ewg_inEvent, HIViewRef *ewg_outView)
+{
+	return HIViewGetViewForMouseEvent ((HIViewRef)ewg_inView, (EventRef)ewg_inEvent, (HIViewRef*)ewg_outView);
+}
+
+// Return address of function 'HIViewGetViewForMouseEvent'
+void* ewg_get_function_address_HIViewGetViewForMouseEvent (void)
+{
+	return (void*) HIViewGetViewForMouseEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewClick'
+// For ise
+OSStatus  ewg_function_HIViewClick (HIViewRef ewg_inView, EventRef ewg_inEvent)
+{
+	return HIViewClick ((HIViewRef)ewg_inView, (EventRef)ewg_inEvent);
+}
+
+// Return address of function 'HIViewClick'
+void* ewg_get_function_address_HIViewClick (void)
+{
+	return (void*) HIViewClick;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSimulateClick'
+// For ise
+OSStatus  ewg_function_HIViewSimulateClick (HIViewRef ewg_inView, HIViewPartCode ewg_inPartToClick, UInt32 ewg_inModifiers, HIViewPartCode *ewg_outPartClicked)
+{
+	return HIViewSimulateClick ((HIViewRef)ewg_inView, (HIViewPartCode)ewg_inPartToClick, (UInt32)ewg_inModifiers, (HIViewPartCode*)ewg_outPartClicked);
+}
+
+// Return address of function 'HIViewSimulateClick'
+void* ewg_get_function_address_HIViewSimulateClick (void)
+{
+	return (void*) HIViewSimulateClick;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetPartHit'
+// For ise
+OSStatus  ewg_function_HIViewGetPartHit (HIViewRef ewg_inView, HIPoint const *ewg_inPoint, HIViewPartCode *ewg_outPart)
+{
+	return HIViewGetPartHit ((HIViewRef)ewg_inView, (HIPoint const*)ewg_inPoint, (HIViewPartCode*)ewg_outPart);
+}
+
+// Return address of function 'HIViewGetPartHit'
+void* ewg_get_function_address_HIViewGetPartHit (void)
+{
+	return (void*) HIViewGetPartHit;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetSubviewHit'
+// For ise
+OSStatus  ewg_function_HIViewGetSubviewHit (HIViewRef ewg_inView, HIPoint const *ewg_inPoint, Boolean ewg_inDeep, HIViewRef *ewg_outView)
+{
+	return HIViewGetSubviewHit ((HIViewRef)ewg_inView, (HIPoint const*)ewg_inPoint, (Boolean)ewg_inDeep, (HIViewRef*)ewg_outView);
+}
+
+// Return address of function 'HIViewGetSubviewHit'
+void* ewg_get_function_address_HIViewGetSubviewHit (void)
+{
+	return (void*) HIViewGetSubviewHit;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewNewTrackingArea'
+// For ise
+OSStatus  ewg_function_HIViewNewTrackingArea (HIViewRef ewg_inView, HIShapeRef ewg_inShape, HIViewTrackingAreaID ewg_inID, HIViewTrackingAreaRef *ewg_outRef)
+{
+	return HIViewNewTrackingArea ((HIViewRef)ewg_inView, (HIShapeRef)ewg_inShape, (HIViewTrackingAreaID)ewg_inID, (HIViewTrackingAreaRef*)ewg_outRef);
+}
+
+// Return address of function 'HIViewNewTrackingArea'
+void* ewg_get_function_address_HIViewNewTrackingArea (void)
+{
+	return (void*) HIViewNewTrackingArea;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewChangeTrackingArea'
+// For ise
+OSStatus  ewg_function_HIViewChangeTrackingArea (HIViewTrackingAreaRef ewg_inArea, HIShapeRef ewg_inShape)
+{
+	return HIViewChangeTrackingArea ((HIViewTrackingAreaRef)ewg_inArea, (HIShapeRef)ewg_inShape);
+}
+
+// Return address of function 'HIViewChangeTrackingArea'
+void* ewg_get_function_address_HIViewChangeTrackingArea (void)
+{
+	return (void*) HIViewChangeTrackingArea;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetTrackingAreaID'
+// For ise
+OSStatus  ewg_function_HIViewGetTrackingAreaID (HIViewTrackingAreaRef ewg_inArea, HIViewTrackingAreaID *ewg_outID)
+{
+	return HIViewGetTrackingAreaID ((HIViewTrackingAreaRef)ewg_inArea, (HIViewTrackingAreaID*)ewg_outID);
+}
+
+// Return address of function 'HIViewGetTrackingAreaID'
+void* ewg_get_function_address_HIViewGetTrackingAreaID (void)
+{
+	return (void*) HIViewGetTrackingAreaID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewDisposeTrackingArea'
+// For ise
+OSStatus  ewg_function_HIViewDisposeTrackingArea (HIViewTrackingAreaRef ewg_inArea)
+{
+	return HIViewDisposeTrackingArea ((HIViewTrackingAreaRef)ewg_inArea);
+}
+
+// Return address of function 'HIViewDisposeTrackingArea'
+void* ewg_get_function_address_HIViewDisposeTrackingArea (void)
+{
+	return (void*) HIViewDisposeTrackingArea;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetNeedsDisplay'
+// For ise
+Boolean  ewg_function_HIViewGetNeedsDisplay (HIViewRef ewg_inView)
+{
+	return HIViewGetNeedsDisplay ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetNeedsDisplay'
+void* ewg_get_function_address_HIViewGetNeedsDisplay (void)
+{
+	return (void*) HIViewGetNeedsDisplay;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetNeedsDisplay'
+// For ise
+OSStatus  ewg_function_HIViewSetNeedsDisplay (HIViewRef ewg_inView, Boolean ewg_inNeedsDisplay)
+{
+	return HIViewSetNeedsDisplay ((HIViewRef)ewg_inView, (Boolean)ewg_inNeedsDisplay);
+}
+
+// Return address of function 'HIViewSetNeedsDisplay'
+void* ewg_get_function_address_HIViewSetNeedsDisplay (void)
+{
+	return (void*) HIViewSetNeedsDisplay;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetNeedsDisplayInRect'
+// For ise
+OSStatus  ewg_function_HIViewSetNeedsDisplayInRect (HIViewRef ewg_inView, HIRect const *ewg_inRect, Boolean ewg_inNeedsDisplay)
+{
+	return HIViewSetNeedsDisplayInRect ((HIViewRef)ewg_inView, (HIRect const*)ewg_inRect, (Boolean)ewg_inNeedsDisplay);
+}
+
+// Return address of function 'HIViewSetNeedsDisplayInRect'
+void* ewg_get_function_address_HIViewSetNeedsDisplayInRect (void)
+{
+	return (void*) HIViewSetNeedsDisplayInRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetNeedsDisplayInShape'
+// For ise
+OSStatus  ewg_function_HIViewSetNeedsDisplayInShape (HIViewRef ewg_inView, HIShapeRef ewg_inArea, Boolean ewg_inNeedsDisplay)
+{
+	return HIViewSetNeedsDisplayInShape ((HIViewRef)ewg_inView, (HIShapeRef)ewg_inArea, (Boolean)ewg_inNeedsDisplay);
+}
+
+// Return address of function 'HIViewSetNeedsDisplayInShape'
+void* ewg_get_function_address_HIViewSetNeedsDisplayInShape (void)
+{
+	return (void*) HIViewSetNeedsDisplayInShape;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetNeedsDisplayInRegion'
+// For ise
+OSStatus  ewg_function_HIViewSetNeedsDisplayInRegion (HIViewRef ewg_inView, RgnHandle ewg_inRgn, Boolean ewg_inNeedsDisplay)
+{
+	return HIViewSetNeedsDisplayInRegion ((HIViewRef)ewg_inView, (RgnHandle)ewg_inRgn, (Boolean)ewg_inNeedsDisplay);
+}
+
+// Return address of function 'HIViewSetNeedsDisplayInRegion'
+void* ewg_get_function_address_HIViewSetNeedsDisplayInRegion (void)
+{
+	return (void*) HIViewSetNeedsDisplayInRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewRender'
+// For ise
+OSStatus  ewg_function_HIViewRender (HIViewRef ewg_inView)
+{
+	return HIViewRender ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewRender'
+void* ewg_get_function_address_HIViewRender (void)
+{
+	return (void*) HIViewRender;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewFlashDirtyArea'
+// For ise
+OSStatus  ewg_function_HIViewFlashDirtyArea (WindowRef ewg_inWindow)
+{
+	return HIViewFlashDirtyArea ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'HIViewFlashDirtyArea'
+void* ewg_get_function_address_HIViewFlashDirtyArea (void)
+{
+	return (void*) HIViewFlashDirtyArea;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetSizeConstraints'
+// For ise
+OSStatus  ewg_function_HIViewGetSizeConstraints (HIViewRef ewg_inView, HISize *ewg_outMinSize, HISize *ewg_outMaxSize)
+{
+	return HIViewGetSizeConstraints ((HIViewRef)ewg_inView, (HISize*)ewg_outMinSize, (HISize*)ewg_outMaxSize);
+}
+
+// Return address of function 'HIViewGetSizeConstraints'
+void* ewg_get_function_address_HIViewGetSizeConstraints (void)
+{
+	return (void*) HIViewGetSizeConstraints;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewConvertPoint'
+// For ise
+OSStatus  ewg_function_HIViewConvertPoint (HIPoint *ewg_ioPoint, HIViewRef ewg_inSourceView, HIViewRef ewg_inDestView)
+{
+	return HIViewConvertPoint ((HIPoint*)ewg_ioPoint, (HIViewRef)ewg_inSourceView, (HIViewRef)ewg_inDestView);
+}
+
+// Return address of function 'HIViewConvertPoint'
+void* ewg_get_function_address_HIViewConvertPoint (void)
+{
+	return (void*) HIViewConvertPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewConvertRect'
+// For ise
+OSStatus  ewg_function_HIViewConvertRect (HIRect *ewg_ioRect, HIViewRef ewg_inSourceView, HIViewRef ewg_inDestView)
+{
+	return HIViewConvertRect ((HIRect*)ewg_ioRect, (HIViewRef)ewg_inSourceView, (HIViewRef)ewg_inDestView);
+}
+
+// Return address of function 'HIViewConvertRect'
+void* ewg_get_function_address_HIViewConvertRect (void)
+{
+	return (void*) HIViewConvertRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewConvertRegion'
+// For ise
+OSStatus  ewg_function_HIViewConvertRegion (RgnHandle ewg_ioRgn, HIViewRef ewg_inSourceView, HIViewRef ewg_inDestView)
+{
+	return HIViewConvertRegion ((RgnHandle)ewg_ioRgn, (HIViewRef)ewg_inSourceView, (HIViewRef)ewg_inDestView);
+}
+
+// Return address of function 'HIViewConvertRegion'
+void* ewg_get_function_address_HIViewConvertRegion (void)
+{
+	return (void*) HIViewConvertRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetDrawingEnabled'
+// For ise
+OSStatus  ewg_function_HIViewSetDrawingEnabled (HIViewRef ewg_inView, Boolean ewg_inEnabled)
+{
+	return HIViewSetDrawingEnabled ((HIViewRef)ewg_inView, (Boolean)ewg_inEnabled);
+}
+
+// Return address of function 'HIViewSetDrawingEnabled'
+void* ewg_get_function_address_HIViewSetDrawingEnabled (void)
+{
+	return (void*) HIViewSetDrawingEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsDrawingEnabled'
+// For ise
+Boolean  ewg_function_HIViewIsDrawingEnabled (HIViewRef ewg_inView)
+{
+	return HIViewIsDrawingEnabled ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewIsDrawingEnabled'
+void* ewg_get_function_address_HIViewIsDrawingEnabled (void)
+{
+	return (void*) HIViewIsDrawingEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewScrollRect'
+// For ise
+OSStatus  ewg_function_HIViewScrollRect (HIViewRef ewg_inView, HIRect const *ewg_inRect, float ewg_inDX, float ewg_inDY)
+{
+	return HIViewScrollRect ((HIViewRef)ewg_inView, (HIRect const*)ewg_inRect, (float)ewg_inDX, (float)ewg_inDY);
+}
+
+// Return address of function 'HIViewScrollRect'
+void* ewg_get_function_address_HIViewScrollRect (void)
+{
+	return (void*) HIViewScrollRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetBoundsOrigin'
+// For ise
+OSStatus  ewg_function_HIViewSetBoundsOrigin (HIViewRef ewg_inView, float ewg_inX, float ewg_inY)
+{
+	return HIViewSetBoundsOrigin ((HIViewRef)ewg_inView, (float)ewg_inX, (float)ewg_inY);
+}
+
+// Return address of function 'HIViewSetBoundsOrigin'
+void* ewg_get_function_address_HIViewSetBoundsOrigin (void)
+{
+	return (void*) HIViewSetBoundsOrigin;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewAdvanceFocus'
+// For ise
+OSStatus  ewg_function_HIViewAdvanceFocus (HIViewRef ewg_inRootForFocus, EventModifiers ewg_inModifiers)
+{
+	return HIViewAdvanceFocus ((HIViewRef)ewg_inRootForFocus, (EventModifiers)ewg_inModifiers);
+}
+
+// Return address of function 'HIViewAdvanceFocus'
+void* ewg_get_function_address_HIViewAdvanceFocus (void)
+{
+	return (void*) HIViewAdvanceFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetFocusPart'
+// For ise
+OSStatus  ewg_function_HIViewGetFocusPart (HIViewRef ewg_inView, HIViewPartCode *ewg_outFocusPart)
+{
+	return HIViewGetFocusPart ((HIViewRef)ewg_inView, (HIViewPartCode*)ewg_outFocusPart);
+}
+
+// Return address of function 'HIViewGetFocusPart'
+void* ewg_get_function_address_HIViewGetFocusPart (void)
+{
+	return (void*) HIViewGetFocusPart;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSubtreeContainsFocus'
+// For ise
+Boolean  ewg_function_HIViewSubtreeContainsFocus (HIViewRef ewg_inSubtreeStart)
+{
+	return HIViewSubtreeContainsFocus ((HIViewRef)ewg_inSubtreeStart);
+}
+
+// Return address of function 'HIViewSubtreeContainsFocus'
+void* ewg_get_function_address_HIViewSubtreeContainsFocus (void)
+{
+	return (void*) HIViewSubtreeContainsFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetNextFocus'
+// For ise
+OSStatus  ewg_function_HIViewSetNextFocus (HIViewRef ewg_inView, HIViewRef ewg_inNextFocus)
+{
+	return HIViewSetNextFocus ((HIViewRef)ewg_inView, (HIViewRef)ewg_inNextFocus);
+}
+
+// Return address of function 'HIViewSetNextFocus'
+void* ewg_get_function_address_HIViewSetNextFocus (void)
+{
+	return (void*) HIViewSetNextFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetFirstSubViewFocus'
+// For ise
+OSStatus  ewg_function_HIViewSetFirstSubViewFocus (HIViewRef ewg_inParent, HIViewRef ewg_inSubView)
+{
+	return HIViewSetFirstSubViewFocus ((HIViewRef)ewg_inParent, (HIViewRef)ewg_inSubView);
+}
+
+// Return address of function 'HIViewSetFirstSubViewFocus'
+void* ewg_get_function_address_HIViewSetFirstSubViewFocus (void)
+{
+	return (void*) HIViewSetFirstSubViewFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetLayoutInfo'
+// For ise
+OSStatus  ewg_function_HIViewGetLayoutInfo (HIViewRef ewg_inView, HILayoutInfo *ewg_outLayoutInfo)
+{
+	return HIViewGetLayoutInfo ((HIViewRef)ewg_inView, (HILayoutInfo*)ewg_outLayoutInfo);
+}
+
+// Return address of function 'HIViewGetLayoutInfo'
+void* ewg_get_function_address_HIViewGetLayoutInfo (void)
+{
+	return (void*) HIViewGetLayoutInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSetLayoutInfo'
+// For ise
+OSStatus  ewg_function_HIViewSetLayoutInfo (HIViewRef ewg_inView, HILayoutInfo const *ewg_inLayoutInfo)
+{
+	return HIViewSetLayoutInfo ((HIViewRef)ewg_inView, (HILayoutInfo const*)ewg_inLayoutInfo);
+}
+
+// Return address of function 'HIViewSetLayoutInfo'
+void* ewg_get_function_address_HIViewSetLayoutInfo (void)
+{
+	return (void*) HIViewSetLayoutInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewSuspendLayout'
+// For ise
+OSStatus  ewg_function_HIViewSuspendLayout (HIViewRef ewg_inView)
+{
+	return HIViewSuspendLayout ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewSuspendLayout'
+void* ewg_get_function_address_HIViewSuspendLayout (void)
+{
+	return (void*) HIViewSuspendLayout;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewResumeLayout'
+// For ise
+OSStatus  ewg_function_HIViewResumeLayout (HIViewRef ewg_inView)
+{
+	return HIViewResumeLayout ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewResumeLayout'
+void* ewg_get_function_address_HIViewResumeLayout (void)
+{
+	return (void*) HIViewResumeLayout;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsLayoutActive'
+// For ise
+Boolean  ewg_function_HIViewIsLayoutActive (HIViewRef ewg_inView)
+{
+	return HIViewIsLayoutActive ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewIsLayoutActive'
+void* ewg_get_function_address_HIViewIsLayoutActive (void)
+{
+	return (void*) HIViewIsLayoutActive;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewIsLayoutLatentlyActive'
+// For ise
+Boolean  ewg_function_HIViewIsLayoutLatentlyActive (HIViewRef ewg_inView)
+{
+	return HIViewIsLayoutLatentlyActive ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewIsLayoutLatentlyActive'
+void* ewg_get_function_address_HIViewIsLayoutLatentlyActive (void)
+{
+	return (void*) HIViewIsLayoutLatentlyActive;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewApplyLayout'
+// For ise
+OSStatus  ewg_function_HIViewApplyLayout (HIViewRef ewg_inView)
+{
+	return HIViewApplyLayout ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewApplyLayout'
+void* ewg_get_function_address_HIViewApplyLayout (void)
+{
+	return (void*) HIViewApplyLayout;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetWindow'
+// For ise
+WindowRef  ewg_function_HIViewGetWindow (HIViewRef ewg_inView)
+{
+	return HIViewGetWindow ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetWindow'
+void* ewg_get_function_address_HIViewGetWindow (void)
+{
+	return (void*) HIViewGetWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewFindByID'
+// For ise
+OSStatus  ewg_function_HIViewFindByID (HIViewRef ewg_inStartView, HIViewID *ewg_inID, HIViewRef *ewg_outControl)
+{
+	return HIViewFindByID ((HIViewRef)ewg_inStartView, *(HIViewID*)ewg_inID, (HIViewRef*)ewg_outControl);
+}
+
+// Return address of function 'HIViewFindByID'
+void* ewg_get_function_address_HIViewFindByID (void)
+{
+	return (void*) HIViewFindByID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetAttributes'
+// For ise
+OSStatus  ewg_function_HIViewGetAttributes (HIViewRef ewg_inView, OptionBits *ewg_outAttrs)
+{
+	return HIViewGetAttributes ((HIViewRef)ewg_inView, (OptionBits*)ewg_outAttrs);
+}
+
+// Return address of function 'HIViewGetAttributes'
+void* ewg_get_function_address_HIViewGetAttributes (void)
+{
+	return (void*) HIViewGetAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewChangeAttributes'
+// For ise
+OSStatus  ewg_function_HIViewChangeAttributes (HIViewRef ewg_inView, OptionBits ewg_inAttrsToSet, OptionBits ewg_inAttrsToClear)
+{
+	return HIViewChangeAttributes ((HIViewRef)ewg_inView, (OptionBits)ewg_inAttrsToSet, (OptionBits)ewg_inAttrsToClear);
+}
+
+// Return address of function 'HIViewChangeAttributes'
+void* ewg_get_function_address_HIViewChangeAttributes (void)
+{
+	return (void*) HIViewChangeAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewCreateOffscreenImage'
+// For ise
+OSStatus  ewg_function_HIViewCreateOffscreenImage (HIViewRef ewg_inView, OptionBits ewg_inOptions, HIRect *ewg_outFrame, CGImageRef *ewg_outImage)
+{
+	return HIViewCreateOffscreenImage ((HIViewRef)ewg_inView, (OptionBits)ewg_inOptions, (HIRect*)ewg_outFrame, (CGImageRef*)ewg_outImage);
+}
+
+// Return address of function 'HIViewCreateOffscreenImage'
+void* ewg_get_function_address_HIViewCreateOffscreenImage (void)
+{
+	return (void*) HIViewCreateOffscreenImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewDrawCGImage'
+// For ise
+OSStatus  ewg_function_HIViewDrawCGImage (CGContextRef ewg_inContext, HIRect const *ewg_inBounds, CGImageRef ewg_inImage)
+{
+	return HIViewDrawCGImage ((CGContextRef)ewg_inContext, (HIRect const*)ewg_inBounds, (CGImageRef)ewg_inImage);
+}
+
+// Return address of function 'HIViewDrawCGImage'
+void* ewg_get_function_address_HIViewDrawCGImage (void)
+{
+	return (void*) HIViewDrawCGImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetFeatures'
+// For ise
+OSStatus  ewg_function_HIViewGetFeatures (HIViewRef ewg_inView, HIViewFeatures *ewg_outFeatures)
+{
+	return HIViewGetFeatures ((HIViewRef)ewg_inView, (HIViewFeatures*)ewg_outFeatures);
+}
+
+// Return address of function 'HIViewGetFeatures'
+void* ewg_get_function_address_HIViewGetFeatures (void)
+{
+	return (void*) HIViewGetFeatures;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewChangeFeatures'
+// For ise
+OSStatus  ewg_function_HIViewChangeFeatures (HIViewRef ewg_inView, HIViewFeatures ewg_inFeaturesToSet, HIViewFeatures ewg_inFeaturesToClear)
+{
+	return HIViewChangeFeatures ((HIViewRef)ewg_inView, (HIViewFeatures)ewg_inFeaturesToSet, (HIViewFeatures)ewg_inFeaturesToClear);
+}
+
+// Return address of function 'HIViewChangeFeatures'
+void* ewg_get_function_address_HIViewChangeFeatures (void)
+{
+	return (void*) HIViewChangeFeatures;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HICreateTransformedCGImage'
+// For ise
+OSStatus  ewg_function_HICreateTransformedCGImage (CGImageRef ewg_inImage, OptionBits ewg_inTransform, CGImageRef *ewg_outImage)
+{
+	return HICreateTransformedCGImage ((CGImageRef)ewg_inImage, (OptionBits)ewg_inTransform, (CGImageRef*)ewg_outImage);
+}
+
+// Return address of function 'HICreateTransformedCGImage'
+void* ewg_get_function_address_HICreateTransformedCGImage (void)
+{
+	return (void*) HICreateTransformedCGImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIViewGetEventTarget'
+// For ise
+EventTargetRef  ewg_function_HIViewGetEventTarget (HIViewRef ewg_inView)
+{
+	return HIViewGetEventTarget ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIViewGetEventTarget'
+void* ewg_get_function_address_HIViewGetEventTarget (void)
+{
+	return (void*) HIViewGetEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIGrowBoxViewSetTransparent'
+// For ise
+OSStatus  ewg_function_HIGrowBoxViewSetTransparent (HIViewRef ewg_inGrowBoxView, Boolean ewg_inTransparent)
+{
+	return HIGrowBoxViewSetTransparent ((HIViewRef)ewg_inGrowBoxView, (Boolean)ewg_inTransparent);
+}
+
+// Return address of function 'HIGrowBoxViewSetTransparent'
+void* ewg_get_function_address_HIGrowBoxViewSetTransparent (void)
+{
+	return (void*) HIGrowBoxViewSetTransparent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIGrowBoxViewIsTransparent'
+// For ise
+Boolean  ewg_function_HIGrowBoxViewIsTransparent (HIViewRef ewg_inGrowBoxView)
+{
+	return HIGrowBoxViewIsTransparent ((HIViewRef)ewg_inGrowBoxView);
+}
+
+// Return address of function 'HIGrowBoxViewIsTransparent'
+void* ewg_get_function_address_HIGrowBoxViewIsTransparent (void)
+{
+	return (void*) HIGrowBoxViewIsTransparent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIScrollViewCreate'
+// For ise
+OSStatus  ewg_function_HIScrollViewCreate (OptionBits ewg_inOptions, HIViewRef *ewg_outView)
+{
+	return HIScrollViewCreate ((OptionBits)ewg_inOptions, (HIViewRef*)ewg_outView);
+}
+
+// Return address of function 'HIScrollViewCreate'
+void* ewg_get_function_address_HIScrollViewCreate (void)
+{
+	return (void*) HIScrollViewCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIScrollViewSetScrollBarAutoHide'
+// For ise
+OSStatus  ewg_function_HIScrollViewSetScrollBarAutoHide (HIViewRef ewg_inView, Boolean ewg_inAutoHide)
+{
+	return HIScrollViewSetScrollBarAutoHide ((HIViewRef)ewg_inView, (Boolean)ewg_inAutoHide);
+}
+
+// Return address of function 'HIScrollViewSetScrollBarAutoHide'
+void* ewg_get_function_address_HIScrollViewSetScrollBarAutoHide (void)
+{
+	return (void*) HIScrollViewSetScrollBarAutoHide;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIScrollViewGetScrollBarAutoHide'
+// For ise
+Boolean  ewg_function_HIScrollViewGetScrollBarAutoHide (HIViewRef ewg_inView)
+{
+	return HIScrollViewGetScrollBarAutoHide ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIScrollViewGetScrollBarAutoHide'
+void* ewg_get_function_address_HIScrollViewGetScrollBarAutoHide (void)
+{
+	return (void*) HIScrollViewGetScrollBarAutoHide;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIScrollViewNavigate'
+// For ise
+OSStatus  ewg_function_HIScrollViewNavigate (HIViewRef ewg_inView, HIScrollViewAction ewg_inAction)
+{
+	return HIScrollViewNavigate ((HIViewRef)ewg_inView, (HIScrollViewAction)ewg_inAction);
+}
+
+// Return address of function 'HIScrollViewNavigate'
+void* ewg_get_function_address_HIScrollViewNavigate (void)
+{
+	return (void*) HIScrollViewNavigate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIScrollViewCanNavigate'
+// For ise
+Boolean  ewg_function_HIScrollViewCanNavigate (HIViewRef ewg_inView, HIScrollViewAction ewg_inAction)
+{
+	return HIScrollViewCanNavigate ((HIViewRef)ewg_inView, (HIScrollViewAction)ewg_inAction);
+}
+
+// Return address of function 'HIScrollViewCanNavigate'
+void* ewg_get_function_address_HIScrollViewCanNavigate (void)
+{
+	return (void*) HIScrollViewCanNavigate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewCreate'
+// For ise
+OSStatus  ewg_function_HIImageViewCreate (CGImageRef ewg_inImage, ControlRef *ewg_outControl)
+{
+	return HIImageViewCreate ((CGImageRef)ewg_inImage, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'HIImageViewCreate'
+void* ewg_get_function_address_HIImageViewCreate (void)
+{
+	return (void*) HIImageViewCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewSetOpaque'
+// For ise
+OSStatus  ewg_function_HIImageViewSetOpaque (HIViewRef ewg_inView, Boolean ewg_inOpaque)
+{
+	return HIImageViewSetOpaque ((HIViewRef)ewg_inView, (Boolean)ewg_inOpaque);
+}
+
+// Return address of function 'HIImageViewSetOpaque'
+void* ewg_get_function_address_HIImageViewSetOpaque (void)
+{
+	return (void*) HIImageViewSetOpaque;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewIsOpaque'
+// For ise
+Boolean  ewg_function_HIImageViewIsOpaque (HIViewRef ewg_inView)
+{
+	return HIImageViewIsOpaque ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIImageViewIsOpaque'
+void* ewg_get_function_address_HIImageViewIsOpaque (void)
+{
+	return (void*) HIImageViewIsOpaque;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewSetAlpha'
+// For ise
+OSStatus  ewg_function_HIImageViewSetAlpha (HIViewRef ewg_inView, float ewg_inAlpha)
+{
+	return HIImageViewSetAlpha ((HIViewRef)ewg_inView, (float)ewg_inAlpha);
+}
+
+// Return address of function 'HIImageViewSetAlpha'
+void* ewg_get_function_address_HIImageViewSetAlpha (void)
+{
+	return (void*) HIImageViewSetAlpha;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewGetAlpha'
+// For ise
+float  ewg_function_HIImageViewGetAlpha (HIViewRef ewg_inView)
+{
+	return HIImageViewGetAlpha ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIImageViewGetAlpha'
+void* ewg_get_function_address_HIImageViewGetAlpha (void)
+{
+	return (void*) HIImageViewGetAlpha;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewSetScaleToFit'
+// For ise
+OSStatus  ewg_function_HIImageViewSetScaleToFit (HIViewRef ewg_inView, Boolean ewg_inScaleToFit)
+{
+	return HIImageViewSetScaleToFit ((HIViewRef)ewg_inView, (Boolean)ewg_inScaleToFit);
+}
+
+// Return address of function 'HIImageViewSetScaleToFit'
+void* ewg_get_function_address_HIImageViewSetScaleToFit (void)
+{
+	return (void*) HIImageViewSetScaleToFit;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewGetScaleToFit'
+// For ise
+Boolean  ewg_function_HIImageViewGetScaleToFit (HIViewRef ewg_inView)
+{
+	return HIImageViewGetScaleToFit ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIImageViewGetScaleToFit'
+void* ewg_get_function_address_HIImageViewGetScaleToFit (void)
+{
+	return (void*) HIImageViewGetScaleToFit;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewSetImage'
+// For ise
+OSStatus  ewg_function_HIImageViewSetImage (HIViewRef ewg_inView, CGImageRef ewg_inImage)
+{
+	return HIImageViewSetImage ((HIViewRef)ewg_inView, (CGImageRef)ewg_inImage);
+}
+
+// Return address of function 'HIImageViewSetImage'
+void* ewg_get_function_address_HIImageViewSetImage (void)
+{
+	return (void*) HIImageViewSetImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIImageViewCopyImage'
+// For ise
+CGImageRef  ewg_function_HIImageViewCopyImage (HIViewRef ewg_inView)
+{
+	return HIImageViewCopyImage ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIImageViewCopyImage'
+void* ewg_get_function_address_HIImageViewCopyImage (void)
+{
+	return (void*) HIImageViewCopyImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxCreate'
+// For ise
+OSStatus  ewg_function_HIComboBoxCreate (HIRect const *ewg_boundsRect, CFStringRef ewg_text, ControlFontStyleRec const *ewg_style, CFArrayRef ewg_list, OptionBits ewg_inAttributes, HIViewRef *ewg_outComboBox)
+{
+	return HIComboBoxCreate ((HIRect const*)ewg_boundsRect, (CFStringRef)ewg_text, (ControlFontStyleRec const*)ewg_style, (CFArrayRef)ewg_list, (OptionBits)ewg_inAttributes, (HIViewRef*)ewg_outComboBox);
+}
+
+// Return address of function 'HIComboBoxCreate'
+void* ewg_get_function_address_HIComboBoxCreate (void)
+{
+	return (void*) HIComboBoxCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxGetItemCount'
+// For ise
+ItemCount  ewg_function_HIComboBoxGetItemCount (HIViewRef ewg_inComboBox)
+{
+	return HIComboBoxGetItemCount ((HIViewRef)ewg_inComboBox);
+}
+
+// Return address of function 'HIComboBoxGetItemCount'
+void* ewg_get_function_address_HIComboBoxGetItemCount (void)
+{
+	return (void*) HIComboBoxGetItemCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxInsertTextItemAtIndex'
+// For ise
+OSStatus  ewg_function_HIComboBoxInsertTextItemAtIndex (HIViewRef ewg_inComboBox, CFIndex ewg_inIndex, CFStringRef ewg_inText)
+{
+	return HIComboBoxInsertTextItemAtIndex ((HIViewRef)ewg_inComboBox, (CFIndex)ewg_inIndex, (CFStringRef)ewg_inText);
+}
+
+// Return address of function 'HIComboBoxInsertTextItemAtIndex'
+void* ewg_get_function_address_HIComboBoxInsertTextItemAtIndex (void)
+{
+	return (void*) HIComboBoxInsertTextItemAtIndex;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxAppendTextItem'
+// For ise
+OSStatus  ewg_function_HIComboBoxAppendTextItem (HIViewRef ewg_inComboBox, CFStringRef ewg_inText, CFIndex *ewg_outIndex)
+{
+	return HIComboBoxAppendTextItem ((HIViewRef)ewg_inComboBox, (CFStringRef)ewg_inText, (CFIndex*)ewg_outIndex);
+}
+
+// Return address of function 'HIComboBoxAppendTextItem'
+void* ewg_get_function_address_HIComboBoxAppendTextItem (void)
+{
+	return (void*) HIComboBoxAppendTextItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxCopyTextItemAtIndex'
+// For ise
+OSStatus  ewg_function_HIComboBoxCopyTextItemAtIndex (HIViewRef ewg_inComboBox, CFIndex ewg_inIndex, CFStringRef *ewg_outString)
+{
+	return HIComboBoxCopyTextItemAtIndex ((HIViewRef)ewg_inComboBox, (CFIndex)ewg_inIndex, (CFStringRef*)ewg_outString);
+}
+
+// Return address of function 'HIComboBoxCopyTextItemAtIndex'
+void* ewg_get_function_address_HIComboBoxCopyTextItemAtIndex (void)
+{
+	return (void*) HIComboBoxCopyTextItemAtIndex;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxRemoveItemAtIndex'
+// For ise
+OSStatus  ewg_function_HIComboBoxRemoveItemAtIndex (HIViewRef ewg_inComboBox, CFIndex ewg_inIndex)
+{
+	return HIComboBoxRemoveItemAtIndex ((HIViewRef)ewg_inComboBox, (CFIndex)ewg_inIndex);
+}
+
+// Return address of function 'HIComboBoxRemoveItemAtIndex'
+void* ewg_get_function_address_HIComboBoxRemoveItemAtIndex (void)
+{
+	return (void*) HIComboBoxRemoveItemAtIndex;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxChangeAttributes'
+// For ise
+OSStatus  ewg_function_HIComboBoxChangeAttributes (HIViewRef ewg_inComboBox, OptionBits ewg_inAttributesToSet, OptionBits ewg_inAttributesToClear)
+{
+	return HIComboBoxChangeAttributes ((HIViewRef)ewg_inComboBox, (OptionBits)ewg_inAttributesToSet, (OptionBits)ewg_inAttributesToClear);
+}
+
+// Return address of function 'HIComboBoxChangeAttributes'
+void* ewg_get_function_address_HIComboBoxChangeAttributes (void)
+{
+	return (void*) HIComboBoxChangeAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxGetAttributes'
+// For ise
+OSStatus  ewg_function_HIComboBoxGetAttributes (HIViewRef ewg_inComboBox, OptionBits *ewg_outAttributes)
+{
+	return HIComboBoxGetAttributes ((HIViewRef)ewg_inComboBox, (OptionBits*)ewg_outAttributes);
+}
+
+// Return address of function 'HIComboBoxGetAttributes'
+void* ewg_get_function_address_HIComboBoxGetAttributes (void)
+{
+	return (void*) HIComboBoxGetAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxIsListVisible'
+// For ise
+Boolean  ewg_function_HIComboBoxIsListVisible (HIViewRef ewg_inComboBox)
+{
+	return HIComboBoxIsListVisible ((HIViewRef)ewg_inComboBox);
+}
+
+// Return address of function 'HIComboBoxIsListVisible'
+void* ewg_get_function_address_HIComboBoxIsListVisible (void)
+{
+	return (void*) HIComboBoxIsListVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIComboBoxSetListVisible'
+// For ise
+OSStatus  ewg_function_HIComboBoxSetListVisible (HIViewRef ewg_inComboBox, Boolean ewg_inVisible)
+{
+	return HIComboBoxSetListVisible ((HIViewRef)ewg_inComboBox, (Boolean)ewg_inVisible);
+}
+
+// Return address of function 'HIComboBoxSetListVisible'
+void* ewg_get_function_address_HIComboBoxSetListVisible (void)
+{
+	return (void*) HIComboBoxSetListVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISearchFieldCreate'
+// For ise
+OSStatus  ewg_function_HISearchFieldCreate (HIRect const *ewg_inBounds, OptionBits ewg_inAttributes, MenuRef ewg_inSearchMenu, CFStringRef ewg_inDescriptiveText, HIViewRef *ewg_outRef)
+{
+	return HISearchFieldCreate ((HIRect const*)ewg_inBounds, (OptionBits)ewg_inAttributes, (MenuRef)ewg_inSearchMenu, (CFStringRef)ewg_inDescriptiveText, (HIViewRef*)ewg_outRef);
+}
+
+// Return address of function 'HISearchFieldCreate'
+void* ewg_get_function_address_HISearchFieldCreate (void)
+{
+	return (void*) HISearchFieldCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISearchFieldSetSearchMenu'
+// For ise
+OSStatus  ewg_function_HISearchFieldSetSearchMenu (HIViewRef ewg_inSearchField, MenuRef ewg_inSearchMenu)
+{
+	return HISearchFieldSetSearchMenu ((HIViewRef)ewg_inSearchField, (MenuRef)ewg_inSearchMenu);
+}
+
+// Return address of function 'HISearchFieldSetSearchMenu'
+void* ewg_get_function_address_HISearchFieldSetSearchMenu (void)
+{
+	return (void*) HISearchFieldSetSearchMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISearchFieldGetSearchMenu'
+// For ise
+OSStatus  ewg_function_HISearchFieldGetSearchMenu (HIViewRef ewg_inSearchField, MenuRef *ewg_outSearchMenu)
+{
+	return HISearchFieldGetSearchMenu ((HIViewRef)ewg_inSearchField, (MenuRef*)ewg_outSearchMenu);
+}
+
+// Return address of function 'HISearchFieldGetSearchMenu'
+void* ewg_get_function_address_HISearchFieldGetSearchMenu (void)
+{
+	return (void*) HISearchFieldGetSearchMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISearchFieldChangeAttributes'
+// For ise
+OSStatus  ewg_function_HISearchFieldChangeAttributes (HIViewRef ewg_inSearchField, OptionBits ewg_inAttributesToSet, OptionBits ewg_inAttributesToClear)
+{
+	return HISearchFieldChangeAttributes ((HIViewRef)ewg_inSearchField, (OptionBits)ewg_inAttributesToSet, (OptionBits)ewg_inAttributesToClear);
+}
+
+// Return address of function 'HISearchFieldChangeAttributes'
+void* ewg_get_function_address_HISearchFieldChangeAttributes (void)
+{
+	return (void*) HISearchFieldChangeAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISearchFieldGetAttributes'
+// For ise
+OSStatus  ewg_function_HISearchFieldGetAttributes (HIViewRef ewg_inSearchField, OptionBits *ewg_outAttributes)
+{
+	return HISearchFieldGetAttributes ((HIViewRef)ewg_inSearchField, (OptionBits*)ewg_outAttributes);
+}
+
+// Return address of function 'HISearchFieldGetAttributes'
+void* ewg_get_function_address_HISearchFieldGetAttributes (void)
+{
+	return (void*) HISearchFieldGetAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISearchFieldSetDescriptiveText'
+// For ise
+OSStatus  ewg_function_HISearchFieldSetDescriptiveText (HIViewRef ewg_inSearchField, CFStringRef ewg_inDescription)
+{
+	return HISearchFieldSetDescriptiveText ((HIViewRef)ewg_inSearchField, (CFStringRef)ewg_inDescription);
+}
+
+// Return address of function 'HISearchFieldSetDescriptiveText'
+void* ewg_get_function_address_HISearchFieldSetDescriptiveText (void)
+{
+	return (void*) HISearchFieldSetDescriptiveText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISearchFieldCopyDescriptiveText'
+// For ise
+OSStatus  ewg_function_HISearchFieldCopyDescriptiveText (HIViewRef ewg_inSearchField, CFStringRef *ewg_outDescription)
+{
+	return HISearchFieldCopyDescriptiveText ((HIViewRef)ewg_inSearchField, (CFStringRef*)ewg_outDescription);
+}
+
+// Return address of function 'HISearchFieldCopyDescriptiveText'
+void* ewg_get_function_address_HISearchFieldCopyDescriptiveText (void)
+{
+	return (void*) HISearchFieldCopyDescriptiveText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIMenuViewGetMenu'
+// For ise
+MenuRef  ewg_function_HIMenuViewGetMenu (HIViewRef ewg_inView)
+{
+	return HIMenuViewGetMenu ((HIViewRef)ewg_inView);
+}
+
+// Return address of function 'HIMenuViewGetMenu'
+void* ewg_get_function_address_HIMenuViewGetMenu (void)
+{
+	return (void*) HIMenuViewGetMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIMenuGetContentView'
+// For ise
+OSStatus  ewg_function_HIMenuGetContentView (MenuRef ewg_inMenu, ThemeMenuType ewg_inMenuType, HIViewRef *ewg_outView)
+{
+	return HIMenuGetContentView ((MenuRef)ewg_inMenu, (ThemeMenuType)ewg_inMenuType, (HIViewRef*)ewg_outView);
+}
+
+// Return address of function 'HIMenuGetContentView'
+void* ewg_get_function_address_HIMenuGetContentView (void)
+{
+	return (void*) HIMenuGetContentView;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewCreate'
+// For ise
+OSStatus  ewg_function_HISegmentedViewCreate (HIRect const *ewg_inBounds, HIViewRef *ewg_outRef)
+{
+	return HISegmentedViewCreate ((HIRect const*)ewg_inBounds, (HIViewRef*)ewg_outRef);
+}
+
+// Return address of function 'HISegmentedViewCreate'
+void* ewg_get_function_address_HISegmentedViewCreate (void)
+{
+	return (void*) HISegmentedViewCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentCount'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentCount (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentCount)
+{
+	return HISegmentedViewSetSegmentCount ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentCount);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentCount'
+void* ewg_get_function_address_HISegmentedViewSetSegmentCount (void)
+{
+	return (void*) HISegmentedViewSetSegmentCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewGetSegmentCount'
+// For ise
+UInt32  ewg_function_HISegmentedViewGetSegmentCount (HIViewRef ewg_inSegmentedView)
+{
+	return HISegmentedViewGetSegmentCount ((HIViewRef)ewg_inSegmentedView);
+}
+
+// Return address of function 'HISegmentedViewGetSegmentCount'
+void* ewg_get_function_address_HISegmentedViewGetSegmentCount (void)
+{
+	return (void*) HISegmentedViewGetSegmentCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentBehavior'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentBehavior (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, HISegmentBehavior ewg_inBehavior)
+{
+	return HISegmentedViewSetSegmentBehavior ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (HISegmentBehavior)ewg_inBehavior);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentBehavior'
+void* ewg_get_function_address_HISegmentedViewSetSegmentBehavior (void)
+{
+	return (void*) HISegmentedViewSetSegmentBehavior;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewGetSegmentBehavior'
+// For ise
+HISegmentBehavior  ewg_function_HISegmentedViewGetSegmentBehavior (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased)
+{
+	return HISegmentedViewGetSegmentBehavior ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased);
+}
+
+// Return address of function 'HISegmentedViewGetSegmentBehavior'
+void* ewg_get_function_address_HISegmentedViewGetSegmentBehavior (void)
+{
+	return (void*) HISegmentedViewGetSegmentBehavior;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewChangeSegmentAttributes'
+// For ise
+OSStatus  ewg_function_HISegmentedViewChangeSegmentAttributes (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, OptionBits ewg_inAttributesToSet, OptionBits ewg_inAttributesToClear)
+{
+	return HISegmentedViewChangeSegmentAttributes ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (OptionBits)ewg_inAttributesToSet, (OptionBits)ewg_inAttributesToClear);
+}
+
+// Return address of function 'HISegmentedViewChangeSegmentAttributes'
+void* ewg_get_function_address_HISegmentedViewChangeSegmentAttributes (void)
+{
+	return (void*) HISegmentedViewChangeSegmentAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewGetSegmentAttributes'
+// For ise
+OptionBits  ewg_function_HISegmentedViewGetSegmentAttributes (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased)
+{
+	return HISegmentedViewGetSegmentAttributes ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased);
+}
+
+// Return address of function 'HISegmentedViewGetSegmentAttributes'
+void* ewg_get_function_address_HISegmentedViewGetSegmentAttributes (void)
+{
+	return (void*) HISegmentedViewGetSegmentAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentValue'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentValue (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, SInt32 ewg_inValue)
+{
+	return HISegmentedViewSetSegmentValue ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (SInt32)ewg_inValue);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentValue'
+void* ewg_get_function_address_HISegmentedViewSetSegmentValue (void)
+{
+	return (void*) HISegmentedViewSetSegmentValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewGetSegmentValue'
+// For ise
+SInt32  ewg_function_HISegmentedViewGetSegmentValue (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased)
+{
+	return HISegmentedViewGetSegmentValue ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased);
+}
+
+// Return address of function 'HISegmentedViewGetSegmentValue'
+void* ewg_get_function_address_HISegmentedViewGetSegmentValue (void)
+{
+	return (void*) HISegmentedViewGetSegmentValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentEnabled'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentEnabled (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, Boolean ewg_inEnabled)
+{
+	return HISegmentedViewSetSegmentEnabled ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (Boolean)ewg_inEnabled);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentEnabled'
+void* ewg_get_function_address_HISegmentedViewSetSegmentEnabled (void)
+{
+	return (void*) HISegmentedViewSetSegmentEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewIsSegmentEnabled'
+// For ise
+Boolean  ewg_function_HISegmentedViewIsSegmentEnabled (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased)
+{
+	return HISegmentedViewIsSegmentEnabled ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased);
+}
+
+// Return address of function 'HISegmentedViewIsSegmentEnabled'
+void* ewg_get_function_address_HISegmentedViewIsSegmentEnabled (void)
+{
+	return (void*) HISegmentedViewIsSegmentEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentCommand'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentCommand (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, UInt32 ewg_inCommand)
+{
+	return HISegmentedViewSetSegmentCommand ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (UInt32)ewg_inCommand);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentCommand'
+void* ewg_get_function_address_HISegmentedViewSetSegmentCommand (void)
+{
+	return (void*) HISegmentedViewSetSegmentCommand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewGetSegmentCommand'
+// For ise
+UInt32  ewg_function_HISegmentedViewGetSegmentCommand (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased)
+{
+	return HISegmentedViewGetSegmentCommand ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased);
+}
+
+// Return address of function 'HISegmentedViewGetSegmentCommand'
+void* ewg_get_function_address_HISegmentedViewGetSegmentCommand (void)
+{
+	return (void*) HISegmentedViewGetSegmentCommand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentLabel'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentLabel (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, CFStringRef ewg_inLabel)
+{
+	return HISegmentedViewSetSegmentLabel ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (CFStringRef)ewg_inLabel);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentLabel'
+void* ewg_get_function_address_HISegmentedViewSetSegmentLabel (void)
+{
+	return (void*) HISegmentedViewSetSegmentLabel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewCopySegmentLabel'
+// For ise
+OSStatus  ewg_function_HISegmentedViewCopySegmentLabel (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, CFStringRef *ewg_outLabel)
+{
+	return HISegmentedViewCopySegmentLabel ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (CFStringRef*)ewg_outLabel);
+}
+
+// Return address of function 'HISegmentedViewCopySegmentLabel'
+void* ewg_get_function_address_HISegmentedViewCopySegmentLabel (void)
+{
+	return (void*) HISegmentedViewCopySegmentLabel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentContentWidth'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentContentWidth (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, Boolean ewg_inAutoCalculateWidth, float ewg_inWidth)
+{
+	return HISegmentedViewSetSegmentContentWidth ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (Boolean)ewg_inAutoCalculateWidth, (float)ewg_inWidth);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentContentWidth'
+void* ewg_get_function_address_HISegmentedViewSetSegmentContentWidth (void)
+{
+	return (void*) HISegmentedViewSetSegmentContentWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewGetSegmentContentWidth'
+// For ise
+float  ewg_function_HISegmentedViewGetSegmentContentWidth (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, Boolean *ewg_outAutoCalculated)
+{
+	return HISegmentedViewGetSegmentContentWidth ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (Boolean*)ewg_outAutoCalculated);
+}
+
+// Return address of function 'HISegmentedViewGetSegmentContentWidth'
+void* ewg_get_function_address_HISegmentedViewGetSegmentContentWidth (void)
+{
+	return (void*) HISegmentedViewGetSegmentContentWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewSetSegmentImage'
+// For ise
+OSStatus  ewg_function_HISegmentedViewSetSegmentImage (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, HIViewImageContentInfo const *ewg_inImage)
+{
+	return HISegmentedViewSetSegmentImage ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (HIViewImageContentInfo const*)ewg_inImage);
+}
+
+// Return address of function 'HISegmentedViewSetSegmentImage'
+void* ewg_get_function_address_HISegmentedViewSetSegmentImage (void)
+{
+	return (void*) HISegmentedViewSetSegmentImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewGetSegmentImageContentType'
+// For ise
+HIViewImageContentType  ewg_function_HISegmentedViewGetSegmentImageContentType (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased)
+{
+	return HISegmentedViewGetSegmentImageContentType ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased);
+}
+
+// Return address of function 'HISegmentedViewGetSegmentImageContentType'
+void* ewg_get_function_address_HISegmentedViewGetSegmentImageContentType (void)
+{
+	return (void*) HISegmentedViewGetSegmentImageContentType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISegmentedViewCopySegmentImage'
+// For ise
+OSStatus  ewg_function_HISegmentedViewCopySegmentImage (HIViewRef ewg_inSegmentedView, UInt32 ewg_inSegmentIndexOneBased, HIViewImageContentInfo *ewg_ioImage)
+{
+	return HISegmentedViewCopySegmentImage ((HIViewRef)ewg_inSegmentedView, (UInt32)ewg_inSegmentIndexOneBased, (HIViewImageContentInfo*)ewg_ioImage);
+}
+
+// Return address of function 'HISegmentedViewCopySegmentImage'
+void* ewg_get_function_address_HISegmentedViewCopySegmentImage (void)
+{
+	return (void*) HISegmentedViewCopySegmentImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateBevelButtonControl'
+// For ise
+OSStatus  ewg_function_CreateBevelButtonControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, ControlBevelThickness ewg_thickness, ControlBevelButtonBehavior ewg_behavior, ControlButtonContentInfoPtr ewg_info, SInt16 ewg_menuID, ControlBevelButtonMenuBehavior ewg_menuBehavior, ControlBevelButtonMenuPlacement ewg_menuPlacement, ControlRef *ewg_outControl)
+{
+	return CreateBevelButtonControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (ControlBevelThickness)ewg_thickness, (ControlBevelButtonBehavior)ewg_behavior, (ControlButtonContentInfoPtr)ewg_info, (SInt16)ewg_menuID, (ControlBevelButtonMenuBehavior)ewg_menuBehavior, (ControlBevelButtonMenuPlacement)ewg_menuPlacement, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateBevelButtonControl'
+void* ewg_get_function_address_CreateBevelButtonControl (void)
+{
+	return (void*) CreateBevelButtonControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetBevelButtonMenuValue'
+// For ise
+OSErr  ewg_function_GetBevelButtonMenuValue (ControlRef ewg_inButton, SInt16 *ewg_outValue)
+{
+	return GetBevelButtonMenuValue ((ControlRef)ewg_inButton, (SInt16*)ewg_outValue);
+}
+
+// Return address of function 'GetBevelButtonMenuValue'
+void* ewg_get_function_address_GetBevelButtonMenuValue (void)
+{
+	return (void*) GetBevelButtonMenuValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetBevelButtonMenuValue'
+// For ise
+OSErr  ewg_function_SetBevelButtonMenuValue (ControlRef ewg_inButton, SInt16 ewg_inValue)
+{
+	return SetBevelButtonMenuValue ((ControlRef)ewg_inButton, (SInt16)ewg_inValue);
+}
+
+// Return address of function 'SetBevelButtonMenuValue'
+void* ewg_get_function_address_SetBevelButtonMenuValue (void)
+{
+	return (void*) SetBevelButtonMenuValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetBevelButtonMenuHandle'
+// For ise
+OSErr  ewg_function_GetBevelButtonMenuHandle (ControlRef ewg_inButton, MenuHandle *ewg_outHandle)
+{
+	return GetBevelButtonMenuHandle ((ControlRef)ewg_inButton, (MenuHandle*)ewg_outHandle);
+}
+
+// Return address of function 'GetBevelButtonMenuHandle'
+void* ewg_get_function_address_GetBevelButtonMenuHandle (void)
+{
+	return (void*) GetBevelButtonMenuHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetBevelButtonContentInfo'
+// For ise
+OSErr  ewg_function_GetBevelButtonContentInfo (ControlRef ewg_inButton, ControlButtonContentInfoPtr ewg_outContent)
+{
+	return GetBevelButtonContentInfo ((ControlRef)ewg_inButton, (ControlButtonContentInfoPtr)ewg_outContent);
+}
+
+// Return address of function 'GetBevelButtonContentInfo'
+void* ewg_get_function_address_GetBevelButtonContentInfo (void)
+{
+	return (void*) GetBevelButtonContentInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetBevelButtonContentInfo'
+// For ise
+OSErr  ewg_function_SetBevelButtonContentInfo (ControlRef ewg_inButton, ControlButtonContentInfoPtr ewg_inContent)
+{
+	return SetBevelButtonContentInfo ((ControlRef)ewg_inButton, (ControlButtonContentInfoPtr)ewg_inContent);
+}
+
+// Return address of function 'SetBevelButtonContentInfo'
+void* ewg_get_function_address_SetBevelButtonContentInfo (void)
+{
+	return (void*) SetBevelButtonContentInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetBevelButtonTransform'
+// For ise
+OSErr  ewg_function_SetBevelButtonTransform (ControlRef ewg_inButton, IconTransformType ewg_transform)
+{
+	return SetBevelButtonTransform ((ControlRef)ewg_inButton, (IconTransformType)ewg_transform);
+}
+
+// Return address of function 'SetBevelButtonTransform'
+void* ewg_get_function_address_SetBevelButtonTransform (void)
+{
+	return (void*) SetBevelButtonTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetBevelButtonGraphicAlignment'
+// For ise
+OSErr  ewg_function_SetBevelButtonGraphicAlignment (ControlRef ewg_inButton, ControlButtonGraphicAlignment ewg_inAlign, SInt16 ewg_inHOffset, SInt16 ewg_inVOffset)
+{
+	return SetBevelButtonGraphicAlignment ((ControlRef)ewg_inButton, (ControlButtonGraphicAlignment)ewg_inAlign, (SInt16)ewg_inHOffset, (SInt16)ewg_inVOffset);
+}
+
+// Return address of function 'SetBevelButtonGraphicAlignment'
+void* ewg_get_function_address_SetBevelButtonGraphicAlignment (void)
+{
+	return (void*) SetBevelButtonGraphicAlignment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetBevelButtonTextAlignment'
+// For ise
+OSErr  ewg_function_SetBevelButtonTextAlignment (ControlRef ewg_inButton, ControlButtonTextAlignment ewg_inAlign, SInt16 ewg_inHOffset)
+{
+	return SetBevelButtonTextAlignment ((ControlRef)ewg_inButton, (ControlButtonTextAlignment)ewg_inAlign, (SInt16)ewg_inHOffset);
+}
+
+// Return address of function 'SetBevelButtonTextAlignment'
+void* ewg_get_function_address_SetBevelButtonTextAlignment (void)
+{
+	return (void*) SetBevelButtonTextAlignment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetBevelButtonTextPlacement'
+// For ise
+OSErr  ewg_function_SetBevelButtonTextPlacement (ControlRef ewg_inButton, ControlButtonTextPlacement ewg_inWhere)
+{
+	return SetBevelButtonTextPlacement ((ControlRef)ewg_inButton, (ControlButtonTextPlacement)ewg_inWhere);
+}
+
+// Return address of function 'SetBevelButtonTextPlacement'
+void* ewg_get_function_address_SetBevelButtonTextPlacement (void)
+{
+	return (void*) SetBevelButtonTextPlacement;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateSliderControl'
+// For ise
+OSStatus  ewg_function_CreateSliderControl (WindowRef ewg_window, Rect const *ewg_boundsRect, SInt32 ewg_value, SInt32 ewg_minimum, SInt32 ewg_maximum, ControlSliderOrientation ewg_orientation, UInt16 ewg_numTickMarks, Boolean ewg_liveTracking, ControlActionUPP ewg_liveTrackingProc, ControlRef *ewg_outControl)
+{
+	return CreateSliderControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (SInt32)ewg_value, (SInt32)ewg_minimum, (SInt32)ewg_maximum, (ControlSliderOrientation)ewg_orientation, (UInt16)ewg_numTickMarks, (Boolean)ewg_liveTracking, (ControlActionUPP)ewg_liveTrackingProc, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateSliderControl'
+void* ewg_get_function_address_CreateSliderControl (void)
+{
+	return (void*) CreateSliderControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateDisclosureTriangleControl'
+// For ise
+OSStatus  ewg_function_CreateDisclosureTriangleControl (WindowRef ewg_inWindow, Rect const *ewg_inBoundsRect, ControlDisclosureTriangleOrientation ewg_inOrientation, CFStringRef ewg_inTitle, SInt32 ewg_inInitialValue, Boolean ewg_inDrawTitle, Boolean ewg_inAutoToggles, ControlRef *ewg_outControl)
+{
+	return CreateDisclosureTriangleControl ((WindowRef)ewg_inWindow, (Rect const*)ewg_inBoundsRect, (ControlDisclosureTriangleOrientation)ewg_inOrientation, (CFStringRef)ewg_inTitle, (SInt32)ewg_inInitialValue, (Boolean)ewg_inDrawTitle, (Boolean)ewg_inAutoToggles, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateDisclosureTriangleControl'
+void* ewg_get_function_address_CreateDisclosureTriangleControl (void)
+{
+	return (void*) CreateDisclosureTriangleControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDisclosureTriangleLastValue'
+// For ise
+OSErr  ewg_function_SetDisclosureTriangleLastValue (ControlRef ewg_inTabControl, SInt16 ewg_inValue)
+{
+	return SetDisclosureTriangleLastValue ((ControlRef)ewg_inTabControl, (SInt16)ewg_inValue);
+}
+
+// Return address of function 'SetDisclosureTriangleLastValue'
+void* ewg_get_function_address_SetDisclosureTriangleLastValue (void)
+{
+	return (void*) SetDisclosureTriangleLastValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateProgressBarControl'
+// For ise
+OSStatus  ewg_function_CreateProgressBarControl (WindowRef ewg_window, Rect const *ewg_boundsRect, SInt32 ewg_value, SInt32 ewg_minimum, SInt32 ewg_maximum, Boolean ewg_indeterminate, ControlRef *ewg_outControl)
+{
+	return CreateProgressBarControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (SInt32)ewg_value, (SInt32)ewg_minimum, (SInt32)ewg_maximum, (Boolean)ewg_indeterminate, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateProgressBarControl'
+void* ewg_get_function_address_CreateProgressBarControl (void)
+{
+	return (void*) CreateProgressBarControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateRelevanceBarControl'
+// For ise
+OSStatus  ewg_function_CreateRelevanceBarControl (WindowRef ewg_window, Rect const *ewg_boundsRect, SInt32 ewg_value, SInt32 ewg_minimum, SInt32 ewg_maximum, ControlRef *ewg_outControl)
+{
+	return CreateRelevanceBarControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (SInt32)ewg_value, (SInt32)ewg_minimum, (SInt32)ewg_maximum, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateRelevanceBarControl'
+void* ewg_get_function_address_CreateRelevanceBarControl (void)
+{
+	return (void*) CreateRelevanceBarControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateLittleArrowsControl'
+// For ise
+OSStatus  ewg_function_CreateLittleArrowsControl (WindowRef ewg_window, Rect const *ewg_boundsRect, SInt32 ewg_value, SInt32 ewg_minimum, SInt32 ewg_maximum, SInt32 ewg_increment, ControlRef *ewg_outControl)
+{
+	return CreateLittleArrowsControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (SInt32)ewg_value, (SInt32)ewg_minimum, (SInt32)ewg_maximum, (SInt32)ewg_increment, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateLittleArrowsControl'
+void* ewg_get_function_address_CreateLittleArrowsControl (void)
+{
+	return (void*) CreateLittleArrowsControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateChasingArrowsControl'
+// For ise
+OSStatus  ewg_function_CreateChasingArrowsControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlRef *ewg_outControl)
+{
+	return CreateChasingArrowsControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateChasingArrowsControl'
+void* ewg_get_function_address_CreateChasingArrowsControl (void)
+{
+	return (void*) CreateChasingArrowsControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateTabsControl'
+// For ise
+OSStatus  ewg_function_CreateTabsControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlTabSize ewg_size, ControlTabDirection ewg_direction, UInt16 ewg_numTabs, ControlTabEntry const *ewg_tabArray, ControlRef *ewg_outControl)
+{
+	return CreateTabsControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlTabSize)ewg_size, (ControlTabDirection)ewg_direction, (UInt16)ewg_numTabs, (ControlTabEntry const*)ewg_tabArray, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateTabsControl'
+void* ewg_get_function_address_CreateTabsControl (void)
+{
+	return (void*) CreateTabsControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetTabContentRect'
+// For ise
+OSErr  ewg_function_GetTabContentRect (ControlRef ewg_inTabControl, Rect *ewg_outContentRect)
+{
+	return GetTabContentRect ((ControlRef)ewg_inTabControl, (Rect*)ewg_outContentRect);
+}
+
+// Return address of function 'GetTabContentRect'
+void* ewg_get_function_address_GetTabContentRect (void)
+{
+	return (void*) GetTabContentRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetTabEnabled'
+// For ise
+OSErr  ewg_function_SetTabEnabled (ControlRef ewg_inTabControl, SInt16 ewg_inTabToHilite, Boolean ewg_inEnabled)
+{
+	return SetTabEnabled ((ControlRef)ewg_inTabControl, (SInt16)ewg_inTabToHilite, (Boolean)ewg_inEnabled);
+}
+
+// Return address of function 'SetTabEnabled'
+void* ewg_get_function_address_SetTabEnabled (void)
+{
+	return (void*) SetTabEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateSeparatorControl'
+// For ise
+OSStatus  ewg_function_CreateSeparatorControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlRef *ewg_outControl)
+{
+	return CreateSeparatorControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateSeparatorControl'
+void* ewg_get_function_address_CreateSeparatorControl (void)
+{
+	return (void*) CreateSeparatorControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateGroupBoxControl'
+// For ise
+OSStatus  ewg_function_CreateGroupBoxControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, Boolean ewg_primary, ControlRef *ewg_outControl)
+{
+	return CreateGroupBoxControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (Boolean)ewg_primary, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateGroupBoxControl'
+void* ewg_get_function_address_CreateGroupBoxControl (void)
+{
+	return (void*) CreateGroupBoxControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateCheckGroupBoxControl'
+// For ise
+OSStatus  ewg_function_CreateCheckGroupBoxControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, SInt32 ewg_initialValue, Boolean ewg_primary, Boolean ewg_autoToggle, ControlRef *ewg_outControl)
+{
+	return CreateCheckGroupBoxControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (SInt32)ewg_initialValue, (Boolean)ewg_primary, (Boolean)ewg_autoToggle, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateCheckGroupBoxControl'
+void* ewg_get_function_address_CreateCheckGroupBoxControl (void)
+{
+	return (void*) CreateCheckGroupBoxControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreatePopupGroupBoxControl'
+// For ise
+OSStatus  ewg_function_CreatePopupGroupBoxControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, Boolean ewg_primary, SInt16 ewg_menuID, Boolean ewg_variableWidth, SInt16 ewg_titleWidth, SInt16 ewg_titleJustification, Style ewg_titleStyle, ControlRef *ewg_outControl)
+{
+	return CreatePopupGroupBoxControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (Boolean)ewg_primary, (SInt16)ewg_menuID, (Boolean)ewg_variableWidth, (SInt16)ewg_titleWidth, (SInt16)ewg_titleJustification, (Style)ewg_titleStyle, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreatePopupGroupBoxControl'
+void* ewg_get_function_address_CreatePopupGroupBoxControl (void)
+{
+	return (void*) CreatePopupGroupBoxControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateImageWellControl'
+// For ise
+OSStatus  ewg_function_CreateImageWellControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlButtonContentInfo const *ewg_info, ControlRef *ewg_outControl)
+{
+	return CreateImageWellControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlButtonContentInfo const*)ewg_info, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateImageWellControl'
+void* ewg_get_function_address_CreateImageWellControl (void)
+{
+	return (void*) CreateImageWellControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetImageWellContentInfo'
+// For ise
+OSErr  ewg_function_GetImageWellContentInfo (ControlRef ewg_inButton, ControlButtonContentInfoPtr ewg_outContent)
+{
+	return GetImageWellContentInfo ((ControlRef)ewg_inButton, (ControlButtonContentInfoPtr)ewg_outContent);
+}
+
+// Return address of function 'GetImageWellContentInfo'
+void* ewg_get_function_address_GetImageWellContentInfo (void)
+{
+	return (void*) GetImageWellContentInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetImageWellContentInfo'
+// For ise
+OSErr  ewg_function_SetImageWellContentInfo (ControlRef ewg_inButton, ControlButtonContentInfoPtr ewg_inContent)
+{
+	return SetImageWellContentInfo ((ControlRef)ewg_inButton, (ControlButtonContentInfoPtr)ewg_inContent);
+}
+
+// Return address of function 'SetImageWellContentInfo'
+void* ewg_get_function_address_SetImageWellContentInfo (void)
+{
+	return (void*) SetImageWellContentInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetImageWellTransform'
+// For ise
+OSErr  ewg_function_SetImageWellTransform (ControlRef ewg_inButton, IconTransformType ewg_inTransform)
+{
+	return SetImageWellTransform ((ControlRef)ewg_inButton, (IconTransformType)ewg_inTransform);
+}
+
+// Return address of function 'SetImageWellTransform'
+void* ewg_get_function_address_SetImageWellTransform (void)
+{
+	return (void*) SetImageWellTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreatePopupArrowControl'
+// For ise
+OSStatus  ewg_function_CreatePopupArrowControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlPopupArrowOrientation ewg_orientation, ControlPopupArrowSize ewg_size, ControlRef *ewg_outControl)
+{
+	return CreatePopupArrowControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlPopupArrowOrientation)ewg_orientation, (ControlPopupArrowSize)ewg_size, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreatePopupArrowControl'
+void* ewg_get_function_address_CreatePopupArrowControl (void)
+{
+	return (void*) CreatePopupArrowControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreatePlacardControl'
+// For ise
+OSStatus  ewg_function_CreatePlacardControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlRef *ewg_outControl)
+{
+	return CreatePlacardControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreatePlacardControl'
+void* ewg_get_function_address_CreatePlacardControl (void)
+{
+	return (void*) CreatePlacardControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateClockControl'
+// For ise
+OSStatus  ewg_function_CreateClockControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlClockType ewg_clockType, ControlClockFlags ewg_clockFlags, ControlRef *ewg_outControl)
+{
+	return CreateClockControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlClockType)ewg_clockType, (ControlClockFlags)ewg_clockFlags, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateClockControl'
+void* ewg_get_function_address_CreateClockControl (void)
+{
+	return (void*) CreateClockControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateUserPaneControl'
+// For ise
+OSStatus  ewg_function_CreateUserPaneControl (WindowRef ewg_window, Rect const *ewg_boundsRect, UInt32 ewg_features, ControlRef *ewg_outControl)
+{
+	return CreateUserPaneControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (UInt32)ewg_features, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateUserPaneControl'
+void* ewg_get_function_address_CreateUserPaneControl (void)
+{
+	return (void*) CreateUserPaneControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneDrawUPP'
+// For ise
+ControlUserPaneDrawUPP  ewg_function_NewControlUserPaneDrawUPP (ControlUserPaneDrawProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneDrawUPP ((ControlUserPaneDrawProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneDrawUPP'
+void* ewg_get_function_address_NewControlUserPaneDrawUPP (void)
+{
+	return (void*) NewControlUserPaneDrawUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneHitTestUPP'
+// For ise
+ControlUserPaneHitTestUPP  ewg_function_NewControlUserPaneHitTestUPP (ControlUserPaneHitTestProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneHitTestUPP ((ControlUserPaneHitTestProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneHitTestUPP'
+void* ewg_get_function_address_NewControlUserPaneHitTestUPP (void)
+{
+	return (void*) NewControlUserPaneHitTestUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneTrackingUPP'
+// For ise
+ControlUserPaneTrackingUPP  ewg_function_NewControlUserPaneTrackingUPP (ControlUserPaneTrackingProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneTrackingUPP ((ControlUserPaneTrackingProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneTrackingUPP'
+void* ewg_get_function_address_NewControlUserPaneTrackingUPP (void)
+{
+	return (void*) NewControlUserPaneTrackingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneIdleUPP'
+// For ise
+ControlUserPaneIdleUPP  ewg_function_NewControlUserPaneIdleUPP (ControlUserPaneIdleProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneIdleUPP ((ControlUserPaneIdleProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneIdleUPP'
+void* ewg_get_function_address_NewControlUserPaneIdleUPP (void)
+{
+	return (void*) NewControlUserPaneIdleUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneKeyDownUPP'
+// For ise
+ControlUserPaneKeyDownUPP  ewg_function_NewControlUserPaneKeyDownUPP (ControlUserPaneKeyDownProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneKeyDownUPP ((ControlUserPaneKeyDownProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneKeyDownUPP'
+void* ewg_get_function_address_NewControlUserPaneKeyDownUPP (void)
+{
+	return (void*) NewControlUserPaneKeyDownUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneActivateUPP'
+// For ise
+ControlUserPaneActivateUPP  ewg_function_NewControlUserPaneActivateUPP (ControlUserPaneActivateProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneActivateUPP ((ControlUserPaneActivateProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneActivateUPP'
+void* ewg_get_function_address_NewControlUserPaneActivateUPP (void)
+{
+	return (void*) NewControlUserPaneActivateUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneFocusUPP'
+// For ise
+ControlUserPaneFocusUPP  ewg_function_NewControlUserPaneFocusUPP (ControlUserPaneFocusProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneFocusUPP ((ControlUserPaneFocusProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneFocusUPP'
+void* ewg_get_function_address_NewControlUserPaneFocusUPP (void)
+{
+	return (void*) NewControlUserPaneFocusUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlUserPaneBackgroundUPP'
+// For ise
+ControlUserPaneBackgroundUPP  ewg_function_NewControlUserPaneBackgroundUPP (ControlUserPaneBackgroundProcPtr ewg_userRoutine)
+{
+	return NewControlUserPaneBackgroundUPP ((ControlUserPaneBackgroundProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlUserPaneBackgroundUPP'
+void* ewg_get_function_address_NewControlUserPaneBackgroundUPP (void)
+{
+	return (void*) NewControlUserPaneBackgroundUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneDrawUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneDrawUPP (ControlUserPaneDrawUPP ewg_userUPP)
+{
+	DisposeControlUserPaneDrawUPP ((ControlUserPaneDrawUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneDrawUPP'
+void* ewg_get_function_address_DisposeControlUserPaneDrawUPP (void)
+{
+	return (void*) DisposeControlUserPaneDrawUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneHitTestUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneHitTestUPP (ControlUserPaneHitTestUPP ewg_userUPP)
+{
+	DisposeControlUserPaneHitTestUPP ((ControlUserPaneHitTestUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneHitTestUPP'
+void* ewg_get_function_address_DisposeControlUserPaneHitTestUPP (void)
+{
+	return (void*) DisposeControlUserPaneHitTestUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneTrackingUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneTrackingUPP (ControlUserPaneTrackingUPP ewg_userUPP)
+{
+	DisposeControlUserPaneTrackingUPP ((ControlUserPaneTrackingUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneTrackingUPP'
+void* ewg_get_function_address_DisposeControlUserPaneTrackingUPP (void)
+{
+	return (void*) DisposeControlUserPaneTrackingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneIdleUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneIdleUPP (ControlUserPaneIdleUPP ewg_userUPP)
+{
+	DisposeControlUserPaneIdleUPP ((ControlUserPaneIdleUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneIdleUPP'
+void* ewg_get_function_address_DisposeControlUserPaneIdleUPP (void)
+{
+	return (void*) DisposeControlUserPaneIdleUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneKeyDownUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneKeyDownUPP (ControlUserPaneKeyDownUPP ewg_userUPP)
+{
+	DisposeControlUserPaneKeyDownUPP ((ControlUserPaneKeyDownUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneKeyDownUPP'
+void* ewg_get_function_address_DisposeControlUserPaneKeyDownUPP (void)
+{
+	return (void*) DisposeControlUserPaneKeyDownUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneActivateUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneActivateUPP (ControlUserPaneActivateUPP ewg_userUPP)
+{
+	DisposeControlUserPaneActivateUPP ((ControlUserPaneActivateUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneActivateUPP'
+void* ewg_get_function_address_DisposeControlUserPaneActivateUPP (void)
+{
+	return (void*) DisposeControlUserPaneActivateUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneFocusUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneFocusUPP (ControlUserPaneFocusUPP ewg_userUPP)
+{
+	DisposeControlUserPaneFocusUPP ((ControlUserPaneFocusUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneFocusUPP'
+void* ewg_get_function_address_DisposeControlUserPaneFocusUPP (void)
+{
+	return (void*) DisposeControlUserPaneFocusUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlUserPaneBackgroundUPP'
+// For ise
+void  ewg_function_DisposeControlUserPaneBackgroundUPP (ControlUserPaneBackgroundUPP ewg_userUPP)
+{
+	DisposeControlUserPaneBackgroundUPP ((ControlUserPaneBackgroundUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlUserPaneBackgroundUPP'
+void* ewg_get_function_address_DisposeControlUserPaneBackgroundUPP (void)
+{
+	return (void*) DisposeControlUserPaneBackgroundUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneDrawUPP'
+// For ise
+void  ewg_function_InvokeControlUserPaneDrawUPP (ControlRef ewg_control, SInt16 ewg_part, ControlUserPaneDrawUPP ewg_userUPP)
+{
+	InvokeControlUserPaneDrawUPP ((ControlRef)ewg_control, (SInt16)ewg_part, (ControlUserPaneDrawUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneDrawUPP'
+void* ewg_get_function_address_InvokeControlUserPaneDrawUPP (void)
+{
+	return (void*) InvokeControlUserPaneDrawUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneHitTestUPP'
+// For ise
+ControlPartCode  ewg_function_InvokeControlUserPaneHitTestUPP (ControlRef ewg_control, Point *ewg_where, ControlUserPaneHitTestUPP ewg_userUPP)
+{
+	return InvokeControlUserPaneHitTestUPP ((ControlRef)ewg_control, *(Point*)ewg_where, (ControlUserPaneHitTestUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneHitTestUPP'
+void* ewg_get_function_address_InvokeControlUserPaneHitTestUPP (void)
+{
+	return (void*) InvokeControlUserPaneHitTestUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneTrackingUPP'
+// For ise
+ControlPartCode  ewg_function_InvokeControlUserPaneTrackingUPP (ControlRef ewg_control, Point *ewg_startPt, ControlActionUPP ewg_actionProc, ControlUserPaneTrackingUPP ewg_userUPP)
+{
+	return InvokeControlUserPaneTrackingUPP ((ControlRef)ewg_control, *(Point*)ewg_startPt, (ControlActionUPP)ewg_actionProc, (ControlUserPaneTrackingUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneTrackingUPP'
+void* ewg_get_function_address_InvokeControlUserPaneTrackingUPP (void)
+{
+	return (void*) InvokeControlUserPaneTrackingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneIdleUPP'
+// For ise
+void  ewg_function_InvokeControlUserPaneIdleUPP (ControlRef ewg_control, ControlUserPaneIdleUPP ewg_userUPP)
+{
+	InvokeControlUserPaneIdleUPP ((ControlRef)ewg_control, (ControlUserPaneIdleUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneIdleUPP'
+void* ewg_get_function_address_InvokeControlUserPaneIdleUPP (void)
+{
+	return (void*) InvokeControlUserPaneIdleUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneKeyDownUPP'
+// For ise
+ControlPartCode  ewg_function_InvokeControlUserPaneKeyDownUPP (ControlRef ewg_control, SInt16 ewg_keyCode, SInt16 ewg_charCode, SInt16 ewg_modifiers, ControlUserPaneKeyDownUPP ewg_userUPP)
+{
+	return InvokeControlUserPaneKeyDownUPP ((ControlRef)ewg_control, (SInt16)ewg_keyCode, (SInt16)ewg_charCode, (SInt16)ewg_modifiers, (ControlUserPaneKeyDownUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneKeyDownUPP'
+void* ewg_get_function_address_InvokeControlUserPaneKeyDownUPP (void)
+{
+	return (void*) InvokeControlUserPaneKeyDownUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneActivateUPP'
+// For ise
+void  ewg_function_InvokeControlUserPaneActivateUPP (ControlRef ewg_control, Boolean ewg_activating, ControlUserPaneActivateUPP ewg_userUPP)
+{
+	InvokeControlUserPaneActivateUPP ((ControlRef)ewg_control, (Boolean)ewg_activating, (ControlUserPaneActivateUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneActivateUPP'
+void* ewg_get_function_address_InvokeControlUserPaneActivateUPP (void)
+{
+	return (void*) InvokeControlUserPaneActivateUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneFocusUPP'
+// For ise
+ControlPartCode  ewg_function_InvokeControlUserPaneFocusUPP (ControlRef ewg_control, ControlFocusPart ewg_action, ControlUserPaneFocusUPP ewg_userUPP)
+{
+	return InvokeControlUserPaneFocusUPP ((ControlRef)ewg_control, (ControlFocusPart)ewg_action, (ControlUserPaneFocusUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneFocusUPP'
+void* ewg_get_function_address_InvokeControlUserPaneFocusUPP (void)
+{
+	return (void*) InvokeControlUserPaneFocusUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlUserPaneBackgroundUPP'
+// For ise
+void  ewg_function_InvokeControlUserPaneBackgroundUPP (ControlRef ewg_control, ControlBackgroundPtr ewg_info, ControlUserPaneBackgroundUPP ewg_userUPP)
+{
+	InvokeControlUserPaneBackgroundUPP ((ControlRef)ewg_control, (ControlBackgroundPtr)ewg_info, (ControlUserPaneBackgroundUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlUserPaneBackgroundUPP'
+void* ewg_get_function_address_InvokeControlUserPaneBackgroundUPP (void)
+{
+	return (void*) InvokeControlUserPaneBackgroundUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateEditTextControl'
+// For ise
+OSStatus  ewg_function_CreateEditTextControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_text, Boolean ewg_isPassword, Boolean ewg_useInlineInput, ControlFontStyleRec const *ewg_style, ControlRef *ewg_outControl)
+{
+	return CreateEditTextControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_text, (Boolean)ewg_isPassword, (Boolean)ewg_useInlineInput, (ControlFontStyleRec const*)ewg_style, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateEditTextControl'
+void* ewg_get_function_address_CreateEditTextControl (void)
+{
+	return (void*) CreateEditTextControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlEditTextValidationUPP'
+// For ise
+ControlEditTextValidationUPP  ewg_function_NewControlEditTextValidationUPP (ControlEditTextValidationProcPtr ewg_userRoutine)
+{
+	return NewControlEditTextValidationUPP ((ControlEditTextValidationProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlEditTextValidationUPP'
+void* ewg_get_function_address_NewControlEditTextValidationUPP (void)
+{
+	return (void*) NewControlEditTextValidationUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlEditTextValidationUPP'
+// For ise
+void  ewg_function_DisposeControlEditTextValidationUPP (ControlEditTextValidationUPP ewg_userUPP)
+{
+	DisposeControlEditTextValidationUPP ((ControlEditTextValidationUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlEditTextValidationUPP'
+void* ewg_get_function_address_DisposeControlEditTextValidationUPP (void)
+{
+	return (void*) DisposeControlEditTextValidationUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlEditTextValidationUPP'
+// For ise
+void  ewg_function_InvokeControlEditTextValidationUPP (ControlRef ewg_control, ControlEditTextValidationUPP ewg_userUPP)
+{
+	InvokeControlEditTextValidationUPP ((ControlRef)ewg_control, (ControlEditTextValidationUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlEditTextValidationUPP'
+void* ewg_get_function_address_InvokeControlEditTextValidationUPP (void)
+{
+	return (void*) InvokeControlEditTextValidationUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateStaticTextControl'
+// For ise
+OSStatus  ewg_function_CreateStaticTextControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_text, ControlFontStyleRec const *ewg_style, ControlRef *ewg_outControl)
+{
+	return CreateStaticTextControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_text, (ControlFontStyleRec const*)ewg_style, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateStaticTextControl'
+void* ewg_get_function_address_CreateStaticTextControl (void)
+{
+	return (void*) CreateStaticTextControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreatePictureControl'
+// For ise
+OSStatus  ewg_function_CreatePictureControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlButtonContentInfo const *ewg_content, Boolean ewg_dontTrack, ControlRef *ewg_outControl)
+{
+	return CreatePictureControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlButtonContentInfo const*)ewg_content, (Boolean)ewg_dontTrack, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreatePictureControl'
+void* ewg_get_function_address_CreatePictureControl (void)
+{
+	return (void*) CreatePictureControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateIconControl'
+// For ise
+OSStatus  ewg_function_CreateIconControl (WindowRef ewg_inWindow, Rect const *ewg_inBoundsRect, ControlButtonContentInfo const *ewg_inIconContent, Boolean ewg_inDontTrack, ControlRef *ewg_outControl)
+{
+	return CreateIconControl ((WindowRef)ewg_inWindow, (Rect const*)ewg_inBoundsRect, (ControlButtonContentInfo const*)ewg_inIconContent, (Boolean)ewg_inDontTrack, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateIconControl'
+void* ewg_get_function_address_CreateIconControl (void)
+{
+	return (void*) CreateIconControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateWindowHeaderControl'
+// For ise
+OSStatus  ewg_function_CreateWindowHeaderControl (WindowRef ewg_window, Rect const *ewg_boundsRect, Boolean ewg_isListHeader, ControlRef *ewg_outControl)
+{
+	return CreateWindowHeaderControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (Boolean)ewg_isListHeader, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateWindowHeaderControl'
+void* ewg_get_function_address_CreateWindowHeaderControl (void)
+{
+	return (void*) CreateWindowHeaderControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateListBoxControl'
+// For ise
+OSStatus  ewg_function_CreateListBoxControl (WindowRef ewg_window, Rect const *ewg_boundsRect, Boolean ewg_autoSize, SInt16 ewg_numRows, SInt16 ewg_numColumns, Boolean ewg_horizScroll, Boolean ewg_vertScroll, SInt16 ewg_cellHeight, SInt16 ewg_cellWidth, Boolean ewg_hasGrowSpace, ListDefSpec const *ewg_listDef, ControlRef *ewg_outControl)
+{
+	return CreateListBoxControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (Boolean)ewg_autoSize, (SInt16)ewg_numRows, (SInt16)ewg_numColumns, (Boolean)ewg_horizScroll, (Boolean)ewg_vertScroll, (SInt16)ewg_cellHeight, (SInt16)ewg_cellWidth, (Boolean)ewg_hasGrowSpace, (ListDefSpec const*)ewg_listDef, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateListBoxControl'
+void* ewg_get_function_address_CreateListBoxControl (void)
+{
+	return (void*) CreateListBoxControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreatePushButtonControl'
+// For ise
+OSStatus  ewg_function_CreatePushButtonControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, ControlRef *ewg_outControl)
+{
+	return CreatePushButtonControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreatePushButtonControl'
+void* ewg_get_function_address_CreatePushButtonControl (void)
+{
+	return (void*) CreatePushButtonControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreatePushButtonWithIconControl'
+// For ise
+OSStatus  ewg_function_CreatePushButtonWithIconControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, ControlButtonContentInfo *ewg_icon, ControlPushButtonIconAlignment ewg_iconAlignment, ControlRef *ewg_outControl)
+{
+	return CreatePushButtonWithIconControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (ControlButtonContentInfo*)ewg_icon, (ControlPushButtonIconAlignment)ewg_iconAlignment, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreatePushButtonWithIconControl'
+void* ewg_get_function_address_CreatePushButtonWithIconControl (void)
+{
+	return (void*) CreatePushButtonWithIconControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateRadioButtonControl'
+// For ise
+OSStatus  ewg_function_CreateRadioButtonControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, SInt32 ewg_initialValue, Boolean ewg_autoToggle, ControlRef *ewg_outControl)
+{
+	return CreateRadioButtonControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (SInt32)ewg_initialValue, (Boolean)ewg_autoToggle, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateRadioButtonControl'
+void* ewg_get_function_address_CreateRadioButtonControl (void)
+{
+	return (void*) CreateRadioButtonControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateCheckBoxControl'
+// For ise
+OSStatus  ewg_function_CreateCheckBoxControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, SInt32 ewg_initialValue, Boolean ewg_autoToggle, ControlRef *ewg_outControl)
+{
+	return CreateCheckBoxControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (SInt32)ewg_initialValue, (Boolean)ewg_autoToggle, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateCheckBoxControl'
+void* ewg_get_function_address_CreateCheckBoxControl (void)
+{
+	return (void*) CreateCheckBoxControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateScrollBarControl'
+// For ise
+OSStatus  ewg_function_CreateScrollBarControl (WindowRef ewg_window, Rect const *ewg_boundsRect, SInt32 ewg_value, SInt32 ewg_minimum, SInt32 ewg_maximum, SInt32 ewg_viewSize, Boolean ewg_liveTracking, ControlActionUPP ewg_liveTrackingProc, ControlRef *ewg_outControl)
+{
+	return CreateScrollBarControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (SInt32)ewg_value, (SInt32)ewg_minimum, (SInt32)ewg_maximum, (SInt32)ewg_viewSize, (Boolean)ewg_liveTracking, (ControlActionUPP)ewg_liveTrackingProc, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateScrollBarControl'
+void* ewg_get_function_address_CreateScrollBarControl (void)
+{
+	return (void*) CreateScrollBarControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreatePopupButtonControl'
+// For ise
+OSStatus  ewg_function_CreatePopupButtonControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, SInt16 ewg_menuID, Boolean ewg_variableWidth, SInt16 ewg_titleWidth, SInt16 ewg_titleJustification, Style ewg_titleStyle, ControlRef *ewg_outControl)
+{
+	return CreatePopupButtonControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_title, (SInt16)ewg_menuID, (Boolean)ewg_variableWidth, (SInt16)ewg_titleWidth, (SInt16)ewg_titleJustification, (Style)ewg_titleStyle, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreatePopupButtonControl'
+void* ewg_get_function_address_CreatePopupButtonControl (void)
+{
+	return (void*) CreatePopupButtonControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateRadioGroupControl'
+// For ise
+OSStatus  ewg_function_CreateRadioGroupControl (WindowRef ewg_window, Rect const *ewg_boundsRect, ControlRef *ewg_outControl)
+{
+	return CreateRadioGroupControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateRadioGroupControl'
+void* ewg_get_function_address_CreateRadioGroupControl (void)
+{
+	return (void*) CreateRadioGroupControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateScrollingTextBoxControl'
+// For ise
+OSStatus  ewg_function_CreateScrollingTextBoxControl (WindowRef ewg_window, Rect const *ewg_boundsRect, SInt16 ewg_contentResID, Boolean ewg_autoScroll, UInt32 ewg_delayBeforeAutoScroll, UInt32 ewg_delayBetweenAutoScroll, UInt16 ewg_autoScrollAmount, ControlRef *ewg_outControl)
+{
+	return CreateScrollingTextBoxControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (SInt16)ewg_contentResID, (Boolean)ewg_autoScroll, (UInt32)ewg_delayBeforeAutoScroll, (UInt32)ewg_delayBetweenAutoScroll, (UInt16)ewg_autoScrollAmount, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateScrollingTextBoxControl'
+void* ewg_get_function_address_CreateScrollingTextBoxControl (void)
+{
+	return (void*) CreateScrollingTextBoxControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateDisclosureButtonControl'
+// For ise
+OSStatus  ewg_function_CreateDisclosureButtonControl (WindowRef ewg_inWindow, Rect const *ewg_inBoundsRect, SInt32 ewg_inValue, Boolean ewg_inAutoToggles, ControlRef *ewg_outControl)
+{
+	return CreateDisclosureButtonControl ((WindowRef)ewg_inWindow, (Rect const*)ewg_inBoundsRect, (SInt32)ewg_inValue, (Boolean)ewg_inAutoToggles, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateDisclosureButtonControl'
+void* ewg_get_function_address_CreateDisclosureButtonControl (void)
+{
+	return (void*) CreateDisclosureButtonControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateRoundButtonControl'
+// For ise
+OSStatus  ewg_function_CreateRoundButtonControl (WindowRef ewg_inWindow, Rect const *ewg_inBoundsRect, ControlRoundButtonSize ewg_inSize, ControlButtonContentInfo *ewg_inContent, ControlRef *ewg_outControl)
+{
+	return CreateRoundButtonControl ((WindowRef)ewg_inWindow, (Rect const*)ewg_inBoundsRect, (ControlRoundButtonSize)ewg_inSize, (ControlButtonContentInfo*)ewg_inContent, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateRoundButtonControl'
+void* ewg_get_function_address_CreateRoundButtonControl (void)
+{
+	return (void*) CreateRoundButtonControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemUPP'
+// For ise
+DataBrowserItemUPP  ewg_function_NewDataBrowserItemUPP (DataBrowserItemProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemUPP ((DataBrowserItemProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemUPP'
+void* ewg_get_function_address_NewDataBrowserItemUPP (void)
+{
+	return (void*) NewDataBrowserItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemUPP (DataBrowserItemUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemUPP ((DataBrowserItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemUPP (void)
+{
+	return (void*) DisposeDataBrowserItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserItemUPP (DataBrowserItemID ewg_item, DataBrowserItemState ewg_state, void *ewg_clientData, DataBrowserItemUPP ewg_userUPP)
+{
+	InvokeDataBrowserItemUPP ((DataBrowserItemID)ewg_item, (DataBrowserItemState)ewg_state, (void*)ewg_clientData, (DataBrowserItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemUPP (void)
+{
+	return (void*) InvokeDataBrowserItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateDataBrowserControl'
+// For ise
+OSStatus  ewg_function_CreateDataBrowserControl (WindowRef ewg_window, Rect const *ewg_boundsRect, DataBrowserViewStyle ewg_style, ControlRef *ewg_outControl)
+{
+	return CreateDataBrowserControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (DataBrowserViewStyle)ewg_style, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateDataBrowserControl'
+void* ewg_get_function_address_CreateDataBrowserControl (void)
+{
+	return (void*) CreateDataBrowserControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserViewStyle'
+// For ise
+OSStatus  ewg_function_GetDataBrowserViewStyle (ControlRef ewg_browser, DataBrowserViewStyle *ewg_style)
+{
+	return GetDataBrowserViewStyle ((ControlRef)ewg_browser, (DataBrowserViewStyle*)ewg_style);
+}
+
+// Return address of function 'GetDataBrowserViewStyle'
+void* ewg_get_function_address_GetDataBrowserViewStyle (void)
+{
+	return (void*) GetDataBrowserViewStyle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserViewStyle'
+// For ise
+OSStatus  ewg_function_SetDataBrowserViewStyle (ControlRef ewg_browser, DataBrowserViewStyle ewg_style)
+{
+	return SetDataBrowserViewStyle ((ControlRef)ewg_browser, (DataBrowserViewStyle)ewg_style);
+}
+
+// Return address of function 'SetDataBrowserViewStyle'
+void* ewg_get_function_address_SetDataBrowserViewStyle (void)
+{
+	return (void*) SetDataBrowserViewStyle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DataBrowserChangeAttributes'
+// For ise
+OSStatus  ewg_function_DataBrowserChangeAttributes (ControlRef ewg_inDataBrowser, OptionBits ewg_inAttributesToSet, OptionBits ewg_inAttributesToClear)
+{
+	return DataBrowserChangeAttributes ((ControlRef)ewg_inDataBrowser, (OptionBits)ewg_inAttributesToSet, (OptionBits)ewg_inAttributesToClear);
+}
+
+// Return address of function 'DataBrowserChangeAttributes'
+void* ewg_get_function_address_DataBrowserChangeAttributes (void)
+{
+	return (void*) DataBrowserChangeAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DataBrowserGetAttributes'
+// For ise
+OSStatus  ewg_function_DataBrowserGetAttributes (ControlRef ewg_inDataBrowser, OptionBits *ewg_outAttributes)
+{
+	return DataBrowserGetAttributes ((ControlRef)ewg_inDataBrowser, (OptionBits*)ewg_outAttributes);
+}
+
+// Return address of function 'DataBrowserGetAttributes'
+void* ewg_get_function_address_DataBrowserGetAttributes (void)
+{
+	return (void*) DataBrowserGetAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DataBrowserSetMetric'
+// For ise
+OSStatus  ewg_function_DataBrowserSetMetric (ControlRef ewg_inDataBrowser, DataBrowserMetric ewg_inMetric, Boolean ewg_inUseDefaultValue, float ewg_inValue)
+{
+	return DataBrowserSetMetric ((ControlRef)ewg_inDataBrowser, (DataBrowserMetric)ewg_inMetric, (Boolean)ewg_inUseDefaultValue, (float)ewg_inValue);
+}
+
+// Return address of function 'DataBrowserSetMetric'
+void* ewg_get_function_address_DataBrowserSetMetric (void)
+{
+	return (void*) DataBrowserSetMetric;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DataBrowserGetMetric'
+// For ise
+OSStatus  ewg_function_DataBrowserGetMetric (ControlRef ewg_inDataBrowser, DataBrowserMetric ewg_inMetric, Boolean *ewg_outUsingDefaultValue, float *ewg_outValue)
+{
+	return DataBrowserGetMetric ((ControlRef)ewg_inDataBrowser, (DataBrowserMetric)ewg_inMetric, (Boolean*)ewg_outUsingDefaultValue, (float*)ewg_outValue);
+}
+
+// Return address of function 'DataBrowserGetMetric'
+void* ewg_get_function_address_DataBrowserGetMetric (void)
+{
+	return (void*) DataBrowserGetMetric;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AddDataBrowserItems'
+// For ise
+OSStatus  ewg_function_AddDataBrowserItems (ControlRef ewg_browser, DataBrowserItemID ewg_container, UInt32 ewg_numItems, DataBrowserItemID const *ewg_items, DataBrowserPropertyID ewg_preSortProperty)
+{
+	return AddDataBrowserItems ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container, (UInt32)ewg_numItems, (DataBrowserItemID const*)ewg_items, (DataBrowserPropertyID)ewg_preSortProperty);
+}
+
+// Return address of function 'AddDataBrowserItems'
+void* ewg_get_function_address_AddDataBrowserItems (void)
+{
+	return (void*) AddDataBrowserItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveDataBrowserItems'
+// For ise
+OSStatus  ewg_function_RemoveDataBrowserItems (ControlRef ewg_browser, DataBrowserItemID ewg_container, UInt32 ewg_numItems, DataBrowserItemID const *ewg_items, DataBrowserPropertyID ewg_preSortProperty)
+{
+	return RemoveDataBrowserItems ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container, (UInt32)ewg_numItems, (DataBrowserItemID const*)ewg_items, (DataBrowserPropertyID)ewg_preSortProperty);
+}
+
+// Return address of function 'RemoveDataBrowserItems'
+void* ewg_get_function_address_RemoveDataBrowserItems (void)
+{
+	return (void*) RemoveDataBrowserItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UpdateDataBrowserItems'
+// For ise
+OSStatus  ewg_function_UpdateDataBrowserItems (ControlRef ewg_browser, DataBrowserItemID ewg_container, UInt32 ewg_numItems, DataBrowserItemID const *ewg_items, DataBrowserPropertyID ewg_preSortProperty, DataBrowserPropertyID ewg_propertyID)
+{
+	return UpdateDataBrowserItems ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container, (UInt32)ewg_numItems, (DataBrowserItemID const*)ewg_items, (DataBrowserPropertyID)ewg_preSortProperty, (DataBrowserPropertyID)ewg_propertyID);
+}
+
+// Return address of function 'UpdateDataBrowserItems'
+void* ewg_get_function_address_UpdateDataBrowserItems (void)
+{
+	return (void*) UpdateDataBrowserItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableDataBrowserEditCommand'
+// For ise
+Boolean  ewg_function_EnableDataBrowserEditCommand (ControlRef ewg_browser, DataBrowserEditCommand ewg_command)
+{
+	return EnableDataBrowserEditCommand ((ControlRef)ewg_browser, (DataBrowserEditCommand)ewg_command);
+}
+
+// Return address of function 'EnableDataBrowserEditCommand'
+void* ewg_get_function_address_EnableDataBrowserEditCommand (void)
+{
+	return (void*) EnableDataBrowserEditCommand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ExecuteDataBrowserEditCommand'
+// For ise
+OSStatus  ewg_function_ExecuteDataBrowserEditCommand (ControlRef ewg_browser, DataBrowserEditCommand ewg_command)
+{
+	return ExecuteDataBrowserEditCommand ((ControlRef)ewg_browser, (DataBrowserEditCommand)ewg_command);
+}
+
+// Return address of function 'ExecuteDataBrowserEditCommand'
+void* ewg_get_function_address_ExecuteDataBrowserEditCommand (void)
+{
+	return (void*) ExecuteDataBrowserEditCommand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserSelectionAnchor'
+// For ise
+OSStatus  ewg_function_GetDataBrowserSelectionAnchor (ControlRef ewg_browser, DataBrowserItemID *ewg_first, DataBrowserItemID *ewg_last)
+{
+	return GetDataBrowserSelectionAnchor ((ControlRef)ewg_browser, (DataBrowserItemID*)ewg_first, (DataBrowserItemID*)ewg_last);
+}
+
+// Return address of function 'GetDataBrowserSelectionAnchor'
+void* ewg_get_function_address_GetDataBrowserSelectionAnchor (void)
+{
+	return (void*) GetDataBrowserSelectionAnchor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MoveDataBrowserSelectionAnchor'
+// For ise
+OSStatus  ewg_function_MoveDataBrowserSelectionAnchor (ControlRef ewg_browser, DataBrowserSelectionAnchorDirection ewg_direction, Boolean ewg_extendSelection)
+{
+	return MoveDataBrowserSelectionAnchor ((ControlRef)ewg_browser, (DataBrowserSelectionAnchorDirection)ewg_direction, (Boolean)ewg_extendSelection);
+}
+
+// Return address of function 'MoveDataBrowserSelectionAnchor'
+void* ewg_get_function_address_MoveDataBrowserSelectionAnchor (void)
+{
+	return (void*) MoveDataBrowserSelectionAnchor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'OpenDataBrowserContainer'
+// For ise
+OSStatus  ewg_function_OpenDataBrowserContainer (ControlRef ewg_browser, DataBrowserItemID ewg_container)
+{
+	return OpenDataBrowserContainer ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container);
+}
+
+// Return address of function 'OpenDataBrowserContainer'
+void* ewg_get_function_address_OpenDataBrowserContainer (void)
+{
+	return (void*) OpenDataBrowserContainer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CloseDataBrowserContainer'
+// For ise
+OSStatus  ewg_function_CloseDataBrowserContainer (ControlRef ewg_browser, DataBrowserItemID ewg_container)
+{
+	return CloseDataBrowserContainer ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container);
+}
+
+// Return address of function 'CloseDataBrowserContainer'
+void* ewg_get_function_address_CloseDataBrowserContainer (void)
+{
+	return (void*) CloseDataBrowserContainer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SortDataBrowserContainer'
+// For ise
+OSStatus  ewg_function_SortDataBrowserContainer (ControlRef ewg_browser, DataBrowserItemID ewg_container, Boolean ewg_sortChildren)
+{
+	return SortDataBrowserContainer ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container, (Boolean)ewg_sortChildren);
+}
+
+// Return address of function 'SortDataBrowserContainer'
+void* ewg_get_function_address_SortDataBrowserContainer (void)
+{
+	return (void*) SortDataBrowserContainer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItems'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItems (ControlRef ewg_browser, DataBrowserItemID ewg_container, Boolean ewg_recurse, DataBrowserItemState ewg_state, Handle ewg_items)
+{
+	return GetDataBrowserItems ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container, (Boolean)ewg_recurse, (DataBrowserItemState)ewg_state, (Handle)ewg_items);
+}
+
+// Return address of function 'GetDataBrowserItems'
+void* ewg_get_function_address_GetDataBrowserItems (void)
+{
+	return (void*) GetDataBrowserItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemCount'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemCount (ControlRef ewg_browser, DataBrowserItemID ewg_container, Boolean ewg_recurse, DataBrowserItemState ewg_state, UInt32 *ewg_numItems)
+{
+	return GetDataBrowserItemCount ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container, (Boolean)ewg_recurse, (DataBrowserItemState)ewg_state, (UInt32*)ewg_numItems);
+}
+
+// Return address of function 'GetDataBrowserItemCount'
+void* ewg_get_function_address_GetDataBrowserItemCount (void)
+{
+	return (void*) GetDataBrowserItemCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ForEachDataBrowserItem'
+// For ise
+OSStatus  ewg_function_ForEachDataBrowserItem (ControlRef ewg_browser, DataBrowserItemID ewg_container, Boolean ewg_recurse, DataBrowserItemState ewg_state, DataBrowserItemUPP ewg_callback, void *ewg_clientData)
+{
+	return ForEachDataBrowserItem ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_container, (Boolean)ewg_recurse, (DataBrowserItemState)ewg_state, (DataBrowserItemUPP)ewg_callback, (void*)ewg_clientData);
+}
+
+// Return address of function 'ForEachDataBrowserItem'
+void* ewg_get_function_address_ForEachDataBrowserItem (void)
+{
+	return (void*) ForEachDataBrowserItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsDataBrowserItemSelected'
+// For ise
+Boolean  ewg_function_IsDataBrowserItemSelected (ControlRef ewg_browser, DataBrowserItemID ewg_item)
+{
+	return IsDataBrowserItemSelected ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item);
+}
+
+// Return address of function 'IsDataBrowserItemSelected'
+void* ewg_get_function_address_IsDataBrowserItemSelected (void)
+{
+	return (void*) IsDataBrowserItemSelected;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemState'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemState (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserItemState *ewg_state)
+{
+	return GetDataBrowserItemState ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserItemState*)ewg_state);
+}
+
+// Return address of function 'GetDataBrowserItemState'
+void* ewg_get_function_address_GetDataBrowserItemState (void)
+{
+	return (void*) GetDataBrowserItemState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RevealDataBrowserItem'
+// For ise
+OSStatus  ewg_function_RevealDataBrowserItem (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_propertyID, DataBrowserRevealOptions ewg_options)
+{
+	return RevealDataBrowserItem ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_propertyID, (DataBrowserRevealOptions)ewg_options);
+}
+
+// Return address of function 'RevealDataBrowserItem'
+void* ewg_get_function_address_RevealDataBrowserItem (void)
+{
+	return (void*) RevealDataBrowserItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserSelectedItems'
+// For ise
+OSStatus  ewg_function_SetDataBrowserSelectedItems (ControlRef ewg_browser, UInt32 ewg_numItems, DataBrowserItemID const *ewg_items, DataBrowserSetOption ewg_operation)
+{
+	return SetDataBrowserSelectedItems ((ControlRef)ewg_browser, (UInt32)ewg_numItems, (DataBrowserItemID const*)ewg_items, (DataBrowserSetOption)ewg_operation);
+}
+
+// Return address of function 'SetDataBrowserSelectedItems'
+void* ewg_get_function_address_SetDataBrowserSelectedItems (void)
+{
+	return (void*) SetDataBrowserSelectedItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserUserState'
+// For ise
+OSStatus  ewg_function_SetDataBrowserUserState (ControlRef ewg_browser, CFDictionaryRef ewg_stateInfo)
+{
+	return SetDataBrowserUserState ((ControlRef)ewg_browser, (CFDictionaryRef)ewg_stateInfo);
+}
+
+// Return address of function 'SetDataBrowserUserState'
+void* ewg_get_function_address_SetDataBrowserUserState (void)
+{
+	return (void*) SetDataBrowserUserState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserUserState'
+// For ise
+OSStatus  ewg_function_GetDataBrowserUserState (ControlRef ewg_browser, CFDictionaryRef *ewg_stateInfo)
+{
+	return GetDataBrowserUserState ((ControlRef)ewg_browser, (CFDictionaryRef*)ewg_stateInfo);
+}
+
+// Return address of function 'GetDataBrowserUserState'
+void* ewg_get_function_address_GetDataBrowserUserState (void)
+{
+	return (void*) GetDataBrowserUserState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserActiveItems'
+// For ise
+OSStatus  ewg_function_SetDataBrowserActiveItems (ControlRef ewg_browser, Boolean ewg_active)
+{
+	return SetDataBrowserActiveItems ((ControlRef)ewg_browser, (Boolean)ewg_active);
+}
+
+// Return address of function 'SetDataBrowserActiveItems'
+void* ewg_get_function_address_SetDataBrowserActiveItems (void)
+{
+	return (void*) SetDataBrowserActiveItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserActiveItems'
+// For ise
+OSStatus  ewg_function_GetDataBrowserActiveItems (ControlRef ewg_browser, Boolean *ewg_active)
+{
+	return GetDataBrowserActiveItems ((ControlRef)ewg_browser, (Boolean*)ewg_active);
+}
+
+// Return address of function 'GetDataBrowserActiveItems'
+void* ewg_get_function_address_GetDataBrowserActiveItems (void)
+{
+	return (void*) GetDataBrowserActiveItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserScrollBarInset'
+// For ise
+OSStatus  ewg_function_SetDataBrowserScrollBarInset (ControlRef ewg_browser, Rect *ewg_insetRect)
+{
+	return SetDataBrowserScrollBarInset ((ControlRef)ewg_browser, (Rect*)ewg_insetRect);
+}
+
+// Return address of function 'SetDataBrowserScrollBarInset'
+void* ewg_get_function_address_SetDataBrowserScrollBarInset (void)
+{
+	return (void*) SetDataBrowserScrollBarInset;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserScrollBarInset'
+// For ise
+OSStatus  ewg_function_GetDataBrowserScrollBarInset (ControlRef ewg_browser, Rect *ewg_insetRect)
+{
+	return GetDataBrowserScrollBarInset ((ControlRef)ewg_browser, (Rect*)ewg_insetRect);
+}
+
+// Return address of function 'GetDataBrowserScrollBarInset'
+void* ewg_get_function_address_GetDataBrowserScrollBarInset (void)
+{
+	return (void*) GetDataBrowserScrollBarInset;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTarget'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTarget (ControlRef ewg_browser, DataBrowserItemID ewg_target)
+{
+	return SetDataBrowserTarget ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_target);
+}
+
+// Return address of function 'SetDataBrowserTarget'
+void* ewg_get_function_address_SetDataBrowserTarget (void)
+{
+	return (void*) SetDataBrowserTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTarget'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTarget (ControlRef ewg_browser, DataBrowserItemID *ewg_target)
+{
+	return GetDataBrowserTarget ((ControlRef)ewg_browser, (DataBrowserItemID*)ewg_target);
+}
+
+// Return address of function 'GetDataBrowserTarget'
+void* ewg_get_function_address_GetDataBrowserTarget (void)
+{
+	return (void*) GetDataBrowserTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserSortOrder'
+// For ise
+OSStatus  ewg_function_SetDataBrowserSortOrder (ControlRef ewg_browser, DataBrowserSortOrder ewg_order)
+{
+	return SetDataBrowserSortOrder ((ControlRef)ewg_browser, (DataBrowserSortOrder)ewg_order);
+}
+
+// Return address of function 'SetDataBrowserSortOrder'
+void* ewg_get_function_address_SetDataBrowserSortOrder (void)
+{
+	return (void*) SetDataBrowserSortOrder;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserSortOrder'
+// For ise
+OSStatus  ewg_function_GetDataBrowserSortOrder (ControlRef ewg_browser, DataBrowserSortOrder *ewg_order)
+{
+	return GetDataBrowserSortOrder ((ControlRef)ewg_browser, (DataBrowserSortOrder*)ewg_order);
+}
+
+// Return address of function 'GetDataBrowserSortOrder'
+void* ewg_get_function_address_GetDataBrowserSortOrder (void)
+{
+	return (void*) GetDataBrowserSortOrder;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserScrollPosition'
+// For ise
+OSStatus  ewg_function_SetDataBrowserScrollPosition (ControlRef ewg_browser, UInt32 ewg_top, UInt32 ewg_left)
+{
+	return SetDataBrowserScrollPosition ((ControlRef)ewg_browser, (UInt32)ewg_top, (UInt32)ewg_left);
+}
+
+// Return address of function 'SetDataBrowserScrollPosition'
+void* ewg_get_function_address_SetDataBrowserScrollPosition (void)
+{
+	return (void*) SetDataBrowserScrollPosition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserScrollPosition'
+// For ise
+OSStatus  ewg_function_GetDataBrowserScrollPosition (ControlRef ewg_browser, UInt32 *ewg_top, UInt32 *ewg_left)
+{
+	return GetDataBrowserScrollPosition ((ControlRef)ewg_browser, (UInt32*)ewg_top, (UInt32*)ewg_left);
+}
+
+// Return address of function 'GetDataBrowserScrollPosition'
+void* ewg_get_function_address_GetDataBrowserScrollPosition (void)
+{
+	return (void*) GetDataBrowserScrollPosition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserHasScrollBars'
+// For ise
+OSStatus  ewg_function_SetDataBrowserHasScrollBars (ControlRef ewg_browser, Boolean ewg_horiz, Boolean ewg_vert)
+{
+	return SetDataBrowserHasScrollBars ((ControlRef)ewg_browser, (Boolean)ewg_horiz, (Boolean)ewg_vert);
+}
+
+// Return address of function 'SetDataBrowserHasScrollBars'
+void* ewg_get_function_address_SetDataBrowserHasScrollBars (void)
+{
+	return (void*) SetDataBrowserHasScrollBars;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserHasScrollBars'
+// For ise
+OSStatus  ewg_function_GetDataBrowserHasScrollBars (ControlRef ewg_browser, Boolean *ewg_horiz, Boolean *ewg_vert)
+{
+	return GetDataBrowserHasScrollBars ((ControlRef)ewg_browser, (Boolean*)ewg_horiz, (Boolean*)ewg_vert);
+}
+
+// Return address of function 'GetDataBrowserHasScrollBars'
+void* ewg_get_function_address_GetDataBrowserHasScrollBars (void)
+{
+	return (void*) GetDataBrowserHasScrollBars;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserSortProperty'
+// For ise
+OSStatus  ewg_function_SetDataBrowserSortProperty (ControlRef ewg_browser, DataBrowserPropertyID ewg_property)
+{
+	return SetDataBrowserSortProperty ((ControlRef)ewg_browser, (DataBrowserPropertyID)ewg_property);
+}
+
+// Return address of function 'SetDataBrowserSortProperty'
+void* ewg_get_function_address_SetDataBrowserSortProperty (void)
+{
+	return (void*) SetDataBrowserSortProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserSortProperty'
+// For ise
+OSStatus  ewg_function_GetDataBrowserSortProperty (ControlRef ewg_browser, DataBrowserPropertyID *ewg_property)
+{
+	return GetDataBrowserSortProperty ((ControlRef)ewg_browser, (DataBrowserPropertyID*)ewg_property);
+}
+
+// Return address of function 'GetDataBrowserSortProperty'
+void* ewg_get_function_address_GetDataBrowserSortProperty (void)
+{
+	return (void*) GetDataBrowserSortProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserSelectionFlags'
+// For ise
+OSStatus  ewg_function_SetDataBrowserSelectionFlags (ControlRef ewg_browser, DataBrowserSelectionFlags ewg_selectionFlags)
+{
+	return SetDataBrowserSelectionFlags ((ControlRef)ewg_browser, (DataBrowserSelectionFlags)ewg_selectionFlags);
+}
+
+// Return address of function 'SetDataBrowserSelectionFlags'
+void* ewg_get_function_address_SetDataBrowserSelectionFlags (void)
+{
+	return (void*) SetDataBrowserSelectionFlags;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserSelectionFlags'
+// For ise
+OSStatus  ewg_function_GetDataBrowserSelectionFlags (ControlRef ewg_browser, DataBrowserSelectionFlags *ewg_selectionFlags)
+{
+	return GetDataBrowserSelectionFlags ((ControlRef)ewg_browser, (DataBrowserSelectionFlags*)ewg_selectionFlags);
+}
+
+// Return address of function 'GetDataBrowserSelectionFlags'
+void* ewg_get_function_address_GetDataBrowserSelectionFlags (void)
+{
+	return (void*) GetDataBrowserSelectionFlags;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserPropertyFlags'
+// For ise
+OSStatus  ewg_function_SetDataBrowserPropertyFlags (ControlRef ewg_browser, DataBrowserPropertyID ewg_property, DataBrowserPropertyFlags ewg_flags)
+{
+	return SetDataBrowserPropertyFlags ((ControlRef)ewg_browser, (DataBrowserPropertyID)ewg_property, (DataBrowserPropertyFlags)ewg_flags);
+}
+
+// Return address of function 'SetDataBrowserPropertyFlags'
+void* ewg_get_function_address_SetDataBrowserPropertyFlags (void)
+{
+	return (void*) SetDataBrowserPropertyFlags;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserPropertyFlags'
+// For ise
+OSStatus  ewg_function_GetDataBrowserPropertyFlags (ControlRef ewg_browser, DataBrowserPropertyID ewg_property, DataBrowserPropertyFlags *ewg_flags)
+{
+	return GetDataBrowserPropertyFlags ((ControlRef)ewg_browser, (DataBrowserPropertyID)ewg_property, (DataBrowserPropertyFlags*)ewg_flags);
+}
+
+// Return address of function 'GetDataBrowserPropertyFlags'
+void* ewg_get_function_address_GetDataBrowserPropertyFlags (void)
+{
+	return (void*) GetDataBrowserPropertyFlags;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserEditText'
+// For ise
+OSStatus  ewg_function_SetDataBrowserEditText (ControlRef ewg_browser, CFStringRef ewg_text)
+{
+	return SetDataBrowserEditText ((ControlRef)ewg_browser, (CFStringRef)ewg_text);
+}
+
+// Return address of function 'SetDataBrowserEditText'
+void* ewg_get_function_address_SetDataBrowserEditText (void)
+{
+	return (void*) SetDataBrowserEditText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyDataBrowserEditText'
+// For ise
+OSStatus  ewg_function_CopyDataBrowserEditText (ControlRef ewg_browser, CFStringRef *ewg_text)
+{
+	return CopyDataBrowserEditText ((ControlRef)ewg_browser, (CFStringRef*)ewg_text);
+}
+
+// Return address of function 'CopyDataBrowserEditText'
+void* ewg_get_function_address_CopyDataBrowserEditText (void)
+{
+	return (void*) CopyDataBrowserEditText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserEditText'
+// For ise
+OSStatus  ewg_function_GetDataBrowserEditText (ControlRef ewg_browser, CFMutableStringRef ewg_text)
+{
+	return GetDataBrowserEditText ((ControlRef)ewg_browser, (CFMutableStringRef)ewg_text);
+}
+
+// Return address of function 'GetDataBrowserEditText'
+void* ewg_get_function_address_GetDataBrowserEditText (void)
+{
+	return (void*) GetDataBrowserEditText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserEditItem'
+// For ise
+OSStatus  ewg_function_SetDataBrowserEditItem (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property)
+{
+	return SetDataBrowserEditItem ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property);
+}
+
+// Return address of function 'SetDataBrowserEditItem'
+void* ewg_get_function_address_SetDataBrowserEditItem (void)
+{
+	return (void*) SetDataBrowserEditItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserEditItem'
+// For ise
+OSStatus  ewg_function_GetDataBrowserEditItem (ControlRef ewg_browser, DataBrowserItemID *ewg_item, DataBrowserPropertyID *ewg_property)
+{
+	return GetDataBrowserEditItem ((ControlRef)ewg_browser, (DataBrowserItemID*)ewg_item, (DataBrowserPropertyID*)ewg_property);
+}
+
+// Return address of function 'GetDataBrowserEditItem'
+void* ewg_get_function_address_GetDataBrowserEditItem (void)
+{
+	return (void*) GetDataBrowserEditItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemPartBounds'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemPartBounds (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, DataBrowserPropertyPart ewg_part, Rect *ewg_bounds)
+{
+	return GetDataBrowserItemPartBounds ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (DataBrowserPropertyPart)ewg_part, (Rect*)ewg_bounds);
+}
+
+// Return address of function 'GetDataBrowserItemPartBounds'
+void* ewg_get_function_address_GetDataBrowserItemPartBounds (void)
+{
+	return (void*) GetDataBrowserItemPartBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataIcon'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataIcon (DataBrowserItemDataRef ewg_itemData, IconRef ewg_theData)
+{
+	return SetDataBrowserItemDataIcon ((DataBrowserItemDataRef)ewg_itemData, (IconRef)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataIcon'
+void* ewg_get_function_address_SetDataBrowserItemDataIcon (void)
+{
+	return (void*) SetDataBrowserItemDataIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataIcon'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataIcon (DataBrowserItemDataRef ewg_itemData, IconRef *ewg_theData)
+{
+	return GetDataBrowserItemDataIcon ((DataBrowserItemDataRef)ewg_itemData, (IconRef*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataIcon'
+void* ewg_get_function_address_GetDataBrowserItemDataIcon (void)
+{
+	return (void*) GetDataBrowserItemDataIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataText'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataText (DataBrowserItemDataRef ewg_itemData, CFStringRef ewg_theData)
+{
+	return SetDataBrowserItemDataText ((DataBrowserItemDataRef)ewg_itemData, (CFStringRef)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataText'
+void* ewg_get_function_address_SetDataBrowserItemDataText (void)
+{
+	return (void*) SetDataBrowserItemDataText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataText'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataText (DataBrowserItemDataRef ewg_itemData, CFStringRef *ewg_theData)
+{
+	return GetDataBrowserItemDataText ((DataBrowserItemDataRef)ewg_itemData, (CFStringRef*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataText'
+void* ewg_get_function_address_GetDataBrowserItemDataText (void)
+{
+	return (void*) GetDataBrowserItemDataText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataValue'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataValue (DataBrowserItemDataRef ewg_itemData, SInt32 ewg_theData)
+{
+	return SetDataBrowserItemDataValue ((DataBrowserItemDataRef)ewg_itemData, (SInt32)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataValue'
+void* ewg_get_function_address_SetDataBrowserItemDataValue (void)
+{
+	return (void*) SetDataBrowserItemDataValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataValue'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataValue (DataBrowserItemDataRef ewg_itemData, SInt32 *ewg_theData)
+{
+	return GetDataBrowserItemDataValue ((DataBrowserItemDataRef)ewg_itemData, (SInt32*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataValue'
+void* ewg_get_function_address_GetDataBrowserItemDataValue (void)
+{
+	return (void*) GetDataBrowserItemDataValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataMinimum'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataMinimum (DataBrowserItemDataRef ewg_itemData, SInt32 ewg_theData)
+{
+	return SetDataBrowserItemDataMinimum ((DataBrowserItemDataRef)ewg_itemData, (SInt32)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataMinimum'
+void* ewg_get_function_address_SetDataBrowserItemDataMinimum (void)
+{
+	return (void*) SetDataBrowserItemDataMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataMinimum'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataMinimum (DataBrowserItemDataRef ewg_itemData, SInt32 *ewg_theData)
+{
+	return GetDataBrowserItemDataMinimum ((DataBrowserItemDataRef)ewg_itemData, (SInt32*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataMinimum'
+void* ewg_get_function_address_GetDataBrowserItemDataMinimum (void)
+{
+	return (void*) GetDataBrowserItemDataMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataMaximum'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataMaximum (DataBrowserItemDataRef ewg_itemData, SInt32 ewg_theData)
+{
+	return SetDataBrowserItemDataMaximum ((DataBrowserItemDataRef)ewg_itemData, (SInt32)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataMaximum'
+void* ewg_get_function_address_SetDataBrowserItemDataMaximum (void)
+{
+	return (void*) SetDataBrowserItemDataMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataMaximum'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataMaximum (DataBrowserItemDataRef ewg_itemData, SInt32 *ewg_theData)
+{
+	return GetDataBrowserItemDataMaximum ((DataBrowserItemDataRef)ewg_itemData, (SInt32*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataMaximum'
+void* ewg_get_function_address_GetDataBrowserItemDataMaximum (void)
+{
+	return (void*) GetDataBrowserItemDataMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataBooleanValue'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataBooleanValue (DataBrowserItemDataRef ewg_itemData, Boolean ewg_theData)
+{
+	return SetDataBrowserItemDataBooleanValue ((DataBrowserItemDataRef)ewg_itemData, (Boolean)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataBooleanValue'
+void* ewg_get_function_address_SetDataBrowserItemDataBooleanValue (void)
+{
+	return (void*) SetDataBrowserItemDataBooleanValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataBooleanValue'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataBooleanValue (DataBrowserItemDataRef ewg_itemData, Boolean *ewg_theData)
+{
+	return GetDataBrowserItemDataBooleanValue ((DataBrowserItemDataRef)ewg_itemData, (Boolean*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataBooleanValue'
+void* ewg_get_function_address_GetDataBrowserItemDataBooleanValue (void)
+{
+	return (void*) GetDataBrowserItemDataBooleanValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataMenuRef'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataMenuRef (DataBrowserItemDataRef ewg_itemData, MenuRef ewg_theData)
+{
+	return SetDataBrowserItemDataMenuRef ((DataBrowserItemDataRef)ewg_itemData, (MenuRef)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataMenuRef'
+void* ewg_get_function_address_SetDataBrowserItemDataMenuRef (void)
+{
+	return (void*) SetDataBrowserItemDataMenuRef;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataMenuRef'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataMenuRef (DataBrowserItemDataRef ewg_itemData, MenuRef *ewg_theData)
+{
+	return GetDataBrowserItemDataMenuRef ((DataBrowserItemDataRef)ewg_itemData, (MenuRef*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataMenuRef'
+void* ewg_get_function_address_GetDataBrowserItemDataMenuRef (void)
+{
+	return (void*) GetDataBrowserItemDataMenuRef;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataRGBColor'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataRGBColor (DataBrowserItemDataRef ewg_itemData, RGBColor const *ewg_theData)
+{
+	return SetDataBrowserItemDataRGBColor ((DataBrowserItemDataRef)ewg_itemData, (RGBColor const*)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataRGBColor'
+void* ewg_get_function_address_SetDataBrowserItemDataRGBColor (void)
+{
+	return (void*) SetDataBrowserItemDataRGBColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataRGBColor'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataRGBColor (DataBrowserItemDataRef ewg_itemData, RGBColor *ewg_theData)
+{
+	return GetDataBrowserItemDataRGBColor ((DataBrowserItemDataRef)ewg_itemData, (RGBColor*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataRGBColor'
+void* ewg_get_function_address_GetDataBrowserItemDataRGBColor (void)
+{
+	return (void*) GetDataBrowserItemDataRGBColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataDrawState'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataDrawState (DataBrowserItemDataRef ewg_itemData, ThemeDrawState ewg_theData)
+{
+	return SetDataBrowserItemDataDrawState ((DataBrowserItemDataRef)ewg_itemData, (ThemeDrawState)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataDrawState'
+void* ewg_get_function_address_SetDataBrowserItemDataDrawState (void)
+{
+	return (void*) SetDataBrowserItemDataDrawState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataDrawState'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataDrawState (DataBrowserItemDataRef ewg_itemData, ThemeDrawState *ewg_theData)
+{
+	return GetDataBrowserItemDataDrawState ((DataBrowserItemDataRef)ewg_itemData, (ThemeDrawState*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataDrawState'
+void* ewg_get_function_address_GetDataBrowserItemDataDrawState (void)
+{
+	return (void*) GetDataBrowserItemDataDrawState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataButtonValue'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataButtonValue (DataBrowserItemDataRef ewg_itemData, ThemeButtonValue ewg_theData)
+{
+	return SetDataBrowserItemDataButtonValue ((DataBrowserItemDataRef)ewg_itemData, (ThemeButtonValue)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataButtonValue'
+void* ewg_get_function_address_SetDataBrowserItemDataButtonValue (void)
+{
+	return (void*) SetDataBrowserItemDataButtonValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataButtonValue'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataButtonValue (DataBrowserItemDataRef ewg_itemData, ThemeButtonValue *ewg_theData)
+{
+	return GetDataBrowserItemDataButtonValue ((DataBrowserItemDataRef)ewg_itemData, (ThemeButtonValue*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataButtonValue'
+void* ewg_get_function_address_GetDataBrowserItemDataButtonValue (void)
+{
+	return (void*) GetDataBrowserItemDataButtonValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataIconTransform'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataIconTransform (DataBrowserItemDataRef ewg_itemData, IconTransformType ewg_theData)
+{
+	return SetDataBrowserItemDataIconTransform ((DataBrowserItemDataRef)ewg_itemData, (IconTransformType)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataIconTransform'
+void* ewg_get_function_address_SetDataBrowserItemDataIconTransform (void)
+{
+	return (void*) SetDataBrowserItemDataIconTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataIconTransform'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataIconTransform (DataBrowserItemDataRef ewg_itemData, IconTransformType *ewg_theData)
+{
+	return GetDataBrowserItemDataIconTransform ((DataBrowserItemDataRef)ewg_itemData, (IconTransformType*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataIconTransform'
+void* ewg_get_function_address_GetDataBrowserItemDataIconTransform (void)
+{
+	return (void*) GetDataBrowserItemDataIconTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataDateTime'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataDateTime (DataBrowserItemDataRef ewg_itemData, long ewg_theData)
+{
+	return SetDataBrowserItemDataDateTime ((DataBrowserItemDataRef)ewg_itemData, (long)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataDateTime'
+void* ewg_get_function_address_SetDataBrowserItemDataDateTime (void)
+{
+	return (void*) SetDataBrowserItemDataDateTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataDateTime'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataDateTime (DataBrowserItemDataRef ewg_itemData, long *ewg_theData)
+{
+	return GetDataBrowserItemDataDateTime ((DataBrowserItemDataRef)ewg_itemData, (long*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataDateTime'
+void* ewg_get_function_address_GetDataBrowserItemDataDateTime (void)
+{
+	return (void*) GetDataBrowserItemDataDateTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataLongDateTime'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataLongDateTime (DataBrowserItemDataRef ewg_itemData, LongDateTime const *ewg_theData)
+{
+	return SetDataBrowserItemDataLongDateTime ((DataBrowserItemDataRef)ewg_itemData, (LongDateTime const*)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataLongDateTime'
+void* ewg_get_function_address_SetDataBrowserItemDataLongDateTime (void)
+{
+	return (void*) SetDataBrowserItemDataLongDateTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataLongDateTime'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataLongDateTime (DataBrowserItemDataRef ewg_itemData, LongDateTime *ewg_theData)
+{
+	return GetDataBrowserItemDataLongDateTime ((DataBrowserItemDataRef)ewg_itemData, (LongDateTime*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataLongDateTime'
+void* ewg_get_function_address_GetDataBrowserItemDataLongDateTime (void)
+{
+	return (void*) GetDataBrowserItemDataLongDateTime;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserItemDataItemID'
+// For ise
+OSStatus  ewg_function_SetDataBrowserItemDataItemID (DataBrowserItemDataRef ewg_itemData, DataBrowserItemID ewg_theData)
+{
+	return SetDataBrowserItemDataItemID ((DataBrowserItemDataRef)ewg_itemData, (DataBrowserItemID)ewg_theData);
+}
+
+// Return address of function 'SetDataBrowserItemDataItemID'
+void* ewg_get_function_address_SetDataBrowserItemDataItemID (void)
+{
+	return (void*) SetDataBrowserItemDataItemID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataItemID'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataItemID (DataBrowserItemDataRef ewg_itemData, DataBrowserItemID *ewg_theData)
+{
+	return GetDataBrowserItemDataItemID ((DataBrowserItemDataRef)ewg_itemData, (DataBrowserItemID*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataItemID'
+void* ewg_get_function_address_GetDataBrowserItemDataItemID (void)
+{
+	return (void*) GetDataBrowserItemDataItemID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserItemDataProperty'
+// For ise
+OSStatus  ewg_function_GetDataBrowserItemDataProperty (DataBrowserItemDataRef ewg_itemData, DataBrowserPropertyID *ewg_theData)
+{
+	return GetDataBrowserItemDataProperty ((DataBrowserItemDataRef)ewg_itemData, (DataBrowserPropertyID*)ewg_theData);
+}
+
+// Return address of function 'GetDataBrowserItemDataProperty'
+void* ewg_get_function_address_GetDataBrowserItemDataProperty (void)
+{
+	return (void*) GetDataBrowserItemDataProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemDataUPP'
+// For ise
+DataBrowserItemDataUPP  ewg_function_NewDataBrowserItemDataUPP (DataBrowserItemDataProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemDataUPP ((DataBrowserItemDataProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemDataUPP'
+void* ewg_get_function_address_NewDataBrowserItemDataUPP (void)
+{
+	return (void*) NewDataBrowserItemDataUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemCompareUPP'
+// For ise
+DataBrowserItemCompareUPP  ewg_function_NewDataBrowserItemCompareUPP (DataBrowserItemCompareProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemCompareUPP ((DataBrowserItemCompareProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemCompareUPP'
+void* ewg_get_function_address_NewDataBrowserItemCompareUPP (void)
+{
+	return (void*) NewDataBrowserItemCompareUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemNotificationWithItemUPP'
+// For ise
+DataBrowserItemNotificationWithItemUPP  ewg_function_NewDataBrowserItemNotificationWithItemUPP (DataBrowserItemNotificationWithItemProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemNotificationWithItemUPP ((DataBrowserItemNotificationWithItemProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemNotificationWithItemUPP'
+void* ewg_get_function_address_NewDataBrowserItemNotificationWithItemUPP (void)
+{
+	return (void*) NewDataBrowserItemNotificationWithItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemNotificationUPP'
+// For ise
+DataBrowserItemNotificationUPP  ewg_function_NewDataBrowserItemNotificationUPP (DataBrowserItemNotificationProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemNotificationUPP ((DataBrowserItemNotificationProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemNotificationUPP'
+void* ewg_get_function_address_NewDataBrowserItemNotificationUPP (void)
+{
+	return (void*) NewDataBrowserItemNotificationUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserAddDragItemUPP'
+// For ise
+DataBrowserAddDragItemUPP  ewg_function_NewDataBrowserAddDragItemUPP (DataBrowserAddDragItemProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserAddDragItemUPP ((DataBrowserAddDragItemProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserAddDragItemUPP'
+void* ewg_get_function_address_NewDataBrowserAddDragItemUPP (void)
+{
+	return (void*) NewDataBrowserAddDragItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserAcceptDragUPP'
+// For ise
+DataBrowserAcceptDragUPP  ewg_function_NewDataBrowserAcceptDragUPP (DataBrowserAcceptDragProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserAcceptDragUPP ((DataBrowserAcceptDragProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserAcceptDragUPP'
+void* ewg_get_function_address_NewDataBrowserAcceptDragUPP (void)
+{
+	return (void*) NewDataBrowserAcceptDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserReceiveDragUPP'
+// For ise
+DataBrowserReceiveDragUPP  ewg_function_NewDataBrowserReceiveDragUPP (DataBrowserReceiveDragProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserReceiveDragUPP ((DataBrowserReceiveDragProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserReceiveDragUPP'
+void* ewg_get_function_address_NewDataBrowserReceiveDragUPP (void)
+{
+	return (void*) NewDataBrowserReceiveDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserPostProcessDragUPP'
+// For ise
+DataBrowserPostProcessDragUPP  ewg_function_NewDataBrowserPostProcessDragUPP (DataBrowserPostProcessDragProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserPostProcessDragUPP ((DataBrowserPostProcessDragProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserPostProcessDragUPP'
+void* ewg_get_function_address_NewDataBrowserPostProcessDragUPP (void)
+{
+	return (void*) NewDataBrowserPostProcessDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserGetContextualMenuUPP'
+// For ise
+DataBrowserGetContextualMenuUPP  ewg_function_NewDataBrowserGetContextualMenuUPP (DataBrowserGetContextualMenuProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserGetContextualMenuUPP ((DataBrowserGetContextualMenuProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserGetContextualMenuUPP'
+void* ewg_get_function_address_NewDataBrowserGetContextualMenuUPP (void)
+{
+	return (void*) NewDataBrowserGetContextualMenuUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserSelectContextualMenuUPP'
+// For ise
+DataBrowserSelectContextualMenuUPP  ewg_function_NewDataBrowserSelectContextualMenuUPP (DataBrowserSelectContextualMenuProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserSelectContextualMenuUPP ((DataBrowserSelectContextualMenuProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserSelectContextualMenuUPP'
+void* ewg_get_function_address_NewDataBrowserSelectContextualMenuUPP (void)
+{
+	return (void*) NewDataBrowserSelectContextualMenuUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemHelpContentUPP'
+// For ise
+DataBrowserItemHelpContentUPP  ewg_function_NewDataBrowserItemHelpContentUPP (DataBrowserItemHelpContentProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemHelpContentUPP ((DataBrowserItemHelpContentProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemHelpContentUPP'
+void* ewg_get_function_address_NewDataBrowserItemHelpContentUPP (void)
+{
+	return (void*) NewDataBrowserItemHelpContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemDataUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemDataUPP (DataBrowserItemDataUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemDataUPP ((DataBrowserItemDataUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemDataUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemDataUPP (void)
+{
+	return (void*) DisposeDataBrowserItemDataUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemCompareUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemCompareUPP (DataBrowserItemCompareUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemCompareUPP ((DataBrowserItemCompareUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemCompareUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemCompareUPP (void)
+{
+	return (void*) DisposeDataBrowserItemCompareUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemNotificationWithItemUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemNotificationWithItemUPP (DataBrowserItemNotificationWithItemUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemNotificationWithItemUPP ((DataBrowserItemNotificationWithItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemNotificationWithItemUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemNotificationWithItemUPP (void)
+{
+	return (void*) DisposeDataBrowserItemNotificationWithItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemNotificationUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemNotificationUPP (DataBrowserItemNotificationUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemNotificationUPP ((DataBrowserItemNotificationUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemNotificationUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemNotificationUPP (void)
+{
+	return (void*) DisposeDataBrowserItemNotificationUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserAddDragItemUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserAddDragItemUPP (DataBrowserAddDragItemUPP ewg_userUPP)
+{
+	DisposeDataBrowserAddDragItemUPP ((DataBrowserAddDragItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserAddDragItemUPP'
+void* ewg_get_function_address_DisposeDataBrowserAddDragItemUPP (void)
+{
+	return (void*) DisposeDataBrowserAddDragItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserAcceptDragUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserAcceptDragUPP (DataBrowserAcceptDragUPP ewg_userUPP)
+{
+	DisposeDataBrowserAcceptDragUPP ((DataBrowserAcceptDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserAcceptDragUPP'
+void* ewg_get_function_address_DisposeDataBrowserAcceptDragUPP (void)
+{
+	return (void*) DisposeDataBrowserAcceptDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserReceiveDragUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserReceiveDragUPP (DataBrowserReceiveDragUPP ewg_userUPP)
+{
+	DisposeDataBrowserReceiveDragUPP ((DataBrowserReceiveDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserReceiveDragUPP'
+void* ewg_get_function_address_DisposeDataBrowserReceiveDragUPP (void)
+{
+	return (void*) DisposeDataBrowserReceiveDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserPostProcessDragUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserPostProcessDragUPP (DataBrowserPostProcessDragUPP ewg_userUPP)
+{
+	DisposeDataBrowserPostProcessDragUPP ((DataBrowserPostProcessDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserPostProcessDragUPP'
+void* ewg_get_function_address_DisposeDataBrowserPostProcessDragUPP (void)
+{
+	return (void*) DisposeDataBrowserPostProcessDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserGetContextualMenuUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserGetContextualMenuUPP (DataBrowserGetContextualMenuUPP ewg_userUPP)
+{
+	DisposeDataBrowserGetContextualMenuUPP ((DataBrowserGetContextualMenuUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserGetContextualMenuUPP'
+void* ewg_get_function_address_DisposeDataBrowserGetContextualMenuUPP (void)
+{
+	return (void*) DisposeDataBrowserGetContextualMenuUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserSelectContextualMenuUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserSelectContextualMenuUPP (DataBrowserSelectContextualMenuUPP ewg_userUPP)
+{
+	DisposeDataBrowserSelectContextualMenuUPP ((DataBrowserSelectContextualMenuUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserSelectContextualMenuUPP'
+void* ewg_get_function_address_DisposeDataBrowserSelectContextualMenuUPP (void)
+{
+	return (void*) DisposeDataBrowserSelectContextualMenuUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemHelpContentUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemHelpContentUPP (DataBrowserItemHelpContentUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemHelpContentUPP ((DataBrowserItemHelpContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemHelpContentUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemHelpContentUPP (void)
+{
+	return (void*) DisposeDataBrowserItemHelpContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemDataUPP'
+// For ise
+OSStatus  ewg_function_InvokeDataBrowserItemDataUPP (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, DataBrowserItemDataRef ewg_itemData, Boolean ewg_setValue, DataBrowserItemDataUPP ewg_userUPP)
+{
+	return InvokeDataBrowserItemDataUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (DataBrowserItemDataRef)ewg_itemData, (Boolean)ewg_setValue, (DataBrowserItemDataUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemDataUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemDataUPP (void)
+{
+	return (void*) InvokeDataBrowserItemDataUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemCompareUPP'
+// For ise
+Boolean  ewg_function_InvokeDataBrowserItemCompareUPP (ControlRef ewg_browser, DataBrowserItemID ewg_itemOne, DataBrowserItemID ewg_itemTwo, DataBrowserPropertyID ewg_sortProperty, DataBrowserItemCompareUPP ewg_userUPP)
+{
+	return InvokeDataBrowserItemCompareUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemOne, (DataBrowserItemID)ewg_itemTwo, (DataBrowserPropertyID)ewg_sortProperty, (DataBrowserItemCompareUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemCompareUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemCompareUPP (void)
+{
+	return (void*) InvokeDataBrowserItemCompareUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemNotificationWithItemUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserItemNotificationWithItemUPP (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserItemNotification ewg_message, DataBrowserItemDataRef ewg_itemData, DataBrowserItemNotificationWithItemUPP ewg_userUPP)
+{
+	InvokeDataBrowserItemNotificationWithItemUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserItemNotification)ewg_message, (DataBrowserItemDataRef)ewg_itemData, (DataBrowserItemNotificationWithItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemNotificationWithItemUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemNotificationWithItemUPP (void)
+{
+	return (void*) InvokeDataBrowserItemNotificationWithItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemNotificationUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserItemNotificationUPP (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserItemNotification ewg_message, DataBrowserItemNotificationUPP ewg_userUPP)
+{
+	InvokeDataBrowserItemNotificationUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserItemNotification)ewg_message, (DataBrowserItemNotificationUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemNotificationUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemNotificationUPP (void)
+{
+	return (void*) InvokeDataBrowserItemNotificationUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserAddDragItemUPP'
+// For ise
+Boolean  ewg_function_InvokeDataBrowserAddDragItemUPP (ControlRef ewg_browser, DragReference ewg_theDrag, DataBrowserItemID ewg_item, ItemReference *ewg_itemRef, DataBrowserAddDragItemUPP ewg_userUPP)
+{
+	return InvokeDataBrowserAddDragItemUPP ((ControlRef)ewg_browser, (DragReference)ewg_theDrag, (DataBrowserItemID)ewg_item, (ItemReference*)ewg_itemRef, (DataBrowserAddDragItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserAddDragItemUPP'
+void* ewg_get_function_address_InvokeDataBrowserAddDragItemUPP (void)
+{
+	return (void*) InvokeDataBrowserAddDragItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserAcceptDragUPP'
+// For ise
+Boolean  ewg_function_InvokeDataBrowserAcceptDragUPP (ControlRef ewg_browser, DragReference ewg_theDrag, DataBrowserItemID ewg_item, DataBrowserAcceptDragUPP ewg_userUPP)
+{
+	return InvokeDataBrowserAcceptDragUPP ((ControlRef)ewg_browser, (DragReference)ewg_theDrag, (DataBrowserItemID)ewg_item, (DataBrowserAcceptDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserAcceptDragUPP'
+void* ewg_get_function_address_InvokeDataBrowserAcceptDragUPP (void)
+{
+	return (void*) InvokeDataBrowserAcceptDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserReceiveDragUPP'
+// For ise
+Boolean  ewg_function_InvokeDataBrowserReceiveDragUPP (ControlRef ewg_browser, DragReference ewg_theDrag, DataBrowserItemID ewg_item, DataBrowserReceiveDragUPP ewg_userUPP)
+{
+	return InvokeDataBrowserReceiveDragUPP ((ControlRef)ewg_browser, (DragReference)ewg_theDrag, (DataBrowserItemID)ewg_item, (DataBrowserReceiveDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserReceiveDragUPP'
+void* ewg_get_function_address_InvokeDataBrowserReceiveDragUPP (void)
+{
+	return (void*) InvokeDataBrowserReceiveDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserPostProcessDragUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserPostProcessDragUPP (ControlRef ewg_browser, DragReference ewg_theDrag, OSStatus ewg_trackDragResult, DataBrowserPostProcessDragUPP ewg_userUPP)
+{
+	InvokeDataBrowserPostProcessDragUPP ((ControlRef)ewg_browser, (DragReference)ewg_theDrag, (OSStatus)ewg_trackDragResult, (DataBrowserPostProcessDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserPostProcessDragUPP'
+void* ewg_get_function_address_InvokeDataBrowserPostProcessDragUPP (void)
+{
+	return (void*) InvokeDataBrowserPostProcessDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserGetContextualMenuUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserGetContextualMenuUPP (ControlRef ewg_browser, MenuRef *ewg_menu, UInt32 *ewg_helpType, CFStringRef *ewg_helpItemString, AEDesc *ewg_selection, DataBrowserGetContextualMenuUPP ewg_userUPP)
+{
+	InvokeDataBrowserGetContextualMenuUPP ((ControlRef)ewg_browser, (MenuRef*)ewg_menu, (UInt32*)ewg_helpType, (CFStringRef*)ewg_helpItemString, (AEDesc*)ewg_selection, (DataBrowserGetContextualMenuUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserGetContextualMenuUPP'
+void* ewg_get_function_address_InvokeDataBrowserGetContextualMenuUPP (void)
+{
+	return (void*) InvokeDataBrowserGetContextualMenuUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserSelectContextualMenuUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserSelectContextualMenuUPP (ControlRef ewg_browser, MenuRef ewg_menu, UInt32 ewg_selectionType, SInt16 ewg_menuID, MenuItemIndex ewg_menuItem, DataBrowserSelectContextualMenuUPP ewg_userUPP)
+{
+	InvokeDataBrowserSelectContextualMenuUPP ((ControlRef)ewg_browser, (MenuRef)ewg_menu, (UInt32)ewg_selectionType, (SInt16)ewg_menuID, (MenuItemIndex)ewg_menuItem, (DataBrowserSelectContextualMenuUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserSelectContextualMenuUPP'
+void* ewg_get_function_address_InvokeDataBrowserSelectContextualMenuUPP (void)
+{
+	return (void*) InvokeDataBrowserSelectContextualMenuUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemHelpContentUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserItemHelpContentUPP (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent, DataBrowserItemHelpContentUPP ewg_userUPP)
+{
+	InvokeDataBrowserItemHelpContentUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent, (DataBrowserItemHelpContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemHelpContentUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemHelpContentUPP (void)
+{
+	return (void*) InvokeDataBrowserItemHelpContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InitDataBrowserCallbacks'
+// For ise
+OSStatus  ewg_function_InitDataBrowserCallbacks (DataBrowserCallbacks *ewg_callbacks)
+{
+	return InitDataBrowserCallbacks ((DataBrowserCallbacks*)ewg_callbacks);
+}
+
+// Return address of function 'InitDataBrowserCallbacks'
+void* ewg_get_function_address_InitDataBrowserCallbacks (void)
+{
+	return (void*) InitDataBrowserCallbacks;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserCallbacks'
+// For ise
+OSStatus  ewg_function_GetDataBrowserCallbacks (ControlRef ewg_browser, DataBrowserCallbacks *ewg_callbacks)
+{
+	return GetDataBrowserCallbacks ((ControlRef)ewg_browser, (DataBrowserCallbacks*)ewg_callbacks);
+}
+
+// Return address of function 'GetDataBrowserCallbacks'
+void* ewg_get_function_address_GetDataBrowserCallbacks (void)
+{
+	return (void*) GetDataBrowserCallbacks;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserCallbacks'
+// For ise
+OSStatus  ewg_function_SetDataBrowserCallbacks (ControlRef ewg_browser, DataBrowserCallbacks const *ewg_callbacks)
+{
+	return SetDataBrowserCallbacks ((ControlRef)ewg_browser, (DataBrowserCallbacks const*)ewg_callbacks);
+}
+
+// Return address of function 'SetDataBrowserCallbacks'
+void* ewg_get_function_address_SetDataBrowserCallbacks (void)
+{
+	return (void*) SetDataBrowserCallbacks;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserDrawItemUPP'
+// For ise
+DataBrowserDrawItemUPP  ewg_function_NewDataBrowserDrawItemUPP (DataBrowserDrawItemProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserDrawItemUPP ((DataBrowserDrawItemProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserDrawItemUPP'
+void* ewg_get_function_address_NewDataBrowserDrawItemUPP (void)
+{
+	return (void*) NewDataBrowserDrawItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserEditItemUPP'
+// For ise
+DataBrowserEditItemUPP  ewg_function_NewDataBrowserEditItemUPP (DataBrowserEditItemProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserEditItemUPP ((DataBrowserEditItemProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserEditItemUPP'
+void* ewg_get_function_address_NewDataBrowserEditItemUPP (void)
+{
+	return (void*) NewDataBrowserEditItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserHitTestUPP'
+// For ise
+DataBrowserHitTestUPP  ewg_function_NewDataBrowserHitTestUPP (DataBrowserHitTestProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserHitTestUPP ((DataBrowserHitTestProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserHitTestUPP'
+void* ewg_get_function_address_NewDataBrowserHitTestUPP (void)
+{
+	return (void*) NewDataBrowserHitTestUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserTrackingUPP'
+// For ise
+DataBrowserTrackingUPP  ewg_function_NewDataBrowserTrackingUPP (DataBrowserTrackingProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserTrackingUPP ((DataBrowserTrackingProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserTrackingUPP'
+void* ewg_get_function_address_NewDataBrowserTrackingUPP (void)
+{
+	return (void*) NewDataBrowserTrackingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemDragRgnUPP'
+// For ise
+DataBrowserItemDragRgnUPP  ewg_function_NewDataBrowserItemDragRgnUPP (DataBrowserItemDragRgnProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemDragRgnUPP ((DataBrowserItemDragRgnProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemDragRgnUPP'
+void* ewg_get_function_address_NewDataBrowserItemDragRgnUPP (void)
+{
+	return (void*) NewDataBrowserItemDragRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemAcceptDragUPP'
+// For ise
+DataBrowserItemAcceptDragUPP  ewg_function_NewDataBrowserItemAcceptDragUPP (DataBrowserItemAcceptDragProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemAcceptDragUPP ((DataBrowserItemAcceptDragProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemAcceptDragUPP'
+void* ewg_get_function_address_NewDataBrowserItemAcceptDragUPP (void)
+{
+	return (void*) NewDataBrowserItemAcceptDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewDataBrowserItemReceiveDragUPP'
+// For ise
+DataBrowserItemReceiveDragUPP  ewg_function_NewDataBrowserItemReceiveDragUPP (DataBrowserItemReceiveDragProcPtr ewg_userRoutine)
+{
+	return NewDataBrowserItemReceiveDragUPP ((DataBrowserItemReceiveDragProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewDataBrowserItemReceiveDragUPP'
+void* ewg_get_function_address_NewDataBrowserItemReceiveDragUPP (void)
+{
+	return (void*) NewDataBrowserItemReceiveDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserDrawItemUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserDrawItemUPP (DataBrowserDrawItemUPP ewg_userUPP)
+{
+	DisposeDataBrowserDrawItemUPP ((DataBrowserDrawItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserDrawItemUPP'
+void* ewg_get_function_address_DisposeDataBrowserDrawItemUPP (void)
+{
+	return (void*) DisposeDataBrowserDrawItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserEditItemUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserEditItemUPP (DataBrowserEditItemUPP ewg_userUPP)
+{
+	DisposeDataBrowserEditItemUPP ((DataBrowserEditItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserEditItemUPP'
+void* ewg_get_function_address_DisposeDataBrowserEditItemUPP (void)
+{
+	return (void*) DisposeDataBrowserEditItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserHitTestUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserHitTestUPP (DataBrowserHitTestUPP ewg_userUPP)
+{
+	DisposeDataBrowserHitTestUPP ((DataBrowserHitTestUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserHitTestUPP'
+void* ewg_get_function_address_DisposeDataBrowserHitTestUPP (void)
+{
+	return (void*) DisposeDataBrowserHitTestUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserTrackingUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserTrackingUPP (DataBrowserTrackingUPP ewg_userUPP)
+{
+	DisposeDataBrowserTrackingUPP ((DataBrowserTrackingUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserTrackingUPP'
+void* ewg_get_function_address_DisposeDataBrowserTrackingUPP (void)
+{
+	return (void*) DisposeDataBrowserTrackingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemDragRgnUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemDragRgnUPP (DataBrowserItemDragRgnUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemDragRgnUPP ((DataBrowserItemDragRgnUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemDragRgnUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemDragRgnUPP (void)
+{
+	return (void*) DisposeDataBrowserItemDragRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemAcceptDragUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemAcceptDragUPP (DataBrowserItemAcceptDragUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemAcceptDragUPP ((DataBrowserItemAcceptDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemAcceptDragUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemAcceptDragUPP (void)
+{
+	return (void*) DisposeDataBrowserItemAcceptDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeDataBrowserItemReceiveDragUPP'
+// For ise
+void  ewg_function_DisposeDataBrowserItemReceiveDragUPP (DataBrowserItemReceiveDragUPP ewg_userUPP)
+{
+	DisposeDataBrowserItemReceiveDragUPP ((DataBrowserItemReceiveDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeDataBrowserItemReceiveDragUPP'
+void* ewg_get_function_address_DisposeDataBrowserItemReceiveDragUPP (void)
+{
+	return (void*) DisposeDataBrowserItemReceiveDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserDrawItemUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserDrawItemUPP (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, DataBrowserItemState ewg_itemState, Rect const *ewg_theRect, SInt16 ewg_gdDepth, Boolean ewg_colorDevice, DataBrowserDrawItemUPP ewg_userUPP)
+{
+	InvokeDataBrowserDrawItemUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (DataBrowserItemState)ewg_itemState, (Rect const*)ewg_theRect, (SInt16)ewg_gdDepth, (Boolean)ewg_colorDevice, (DataBrowserDrawItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserDrawItemUPP'
+void* ewg_get_function_address_InvokeDataBrowserDrawItemUPP (void)
+{
+	return (void*) InvokeDataBrowserDrawItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserEditItemUPP'
+// For ise
+Boolean  ewg_function_InvokeDataBrowserEditItemUPP (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, CFStringRef ewg_theString, Rect *ewg_maxEditTextRect, Boolean *ewg_shrinkToFit, DataBrowserEditItemUPP ewg_userUPP)
+{
+	return InvokeDataBrowserEditItemUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (CFStringRef)ewg_theString, (Rect*)ewg_maxEditTextRect, (Boolean*)ewg_shrinkToFit, (DataBrowserEditItemUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserEditItemUPP'
+void* ewg_get_function_address_InvokeDataBrowserEditItemUPP (void)
+{
+	return (void*) InvokeDataBrowserEditItemUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserHitTestUPP'
+// For ise
+Boolean  ewg_function_InvokeDataBrowserHitTestUPP (ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, Rect const *ewg_mouseRect, DataBrowserHitTestUPP ewg_userUPP)
+{
+	return InvokeDataBrowserHitTestUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, (Rect const*)ewg_mouseRect, (DataBrowserHitTestUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserHitTestUPP'
+void* ewg_get_function_address_InvokeDataBrowserHitTestUPP (void)
+{
+	return (void*) InvokeDataBrowserHitTestUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserTrackingUPP'
+// For ise
+DataBrowserTrackingResult  ewg_function_InvokeDataBrowserTrackingUPP (ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, Point *ewg_startPt, EventModifiers ewg_modifiers, DataBrowserTrackingUPP ewg_userUPP)
+{
+	return InvokeDataBrowserTrackingUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, *(Point*)ewg_startPt, (EventModifiers)ewg_modifiers, (DataBrowserTrackingUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserTrackingUPP'
+void* ewg_get_function_address_InvokeDataBrowserTrackingUPP (void)
+{
+	return (void*) InvokeDataBrowserTrackingUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemDragRgnUPP'
+// For ise
+void  ewg_function_InvokeDataBrowserItemDragRgnUPP (ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, RgnHandle ewg_dragRgn, DataBrowserItemDragRgnUPP ewg_userUPP)
+{
+	InvokeDataBrowserItemDragRgnUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, (RgnHandle)ewg_dragRgn, (DataBrowserItemDragRgnUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemDragRgnUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemDragRgnUPP (void)
+{
+	return (void*) InvokeDataBrowserItemDragRgnUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemAcceptDragUPP'
+// For ise
+DataBrowserDragFlags  ewg_function_InvokeDataBrowserItemAcceptDragUPP (ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, DragReference ewg_theDrag, DataBrowserItemAcceptDragUPP ewg_userUPP)
+{
+	return InvokeDataBrowserItemAcceptDragUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, (DragReference)ewg_theDrag, (DataBrowserItemAcceptDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemAcceptDragUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemAcceptDragUPP (void)
+{
+	return (void*) InvokeDataBrowserItemAcceptDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeDataBrowserItemReceiveDragUPP'
+// For ise
+Boolean  ewg_function_InvokeDataBrowserItemReceiveDragUPP (ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, DataBrowserDragFlags ewg_dragFlags, DragReference ewg_theDrag, DataBrowserItemReceiveDragUPP ewg_userUPP)
+{
+	return InvokeDataBrowserItemReceiveDragUPP ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (DataBrowserDragFlags)ewg_dragFlags, (DragReference)ewg_theDrag, (DataBrowserItemReceiveDragUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeDataBrowserItemReceiveDragUPP'
+void* ewg_get_function_address_InvokeDataBrowserItemReceiveDragUPP (void)
+{
+	return (void*) InvokeDataBrowserItemReceiveDragUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InitDataBrowserCustomCallbacks'
+// For ise
+OSStatus  ewg_function_InitDataBrowserCustomCallbacks (DataBrowserCustomCallbacks *ewg_callbacks)
+{
+	return InitDataBrowserCustomCallbacks ((DataBrowserCustomCallbacks*)ewg_callbacks);
+}
+
+// Return address of function 'InitDataBrowserCustomCallbacks'
+void* ewg_get_function_address_InitDataBrowserCustomCallbacks (void)
+{
+	return (void*) InitDataBrowserCustomCallbacks;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserCustomCallbacks'
+// For ise
+OSStatus  ewg_function_GetDataBrowserCustomCallbacks (ControlRef ewg_browser, DataBrowserCustomCallbacks *ewg_callbacks)
+{
+	return GetDataBrowserCustomCallbacks ((ControlRef)ewg_browser, (DataBrowserCustomCallbacks*)ewg_callbacks);
+}
+
+// Return address of function 'GetDataBrowserCustomCallbacks'
+void* ewg_get_function_address_GetDataBrowserCustomCallbacks (void)
+{
+	return (void*) GetDataBrowserCustomCallbacks;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserCustomCallbacks'
+// For ise
+OSStatus  ewg_function_SetDataBrowserCustomCallbacks (ControlRef ewg_browser, DataBrowserCustomCallbacks const *ewg_callbacks)
+{
+	return SetDataBrowserCustomCallbacks ((ControlRef)ewg_browser, (DataBrowserCustomCallbacks const*)ewg_callbacks);
+}
+
+// Return address of function 'SetDataBrowserCustomCallbacks'
+void* ewg_get_function_address_SetDataBrowserCustomCallbacks (void)
+{
+	return (void*) SetDataBrowserCustomCallbacks;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveDataBrowserTableViewColumn'
+// For ise
+OSStatus  ewg_function_RemoveDataBrowserTableViewColumn (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column)
+{
+	return RemoveDataBrowserTableViewColumn ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column);
+}
+
+// Return address of function 'RemoveDataBrowserTableViewColumn'
+void* ewg_get_function_address_RemoveDataBrowserTableViewColumn (void)
+{
+	return (void*) RemoveDataBrowserTableViewColumn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewColumnCount'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewColumnCount (ControlRef ewg_browser, UInt32 *ewg_numColumns)
+{
+	return GetDataBrowserTableViewColumnCount ((ControlRef)ewg_browser, (UInt32*)ewg_numColumns);
+}
+
+// Return address of function 'GetDataBrowserTableViewColumnCount'
+void* ewg_get_function_address_GetDataBrowserTableViewColumnCount (void)
+{
+	return (void*) GetDataBrowserTableViewColumnCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewHiliteStyle'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewHiliteStyle (ControlRef ewg_browser, DataBrowserTableViewHiliteStyle ewg_hiliteStyle)
+{
+	return SetDataBrowserTableViewHiliteStyle ((ControlRef)ewg_browser, (DataBrowserTableViewHiliteStyle)ewg_hiliteStyle);
+}
+
+// Return address of function 'SetDataBrowserTableViewHiliteStyle'
+void* ewg_get_function_address_SetDataBrowserTableViewHiliteStyle (void)
+{
+	return (void*) SetDataBrowserTableViewHiliteStyle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewHiliteStyle'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewHiliteStyle (ControlRef ewg_browser, DataBrowserTableViewHiliteStyle *ewg_hiliteStyle)
+{
+	return GetDataBrowserTableViewHiliteStyle ((ControlRef)ewg_browser, (DataBrowserTableViewHiliteStyle*)ewg_hiliteStyle);
+}
+
+// Return address of function 'GetDataBrowserTableViewHiliteStyle'
+void* ewg_get_function_address_GetDataBrowserTableViewHiliteStyle (void)
+{
+	return (void*) GetDataBrowserTableViewHiliteStyle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewRowHeight'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewRowHeight (ControlRef ewg_browser, UInt16 ewg_height)
+{
+	return SetDataBrowserTableViewRowHeight ((ControlRef)ewg_browser, (UInt16)ewg_height);
+}
+
+// Return address of function 'SetDataBrowserTableViewRowHeight'
+void* ewg_get_function_address_SetDataBrowserTableViewRowHeight (void)
+{
+	return (void*) SetDataBrowserTableViewRowHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewRowHeight'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewRowHeight (ControlRef ewg_browser, UInt16 *ewg_height)
+{
+	return GetDataBrowserTableViewRowHeight ((ControlRef)ewg_browser, (UInt16*)ewg_height);
+}
+
+// Return address of function 'GetDataBrowserTableViewRowHeight'
+void* ewg_get_function_address_GetDataBrowserTableViewRowHeight (void)
+{
+	return (void*) GetDataBrowserTableViewRowHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewColumnWidth'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewColumnWidth (ControlRef ewg_browser, UInt16 ewg_width)
+{
+	return SetDataBrowserTableViewColumnWidth ((ControlRef)ewg_browser, (UInt16)ewg_width);
+}
+
+// Return address of function 'SetDataBrowserTableViewColumnWidth'
+void* ewg_get_function_address_SetDataBrowserTableViewColumnWidth (void)
+{
+	return (void*) SetDataBrowserTableViewColumnWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewColumnWidth'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewColumnWidth (ControlRef ewg_browser, UInt16 *ewg_width)
+{
+	return GetDataBrowserTableViewColumnWidth ((ControlRef)ewg_browser, (UInt16*)ewg_width);
+}
+
+// Return address of function 'GetDataBrowserTableViewColumnWidth'
+void* ewg_get_function_address_GetDataBrowserTableViewColumnWidth (void)
+{
+	return (void*) GetDataBrowserTableViewColumnWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewItemRowHeight'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewItemRowHeight (ControlRef ewg_browser, DataBrowserItemID ewg_item, UInt16 ewg_height)
+{
+	return SetDataBrowserTableViewItemRowHeight ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (UInt16)ewg_height);
+}
+
+// Return address of function 'SetDataBrowserTableViewItemRowHeight'
+void* ewg_get_function_address_SetDataBrowserTableViewItemRowHeight (void)
+{
+	return (void*) SetDataBrowserTableViewItemRowHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewItemRowHeight'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewItemRowHeight (ControlRef ewg_browser, DataBrowserItemID ewg_item, UInt16 *ewg_height)
+{
+	return GetDataBrowserTableViewItemRowHeight ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (UInt16*)ewg_height);
+}
+
+// Return address of function 'GetDataBrowserTableViewItemRowHeight'
+void* ewg_get_function_address_GetDataBrowserTableViewItemRowHeight (void)
+{
+	return (void*) GetDataBrowserTableViewItemRowHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewNamedColumnWidth'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewNamedColumnWidth (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column, UInt16 ewg_width)
+{
+	return SetDataBrowserTableViewNamedColumnWidth ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column, (UInt16)ewg_width);
+}
+
+// Return address of function 'SetDataBrowserTableViewNamedColumnWidth'
+void* ewg_get_function_address_SetDataBrowserTableViewNamedColumnWidth (void)
+{
+	return (void*) SetDataBrowserTableViewNamedColumnWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewNamedColumnWidth'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewNamedColumnWidth (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column, UInt16 *ewg_width)
+{
+	return GetDataBrowserTableViewNamedColumnWidth ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column, (UInt16*)ewg_width);
+}
+
+// Return address of function 'GetDataBrowserTableViewNamedColumnWidth'
+void* ewg_get_function_address_GetDataBrowserTableViewNamedColumnWidth (void)
+{
+	return (void*) GetDataBrowserTableViewNamedColumnWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewGeometry'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewGeometry (ControlRef ewg_browser, Boolean ewg_variableWidthColumns, Boolean ewg_variableHeightRows)
+{
+	return SetDataBrowserTableViewGeometry ((ControlRef)ewg_browser, (Boolean)ewg_variableWidthColumns, (Boolean)ewg_variableHeightRows);
+}
+
+// Return address of function 'SetDataBrowserTableViewGeometry'
+void* ewg_get_function_address_SetDataBrowserTableViewGeometry (void)
+{
+	return (void*) SetDataBrowserTableViewGeometry;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewGeometry'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewGeometry (ControlRef ewg_browser, Boolean *ewg_variableWidthColumns, Boolean *ewg_variableHeightRows)
+{
+	return GetDataBrowserTableViewGeometry ((ControlRef)ewg_browser, (Boolean*)ewg_variableWidthColumns, (Boolean*)ewg_variableHeightRows);
+}
+
+// Return address of function 'GetDataBrowserTableViewGeometry'
+void* ewg_get_function_address_GetDataBrowserTableViewGeometry (void)
+{
+	return (void*) GetDataBrowserTableViewGeometry;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewItemID'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewItemID (ControlRef ewg_browser, DataBrowserTableViewRowIndex ewg_row, DataBrowserItemID *ewg_item)
+{
+	return GetDataBrowserTableViewItemID ((ControlRef)ewg_browser, (DataBrowserTableViewRowIndex)ewg_row, (DataBrowserItemID*)ewg_item);
+}
+
+// Return address of function 'GetDataBrowserTableViewItemID'
+void* ewg_get_function_address_GetDataBrowserTableViewItemID (void)
+{
+	return (void*) GetDataBrowserTableViewItemID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewItemRow'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewItemRow (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserTableViewRowIndex ewg_row)
+{
+	return SetDataBrowserTableViewItemRow ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserTableViewRowIndex)ewg_row);
+}
+
+// Return address of function 'SetDataBrowserTableViewItemRow'
+void* ewg_get_function_address_SetDataBrowserTableViewItemRow (void)
+{
+	return (void*) SetDataBrowserTableViewItemRow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewItemRow'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewItemRow (ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserTableViewRowIndex *ewg_row)
+{
+	return GetDataBrowserTableViewItemRow ((ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserTableViewRowIndex*)ewg_row);
+}
+
+// Return address of function 'GetDataBrowserTableViewItemRow'
+void* ewg_get_function_address_GetDataBrowserTableViewItemRow (void)
+{
+	return (void*) GetDataBrowserTableViewItemRow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserTableViewColumnPosition'
+// For ise
+OSStatus  ewg_function_SetDataBrowserTableViewColumnPosition (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column, DataBrowserTableViewColumnIndex ewg_position)
+{
+	return SetDataBrowserTableViewColumnPosition ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column, (DataBrowserTableViewColumnIndex)ewg_position);
+}
+
+// Return address of function 'SetDataBrowserTableViewColumnPosition'
+void* ewg_get_function_address_SetDataBrowserTableViewColumnPosition (void)
+{
+	return (void*) SetDataBrowserTableViewColumnPosition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewColumnPosition'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewColumnPosition (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column, DataBrowserTableViewColumnIndex *ewg_position)
+{
+	return GetDataBrowserTableViewColumnPosition ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column, (DataBrowserTableViewColumnIndex*)ewg_position);
+}
+
+// Return address of function 'GetDataBrowserTableViewColumnPosition'
+void* ewg_get_function_address_GetDataBrowserTableViewColumnPosition (void)
+{
+	return (void*) GetDataBrowserTableViewColumnPosition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserTableViewColumnProperty'
+// For ise
+OSStatus  ewg_function_GetDataBrowserTableViewColumnProperty (ControlRef ewg_browser, DataBrowserTableViewColumnIndex ewg_column, DataBrowserTableViewColumnID *ewg_property)
+{
+	return GetDataBrowserTableViewColumnProperty ((ControlRef)ewg_browser, (DataBrowserTableViewColumnIndex)ewg_column, (DataBrowserTableViewColumnID*)ewg_property);
+}
+
+// Return address of function 'GetDataBrowserTableViewColumnProperty'
+void* ewg_get_function_address_GetDataBrowserTableViewColumnProperty (void)
+{
+	return (void*) GetDataBrowserTableViewColumnProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AutoSizeDataBrowserListViewColumns'
+// For ise
+OSStatus  ewg_function_AutoSizeDataBrowserListViewColumns (ControlRef ewg_browser)
+{
+	return AutoSizeDataBrowserListViewColumns ((ControlRef)ewg_browser);
+}
+
+// Return address of function 'AutoSizeDataBrowserListViewColumns'
+void* ewg_get_function_address_AutoSizeDataBrowserListViewColumns (void)
+{
+	return (void*) AutoSizeDataBrowserListViewColumns;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AddDataBrowserListViewColumn'
+// For ise
+OSStatus  ewg_function_AddDataBrowserListViewColumn (ControlRef ewg_browser, DataBrowserListViewColumnDesc *ewg_columnDesc, DataBrowserTableViewColumnIndex ewg_position)
+{
+	return AddDataBrowserListViewColumn ((ControlRef)ewg_browser, (DataBrowserListViewColumnDesc*)ewg_columnDesc, (DataBrowserTableViewColumnIndex)ewg_position);
+}
+
+// Return address of function 'AddDataBrowserListViewColumn'
+void* ewg_get_function_address_AddDataBrowserListViewColumn (void)
+{
+	return (void*) AddDataBrowserListViewColumn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserListViewHeaderDesc'
+// For ise
+OSStatus  ewg_function_GetDataBrowserListViewHeaderDesc (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column, DataBrowserListViewHeaderDesc *ewg_desc)
+{
+	return GetDataBrowserListViewHeaderDesc ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column, (DataBrowserListViewHeaderDesc*)ewg_desc);
+}
+
+// Return address of function 'GetDataBrowserListViewHeaderDesc'
+void* ewg_get_function_address_GetDataBrowserListViewHeaderDesc (void)
+{
+	return (void*) GetDataBrowserListViewHeaderDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserListViewHeaderDesc'
+// For ise
+OSStatus  ewg_function_SetDataBrowserListViewHeaderDesc (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column, DataBrowserListViewHeaderDesc *ewg_desc)
+{
+	return SetDataBrowserListViewHeaderDesc ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column, (DataBrowserListViewHeaderDesc*)ewg_desc);
+}
+
+// Return address of function 'SetDataBrowserListViewHeaderDesc'
+void* ewg_get_function_address_SetDataBrowserListViewHeaderDesc (void)
+{
+	return (void*) SetDataBrowserListViewHeaderDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserListViewHeaderBtnHeight'
+// For ise
+OSStatus  ewg_function_SetDataBrowserListViewHeaderBtnHeight (ControlRef ewg_browser, UInt16 ewg_height)
+{
+	return SetDataBrowserListViewHeaderBtnHeight ((ControlRef)ewg_browser, (UInt16)ewg_height);
+}
+
+// Return address of function 'SetDataBrowserListViewHeaderBtnHeight'
+void* ewg_get_function_address_SetDataBrowserListViewHeaderBtnHeight (void)
+{
+	return (void*) SetDataBrowserListViewHeaderBtnHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserListViewHeaderBtnHeight'
+// For ise
+OSStatus  ewg_function_GetDataBrowserListViewHeaderBtnHeight (ControlRef ewg_browser, UInt16 *ewg_height)
+{
+	return GetDataBrowserListViewHeaderBtnHeight ((ControlRef)ewg_browser, (UInt16*)ewg_height);
+}
+
+// Return address of function 'GetDataBrowserListViewHeaderBtnHeight'
+void* ewg_get_function_address_GetDataBrowserListViewHeaderBtnHeight (void)
+{
+	return (void*) GetDataBrowserListViewHeaderBtnHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserListViewUsePlainBackground'
+// For ise
+OSStatus  ewg_function_SetDataBrowserListViewUsePlainBackground (ControlRef ewg_browser, Boolean ewg_usePlainBackground)
+{
+	return SetDataBrowserListViewUsePlainBackground ((ControlRef)ewg_browser, (Boolean)ewg_usePlainBackground);
+}
+
+// Return address of function 'SetDataBrowserListViewUsePlainBackground'
+void* ewg_get_function_address_SetDataBrowserListViewUsePlainBackground (void)
+{
+	return (void*) SetDataBrowserListViewUsePlainBackground;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserListViewUsePlainBackground'
+// For ise
+OSStatus  ewg_function_GetDataBrowserListViewUsePlainBackground (ControlRef ewg_browser, Boolean *ewg_usePlainBackground)
+{
+	return GetDataBrowserListViewUsePlainBackground ((ControlRef)ewg_browser, (Boolean*)ewg_usePlainBackground);
+}
+
+// Return address of function 'GetDataBrowserListViewUsePlainBackground'
+void* ewg_get_function_address_GetDataBrowserListViewUsePlainBackground (void)
+{
+	return (void*) GetDataBrowserListViewUsePlainBackground;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserListViewDisclosureColumn'
+// For ise
+OSStatus  ewg_function_SetDataBrowserListViewDisclosureColumn (ControlRef ewg_browser, DataBrowserTableViewColumnID ewg_column, Boolean ewg_expandableRows)
+{
+	return SetDataBrowserListViewDisclosureColumn ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID)ewg_column, (Boolean)ewg_expandableRows);
+}
+
+// Return address of function 'SetDataBrowserListViewDisclosureColumn'
+void* ewg_get_function_address_SetDataBrowserListViewDisclosureColumn (void)
+{
+	return (void*) SetDataBrowserListViewDisclosureColumn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserListViewDisclosureColumn'
+// For ise
+OSStatus  ewg_function_GetDataBrowserListViewDisclosureColumn (ControlRef ewg_browser, DataBrowserTableViewColumnID *ewg_column, Boolean *ewg_expandableRows)
+{
+	return GetDataBrowserListViewDisclosureColumn ((ControlRef)ewg_browser, (DataBrowserTableViewColumnID*)ewg_column, (Boolean*)ewg_expandableRows);
+}
+
+// Return address of function 'GetDataBrowserListViewDisclosureColumn'
+void* ewg_get_function_address_GetDataBrowserListViewDisclosureColumn (void)
+{
+	return (void*) GetDataBrowserListViewDisclosureColumn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserColumnViewPath'
+// For ise
+OSStatus  ewg_function_GetDataBrowserColumnViewPath (ControlRef ewg_browser, Handle ewg_path)
+{
+	return GetDataBrowserColumnViewPath ((ControlRef)ewg_browser, (Handle)ewg_path);
+}
+
+// Return address of function 'GetDataBrowserColumnViewPath'
+void* ewg_get_function_address_GetDataBrowserColumnViewPath (void)
+{
+	return (void*) GetDataBrowserColumnViewPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserColumnViewPathLength'
+// For ise
+OSStatus  ewg_function_GetDataBrowserColumnViewPathLength (ControlRef ewg_browser, UInt32 *ewg_pathLength)
+{
+	return GetDataBrowserColumnViewPathLength ((ControlRef)ewg_browser, (UInt32*)ewg_pathLength);
+}
+
+// Return address of function 'GetDataBrowserColumnViewPathLength'
+void* ewg_get_function_address_GetDataBrowserColumnViewPathLength (void)
+{
+	return (void*) GetDataBrowserColumnViewPathLength;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserColumnViewPath'
+// For ise
+OSStatus  ewg_function_SetDataBrowserColumnViewPath (ControlRef ewg_browser, UInt32 ewg_length, DataBrowserItemID const *ewg_path)
+{
+	return SetDataBrowserColumnViewPath ((ControlRef)ewg_browser, (UInt32)ewg_length, (DataBrowserItemID const*)ewg_path);
+}
+
+// Return address of function 'SetDataBrowserColumnViewPath'
+void* ewg_get_function_address_SetDataBrowserColumnViewPath (void)
+{
+	return (void*) SetDataBrowserColumnViewPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetDataBrowserColumnViewDisplayType'
+// For ise
+OSStatus  ewg_function_SetDataBrowserColumnViewDisplayType (ControlRef ewg_browser, DataBrowserPropertyType ewg_propertyType)
+{
+	return SetDataBrowserColumnViewDisplayType ((ControlRef)ewg_browser, (DataBrowserPropertyType)ewg_propertyType);
+}
+
+// Return address of function 'SetDataBrowserColumnViewDisplayType'
+void* ewg_get_function_address_SetDataBrowserColumnViewDisplayType (void)
+{
+	return (void*) SetDataBrowserColumnViewDisplayType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetDataBrowserColumnViewDisplayType'
+// For ise
+OSStatus  ewg_function_GetDataBrowserColumnViewDisplayType (ControlRef ewg_browser, DataBrowserPropertyType *ewg_propertyType)
+{
+	return GetDataBrowserColumnViewDisplayType ((ControlRef)ewg_browser, (DataBrowserPropertyType*)ewg_propertyType);
+}
+
+// Return address of function 'GetDataBrowserColumnViewDisplayType'
+void* ewg_get_function_address_GetDataBrowserColumnViewDisplayType (void)
+{
+	return (void*) GetDataBrowserColumnViewDisplayType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AXUIElementGetDataBrowserItemInfo'
+// For ise
+OSStatus  ewg_function_AXUIElementGetDataBrowserItemInfo (AXUIElementRef ewg_inElement, ControlRef ewg_inDataBrowser, UInt32 ewg_inDesiredInfoVersion, DataBrowserAccessibilityItemInfo *ewg_outInfo)
+{
+	return AXUIElementGetDataBrowserItemInfo ((AXUIElementRef)ewg_inElement, (ControlRef)ewg_inDataBrowser, (UInt32)ewg_inDesiredInfoVersion, (DataBrowserAccessibilityItemInfo*)ewg_outInfo);
+}
+
+// Return address of function 'AXUIElementGetDataBrowserItemInfo'
+void* ewg_get_function_address_AXUIElementGetDataBrowserItemInfo (void)
+{
+	return (void*) AXUIElementGetDataBrowserItemInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AXUIElementCreateWithDataBrowserAndItemInfo'
+// For ise
+AXUIElementRef  ewg_function_AXUIElementCreateWithDataBrowserAndItemInfo (ControlRef ewg_inDataBrowser, DataBrowserAccessibilityItemInfo const *ewg_inInfo)
+{
+	return AXUIElementCreateWithDataBrowserAndItemInfo ((ControlRef)ewg_inDataBrowser, (DataBrowserAccessibilityItemInfo const*)ewg_inInfo);
+}
+
+// Return address of function 'AXUIElementCreateWithDataBrowserAndItemInfo'
+void* ewg_get_function_address_AXUIElementCreateWithDataBrowserAndItemInfo (void)
+{
+	return (void*) AXUIElementCreateWithDataBrowserAndItemInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewEditUnicodePostUpdateUPP'
+// For ise
+EditUnicodePostUpdateUPP  ewg_function_NewEditUnicodePostUpdateUPP (EditUnicodePostUpdateProcPtr ewg_userRoutine)
+{
+	return NewEditUnicodePostUpdateUPP ((EditUnicodePostUpdateProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewEditUnicodePostUpdateUPP'
+void* ewg_get_function_address_NewEditUnicodePostUpdateUPP (void)
+{
+	return (void*) NewEditUnicodePostUpdateUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeEditUnicodePostUpdateUPP'
+// For ise
+void  ewg_function_DisposeEditUnicodePostUpdateUPP (EditUnicodePostUpdateUPP ewg_userUPP)
+{
+	DisposeEditUnicodePostUpdateUPP ((EditUnicodePostUpdateUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeEditUnicodePostUpdateUPP'
+void* ewg_get_function_address_DisposeEditUnicodePostUpdateUPP (void)
+{
+	return (void*) DisposeEditUnicodePostUpdateUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeEditUnicodePostUpdateUPP'
+// For ise
+Boolean  ewg_function_InvokeEditUnicodePostUpdateUPP (UniCharArrayHandle ewg_uniText, UniCharCount ewg_uniTextLength, UniCharArrayOffset ewg_iStartOffset, UniCharArrayOffset ewg_iEndOffset, void *ewg_refcon, EditUnicodePostUpdateUPP ewg_userUPP)
+{
+	return InvokeEditUnicodePostUpdateUPP ((UniCharArrayHandle)ewg_uniText, (UniCharCount)ewg_uniTextLength, (UniCharArrayOffset)ewg_iStartOffset, (UniCharArrayOffset)ewg_iEndOffset, (void*)ewg_refcon, (EditUnicodePostUpdateUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeEditUnicodePostUpdateUPP'
+void* ewg_get_function_address_InvokeEditUnicodePostUpdateUPP (void)
+{
+	return (void*) InvokeEditUnicodePostUpdateUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateEditUnicodeTextControl'
+// For ise
+OSStatus  ewg_function_CreateEditUnicodeTextControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_text, Boolean ewg_isPassword, ControlFontStyleRec const *ewg_style, ControlRef *ewg_outControl)
+{
+	return CreateEditUnicodeTextControl ((WindowRef)ewg_window, (Rect const*)ewg_boundsRect, (CFStringRef)ewg_text, (Boolean)ewg_isPassword, (ControlFontStyleRec const*)ewg_style, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateEditUnicodeTextControl'
+void* ewg_get_function_address_CreateEditUnicodeTextControl (void)
+{
+	return (void*) CreateEditUnicodeTextControl;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_aeremote_process_resolver_callback_stub'
+// For ise
+void * ewg_function_get_aeremote_process_resolver_callback_stub (void)
+{
+	return get_aeremote_process_resolver_callback_stub ();
+}
+
+// Return address of function 'get_aeremote_process_resolver_callback_stub'
+void* ewg_get_function_address_get_aeremote_process_resolver_callback_stub (void)
+{
+	return (void*) get_aeremote_process_resolver_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_aeremote_process_resolver_callback_entry'
+// For ise
+void  ewg_function_set_aeremote_process_resolver_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_aeremote_process_resolver_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_aeremote_process_resolver_callback_entry'
+void* ewg_get_function_address_set_aeremote_process_resolver_callback_entry (void)
+{
+	return (void*) set_aeremote_process_resolver_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_aeremote_process_resolver_callback'
+// For ise
+void  ewg_function_call_aeremote_process_resolver_callback (void *ewg_a_function, AERemoteProcessResolverRef ewg_ref, void *ewg_info)
+{
+	call_aeremote_process_resolver_callback ((void*)ewg_a_function, (AERemoteProcessResolverRef)ewg_ref, (void*)ewg_info);
+}
+
+// Return address of function 'call_aeremote_process_resolver_callback'
+void* ewg_get_function_address_call_aeremote_process_resolver_callback (void)
+{
+	return (void*) call_aeremote_process_resolver_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdtext_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdtext_proc_ptr_stub (void)
+{
+	return get_qdtext_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdtext_proc_ptr_stub'
+void* ewg_get_function_address_get_qdtext_proc_ptr_stub (void)
+{
+	return (void*) get_qdtext_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdtext_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdtext_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdtext_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdtext_proc_ptr_entry'
+void* ewg_get_function_address_set_qdtext_proc_ptr_entry (void)
+{
+	return (void*) set_qdtext_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdtext_proc_ptr'
+// For ise
+void  ewg_function_call_qdtext_proc_ptr (void *ewg_a_function, short ewg_byteCount, void const *ewg_textBuf, Point *ewg_numer, Point *ewg_denom)
+{
+	call_qdtext_proc_ptr ((void*)ewg_a_function, (short)ewg_byteCount, (void const*)ewg_textBuf, *(Point*)ewg_numer, *(Point*)ewg_denom);
+}
+
+// Return address of function 'call_qdtext_proc_ptr'
+void* ewg_get_function_address_call_qdtext_proc_ptr (void)
+{
+	return (void*) call_qdtext_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdline_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdline_proc_ptr_stub (void)
+{
+	return get_qdline_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdline_proc_ptr_stub'
+void* ewg_get_function_address_get_qdline_proc_ptr_stub (void)
+{
+	return (void*) get_qdline_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdline_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdline_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdline_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdline_proc_ptr_entry'
+void* ewg_get_function_address_set_qdline_proc_ptr_entry (void)
+{
+	return (void*) set_qdline_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdline_proc_ptr'
+// For ise
+void  ewg_function_call_qdline_proc_ptr (void *ewg_a_function, Point *ewg_newPt)
+{
+	call_qdline_proc_ptr ((void*)ewg_a_function, *(Point*)ewg_newPt);
+}
+
+// Return address of function 'call_qdline_proc_ptr'
+void* ewg_get_function_address_call_qdline_proc_ptr (void)
+{
+	return (void*) call_qdline_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdrect_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdrect_proc_ptr_stub (void)
+{
+	return get_qdrect_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdrect_proc_ptr_stub'
+void* ewg_get_function_address_get_qdrect_proc_ptr_stub (void)
+{
+	return (void*) get_qdrect_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdrect_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdrect_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdrect_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdrect_proc_ptr_entry'
+void* ewg_get_function_address_set_qdrect_proc_ptr_entry (void)
+{
+	return (void*) set_qdrect_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdrect_proc_ptr'
+// For ise
+void  ewg_function_call_qdrect_proc_ptr (void *ewg_a_function, GrafVerb ewg_verb, Rect const *ewg_r)
+{
+	call_qdrect_proc_ptr ((void*)ewg_a_function, (GrafVerb)ewg_verb, (Rect const*)ewg_r);
+}
+
+// Return address of function 'call_qdrect_proc_ptr'
+void* ewg_get_function_address_call_qdrect_proc_ptr (void)
+{
+	return (void*) call_qdrect_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdrrect_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdrrect_proc_ptr_stub (void)
+{
+	return get_qdrrect_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdrrect_proc_ptr_stub'
+void* ewg_get_function_address_get_qdrrect_proc_ptr_stub (void)
+{
+	return (void*) get_qdrrect_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdrrect_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdrrect_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdrrect_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdrrect_proc_ptr_entry'
+void* ewg_get_function_address_set_qdrrect_proc_ptr_entry (void)
+{
+	return (void*) set_qdrrect_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdrrect_proc_ptr'
+// For ise
+void  ewg_function_call_qdrrect_proc_ptr (void *ewg_a_function, GrafVerb ewg_verb, Rect const *ewg_r, short ewg_ovalWidth, short ewg_ovalHeight)
+{
+	call_qdrrect_proc_ptr ((void*)ewg_a_function, (GrafVerb)ewg_verb, (Rect const*)ewg_r, (short)ewg_ovalWidth, (short)ewg_ovalHeight);
+}
+
+// Return address of function 'call_qdrrect_proc_ptr'
+void* ewg_get_function_address_call_qdrrect_proc_ptr (void)
+{
+	return (void*) call_qdrrect_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdarc_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdarc_proc_ptr_stub (void)
+{
+	return get_qdarc_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdarc_proc_ptr_stub'
+void* ewg_get_function_address_get_qdarc_proc_ptr_stub (void)
+{
+	return (void*) get_qdarc_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdarc_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdarc_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdarc_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdarc_proc_ptr_entry'
+void* ewg_get_function_address_set_qdarc_proc_ptr_entry (void)
+{
+	return (void*) set_qdarc_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdarc_proc_ptr'
+// For ise
+void  ewg_function_call_qdarc_proc_ptr (void *ewg_a_function, GrafVerb ewg_verb, Rect const *ewg_r, short ewg_startAngle, short ewg_arcAngle)
+{
+	call_qdarc_proc_ptr ((void*)ewg_a_function, (GrafVerb)ewg_verb, (Rect const*)ewg_r, (short)ewg_startAngle, (short)ewg_arcAngle);
+}
+
+// Return address of function 'call_qdarc_proc_ptr'
+void* ewg_get_function_address_call_qdarc_proc_ptr (void)
+{
+	return (void*) call_qdarc_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdpoly_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdpoly_proc_ptr_stub (void)
+{
+	return get_qdpoly_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdpoly_proc_ptr_stub'
+void* ewg_get_function_address_get_qdpoly_proc_ptr_stub (void)
+{
+	return (void*) get_qdpoly_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdpoly_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdpoly_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdpoly_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdpoly_proc_ptr_entry'
+void* ewg_get_function_address_set_qdpoly_proc_ptr_entry (void)
+{
+	return (void*) set_qdpoly_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdpoly_proc_ptr'
+// For ise
+void  ewg_function_call_qdpoly_proc_ptr (void *ewg_a_function, GrafVerb ewg_verb, PolyHandle ewg_poly)
+{
+	call_qdpoly_proc_ptr ((void*)ewg_a_function, (GrafVerb)ewg_verb, (PolyHandle)ewg_poly);
+}
+
+// Return address of function 'call_qdpoly_proc_ptr'
+void* ewg_get_function_address_call_qdpoly_proc_ptr (void)
+{
+	return (void*) call_qdpoly_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdrgn_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdrgn_proc_ptr_stub (void)
+{
+	return get_qdrgn_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdrgn_proc_ptr_stub'
+void* ewg_get_function_address_get_qdrgn_proc_ptr_stub (void)
+{
+	return (void*) get_qdrgn_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdrgn_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdrgn_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdrgn_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdrgn_proc_ptr_entry'
+void* ewg_get_function_address_set_qdrgn_proc_ptr_entry (void)
+{
+	return (void*) set_qdrgn_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdrgn_proc_ptr'
+// For ise
+void  ewg_function_call_qdrgn_proc_ptr (void *ewg_a_function, GrafVerb ewg_verb, RgnHandle ewg_rgn)
+{
+	call_qdrgn_proc_ptr ((void*)ewg_a_function, (GrafVerb)ewg_verb, (RgnHandle)ewg_rgn);
+}
+
+// Return address of function 'call_qdrgn_proc_ptr'
+void* ewg_get_function_address_call_qdrgn_proc_ptr (void)
+{
+	return (void*) call_qdrgn_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdbits_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdbits_proc_ptr_stub (void)
+{
+	return get_qdbits_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdbits_proc_ptr_stub'
+void* ewg_get_function_address_get_qdbits_proc_ptr_stub (void)
+{
+	return (void*) get_qdbits_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdbits_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdbits_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdbits_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdbits_proc_ptr_entry'
+void* ewg_get_function_address_set_qdbits_proc_ptr_entry (void)
+{
+	return (void*) set_qdbits_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdbits_proc_ptr'
+// For ise
+void  ewg_function_call_qdbits_proc_ptr (void *ewg_a_function, BitMap const *ewg_srcBits, Rect const *ewg_srcRect, Rect const *ewg_dstRect, short ewg_mode, RgnHandle ewg_maskRgn)
+{
+	call_qdbits_proc_ptr ((void*)ewg_a_function, (BitMap const*)ewg_srcBits, (Rect const*)ewg_srcRect, (Rect const*)ewg_dstRect, (short)ewg_mode, (RgnHandle)ewg_maskRgn);
+}
+
+// Return address of function 'call_qdbits_proc_ptr'
+void* ewg_get_function_address_call_qdbits_proc_ptr (void)
+{
+	return (void*) call_qdbits_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdcomment_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdcomment_proc_ptr_stub (void)
+{
+	return get_qdcomment_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdcomment_proc_ptr_stub'
+void* ewg_get_function_address_get_qdcomment_proc_ptr_stub (void)
+{
+	return (void*) get_qdcomment_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdcomment_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdcomment_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdcomment_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdcomment_proc_ptr_entry'
+void* ewg_get_function_address_set_qdcomment_proc_ptr_entry (void)
+{
+	return (void*) set_qdcomment_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdcomment_proc_ptr'
+// For ise
+void  ewg_function_call_qdcomment_proc_ptr (void *ewg_a_function, short ewg_kind, short ewg_dataSize, Handle ewg_dataHandle)
+{
+	call_qdcomment_proc_ptr ((void*)ewg_a_function, (short)ewg_kind, (short)ewg_dataSize, (Handle)ewg_dataHandle);
+}
+
+// Return address of function 'call_qdcomment_proc_ptr'
+void* ewg_get_function_address_call_qdcomment_proc_ptr (void)
+{
+	return (void*) call_qdcomment_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdtx_meas_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdtx_meas_proc_ptr_stub (void)
+{
+	return get_qdtx_meas_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdtx_meas_proc_ptr_stub'
+void* ewg_get_function_address_get_qdtx_meas_proc_ptr_stub (void)
+{
+	return (void*) get_qdtx_meas_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdtx_meas_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdtx_meas_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdtx_meas_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdtx_meas_proc_ptr_entry'
+void* ewg_get_function_address_set_qdtx_meas_proc_ptr_entry (void)
+{
+	return (void*) set_qdtx_meas_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdtx_meas_proc_ptr'
+// For ise
+short  ewg_function_call_qdtx_meas_proc_ptr (void *ewg_a_function, short ewg_byteCount, void const *ewg_textAddr, Point *ewg_numer, Point *ewg_denom, FontInfo *ewg_info)
+{
+	return call_qdtx_meas_proc_ptr ((void*)ewg_a_function, (short)ewg_byteCount, (void const*)ewg_textAddr, (Point*)ewg_numer, (Point*)ewg_denom, (FontInfo*)ewg_info);
+}
+
+// Return address of function 'call_qdtx_meas_proc_ptr'
+void* ewg_get_function_address_call_qdtx_meas_proc_ptr (void)
+{
+	return (void*) call_qdtx_meas_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdget_pic_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdget_pic_proc_ptr_stub (void)
+{
+	return get_qdget_pic_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdget_pic_proc_ptr_stub'
+void* ewg_get_function_address_get_qdget_pic_proc_ptr_stub (void)
+{
+	return (void*) get_qdget_pic_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdget_pic_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdget_pic_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdget_pic_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdget_pic_proc_ptr_entry'
+void* ewg_get_function_address_set_qdget_pic_proc_ptr_entry (void)
+{
+	return (void*) set_qdget_pic_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdget_pic_proc_ptr'
+// For ise
+void  ewg_function_call_qdget_pic_proc_ptr (void *ewg_a_function, void *ewg_dataPtr, short ewg_byteCount)
+{
+	call_qdget_pic_proc_ptr ((void*)ewg_a_function, (void*)ewg_dataPtr, (short)ewg_byteCount);
+}
+
+// Return address of function 'call_qdget_pic_proc_ptr'
+void* ewg_get_function_address_call_qdget_pic_proc_ptr (void)
+{
+	return (void*) call_qdget_pic_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdput_pic_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdput_pic_proc_ptr_stub (void)
+{
+	return get_qdput_pic_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdput_pic_proc_ptr_stub'
+void* ewg_get_function_address_get_qdput_pic_proc_ptr_stub (void)
+{
+	return (void*) get_qdput_pic_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdput_pic_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdput_pic_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdput_pic_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdput_pic_proc_ptr_entry'
+void* ewg_get_function_address_set_qdput_pic_proc_ptr_entry (void)
+{
+	return (void*) set_qdput_pic_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdput_pic_proc_ptr'
+// For ise
+void  ewg_function_call_qdput_pic_proc_ptr (void *ewg_a_function, void const *ewg_dataPtr, short ewg_byteCount)
+{
+	call_qdput_pic_proc_ptr ((void*)ewg_a_function, (void const*)ewg_dataPtr, (short)ewg_byteCount);
+}
+
+// Return address of function 'call_qdput_pic_proc_ptr'
+void* ewg_get_function_address_call_qdput_pic_proc_ptr (void)
+{
+	return (void*) call_qdput_pic_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdopcode_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdopcode_proc_ptr_stub (void)
+{
+	return get_qdopcode_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdopcode_proc_ptr_stub'
+void* ewg_get_function_address_get_qdopcode_proc_ptr_stub (void)
+{
+	return (void*) get_qdopcode_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdopcode_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdopcode_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdopcode_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdopcode_proc_ptr_entry'
+void* ewg_get_function_address_set_qdopcode_proc_ptr_entry (void)
+{
+	return (void*) set_qdopcode_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdopcode_proc_ptr'
+// For ise
+void  ewg_function_call_qdopcode_proc_ptr (void *ewg_a_function, Rect const *ewg_fromRect, Rect const *ewg_toRect, UInt16 ewg_opcode, SInt16 ewg_version)
+{
+	call_qdopcode_proc_ptr ((void*)ewg_a_function, (Rect const*)ewg_fromRect, (Rect const*)ewg_toRect, (UInt16)ewg_opcode, (SInt16)ewg_version);
+}
+
+// Return address of function 'call_qdopcode_proc_ptr'
+void* ewg_get_function_address_call_qdopcode_proc_ptr (void)
+{
+	return (void*) call_qdopcode_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdstd_glyphs_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdstd_glyphs_proc_ptr_stub (void)
+{
+	return get_qdstd_glyphs_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdstd_glyphs_proc_ptr_stub'
+void* ewg_get_function_address_get_qdstd_glyphs_proc_ptr_stub (void)
+{
+	return (void*) get_qdstd_glyphs_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdstd_glyphs_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdstd_glyphs_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdstd_glyphs_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdstd_glyphs_proc_ptr_entry'
+void* ewg_get_function_address_set_qdstd_glyphs_proc_ptr_entry (void)
+{
+	return (void*) set_qdstd_glyphs_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdstd_glyphs_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_qdstd_glyphs_proc_ptr (void *ewg_a_function, void *ewg_dataStream, ByteCount ewg_size)
+{
+	return call_qdstd_glyphs_proc_ptr ((void*)ewg_a_function, (void*)ewg_dataStream, (ByteCount)ewg_size);
+}
+
+// Return address of function 'call_qdstd_glyphs_proc_ptr'
+void* ewg_get_function_address_call_qdstd_glyphs_proc_ptr (void)
+{
+	return (void*) call_qdstd_glyphs_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdjshield_cursor_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdjshield_cursor_proc_ptr_stub (void)
+{
+	return get_qdjshield_cursor_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdjshield_cursor_proc_ptr_stub'
+void* ewg_get_function_address_get_qdjshield_cursor_proc_ptr_stub (void)
+{
+	return (void*) get_qdjshield_cursor_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdjshield_cursor_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdjshield_cursor_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdjshield_cursor_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdjshield_cursor_proc_ptr_entry'
+void* ewg_get_function_address_set_qdjshield_cursor_proc_ptr_entry (void)
+{
+	return (void*) set_qdjshield_cursor_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdjshield_cursor_proc_ptr'
+// For ise
+void  ewg_function_call_qdjshield_cursor_proc_ptr (void *ewg_a_function, short ewg_left, short ewg_top, short ewg_right, short ewg_bottom)
+{
+	call_qdjshield_cursor_proc_ptr ((void*)ewg_a_function, (short)ewg_left, (short)ewg_top, (short)ewg_right, (short)ewg_bottom);
+}
+
+// Return address of function 'call_qdjshield_cursor_proc_ptr'
+void* ewg_get_function_address_call_qdjshield_cursor_proc_ptr (void)
+{
+	return (void*) call_qdjshield_cursor_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfrag_term_procedure_stub'
+// For ise
+void * ewg_function_get_cfrag_term_procedure_stub (void)
+{
+	return get_cfrag_term_procedure_stub ();
+}
+
+// Return address of function 'get_cfrag_term_procedure_stub'
+void* ewg_get_function_address_get_cfrag_term_procedure_stub (void)
+{
+	return (void*) get_cfrag_term_procedure_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfrag_term_procedure_entry'
+// For ise
+void  ewg_function_set_cfrag_term_procedure_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfrag_term_procedure_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfrag_term_procedure_entry'
+void* ewg_get_function_address_set_cfrag_term_procedure_entry (void)
+{
+	return (void*) set_cfrag_term_procedure_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfrag_term_procedure'
+// For ise
+void  ewg_function_call_cfrag_term_procedure (void *ewg_a_function)
+{
+	call_cfrag_term_procedure ((void*)ewg_a_function);
+}
+
+// Return address of function 'call_cfrag_term_procedure'
+void* ewg_get_function_address_call_cfrag_term_procedure (void)
+{
+	return (void*) call_cfrag_term_procedure;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_color_search_proc_ptr_stub'
+// For ise
+void * ewg_function_get_color_search_proc_ptr_stub (void)
+{
+	return get_color_search_proc_ptr_stub ();
+}
+
+// Return address of function 'get_color_search_proc_ptr_stub'
+void* ewg_get_function_address_get_color_search_proc_ptr_stub (void)
+{
+	return (void*) get_color_search_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_color_search_proc_ptr_entry'
+// For ise
+void  ewg_function_set_color_search_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_color_search_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_color_search_proc_ptr_entry'
+void* ewg_get_function_address_set_color_search_proc_ptr_entry (void)
+{
+	return (void*) set_color_search_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_color_search_proc_ptr'
+// For ise
+Boolean  ewg_function_call_color_search_proc_ptr (void *ewg_a_function, RGBColor *ewg_rgb, long *ewg_position)
+{
+	return call_color_search_proc_ptr ((void*)ewg_a_function, (RGBColor*)ewg_rgb, (long*)ewg_position);
+}
+
+// Return address of function 'call_color_search_proc_ptr'
+void* ewg_get_function_address_call_color_search_proc_ptr (void)
+{
+	return (void*) call_color_search_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_color_complement_proc_ptr_stub'
+// For ise
+void * ewg_function_get_color_complement_proc_ptr_stub (void)
+{
+	return get_color_complement_proc_ptr_stub ();
+}
+
+// Return address of function 'get_color_complement_proc_ptr_stub'
+void* ewg_get_function_address_get_color_complement_proc_ptr_stub (void)
+{
+	return (void*) get_color_complement_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_color_complement_proc_ptr_entry'
+// For ise
+void  ewg_function_set_color_complement_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_color_complement_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_color_complement_proc_ptr_entry'
+void* ewg_get_function_address_set_color_complement_proc_ptr_entry (void)
+{
+	return (void*) set_color_complement_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_color_complement_proc_ptr'
+// For ise
+Boolean  ewg_function_call_color_complement_proc_ptr (void *ewg_a_function, RGBColor *ewg_rgb)
+{
+	return call_color_complement_proc_ptr ((void*)ewg_a_function, (RGBColor*)ewg_rgb);
+}
+
+// Return address of function 'call_color_complement_proc_ptr'
+void* ewg_get_function_address_call_color_complement_proc_ptr (void)
+{
+	return (void*) call_color_complement_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_device_loop_drawing_proc_ptr_stub'
+// For ise
+void * ewg_function_get_device_loop_drawing_proc_ptr_stub (void)
+{
+	return get_device_loop_drawing_proc_ptr_stub ();
+}
+
+// Return address of function 'get_device_loop_drawing_proc_ptr_stub'
+void* ewg_get_function_address_get_device_loop_drawing_proc_ptr_stub (void)
+{
+	return (void*) get_device_loop_drawing_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_device_loop_drawing_proc_ptr_entry'
+// For ise
+void  ewg_function_set_device_loop_drawing_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_device_loop_drawing_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_device_loop_drawing_proc_ptr_entry'
+void* ewg_get_function_address_set_device_loop_drawing_proc_ptr_entry (void)
+{
+	return (void*) set_device_loop_drawing_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_device_loop_drawing_proc_ptr'
+// For ise
+void  ewg_function_call_device_loop_drawing_proc_ptr (void *ewg_a_function, short ewg_depth, short ewg_deviceFlags, GDHandle ewg_targetDevice, long ewg_userData)
+{
+	call_device_loop_drawing_proc_ptr ((void*)ewg_a_function, (short)ewg_depth, (short)ewg_deviceFlags, (GDHandle)ewg_targetDevice, (long)ewg_userData);
+}
+
+// Return address of function 'call_device_loop_drawing_proc_ptr'
+void* ewg_get_function_address_call_device_loop_drawing_proc_ptr (void)
+{
+	return (void*) call_device_loop_drawing_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_region_to_rects_proc_ptr_stub'
+// For ise
+void * ewg_function_get_region_to_rects_proc_ptr_stub (void)
+{
+	return get_region_to_rects_proc_ptr_stub ();
+}
+
+// Return address of function 'get_region_to_rects_proc_ptr_stub'
+void* ewg_get_function_address_get_region_to_rects_proc_ptr_stub (void)
+{
+	return (void*) get_region_to_rects_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_region_to_rects_proc_ptr_entry'
+// For ise
+void  ewg_function_set_region_to_rects_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_region_to_rects_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_region_to_rects_proc_ptr_entry'
+void* ewg_get_function_address_set_region_to_rects_proc_ptr_entry (void)
+{
+	return (void*) set_region_to_rects_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_region_to_rects_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_region_to_rects_proc_ptr (void *ewg_a_function, UInt16 ewg_message, RgnHandle ewg_rgn, Rect const *ewg_rect, void *ewg_refCon)
+{
+	return call_region_to_rects_proc_ptr ((void*)ewg_a_function, (UInt16)ewg_message, (RgnHandle)ewg_rgn, (Rect const*)ewg_rect, (void*)ewg_refCon);
+}
+
+// Return address of function 'call_region_to_rects_proc_ptr'
+void* ewg_get_function_address_call_region_to_rects_proc_ptr (void)
+{
+	return (void*) call_region_to_rects_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_custom_xfer_proc_ptr_stub'
+// For ise
+void * ewg_function_get_custom_xfer_proc_ptr_stub (void)
+{
+	return get_custom_xfer_proc_ptr_stub ();
+}
+
+// Return address of function 'get_custom_xfer_proc_ptr_stub'
+void* ewg_get_function_address_get_custom_xfer_proc_ptr_stub (void)
+{
+	return (void*) get_custom_xfer_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_custom_xfer_proc_ptr_entry'
+// For ise
+void  ewg_function_set_custom_xfer_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_custom_xfer_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_custom_xfer_proc_ptr_entry'
+void* ewg_get_function_address_set_custom_xfer_proc_ptr_entry (void)
+{
+	return (void*) set_custom_xfer_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_custom_xfer_proc_ptr'
+// For ise
+void  ewg_function_call_custom_xfer_proc_ptr (void *ewg_a_function, CustomXFerRecPtr ewg_info)
+{
+	call_custom_xfer_proc_ptr ((void*)ewg_a_function, (CustomXFerRecPtr)ewg_info);
+}
+
+// Return address of function 'call_custom_xfer_proc_ptr'
+void* ewg_get_function_address_call_custom_xfer_proc_ptr (void)
+{
+	return (void*) call_custom_xfer_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_event_comparator_proc_ptr_stub'
+// For ise
+void * ewg_function_get_event_comparator_proc_ptr_stub (void)
+{
+	return get_event_comparator_proc_ptr_stub ();
+}
+
+// Return address of function 'get_event_comparator_proc_ptr_stub'
+void* ewg_get_function_address_get_event_comparator_proc_ptr_stub (void)
+{
+	return (void*) get_event_comparator_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_event_comparator_proc_ptr_entry'
+// For ise
+void  ewg_function_set_event_comparator_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_event_comparator_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_event_comparator_proc_ptr_entry'
+void* ewg_get_function_address_set_event_comparator_proc_ptr_entry (void)
+{
+	return (void*) set_event_comparator_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_event_comparator_proc_ptr'
+// For ise
+Boolean  ewg_function_call_event_comparator_proc_ptr (void *ewg_a_function, EventRef ewg_inEvent, void *ewg_inCompareData)
+{
+	return call_event_comparator_proc_ptr ((void*)ewg_a_function, (EventRef)ewg_inEvent, (void*)ewg_inCompareData);
+}
+
+// Return address of function 'call_event_comparator_proc_ptr'
+void* ewg_get_function_address_call_event_comparator_proc_ptr (void)
+{
+	return (void*) call_event_comparator_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_event_loop_timer_proc_ptr_stub'
+// For ise
+void * ewg_function_get_event_loop_timer_proc_ptr_stub (void)
+{
+	return get_event_loop_timer_proc_ptr_stub ();
+}
+
+// Return address of function 'get_event_loop_timer_proc_ptr_stub'
+void* ewg_get_function_address_get_event_loop_timer_proc_ptr_stub (void)
+{
+	return (void*) get_event_loop_timer_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_event_loop_timer_proc_ptr_entry'
+// For ise
+void  ewg_function_set_event_loop_timer_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_event_loop_timer_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_event_loop_timer_proc_ptr_entry'
+void* ewg_get_function_address_set_event_loop_timer_proc_ptr_entry (void)
+{
+	return (void*) set_event_loop_timer_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_event_loop_timer_proc_ptr'
+// For ise
+void  ewg_function_call_event_loop_timer_proc_ptr (void *ewg_a_function, EventLoopTimerRef ewg_inTimer, void *ewg_inUserData)
+{
+	call_event_loop_timer_proc_ptr ((void*)ewg_a_function, (EventLoopTimerRef)ewg_inTimer, (void*)ewg_inUserData);
+}
+
+// Return address of function 'call_event_loop_timer_proc_ptr'
+void* ewg_get_function_address_call_event_loop_timer_proc_ptr (void)
+{
+	return (void*) call_event_loop_timer_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_event_loop_idle_timer_proc_ptr_stub'
+// For ise
+void * ewg_function_get_event_loop_idle_timer_proc_ptr_stub (void)
+{
+	return get_event_loop_idle_timer_proc_ptr_stub ();
+}
+
+// Return address of function 'get_event_loop_idle_timer_proc_ptr_stub'
+void* ewg_get_function_address_get_event_loop_idle_timer_proc_ptr_stub (void)
+{
+	return (void*) get_event_loop_idle_timer_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_event_loop_idle_timer_proc_ptr_entry'
+// For ise
+void  ewg_function_set_event_loop_idle_timer_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_event_loop_idle_timer_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_event_loop_idle_timer_proc_ptr_entry'
+void* ewg_get_function_address_set_event_loop_idle_timer_proc_ptr_entry (void)
+{
+	return (void*) set_event_loop_idle_timer_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_event_loop_idle_timer_proc_ptr'
+// For ise
+void  ewg_function_call_event_loop_idle_timer_proc_ptr (void *ewg_a_function, EventLoopTimerRef ewg_inTimer, EventLoopIdleTimerMessage ewg_inState, void *ewg_inUserData)
+{
+	call_event_loop_idle_timer_proc_ptr ((void*)ewg_a_function, (EventLoopTimerRef)ewg_inTimer, (EventLoopIdleTimerMessage)ewg_inState, (void*)ewg_inUserData);
+}
+
+// Return address of function 'call_event_loop_idle_timer_proc_ptr'
+void* ewg_get_function_address_call_event_loop_idle_timer_proc_ptr (void)
+{
+	return (void*) call_event_loop_idle_timer_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_event_handler_proc_ptr_stub'
+// For ise
+void * ewg_function_get_event_handler_proc_ptr_stub (void)
+{
+	return get_event_handler_proc_ptr_stub ();
+}
+
+// Return address of function 'get_event_handler_proc_ptr_stub'
+void* ewg_get_function_address_get_event_handler_proc_ptr_stub (void)
+{
+	return (void*) get_event_handler_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_event_handler_proc_ptr_entry'
+// For ise
+void  ewg_function_set_event_handler_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_event_handler_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_event_handler_proc_ptr_entry'
+void* ewg_get_function_address_set_event_handler_proc_ptr_entry (void)
+{
+	return (void*) set_event_handler_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_event_handler_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_event_handler_proc_ptr (void *ewg_a_function, EventHandlerCallRef ewg_inHandlerCallRef, EventRef ewg_inEvent, void *ewg_inUserData)
+{
+	return call_event_handler_proc_ptr ((void*)ewg_a_function, (EventHandlerCallRef)ewg_inHandlerCallRef, (EventRef)ewg_inEvent, (void*)ewg_inUserData);
+}
+
+// Return address of function 'call_event_handler_proc_ptr'
+void* ewg_get_function_address_call_event_handler_proc_ptr (void)
+{
+	return (void*) call_event_handler_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_window_def_proc_ptr_stub'
+// For ise
+void * ewg_function_get_window_def_proc_ptr_stub (void)
+{
+	return get_window_def_proc_ptr_stub ();
+}
+
+// Return address of function 'get_window_def_proc_ptr_stub'
+void* ewg_get_function_address_get_window_def_proc_ptr_stub (void)
+{
+	return (void*) get_window_def_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_window_def_proc_ptr_entry'
+// For ise
+void  ewg_function_set_window_def_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_window_def_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_window_def_proc_ptr_entry'
+void* ewg_get_function_address_set_window_def_proc_ptr_entry (void)
+{
+	return (void*) set_window_def_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_window_def_proc_ptr'
+// For ise
+long  ewg_function_call_window_def_proc_ptr (void *ewg_a_function, short ewg_varCode, WindowRef ewg_window, short ewg_message, long ewg_param)
+{
+	return call_window_def_proc_ptr ((void*)ewg_a_function, (short)ewg_varCode, (WindowRef)ewg_window, (short)ewg_message, (long)ewg_param);
+}
+
+// Return address of function 'call_window_def_proc_ptr'
+void* ewg_get_function_address_call_window_def_proc_ptr (void)
+{
+	return (void*) call_window_def_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_window_paint_proc_ptr_stub'
+// For ise
+void * ewg_function_get_window_paint_proc_ptr_stub (void)
+{
+	return get_window_paint_proc_ptr_stub ();
+}
+
+// Return address of function 'get_window_paint_proc_ptr_stub'
+void* ewg_get_function_address_get_window_paint_proc_ptr_stub (void)
+{
+	return (void*) get_window_paint_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_window_paint_proc_ptr_entry'
+// For ise
+void  ewg_function_set_window_paint_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_window_paint_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_window_paint_proc_ptr_entry'
+void* ewg_get_function_address_set_window_paint_proc_ptr_entry (void)
+{
+	return (void*) set_window_paint_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_window_paint_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_window_paint_proc_ptr (void *ewg_a_function, GDHandle ewg_device, GrafPtr ewg_qdContext, WindowRef ewg_window, RgnHandle ewg_inClientPaintRgn, RgnHandle ewg_outSystemPaintRgn, void *ewg_refCon)
+{
+	return call_window_paint_proc_ptr ((void*)ewg_a_function, (GDHandle)ewg_device, (GrafPtr)ewg_qdContext, (WindowRef)ewg_window, (RgnHandle)ewg_inClientPaintRgn, (RgnHandle)ewg_outSystemPaintRgn, (void*)ewg_refCon);
+}
+
+// Return address of function 'call_window_paint_proc_ptr'
+void* ewg_get_function_address_call_window_paint_proc_ptr (void)
+{
+	return (void*) call_window_paint_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_draw_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_draw_proc_ptr_stub (void)
+{
+	return get_control_user_pane_draw_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_draw_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_draw_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_draw_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_draw_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_draw_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_draw_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_draw_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_draw_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_draw_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_draw_proc_ptr'
+// For ise
+void  ewg_function_call_control_user_pane_draw_proc_ptr (void *ewg_a_function, ControlRef ewg_control, SInt16 ewg_part)
+{
+	call_control_user_pane_draw_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control, (SInt16)ewg_part);
+}
+
+// Return address of function 'call_control_user_pane_draw_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_draw_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_draw_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_hit_test_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_hit_test_proc_ptr_stub (void)
+{
+	return get_control_user_pane_hit_test_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_hit_test_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_hit_test_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_hit_test_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_hit_test_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_hit_test_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_hit_test_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_hit_test_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_hit_test_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_hit_test_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_hit_test_proc_ptr'
+// For ise
+ControlPartCode  ewg_function_call_control_user_pane_hit_test_proc_ptr (void *ewg_a_function, ControlRef ewg_control, Point *ewg_where)
+{
+	return call_control_user_pane_hit_test_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control, *(Point*)ewg_where);
+}
+
+// Return address of function 'call_control_user_pane_hit_test_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_hit_test_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_hit_test_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_tracking_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_tracking_proc_ptr_stub (void)
+{
+	return get_control_user_pane_tracking_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_tracking_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_tracking_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_tracking_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_tracking_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_tracking_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_tracking_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_tracking_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_tracking_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_tracking_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_tracking_proc_ptr'
+// For ise
+ControlPartCode  ewg_function_call_control_user_pane_tracking_proc_ptr (void *ewg_a_function, ControlRef ewg_control, Point *ewg_startPt, ControlActionUPP ewg_actionProc)
+{
+	return call_control_user_pane_tracking_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control, *(Point*)ewg_startPt, (ControlActionUPP)ewg_actionProc);
+}
+
+// Return address of function 'call_control_user_pane_tracking_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_tracking_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_tracking_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_idle_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_idle_proc_ptr_stub (void)
+{
+	return get_control_user_pane_idle_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_idle_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_idle_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_idle_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_idle_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_idle_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_idle_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_idle_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_idle_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_idle_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_idle_proc_ptr'
+// For ise
+void  ewg_function_call_control_user_pane_idle_proc_ptr (void *ewg_a_function, ControlRef ewg_control)
+{
+	call_control_user_pane_idle_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control);
+}
+
+// Return address of function 'call_control_user_pane_idle_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_idle_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_idle_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_key_down_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_key_down_proc_ptr_stub (void)
+{
+	return get_control_user_pane_key_down_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_key_down_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_key_down_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_key_down_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_key_down_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_key_down_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_key_down_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_key_down_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_key_down_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_key_down_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_key_down_proc_ptr'
+// For ise
+ControlPartCode  ewg_function_call_control_user_pane_key_down_proc_ptr (void *ewg_a_function, ControlRef ewg_control, SInt16 ewg_keyCode, SInt16 ewg_charCode, SInt16 ewg_modifiers)
+{
+	return call_control_user_pane_key_down_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control, (SInt16)ewg_keyCode, (SInt16)ewg_charCode, (SInt16)ewg_modifiers);
+}
+
+// Return address of function 'call_control_user_pane_key_down_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_key_down_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_key_down_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_activate_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_activate_proc_ptr_stub (void)
+{
+	return get_control_user_pane_activate_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_activate_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_activate_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_activate_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_activate_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_activate_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_activate_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_activate_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_activate_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_activate_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_activate_proc_ptr'
+// For ise
+void  ewg_function_call_control_user_pane_activate_proc_ptr (void *ewg_a_function, ControlRef ewg_control, Boolean ewg_activating)
+{
+	call_control_user_pane_activate_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control, (Boolean)ewg_activating);
+}
+
+// Return address of function 'call_control_user_pane_activate_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_activate_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_activate_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_focus_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_focus_proc_ptr_stub (void)
+{
+	return get_control_user_pane_focus_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_focus_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_focus_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_focus_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_focus_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_focus_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_focus_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_focus_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_focus_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_focus_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_focus_proc_ptr'
+// For ise
+ControlPartCode  ewg_function_call_control_user_pane_focus_proc_ptr (void *ewg_a_function, ControlRef ewg_control, ControlFocusPart ewg_action)
+{
+	return call_control_user_pane_focus_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control, (ControlFocusPart)ewg_action);
+}
+
+// Return address of function 'call_control_user_pane_focus_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_focus_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_focus_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_user_pane_background_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_user_pane_background_proc_ptr_stub (void)
+{
+	return get_control_user_pane_background_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_user_pane_background_proc_ptr_stub'
+void* ewg_get_function_address_get_control_user_pane_background_proc_ptr_stub (void)
+{
+	return (void*) get_control_user_pane_background_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_user_pane_background_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_user_pane_background_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_user_pane_background_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_user_pane_background_proc_ptr_entry'
+void* ewg_get_function_address_set_control_user_pane_background_proc_ptr_entry (void)
+{
+	return (void*) set_control_user_pane_background_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_user_pane_background_proc_ptr'
+// For ise
+void  ewg_function_call_control_user_pane_background_proc_ptr (void *ewg_a_function, ControlRef ewg_control, ControlBackgroundPtr ewg_info)
+{
+	call_control_user_pane_background_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_control, (ControlBackgroundPtr)ewg_info);
+}
+
+// Return address of function 'call_control_user_pane_background_proc_ptr'
+void* ewg_get_function_address_call_control_user_pane_background_proc_ptr (void)
+{
+	return (void*) call_control_user_pane_background_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_proc_ptr_stub (void)
+{
+	return get_data_browser_item_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_item_proc_ptr (void *ewg_a_function, DataBrowserItemID ewg_item, DataBrowserItemState ewg_state, void *ewg_clientData)
+{
+	call_data_browser_item_proc_ptr ((void*)ewg_a_function, (DataBrowserItemID)ewg_item, (DataBrowserItemState)ewg_state, (void*)ewg_clientData);
+}
+
+// Return address of function 'call_data_browser_item_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_data_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_data_proc_ptr_stub (void)
+{
+	return get_data_browser_item_data_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_data_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_data_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_data_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_data_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_data_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_data_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_data_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_data_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_data_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_data_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_data_browser_item_data_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, DataBrowserItemDataRef ewg_itemData, Boolean ewg_setValue)
+{
+	return call_data_browser_item_data_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (DataBrowserItemDataRef)ewg_itemData, (Boolean)ewg_setValue);
+}
+
+// Return address of function 'call_data_browser_item_data_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_data_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_data_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_compare_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_compare_proc_ptr_stub (void)
+{
+	return get_data_browser_item_compare_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_compare_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_compare_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_compare_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_compare_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_compare_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_compare_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_compare_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_compare_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_compare_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_compare_proc_ptr'
+// For ise
+Boolean  ewg_function_call_data_browser_item_compare_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_itemOne, DataBrowserItemID ewg_itemTwo, DataBrowserPropertyID ewg_sortProperty)
+{
+	return call_data_browser_item_compare_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemOne, (DataBrowserItemID)ewg_itemTwo, (DataBrowserPropertyID)ewg_sortProperty);
+}
+
+// Return address of function 'call_data_browser_item_compare_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_compare_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_compare_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_notification_with_item_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_notification_with_item_proc_ptr_stub (void)
+{
+	return get_data_browser_item_notification_with_item_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_notification_with_item_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_notification_with_item_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_notification_with_item_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_notification_with_item_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_notification_with_item_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_notification_with_item_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_notification_with_item_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_notification_with_item_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_notification_with_item_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_notification_with_item_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_item_notification_with_item_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserItemNotification ewg_message, DataBrowserItemDataRef ewg_itemData)
+{
+	call_data_browser_item_notification_with_item_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserItemNotification)ewg_message, (DataBrowserItemDataRef)ewg_itemData);
+}
+
+// Return address of function 'call_data_browser_item_notification_with_item_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_notification_with_item_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_notification_with_item_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_notification_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_notification_proc_ptr_stub (void)
+{
+	return get_data_browser_item_notification_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_notification_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_notification_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_notification_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_notification_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_notification_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_notification_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_notification_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_notification_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_notification_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_notification_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_item_notification_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserItemNotification ewg_message)
+{
+	call_data_browser_item_notification_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserItemNotification)ewg_message);
+}
+
+// Return address of function 'call_data_browser_item_notification_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_notification_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_notification_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_add_drag_item_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_add_drag_item_proc_ptr_stub (void)
+{
+	return get_data_browser_add_drag_item_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_add_drag_item_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_add_drag_item_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_add_drag_item_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_add_drag_item_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_add_drag_item_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_add_drag_item_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_add_drag_item_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_add_drag_item_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_add_drag_item_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_add_drag_item_proc_ptr'
+// For ise
+Boolean  ewg_function_call_data_browser_add_drag_item_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DragReference ewg_theDrag, DataBrowserItemID ewg_item, ItemReference *ewg_itemRef)
+{
+	return call_data_browser_add_drag_item_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DragReference)ewg_theDrag, (DataBrowserItemID)ewg_item, (ItemReference*)ewg_itemRef);
+}
+
+// Return address of function 'call_data_browser_add_drag_item_proc_ptr'
+void* ewg_get_function_address_call_data_browser_add_drag_item_proc_ptr (void)
+{
+	return (void*) call_data_browser_add_drag_item_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_accept_drag_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_accept_drag_proc_ptr_stub (void)
+{
+	return get_data_browser_accept_drag_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_accept_drag_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_accept_drag_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_accept_drag_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_accept_drag_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_accept_drag_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_accept_drag_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_accept_drag_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_accept_drag_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_accept_drag_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_accept_drag_proc_ptr'
+// For ise
+Boolean  ewg_function_call_data_browser_accept_drag_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DragReference ewg_theDrag, DataBrowserItemID ewg_item)
+{
+	return call_data_browser_accept_drag_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DragReference)ewg_theDrag, (DataBrowserItemID)ewg_item);
+}
+
+// Return address of function 'call_data_browser_accept_drag_proc_ptr'
+void* ewg_get_function_address_call_data_browser_accept_drag_proc_ptr (void)
+{
+	return (void*) call_data_browser_accept_drag_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_post_process_drag_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_post_process_drag_proc_ptr_stub (void)
+{
+	return get_data_browser_post_process_drag_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_post_process_drag_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_post_process_drag_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_post_process_drag_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_post_process_drag_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_post_process_drag_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_post_process_drag_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_post_process_drag_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_post_process_drag_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_post_process_drag_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_post_process_drag_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_post_process_drag_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DragReference ewg_theDrag, OSStatus ewg_trackDragResult)
+{
+	call_data_browser_post_process_drag_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DragReference)ewg_theDrag, (OSStatus)ewg_trackDragResult);
+}
+
+// Return address of function 'call_data_browser_post_process_drag_proc_ptr'
+void* ewg_get_function_address_call_data_browser_post_process_drag_proc_ptr (void)
+{
+	return (void*) call_data_browser_post_process_drag_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_get_contextual_menu_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_get_contextual_menu_proc_ptr_stub (void)
+{
+	return get_data_browser_get_contextual_menu_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_get_contextual_menu_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_get_contextual_menu_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_get_contextual_menu_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_get_contextual_menu_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_get_contextual_menu_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_get_contextual_menu_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_get_contextual_menu_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_get_contextual_menu_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_get_contextual_menu_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_get_contextual_menu_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_get_contextual_menu_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, MenuRef *ewg_menu, UInt32 *ewg_helpType, CFStringRef *ewg_helpItemString, AEDesc *ewg_selection)
+{
+	call_data_browser_get_contextual_menu_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (MenuRef*)ewg_menu, (UInt32*)ewg_helpType, (CFStringRef*)ewg_helpItemString, (AEDesc*)ewg_selection);
+}
+
+// Return address of function 'call_data_browser_get_contextual_menu_proc_ptr'
+void* ewg_get_function_address_call_data_browser_get_contextual_menu_proc_ptr (void)
+{
+	return (void*) call_data_browser_get_contextual_menu_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_select_contextual_menu_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_select_contextual_menu_proc_ptr_stub (void)
+{
+	return get_data_browser_select_contextual_menu_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_select_contextual_menu_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_select_contextual_menu_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_select_contextual_menu_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_select_contextual_menu_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_select_contextual_menu_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_select_contextual_menu_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_select_contextual_menu_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_select_contextual_menu_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_select_contextual_menu_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_select_contextual_menu_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_select_contextual_menu_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, MenuRef ewg_menu, UInt32 ewg_selectionType, SInt16 ewg_menuID, MenuItemIndex ewg_menuItem)
+{
+	call_data_browser_select_contextual_menu_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (MenuRef)ewg_menu, (UInt32)ewg_selectionType, (SInt16)ewg_menuID, (MenuItemIndex)ewg_menuItem);
+}
+
+// Return address of function 'call_data_browser_select_contextual_menu_proc_ptr'
+void* ewg_get_function_address_call_data_browser_select_contextual_menu_proc_ptr (void)
+{
+	return (void*) call_data_browser_select_contextual_menu_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_help_content_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_help_content_proc_ptr_stub (void)
+{
+	return get_data_browser_item_help_content_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_help_content_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_help_content_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_help_content_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_help_content_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_help_content_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_help_content_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_help_content_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_help_content_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_help_content_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_help_content_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_item_help_content_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent)
+{
+	call_data_browser_item_help_content_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent);
+}
+
+// Return address of function 'call_data_browser_item_help_content_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_help_content_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_help_content_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_draw_item_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_draw_item_proc_ptr_stub (void)
+{
+	return get_data_browser_draw_item_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_draw_item_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_draw_item_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_draw_item_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_draw_item_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_draw_item_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_draw_item_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_draw_item_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_draw_item_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_draw_item_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_draw_item_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_draw_item_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, DataBrowserItemState ewg_itemState, Rect const *ewg_theRect, SInt16 ewg_gdDepth, Boolean ewg_colorDevice)
+{
+	call_data_browser_draw_item_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (DataBrowserItemState)ewg_itemState, (Rect const*)ewg_theRect, (SInt16)ewg_gdDepth, (Boolean)ewg_colorDevice);
+}
+
+// Return address of function 'call_data_browser_draw_item_proc_ptr'
+void* ewg_get_function_address_call_data_browser_draw_item_proc_ptr (void)
+{
+	return (void*) call_data_browser_draw_item_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_edit_item_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_edit_item_proc_ptr_stub (void)
+{
+	return get_data_browser_edit_item_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_edit_item_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_edit_item_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_edit_item_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_edit_item_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_edit_item_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_edit_item_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_edit_item_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_edit_item_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_edit_item_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_edit_item_proc_ptr'
+// For ise
+Boolean  ewg_function_call_data_browser_edit_item_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_item, DataBrowserPropertyID ewg_property, CFStringRef ewg_theString, Rect *ewg_maxEditTextRect, Boolean *ewg_shrinkToFit)
+{
+	return call_data_browser_edit_item_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_item, (DataBrowserPropertyID)ewg_property, (CFStringRef)ewg_theString, (Rect*)ewg_maxEditTextRect, (Boolean*)ewg_shrinkToFit);
+}
+
+// Return address of function 'call_data_browser_edit_item_proc_ptr'
+void* ewg_get_function_address_call_data_browser_edit_item_proc_ptr (void)
+{
+	return (void*) call_data_browser_edit_item_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_hit_test_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_hit_test_proc_ptr_stub (void)
+{
+	return get_data_browser_hit_test_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_hit_test_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_hit_test_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_hit_test_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_hit_test_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_hit_test_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_hit_test_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_hit_test_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_hit_test_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_hit_test_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_hit_test_proc_ptr'
+// For ise
+Boolean  ewg_function_call_data_browser_hit_test_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, Rect const *ewg_mouseRect)
+{
+	return call_data_browser_hit_test_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, (Rect const*)ewg_mouseRect);
+}
+
+// Return address of function 'call_data_browser_hit_test_proc_ptr'
+void* ewg_get_function_address_call_data_browser_hit_test_proc_ptr (void)
+{
+	return (void*) call_data_browser_hit_test_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_tracking_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_tracking_proc_ptr_stub (void)
+{
+	return get_data_browser_tracking_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_tracking_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_tracking_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_tracking_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_tracking_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_tracking_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_tracking_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_tracking_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_tracking_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_tracking_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_tracking_proc_ptr'
+// For ise
+DataBrowserTrackingResult  ewg_function_call_data_browser_tracking_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, Point *ewg_startPt, EventModifiers ewg_modifiers)
+{
+	return call_data_browser_tracking_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, *(Point*)ewg_startPt, (EventModifiers)ewg_modifiers);
+}
+
+// Return address of function 'call_data_browser_tracking_proc_ptr'
+void* ewg_get_function_address_call_data_browser_tracking_proc_ptr (void)
+{
+	return (void*) call_data_browser_tracking_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_drag_rgn_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_drag_rgn_proc_ptr_stub (void)
+{
+	return get_data_browser_item_drag_rgn_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_drag_rgn_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_drag_rgn_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_drag_rgn_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_drag_rgn_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_drag_rgn_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_drag_rgn_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_drag_rgn_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_drag_rgn_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_drag_rgn_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_drag_rgn_proc_ptr'
+// For ise
+void  ewg_function_call_data_browser_item_drag_rgn_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, RgnHandle ewg_dragRgn)
+{
+	call_data_browser_item_drag_rgn_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, (RgnHandle)ewg_dragRgn);
+}
+
+// Return address of function 'call_data_browser_item_drag_rgn_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_drag_rgn_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_drag_rgn_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_accept_drag_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_accept_drag_proc_ptr_stub (void)
+{
+	return get_data_browser_item_accept_drag_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_accept_drag_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_accept_drag_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_accept_drag_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_accept_drag_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_accept_drag_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_accept_drag_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_accept_drag_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_accept_drag_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_accept_drag_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_accept_drag_proc_ptr'
+// For ise
+DataBrowserDragFlags  ewg_function_call_data_browser_item_accept_drag_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, Rect const *ewg_theRect, DragReference ewg_theDrag)
+{
+	return call_data_browser_item_accept_drag_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (Rect const*)ewg_theRect, (DragReference)ewg_theDrag);
+}
+
+// Return address of function 'call_data_browser_item_accept_drag_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_accept_drag_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_accept_drag_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_data_browser_item_receive_drag_proc_ptr_stub'
+// For ise
+void * ewg_function_get_data_browser_item_receive_drag_proc_ptr_stub (void)
+{
+	return get_data_browser_item_receive_drag_proc_ptr_stub ();
+}
+
+// Return address of function 'get_data_browser_item_receive_drag_proc_ptr_stub'
+void* ewg_get_function_address_get_data_browser_item_receive_drag_proc_ptr_stub (void)
+{
+	return (void*) get_data_browser_item_receive_drag_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_data_browser_item_receive_drag_proc_ptr_entry'
+// For ise
+void  ewg_function_set_data_browser_item_receive_drag_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_data_browser_item_receive_drag_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_data_browser_item_receive_drag_proc_ptr_entry'
+void* ewg_get_function_address_set_data_browser_item_receive_drag_proc_ptr_entry (void)
+{
+	return (void*) set_data_browser_item_receive_drag_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_data_browser_item_receive_drag_proc_ptr'
+// For ise
+Boolean  ewg_function_call_data_browser_item_receive_drag_proc_ptr (void *ewg_a_function, ControlRef ewg_browser, DataBrowserItemID ewg_itemID, DataBrowserPropertyID ewg_property, DataBrowserDragFlags ewg_dragFlags, DragReference ewg_theDrag)
+{
+	return call_data_browser_item_receive_drag_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_browser, (DataBrowserItemID)ewg_itemID, (DataBrowserPropertyID)ewg_property, (DataBrowserDragFlags)ewg_dragFlags, (DragReference)ewg_theDrag);
+}
+
+// Return address of function 'call_data_browser_item_receive_drag_proc_ptr'
+void* ewg_get_function_address_call_data_browser_item_receive_drag_proc_ptr (void)
+{
+	return (void*) call_data_browser_item_receive_drag_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_edit_unicode_post_update_proc_ptr_stub'
+// For ise
+void * ewg_function_get_edit_unicode_post_update_proc_ptr_stub (void)
+{
+	return get_edit_unicode_post_update_proc_ptr_stub ();
+}
+
+// Return address of function 'get_edit_unicode_post_update_proc_ptr_stub'
+void* ewg_get_function_address_get_edit_unicode_post_update_proc_ptr_stub (void)
+{
+	return (void*) get_edit_unicode_post_update_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_edit_unicode_post_update_proc_ptr_entry'
+// For ise
+void  ewg_function_set_edit_unicode_post_update_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_edit_unicode_post_update_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_edit_unicode_post_update_proc_ptr_entry'
+void* ewg_get_function_address_set_edit_unicode_post_update_proc_ptr_entry (void)
+{
+	return (void*) set_edit_unicode_post_update_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_edit_unicode_post_update_proc_ptr'
+// For ise
+Boolean  ewg_function_call_edit_unicode_post_update_proc_ptr (void *ewg_a_function, UniCharArrayHandle ewg_uniText, UniCharCount ewg_uniTextLength, UniCharArrayOffset ewg_iStartOffset, UniCharArrayOffset ewg_iEndOffset, void *ewg_refcon)
+{
+	return call_edit_unicode_post_update_proc_ptr ((void*)ewg_a_function, (UniCharArrayHandle)ewg_uniText, (UniCharCount)ewg_uniTextLength, (UniCharArrayOffset)ewg_iStartOffset, (UniCharArrayOffset)ewg_iEndOffset, (void*)ewg_refcon);
+}
+
+// Return address of function 'call_edit_unicode_post_update_proc_ptr'
+void* ewg_get_function_address_call_edit_unicode_post_update_proc_ptr (void)
+{
+	return (void*) call_edit_unicode_post_update_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_qdprinter_status_proc_ptr_stub'
+// For ise
+void * ewg_function_get_qdprinter_status_proc_ptr_stub (void)
+{
+	return get_qdprinter_status_proc_ptr_stub ();
+}
+
+// Return address of function 'get_qdprinter_status_proc_ptr_stub'
+void* ewg_get_function_address_get_qdprinter_status_proc_ptr_stub (void)
+{
+	return (void*) get_qdprinter_status_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_qdprinter_status_proc_ptr_entry'
+// For ise
+void  ewg_function_set_qdprinter_status_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_qdprinter_status_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_qdprinter_status_proc_ptr_entry'
+void* ewg_get_function_address_set_qdprinter_status_proc_ptr_entry (void)
+{
+	return (void*) set_qdprinter_status_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_qdprinter_status_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_qdprinter_status_proc_ptr (void *ewg_a_function, PrinterStatusOpcode ewg_opcode, CGrafPtr ewg_currentPort, void *ewg_printerStatus)
+{
+	return call_qdprinter_status_proc_ptr ((void*)ewg_a_function, (PrinterStatusOpcode)ewg_opcode, (CGrafPtr)ewg_currentPort, (void*)ewg_printerStatus);
+}
+
+// Return address of function 'call_qdprinter_status_proc_ptr'
+void* ewg_get_function_address_call_qdprinter_status_proc_ptr (void)
+{
+	return (void*) call_qdprinter_status_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_get_next_event_filter_proc_ptr_stub'
+// For ise
+void * ewg_function_get_get_next_event_filter_proc_ptr_stub (void)
+{
+	return get_get_next_event_filter_proc_ptr_stub ();
+}
+
+// Return address of function 'get_get_next_event_filter_proc_ptr_stub'
+void* ewg_get_function_address_get_get_next_event_filter_proc_ptr_stub (void)
+{
+	return (void*) get_get_next_event_filter_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_get_next_event_filter_proc_ptr_entry'
+// For ise
+void  ewg_function_set_get_next_event_filter_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_get_next_event_filter_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_get_next_event_filter_proc_ptr_entry'
+void* ewg_get_function_address_set_get_next_event_filter_proc_ptr_entry (void)
+{
+	return (void*) set_get_next_event_filter_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_get_next_event_filter_proc_ptr'
+// For ise
+void  ewg_function_call_get_next_event_filter_proc_ptr (void *ewg_a_function, EventRecord *ewg_theEvent, Boolean *ewg_result)
+{
+	call_get_next_event_filter_proc_ptr ((void*)ewg_a_function, (EventRecord*)ewg_theEvent, (Boolean*)ewg_result);
+}
+
+// Return address of function 'call_get_next_event_filter_proc_ptr'
+void* ewg_get_function_address_call_get_next_event_filter_proc_ptr (void)
+{
+	return (void*) call_get_next_event_filter_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_desk_hook_proc_ptr_stub'
+// For ise
+void * ewg_function_get_desk_hook_proc_ptr_stub (void)
+{
+	return get_desk_hook_proc_ptr_stub ();
+}
+
+// Return address of function 'get_desk_hook_proc_ptr_stub'
+void* ewg_get_function_address_get_desk_hook_proc_ptr_stub (void)
+{
+	return (void*) get_desk_hook_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_desk_hook_proc_ptr_entry'
+// For ise
+void  ewg_function_set_desk_hook_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_desk_hook_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_desk_hook_proc_ptr_entry'
+void* ewg_get_function_address_set_desk_hook_proc_ptr_entry (void)
+{
+	return (void*) set_desk_hook_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_desk_hook_proc_ptr'
+// For ise
+void  ewg_function_call_desk_hook_proc_ptr (void *ewg_a_function, Boolean ewg_mouseClick, EventRecord *ewg_theEvent)
+{
+	call_desk_hook_proc_ptr ((void*)ewg_a_function, (Boolean)ewg_mouseClick, (EventRecord*)ewg_theEvent);
+}
+
+// Return address of function 'call_desk_hook_proc_ptr'
+void* ewg_get_function_address_call_desk_hook_proc_ptr (void)
+{
+	return (void*) call_desk_hook_proc_ptr;
+}
+

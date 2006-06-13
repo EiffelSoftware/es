@@ -1,0 +1,8521 @@
+
+// Wraps call to function 'AEInstallEventHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEInstallEventHandler(ewg_param_theAEEventClass, ewg_param_theAEEventID, ewg_param_handler, ewg_param_handlerRefcon, ewg_param_isSysHandler) AEInstallEventHandler ((AEEventClass)ewg_param_theAEEventClass, (AEEventID)ewg_param_theAEEventID, (AEEventHandlerUPP)ewg_param_handler, (long)ewg_param_handlerRefcon, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AEInstallEventHandler (AEEventClass theAEEventClass, AEEventID theAEEventID, AEEventHandlerUPP handler, long handlerRefcon, Boolean isSysHandler);
+// Wraps call to function 'AERemoveEventHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AERemoveEventHandler(ewg_param_theAEEventClass, ewg_param_theAEEventID, ewg_param_handler, ewg_param_isSysHandler) AERemoveEventHandler ((AEEventClass)ewg_param_theAEEventClass, (AEEventID)ewg_param_theAEEventID, (AEEventHandlerUPP)ewg_param_handler, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AERemoveEventHandler (AEEventClass theAEEventClass, AEEventID theAEEventID, AEEventHandlerUPP handler, Boolean isSysHandler);
+// Wraps call to function 'AEGetEventHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetEventHandler(ewg_param_theAEEventClass, ewg_param_theAEEventID, ewg_param_handler, ewg_param_handlerRefcon, ewg_param_isSysHandler) AEGetEventHandler ((AEEventClass)ewg_param_theAEEventClass, (AEEventID)ewg_param_theAEEventID, (AEEventHandlerUPP*)ewg_param_handler, (long*)ewg_param_handlerRefcon, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AEGetEventHandler (AEEventClass theAEEventClass, AEEventID theAEEventID, AEEventHandlerUPP *handler, long *handlerRefcon, Boolean isSysHandler);
+// Wraps call to function 'AEInstallSpecialHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEInstallSpecialHandler(ewg_param_functionClass, ewg_param_handler, ewg_param_isSysHandler) AEInstallSpecialHandler ((AEKeyword)ewg_param_functionClass, (AEEventHandlerUPP)ewg_param_handler, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AEInstallSpecialHandler (AEKeyword functionClass, AEEventHandlerUPP handler, Boolean isSysHandler);
+// Wraps call to function 'AERemoveSpecialHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AERemoveSpecialHandler(ewg_param_functionClass, ewg_param_handler, ewg_param_isSysHandler) AERemoveSpecialHandler ((AEKeyword)ewg_param_functionClass, (AEEventHandlerUPP)ewg_param_handler, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AERemoveSpecialHandler (AEKeyword functionClass, AEEventHandlerUPP handler, Boolean isSysHandler);
+// Wraps call to function 'AEGetSpecialHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetSpecialHandler(ewg_param_functionClass, ewg_param_handler, ewg_param_isSysHandler) AEGetSpecialHandler ((AEKeyword)ewg_param_functionClass, (AEEventHandlerUPP*)ewg_param_handler, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AEGetSpecialHandler (AEKeyword functionClass, AEEventHandlerUPP *handler, Boolean isSysHandler);
+// Wraps call to function 'AEManagerInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEManagerInfo(ewg_param_keyWord, ewg_param_result) AEManagerInfo ((AEKeyword)ewg_param_keyWord, (long*)ewg_param_result)
+
+OSErr  ewg_function_AEManagerInfo (AEKeyword keyWord, long *result);
+// Wraps call to function 'AECreateRemoteProcessResolver' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECreateRemoteProcessResolver(ewg_param_allocator, ewg_param_url) AECreateRemoteProcessResolver ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_url)
+
+AERemoteProcessResolverRef  ewg_function_AECreateRemoteProcessResolver (CFAllocatorRef allocator, CFURLRef url);
+// Wraps call to function 'AEDisposeRemoteProcessResolver' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEDisposeRemoteProcessResolver(ewg_param_ref) AEDisposeRemoteProcessResolver ((AERemoteProcessResolverRef)ewg_param_ref)
+
+void  ewg_function_AEDisposeRemoteProcessResolver (AERemoteProcessResolverRef ref);
+// Wraps call to function 'AERemoteProcessResolverGetProcesses' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AERemoteProcessResolverGetProcesses(ewg_param_ref, ewg_param_outError) AERemoteProcessResolverGetProcesses ((AERemoteProcessResolverRef)ewg_param_ref, (CFStreamError*)ewg_param_outError)
+
+CFArrayRef  ewg_function_AERemoteProcessResolverGetProcesses (AERemoteProcessResolverRef ref, CFStreamError *outError);
+// Wraps call to function 'AERemoteProcessResolverScheduleWithRunLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AERemoteProcessResolverScheduleWithRunLoop(ewg_param_ref, ewg_param_runLoop, ewg_param_runLoopMode, ewg_param_callback, ewg_param_ctx) AERemoteProcessResolverScheduleWithRunLoop ((AERemoteProcessResolverRef)ewg_param_ref, (CFRunLoopRef)ewg_param_runLoop, (CFStringRef)ewg_param_runLoopMode, (AERemoteProcessResolverCallback)ewg_param_callback, (AERemoteProcessResolverContext const*)ewg_param_ctx)
+
+void  ewg_function_AERemoteProcessResolverScheduleWithRunLoop (AERemoteProcessResolverRef ref, CFRunLoopRef runLoop, CFStringRef runLoopMode, AERemoteProcessResolverCallback callback, AERemoteProcessResolverContext const *ctx);
+// Wraps call to function 'NewQDTextUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDTextUPP(ewg_param_userRoutine) NewQDTextUPP ((QDTextProcPtr)ewg_param_userRoutine)
+
+QDTextUPP  ewg_function_NewQDTextUPP (QDTextProcPtr userRoutine);
+// Wraps call to function 'NewQDLineUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDLineUPP(ewg_param_userRoutine) NewQDLineUPP ((QDLineProcPtr)ewg_param_userRoutine)
+
+QDLineUPP  ewg_function_NewQDLineUPP (QDLineProcPtr userRoutine);
+// Wraps call to function 'NewQDRectUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDRectUPP(ewg_param_userRoutine) NewQDRectUPP ((QDRectProcPtr)ewg_param_userRoutine)
+
+QDRectUPP  ewg_function_NewQDRectUPP (QDRectProcPtr userRoutine);
+// Wraps call to function 'NewQDRRectUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDRRectUPP(ewg_param_userRoutine) NewQDRRectUPP ((QDRRectProcPtr)ewg_param_userRoutine)
+
+QDRRectUPP  ewg_function_NewQDRRectUPP (QDRRectProcPtr userRoutine);
+// Wraps call to function 'NewQDOvalUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDOvalUPP(ewg_param_userRoutine) NewQDOvalUPP ((QDOvalProcPtr)ewg_param_userRoutine)
+
+QDOvalUPP  ewg_function_NewQDOvalUPP (QDOvalProcPtr userRoutine);
+// Wraps call to function 'NewQDArcUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDArcUPP(ewg_param_userRoutine) NewQDArcUPP ((QDArcProcPtr)ewg_param_userRoutine)
+
+QDArcUPP  ewg_function_NewQDArcUPP (QDArcProcPtr userRoutine);
+// Wraps call to function 'NewQDPolyUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDPolyUPP(ewg_param_userRoutine) NewQDPolyUPP ((QDPolyProcPtr)ewg_param_userRoutine)
+
+QDPolyUPP  ewg_function_NewQDPolyUPP (QDPolyProcPtr userRoutine);
+// Wraps call to function 'NewQDRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDRgnUPP(ewg_param_userRoutine) NewQDRgnUPP ((QDRgnProcPtr)ewg_param_userRoutine)
+
+QDRgnUPP  ewg_function_NewQDRgnUPP (QDRgnProcPtr userRoutine);
+// Wraps call to function 'NewQDBitsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDBitsUPP(ewg_param_userRoutine) NewQDBitsUPP ((QDBitsProcPtr)ewg_param_userRoutine)
+
+QDBitsUPP  ewg_function_NewQDBitsUPP (QDBitsProcPtr userRoutine);
+// Wraps call to function 'NewQDCommentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDCommentUPP(ewg_param_userRoutine) NewQDCommentUPP ((QDCommentProcPtr)ewg_param_userRoutine)
+
+QDCommentUPP  ewg_function_NewQDCommentUPP (QDCommentProcPtr userRoutine);
+// Wraps call to function 'NewQDTxMeasUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDTxMeasUPP(ewg_param_userRoutine) NewQDTxMeasUPP ((QDTxMeasProcPtr)ewg_param_userRoutine)
+
+QDTxMeasUPP  ewg_function_NewQDTxMeasUPP (QDTxMeasProcPtr userRoutine);
+// Wraps call to function 'NewQDGetPicUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDGetPicUPP(ewg_param_userRoutine) NewQDGetPicUPP ((QDGetPicProcPtr)ewg_param_userRoutine)
+
+QDGetPicUPP  ewg_function_NewQDGetPicUPP (QDGetPicProcPtr userRoutine);
+// Wraps call to function 'NewQDPutPicUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDPutPicUPP(ewg_param_userRoutine) NewQDPutPicUPP ((QDPutPicProcPtr)ewg_param_userRoutine)
+
+QDPutPicUPP  ewg_function_NewQDPutPicUPP (QDPutPicProcPtr userRoutine);
+// Wraps call to function 'NewQDOpcodeUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDOpcodeUPP(ewg_param_userRoutine) NewQDOpcodeUPP ((QDOpcodeProcPtr)ewg_param_userRoutine)
+
+QDOpcodeUPP  ewg_function_NewQDOpcodeUPP (QDOpcodeProcPtr userRoutine);
+// Wraps call to function 'NewQDStdGlyphsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDStdGlyphsUPP(ewg_param_userRoutine) NewQDStdGlyphsUPP ((QDStdGlyphsProcPtr)ewg_param_userRoutine)
+
+QDStdGlyphsUPP  ewg_function_NewQDStdGlyphsUPP (QDStdGlyphsProcPtr userRoutine);
+// Wraps call to function 'NewQDJShieldCursorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewQDJShieldCursorUPP(ewg_param_userRoutine) NewQDJShieldCursorUPP ((QDJShieldCursorProcPtr)ewg_param_userRoutine)
+
+QDJShieldCursorUPP  ewg_function_NewQDJShieldCursorUPP (QDJShieldCursorProcPtr userRoutine);
+// Wraps call to function 'DisposeQDTextUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDTextUPP(ewg_param_userUPP) DisposeQDTextUPP ((QDTextUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDTextUPP (QDTextUPP userUPP);
+// Wraps call to function 'DisposeQDLineUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDLineUPP(ewg_param_userUPP) DisposeQDLineUPP ((QDLineUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDLineUPP (QDLineUPP userUPP);
+// Wraps call to function 'DisposeQDRectUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDRectUPP(ewg_param_userUPP) DisposeQDRectUPP ((QDRectUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDRectUPP (QDRectUPP userUPP);
+// Wraps call to function 'DisposeQDRRectUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDRRectUPP(ewg_param_userUPP) DisposeQDRRectUPP ((QDRRectUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDRRectUPP (QDRRectUPP userUPP);
+// Wraps call to function 'DisposeQDOvalUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDOvalUPP(ewg_param_userUPP) DisposeQDOvalUPP ((QDOvalUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDOvalUPP (QDOvalUPP userUPP);
+// Wraps call to function 'DisposeQDArcUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDArcUPP(ewg_param_userUPP) DisposeQDArcUPP ((QDArcUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDArcUPP (QDArcUPP userUPP);
+// Wraps call to function 'DisposeQDPolyUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDPolyUPP(ewg_param_userUPP) DisposeQDPolyUPP ((QDPolyUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDPolyUPP (QDPolyUPP userUPP);
+// Wraps call to function 'DisposeQDRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDRgnUPP(ewg_param_userUPP) DisposeQDRgnUPP ((QDRgnUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDRgnUPP (QDRgnUPP userUPP);
+// Wraps call to function 'DisposeQDBitsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDBitsUPP(ewg_param_userUPP) DisposeQDBitsUPP ((QDBitsUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDBitsUPP (QDBitsUPP userUPP);
+// Wraps call to function 'DisposeQDCommentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDCommentUPP(ewg_param_userUPP) DisposeQDCommentUPP ((QDCommentUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDCommentUPP (QDCommentUPP userUPP);
+// Wraps call to function 'DisposeQDTxMeasUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDTxMeasUPP(ewg_param_userUPP) DisposeQDTxMeasUPP ((QDTxMeasUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDTxMeasUPP (QDTxMeasUPP userUPP);
+// Wraps call to function 'DisposeQDGetPicUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDGetPicUPP(ewg_param_userUPP) DisposeQDGetPicUPP ((QDGetPicUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDGetPicUPP (QDGetPicUPP userUPP);
+// Wraps call to function 'DisposeQDPutPicUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDPutPicUPP(ewg_param_userUPP) DisposeQDPutPicUPP ((QDPutPicUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDPutPicUPP (QDPutPicUPP userUPP);
+// Wraps call to function 'DisposeQDOpcodeUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDOpcodeUPP(ewg_param_userUPP) DisposeQDOpcodeUPP ((QDOpcodeUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDOpcodeUPP (QDOpcodeUPP userUPP);
+// Wraps call to function 'DisposeQDStdGlyphsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDStdGlyphsUPP(ewg_param_userUPP) DisposeQDStdGlyphsUPP ((QDStdGlyphsUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDStdGlyphsUPP (QDStdGlyphsUPP userUPP);
+// Wraps call to function 'DisposeQDJShieldCursorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeQDJShieldCursorUPP(ewg_param_userUPP) DisposeQDJShieldCursorUPP ((QDJShieldCursorUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeQDJShieldCursorUPP (QDJShieldCursorUPP userUPP);
+// Wraps call to function 'InvokeQDTextUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDTextUPP(ewg_param_byteCount, ewg_param_textBuf, ewg_param_numer, ewg_param_denom, ewg_param_userUPP) InvokeQDTextUPP ((short)ewg_param_byteCount, (void const*)ewg_param_textBuf, *(Point*)ewg_param_numer, *(Point*)ewg_param_denom, (QDTextUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDTextUPP (short byteCount, void const *textBuf, Point *numer, Point *denom, QDTextUPP userUPP);
+// Wraps call to function 'InvokeQDLineUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDLineUPP(ewg_param_newPt, ewg_param_userUPP) InvokeQDLineUPP (*(Point*)ewg_param_newPt, (QDLineUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDLineUPP (Point *newPt, QDLineUPP userUPP);
+// Wraps call to function 'InvokeQDRectUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDRectUPP(ewg_param_verb, ewg_param_r, ewg_param_userUPP) InvokeQDRectUPP ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (QDRectUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDRectUPP (GrafVerb verb, Rect const *r, QDRectUPP userUPP);
+// Wraps call to function 'InvokeQDRRectUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDRRectUPP(ewg_param_verb, ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight, ewg_param_userUPP) InvokeQDRRectUPP ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight, (QDRRectUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDRRectUPP (GrafVerb verb, Rect const *r, short ovalWidth, short ovalHeight, QDRRectUPP userUPP);
+// Wraps call to function 'InvokeQDOvalUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDOvalUPP(ewg_param_verb, ewg_param_r, ewg_param_userUPP) InvokeQDOvalUPP ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (QDOvalUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDOvalUPP (GrafVerb verb, Rect const *r, QDOvalUPP userUPP);
+// Wraps call to function 'InvokeQDArcUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDArcUPP(ewg_param_verb, ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle, ewg_param_userUPP) InvokeQDArcUPP ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle, (QDArcUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDArcUPP (GrafVerb verb, Rect const *r, short startAngle, short arcAngle, QDArcUPP userUPP);
+// Wraps call to function 'InvokeQDPolyUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDPolyUPP(ewg_param_verb, ewg_param_poly, ewg_param_userUPP) InvokeQDPolyUPP ((GrafVerb)ewg_param_verb, (PolyHandle)ewg_param_poly, (QDPolyUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDPolyUPP (GrafVerb verb, PolyHandle poly, QDPolyUPP userUPP);
+// Wraps call to function 'InvokeQDRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDRgnUPP(ewg_param_verb, ewg_param_rgn, ewg_param_userUPP) InvokeQDRgnUPP ((GrafVerb)ewg_param_verb, (RgnHandle)ewg_param_rgn, (QDRgnUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDRgnUPP (GrafVerb verb, RgnHandle rgn, QDRgnUPP userUPP);
+// Wraps call to function 'InvokeQDBitsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDBitsUPP(ewg_param_srcBits, ewg_param_srcRect, ewg_param_dstRect, ewg_param_mode, ewg_param_maskRgn, ewg_param_userUPP) InvokeQDBitsUPP ((BitMap const*)ewg_param_srcBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect, (short)ewg_param_mode, (RgnHandle)ewg_param_maskRgn, (QDBitsUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDBitsUPP (BitMap const *srcBits, Rect const *srcRect, Rect const *dstRect, short mode, RgnHandle maskRgn, QDBitsUPP userUPP);
+// Wraps call to function 'InvokeQDCommentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDCommentUPP(ewg_param_kind, ewg_param_dataSize, ewg_param_dataHandle, ewg_param_userUPP) InvokeQDCommentUPP ((short)ewg_param_kind, (short)ewg_param_dataSize, (Handle)ewg_param_dataHandle, (QDCommentUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDCommentUPP (short kind, short dataSize, Handle dataHandle, QDCommentUPP userUPP);
+// Wraps call to function 'InvokeQDTxMeasUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDTxMeasUPP(ewg_param_byteCount, ewg_param_textAddr, ewg_param_numer, ewg_param_denom, ewg_param_info, ewg_param_userUPP) InvokeQDTxMeasUPP ((short)ewg_param_byteCount, (void const*)ewg_param_textAddr, (Point*)ewg_param_numer, (Point*)ewg_param_denom, (FontInfo*)ewg_param_info, (QDTxMeasUPP)ewg_param_userUPP)
+
+short  ewg_function_InvokeQDTxMeasUPP (short byteCount, void const *textAddr, Point *numer, Point *denom, FontInfo *info, QDTxMeasUPP userUPP);
+// Wraps call to function 'InvokeQDGetPicUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDGetPicUPP(ewg_param_dataPtr, ewg_param_byteCount, ewg_param_userUPP) InvokeQDGetPicUPP ((void*)ewg_param_dataPtr, (short)ewg_param_byteCount, (QDGetPicUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDGetPicUPP (void *dataPtr, short byteCount, QDGetPicUPP userUPP);
+// Wraps call to function 'InvokeQDPutPicUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDPutPicUPP(ewg_param_dataPtr, ewg_param_byteCount, ewg_param_userUPP) InvokeQDPutPicUPP ((void const*)ewg_param_dataPtr, (short)ewg_param_byteCount, (QDPutPicUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDPutPicUPP (void const *dataPtr, short byteCount, QDPutPicUPP userUPP);
+// Wraps call to function 'InvokeQDOpcodeUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDOpcodeUPP(ewg_param_fromRect, ewg_param_toRect, ewg_param_opcode, ewg_param_version, ewg_param_userUPP) InvokeQDOpcodeUPP ((Rect const*)ewg_param_fromRect, (Rect const*)ewg_param_toRect, (UInt16)ewg_param_opcode, (SInt16)ewg_param_version, (QDOpcodeUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDOpcodeUPP (Rect const *fromRect, Rect const *toRect, UInt16 opcode, SInt16 version, QDOpcodeUPP userUPP);
+// Wraps call to function 'InvokeQDStdGlyphsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDStdGlyphsUPP(ewg_param_dataStream, ewg_param_size, ewg_param_userUPP) InvokeQDStdGlyphsUPP ((void*)ewg_param_dataStream, (ByteCount)ewg_param_size, (QDStdGlyphsUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeQDStdGlyphsUPP (void *dataStream, ByteCount size, QDStdGlyphsUPP userUPP);
+// Wraps call to function 'InvokeQDJShieldCursorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeQDJShieldCursorUPP(ewg_param_left, ewg_param_top, ewg_param_right, ewg_param_bottom, ewg_param_userUPP) InvokeQDJShieldCursorUPP ((short)ewg_param_left, (short)ewg_param_top, (short)ewg_param_right, (short)ewg_param_bottom, (QDJShieldCursorUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeQDJShieldCursorUPP (short left, short top, short right, short bottom, QDJShieldCursorUPP userUPP);
+// Wraps call to function 'NewDragGrayRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDragGrayRgnUPP(ewg_param_userRoutine) NewDragGrayRgnUPP ((DragGrayRgnProcPtr)ewg_param_userRoutine)
+
+DragGrayRgnUPP  ewg_function_NewDragGrayRgnUPP (DragGrayRgnProcPtr userRoutine);
+// Wraps call to function 'NewColorSearchUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewColorSearchUPP(ewg_param_userRoutine) NewColorSearchUPP ((ColorSearchProcPtr)ewg_param_userRoutine)
+
+ColorSearchUPP  ewg_function_NewColorSearchUPP (ColorSearchProcPtr userRoutine);
+// Wraps call to function 'NewColorComplementUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewColorComplementUPP(ewg_param_userRoutine) NewColorComplementUPP ((ColorComplementProcPtr)ewg_param_userRoutine)
+
+ColorComplementUPP  ewg_function_NewColorComplementUPP (ColorComplementProcPtr userRoutine);
+// Wraps call to function 'DisposeDragGrayRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDragGrayRgnUPP(ewg_param_userUPP) DisposeDragGrayRgnUPP ((DragGrayRgnUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDragGrayRgnUPP (DragGrayRgnUPP userUPP);
+// Wraps call to function 'DisposeColorSearchUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeColorSearchUPP(ewg_param_userUPP) DisposeColorSearchUPP ((ColorSearchUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeColorSearchUPP (ColorSearchUPP userUPP);
+// Wraps call to function 'DisposeColorComplementUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeColorComplementUPP(ewg_param_userUPP) DisposeColorComplementUPP ((ColorComplementUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeColorComplementUPP (ColorComplementUPP userUPP);
+// Wraps call to function 'InvokeDragGrayRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDragGrayRgnUPP(ewg_param_userUPP) InvokeDragGrayRgnUPP ((DragGrayRgnUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDragGrayRgnUPP (DragGrayRgnUPP userUPP);
+// Wraps call to function 'InvokeColorSearchUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeColorSearchUPP(ewg_param_rgb, ewg_param_position, ewg_param_userUPP) InvokeColorSearchUPP ((RGBColor*)ewg_param_rgb, (long*)ewg_param_position, (ColorSearchUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeColorSearchUPP (RGBColor *rgb, long *position, ColorSearchUPP userUPP);
+// Wraps call to function 'InvokeColorComplementUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeColorComplementUPP(ewg_param_rgb, ewg_param_userUPP) InvokeColorComplementUPP ((RGBColor*)ewg_param_rgb, (ColorComplementUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeColorComplementUPP (RGBColor *rgb, ColorComplementUPP userUPP);
+// Wraps call to function 'NewDeviceLoopDrawingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDeviceLoopDrawingUPP(ewg_param_userRoutine) NewDeviceLoopDrawingUPP ((DeviceLoopDrawingProcPtr)ewg_param_userRoutine)
+
+DeviceLoopDrawingUPP  ewg_function_NewDeviceLoopDrawingUPP (DeviceLoopDrawingProcPtr userRoutine);
+// Wraps call to function 'DisposeDeviceLoopDrawingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDeviceLoopDrawingUPP(ewg_param_userUPP) DisposeDeviceLoopDrawingUPP ((DeviceLoopDrawingUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDeviceLoopDrawingUPP (DeviceLoopDrawingUPP userUPP);
+// Wraps call to function 'InvokeDeviceLoopDrawingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDeviceLoopDrawingUPP(ewg_param_depth, ewg_param_deviceFlags, ewg_param_targetDevice, ewg_param_userData, ewg_param_userUPP) InvokeDeviceLoopDrawingUPP ((short)ewg_param_depth, (short)ewg_param_deviceFlags, (GDHandle)ewg_param_targetDevice, (long)ewg_param_userData, (DeviceLoopDrawingUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDeviceLoopDrawingUPP (short depth, short deviceFlags, GDHandle targetDevice, long userData, DeviceLoopDrawingUPP userUPP);
+// Wraps call to function 'LockPortBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LockPortBits(ewg_param_port) LockPortBits ((GrafPtr)ewg_param_port)
+
+OSErr  ewg_function_LockPortBits (GrafPtr port);
+// Wraps call to function 'UnlockPortBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UnlockPortBits(ewg_param_port) UnlockPortBits ((GrafPtr)ewg_param_port)
+
+OSErr  ewg_function_UnlockPortBits (GrafPtr port);
+// Wraps call to function 'NewRegionToRectsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewRegionToRectsUPP(ewg_param_userRoutine) NewRegionToRectsUPP ((RegionToRectsProcPtr)ewg_param_userRoutine)
+
+RegionToRectsUPP  ewg_function_NewRegionToRectsUPP (RegionToRectsProcPtr userRoutine);
+// Wraps call to function 'DisposeRegionToRectsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeRegionToRectsUPP(ewg_param_userUPP) DisposeRegionToRectsUPP ((RegionToRectsUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeRegionToRectsUPP (RegionToRectsUPP userUPP);
+// Wraps call to function 'InvokeRegionToRectsUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeRegionToRectsUPP(ewg_param_message, ewg_param_rgn, ewg_param_rect, ewg_param_refCon, ewg_param_userUPP) InvokeRegionToRectsUPP ((UInt16)ewg_param_message, (RgnHandle)ewg_param_rgn, (Rect const*)ewg_param_rect, (void*)ewg_param_refCon, (RegionToRectsUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeRegionToRectsUPP (UInt16 message, RgnHandle rgn, Rect const *rect, void *refCon, RegionToRectsUPP userUPP);
+// Wraps call to function 'QDRegionToRects' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDRegionToRects(ewg_param_rgn, ewg_param_dir, ewg_param_proc, ewg_param_userData) QDRegionToRects ((RgnHandle)ewg_param_rgn, (QDRegionParseDirection)ewg_param_dir, (RegionToRectsUPP)ewg_param_proc, (void*)ewg_param_userData)
+
+OSStatus  ewg_function_QDRegionToRects (RgnHandle rgn, QDRegionParseDirection dir, RegionToRectsUPP proc, void *userData);
+// Wraps call to function 'SetPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPort(ewg_param_port) SetPort ((GrafPtr)ewg_param_port)
+
+void  ewg_function_SetPort (GrafPtr port);
+// Wraps call to function 'GetPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPort(ewg_param_port) GetPort ((GrafPtr*)ewg_param_port)
+
+void  ewg_function_GetPort (GrafPtr *port);
+// Wraps call to function 'QDSwapPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSwapPort(ewg_param_inNewPort, ewg_param_outOldPort) QDSwapPort ((CGrafPtr)ewg_param_inNewPort, (CGrafPtr*)ewg_param_outOldPort)
+
+Boolean  ewg_function_QDSwapPort (CGrafPtr inNewPort, CGrafPtr *outOldPort);
+// Wraps call to function 'GrafDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GrafDevice(ewg_param_device) GrafDevice ((short)ewg_param_device)
+
+void  ewg_function_GrafDevice (short device);
+// Wraps call to function 'SetPortBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortBits(ewg_param_bm) SetPortBits ((BitMap const*)ewg_param_bm)
+
+void  ewg_function_SetPortBits (BitMap const *bm);
+// Wraps call to function 'PortSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PortSize(ewg_param_width, ewg_param_height) PortSize ((short)ewg_param_width, (short)ewg_param_height)
+
+void  ewg_function_PortSize (short width, short height);
+// Wraps call to function 'MovePortTo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MovePortTo(ewg_param_leftGlobal, ewg_param_topGlobal) MovePortTo ((short)ewg_param_leftGlobal, (short)ewg_param_topGlobal)
+
+void  ewg_function_MovePortTo (short leftGlobal, short topGlobal);
+// Wraps call to function 'SetOrigin' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetOrigin(ewg_param_h, ewg_param_v) SetOrigin ((short)ewg_param_h, (short)ewg_param_v)
+
+void  ewg_function_SetOrigin (short h, short v);
+// Wraps call to function 'SetClip' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetClip(ewg_param_rgn) SetClip ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_SetClip (RgnHandle rgn);
+// Wraps call to function 'GetClip' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetClip(ewg_param_rgn) GetClip ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_GetClip (RgnHandle rgn);
+// Wraps call to function 'ClipRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClipRect(ewg_param_r) ClipRect ((Rect const*)ewg_param_r)
+
+void  ewg_function_ClipRect (Rect const *r);
+// Wraps call to function 'BackPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BackPat(ewg_param_pat) BackPat ((Pattern const*)ewg_param_pat)
+
+void  ewg_function_BackPat (Pattern const *pat);
+// Wraps call to function 'InitCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InitCursor InitCursor ()
+
+void  ewg_function_InitCursor (void);
+// Wraps call to function 'SetCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetCursor(ewg_param_crsr) SetCursor ((Cursor const*)ewg_param_crsr)
+
+void  ewg_function_SetCursor (Cursor const *crsr);
+// Wraps call to function 'HideCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HideCursor HideCursor ()
+
+void  ewg_function_HideCursor (void);
+// Wraps call to function 'ShowCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowCursor ShowCursor ()
+
+void  ewg_function_ShowCursor (void);
+// Wraps call to function 'ObscureCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ObscureCursor ObscureCursor ()
+
+void  ewg_function_ObscureCursor (void);
+// Wraps call to function 'HidePen' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HidePen HidePen ()
+
+void  ewg_function_HidePen (void);
+// Wraps call to function 'ShowPen' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowPen ShowPen ()
+
+void  ewg_function_ShowPen (void);
+// Wraps call to function 'GetPen' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPen(ewg_param_pt) GetPen ((Point*)ewg_param_pt)
+
+void  ewg_function_GetPen (Point *pt);
+// Wraps call to function 'GetPenState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPenState(ewg_param_pnState) GetPenState ((PenState*)ewg_param_pnState)
+
+void  ewg_function_GetPenState (PenState *pnState);
+// Wraps call to function 'SetPenState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPenState(ewg_param_pnState) SetPenState ((PenState const*)ewg_param_pnState)
+
+void  ewg_function_SetPenState (PenState const *pnState);
+// Wraps call to function 'PenSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PenSize(ewg_param_width, ewg_param_height) PenSize ((short)ewg_param_width, (short)ewg_param_height)
+
+void  ewg_function_PenSize (short width, short height);
+// Wraps call to function 'PenMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PenMode(ewg_param_mode) PenMode ((short)ewg_param_mode)
+
+void  ewg_function_PenMode (short mode);
+// Wraps call to function 'PenPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PenPat(ewg_param_pat) PenPat ((Pattern const*)ewg_param_pat)
+
+void  ewg_function_PenPat (Pattern const *pat);
+// Wraps call to function 'PenNormal' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PenNormal PenNormal ()
+
+void  ewg_function_PenNormal (void);
+// Wraps call to function 'MoveTo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MoveTo(ewg_param_h, ewg_param_v) MoveTo ((short)ewg_param_h, (short)ewg_param_v)
+
+void  ewg_function_MoveTo (short h, short v);
+// Wraps call to function 'Move' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Move(ewg_param_dh, ewg_param_dv) Move ((short)ewg_param_dh, (short)ewg_param_dv)
+
+void  ewg_function_Move (short dh, short dv);
+// Wraps call to function 'LineTo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LineTo(ewg_param_h, ewg_param_v) LineTo ((short)ewg_param_h, (short)ewg_param_v)
+
+void  ewg_function_LineTo (short h, short v);
+// Wraps call to function 'Line' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Line(ewg_param_dh, ewg_param_dv) Line ((short)ewg_param_dh, (short)ewg_param_dv)
+
+void  ewg_function_Line (short dh, short dv);
+// Wraps call to function 'ForeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ForeColor(ewg_param_color) ForeColor ((long)ewg_param_color)
+
+void  ewg_function_ForeColor (long color);
+// Wraps call to function 'BackColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BackColor(ewg_param_color) BackColor ((long)ewg_param_color)
+
+void  ewg_function_BackColor (long color);
+// Wraps call to function 'ColorBit' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ColorBit(ewg_param_whichBit) ColorBit ((short)ewg_param_whichBit)
+
+void  ewg_function_ColorBit (short whichBit);
+// Wraps call to function 'SetRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetRect(ewg_param_r, ewg_param_left, ewg_param_top, ewg_param_right, ewg_param_bottom) SetRect ((Rect*)ewg_param_r, (short)ewg_param_left, (short)ewg_param_top, (short)ewg_param_right, (short)ewg_param_bottom)
+
+void  ewg_function_SetRect (Rect *r, short left, short top, short right, short bottom);
+// Wraps call to function 'OffsetRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OffsetRect(ewg_param_r, ewg_param_dh, ewg_param_dv) OffsetRect ((Rect*)ewg_param_r, (short)ewg_param_dh, (short)ewg_param_dv)
+
+void  ewg_function_OffsetRect (Rect *r, short dh, short dv);
+// Wraps call to function 'InsetRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsetRect(ewg_param_r, ewg_param_dh, ewg_param_dv) InsetRect ((Rect*)ewg_param_r, (short)ewg_param_dh, (short)ewg_param_dv)
+
+void  ewg_function_InsetRect (Rect *r, short dh, short dv);
+// Wraps call to function 'SectRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SectRect(ewg_param_src1, ewg_param_src2, ewg_param_dstRect) SectRect ((Rect const*)ewg_param_src1, (Rect const*)ewg_param_src2, (Rect*)ewg_param_dstRect)
+
+Boolean  ewg_function_SectRect (Rect const *src1, Rect const *src2, Rect *dstRect);
+// Wraps call to function 'UnionRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UnionRect(ewg_param_src1, ewg_param_src2, ewg_param_dstRect) UnionRect ((Rect const*)ewg_param_src1, (Rect const*)ewg_param_src2, (Rect*)ewg_param_dstRect)
+
+void  ewg_function_UnionRect (Rect const *src1, Rect const *src2, Rect *dstRect);
+// Wraps call to function 'EqualRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EqualRect(ewg_param_rect1, ewg_param_rect2) EqualRect ((Rect const*)ewg_param_rect1, (Rect const*)ewg_param_rect2)
+
+Boolean  ewg_function_EqualRect (Rect const *rect1, Rect const *rect2);
+// Wraps call to function 'EmptyRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EmptyRect(ewg_param_r) EmptyRect ((Rect const*)ewg_param_r)
+
+Boolean  ewg_function_EmptyRect (Rect const *r);
+// Wraps call to function 'FrameRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FrameRect(ewg_param_r) FrameRect ((Rect const*)ewg_param_r)
+
+void  ewg_function_FrameRect (Rect const *r);
+// Wraps call to function 'PaintRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintRect(ewg_param_r) PaintRect ((Rect const*)ewg_param_r)
+
+void  ewg_function_PaintRect (Rect const *r);
+// Wraps call to function 'EraseRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EraseRect(ewg_param_r) EraseRect ((Rect const*)ewg_param_r)
+
+void  ewg_function_EraseRect (Rect const *r);
+// Wraps call to function 'InvertRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvertRect(ewg_param_r) InvertRect ((Rect const*)ewg_param_r)
+
+void  ewg_function_InvertRect (Rect const *r);
+// Wraps call to function 'FillRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillRect(ewg_param_r, ewg_param_pat) FillRect ((Rect const*)ewg_param_r, (Pattern const*)ewg_param_pat)
+
+void  ewg_function_FillRect (Rect const *r, Pattern const *pat);
+// Wraps call to function 'FrameOval' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FrameOval(ewg_param_r) FrameOval ((Rect const*)ewg_param_r)
+
+void  ewg_function_FrameOval (Rect const *r);
+// Wraps call to function 'PaintOval' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintOval(ewg_param_r) PaintOval ((Rect const*)ewg_param_r)
+
+void  ewg_function_PaintOval (Rect const *r);
+// Wraps call to function 'EraseOval' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EraseOval(ewg_param_r) EraseOval ((Rect const*)ewg_param_r)
+
+void  ewg_function_EraseOval (Rect const *r);
+// Wraps call to function 'InvertOval' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvertOval(ewg_param_r) InvertOval ((Rect const*)ewg_param_r)
+
+void  ewg_function_InvertOval (Rect const *r);
+// Wraps call to function 'FillOval' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillOval(ewg_param_r, ewg_param_pat) FillOval ((Rect const*)ewg_param_r, (Pattern const*)ewg_param_pat)
+
+void  ewg_function_FillOval (Rect const *r, Pattern const *pat);
+// Wraps call to function 'FrameRoundRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FrameRoundRect(ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight) FrameRoundRect ((Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight)
+
+void  ewg_function_FrameRoundRect (Rect const *r, short ovalWidth, short ovalHeight);
+// Wraps call to function 'PaintRoundRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintRoundRect(ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight) PaintRoundRect ((Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight)
+
+void  ewg_function_PaintRoundRect (Rect const *r, short ovalWidth, short ovalHeight);
+// Wraps call to function 'EraseRoundRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EraseRoundRect(ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight) EraseRoundRect ((Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight)
+
+void  ewg_function_EraseRoundRect (Rect const *r, short ovalWidth, short ovalHeight);
+// Wraps call to function 'InvertRoundRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvertRoundRect(ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight) InvertRoundRect ((Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight)
+
+void  ewg_function_InvertRoundRect (Rect const *r, short ovalWidth, short ovalHeight);
+// Wraps call to function 'FillRoundRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillRoundRect(ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight, ewg_param_pat) FillRoundRect ((Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight, (Pattern const*)ewg_param_pat)
+
+void  ewg_function_FillRoundRect (Rect const *r, short ovalWidth, short ovalHeight, Pattern const *pat);
+// Wraps call to function 'FrameArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FrameArc(ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle) FrameArc ((Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle)
+
+void  ewg_function_FrameArc (Rect const *r, short startAngle, short arcAngle);
+// Wraps call to function 'PaintArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintArc(ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle) PaintArc ((Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle)
+
+void  ewg_function_PaintArc (Rect const *r, short startAngle, short arcAngle);
+// Wraps call to function 'EraseArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EraseArc(ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle) EraseArc ((Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle)
+
+void  ewg_function_EraseArc (Rect const *r, short startAngle, short arcAngle);
+// Wraps call to function 'InvertArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvertArc(ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle) InvertArc ((Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle)
+
+void  ewg_function_InvertArc (Rect const *r, short startAngle, short arcAngle);
+// Wraps call to function 'FillArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillArc(ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle, ewg_param_pat) FillArc ((Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle, (Pattern const*)ewg_param_pat)
+
+void  ewg_function_FillArc (Rect const *r, short startAngle, short arcAngle, Pattern const *pat);
+// Wraps call to function 'NewRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewRgn NewRgn ()
+
+RgnHandle  ewg_function_NewRgn (void);
+// Wraps call to function 'OpenRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpenRgn OpenRgn ()
+
+void  ewg_function_OpenRgn (void);
+// Wraps call to function 'CloseRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CloseRgn(ewg_param_dstRgn) CloseRgn ((RgnHandle)ewg_param_dstRgn)
+
+void  ewg_function_CloseRgn (RgnHandle dstRgn);
+// Wraps call to function 'BitMapToRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BitMapToRegion(ewg_param_region, ewg_param_bMap) BitMapToRegion ((RgnHandle)ewg_param_region, (BitMap const*)ewg_param_bMap)
+
+OSErr  ewg_function_BitMapToRegion (RgnHandle region, BitMap const *bMap);
+// Wraps call to function 'RgnToHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RgnToHandle(ewg_param_region, ewg_param_flattenedRgnDataHdl) RgnToHandle ((RgnHandle)ewg_param_region, (Handle)ewg_param_flattenedRgnDataHdl)
+
+void  ewg_function_RgnToHandle (RgnHandle region, Handle flattenedRgnDataHdl);
+// Wraps call to function 'HandleToRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HandleToRgn(ewg_param_oldRegion, ewg_param_region) HandleToRgn ((Handle)ewg_param_oldRegion, (RgnHandle)ewg_param_region)
+
+void  ewg_function_HandleToRgn (Handle oldRegion, RgnHandle region);
+// Wraps call to function 'DisposeRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeRgn(ewg_param_rgn) DisposeRgn ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_DisposeRgn (RgnHandle rgn);
+// Wraps call to function 'CopyRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyRgn(ewg_param_srcRgn, ewg_param_dstRgn) CopyRgn ((RgnHandle)ewg_param_srcRgn, (RgnHandle)ewg_param_dstRgn)
+
+void  ewg_function_CopyRgn (RgnHandle srcRgn, RgnHandle dstRgn);
+// Wraps call to function 'SetEmptyRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetEmptyRgn(ewg_param_rgn) SetEmptyRgn ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_SetEmptyRgn (RgnHandle rgn);
+// Wraps call to function 'SetRectRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetRectRgn(ewg_param_rgn, ewg_param_left, ewg_param_top, ewg_param_right, ewg_param_bottom) SetRectRgn ((RgnHandle)ewg_param_rgn, (short)ewg_param_left, (short)ewg_param_top, (short)ewg_param_right, (short)ewg_param_bottom)
+
+void  ewg_function_SetRectRgn (RgnHandle rgn, short left, short top, short right, short bottom);
+// Wraps call to function 'RectRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RectRgn(ewg_param_rgn, ewg_param_r) RectRgn ((RgnHandle)ewg_param_rgn, (Rect const*)ewg_param_r)
+
+void  ewg_function_RectRgn (RgnHandle rgn, Rect const *r);
+// Wraps call to function 'OffsetRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OffsetRgn(ewg_param_rgn, ewg_param_dh, ewg_param_dv) OffsetRgn ((RgnHandle)ewg_param_rgn, (short)ewg_param_dh, (short)ewg_param_dv)
+
+void  ewg_function_OffsetRgn (RgnHandle rgn, short dh, short dv);
+// Wraps call to function 'InsetRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsetRgn(ewg_param_rgn, ewg_param_dh, ewg_param_dv) InsetRgn ((RgnHandle)ewg_param_rgn, (short)ewg_param_dh, (short)ewg_param_dv)
+
+void  ewg_function_InsetRgn (RgnHandle rgn, short dh, short dv);
+// Wraps call to function 'SectRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SectRgn(ewg_param_srcRgnA, ewg_param_srcRgnB, ewg_param_dstRgn) SectRgn ((RgnHandle)ewg_param_srcRgnA, (RgnHandle)ewg_param_srcRgnB, (RgnHandle)ewg_param_dstRgn)
+
+void  ewg_function_SectRgn (RgnHandle srcRgnA, RgnHandle srcRgnB, RgnHandle dstRgn);
+// Wraps call to function 'UnionRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UnionRgn(ewg_param_srcRgnA, ewg_param_srcRgnB, ewg_param_dstRgn) UnionRgn ((RgnHandle)ewg_param_srcRgnA, (RgnHandle)ewg_param_srcRgnB, (RgnHandle)ewg_param_dstRgn)
+
+void  ewg_function_UnionRgn (RgnHandle srcRgnA, RgnHandle srcRgnB, RgnHandle dstRgn);
+// Wraps call to function 'DiffRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DiffRgn(ewg_param_srcRgnA, ewg_param_srcRgnB, ewg_param_dstRgn) DiffRgn ((RgnHandle)ewg_param_srcRgnA, (RgnHandle)ewg_param_srcRgnB, (RgnHandle)ewg_param_dstRgn)
+
+void  ewg_function_DiffRgn (RgnHandle srcRgnA, RgnHandle srcRgnB, RgnHandle dstRgn);
+// Wraps call to function 'XorRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_XorRgn(ewg_param_srcRgnA, ewg_param_srcRgnB, ewg_param_dstRgn) XorRgn ((RgnHandle)ewg_param_srcRgnA, (RgnHandle)ewg_param_srcRgnB, (RgnHandle)ewg_param_dstRgn)
+
+void  ewg_function_XorRgn (RgnHandle srcRgnA, RgnHandle srcRgnB, RgnHandle dstRgn);
+// Wraps call to function 'RectInRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RectInRgn(ewg_param_r, ewg_param_rgn) RectInRgn ((Rect const*)ewg_param_r, (RgnHandle)ewg_param_rgn)
+
+Boolean  ewg_function_RectInRgn (Rect const *r, RgnHandle rgn);
+// Wraps call to function 'EqualRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EqualRgn(ewg_param_rgnA, ewg_param_rgnB) EqualRgn ((RgnHandle)ewg_param_rgnA, (RgnHandle)ewg_param_rgnB)
+
+Boolean  ewg_function_EqualRgn (RgnHandle rgnA, RgnHandle rgnB);
+// Wraps call to function 'EmptyRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EmptyRgn(ewg_param_rgn) EmptyRgn ((RgnHandle)ewg_param_rgn)
+
+Boolean  ewg_function_EmptyRgn (RgnHandle rgn);
+// Wraps call to function 'FrameRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FrameRgn(ewg_param_rgn) FrameRgn ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_FrameRgn (RgnHandle rgn);
+// Wraps call to function 'PaintRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintRgn(ewg_param_rgn) PaintRgn ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_PaintRgn (RgnHandle rgn);
+// Wraps call to function 'EraseRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EraseRgn(ewg_param_rgn) EraseRgn ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_EraseRgn (RgnHandle rgn);
+// Wraps call to function 'InvertRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvertRgn(ewg_param_rgn) InvertRgn ((RgnHandle)ewg_param_rgn)
+
+void  ewg_function_InvertRgn (RgnHandle rgn);
+// Wraps call to function 'FillRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillRgn(ewg_param_rgn, ewg_param_pat) FillRgn ((RgnHandle)ewg_param_rgn, (Pattern const*)ewg_param_pat)
+
+void  ewg_function_FillRgn (RgnHandle rgn, Pattern const *pat);
+// Wraps call to function 'ScrollRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ScrollRect(ewg_param_r, ewg_param_dh, ewg_param_dv, ewg_param_updateRgn) ScrollRect ((Rect const*)ewg_param_r, (short)ewg_param_dh, (short)ewg_param_dv, (RgnHandle)ewg_param_updateRgn)
+
+void  ewg_function_ScrollRect (Rect const *r, short dh, short dv, RgnHandle updateRgn);
+// Wraps call to function 'CopyBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyBits(ewg_param_srcBits, ewg_param_dstBits, ewg_param_srcRect, ewg_param_dstRect, ewg_param_mode, ewg_param_maskRgn) CopyBits ((BitMap const*)ewg_param_srcBits, (BitMap const*)ewg_param_dstBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect, (short)ewg_param_mode, (RgnHandle)ewg_param_maskRgn)
+
+void  ewg_function_CopyBits (BitMap const *srcBits, BitMap const *dstBits, Rect const *srcRect, Rect const *dstRect, short mode, RgnHandle maskRgn);
+// Wraps call to function 'SeedFill' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SeedFill(ewg_param_srcPtr, ewg_param_dstPtr, ewg_param_srcRow, ewg_param_dstRow, ewg_param_height, ewg_param_words, ewg_param_seedH, ewg_param_seedV) SeedFill ((void const*)ewg_param_srcPtr, (void*)ewg_param_dstPtr, (short)ewg_param_srcRow, (short)ewg_param_dstRow, (short)ewg_param_height, (short)ewg_param_words, (short)ewg_param_seedH, (short)ewg_param_seedV)
+
+void  ewg_function_SeedFill (void const *srcPtr, void *dstPtr, short srcRow, short dstRow, short height, short words, short seedH, short seedV);
+// Wraps call to function 'CalcMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CalcMask(ewg_param_srcPtr, ewg_param_dstPtr, ewg_param_srcRow, ewg_param_dstRow, ewg_param_height, ewg_param_words) CalcMask ((void const*)ewg_param_srcPtr, (void*)ewg_param_dstPtr, (short)ewg_param_srcRow, (short)ewg_param_dstRow, (short)ewg_param_height, (short)ewg_param_words)
+
+void  ewg_function_CalcMask (void const *srcPtr, void *dstPtr, short srcRow, short dstRow, short height, short words);
+// Wraps call to function 'CopyMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyMask(ewg_param_srcBits, ewg_param_maskBits, ewg_param_dstBits, ewg_param_srcRect, ewg_param_maskRect, ewg_param_dstRect) CopyMask ((BitMap const*)ewg_param_srcBits, (BitMap const*)ewg_param_maskBits, (BitMap const*)ewg_param_dstBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_maskRect, (Rect const*)ewg_param_dstRect)
+
+void  ewg_function_CopyMask (BitMap const *srcBits, BitMap const *maskBits, BitMap const *dstBits, Rect const *srcRect, Rect const *maskRect, Rect const *dstRect);
+// Wraps call to function 'OpenPicture' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpenPicture(ewg_param_picFrame) OpenPicture ((Rect const*)ewg_param_picFrame)
+
+PicHandle  ewg_function_OpenPicture (Rect const *picFrame);
+// Wraps call to function 'PicComment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PicComment(ewg_param_kind, ewg_param_dataSize, ewg_param_dataHandle) PicComment ((short)ewg_param_kind, (short)ewg_param_dataSize, (Handle)ewg_param_dataHandle)
+
+void  ewg_function_PicComment (short kind, short dataSize, Handle dataHandle);
+// Wraps call to function 'ClosePicture' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClosePicture ClosePicture ()
+
+void  ewg_function_ClosePicture (void);
+// Wraps call to function 'QDGetPictureBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGetPictureBounds(ewg_param_picH, ewg_param_outRect) QDGetPictureBounds ((PicHandle)ewg_param_picH, (Rect*)ewg_param_outRect)
+
+Rect * ewg_function_QDGetPictureBounds (PicHandle picH, Rect *outRect);
+// Wraps call to function 'DrawPicture' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DrawPicture(ewg_param_myPicture, ewg_param_dstRect) DrawPicture ((PicHandle)ewg_param_myPicture, (Rect const*)ewg_param_dstRect)
+
+void  ewg_function_DrawPicture (PicHandle myPicture, Rect const *dstRect);
+// Wraps call to function 'KillPicture' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_KillPicture(ewg_param_myPicture) KillPicture ((PicHandle)ewg_param_myPicture)
+
+void  ewg_function_KillPicture (PicHandle myPicture);
+// Wraps call to function 'OpenPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpenPoly OpenPoly ()
+
+PolyHandle  ewg_function_OpenPoly (void);
+// Wraps call to function 'ClosePoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClosePoly ClosePoly ()
+
+void  ewg_function_ClosePoly (void);
+// Wraps call to function 'KillPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_KillPoly(ewg_param_poly) KillPoly ((PolyHandle)ewg_param_poly)
+
+void  ewg_function_KillPoly (PolyHandle poly);
+// Wraps call to function 'OffsetPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OffsetPoly(ewg_param_poly, ewg_param_dh, ewg_param_dv) OffsetPoly ((PolyHandle)ewg_param_poly, (short)ewg_param_dh, (short)ewg_param_dv)
+
+void  ewg_function_OffsetPoly (PolyHandle poly, short dh, short dv);
+// Wraps call to function 'FramePoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FramePoly(ewg_param_poly) FramePoly ((PolyHandle)ewg_param_poly)
+
+void  ewg_function_FramePoly (PolyHandle poly);
+// Wraps call to function 'PaintPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintPoly(ewg_param_poly) PaintPoly ((PolyHandle)ewg_param_poly)
+
+void  ewg_function_PaintPoly (PolyHandle poly);
+// Wraps call to function 'ErasePoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ErasePoly(ewg_param_poly) ErasePoly ((PolyHandle)ewg_param_poly)
+
+void  ewg_function_ErasePoly (PolyHandle poly);
+// Wraps call to function 'InvertPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvertPoly(ewg_param_poly) InvertPoly ((PolyHandle)ewg_param_poly)
+
+void  ewg_function_InvertPoly (PolyHandle poly);
+// Wraps call to function 'FillPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillPoly(ewg_param_poly, ewg_param_pat) FillPoly ((PolyHandle)ewg_param_poly, (Pattern const*)ewg_param_pat)
+
+void  ewg_function_FillPoly (PolyHandle poly, Pattern const *pat);
+// Wraps call to function 'SetPt' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPt(ewg_param_pt, ewg_param_h, ewg_param_v) SetPt ((Point*)ewg_param_pt, (short)ewg_param_h, (short)ewg_param_v)
+
+void  ewg_function_SetPt (Point *pt, short h, short v);
+// Wraps call to function 'LocalToGlobal' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LocalToGlobal(ewg_param_pt) LocalToGlobal ((Point*)ewg_param_pt)
+
+void  ewg_function_LocalToGlobal (Point *pt);
+// Wraps call to function 'GlobalToLocal' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GlobalToLocal(ewg_param_pt) GlobalToLocal ((Point*)ewg_param_pt)
+
+void  ewg_function_GlobalToLocal (Point *pt);
+// Wraps call to function 'Random' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Random Random ()
+
+short  ewg_function_Random (void);
+// Wraps call to function 'StuffHex' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StuffHex(ewg_param_thingPtr, ewg_param_s) StuffHex ((void*)ewg_param_thingPtr, (ConstStr255Param)ewg_param_s)
+
+void  ewg_function_StuffHex (void *thingPtr, ConstStr255Param s);
+// Wraps call to function 'GetPixel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPixel(ewg_param_h, ewg_param_v) GetPixel ((short)ewg_param_h, (short)ewg_param_v)
+
+Boolean  ewg_function_GetPixel (short h, short v);
+// Wraps call to function 'ScalePt' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ScalePt(ewg_param_pt, ewg_param_srcRect, ewg_param_dstRect) ScalePt ((Point*)ewg_param_pt, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect)
+
+void  ewg_function_ScalePt (Point *pt, Rect const *srcRect, Rect const *dstRect);
+// Wraps call to function 'MapPt' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MapPt(ewg_param_pt, ewg_param_srcRect, ewg_param_dstRect) MapPt ((Point*)ewg_param_pt, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect)
+
+void  ewg_function_MapPt (Point *pt, Rect const *srcRect, Rect const *dstRect);
+// Wraps call to function 'MapRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MapRect(ewg_param_r, ewg_param_srcRect, ewg_param_dstRect) MapRect ((Rect*)ewg_param_r, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect)
+
+void  ewg_function_MapRect (Rect *r, Rect const *srcRect, Rect const *dstRect);
+// Wraps call to function 'MapRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MapRgn(ewg_param_rgn, ewg_param_srcRect, ewg_param_dstRect) MapRgn ((RgnHandle)ewg_param_rgn, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect)
+
+void  ewg_function_MapRgn (RgnHandle rgn, Rect const *srcRect, Rect const *dstRect);
+// Wraps call to function 'MapPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MapPoly(ewg_param_poly, ewg_param_srcRect, ewg_param_dstRect) MapPoly ((PolyHandle)ewg_param_poly, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect)
+
+void  ewg_function_MapPoly (PolyHandle poly, Rect const *srcRect, Rect const *dstRect);
+// Wraps call to function 'SetStdProcs' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetStdProcs(ewg_param_procs) SetStdProcs ((QDProcs*)ewg_param_procs)
+
+void  ewg_function_SetStdProcs (QDProcs *procs);
+// Wraps call to function 'StdRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdRect(ewg_param_verb, ewg_param_r) StdRect ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r)
+
+void  ewg_function_StdRect (GrafVerb verb, Rect const *r);
+// Wraps call to function 'StdRRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdRRect(ewg_param_verb, ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight) StdRRect ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight)
+
+void  ewg_function_StdRRect (GrafVerb verb, Rect const *r, short ovalWidth, short ovalHeight);
+// Wraps call to function 'StdOval' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdOval(ewg_param_verb, ewg_param_r) StdOval ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r)
+
+void  ewg_function_StdOval (GrafVerb verb, Rect const *r);
+// Wraps call to function 'StdArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdArc(ewg_param_verb, ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle) StdArc ((GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle)
+
+void  ewg_function_StdArc (GrafVerb verb, Rect const *r, short startAngle, short arcAngle);
+// Wraps call to function 'StdPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdPoly(ewg_param_verb, ewg_param_poly) StdPoly ((GrafVerb)ewg_param_verb, (PolyHandle)ewg_param_poly)
+
+void  ewg_function_StdPoly (GrafVerb verb, PolyHandle poly);
+// Wraps call to function 'StdRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdRgn(ewg_param_verb, ewg_param_rgn) StdRgn ((GrafVerb)ewg_param_verb, (RgnHandle)ewg_param_rgn)
+
+void  ewg_function_StdRgn (GrafVerb verb, RgnHandle rgn);
+// Wraps call to function 'StdBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdBits(ewg_param_srcBits, ewg_param_srcRect, ewg_param_dstRect, ewg_param_mode, ewg_param_maskRgn) StdBits ((BitMap const*)ewg_param_srcBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect, (short)ewg_param_mode, (RgnHandle)ewg_param_maskRgn)
+
+void  ewg_function_StdBits (BitMap const *srcBits, Rect const *srcRect, Rect const *dstRect, short mode, RgnHandle maskRgn);
+// Wraps call to function 'StdComment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdComment(ewg_param_kind, ewg_param_dataSize, ewg_param_dataHandle) StdComment ((short)ewg_param_kind, (short)ewg_param_dataSize, (Handle)ewg_param_dataHandle)
+
+void  ewg_function_StdComment (short kind, short dataSize, Handle dataHandle);
+// Wraps call to function 'StdGetPic' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdGetPic(ewg_param_dataPtr, ewg_param_byteCount) StdGetPic ((void*)ewg_param_dataPtr, (short)ewg_param_byteCount)
+
+void  ewg_function_StdGetPic (void *dataPtr, short byteCount);
+// Wraps call to function 'StdPutPic' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdPutPic(ewg_param_dataPtr, ewg_param_byteCount) StdPutPic ((void const*)ewg_param_dataPtr, (short)ewg_param_byteCount)
+
+void  ewg_function_StdPutPic (void const *dataPtr, short byteCount);
+// Wraps call to function 'StdOpcode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdOpcode(ewg_param_fromRect, ewg_param_toRect, ewg_param_opcode, ewg_param_version) StdOpcode ((Rect const*)ewg_param_fromRect, (Rect const*)ewg_param_toRect, (UInt16)ewg_param_opcode, (SInt16)ewg_param_version)
+
+void  ewg_function_StdOpcode (Rect const *fromRect, Rect const *toRect, UInt16 opcode, SInt16 version);
+// Wraps call to function 'AddPt' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AddPt(ewg_param_src, ewg_param_dst) AddPt (*(Point*)ewg_param_src, (Point*)ewg_param_dst)
+
+void  ewg_function_AddPt (Point *src, Point *dst);
+// Wraps call to function 'EqualPt' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EqualPt(ewg_param_pt1, ewg_param_pt2) EqualPt (*(Point*)ewg_param_pt1, *(Point*)ewg_param_pt2)
+
+Boolean  ewg_function_EqualPt (Point *pt1, Point *pt2);
+// Wraps call to function 'PtInRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PtInRect(ewg_param_pt, ewg_param_r) PtInRect (*(Point*)ewg_param_pt, (Rect const*)ewg_param_r)
+
+Boolean  ewg_function_PtInRect (Point *pt, Rect const *r);
+// Wraps call to function 'Pt2Rect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Pt2Rect(ewg_param_pt1, ewg_param_pt2, ewg_param_dstRect) Pt2Rect (*(Point*)ewg_param_pt1, *(Point*)ewg_param_pt2, (Rect*)ewg_param_dstRect)
+
+void  ewg_function_Pt2Rect (Point *pt1, Point *pt2, Rect *dstRect);
+// Wraps call to function 'PtToAngle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PtToAngle(ewg_param_r, ewg_param_pt, ewg_param_angle) PtToAngle ((Rect const*)ewg_param_r, *(Point*)ewg_param_pt, (short*)ewg_param_angle)
+
+void  ewg_function_PtToAngle (Rect const *r, Point *pt, short *angle);
+// Wraps call to function 'SubPt' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SubPt(ewg_param_src, ewg_param_dst) SubPt (*(Point*)ewg_param_src, (Point*)ewg_param_dst)
+
+void  ewg_function_SubPt (Point *src, Point *dst);
+// Wraps call to function 'PtInRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PtInRgn(ewg_param_pt, ewg_param_rgn) PtInRgn (*(Point*)ewg_param_pt, (RgnHandle)ewg_param_rgn)
+
+Boolean  ewg_function_PtInRgn (Point *pt, RgnHandle rgn);
+// Wraps call to function 'StdLine' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StdLine(ewg_param_newPt) StdLine (*(Point*)ewg_param_newPt)
+
+void  ewg_function_StdLine (Point *newPt);
+// Wraps call to function 'NewPixMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewPixMap NewPixMap ()
+
+PixMapHandle  ewg_function_NewPixMap (void);
+// Wraps call to function 'DisposePixMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposePixMap(ewg_param_pm) DisposePixMap ((PixMapHandle)ewg_param_pm)
+
+void  ewg_function_DisposePixMap (PixMapHandle pm);
+// Wraps call to function 'CopyPixMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyPixMap(ewg_param_srcPM, ewg_param_dstPM) CopyPixMap ((PixMapHandle)ewg_param_srcPM, (PixMapHandle)ewg_param_dstPM)
+
+void  ewg_function_CopyPixMap (PixMapHandle srcPM, PixMapHandle dstPM);
+// Wraps call to function 'NewPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewPixPat NewPixPat ()
+
+PixPatHandle  ewg_function_NewPixPat (void);
+// Wraps call to function 'DisposePixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposePixPat(ewg_param_pp) DisposePixPat ((PixPatHandle)ewg_param_pp)
+
+void  ewg_function_DisposePixPat (PixPatHandle pp);
+// Wraps call to function 'CopyPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyPixPat(ewg_param_srcPP, ewg_param_dstPP) CopyPixPat ((PixPatHandle)ewg_param_srcPP, (PixPatHandle)ewg_param_dstPP)
+
+void  ewg_function_CopyPixPat (PixPatHandle srcPP, PixPatHandle dstPP);
+// Wraps call to function 'PenPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PenPixPat(ewg_param_pp) PenPixPat ((PixPatHandle)ewg_param_pp)
+
+void  ewg_function_PenPixPat (PixPatHandle pp);
+// Wraps call to function 'BackPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BackPixPat(ewg_param_pp) BackPixPat ((PixPatHandle)ewg_param_pp)
+
+void  ewg_function_BackPixPat (PixPatHandle pp);
+// Wraps call to function 'GetPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPixPat(ewg_param_patID) GetPixPat ((short)ewg_param_patID)
+
+PixPatHandle  ewg_function_GetPixPat (short patID);
+// Wraps call to function 'MakeRGBPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MakeRGBPat(ewg_param_pp, ewg_param_myColor) MakeRGBPat ((PixPatHandle)ewg_param_pp, (RGBColor const*)ewg_param_myColor)
+
+void  ewg_function_MakeRGBPat (PixPatHandle pp, RGBColor const *myColor);
+// Wraps call to function 'FillCRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillCRect(ewg_param_r, ewg_param_pp) FillCRect ((Rect const*)ewg_param_r, (PixPatHandle)ewg_param_pp)
+
+void  ewg_function_FillCRect (Rect const *r, PixPatHandle pp);
+// Wraps call to function 'FillCOval' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillCOval(ewg_param_r, ewg_param_pp) FillCOval ((Rect const*)ewg_param_r, (PixPatHandle)ewg_param_pp)
+
+void  ewg_function_FillCOval (Rect const *r, PixPatHandle pp);
+// Wraps call to function 'FillCRoundRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillCRoundRect(ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight, ewg_param_pp) FillCRoundRect ((Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight, (PixPatHandle)ewg_param_pp)
+
+void  ewg_function_FillCRoundRect (Rect const *r, short ovalWidth, short ovalHeight, PixPatHandle pp);
+// Wraps call to function 'FillCArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillCArc(ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle, ewg_param_pp) FillCArc ((Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle, (PixPatHandle)ewg_param_pp)
+
+void  ewg_function_FillCArc (Rect const *r, short startAngle, short arcAngle, PixPatHandle pp);
+// Wraps call to function 'FillCRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillCRgn(ewg_param_rgn, ewg_param_pp) FillCRgn ((RgnHandle)ewg_param_rgn, (PixPatHandle)ewg_param_pp)
+
+void  ewg_function_FillCRgn (RgnHandle rgn, PixPatHandle pp);
+// Wraps call to function 'FillCPoly' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FillCPoly(ewg_param_poly, ewg_param_pp) FillCPoly ((PolyHandle)ewg_param_poly, (PixPatHandle)ewg_param_pp)
+
+void  ewg_function_FillCPoly (PolyHandle poly, PixPatHandle pp);
+// Wraps call to function 'RGBForeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RGBForeColor(ewg_param_color) RGBForeColor ((RGBColor const*)ewg_param_color)
+
+void  ewg_function_RGBForeColor (RGBColor const *color);
+// Wraps call to function 'RGBBackColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RGBBackColor(ewg_param_color) RGBBackColor ((RGBColor const*)ewg_param_color)
+
+void  ewg_function_RGBBackColor (RGBColor const *color);
+// Wraps call to function 'SetCPixel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetCPixel(ewg_param_h, ewg_param_v, ewg_param_cPix) SetCPixel ((short)ewg_param_h, (short)ewg_param_v, (RGBColor const*)ewg_param_cPix)
+
+void  ewg_function_SetCPixel (short h, short v, RGBColor const *cPix);
+// Wraps call to function 'SetPortPix' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortPix(ewg_param_pm) SetPortPix ((PixMapHandle)ewg_param_pm)
+
+void  ewg_function_SetPortPix (PixMapHandle pm);
+// Wraps call to function 'GetCPixel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCPixel(ewg_param_h, ewg_param_v, ewg_param_cPix) GetCPixel ((short)ewg_param_h, (short)ewg_param_v, (RGBColor*)ewg_param_cPix)
+
+void  ewg_function_GetCPixel (short h, short v, RGBColor *cPix);
+// Wraps call to function 'GetForeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetForeColor(ewg_param_color) GetForeColor ((RGBColor*)ewg_param_color)
+
+void  ewg_function_GetForeColor (RGBColor *color);
+// Wraps call to function 'GetBackColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetBackColor(ewg_param_color) GetBackColor ((RGBColor*)ewg_param_color)
+
+void  ewg_function_GetBackColor (RGBColor *color);
+// Wraps call to function 'SeedCFill' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SeedCFill(ewg_param_srcBits, ewg_param_dstBits, ewg_param_srcRect, ewg_param_dstRect, ewg_param_seedH, ewg_param_seedV, ewg_param_matchProc, ewg_param_matchData) SeedCFill ((BitMap const*)ewg_param_srcBits, (BitMap const*)ewg_param_dstBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect, (short)ewg_param_seedH, (short)ewg_param_seedV, (ColorSearchUPP)ewg_param_matchProc, (long)ewg_param_matchData)
+
+void  ewg_function_SeedCFill (BitMap const *srcBits, BitMap const *dstBits, Rect const *srcRect, Rect const *dstRect, short seedH, short seedV, ColorSearchUPP matchProc, long matchData);
+// Wraps call to function 'CalcCMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CalcCMask(ewg_param_srcBits, ewg_param_dstBits, ewg_param_srcRect, ewg_param_dstRect, ewg_param_seedRGB, ewg_param_matchProc, ewg_param_matchData) CalcCMask ((BitMap const*)ewg_param_srcBits, (BitMap const*)ewg_param_dstBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect, (RGBColor const*)ewg_param_seedRGB, (ColorSearchUPP)ewg_param_matchProc, (long)ewg_param_matchData)
+
+void  ewg_function_CalcCMask (BitMap const *srcBits, BitMap const *dstBits, Rect const *srcRect, Rect const *dstRect, RGBColor const *seedRGB, ColorSearchUPP matchProc, long matchData);
+// Wraps call to function 'OpenCPicture' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpenCPicture(ewg_param_newHeader) OpenCPicture ((OpenCPicParams const*)ewg_param_newHeader)
+
+PicHandle  ewg_function_OpenCPicture (OpenCPicParams const *newHeader);
+// Wraps call to function 'OpColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpColor(ewg_param_color) OpColor ((RGBColor const*)ewg_param_color)
+
+void  ewg_function_OpColor (RGBColor const *color);
+// Wraps call to function 'HiliteColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HiliteColor(ewg_param_color) HiliteColor ((RGBColor const*)ewg_param_color)
+
+void  ewg_function_HiliteColor (RGBColor const *color);
+// Wraps call to function 'DisposeCTable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeCTable(ewg_param_cTable) DisposeCTable ((CTabHandle)ewg_param_cTable)
+
+void  ewg_function_DisposeCTable (CTabHandle cTable);
+// Wraps call to function 'GetCTable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCTable(ewg_param_ctID) GetCTable ((short)ewg_param_ctID)
+
+CTabHandle  ewg_function_GetCTable (short ctID);
+// Wraps call to function 'GetCCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCCursor(ewg_param_crsrID) GetCCursor ((short)ewg_param_crsrID)
+
+CCrsrHandle  ewg_function_GetCCursor (short crsrID);
+// Wraps call to function 'SetCCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetCCursor(ewg_param_cCrsr) SetCCursor ((CCrsrHandle)ewg_param_cCrsr)
+
+void  ewg_function_SetCCursor (CCrsrHandle cCrsr);
+// Wraps call to function 'AllocCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AllocCursor AllocCursor ()
+
+void  ewg_function_AllocCursor (void);
+// Wraps call to function 'DisposeCCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeCCursor(ewg_param_cCrsr) DisposeCCursor ((CCrsrHandle)ewg_param_cCrsr)
+
+void  ewg_function_DisposeCCursor (CCrsrHandle cCrsr);
+// Wraps call to function 'SetStdCProcs' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetStdCProcs(ewg_param_procs) SetStdCProcs ((CQDProcs*)ewg_param_procs)
+
+void  ewg_function_SetStdCProcs (CQDProcs *procs);
+// Wraps call to function 'GetMaxDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMaxDevice(ewg_param_globalRect) GetMaxDevice ((Rect const*)ewg_param_globalRect)
+
+GDHandle  ewg_function_GetMaxDevice (Rect const *globalRect);
+// Wraps call to function 'GetCTSeed' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCTSeed GetCTSeed ()
+
+long  ewg_function_GetCTSeed (void);
+// Wraps call to function 'GetDeviceList' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDeviceList GetDeviceList ()
+
+GDHandle  ewg_function_GetDeviceList (void);
+// Wraps call to function 'GetMainDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMainDevice GetMainDevice ()
+
+GDHandle  ewg_function_GetMainDevice (void);
+// Wraps call to function 'GetNextDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNextDevice(ewg_param_curDevice) GetNextDevice ((GDHandle)ewg_param_curDevice)
+
+GDHandle  ewg_function_GetNextDevice (GDHandle curDevice);
+// Wraps call to function 'TestDeviceAttribute' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TestDeviceAttribute(ewg_param_gdh, ewg_param_attribute) TestDeviceAttribute ((GDHandle)ewg_param_gdh, (short)ewg_param_attribute)
+
+Boolean  ewg_function_TestDeviceAttribute (GDHandle gdh, short attribute);
+// Wraps call to function 'SetDeviceAttribute' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDeviceAttribute(ewg_param_gdh, ewg_param_attribute, ewg_param_value) SetDeviceAttribute ((GDHandle)ewg_param_gdh, (short)ewg_param_attribute, (Boolean)ewg_param_value)
+
+void  ewg_function_SetDeviceAttribute (GDHandle gdh, short attribute, Boolean value);
+// Wraps call to function 'InitGDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InitGDevice(ewg_param_qdRefNum, ewg_param_mode, ewg_param_gdh) InitGDevice ((short)ewg_param_qdRefNum, (long)ewg_param_mode, (GDHandle)ewg_param_gdh)
+
+void  ewg_function_InitGDevice (short qdRefNum, long mode, GDHandle gdh);
+// Wraps call to function 'NewGDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewGDevice(ewg_param_refNum, ewg_param_mode) NewGDevice ((short)ewg_param_refNum, (long)ewg_param_mode)
+
+GDHandle  ewg_function_NewGDevice (short refNum, long mode);
+// Wraps call to function 'DisposeGDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeGDevice(ewg_param_gdh) DisposeGDevice ((GDHandle)ewg_param_gdh)
+
+void  ewg_function_DisposeGDevice (GDHandle gdh);
+// Wraps call to function 'SetGDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetGDevice(ewg_param_gd) SetGDevice ((GDHandle)ewg_param_gd)
+
+void  ewg_function_SetGDevice (GDHandle gd);
+// Wraps call to function 'GetGDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetGDevice GetGDevice ()
+
+GDHandle  ewg_function_GetGDevice (void);
+// Wraps call to function 'Color2Index' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Color2Index(ewg_param_myColor) Color2Index ((RGBColor const*)ewg_param_myColor)
+
+long  ewg_function_Color2Index (RGBColor const *myColor);
+// Wraps call to function 'Index2Color' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Index2Color(ewg_param_index, ewg_param_aColor) Index2Color ((long)ewg_param_index, (RGBColor*)ewg_param_aColor)
+
+void  ewg_function_Index2Color (long index, RGBColor *aColor);
+// Wraps call to function 'InvertColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvertColor(ewg_param_myColor) InvertColor ((RGBColor*)ewg_param_myColor)
+
+void  ewg_function_InvertColor (RGBColor *myColor);
+// Wraps call to function 'RealColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RealColor(ewg_param_color) RealColor ((RGBColor const*)ewg_param_color)
+
+Boolean  ewg_function_RealColor (RGBColor const *color);
+// Wraps call to function 'GetSubTable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetSubTable(ewg_param_myColors, ewg_param_iTabRes, ewg_param_targetTbl) GetSubTable ((CTabHandle)ewg_param_myColors, (short)ewg_param_iTabRes, (CTabHandle)ewg_param_targetTbl)
+
+void  ewg_function_GetSubTable (CTabHandle myColors, short iTabRes, CTabHandle targetTbl);
+// Wraps call to function 'MakeITable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MakeITable(ewg_param_cTabH, ewg_param_iTabH, ewg_param_res) MakeITable ((CTabHandle)ewg_param_cTabH, (ITabHandle)ewg_param_iTabH, (short)ewg_param_res)
+
+void  ewg_function_MakeITable (CTabHandle cTabH, ITabHandle iTabH, short res);
+// Wraps call to function 'AddSearch' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AddSearch(ewg_param_searchProc) AddSearch ((ColorSearchUPP)ewg_param_searchProc)
+
+void  ewg_function_AddSearch (ColorSearchUPP searchProc);
+// Wraps call to function 'AddComp' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AddComp(ewg_param_compProc) AddComp ((ColorComplementUPP)ewg_param_compProc)
+
+void  ewg_function_AddComp (ColorComplementUPP compProc);
+// Wraps call to function 'DelSearch' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DelSearch(ewg_param_searchProc) DelSearch ((ColorSearchUPP)ewg_param_searchProc)
+
+void  ewg_function_DelSearch (ColorSearchUPP searchProc);
+// Wraps call to function 'DelComp' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DelComp(ewg_param_compProc) DelComp ((ColorComplementUPP)ewg_param_compProc)
+
+void  ewg_function_DelComp (ColorComplementUPP compProc);
+// Wraps call to function 'SetClientID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetClientID(ewg_param_id) SetClientID ((short)ewg_param_id)
+
+void  ewg_function_SetClientID (short id);
+// Wraps call to function 'ProtectEntry' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ProtectEntry(ewg_param_index, ewg_param_protect) ProtectEntry ((short)ewg_param_index, (Boolean)ewg_param_protect)
+
+void  ewg_function_ProtectEntry (short index, Boolean protect);
+// Wraps call to function 'ReserveEntry' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReserveEntry(ewg_param_index, ewg_param_reserve) ReserveEntry ((short)ewg_param_index, (Boolean)ewg_param_reserve)
+
+void  ewg_function_ReserveEntry (short index, Boolean reserve);
+// Wraps call to function 'SetEntries' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetEntries(ewg_param_start, ewg_param_count, ewg_param_aTable) SetEntries ((short)ewg_param_start, (short)ewg_param_count, ewg_param_aTable)
+
+void  ewg_function_SetEntries (short start, short count, void *aTable);
+// Wraps call to function 'SaveEntries' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SaveEntries(ewg_param_srcTable, ewg_param_resultTable, ewg_param_selection) SaveEntries ((CTabHandle)ewg_param_srcTable, (CTabHandle)ewg_param_resultTable, (ReqListRec*)ewg_param_selection)
+
+void  ewg_function_SaveEntries (CTabHandle srcTable, CTabHandle resultTable, ReqListRec *selection);
+// Wraps call to function 'RestoreEntries' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RestoreEntries(ewg_param_srcTable, ewg_param_dstTable, ewg_param_selection) RestoreEntries ((CTabHandle)ewg_param_srcTable, (CTabHandle)ewg_param_dstTable, (ReqListRec*)ewg_param_selection)
+
+void  ewg_function_RestoreEntries (CTabHandle srcTable, CTabHandle dstTable, ReqListRec *selection);
+// Wraps call to function 'QDError' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDError QDError ()
+
+short  ewg_function_QDError (void);
+// Wraps call to function 'CopyDeepMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyDeepMask(ewg_param_srcBits, ewg_param_maskBits, ewg_param_dstBits, ewg_param_srcRect, ewg_param_maskRect, ewg_param_dstRect, ewg_param_mode, ewg_param_maskRgn) CopyDeepMask ((BitMap const*)ewg_param_srcBits, (BitMap const*)ewg_param_maskBits, (BitMap const*)ewg_param_dstBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_maskRect, (Rect const*)ewg_param_dstRect, (short)ewg_param_mode, (RgnHandle)ewg_param_maskRgn)
+
+void  ewg_function_CopyDeepMask (BitMap const *srcBits, BitMap const *maskBits, BitMap const *dstBits, Rect const *srcRect, Rect const *maskRect, Rect const *dstRect, short mode, RgnHandle maskRgn);
+// Wraps call to function 'DeviceLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DeviceLoop(ewg_param_drawingRgn, ewg_param_drawingProc, ewg_param_userData, ewg_param_flags) DeviceLoop ((RgnHandle)ewg_param_drawingRgn, (DeviceLoopDrawingUPP)ewg_param_drawingProc, (long)ewg_param_userData, (DeviceLoopFlags)ewg_param_flags)
+
+void  ewg_function_DeviceLoop (RgnHandle drawingRgn, DeviceLoopDrawingUPP drawingProc, long userData, DeviceLoopFlags flags);
+// Wraps call to function 'GetMaskTable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMaskTable GetMaskTable ()
+
+Ptr  ewg_function_GetMaskTable (void);
+// Wraps call to function 'GetPattern' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPattern(ewg_param_patternID) GetPattern ((short)ewg_param_patternID)
+
+PatHandle  ewg_function_GetPattern (short patternID);
+// Wraps call to function 'GetCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCursor(ewg_param_cursorID) GetCursor ((short)ewg_param_cursorID)
+
+CursHandle  ewg_function_GetCursor (short cursorID);
+// Wraps call to function 'GetPicture' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPicture(ewg_param_pictureID) GetPicture ((short)ewg_param_pictureID)
+
+PicHandle  ewg_function_GetPicture (short pictureID);
+// Wraps call to function 'DeltaPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DeltaPoint(ewg_param_ptA, ewg_param_ptB) DeltaPoint (*(Point*)ewg_param_ptA, *(Point*)ewg_param_ptB)
+
+long  ewg_function_DeltaPoint (Point *ptA, Point *ptB);
+// Wraps call to function 'ShieldCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShieldCursor(ewg_param_shieldRect, ewg_param_offsetPt) ShieldCursor ((Rect const*)ewg_param_shieldRect, *(Point*)ewg_param_offsetPt)
+
+void  ewg_function_ShieldCursor (Rect const *shieldRect, Point *offsetPt);
+// Wraps call to function 'ScreenRes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ScreenRes(ewg_param_scrnHRes, ewg_param_scrnVRes) ScreenRes ((short*)ewg_param_scrnHRes, (short*)ewg_param_scrnVRes)
+
+void  ewg_function_ScreenRes (short *scrnHRes, short *scrnVRes);
+// Wraps call to function 'GetIndPattern' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetIndPattern(ewg_param_thePat, ewg_param_patternListID, ewg_param_index) GetIndPattern ((Pattern*)ewg_param_thePat, (short)ewg_param_patternListID, (short)ewg_param_index)
+
+void  ewg_function_GetIndPattern (Pattern *thePat, short patternListID, short index);
+// Wraps call to function 'deltapoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_deltapoint(ewg_param_ptA, ewg_param_ptB) deltapoint ((Point*)ewg_param_ptA, (Point*)ewg_param_ptB)
+
+long  ewg_function_deltapoint (Point *ptA, Point *ptB);
+// Wraps call to function 'PackBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PackBits(ewg_param_srcPtr, ewg_param_dstPtr, ewg_param_srcBytes) PackBits ((Ptr*)ewg_param_srcPtr, (Ptr*)ewg_param_dstPtr, (short)ewg_param_srcBytes)
+
+void  ewg_function_PackBits (Ptr *srcPtr, Ptr *dstPtr, short srcBytes);
+// Wraps call to function 'UnpackBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UnpackBits(ewg_param_srcPtr, ewg_param_dstPtr, ewg_param_dstBytes) UnpackBits ((Ptr*)ewg_param_srcPtr, (Ptr*)ewg_param_dstPtr, (short)ewg_param_dstBytes)
+
+void  ewg_function_UnpackBits (Ptr *srcPtr, Ptr *dstPtr, short dstBytes);
+// Wraps call to function 'SlopeFromAngle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SlopeFromAngle(ewg_param_angle) SlopeFromAngle ((short)ewg_param_angle)
+
+Fixed  ewg_function_SlopeFromAngle (short angle);
+// Wraps call to function 'AngleFromSlope' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AngleFromSlope(ewg_param_slope) AngleFromSlope ((Fixed)ewg_param_slope)
+
+short  ewg_function_AngleFromSlope (Fixed slope);
+// Wraps call to function 'GetPortCustomXFerProc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortCustomXFerProc(ewg_param_port, ewg_param_proc, ewg_param_flags, ewg_param_refCon) GetPortCustomXFerProc ((CGrafPtr)ewg_param_port, (CustomXFerProcPtr*)ewg_param_proc, (UInt32*)ewg_param_flags, (UInt32*)ewg_param_refCon)
+
+OSErr  ewg_function_GetPortCustomXFerProc (CGrafPtr port, CustomXFerProcPtr *proc, UInt32 *flags, UInt32 *refCon);
+// Wraps call to function 'SetPortCustomXFerProc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortCustomXFerProc(ewg_param_port, ewg_param_proc, ewg_param_flags, ewg_param_refCon) SetPortCustomXFerProc ((CGrafPtr)ewg_param_port, (CustomXFerProcPtr)ewg_param_proc, (UInt32)ewg_param_flags, (UInt32)ewg_param_refCon)
+
+OSErr  ewg_function_SetPortCustomXFerProc (CGrafPtr port, CustomXFerProcPtr proc, UInt32 flags, UInt32 refCon);
+// Wraps call to function 'OpenCursorComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpenCursorComponent(ewg_param_c, ewg_param_ci) OpenCursorComponent ((Component)ewg_param_c, (ComponentInstance*)ewg_param_ci)
+
+OSErr  ewg_function_OpenCursorComponent (Component c, ComponentInstance *ci);
+// Wraps call to function 'CloseCursorComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CloseCursorComponent(ewg_param_ci) CloseCursorComponent ((ComponentInstance)ewg_param_ci)
+
+OSErr  ewg_function_CloseCursorComponent (ComponentInstance ci);
+// Wraps call to function 'SetCursorComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetCursorComponent(ewg_param_ci) SetCursorComponent ((ComponentInstance)ewg_param_ci)
+
+OSErr  ewg_function_SetCursorComponent (ComponentInstance ci);
+// Wraps call to function 'CursorComponentChanged' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CursorComponentChanged(ewg_param_ci) CursorComponentChanged ((ComponentInstance)ewg_param_ci)
+
+OSErr  ewg_function_CursorComponentChanged (ComponentInstance ci);
+// Wraps call to function 'CursorComponentSetData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CursorComponentSetData(ewg_param_ci, ewg_param_data) CursorComponentSetData ((ComponentInstance)ewg_param_ci, (long)ewg_param_data)
+
+OSErr  ewg_function_CursorComponentSetData (ComponentInstance ci, long data);
+// Wraps call to function 'CWMatchPixMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CWMatchPixMap(ewg_param_cw, ewg_param_myPixMap, ewg_param_progressProc, ewg_param_refCon) CWMatchPixMap ((CMWorldRef)ewg_param_cw, (PixMap*)ewg_param_myPixMap, (CMBitmapCallBackUPP)ewg_param_progressProc, (void*)ewg_param_refCon)
+
+CMError  ewg_function_CWMatchPixMap (CMWorldRef cw, PixMap *myPixMap, CMBitmapCallBackUPP progressProc, void *refCon);
+// Wraps call to function 'CWCheckPixMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CWCheckPixMap(ewg_param_cw, ewg_param_myPixMap, ewg_param_progressProc, ewg_param_refCon, ewg_param_resultBitMap) CWCheckPixMap ((CMWorldRef)ewg_param_cw, (PixMap*)ewg_param_myPixMap, (CMBitmapCallBackUPP)ewg_param_progressProc, (void*)ewg_param_refCon, (BitMap*)ewg_param_resultBitMap)
+
+CMError  ewg_function_CWCheckPixMap (CMWorldRef cw, PixMap *myPixMap, CMBitmapCallBackUPP progressProc, void *refCon, BitMap *resultBitMap);
+// Wraps call to function 'NCMBeginMatching' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NCMBeginMatching(ewg_param_src, ewg_param_dst, ewg_param_myRef) NCMBeginMatching ((CMProfileRef)ewg_param_src, (CMProfileRef)ewg_param_dst, (CMMatchRef*)ewg_param_myRef)
+
+CMError  ewg_function_NCMBeginMatching (CMProfileRef src, CMProfileRef dst, CMMatchRef *myRef);
+// Wraps call to function 'CMEndMatching' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CMEndMatching(ewg_param_myRef) CMEndMatching ((CMMatchRef)ewg_param_myRef)
+
+void  ewg_function_CMEndMatching (CMMatchRef myRef);
+// Wraps call to function 'NCMDrawMatchedPicture' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NCMDrawMatchedPicture(ewg_param_myPicture, ewg_param_dst, ewg_param_myRect) NCMDrawMatchedPicture ((PicHandle)ewg_param_myPicture, (CMProfileRef)ewg_param_dst, (Rect*)ewg_param_myRect)
+
+void  ewg_function_NCMDrawMatchedPicture (PicHandle myPicture, CMProfileRef dst, Rect *myRect);
+// Wraps call to function 'CMEnableMatchingComment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CMEnableMatchingComment(ewg_param_enableIt) CMEnableMatchingComment ((Boolean)ewg_param_enableIt)
+
+void  ewg_function_CMEnableMatchingComment (Boolean enableIt);
+// Wraps call to function 'NCMUseProfileComment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NCMUseProfileComment(ewg_param_prof, ewg_param_flags) NCMUseProfileComment ((CMProfileRef)ewg_param_prof, (UInt32)ewg_param_flags)
+
+CMError  ewg_function_NCMUseProfileComment (CMProfileRef prof, UInt32 flags);
+// Wraps call to function 'IsValidPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsValidPort(ewg_param_port) IsValidPort ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsValidPort (CGrafPtr port);
+// Wraps call to function 'IsValidRgnHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsValidRgnHandle(ewg_param_rgn) IsValidRgnHandle ((RgnHandle)ewg_param_rgn)
+
+Boolean  ewg_function_IsValidRgnHandle (RgnHandle rgn);
+// Wraps call to function 'GetPortPixMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortPixMap(ewg_param_port) GetPortPixMap ((CGrafPtr)ewg_param_port)
+
+PixMapHandle  ewg_function_GetPortPixMap (CGrafPtr port);
+// Wraps call to function 'GetPortBitMapForCopyBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortBitMapForCopyBits(ewg_param_port) GetPortBitMapForCopyBits ((CGrafPtr)ewg_param_port)
+
+BitMap const * ewg_function_GetPortBitMapForCopyBits (CGrafPtr port);
+// Wraps call to function 'GetPortBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortBounds(ewg_param_port, ewg_param_rect) GetPortBounds ((CGrafPtr)ewg_param_port, (Rect*)ewg_param_rect)
+
+Rect * ewg_function_GetPortBounds (CGrafPtr port, Rect *rect);
+// Wraps call to function 'GetPortForeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortForeColor(ewg_param_port, ewg_param_foreColor) GetPortForeColor ((CGrafPtr)ewg_param_port, (RGBColor*)ewg_param_foreColor)
+
+RGBColor * ewg_function_GetPortForeColor (CGrafPtr port, RGBColor *foreColor);
+// Wraps call to function 'GetPortBackColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortBackColor(ewg_param_port, ewg_param_backColor) GetPortBackColor ((CGrafPtr)ewg_param_port, (RGBColor*)ewg_param_backColor)
+
+RGBColor * ewg_function_GetPortBackColor (CGrafPtr port, RGBColor *backColor);
+// Wraps call to function 'GetPortOpColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortOpColor(ewg_param_port, ewg_param_opColor) GetPortOpColor ((CGrafPtr)ewg_param_port, (RGBColor*)ewg_param_opColor)
+
+RGBColor * ewg_function_GetPortOpColor (CGrafPtr port, RGBColor *opColor);
+// Wraps call to function 'GetPortHiliteColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortHiliteColor(ewg_param_port, ewg_param_hiliteColor) GetPortHiliteColor ((CGrafPtr)ewg_param_port, (RGBColor*)ewg_param_hiliteColor)
+
+RGBColor * ewg_function_GetPortHiliteColor (CGrafPtr port, RGBColor *hiliteColor);
+// Wraps call to function 'GetPortGrafProcs' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortGrafProcs(ewg_param_port) GetPortGrafProcs ((CGrafPtr)ewg_param_port)
+
+CQDProcsPtr  ewg_function_GetPortGrafProcs (CGrafPtr port);
+// Wraps call to function 'GetPortTextFont' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortTextFont(ewg_param_port) GetPortTextFont ((CGrafPtr)ewg_param_port)
+
+short  ewg_function_GetPortTextFont (CGrafPtr port);
+// Wraps call to function 'GetPortTextFace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortTextFace(ewg_param_port) GetPortTextFace ((CGrafPtr)ewg_param_port)
+
+Style  ewg_function_GetPortTextFace (CGrafPtr port);
+// Wraps call to function 'GetPortTextMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortTextMode(ewg_param_port) GetPortTextMode ((CGrafPtr)ewg_param_port)
+
+short  ewg_function_GetPortTextMode (CGrafPtr port);
+// Wraps call to function 'GetPortTextSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortTextSize(ewg_param_port) GetPortTextSize ((CGrafPtr)ewg_param_port)
+
+short  ewg_function_GetPortTextSize (CGrafPtr port);
+// Wraps call to function 'GetPortChExtra' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortChExtra(ewg_param_port) GetPortChExtra ((CGrafPtr)ewg_param_port)
+
+short  ewg_function_GetPortChExtra (CGrafPtr port);
+// Wraps call to function 'GetPortFracHPenLocation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortFracHPenLocation(ewg_param_port) GetPortFracHPenLocation ((CGrafPtr)ewg_param_port)
+
+short  ewg_function_GetPortFracHPenLocation (CGrafPtr port);
+// Wraps call to function 'GetPortSpExtra' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortSpExtra(ewg_param_port) GetPortSpExtra ((CGrafPtr)ewg_param_port)
+
+Fixed  ewg_function_GetPortSpExtra (CGrafPtr port);
+// Wraps call to function 'GetPortPenVisibility' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortPenVisibility(ewg_param_port) GetPortPenVisibility ((CGrafPtr)ewg_param_port)
+
+short  ewg_function_GetPortPenVisibility (CGrafPtr port);
+// Wraps call to function 'GetPortVisibleRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortVisibleRegion(ewg_param_port, ewg_param_visRgn) GetPortVisibleRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_visRgn)
+
+RgnHandle  ewg_function_GetPortVisibleRegion (CGrafPtr port, RgnHandle visRgn);
+// Wraps call to function 'GetPortClipRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortClipRegion(ewg_param_port, ewg_param_clipRgn) GetPortClipRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_clipRgn)
+
+RgnHandle  ewg_function_GetPortClipRegion (CGrafPtr port, RgnHandle clipRgn);
+// Wraps call to function 'GetPortBackPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortBackPixPat(ewg_param_port, ewg_param_backPattern) GetPortBackPixPat ((CGrafPtr)ewg_param_port, (PixPatHandle)ewg_param_backPattern)
+
+PixPatHandle  ewg_function_GetPortBackPixPat (CGrafPtr port, PixPatHandle backPattern);
+// Wraps call to function 'GetPortPenPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortPenPixPat(ewg_param_port, ewg_param_penPattern) GetPortPenPixPat ((CGrafPtr)ewg_param_port, (PixPatHandle)ewg_param_penPattern)
+
+PixPatHandle  ewg_function_GetPortPenPixPat (CGrafPtr port, PixPatHandle penPattern);
+// Wraps call to function 'GetPortFillPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortFillPixPat(ewg_param_port, ewg_param_fillPattern) GetPortFillPixPat ((CGrafPtr)ewg_param_port, (PixPatHandle)ewg_param_fillPattern)
+
+PixPatHandle  ewg_function_GetPortFillPixPat (CGrafPtr port, PixPatHandle fillPattern);
+// Wraps call to function 'GetPortPenSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortPenSize(ewg_param_port, ewg_param_penSize) GetPortPenSize ((CGrafPtr)ewg_param_port, (Point*)ewg_param_penSize)
+
+Point * ewg_function_GetPortPenSize (CGrafPtr port, Point *penSize);
+// Wraps call to function 'GetPortPenMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortPenMode(ewg_param_port) GetPortPenMode ((CGrafPtr)ewg_param_port)
+
+SInt32  ewg_function_GetPortPenMode (CGrafPtr port);
+// Wraps call to function 'GetPortPenLocation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPortPenLocation(ewg_param_port, ewg_param_penLocation) GetPortPenLocation ((CGrafPtr)ewg_param_port, (Point*)ewg_param_penLocation)
+
+Point * ewg_function_GetPortPenLocation (CGrafPtr port, Point *penLocation);
+// Wraps call to function 'IsPortRegionBeingDefined' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsPortRegionBeingDefined(ewg_param_port) IsPortRegionBeingDefined ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsPortRegionBeingDefined (CGrafPtr port);
+// Wraps call to function 'IsPortPictureBeingDefined' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsPortPictureBeingDefined(ewg_param_port) IsPortPictureBeingDefined ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsPortPictureBeingDefined (CGrafPtr port);
+// Wraps call to function 'IsPortPolyBeingDefined' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsPortPolyBeingDefined(ewg_param_port) IsPortPolyBeingDefined ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsPortPolyBeingDefined (CGrafPtr port);
+// Wraps call to function 'IsPortOffscreen' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsPortOffscreen(ewg_param_port) IsPortOffscreen ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsPortOffscreen (CGrafPtr port);
+// Wraps call to function 'IsPortColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsPortColor(ewg_param_port) IsPortColor ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsPortColor (CGrafPtr port);
+// Wraps call to function 'IsPortVisibleRegionEmpty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsPortVisibleRegionEmpty(ewg_param_port) IsPortVisibleRegionEmpty ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsPortVisibleRegionEmpty (CGrafPtr port);
+// Wraps call to function 'IsPortClipRegionEmpty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsPortClipRegionEmpty(ewg_param_port) IsPortClipRegionEmpty ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_IsPortClipRegionEmpty (CGrafPtr port);
+// Wraps call to function 'SectRegionWithPortClipRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SectRegionWithPortClipRegion(ewg_param_port, ewg_param_ioRegion) SectRegionWithPortClipRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_ioRegion)
+
+void  ewg_function_SectRegionWithPortClipRegion (CGrafPtr port, RgnHandle ioRegion);
+// Wraps call to function 'SectRegionWithPortVisibleRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SectRegionWithPortVisibleRegion(ewg_param_port, ewg_param_ioRegion) SectRegionWithPortVisibleRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_ioRegion)
+
+void  ewg_function_SectRegionWithPortVisibleRegion (CGrafPtr port, RgnHandle ioRegion);
+// Wraps call to function 'SwapPortPicSaveHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SwapPortPicSaveHandle(ewg_param_port, ewg_param_inPicSaveHdl) SwapPortPicSaveHandle ((CGrafPtr)ewg_param_port, (Handle)ewg_param_inPicSaveHdl)
+
+Handle  ewg_function_SwapPortPicSaveHandle (CGrafPtr port, Handle inPicSaveHdl);
+// Wraps call to function 'SwapPortPolySaveHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SwapPortPolySaveHandle(ewg_param_port, ewg_param_inPolySaveHdl) SwapPortPolySaveHandle ((CGrafPtr)ewg_param_port, (Handle)ewg_param_inPolySaveHdl)
+
+Handle  ewg_function_SwapPortPolySaveHandle (CGrafPtr port, Handle inPolySaveHdl);
+// Wraps call to function 'SwapPortRegionSaveHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SwapPortRegionSaveHandle(ewg_param_port, ewg_param_inRegionSaveHdl) SwapPortRegionSaveHandle ((CGrafPtr)ewg_param_port, (Handle)ewg_param_inRegionSaveHdl)
+
+Handle  ewg_function_SwapPortRegionSaveHandle (CGrafPtr port, Handle inRegionSaveHdl);
+// Wraps call to function 'SetPortBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortBounds(ewg_param_port, ewg_param_rect) SetPortBounds ((CGrafPtr)ewg_param_port, (Rect const*)ewg_param_rect)
+
+void  ewg_function_SetPortBounds (CGrafPtr port, Rect const *rect);
+// Wraps call to function 'SetPortOpColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortOpColor(ewg_param_port, ewg_param_opColor) SetPortOpColor ((CGrafPtr)ewg_param_port, (RGBColor const*)ewg_param_opColor)
+
+void  ewg_function_SetPortOpColor (CGrafPtr port, RGBColor const *opColor);
+// Wraps call to function 'SetPortGrafProcs' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortGrafProcs(ewg_param_port, ewg_param_procs) SetPortGrafProcs ((CGrafPtr)ewg_param_port, (CQDProcsPtr)ewg_param_procs)
+
+void  ewg_function_SetPortGrafProcs (CGrafPtr port, CQDProcsPtr procs);
+// Wraps call to function 'SetPortTextFont' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortTextFont(ewg_param_port, ewg_param_txFont) SetPortTextFont ((CGrafPtr)ewg_param_port, (short)ewg_param_txFont)
+
+void  ewg_function_SetPortTextFont (CGrafPtr port, short txFont);
+// Wraps call to function 'SetPortTextSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortTextSize(ewg_param_port, ewg_param_txSize) SetPortTextSize ((CGrafPtr)ewg_param_port, (short)ewg_param_txSize)
+
+void  ewg_function_SetPortTextSize (CGrafPtr port, short txSize);
+// Wraps call to function 'SetPortTextFace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortTextFace(ewg_param_port, ewg_param_face) SetPortTextFace ((CGrafPtr)ewg_param_port, (StyleParameter)ewg_param_face)
+
+void  ewg_function_SetPortTextFace (CGrafPtr port, StyleParameter face);
+// Wraps call to function 'SetPortTextMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortTextMode(ewg_param_port, ewg_param_mode) SetPortTextMode ((CGrafPtr)ewg_param_port, (short)ewg_param_mode)
+
+void  ewg_function_SetPortTextMode (CGrafPtr port, short mode);
+// Wraps call to function 'SetPortVisibleRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortVisibleRegion(ewg_param_port, ewg_param_visRgn) SetPortVisibleRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_visRgn)
+
+void  ewg_function_SetPortVisibleRegion (CGrafPtr port, RgnHandle visRgn);
+// Wraps call to function 'SetPortClipRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortClipRegion(ewg_param_port, ewg_param_clipRgn) SetPortClipRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_clipRgn)
+
+void  ewg_function_SetPortClipRegion (CGrafPtr port, RgnHandle clipRgn);
+// Wraps call to function 'SetPortPenPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortPenPixPat(ewg_param_port, ewg_param_penPattern) SetPortPenPixPat ((CGrafPtr)ewg_param_port, (PixPatHandle)ewg_param_penPattern)
+
+void  ewg_function_SetPortPenPixPat (CGrafPtr port, PixPatHandle penPattern);
+// Wraps call to function 'SetPortFillPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortFillPixPat(ewg_param_port, ewg_param_penPattern) SetPortFillPixPat ((CGrafPtr)ewg_param_port, (PixPatHandle)ewg_param_penPattern)
+
+void  ewg_function_SetPortFillPixPat (CGrafPtr port, PixPatHandle penPattern);
+// Wraps call to function 'SetPortBackPixPat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortBackPixPat(ewg_param_port, ewg_param_backPattern) SetPortBackPixPat ((CGrafPtr)ewg_param_port, (PixPatHandle)ewg_param_backPattern)
+
+void  ewg_function_SetPortBackPixPat (CGrafPtr port, PixPatHandle backPattern);
+// Wraps call to function 'SetPortPenSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortPenSize(ewg_param_port, ewg_param_penSize) SetPortPenSize ((CGrafPtr)ewg_param_port, *(Point*)ewg_param_penSize)
+
+void  ewg_function_SetPortPenSize (CGrafPtr port, Point *penSize);
+// Wraps call to function 'SetPortPenMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortPenMode(ewg_param_port, ewg_param_penMode) SetPortPenMode ((CGrafPtr)ewg_param_port, (SInt32)ewg_param_penMode)
+
+void  ewg_function_SetPortPenMode (CGrafPtr port, SInt32 penMode);
+// Wraps call to function 'SetPortFracHPenLocation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortFracHPenLocation(ewg_param_port, ewg_param_pnLocHFrac) SetPortFracHPenLocation ((CGrafPtr)ewg_param_port, (short)ewg_param_pnLocHFrac)
+
+void  ewg_function_SetPortFracHPenLocation (CGrafPtr port, short pnLocHFrac);
+// Wraps call to function 'GetPixBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPixBounds(ewg_param_pixMap, ewg_param_bounds) GetPixBounds ((PixMapHandle)ewg_param_pixMap, (Rect*)ewg_param_bounds)
+
+Rect * ewg_function_GetPixBounds (PixMapHandle pixMap, Rect *bounds);
+// Wraps call to function 'GetPixDepth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPixDepth(ewg_param_pixMap) GetPixDepth ((PixMapHandle)ewg_param_pixMap)
+
+short  ewg_function_GetPixDepth (PixMapHandle pixMap);
+// Wraps call to function 'GetQDGlobalsRandomSeed' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsRandomSeed GetQDGlobalsRandomSeed ()
+
+long  ewg_function_GetQDGlobalsRandomSeed (void);
+// Wraps call to function 'GetQDGlobalsScreenBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsScreenBits(ewg_param_screenBits) GetQDGlobalsScreenBits ((BitMap*)ewg_param_screenBits)
+
+BitMap * ewg_function_GetQDGlobalsScreenBits (BitMap *screenBits);
+// Wraps call to function 'GetQDGlobalsArrow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsArrow(ewg_param_arrow) GetQDGlobalsArrow ((Cursor*)ewg_param_arrow)
+
+Cursor * ewg_function_GetQDGlobalsArrow (Cursor *arrow);
+// Wraps call to function 'GetQDGlobalsDarkGray' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsDarkGray(ewg_param_dkGray) GetQDGlobalsDarkGray ((Pattern*)ewg_param_dkGray)
+
+Pattern * ewg_function_GetQDGlobalsDarkGray (Pattern *dkGray);
+// Wraps call to function 'GetQDGlobalsLightGray' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsLightGray(ewg_param_ltGray) GetQDGlobalsLightGray ((Pattern*)ewg_param_ltGray)
+
+Pattern * ewg_function_GetQDGlobalsLightGray (Pattern *ltGray);
+// Wraps call to function 'GetQDGlobalsGray' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsGray(ewg_param_gray) GetQDGlobalsGray ((Pattern*)ewg_param_gray)
+
+Pattern * ewg_function_GetQDGlobalsGray (Pattern *gray);
+// Wraps call to function 'GetQDGlobalsBlack' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsBlack(ewg_param_black) GetQDGlobalsBlack ((Pattern*)ewg_param_black)
+
+Pattern * ewg_function_GetQDGlobalsBlack (Pattern *black);
+// Wraps call to function 'GetQDGlobalsWhite' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsWhite(ewg_param_white) GetQDGlobalsWhite ((Pattern*)ewg_param_white)
+
+Pattern * ewg_function_GetQDGlobalsWhite (Pattern *white);
+// Wraps call to function 'GetQDGlobalsThePort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetQDGlobalsThePort GetQDGlobalsThePort ()
+
+CGrafPtr  ewg_function_GetQDGlobalsThePort (void);
+// Wraps call to function 'SetQDGlobalsRandomSeed' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetQDGlobalsRandomSeed(ewg_param_randomSeed) SetQDGlobalsRandomSeed ((long)ewg_param_randomSeed)
+
+void  ewg_function_SetQDGlobalsRandomSeed (long randomSeed);
+// Wraps call to function 'SetQDGlobalsArrow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetQDGlobalsArrow(ewg_param_arrow) SetQDGlobalsArrow ((Cursor const*)ewg_param_arrow)
+
+void  ewg_function_SetQDGlobalsArrow (Cursor const *arrow);
+// Wraps call to function 'GetRegionBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetRegionBounds(ewg_param_region, ewg_param_bounds) GetRegionBounds ((RgnHandle)ewg_param_region, (Rect*)ewg_param_bounds)
+
+Rect * ewg_function_GetRegionBounds (RgnHandle region, Rect *bounds);
+// Wraps call to function 'IsRegionRectangular' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsRegionRectangular(ewg_param_region) IsRegionRectangular ((RgnHandle)ewg_param_region)
+
+Boolean  ewg_function_IsRegionRectangular (RgnHandle region);
+// Wraps call to function 'CreateNewPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateNewPort CreateNewPort ()
+
+CGrafPtr  ewg_function_CreateNewPort (void);
+// Wraps call to function 'DisposePort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposePort(ewg_param_port) DisposePort ((CGrafPtr)ewg_param_port)
+
+void  ewg_function_DisposePort (CGrafPtr port);
+// Wraps call to function 'SetQDError' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetQDError(ewg_param_err) SetQDError ((OSErr)ewg_param_err)
+
+void  ewg_function_SetQDError (OSErr err);
+// Wraps call to function 'QDLocalToGlobalPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDLocalToGlobalPoint(ewg_param_port, ewg_param_point) QDLocalToGlobalPoint ((CGrafPtr)ewg_param_port, (Point*)ewg_param_point)
+
+Point * ewg_function_QDLocalToGlobalPoint (CGrafPtr port, Point *point);
+// Wraps call to function 'QDGlobalToLocalPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGlobalToLocalPoint(ewg_param_port, ewg_param_point) QDGlobalToLocalPoint ((CGrafPtr)ewg_param_port, (Point*)ewg_param_point)
+
+Point * ewg_function_QDGlobalToLocalPoint (CGrafPtr port, Point *point);
+// Wraps call to function 'QDLocalToGlobalRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDLocalToGlobalRect(ewg_param_port, ewg_param_bounds) QDLocalToGlobalRect ((CGrafPtr)ewg_param_port, (Rect*)ewg_param_bounds)
+
+Rect * ewg_function_QDLocalToGlobalRect (CGrafPtr port, Rect *bounds);
+// Wraps call to function 'QDGlobalToLocalRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGlobalToLocalRect(ewg_param_port, ewg_param_bounds) QDGlobalToLocalRect ((CGrafPtr)ewg_param_port, (Rect*)ewg_param_bounds)
+
+Rect * ewg_function_QDGlobalToLocalRect (CGrafPtr port, Rect *bounds);
+// Wraps call to function 'QDLocalToGlobalRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDLocalToGlobalRegion(ewg_param_port, ewg_param_region) QDLocalToGlobalRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_region)
+
+RgnHandle  ewg_function_QDLocalToGlobalRegion (CGrafPtr port, RgnHandle region);
+// Wraps call to function 'QDGlobalToLocalRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGlobalToLocalRegion(ewg_param_port, ewg_param_region) QDGlobalToLocalRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_region)
+
+RgnHandle  ewg_function_QDGlobalToLocalRegion (CGrafPtr port, RgnHandle region);
+// Wraps call to function 'QDIsPortBuffered' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDIsPortBuffered(ewg_param_port) QDIsPortBuffered ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_QDIsPortBuffered (CGrafPtr port);
+// Wraps call to function 'QDIsPortBufferDirty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDIsPortBufferDirty(ewg_param_port) QDIsPortBufferDirty ((CGrafPtr)ewg_param_port)
+
+Boolean  ewg_function_QDIsPortBufferDirty (CGrafPtr port);
+// Wraps call to function 'QDFlushPortBuffer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDFlushPortBuffer(ewg_param_port, ewg_param_region) QDFlushPortBuffer ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_region)
+
+void  ewg_function_QDFlushPortBuffer (CGrafPtr port, RgnHandle region);
+// Wraps call to function 'QDGetDirtyRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGetDirtyRegion(ewg_param_port, ewg_param_rgn) QDGetDirtyRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_rgn)
+
+OSStatus  ewg_function_QDGetDirtyRegion (CGrafPtr port, RgnHandle rgn);
+// Wraps call to function 'QDSetDirtyRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSetDirtyRegion(ewg_param_port, ewg_param_rgn) QDSetDirtyRegion ((CGrafPtr)ewg_param_port, (RgnHandle)ewg_param_rgn)
+
+OSStatus  ewg_function_QDSetDirtyRegion (CGrafPtr port, RgnHandle rgn);
+// Wraps call to function 'QDAddRectToDirtyRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDAddRectToDirtyRegion(ewg_param_inPort, ewg_param_inBounds) QDAddRectToDirtyRegion ((CGrafPtr)ewg_param_inPort, (Rect const*)ewg_param_inBounds)
+
+OSStatus  ewg_function_QDAddRectToDirtyRegion (CGrafPtr inPort, Rect const *inBounds);
+// Wraps call to function 'QDAddRegionToDirtyRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDAddRegionToDirtyRegion(ewg_param_inPort, ewg_param_inRegion) QDAddRegionToDirtyRegion ((CGrafPtr)ewg_param_inPort, (RgnHandle)ewg_param_inRegion)
+
+OSStatus  ewg_function_QDAddRegionToDirtyRegion (CGrafPtr inPort, RgnHandle inRegion);
+// Wraps call to function 'CreateCGContextForPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateCGContextForPort(ewg_param_inPort, ewg_param_outContext) CreateCGContextForPort ((CGrafPtr)ewg_param_inPort, (CGContextRef*)ewg_param_outContext)
+
+OSStatus  ewg_function_CreateCGContextForPort (CGrafPtr inPort, CGContextRef *outContext);
+// Wraps call to function 'ClipCGContextToRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClipCGContextToRegion(ewg_param_gc, ewg_param_portRect, ewg_param_region) ClipCGContextToRegion ((CGContextRef)ewg_param_gc, (Rect const*)ewg_param_portRect, (RgnHandle)ewg_param_region)
+
+OSStatus  ewg_function_ClipCGContextToRegion (CGContextRef gc, Rect const *portRect, RgnHandle region);
+// Wraps call to function 'SyncCGContextOriginWithPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SyncCGContextOriginWithPort(ewg_param_inContext, ewg_param_port) SyncCGContextOriginWithPort ((CGContextRef)ewg_param_inContext, (CGrafPtr)ewg_param_port)
+
+OSStatus  ewg_function_SyncCGContextOriginWithPort (CGContextRef inContext, CGrafPtr port);
+// Wraps call to function 'QDBeginCGContext' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDBeginCGContext(ewg_param_inPort, ewg_param_outContext) QDBeginCGContext ((CGrafPtr)ewg_param_inPort, (CGContextRef*)ewg_param_outContext)
+
+OSStatus  ewg_function_QDBeginCGContext (CGrafPtr inPort, CGContextRef *outContext);
+// Wraps call to function 'QDEndCGContext' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDEndCGContext(ewg_param_inPort, ewg_param_inoutContext) QDEndCGContext ((CGrafPtr)ewg_param_inPort, (CGContextRef*)ewg_param_inoutContext)
+
+OSStatus  ewg_function_QDEndCGContext (CGrafPtr inPort, CGContextRef *inoutContext);
+// Wraps call to function 'QDSaveRegionBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSaveRegionBits(ewg_param_region) QDSaveRegionBits ((RgnHandle)ewg_param_region)
+
+QDRegionBitsRef  ewg_function_QDSaveRegionBits (RgnHandle region);
+// Wraps call to function 'QDRestoreRegionBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDRestoreRegionBits(ewg_param_region, ewg_param_regionBits) QDRestoreRegionBits ((RgnHandle)ewg_param_region, (QDRegionBitsRef)ewg_param_regionBits)
+
+OSStatus  ewg_function_QDRestoreRegionBits (RgnHandle region, QDRegionBitsRef regionBits);
+// Wraps call to function 'QDDisposeRegionBits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDDisposeRegionBits(ewg_param_regionBits) QDDisposeRegionBits ((QDRegionBitsRef)ewg_param_regionBits)
+
+OSStatus  ewg_function_QDDisposeRegionBits (QDRegionBitsRef regionBits);
+// Wraps call to function 'CreateNewPortForCGDisplayID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateNewPortForCGDisplayID(ewg_param_inCGDisplayID) CreateNewPortForCGDisplayID ((UInt32)ewg_param_inCGDisplayID)
+
+CGrafPtr  ewg_function_CreateNewPortForCGDisplayID (UInt32 inCGDisplayID);
+// Wraps call to function 'QDDisplayWaitCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDDisplayWaitCursor(ewg_param_forceWaitCursor) QDDisplayWaitCursor ((Boolean)ewg_param_forceWaitCursor)
+
+void  ewg_function_QDDisplayWaitCursor (Boolean forceWaitCursor);
+// Wraps call to function 'QDSetPatternOrigin' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSetPatternOrigin(ewg_param_origin) QDSetPatternOrigin (*(Point*)ewg_param_origin)
+
+void  ewg_function_QDSetPatternOrigin (Point *origin);
+// Wraps call to function 'QDGetPatternOrigin' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGetPatternOrigin(ewg_param_origin) QDGetPatternOrigin ((Point*)ewg_param_origin)
+
+void  ewg_function_QDGetPatternOrigin (Point *origin);
+// Wraps call to function 'QDIsNamedPixMapCursorRegistered' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDIsNamedPixMapCursorRegistered(ewg_param_name) QDIsNamedPixMapCursorRegistered (ewg_param_name)
+
+Boolean  ewg_function_QDIsNamedPixMapCursorRegistered (void *name);
+// Wraps call to function 'QDRegisterNamedPixMapCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDRegisterNamedPixMapCursor(ewg_param_crsrData, ewg_param_crsrMask, ewg_param_hotSpot, ewg_param_name) QDRegisterNamedPixMapCursor ((PixMapHandle)ewg_param_crsrData, (PixMapHandle)ewg_param_crsrMask, *(Point*)ewg_param_hotSpot, ewg_param_name)
+
+OSStatus  ewg_function_QDRegisterNamedPixMapCursor (PixMapHandle crsrData, PixMapHandle crsrMask, Point *hotSpot, void *name);
+// Wraps call to function 'QDUnregisterNamedPixMapCursur' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDUnregisterNamedPixMapCursur(ewg_param_name) QDUnregisterNamedPixMapCursur (ewg_param_name)
+
+OSStatus  ewg_function_QDUnregisterNamedPixMapCursur (void *name);
+// Wraps call to function 'QDUnregisterNamedPixMapCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDUnregisterNamedPixMapCursor(ewg_param_name) QDUnregisterNamedPixMapCursor (ewg_param_name)
+
+OSStatus  ewg_function_QDUnregisterNamedPixMapCursor (void *name);
+// Wraps call to function 'QDSetNamedPixMapCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSetNamedPixMapCursor(ewg_param_name) QDSetNamedPixMapCursor (ewg_param_name)
+
+OSStatus  ewg_function_QDSetNamedPixMapCursor (void *name);
+// Wraps call to function 'QDGetCursorNameForSystemCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGetCursorNameForSystemCursor(ewg_param_cursorID) QDGetCursorNameForSystemCursor ((QDXSystemCursorID)ewg_param_cursorID)
+
+char const * ewg_function_QDGetCursorNameForSystemCursor (QDXSystemCursorID cursorID);
+// Wraps call to function 'QDSetCursorScale' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSetCursorScale(ewg_param_scale) QDSetCursorScale ((float)ewg_param_scale)
+
+OSStatus  ewg_function_QDSetCursorScale (float scale);
+// Wraps call to function 'QDGetCursorScale' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGetCursorScale(ewg_param_outScale) QDGetCursorScale ((float*)ewg_param_outScale)
+
+OSStatus  ewg_function_QDGetCursorScale (float *outScale);
+// Wraps call to function 'QDGetCursorData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGetCursorData(ewg_param_contextCursor, ewg_param_crsrData, ewg_param_hotSpot) QDGetCursorData ((Boolean)ewg_param_contextCursor, (PixMapHandle*)ewg_param_crsrData, (Point*)ewg_param_hotSpot)
+
+OSStatus  ewg_function_QDGetCursorData (Boolean contextCursor, PixMapHandle *crsrData, Point *hotSpot);
+// Wraps call to function 'QDSwapTextFlags' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSwapTextFlags(ewg_param_newFlags) QDSwapTextFlags ((UInt32)ewg_param_newFlags)
+
+UInt32  ewg_function_QDSwapTextFlags (UInt32 newFlags);
+// Wraps call to function 'QDSwapPortTextFlags' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDSwapPortTextFlags(ewg_param_port, ewg_param_newFlags) QDSwapPortTextFlags ((CGrafPtr)ewg_param_port, (UInt32)ewg_param_newFlags)
+
+UInt32  ewg_function_QDSwapPortTextFlags (CGrafPtr port, UInt32 newFlags);
+// Wraps call to function 'QDGetCGDirectDisplayID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDGetCGDirectDisplayID(ewg_param_inGDevice) QDGetCGDirectDisplayID ((GDHandle)ewg_param_inGDevice)
+
+CGDirectDisplayID  ewg_function_QDGetCGDirectDisplayID (GDHandle inGDevice);
+// Wraps call to function 'LMGetScrVRes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetScrVRes LMGetScrVRes ()
+
+SInt16  ewg_function_LMGetScrVRes (void);
+// Wraps call to function 'LMSetScrVRes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetScrVRes(ewg_param_value) LMSetScrVRes ((SInt16)ewg_param_value)
+
+void  ewg_function_LMSetScrVRes (SInt16 value);
+// Wraps call to function 'LMGetScrHRes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetScrHRes LMGetScrHRes ()
+
+SInt16  ewg_function_LMGetScrHRes (void);
+// Wraps call to function 'LMSetScrHRes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetScrHRes(ewg_param_value) LMSetScrHRes ((SInt16)ewg_param_value)
+
+void  ewg_function_LMSetScrHRes (SInt16 value);
+// Wraps call to function 'LMGetMainDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetMainDevice LMGetMainDevice ()
+
+GDHandle  ewg_function_LMGetMainDevice (void);
+// Wraps call to function 'LMSetMainDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetMainDevice(ewg_param_value) LMSetMainDevice ((GDHandle)ewg_param_value)
+
+void  ewg_function_LMSetMainDevice (GDHandle value);
+// Wraps call to function 'LMGetDeviceList' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetDeviceList LMGetDeviceList ()
+
+GDHandle  ewg_function_LMGetDeviceList (void);
+// Wraps call to function 'LMSetDeviceList' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetDeviceList(ewg_param_value) LMSetDeviceList ((GDHandle)ewg_param_value)
+
+void  ewg_function_LMSetDeviceList (GDHandle value);
+// Wraps call to function 'LMGetQDColors' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetQDColors LMGetQDColors ()
+
+Handle  ewg_function_LMGetQDColors (void);
+// Wraps call to function 'LMSetQDColors' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetQDColors(ewg_param_value) LMSetQDColors ((Handle)ewg_param_value)
+
+void  ewg_function_LMSetQDColors (Handle value);
+// Wraps call to function 'LMGetWidthListHand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetWidthListHand LMGetWidthListHand ()
+
+Handle  ewg_function_LMGetWidthListHand (void);
+// Wraps call to function 'LMSetWidthListHand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetWidthListHand(ewg_param_value) LMSetWidthListHand ((Handle)ewg_param_value)
+
+void  ewg_function_LMSetWidthListHand (Handle value);
+// Wraps call to function 'LMGetHiliteMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetHiliteMode LMGetHiliteMode ()
+
+UInt8  ewg_function_LMGetHiliteMode (void);
+// Wraps call to function 'LMSetHiliteMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetHiliteMode(ewg_param_value) LMSetHiliteMode ((UInt8)ewg_param_value)
+
+void  ewg_function_LMSetHiliteMode (UInt8 value);
+// Wraps call to function 'LMGetWidthPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetWidthPtr LMGetWidthPtr ()
+
+Ptr  ewg_function_LMGetWidthPtr (void);
+// Wraps call to function 'LMSetWidthPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetWidthPtr(ewg_param_value) LMSetWidthPtr ((Ptr)ewg_param_value)
+
+void  ewg_function_LMSetWidthPtr (Ptr value);
+// Wraps call to function 'LMGetWidthTabHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetWidthTabHandle LMGetWidthTabHandle ()
+
+Handle  ewg_function_LMGetWidthTabHandle (void);
+// Wraps call to function 'LMSetWidthTabHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetWidthTabHandle(ewg_param_value) LMSetWidthTabHandle ((Handle)ewg_param_value)
+
+void  ewg_function_LMSetWidthTabHandle (Handle value);
+// Wraps call to function 'LMGetLastSPExtra' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetLastSPExtra LMGetLastSPExtra ()
+
+SInt32  ewg_function_LMGetLastSPExtra (void);
+// Wraps call to function 'LMSetLastSPExtra' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetLastSPExtra(ewg_param_value) LMSetLastSPExtra ((SInt32)ewg_param_value)
+
+void  ewg_function_LMSetLastSPExtra (SInt32 value);
+// Wraps call to function 'LMGetLastFOND' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetLastFOND LMGetLastFOND ()
+
+Handle  ewg_function_LMGetLastFOND (void);
+// Wraps call to function 'LMSetLastFOND' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetLastFOND(ewg_param_value) LMSetLastFOND ((Handle)ewg_param_value)
+
+void  ewg_function_LMSetLastFOND (Handle value);
+// Wraps call to function 'LMGetFractEnable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetFractEnable LMGetFractEnable ()
+
+UInt8  ewg_function_LMGetFractEnable (void);
+// Wraps call to function 'LMSetFractEnable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetFractEnable(ewg_param_value) LMSetFractEnable ((UInt8)ewg_param_value)
+
+void  ewg_function_LMSetFractEnable (UInt8 value);
+// Wraps call to function 'LMGetTheGDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetTheGDevice LMGetTheGDevice ()
+
+GDHandle  ewg_function_LMGetTheGDevice (void);
+// Wraps call to function 'LMSetTheGDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetTheGDevice(ewg_param_value) LMSetTheGDevice ((GDHandle)ewg_param_value)
+
+void  ewg_function_LMSetTheGDevice (GDHandle value);
+// Wraps call to function 'LMGetHiliteRGB' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetHiliteRGB(ewg_param_hiliteRGBValue) LMGetHiliteRGB ((RGBColor*)ewg_param_hiliteRGBValue)
+
+void  ewg_function_LMGetHiliteRGB (RGBColor *hiliteRGBValue);
+// Wraps call to function 'LMSetHiliteRGB' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetHiliteRGB(ewg_param_hiliteRGBValue) LMSetHiliteRGB ((RGBColor const*)ewg_param_hiliteRGBValue)
+
+void  ewg_function_LMSetHiliteRGB (RGBColor const *hiliteRGBValue);
+// Wraps call to function 'LMGetCursorNew' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetCursorNew LMGetCursorNew ()
+
+Boolean  ewg_function_LMGetCursorNew (void);
+// Wraps call to function 'LMSetCursorNew' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetCursorNew(ewg_param_value) LMSetCursorNew ((Boolean)ewg_param_value)
+
+void  ewg_function_LMSetCursorNew (Boolean value);
+// Wraps call to function 'LaunchApplication' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LaunchApplication(ewg_param_LaunchParams) LaunchApplication ((LaunchPBPtr)ewg_param_LaunchParams)
+
+OSErr  ewg_function_LaunchApplication (LaunchPBPtr LaunchParams);
+// Wraps call to function 'GetCurrentProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentProcess(ewg_param_PSN) GetCurrentProcess ((ProcessSerialNumber*)ewg_param_PSN)
+
+OSErr  ewg_function_GetCurrentProcess (ProcessSerialNumber *PSN);
+// Wraps call to function 'GetFrontProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetFrontProcess(ewg_param_PSN) GetFrontProcess ((ProcessSerialNumber*)ewg_param_PSN)
+
+OSErr  ewg_function_GetFrontProcess (ProcessSerialNumber *PSN);
+// Wraps call to function 'GetNextProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNextProcess(ewg_param_PSN) GetNextProcess ((ProcessSerialNumber*)ewg_param_PSN)
+
+OSErr  ewg_function_GetNextProcess (ProcessSerialNumber *PSN);
+// Wraps call to function 'GetProcessInformation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetProcessInformation(ewg_param_PSN, ewg_param_info) GetProcessInformation ((ProcessSerialNumber const*)ewg_param_PSN, (ProcessInfoRec*)ewg_param_info)
+
+OSErr  ewg_function_GetProcessInformation (ProcessSerialNumber const *PSN, ProcessInfoRec *info);
+// Wraps call to function 'ProcessInformationCopyDictionary' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ProcessInformationCopyDictionary(ewg_param_PSN, ewg_param_infoToReturn) ProcessInformationCopyDictionary ((ProcessSerialNumber const*)ewg_param_PSN, (UInt32)ewg_param_infoToReturn)
+
+CFDictionaryRef  ewg_function_ProcessInformationCopyDictionary (ProcessSerialNumber const *PSN, UInt32 infoToReturn);
+// Wraps call to function 'SetFrontProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetFrontProcess(ewg_param_PSN) SetFrontProcess ((ProcessSerialNumber const*)ewg_param_PSN)
+
+OSErr  ewg_function_SetFrontProcess (ProcessSerialNumber const *PSN);
+// Wraps call to function 'SetFrontProcessWithOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetFrontProcessWithOptions(ewg_param_inProcess, ewg_param_inOptions) SetFrontProcessWithOptions ((ProcessSerialNumber const*)ewg_param_inProcess, (OptionBits)ewg_param_inOptions)
+
+OSStatus  ewg_function_SetFrontProcessWithOptions (ProcessSerialNumber const *inProcess, OptionBits inOptions);
+// Wraps call to function 'WakeUpProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_WakeUpProcess(ewg_param_PSN) WakeUpProcess ((ProcessSerialNumber const*)ewg_param_PSN)
+
+OSErr  ewg_function_WakeUpProcess (ProcessSerialNumber const *PSN);
+// Wraps call to function 'SameProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SameProcess(ewg_param_PSN1, ewg_param_PSN2, ewg_param_result) SameProcess ((ProcessSerialNumber const*)ewg_param_PSN1, (ProcessSerialNumber const*)ewg_param_PSN2, (Boolean*)ewg_param_result)
+
+OSErr  ewg_function_SameProcess (ProcessSerialNumber const *PSN1, ProcessSerialNumber const *PSN2, Boolean *result);
+// Wraps call to function 'ExitToShell' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ExitToShell ExitToShell ()
+
+void  ewg_function_ExitToShell (void);
+// Wraps call to function 'KillProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_KillProcess(ewg_param_inProcess) KillProcess ((ProcessSerialNumber const*)ewg_param_inProcess)
+
+OSErr  ewg_function_KillProcess (ProcessSerialNumber const *inProcess);
+// Wraps call to function 'GetProcessBundleLocation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetProcessBundleLocation(ewg_param_psn, ewg_param_location) GetProcessBundleLocation ((ProcessSerialNumber const*)ewg_param_psn, (FSRef*)ewg_param_location)
+
+OSStatus  ewg_function_GetProcessBundleLocation (ProcessSerialNumber const *psn, FSRef *location);
+// Wraps call to function 'CopyProcessName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyProcessName(ewg_param_psn, ewg_param_name) CopyProcessName ((ProcessSerialNumber const*)ewg_param_psn, (CFStringRef*)ewg_param_name)
+
+OSStatus  ewg_function_CopyProcessName (ProcessSerialNumber const *psn, CFStringRef *name);
+// Wraps call to function 'GetProcessPID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetProcessPID(ewg_param_psn, ewg_param_pid) GetProcessPID ((ProcessSerialNumber const*)ewg_param_psn, (pid_t*)ewg_param_pid)
+
+OSStatus  ewg_function_GetProcessPID (ProcessSerialNumber const *psn, pid_t *pid);
+// Wraps call to function 'GetProcessForPID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetProcessForPID(ewg_param_pid, ewg_param_psn) GetProcessForPID ((pid_t)ewg_param_pid, (ProcessSerialNumber*)ewg_param_psn)
+
+OSStatus  ewg_function_GetProcessForPID (pid_t pid, ProcessSerialNumber *psn);
+// Wraps call to function 'IsProcessVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsProcessVisible(ewg_param_psn) IsProcessVisible ((ProcessSerialNumber const*)ewg_param_psn)
+
+Boolean  ewg_function_IsProcessVisible (ProcessSerialNumber const *psn);
+// Wraps call to function 'ShowHideProcess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowHideProcess(ewg_param_psn, ewg_param_visible) ShowHideProcess ((ProcessSerialNumber const*)ewg_param_psn, (Boolean)ewg_param_visible)
+
+OSErr  ewg_function_ShowHideProcess (ProcessSerialNumber const *psn, Boolean visible);
+// Wraps call to function 'TransformProcessType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TransformProcessType(ewg_param_psn, ewg_param_transformState) TransformProcessType ((ProcessSerialNumber const*)ewg_param_psn, (ProcessApplicationTransformState)ewg_param_transformState)
+
+OSStatus  ewg_function_TransformProcessType (ProcessSerialNumber const *psn, ProcessApplicationTransformState transformState);
+// Wraps call to function 'GetCurrentEventLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentEventLoop GetCurrentEventLoop ()
+
+EventLoopRef  ewg_function_GetCurrentEventLoop (void);
+// Wraps call to function 'GetMainEventLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMainEventLoop GetMainEventLoop ()
+
+EventLoopRef  ewg_function_GetMainEventLoop (void);
+// Wraps call to function 'RunCurrentEventLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RunCurrentEventLoop(ewg_param_inTimeout) RunCurrentEventLoop ((EventTimeout)ewg_param_inTimeout)
+
+OSStatus  ewg_function_RunCurrentEventLoop (EventTimeout inTimeout);
+// Wraps call to function 'QuitEventLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QuitEventLoop(ewg_param_inEventLoop) QuitEventLoop ((EventLoopRef)ewg_param_inEventLoop)
+
+OSStatus  ewg_function_QuitEventLoop (EventLoopRef inEventLoop);
+// Wraps call to function 'GetCFRunLoopFromEventLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCFRunLoopFromEventLoop(ewg_param_inEventLoop) GetCFRunLoopFromEventLoop ((EventLoopRef)ewg_param_inEventLoop)
+
+CFTypeRef  ewg_function_GetCFRunLoopFromEventLoop (EventLoopRef inEventLoop);
+// Wraps call to function 'ReceiveNextEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReceiveNextEvent(ewg_param_inNumTypes, ewg_param_inList, ewg_param_inTimeout, ewg_param_inPullEvent, ewg_param_outEvent) ReceiveNextEvent ((UInt32)ewg_param_inNumTypes, (EventTypeSpec const*)ewg_param_inList, (EventTimeout)ewg_param_inTimeout, (Boolean)ewg_param_inPullEvent, (EventRef*)ewg_param_outEvent)
+
+OSStatus  ewg_function_ReceiveNextEvent (UInt32 inNumTypes, EventTypeSpec const *inList, EventTimeout inTimeout, Boolean inPullEvent, EventRef *outEvent);
+// Wraps call to function 'CreateEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateEvent(ewg_param_inAllocator, ewg_param_inClassID, ewg_param_inKind, ewg_param_inWhen, ewg_param_inAttributes, ewg_param_outEvent) CreateEvent ((CFAllocatorRef)ewg_param_inAllocator, (UInt32)ewg_param_inClassID, (UInt32)ewg_param_inKind, (EventTime)ewg_param_inWhen, (EventAttributes)ewg_param_inAttributes, (EventRef*)ewg_param_outEvent)
+
+OSStatus  ewg_function_CreateEvent (CFAllocatorRef inAllocator, UInt32 inClassID, UInt32 inKind, EventTime inWhen, EventAttributes inAttributes, EventRef *outEvent);
+// Wraps call to function 'CopyEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyEvent(ewg_param_inOther) CopyEvent ((EventRef)ewg_param_inOther)
+
+EventRef  ewg_function_CopyEvent (EventRef inOther);
+// Wraps call to function 'CopyEventAs' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyEventAs(ewg_param_inAllocator, ewg_param_inOther, ewg_param_inEventClass, ewg_param_inEventKind) CopyEventAs ((CFAllocatorRef)ewg_param_inAllocator, (EventRef)ewg_param_inOther, (UInt32)ewg_param_inEventClass, (UInt32)ewg_param_inEventKind)
+
+EventRef  ewg_function_CopyEventAs (CFAllocatorRef inAllocator, EventRef inOther, UInt32 inEventClass, UInt32 inEventKind);
+// Wraps call to function 'RetainEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RetainEvent(ewg_param_inEvent) RetainEvent ((EventRef)ewg_param_inEvent)
+
+EventRef  ewg_function_RetainEvent (EventRef inEvent);
+// Wraps call to function 'GetEventRetainCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetEventRetainCount(ewg_param_inEvent) GetEventRetainCount ((EventRef)ewg_param_inEvent)
+
+UInt32  ewg_function_GetEventRetainCount (EventRef inEvent);
+// Wraps call to function 'ReleaseEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReleaseEvent(ewg_param_inEvent) ReleaseEvent ((EventRef)ewg_param_inEvent)
+
+void  ewg_function_ReleaseEvent (EventRef inEvent);
+// Wraps call to function 'SetEventParameter' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetEventParameter(ewg_param_inEvent, ewg_param_inName, ewg_param_inType, ewg_param_inSize, ewg_param_inDataPtr) SetEventParameter ((EventRef)ewg_param_inEvent, (EventParamName)ewg_param_inName, (EventParamType)ewg_param_inType, (UInt32)ewg_param_inSize, (void const*)ewg_param_inDataPtr)
+
+OSStatus  ewg_function_SetEventParameter (EventRef inEvent, EventParamName inName, EventParamType inType, UInt32 inSize, void const *inDataPtr);
+// Wraps call to function 'GetEventParameter' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetEventParameter(ewg_param_inEvent, ewg_param_inName, ewg_param_inDesiredType, ewg_param_outActualType, ewg_param_inBufferSize, ewg_param_outActualSize, ewg_param_outData) GetEventParameter ((EventRef)ewg_param_inEvent, (EventParamName)ewg_param_inName, (EventParamType)ewg_param_inDesiredType, (EventParamType*)ewg_param_outActualType, (UInt32)ewg_param_inBufferSize, (UInt32*)ewg_param_outActualSize, (void*)ewg_param_outData)
+
+OSStatus  ewg_function_GetEventParameter (EventRef inEvent, EventParamName inName, EventParamType inDesiredType, EventParamType *outActualType, UInt32 inBufferSize, UInt32 *outActualSize, void *outData);
+// Wraps call to function 'GetEventClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetEventClass(ewg_param_inEvent) GetEventClass ((EventRef)ewg_param_inEvent)
+
+UInt32  ewg_function_GetEventClass (EventRef inEvent);
+// Wraps call to function 'GetEventKind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetEventKind(ewg_param_inEvent) GetEventKind ((EventRef)ewg_param_inEvent)
+
+UInt32  ewg_function_GetEventKind (EventRef inEvent);
+// Wraps call to function 'GetEventTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetEventTime(ewg_param_inEvent) GetEventTime ((EventRef)ewg_param_inEvent)
+
+EventTime  ewg_function_GetEventTime (EventRef inEvent);
+// Wraps call to function 'SetEventTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetEventTime(ewg_param_inEvent, ewg_param_inTime) SetEventTime ((EventRef)ewg_param_inEvent, (EventTime)ewg_param_inTime)
+
+OSStatus  ewg_function_SetEventTime (EventRef inEvent, EventTime inTime);
+// Wraps call to function 'GetCurrentEventQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentEventQueue GetCurrentEventQueue ()
+
+EventQueueRef  ewg_function_GetCurrentEventQueue (void);
+// Wraps call to function 'GetMainEventQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMainEventQueue GetMainEventQueue ()
+
+EventQueueRef  ewg_function_GetMainEventQueue (void);
+// Wraps call to function 'NewEventComparatorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewEventComparatorUPP(ewg_param_userRoutine) NewEventComparatorUPP ((EventComparatorProcPtr)ewg_param_userRoutine)
+
+EventComparatorUPP  ewg_function_NewEventComparatorUPP (EventComparatorProcPtr userRoutine);
+// Wraps call to function 'DisposeEventComparatorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeEventComparatorUPP(ewg_param_userUPP) DisposeEventComparatorUPP ((EventComparatorUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeEventComparatorUPP (EventComparatorUPP userUPP);
+// Wraps call to function 'InvokeEventComparatorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeEventComparatorUPP(ewg_param_inEvent, ewg_param_inCompareData, ewg_param_userUPP) InvokeEventComparatorUPP ((EventRef)ewg_param_inEvent, (void*)ewg_param_inCompareData, (EventComparatorUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeEventComparatorUPP (EventRef inEvent, void *inCompareData, EventComparatorUPP userUPP);
+// Wraps call to function 'PostEventToQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PostEventToQueue(ewg_param_inQueue, ewg_param_inEvent, ewg_param_inPriority) PostEventToQueue ((EventQueueRef)ewg_param_inQueue, (EventRef)ewg_param_inEvent, (EventPriority)ewg_param_inPriority)
+
+OSStatus  ewg_function_PostEventToQueue (EventQueueRef inQueue, EventRef inEvent, EventPriority inPriority);
+// Wraps call to function 'FlushEventsMatchingListFromQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FlushEventsMatchingListFromQueue(ewg_param_inQueue, ewg_param_inNumTypes, ewg_param_inList) FlushEventsMatchingListFromQueue ((EventQueueRef)ewg_param_inQueue, (UInt32)ewg_param_inNumTypes, (EventTypeSpec const*)ewg_param_inList)
+
+OSStatus  ewg_function_FlushEventsMatchingListFromQueue (EventQueueRef inQueue, UInt32 inNumTypes, EventTypeSpec const *inList);
+// Wraps call to function 'FlushSpecificEventsFromQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FlushSpecificEventsFromQueue(ewg_param_inQueue, ewg_param_inComparator, ewg_param_inCompareData) FlushSpecificEventsFromQueue ((EventQueueRef)ewg_param_inQueue, (EventComparatorUPP)ewg_param_inComparator, (void*)ewg_param_inCompareData)
+
+OSStatus  ewg_function_FlushSpecificEventsFromQueue (EventQueueRef inQueue, EventComparatorUPP inComparator, void *inCompareData);
+// Wraps call to function 'FlushEventQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FlushEventQueue(ewg_param_inQueue) FlushEventQueue ((EventQueueRef)ewg_param_inQueue)
+
+OSStatus  ewg_function_FlushEventQueue (EventQueueRef inQueue);
+// Wraps call to function 'FindSpecificEventInQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FindSpecificEventInQueue(ewg_param_inQueue, ewg_param_inComparator, ewg_param_inCompareData) FindSpecificEventInQueue ((EventQueueRef)ewg_param_inQueue, (EventComparatorUPP)ewg_param_inComparator, (void*)ewg_param_inCompareData)
+
+EventRef  ewg_function_FindSpecificEventInQueue (EventQueueRef inQueue, EventComparatorUPP inComparator, void *inCompareData);
+// Wraps call to function 'GetNumEventsInQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNumEventsInQueue(ewg_param_inQueue) GetNumEventsInQueue ((EventQueueRef)ewg_param_inQueue)
+
+UInt32  ewg_function_GetNumEventsInQueue (EventQueueRef inQueue);
+// Wraps call to function 'RemoveEventFromQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveEventFromQueue(ewg_param_inQueue, ewg_param_inEvent) RemoveEventFromQueue ((EventQueueRef)ewg_param_inQueue, (EventRef)ewg_param_inEvent)
+
+OSStatus  ewg_function_RemoveEventFromQueue (EventQueueRef inQueue, EventRef inEvent);
+// Wraps call to function 'IsEventInQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsEventInQueue(ewg_param_inQueue, ewg_param_inEvent) IsEventInQueue ((EventQueueRef)ewg_param_inQueue, (EventRef)ewg_param_inEvent)
+
+Boolean  ewg_function_IsEventInQueue (EventQueueRef inQueue, EventRef inEvent);
+// Wraps call to function 'AcquireFirstMatchingEventInQueue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AcquireFirstMatchingEventInQueue(ewg_param_inQueue, ewg_param_inNumTypes, ewg_param_inList, ewg_param_inOptions) AcquireFirstMatchingEventInQueue ((EventQueueRef)ewg_param_inQueue, (UInt32)ewg_param_inNumTypes, (EventTypeSpec const*)ewg_param_inList, (OptionBits)ewg_param_inOptions)
+
+EventRef  ewg_function_AcquireFirstMatchingEventInQueue (EventQueueRef inQueue, UInt32 inNumTypes, EventTypeSpec const *inList, OptionBits inOptions);
+// Wraps call to function 'GetCurrentEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentEvent GetCurrentEvent ()
+
+EventRef  ewg_function_GetCurrentEvent (void);
+// Wraps call to function 'GetCurrentEventButtonState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentEventButtonState GetCurrentEventButtonState ()
+
+UInt32  ewg_function_GetCurrentEventButtonState (void);
+// Wraps call to function 'GetCurrentEventKeyModifiers' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentEventKeyModifiers GetCurrentEventKeyModifiers ()
+
+UInt32  ewg_function_GetCurrentEventKeyModifiers (void);
+// Wraps call to function 'GetCurrentButtonState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentButtonState GetCurrentButtonState ()
+
+UInt32  ewg_function_GetCurrentButtonState (void);
+// Wraps call to function 'GetCurrentEventTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentEventTime GetCurrentEventTime ()
+
+EventTime  ewg_function_GetCurrentEventTime (void);
+// Wraps call to function 'NewEventLoopTimerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewEventLoopTimerUPP(ewg_param_userRoutine) NewEventLoopTimerUPP ((EventLoopTimerProcPtr)ewg_param_userRoutine)
+
+EventLoopTimerUPP  ewg_function_NewEventLoopTimerUPP (EventLoopTimerProcPtr userRoutine);
+// Wraps call to function 'NewEventLoopIdleTimerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewEventLoopIdleTimerUPP(ewg_param_userRoutine) NewEventLoopIdleTimerUPP ((EventLoopIdleTimerProcPtr)ewg_param_userRoutine)
+
+EventLoopIdleTimerUPP  ewg_function_NewEventLoopIdleTimerUPP (EventLoopIdleTimerProcPtr userRoutine);
+// Wraps call to function 'DisposeEventLoopTimerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeEventLoopTimerUPP(ewg_param_userUPP) DisposeEventLoopTimerUPP ((EventLoopTimerUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeEventLoopTimerUPP (EventLoopTimerUPP userUPP);
+// Wraps call to function 'DisposeEventLoopIdleTimerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeEventLoopIdleTimerUPP(ewg_param_userUPP) DisposeEventLoopIdleTimerUPP ((EventLoopIdleTimerUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeEventLoopIdleTimerUPP (EventLoopIdleTimerUPP userUPP);
+// Wraps call to function 'InvokeEventLoopTimerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeEventLoopTimerUPP(ewg_param_inTimer, ewg_param_inUserData, ewg_param_userUPP) InvokeEventLoopTimerUPP ((EventLoopTimerRef)ewg_param_inTimer, (void*)ewg_param_inUserData, (EventLoopTimerUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeEventLoopTimerUPP (EventLoopTimerRef inTimer, void *inUserData, EventLoopTimerUPP userUPP);
+// Wraps call to function 'InvokeEventLoopIdleTimerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeEventLoopIdleTimerUPP(ewg_param_inTimer, ewg_param_inState, ewg_param_inUserData, ewg_param_userUPP) InvokeEventLoopIdleTimerUPP ((EventLoopTimerRef)ewg_param_inTimer, (EventLoopIdleTimerMessage)ewg_param_inState, (void*)ewg_param_inUserData, (EventLoopIdleTimerUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeEventLoopIdleTimerUPP (EventLoopTimerRef inTimer, EventLoopIdleTimerMessage inState, void *inUserData, EventLoopIdleTimerUPP userUPP);
+// Wraps call to function 'InstallEventLoopTimer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InstallEventLoopTimer(ewg_param_inEventLoop, ewg_param_inFireDelay, ewg_param_inInterval, ewg_param_inTimerProc, ewg_param_inTimerData, ewg_param_outTimer) InstallEventLoopTimer ((EventLoopRef)ewg_param_inEventLoop, (EventTimerInterval)ewg_param_inFireDelay, (EventTimerInterval)ewg_param_inInterval, (EventLoopTimerUPP)ewg_param_inTimerProc, (void*)ewg_param_inTimerData, (EventLoopTimerRef*)ewg_param_outTimer)
+
+OSStatus  ewg_function_InstallEventLoopTimer (EventLoopRef inEventLoop, EventTimerInterval inFireDelay, EventTimerInterval inInterval, EventLoopTimerUPP inTimerProc, void *inTimerData, EventLoopTimerRef *outTimer);
+// Wraps call to function 'InstallEventLoopIdleTimer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InstallEventLoopIdleTimer(ewg_param_inEventLoop, ewg_param_inDelay, ewg_param_inInterval, ewg_param_inTimerProc, ewg_param_inTimerData, ewg_param_outTimer) InstallEventLoopIdleTimer ((EventLoopRef)ewg_param_inEventLoop, (EventTimerInterval)ewg_param_inDelay, (EventTimerInterval)ewg_param_inInterval, (EventLoopIdleTimerUPP)ewg_param_inTimerProc, (void*)ewg_param_inTimerData, (EventLoopTimerRef*)ewg_param_outTimer)
+
+OSStatus  ewg_function_InstallEventLoopIdleTimer (EventLoopRef inEventLoop, EventTimerInterval inDelay, EventTimerInterval inInterval, EventLoopIdleTimerUPP inTimerProc, void *inTimerData, EventLoopTimerRef *outTimer);
+// Wraps call to function 'RemoveEventLoopTimer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveEventLoopTimer(ewg_param_inTimer) RemoveEventLoopTimer ((EventLoopTimerRef)ewg_param_inTimer)
+
+OSStatus  ewg_function_RemoveEventLoopTimer (EventLoopTimerRef inTimer);
+// Wraps call to function 'SetEventLoopTimerNextFireTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetEventLoopTimerNextFireTime(ewg_param_inTimer, ewg_param_inNextFire) SetEventLoopTimerNextFireTime ((EventLoopTimerRef)ewg_param_inTimer, (EventTimerInterval)ewg_param_inNextFire)
+
+OSStatus  ewg_function_SetEventLoopTimerNextFireTime (EventLoopTimerRef inTimer, EventTimerInterval inNextFire);
+// Wraps call to function 'NewEventHandlerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewEventHandlerUPP(ewg_param_userRoutine) NewEventHandlerUPP ((EventHandlerProcPtr)ewg_param_userRoutine)
+
+EventHandlerUPP  ewg_function_NewEventHandlerUPP (EventHandlerProcPtr userRoutine);
+// Wraps call to function 'DisposeEventHandlerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeEventHandlerUPP(ewg_param_userUPP) DisposeEventHandlerUPP ((EventHandlerUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeEventHandlerUPP (EventHandlerUPP userUPP);
+// Wraps call to function 'InvokeEventHandlerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeEventHandlerUPP(ewg_param_inHandlerCallRef, ewg_param_inEvent, ewg_param_inUserData, ewg_param_userUPP) InvokeEventHandlerUPP ((EventHandlerCallRef)ewg_param_inHandlerCallRef, (EventRef)ewg_param_inEvent, (void*)ewg_param_inUserData, (EventHandlerUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeEventHandlerUPP (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData, EventHandlerUPP userUPP);
+// Wraps call to function 'InstallEventHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InstallEventHandler(ewg_param_inTarget, ewg_param_inHandler, ewg_param_inNumTypes, ewg_param_inList, ewg_param_inUserData, ewg_param_outRef) InstallEventHandler ((EventTargetRef)ewg_param_inTarget, (EventHandlerUPP)ewg_param_inHandler, (UInt32)ewg_param_inNumTypes, (EventTypeSpec const*)ewg_param_inList, (void*)ewg_param_inUserData, (EventHandlerRef*)ewg_param_outRef)
+
+OSStatus  ewg_function_InstallEventHandler (EventTargetRef inTarget, EventHandlerUPP inHandler, UInt32 inNumTypes, EventTypeSpec const *inList, void *inUserData, EventHandlerRef *outRef);
+// Wraps call to function 'InstallStandardEventHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InstallStandardEventHandler(ewg_param_inTarget) InstallStandardEventHandler ((EventTargetRef)ewg_param_inTarget)
+
+OSStatus  ewg_function_InstallStandardEventHandler (EventTargetRef inTarget);
+// Wraps call to function 'RemoveEventHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveEventHandler(ewg_param_inHandlerRef) RemoveEventHandler ((EventHandlerRef)ewg_param_inHandlerRef)
+
+OSStatus  ewg_function_RemoveEventHandler (EventHandlerRef inHandlerRef);
+// Wraps call to function 'AddEventTypesToHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AddEventTypesToHandler(ewg_param_inHandlerRef, ewg_param_inNumTypes, ewg_param_inList) AddEventTypesToHandler ((EventHandlerRef)ewg_param_inHandlerRef, (UInt32)ewg_param_inNumTypes, (EventTypeSpec const*)ewg_param_inList)
+
+OSStatus  ewg_function_AddEventTypesToHandler (EventHandlerRef inHandlerRef, UInt32 inNumTypes, EventTypeSpec const *inList);
+// Wraps call to function 'RemoveEventTypesFromHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveEventTypesFromHandler(ewg_param_inHandlerRef, ewg_param_inNumTypes, ewg_param_inList) RemoveEventTypesFromHandler ((EventHandlerRef)ewg_param_inHandlerRef, (UInt32)ewg_param_inNumTypes, (EventTypeSpec const*)ewg_param_inList)
+
+OSStatus  ewg_function_RemoveEventTypesFromHandler (EventHandlerRef inHandlerRef, UInt32 inNumTypes, EventTypeSpec const *inList);
+// Wraps call to function 'CallNextEventHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CallNextEventHandler(ewg_param_inCallRef, ewg_param_inEvent) CallNextEventHandler ((EventHandlerCallRef)ewg_param_inCallRef, (EventRef)ewg_param_inEvent)
+
+OSStatus  ewg_function_CallNextEventHandler (EventHandlerCallRef inCallRef, EventRef inEvent);
+// Wraps call to function 'SendEventToEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SendEventToEventTarget(ewg_param_inEvent, ewg_param_inTarget) SendEventToEventTarget ((EventRef)ewg_param_inEvent, (EventTargetRef)ewg_param_inTarget)
+
+OSStatus  ewg_function_SendEventToEventTarget (EventRef inEvent, EventTargetRef inTarget);
+// Wraps call to function 'SendEventToEventTargetWithOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SendEventToEventTargetWithOptions(ewg_param_inEvent, ewg_param_inTarget, ewg_param_inOptions) SendEventToEventTargetWithOptions ((EventRef)ewg_param_inEvent, (EventTargetRef)ewg_param_inTarget, (OptionBits)ewg_param_inOptions)
+
+OSStatus  ewg_function_SendEventToEventTargetWithOptions (EventRef inEvent, EventTargetRef inTarget, OptionBits inOptions);
+// Wraps call to function 'EnableSecureEventInput' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableSecureEventInput EnableSecureEventInput ()
+
+OSStatus  ewg_function_EnableSecureEventInput (void);
+// Wraps call to function 'DisableSecureEventInput' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisableSecureEventInput DisableSecureEventInput ()
+
+OSStatus  ewg_function_DisableSecureEventInput (void);
+// Wraps call to function 'IsSecureEventInputEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsSecureEventInputEnabled IsSecureEventInputEnabled ()
+
+Boolean  ewg_function_IsSecureEventInputEnabled (void);
+// Wraps call to function 'GetMouse' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMouse(ewg_param_mouseLoc) GetMouse ((Point*)ewg_param_mouseLoc)
+
+void  ewg_function_GetMouse (Point *mouseLoc);
+// Wraps call to function 'Button' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Button Button ()
+
+Boolean  ewg_function_Button (void);
+// Wraps call to function 'StillDown' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StillDown StillDown ()
+
+Boolean  ewg_function_StillDown (void);
+// Wraps call to function 'WaitMouseUp' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_WaitMouseUp WaitMouseUp ()
+
+Boolean  ewg_function_WaitMouseUp (void);
+// Wraps call to function 'KeyTranslate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_KeyTranslate(ewg_param_transData, ewg_param_keycode, ewg_param_state) KeyTranslate ((void const*)ewg_param_transData, (UInt16)ewg_param_keycode, (UInt32*)ewg_param_state)
+
+UInt32  ewg_function_KeyTranslate (void const *transData, UInt16 keycode, UInt32 *state);
+// Wraps call to function 'GetCaretTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCaretTime GetCaretTime ()
+
+UInt32  ewg_function_GetCaretTime (void);
+// Wraps call to function 'GetKeys' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetKeys(ewg_param_theKeys) GetKeys (ewg_param_theKeys)
+
+void  ewg_function_GetKeys (void *theKeys);
+// Wraps call to function 'GetDblTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDblTime GetDblTime ()
+
+UInt32  ewg_function_GetDblTime (void);
+// Wraps call to function 'SetEventMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetEventMask(ewg_param_value) SetEventMask ((EventMask)ewg_param_value)
+
+void  ewg_function_SetEventMask (EventMask value);
+// Wraps call to function 'GetNextEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNextEvent(ewg_param_eventMask, ewg_param_theEvent) GetNextEvent ((EventMask)ewg_param_eventMask, (EventRecord*)ewg_param_theEvent)
+
+Boolean  ewg_function_GetNextEvent (EventMask eventMask, EventRecord *theEvent);
+// Wraps call to function 'WaitNextEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_WaitNextEvent(ewg_param_eventMask, ewg_param_theEvent, ewg_param_sleep, ewg_param_mouseRgn) WaitNextEvent ((EventMask)ewg_param_eventMask, (EventRecord*)ewg_param_theEvent, (UInt32)ewg_param_sleep, (RgnHandle)ewg_param_mouseRgn)
+
+Boolean  ewg_function_WaitNextEvent (EventMask eventMask, EventRecord *theEvent, UInt32 sleep, RgnHandle mouseRgn);
+// Wraps call to function 'EventAvail' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EventAvail(ewg_param_eventMask, ewg_param_theEvent) EventAvail ((EventMask)ewg_param_eventMask, (EventRecord*)ewg_param_theEvent)
+
+Boolean  ewg_function_EventAvail (EventMask eventMask, EventRecord *theEvent);
+// Wraps call to function 'PostEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PostEvent(ewg_param_eventNum, ewg_param_eventMsg) PostEvent ((EventKind)ewg_param_eventNum, (UInt32)ewg_param_eventMsg)
+
+OSErr  ewg_function_PostEvent (EventKind eventNum, UInt32 eventMsg);
+// Wraps call to function 'FlushEvents' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FlushEvents(ewg_param_whichMask, ewg_param_stopMask) FlushEvents ((EventMask)ewg_param_whichMask, (EventMask)ewg_param_stopMask)
+
+void  ewg_function_FlushEvents (EventMask whichMask, EventMask stopMask);
+// Wraps call to function 'GetGlobalMouse' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetGlobalMouse(ewg_param_globalMouse) GetGlobalMouse ((Point*)ewg_param_globalMouse)
+
+void  ewg_function_GetGlobalMouse (Point *globalMouse);
+// Wraps call to function 'GetCurrentKeyModifiers' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetCurrentKeyModifiers GetCurrentKeyModifiers ()
+
+UInt32  ewg_function_GetCurrentKeyModifiers (void);
+// Wraps call to function 'CheckEventQueueForUserCancel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CheckEventQueueForUserCancel CheckEventQueueForUserCancel ()
+
+Boolean  ewg_function_CheckEventQueueForUserCancel (void);
+// Wraps call to function 'KeyScript' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_KeyScript(ewg_param_code) KeyScript ((short)ewg_param_code)
+
+void  ewg_function_KeyScript (short code);
+// Wraps call to function 'IsCmdChar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsCmdChar(ewg_param_event, ewg_param_test) IsCmdChar ((EventRecord const*)ewg_param_event, (short)ewg_param_test)
+
+Boolean  ewg_function_IsCmdChar (EventRecord const *event, short test);
+// Wraps call to function 'LMGetKeyThresh' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetKeyThresh LMGetKeyThresh ()
+
+SInt16  ewg_function_LMGetKeyThresh (void);
+// Wraps call to function 'LMSetKeyThresh' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetKeyThresh(ewg_param_value) LMSetKeyThresh ((SInt16)ewg_param_value)
+
+void  ewg_function_LMSetKeyThresh (SInt16 value);
+// Wraps call to function 'LMGetKeyRepThresh' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetKeyRepThresh LMGetKeyRepThresh ()
+
+SInt16  ewg_function_LMGetKeyRepThresh (void);
+// Wraps call to function 'LMSetKeyRepThresh' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetKeyRepThresh(ewg_param_value) LMSetKeyRepThresh ((SInt16)ewg_param_value)
+
+void  ewg_function_LMSetKeyRepThresh (SInt16 value);
+// Wraps call to function 'LMGetKbdLast' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetKbdLast LMGetKbdLast ()
+
+UInt8  ewg_function_LMGetKbdLast (void);
+// Wraps call to function 'LMSetKbdLast' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetKbdLast(ewg_param_value) LMSetKbdLast ((UInt8)ewg_param_value)
+
+void  ewg_function_LMSetKbdLast (UInt8 value);
+// Wraps call to function 'LMGetKbdType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetKbdType LMGetKbdType ()
+
+UInt8  ewg_function_LMGetKbdType (void);
+// Wraps call to function 'LMSetKbdType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMSetKbdType(ewg_param_value) LMSetKbdType ((UInt8)ewg_param_value)
+
+void  ewg_function_LMSetKbdType (UInt8 value);
+// Wraps call to function 'NewWindowDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewWindowDefUPP(ewg_param_userRoutine) NewWindowDefUPP ((WindowDefProcPtr)ewg_param_userRoutine)
+
+WindowDefUPP  ewg_function_NewWindowDefUPP (WindowDefProcPtr userRoutine);
+// Wraps call to function 'NewWindowPaintUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewWindowPaintUPP(ewg_param_userRoutine) NewWindowPaintUPP ((WindowPaintProcPtr)ewg_param_userRoutine)
+
+WindowPaintUPP  ewg_function_NewWindowPaintUPP (WindowPaintProcPtr userRoutine);
+// Wraps call to function 'DisposeWindowDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeWindowDefUPP(ewg_param_userUPP) DisposeWindowDefUPP ((WindowDefUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeWindowDefUPP (WindowDefUPP userUPP);
+// Wraps call to function 'DisposeWindowPaintUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeWindowPaintUPP(ewg_param_userUPP) DisposeWindowPaintUPP ((WindowPaintUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeWindowPaintUPP (WindowPaintUPP userUPP);
+// Wraps call to function 'InvokeWindowDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeWindowDefUPP(ewg_param_varCode, ewg_param_window, ewg_param_message, ewg_param_param, ewg_param_userUPP) InvokeWindowDefUPP ((short)ewg_param_varCode, (WindowRef)ewg_param_window, (short)ewg_param_message, (long)ewg_param_param, (WindowDefUPP)ewg_param_userUPP)
+
+long  ewg_function_InvokeWindowDefUPP (short varCode, WindowRef window, short message, long param, WindowDefUPP userUPP);
+// Wraps call to function 'InvokeWindowPaintUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeWindowPaintUPP(ewg_param_device, ewg_param_qdContext, ewg_param_window, ewg_param_inClientPaintRgn, ewg_param_outSystemPaintRgn, ewg_param_refCon, ewg_param_userUPP) InvokeWindowPaintUPP ((GDHandle)ewg_param_device, (GrafPtr)ewg_param_qdContext, (WindowRef)ewg_param_window, (RgnHandle)ewg_param_inClientPaintRgn, (RgnHandle)ewg_param_outSystemPaintRgn, (void*)ewg_param_refCon, (WindowPaintUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeWindowPaintUPP (GDHandle device, GrafPtr qdContext, WindowRef window, RgnHandle inClientPaintRgn, RgnHandle outSystemPaintRgn, void *refCon, WindowPaintUPP userUPP);
+// Wraps call to function 'GetNewCWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNewCWindow(ewg_param_windowID, ewg_param_wStorage, ewg_param_behind) GetNewCWindow ((short)ewg_param_windowID, (void*)ewg_param_wStorage, (WindowRef)ewg_param_behind)
+
+WindowRef  ewg_function_GetNewCWindow (short windowID, void *wStorage, WindowRef behind);
+// Wraps call to function 'NewWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewWindow(ewg_param_wStorage, ewg_param_boundsRect, ewg_param_title, ewg_param_visible, ewg_param_theProc, ewg_param_behind, ewg_param_goAwayFlag, ewg_param_refCon) NewWindow ((void*)ewg_param_wStorage, (Rect const*)ewg_param_boundsRect, (ConstStr255Param)ewg_param_title, (Boolean)ewg_param_visible, (short)ewg_param_theProc, (WindowRef)ewg_param_behind, (Boolean)ewg_param_goAwayFlag, (long)ewg_param_refCon)
+
+WindowRef  ewg_function_NewWindow (void *wStorage, Rect const *boundsRect, ConstStr255Param title, Boolean visible, short theProc, WindowRef behind, Boolean goAwayFlag, long refCon);
+// Wraps call to function 'GetNewWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNewWindow(ewg_param_windowID, ewg_param_wStorage, ewg_param_behind) GetNewWindow ((short)ewg_param_windowID, (void*)ewg_param_wStorage, (WindowRef)ewg_param_behind)
+
+WindowRef  ewg_function_GetNewWindow (short windowID, void *wStorage, WindowRef behind);
+// Wraps call to function 'NewCWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewCWindow(ewg_param_wStorage, ewg_param_boundsRect, ewg_param_title, ewg_param_visible, ewg_param_procID, ewg_param_behind, ewg_param_goAwayFlag, ewg_param_refCon) NewCWindow ((void*)ewg_param_wStorage, (Rect const*)ewg_param_boundsRect, (ConstStr255Param)ewg_param_title, (Boolean)ewg_param_visible, (short)ewg_param_procID, (WindowRef)ewg_param_behind, (Boolean)ewg_param_goAwayFlag, (long)ewg_param_refCon)
+
+WindowRef  ewg_function_NewCWindow (void *wStorage, Rect const *boundsRect, ConstStr255Param title, Boolean visible, short procID, WindowRef behind, Boolean goAwayFlag, long refCon);
+// Wraps call to function 'DisposeWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeWindow(ewg_param_window) DisposeWindow ((WindowRef)ewg_param_window)
+
+void  ewg_function_DisposeWindow (WindowRef window);
+// Wraps call to function 'CreateNewWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateNewWindow(ewg_param_windowClass, ewg_param_attributes, ewg_param_contentBounds, ewg_param_outWindow) CreateNewWindow ((WindowClass)ewg_param_windowClass, (WindowAttributes)ewg_param_attributes, (Rect const*)ewg_param_contentBounds, (WindowRef*)ewg_param_outWindow)
+
+OSStatus  ewg_function_CreateNewWindow (WindowClass windowClass, WindowAttributes attributes, Rect const *contentBounds, WindowRef *outWindow);
+// Wraps call to function 'CreateWindowFromResource' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateWindowFromResource(ewg_param_resID, ewg_param_outWindow) CreateWindowFromResource ((SInt16)ewg_param_resID, (WindowRef*)ewg_param_outWindow)
+
+OSStatus  ewg_function_CreateWindowFromResource (SInt16 resID, WindowRef *outWindow);
+// Wraps call to function 'StoreWindowIntoCollection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_StoreWindowIntoCollection(ewg_param_window, ewg_param_collection) StoreWindowIntoCollection ((WindowRef)ewg_param_window, (Collection)ewg_param_collection)
+
+OSStatus  ewg_function_StoreWindowIntoCollection (WindowRef window, Collection collection);
+// Wraps call to function 'CreateWindowFromCollection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateWindowFromCollection(ewg_param_collection, ewg_param_outWindow) CreateWindowFromCollection ((Collection)ewg_param_collection, (WindowRef*)ewg_param_outWindow)
+
+OSStatus  ewg_function_CreateWindowFromCollection (Collection collection, WindowRef *outWindow);
+// Wraps call to function 'GetWindowOwnerCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowOwnerCount(ewg_param_window, ewg_param_outCount) GetWindowOwnerCount ((WindowRef)ewg_param_window, (UInt32*)ewg_param_outCount)
+
+OSStatus  ewg_function_GetWindowOwnerCount (WindowRef window, UInt32 *outCount);
+// Wraps call to function 'CloneWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CloneWindow(ewg_param_window) CloneWindow ((WindowRef)ewg_param_window)
+
+OSStatus  ewg_function_CloneWindow (WindowRef window);
+// Wraps call to function 'GetWindowRetainCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowRetainCount(ewg_param_inWindow) GetWindowRetainCount ((WindowRef)ewg_param_inWindow)
+
+ItemCount  ewg_function_GetWindowRetainCount (WindowRef inWindow);
+// Wraps call to function 'RetainWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RetainWindow(ewg_param_inWindow) RetainWindow ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_RetainWindow (WindowRef inWindow);
+// Wraps call to function 'ReleaseWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReleaseWindow(ewg_param_inWindow) ReleaseWindow ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_ReleaseWindow (WindowRef inWindow);
+// Wraps call to function 'CreateCustomWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateCustomWindow(ewg_param_def, ewg_param_windowClass, ewg_param_attributes, ewg_param_contentBounds, ewg_param_outWindow) CreateCustomWindow ((WindowDefSpec const*)ewg_param_def, (WindowClass)ewg_param_windowClass, (WindowAttributes)ewg_param_attributes, (Rect const*)ewg_param_contentBounds, (WindowRef*)ewg_param_outWindow)
+
+OSStatus  ewg_function_CreateCustomWindow (WindowDefSpec const *def, WindowClass windowClass, WindowAttributes attributes, Rect const *contentBounds, WindowRef *outWindow);
+// Wraps call to function 'ReshapeCustomWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReshapeCustomWindow(ewg_param_window) ReshapeCustomWindow ((WindowRef)ewg_param_window)
+
+OSStatus  ewg_function_ReshapeCustomWindow (WindowRef window);
+// Wraps call to function 'RegisterWindowDefinition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RegisterWindowDefinition(ewg_param_inResID, ewg_param_inDefSpec) RegisterWindowDefinition ((SInt16)ewg_param_inResID, (WindowDefSpec const*)ewg_param_inDefSpec)
+
+OSStatus  ewg_function_RegisterWindowDefinition (SInt16 inResID, WindowDefSpec const *inDefSpec);
+// Wraps call to function 'GetWindowWidgetHilite' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowWidgetHilite(ewg_param_inWindow, ewg_param_outHilite) GetWindowWidgetHilite ((WindowRef)ewg_param_inWindow, (WindowDefPartCode*)ewg_param_outHilite)
+
+OSStatus  ewg_function_GetWindowWidgetHilite (WindowRef inWindow, WindowDefPartCode *outHilite);
+// Wraps call to function 'IsValidWindowClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsValidWindowClass(ewg_param_inClass) IsValidWindowClass ((WindowClass)ewg_param_inClass)
+
+Boolean  ewg_function_IsValidWindowClass (WindowClass inClass);
+// Wraps call to function 'GetAvailableWindowAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetAvailableWindowAttributes(ewg_param_inClass) GetAvailableWindowAttributes ((WindowClass)ewg_param_inClass)
+
+WindowAttributes  ewg_function_GetAvailableWindowAttributes (WindowClass inClass);
+// Wraps call to function 'GetWindowClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowClass(ewg_param_window, ewg_param_outClass) GetWindowClass ((WindowRef)ewg_param_window, (WindowClass*)ewg_param_outClass)
+
+OSStatus  ewg_function_GetWindowClass (WindowRef window, WindowClass *outClass);
+// Wraps call to function 'GetWindowAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowAttributes(ewg_param_window, ewg_param_outAttributes) GetWindowAttributes ((WindowRef)ewg_param_window, (WindowAttributes*)ewg_param_outAttributes)
+
+OSStatus  ewg_function_GetWindowAttributes (WindowRef window, WindowAttributes *outAttributes);
+// Wraps call to function 'ChangeWindowAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeWindowAttributes(ewg_param_window, ewg_param_setTheseAttributes, ewg_param_clearTheseAttributes) ChangeWindowAttributes ((WindowRef)ewg_param_window, (WindowAttributes)ewg_param_setTheseAttributes, (WindowAttributes)ewg_param_clearTheseAttributes)
+
+OSStatus  ewg_function_ChangeWindowAttributes (WindowRef window, WindowAttributes setTheseAttributes, WindowAttributes clearTheseAttributes);
+// Wraps call to function 'SetWindowClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowClass(ewg_param_inWindow, ewg_param_inWindowClass) SetWindowClass ((WindowRef)ewg_param_inWindow, (WindowClass)ewg_param_inWindowClass)
+
+OSStatus  ewg_function_SetWindowClass (WindowRef inWindow, WindowClass inWindowClass);
+// Wraps call to function 'HIWindowChangeClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowChangeClass(ewg_param_inWindow, ewg_param_inWindowClass) HIWindowChangeClass ((HIWindowRef)ewg_param_inWindow, (WindowClass)ewg_param_inWindowClass)
+
+OSStatus  ewg_function_HIWindowChangeClass (HIWindowRef inWindow, WindowClass inWindowClass);
+// Wraps call to function 'HIWindowFlush' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowFlush(ewg_param_inWindow) HIWindowFlush ((HIWindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_HIWindowFlush (HIWindowRef inWindow);
+// Wraps call to function 'SetWindowModality' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowModality(ewg_param_inWindow, ewg_param_inModalKind, ewg_param_inUnavailableWindow) SetWindowModality ((WindowRef)ewg_param_inWindow, (WindowModality)ewg_param_inModalKind, (WindowRef)ewg_param_inUnavailableWindow)
+
+OSStatus  ewg_function_SetWindowModality (WindowRef inWindow, WindowModality inModalKind, WindowRef inUnavailableWindow);
+// Wraps call to function 'GetWindowModality' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowModality(ewg_param_inWindow, ewg_param_outModalKind, ewg_param_outUnavailableWindow) GetWindowModality ((WindowRef)ewg_param_inWindow, (WindowModality*)ewg_param_outModalKind, (WindowRef*)ewg_param_outUnavailableWindow)
+
+OSStatus  ewg_function_GetWindowModality (WindowRef inWindow, WindowModality *outModalKind, WindowRef *outUnavailableWindow);
+// Wraps call to function 'HIWindowIsDocumentModalTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowIsDocumentModalTarget(ewg_param_inWindow, ewg_param_outOwner) HIWindowIsDocumentModalTarget ((HIWindowRef)ewg_param_inWindow, (HIWindowRef*)ewg_param_outOwner)
+
+Boolean  ewg_function_HIWindowIsDocumentModalTarget (HIWindowRef inWindow, HIWindowRef *outOwner);
+// Wraps call to function 'ShowFloatingWindows' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowFloatingWindows ShowFloatingWindows ()
+
+OSStatus  ewg_function_ShowFloatingWindows (void);
+// Wraps call to function 'HideFloatingWindows' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HideFloatingWindows HideFloatingWindows ()
+
+OSStatus  ewg_function_HideFloatingWindows (void);
+// Wraps call to function 'AreFloatingWindowsVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AreFloatingWindowsVisible AreFloatingWindowsVisible ()
+
+Boolean  ewg_function_AreFloatingWindowsVisible (void);
+// Wraps call to function 'CreateWindowGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateWindowGroup(ewg_param_inAttributes, ewg_param_outGroup) CreateWindowGroup ((WindowGroupAttributes)ewg_param_inAttributes, (WindowGroupRef*)ewg_param_outGroup)
+
+OSStatus  ewg_function_CreateWindowGroup (WindowGroupAttributes inAttributes, WindowGroupRef *outGroup);
+// Wraps call to function 'RetainWindowGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RetainWindowGroup(ewg_param_inGroup) RetainWindowGroup ((WindowGroupRef)ewg_param_inGroup)
+
+OSStatus  ewg_function_RetainWindowGroup (WindowGroupRef inGroup);
+// Wraps call to function 'ReleaseWindowGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReleaseWindowGroup(ewg_param_inGroup) ReleaseWindowGroup ((WindowGroupRef)ewg_param_inGroup)
+
+OSStatus  ewg_function_ReleaseWindowGroup (WindowGroupRef inGroup);
+// Wraps call to function 'GetWindowGroupRetainCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupRetainCount(ewg_param_inGroup) GetWindowGroupRetainCount ((WindowGroupRef)ewg_param_inGroup)
+
+ItemCount  ewg_function_GetWindowGroupRetainCount (WindowGroupRef inGroup);
+// Wraps call to function 'GetWindowGroupOfClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupOfClass(ewg_param_windowClass) GetWindowGroupOfClass ((WindowClass)ewg_param_windowClass)
+
+WindowGroupRef  ewg_function_GetWindowGroupOfClass (WindowClass windowClass);
+// Wraps call to function 'SetWindowGroupName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowGroupName(ewg_param_inGroup, ewg_param_inName) SetWindowGroupName ((WindowGroupRef)ewg_param_inGroup, (CFStringRef)ewg_param_inName)
+
+OSStatus  ewg_function_SetWindowGroupName (WindowGroupRef inGroup, CFStringRef inName);
+// Wraps call to function 'CopyWindowGroupName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyWindowGroupName(ewg_param_inGroup, ewg_param_outName) CopyWindowGroupName ((WindowGroupRef)ewg_param_inGroup, (CFStringRef*)ewg_param_outName)
+
+OSStatus  ewg_function_CopyWindowGroupName (WindowGroupRef inGroup, CFStringRef *outName);
+// Wraps call to function 'GetWindowGroupAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupAttributes(ewg_param_inGroup, ewg_param_outAttributes) GetWindowGroupAttributes ((WindowGroupRef)ewg_param_inGroup, (WindowGroupAttributes*)ewg_param_outAttributes)
+
+OSStatus  ewg_function_GetWindowGroupAttributes (WindowGroupRef inGroup, WindowGroupAttributes *outAttributes);
+// Wraps call to function 'ChangeWindowGroupAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeWindowGroupAttributes(ewg_param_inGroup, ewg_param_setTheseAttributes, ewg_param_clearTheseAttributes) ChangeWindowGroupAttributes ((WindowGroupRef)ewg_param_inGroup, (WindowGroupAttributes)ewg_param_setTheseAttributes, (WindowGroupAttributes)ewg_param_clearTheseAttributes)
+
+OSStatus  ewg_function_ChangeWindowGroupAttributes (WindowGroupRef inGroup, WindowGroupAttributes setTheseAttributes, WindowGroupAttributes clearTheseAttributes);
+// Wraps call to function 'SetWindowGroupLevel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowGroupLevel(ewg_param_inGroup, ewg_param_inLevel) SetWindowGroupLevel ((WindowGroupRef)ewg_param_inGroup, (SInt32)ewg_param_inLevel)
+
+OSStatus  ewg_function_SetWindowGroupLevel (WindowGroupRef inGroup, SInt32 inLevel);
+// Wraps call to function 'GetWindowGroupLevel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupLevel(ewg_param_inGroup, ewg_param_outLevel) GetWindowGroupLevel ((WindowGroupRef)ewg_param_inGroup, (SInt32*)ewg_param_outLevel)
+
+OSStatus  ewg_function_GetWindowGroupLevel (WindowGroupRef inGroup, SInt32 *outLevel);
+// Wraps call to function 'SetWindowGroupLevelOfType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowGroupLevelOfType(ewg_param_inGroup, ewg_param_inLevelType, ewg_param_inLevel) SetWindowGroupLevelOfType ((WindowGroupRef)ewg_param_inGroup, (UInt32)ewg_param_inLevelType, (CGWindowLevel)ewg_param_inLevel)
+
+OSStatus  ewg_function_SetWindowGroupLevelOfType (WindowGroupRef inGroup, UInt32 inLevelType, CGWindowLevel inLevel);
+// Wraps call to function 'GetWindowGroupLevelOfType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupLevelOfType(ewg_param_inGroup, ewg_param_inLevelType, ewg_param_outLevel) GetWindowGroupLevelOfType ((WindowGroupRef)ewg_param_inGroup, (UInt32)ewg_param_inLevelType, (CGWindowLevel*)ewg_param_outLevel)
+
+OSStatus  ewg_function_GetWindowGroupLevelOfType (WindowGroupRef inGroup, UInt32 inLevelType, CGWindowLevel *outLevel);
+// Wraps call to function 'SendWindowGroupBehind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SendWindowGroupBehind(ewg_param_inGroup, ewg_param_behindGroup) SendWindowGroupBehind ((WindowGroupRef)ewg_param_inGroup, (WindowGroupRef)ewg_param_behindGroup)
+
+OSStatus  ewg_function_SendWindowGroupBehind (WindowGroupRef inGroup, WindowGroupRef behindGroup);
+// Wraps call to function 'GetWindowGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroup(ewg_param_inWindow) GetWindowGroup ((WindowRef)ewg_param_inWindow)
+
+WindowGroupRef  ewg_function_GetWindowGroup (WindowRef inWindow);
+// Wraps call to function 'SetWindowGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowGroup(ewg_param_inWindow, ewg_param_inNewGroup) SetWindowGroup ((WindowRef)ewg_param_inWindow, (WindowGroupRef)ewg_param_inNewGroup)
+
+OSStatus  ewg_function_SetWindowGroup (WindowRef inWindow, WindowGroupRef inNewGroup);
+// Wraps call to function 'IsWindowContainedInGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowContainedInGroup(ewg_param_inWindow, ewg_param_inGroup) IsWindowContainedInGroup ((WindowRef)ewg_param_inWindow, (WindowGroupRef)ewg_param_inGroup)
+
+Boolean  ewg_function_IsWindowContainedInGroup (WindowRef inWindow, WindowGroupRef inGroup);
+// Wraps call to function 'GetWindowGroupParent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupParent(ewg_param_inGroup) GetWindowGroupParent ((WindowGroupRef)ewg_param_inGroup)
+
+WindowGroupRef  ewg_function_GetWindowGroupParent (WindowGroupRef inGroup);
+// Wraps call to function 'SetWindowGroupParent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowGroupParent(ewg_param_inGroup, ewg_param_inNewGroup) SetWindowGroupParent ((WindowGroupRef)ewg_param_inGroup, (WindowGroupRef)ewg_param_inNewGroup)
+
+OSStatus  ewg_function_SetWindowGroupParent (WindowGroupRef inGroup, WindowGroupRef inNewGroup);
+// Wraps call to function 'GetWindowGroupSibling' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupSibling(ewg_param_inGroup, ewg_param_inNextGroup) GetWindowGroupSibling ((WindowGroupRef)ewg_param_inGroup, (Boolean)ewg_param_inNextGroup)
+
+WindowGroupRef  ewg_function_GetWindowGroupSibling (WindowGroupRef inGroup, Boolean inNextGroup);
+// Wraps call to function 'GetWindowGroupOwner' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupOwner(ewg_param_inGroup) GetWindowGroupOwner ((WindowGroupRef)ewg_param_inGroup)
+
+WindowRef  ewg_function_GetWindowGroupOwner (WindowGroupRef inGroup);
+// Wraps call to function 'SetWindowGroupOwner' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowGroupOwner(ewg_param_inGroup, ewg_param_inWindow) SetWindowGroupOwner ((WindowGroupRef)ewg_param_inGroup, (WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_SetWindowGroupOwner (WindowGroupRef inGroup, WindowRef inWindow);
+// Wraps call to function 'CountWindowGroupContents' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CountWindowGroupContents(ewg_param_inGroup, ewg_param_inOptions) CountWindowGroupContents ((WindowGroupRef)ewg_param_inGroup, (WindowGroupContentOptions)ewg_param_inOptions)
+
+ItemCount  ewg_function_CountWindowGroupContents (WindowGroupRef inGroup, WindowGroupContentOptions inOptions);
+// Wraps call to function 'GetWindowGroupContents' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGroupContents(ewg_param_inGroup, ewg_param_inOptions, ewg_param_inAllowedItems, ewg_param_outNumItems, ewg_param_outItems) GetWindowGroupContents ((WindowGroupRef)ewg_param_inGroup, (WindowGroupContentOptions)ewg_param_inOptions, (ItemCount)ewg_param_inAllowedItems, (ItemCount*)ewg_param_outNumItems, (void**)ewg_param_outItems)
+
+OSStatus  ewg_function_GetWindowGroupContents (WindowGroupRef inGroup, WindowGroupContentOptions inOptions, ItemCount inAllowedItems, ItemCount *outNumItems, void **outItems);
+// Wraps call to function 'GetIndexedWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetIndexedWindow(ewg_param_inGroup, ewg_param_inIndex, ewg_param_inOptions, ewg_param_outWindow) GetIndexedWindow ((WindowGroupRef)ewg_param_inGroup, (UInt32)ewg_param_inIndex, (WindowGroupContentOptions)ewg_param_inOptions, (WindowRef*)ewg_param_outWindow)
+
+OSStatus  ewg_function_GetIndexedWindow (WindowGroupRef inGroup, UInt32 inIndex, WindowGroupContentOptions inOptions, WindowRef *outWindow);
+// Wraps call to function 'GetWindowIndex' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowIndex(ewg_param_inWindow, ewg_param_inStartGroup, ewg_param_inOptions, ewg_param_outIndex) GetWindowIndex ((WindowRef)ewg_param_inWindow, (WindowGroupRef)ewg_param_inStartGroup, (WindowGroupContentOptions)ewg_param_inOptions, (UInt32*)ewg_param_outIndex)
+
+OSStatus  ewg_function_GetWindowIndex (WindowRef inWindow, WindowGroupRef inStartGroup, WindowGroupContentOptions inOptions, UInt32 *outIndex);
+// Wraps call to function 'ActiveNonFloatingWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ActiveNonFloatingWindow ActiveNonFloatingWindow ()
+
+WindowRef  ewg_function_ActiveNonFloatingWindow (void);
+// Wraps call to function 'IsWindowActive' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowActive(ewg_param_inWindow) IsWindowActive ((WindowRef)ewg_param_inWindow)
+
+Boolean  ewg_function_IsWindowActive (WindowRef inWindow);
+// Wraps call to function 'ActivateWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ActivateWindow(ewg_param_inWindow, ewg_param_inActivate) ActivateWindow ((WindowRef)ewg_param_inWindow, (Boolean)ewg_param_inActivate)
+
+OSStatus  ewg_function_ActivateWindow (WindowRef inWindow, Boolean inActivate);
+// Wraps call to function 'GetWindowActivationScope' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowActivationScope(ewg_param_inWindow, ewg_param_outScope) GetWindowActivationScope ((WindowRef)ewg_param_inWindow, (WindowActivationScope*)ewg_param_outScope)
+
+OSStatus  ewg_function_GetWindowActivationScope (WindowRef inWindow, WindowActivationScope *outScope);
+// Wraps call to function 'SetWindowActivationScope' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowActivationScope(ewg_param_inWindow, ewg_param_inScope) SetWindowActivationScope ((WindowRef)ewg_param_inWindow, (WindowActivationScope)ewg_param_inScope)
+
+OSStatus  ewg_function_SetWindowActivationScope (WindowRef inWindow, WindowActivationScope inScope);
+// Wraps call to function 'DebugPrintWindowGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DebugPrintWindowGroup(ewg_param_inGroup) DebugPrintWindowGroup ((WindowGroupRef)ewg_param_inGroup)
+
+void  ewg_function_DebugPrintWindowGroup (WindowGroupRef inGroup);
+// Wraps call to function 'DebugPrintAllWindowGroups' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DebugPrintAllWindowGroups DebugPrintAllWindowGroups ()
+
+void  ewg_function_DebugPrintAllWindowGroups (void);
+// Wraps call to function 'SetThemeWindowBackground' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetThemeWindowBackground(ewg_param_inWindow, ewg_param_inBrush, ewg_param_inUpdate) SetThemeWindowBackground ((WindowRef)ewg_param_inWindow, (ThemeBrush)ewg_param_inBrush, (Boolean)ewg_param_inUpdate)
+
+OSStatus  ewg_function_SetThemeWindowBackground (WindowRef inWindow, ThemeBrush inBrush, Boolean inUpdate);
+// Wraps call to function 'SetThemeTextColorForWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetThemeTextColorForWindow(ewg_param_inWindow, ewg_param_inActive, ewg_param_inDepth, ewg_param_inColorDev) SetThemeTextColorForWindow ((WindowRef)ewg_param_inWindow, (Boolean)ewg_param_inActive, (SInt16)ewg_param_inDepth, (Boolean)ewg_param_inColorDev)
+
+OSStatus  ewg_function_SetThemeTextColorForWindow (WindowRef inWindow, Boolean inActive, SInt16 inDepth, Boolean inColorDev);
+// Wraps call to function 'SetWindowContentColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowContentColor(ewg_param_window, ewg_param_color) SetWindowContentColor ((WindowRef)ewg_param_window, (RGBColor const*)ewg_param_color)
+
+OSStatus  ewg_function_SetWindowContentColor (WindowRef window, RGBColor const *color);
+// Wraps call to function 'GetWindowContentColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowContentColor(ewg_param_window, ewg_param_color) GetWindowContentColor ((WindowRef)ewg_param_window, (RGBColor*)ewg_param_color)
+
+OSStatus  ewg_function_GetWindowContentColor (WindowRef window, RGBColor *color);
+// Wraps call to function 'GetWindowContentPattern' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowContentPattern(ewg_param_window, ewg_param_outPixPat) GetWindowContentPattern ((WindowRef)ewg_param_window, (PixPatHandle)ewg_param_outPixPat)
+
+OSStatus  ewg_function_GetWindowContentPattern (WindowRef window, PixPatHandle outPixPat);
+// Wraps call to function 'SetWindowContentPattern' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowContentPattern(ewg_param_window, ewg_param_pixPat) SetWindowContentPattern ((WindowRef)ewg_param_window, (PixPatHandle)ewg_param_pixPat)
+
+OSStatus  ewg_function_SetWindowContentPattern (WindowRef window, PixPatHandle pixPat);
+// Wraps call to function 'InstallWindowContentPaintProc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InstallWindowContentPaintProc(ewg_param_window, ewg_param_paintProc, ewg_param_options, ewg_param_refCon) InstallWindowContentPaintProc ((WindowRef)ewg_param_window, (WindowPaintUPP)ewg_param_paintProc, (WindowPaintProcOptions)ewg_param_options, (void*)ewg_param_refCon)
+
+OSStatus  ewg_function_InstallWindowContentPaintProc (WindowRef window, WindowPaintUPP paintProc, WindowPaintProcOptions options, void *refCon);
+// Wraps call to function 'ScrollWindowRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ScrollWindowRect(ewg_param_inWindow, ewg_param_inScrollRect, ewg_param_inHPixels, ewg_param_inVPixels, ewg_param_inOptions, ewg_param_outExposedRgn) ScrollWindowRect ((WindowRef)ewg_param_inWindow, (Rect const*)ewg_param_inScrollRect, (SInt16)ewg_param_inHPixels, (SInt16)ewg_param_inVPixels, (ScrollWindowOptions)ewg_param_inOptions, (RgnHandle)ewg_param_outExposedRgn)
+
+OSStatus  ewg_function_ScrollWindowRect (WindowRef inWindow, Rect const *inScrollRect, SInt16 inHPixels, SInt16 inVPixels, ScrollWindowOptions inOptions, RgnHandle outExposedRgn);
+// Wraps call to function 'ScrollWindowRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ScrollWindowRegion(ewg_param_inWindow, ewg_param_inScrollRgn, ewg_param_inHPixels, ewg_param_inVPixels, ewg_param_inOptions, ewg_param_outExposedRgn) ScrollWindowRegion ((WindowRef)ewg_param_inWindow, (RgnHandle)ewg_param_inScrollRgn, (SInt16)ewg_param_inHPixels, (SInt16)ewg_param_inVPixels, (ScrollWindowOptions)ewg_param_inOptions, (RgnHandle)ewg_param_outExposedRgn)
+
+OSStatus  ewg_function_ScrollWindowRegion (WindowRef inWindow, RgnHandle inScrollRgn, SInt16 inHPixels, SInt16 inVPixels, ScrollWindowOptions inOptions, RgnHandle outExposedRgn);
+// Wraps call to function 'ClipAbove' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClipAbove(ewg_param_window) ClipAbove ((WindowRef)ewg_param_window)
+
+void  ewg_function_ClipAbove (WindowRef window);
+// Wraps call to function 'PaintOne' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintOne(ewg_param_window, ewg_param_clobberedRgn) PaintOne ((WindowRef)ewg_param_window, (RgnHandle)ewg_param_clobberedRgn)
+
+void  ewg_function_PaintOne (WindowRef window, RgnHandle clobberedRgn);
+// Wraps call to function 'PaintBehind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PaintBehind(ewg_param_startWindow, ewg_param_clobberedRgn) PaintBehind ((WindowRef)ewg_param_startWindow, (RgnHandle)ewg_param_clobberedRgn)
+
+void  ewg_function_PaintBehind (WindowRef startWindow, RgnHandle clobberedRgn);
+// Wraps call to function 'CalcVis' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CalcVis(ewg_param_window) CalcVis ((WindowRef)ewg_param_window)
+
+void  ewg_function_CalcVis (WindowRef window);
+// Wraps call to function 'CalcVisBehind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CalcVisBehind(ewg_param_startWindow, ewg_param_clobberedRgn) CalcVisBehind ((WindowRef)ewg_param_startWindow, (RgnHandle)ewg_param_clobberedRgn)
+
+void  ewg_function_CalcVisBehind (WindowRef startWindow, RgnHandle clobberedRgn);
+// Wraps call to function 'CheckUpdate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CheckUpdate(ewg_param_theEvent) CheckUpdate ((EventRecord*)ewg_param_theEvent)
+
+Boolean  ewg_function_CheckUpdate (EventRecord *theEvent);
+// Wraps call to function 'FindWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FindWindow(ewg_param_thePoint, ewg_param_window) FindWindow (*(Point*)ewg_param_thePoint, (WindowRef*)ewg_param_window)
+
+WindowPartCode  ewg_function_FindWindow (Point *thePoint, WindowRef *window);
+// Wraps call to function 'FrontWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FrontWindow FrontWindow ()
+
+WindowRef  ewg_function_FrontWindow (void);
+// Wraps call to function 'BringToFront' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BringToFront(ewg_param_window) BringToFront ((WindowRef)ewg_param_window)
+
+void  ewg_function_BringToFront (WindowRef window);
+// Wraps call to function 'SendBehind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SendBehind(ewg_param_window, ewg_param_behindWindow) SendBehind ((WindowRef)ewg_param_window, (WindowRef)ewg_param_behindWindow)
+
+void  ewg_function_SendBehind (WindowRef window, WindowRef behindWindow);
+// Wraps call to function 'SelectWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SelectWindow(ewg_param_window) SelectWindow ((WindowRef)ewg_param_window)
+
+void  ewg_function_SelectWindow (WindowRef window);
+// Wraps call to function 'FrontNonFloatingWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FrontNonFloatingWindow FrontNonFloatingWindow ()
+
+WindowRef  ewg_function_FrontNonFloatingWindow (void);
+// Wraps call to function 'GetNextWindowOfClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNextWindowOfClass(ewg_param_inWindow, ewg_param_inWindowClass, ewg_param_mustBeVisible) GetNextWindowOfClass ((WindowRef)ewg_param_inWindow, (WindowClass)ewg_param_inWindowClass, (Boolean)ewg_param_mustBeVisible)
+
+WindowRef  ewg_function_GetNextWindowOfClass (WindowRef inWindow, WindowClass inWindowClass, Boolean mustBeVisible);
+// Wraps call to function 'GetFrontWindowOfClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetFrontWindowOfClass(ewg_param_inWindowClass, ewg_param_mustBeVisible) GetFrontWindowOfClass ((WindowClass)ewg_param_inWindowClass, (Boolean)ewg_param_mustBeVisible)
+
+WindowRef  ewg_function_GetFrontWindowOfClass (WindowClass inWindowClass, Boolean mustBeVisible);
+// Wraps call to function 'FindWindowOfClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FindWindowOfClass(ewg_param_where, ewg_param_inWindowClass, ewg_param_outWindow, ewg_param_outWindowPart) FindWindowOfClass ((Point const*)ewg_param_where, (WindowClass)ewg_param_inWindowClass, (WindowRef*)ewg_param_outWindow, (WindowPartCode*)ewg_param_outWindowPart)
+
+OSStatus  ewg_function_FindWindowOfClass (Point const *where, WindowClass inWindowClass, WindowRef *outWindow, WindowPartCode *outWindowPart);
+// Wraps call to function 'CreateStandardWindowMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateStandardWindowMenu(ewg_param_inOptions, ewg_param_outMenu) CreateStandardWindowMenu ((OptionBits)ewg_param_inOptions, (MenuRef*)ewg_param_outMenu)
+
+OSStatus  ewg_function_CreateStandardWindowMenu (OptionBits inOptions, MenuRef *outMenu);
+// Wraps call to function 'SetWindowAlternateTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowAlternateTitle(ewg_param_inWindow, ewg_param_inTitle) SetWindowAlternateTitle ((WindowRef)ewg_param_inWindow, (CFStringRef)ewg_param_inTitle)
+
+OSStatus  ewg_function_SetWindowAlternateTitle (WindowRef inWindow, CFStringRef inTitle);
+// Wraps call to function 'CopyWindowAlternateTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyWindowAlternateTitle(ewg_param_inWindow, ewg_param_outTitle) CopyWindowAlternateTitle ((WindowRef)ewg_param_inWindow, (CFStringRef*)ewg_param_outTitle)
+
+OSStatus  ewg_function_CopyWindowAlternateTitle (WindowRef inWindow, CFStringRef *outTitle);
+// Wraps call to function 'IsValidWindowPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsValidWindowPtr(ewg_param_possibleWindow) IsValidWindowPtr ((WindowRef)ewg_param_possibleWindow)
+
+Boolean  ewg_function_IsValidWindowPtr (WindowRef possibleWindow);
+// Wraps call to function 'HiliteWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HiliteWindow(ewg_param_window, ewg_param_fHilite) HiliteWindow ((WindowRef)ewg_param_window, (Boolean)ewg_param_fHilite)
+
+void  ewg_function_HiliteWindow (WindowRef window, Boolean fHilite);
+// Wraps call to function 'SetWRefCon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWRefCon(ewg_param_window, ewg_param_data) SetWRefCon ((WindowRef)ewg_param_window, (long)ewg_param_data)
+
+void  ewg_function_SetWRefCon (WindowRef window, long data);
+// Wraps call to function 'GetWRefCon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWRefCon(ewg_param_window) GetWRefCon ((WindowRef)ewg_param_window)
+
+long  ewg_function_GetWRefCon (WindowRef window);
+// Wraps call to function 'SetWindowPic' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowPic(ewg_param_window, ewg_param_pic) SetWindowPic ((WindowRef)ewg_param_window, (PicHandle)ewg_param_pic)
+
+void  ewg_function_SetWindowPic (WindowRef window, PicHandle pic);
+// Wraps call to function 'GetWindowPic' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowPic(ewg_param_window) GetWindowPic ((WindowRef)ewg_param_window)
+
+PicHandle  ewg_function_GetWindowPic (WindowRef window);
+// Wraps call to function 'GetWVariant' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWVariant(ewg_param_window) GetWVariant ((WindowRef)ewg_param_window)
+
+short  ewg_function_GetWVariant (WindowRef window);
+// Wraps call to function 'GetWindowFeatures' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowFeatures(ewg_param_window, ewg_param_outFeatures) GetWindowFeatures ((WindowRef)ewg_param_window, (UInt32*)ewg_param_outFeatures)
+
+OSStatus  ewg_function_GetWindowFeatures (WindowRef window, UInt32 *outFeatures);
+// Wraps call to function 'GetWindowRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowRegion(ewg_param_window, ewg_param_inRegionCode, ewg_param_ioWinRgn) GetWindowRegion ((WindowRef)ewg_param_window, (WindowRegionCode)ewg_param_inRegionCode, (RgnHandle)ewg_param_ioWinRgn)
+
+OSStatus  ewg_function_GetWindowRegion (WindowRef window, WindowRegionCode inRegionCode, RgnHandle ioWinRgn);
+// Wraps call to function 'GetWindowStructureWidths' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowStructureWidths(ewg_param_inWindow, ewg_param_outRect) GetWindowStructureWidths ((WindowRef)ewg_param_inWindow, (Rect*)ewg_param_outRect)
+
+OSStatus  ewg_function_GetWindowStructureWidths (WindowRef inWindow, Rect *outRect);
+// Wraps call to function 'HIWindowChangeFeatures' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowChangeFeatures(ewg_param_inWindow, ewg_param_inSetThese, ewg_param_inClearThese) HIWindowChangeFeatures ((WindowRef)ewg_param_inWindow, (UInt64)ewg_param_inSetThese, (UInt64)ewg_param_inClearThese)
+
+OSStatus  ewg_function_HIWindowChangeFeatures (WindowRef inWindow, UInt64 inSetThese, UInt64 inClearThese);
+// Wraps call to function 'BeginUpdate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BeginUpdate(ewg_param_window) BeginUpdate ((WindowRef)ewg_param_window)
+
+void  ewg_function_BeginUpdate (WindowRef window);
+// Wraps call to function 'EndUpdate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EndUpdate(ewg_param_window) EndUpdate ((WindowRef)ewg_param_window)
+
+void  ewg_function_EndUpdate (WindowRef window);
+// Wraps call to function 'InvalWindowRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvalWindowRgn(ewg_param_window, ewg_param_region) InvalWindowRgn ((WindowRef)ewg_param_window, (RgnHandle)ewg_param_region)
+
+OSStatus  ewg_function_InvalWindowRgn (WindowRef window, RgnHandle region);
+// Wraps call to function 'InvalWindowRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvalWindowRect(ewg_param_window, ewg_param_bounds) InvalWindowRect ((WindowRef)ewg_param_window, (Rect const*)ewg_param_bounds)
+
+OSStatus  ewg_function_InvalWindowRect (WindowRef window, Rect const *bounds);
+// Wraps call to function 'ValidWindowRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ValidWindowRgn(ewg_param_window, ewg_param_region) ValidWindowRgn ((WindowRef)ewg_param_window, (RgnHandle)ewg_param_region)
+
+OSStatus  ewg_function_ValidWindowRgn (WindowRef window, RgnHandle region);
+// Wraps call to function 'ValidWindowRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ValidWindowRect(ewg_param_window, ewg_param_bounds) ValidWindowRect ((WindowRef)ewg_param_window, (Rect const*)ewg_param_bounds)
+
+OSStatus  ewg_function_ValidWindowRect (WindowRef window, Rect const *bounds);
+// Wraps call to function 'DrawGrowIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DrawGrowIcon(ewg_param_window) DrawGrowIcon ((WindowRef)ewg_param_window)
+
+void  ewg_function_DrawGrowIcon (WindowRef window);
+// Wraps call to function 'SetWTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWTitle(ewg_param_window, ewg_param_title) SetWTitle ((WindowRef)ewg_param_window, (ConstStr255Param)ewg_param_title)
+
+void  ewg_function_SetWTitle (WindowRef window, ConstStr255Param title);
+// Wraps call to function 'GetWTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWTitle(ewg_param_window, ewg_param_title) GetWTitle ((WindowRef)ewg_param_window, ewg_param_title)
+
+void  ewg_function_GetWTitle (WindowRef window, void *title);
+// Wraps call to function 'SetWindowTitleWithCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowTitleWithCFString(ewg_param_inWindow, ewg_param_inString) SetWindowTitleWithCFString ((WindowRef)ewg_param_inWindow, (CFStringRef)ewg_param_inString)
+
+OSStatus  ewg_function_SetWindowTitleWithCFString (WindowRef inWindow, CFStringRef inString);
+// Wraps call to function 'CopyWindowTitleAsCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyWindowTitleAsCFString(ewg_param_inWindow, ewg_param_outString) CopyWindowTitleAsCFString ((WindowRef)ewg_param_inWindow, (CFStringRef*)ewg_param_outString)
+
+OSStatus  ewg_function_CopyWindowTitleAsCFString (WindowRef inWindow, CFStringRef *outString);
+// Wraps call to function 'SetWindowProxyFSSpec' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowProxyFSSpec(ewg_param_window, ewg_param_inFile) SetWindowProxyFSSpec ((WindowRef)ewg_param_window, (FSSpec const*)ewg_param_inFile)
+
+OSStatus  ewg_function_SetWindowProxyFSSpec (WindowRef window, FSSpec const *inFile);
+// Wraps call to function 'GetWindowProxyFSSpec' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowProxyFSSpec(ewg_param_window, ewg_param_outFile) GetWindowProxyFSSpec ((WindowRef)ewg_param_window, (FSSpec*)ewg_param_outFile)
+
+OSStatus  ewg_function_GetWindowProxyFSSpec (WindowRef window, FSSpec *outFile);
+// Wraps call to function 'HIWindowSetProxyFSRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowSetProxyFSRef(ewg_param_window, ewg_param_inRef) HIWindowSetProxyFSRef ((WindowRef)ewg_param_window, (FSRef const*)ewg_param_inRef)
+
+OSStatus  ewg_function_HIWindowSetProxyFSRef (WindowRef window, FSRef const *inRef);
+// Wraps call to function 'HIWindowGetProxyFSRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowGetProxyFSRef(ewg_param_window, ewg_param_outRef) HIWindowGetProxyFSRef ((WindowRef)ewg_param_window, (FSRef*)ewg_param_outRef)
+
+OSStatus  ewg_function_HIWindowGetProxyFSRef (WindowRef window, FSRef *outRef);
+// Wraps call to function 'SetWindowProxyAlias' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowProxyAlias(ewg_param_inWindow, ewg_param_inAlias) SetWindowProxyAlias ((WindowRef)ewg_param_inWindow, (AliasHandle)ewg_param_inAlias)
+
+OSStatus  ewg_function_SetWindowProxyAlias (WindowRef inWindow, AliasHandle inAlias);
+// Wraps call to function 'GetWindowProxyAlias' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowProxyAlias(ewg_param_window, ewg_param_alias) GetWindowProxyAlias ((WindowRef)ewg_param_window, (AliasHandle*)ewg_param_alias)
+
+OSStatus  ewg_function_GetWindowProxyAlias (WindowRef window, AliasHandle *alias);
+// Wraps call to function 'SetWindowProxyCreatorAndType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowProxyCreatorAndType(ewg_param_window, ewg_param_fileCreator, ewg_param_fileType, ewg_param_vRefNum) SetWindowProxyCreatorAndType ((WindowRef)ewg_param_window, (OSType)ewg_param_fileCreator, (OSType)ewg_param_fileType, (SInt16)ewg_param_vRefNum)
+
+OSStatus  ewg_function_SetWindowProxyCreatorAndType (WindowRef window, OSType fileCreator, OSType fileType, SInt16 vRefNum);
+// Wraps call to function 'GetWindowProxyIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowProxyIcon(ewg_param_window, ewg_param_outIcon) GetWindowProxyIcon ((WindowRef)ewg_param_window, (IconRef*)ewg_param_outIcon)
+
+OSStatus  ewg_function_GetWindowProxyIcon (WindowRef window, IconRef *outIcon);
+// Wraps call to function 'SetWindowProxyIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowProxyIcon(ewg_param_window, ewg_param_icon) SetWindowProxyIcon ((WindowRef)ewg_param_window, (IconRef)ewg_param_icon)
+
+OSStatus  ewg_function_SetWindowProxyIcon (WindowRef window, IconRef icon);
+// Wraps call to function 'RemoveWindowProxy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveWindowProxy(ewg_param_window) RemoveWindowProxy ((WindowRef)ewg_param_window)
+
+OSStatus  ewg_function_RemoveWindowProxy (WindowRef window);
+// Wraps call to function 'BeginWindowProxyDrag' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BeginWindowProxyDrag(ewg_param_window, ewg_param_outNewDrag, ewg_param_outDragOutlineRgn) BeginWindowProxyDrag ((WindowRef)ewg_param_window, (DragReference*)ewg_param_outNewDrag, (RgnHandle)ewg_param_outDragOutlineRgn)
+
+OSStatus  ewg_function_BeginWindowProxyDrag (WindowRef window, DragReference *outNewDrag, RgnHandle outDragOutlineRgn);
+// Wraps call to function 'EndWindowProxyDrag' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EndWindowProxyDrag(ewg_param_window, ewg_param_theDrag) EndWindowProxyDrag ((WindowRef)ewg_param_window, (DragReference)ewg_param_theDrag)
+
+OSStatus  ewg_function_EndWindowProxyDrag (WindowRef window, DragReference theDrag);
+// Wraps call to function 'TrackWindowProxyFromExistingDrag' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackWindowProxyFromExistingDrag(ewg_param_window, ewg_param_startPt, ewg_param_drag, ewg_param_inDragOutlineRgn) TrackWindowProxyFromExistingDrag ((WindowRef)ewg_param_window, *(Point*)ewg_param_startPt, (DragReference)ewg_param_drag, (RgnHandle)ewg_param_inDragOutlineRgn)
+
+OSStatus  ewg_function_TrackWindowProxyFromExistingDrag (WindowRef window, Point *startPt, DragReference drag, RgnHandle inDragOutlineRgn);
+// Wraps call to function 'TrackWindowProxyDrag' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackWindowProxyDrag(ewg_param_window, ewg_param_startPt) TrackWindowProxyDrag ((WindowRef)ewg_param_window, *(Point*)ewg_param_startPt)
+
+OSStatus  ewg_function_TrackWindowProxyDrag (WindowRef window, Point *startPt);
+// Wraps call to function 'IsWindowModified' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowModified(ewg_param_window) IsWindowModified ((WindowRef)ewg_param_window)
+
+Boolean  ewg_function_IsWindowModified (WindowRef window);
+// Wraps call to function 'SetWindowModified' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowModified(ewg_param_window, ewg_param_modified) SetWindowModified ((WindowRef)ewg_param_window, (Boolean)ewg_param_modified)
+
+OSStatus  ewg_function_SetWindowModified (WindowRef window, Boolean modified);
+// Wraps call to function 'IsWindowPathSelectClick' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowPathSelectClick(ewg_param_window, ewg_param_event) IsWindowPathSelectClick ((WindowRef)ewg_param_window, (EventRecord const*)ewg_param_event)
+
+Boolean  ewg_function_IsWindowPathSelectClick (WindowRef window, EventRecord const *event);
+// Wraps call to function 'IsWindowPathSelectEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowPathSelectEvent(ewg_param_window, ewg_param_inEvent) IsWindowPathSelectEvent ((WindowRef)ewg_param_window, (EventRef)ewg_param_inEvent)
+
+Boolean  ewg_function_IsWindowPathSelectEvent (WindowRef window, EventRef inEvent);
+// Wraps call to function 'WindowPathSelect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_WindowPathSelect(ewg_param_window, ewg_param_menu, ewg_param_outMenuResult) WindowPathSelect ((WindowRef)ewg_param_window, (MenuRef)ewg_param_menu, (SInt32*)ewg_param_outMenuResult)
+
+OSStatus  ewg_function_WindowPathSelect (WindowRef window, MenuRef menu, SInt32 *outMenuResult);
+// Wraps call to function 'HiliteWindowFrameForDrag' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HiliteWindowFrameForDrag(ewg_param_window, ewg_param_hilited) HiliteWindowFrameForDrag ((WindowRef)ewg_param_window, (Boolean)ewg_param_hilited)
+
+OSStatus  ewg_function_HiliteWindowFrameForDrag (WindowRef window, Boolean hilited);
+// Wraps call to function 'TransitionWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TransitionWindow(ewg_param_inWindow, ewg_param_inEffect, ewg_param_inAction, ewg_param_inRect) TransitionWindow ((WindowRef)ewg_param_inWindow, (WindowTransitionEffect)ewg_param_inEffect, (WindowTransitionAction)ewg_param_inAction, (Rect const*)ewg_param_inRect)
+
+OSStatus  ewg_function_TransitionWindow (WindowRef inWindow, WindowTransitionEffect inEffect, WindowTransitionAction inAction, Rect const *inRect);
+// Wraps call to function 'TransitionWindowAndParent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TransitionWindowAndParent(ewg_param_inWindow, ewg_param_inParentWindow, ewg_param_inEffect, ewg_param_inAction, ewg_param_inRect) TransitionWindowAndParent ((WindowRef)ewg_param_inWindow, (WindowRef)ewg_param_inParentWindow, (WindowTransitionEffect)ewg_param_inEffect, (WindowTransitionAction)ewg_param_inAction, (Rect const*)ewg_param_inRect)
+
+OSStatus  ewg_function_TransitionWindowAndParent (WindowRef inWindow, WindowRef inParentWindow, WindowTransitionEffect inEffect, WindowTransitionAction inAction, Rect const *inRect);
+// Wraps call to function 'TransitionWindowWithOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TransitionWindowWithOptions(ewg_param_inWindow, ewg_param_inEffect, ewg_param_inAction, ewg_param_inBounds, ewg_param_inAsync, ewg_param_inOptions) TransitionWindowWithOptions ((WindowRef)ewg_param_inWindow, (WindowTransitionEffect)ewg_param_inEffect, (WindowTransitionAction)ewg_param_inAction, (HIRect const*)ewg_param_inBounds, (Boolean)ewg_param_inAsync, (TransitionWindowOptions*)ewg_param_inOptions)
+
+OSStatus  ewg_function_TransitionWindowWithOptions (WindowRef inWindow, WindowTransitionEffect inEffect, WindowTransitionAction inAction, HIRect const *inBounds, Boolean inAsync, TransitionWindowOptions *inOptions);
+// Wraps call to function 'MoveWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MoveWindow(ewg_param_window, ewg_param_hGlobal, ewg_param_vGlobal, ewg_param_front) MoveWindow ((WindowRef)ewg_param_window, (short)ewg_param_hGlobal, (short)ewg_param_vGlobal, (Boolean)ewg_param_front)
+
+void  ewg_function_MoveWindow (WindowRef window, short hGlobal, short vGlobal, Boolean front);
+// Wraps call to function 'SizeWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SizeWindow(ewg_param_window, ewg_param_w, ewg_param_h, ewg_param_fUpdate) SizeWindow ((WindowRef)ewg_param_window, (short)ewg_param_w, (short)ewg_param_h, (Boolean)ewg_param_fUpdate)
+
+void  ewg_function_SizeWindow (WindowRef window, short w, short h, Boolean fUpdate);
+// Wraps call to function 'GrowWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GrowWindow(ewg_param_window, ewg_param_startPt, ewg_param_bBox) GrowWindow ((WindowRef)ewg_param_window, *(Point*)ewg_param_startPt, (Rect const*)ewg_param_bBox)
+
+long  ewg_function_GrowWindow (WindowRef window, Point *startPt, Rect const *bBox);
+// Wraps call to function 'DragWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DragWindow(ewg_param_window, ewg_param_startPt, ewg_param_boundsRect) DragWindow ((WindowRef)ewg_param_window, *(Point*)ewg_param_startPt, (Rect const*)ewg_param_boundsRect)
+
+void  ewg_function_DragWindow (WindowRef window, Point *startPt, Rect const *boundsRect);
+// Wraps call to function 'ZoomWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ZoomWindow(ewg_param_window, ewg_param_partCode, ewg_param_front) ZoomWindow ((WindowRef)ewg_param_window, (WindowPartCode)ewg_param_partCode, (Boolean)ewg_param_front)
+
+void  ewg_function_ZoomWindow (WindowRef window, WindowPartCode partCode, Boolean front);
+// Wraps call to function 'IsWindowCollapsable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowCollapsable(ewg_param_window) IsWindowCollapsable ((WindowRef)ewg_param_window)
+
+Boolean  ewg_function_IsWindowCollapsable (WindowRef window);
+// Wraps call to function 'IsWindowCollapsed' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowCollapsed(ewg_param_window) IsWindowCollapsed ((WindowRef)ewg_param_window)
+
+Boolean  ewg_function_IsWindowCollapsed (WindowRef window);
+// Wraps call to function 'CollapseWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CollapseWindow(ewg_param_window, ewg_param_collapse) CollapseWindow ((WindowRef)ewg_param_window, (Boolean)ewg_param_collapse)
+
+OSStatus  ewg_function_CollapseWindow (WindowRef window, Boolean collapse);
+// Wraps call to function 'CollapseAllWindows' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CollapseAllWindows(ewg_param_collapse) CollapseAllWindows ((Boolean)ewg_param_collapse)
+
+OSStatus  ewg_function_CollapseAllWindows (Boolean collapse);
+// Wraps call to function 'CreateQDContextForCollapsedWindowDockTile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateQDContextForCollapsedWindowDockTile(ewg_param_inWindow, ewg_param_outContext) CreateQDContextForCollapsedWindowDockTile ((WindowRef)ewg_param_inWindow, (CGrafPtr*)ewg_param_outContext)
+
+OSStatus  ewg_function_CreateQDContextForCollapsedWindowDockTile (WindowRef inWindow, CGrafPtr *outContext);
+// Wraps call to function 'ReleaseQDContextForCollapsedWindowDockTile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReleaseQDContextForCollapsedWindowDockTile(ewg_param_inWindow, ewg_param_inContext) ReleaseQDContextForCollapsedWindowDockTile ((WindowRef)ewg_param_inWindow, (CGrafPtr)ewg_param_inContext)
+
+OSStatus  ewg_function_ReleaseQDContextForCollapsedWindowDockTile (WindowRef inWindow, CGrafPtr inContext);
+// Wraps call to function 'UpdateCollapsedWindowDockTile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UpdateCollapsedWindowDockTile(ewg_param_inWindow) UpdateCollapsedWindowDockTile ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_UpdateCollapsedWindowDockTile (WindowRef inWindow);
+// Wraps call to function 'SetWindowDockTileMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowDockTileMenu(ewg_param_inWindow, ewg_param_inMenu) SetWindowDockTileMenu ((WindowRef)ewg_param_inWindow, (MenuRef)ewg_param_inMenu)
+
+OSStatus  ewg_function_SetWindowDockTileMenu (WindowRef inWindow, MenuRef inMenu);
+// Wraps call to function 'GetWindowDockTileMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowDockTileMenu(ewg_param_inWindow) GetWindowDockTileMenu ((WindowRef)ewg_param_inWindow)
+
+MenuRef  ewg_function_GetWindowDockTileMenu (WindowRef inWindow);
+// Wraps call to function 'GetWindowBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowBounds(ewg_param_window, ewg_param_regionCode, ewg_param_globalBounds) GetWindowBounds ((WindowRef)ewg_param_window, (WindowRegionCode)ewg_param_regionCode, (Rect*)ewg_param_globalBounds)
+
+OSStatus  ewg_function_GetWindowBounds (WindowRef window, WindowRegionCode regionCode, Rect *globalBounds);
+// Wraps call to function 'SetWindowResizeLimits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowResizeLimits(ewg_param_inWindow, ewg_param_inMinLimits, ewg_param_inMaxLimits) SetWindowResizeLimits ((WindowRef)ewg_param_inWindow, (HISize const*)ewg_param_inMinLimits, (HISize const*)ewg_param_inMaxLimits)
+
+OSStatus  ewg_function_SetWindowResizeLimits (WindowRef inWindow, HISize const *inMinLimits, HISize const *inMaxLimits);
+// Wraps call to function 'GetWindowResizeLimits' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowResizeLimits(ewg_param_inWindow, ewg_param_outMinLimits, ewg_param_outMaxLimits) GetWindowResizeLimits ((WindowRef)ewg_param_inWindow, (HISize*)ewg_param_outMinLimits, (HISize*)ewg_param_outMaxLimits)
+
+OSStatus  ewg_function_GetWindowResizeLimits (WindowRef inWindow, HISize *outMinLimits, HISize *outMaxLimits);
+// Wraps call to function 'ResizeWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ResizeWindow(ewg_param_inWindow, ewg_param_inStartPoint, ewg_param_inSizeConstraints, ewg_param_outNewContentRect) ResizeWindow ((WindowRef)ewg_param_inWindow, *(Point*)ewg_param_inStartPoint, (Rect const*)ewg_param_inSizeConstraints, (Rect*)ewg_param_outNewContentRect)
+
+Boolean  ewg_function_ResizeWindow (WindowRef inWindow, Point *inStartPoint, Rect const *inSizeConstraints, Rect *outNewContentRect);
+// Wraps call to function 'SetWindowBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowBounds(ewg_param_window, ewg_param_regionCode, ewg_param_globalBounds) SetWindowBounds ((WindowRef)ewg_param_window, (WindowRegionCode)ewg_param_regionCode, (Rect const*)ewg_param_globalBounds)
+
+OSStatus  ewg_function_SetWindowBounds (WindowRef window, WindowRegionCode regionCode, Rect const *globalBounds);
+// Wraps call to function 'RepositionWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RepositionWindow(ewg_param_window, ewg_param_parentWindow, ewg_param_method) RepositionWindow ((WindowRef)ewg_param_window, (WindowRef)ewg_param_parentWindow, (WindowPositionMethod)ewg_param_method)
+
+OSStatus  ewg_function_RepositionWindow (WindowRef window, WindowRef parentWindow, WindowPositionMethod method);
+// Wraps call to function 'MoveWindowStructure' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MoveWindowStructure(ewg_param_window, ewg_param_hGlobal, ewg_param_vGlobal) MoveWindowStructure ((WindowRef)ewg_param_window, (short)ewg_param_hGlobal, (short)ewg_param_vGlobal)
+
+OSStatus  ewg_function_MoveWindowStructure (WindowRef window, short hGlobal, short vGlobal);
+// Wraps call to function 'IsWindowInStandardState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowInStandardState(ewg_param_inWindow, ewg_param_inIdealSize, ewg_param_outIdealStandardState) IsWindowInStandardState ((WindowRef)ewg_param_inWindow, (Point const*)ewg_param_inIdealSize, (Rect*)ewg_param_outIdealStandardState)
+
+Boolean  ewg_function_IsWindowInStandardState (WindowRef inWindow, Point const *inIdealSize, Rect *outIdealStandardState);
+// Wraps call to function 'ZoomWindowIdeal' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ZoomWindowIdeal(ewg_param_inWindow, ewg_param_inPartCode, ewg_param_ioIdealSize) ZoomWindowIdeal ((WindowRef)ewg_param_inWindow, (WindowPartCode)ewg_param_inPartCode, (Point*)ewg_param_ioIdealSize)
+
+OSStatus  ewg_function_ZoomWindowIdeal (WindowRef inWindow, WindowPartCode inPartCode, Point *ioIdealSize);
+// Wraps call to function 'GetWindowIdealUserState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowIdealUserState(ewg_param_inWindow, ewg_param_outUserState) GetWindowIdealUserState ((WindowRef)ewg_param_inWindow, (Rect*)ewg_param_outUserState)
+
+OSStatus  ewg_function_GetWindowIdealUserState (WindowRef inWindow, Rect *outUserState);
+// Wraps call to function 'SetWindowIdealUserState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowIdealUserState(ewg_param_inWindow, ewg_param_inUserState) SetWindowIdealUserState ((WindowRef)ewg_param_inWindow, (Rect const*)ewg_param_inUserState)
+
+OSStatus  ewg_function_SetWindowIdealUserState (WindowRef inWindow, Rect const *inUserState);
+// Wraps call to function 'GetWindowGreatestAreaDevice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowGreatestAreaDevice(ewg_param_inWindow, ewg_param_inRegion, ewg_param_outGreatestDevice, ewg_param_outGreatestDeviceRect) GetWindowGreatestAreaDevice ((WindowRef)ewg_param_inWindow, (WindowRegionCode)ewg_param_inRegion, (GDHandle*)ewg_param_outGreatestDevice, (Rect*)ewg_param_outGreatestDeviceRect)
+
+OSStatus  ewg_function_GetWindowGreatestAreaDevice (WindowRef inWindow, WindowRegionCode inRegion, GDHandle *outGreatestDevice, Rect *outGreatestDeviceRect);
+// Wraps call to function 'ConstrainWindowToScreen' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ConstrainWindowToScreen(ewg_param_inWindowRef, ewg_param_inRegionCode, ewg_param_inOptions, ewg_param_inScreenRect, ewg_param_outStructure) ConstrainWindowToScreen ((WindowRef)ewg_param_inWindowRef, (WindowRegionCode)ewg_param_inRegionCode, (WindowConstrainOptions)ewg_param_inOptions, (Rect const*)ewg_param_inScreenRect, (Rect*)ewg_param_outStructure)
+
+OSStatus  ewg_function_ConstrainWindowToScreen (WindowRef inWindowRef, WindowRegionCode inRegionCode, WindowConstrainOptions inOptions, Rect const *inScreenRect, Rect *outStructure);
+// Wraps call to function 'GetAvailableWindowPositioningBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetAvailableWindowPositioningBounds(ewg_param_inDevice, ewg_param_outAvailableRect) GetAvailableWindowPositioningBounds ((GDHandle)ewg_param_inDevice, (Rect*)ewg_param_outAvailableRect)
+
+OSStatus  ewg_function_GetAvailableWindowPositioningBounds (GDHandle inDevice, Rect *outAvailableRect);
+// Wraps call to function 'GetAvailableWindowPositioningRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetAvailableWindowPositioningRegion(ewg_param_inDevice, ewg_param_ioRgn) GetAvailableWindowPositioningRegion ((GDHandle)ewg_param_inDevice, (RgnHandle)ewg_param_ioRgn)
+
+OSStatus  ewg_function_GetAvailableWindowPositioningRegion (GDHandle inDevice, RgnHandle ioRgn);
+// Wraps call to function 'HideWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HideWindow(ewg_param_window) HideWindow ((WindowRef)ewg_param_window)
+
+void  ewg_function_HideWindow (WindowRef window);
+// Wraps call to function 'ShowWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowWindow(ewg_param_window) ShowWindow ((WindowRef)ewg_param_window)
+
+void  ewg_function_ShowWindow (WindowRef window);
+// Wraps call to function 'ShowHide' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowHide(ewg_param_window, ewg_param_showFlag) ShowHide ((WindowRef)ewg_param_window, (Boolean)ewg_param_showFlag)
+
+void  ewg_function_ShowHide (WindowRef window, Boolean showFlag);
+// Wraps call to function 'IsWindowVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowVisible(ewg_param_window) IsWindowVisible ((WindowRef)ewg_param_window)
+
+Boolean  ewg_function_IsWindowVisible (WindowRef window);
+// Wraps call to function 'IsWindowLatentVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowLatentVisible(ewg_param_inWindow, ewg_param_outLatentVisible) IsWindowLatentVisible ((WindowRef)ewg_param_inWindow, (WindowLatentVisibility*)ewg_param_outLatentVisible)
+
+Boolean  ewg_function_IsWindowLatentVisible (WindowRef inWindow, WindowLatentVisibility *outLatentVisible);
+// Wraps call to function 'HIWindowGetAvailability' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowGetAvailability(ewg_param_inWindow, ewg_param_outAvailability) HIWindowGetAvailability ((HIWindowRef)ewg_param_inWindow, (HIWindowAvailability*)ewg_param_outAvailability)
+
+OSStatus  ewg_function_HIWindowGetAvailability (HIWindowRef inWindow, HIWindowAvailability *outAvailability);
+// Wraps call to function 'HIWindowChangeAvailability' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowChangeAvailability(ewg_param_inWindow, ewg_param_inSetAvailability, ewg_param_inClearAvailability) HIWindowChangeAvailability ((HIWindowRef)ewg_param_inWindow, (HIWindowAvailability)ewg_param_inSetAvailability, (HIWindowAvailability)ewg_param_inClearAvailability)
+
+OSStatus  ewg_function_HIWindowChangeAvailability (HIWindowRef inWindow, HIWindowAvailability inSetAvailability, HIWindowAvailability inClearAvailability);
+// Wraps call to function 'ShowSheetWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowSheetWindow(ewg_param_inSheet, ewg_param_inParentWindow) ShowSheetWindow ((WindowRef)ewg_param_inSheet, (WindowRef)ewg_param_inParentWindow)
+
+OSStatus  ewg_function_ShowSheetWindow (WindowRef inSheet, WindowRef inParentWindow);
+// Wraps call to function 'HideSheetWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HideSheetWindow(ewg_param_inSheet) HideSheetWindow ((WindowRef)ewg_param_inSheet)
+
+OSStatus  ewg_function_HideSheetWindow (WindowRef inSheet);
+// Wraps call to function 'DetachSheetWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DetachSheetWindow(ewg_param_inSheet) DetachSheetWindow ((WindowRef)ewg_param_inSheet)
+
+OSStatus  ewg_function_DetachSheetWindow (WindowRef inSheet);
+// Wraps call to function 'GetSheetWindowParent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetSheetWindowParent(ewg_param_inSheet, ewg_param_outParentWindow) GetSheetWindowParent ((WindowRef)ewg_param_inSheet, (WindowRef*)ewg_param_outParentWindow)
+
+OSStatus  ewg_function_GetSheetWindowParent (WindowRef inSheet, WindowRef *outParentWindow);
+// Wraps call to function 'GetDrawerPreferredEdge' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDrawerPreferredEdge(ewg_param_inDrawerWindow) GetDrawerPreferredEdge ((WindowRef)ewg_param_inDrawerWindow)
+
+OptionBits  ewg_function_GetDrawerPreferredEdge (WindowRef inDrawerWindow);
+// Wraps call to function 'SetDrawerPreferredEdge' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDrawerPreferredEdge(ewg_param_inDrawerWindow, ewg_param_inEdge) SetDrawerPreferredEdge ((WindowRef)ewg_param_inDrawerWindow, (OptionBits)ewg_param_inEdge)
+
+OSStatus  ewg_function_SetDrawerPreferredEdge (WindowRef inDrawerWindow, OptionBits inEdge);
+// Wraps call to function 'GetDrawerCurrentEdge' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDrawerCurrentEdge(ewg_param_inDrawerWindow) GetDrawerCurrentEdge ((WindowRef)ewg_param_inDrawerWindow)
+
+OptionBits  ewg_function_GetDrawerCurrentEdge (WindowRef inDrawerWindow);
+// Wraps call to function 'GetDrawerState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDrawerState(ewg_param_inDrawerWindow) GetDrawerState ((WindowRef)ewg_param_inDrawerWindow)
+
+WindowDrawerState  ewg_function_GetDrawerState (WindowRef inDrawerWindow);
+// Wraps call to function 'GetDrawerParent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDrawerParent(ewg_param_inDrawerWindow) GetDrawerParent ((WindowRef)ewg_param_inDrawerWindow)
+
+WindowRef  ewg_function_GetDrawerParent (WindowRef inDrawerWindow);
+// Wraps call to function 'SetDrawerParent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDrawerParent(ewg_param_inDrawerWindow, ewg_param_inParent) SetDrawerParent ((WindowRef)ewg_param_inDrawerWindow, (WindowRef)ewg_param_inParent)
+
+OSStatus  ewg_function_SetDrawerParent (WindowRef inDrawerWindow, WindowRef inParent);
+// Wraps call to function 'SetDrawerOffsets' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDrawerOffsets(ewg_param_inDrawerWindow, ewg_param_inLeadingOffset, ewg_param_inTrailingOffset) SetDrawerOffsets ((WindowRef)ewg_param_inDrawerWindow, (float)ewg_param_inLeadingOffset, (float)ewg_param_inTrailingOffset)
+
+OSStatus  ewg_function_SetDrawerOffsets (WindowRef inDrawerWindow, float inLeadingOffset, float inTrailingOffset);
+// Wraps call to function 'GetDrawerOffsets' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDrawerOffsets(ewg_param_inDrawerWindow, ewg_param_outLeadingOffset, ewg_param_outTrailingOffset) GetDrawerOffsets ((WindowRef)ewg_param_inDrawerWindow, (float*)ewg_param_outLeadingOffset, (float*)ewg_param_outTrailingOffset)
+
+OSStatus  ewg_function_GetDrawerOffsets (WindowRef inDrawerWindow, float *outLeadingOffset, float *outTrailingOffset);
+// Wraps call to function 'ToggleDrawer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ToggleDrawer(ewg_param_inDrawerWindow) ToggleDrawer ((WindowRef)ewg_param_inDrawerWindow)
+
+OSStatus  ewg_function_ToggleDrawer (WindowRef inDrawerWindow);
+// Wraps call to function 'OpenDrawer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpenDrawer(ewg_param_inDrawerWindow, ewg_param_inEdge, ewg_param_inAsync) OpenDrawer ((WindowRef)ewg_param_inDrawerWindow, (OptionBits)ewg_param_inEdge, (Boolean)ewg_param_inAsync)
+
+OSStatus  ewg_function_OpenDrawer (WindowRef inDrawerWindow, OptionBits inEdge, Boolean inAsync);
+// Wraps call to function 'CloseDrawer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CloseDrawer(ewg_param_inDrawerWindow, ewg_param_inAsync) CloseDrawer ((WindowRef)ewg_param_inDrawerWindow, (Boolean)ewg_param_inAsync)
+
+OSStatus  ewg_function_CloseDrawer (WindowRef inDrawerWindow, Boolean inAsync);
+// Wraps call to function 'DisableScreenUpdates' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisableScreenUpdates DisableScreenUpdates ()
+
+OSStatus  ewg_function_DisableScreenUpdates (void);
+// Wraps call to function 'EnableScreenUpdates' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableScreenUpdates EnableScreenUpdates ()
+
+OSStatus  ewg_function_EnableScreenUpdates (void);
+// Wraps call to function 'SetWindowToolbar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowToolbar(ewg_param_inWindow, ewg_param_inToolbar) SetWindowToolbar ((WindowRef)ewg_param_inWindow, (HIToolbarRef)ewg_param_inToolbar)
+
+OSStatus  ewg_function_SetWindowToolbar (WindowRef inWindow, HIToolbarRef inToolbar);
+// Wraps call to function 'GetWindowToolbar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowToolbar(ewg_param_inWindow, ewg_param_outToolbar) GetWindowToolbar ((WindowRef)ewg_param_inWindow, (HIToolbarRef*)ewg_param_outToolbar)
+
+OSStatus  ewg_function_GetWindowToolbar (WindowRef inWindow, HIToolbarRef *outToolbar);
+// Wraps call to function 'ShowHideWindowToolbar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowHideWindowToolbar(ewg_param_inWindow, ewg_param_inShow, ewg_param_inAnimate) ShowHideWindowToolbar ((WindowRef)ewg_param_inWindow, (Boolean)ewg_param_inShow, (Boolean)ewg_param_inAnimate)
+
+OSStatus  ewg_function_ShowHideWindowToolbar (WindowRef inWindow, Boolean inShow, Boolean inAnimate);
+// Wraps call to function 'IsWindowToolbarVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowToolbarVisible(ewg_param_inWindow) IsWindowToolbarVisible ((WindowRef)ewg_param_inWindow)
+
+Boolean  ewg_function_IsWindowToolbarVisible (WindowRef inWindow);
+// Wraps call to function 'SetWindowAlpha' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowAlpha(ewg_param_inWindow, ewg_param_inAlpha) SetWindowAlpha ((WindowRef)ewg_param_inWindow, (float)ewg_param_inAlpha)
+
+OSStatus  ewg_function_SetWindowAlpha (WindowRef inWindow, float inAlpha);
+// Wraps call to function 'GetWindowAlpha' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowAlpha(ewg_param_inWindow, ewg_param_outAlpha) GetWindowAlpha ((WindowRef)ewg_param_inWindow, (float*)ewg_param_outAlpha)
+
+OSStatus  ewg_function_GetWindowAlpha (WindowRef inWindow, float *outAlpha);
+// Wraps call to function 'HIWindowInvalidateShadow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowInvalidateShadow(ewg_param_inWindow) HIWindowInvalidateShadow ((HIWindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_HIWindowInvalidateShadow (HIWindowRef inWindow);
+// Wraps call to function 'HIWindowGetScaleMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIWindowGetScaleMode(ewg_param_inWindow, ewg_param_outMode, ewg_param_outScaleFactor) HIWindowGetScaleMode ((HIWindowRef)ewg_param_inWindow, (HIWindowScaleMode*)ewg_param_outMode, (float*)ewg_param_outScaleFactor)
+
+OSStatus  ewg_function_HIWindowGetScaleMode (HIWindowRef inWindow, HIWindowScaleMode *outMode, float *outScaleFactor);
+// Wraps call to function 'GetWindowProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowProperty(ewg_param_window, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_bufferSize, ewg_param_actualSize, ewg_param_propertyBuffer) GetWindowProperty ((WindowRef)ewg_param_window, (PropertyCreator)ewg_param_propertyCreator, (PropertyTag)ewg_param_propertyTag, (UInt32)ewg_param_bufferSize, (UInt32*)ewg_param_actualSize, (void*)ewg_param_propertyBuffer)
+
+OSStatus  ewg_function_GetWindowProperty (WindowRef window, PropertyCreator propertyCreator, PropertyTag propertyTag, UInt32 bufferSize, UInt32 *actualSize, void *propertyBuffer);
+// Wraps call to function 'GetWindowPropertySize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowPropertySize(ewg_param_window, ewg_param_creator, ewg_param_tag, ewg_param_size) GetWindowPropertySize ((WindowRef)ewg_param_window, (PropertyCreator)ewg_param_creator, (PropertyTag)ewg_param_tag, (UInt32*)ewg_param_size)
+
+OSStatus  ewg_function_GetWindowPropertySize (WindowRef window, PropertyCreator creator, PropertyTag tag, UInt32 *size);
+// Wraps call to function 'SetWindowProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowProperty(ewg_param_window, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_propertySize, ewg_param_propertyBuffer) SetWindowProperty ((WindowRef)ewg_param_window, (PropertyCreator)ewg_param_propertyCreator, (PropertyTag)ewg_param_propertyTag, (UInt32)ewg_param_propertySize, (void const*)ewg_param_propertyBuffer)
+
+OSStatus  ewg_function_SetWindowProperty (WindowRef window, PropertyCreator propertyCreator, PropertyTag propertyTag, UInt32 propertySize, void const *propertyBuffer);
+// Wraps call to function 'RemoveWindowProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveWindowProperty(ewg_param_window, ewg_param_propertyCreator, ewg_param_propertyTag) RemoveWindowProperty ((WindowRef)ewg_param_window, (PropertyCreator)ewg_param_propertyCreator, (PropertyTag)ewg_param_propertyTag)
+
+OSStatus  ewg_function_RemoveWindowProperty (WindowRef window, PropertyCreator propertyCreator, PropertyTag propertyTag);
+// Wraps call to function 'GetWindowPropertyAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowPropertyAttributes(ewg_param_window, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_attributes) GetWindowPropertyAttributes ((WindowRef)ewg_param_window, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32*)ewg_param_attributes)
+
+OSStatus  ewg_function_GetWindowPropertyAttributes (WindowRef window, OSType propertyCreator, OSType propertyTag, UInt32 *attributes);
+// Wraps call to function 'ChangeWindowPropertyAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeWindowPropertyAttributes(ewg_param_window, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_attributesToSet, ewg_param_attributesToClear) ChangeWindowPropertyAttributes ((WindowRef)ewg_param_window, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32)ewg_param_attributesToSet, (UInt32)ewg_param_attributesToClear)
+
+OSStatus  ewg_function_ChangeWindowPropertyAttributes (WindowRef window, OSType propertyCreator, OSType propertyTag, UInt32 attributesToSet, UInt32 attributesToClear);
+// Wraps call to function 'PinRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PinRect(ewg_param_theRect, ewg_param_thePt) PinRect ((Rect const*)ewg_param_theRect, *(Point*)ewg_param_thePt)
+
+long  ewg_function_PinRect (Rect const *theRect, Point *thePt);
+// Wraps call to function 'GetGrayRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetGrayRgn GetGrayRgn ()
+
+RgnHandle  ewg_function_GetGrayRgn (void);
+// Wraps call to function 'TrackBox' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackBox(ewg_param_window, ewg_param_thePt, ewg_param_partCode) TrackBox ((WindowRef)ewg_param_window, *(Point*)ewg_param_thePt, (WindowPartCode)ewg_param_partCode)
+
+Boolean  ewg_function_TrackBox (WindowRef window, Point *thePt, WindowPartCode partCode);
+// Wraps call to function 'TrackGoAway' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackGoAway(ewg_param_window, ewg_param_thePt) TrackGoAway ((WindowRef)ewg_param_window, *(Point*)ewg_param_thePt)
+
+Boolean  ewg_function_TrackGoAway (WindowRef window, Point *thePt);
+// Wraps call to function 'DragGrayRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DragGrayRgn(ewg_param_theRgn, ewg_param_startPt, ewg_param_limitRect, ewg_param_slopRect, ewg_param_axis, ewg_param_actionProc) DragGrayRgn ((RgnHandle)ewg_param_theRgn, *(Point*)ewg_param_startPt, (Rect const*)ewg_param_limitRect, (Rect const*)ewg_param_slopRect, (short)ewg_param_axis, (DragGrayRgnUPP)ewg_param_actionProc)
+
+long  ewg_function_DragGrayRgn (RgnHandle theRgn, Point *startPt, Rect const *limitRect, Rect const *slopRect, short axis, DragGrayRgnUPP actionProc);
+// Wraps call to function 'DragTheRgn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DragTheRgn(ewg_param_theRgn, ewg_param_startPt, ewg_param_limitRect, ewg_param_slopRect, ewg_param_axis, ewg_param_actionProc) DragTheRgn ((RgnHandle)ewg_param_theRgn, *(Point*)ewg_param_startPt, (Rect const*)ewg_param_limitRect, (Rect const*)ewg_param_slopRect, (short)ewg_param_axis, (DragGrayRgnUPP)ewg_param_actionProc)
+
+long  ewg_function_DragTheRgn (RgnHandle theRgn, Point *startPt, Rect const *limitRect, Rect const *slopRect, short axis, DragGrayRgnUPP actionProc);
+// Wraps call to function 'GetWindowList' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowList GetWindowList ()
+
+WindowRef  ewg_function_GetWindowList (void);
+// Wraps call to function 'GetWindowPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowPort(ewg_param_window) GetWindowPort ((WindowRef)ewg_param_window)
+
+CGrafPtr  ewg_function_GetWindowPort (WindowRef window);
+// Wraps call to function 'GetWindowStructurePort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowStructurePort(ewg_param_inWindow) GetWindowStructurePort ((WindowRef)ewg_param_inWindow)
+
+CGrafPtr  ewg_function_GetWindowStructurePort (WindowRef inWindow);
+// Wraps call to function 'GetWindowKind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowKind(ewg_param_window) GetWindowKind ((WindowRef)ewg_param_window)
+
+short  ewg_function_GetWindowKind (WindowRef window);
+// Wraps call to function 'IsWindowHilited' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowHilited(ewg_param_window) IsWindowHilited ((WindowRef)ewg_param_window)
+
+Boolean  ewg_function_IsWindowHilited (WindowRef window);
+// Wraps call to function 'IsWindowUpdatePending' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsWindowUpdatePending(ewg_param_window) IsWindowUpdatePending ((WindowRef)ewg_param_window)
+
+Boolean  ewg_function_IsWindowUpdatePending (WindowRef window);
+// Wraps call to function 'GetNextWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNextWindow(ewg_param_window) GetNextWindow ((WindowRef)ewg_param_window)
+
+WindowRef  ewg_function_GetNextWindow (WindowRef window);
+// Wraps call to function 'GetPreviousWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetPreviousWindow(ewg_param_inWindow) GetPreviousWindow ((WindowRef)ewg_param_inWindow)
+
+WindowRef  ewg_function_GetPreviousWindow (WindowRef inWindow);
+// Wraps call to function 'GetWindowStandardState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowStandardState(ewg_param_window, ewg_param_rect) GetWindowStandardState ((WindowRef)ewg_param_window, (Rect*)ewg_param_rect)
+
+Rect * ewg_function_GetWindowStandardState (WindowRef window, Rect *rect);
+// Wraps call to function 'GetWindowUserState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowUserState(ewg_param_window, ewg_param_rect) GetWindowUserState ((WindowRef)ewg_param_window, (Rect*)ewg_param_rect)
+
+Rect * ewg_function_GetWindowUserState (WindowRef window, Rect *rect);
+// Wraps call to function 'SetWindowKind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowKind(ewg_param_window, ewg_param_kind) SetWindowKind ((WindowRef)ewg_param_window, (short)ewg_param_kind)
+
+void  ewg_function_SetWindowKind (WindowRef window, short kind);
+// Wraps call to function 'SetWindowStandardState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowStandardState(ewg_param_window, ewg_param_rect) SetWindowStandardState ((WindowRef)ewg_param_window, (Rect const*)ewg_param_rect)
+
+void  ewg_function_SetWindowStandardState (WindowRef window, Rect const *rect);
+// Wraps call to function 'SetWindowUserState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowUserState(ewg_param_window, ewg_param_rect) SetWindowUserState ((WindowRef)ewg_param_window, (Rect const*)ewg_param_rect)
+
+void  ewg_function_SetWindowUserState (WindowRef window, Rect const *rect);
+// Wraps call to function 'SetPortWindowPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetPortWindowPort(ewg_param_window) SetPortWindowPort ((WindowRef)ewg_param_window)
+
+void  ewg_function_SetPortWindowPort (WindowRef window);
+// Wraps call to function 'GetWindowPortBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowPortBounds(ewg_param_window, ewg_param_bounds) GetWindowPortBounds ((WindowRef)ewg_param_window, (Rect*)ewg_param_bounds)
+
+Rect * ewg_function_GetWindowPortBounds (WindowRef window, Rect *bounds);
+// Wraps call to function 'GetWindowFromPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowFromPort(ewg_param_port) GetWindowFromPort ((CGrafPtr)ewg_param_port)
+
+WindowRef  ewg_function_GetWindowFromPort (CGrafPtr port);
+// Wraps call to function 'IsUserCancelEventRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsUserCancelEventRef(ewg_param_event) IsUserCancelEventRef ((EventRef)ewg_param_event)
+
+Boolean  ewg_function_IsUserCancelEventRef (EventRef event);
+// Wraps call to function 'TrackMouseLocation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackMouseLocation(ewg_param_inPort, ewg_param_outPt, ewg_param_outResult) TrackMouseLocation ((GrafPtr)ewg_param_inPort, (Point*)ewg_param_outPt, (MouseTrackingResult*)ewg_param_outResult)
+
+OSStatus  ewg_function_TrackMouseLocation (GrafPtr inPort, Point *outPt, MouseTrackingResult *outResult);
+// Wraps call to function 'TrackMouseLocationWithOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackMouseLocationWithOptions(ewg_param_inPort, ewg_param_inOptions, ewg_param_inTimeout, ewg_param_outPt, ewg_param_outModifiers, ewg_param_outResult) TrackMouseLocationWithOptions ((GrafPtr)ewg_param_inPort, (OptionBits)ewg_param_inOptions, (EventTimeout)ewg_param_inTimeout, (Point*)ewg_param_outPt, (UInt32*)ewg_param_outModifiers, (MouseTrackingResult*)ewg_param_outResult)
+
+OSStatus  ewg_function_TrackMouseLocationWithOptions (GrafPtr inPort, OptionBits inOptions, EventTimeout inTimeout, Point *outPt, UInt32 *outModifiers, MouseTrackingResult *outResult);
+// Wraps call to function 'TrackMouseRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackMouseRegion(ewg_param_inPort, ewg_param_inRegion, ewg_param_ioWasInRgn, ewg_param_outResult) TrackMouseRegion ((GrafPtr)ewg_param_inPort, (RgnHandle)ewg_param_inRegion, (Boolean*)ewg_param_ioWasInRgn, (MouseTrackingResult*)ewg_param_outResult)
+
+OSStatus  ewg_function_TrackMouseRegion (GrafPtr inPort, RgnHandle inRegion, Boolean *ioWasInRgn, MouseTrackingResult *outResult);
+// Wraps call to function 'HIMouseTrackingGetParameters' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIMouseTrackingGetParameters(ewg_param_inSelector, ewg_param_outTime, ewg_param_outDistance) HIMouseTrackingGetParameters ((OSType)ewg_param_inSelector, (EventTime*)ewg_param_outTime, (HISize*)ewg_param_outDistance)
+
+OSStatus  ewg_function_HIMouseTrackingGetParameters (OSType inSelector, EventTime *outTime, HISize *outDistance);
+// Wraps call to function 'ConvertEventRefToEventRecord' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ConvertEventRefToEventRecord(ewg_param_inEvent, ewg_param_outEvent) ConvertEventRefToEventRecord ((EventRef)ewg_param_inEvent, (EventRecord*)ewg_param_outEvent)
+
+Boolean  ewg_function_ConvertEventRefToEventRecord (EventRef inEvent, EventRecord *outEvent);
+// Wraps call to function 'IsEventInMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsEventInMask(ewg_param_inEvent, ewg_param_inMask) IsEventInMask ((EventRef)ewg_param_inEvent, (EventMask)ewg_param_inMask)
+
+Boolean  ewg_function_IsEventInMask (EventRef inEvent, EventMask inMask);
+// Wraps call to function 'GetLastUserEventTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetLastUserEventTime GetLastUserEventTime ()
+
+EventTime  ewg_function_GetLastUserEventTime (void);
+// Wraps call to function 'IsMouseCoalescingEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMouseCoalescingEnabled IsMouseCoalescingEnabled ()
+
+Boolean  ewg_function_IsMouseCoalescingEnabled (void);
+// Wraps call to function 'SetMouseCoalescingEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMouseCoalescingEnabled(ewg_param_inNewState, ewg_param_outOldState) SetMouseCoalescingEnabled ((Boolean)ewg_param_inNewState, (Boolean*)ewg_param_outOldState)
+
+OSStatus  ewg_function_SetMouseCoalescingEnabled (Boolean inNewState, Boolean *outOldState);
+// Wraps call to function 'CreateTypeStringWithOSType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateTypeStringWithOSType(ewg_param_inType) CreateTypeStringWithOSType ((OSType)ewg_param_inType)
+
+CFStringRef  ewg_function_CreateTypeStringWithOSType (OSType inType);
+// Wraps call to function 'CopyServicesMenuCommandKeys' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyServicesMenuCommandKeys(ewg_param_outCommandKeyArray) CopyServicesMenuCommandKeys ((CFArrayRef*)ewg_param_outCommandKeyArray)
+
+OSStatus  ewg_function_CopyServicesMenuCommandKeys (CFArrayRef *outCommandKeyArray);
+// Wraps call to function 'AXUIElementCreateWithHIObjectAndIdentifier' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AXUIElementCreateWithHIObjectAndIdentifier(ewg_param_inHIObject, ewg_param_inIdentifier) AXUIElementCreateWithHIObjectAndIdentifier ((HIObjectRef)ewg_param_inHIObject, (UInt64)ewg_param_inIdentifier)
+
+AXUIElementRef  ewg_function_AXUIElementCreateWithHIObjectAndIdentifier (HIObjectRef inHIObject, UInt64 inIdentifier);
+// Wraps call to function 'AXUIElementGetHIObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AXUIElementGetHIObject(ewg_param_inUIElement) AXUIElementGetHIObject ((AXUIElementRef)ewg_param_inUIElement)
+
+HIObjectRef  ewg_function_AXUIElementGetHIObject (AXUIElementRef inUIElement);
+// Wraps call to function 'AXUIElementGetIdentifier' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AXUIElementGetIdentifier(ewg_param_inUIElement, ewg_param_outIdentifier) AXUIElementGetIdentifier ((AXUIElementRef)ewg_param_inUIElement, (UInt64*)ewg_param_outIdentifier)
+
+void  ewg_function_AXUIElementGetIdentifier (AXUIElementRef inUIElement, UInt64 *outIdentifier);
+// Wraps call to function 'AXNotificationHIObjectNotify' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AXNotificationHIObjectNotify(ewg_param_inNotification, ewg_param_inHIObject, ewg_param_inIdentifier) AXNotificationHIObjectNotify ((CFStringRef)ewg_param_inNotification, (HIObjectRef)ewg_param_inHIObject, (UInt64)ewg_param_inIdentifier)
+
+void  ewg_function_AXNotificationHIObjectNotify (CFStringRef inNotification, HIObjectRef inHIObject, UInt64 inIdentifier);
+// Wraps call to function 'HICopyAccessibilityRoleDescription' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HICopyAccessibilityRoleDescription(ewg_param_inRole, ewg_param_inSubrole) HICopyAccessibilityRoleDescription ((CFStringRef)ewg_param_inRole, (CFStringRef)ewg_param_inSubrole)
+
+CFStringRef  ewg_function_HICopyAccessibilityRoleDescription (CFStringRef inRole, CFStringRef inSubrole);
+// Wraps call to function 'HICopyAccessibilityActionDescription' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HICopyAccessibilityActionDescription(ewg_param_inAction) HICopyAccessibilityActionDescription ((CFStringRef)ewg_param_inAction)
+
+CFStringRef  ewg_function_HICopyAccessibilityActionDescription (CFStringRef inAction);
+// Wraps call to function 'GetWindowEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowEventTarget(ewg_param_inWindow) GetWindowEventTarget ((WindowRef)ewg_param_inWindow)
+
+EventTargetRef  ewg_function_GetWindowEventTarget (WindowRef inWindow);
+// Wraps call to function 'GetControlEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlEventTarget(ewg_param_inControl) GetControlEventTarget ((ControlRef)ewg_param_inControl)
+
+EventTargetRef  ewg_function_GetControlEventTarget (ControlRef inControl);
+// Wraps call to function 'GetMenuEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuEventTarget(ewg_param_inMenu) GetMenuEventTarget ((MenuRef)ewg_param_inMenu)
+
+EventTargetRef  ewg_function_GetMenuEventTarget (MenuRef inMenu);
+// Wraps call to function 'GetApplicationEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetApplicationEventTarget GetApplicationEventTarget ()
+
+EventTargetRef  ewg_function_GetApplicationEventTarget (void);
+// Wraps call to function 'GetUserFocusEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetUserFocusEventTarget GetUserFocusEventTarget ()
+
+EventTargetRef  ewg_function_GetUserFocusEventTarget (void);
+// Wraps call to function 'GetEventDispatcherTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetEventDispatcherTarget GetEventDispatcherTarget ()
+
+EventTargetRef  ewg_function_GetEventDispatcherTarget (void);
+// Wraps call to function 'GetEventMonitorTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetEventMonitorTarget GetEventMonitorTarget ()
+
+EventTargetRef  ewg_function_GetEventMonitorTarget (void);
+// Wraps call to function 'ProcessHICommand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ProcessHICommand(ewg_param_inCommand) ProcessHICommand ((HICommand const*)ewg_param_inCommand)
+
+OSStatus  ewg_function_ProcessHICommand (HICommand const *inCommand);
+// Wraps call to function 'RunApplicationEventLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RunApplicationEventLoop RunApplicationEventLoop ()
+
+void  ewg_function_RunApplicationEventLoop (void);
+// Wraps call to function 'QuitApplicationEventLoop' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QuitApplicationEventLoop QuitApplicationEventLoop ()
+
+void  ewg_function_QuitApplicationEventLoop (void);
+// Wraps call to function 'RunAppModalLoopForWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RunAppModalLoopForWindow(ewg_param_inWindow) RunAppModalLoopForWindow ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_RunAppModalLoopForWindow (WindowRef inWindow);
+// Wraps call to function 'QuitAppModalLoopForWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QuitAppModalLoopForWindow(ewg_param_inWindow) QuitAppModalLoopForWindow ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_QuitAppModalLoopForWindow (WindowRef inWindow);
+// Wraps call to function 'BeginAppModalStateForWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_BeginAppModalStateForWindow(ewg_param_inWindow) BeginAppModalStateForWindow ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_BeginAppModalStateForWindow (WindowRef inWindow);
+// Wraps call to function 'EndAppModalStateForWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EndAppModalStateForWindow(ewg_param_inWindow) EndAppModalStateForWindow ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_EndAppModalStateForWindow (WindowRef inWindow);
+// Wraps call to function 'SetUserFocusWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetUserFocusWindow(ewg_param_inWindow) SetUserFocusWindow ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_SetUserFocusWindow (WindowRef inWindow);
+// Wraps call to function 'GetUserFocusWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetUserFocusWindow GetUserFocusWindow ()
+
+WindowRef  ewg_function_GetUserFocusWindow (void);
+// Wraps call to function 'SetWindowDefaultButton' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowDefaultButton(ewg_param_inWindow, ewg_param_inControl) SetWindowDefaultButton ((WindowRef)ewg_param_inWindow, (ControlRef)ewg_param_inControl)
+
+OSStatus  ewg_function_SetWindowDefaultButton (WindowRef inWindow, ControlRef inControl);
+// Wraps call to function 'SetWindowCancelButton' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowCancelButton(ewg_param_inWindow, ewg_param_inControl) SetWindowCancelButton ((WindowRef)ewg_param_inWindow, (ControlRef)ewg_param_inControl)
+
+OSStatus  ewg_function_SetWindowCancelButton (WindowRef inWindow, ControlRef inControl);
+// Wraps call to function 'GetWindowDefaultButton' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowDefaultButton(ewg_param_inWindow, ewg_param_outControl) GetWindowDefaultButton ((WindowRef)ewg_param_inWindow, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_GetWindowDefaultButton (WindowRef inWindow, ControlRef *outControl);
+// Wraps call to function 'GetWindowCancelButton' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetWindowCancelButton(ewg_param_inWindow, ewg_param_outControl) GetWindowCancelButton ((WindowRef)ewg_param_inWindow, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_GetWindowCancelButton (WindowRef inWindow, ControlRef *outControl);
+// Wraps call to function 'RegisterEventHotKey' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RegisterEventHotKey(ewg_param_inHotKeyCode, ewg_param_inHotKeyModifiers, ewg_param_inHotKeyID, ewg_param_inTarget, ewg_param_inOptions, ewg_param_outRef) RegisterEventHotKey ((UInt32)ewg_param_inHotKeyCode, (UInt32)ewg_param_inHotKeyModifiers, *(EventHotKeyID*)ewg_param_inHotKeyID, (EventTargetRef)ewg_param_inTarget, (OptionBits)ewg_param_inOptions, (EventHotKeyRef*)ewg_param_outRef)
+
+OSStatus  ewg_function_RegisterEventHotKey (UInt32 inHotKeyCode, UInt32 inHotKeyModifiers, EventHotKeyID *inHotKeyID, EventTargetRef inTarget, OptionBits inOptions, EventHotKeyRef *outRef);
+// Wraps call to function 'UnregisterEventHotKey' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UnregisterEventHotKey(ewg_param_inHotKey) UnregisterEventHotKey ((EventHotKeyRef)ewg_param_inHotKey)
+
+OSStatus  ewg_function_UnregisterEventHotKey (EventHotKeyRef inHotKey);
+// Wraps call to function 'CopySymbolicHotKeys' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopySymbolicHotKeys(ewg_param_outHotKeyArray) CopySymbolicHotKeys ((CFArrayRef*)ewg_param_outHotKeyArray)
+
+OSStatus  ewg_function_CopySymbolicHotKeys (CFArrayRef *outHotKeyArray);
+// Wraps call to function 'PushSymbolicHotKeyMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PushSymbolicHotKeyMode(ewg_param_inOptions) PushSymbolicHotKeyMode ((OptionBits)ewg_param_inOptions)
+
+void * ewg_function_PushSymbolicHotKeyMode (OptionBits inOptions);
+// Wraps call to function 'PopSymbolicHotKeyMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PopSymbolicHotKeyMode(ewg_param_inToken) PopSymbolicHotKeyMode ((void*)ewg_param_inToken)
+
+void  ewg_function_PopSymbolicHotKeyMode (void *inToken);
+// Wraps call to function 'GetSymbolicHotKeyMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetSymbolicHotKeyMode GetSymbolicHotKeyMode ()
+
+OptionBits  ewg_function_GetSymbolicHotKeyMode (void);
+// Wraps call to function 'CreateMouseTrackingRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateMouseTrackingRegion(ewg_param_inWindow, ewg_param_inRegion, ewg_param_inClip, ewg_param_inOptions, ewg_param_inID, ewg_param_inRefCon, ewg_param_inTargetToNotify, ewg_param_outTrackingRef) CreateMouseTrackingRegion ((WindowRef)ewg_param_inWindow, (RgnHandle)ewg_param_inRegion, (RgnHandle)ewg_param_inClip, (MouseTrackingOptions)ewg_param_inOptions, *(MouseTrackingRegionID*)ewg_param_inID, (void*)ewg_param_inRefCon, (EventTargetRef)ewg_param_inTargetToNotify, (MouseTrackingRef*)ewg_param_outTrackingRef)
+
+OSStatus  ewg_function_CreateMouseTrackingRegion (WindowRef inWindow, RgnHandle inRegion, RgnHandle inClip, MouseTrackingOptions inOptions, MouseTrackingRegionID *inID, void *inRefCon, EventTargetRef inTargetToNotify, MouseTrackingRef *outTrackingRef);
+// Wraps call to function 'RetainMouseTrackingRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RetainMouseTrackingRegion(ewg_param_inMouseRef) RetainMouseTrackingRegion ((MouseTrackingRef)ewg_param_inMouseRef)
+
+OSStatus  ewg_function_RetainMouseTrackingRegion (MouseTrackingRef inMouseRef);
+// Wraps call to function 'ReleaseMouseTrackingRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReleaseMouseTrackingRegion(ewg_param_inMouseRef) ReleaseMouseTrackingRegion ((MouseTrackingRef)ewg_param_inMouseRef)
+
+OSStatus  ewg_function_ReleaseMouseTrackingRegion (MouseTrackingRef inMouseRef);
+// Wraps call to function 'ChangeMouseTrackingRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeMouseTrackingRegion(ewg_param_inMouseRef, ewg_param_inRegion, ewg_param_inClip) ChangeMouseTrackingRegion ((MouseTrackingRef)ewg_param_inMouseRef, (RgnHandle)ewg_param_inRegion, (RgnHandle)ewg_param_inClip)
+
+OSStatus  ewg_function_ChangeMouseTrackingRegion (MouseTrackingRef inMouseRef, RgnHandle inRegion, RgnHandle inClip);
+// Wraps call to function 'ClipMouseTrackingRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClipMouseTrackingRegion(ewg_param_inMouseRef, ewg_param_inRegion) ClipMouseTrackingRegion ((MouseTrackingRef)ewg_param_inMouseRef, (RgnHandle)ewg_param_inRegion)
+
+OSStatus  ewg_function_ClipMouseTrackingRegion (MouseTrackingRef inMouseRef, RgnHandle inRegion);
+// Wraps call to function 'GetMouseTrackingRegionID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMouseTrackingRegionID(ewg_param_inMouseRef, ewg_param_outID) GetMouseTrackingRegionID ((MouseTrackingRef)ewg_param_inMouseRef, (MouseTrackingRegionID*)ewg_param_outID)
+
+OSStatus  ewg_function_GetMouseTrackingRegionID (MouseTrackingRef inMouseRef, MouseTrackingRegionID *outID);
+// Wraps call to function 'GetMouseTrackingRegionRefCon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMouseTrackingRegionRefCon(ewg_param_inMouseRef, ewg_param_outRefCon) GetMouseTrackingRegionRefCon ((MouseTrackingRef)ewg_param_inMouseRef, (void**)ewg_param_outRefCon)
+
+OSStatus  ewg_function_GetMouseTrackingRegionRefCon (MouseTrackingRef inMouseRef, void **outRefCon);
+// Wraps call to function 'MoveMouseTrackingRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MoveMouseTrackingRegion(ewg_param_inMouseRef, ewg_param_deltaH, ewg_param_deltaV, ewg_param_inClip) MoveMouseTrackingRegion ((MouseTrackingRef)ewg_param_inMouseRef, (SInt16)ewg_param_deltaH, (SInt16)ewg_param_deltaV, (RgnHandle)ewg_param_inClip)
+
+OSStatus  ewg_function_MoveMouseTrackingRegion (MouseTrackingRef inMouseRef, SInt16 deltaH, SInt16 deltaV, RgnHandle inClip);
+// Wraps call to function 'SetMouseTrackingRegionEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMouseTrackingRegionEnabled(ewg_param_inMouseRef, ewg_param_inEnabled) SetMouseTrackingRegionEnabled ((MouseTrackingRef)ewg_param_inMouseRef, (Boolean)ewg_param_inEnabled)
+
+OSStatus  ewg_function_SetMouseTrackingRegionEnabled (MouseTrackingRef inMouseRef, Boolean inEnabled);
+// Wraps call to function 'ClipWindowMouseTrackingRegions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClipWindowMouseTrackingRegions(ewg_param_inWindow, ewg_param_inSignature, ewg_param_inClip) ClipWindowMouseTrackingRegions ((WindowRef)ewg_param_inWindow, (OSType)ewg_param_inSignature, (RgnHandle)ewg_param_inClip)
+
+OSStatus  ewg_function_ClipWindowMouseTrackingRegions (WindowRef inWindow, OSType inSignature, RgnHandle inClip);
+// Wraps call to function 'MoveWindowMouseTrackingRegions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MoveWindowMouseTrackingRegions(ewg_param_inWindow, ewg_param_inSignature, ewg_param_deltaH, ewg_param_deltaV, ewg_param_inClip) MoveWindowMouseTrackingRegions ((WindowRef)ewg_param_inWindow, (OSType)ewg_param_inSignature, (SInt16)ewg_param_deltaH, (SInt16)ewg_param_deltaV, (RgnHandle)ewg_param_inClip)
+
+OSStatus  ewg_function_MoveWindowMouseTrackingRegions (WindowRef inWindow, OSType inSignature, SInt16 deltaH, SInt16 deltaV, RgnHandle inClip);
+// Wraps call to function 'SetWindowMouseTrackingRegionsEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetWindowMouseTrackingRegionsEnabled(ewg_param_inWindow, ewg_param_inSignature, ewg_param_inEnabled) SetWindowMouseTrackingRegionsEnabled ((WindowRef)ewg_param_inWindow, (OSType)ewg_param_inSignature, (Boolean)ewg_param_inEnabled)
+
+OSStatus  ewg_function_SetWindowMouseTrackingRegionsEnabled (WindowRef inWindow, OSType inSignature, Boolean inEnabled);
+// Wraps call to function 'ReleaseWindowMouseTrackingRegions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReleaseWindowMouseTrackingRegions(ewg_param_inWindow, ewg_param_inSignature) ReleaseWindowMouseTrackingRegions ((WindowRef)ewg_param_inWindow, (OSType)ewg_param_inSignature)
+
+OSStatus  ewg_function_ReleaseWindowMouseTrackingRegions (WindowRef inWindow, OSType inSignature);
+// Wraps call to function 'RegisterToolboxObjectClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RegisterToolboxObjectClass(ewg_param_inClassID, ewg_param_inBaseClass, ewg_param_inNumEvents, ewg_param_inEventList, ewg_param_inEventHandler, ewg_param_inEventHandlerData, ewg_param_outClassRef) RegisterToolboxObjectClass ((CFStringRef)ewg_param_inClassID, (ToolboxObjectClassRef)ewg_param_inBaseClass, (UInt32)ewg_param_inNumEvents, (EventTypeSpec const*)ewg_param_inEventList, (EventHandlerUPP)ewg_param_inEventHandler, (void*)ewg_param_inEventHandlerData, (ToolboxObjectClassRef*)ewg_param_outClassRef)
+
+OSStatus  ewg_function_RegisterToolboxObjectClass (CFStringRef inClassID, ToolboxObjectClassRef inBaseClass, UInt32 inNumEvents, EventTypeSpec const *inEventList, EventHandlerUPP inEventHandler, void *inEventHandlerData, ToolboxObjectClassRef *outClassRef);
+// Wraps call to function 'UnregisterToolboxObjectClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UnregisterToolboxObjectClass(ewg_param_inClassRef) UnregisterToolboxObjectClass ((ToolboxObjectClassRef)ewg_param_inClassRef)
+
+OSStatus  ewg_function_UnregisterToolboxObjectClass (ToolboxObjectClassRef inClassRef);
+// Wraps call to function 'HIViewGetRoot' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetRoot(ewg_param_inWindow) HIViewGetRoot ((WindowRef)ewg_param_inWindow)
+
+HIViewRef  ewg_function_HIViewGetRoot (WindowRef inWindow);
+// Wraps call to function 'HIViewAddSubview' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewAddSubview(ewg_param_inParent, ewg_param_inNewChild) HIViewAddSubview ((HIViewRef)ewg_param_inParent, (HIViewRef)ewg_param_inNewChild)
+
+OSStatus  ewg_function_HIViewAddSubview (HIViewRef inParent, HIViewRef inNewChild);
+// Wraps call to function 'HIViewRemoveFromSuperview' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewRemoveFromSuperview(ewg_param_inView) HIViewRemoveFromSuperview ((HIViewRef)ewg_param_inView)
+
+OSStatus  ewg_function_HIViewRemoveFromSuperview (HIViewRef inView);
+// Wraps call to function 'HIViewGetSuperview' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetSuperview(ewg_param_inView) HIViewGetSuperview ((HIViewRef)ewg_param_inView)
+
+HIViewRef  ewg_function_HIViewGetSuperview (HIViewRef inView);
+// Wraps call to function 'HIViewGetFirstSubview' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetFirstSubview(ewg_param_inView) HIViewGetFirstSubview ((HIViewRef)ewg_param_inView)
+
+HIViewRef  ewg_function_HIViewGetFirstSubview (HIViewRef inView);
+// Wraps call to function 'HIViewGetLastSubview' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetLastSubview(ewg_param_inView) HIViewGetLastSubview ((HIViewRef)ewg_param_inView)
+
+HIViewRef  ewg_function_HIViewGetLastSubview (HIViewRef inView);
+// Wraps call to function 'HIViewGetNextView' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetNextView(ewg_param_inView) HIViewGetNextView ((HIViewRef)ewg_param_inView)
+
+HIViewRef  ewg_function_HIViewGetNextView (HIViewRef inView);
+// Wraps call to function 'HIViewGetPreviousView' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetPreviousView(ewg_param_inView) HIViewGetPreviousView ((HIViewRef)ewg_param_inView)
+
+HIViewRef  ewg_function_HIViewGetPreviousView (HIViewRef inView);
+// Wraps call to function 'HIViewCountSubviews' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewCountSubviews(ewg_param_inView) HIViewCountSubviews ((HIViewRef)ewg_param_inView)
+
+CFIndex  ewg_function_HIViewCountSubviews (HIViewRef inView);
+// Wraps call to function 'HIViewGetIndexedSubview' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetIndexedSubview(ewg_param_inView, ewg_param_inSubviewIndex, ewg_param_outSubview) HIViewGetIndexedSubview ((HIViewRef)ewg_param_inView, (CFIndex)ewg_param_inSubviewIndex, (HIViewRef*)ewg_param_outSubview)
+
+OSStatus  ewg_function_HIViewGetIndexedSubview (HIViewRef inView, CFIndex inSubviewIndex, HIViewRef *outSubview);
+// Wraps call to function 'HIViewSetZOrder' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetZOrder(ewg_param_inView, ewg_param_inOp, ewg_param_inOther) HIViewSetZOrder ((HIViewRef)ewg_param_inView, (HIViewZOrderOp)ewg_param_inOp, (HIViewRef)ewg_param_inOther)
+
+OSStatus  ewg_function_HIViewSetZOrder (HIViewRef inView, HIViewZOrderOp inOp, HIViewRef inOther);
+// Wraps call to function 'HIViewSetVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetVisible(ewg_param_inView, ewg_param_inVisible) HIViewSetVisible ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inVisible)
+
+OSStatus  ewg_function_HIViewSetVisible (HIViewRef inView, Boolean inVisible);
+// Wraps call to function 'HIViewIsVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsVisible(ewg_param_inView) HIViewIsVisible ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewIsVisible (HIViewRef inView);
+// Wraps call to function 'HIViewIsLatentlyVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsLatentlyVisible(ewg_param_inView) HIViewIsLatentlyVisible ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewIsLatentlyVisible (HIViewRef inView);
+// Wraps call to function 'HIViewSetHilite' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetHilite(ewg_param_inView, ewg_param_inHilitePart) HIViewSetHilite ((HIViewRef)ewg_param_inView, (HIViewPartCode)ewg_param_inHilitePart)
+
+OSStatus  ewg_function_HIViewSetHilite (HIViewRef inView, HIViewPartCode inHilitePart);
+// Wraps call to function 'HIViewIsActive' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsActive(ewg_param_inView, ewg_param_outIsLatentActive) HIViewIsActive ((HIViewRef)ewg_param_inView, (Boolean*)ewg_param_outIsLatentActive)
+
+Boolean  ewg_function_HIViewIsActive (HIViewRef inView, Boolean *outIsLatentActive);
+// Wraps call to function 'HIViewSetActivated' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetActivated(ewg_param_inView, ewg_param_inSetActivated) HIViewSetActivated ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inSetActivated)
+
+OSStatus  ewg_function_HIViewSetActivated (HIViewRef inView, Boolean inSetActivated);
+// Wraps call to function 'HIViewIsEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsEnabled(ewg_param_inView, ewg_param_outIsLatentEnabled) HIViewIsEnabled ((HIViewRef)ewg_param_inView, (Boolean*)ewg_param_outIsLatentEnabled)
+
+Boolean  ewg_function_HIViewIsEnabled (HIViewRef inView, Boolean *outIsLatentEnabled);
+// Wraps call to function 'HIViewSetEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetEnabled(ewg_param_inView, ewg_param_inSetEnabled) HIViewSetEnabled ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inSetEnabled)
+
+OSStatus  ewg_function_HIViewSetEnabled (HIViewRef inView, Boolean inSetEnabled);
+// Wraps call to function 'HIViewIsCompositingEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsCompositingEnabled(ewg_param_inView) HIViewIsCompositingEnabled ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewIsCompositingEnabled (HIViewRef inView);
+// Wraps call to function 'HIViewSetText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetText(ewg_param_inView, ewg_param_inText) HIViewSetText ((HIViewRef)ewg_param_inView, (CFStringRef)ewg_param_inText)
+
+OSStatus  ewg_function_HIViewSetText (HIViewRef inView, CFStringRef inText);
+// Wraps call to function 'HIViewCopyText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewCopyText(ewg_param_inView) HIViewCopyText ((HIViewRef)ewg_param_inView)
+
+CFStringRef  ewg_function_HIViewCopyText (HIViewRef inView);
+// Wraps call to function 'HIViewGetValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetValue(ewg_param_inView) HIViewGetValue ((HIViewRef)ewg_param_inView)
+
+SInt32  ewg_function_HIViewGetValue (HIViewRef inView);
+// Wraps call to function 'HIViewSetValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetValue(ewg_param_inView, ewg_param_inValue) HIViewSetValue ((HIViewRef)ewg_param_inView, (SInt32)ewg_param_inValue)
+
+OSStatus  ewg_function_HIViewSetValue (HIViewRef inView, SInt32 inValue);
+// Wraps call to function 'HIViewGetMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetMinimum(ewg_param_inView) HIViewGetMinimum ((HIViewRef)ewg_param_inView)
+
+SInt32  ewg_function_HIViewGetMinimum (HIViewRef inView);
+// Wraps call to function 'HIViewSetMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetMinimum(ewg_param_inView, ewg_param_inMinimum) HIViewSetMinimum ((HIViewRef)ewg_param_inView, (SInt32)ewg_param_inMinimum)
+
+OSStatus  ewg_function_HIViewSetMinimum (HIViewRef inView, SInt32 inMinimum);
+// Wraps call to function 'HIViewGetMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetMaximum(ewg_param_inView) HIViewGetMaximum ((HIViewRef)ewg_param_inView)
+
+SInt32  ewg_function_HIViewGetMaximum (HIViewRef inView);
+// Wraps call to function 'HIViewSetMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetMaximum(ewg_param_inView, ewg_param_inMaximum) HIViewSetMaximum ((HIViewRef)ewg_param_inView, (SInt32)ewg_param_inMaximum)
+
+OSStatus  ewg_function_HIViewSetMaximum (HIViewRef inView, SInt32 inMaximum);
+// Wraps call to function 'HIViewGetViewSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetViewSize(ewg_param_inView) HIViewGetViewSize ((HIViewRef)ewg_param_inView)
+
+SInt32  ewg_function_HIViewGetViewSize (HIViewRef inView);
+// Wraps call to function 'HIViewSetViewSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetViewSize(ewg_param_inView, ewg_param_inViewSize) HIViewSetViewSize ((HIViewRef)ewg_param_inView, (SInt32)ewg_param_inViewSize)
+
+OSStatus  ewg_function_HIViewSetViewSize (HIViewRef inView, SInt32 inViewSize);
+// Wraps call to function 'HIViewIsValid' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsValid(ewg_param_inView) HIViewIsValid ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewIsValid (HIViewRef inView);
+// Wraps call to function 'HIViewSetID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetID(ewg_param_inView, ewg_param_inID) HIViewSetID ((HIViewRef)ewg_param_inView, *(HIViewID*)ewg_param_inID)
+
+OSStatus  ewg_function_HIViewSetID (HIViewRef inView, HIViewID *inID);
+// Wraps call to function 'HIViewGetID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetID(ewg_param_inView, ewg_param_outID) HIViewGetID ((HIViewRef)ewg_param_inView, (HIViewID*)ewg_param_outID)
+
+OSStatus  ewg_function_HIViewGetID (HIViewRef inView, HIViewID *outID);
+// Wraps call to function 'HIViewSetCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetCommandID(ewg_param_inView, ewg_param_inCommandID) HIViewSetCommandID ((HIViewRef)ewg_param_inView, (UInt32)ewg_param_inCommandID)
+
+OSStatus  ewg_function_HIViewSetCommandID (HIViewRef inView, UInt32 inCommandID);
+// Wraps call to function 'HIViewGetCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetCommandID(ewg_param_inView, ewg_param_outCommandID) HIViewGetCommandID ((HIViewRef)ewg_param_inView, (UInt32*)ewg_param_outCommandID)
+
+OSStatus  ewg_function_HIViewGetCommandID (HIViewRef inView, UInt32 *outCommandID);
+// Wraps call to function 'HIViewGetKind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetKind(ewg_param_inView, ewg_param_outViewKind) HIViewGetKind ((HIViewRef)ewg_param_inView, (HIViewKind*)ewg_param_outViewKind)
+
+OSStatus  ewg_function_HIViewGetKind (HIViewRef inView, HIViewKind *outViewKind);
+// Wraps call to function 'HIViewGetBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetBounds(ewg_param_inView, ewg_param_outRect) HIViewGetBounds ((HIViewRef)ewg_param_inView, (HIRect*)ewg_param_outRect)
+
+OSStatus  ewg_function_HIViewGetBounds (HIViewRef inView, HIRect *outRect);
+// Wraps call to function 'HIViewGetFrame' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetFrame(ewg_param_inView, ewg_param_outRect) HIViewGetFrame ((HIViewRef)ewg_param_inView, (HIRect*)ewg_param_outRect)
+
+OSStatus  ewg_function_HIViewGetFrame (HIViewRef inView, HIRect *outRect);
+// Wraps call to function 'HIViewSetFrame' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetFrame(ewg_param_inView, ewg_param_inRect) HIViewSetFrame ((HIViewRef)ewg_param_inView, (HIRect const*)ewg_param_inRect)
+
+OSStatus  ewg_function_HIViewSetFrame (HIViewRef inView, HIRect const *inRect);
+// Wraps call to function 'HIViewMoveBy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewMoveBy(ewg_param_inView, ewg_param_inDX, ewg_param_inDY) HIViewMoveBy ((HIViewRef)ewg_param_inView, (float)ewg_param_inDX, (float)ewg_param_inDY)
+
+OSStatus  ewg_function_HIViewMoveBy (HIViewRef inView, float inDX, float inDY);
+// Wraps call to function 'HIViewPlaceInSuperviewAt' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewPlaceInSuperviewAt(ewg_param_inView, ewg_param_inX, ewg_param_inY) HIViewPlaceInSuperviewAt ((HIViewRef)ewg_param_inView, (float)ewg_param_inX, (float)ewg_param_inY)
+
+OSStatus  ewg_function_HIViewPlaceInSuperviewAt (HIViewRef inView, float inX, float inY);
+// Wraps call to function 'HIViewReshapeStructure' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewReshapeStructure(ewg_param_inView) HIViewReshapeStructure ((HIViewRef)ewg_param_inView)
+
+OSStatus  ewg_function_HIViewReshapeStructure (HIViewRef inView);
+// Wraps call to function 'HIViewRegionChanged' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewRegionChanged(ewg_param_inView, ewg_param_inRegionCode) HIViewRegionChanged ((HIViewRef)ewg_param_inView, (HIViewPartCode)ewg_param_inRegionCode)
+
+OSStatus  ewg_function_HIViewRegionChanged (HIViewRef inView, HIViewPartCode inRegionCode);
+// Wraps call to function 'HIViewCopyShape' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewCopyShape(ewg_param_inView, ewg_param_inPart, ewg_param_outShape) HIViewCopyShape ((HIViewRef)ewg_param_inView, (HIViewPartCode)ewg_param_inPart, (HIShapeRef*)ewg_param_outShape)
+
+OSStatus  ewg_function_HIViewCopyShape (HIViewRef inView, HIViewPartCode inPart, HIShapeRef *outShape);
+// Wraps call to function 'HIViewGetOptimalBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetOptimalBounds(ewg_param_inView, ewg_param_outBounds, ewg_param_outBaseLineOffset) HIViewGetOptimalBounds ((HIViewRef)ewg_param_inView, (HIRect*)ewg_param_outBounds, (float*)ewg_param_outBaseLineOffset)
+
+OSStatus  ewg_function_HIViewGetOptimalBounds (HIViewRef inView, HIRect *outBounds, float *outBaseLineOffset);
+// Wraps call to function 'HIViewGetViewForMouseEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetViewForMouseEvent(ewg_param_inView, ewg_param_inEvent, ewg_param_outView) HIViewGetViewForMouseEvent ((HIViewRef)ewg_param_inView, (EventRef)ewg_param_inEvent, (HIViewRef*)ewg_param_outView)
+
+OSStatus  ewg_function_HIViewGetViewForMouseEvent (HIViewRef inView, EventRef inEvent, HIViewRef *outView);
+// Wraps call to function 'HIViewClick' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewClick(ewg_param_inView, ewg_param_inEvent) HIViewClick ((HIViewRef)ewg_param_inView, (EventRef)ewg_param_inEvent)
+
+OSStatus  ewg_function_HIViewClick (HIViewRef inView, EventRef inEvent);
+// Wraps call to function 'HIViewSimulateClick' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSimulateClick(ewg_param_inView, ewg_param_inPartToClick, ewg_param_inModifiers, ewg_param_outPartClicked) HIViewSimulateClick ((HIViewRef)ewg_param_inView, (HIViewPartCode)ewg_param_inPartToClick, (UInt32)ewg_param_inModifiers, (HIViewPartCode*)ewg_param_outPartClicked)
+
+OSStatus  ewg_function_HIViewSimulateClick (HIViewRef inView, HIViewPartCode inPartToClick, UInt32 inModifiers, HIViewPartCode *outPartClicked);
+// Wraps call to function 'HIViewGetPartHit' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetPartHit(ewg_param_inView, ewg_param_inPoint, ewg_param_outPart) HIViewGetPartHit ((HIViewRef)ewg_param_inView, (HIPoint const*)ewg_param_inPoint, (HIViewPartCode*)ewg_param_outPart)
+
+OSStatus  ewg_function_HIViewGetPartHit (HIViewRef inView, HIPoint const *inPoint, HIViewPartCode *outPart);
+// Wraps call to function 'HIViewGetSubviewHit' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetSubviewHit(ewg_param_inView, ewg_param_inPoint, ewg_param_inDeep, ewg_param_outView) HIViewGetSubviewHit ((HIViewRef)ewg_param_inView, (HIPoint const*)ewg_param_inPoint, (Boolean)ewg_param_inDeep, (HIViewRef*)ewg_param_outView)
+
+OSStatus  ewg_function_HIViewGetSubviewHit (HIViewRef inView, HIPoint const *inPoint, Boolean inDeep, HIViewRef *outView);
+// Wraps call to function 'HIViewNewTrackingArea' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewNewTrackingArea(ewg_param_inView, ewg_param_inShape, ewg_param_inID, ewg_param_outRef) HIViewNewTrackingArea ((HIViewRef)ewg_param_inView, (HIShapeRef)ewg_param_inShape, (HIViewTrackingAreaID)ewg_param_inID, (HIViewTrackingAreaRef*)ewg_param_outRef)
+
+OSStatus  ewg_function_HIViewNewTrackingArea (HIViewRef inView, HIShapeRef inShape, HIViewTrackingAreaID inID, HIViewTrackingAreaRef *outRef);
+// Wraps call to function 'HIViewChangeTrackingArea' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewChangeTrackingArea(ewg_param_inArea, ewg_param_inShape) HIViewChangeTrackingArea ((HIViewTrackingAreaRef)ewg_param_inArea, (HIShapeRef)ewg_param_inShape)
+
+OSStatus  ewg_function_HIViewChangeTrackingArea (HIViewTrackingAreaRef inArea, HIShapeRef inShape);
+// Wraps call to function 'HIViewGetTrackingAreaID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetTrackingAreaID(ewg_param_inArea, ewg_param_outID) HIViewGetTrackingAreaID ((HIViewTrackingAreaRef)ewg_param_inArea, (HIViewTrackingAreaID*)ewg_param_outID)
+
+OSStatus  ewg_function_HIViewGetTrackingAreaID (HIViewTrackingAreaRef inArea, HIViewTrackingAreaID *outID);
+// Wraps call to function 'HIViewDisposeTrackingArea' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewDisposeTrackingArea(ewg_param_inArea) HIViewDisposeTrackingArea ((HIViewTrackingAreaRef)ewg_param_inArea)
+
+OSStatus  ewg_function_HIViewDisposeTrackingArea (HIViewTrackingAreaRef inArea);
+// Wraps call to function 'HIViewGetNeedsDisplay' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetNeedsDisplay(ewg_param_inView) HIViewGetNeedsDisplay ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewGetNeedsDisplay (HIViewRef inView);
+// Wraps call to function 'HIViewSetNeedsDisplay' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetNeedsDisplay(ewg_param_inView, ewg_param_inNeedsDisplay) HIViewSetNeedsDisplay ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inNeedsDisplay)
+
+OSStatus  ewg_function_HIViewSetNeedsDisplay (HIViewRef inView, Boolean inNeedsDisplay);
+// Wraps call to function 'HIViewSetNeedsDisplayInRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetNeedsDisplayInRect(ewg_param_inView, ewg_param_inRect, ewg_param_inNeedsDisplay) HIViewSetNeedsDisplayInRect ((HIViewRef)ewg_param_inView, (HIRect const*)ewg_param_inRect, (Boolean)ewg_param_inNeedsDisplay)
+
+OSStatus  ewg_function_HIViewSetNeedsDisplayInRect (HIViewRef inView, HIRect const *inRect, Boolean inNeedsDisplay);
+// Wraps call to function 'HIViewSetNeedsDisplayInShape' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetNeedsDisplayInShape(ewg_param_inView, ewg_param_inArea, ewg_param_inNeedsDisplay) HIViewSetNeedsDisplayInShape ((HIViewRef)ewg_param_inView, (HIShapeRef)ewg_param_inArea, (Boolean)ewg_param_inNeedsDisplay)
+
+OSStatus  ewg_function_HIViewSetNeedsDisplayInShape (HIViewRef inView, HIShapeRef inArea, Boolean inNeedsDisplay);
+// Wraps call to function 'HIViewSetNeedsDisplayInRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetNeedsDisplayInRegion(ewg_param_inView, ewg_param_inRgn, ewg_param_inNeedsDisplay) HIViewSetNeedsDisplayInRegion ((HIViewRef)ewg_param_inView, (RgnHandle)ewg_param_inRgn, (Boolean)ewg_param_inNeedsDisplay)
+
+OSStatus  ewg_function_HIViewSetNeedsDisplayInRegion (HIViewRef inView, RgnHandle inRgn, Boolean inNeedsDisplay);
+// Wraps call to function 'HIViewRender' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewRender(ewg_param_inView) HIViewRender ((HIViewRef)ewg_param_inView)
+
+OSStatus  ewg_function_HIViewRender (HIViewRef inView);
+// Wraps call to function 'HIViewFlashDirtyArea' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewFlashDirtyArea(ewg_param_inWindow) HIViewFlashDirtyArea ((WindowRef)ewg_param_inWindow)
+
+OSStatus  ewg_function_HIViewFlashDirtyArea (WindowRef inWindow);
+// Wraps call to function 'HIViewGetSizeConstraints' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetSizeConstraints(ewg_param_inView, ewg_param_outMinSize, ewg_param_outMaxSize) HIViewGetSizeConstraints ((HIViewRef)ewg_param_inView, (HISize*)ewg_param_outMinSize, (HISize*)ewg_param_outMaxSize)
+
+OSStatus  ewg_function_HIViewGetSizeConstraints (HIViewRef inView, HISize *outMinSize, HISize *outMaxSize);
+// Wraps call to function 'HIViewConvertPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewConvertPoint(ewg_param_ioPoint, ewg_param_inSourceView, ewg_param_inDestView) HIViewConvertPoint ((HIPoint*)ewg_param_ioPoint, (HIViewRef)ewg_param_inSourceView, (HIViewRef)ewg_param_inDestView)
+
+OSStatus  ewg_function_HIViewConvertPoint (HIPoint *ioPoint, HIViewRef inSourceView, HIViewRef inDestView);
+// Wraps call to function 'HIViewConvertRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewConvertRect(ewg_param_ioRect, ewg_param_inSourceView, ewg_param_inDestView) HIViewConvertRect ((HIRect*)ewg_param_ioRect, (HIViewRef)ewg_param_inSourceView, (HIViewRef)ewg_param_inDestView)
+
+OSStatus  ewg_function_HIViewConvertRect (HIRect *ioRect, HIViewRef inSourceView, HIViewRef inDestView);
+// Wraps call to function 'HIViewConvertRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewConvertRegion(ewg_param_ioRgn, ewg_param_inSourceView, ewg_param_inDestView) HIViewConvertRegion ((RgnHandle)ewg_param_ioRgn, (HIViewRef)ewg_param_inSourceView, (HIViewRef)ewg_param_inDestView)
+
+OSStatus  ewg_function_HIViewConvertRegion (RgnHandle ioRgn, HIViewRef inSourceView, HIViewRef inDestView);
+// Wraps call to function 'HIViewSetDrawingEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetDrawingEnabled(ewg_param_inView, ewg_param_inEnabled) HIViewSetDrawingEnabled ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inEnabled)
+
+OSStatus  ewg_function_HIViewSetDrawingEnabled (HIViewRef inView, Boolean inEnabled);
+// Wraps call to function 'HIViewIsDrawingEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsDrawingEnabled(ewg_param_inView) HIViewIsDrawingEnabled ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewIsDrawingEnabled (HIViewRef inView);
+// Wraps call to function 'HIViewScrollRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewScrollRect(ewg_param_inView, ewg_param_inRect, ewg_param_inDX, ewg_param_inDY) HIViewScrollRect ((HIViewRef)ewg_param_inView, (HIRect const*)ewg_param_inRect, (float)ewg_param_inDX, (float)ewg_param_inDY)
+
+OSStatus  ewg_function_HIViewScrollRect (HIViewRef inView, HIRect const *inRect, float inDX, float inDY);
+// Wraps call to function 'HIViewSetBoundsOrigin' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetBoundsOrigin(ewg_param_inView, ewg_param_inX, ewg_param_inY) HIViewSetBoundsOrigin ((HIViewRef)ewg_param_inView, (float)ewg_param_inX, (float)ewg_param_inY)
+
+OSStatus  ewg_function_HIViewSetBoundsOrigin (HIViewRef inView, float inX, float inY);
+// Wraps call to function 'HIViewAdvanceFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewAdvanceFocus(ewg_param_inRootForFocus, ewg_param_inModifiers) HIViewAdvanceFocus ((HIViewRef)ewg_param_inRootForFocus, (EventModifiers)ewg_param_inModifiers)
+
+OSStatus  ewg_function_HIViewAdvanceFocus (HIViewRef inRootForFocus, EventModifiers inModifiers);
+// Wraps call to function 'HIViewGetFocusPart' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetFocusPart(ewg_param_inView, ewg_param_outFocusPart) HIViewGetFocusPart ((HIViewRef)ewg_param_inView, (HIViewPartCode*)ewg_param_outFocusPart)
+
+OSStatus  ewg_function_HIViewGetFocusPart (HIViewRef inView, HIViewPartCode *outFocusPart);
+// Wraps call to function 'HIViewSubtreeContainsFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSubtreeContainsFocus(ewg_param_inSubtreeStart) HIViewSubtreeContainsFocus ((HIViewRef)ewg_param_inSubtreeStart)
+
+Boolean  ewg_function_HIViewSubtreeContainsFocus (HIViewRef inSubtreeStart);
+// Wraps call to function 'HIViewSetNextFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetNextFocus(ewg_param_inView, ewg_param_inNextFocus) HIViewSetNextFocus ((HIViewRef)ewg_param_inView, (HIViewRef)ewg_param_inNextFocus)
+
+OSStatus  ewg_function_HIViewSetNextFocus (HIViewRef inView, HIViewRef inNextFocus);
+// Wraps call to function 'HIViewSetFirstSubViewFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetFirstSubViewFocus(ewg_param_inParent, ewg_param_inSubView) HIViewSetFirstSubViewFocus ((HIViewRef)ewg_param_inParent, (HIViewRef)ewg_param_inSubView)
+
+OSStatus  ewg_function_HIViewSetFirstSubViewFocus (HIViewRef inParent, HIViewRef inSubView);
+// Wraps call to function 'HIViewGetLayoutInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetLayoutInfo(ewg_param_inView, ewg_param_outLayoutInfo) HIViewGetLayoutInfo ((HIViewRef)ewg_param_inView, (HILayoutInfo*)ewg_param_outLayoutInfo)
+
+OSStatus  ewg_function_HIViewGetLayoutInfo (HIViewRef inView, HILayoutInfo *outLayoutInfo);
+// Wraps call to function 'HIViewSetLayoutInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSetLayoutInfo(ewg_param_inView, ewg_param_inLayoutInfo) HIViewSetLayoutInfo ((HIViewRef)ewg_param_inView, (HILayoutInfo const*)ewg_param_inLayoutInfo)
+
+OSStatus  ewg_function_HIViewSetLayoutInfo (HIViewRef inView, HILayoutInfo const *inLayoutInfo);
+// Wraps call to function 'HIViewSuspendLayout' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewSuspendLayout(ewg_param_inView) HIViewSuspendLayout ((HIViewRef)ewg_param_inView)
+
+OSStatus  ewg_function_HIViewSuspendLayout (HIViewRef inView);
+// Wraps call to function 'HIViewResumeLayout' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewResumeLayout(ewg_param_inView) HIViewResumeLayout ((HIViewRef)ewg_param_inView)
+
+OSStatus  ewg_function_HIViewResumeLayout (HIViewRef inView);
+// Wraps call to function 'HIViewIsLayoutActive' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsLayoutActive(ewg_param_inView) HIViewIsLayoutActive ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewIsLayoutActive (HIViewRef inView);
+// Wraps call to function 'HIViewIsLayoutLatentlyActive' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewIsLayoutLatentlyActive(ewg_param_inView) HIViewIsLayoutLatentlyActive ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIViewIsLayoutLatentlyActive (HIViewRef inView);
+// Wraps call to function 'HIViewApplyLayout' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewApplyLayout(ewg_param_inView) HIViewApplyLayout ((HIViewRef)ewg_param_inView)
+
+OSStatus  ewg_function_HIViewApplyLayout (HIViewRef inView);
+// Wraps call to function 'HIViewGetWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetWindow(ewg_param_inView) HIViewGetWindow ((HIViewRef)ewg_param_inView)
+
+WindowRef  ewg_function_HIViewGetWindow (HIViewRef inView);
+// Wraps call to function 'HIViewFindByID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewFindByID(ewg_param_inStartView, ewg_param_inID, ewg_param_outControl) HIViewFindByID ((HIViewRef)ewg_param_inStartView, *(HIViewID*)ewg_param_inID, (HIViewRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_HIViewFindByID (HIViewRef inStartView, HIViewID *inID, HIViewRef *outControl);
+// Wraps call to function 'HIViewGetAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetAttributes(ewg_param_inView, ewg_param_outAttrs) HIViewGetAttributes ((HIViewRef)ewg_param_inView, (OptionBits*)ewg_param_outAttrs)
+
+OSStatus  ewg_function_HIViewGetAttributes (HIViewRef inView, OptionBits *outAttrs);
+// Wraps call to function 'HIViewChangeAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewChangeAttributes(ewg_param_inView, ewg_param_inAttrsToSet, ewg_param_inAttrsToClear) HIViewChangeAttributes ((HIViewRef)ewg_param_inView, (OptionBits)ewg_param_inAttrsToSet, (OptionBits)ewg_param_inAttrsToClear)
+
+OSStatus  ewg_function_HIViewChangeAttributes (HIViewRef inView, OptionBits inAttrsToSet, OptionBits inAttrsToClear);
+// Wraps call to function 'HIViewCreateOffscreenImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewCreateOffscreenImage(ewg_param_inView, ewg_param_inOptions, ewg_param_outFrame, ewg_param_outImage) HIViewCreateOffscreenImage ((HIViewRef)ewg_param_inView, (OptionBits)ewg_param_inOptions, (HIRect*)ewg_param_outFrame, (CGImageRef*)ewg_param_outImage)
+
+OSStatus  ewg_function_HIViewCreateOffscreenImage (HIViewRef inView, OptionBits inOptions, HIRect *outFrame, CGImageRef *outImage);
+// Wraps call to function 'HIViewDrawCGImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewDrawCGImage(ewg_param_inContext, ewg_param_inBounds, ewg_param_inImage) HIViewDrawCGImage ((CGContextRef)ewg_param_inContext, (HIRect const*)ewg_param_inBounds, (CGImageRef)ewg_param_inImage)
+
+OSStatus  ewg_function_HIViewDrawCGImage (CGContextRef inContext, HIRect const *inBounds, CGImageRef inImage);
+// Wraps call to function 'HIViewGetFeatures' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetFeatures(ewg_param_inView, ewg_param_outFeatures) HIViewGetFeatures ((HIViewRef)ewg_param_inView, (HIViewFeatures*)ewg_param_outFeatures)
+
+OSStatus  ewg_function_HIViewGetFeatures (HIViewRef inView, HIViewFeatures *outFeatures);
+// Wraps call to function 'HIViewChangeFeatures' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewChangeFeatures(ewg_param_inView, ewg_param_inFeaturesToSet, ewg_param_inFeaturesToClear) HIViewChangeFeatures ((HIViewRef)ewg_param_inView, (HIViewFeatures)ewg_param_inFeaturesToSet, (HIViewFeatures)ewg_param_inFeaturesToClear)
+
+OSStatus  ewg_function_HIViewChangeFeatures (HIViewRef inView, HIViewFeatures inFeaturesToSet, HIViewFeatures inFeaturesToClear);
+// Wraps call to function 'HICreateTransformedCGImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HICreateTransformedCGImage(ewg_param_inImage, ewg_param_inTransform, ewg_param_outImage) HICreateTransformedCGImage ((CGImageRef)ewg_param_inImage, (OptionBits)ewg_param_inTransform, (CGImageRef*)ewg_param_outImage)
+
+OSStatus  ewg_function_HICreateTransformedCGImage (CGImageRef inImage, OptionBits inTransform, CGImageRef *outImage);
+// Wraps call to function 'HIViewGetEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIViewGetEventTarget(ewg_param_inView) HIViewGetEventTarget ((HIViewRef)ewg_param_inView)
+
+EventTargetRef  ewg_function_HIViewGetEventTarget (HIViewRef inView);
+// Wraps call to function 'HIGrowBoxViewSetTransparent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIGrowBoxViewSetTransparent(ewg_param_inGrowBoxView, ewg_param_inTransparent) HIGrowBoxViewSetTransparent ((HIViewRef)ewg_param_inGrowBoxView, (Boolean)ewg_param_inTransparent)
+
+OSStatus  ewg_function_HIGrowBoxViewSetTransparent (HIViewRef inGrowBoxView, Boolean inTransparent);
+// Wraps call to function 'HIGrowBoxViewIsTransparent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIGrowBoxViewIsTransparent(ewg_param_inGrowBoxView) HIGrowBoxViewIsTransparent ((HIViewRef)ewg_param_inGrowBoxView)
+
+Boolean  ewg_function_HIGrowBoxViewIsTransparent (HIViewRef inGrowBoxView);
+// Wraps call to function 'HIScrollViewCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIScrollViewCreate(ewg_param_inOptions, ewg_param_outView) HIScrollViewCreate ((OptionBits)ewg_param_inOptions, (HIViewRef*)ewg_param_outView)
+
+OSStatus  ewg_function_HIScrollViewCreate (OptionBits inOptions, HIViewRef *outView);
+// Wraps call to function 'HIScrollViewSetScrollBarAutoHide' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIScrollViewSetScrollBarAutoHide(ewg_param_inView, ewg_param_inAutoHide) HIScrollViewSetScrollBarAutoHide ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inAutoHide)
+
+OSStatus  ewg_function_HIScrollViewSetScrollBarAutoHide (HIViewRef inView, Boolean inAutoHide);
+// Wraps call to function 'HIScrollViewGetScrollBarAutoHide' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIScrollViewGetScrollBarAutoHide(ewg_param_inView) HIScrollViewGetScrollBarAutoHide ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIScrollViewGetScrollBarAutoHide (HIViewRef inView);
+// Wraps call to function 'HIScrollViewNavigate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIScrollViewNavigate(ewg_param_inView, ewg_param_inAction) HIScrollViewNavigate ((HIViewRef)ewg_param_inView, (HIScrollViewAction)ewg_param_inAction)
+
+OSStatus  ewg_function_HIScrollViewNavigate (HIViewRef inView, HIScrollViewAction inAction);
+// Wraps call to function 'HIScrollViewCanNavigate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIScrollViewCanNavigate(ewg_param_inView, ewg_param_inAction) HIScrollViewCanNavigate ((HIViewRef)ewg_param_inView, (HIScrollViewAction)ewg_param_inAction)
+
+Boolean  ewg_function_HIScrollViewCanNavigate (HIViewRef inView, HIScrollViewAction inAction);
+// Wraps call to function 'HIImageViewCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewCreate(ewg_param_inImage, ewg_param_outControl) HIImageViewCreate ((CGImageRef)ewg_param_inImage, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_HIImageViewCreate (CGImageRef inImage, ControlRef *outControl);
+// Wraps call to function 'HIImageViewSetOpaque' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewSetOpaque(ewg_param_inView, ewg_param_inOpaque) HIImageViewSetOpaque ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inOpaque)
+
+OSStatus  ewg_function_HIImageViewSetOpaque (HIViewRef inView, Boolean inOpaque);
+// Wraps call to function 'HIImageViewIsOpaque' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewIsOpaque(ewg_param_inView) HIImageViewIsOpaque ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIImageViewIsOpaque (HIViewRef inView);
+// Wraps call to function 'HIImageViewSetAlpha' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewSetAlpha(ewg_param_inView, ewg_param_inAlpha) HIImageViewSetAlpha ((HIViewRef)ewg_param_inView, (float)ewg_param_inAlpha)
+
+OSStatus  ewg_function_HIImageViewSetAlpha (HIViewRef inView, float inAlpha);
+// Wraps call to function 'HIImageViewGetAlpha' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewGetAlpha(ewg_param_inView) HIImageViewGetAlpha ((HIViewRef)ewg_param_inView)
+
+float  ewg_function_HIImageViewGetAlpha (HIViewRef inView);
+// Wraps call to function 'HIImageViewSetScaleToFit' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewSetScaleToFit(ewg_param_inView, ewg_param_inScaleToFit) HIImageViewSetScaleToFit ((HIViewRef)ewg_param_inView, (Boolean)ewg_param_inScaleToFit)
+
+OSStatus  ewg_function_HIImageViewSetScaleToFit (HIViewRef inView, Boolean inScaleToFit);
+// Wraps call to function 'HIImageViewGetScaleToFit' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewGetScaleToFit(ewg_param_inView) HIImageViewGetScaleToFit ((HIViewRef)ewg_param_inView)
+
+Boolean  ewg_function_HIImageViewGetScaleToFit (HIViewRef inView);
+// Wraps call to function 'HIImageViewSetImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewSetImage(ewg_param_inView, ewg_param_inImage) HIImageViewSetImage ((HIViewRef)ewg_param_inView, (CGImageRef)ewg_param_inImage)
+
+OSStatus  ewg_function_HIImageViewSetImage (HIViewRef inView, CGImageRef inImage);
+// Wraps call to function 'HIImageViewCopyImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIImageViewCopyImage(ewg_param_inView) HIImageViewCopyImage ((HIViewRef)ewg_param_inView)
+
+CGImageRef  ewg_function_HIImageViewCopyImage (HIViewRef inView);
+// Wraps call to function 'HIComboBoxCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxCreate(ewg_param_boundsRect, ewg_param_text, ewg_param_style, ewg_param_list, ewg_param_inAttributes, ewg_param_outComboBox) HIComboBoxCreate ((HIRect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_text, (ControlFontStyleRec const*)ewg_param_style, (CFArrayRef)ewg_param_list, (OptionBits)ewg_param_inAttributes, (HIViewRef*)ewg_param_outComboBox)
+
+OSStatus  ewg_function_HIComboBoxCreate (HIRect const *boundsRect, CFStringRef text, ControlFontStyleRec const *style, CFArrayRef list, OptionBits inAttributes, HIViewRef *outComboBox);
+// Wraps call to function 'HIComboBoxGetItemCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxGetItemCount(ewg_param_inComboBox) HIComboBoxGetItemCount ((HIViewRef)ewg_param_inComboBox)
+
+ItemCount  ewg_function_HIComboBoxGetItemCount (HIViewRef inComboBox);
+// Wraps call to function 'HIComboBoxInsertTextItemAtIndex' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxInsertTextItemAtIndex(ewg_param_inComboBox, ewg_param_inIndex, ewg_param_inText) HIComboBoxInsertTextItemAtIndex ((HIViewRef)ewg_param_inComboBox, (CFIndex)ewg_param_inIndex, (CFStringRef)ewg_param_inText)
+
+OSStatus  ewg_function_HIComboBoxInsertTextItemAtIndex (HIViewRef inComboBox, CFIndex inIndex, CFStringRef inText);
+// Wraps call to function 'HIComboBoxAppendTextItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxAppendTextItem(ewg_param_inComboBox, ewg_param_inText, ewg_param_outIndex) HIComboBoxAppendTextItem ((HIViewRef)ewg_param_inComboBox, (CFStringRef)ewg_param_inText, (CFIndex*)ewg_param_outIndex)
+
+OSStatus  ewg_function_HIComboBoxAppendTextItem (HIViewRef inComboBox, CFStringRef inText, CFIndex *outIndex);
+// Wraps call to function 'HIComboBoxCopyTextItemAtIndex' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxCopyTextItemAtIndex(ewg_param_inComboBox, ewg_param_inIndex, ewg_param_outString) HIComboBoxCopyTextItemAtIndex ((HIViewRef)ewg_param_inComboBox, (CFIndex)ewg_param_inIndex, (CFStringRef*)ewg_param_outString)
+
+OSStatus  ewg_function_HIComboBoxCopyTextItemAtIndex (HIViewRef inComboBox, CFIndex inIndex, CFStringRef *outString);
+// Wraps call to function 'HIComboBoxRemoveItemAtIndex' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxRemoveItemAtIndex(ewg_param_inComboBox, ewg_param_inIndex) HIComboBoxRemoveItemAtIndex ((HIViewRef)ewg_param_inComboBox, (CFIndex)ewg_param_inIndex)
+
+OSStatus  ewg_function_HIComboBoxRemoveItemAtIndex (HIViewRef inComboBox, CFIndex inIndex);
+// Wraps call to function 'HIComboBoxChangeAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxChangeAttributes(ewg_param_inComboBox, ewg_param_inAttributesToSet, ewg_param_inAttributesToClear) HIComboBoxChangeAttributes ((HIViewRef)ewg_param_inComboBox, (OptionBits)ewg_param_inAttributesToSet, (OptionBits)ewg_param_inAttributesToClear)
+
+OSStatus  ewg_function_HIComboBoxChangeAttributes (HIViewRef inComboBox, OptionBits inAttributesToSet, OptionBits inAttributesToClear);
+// Wraps call to function 'HIComboBoxGetAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxGetAttributes(ewg_param_inComboBox, ewg_param_outAttributes) HIComboBoxGetAttributes ((HIViewRef)ewg_param_inComboBox, (OptionBits*)ewg_param_outAttributes)
+
+OSStatus  ewg_function_HIComboBoxGetAttributes (HIViewRef inComboBox, OptionBits *outAttributes);
+// Wraps call to function 'HIComboBoxIsListVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxIsListVisible(ewg_param_inComboBox) HIComboBoxIsListVisible ((HIViewRef)ewg_param_inComboBox)
+
+Boolean  ewg_function_HIComboBoxIsListVisible (HIViewRef inComboBox);
+// Wraps call to function 'HIComboBoxSetListVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIComboBoxSetListVisible(ewg_param_inComboBox, ewg_param_inVisible) HIComboBoxSetListVisible ((HIViewRef)ewg_param_inComboBox, (Boolean)ewg_param_inVisible)
+
+OSStatus  ewg_function_HIComboBoxSetListVisible (HIViewRef inComboBox, Boolean inVisible);
+// Wraps call to function 'HISearchFieldCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISearchFieldCreate(ewg_param_inBounds, ewg_param_inAttributes, ewg_param_inSearchMenu, ewg_param_inDescriptiveText, ewg_param_outRef) HISearchFieldCreate ((HIRect const*)ewg_param_inBounds, (OptionBits)ewg_param_inAttributes, (MenuRef)ewg_param_inSearchMenu, (CFStringRef)ewg_param_inDescriptiveText, (HIViewRef*)ewg_param_outRef)
+
+OSStatus  ewg_function_HISearchFieldCreate (HIRect const *inBounds, OptionBits inAttributes, MenuRef inSearchMenu, CFStringRef inDescriptiveText, HIViewRef *outRef);
+// Wraps call to function 'HISearchFieldSetSearchMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISearchFieldSetSearchMenu(ewg_param_inSearchField, ewg_param_inSearchMenu) HISearchFieldSetSearchMenu ((HIViewRef)ewg_param_inSearchField, (MenuRef)ewg_param_inSearchMenu)
+
+OSStatus  ewg_function_HISearchFieldSetSearchMenu (HIViewRef inSearchField, MenuRef inSearchMenu);
+// Wraps call to function 'HISearchFieldGetSearchMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISearchFieldGetSearchMenu(ewg_param_inSearchField, ewg_param_outSearchMenu) HISearchFieldGetSearchMenu ((HIViewRef)ewg_param_inSearchField, (MenuRef*)ewg_param_outSearchMenu)
+
+OSStatus  ewg_function_HISearchFieldGetSearchMenu (HIViewRef inSearchField, MenuRef *outSearchMenu);
+// Wraps call to function 'HISearchFieldChangeAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISearchFieldChangeAttributes(ewg_param_inSearchField, ewg_param_inAttributesToSet, ewg_param_inAttributesToClear) HISearchFieldChangeAttributes ((HIViewRef)ewg_param_inSearchField, (OptionBits)ewg_param_inAttributesToSet, (OptionBits)ewg_param_inAttributesToClear)
+
+OSStatus  ewg_function_HISearchFieldChangeAttributes (HIViewRef inSearchField, OptionBits inAttributesToSet, OptionBits inAttributesToClear);
+// Wraps call to function 'HISearchFieldGetAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISearchFieldGetAttributes(ewg_param_inSearchField, ewg_param_outAttributes) HISearchFieldGetAttributes ((HIViewRef)ewg_param_inSearchField, (OptionBits*)ewg_param_outAttributes)
+
+OSStatus  ewg_function_HISearchFieldGetAttributes (HIViewRef inSearchField, OptionBits *outAttributes);
+// Wraps call to function 'HISearchFieldSetDescriptiveText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISearchFieldSetDescriptiveText(ewg_param_inSearchField, ewg_param_inDescription) HISearchFieldSetDescriptiveText ((HIViewRef)ewg_param_inSearchField, (CFStringRef)ewg_param_inDescription)
+
+OSStatus  ewg_function_HISearchFieldSetDescriptiveText (HIViewRef inSearchField, CFStringRef inDescription);
+// Wraps call to function 'HISearchFieldCopyDescriptiveText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISearchFieldCopyDescriptiveText(ewg_param_inSearchField, ewg_param_outDescription) HISearchFieldCopyDescriptiveText ((HIViewRef)ewg_param_inSearchField, (CFStringRef*)ewg_param_outDescription)
+
+OSStatus  ewg_function_HISearchFieldCopyDescriptiveText (HIViewRef inSearchField, CFStringRef *outDescription);
+// Wraps call to function 'HIMenuViewGetMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIMenuViewGetMenu(ewg_param_inView) HIMenuViewGetMenu ((HIViewRef)ewg_param_inView)
+
+MenuRef  ewg_function_HIMenuViewGetMenu (HIViewRef inView);
+// Wraps call to function 'HIMenuGetContentView' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIMenuGetContentView(ewg_param_inMenu, ewg_param_inMenuType, ewg_param_outView) HIMenuGetContentView ((MenuRef)ewg_param_inMenu, (ThemeMenuType)ewg_param_inMenuType, (HIViewRef*)ewg_param_outView)
+
+OSStatus  ewg_function_HIMenuGetContentView (MenuRef inMenu, ThemeMenuType inMenuType, HIViewRef *outView);
+// Wraps call to function 'HISegmentedViewCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewCreate(ewg_param_inBounds, ewg_param_outRef) HISegmentedViewCreate ((HIRect const*)ewg_param_inBounds, (HIViewRef*)ewg_param_outRef)
+
+OSStatus  ewg_function_HISegmentedViewCreate (HIRect const *inBounds, HIViewRef *outRef);
+// Wraps call to function 'HISegmentedViewSetSegmentCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentCount(ewg_param_inSegmentedView, ewg_param_inSegmentCount) HISegmentedViewSetSegmentCount ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentCount)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentCount (HIViewRef inSegmentedView, UInt32 inSegmentCount);
+// Wraps call to function 'HISegmentedViewGetSegmentCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewGetSegmentCount(ewg_param_inSegmentedView) HISegmentedViewGetSegmentCount ((HIViewRef)ewg_param_inSegmentedView)
+
+UInt32  ewg_function_HISegmentedViewGetSegmentCount (HIViewRef inSegmentedView);
+// Wraps call to function 'HISegmentedViewSetSegmentBehavior' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentBehavior(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inBehavior) HISegmentedViewSetSegmentBehavior ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (HISegmentBehavior)ewg_param_inBehavior)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentBehavior (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, HISegmentBehavior inBehavior);
+// Wraps call to function 'HISegmentedViewGetSegmentBehavior' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewGetSegmentBehavior(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased) HISegmentedViewGetSegmentBehavior ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased)
+
+HISegmentBehavior  ewg_function_HISegmentedViewGetSegmentBehavior (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased);
+// Wraps call to function 'HISegmentedViewChangeSegmentAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewChangeSegmentAttributes(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inAttributesToSet, ewg_param_inAttributesToClear) HISegmentedViewChangeSegmentAttributes ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (OptionBits)ewg_param_inAttributesToSet, (OptionBits)ewg_param_inAttributesToClear)
+
+OSStatus  ewg_function_HISegmentedViewChangeSegmentAttributes (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, OptionBits inAttributesToSet, OptionBits inAttributesToClear);
+// Wraps call to function 'HISegmentedViewGetSegmentAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewGetSegmentAttributes(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased) HISegmentedViewGetSegmentAttributes ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased)
+
+OptionBits  ewg_function_HISegmentedViewGetSegmentAttributes (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased);
+// Wraps call to function 'HISegmentedViewSetSegmentValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentValue(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inValue) HISegmentedViewSetSegmentValue ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (SInt32)ewg_param_inValue)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentValue (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, SInt32 inValue);
+// Wraps call to function 'HISegmentedViewGetSegmentValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewGetSegmentValue(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased) HISegmentedViewGetSegmentValue ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased)
+
+SInt32  ewg_function_HISegmentedViewGetSegmentValue (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased);
+// Wraps call to function 'HISegmentedViewSetSegmentEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentEnabled(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inEnabled) HISegmentedViewSetSegmentEnabled ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (Boolean)ewg_param_inEnabled)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentEnabled (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, Boolean inEnabled);
+// Wraps call to function 'HISegmentedViewIsSegmentEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewIsSegmentEnabled(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased) HISegmentedViewIsSegmentEnabled ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased)
+
+Boolean  ewg_function_HISegmentedViewIsSegmentEnabled (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased);
+// Wraps call to function 'HISegmentedViewSetSegmentCommand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentCommand(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inCommand) HISegmentedViewSetSegmentCommand ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (UInt32)ewg_param_inCommand)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentCommand (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, UInt32 inCommand);
+// Wraps call to function 'HISegmentedViewGetSegmentCommand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewGetSegmentCommand(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased) HISegmentedViewGetSegmentCommand ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased)
+
+UInt32  ewg_function_HISegmentedViewGetSegmentCommand (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased);
+// Wraps call to function 'HISegmentedViewSetSegmentLabel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentLabel(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inLabel) HISegmentedViewSetSegmentLabel ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (CFStringRef)ewg_param_inLabel)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentLabel (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, CFStringRef inLabel);
+// Wraps call to function 'HISegmentedViewCopySegmentLabel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewCopySegmentLabel(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_outLabel) HISegmentedViewCopySegmentLabel ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (CFStringRef*)ewg_param_outLabel)
+
+OSStatus  ewg_function_HISegmentedViewCopySegmentLabel (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, CFStringRef *outLabel);
+// Wraps call to function 'HISegmentedViewSetSegmentContentWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentContentWidth(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inAutoCalculateWidth, ewg_param_inWidth) HISegmentedViewSetSegmentContentWidth ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (Boolean)ewg_param_inAutoCalculateWidth, (float)ewg_param_inWidth)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentContentWidth (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, Boolean inAutoCalculateWidth, float inWidth);
+// Wraps call to function 'HISegmentedViewGetSegmentContentWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewGetSegmentContentWidth(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_outAutoCalculated) HISegmentedViewGetSegmentContentWidth ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (Boolean*)ewg_param_outAutoCalculated)
+
+float  ewg_function_HISegmentedViewGetSegmentContentWidth (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, Boolean *outAutoCalculated);
+// Wraps call to function 'HISegmentedViewSetSegmentImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewSetSegmentImage(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_inImage) HISegmentedViewSetSegmentImage ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (HIViewImageContentInfo const*)ewg_param_inImage)
+
+OSStatus  ewg_function_HISegmentedViewSetSegmentImage (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, HIViewImageContentInfo const *inImage);
+// Wraps call to function 'HISegmentedViewGetSegmentImageContentType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewGetSegmentImageContentType(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased) HISegmentedViewGetSegmentImageContentType ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased)
+
+HIViewImageContentType  ewg_function_HISegmentedViewGetSegmentImageContentType (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased);
+// Wraps call to function 'HISegmentedViewCopySegmentImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISegmentedViewCopySegmentImage(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_ioImage) HISegmentedViewCopySegmentImage ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (HIViewImageContentInfo*)ewg_param_ioImage)
+
+OSStatus  ewg_function_HISegmentedViewCopySegmentImage (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, HIViewImageContentInfo *ioImage);
+// Wraps call to function 'CreateBevelButtonControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateBevelButtonControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_thickness, ewg_param_behavior, ewg_param_info, ewg_param_menuID, ewg_param_menuBehavior, ewg_param_menuPlacement, ewg_param_outControl) CreateBevelButtonControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (ControlBevelThickness)ewg_param_thickness, (ControlBevelButtonBehavior)ewg_param_behavior, (ControlButtonContentInfoPtr)ewg_param_info, (SInt16)ewg_param_menuID, (ControlBevelButtonMenuBehavior)ewg_param_menuBehavior, (ControlBevelButtonMenuPlacement)ewg_param_menuPlacement, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateBevelButtonControl (WindowRef window, Rect const *boundsRect, CFStringRef title, ControlBevelThickness thickness, ControlBevelButtonBehavior behavior, ControlButtonContentInfoPtr info, SInt16 menuID, ControlBevelButtonMenuBehavior menuBehavior, ControlBevelButtonMenuPlacement menuPlacement, ControlRef *outControl);
+// Wraps call to function 'GetBevelButtonMenuValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetBevelButtonMenuValue(ewg_param_inButton, ewg_param_outValue) GetBevelButtonMenuValue ((ControlRef)ewg_param_inButton, (SInt16*)ewg_param_outValue)
+
+OSErr  ewg_function_GetBevelButtonMenuValue (ControlRef inButton, SInt16 *outValue);
+// Wraps call to function 'SetBevelButtonMenuValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetBevelButtonMenuValue(ewg_param_inButton, ewg_param_inValue) SetBevelButtonMenuValue ((ControlRef)ewg_param_inButton, (SInt16)ewg_param_inValue)
+
+OSErr  ewg_function_SetBevelButtonMenuValue (ControlRef inButton, SInt16 inValue);
+// Wraps call to function 'GetBevelButtonMenuHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetBevelButtonMenuHandle(ewg_param_inButton, ewg_param_outHandle) GetBevelButtonMenuHandle ((ControlRef)ewg_param_inButton, (MenuHandle*)ewg_param_outHandle)
+
+OSErr  ewg_function_GetBevelButtonMenuHandle (ControlRef inButton, MenuHandle *outHandle);
+// Wraps call to function 'GetBevelButtonContentInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetBevelButtonContentInfo(ewg_param_inButton, ewg_param_outContent) GetBevelButtonContentInfo ((ControlRef)ewg_param_inButton, (ControlButtonContentInfoPtr)ewg_param_outContent)
+
+OSErr  ewg_function_GetBevelButtonContentInfo (ControlRef inButton, ControlButtonContentInfoPtr outContent);
+// Wraps call to function 'SetBevelButtonContentInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetBevelButtonContentInfo(ewg_param_inButton, ewg_param_inContent) SetBevelButtonContentInfo ((ControlRef)ewg_param_inButton, (ControlButtonContentInfoPtr)ewg_param_inContent)
+
+OSErr  ewg_function_SetBevelButtonContentInfo (ControlRef inButton, ControlButtonContentInfoPtr inContent);
+// Wraps call to function 'SetBevelButtonTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetBevelButtonTransform(ewg_param_inButton, ewg_param_transform) SetBevelButtonTransform ((ControlRef)ewg_param_inButton, (IconTransformType)ewg_param_transform)
+
+OSErr  ewg_function_SetBevelButtonTransform (ControlRef inButton, IconTransformType transform);
+// Wraps call to function 'SetBevelButtonGraphicAlignment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetBevelButtonGraphicAlignment(ewg_param_inButton, ewg_param_inAlign, ewg_param_inHOffset, ewg_param_inVOffset) SetBevelButtonGraphicAlignment ((ControlRef)ewg_param_inButton, (ControlButtonGraphicAlignment)ewg_param_inAlign, (SInt16)ewg_param_inHOffset, (SInt16)ewg_param_inVOffset)
+
+OSErr  ewg_function_SetBevelButtonGraphicAlignment (ControlRef inButton, ControlButtonGraphicAlignment inAlign, SInt16 inHOffset, SInt16 inVOffset);
+// Wraps call to function 'SetBevelButtonTextAlignment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetBevelButtonTextAlignment(ewg_param_inButton, ewg_param_inAlign, ewg_param_inHOffset) SetBevelButtonTextAlignment ((ControlRef)ewg_param_inButton, (ControlButtonTextAlignment)ewg_param_inAlign, (SInt16)ewg_param_inHOffset)
+
+OSErr  ewg_function_SetBevelButtonTextAlignment (ControlRef inButton, ControlButtonTextAlignment inAlign, SInt16 inHOffset);
+// Wraps call to function 'SetBevelButtonTextPlacement' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetBevelButtonTextPlacement(ewg_param_inButton, ewg_param_inWhere) SetBevelButtonTextPlacement ((ControlRef)ewg_param_inButton, (ControlButtonTextPlacement)ewg_param_inWhere)
+
+OSErr  ewg_function_SetBevelButtonTextPlacement (ControlRef inButton, ControlButtonTextPlacement inWhere);
+// Wraps call to function 'CreateSliderControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateSliderControl(ewg_param_window, ewg_param_boundsRect, ewg_param_value, ewg_param_minimum, ewg_param_maximum, ewg_param_orientation, ewg_param_numTickMarks, ewg_param_liveTracking, ewg_param_liveTrackingProc, ewg_param_outControl) CreateSliderControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (SInt32)ewg_param_value, (SInt32)ewg_param_minimum, (SInt32)ewg_param_maximum, (ControlSliderOrientation)ewg_param_orientation, (UInt16)ewg_param_numTickMarks, (Boolean)ewg_param_liveTracking, (ControlActionUPP)ewg_param_liveTrackingProc, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateSliderControl (WindowRef window, Rect const *boundsRect, SInt32 value, SInt32 minimum, SInt32 maximum, ControlSliderOrientation orientation, UInt16 numTickMarks, Boolean liveTracking, ControlActionUPP liveTrackingProc, ControlRef *outControl);
+// Wraps call to function 'CreateDisclosureTriangleControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateDisclosureTriangleControl(ewg_param_inWindow, ewg_param_inBoundsRect, ewg_param_inOrientation, ewg_param_inTitle, ewg_param_inInitialValue, ewg_param_inDrawTitle, ewg_param_inAutoToggles, ewg_param_outControl) CreateDisclosureTriangleControl ((WindowRef)ewg_param_inWindow, (Rect const*)ewg_param_inBoundsRect, (ControlDisclosureTriangleOrientation)ewg_param_inOrientation, (CFStringRef)ewg_param_inTitle, (SInt32)ewg_param_inInitialValue, (Boolean)ewg_param_inDrawTitle, (Boolean)ewg_param_inAutoToggles, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateDisclosureTriangleControl (WindowRef inWindow, Rect const *inBoundsRect, ControlDisclosureTriangleOrientation inOrientation, CFStringRef inTitle, SInt32 inInitialValue, Boolean inDrawTitle, Boolean inAutoToggles, ControlRef *outControl);
+// Wraps call to function 'SetDisclosureTriangleLastValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDisclosureTriangleLastValue(ewg_param_inTabControl, ewg_param_inValue) SetDisclosureTriangleLastValue ((ControlRef)ewg_param_inTabControl, (SInt16)ewg_param_inValue)
+
+OSErr  ewg_function_SetDisclosureTriangleLastValue (ControlRef inTabControl, SInt16 inValue);
+// Wraps call to function 'CreateProgressBarControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateProgressBarControl(ewg_param_window, ewg_param_boundsRect, ewg_param_value, ewg_param_minimum, ewg_param_maximum, ewg_param_indeterminate, ewg_param_outControl) CreateProgressBarControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (SInt32)ewg_param_value, (SInt32)ewg_param_minimum, (SInt32)ewg_param_maximum, (Boolean)ewg_param_indeterminate, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateProgressBarControl (WindowRef window, Rect const *boundsRect, SInt32 value, SInt32 minimum, SInt32 maximum, Boolean indeterminate, ControlRef *outControl);
+// Wraps call to function 'CreateRelevanceBarControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateRelevanceBarControl(ewg_param_window, ewg_param_boundsRect, ewg_param_value, ewg_param_minimum, ewg_param_maximum, ewg_param_outControl) CreateRelevanceBarControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (SInt32)ewg_param_value, (SInt32)ewg_param_minimum, (SInt32)ewg_param_maximum, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateRelevanceBarControl (WindowRef window, Rect const *boundsRect, SInt32 value, SInt32 minimum, SInt32 maximum, ControlRef *outControl);
+// Wraps call to function 'CreateLittleArrowsControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateLittleArrowsControl(ewg_param_window, ewg_param_boundsRect, ewg_param_value, ewg_param_minimum, ewg_param_maximum, ewg_param_increment, ewg_param_outControl) CreateLittleArrowsControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (SInt32)ewg_param_value, (SInt32)ewg_param_minimum, (SInt32)ewg_param_maximum, (SInt32)ewg_param_increment, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateLittleArrowsControl (WindowRef window, Rect const *boundsRect, SInt32 value, SInt32 minimum, SInt32 maximum, SInt32 increment, ControlRef *outControl);
+// Wraps call to function 'CreateChasingArrowsControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateChasingArrowsControl(ewg_param_window, ewg_param_boundsRect, ewg_param_outControl) CreateChasingArrowsControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateChasingArrowsControl (WindowRef window, Rect const *boundsRect, ControlRef *outControl);
+// Wraps call to function 'CreateTabsControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateTabsControl(ewg_param_window, ewg_param_boundsRect, ewg_param_size, ewg_param_direction, ewg_param_numTabs, ewg_param_tabArray, ewg_param_outControl) CreateTabsControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlTabSize)ewg_param_size, (ControlTabDirection)ewg_param_direction, (UInt16)ewg_param_numTabs, (ControlTabEntry const*)ewg_param_tabArray, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateTabsControl (WindowRef window, Rect const *boundsRect, ControlTabSize size, ControlTabDirection direction, UInt16 numTabs, ControlTabEntry const *tabArray, ControlRef *outControl);
+// Wraps call to function 'GetTabContentRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetTabContentRect(ewg_param_inTabControl, ewg_param_outContentRect) GetTabContentRect ((ControlRef)ewg_param_inTabControl, (Rect*)ewg_param_outContentRect)
+
+OSErr  ewg_function_GetTabContentRect (ControlRef inTabControl, Rect *outContentRect);
+// Wraps call to function 'SetTabEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetTabEnabled(ewg_param_inTabControl, ewg_param_inTabToHilite, ewg_param_inEnabled) SetTabEnabled ((ControlRef)ewg_param_inTabControl, (SInt16)ewg_param_inTabToHilite, (Boolean)ewg_param_inEnabled)
+
+OSErr  ewg_function_SetTabEnabled (ControlRef inTabControl, SInt16 inTabToHilite, Boolean inEnabled);
+// Wraps call to function 'CreateSeparatorControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateSeparatorControl(ewg_param_window, ewg_param_boundsRect, ewg_param_outControl) CreateSeparatorControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateSeparatorControl (WindowRef window, Rect const *boundsRect, ControlRef *outControl);
+// Wraps call to function 'CreateGroupBoxControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateGroupBoxControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_primary, ewg_param_outControl) CreateGroupBoxControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (Boolean)ewg_param_primary, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateGroupBoxControl (WindowRef window, Rect const *boundsRect, CFStringRef title, Boolean primary, ControlRef *outControl);
+// Wraps call to function 'CreateCheckGroupBoxControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateCheckGroupBoxControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_initialValue, ewg_param_primary, ewg_param_autoToggle, ewg_param_outControl) CreateCheckGroupBoxControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (SInt32)ewg_param_initialValue, (Boolean)ewg_param_primary, (Boolean)ewg_param_autoToggle, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateCheckGroupBoxControl (WindowRef window, Rect const *boundsRect, CFStringRef title, SInt32 initialValue, Boolean primary, Boolean autoToggle, ControlRef *outControl);
+// Wraps call to function 'CreatePopupGroupBoxControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreatePopupGroupBoxControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_primary, ewg_param_menuID, ewg_param_variableWidth, ewg_param_titleWidth, ewg_param_titleJustification, ewg_param_titleStyle, ewg_param_outControl) CreatePopupGroupBoxControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (Boolean)ewg_param_primary, (SInt16)ewg_param_menuID, (Boolean)ewg_param_variableWidth, (SInt16)ewg_param_titleWidth, (SInt16)ewg_param_titleJustification, (Style)ewg_param_titleStyle, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreatePopupGroupBoxControl (WindowRef window, Rect const *boundsRect, CFStringRef title, Boolean primary, SInt16 menuID, Boolean variableWidth, SInt16 titleWidth, SInt16 titleJustification, Style titleStyle, ControlRef *outControl);
+// Wraps call to function 'CreateImageWellControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateImageWellControl(ewg_param_window, ewg_param_boundsRect, ewg_param_info, ewg_param_outControl) CreateImageWellControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlButtonContentInfo const*)ewg_param_info, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateImageWellControl (WindowRef window, Rect const *boundsRect, ControlButtonContentInfo const *info, ControlRef *outControl);
+// Wraps call to function 'GetImageWellContentInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetImageWellContentInfo(ewg_param_inButton, ewg_param_outContent) GetImageWellContentInfo ((ControlRef)ewg_param_inButton, (ControlButtonContentInfoPtr)ewg_param_outContent)
+
+OSErr  ewg_function_GetImageWellContentInfo (ControlRef inButton, ControlButtonContentInfoPtr outContent);
+// Wraps call to function 'SetImageWellContentInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetImageWellContentInfo(ewg_param_inButton, ewg_param_inContent) SetImageWellContentInfo ((ControlRef)ewg_param_inButton, (ControlButtonContentInfoPtr)ewg_param_inContent)
+
+OSErr  ewg_function_SetImageWellContentInfo (ControlRef inButton, ControlButtonContentInfoPtr inContent);
+// Wraps call to function 'SetImageWellTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetImageWellTransform(ewg_param_inButton, ewg_param_inTransform) SetImageWellTransform ((ControlRef)ewg_param_inButton, (IconTransformType)ewg_param_inTransform)
+
+OSErr  ewg_function_SetImageWellTransform (ControlRef inButton, IconTransformType inTransform);
+// Wraps call to function 'CreatePopupArrowControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreatePopupArrowControl(ewg_param_window, ewg_param_boundsRect, ewg_param_orientation, ewg_param_size, ewg_param_outControl) CreatePopupArrowControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlPopupArrowOrientation)ewg_param_orientation, (ControlPopupArrowSize)ewg_param_size, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreatePopupArrowControl (WindowRef window, Rect const *boundsRect, ControlPopupArrowOrientation orientation, ControlPopupArrowSize size, ControlRef *outControl);
+// Wraps call to function 'CreatePlacardControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreatePlacardControl(ewg_param_window, ewg_param_boundsRect, ewg_param_outControl) CreatePlacardControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreatePlacardControl (WindowRef window, Rect const *boundsRect, ControlRef *outControl);
+// Wraps call to function 'CreateClockControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateClockControl(ewg_param_window, ewg_param_boundsRect, ewg_param_clockType, ewg_param_clockFlags, ewg_param_outControl) CreateClockControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlClockType)ewg_param_clockType, (ControlClockFlags)ewg_param_clockFlags, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateClockControl (WindowRef window, Rect const *boundsRect, ControlClockType clockType, ControlClockFlags clockFlags, ControlRef *outControl);
+// Wraps call to function 'CreateUserPaneControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateUserPaneControl(ewg_param_window, ewg_param_boundsRect, ewg_param_features, ewg_param_outControl) CreateUserPaneControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (UInt32)ewg_param_features, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateUserPaneControl (WindowRef window, Rect const *boundsRect, UInt32 features, ControlRef *outControl);
+// Wraps call to function 'NewControlUserPaneDrawUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneDrawUPP(ewg_param_userRoutine) NewControlUserPaneDrawUPP ((ControlUserPaneDrawProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneDrawUPP  ewg_function_NewControlUserPaneDrawUPP (ControlUserPaneDrawProcPtr userRoutine);
+// Wraps call to function 'NewControlUserPaneHitTestUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneHitTestUPP(ewg_param_userRoutine) NewControlUserPaneHitTestUPP ((ControlUserPaneHitTestProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneHitTestUPP  ewg_function_NewControlUserPaneHitTestUPP (ControlUserPaneHitTestProcPtr userRoutine);
+// Wraps call to function 'NewControlUserPaneTrackingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneTrackingUPP(ewg_param_userRoutine) NewControlUserPaneTrackingUPP ((ControlUserPaneTrackingProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneTrackingUPP  ewg_function_NewControlUserPaneTrackingUPP (ControlUserPaneTrackingProcPtr userRoutine);
+// Wraps call to function 'NewControlUserPaneIdleUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneIdleUPP(ewg_param_userRoutine) NewControlUserPaneIdleUPP ((ControlUserPaneIdleProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneIdleUPP  ewg_function_NewControlUserPaneIdleUPP (ControlUserPaneIdleProcPtr userRoutine);
+// Wraps call to function 'NewControlUserPaneKeyDownUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneKeyDownUPP(ewg_param_userRoutine) NewControlUserPaneKeyDownUPP ((ControlUserPaneKeyDownProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneKeyDownUPP  ewg_function_NewControlUserPaneKeyDownUPP (ControlUserPaneKeyDownProcPtr userRoutine);
+// Wraps call to function 'NewControlUserPaneActivateUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneActivateUPP(ewg_param_userRoutine) NewControlUserPaneActivateUPP ((ControlUserPaneActivateProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneActivateUPP  ewg_function_NewControlUserPaneActivateUPP (ControlUserPaneActivateProcPtr userRoutine);
+// Wraps call to function 'NewControlUserPaneFocusUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneFocusUPP(ewg_param_userRoutine) NewControlUserPaneFocusUPP ((ControlUserPaneFocusProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneFocusUPP  ewg_function_NewControlUserPaneFocusUPP (ControlUserPaneFocusProcPtr userRoutine);
+// Wraps call to function 'NewControlUserPaneBackgroundUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlUserPaneBackgroundUPP(ewg_param_userRoutine) NewControlUserPaneBackgroundUPP ((ControlUserPaneBackgroundProcPtr)ewg_param_userRoutine)
+
+ControlUserPaneBackgroundUPP  ewg_function_NewControlUserPaneBackgroundUPP (ControlUserPaneBackgroundProcPtr userRoutine);
+// Wraps call to function 'DisposeControlUserPaneDrawUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneDrawUPP(ewg_param_userUPP) DisposeControlUserPaneDrawUPP ((ControlUserPaneDrawUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneDrawUPP (ControlUserPaneDrawUPP userUPP);
+// Wraps call to function 'DisposeControlUserPaneHitTestUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneHitTestUPP(ewg_param_userUPP) DisposeControlUserPaneHitTestUPP ((ControlUserPaneHitTestUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneHitTestUPP (ControlUserPaneHitTestUPP userUPP);
+// Wraps call to function 'DisposeControlUserPaneTrackingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneTrackingUPP(ewg_param_userUPP) DisposeControlUserPaneTrackingUPP ((ControlUserPaneTrackingUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneTrackingUPP (ControlUserPaneTrackingUPP userUPP);
+// Wraps call to function 'DisposeControlUserPaneIdleUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneIdleUPP(ewg_param_userUPP) DisposeControlUserPaneIdleUPP ((ControlUserPaneIdleUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneIdleUPP (ControlUserPaneIdleUPP userUPP);
+// Wraps call to function 'DisposeControlUserPaneKeyDownUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneKeyDownUPP(ewg_param_userUPP) DisposeControlUserPaneKeyDownUPP ((ControlUserPaneKeyDownUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneKeyDownUPP (ControlUserPaneKeyDownUPP userUPP);
+// Wraps call to function 'DisposeControlUserPaneActivateUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneActivateUPP(ewg_param_userUPP) DisposeControlUserPaneActivateUPP ((ControlUserPaneActivateUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneActivateUPP (ControlUserPaneActivateUPP userUPP);
+// Wraps call to function 'DisposeControlUserPaneFocusUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneFocusUPP(ewg_param_userUPP) DisposeControlUserPaneFocusUPP ((ControlUserPaneFocusUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneFocusUPP (ControlUserPaneFocusUPP userUPP);
+// Wraps call to function 'DisposeControlUserPaneBackgroundUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlUserPaneBackgroundUPP(ewg_param_userUPP) DisposeControlUserPaneBackgroundUPP ((ControlUserPaneBackgroundUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlUserPaneBackgroundUPP (ControlUserPaneBackgroundUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneDrawUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneDrawUPP(ewg_param_control, ewg_param_part, ewg_param_userUPP) InvokeControlUserPaneDrawUPP ((ControlRef)ewg_param_control, (SInt16)ewg_param_part, (ControlUserPaneDrawUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeControlUserPaneDrawUPP (ControlRef control, SInt16 part, ControlUserPaneDrawUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneHitTestUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneHitTestUPP(ewg_param_control, ewg_param_where, ewg_param_userUPP) InvokeControlUserPaneHitTestUPP ((ControlRef)ewg_param_control, *(Point*)ewg_param_where, (ControlUserPaneHitTestUPP)ewg_param_userUPP)
+
+ControlPartCode  ewg_function_InvokeControlUserPaneHitTestUPP (ControlRef control, Point *where, ControlUserPaneHitTestUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneTrackingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneTrackingUPP(ewg_param_control, ewg_param_startPt, ewg_param_actionProc, ewg_param_userUPP) InvokeControlUserPaneTrackingUPP ((ControlRef)ewg_param_control, *(Point*)ewg_param_startPt, (ControlActionUPP)ewg_param_actionProc, (ControlUserPaneTrackingUPP)ewg_param_userUPP)
+
+ControlPartCode  ewg_function_InvokeControlUserPaneTrackingUPP (ControlRef control, Point *startPt, ControlActionUPP actionProc, ControlUserPaneTrackingUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneIdleUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneIdleUPP(ewg_param_control, ewg_param_userUPP) InvokeControlUserPaneIdleUPP ((ControlRef)ewg_param_control, (ControlUserPaneIdleUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeControlUserPaneIdleUPP (ControlRef control, ControlUserPaneIdleUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneKeyDownUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneKeyDownUPP(ewg_param_control, ewg_param_keyCode, ewg_param_charCode, ewg_param_modifiers, ewg_param_userUPP) InvokeControlUserPaneKeyDownUPP ((ControlRef)ewg_param_control, (SInt16)ewg_param_keyCode, (SInt16)ewg_param_charCode, (SInt16)ewg_param_modifiers, (ControlUserPaneKeyDownUPP)ewg_param_userUPP)
+
+ControlPartCode  ewg_function_InvokeControlUserPaneKeyDownUPP (ControlRef control, SInt16 keyCode, SInt16 charCode, SInt16 modifiers, ControlUserPaneKeyDownUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneActivateUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneActivateUPP(ewg_param_control, ewg_param_activating, ewg_param_userUPP) InvokeControlUserPaneActivateUPP ((ControlRef)ewg_param_control, (Boolean)ewg_param_activating, (ControlUserPaneActivateUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeControlUserPaneActivateUPP (ControlRef control, Boolean activating, ControlUserPaneActivateUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneFocusUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneFocusUPP(ewg_param_control, ewg_param_action, ewg_param_userUPP) InvokeControlUserPaneFocusUPP ((ControlRef)ewg_param_control, (ControlFocusPart)ewg_param_action, (ControlUserPaneFocusUPP)ewg_param_userUPP)
+
+ControlPartCode  ewg_function_InvokeControlUserPaneFocusUPP (ControlRef control, ControlFocusPart action, ControlUserPaneFocusUPP userUPP);
+// Wraps call to function 'InvokeControlUserPaneBackgroundUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlUserPaneBackgroundUPP(ewg_param_control, ewg_param_info, ewg_param_userUPP) InvokeControlUserPaneBackgroundUPP ((ControlRef)ewg_param_control, (ControlBackgroundPtr)ewg_param_info, (ControlUserPaneBackgroundUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeControlUserPaneBackgroundUPP (ControlRef control, ControlBackgroundPtr info, ControlUserPaneBackgroundUPP userUPP);
+// Wraps call to function 'CreateEditTextControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateEditTextControl(ewg_param_window, ewg_param_boundsRect, ewg_param_text, ewg_param_isPassword, ewg_param_useInlineInput, ewg_param_style, ewg_param_outControl) CreateEditTextControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_text, (Boolean)ewg_param_isPassword, (Boolean)ewg_param_useInlineInput, (ControlFontStyleRec const*)ewg_param_style, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateEditTextControl (WindowRef window, Rect const *boundsRect, CFStringRef text, Boolean isPassword, Boolean useInlineInput, ControlFontStyleRec const *style, ControlRef *outControl);
+// Wraps call to function 'NewControlEditTextValidationUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlEditTextValidationUPP(ewg_param_userRoutine) NewControlEditTextValidationUPP ((ControlEditTextValidationProcPtr)ewg_param_userRoutine)
+
+ControlEditTextValidationUPP  ewg_function_NewControlEditTextValidationUPP (ControlEditTextValidationProcPtr userRoutine);
+// Wraps call to function 'DisposeControlEditTextValidationUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlEditTextValidationUPP(ewg_param_userUPP) DisposeControlEditTextValidationUPP ((ControlEditTextValidationUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlEditTextValidationUPP (ControlEditTextValidationUPP userUPP);
+// Wraps call to function 'InvokeControlEditTextValidationUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlEditTextValidationUPP(ewg_param_control, ewg_param_userUPP) InvokeControlEditTextValidationUPP ((ControlRef)ewg_param_control, (ControlEditTextValidationUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeControlEditTextValidationUPP (ControlRef control, ControlEditTextValidationUPP userUPP);
+// Wraps call to function 'CreateStaticTextControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateStaticTextControl(ewg_param_window, ewg_param_boundsRect, ewg_param_text, ewg_param_style, ewg_param_outControl) CreateStaticTextControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_text, (ControlFontStyleRec const*)ewg_param_style, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateStaticTextControl (WindowRef window, Rect const *boundsRect, CFStringRef text, ControlFontStyleRec const *style, ControlRef *outControl);
+// Wraps call to function 'CreatePictureControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreatePictureControl(ewg_param_window, ewg_param_boundsRect, ewg_param_content, ewg_param_dontTrack, ewg_param_outControl) CreatePictureControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlButtonContentInfo const*)ewg_param_content, (Boolean)ewg_param_dontTrack, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreatePictureControl (WindowRef window, Rect const *boundsRect, ControlButtonContentInfo const *content, Boolean dontTrack, ControlRef *outControl);
+// Wraps call to function 'CreateIconControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateIconControl(ewg_param_inWindow, ewg_param_inBoundsRect, ewg_param_inIconContent, ewg_param_inDontTrack, ewg_param_outControl) CreateIconControl ((WindowRef)ewg_param_inWindow, (Rect const*)ewg_param_inBoundsRect, (ControlButtonContentInfo const*)ewg_param_inIconContent, (Boolean)ewg_param_inDontTrack, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateIconControl (WindowRef inWindow, Rect const *inBoundsRect, ControlButtonContentInfo const *inIconContent, Boolean inDontTrack, ControlRef *outControl);
+// Wraps call to function 'CreateWindowHeaderControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateWindowHeaderControl(ewg_param_window, ewg_param_boundsRect, ewg_param_isListHeader, ewg_param_outControl) CreateWindowHeaderControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (Boolean)ewg_param_isListHeader, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateWindowHeaderControl (WindowRef window, Rect const *boundsRect, Boolean isListHeader, ControlRef *outControl);
+// Wraps call to function 'CreateListBoxControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateListBoxControl(ewg_param_window, ewg_param_boundsRect, ewg_param_autoSize, ewg_param_numRows, ewg_param_numColumns, ewg_param_horizScroll, ewg_param_vertScroll, ewg_param_cellHeight, ewg_param_cellWidth, ewg_param_hasGrowSpace, ewg_param_listDef, ewg_param_outControl) CreateListBoxControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (Boolean)ewg_param_autoSize, (SInt16)ewg_param_numRows, (SInt16)ewg_param_numColumns, (Boolean)ewg_param_horizScroll, (Boolean)ewg_param_vertScroll, (SInt16)ewg_param_cellHeight, (SInt16)ewg_param_cellWidth, (Boolean)ewg_param_hasGrowSpace, (ListDefSpec const*)ewg_param_listDef, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateListBoxControl (WindowRef window, Rect const *boundsRect, Boolean autoSize, SInt16 numRows, SInt16 numColumns, Boolean horizScroll, Boolean vertScroll, SInt16 cellHeight, SInt16 cellWidth, Boolean hasGrowSpace, ListDefSpec const *listDef, ControlRef *outControl);
+// Wraps call to function 'CreatePushButtonControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreatePushButtonControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_outControl) CreatePushButtonControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreatePushButtonControl (WindowRef window, Rect const *boundsRect, CFStringRef title, ControlRef *outControl);
+// Wraps call to function 'CreatePushButtonWithIconControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreatePushButtonWithIconControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_icon, ewg_param_iconAlignment, ewg_param_outControl) CreatePushButtonWithIconControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (ControlButtonContentInfo*)ewg_param_icon, (ControlPushButtonIconAlignment)ewg_param_iconAlignment, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreatePushButtonWithIconControl (WindowRef window, Rect const *boundsRect, CFStringRef title, ControlButtonContentInfo *icon, ControlPushButtonIconAlignment iconAlignment, ControlRef *outControl);
+// Wraps call to function 'CreateRadioButtonControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateRadioButtonControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_initialValue, ewg_param_autoToggle, ewg_param_outControl) CreateRadioButtonControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (SInt32)ewg_param_initialValue, (Boolean)ewg_param_autoToggle, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateRadioButtonControl (WindowRef window, Rect const *boundsRect, CFStringRef title, SInt32 initialValue, Boolean autoToggle, ControlRef *outControl);
+// Wraps call to function 'CreateCheckBoxControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateCheckBoxControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_initialValue, ewg_param_autoToggle, ewg_param_outControl) CreateCheckBoxControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (SInt32)ewg_param_initialValue, (Boolean)ewg_param_autoToggle, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateCheckBoxControl (WindowRef window, Rect const *boundsRect, CFStringRef title, SInt32 initialValue, Boolean autoToggle, ControlRef *outControl);
+// Wraps call to function 'CreateScrollBarControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateScrollBarControl(ewg_param_window, ewg_param_boundsRect, ewg_param_value, ewg_param_minimum, ewg_param_maximum, ewg_param_viewSize, ewg_param_liveTracking, ewg_param_liveTrackingProc, ewg_param_outControl) CreateScrollBarControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (SInt32)ewg_param_value, (SInt32)ewg_param_minimum, (SInt32)ewg_param_maximum, (SInt32)ewg_param_viewSize, (Boolean)ewg_param_liveTracking, (ControlActionUPP)ewg_param_liveTrackingProc, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateScrollBarControl (WindowRef window, Rect const *boundsRect, SInt32 value, SInt32 minimum, SInt32 maximum, SInt32 viewSize, Boolean liveTracking, ControlActionUPP liveTrackingProc, ControlRef *outControl);
+// Wraps call to function 'CreatePopupButtonControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreatePopupButtonControl(ewg_param_window, ewg_param_boundsRect, ewg_param_title, ewg_param_menuID, ewg_param_variableWidth, ewg_param_titleWidth, ewg_param_titleJustification, ewg_param_titleStyle, ewg_param_outControl) CreatePopupButtonControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_title, (SInt16)ewg_param_menuID, (Boolean)ewg_param_variableWidth, (SInt16)ewg_param_titleWidth, (SInt16)ewg_param_titleJustification, (Style)ewg_param_titleStyle, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreatePopupButtonControl (WindowRef window, Rect const *boundsRect, CFStringRef title, SInt16 menuID, Boolean variableWidth, SInt16 titleWidth, SInt16 titleJustification, Style titleStyle, ControlRef *outControl);
+// Wraps call to function 'CreateRadioGroupControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateRadioGroupControl(ewg_param_window, ewg_param_boundsRect, ewg_param_outControl) CreateRadioGroupControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateRadioGroupControl (WindowRef window, Rect const *boundsRect, ControlRef *outControl);
+// Wraps call to function 'CreateScrollingTextBoxControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateScrollingTextBoxControl(ewg_param_window, ewg_param_boundsRect, ewg_param_contentResID, ewg_param_autoScroll, ewg_param_delayBeforeAutoScroll, ewg_param_delayBetweenAutoScroll, ewg_param_autoScrollAmount, ewg_param_outControl) CreateScrollingTextBoxControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (SInt16)ewg_param_contentResID, (Boolean)ewg_param_autoScroll, (UInt32)ewg_param_delayBeforeAutoScroll, (UInt32)ewg_param_delayBetweenAutoScroll, (UInt16)ewg_param_autoScrollAmount, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateScrollingTextBoxControl (WindowRef window, Rect const *boundsRect, SInt16 contentResID, Boolean autoScroll, UInt32 delayBeforeAutoScroll, UInt32 delayBetweenAutoScroll, UInt16 autoScrollAmount, ControlRef *outControl);
+// Wraps call to function 'CreateDisclosureButtonControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateDisclosureButtonControl(ewg_param_inWindow, ewg_param_inBoundsRect, ewg_param_inValue, ewg_param_inAutoToggles, ewg_param_outControl) CreateDisclosureButtonControl ((WindowRef)ewg_param_inWindow, (Rect const*)ewg_param_inBoundsRect, (SInt32)ewg_param_inValue, (Boolean)ewg_param_inAutoToggles, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateDisclosureButtonControl (WindowRef inWindow, Rect const *inBoundsRect, SInt32 inValue, Boolean inAutoToggles, ControlRef *outControl);
+// Wraps call to function 'CreateRoundButtonControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateRoundButtonControl(ewg_param_inWindow, ewg_param_inBoundsRect, ewg_param_inSize, ewg_param_inContent, ewg_param_outControl) CreateRoundButtonControl ((WindowRef)ewg_param_inWindow, (Rect const*)ewg_param_inBoundsRect, (ControlRoundButtonSize)ewg_param_inSize, (ControlButtonContentInfo*)ewg_param_inContent, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateRoundButtonControl (WindowRef inWindow, Rect const *inBoundsRect, ControlRoundButtonSize inSize, ControlButtonContentInfo *inContent, ControlRef *outControl);
+// Wraps call to function 'NewDataBrowserItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemUPP(ewg_param_userRoutine) NewDataBrowserItemUPP ((DataBrowserItemProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemUPP  ewg_function_NewDataBrowserItemUPP (DataBrowserItemProcPtr userRoutine);
+// Wraps call to function 'DisposeDataBrowserItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemUPP(ewg_param_userUPP) DisposeDataBrowserItemUPP ((DataBrowserItemUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemUPP (DataBrowserItemUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemUPP(ewg_param_item, ewg_param_state, ewg_param_clientData, ewg_param_userUPP) InvokeDataBrowserItemUPP ((DataBrowserItemID)ewg_param_item, (DataBrowserItemState)ewg_param_state, (void*)ewg_param_clientData, (DataBrowserItemUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserItemUPP (DataBrowserItemID item, DataBrowserItemState state, void *clientData, DataBrowserItemUPP userUPP);
+// Wraps call to function 'CreateDataBrowserControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateDataBrowserControl(ewg_param_window, ewg_param_boundsRect, ewg_param_style, ewg_param_outControl) CreateDataBrowserControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (DataBrowserViewStyle)ewg_param_style, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateDataBrowserControl (WindowRef window, Rect const *boundsRect, DataBrowserViewStyle style, ControlRef *outControl);
+// Wraps call to function 'GetDataBrowserViewStyle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserViewStyle(ewg_param_browser, ewg_param_style) GetDataBrowserViewStyle ((ControlRef)ewg_param_browser, (DataBrowserViewStyle*)ewg_param_style)
+
+OSStatus  ewg_function_GetDataBrowserViewStyle (ControlRef browser, DataBrowserViewStyle *style);
+// Wraps call to function 'SetDataBrowserViewStyle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserViewStyle(ewg_param_browser, ewg_param_style) SetDataBrowserViewStyle ((ControlRef)ewg_param_browser, (DataBrowserViewStyle)ewg_param_style)
+
+OSStatus  ewg_function_SetDataBrowserViewStyle (ControlRef browser, DataBrowserViewStyle style);
+// Wraps call to function 'DataBrowserChangeAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DataBrowserChangeAttributes(ewg_param_inDataBrowser, ewg_param_inAttributesToSet, ewg_param_inAttributesToClear) DataBrowserChangeAttributes ((ControlRef)ewg_param_inDataBrowser, (OptionBits)ewg_param_inAttributesToSet, (OptionBits)ewg_param_inAttributesToClear)
+
+OSStatus  ewg_function_DataBrowserChangeAttributes (ControlRef inDataBrowser, OptionBits inAttributesToSet, OptionBits inAttributesToClear);
+// Wraps call to function 'DataBrowserGetAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DataBrowserGetAttributes(ewg_param_inDataBrowser, ewg_param_outAttributes) DataBrowserGetAttributes ((ControlRef)ewg_param_inDataBrowser, (OptionBits*)ewg_param_outAttributes)
+
+OSStatus  ewg_function_DataBrowserGetAttributes (ControlRef inDataBrowser, OptionBits *outAttributes);
+// Wraps call to function 'DataBrowserSetMetric' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DataBrowserSetMetric(ewg_param_inDataBrowser, ewg_param_inMetric, ewg_param_inUseDefaultValue, ewg_param_inValue) DataBrowserSetMetric ((ControlRef)ewg_param_inDataBrowser, (DataBrowserMetric)ewg_param_inMetric, (Boolean)ewg_param_inUseDefaultValue, (float)ewg_param_inValue)
+
+OSStatus  ewg_function_DataBrowserSetMetric (ControlRef inDataBrowser, DataBrowserMetric inMetric, Boolean inUseDefaultValue, float inValue);
+// Wraps call to function 'DataBrowserGetMetric' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DataBrowserGetMetric(ewg_param_inDataBrowser, ewg_param_inMetric, ewg_param_outUsingDefaultValue, ewg_param_outValue) DataBrowserGetMetric ((ControlRef)ewg_param_inDataBrowser, (DataBrowserMetric)ewg_param_inMetric, (Boolean*)ewg_param_outUsingDefaultValue, (float*)ewg_param_outValue)
+
+OSStatus  ewg_function_DataBrowserGetMetric (ControlRef inDataBrowser, DataBrowserMetric inMetric, Boolean *outUsingDefaultValue, float *outValue);
+// Wraps call to function 'AddDataBrowserItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AddDataBrowserItems(ewg_param_browser, ewg_param_container, ewg_param_numItems, ewg_param_items, ewg_param_preSortProperty) AddDataBrowserItems ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container, (UInt32)ewg_param_numItems, (DataBrowserItemID const*)ewg_param_items, (DataBrowserPropertyID)ewg_param_preSortProperty)
+
+OSStatus  ewg_function_AddDataBrowserItems (ControlRef browser, DataBrowserItemID container, UInt32 numItems, DataBrowserItemID const *items, DataBrowserPropertyID preSortProperty);
+// Wraps call to function 'RemoveDataBrowserItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveDataBrowserItems(ewg_param_browser, ewg_param_container, ewg_param_numItems, ewg_param_items, ewg_param_preSortProperty) RemoveDataBrowserItems ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container, (UInt32)ewg_param_numItems, (DataBrowserItemID const*)ewg_param_items, (DataBrowserPropertyID)ewg_param_preSortProperty)
+
+OSStatus  ewg_function_RemoveDataBrowserItems (ControlRef browser, DataBrowserItemID container, UInt32 numItems, DataBrowserItemID const *items, DataBrowserPropertyID preSortProperty);
+// Wraps call to function 'UpdateDataBrowserItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UpdateDataBrowserItems(ewg_param_browser, ewg_param_container, ewg_param_numItems, ewg_param_items, ewg_param_preSortProperty, ewg_param_propertyID) UpdateDataBrowserItems ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container, (UInt32)ewg_param_numItems, (DataBrowserItemID const*)ewg_param_items, (DataBrowserPropertyID)ewg_param_preSortProperty, (DataBrowserPropertyID)ewg_param_propertyID)
+
+OSStatus  ewg_function_UpdateDataBrowserItems (ControlRef browser, DataBrowserItemID container, UInt32 numItems, DataBrowserItemID const *items, DataBrowserPropertyID preSortProperty, DataBrowserPropertyID propertyID);
+// Wraps call to function 'EnableDataBrowserEditCommand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableDataBrowserEditCommand(ewg_param_browser, ewg_param_command) EnableDataBrowserEditCommand ((ControlRef)ewg_param_browser, (DataBrowserEditCommand)ewg_param_command)
+
+Boolean  ewg_function_EnableDataBrowserEditCommand (ControlRef browser, DataBrowserEditCommand command);
+// Wraps call to function 'ExecuteDataBrowserEditCommand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ExecuteDataBrowserEditCommand(ewg_param_browser, ewg_param_command) ExecuteDataBrowserEditCommand ((ControlRef)ewg_param_browser, (DataBrowserEditCommand)ewg_param_command)
+
+OSStatus  ewg_function_ExecuteDataBrowserEditCommand (ControlRef browser, DataBrowserEditCommand command);
+// Wraps call to function 'GetDataBrowserSelectionAnchor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserSelectionAnchor(ewg_param_browser, ewg_param_first, ewg_param_last) GetDataBrowserSelectionAnchor ((ControlRef)ewg_param_browser, (DataBrowserItemID*)ewg_param_first, (DataBrowserItemID*)ewg_param_last)
+
+OSStatus  ewg_function_GetDataBrowserSelectionAnchor (ControlRef browser, DataBrowserItemID *first, DataBrowserItemID *last);
+// Wraps call to function 'MoveDataBrowserSelectionAnchor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MoveDataBrowserSelectionAnchor(ewg_param_browser, ewg_param_direction, ewg_param_extendSelection) MoveDataBrowserSelectionAnchor ((ControlRef)ewg_param_browser, (DataBrowserSelectionAnchorDirection)ewg_param_direction, (Boolean)ewg_param_extendSelection)
+
+OSStatus  ewg_function_MoveDataBrowserSelectionAnchor (ControlRef browser, DataBrowserSelectionAnchorDirection direction, Boolean extendSelection);
+// Wraps call to function 'OpenDataBrowserContainer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_OpenDataBrowserContainer(ewg_param_browser, ewg_param_container) OpenDataBrowserContainer ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container)
+
+OSStatus  ewg_function_OpenDataBrowserContainer (ControlRef browser, DataBrowserItemID container);
+// Wraps call to function 'CloseDataBrowserContainer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CloseDataBrowserContainer(ewg_param_browser, ewg_param_container) CloseDataBrowserContainer ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container)
+
+OSStatus  ewg_function_CloseDataBrowserContainer (ControlRef browser, DataBrowserItemID container);
+// Wraps call to function 'SortDataBrowserContainer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SortDataBrowserContainer(ewg_param_browser, ewg_param_container, ewg_param_sortChildren) SortDataBrowserContainer ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container, (Boolean)ewg_param_sortChildren)
+
+OSStatus  ewg_function_SortDataBrowserContainer (ControlRef browser, DataBrowserItemID container, Boolean sortChildren);
+// Wraps call to function 'GetDataBrowserItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItems(ewg_param_browser, ewg_param_container, ewg_param_recurse, ewg_param_state, ewg_param_items) GetDataBrowserItems ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container, (Boolean)ewg_param_recurse, (DataBrowserItemState)ewg_param_state, (Handle)ewg_param_items)
+
+OSStatus  ewg_function_GetDataBrowserItems (ControlRef browser, DataBrowserItemID container, Boolean recurse, DataBrowserItemState state, Handle items);
+// Wraps call to function 'GetDataBrowserItemCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemCount(ewg_param_browser, ewg_param_container, ewg_param_recurse, ewg_param_state, ewg_param_numItems) GetDataBrowserItemCount ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container, (Boolean)ewg_param_recurse, (DataBrowserItemState)ewg_param_state, (UInt32*)ewg_param_numItems)
+
+OSStatus  ewg_function_GetDataBrowserItemCount (ControlRef browser, DataBrowserItemID container, Boolean recurse, DataBrowserItemState state, UInt32 *numItems);
+// Wraps call to function 'ForEachDataBrowserItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ForEachDataBrowserItem(ewg_param_browser, ewg_param_container, ewg_param_recurse, ewg_param_state, ewg_param_callback, ewg_param_clientData) ForEachDataBrowserItem ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_container, (Boolean)ewg_param_recurse, (DataBrowserItemState)ewg_param_state, (DataBrowserItemUPP)ewg_param_callback, (void*)ewg_param_clientData)
+
+OSStatus  ewg_function_ForEachDataBrowserItem (ControlRef browser, DataBrowserItemID container, Boolean recurse, DataBrowserItemState state, DataBrowserItemUPP callback, void *clientData);
+// Wraps call to function 'IsDataBrowserItemSelected' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsDataBrowserItemSelected(ewg_param_browser, ewg_param_item) IsDataBrowserItemSelected ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item)
+
+Boolean  ewg_function_IsDataBrowserItemSelected (ControlRef browser, DataBrowserItemID item);
+// Wraps call to function 'GetDataBrowserItemState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemState(ewg_param_browser, ewg_param_item, ewg_param_state) GetDataBrowserItemState ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserItemState*)ewg_param_state)
+
+OSStatus  ewg_function_GetDataBrowserItemState (ControlRef browser, DataBrowserItemID item, DataBrowserItemState *state);
+// Wraps call to function 'RevealDataBrowserItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RevealDataBrowserItem(ewg_param_browser, ewg_param_item, ewg_param_propertyID, ewg_param_options) RevealDataBrowserItem ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_propertyID, (DataBrowserRevealOptions)ewg_param_options)
+
+OSStatus  ewg_function_RevealDataBrowserItem (ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID propertyID, DataBrowserRevealOptions options);
+// Wraps call to function 'SetDataBrowserSelectedItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserSelectedItems(ewg_param_browser, ewg_param_numItems, ewg_param_items, ewg_param_operation) SetDataBrowserSelectedItems ((ControlRef)ewg_param_browser, (UInt32)ewg_param_numItems, (DataBrowserItemID const*)ewg_param_items, (DataBrowserSetOption)ewg_param_operation)
+
+OSStatus  ewg_function_SetDataBrowserSelectedItems (ControlRef browser, UInt32 numItems, DataBrowserItemID const *items, DataBrowserSetOption operation);
+// Wraps call to function 'SetDataBrowserUserState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserUserState(ewg_param_browser, ewg_param_stateInfo) SetDataBrowserUserState ((ControlRef)ewg_param_browser, (CFDictionaryRef)ewg_param_stateInfo)
+
+OSStatus  ewg_function_SetDataBrowserUserState (ControlRef browser, CFDictionaryRef stateInfo);
+// Wraps call to function 'GetDataBrowserUserState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserUserState(ewg_param_browser, ewg_param_stateInfo) GetDataBrowserUserState ((ControlRef)ewg_param_browser, (CFDictionaryRef*)ewg_param_stateInfo)
+
+OSStatus  ewg_function_GetDataBrowserUserState (ControlRef browser, CFDictionaryRef *stateInfo);
+// Wraps call to function 'SetDataBrowserActiveItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserActiveItems(ewg_param_browser, ewg_param_active) SetDataBrowserActiveItems ((ControlRef)ewg_param_browser, (Boolean)ewg_param_active)
+
+OSStatus  ewg_function_SetDataBrowserActiveItems (ControlRef browser, Boolean active);
+// Wraps call to function 'GetDataBrowserActiveItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserActiveItems(ewg_param_browser, ewg_param_active) GetDataBrowserActiveItems ((ControlRef)ewg_param_browser, (Boolean*)ewg_param_active)
+
+OSStatus  ewg_function_GetDataBrowserActiveItems (ControlRef browser, Boolean *active);
+// Wraps call to function 'SetDataBrowserScrollBarInset' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserScrollBarInset(ewg_param_browser, ewg_param_insetRect) SetDataBrowserScrollBarInset ((ControlRef)ewg_param_browser, (Rect*)ewg_param_insetRect)
+
+OSStatus  ewg_function_SetDataBrowserScrollBarInset (ControlRef browser, Rect *insetRect);
+// Wraps call to function 'GetDataBrowserScrollBarInset' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserScrollBarInset(ewg_param_browser, ewg_param_insetRect) GetDataBrowserScrollBarInset ((ControlRef)ewg_param_browser, (Rect*)ewg_param_insetRect)
+
+OSStatus  ewg_function_GetDataBrowserScrollBarInset (ControlRef browser, Rect *insetRect);
+// Wraps call to function 'SetDataBrowserTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTarget(ewg_param_browser, ewg_param_target) SetDataBrowserTarget ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_target)
+
+OSStatus  ewg_function_SetDataBrowserTarget (ControlRef browser, DataBrowserItemID target);
+// Wraps call to function 'GetDataBrowserTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTarget(ewg_param_browser, ewg_param_target) GetDataBrowserTarget ((ControlRef)ewg_param_browser, (DataBrowserItemID*)ewg_param_target)
+
+OSStatus  ewg_function_GetDataBrowserTarget (ControlRef browser, DataBrowserItemID *target);
+// Wraps call to function 'SetDataBrowserSortOrder' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserSortOrder(ewg_param_browser, ewg_param_order) SetDataBrowserSortOrder ((ControlRef)ewg_param_browser, (DataBrowserSortOrder)ewg_param_order)
+
+OSStatus  ewg_function_SetDataBrowserSortOrder (ControlRef browser, DataBrowserSortOrder order);
+// Wraps call to function 'GetDataBrowserSortOrder' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserSortOrder(ewg_param_browser, ewg_param_order) GetDataBrowserSortOrder ((ControlRef)ewg_param_browser, (DataBrowserSortOrder*)ewg_param_order)
+
+OSStatus  ewg_function_GetDataBrowserSortOrder (ControlRef browser, DataBrowserSortOrder *order);
+// Wraps call to function 'SetDataBrowserScrollPosition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserScrollPosition(ewg_param_browser, ewg_param_top, ewg_param_left) SetDataBrowserScrollPosition ((ControlRef)ewg_param_browser, (UInt32)ewg_param_top, (UInt32)ewg_param_left)
+
+OSStatus  ewg_function_SetDataBrowserScrollPosition (ControlRef browser, UInt32 top, UInt32 left);
+// Wraps call to function 'GetDataBrowserScrollPosition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserScrollPosition(ewg_param_browser, ewg_param_top, ewg_param_left) GetDataBrowserScrollPosition ((ControlRef)ewg_param_browser, (UInt32*)ewg_param_top, (UInt32*)ewg_param_left)
+
+OSStatus  ewg_function_GetDataBrowserScrollPosition (ControlRef browser, UInt32 *top, UInt32 *left);
+// Wraps call to function 'SetDataBrowserHasScrollBars' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserHasScrollBars(ewg_param_browser, ewg_param_horiz, ewg_param_vert) SetDataBrowserHasScrollBars ((ControlRef)ewg_param_browser, (Boolean)ewg_param_horiz, (Boolean)ewg_param_vert)
+
+OSStatus  ewg_function_SetDataBrowserHasScrollBars (ControlRef browser, Boolean horiz, Boolean vert);
+// Wraps call to function 'GetDataBrowserHasScrollBars' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserHasScrollBars(ewg_param_browser, ewg_param_horiz, ewg_param_vert) GetDataBrowserHasScrollBars ((ControlRef)ewg_param_browser, (Boolean*)ewg_param_horiz, (Boolean*)ewg_param_vert)
+
+OSStatus  ewg_function_GetDataBrowserHasScrollBars (ControlRef browser, Boolean *horiz, Boolean *vert);
+// Wraps call to function 'SetDataBrowserSortProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserSortProperty(ewg_param_browser, ewg_param_property) SetDataBrowserSortProperty ((ControlRef)ewg_param_browser, (DataBrowserPropertyID)ewg_param_property)
+
+OSStatus  ewg_function_SetDataBrowserSortProperty (ControlRef browser, DataBrowserPropertyID property);
+// Wraps call to function 'GetDataBrowserSortProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserSortProperty(ewg_param_browser, ewg_param_property) GetDataBrowserSortProperty ((ControlRef)ewg_param_browser, (DataBrowserPropertyID*)ewg_param_property)
+
+OSStatus  ewg_function_GetDataBrowserSortProperty (ControlRef browser, DataBrowserPropertyID *property);
+// Wraps call to function 'SetDataBrowserSelectionFlags' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserSelectionFlags(ewg_param_browser, ewg_param_selectionFlags) SetDataBrowserSelectionFlags ((ControlRef)ewg_param_browser, (DataBrowserSelectionFlags)ewg_param_selectionFlags)
+
+OSStatus  ewg_function_SetDataBrowserSelectionFlags (ControlRef browser, DataBrowserSelectionFlags selectionFlags);
+// Wraps call to function 'GetDataBrowserSelectionFlags' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserSelectionFlags(ewg_param_browser, ewg_param_selectionFlags) GetDataBrowserSelectionFlags ((ControlRef)ewg_param_browser, (DataBrowserSelectionFlags*)ewg_param_selectionFlags)
+
+OSStatus  ewg_function_GetDataBrowserSelectionFlags (ControlRef browser, DataBrowserSelectionFlags *selectionFlags);
+// Wraps call to function 'SetDataBrowserPropertyFlags' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserPropertyFlags(ewg_param_browser, ewg_param_property, ewg_param_flags) SetDataBrowserPropertyFlags ((ControlRef)ewg_param_browser, (DataBrowserPropertyID)ewg_param_property, (DataBrowserPropertyFlags)ewg_param_flags)
+
+OSStatus  ewg_function_SetDataBrowserPropertyFlags (ControlRef browser, DataBrowserPropertyID property, DataBrowserPropertyFlags flags);
+// Wraps call to function 'GetDataBrowserPropertyFlags' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserPropertyFlags(ewg_param_browser, ewg_param_property, ewg_param_flags) GetDataBrowserPropertyFlags ((ControlRef)ewg_param_browser, (DataBrowserPropertyID)ewg_param_property, (DataBrowserPropertyFlags*)ewg_param_flags)
+
+OSStatus  ewg_function_GetDataBrowserPropertyFlags (ControlRef browser, DataBrowserPropertyID property, DataBrowserPropertyFlags *flags);
+// Wraps call to function 'SetDataBrowserEditText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserEditText(ewg_param_browser, ewg_param_text) SetDataBrowserEditText ((ControlRef)ewg_param_browser, (CFStringRef)ewg_param_text)
+
+OSStatus  ewg_function_SetDataBrowserEditText (ControlRef browser, CFStringRef text);
+// Wraps call to function 'CopyDataBrowserEditText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyDataBrowserEditText(ewg_param_browser, ewg_param_text) CopyDataBrowserEditText ((ControlRef)ewg_param_browser, (CFStringRef*)ewg_param_text)
+
+OSStatus  ewg_function_CopyDataBrowserEditText (ControlRef browser, CFStringRef *text);
+// Wraps call to function 'GetDataBrowserEditText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserEditText(ewg_param_browser, ewg_param_text) GetDataBrowserEditText ((ControlRef)ewg_param_browser, (CFMutableStringRef)ewg_param_text)
+
+OSStatus  ewg_function_GetDataBrowserEditText (ControlRef browser, CFMutableStringRef text);
+// Wraps call to function 'SetDataBrowserEditItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserEditItem(ewg_param_browser, ewg_param_item, ewg_param_property) SetDataBrowserEditItem ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property)
+
+OSStatus  ewg_function_SetDataBrowserEditItem (ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property);
+// Wraps call to function 'GetDataBrowserEditItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserEditItem(ewg_param_browser, ewg_param_item, ewg_param_property) GetDataBrowserEditItem ((ControlRef)ewg_param_browser, (DataBrowserItemID*)ewg_param_item, (DataBrowserPropertyID*)ewg_param_property)
+
+OSStatus  ewg_function_GetDataBrowserEditItem (ControlRef browser, DataBrowserItemID *item, DataBrowserPropertyID *property);
+// Wraps call to function 'GetDataBrowserItemPartBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemPartBounds(ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_part, ewg_param_bounds) GetDataBrowserItemPartBounds ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (DataBrowserPropertyPart)ewg_param_part, (Rect*)ewg_param_bounds)
+
+OSStatus  ewg_function_GetDataBrowserItemPartBounds (ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, DataBrowserPropertyPart part, Rect *bounds);
+// Wraps call to function 'SetDataBrowserItemDataIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataIcon(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataIcon ((DataBrowserItemDataRef)ewg_param_itemData, (IconRef)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataIcon (DataBrowserItemDataRef itemData, IconRef theData);
+// Wraps call to function 'GetDataBrowserItemDataIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataIcon(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataIcon ((DataBrowserItemDataRef)ewg_param_itemData, (IconRef*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataIcon (DataBrowserItemDataRef itemData, IconRef *theData);
+// Wraps call to function 'SetDataBrowserItemDataText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataText(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataText ((DataBrowserItemDataRef)ewg_param_itemData, (CFStringRef)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataText (DataBrowserItemDataRef itemData, CFStringRef theData);
+// Wraps call to function 'GetDataBrowserItemDataText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataText(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataText ((DataBrowserItemDataRef)ewg_param_itemData, (CFStringRef*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataText (DataBrowserItemDataRef itemData, CFStringRef *theData);
+// Wraps call to function 'SetDataBrowserItemDataValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataValue(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataValue ((DataBrowserItemDataRef)ewg_param_itemData, (SInt32)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataValue (DataBrowserItemDataRef itemData, SInt32 theData);
+// Wraps call to function 'GetDataBrowserItemDataValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataValue(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataValue ((DataBrowserItemDataRef)ewg_param_itemData, (SInt32*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataValue (DataBrowserItemDataRef itemData, SInt32 *theData);
+// Wraps call to function 'SetDataBrowserItemDataMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataMinimum(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataMinimum ((DataBrowserItemDataRef)ewg_param_itemData, (SInt32)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataMinimum (DataBrowserItemDataRef itemData, SInt32 theData);
+// Wraps call to function 'GetDataBrowserItemDataMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataMinimum(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataMinimum ((DataBrowserItemDataRef)ewg_param_itemData, (SInt32*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataMinimum (DataBrowserItemDataRef itemData, SInt32 *theData);
+// Wraps call to function 'SetDataBrowserItemDataMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataMaximum(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataMaximum ((DataBrowserItemDataRef)ewg_param_itemData, (SInt32)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataMaximum (DataBrowserItemDataRef itemData, SInt32 theData);
+// Wraps call to function 'GetDataBrowserItemDataMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataMaximum(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataMaximum ((DataBrowserItemDataRef)ewg_param_itemData, (SInt32*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataMaximum (DataBrowserItemDataRef itemData, SInt32 *theData);
+// Wraps call to function 'SetDataBrowserItemDataBooleanValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataBooleanValue(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataBooleanValue ((DataBrowserItemDataRef)ewg_param_itemData, (Boolean)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataBooleanValue (DataBrowserItemDataRef itemData, Boolean theData);
+// Wraps call to function 'GetDataBrowserItemDataBooleanValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataBooleanValue(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataBooleanValue ((DataBrowserItemDataRef)ewg_param_itemData, (Boolean*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataBooleanValue (DataBrowserItemDataRef itemData, Boolean *theData);
+// Wraps call to function 'SetDataBrowserItemDataMenuRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataMenuRef(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataMenuRef ((DataBrowserItemDataRef)ewg_param_itemData, (MenuRef)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataMenuRef (DataBrowserItemDataRef itemData, MenuRef theData);
+// Wraps call to function 'GetDataBrowserItemDataMenuRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataMenuRef(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataMenuRef ((DataBrowserItemDataRef)ewg_param_itemData, (MenuRef*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataMenuRef (DataBrowserItemDataRef itemData, MenuRef *theData);
+// Wraps call to function 'SetDataBrowserItemDataRGBColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataRGBColor(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataRGBColor ((DataBrowserItemDataRef)ewg_param_itemData, (RGBColor const*)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataRGBColor (DataBrowserItemDataRef itemData, RGBColor const *theData);
+// Wraps call to function 'GetDataBrowserItemDataRGBColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataRGBColor(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataRGBColor ((DataBrowserItemDataRef)ewg_param_itemData, (RGBColor*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataRGBColor (DataBrowserItemDataRef itemData, RGBColor *theData);
+// Wraps call to function 'SetDataBrowserItemDataDrawState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataDrawState(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataDrawState ((DataBrowserItemDataRef)ewg_param_itemData, (ThemeDrawState)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataDrawState (DataBrowserItemDataRef itemData, ThemeDrawState theData);
+// Wraps call to function 'GetDataBrowserItemDataDrawState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataDrawState(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataDrawState ((DataBrowserItemDataRef)ewg_param_itemData, (ThemeDrawState*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataDrawState (DataBrowserItemDataRef itemData, ThemeDrawState *theData);
+// Wraps call to function 'SetDataBrowserItemDataButtonValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataButtonValue(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataButtonValue ((DataBrowserItemDataRef)ewg_param_itemData, (ThemeButtonValue)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataButtonValue (DataBrowserItemDataRef itemData, ThemeButtonValue theData);
+// Wraps call to function 'GetDataBrowserItemDataButtonValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataButtonValue(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataButtonValue ((DataBrowserItemDataRef)ewg_param_itemData, (ThemeButtonValue*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataButtonValue (DataBrowserItemDataRef itemData, ThemeButtonValue *theData);
+// Wraps call to function 'SetDataBrowserItemDataIconTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataIconTransform(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataIconTransform ((DataBrowserItemDataRef)ewg_param_itemData, (IconTransformType)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataIconTransform (DataBrowserItemDataRef itemData, IconTransformType theData);
+// Wraps call to function 'GetDataBrowserItemDataIconTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataIconTransform(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataIconTransform ((DataBrowserItemDataRef)ewg_param_itemData, (IconTransformType*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataIconTransform (DataBrowserItemDataRef itemData, IconTransformType *theData);
+// Wraps call to function 'SetDataBrowserItemDataDateTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataDateTime(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataDateTime ((DataBrowserItemDataRef)ewg_param_itemData, (long)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataDateTime (DataBrowserItemDataRef itemData, long theData);
+// Wraps call to function 'GetDataBrowserItemDataDateTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataDateTime(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataDateTime ((DataBrowserItemDataRef)ewg_param_itemData, (long*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataDateTime (DataBrowserItemDataRef itemData, long *theData);
+// Wraps call to function 'SetDataBrowserItemDataLongDateTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataLongDateTime(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataLongDateTime ((DataBrowserItemDataRef)ewg_param_itemData, (LongDateTime const*)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataLongDateTime (DataBrowserItemDataRef itemData, LongDateTime const *theData);
+// Wraps call to function 'GetDataBrowserItemDataLongDateTime' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataLongDateTime(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataLongDateTime ((DataBrowserItemDataRef)ewg_param_itemData, (LongDateTime*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataLongDateTime (DataBrowserItemDataRef itemData, LongDateTime *theData);
+// Wraps call to function 'SetDataBrowserItemDataItemID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserItemDataItemID(ewg_param_itemData, ewg_param_theData) SetDataBrowserItemDataItemID ((DataBrowserItemDataRef)ewg_param_itemData, (DataBrowserItemID)ewg_param_theData)
+
+OSStatus  ewg_function_SetDataBrowserItemDataItemID (DataBrowserItemDataRef itemData, DataBrowserItemID theData);
+// Wraps call to function 'GetDataBrowserItemDataItemID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataItemID(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataItemID ((DataBrowserItemDataRef)ewg_param_itemData, (DataBrowserItemID*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataItemID (DataBrowserItemDataRef itemData, DataBrowserItemID *theData);
+// Wraps call to function 'GetDataBrowserItemDataProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserItemDataProperty(ewg_param_itemData, ewg_param_theData) GetDataBrowserItemDataProperty ((DataBrowserItemDataRef)ewg_param_itemData, (DataBrowserPropertyID*)ewg_param_theData)
+
+OSStatus  ewg_function_GetDataBrowserItemDataProperty (DataBrowserItemDataRef itemData, DataBrowserPropertyID *theData);
+// Wraps call to function 'NewDataBrowserItemDataUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemDataUPP(ewg_param_userRoutine) NewDataBrowserItemDataUPP ((DataBrowserItemDataProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemDataUPP  ewg_function_NewDataBrowserItemDataUPP (DataBrowserItemDataProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserItemCompareUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemCompareUPP(ewg_param_userRoutine) NewDataBrowserItemCompareUPP ((DataBrowserItemCompareProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemCompareUPP  ewg_function_NewDataBrowserItemCompareUPP (DataBrowserItemCompareProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserItemNotificationWithItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemNotificationWithItemUPP(ewg_param_userRoutine) NewDataBrowserItemNotificationWithItemUPP ((DataBrowserItemNotificationWithItemProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemNotificationWithItemUPP  ewg_function_NewDataBrowserItemNotificationWithItemUPP (DataBrowserItemNotificationWithItemProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserItemNotificationUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemNotificationUPP(ewg_param_userRoutine) NewDataBrowserItemNotificationUPP ((DataBrowserItemNotificationProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemNotificationUPP  ewg_function_NewDataBrowserItemNotificationUPP (DataBrowserItemNotificationProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserAddDragItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserAddDragItemUPP(ewg_param_userRoutine) NewDataBrowserAddDragItemUPP ((DataBrowserAddDragItemProcPtr)ewg_param_userRoutine)
+
+DataBrowserAddDragItemUPP  ewg_function_NewDataBrowserAddDragItemUPP (DataBrowserAddDragItemProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserAcceptDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserAcceptDragUPP(ewg_param_userRoutine) NewDataBrowserAcceptDragUPP ((DataBrowserAcceptDragProcPtr)ewg_param_userRoutine)
+
+DataBrowserAcceptDragUPP  ewg_function_NewDataBrowserAcceptDragUPP (DataBrowserAcceptDragProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserReceiveDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserReceiveDragUPP(ewg_param_userRoutine) NewDataBrowserReceiveDragUPP ((DataBrowserReceiveDragProcPtr)ewg_param_userRoutine)
+
+DataBrowserReceiveDragUPP  ewg_function_NewDataBrowserReceiveDragUPP (DataBrowserReceiveDragProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserPostProcessDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserPostProcessDragUPP(ewg_param_userRoutine) NewDataBrowserPostProcessDragUPP ((DataBrowserPostProcessDragProcPtr)ewg_param_userRoutine)
+
+DataBrowserPostProcessDragUPP  ewg_function_NewDataBrowserPostProcessDragUPP (DataBrowserPostProcessDragProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserGetContextualMenuUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserGetContextualMenuUPP(ewg_param_userRoutine) NewDataBrowserGetContextualMenuUPP ((DataBrowserGetContextualMenuProcPtr)ewg_param_userRoutine)
+
+DataBrowserGetContextualMenuUPP  ewg_function_NewDataBrowserGetContextualMenuUPP (DataBrowserGetContextualMenuProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserSelectContextualMenuUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserSelectContextualMenuUPP(ewg_param_userRoutine) NewDataBrowserSelectContextualMenuUPP ((DataBrowserSelectContextualMenuProcPtr)ewg_param_userRoutine)
+
+DataBrowserSelectContextualMenuUPP  ewg_function_NewDataBrowserSelectContextualMenuUPP (DataBrowserSelectContextualMenuProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserItemHelpContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemHelpContentUPP(ewg_param_userRoutine) NewDataBrowserItemHelpContentUPP ((DataBrowserItemHelpContentProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemHelpContentUPP  ewg_function_NewDataBrowserItemHelpContentUPP (DataBrowserItemHelpContentProcPtr userRoutine);
+// Wraps call to function 'DisposeDataBrowserItemDataUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemDataUPP(ewg_param_userUPP) DisposeDataBrowserItemDataUPP ((DataBrowserItemDataUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemDataUPP (DataBrowserItemDataUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserItemCompareUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemCompareUPP(ewg_param_userUPP) DisposeDataBrowserItemCompareUPP ((DataBrowserItemCompareUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemCompareUPP (DataBrowserItemCompareUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserItemNotificationWithItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemNotificationWithItemUPP(ewg_param_userUPP) DisposeDataBrowserItemNotificationWithItemUPP ((DataBrowserItemNotificationWithItemUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemNotificationWithItemUPP (DataBrowserItemNotificationWithItemUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserItemNotificationUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemNotificationUPP(ewg_param_userUPP) DisposeDataBrowserItemNotificationUPP ((DataBrowserItemNotificationUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemNotificationUPP (DataBrowserItemNotificationUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserAddDragItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserAddDragItemUPP(ewg_param_userUPP) DisposeDataBrowserAddDragItemUPP ((DataBrowserAddDragItemUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserAddDragItemUPP (DataBrowserAddDragItemUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserAcceptDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserAcceptDragUPP(ewg_param_userUPP) DisposeDataBrowserAcceptDragUPP ((DataBrowserAcceptDragUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserAcceptDragUPP (DataBrowserAcceptDragUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserReceiveDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserReceiveDragUPP(ewg_param_userUPP) DisposeDataBrowserReceiveDragUPP ((DataBrowserReceiveDragUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserReceiveDragUPP (DataBrowserReceiveDragUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserPostProcessDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserPostProcessDragUPP(ewg_param_userUPP) DisposeDataBrowserPostProcessDragUPP ((DataBrowserPostProcessDragUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserPostProcessDragUPP (DataBrowserPostProcessDragUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserGetContextualMenuUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserGetContextualMenuUPP(ewg_param_userUPP) DisposeDataBrowserGetContextualMenuUPP ((DataBrowserGetContextualMenuUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserGetContextualMenuUPP (DataBrowserGetContextualMenuUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserSelectContextualMenuUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserSelectContextualMenuUPP(ewg_param_userUPP) DisposeDataBrowserSelectContextualMenuUPP ((DataBrowserSelectContextualMenuUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserSelectContextualMenuUPP (DataBrowserSelectContextualMenuUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserItemHelpContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemHelpContentUPP(ewg_param_userUPP) DisposeDataBrowserItemHelpContentUPP ((DataBrowserItemHelpContentUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemHelpContentUPP (DataBrowserItemHelpContentUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemDataUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemDataUPP(ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_itemData, ewg_param_setValue, ewg_param_userUPP) InvokeDataBrowserItemDataUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (DataBrowserItemDataRef)ewg_param_itemData, (Boolean)ewg_param_setValue, (DataBrowserItemDataUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeDataBrowserItemDataUPP (ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, DataBrowserItemDataRef itemData, Boolean setValue, DataBrowserItemDataUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemCompareUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemCompareUPP(ewg_param_browser, ewg_param_itemOne, ewg_param_itemTwo, ewg_param_sortProperty, ewg_param_userUPP) InvokeDataBrowserItemCompareUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemOne, (DataBrowserItemID)ewg_param_itemTwo, (DataBrowserPropertyID)ewg_param_sortProperty, (DataBrowserItemCompareUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeDataBrowserItemCompareUPP (ControlRef browser, DataBrowserItemID itemOne, DataBrowserItemID itemTwo, DataBrowserPropertyID sortProperty, DataBrowserItemCompareUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemNotificationWithItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemNotificationWithItemUPP(ewg_param_browser, ewg_param_item, ewg_param_message, ewg_param_itemData, ewg_param_userUPP) InvokeDataBrowserItemNotificationWithItemUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserItemNotification)ewg_param_message, (DataBrowserItemDataRef)ewg_param_itemData, (DataBrowserItemNotificationWithItemUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserItemNotificationWithItemUPP (ControlRef browser, DataBrowserItemID item, DataBrowserItemNotification message, DataBrowserItemDataRef itemData, DataBrowserItemNotificationWithItemUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemNotificationUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemNotificationUPP(ewg_param_browser, ewg_param_item, ewg_param_message, ewg_param_userUPP) InvokeDataBrowserItemNotificationUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserItemNotification)ewg_param_message, (DataBrowserItemNotificationUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserItemNotificationUPP (ControlRef browser, DataBrowserItemID item, DataBrowserItemNotification message, DataBrowserItemNotificationUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserAddDragItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserAddDragItemUPP(ewg_param_browser, ewg_param_theDrag, ewg_param_item, ewg_param_itemRef, ewg_param_userUPP) InvokeDataBrowserAddDragItemUPP ((ControlRef)ewg_param_browser, (DragReference)ewg_param_theDrag, (DataBrowserItemID)ewg_param_item, (ItemReference*)ewg_param_itemRef, (DataBrowserAddDragItemUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeDataBrowserAddDragItemUPP (ControlRef browser, DragReference theDrag, DataBrowserItemID item, ItemReference *itemRef, DataBrowserAddDragItemUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserAcceptDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserAcceptDragUPP(ewg_param_browser, ewg_param_theDrag, ewg_param_item, ewg_param_userUPP) InvokeDataBrowserAcceptDragUPP ((ControlRef)ewg_param_browser, (DragReference)ewg_param_theDrag, (DataBrowserItemID)ewg_param_item, (DataBrowserAcceptDragUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeDataBrowserAcceptDragUPP (ControlRef browser, DragReference theDrag, DataBrowserItemID item, DataBrowserAcceptDragUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserReceiveDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserReceiveDragUPP(ewg_param_browser, ewg_param_theDrag, ewg_param_item, ewg_param_userUPP) InvokeDataBrowserReceiveDragUPP ((ControlRef)ewg_param_browser, (DragReference)ewg_param_theDrag, (DataBrowserItemID)ewg_param_item, (DataBrowserReceiveDragUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeDataBrowserReceiveDragUPP (ControlRef browser, DragReference theDrag, DataBrowserItemID item, DataBrowserReceiveDragUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserPostProcessDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserPostProcessDragUPP(ewg_param_browser, ewg_param_theDrag, ewg_param_trackDragResult, ewg_param_userUPP) InvokeDataBrowserPostProcessDragUPP ((ControlRef)ewg_param_browser, (DragReference)ewg_param_theDrag, (OSStatus)ewg_param_trackDragResult, (DataBrowserPostProcessDragUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserPostProcessDragUPP (ControlRef browser, DragReference theDrag, OSStatus trackDragResult, DataBrowserPostProcessDragUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserGetContextualMenuUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserGetContextualMenuUPP(ewg_param_browser, ewg_param_menu, ewg_param_helpType, ewg_param_helpItemString, ewg_param_selection, ewg_param_userUPP) InvokeDataBrowserGetContextualMenuUPP ((ControlRef)ewg_param_browser, (MenuRef*)ewg_param_menu, (UInt32*)ewg_param_helpType, (CFStringRef*)ewg_param_helpItemString, (AEDesc*)ewg_param_selection, (DataBrowserGetContextualMenuUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserGetContextualMenuUPP (ControlRef browser, MenuRef *menu, UInt32 *helpType, CFStringRef *helpItemString, AEDesc *selection, DataBrowserGetContextualMenuUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserSelectContextualMenuUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserSelectContextualMenuUPP(ewg_param_browser, ewg_param_menu, ewg_param_selectionType, ewg_param_menuID, ewg_param_menuItem, ewg_param_userUPP) InvokeDataBrowserSelectContextualMenuUPP ((ControlRef)ewg_param_browser, (MenuRef)ewg_param_menu, (UInt32)ewg_param_selectionType, (SInt16)ewg_param_menuID, (MenuItemIndex)ewg_param_menuItem, (DataBrowserSelectContextualMenuUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserSelectContextualMenuUPP (ControlRef browser, MenuRef menu, UInt32 selectionType, SInt16 menuID, MenuItemIndex menuItem, DataBrowserSelectContextualMenuUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemHelpContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemHelpContentUPP(ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent, ewg_param_userUPP) InvokeDataBrowserItemHelpContentUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent, (DataBrowserItemHelpContentUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserItemHelpContentUPP (ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent, DataBrowserItemHelpContentUPP userUPP);
+// Wraps call to function 'InitDataBrowserCallbacks' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InitDataBrowserCallbacks(ewg_param_callbacks) InitDataBrowserCallbacks ((DataBrowserCallbacks*)ewg_param_callbacks)
+
+OSStatus  ewg_function_InitDataBrowserCallbacks (DataBrowserCallbacks *callbacks);
+// Wraps call to function 'GetDataBrowserCallbacks' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserCallbacks(ewg_param_browser, ewg_param_callbacks) GetDataBrowserCallbacks ((ControlRef)ewg_param_browser, (DataBrowserCallbacks*)ewg_param_callbacks)
+
+OSStatus  ewg_function_GetDataBrowserCallbacks (ControlRef browser, DataBrowserCallbacks *callbacks);
+// Wraps call to function 'SetDataBrowserCallbacks' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserCallbacks(ewg_param_browser, ewg_param_callbacks) SetDataBrowserCallbacks ((ControlRef)ewg_param_browser, (DataBrowserCallbacks const*)ewg_param_callbacks)
+
+OSStatus  ewg_function_SetDataBrowserCallbacks (ControlRef browser, DataBrowserCallbacks const *callbacks);
+// Wraps call to function 'NewDataBrowserDrawItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserDrawItemUPP(ewg_param_userRoutine) NewDataBrowserDrawItemUPP ((DataBrowserDrawItemProcPtr)ewg_param_userRoutine)
+
+DataBrowserDrawItemUPP  ewg_function_NewDataBrowserDrawItemUPP (DataBrowserDrawItemProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserEditItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserEditItemUPP(ewg_param_userRoutine) NewDataBrowserEditItemUPP ((DataBrowserEditItemProcPtr)ewg_param_userRoutine)
+
+DataBrowserEditItemUPP  ewg_function_NewDataBrowserEditItemUPP (DataBrowserEditItemProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserHitTestUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserHitTestUPP(ewg_param_userRoutine) NewDataBrowserHitTestUPP ((DataBrowserHitTestProcPtr)ewg_param_userRoutine)
+
+DataBrowserHitTestUPP  ewg_function_NewDataBrowserHitTestUPP (DataBrowserHitTestProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserTrackingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserTrackingUPP(ewg_param_userRoutine) NewDataBrowserTrackingUPP ((DataBrowserTrackingProcPtr)ewg_param_userRoutine)
+
+DataBrowserTrackingUPP  ewg_function_NewDataBrowserTrackingUPP (DataBrowserTrackingProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserItemDragRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemDragRgnUPP(ewg_param_userRoutine) NewDataBrowserItemDragRgnUPP ((DataBrowserItemDragRgnProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemDragRgnUPP  ewg_function_NewDataBrowserItemDragRgnUPP (DataBrowserItemDragRgnProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserItemAcceptDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemAcceptDragUPP(ewg_param_userRoutine) NewDataBrowserItemAcceptDragUPP ((DataBrowserItemAcceptDragProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemAcceptDragUPP  ewg_function_NewDataBrowserItemAcceptDragUPP (DataBrowserItemAcceptDragProcPtr userRoutine);
+// Wraps call to function 'NewDataBrowserItemReceiveDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewDataBrowserItemReceiveDragUPP(ewg_param_userRoutine) NewDataBrowserItemReceiveDragUPP ((DataBrowserItemReceiveDragProcPtr)ewg_param_userRoutine)
+
+DataBrowserItemReceiveDragUPP  ewg_function_NewDataBrowserItemReceiveDragUPP (DataBrowserItemReceiveDragProcPtr userRoutine);
+// Wraps call to function 'DisposeDataBrowserDrawItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserDrawItemUPP(ewg_param_userUPP) DisposeDataBrowserDrawItemUPP ((DataBrowserDrawItemUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserDrawItemUPP (DataBrowserDrawItemUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserEditItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserEditItemUPP(ewg_param_userUPP) DisposeDataBrowserEditItemUPP ((DataBrowserEditItemUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserEditItemUPP (DataBrowserEditItemUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserHitTestUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserHitTestUPP(ewg_param_userUPP) DisposeDataBrowserHitTestUPP ((DataBrowserHitTestUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserHitTestUPP (DataBrowserHitTestUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserTrackingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserTrackingUPP(ewg_param_userUPP) DisposeDataBrowserTrackingUPP ((DataBrowserTrackingUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserTrackingUPP (DataBrowserTrackingUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserItemDragRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemDragRgnUPP(ewg_param_userUPP) DisposeDataBrowserItemDragRgnUPP ((DataBrowserItemDragRgnUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemDragRgnUPP (DataBrowserItemDragRgnUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserItemAcceptDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemAcceptDragUPP(ewg_param_userUPP) DisposeDataBrowserItemAcceptDragUPP ((DataBrowserItemAcceptDragUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemAcceptDragUPP (DataBrowserItemAcceptDragUPP userUPP);
+// Wraps call to function 'DisposeDataBrowserItemReceiveDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeDataBrowserItemReceiveDragUPP(ewg_param_userUPP) DisposeDataBrowserItemReceiveDragUPP ((DataBrowserItemReceiveDragUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeDataBrowserItemReceiveDragUPP (DataBrowserItemReceiveDragUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserDrawItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserDrawItemUPP(ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_itemState, ewg_param_theRect, ewg_param_gdDepth, ewg_param_colorDevice, ewg_param_userUPP) InvokeDataBrowserDrawItemUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (DataBrowserItemState)ewg_param_itemState, (Rect const*)ewg_param_theRect, (SInt16)ewg_param_gdDepth, (Boolean)ewg_param_colorDevice, (DataBrowserDrawItemUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserDrawItemUPP (ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, DataBrowserItemState itemState, Rect const *theRect, SInt16 gdDepth, Boolean colorDevice, DataBrowserDrawItemUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserEditItemUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserEditItemUPP(ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_theString, ewg_param_maxEditTextRect, ewg_param_shrinkToFit, ewg_param_userUPP) InvokeDataBrowserEditItemUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (CFStringRef)ewg_param_theString, (Rect*)ewg_param_maxEditTextRect, (Boolean*)ewg_param_shrinkToFit, (DataBrowserEditItemUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeDataBrowserEditItemUPP (ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, CFStringRef theString, Rect *maxEditTextRect, Boolean *shrinkToFit, DataBrowserEditItemUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserHitTestUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserHitTestUPP(ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_mouseRect, ewg_param_userUPP) InvokeDataBrowserHitTestUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, (Rect const*)ewg_param_mouseRect, (DataBrowserHitTestUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeDataBrowserHitTestUPP (ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, Rect const *mouseRect, DataBrowserHitTestUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserTrackingUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserTrackingUPP(ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_startPt, ewg_param_modifiers, ewg_param_userUPP) InvokeDataBrowserTrackingUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, *(Point*)ewg_param_startPt, (EventModifiers)ewg_param_modifiers, (DataBrowserTrackingUPP)ewg_param_userUPP)
+
+DataBrowserTrackingResult  ewg_function_InvokeDataBrowserTrackingUPP (ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, Point *startPt, EventModifiers modifiers, DataBrowserTrackingUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemDragRgnUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemDragRgnUPP(ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_dragRgn, ewg_param_userUPP) InvokeDataBrowserItemDragRgnUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, (RgnHandle)ewg_param_dragRgn, (DataBrowserItemDragRgnUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeDataBrowserItemDragRgnUPP (ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, RgnHandle dragRgn, DataBrowserItemDragRgnUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemAcceptDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemAcceptDragUPP(ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_theDrag, ewg_param_userUPP) InvokeDataBrowserItemAcceptDragUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, (DragReference)ewg_param_theDrag, (DataBrowserItemAcceptDragUPP)ewg_param_userUPP)
+
+DataBrowserDragFlags  ewg_function_InvokeDataBrowserItemAcceptDragUPP (ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, DragReference theDrag, DataBrowserItemAcceptDragUPP userUPP);
+// Wraps call to function 'InvokeDataBrowserItemReceiveDragUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeDataBrowserItemReceiveDragUPP(ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_dragFlags, ewg_param_theDrag, ewg_param_userUPP) InvokeDataBrowserItemReceiveDragUPP ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (DataBrowserDragFlags)ewg_param_dragFlags, (DragReference)ewg_param_theDrag, (DataBrowserItemReceiveDragUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeDataBrowserItemReceiveDragUPP (ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, DataBrowserDragFlags dragFlags, DragReference theDrag, DataBrowserItemReceiveDragUPP userUPP);
+// Wraps call to function 'InitDataBrowserCustomCallbacks' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InitDataBrowserCustomCallbacks(ewg_param_callbacks) InitDataBrowserCustomCallbacks ((DataBrowserCustomCallbacks*)ewg_param_callbacks)
+
+OSStatus  ewg_function_InitDataBrowserCustomCallbacks (DataBrowserCustomCallbacks *callbacks);
+// Wraps call to function 'GetDataBrowserCustomCallbacks' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserCustomCallbacks(ewg_param_browser, ewg_param_callbacks) GetDataBrowserCustomCallbacks ((ControlRef)ewg_param_browser, (DataBrowserCustomCallbacks*)ewg_param_callbacks)
+
+OSStatus  ewg_function_GetDataBrowserCustomCallbacks (ControlRef browser, DataBrowserCustomCallbacks *callbacks);
+// Wraps call to function 'SetDataBrowserCustomCallbacks' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserCustomCallbacks(ewg_param_browser, ewg_param_callbacks) SetDataBrowserCustomCallbacks ((ControlRef)ewg_param_browser, (DataBrowserCustomCallbacks const*)ewg_param_callbacks)
+
+OSStatus  ewg_function_SetDataBrowserCustomCallbacks (ControlRef browser, DataBrowserCustomCallbacks const *callbacks);
+// Wraps call to function 'RemoveDataBrowserTableViewColumn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveDataBrowserTableViewColumn(ewg_param_browser, ewg_param_column) RemoveDataBrowserTableViewColumn ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column)
+
+OSStatus  ewg_function_RemoveDataBrowserTableViewColumn (ControlRef browser, DataBrowserTableViewColumnID column);
+// Wraps call to function 'GetDataBrowserTableViewColumnCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewColumnCount(ewg_param_browser, ewg_param_numColumns) GetDataBrowserTableViewColumnCount ((ControlRef)ewg_param_browser, (UInt32*)ewg_param_numColumns)
+
+OSStatus  ewg_function_GetDataBrowserTableViewColumnCount (ControlRef browser, UInt32 *numColumns);
+// Wraps call to function 'SetDataBrowserTableViewHiliteStyle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewHiliteStyle(ewg_param_browser, ewg_param_hiliteStyle) SetDataBrowserTableViewHiliteStyle ((ControlRef)ewg_param_browser, (DataBrowserTableViewHiliteStyle)ewg_param_hiliteStyle)
+
+OSStatus  ewg_function_SetDataBrowserTableViewHiliteStyle (ControlRef browser, DataBrowserTableViewHiliteStyle hiliteStyle);
+// Wraps call to function 'GetDataBrowserTableViewHiliteStyle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewHiliteStyle(ewg_param_browser, ewg_param_hiliteStyle) GetDataBrowserTableViewHiliteStyle ((ControlRef)ewg_param_browser, (DataBrowserTableViewHiliteStyle*)ewg_param_hiliteStyle)
+
+OSStatus  ewg_function_GetDataBrowserTableViewHiliteStyle (ControlRef browser, DataBrowserTableViewHiliteStyle *hiliteStyle);
+// Wraps call to function 'SetDataBrowserTableViewRowHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewRowHeight(ewg_param_browser, ewg_param_height) SetDataBrowserTableViewRowHeight ((ControlRef)ewg_param_browser, (UInt16)ewg_param_height)
+
+OSStatus  ewg_function_SetDataBrowserTableViewRowHeight (ControlRef browser, UInt16 height);
+// Wraps call to function 'GetDataBrowserTableViewRowHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewRowHeight(ewg_param_browser, ewg_param_height) GetDataBrowserTableViewRowHeight ((ControlRef)ewg_param_browser, (UInt16*)ewg_param_height)
+
+OSStatus  ewg_function_GetDataBrowserTableViewRowHeight (ControlRef browser, UInt16 *height);
+// Wraps call to function 'SetDataBrowserTableViewColumnWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewColumnWidth(ewg_param_browser, ewg_param_width) SetDataBrowserTableViewColumnWidth ((ControlRef)ewg_param_browser, (UInt16)ewg_param_width)
+
+OSStatus  ewg_function_SetDataBrowserTableViewColumnWidth (ControlRef browser, UInt16 width);
+// Wraps call to function 'GetDataBrowserTableViewColumnWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewColumnWidth(ewg_param_browser, ewg_param_width) GetDataBrowserTableViewColumnWidth ((ControlRef)ewg_param_browser, (UInt16*)ewg_param_width)
+
+OSStatus  ewg_function_GetDataBrowserTableViewColumnWidth (ControlRef browser, UInt16 *width);
+// Wraps call to function 'SetDataBrowserTableViewItemRowHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewItemRowHeight(ewg_param_browser, ewg_param_item, ewg_param_height) SetDataBrowserTableViewItemRowHeight ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (UInt16)ewg_param_height)
+
+OSStatus  ewg_function_SetDataBrowserTableViewItemRowHeight (ControlRef browser, DataBrowserItemID item, UInt16 height);
+// Wraps call to function 'GetDataBrowserTableViewItemRowHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewItemRowHeight(ewg_param_browser, ewg_param_item, ewg_param_height) GetDataBrowserTableViewItemRowHeight ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (UInt16*)ewg_param_height)
+
+OSStatus  ewg_function_GetDataBrowserTableViewItemRowHeight (ControlRef browser, DataBrowserItemID item, UInt16 *height);
+// Wraps call to function 'SetDataBrowserTableViewNamedColumnWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewNamedColumnWidth(ewg_param_browser, ewg_param_column, ewg_param_width) SetDataBrowserTableViewNamedColumnWidth ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column, (UInt16)ewg_param_width)
+
+OSStatus  ewg_function_SetDataBrowserTableViewNamedColumnWidth (ControlRef browser, DataBrowserTableViewColumnID column, UInt16 width);
+// Wraps call to function 'GetDataBrowserTableViewNamedColumnWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewNamedColumnWidth(ewg_param_browser, ewg_param_column, ewg_param_width) GetDataBrowserTableViewNamedColumnWidth ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column, (UInt16*)ewg_param_width)
+
+OSStatus  ewg_function_GetDataBrowserTableViewNamedColumnWidth (ControlRef browser, DataBrowserTableViewColumnID column, UInt16 *width);
+// Wraps call to function 'SetDataBrowserTableViewGeometry' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewGeometry(ewg_param_browser, ewg_param_variableWidthColumns, ewg_param_variableHeightRows) SetDataBrowserTableViewGeometry ((ControlRef)ewg_param_browser, (Boolean)ewg_param_variableWidthColumns, (Boolean)ewg_param_variableHeightRows)
+
+OSStatus  ewg_function_SetDataBrowserTableViewGeometry (ControlRef browser, Boolean variableWidthColumns, Boolean variableHeightRows);
+// Wraps call to function 'GetDataBrowserTableViewGeometry' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewGeometry(ewg_param_browser, ewg_param_variableWidthColumns, ewg_param_variableHeightRows) GetDataBrowserTableViewGeometry ((ControlRef)ewg_param_browser, (Boolean*)ewg_param_variableWidthColumns, (Boolean*)ewg_param_variableHeightRows)
+
+OSStatus  ewg_function_GetDataBrowserTableViewGeometry (ControlRef browser, Boolean *variableWidthColumns, Boolean *variableHeightRows);
+// Wraps call to function 'GetDataBrowserTableViewItemID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewItemID(ewg_param_browser, ewg_param_row, ewg_param_item) GetDataBrowserTableViewItemID ((ControlRef)ewg_param_browser, (DataBrowserTableViewRowIndex)ewg_param_row, (DataBrowserItemID*)ewg_param_item)
+
+OSStatus  ewg_function_GetDataBrowserTableViewItemID (ControlRef browser, DataBrowserTableViewRowIndex row, DataBrowserItemID *item);
+// Wraps call to function 'SetDataBrowserTableViewItemRow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewItemRow(ewg_param_browser, ewg_param_item, ewg_param_row) SetDataBrowserTableViewItemRow ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserTableViewRowIndex)ewg_param_row)
+
+OSStatus  ewg_function_SetDataBrowserTableViewItemRow (ControlRef browser, DataBrowserItemID item, DataBrowserTableViewRowIndex row);
+// Wraps call to function 'GetDataBrowserTableViewItemRow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewItemRow(ewg_param_browser, ewg_param_item, ewg_param_row) GetDataBrowserTableViewItemRow ((ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserTableViewRowIndex*)ewg_param_row)
+
+OSStatus  ewg_function_GetDataBrowserTableViewItemRow (ControlRef browser, DataBrowserItemID item, DataBrowserTableViewRowIndex *row);
+// Wraps call to function 'SetDataBrowserTableViewColumnPosition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserTableViewColumnPosition(ewg_param_browser, ewg_param_column, ewg_param_position) SetDataBrowserTableViewColumnPosition ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column, (DataBrowserTableViewColumnIndex)ewg_param_position)
+
+OSStatus  ewg_function_SetDataBrowserTableViewColumnPosition (ControlRef browser, DataBrowserTableViewColumnID column, DataBrowserTableViewColumnIndex position);
+// Wraps call to function 'GetDataBrowserTableViewColumnPosition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewColumnPosition(ewg_param_browser, ewg_param_column, ewg_param_position) GetDataBrowserTableViewColumnPosition ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column, (DataBrowserTableViewColumnIndex*)ewg_param_position)
+
+OSStatus  ewg_function_GetDataBrowserTableViewColumnPosition (ControlRef browser, DataBrowserTableViewColumnID column, DataBrowserTableViewColumnIndex *position);
+// Wraps call to function 'GetDataBrowserTableViewColumnProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserTableViewColumnProperty(ewg_param_browser, ewg_param_column, ewg_param_property) GetDataBrowserTableViewColumnProperty ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnIndex)ewg_param_column, (DataBrowserTableViewColumnID*)ewg_param_property)
+
+OSStatus  ewg_function_GetDataBrowserTableViewColumnProperty (ControlRef browser, DataBrowserTableViewColumnIndex column, DataBrowserTableViewColumnID *property);
+// Wraps call to function 'AutoSizeDataBrowserListViewColumns' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AutoSizeDataBrowserListViewColumns(ewg_param_browser) AutoSizeDataBrowserListViewColumns ((ControlRef)ewg_param_browser)
+
+OSStatus  ewg_function_AutoSizeDataBrowserListViewColumns (ControlRef browser);
+// Wraps call to function 'AddDataBrowserListViewColumn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AddDataBrowserListViewColumn(ewg_param_browser, ewg_param_columnDesc, ewg_param_position) AddDataBrowserListViewColumn ((ControlRef)ewg_param_browser, (DataBrowserListViewColumnDesc*)ewg_param_columnDesc, (DataBrowserTableViewColumnIndex)ewg_param_position)
+
+OSStatus  ewg_function_AddDataBrowserListViewColumn (ControlRef browser, DataBrowserListViewColumnDesc *columnDesc, DataBrowserTableViewColumnIndex position);
+// Wraps call to function 'GetDataBrowserListViewHeaderDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserListViewHeaderDesc(ewg_param_browser, ewg_param_column, ewg_param_desc) GetDataBrowserListViewHeaderDesc ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column, (DataBrowserListViewHeaderDesc*)ewg_param_desc)
+
+OSStatus  ewg_function_GetDataBrowserListViewHeaderDesc (ControlRef browser, DataBrowserTableViewColumnID column, DataBrowserListViewHeaderDesc *desc);
+// Wraps call to function 'SetDataBrowserListViewHeaderDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserListViewHeaderDesc(ewg_param_browser, ewg_param_column, ewg_param_desc) SetDataBrowserListViewHeaderDesc ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column, (DataBrowserListViewHeaderDesc*)ewg_param_desc)
+
+OSStatus  ewg_function_SetDataBrowserListViewHeaderDesc (ControlRef browser, DataBrowserTableViewColumnID column, DataBrowserListViewHeaderDesc *desc);
+// Wraps call to function 'SetDataBrowserListViewHeaderBtnHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserListViewHeaderBtnHeight(ewg_param_browser, ewg_param_height) SetDataBrowserListViewHeaderBtnHeight ((ControlRef)ewg_param_browser, (UInt16)ewg_param_height)
+
+OSStatus  ewg_function_SetDataBrowserListViewHeaderBtnHeight (ControlRef browser, UInt16 height);
+// Wraps call to function 'GetDataBrowserListViewHeaderBtnHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserListViewHeaderBtnHeight(ewg_param_browser, ewg_param_height) GetDataBrowserListViewHeaderBtnHeight ((ControlRef)ewg_param_browser, (UInt16*)ewg_param_height)
+
+OSStatus  ewg_function_GetDataBrowserListViewHeaderBtnHeight (ControlRef browser, UInt16 *height);
+// Wraps call to function 'SetDataBrowserListViewUsePlainBackground' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserListViewUsePlainBackground(ewg_param_browser, ewg_param_usePlainBackground) SetDataBrowserListViewUsePlainBackground ((ControlRef)ewg_param_browser, (Boolean)ewg_param_usePlainBackground)
+
+OSStatus  ewg_function_SetDataBrowserListViewUsePlainBackground (ControlRef browser, Boolean usePlainBackground);
+// Wraps call to function 'GetDataBrowserListViewUsePlainBackground' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserListViewUsePlainBackground(ewg_param_browser, ewg_param_usePlainBackground) GetDataBrowserListViewUsePlainBackground ((ControlRef)ewg_param_browser, (Boolean*)ewg_param_usePlainBackground)
+
+OSStatus  ewg_function_GetDataBrowserListViewUsePlainBackground (ControlRef browser, Boolean *usePlainBackground);
+// Wraps call to function 'SetDataBrowserListViewDisclosureColumn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserListViewDisclosureColumn(ewg_param_browser, ewg_param_column, ewg_param_expandableRows) SetDataBrowserListViewDisclosureColumn ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID)ewg_param_column, (Boolean)ewg_param_expandableRows)
+
+OSStatus  ewg_function_SetDataBrowserListViewDisclosureColumn (ControlRef browser, DataBrowserTableViewColumnID column, Boolean expandableRows);
+// Wraps call to function 'GetDataBrowserListViewDisclosureColumn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserListViewDisclosureColumn(ewg_param_browser, ewg_param_column, ewg_param_expandableRows) GetDataBrowserListViewDisclosureColumn ((ControlRef)ewg_param_browser, (DataBrowserTableViewColumnID*)ewg_param_column, (Boolean*)ewg_param_expandableRows)
+
+OSStatus  ewg_function_GetDataBrowserListViewDisclosureColumn (ControlRef browser, DataBrowserTableViewColumnID *column, Boolean *expandableRows);
+// Wraps call to function 'GetDataBrowserColumnViewPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserColumnViewPath(ewg_param_browser, ewg_param_path) GetDataBrowserColumnViewPath ((ControlRef)ewg_param_browser, (Handle)ewg_param_path)
+
+OSStatus  ewg_function_GetDataBrowserColumnViewPath (ControlRef browser, Handle path);
+// Wraps call to function 'GetDataBrowserColumnViewPathLength' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserColumnViewPathLength(ewg_param_browser, ewg_param_pathLength) GetDataBrowserColumnViewPathLength ((ControlRef)ewg_param_browser, (UInt32*)ewg_param_pathLength)
+
+OSStatus  ewg_function_GetDataBrowserColumnViewPathLength (ControlRef browser, UInt32 *pathLength);
+// Wraps call to function 'SetDataBrowserColumnViewPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserColumnViewPath(ewg_param_browser, ewg_param_length, ewg_param_path) SetDataBrowserColumnViewPath ((ControlRef)ewg_param_browser, (UInt32)ewg_param_length, (DataBrowserItemID const*)ewg_param_path)
+
+OSStatus  ewg_function_SetDataBrowserColumnViewPath (ControlRef browser, UInt32 length, DataBrowserItemID const *path);
+// Wraps call to function 'SetDataBrowserColumnViewDisplayType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetDataBrowserColumnViewDisplayType(ewg_param_browser, ewg_param_propertyType) SetDataBrowserColumnViewDisplayType ((ControlRef)ewg_param_browser, (DataBrowserPropertyType)ewg_param_propertyType)
+
+OSStatus  ewg_function_SetDataBrowserColumnViewDisplayType (ControlRef browser, DataBrowserPropertyType propertyType);
+// Wraps call to function 'GetDataBrowserColumnViewDisplayType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetDataBrowserColumnViewDisplayType(ewg_param_browser, ewg_param_propertyType) GetDataBrowserColumnViewDisplayType ((ControlRef)ewg_param_browser, (DataBrowserPropertyType*)ewg_param_propertyType)
+
+OSStatus  ewg_function_GetDataBrowserColumnViewDisplayType (ControlRef browser, DataBrowserPropertyType *propertyType);
+// Wraps call to function 'AXUIElementGetDataBrowserItemInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AXUIElementGetDataBrowserItemInfo(ewg_param_inElement, ewg_param_inDataBrowser, ewg_param_inDesiredInfoVersion, ewg_param_outInfo) AXUIElementGetDataBrowserItemInfo ((AXUIElementRef)ewg_param_inElement, (ControlRef)ewg_param_inDataBrowser, (UInt32)ewg_param_inDesiredInfoVersion, (DataBrowserAccessibilityItemInfo*)ewg_param_outInfo)
+
+OSStatus  ewg_function_AXUIElementGetDataBrowserItemInfo (AXUIElementRef inElement, ControlRef inDataBrowser, UInt32 inDesiredInfoVersion, DataBrowserAccessibilityItemInfo *outInfo);
+// Wraps call to function 'AXUIElementCreateWithDataBrowserAndItemInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AXUIElementCreateWithDataBrowserAndItemInfo(ewg_param_inDataBrowser, ewg_param_inInfo) AXUIElementCreateWithDataBrowserAndItemInfo ((ControlRef)ewg_param_inDataBrowser, (DataBrowserAccessibilityItemInfo const*)ewg_param_inInfo)
+
+AXUIElementRef  ewg_function_AXUIElementCreateWithDataBrowserAndItemInfo (ControlRef inDataBrowser, DataBrowserAccessibilityItemInfo const *inInfo);
+// Wraps call to function 'NewEditUnicodePostUpdateUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewEditUnicodePostUpdateUPP(ewg_param_userRoutine) NewEditUnicodePostUpdateUPP ((EditUnicodePostUpdateProcPtr)ewg_param_userRoutine)
+
+EditUnicodePostUpdateUPP  ewg_function_NewEditUnicodePostUpdateUPP (EditUnicodePostUpdateProcPtr userRoutine);
+// Wraps call to function 'DisposeEditUnicodePostUpdateUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeEditUnicodePostUpdateUPP(ewg_param_userUPP) DisposeEditUnicodePostUpdateUPP ((EditUnicodePostUpdateUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeEditUnicodePostUpdateUPP (EditUnicodePostUpdateUPP userUPP);
+// Wraps call to function 'InvokeEditUnicodePostUpdateUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeEditUnicodePostUpdateUPP(ewg_param_uniText, ewg_param_uniTextLength, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_refcon, ewg_param_userUPP) InvokeEditUnicodePostUpdateUPP ((UniCharArrayHandle)ewg_param_uniText, (UniCharCount)ewg_param_uniTextLength, (UniCharArrayOffset)ewg_param_iStartOffset, (UniCharArrayOffset)ewg_param_iEndOffset, (void*)ewg_param_refcon, (EditUnicodePostUpdateUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeEditUnicodePostUpdateUPP (UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon, EditUnicodePostUpdateUPP userUPP);
+// Wraps call to function 'CreateEditUnicodeTextControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateEditUnicodeTextControl(ewg_param_window, ewg_param_boundsRect, ewg_param_text, ewg_param_isPassword, ewg_param_style, ewg_param_outControl) CreateEditUnicodeTextControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_text, (Boolean)ewg_param_isPassword, (ControlFontStyleRec const*)ewg_param_style, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateEditUnicodeTextControl (WindowRef window, Rect const *boundsRect, CFStringRef text, Boolean isPassword, ControlFontStyleRec const *style, ControlRef *outControl);
+// Wraps call to function 'get_aeremote_process_resolver_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_aeremote_process_resolver_callback_stub get_aeremote_process_resolver_callback_stub ()
+
+void * ewg_function_get_aeremote_process_resolver_callback_stub (void);
+// Wraps call to function 'set_aeremote_process_resolver_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_aeremote_process_resolver_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_aeremote_process_resolver_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_aeremote_process_resolver_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_aeremote_process_resolver_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_aeremote_process_resolver_callback(ewg_param_a_function, ewg_param_ref, ewg_param_info) call_aeremote_process_resolver_callback ((void*)ewg_param_a_function, (AERemoteProcessResolverRef)ewg_param_ref, (void*)ewg_param_info)
+
+void  ewg_function_call_aeremote_process_resolver_callback (void *a_function, AERemoteProcessResolverRef ref, void *info);
+// Wraps call to function 'get_qdtext_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdtext_proc_ptr_stub get_qdtext_proc_ptr_stub ()
+
+void * ewg_function_get_qdtext_proc_ptr_stub (void);
+// Wraps call to function 'set_qdtext_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdtext_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdtext_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdtext_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdtext_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdtext_proc_ptr(ewg_param_a_function, ewg_param_byteCount, ewg_param_textBuf, ewg_param_numer, ewg_param_denom) call_qdtext_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_byteCount, (void const*)ewg_param_textBuf, *(Point*)ewg_param_numer, *(Point*)ewg_param_denom)
+
+void  ewg_function_call_qdtext_proc_ptr (void *a_function, short byteCount, void const *textBuf, Point *numer, Point *denom);
+// Wraps call to function 'get_qdline_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdline_proc_ptr_stub get_qdline_proc_ptr_stub ()
+
+void * ewg_function_get_qdline_proc_ptr_stub (void);
+// Wraps call to function 'set_qdline_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdline_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdline_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdline_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdline_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdline_proc_ptr(ewg_param_a_function, ewg_param_newPt) call_qdline_proc_ptr ((void*)ewg_param_a_function, *(Point*)ewg_param_newPt)
+
+void  ewg_function_call_qdline_proc_ptr (void *a_function, Point *newPt);
+// Wraps call to function 'get_qdrect_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdrect_proc_ptr_stub get_qdrect_proc_ptr_stub ()
+
+void * ewg_function_get_qdrect_proc_ptr_stub (void);
+// Wraps call to function 'set_qdrect_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdrect_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdrect_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdrect_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdrect_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdrect_proc_ptr(ewg_param_a_function, ewg_param_verb, ewg_param_r) call_qdrect_proc_ptr ((void*)ewg_param_a_function, (GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r)
+
+void  ewg_function_call_qdrect_proc_ptr (void *a_function, GrafVerb verb, Rect const *r);
+// Wraps call to function 'get_qdrrect_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdrrect_proc_ptr_stub get_qdrrect_proc_ptr_stub ()
+
+void * ewg_function_get_qdrrect_proc_ptr_stub (void);
+// Wraps call to function 'set_qdrrect_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdrrect_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdrrect_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdrrect_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdrrect_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdrrect_proc_ptr(ewg_param_a_function, ewg_param_verb, ewg_param_r, ewg_param_ovalWidth, ewg_param_ovalHeight) call_qdrrect_proc_ptr ((void*)ewg_param_a_function, (GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (short)ewg_param_ovalWidth, (short)ewg_param_ovalHeight)
+
+void  ewg_function_call_qdrrect_proc_ptr (void *a_function, GrafVerb verb, Rect const *r, short ovalWidth, short ovalHeight);
+// Wraps call to function 'get_qdarc_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdarc_proc_ptr_stub get_qdarc_proc_ptr_stub ()
+
+void * ewg_function_get_qdarc_proc_ptr_stub (void);
+// Wraps call to function 'set_qdarc_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdarc_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdarc_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdarc_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdarc_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdarc_proc_ptr(ewg_param_a_function, ewg_param_verb, ewg_param_r, ewg_param_startAngle, ewg_param_arcAngle) call_qdarc_proc_ptr ((void*)ewg_param_a_function, (GrafVerb)ewg_param_verb, (Rect const*)ewg_param_r, (short)ewg_param_startAngle, (short)ewg_param_arcAngle)
+
+void  ewg_function_call_qdarc_proc_ptr (void *a_function, GrafVerb verb, Rect const *r, short startAngle, short arcAngle);
+// Wraps call to function 'get_qdpoly_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdpoly_proc_ptr_stub get_qdpoly_proc_ptr_stub ()
+
+void * ewg_function_get_qdpoly_proc_ptr_stub (void);
+// Wraps call to function 'set_qdpoly_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdpoly_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdpoly_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdpoly_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdpoly_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdpoly_proc_ptr(ewg_param_a_function, ewg_param_verb, ewg_param_poly) call_qdpoly_proc_ptr ((void*)ewg_param_a_function, (GrafVerb)ewg_param_verb, (PolyHandle)ewg_param_poly)
+
+void  ewg_function_call_qdpoly_proc_ptr (void *a_function, GrafVerb verb, PolyHandle poly);
+// Wraps call to function 'get_qdrgn_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdrgn_proc_ptr_stub get_qdrgn_proc_ptr_stub ()
+
+void * ewg_function_get_qdrgn_proc_ptr_stub (void);
+// Wraps call to function 'set_qdrgn_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdrgn_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdrgn_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdrgn_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdrgn_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdrgn_proc_ptr(ewg_param_a_function, ewg_param_verb, ewg_param_rgn) call_qdrgn_proc_ptr ((void*)ewg_param_a_function, (GrafVerb)ewg_param_verb, (RgnHandle)ewg_param_rgn)
+
+void  ewg_function_call_qdrgn_proc_ptr (void *a_function, GrafVerb verb, RgnHandle rgn);
+// Wraps call to function 'get_qdbits_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdbits_proc_ptr_stub get_qdbits_proc_ptr_stub ()
+
+void * ewg_function_get_qdbits_proc_ptr_stub (void);
+// Wraps call to function 'set_qdbits_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdbits_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdbits_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdbits_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdbits_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdbits_proc_ptr(ewg_param_a_function, ewg_param_srcBits, ewg_param_srcRect, ewg_param_dstRect, ewg_param_mode, ewg_param_maskRgn) call_qdbits_proc_ptr ((void*)ewg_param_a_function, (BitMap const*)ewg_param_srcBits, (Rect const*)ewg_param_srcRect, (Rect const*)ewg_param_dstRect, (short)ewg_param_mode, (RgnHandle)ewg_param_maskRgn)
+
+void  ewg_function_call_qdbits_proc_ptr (void *a_function, BitMap const *srcBits, Rect const *srcRect, Rect const *dstRect, short mode, RgnHandle maskRgn);
+// Wraps call to function 'get_qdcomment_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdcomment_proc_ptr_stub get_qdcomment_proc_ptr_stub ()
+
+void * ewg_function_get_qdcomment_proc_ptr_stub (void);
+// Wraps call to function 'set_qdcomment_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdcomment_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdcomment_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdcomment_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdcomment_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdcomment_proc_ptr(ewg_param_a_function, ewg_param_kind, ewg_param_dataSize, ewg_param_dataHandle) call_qdcomment_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_kind, (short)ewg_param_dataSize, (Handle)ewg_param_dataHandle)
+
+void  ewg_function_call_qdcomment_proc_ptr (void *a_function, short kind, short dataSize, Handle dataHandle);
+// Wraps call to function 'get_qdtx_meas_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdtx_meas_proc_ptr_stub get_qdtx_meas_proc_ptr_stub ()
+
+void * ewg_function_get_qdtx_meas_proc_ptr_stub (void);
+// Wraps call to function 'set_qdtx_meas_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdtx_meas_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdtx_meas_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdtx_meas_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdtx_meas_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdtx_meas_proc_ptr(ewg_param_a_function, ewg_param_byteCount, ewg_param_textAddr, ewg_param_numer, ewg_param_denom, ewg_param_info) call_qdtx_meas_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_byteCount, (void const*)ewg_param_textAddr, (Point*)ewg_param_numer, (Point*)ewg_param_denom, (FontInfo*)ewg_param_info)
+
+short  ewg_function_call_qdtx_meas_proc_ptr (void *a_function, short byteCount, void const *textAddr, Point *numer, Point *denom, FontInfo *info);
+// Wraps call to function 'get_qdget_pic_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdget_pic_proc_ptr_stub get_qdget_pic_proc_ptr_stub ()
+
+void * ewg_function_get_qdget_pic_proc_ptr_stub (void);
+// Wraps call to function 'set_qdget_pic_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdget_pic_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdget_pic_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdget_pic_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdget_pic_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdget_pic_proc_ptr(ewg_param_a_function, ewg_param_dataPtr, ewg_param_byteCount) call_qdget_pic_proc_ptr ((void*)ewg_param_a_function, (void*)ewg_param_dataPtr, (short)ewg_param_byteCount)
+
+void  ewg_function_call_qdget_pic_proc_ptr (void *a_function, void *dataPtr, short byteCount);
+// Wraps call to function 'get_qdput_pic_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdput_pic_proc_ptr_stub get_qdput_pic_proc_ptr_stub ()
+
+void * ewg_function_get_qdput_pic_proc_ptr_stub (void);
+// Wraps call to function 'set_qdput_pic_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdput_pic_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdput_pic_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdput_pic_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdput_pic_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdput_pic_proc_ptr(ewg_param_a_function, ewg_param_dataPtr, ewg_param_byteCount) call_qdput_pic_proc_ptr ((void*)ewg_param_a_function, (void const*)ewg_param_dataPtr, (short)ewg_param_byteCount)
+
+void  ewg_function_call_qdput_pic_proc_ptr (void *a_function, void const *dataPtr, short byteCount);
+// Wraps call to function 'get_qdopcode_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdopcode_proc_ptr_stub get_qdopcode_proc_ptr_stub ()
+
+void * ewg_function_get_qdopcode_proc_ptr_stub (void);
+// Wraps call to function 'set_qdopcode_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdopcode_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdopcode_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdopcode_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdopcode_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdopcode_proc_ptr(ewg_param_a_function, ewg_param_fromRect, ewg_param_toRect, ewg_param_opcode, ewg_param_version) call_qdopcode_proc_ptr ((void*)ewg_param_a_function, (Rect const*)ewg_param_fromRect, (Rect const*)ewg_param_toRect, (UInt16)ewg_param_opcode, (SInt16)ewg_param_version)
+
+void  ewg_function_call_qdopcode_proc_ptr (void *a_function, Rect const *fromRect, Rect const *toRect, UInt16 opcode, SInt16 version);
+// Wraps call to function 'get_qdstd_glyphs_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdstd_glyphs_proc_ptr_stub get_qdstd_glyphs_proc_ptr_stub ()
+
+void * ewg_function_get_qdstd_glyphs_proc_ptr_stub (void);
+// Wraps call to function 'set_qdstd_glyphs_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdstd_glyphs_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdstd_glyphs_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdstd_glyphs_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdstd_glyphs_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdstd_glyphs_proc_ptr(ewg_param_a_function, ewg_param_dataStream, ewg_param_size) call_qdstd_glyphs_proc_ptr ((void*)ewg_param_a_function, (void*)ewg_param_dataStream, (ByteCount)ewg_param_size)
+
+OSStatus  ewg_function_call_qdstd_glyphs_proc_ptr (void *a_function, void *dataStream, ByteCount size);
+// Wraps call to function 'get_qdjshield_cursor_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdjshield_cursor_proc_ptr_stub get_qdjshield_cursor_proc_ptr_stub ()
+
+void * ewg_function_get_qdjshield_cursor_proc_ptr_stub (void);
+// Wraps call to function 'set_qdjshield_cursor_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdjshield_cursor_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdjshield_cursor_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdjshield_cursor_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdjshield_cursor_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdjshield_cursor_proc_ptr(ewg_param_a_function, ewg_param_left, ewg_param_top, ewg_param_right, ewg_param_bottom) call_qdjshield_cursor_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_left, (short)ewg_param_top, (short)ewg_param_right, (short)ewg_param_bottom)
+
+void  ewg_function_call_qdjshield_cursor_proc_ptr (void *a_function, short left, short top, short right, short bottom);
+// Wraps call to function 'get_cfrag_term_procedure_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfrag_term_procedure_stub get_cfrag_term_procedure_stub ()
+
+void * ewg_function_get_cfrag_term_procedure_stub (void);
+// Wraps call to function 'set_cfrag_term_procedure_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfrag_term_procedure_entry(ewg_param_a_class, ewg_param_a_feature) set_cfrag_term_procedure_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfrag_term_procedure_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfrag_term_procedure' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfrag_term_procedure(ewg_param_a_function) call_cfrag_term_procedure ((void*)ewg_param_a_function)
+
+void  ewg_function_call_cfrag_term_procedure (void *a_function);
+// Wraps call to function 'get_color_search_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_color_search_proc_ptr_stub get_color_search_proc_ptr_stub ()
+
+void * ewg_function_get_color_search_proc_ptr_stub (void);
+// Wraps call to function 'set_color_search_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_color_search_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_color_search_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_color_search_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_color_search_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_color_search_proc_ptr(ewg_param_a_function, ewg_param_rgb, ewg_param_position) call_color_search_proc_ptr ((void*)ewg_param_a_function, (RGBColor*)ewg_param_rgb, (long*)ewg_param_position)
+
+Boolean  ewg_function_call_color_search_proc_ptr (void *a_function, RGBColor *rgb, long *position);
+// Wraps call to function 'get_color_complement_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_color_complement_proc_ptr_stub get_color_complement_proc_ptr_stub ()
+
+void * ewg_function_get_color_complement_proc_ptr_stub (void);
+// Wraps call to function 'set_color_complement_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_color_complement_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_color_complement_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_color_complement_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_color_complement_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_color_complement_proc_ptr(ewg_param_a_function, ewg_param_rgb) call_color_complement_proc_ptr ((void*)ewg_param_a_function, (RGBColor*)ewg_param_rgb)
+
+Boolean  ewg_function_call_color_complement_proc_ptr (void *a_function, RGBColor *rgb);
+// Wraps call to function 'get_device_loop_drawing_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_device_loop_drawing_proc_ptr_stub get_device_loop_drawing_proc_ptr_stub ()
+
+void * ewg_function_get_device_loop_drawing_proc_ptr_stub (void);
+// Wraps call to function 'set_device_loop_drawing_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_device_loop_drawing_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_device_loop_drawing_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_device_loop_drawing_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_device_loop_drawing_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_device_loop_drawing_proc_ptr(ewg_param_a_function, ewg_param_depth, ewg_param_deviceFlags, ewg_param_targetDevice, ewg_param_userData) call_device_loop_drawing_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_depth, (short)ewg_param_deviceFlags, (GDHandle)ewg_param_targetDevice, (long)ewg_param_userData)
+
+void  ewg_function_call_device_loop_drawing_proc_ptr (void *a_function, short depth, short deviceFlags, GDHandle targetDevice, long userData);
+// Wraps call to function 'get_region_to_rects_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_region_to_rects_proc_ptr_stub get_region_to_rects_proc_ptr_stub ()
+
+void * ewg_function_get_region_to_rects_proc_ptr_stub (void);
+// Wraps call to function 'set_region_to_rects_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_region_to_rects_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_region_to_rects_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_region_to_rects_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_region_to_rects_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_region_to_rects_proc_ptr(ewg_param_a_function, ewg_param_message, ewg_param_rgn, ewg_param_rect, ewg_param_refCon) call_region_to_rects_proc_ptr ((void*)ewg_param_a_function, (UInt16)ewg_param_message, (RgnHandle)ewg_param_rgn, (Rect const*)ewg_param_rect, (void*)ewg_param_refCon)
+
+OSStatus  ewg_function_call_region_to_rects_proc_ptr (void *a_function, UInt16 message, RgnHandle rgn, Rect const *rect, void *refCon);
+// Wraps call to function 'get_custom_xfer_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_custom_xfer_proc_ptr_stub get_custom_xfer_proc_ptr_stub ()
+
+void * ewg_function_get_custom_xfer_proc_ptr_stub (void);
+// Wraps call to function 'set_custom_xfer_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_custom_xfer_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_custom_xfer_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_custom_xfer_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_custom_xfer_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_custom_xfer_proc_ptr(ewg_param_a_function, ewg_param_info) call_custom_xfer_proc_ptr ((void*)ewg_param_a_function, (CustomXFerRecPtr)ewg_param_info)
+
+void  ewg_function_call_custom_xfer_proc_ptr (void *a_function, CustomXFerRecPtr info);
+// Wraps call to function 'get_event_comparator_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_event_comparator_proc_ptr_stub get_event_comparator_proc_ptr_stub ()
+
+void * ewg_function_get_event_comparator_proc_ptr_stub (void);
+// Wraps call to function 'set_event_comparator_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_event_comparator_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_event_comparator_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_event_comparator_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_event_comparator_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_event_comparator_proc_ptr(ewg_param_a_function, ewg_param_inEvent, ewg_param_inCompareData) call_event_comparator_proc_ptr ((void*)ewg_param_a_function, (EventRef)ewg_param_inEvent, (void*)ewg_param_inCompareData)
+
+Boolean  ewg_function_call_event_comparator_proc_ptr (void *a_function, EventRef inEvent, void *inCompareData);
+// Wraps call to function 'get_event_loop_timer_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_event_loop_timer_proc_ptr_stub get_event_loop_timer_proc_ptr_stub ()
+
+void * ewg_function_get_event_loop_timer_proc_ptr_stub (void);
+// Wraps call to function 'set_event_loop_timer_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_event_loop_timer_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_event_loop_timer_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_event_loop_timer_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_event_loop_timer_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_event_loop_timer_proc_ptr(ewg_param_a_function, ewg_param_inTimer, ewg_param_inUserData) call_event_loop_timer_proc_ptr ((void*)ewg_param_a_function, (EventLoopTimerRef)ewg_param_inTimer, (void*)ewg_param_inUserData)
+
+void  ewg_function_call_event_loop_timer_proc_ptr (void *a_function, EventLoopTimerRef inTimer, void *inUserData);
+// Wraps call to function 'get_event_loop_idle_timer_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_event_loop_idle_timer_proc_ptr_stub get_event_loop_idle_timer_proc_ptr_stub ()
+
+void * ewg_function_get_event_loop_idle_timer_proc_ptr_stub (void);
+// Wraps call to function 'set_event_loop_idle_timer_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_event_loop_idle_timer_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_event_loop_idle_timer_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_event_loop_idle_timer_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_event_loop_idle_timer_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_event_loop_idle_timer_proc_ptr(ewg_param_a_function, ewg_param_inTimer, ewg_param_inState, ewg_param_inUserData) call_event_loop_idle_timer_proc_ptr ((void*)ewg_param_a_function, (EventLoopTimerRef)ewg_param_inTimer, (EventLoopIdleTimerMessage)ewg_param_inState, (void*)ewg_param_inUserData)
+
+void  ewg_function_call_event_loop_idle_timer_proc_ptr (void *a_function, EventLoopTimerRef inTimer, EventLoopIdleTimerMessage inState, void *inUserData);
+// Wraps call to function 'get_event_handler_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_event_handler_proc_ptr_stub get_event_handler_proc_ptr_stub ()
+
+void * ewg_function_get_event_handler_proc_ptr_stub (void);
+// Wraps call to function 'set_event_handler_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_event_handler_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_event_handler_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_event_handler_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_event_handler_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_event_handler_proc_ptr(ewg_param_a_function, ewg_param_inHandlerCallRef, ewg_param_inEvent, ewg_param_inUserData) call_event_handler_proc_ptr ((void*)ewg_param_a_function, (EventHandlerCallRef)ewg_param_inHandlerCallRef, (EventRef)ewg_param_inEvent, (void*)ewg_param_inUserData)
+
+OSStatus  ewg_function_call_event_handler_proc_ptr (void *a_function, EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData);
+// Wraps call to function 'get_window_def_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_window_def_proc_ptr_stub get_window_def_proc_ptr_stub ()
+
+void * ewg_function_get_window_def_proc_ptr_stub (void);
+// Wraps call to function 'set_window_def_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_window_def_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_window_def_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_window_def_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_window_def_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_window_def_proc_ptr(ewg_param_a_function, ewg_param_varCode, ewg_param_window, ewg_param_message, ewg_param_param) call_window_def_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_varCode, (WindowRef)ewg_param_window, (short)ewg_param_message, (long)ewg_param_param)
+
+long  ewg_function_call_window_def_proc_ptr (void *a_function, short varCode, WindowRef window, short message, long param);
+// Wraps call to function 'get_window_paint_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_window_paint_proc_ptr_stub get_window_paint_proc_ptr_stub ()
+
+void * ewg_function_get_window_paint_proc_ptr_stub (void);
+// Wraps call to function 'set_window_paint_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_window_paint_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_window_paint_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_window_paint_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_window_paint_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_window_paint_proc_ptr(ewg_param_a_function, ewg_param_device, ewg_param_qdContext, ewg_param_window, ewg_param_inClientPaintRgn, ewg_param_outSystemPaintRgn, ewg_param_refCon) call_window_paint_proc_ptr ((void*)ewg_param_a_function, (GDHandle)ewg_param_device, (GrafPtr)ewg_param_qdContext, (WindowRef)ewg_param_window, (RgnHandle)ewg_param_inClientPaintRgn, (RgnHandle)ewg_param_outSystemPaintRgn, (void*)ewg_param_refCon)
+
+OSStatus  ewg_function_call_window_paint_proc_ptr (void *a_function, GDHandle device, GrafPtr qdContext, WindowRef window, RgnHandle inClientPaintRgn, RgnHandle outSystemPaintRgn, void *refCon);
+// Wraps call to function 'get_control_user_pane_draw_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_draw_proc_ptr_stub get_control_user_pane_draw_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_draw_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_draw_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_draw_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_draw_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_draw_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_draw_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_draw_proc_ptr(ewg_param_a_function, ewg_param_control, ewg_param_part) call_control_user_pane_draw_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control, (SInt16)ewg_param_part)
+
+void  ewg_function_call_control_user_pane_draw_proc_ptr (void *a_function, ControlRef control, SInt16 part);
+// Wraps call to function 'get_control_user_pane_hit_test_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_hit_test_proc_ptr_stub get_control_user_pane_hit_test_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_hit_test_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_hit_test_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_hit_test_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_hit_test_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_hit_test_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_hit_test_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_hit_test_proc_ptr(ewg_param_a_function, ewg_param_control, ewg_param_where) call_control_user_pane_hit_test_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control, *(Point*)ewg_param_where)
+
+ControlPartCode  ewg_function_call_control_user_pane_hit_test_proc_ptr (void *a_function, ControlRef control, Point *where);
+// Wraps call to function 'get_control_user_pane_tracking_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_tracking_proc_ptr_stub get_control_user_pane_tracking_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_tracking_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_tracking_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_tracking_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_tracking_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_tracking_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_tracking_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_tracking_proc_ptr(ewg_param_a_function, ewg_param_control, ewg_param_startPt, ewg_param_actionProc) call_control_user_pane_tracking_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control, *(Point*)ewg_param_startPt, (ControlActionUPP)ewg_param_actionProc)
+
+ControlPartCode  ewg_function_call_control_user_pane_tracking_proc_ptr (void *a_function, ControlRef control, Point *startPt, ControlActionUPP actionProc);
+// Wraps call to function 'get_control_user_pane_idle_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_idle_proc_ptr_stub get_control_user_pane_idle_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_idle_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_idle_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_idle_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_idle_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_idle_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_idle_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_idle_proc_ptr(ewg_param_a_function, ewg_param_control) call_control_user_pane_idle_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control)
+
+void  ewg_function_call_control_user_pane_idle_proc_ptr (void *a_function, ControlRef control);
+// Wraps call to function 'get_control_user_pane_key_down_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_key_down_proc_ptr_stub get_control_user_pane_key_down_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_key_down_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_key_down_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_key_down_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_key_down_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_key_down_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_key_down_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_key_down_proc_ptr(ewg_param_a_function, ewg_param_control, ewg_param_keyCode, ewg_param_charCode, ewg_param_modifiers) call_control_user_pane_key_down_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control, (SInt16)ewg_param_keyCode, (SInt16)ewg_param_charCode, (SInt16)ewg_param_modifiers)
+
+ControlPartCode  ewg_function_call_control_user_pane_key_down_proc_ptr (void *a_function, ControlRef control, SInt16 keyCode, SInt16 charCode, SInt16 modifiers);
+// Wraps call to function 'get_control_user_pane_activate_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_activate_proc_ptr_stub get_control_user_pane_activate_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_activate_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_activate_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_activate_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_activate_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_activate_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_activate_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_activate_proc_ptr(ewg_param_a_function, ewg_param_control, ewg_param_activating) call_control_user_pane_activate_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control, (Boolean)ewg_param_activating)
+
+void  ewg_function_call_control_user_pane_activate_proc_ptr (void *a_function, ControlRef control, Boolean activating);
+// Wraps call to function 'get_control_user_pane_focus_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_focus_proc_ptr_stub get_control_user_pane_focus_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_focus_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_focus_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_focus_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_focus_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_focus_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_focus_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_focus_proc_ptr(ewg_param_a_function, ewg_param_control, ewg_param_action) call_control_user_pane_focus_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control, (ControlFocusPart)ewg_param_action)
+
+ControlPartCode  ewg_function_call_control_user_pane_focus_proc_ptr (void *a_function, ControlRef control, ControlFocusPart action);
+// Wraps call to function 'get_control_user_pane_background_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_user_pane_background_proc_ptr_stub get_control_user_pane_background_proc_ptr_stub ()
+
+void * ewg_function_get_control_user_pane_background_proc_ptr_stub (void);
+// Wraps call to function 'set_control_user_pane_background_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_user_pane_background_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_user_pane_background_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_user_pane_background_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_user_pane_background_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_user_pane_background_proc_ptr(ewg_param_a_function, ewg_param_control, ewg_param_info) call_control_user_pane_background_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_control, (ControlBackgroundPtr)ewg_param_info)
+
+void  ewg_function_call_control_user_pane_background_proc_ptr (void *a_function, ControlRef control, ControlBackgroundPtr info);
+// Wraps call to function 'get_data_browser_item_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_proc_ptr_stub get_data_browser_item_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_proc_ptr(ewg_param_a_function, ewg_param_item, ewg_param_state, ewg_param_clientData) call_data_browser_item_proc_ptr ((void*)ewg_param_a_function, (DataBrowserItemID)ewg_param_item, (DataBrowserItemState)ewg_param_state, (void*)ewg_param_clientData)
+
+void  ewg_function_call_data_browser_item_proc_ptr (void *a_function, DataBrowserItemID item, DataBrowserItemState state, void *clientData);
+// Wraps call to function 'get_data_browser_item_data_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_data_proc_ptr_stub get_data_browser_item_data_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_data_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_data_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_data_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_data_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_data_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_data_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_data_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_itemData, ewg_param_setValue) call_data_browser_item_data_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (DataBrowserItemDataRef)ewg_param_itemData, (Boolean)ewg_param_setValue)
+
+OSStatus  ewg_function_call_data_browser_item_data_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, DataBrowserItemDataRef itemData, Boolean setValue);
+// Wraps call to function 'get_data_browser_item_compare_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_compare_proc_ptr_stub get_data_browser_item_compare_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_compare_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_compare_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_compare_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_compare_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_compare_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_compare_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_compare_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_itemOne, ewg_param_itemTwo, ewg_param_sortProperty) call_data_browser_item_compare_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemOne, (DataBrowserItemID)ewg_param_itemTwo, (DataBrowserPropertyID)ewg_param_sortProperty)
+
+Boolean  ewg_function_call_data_browser_item_compare_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID itemOne, DataBrowserItemID itemTwo, DataBrowserPropertyID sortProperty);
+// Wraps call to function 'get_data_browser_item_notification_with_item_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_notification_with_item_proc_ptr_stub get_data_browser_item_notification_with_item_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_notification_with_item_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_notification_with_item_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_notification_with_item_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_notification_with_item_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_notification_with_item_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_notification_with_item_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_notification_with_item_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_item, ewg_param_message, ewg_param_itemData) call_data_browser_item_notification_with_item_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserItemNotification)ewg_param_message, (DataBrowserItemDataRef)ewg_param_itemData)
+
+void  ewg_function_call_data_browser_item_notification_with_item_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID item, DataBrowserItemNotification message, DataBrowserItemDataRef itemData);
+// Wraps call to function 'get_data_browser_item_notification_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_notification_proc_ptr_stub get_data_browser_item_notification_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_notification_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_notification_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_notification_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_notification_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_notification_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_notification_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_notification_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_item, ewg_param_message) call_data_browser_item_notification_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserItemNotification)ewg_param_message)
+
+void  ewg_function_call_data_browser_item_notification_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID item, DataBrowserItemNotification message);
+// Wraps call to function 'get_data_browser_add_drag_item_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_add_drag_item_proc_ptr_stub get_data_browser_add_drag_item_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_add_drag_item_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_add_drag_item_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_add_drag_item_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_add_drag_item_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_add_drag_item_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_add_drag_item_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_add_drag_item_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_theDrag, ewg_param_item, ewg_param_itemRef) call_data_browser_add_drag_item_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DragReference)ewg_param_theDrag, (DataBrowserItemID)ewg_param_item, (ItemReference*)ewg_param_itemRef)
+
+Boolean  ewg_function_call_data_browser_add_drag_item_proc_ptr (void *a_function, ControlRef browser, DragReference theDrag, DataBrowserItemID item, ItemReference *itemRef);
+// Wraps call to function 'get_data_browser_accept_drag_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_accept_drag_proc_ptr_stub get_data_browser_accept_drag_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_accept_drag_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_accept_drag_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_accept_drag_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_accept_drag_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_accept_drag_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_accept_drag_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_accept_drag_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_theDrag, ewg_param_item) call_data_browser_accept_drag_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DragReference)ewg_param_theDrag, (DataBrowserItemID)ewg_param_item)
+
+Boolean  ewg_function_call_data_browser_accept_drag_proc_ptr (void *a_function, ControlRef browser, DragReference theDrag, DataBrowserItemID item);
+// Wraps call to function 'get_data_browser_post_process_drag_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_post_process_drag_proc_ptr_stub get_data_browser_post_process_drag_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_post_process_drag_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_post_process_drag_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_post_process_drag_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_post_process_drag_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_post_process_drag_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_post_process_drag_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_post_process_drag_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_theDrag, ewg_param_trackDragResult) call_data_browser_post_process_drag_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DragReference)ewg_param_theDrag, (OSStatus)ewg_param_trackDragResult)
+
+void  ewg_function_call_data_browser_post_process_drag_proc_ptr (void *a_function, ControlRef browser, DragReference theDrag, OSStatus trackDragResult);
+// Wraps call to function 'get_data_browser_get_contextual_menu_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_get_contextual_menu_proc_ptr_stub get_data_browser_get_contextual_menu_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_get_contextual_menu_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_get_contextual_menu_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_get_contextual_menu_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_get_contextual_menu_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_get_contextual_menu_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_get_contextual_menu_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_get_contextual_menu_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_menu, ewg_param_helpType, ewg_param_helpItemString, ewg_param_selection) call_data_browser_get_contextual_menu_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (MenuRef*)ewg_param_menu, (UInt32*)ewg_param_helpType, (CFStringRef*)ewg_param_helpItemString, (AEDesc*)ewg_param_selection)
+
+void  ewg_function_call_data_browser_get_contextual_menu_proc_ptr (void *a_function, ControlRef browser, MenuRef *menu, UInt32 *helpType, CFStringRef *helpItemString, AEDesc *selection);
+// Wraps call to function 'get_data_browser_select_contextual_menu_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_select_contextual_menu_proc_ptr_stub get_data_browser_select_contextual_menu_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_select_contextual_menu_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_select_contextual_menu_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_select_contextual_menu_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_select_contextual_menu_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_select_contextual_menu_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_select_contextual_menu_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_select_contextual_menu_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_menu, ewg_param_selectionType, ewg_param_menuID, ewg_param_menuItem) call_data_browser_select_contextual_menu_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (MenuRef)ewg_param_menu, (UInt32)ewg_param_selectionType, (SInt16)ewg_param_menuID, (MenuItemIndex)ewg_param_menuItem)
+
+void  ewg_function_call_data_browser_select_contextual_menu_proc_ptr (void *a_function, ControlRef browser, MenuRef menu, UInt32 selectionType, SInt16 menuID, MenuItemIndex menuItem);
+// Wraps call to function 'get_data_browser_item_help_content_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_help_content_proc_ptr_stub get_data_browser_item_help_content_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_help_content_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_help_content_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_help_content_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_help_content_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_help_content_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_help_content_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_help_content_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent) call_data_browser_item_help_content_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent)
+
+void  ewg_function_call_data_browser_item_help_content_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+// Wraps call to function 'get_data_browser_draw_item_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_draw_item_proc_ptr_stub get_data_browser_draw_item_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_draw_item_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_draw_item_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_draw_item_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_draw_item_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_draw_item_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_draw_item_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_draw_item_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_itemState, ewg_param_theRect, ewg_param_gdDepth, ewg_param_colorDevice) call_data_browser_draw_item_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (DataBrowserItemState)ewg_param_itemState, (Rect const*)ewg_param_theRect, (SInt16)ewg_param_gdDepth, (Boolean)ewg_param_colorDevice)
+
+void  ewg_function_call_data_browser_draw_item_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, DataBrowserItemState itemState, Rect const *theRect, SInt16 gdDepth, Boolean colorDevice);
+// Wraps call to function 'get_data_browser_edit_item_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_edit_item_proc_ptr_stub get_data_browser_edit_item_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_edit_item_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_edit_item_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_edit_item_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_edit_item_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_edit_item_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_edit_item_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_edit_item_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_item, ewg_param_property, ewg_param_theString, ewg_param_maxEditTextRect, ewg_param_shrinkToFit) call_data_browser_edit_item_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_item, (DataBrowserPropertyID)ewg_param_property, (CFStringRef)ewg_param_theString, (Rect*)ewg_param_maxEditTextRect, (Boolean*)ewg_param_shrinkToFit)
+
+Boolean  ewg_function_call_data_browser_edit_item_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property, CFStringRef theString, Rect *maxEditTextRect, Boolean *shrinkToFit);
+// Wraps call to function 'get_data_browser_hit_test_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_hit_test_proc_ptr_stub get_data_browser_hit_test_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_hit_test_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_hit_test_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_hit_test_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_hit_test_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_hit_test_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_hit_test_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_hit_test_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_mouseRect) call_data_browser_hit_test_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, (Rect const*)ewg_param_mouseRect)
+
+Boolean  ewg_function_call_data_browser_hit_test_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, Rect const *mouseRect);
+// Wraps call to function 'get_data_browser_tracking_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_tracking_proc_ptr_stub get_data_browser_tracking_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_tracking_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_tracking_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_tracking_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_tracking_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_tracking_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_tracking_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_tracking_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_startPt, ewg_param_modifiers) call_data_browser_tracking_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, *(Point*)ewg_param_startPt, (EventModifiers)ewg_param_modifiers)
+
+DataBrowserTrackingResult  ewg_function_call_data_browser_tracking_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, Point *startPt, EventModifiers modifiers);
+// Wraps call to function 'get_data_browser_item_drag_rgn_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_drag_rgn_proc_ptr_stub get_data_browser_item_drag_rgn_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_drag_rgn_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_drag_rgn_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_drag_rgn_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_drag_rgn_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_drag_rgn_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_drag_rgn_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_drag_rgn_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_dragRgn) call_data_browser_item_drag_rgn_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, (RgnHandle)ewg_param_dragRgn)
+
+void  ewg_function_call_data_browser_item_drag_rgn_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, RgnHandle dragRgn);
+// Wraps call to function 'get_data_browser_item_accept_drag_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_accept_drag_proc_ptr_stub get_data_browser_item_accept_drag_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_accept_drag_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_accept_drag_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_accept_drag_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_accept_drag_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_accept_drag_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_accept_drag_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_accept_drag_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_theRect, ewg_param_theDrag) call_data_browser_item_accept_drag_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (Rect const*)ewg_param_theRect, (DragReference)ewg_param_theDrag)
+
+DataBrowserDragFlags  ewg_function_call_data_browser_item_accept_drag_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, Rect const *theRect, DragReference theDrag);
+// Wraps call to function 'get_data_browser_item_receive_drag_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_data_browser_item_receive_drag_proc_ptr_stub get_data_browser_item_receive_drag_proc_ptr_stub ()
+
+void * ewg_function_get_data_browser_item_receive_drag_proc_ptr_stub (void);
+// Wraps call to function 'set_data_browser_item_receive_drag_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_data_browser_item_receive_drag_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_data_browser_item_receive_drag_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_data_browser_item_receive_drag_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_data_browser_item_receive_drag_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_data_browser_item_receive_drag_proc_ptr(ewg_param_a_function, ewg_param_browser, ewg_param_itemID, ewg_param_property, ewg_param_dragFlags, ewg_param_theDrag) call_data_browser_item_receive_drag_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_browser, (DataBrowserItemID)ewg_param_itemID, (DataBrowserPropertyID)ewg_param_property, (DataBrowserDragFlags)ewg_param_dragFlags, (DragReference)ewg_param_theDrag)
+
+Boolean  ewg_function_call_data_browser_item_receive_drag_proc_ptr (void *a_function, ControlRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, DataBrowserDragFlags dragFlags, DragReference theDrag);
+// Wraps call to function 'get_edit_unicode_post_update_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_edit_unicode_post_update_proc_ptr_stub get_edit_unicode_post_update_proc_ptr_stub ()
+
+void * ewg_function_get_edit_unicode_post_update_proc_ptr_stub (void);
+// Wraps call to function 'set_edit_unicode_post_update_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_edit_unicode_post_update_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_edit_unicode_post_update_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_edit_unicode_post_update_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_edit_unicode_post_update_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_edit_unicode_post_update_proc_ptr(ewg_param_a_function, ewg_param_uniText, ewg_param_uniTextLength, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_refcon) call_edit_unicode_post_update_proc_ptr ((void*)ewg_param_a_function, (UniCharArrayHandle)ewg_param_uniText, (UniCharCount)ewg_param_uniTextLength, (UniCharArrayOffset)ewg_param_iStartOffset, (UniCharArrayOffset)ewg_param_iEndOffset, (void*)ewg_param_refcon)
+
+Boolean  ewg_function_call_edit_unicode_post_update_proc_ptr (void *a_function, UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon);
+// Wraps call to function 'get_qdprinter_status_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_qdprinter_status_proc_ptr_stub get_qdprinter_status_proc_ptr_stub ()
+
+void * ewg_function_get_qdprinter_status_proc_ptr_stub (void);
+// Wraps call to function 'set_qdprinter_status_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_qdprinter_status_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_qdprinter_status_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_qdprinter_status_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_qdprinter_status_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_qdprinter_status_proc_ptr(ewg_param_a_function, ewg_param_opcode, ewg_param_currentPort, ewg_param_printerStatus) call_qdprinter_status_proc_ptr ((void*)ewg_param_a_function, (PrinterStatusOpcode)ewg_param_opcode, (CGrafPtr)ewg_param_currentPort, (void*)ewg_param_printerStatus)
+
+OSStatus  ewg_function_call_qdprinter_status_proc_ptr (void *a_function, PrinterStatusOpcode opcode, CGrafPtr currentPort, void *printerStatus);
+// Wraps call to function 'get_get_next_event_filter_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_get_next_event_filter_proc_ptr_stub get_get_next_event_filter_proc_ptr_stub ()
+
+void * ewg_function_get_get_next_event_filter_proc_ptr_stub (void);
+// Wraps call to function 'set_get_next_event_filter_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_get_next_event_filter_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_get_next_event_filter_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_get_next_event_filter_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_get_next_event_filter_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_get_next_event_filter_proc_ptr(ewg_param_a_function, ewg_param_theEvent, ewg_param_result) call_get_next_event_filter_proc_ptr ((void*)ewg_param_a_function, (EventRecord*)ewg_param_theEvent, (Boolean*)ewg_param_result)
+
+void  ewg_function_call_get_next_event_filter_proc_ptr (void *a_function, EventRecord *theEvent, Boolean *result);
+// Wraps call to function 'get_desk_hook_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_desk_hook_proc_ptr_stub get_desk_hook_proc_ptr_stub ()
+
+void * ewg_function_get_desk_hook_proc_ptr_stub (void);
+// Wraps call to function 'set_desk_hook_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_desk_hook_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_desk_hook_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_desk_hook_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_desk_hook_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_desk_hook_proc_ptr(ewg_param_a_function, ewg_param_mouseClick, ewg_param_theEvent) call_desk_hook_proc_ptr ((void*)ewg_param_a_function, (Boolean)ewg_param_mouseClick, (EventRecord*)ewg_param_theEvent)
+
+void  ewg_function_call_desk_hook_proc_ptr (void *a_function, Boolean mouseClick, EventRecord *theEvent);
