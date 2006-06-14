@@ -1,7 +1,7 @@
 indexing
 	description: "Parser for accessing MO files."
 	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
-	author: "i18n team, ETH Zurich"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,55 +16,49 @@ inherit
 		end
 	UC_IMPORTED_UTF8_ROUTINES
 
-create {I18N_DATASTRUCTURE}
-	make_with_path
+create {I18N_DATASOURCE_FACTORY}
+	make_with_file
 
 feature {NONE} -- Initialization
-	make_with_path(a_path: STRING) is
-			-- Open the mo_file located in a_path
-			-- and extract information from it.
+	make_with_file(a_file: RAW_FILE) is
+			-- Using a_file
 		require
-			path_exists: a_path /= Void
-			non_empty_path: not a_path.is_empty
+			valid_file: a_file /= Void
+			file_open: a_file.is_open_read
 		do
-			create mo_file.make(a_path)
-			file_exists:= mo_file.exists
-			if file_exists then
-				open_file
-
-				-- Read magic number.
-				mo_file.read_integer
-				if mo_file.last_integer = 0xde120495 then
-					is_big_endian := True
-				elseif mo_file.last_integer = 0x950412de then
-					is_little_endian := True
-				end
-				if is_valid then
-					-- Read mo file version.
-					version := read_integer
-					-- Read number of strings.
-					string_count := read_integer
-					-- Read offset of original strings' table.
-					original_table_offset := read_integer
-					-- Read offset of translated strings' table.
-					translated_table_offset := read_integer
-					-- Read size of hashing table.
-					hash_table_size := read_integer
-					-- Read offset of hashing table.
-					hash_table_offset := read_integer
-					extract_plural_informations
-				end
-			end
+			mo_file := a_file
+			file_exists := true
 		ensure
-			mo_file_open: file_exists implies mo_file.is_open_read
+			mo_file_set: mo_file = a_file
 		end
 
 feature -- Status setting
 	open_file is
 			-- Open mo_file.
 		do
-			mo_file.open_read
-			is_open := mo_file.is_open_read
+			-- Read magic number.
+			mo_file.read_integer
+			if mo_file.last_integer = 0xde120495 then
+				is_big_endian := True
+			elseif mo_file.last_integer = 0x950412de then
+				is_little_endian := True
+			end
+			if is_valid then
+				-- Read mo file version.
+				version := read_integer
+				-- Read number of strings.
+				string_count := read_integer
+				-- Read offset of original strings' table.
+				original_table_offset := read_integer
+				-- Read offset of translated strings' table.
+				translated_table_offset := read_integer
+				-- Read size of hashing table.
+				hash_table_size := read_integer
+				-- Read offset of hashing table.
+				hash_table_offset := read_integer
+				extract_plural_informations
+			end
+			is_open := true
 		end
 
 	close_file is
@@ -214,26 +208,6 @@ feature {NONE} --Implementation
 			string_length := read_integer
 			string_offset := read_integer
 			mo_file.go(string_offset)
-	-- try 1
---			mo_file.read_stream(string_length)
---			create Result.make_from_string(mo_file.last_string)
-	-- try 2
---			create ptr.make (string_length+2)
---			mo_file.read_to_managed_pointer (ptr, 0, string_length)
---			create Result.make_from_c (ptr.item)
-	-- try 3
---			create Result.make_empty
---			c_str ?= {POINTER} mo_file.last_string.to_c
---			Result.make_from_c (c_str)
-	-- try 4
---			create Result.make (string_length*2)
---			create ptr.share_from_pointer (Result.area.base_address, string_length+1)
---			mo_file.read_to_managed_pointer (ptr, 0, string_length+1)
-	-- try 5
---			mo_file.read_stream(string_length)
---			create uc_str.make_from_string (mo_file.last_string)
---			create Result.make_from_string (uc_str.to_utf8)
-	-- try 6
 			create Result.make_empty
 			from
 				i := 1
@@ -364,5 +338,7 @@ feature {NONE} --Implementation
 
 invariant
 	big_xor_little_endian: (file_exists and then is_valid) implies (is_little_endian xor is_big_endian)
+	valid_mo_file: mo_file /= Void
+	is_open implies mo_file.is_open_read
 
 end -- class I18N_MO_PARSER

@@ -42,8 +42,11 @@ feature -- Status report
 			Result := (a_index >= 0) and (a_index <= string_count)
 		end
 
-	is_ready: BOOLEAN
+	is_ready: BOOLEAN is
 			-- Is the datasource ready to load the strings?
+		do
+			Result := is_open
+		end
 
 	is_open: BOOLEAN
 			-- Is the datasource open?
@@ -56,7 +59,7 @@ feature -- Status report
 
 feature -- Basic operations
 	get_originals(i_th: INTEGER): LIST[STRING_32] is
-			-- get `i_th' original string in the file
+			-- What's the `i_th' original string?
 		require
 			valid_index: valid_index(i_th)
 		deferred
@@ -65,7 +68,7 @@ feature -- Basic operations
 		end
 
 	get_translateds(i_th: INTEGER): LIST[STRING_32] is
-			-- What's the `i-th' translated string?
+			-- What's the `i_th' translated string?
 		require
 			valid_index: valid_index(i_th)
 		deferred

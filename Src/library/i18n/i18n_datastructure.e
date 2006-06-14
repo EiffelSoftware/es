@@ -9,22 +9,22 @@ class
 	I18N_DATASTRUCTURE
 
 create {I18N_LOCALIZATOR}
-	make_with_file
+	make_with_datasource
 
 feature {NONE} -- Initialization
-	make_with_file(a_path: STRING) is
+	make_with_datasource(a_datasource: I18N_DATASOURCE) is
 			-- Initialize `Current'.
 		require
-			valid_path: a_path /= Void
-			not_empty_path: not a_path.is_empty
+			valid_datasource: a_datasource /= Void
 		do
-			create i18n_mo_parser.make_with_path(a_path)
-			if i18n_mo_parser.file_exists and then i18n_mo_parser.is_valid then
+			i18n_datasource := a_datasource
+			i18n_datasource.open
+			if i18n_datasource.is_ready then
 				populate_array
 				populate_hash_table
-				i18n_mo_parser.close_file
+				i18n_datasource.close
 			end
-			create i18n_plural_forms.make_with_identifier (i18n_mo_parser.plural_forms, i18n_mo_parser.plural_form_identifier)
+			create i18n_plural_forms.make_with_identifier (i18n_datasource.plural_forms, i18n_datasource.plural_form_identifier)
 		end
 
 feature {NONE} -- Miscellaneous
@@ -130,8 +130,8 @@ feature {NONE} -- Implementation
 	array: ARRAY[I18N_STRING]
 		-- Where all the strings are stored
 
-	i18n_mo_parser: I18N_MO_PARSER
-		-- Reference to the parser
+	i18n_datasource: I18N_DATASOURCE
+		-- Reference to the datasource
 
 	i18n_plural_forms: I18N_PLURAL_FORMS
 		-- Reference to the plural form resolver
@@ -142,16 +142,16 @@ feature {NONE} -- Implementation
 			i: INTEGER
 				-- Iterator
 		do
-			create hash_table.make(i18n_mo_parser.string_count)
+			create hash_table.make(i18n_datasource.string_count)
 			from -- spatial locality
 				i := 1
 			invariant
 				i >= 1
-				i <= i18n_mo_parser.string_count + 1
+				i <= i18n_datasource.string_count + 1
 			variant
-				i18n_mo_parser.string_count + 1 - i
+				i18n_datasource.string_count + 1 - i
 			until
-				i > i18n_mo_parser.string_count
+				i > i18n_datasource.string_count
 			loop
 				array.item(i).set_hash(hash_string(array.item(i).originals.i_th(1)))
 				hash_table.put(array.item(i), array.item(i).hash)
@@ -167,20 +167,20 @@ feature {NONE} -- Implementation
 			temp_string: I18N_STRING
 				-- Temporary string
 		do
-			create array.make(1, i18n_mo_parser.string_count)
+			create array.make(1, i18n_datasource.string_count)
 			from -- spatial locality
 				i := 1
 			invariant
 				i >= 1
-				i <= i18n_mo_parser.string_count + 1
+				i <= i18n_datasource.string_count + 1
 			variant
-				i18n_mo_parser.string_count + 1 - i
+				i18n_datasource.string_count + 1 - i
 			until
-				i > i18n_mo_parser.string_count
+				i > i18n_datasource.string_count
 			loop
 				create temp_string.make_with_id(i)
-				temp_string.set_plural_forms(i18n_mo_parser.plural_forms)
-				temp_string.set_originals(i18n_mo_parser.get_originals(i))
+				temp_string.set_plural_forms(i18n_datasource.plural_forms)
+				temp_string.set_originals(i18n_datasource.get_originals(i))
 				array.put(temp_string, i)
 				i := i + 1
 			end
@@ -188,13 +188,13 @@ feature {NONE} -- Implementation
 				i := 1
 			invariant
 				i >= 1
-				i <= i18n_mo_parser.string_count + 1
+				i <= i18n_datasource.string_count + 1
 			variant
-				i18n_mo_parser.string_count + 1 - i
+				i18n_datasource.string_count + 1 - i
 			until
-				i > i18n_mo_parser.string_count
+				i > i18n_datasource.string_count
 			loop
-				array.item(i).set_translateds(i18n_mo_parser.get_translateds(i))
+				array.item(i).set_translateds(i18n_datasource.get_translateds(i))
 				i := i + 1
 			end
 		end
@@ -202,7 +202,7 @@ feature {NONE} -- Implementation
 invariant
 	valid_array: array /= Void
 	valid_hash_table: hash_table /= Void
-	valid_mo_parser: i18n_mo_parser /= Void
+	valid_datasource: i18n_datasource /= Void
 	valid_plural_forms: i18n_plural_forms /= Void
 
 end

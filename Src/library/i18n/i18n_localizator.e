@@ -18,8 +18,9 @@ feature {NONE} -- Initialization
 			-- NOTE: For the moment, should set path manually!
 			-- Feel free to suggest a way for determining the path
 			-- (Wiki: http://eiffersoftware.origo.ethz.ch/index.php/Internationalization)
-			set_path("/home/etienne/messages.mo")
-			create i18n_datastructure.make_with_file(path_to_file)
+			create i18n_datasource_factory.make
+			i18n_datasource_factory.use_mo_file("/home/etienne/messages.mo")
+			create i18n_datastructure.make_with_datasource(i18n_datasource_factory.last_datasource)
 			create i18n_template_formatter.make
 		ensure
 			valid_datastructure: i18n_datastructure /= Void
@@ -62,28 +63,15 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	set_path(a_path: STRING) is
-			-- Set path_to_file to a_file.
-		require
-			valid_path: a_path /= Void
-			non_empty_path: not a_path.is_empty
-		do
-			path_to_file := a_path
-		ensure
-			valid_path_to_file: path_to_file /= Void
-			path_to_file_set: path_to_file.is_equal(a_path)
-		end
-
-
 feature {NONE} -- Implementation
-	path_to_file: STRING
-		-- Path to the localization file
-
 	i18n_datastructure: I18N_DATASTRUCTURE
 		-- Reference to the datastructure
 
 	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
 		-- Reference to the template formatter
+
+	i18n_datasource_factory: I18N_DATASOURCE_FACTORY
+		-- Reference to the datasource factory
 
 invariant
 	valid_datastructure: i18n_datastructure /= Void
