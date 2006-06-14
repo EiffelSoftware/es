@@ -118,17 +118,45 @@ feature -- Status setting
 
 	minimize is
 			-- Display iconified/minimised.
-		do
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{	
+					WindowRef aWindow;
+					aWindow = GetWindowList();
+					CollapseWindow(aWindow, TRUE);
+				}
+			]"
 		end
 
 	maximize is
 			-- Display at maximum size.
-		do
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{	
+					WindowRef aWindow;
+					aWindow = GetWindowList();
+					Point p;
+					ZoomWindowIdeal(aWindow, inZoomOut, &p); // does not work yet
+				}
+			]"
 		end
 
 	restore is
 			-- Restore to original position when minimized or maximized.
-		do
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{	
+					WindowRef aWindow;
+					aWindow = GetWindowList();
+					CollapseWindow(aWindow, FALSE);
+				}
+			]"
 		end
 
 feature -- Element change
