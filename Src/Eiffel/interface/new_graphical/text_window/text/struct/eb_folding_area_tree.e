@@ -1,12 +1,11 @@
 indexing
-	description: "AVL-Tree with linked leaves for storing FOLDING_AREAs"
+	description: "AVL-like tree with linked leaves for storing FOLDING_AREAs"
 	author: "bherlig"
-	date: "$06/10/2006$"
-	revision: "$0.4$"
+	date: "$06/14/2006$"
+	revision: "$0.7$"
 
 class
-	EB_FOLDING_AREA_TREE [K -> INTEGER, G -> FEATURE_AS]
-
+	EB_FOLDING_AREA_TREE
 create
 	make
 
@@ -23,7 +22,7 @@ feature -- Initialization
 
 feature -- Access
 
-	item (key: K): G is
+	item (key: like root): like root is
 			-- Data stored with `key'; may be Void.
 		local
 			node: like root
@@ -31,20 +30,34 @@ feature -- Access
 			from
 				node := root
 			until
-				node = Void or else node.key.is_equal (key)
+				node = Void or else node.is_equal (key)
 			loop
-				if key < node.key then
+				if key < node then
 					node := node.left
 				else
 					node := node.right
 				end
 			end
 			if node /= Void then
-				Result := node.item
+				Result := node
 			end
 		end
 
-	root: EB_FOLDING_AREA [K, G]
+	has(key: like root): BOOLEAN is
+			-- does the tree have an item with 'key'?
+		local
+			data: like root
+		do
+			data := item(key)
+			if (data /= Void) then
+				result := true
+			else
+				result := false
+			end
+		end
+
+
+	root: EB_FOLDING_AREA
 			-- Tree root.
 	first, last: like root
 		-- the very first/last element in the linked-list
@@ -73,15 +86,34 @@ feature -- Measurement
 
 feature -- Element change
 
-	extend, force (key: K; data: G) is
+	extend, force (key: like root) is
 			-- Add entry {`key', `data'}.
 		do
-			recursive_force (key, data, root, Void)
+			recursive_force (key, root, Void)
 		end
 
-	remove (key: K) is
+	remove (key: like root) is
 			-- Remove entry with `key' if it exists.
 		do
+			-- delete link in linked-list
+			if key /= Void then
+					if (not key.item.feature_name.out.is_equal(first.item.feature_name.out)) then
+						key.previous.set_next (key.next)
+					else
+						first := key.next
+						key.set_previous (Void)
+					end
+					if (not key.item.feature_name.out.is_equal(last.item.feature_name.out)) then
+						key.next.set_previous(key.previous)
+					else
+						last := key.previous
+						key.previous.set_next (Void)
+					end
+					key.set_next(Void)
+					key.set_previous (Void)
+				end
+
+			-- avl-remove
 			recursive_remove (key, root, Void)
 		end
 
@@ -102,10 +134,6 @@ feature {NONE} -- Implementation
 		local
 			temp: like root
 		do
-			debug
-				io.putstring("a rotation occured")
-			end
-
 			if node.balance = 2 then
 				if node.right.balance = -1 then
 					temp := node.right.left
@@ -137,7 +165,7 @@ feature {NONE} -- Implementation
 					temp.right.set_balance (-temp.balance)
 				end
 			end
-			append (temp, parent, node.key, true)
+			append (temp, parent, node, true)
 		end
 
 	adjust_balance (node: like root) is
@@ -182,7 +210,7 @@ feature {NONE} -- Implementation
 			right.set_left (node)
 		end
 
-	recursive_force (key: K; data: G; node: like root; parent: like root) is
+	recursive_force (key: like root; node: like root; parent: like root) is
 			-- Recursively add entry to subtree rooted at `node'.
 		require
 			key_exists: key /= Void
@@ -192,22 +220,23 @@ feature {NONE} -- Implementation
 		do
 			if node = Void then
 				if parent = Void then	-- node = root
-					create root.make (key, data)
+					create root.make (key.item)
+
 					first := root
 					last := root
 				else
-					create new.make (key, data)
+					create new.make (key.item)
 					append (new, parent, key, false)
 					increase_height (parent, key, 1)
 				end
-			elseif key.is_equal (node.key) then
-				node.set_item (data)
+			elseif key.is_equal (node) then
+				node.set_item (key.item)
 			else
 				old_balance := node.balance
-				if key < node.key then
-					recursive_force (key, data, node.left, node)
+				if key < node then
+					recursive_force (key, node.left, node)
 				else
-					recursive_force (key, data, node.right, node)
+					recursive_force (key, node.right, node)
 				end
 				if must_rotate (node) then
 					rotate (node, parent)
@@ -220,7 +249,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	recursive_remove (key: K; node: like root; parent: like root) is
+	recursive_remove (key: like root; node: like root; parent: like root) is
 			-- Remove entry `key'.
 		require
 			key_exists: key /= Void
@@ -234,9 +263,9 @@ feature {NONE} -- Implementation
 				replacement := node
 
 				-- recursively remove `key'
-				if key < node.key then
+				if key < node then
 					recursive_remove (key, node.left, node)
-				elseif key > node.key then
+				elseif key > node then
 					recursive_remove (key, node.right, node)
 				else
 					-- find replacement
@@ -246,18 +275,7 @@ feature {NONE} -- Implementation
 						replacement := node.left
 					else
 						replacement := rightmost (node.left)
-						recursive_remove (replacement.key, node.left, node)
-					end
-					-- delete link in list
-					if node /= first then
-						node.previous.set_next (node.next)
-					else
-						first := node.next
-					end
-					if node /= last then
-						node.next.set_previous(node.previous)
-					else
-						last := node.previous
+						recursive_remove (replacement, node.left, node)
 					end
 
 					-- replace `node' with `replacement'
@@ -278,7 +296,7 @@ feature {NONE} -- Implementation
 						node.set_balance (0)
 					end
 						-- add replacement
-						append (replacement, parent, key, false)
+						append (replacement, parent, key, true)
 				end
 
 				if replacement = Void then
@@ -295,7 +313,7 @@ feature {NONE} -- Implementation
 					-- adjust `parent.balance'
 					if parent /= Void then
 						-- update `replacement' in case of earlier rotation
-						if key < parent.key then
+						if key < parent then
 							replacement := parent.left
 						else
 							replacement := parent.right
@@ -318,7 +336,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	append (node: like root; parent: like root; key: K; from_rotate: BOOLEAN) is
+	append (node: like root; parent: like root; key: like root; dont_change_links: BOOLEAN) is
 			-- Append `node' to `parent' or set `root' to `node'.
 			-- `key' indicates which subtree of `parent' to replace.
 		require
@@ -327,12 +345,12 @@ feature {NONE} -- Implementation
 			if parent = Void then
 				root := node
 			else
-				if key < parent.key then
+				if key < parent then
 					-- avl insert
 					parent.set_left (node)
 
 					-- linked-list pointers
-					if not from_rotate then
+					if (not dont_change_links) and (node /= Void) then
 						node.set_next (parent)
 						node.set_previous(parent.previous)
 
@@ -348,7 +366,7 @@ feature {NONE} -- Implementation
 					parent.set_right (node)
 
 					-- linked-list pointers
-					if not from_rotate then
+					if not dont_change_links and (node /= Void) then
 						node.set_previous (parent)
 						node.set_next(parent.next)
 
@@ -363,16 +381,16 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			root: (parent = Void) implies (root = node)
-			left_child: (parent /= Void and then key < parent.key) implies (parent.left = node)
-			right_child: (parent /= Void and then key > parent.key) implies (parent.right = node)
+			left_child: (parent /= Void and then key < parent) implies (parent.left = node)
+			right_child: (parent /= Void and then key > parent) implies (parent.right = node)
 		end
 
-	increase_height (node: like root; key: K; delta: INTEGER) is
+	increase_height (node: like root; key: like root; delta: INTEGER) is
 			-- Increase height of subtree of `node' containing `key' by `delta'.
 		require
 			node_exists: node /= Void
 		do
-			if key < node.key then
+			if key < node then
 				node.set_balance (node.balance - delta)
 			else
 				node.set_balance (node.balance + delta)
@@ -380,7 +398,7 @@ feature {NONE} -- Implementation
 		end
 
 
-feature {NONE} -- Debugging
+feature {EB_SMART_EDITOR} -- Debugging
 
 	recursive_dump (node: like root; prefix_string: STRING; is_left_child: BOOLEAN) is
 			-- Dump subtree rooted at `node' with indentation `indent'.
@@ -453,34 +471,28 @@ feature {NONE} -- Debugging
 	validity: BOOLEAN
 			-- validity of `Current'; only changed by calling `is_valid'.
 
-feature -- debug
-	-- debug clauses for public access
-
-	printout is
-			-- prints the tree
-		do
-			dump
-		end
-
 	traverse_list_printout is
 			-- prints all nodes by traversing the linked list
 		local
 			node: like root
+			i: INTEGER
 		do
 			from
 				node := first
+				i := 0
 				io.put_string("folding areas:%N%T")
 			until
-				node = Void
+				node = Void or i > 20
 			loop
-				io.put_string("[" + node.key.out + "] ")
+				io.put_string("[" + node.start_line.out + "] ")
 
 				--inc
 				node := node.next
+				i := i+1
 			end
 			if first /= Void then
 				io.put_new_line
-				io.put_string("%Tfirst:%T" + first.key.out + "%N%Tlast:%T" + last.key.out + "%N")
+				io.put_string("%Tfirst:%T" + first.start_line.out + "%N%Tlast:%T" + last.start_line.out + "%N")
 				io.put_string("%Theight: " + height(root).out + "%N")
 			end
 		end

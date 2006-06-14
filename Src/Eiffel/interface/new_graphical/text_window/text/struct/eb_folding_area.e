@@ -8,26 +8,43 @@ indexing
 	revision: "$0.1$"
 
 class
-	EB_FOLDING_AREA  [K -> INTEGER, G -> FEATURE_AS]
+	EB_FOLDING_AREA
+
+	inherit
+		COMPARABLE
 
 create
 	make
 
 feature -- Initialization
 
-	make (k: K; d: G) is
-			-- Set `key' and `item'.
+	make (k: FEATURE_AS) is
+			-- initialize current, set item start- & endlines, hidden := false
 		require
 			key_exists: k /= Void
 		do
-			key := k
-			item := d
+			item := k
+			start_line := k.start_location.line
+			end_line := k.end_location.line
+			hidden := false
 		ensure
-			key_set: key = k
-			item_set: item = d
+			item_set: item = k
 		end
 
-feature -- hidden states
+	make_with_hidden_status(k: FEATURE_AS; h: BOOLEAN) is
+			-- initialize current, set item start- & endlines, hidden := h
+		require
+			key_exists: k /= Void
+		do
+			item := k
+			start_line := k.start_location.line
+			end_line := k.end_location.line
+			hidden := true
+		ensure
+			item_set: item = k
+		end
+
+feature -- hidden status change
 
 	hide is
 			-- hides 'current'
@@ -47,12 +64,13 @@ feature -- hidden states
 			hidden := not hidden
 		end
 
+feature -- hidden - access
+
+	hidden: BOOLEAN
+		-- is 'current' hidden?
+
 feature -- Access
-
-	key: K
-			-- Key for `item'.
-
-	item: G
+	item: FEATURE_AS
 			-- Data associated with `key'.
 
 	left: like Current
@@ -80,8 +98,31 @@ feature -- Access
 			result :=  start_line - end_line
 		end
 
-	hidden: BOOLEAN
-		-- is 'current' hidden?
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is current object less than `other'?
+		do
+			result := (current.start_line < other.start_line)
+		end
+
+feature {EB_SMART_EDITOR} -- Element change
+
+	set_start_line(a_line: like start_line) is
+			-- sets 'start_line' to 'a_line'
+		do
+			start_line := a_line
+		ensure
+			correctly_set: start_line = a_line
+		end
+
+	set_end_line(a_line: like end_line) is
+			-- sets 'start_line' to 'a_line'
+		do
+			end_line := a_line
+		ensure
+			correctly_set: end_line = a_line
+		end
 
 feature {EB_FOLDING_AREA_TREE} -- Element change
 
@@ -101,7 +142,7 @@ feature {EB_FOLDING_AREA_TREE} -- Element change
 			right_assigned: right = a_right
 		end
 
-	set_item (i: G) is
+	set_item (i: FEATURE_AS) is
 			-- Replace `item' with `i'.
 		do
 			item := i

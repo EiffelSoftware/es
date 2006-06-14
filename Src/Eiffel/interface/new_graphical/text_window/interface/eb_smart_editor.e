@@ -208,26 +208,45 @@ feature -- Autocomplete
 			if dev_window.stone /= Void and then text_displayed.click_tool_enabled then
 				text_displayed.update_click_list (dev_window.stone, after_save)
 				process_click_tool_error
+				update_folding_areas
 			end
 		end
 
 feature {NONE} -- Text folding
 
-	folding_areas: EB_FOLDING_AREA_TREE[INTEGER, FEATURE_AS]
+	folding_areas: EB_FOLDING_AREA_TREE
 		-- structure containing all folding regions
 
 	initialize_folding_areas is
-			-- initial generation of reports
-		local
-			the_feature_clauses: EIFFEL_LIST[FEATURE_CLAUSE_AS]
-			the_features:EIFFEL_LIST[FEATURE_AS]
+			-- initial generation of folding_areas, called on class-loading
 		do
+			-- set tree void to delete it if necessary
+			folding_areas := Void
+
 			-- init the folding_area datastructure
 			create folding_areas.make
+			folding_areas_is_initialized := false
 
-			if text_displayed.click_tool_enabled then
-				-- a list of feature clauses
+			-- update all areas
+			update_folding_areas
+
+			debug ("code_folding")
+				folding_areas.traverse_list_printout
+			end
+		end
+
+	update_folding_areas is
+			-- updates the folding_areas to reflect all changes in the currently loaded class
+
+		local
+			the_feature_clauses: EIFFEL_LIST[FEATURE_CLAUSE_AS]
+			the_features: EIFFEL_LIST[FEATURE_AS]
+			current_feature: FEATURE_AS
+			a_area, temp_next: EB_FOLDING_AREA
+		do
+			if (text_displayed.click_tool_enabled and then syntax_is_correct) then
 				the_feature_clauses := text_displayed.click_tool.current_class_as.features
+				a_area := folding_areas.first
 
 				from the_feature_clauses.start
 				until the_feature_clauses.after
@@ -238,39 +257,111 @@ feature {NONE} -- Text folding
 					from the_features.start
 					until the_features.after
 					loop
-						folding_areas.extend (the_features.item.start_location.line, the_features.item)
+						-- note: don't advance the_features - counter on deletion of a_area
 
-						--inc
-						the_features.forth
+						current_feature := the_features.item
+						if (a_area = Void) then
+							-- the tree was empty, let's build it from scratch
+							create a_area.make (current_feature)
+							folding_areas.extend (a_area)
+
+							-- inc
+							a_area := a_area.next
+							the_features.forth
+						elseif (current_feature.feature_name.out.is_equal(a_area.item.feature_name.out)) then
+							-- the features are the same (i.e. have the same name)
+								-- did the start-line change?
+								-- 		as the feature has still the same position in the doubly-linked list,
+								-- 		there are no changes to the tree needed -> just update the linenumbers.
+							synchronize_folding_line_numbers (current_feature, a_area)
+
+							-- inc
+							a_area := a_area.next
+							the_features.forth
+
+						else
+							-- the features are not the same
+							if current_feature.start_location.line >= a_area.start_line then
+								-- 'current_feature' is lower than a_area -> a_area has been deleted.
+								temp_next := a_area.next
+								folding_areas.remove (a_area)
+								a_area := temp_next
+								debug ("code_folding")
+									io.put_string("different name, new one is lower then old%N")
+									folding_areas.traverse_list_printout
+								end
+
+								-- check line_numbers
+								-- 		check for void object is needed, as we could have deleted the last one in the list,
+								-- 		in which case a line check is needless.
+								if (a_area /= Void and then current_feature /= Void) then
+									synchronize_folding_line_numbers (current_feature, a_area)
+								end
+
+							else
+								-- the feature is higher than a_area -> it's a new feature, and a_area may still be in the tree
+								-- do not advance a_area pointer
+								folding_areas.extend (create {EB_FOLDING_AREA}.make (current_feature))
+								debug ("code_folding")
+									io.put_string("different name, new one is higher -> a new feature%N")
+									folding_areas.traverse_list_printout
+								end
+								--inc
+								the_features.forth
+							end
+						end
 					end
 					-- inc
 					the_feature_clauses.forth
 				end
 
-				debug
-					-- let's see something!
-					folding_areas.traverse_list_printout
+				-- all features in the AST have been processed at this point.
+				-- if there are any more in the folding-tree -> delete them
+				if a_area /= Void then
+					from
+					until
+						a_area = Void
+					loop
+						temp_next := a_area.next
+						folding_areas.remove (a_area)
+						a_area := temp_next
+					end
 				end
+
+				debug ("code_folding")
+					-- let's see something!
+					io.put_string("folding_areas updated: %N")
+					folding_areas.traverse_list_printout
+					io.put_new_line
+				end
+
+				folding_areas_is_initialized := true
 			else
 				-- we cant do anything.
-				debug
-					io.put_string("click-tool not enabled, folding_areas not generated%N")
+				debug ("code_folding")
+					io.put_string("syntax error or click-tool not enabled, folding_areas not updated%N")
 				end
+				folding_areas_is_initialized := false
 			end
 		end
 
---	update_reports is
---			--
---			do
---
---			end
---
---	report_walk is
---			-- walks over all reports
---		do
---
---		end
+	synchronize_folding_line_numbers(a_new: FEATURE_AS; a_old: EB_FOLDING_AREA) is
+			-- updates the start- and endlines of 'old' to reflect those in 'new'
+		require
+			not_void: a_old /= Void and a_new /= Void
+		do
+			if (a_new.start_location.line /= a_old.start_line) then
+				a_old.set_start_line (a_new.start_location.line)
+				a_old.set_end_line (a_new.end_location.line)
+			end
+		ensure
+			correctly_synchronized:
+				a_old.start_line = a_new.start_location.line
+				a_old.end_line = a_new.end_location.line
+		end
 
+	folding_areas_is_initialized: BOOLEAN
+		-- are the folding_areas initialized?
 
 feature {NONE} -- Text loading
 
