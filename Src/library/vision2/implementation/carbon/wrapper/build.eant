@@ -15,7 +15,7 @@
   <!-- Implementation -->
 
   <target name="init_ewg">
-    <set name="system_dir" value="${CARBONWRAP}"/>
+    <set name="system_dir" value="${ISE_LIBRARY}/library/vision2/implementation/carbon/wrapper"/>
     <set name="ewg.library_name" value="carbon"/>
     <set name="ewg.short_header_name" value="Carbon/Carbon.h"/>
     <set name="ewg.full_header_name" value="/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Versions/A/Headers/Carbon.h"/>
