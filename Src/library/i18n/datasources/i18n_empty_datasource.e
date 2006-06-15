@@ -21,6 +21,7 @@ feature {NONE} -- Initialization
 			string_count := 0
 			plural_forms := 2
 			plural_form_identifier := "n != 1;"
+			retrieval_method := retrieve_by_string -- Object-oriented
 		end
 
 

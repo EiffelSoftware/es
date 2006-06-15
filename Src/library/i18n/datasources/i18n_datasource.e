@@ -18,6 +18,16 @@ feature -- Source information
 	plural_form_identifier: STRING_32
 			-- Identifier of the plural form function
 
+	retrieval_method: INTEGER
+			-- Method to use to retrieve strings
+			-- retrieve_by_type: first all originals, then all translateds
+			--   (to preserve spatial locality, i.e. in files)
+			-- retrieve_by_string: in order, original and translated, then next string
+			--   (to be more object oriented, used i.e. in databases)
+
+	retrieve_by_type, retrieve_by_string: INTEGER is unique
+			-- Defines the retrieval methods
+
 feature -- Status setting
 	open is
 			-- Open and prepare the datasource.

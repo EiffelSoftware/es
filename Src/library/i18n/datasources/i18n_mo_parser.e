@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 		do
 			mo_file := a_file
 			file_exists := true
+			retrieval_method := retrieve_by_type -- Preserve spatial locality
 		ensure
 			mo_file_set: mo_file = a_file
 		end
