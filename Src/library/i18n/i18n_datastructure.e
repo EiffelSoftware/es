@@ -180,7 +180,7 @@ feature {NONE} -- Implementation
 			loop
 				create temp_string.make_with_id(i)
 				temp_string.set_plural_forms(i18n_datasource.plural_forms)
-				temp_string.set_originals(i18n_datasource.get_originals(i))
+				temp_string.set_original(i18n_datasource.get_original(i))
 				array.put(temp_string, i)
 				i := i + 1
 			end
@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 			until
 				i > i18n_datasource.string_count
 			loop
-				array.item(i).set_translateds(i18n_datasource.get_translateds(i))
+				array.item(i).set_translated(i18n_datasource.get_translated(i))
 				i := i + 1
 			end
 		end

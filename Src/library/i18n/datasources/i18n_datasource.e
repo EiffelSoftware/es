@@ -58,7 +58,7 @@ feature -- Status report
 		end
 
 feature -- Basic operations
-	get_originals(i_th: INTEGER): LIST[STRING_32] is
+	get_original(i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' original string?
 		require
 			valid_index: valid_index(i_th)
@@ -67,7 +67,7 @@ feature -- Basic operations
 			result_exists: Result /= Void
 		end
 
-	get_translateds(i_th: INTEGER): LIST[STRING_32] is
+	get_translated(i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' translated string?
 		require
 			valid_index: valid_index(i_th)

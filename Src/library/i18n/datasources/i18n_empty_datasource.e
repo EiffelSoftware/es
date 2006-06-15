@@ -38,13 +38,13 @@ feature -- Status setting
 		end
 
 feature -- Basic operations
-	get_originals(i_th: INTEGER): LIST[STRING_32] is
+	get_original(i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' original string?
 		do
 			-- Do nothing.
 		end
 
-	get_translateds(i_th: INTEGER): LIST[STRING_32] is
+	get_translated(i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' translated string?
 		do
 			-- Do nothing.

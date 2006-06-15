@@ -91,7 +91,7 @@ feature -- Basic operations
 			hash_set: hash = a_hash
 		end
 
-	set_originals(a_originals: LIST[STRING_32]) is
+	set_original(a_originals: LIST[STRING_32]) is
 			-- Set the i_th original string.
 		require
 			valid_string: a_originals /= Void
@@ -101,7 +101,7 @@ feature -- Basic operations
 			originals_set: originals.count = a_originals.count
 		end
 
-	set_translateds(a_translateds: LIST[STRING_32]) is
+	set_translated(a_translateds: LIST[STRING_32]) is
 			-- Set the i_th translated string.
 		require
 			valid_string: a_translateds /= Void

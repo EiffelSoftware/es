@@ -107,47 +107,7 @@ feature -- File information
 		end
 
 feature -- Basic operation
-	get_original(i_th: INTEGER): STRING_32 is
-			-- get i_th original string in the file
-		obsolete
-			"Use get_originals instead."
-		require
-			valid_index: valid_index(i_th)
-			correct_file: file_exists and then is_valid
-		local
-			string_length, string_offset: INTEGER
-		do
-			mo_file.go(original_table_offset + (i_th - 1) * 8)
-			string_length := read_integer
-			string_offset := read_integer
-			mo_file.go(string_offset)
-			mo_file.read_stream(string_length)
-			create Result.make_from_string(mo_file.last_string)
-		ensure
-			result_exists: Result /= Void
-		end
-
-	get_translated(i_th: INTEGER): STRING_32 is
-			-- What's the i-th translated string?
-		obsolete
-			"Use get_translateds instead."
-		require
-			valid_index: valid_index(i_th)
-			correct_file: file_exists and is_valid
-		local
-			string_length, string_offset: INTEGER
-		do
-			mo_file.go(translated_table_offset + (i_th - 1) * 8)
-			string_length := read_integer
-			string_offset := read_integer
-			mo_file.go(string_offset)
-			mo_file.read_stream(string_length)
-			create Result.make_from_string(mo_file.last_string)
-		ensure
-			result_exists: Result /= Void
-		end
-
-	get_originals(i_th: INTEGER): LIST[STRING_32] is
+	get_original(i_th: INTEGER): LIST[STRING_32] is
 			-- get `i_th' original string in the file
 		require else
 			correct_file: file_exists and then is_valid
@@ -155,7 +115,7 @@ feature -- Basic operation
 			Result := extract_string(original_table_offset, i_th).split('%U')
 		end
 
-	get_translateds(i_th: INTEGER): LIST[STRING_32] is
+	get_translated(i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i-th' translated string?
 		require else
 			correct_file: file_exists and is_valid
@@ -194,7 +154,7 @@ feature {NONE} --Implementation
 			-- Which is the a_number-th string into the table at a_offset?
 		require
 			valid_offset: (a_offset = translated_table_offset) or (a_offset = original_table_offset)
-			valid_number: (0 <= a_number) and (a_number <= string_count)
+			valid_number: (1 <= a_number) and (a_number <= string_count)
 			correct_file: file_exists and then is_valid
 		local
 			string_length,
@@ -291,7 +251,7 @@ feature {NONE} --Implementation
 		do
 			char0 := '0'
 			code0 := char0.code
-			t_list := get_translateds (1).i_th (1).split ('%N')
+			t_list := get_translated(1).i_th(1).split('%N')
 			 -- Search the informations
 			from
 				t_list.start
