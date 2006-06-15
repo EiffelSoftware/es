@@ -20,13 +20,14 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_pl(a_string: TUPLE[STRING_GENERAL, STRING_GENERAL]; a_num: INTEGER): STRING_32 is
+	i18n_pl(a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
 			-- What's the a_num-th plural of the string?
 			-- NOTE: Should change the name?
 		require
-			valid_string: a_string /= Void
+			valid_singular: a_singular /= Void
+			valid_plural: a_plural /= Void
 		do
-			Result := localizator.translate_plural(a_string, a_num)
+			Result := localizator.translate_plural(a_singular, a_plural, a_num)
 		ensure
 			valid_result: Result /= Void
 		end
@@ -34,6 +35,8 @@ feature {NONE} -- Basic operations
 	i18n_comp(a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
 			-- What's the completed form of the template?
 			-- NOTE: Should change the name!
+		obsolete
+			"You should use a different template engine! The built-in one will be removed."
 		require
 			valid_string: a_string /= Void
 			valid_args: a_args /= Void
@@ -47,17 +50,20 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_comp_pl(a_string: TUPLE[STRING_GENERAL, STRING_GENERAL]; a_args: TUPLE; i_th: INTEGER): STRING_32 is
+	i18n_comp_pl(a_singular, a_plural: STRING_GENERAL; a_args: TUPLE; i_th: INTEGER): STRING_32 is
 			-- What's the i_th completed form of the template?
 			-- NOTE: Should change the name!
+		obsolete
+			"You should use a different template engine! The built-in one will be removed."
 		require
-			valid_string: a_string /= Void
+			valid_singular: a_singular /= Void
+			valid_plural: a_plural /= Void
 			valid_args: a_args /= Void
 		local
 			l_string: STRING_32
 				-- Temporary string
 		do
-			l_string := localizator.translate_plural(a_string, i_th)
+			l_string := localizator.translate_plural(a_singular, a_plural, i_th)
 			Result := localizator.solve_template(l_string, a_args)
 		ensure
 			valid_result: Result /= Void

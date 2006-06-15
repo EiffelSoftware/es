@@ -38,20 +38,21 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		require
 			valid_string: a_string /= Void
 		do
-			Result := i18n_datastructure.translate([a_string, ""], 1)
+			Result := i18n_datastructure.translate(a_string, "", 1)
 		ensure
 			valid_result: Result /= Void
 		end
 
-	translate_plural(a_string: TUPLE[STRING_GENERAL, STRING_GENERAL]; a_num: INTEGER): STRING_32 is
+	translate_plural(a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
 			-- What's the a_num-th translated plural of the string?
 		require
-			valid_string: a_string /= Void
+			valid_singular: a_singular /= Void
+			valid_plural: a_plural /= Void
 		local
 			temp_string: STRING_GENERAL
 				-- Temporary string
 		do
-			Result := i18n_datastructure.translate(a_string, a_num)
+			Result := i18n_datastructure.translate(a_singular, a_plural, a_num)
 		ensure
 			valid_result: Result /= Void
 		end

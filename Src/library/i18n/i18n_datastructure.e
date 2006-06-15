@@ -79,11 +79,12 @@ feature {NONE} -- Basic operations
 		end
 
 feature -- Translation
-	translate(a_string: TUPLE[STRING_GENERAL, STRING_GENERAL]; i_th: INTEGER): STRING_32 is
+	translate(a_singular, a_plural: STRING_GENERAL; i_th: INTEGER): STRING_32 is
 			-- Can you give me the translation?
 			-- aka interface to the TRANSLATOR class
 		require
-			valid_string: a_string /= Void
+			valid_singular: a_singular /= Void
+			valid_plural: a_plural /= Void
 		local
 			l_hash: INTEGER
 				-- Temporary hash
@@ -94,27 +95,21 @@ feature -- Translation
 			l_string: STRING_32
 				-- STRING_32 representation
 		do
-			temp_string ?= a_string.item(1)
-			if temp_string /= Void then
-				if temp_string.is_equal("") then
-					Result := ""
+			if a_singular.is_equal("") then
+				Result := ""
+			else
+				l_string := a_singular.as_string_32
+				l_hash := hash_string(l_string)
+				l_plural := i18n_plural_forms.get_plural_form(i_th)
+				if hash_table.has(l_hash) then
+					-- The string is into the hashing table.
+					Result := take_from_hash(l_hash, l_plural)
 				else
-					l_string := temp_string.as_string_32
-					l_hash := hash_string(l_string)
-					l_plural := i18n_plural_forms.get_plural_form(i_th)
-					if hash_table.has(l_hash) then
-						-- The string is into the hashing table.
-						Result := take_from_hash(l_hash, l_plural)
+					-- No string found, serve the argument.
+					if i_th /= 1 then
+						Result := a_plural.as_string_32
 					else
-						-- No string found, serve the argument.
-						if i_th /= 1 then
-							temp_string ?= a_string.item(2)
-							if temp_string /= Void then
-								Result := temp_string.as_string_32
-							end
-						else
-							Result := l_string
-						end
+						Result := l_string
 					end
 				end
 			end
