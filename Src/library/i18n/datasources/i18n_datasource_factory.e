@@ -9,10 +9,10 @@ class
 	I18N_DATASOURCE_FACTORY
 
 create {I18N_LOCALIZATOR}
-	make
+	make_empty
 
 feature {NONE}
-	make is
+	make_empty is
 			-- Creation procedure.
 		do
 			create {I18N_EMPTY_DATASOURCE} last_datasource.make
@@ -27,23 +27,24 @@ feature -- Access
 
 feature -- Basic operations
 	use_mo_file(a_path: STRING) is
-			-- Create a datasource using an mo file.
+			-- Create a datasource using an MO file.
+			-- last_datasource will be Void if the file is not a valid MO
 		require
 			valid_path: a_path /= Void
 			not_empty_path: not a_path.is_empty
 		local
-			l_file: RAW_FILE
-				-- Temporary file
 			l_mo_parser: I18N_MO_PARSER
 				-- Temporary parser
 		do
-			create l_file.make(a_path)
-			if l_file.exists then
-				l_file.open_read
-				create l_mo_parser.make_with_file(l_file)
+			create l_mo_parser.make_with_file_name(a_path)
+			l_mo_parser.open_file
+			if l_mo_parser.is_open and then l_mo_parser.is_valid then
+				last_datasource := l_mo_parser
 			else
 				last_datasource := Void
 			end
+		ensure
+			last_datasource /= Void implies last_datasource.is_ready
 		end
 
 	use_empty_source is

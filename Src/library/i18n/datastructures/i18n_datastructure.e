@@ -18,7 +18,9 @@ feature {NONE} -- Initialization
 			valid_datasource: a_datasource /= Void
 		do
 			i18n_datasource := a_datasource
-			i18n_datasource.open
+			if not i18n_datasource.is_open then
+				i18n_datasource.open
+			end
 			if i18n_datasource.is_ready then
 				populate_array
 				populate_hash_table

@@ -17,25 +17,29 @@ inherit
 	UC_IMPORTED_UTF8_ROUTINES
 
 create {I18N_DATASOURCE_FACTORY}
-	make_with_file
+	make_with_file_name
 
 feature {NONE} -- Initialization
-	make_with_file(a_file: RAW_FILE) is
-			-- Using a_file
+	make_with_file_name(a_name: STRING) is
+			-- Using a_name as the name of the MO file
 		require
-			valid_file: a_file /= Void
-			file_open: a_file.is_open_read
+			valid_name: a_name /= Void
+			not_empty_path: not a_name.is_empty
 		do
-			mo_file := a_file
-			file_exists := true
+			create mo_file.make (a_name)
+			file_exists := mo_file.exists
 			retrieval_method := retrieve_by_type -- Preserve spatial locality
 		ensure
-			mo_file_set: mo_file = a_file
+			mo_file_set: mo_file /= Void
+			file_still_closed: mo_file.is_closed
+			datasource_still_closed: is_closed
 		end
 
 feature -- Status setting
 	open_file is
 			-- Open mo_file.
+		require else
+			not_already_open: is_closed
 		do
 			mo_file.open_read
 			if mo_file.is_open_read then
@@ -61,15 +65,15 @@ feature -- Status setting
 					hash_table_offset := read_integer
 					extract_plural_informations
 				end
+				is_open := true
 			end
-			is_open := true
 		end
 
 	close_file is
 			-- Close mo_file.
 		do
 			mo_file.close
-			is_open := mo_file.is_closed
+			is_open := not mo_file.is_closed
 		end
 
 feature -- File information

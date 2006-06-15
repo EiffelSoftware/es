@@ -89,8 +89,8 @@ feature -- Create window elements
 		do
 			label.set_text (i18n_comp ("n is now equal $1", [n]))
 			simple_label.set_text (names.simple)
-			simple_comp_label.set_text (i18n_pl (["This is singular","This is plural"],n))
-			plural_comp_label.set_text (i18n_comp_pl (["There is 1 file","There are $1 files"], [n], n))
+			simple_comp_label.set_text (i18n_pl ("This is singular","This is plural",n))
+			plural_comp_label.set_text (i18n_comp_pl ("There is 1 file","There are $1 files", [n], n))
 			first_window.refresh_now
 			io.put_string (label.text+"%N"+simple_label.text+"%N"+simple_comp_label.text+"%N"+plural_comp_label.text+"%N")
 		end
@@ -121,13 +121,13 @@ feature -- Create window elements
 	disp_2 is
 			--
 		do
-			io.put_string (i18n_pl (["singular","plural"], n)+"%N")
+			io.put_string (i18n_pl ("singular","plural", n)+"%N")
 		end
 
 	disp_3 is
 			--
 		do
-			io.put_string (i18n_comp_pl (["singular: $1","plura: $1"], [n], n)+"%N")
+			io.put_string (i18n_comp_pl ("singular: $1","plura: $1", [n], n)+"%N")
 		end
 
 
