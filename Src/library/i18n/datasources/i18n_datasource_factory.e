@@ -39,6 +39,7 @@ feature -- Basic operations
 		do
 			create l_file.make(a_path)
 			if l_file.exists then
+				l_file.open_read
 				create l_mo_parser.make_with_file(l_file)
 			else
 				last_datasource := Void
