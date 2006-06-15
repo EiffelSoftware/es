@@ -20,7 +20,12 @@ feature {NONE} -- Initialization
 			-- (Wiki: http://eiffersoftware.origo.ethz.ch/index.php/Internationalization)
 			create i18n_datasource_factory.make
 			i18n_datasource_factory.use_mo_file("/home/etienne/messages.mo")
-			create i18n_datastructure.make_with_datasource(i18n_datasource_factory.last_datasource)
+			if i18n_datasource_factory.last_datasource /= Void then
+				create i18n_datastructure.make_with_datasource(i18n_datasource_factory.last_datasource)
+			else
+				i18n_datasource_factory.use_empty_source
+				create i18n_datastructure.make_with_datasource (i18n_datasource_factory.last_datasource)
+			end
 			create i18n_template_formatter.make
 		ensure
 			valid_datastructure: i18n_datastructure /= Void

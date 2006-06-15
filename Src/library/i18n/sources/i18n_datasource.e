@@ -83,6 +83,6 @@ invariant
 	valid_plural_form_identifier: plural_form_identifier /= Void and then not plural_form_identifier.is_empty
 
 	is_open = not is_closed
-	is_ready implies is_open
+	is_ready = is_open
 
 end

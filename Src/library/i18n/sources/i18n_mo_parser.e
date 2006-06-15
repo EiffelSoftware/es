@@ -36,27 +36,30 @@ feature -- Status setting
 	open_file is
 			-- Open mo_file.
 		do
-			-- Read magic number.
-			mo_file.read_integer
-			if mo_file.last_integer = 0xde120495 then
-				is_big_endian := True
-			elseif mo_file.last_integer = 0x950412de then
-				is_little_endian := True
-			end
-			if is_valid then
-				-- Read mo file version.
-				version := read_integer
-				-- Read number of strings.
-				string_count := read_integer
-				-- Read offset of original strings' table.
-				original_table_offset := read_integer
-				-- Read offset of translated strings' table.
-				translated_table_offset := read_integer
-				-- Read size of hashing table.
-				hash_table_size := read_integer
-				-- Read offset of hashing table.
-				hash_table_offset := read_integer
-				extract_plural_informations
+			mo_file.open_read
+			if mo_file.is_open_read then
+				-- Read magic number.
+				mo_file.read_integer
+				if mo_file.last_integer = 0xde120495 then
+					is_big_endian := True
+				elseif mo_file.last_integer = 0x950412de then
+					is_little_endian := True
+				end
+				if is_valid then
+					-- Read mo file version.
+					version := read_integer
+					-- Read number of strings.
+					string_count := read_integer
+					-- Read offset of original strings' table.
+					original_table_offset := read_integer
+					-- Read offset of translated strings' table.
+					translated_table_offset := read_integer
+					-- Read size of hashing table.
+					hash_table_size := read_integer
+					-- Read offset of hashing table.
+					hash_table_offset := read_integer
+					extract_plural_informations
+				end
 			end
 			is_open := true
 		end

@@ -37,15 +37,22 @@ feature -- Basic operations
 			l_mo_parser: I18N_MO_PARSER
 				-- Temporary parser
 		do
-			create l_file.make_open_read(a_path)
-			if l_file.is_open_read then
+			create l_file.make(a_path)
+			if l_file.exists then
 				create l_mo_parser.make_with_file(l_file)
 			else
-				create {I18N_EMPTY_DATASOURCE} last_datasource.make
+				last_datasource := Void
 			end
-		ensure
-			valid_last_datasource: last_datasource /= Void and then last_datasource.is_ready
 		end
+
+	use_empty_source is
+			-- Create an empty datasource.
+		do
+			create {I18N_EMPTY_DATASOURCE} last_datasource.make
+		ensure
+			valid_datasource: last_datasource /= Void
+		end
+
 
 feature {NONE} -- Implementation
 
