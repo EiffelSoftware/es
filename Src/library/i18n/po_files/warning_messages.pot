@@ -1,11 +1,16 @@
 # WARNING_MESSAGES.E
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.0\n"
-"Report-Msgid-Bugs-To: leof@student.ethz.ch\n"
-"Content-Type: text/plain, charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Unicode-Works: çœŸ æ„›\n"
+  "Project-Id-Version: 0.0\n"
+  "Report-Msgid-Bugs-To: leof@student.ethz.ch\n"
+  "Content-Type: text/plain; charset=UTF-8\n"
+  "Content-Transfer-Encoding: 8bit\n"
+  "Unicode-Works: ç~\~_ æ~D~[\n"
+  "POT-Creation-Date: 2006-05-10 09:24+0100\n"
+  "PO-Revision-Date: 2006-05-10 09:24+0100\n"
+  "Last-Translator: YOUR_NAME_HERE\n"
+  "Language-Team: YOUR_TEAM_HERE\n"
+  "MIME-Version: 1.0\n"
 
 #. Name: w_Feature_is_not_compiled
 msgid "An error occurred on breakpoints because a feature%N was not correctly compiled.%N%N Recompiling the project completely will solve the problem."

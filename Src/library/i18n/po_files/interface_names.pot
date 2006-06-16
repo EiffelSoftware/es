@@ -3,18 +3,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0\n"
 "Report-Msgid-Bugs-To: leof@student.ethz.ch\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Unicode-Works: 真 愛\n"
-"POT-Creation-Date: \n"
+"POT-Creation-Date: 2006-05-10 09:24+0100\n"
 "PO-Revision-Date: 2006-05-10 09:24+0100\n"
-"Last-Translator: Martino <trosim@student.ethz.ch>\n"
-"Language-Team: \n"
+"Last-Translator: YOUR_NAME_HERE\n"
+"Language-Team: YOUR_TEAM_HERE\n"
 "MIME-Version: 1.0\n"
 
 #. Name: l_Identification
 msgid "Identification"
-msgstr "Identificazione"
+msgstr ""
 
 #. Name: f_diagram_show_clusters
 msgid "Show clusters"
