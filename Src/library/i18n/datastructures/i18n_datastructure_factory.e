@@ -12,12 +12,14 @@ create {I18N_LOCALIZATOR}
 	make_with_datasource
 
 feature {NONE} -- Initialization
+
 	make_with_datasource(a_datasource: I18N_DATASOURCE) is
 			-- Create factory with datasource.
 		require
 			valid_datasource: a_datasource /= Void
 		do
 			i18n_datasource := a_datasource
+			create {I18N_BYPASS_DATASTRUCTURE} last_datastructure.make_with_datasource(i18n_datasource)
 		ensure
 			datasource_set: i18n_datasource = a_datasource
 		end
@@ -32,6 +34,13 @@ feature -- Basic operations
 		do
 			create {I18N_HASH_TABLE} last_datastructure.make_with_datasource(i18n_datasource)
 		end
+
+	use_dummy is
+			-- Create a dummy datastructure.
+		do
+			create {I18N_BYPASS_DATASTRUCTURE} last_datastructure.make_with_datasource(i18n_datasource)
+		end
+
 
 feature {NONE} -- Implementation
 	i18n_datasource: I18N_DATASOURCE

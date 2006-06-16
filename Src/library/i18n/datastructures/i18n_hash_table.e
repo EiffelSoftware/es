@@ -17,12 +17,6 @@ create {I18N_DATASTRUCTURE_FACTORY}
 feature {NONE} -- Initialization
 	initialize is
 			-- Initialize the hash table
-		do
-			populate_hash_table
-		end
-
-	populate_hash_table is
-			-- Populates the hash table.
 		local
 			i: INTEGER
 				-- Iterator
@@ -42,16 +36,11 @@ feature {NONE} -- Initialization
 				hash_table.put(base_array.item(i), base_array.item(i).hash)
 				i := i + 1
 			end
+		ensure then
+			hash_table /= Void
 		end
 
 feature -- Basic operations
-	take_from_hash(a_hash, i_th: INTEGER): STRING_32 is
-			-- Which string is the translation of the a_hash-hashed one?
-		do
-			-- Simply get it from the hash table.
-			Result := hash_table.item(a_hash).get_translated(i_th)
-		end
-
 	search(a_string: STRING_32; i_th: INTEGER): STRING_32 is
 			-- Can you give me the translation?
 		local
@@ -65,7 +54,7 @@ feature -- Basic operations
 			l_hash := hash_string(a_string)
 			if hash_table.has(l_hash) then
 				-- The string is into the hashing table.
-				Result := take_from_hash(l_hash, i_th)
+				Result := hash_table.item(l_hash).get_translated(i_th)
 			else
 				-- Do nothing, return void
 			end

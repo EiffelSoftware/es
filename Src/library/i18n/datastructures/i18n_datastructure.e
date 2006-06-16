@@ -40,7 +40,7 @@ feature {NONE} -- Basic operations
 		end
 
 feature -- Translation
-	translate(a_singular, a_plural: STRING_GENERAL; i_th: INTEGER): STRING_32 is
+	translate(a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
 			-- Can you give me the translation?
 			-- aka interface to the LOCALIZATOR class
 		require
@@ -58,10 +58,10 @@ feature -- Translation
 				Result := ""
 			else
 				l_string := a_singular.as_string_32
-				l_plural_form := i18n_plural_forms.get_plural_form(i_th)
+				l_plural_form := i18n_plural_forms.get_plural_form(a_num)
 				Result := search(l_string, l_plural_form)
 				if Result = Void then
-					if i_th /= 1 then
+					if a_num /= 1 then
 						Result := a_plural.as_string_32
 					else
 						Result := l_string
@@ -69,16 +69,6 @@ feature -- Translation
 				end
 			end
 		end
-
-feature {NONE} -- Implementation
-	base_array: ARRAY[I18N_STRING]
-		-- Where all the strings are stored
-
-	i18n_datasource: I18N_DATASOURCE
-		-- Reference to the datasource
-
-	i18n_plural_forms: I18N_PLURAL_FORMS
-		-- Reference to the plural form resolver
 
 feature {NONE} -- Loading
 	populate_array is
@@ -161,16 +151,26 @@ feature {NONE} -- Loading
 				i := 1
 			invariant
 				i >= 1
-				i <= i18n_datasource.string_count + 1
+				i <= base_array.count + 1
 			variant
-				i18n_datasource.string_count + 1 - i
+				base_array.count + 1 - i
 			until
-				i > i18n_datasource.string_count
+				i > base_array.count
 			loop
 				base_array.item(i).set_translated(i18n_datasource.get_translated(base_array.item(i).id))
 				i := i + 1
 			end
 		end
+
+feature {NONE} -- Implementation
+	base_array: ARRAY[I18N_STRING]
+		-- Where all the strings are stored
+
+	i18n_datasource: I18N_DATASOURCE
+		-- Reference to the datasource
+
+	i18n_plural_forms: I18N_PLURAL_FORMS
+		-- Reference to the plural form resolver
 
 invariant
 	valid_array: base_array /= Void
