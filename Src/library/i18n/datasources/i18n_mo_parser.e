@@ -27,7 +27,6 @@ feature {NONE} -- Initialization
 			not_empty_path: not a_name.is_empty
 		do
 			create mo_file.make (a_name)
-			file_exists := mo_file.exists
 			retrieval_method := retrieve_by_type -- Preserve spatial locality
 		ensure
 			mo_file_set: mo_file /= Void
@@ -42,6 +41,8 @@ feature -- Status setting
 			not_already_open: is_closed
 		do
 			mo_file.open_read
+			is_big_endian := False
+			is_little_endian := False
 			if mo_file.is_open_read then
 				-- Read magic number.
 				mo_file.read_integer
@@ -64,9 +65,12 @@ feature -- Status setting
 					-- Read offset of hashing table.
 					hash_table_offset := read_integer
 					extract_plural_informations
+					is_open := true
+				else
+					close_file
 				end
-				is_open := true
 			end
+			is_open := not mo_file.is_closed
 		end
 
 	close_file is
@@ -86,7 +90,7 @@ feature -- File information
 	using_hash_table: BOOLEAN is
 			-- Are we using an hash table?
 		require
-			correct_file: file_exists and then is_valid
+			correct_file: is_open
 		do
 			Result := (hash_table_size > 0)
 		end
@@ -94,7 +98,7 @@ feature -- File information
 	original_system_information: STRING_32 is
 			-- Which original system information is attached to the mo file?
 		require
-			correct_file: file_exists and then is_valid
+			correct_file: is_open
 		do
 			Result := extract_string(original_table_offset, 0)
 		ensure
@@ -104,7 +108,7 @@ feature -- File information
 	translated_system_information : STRING_32 is
 			-- Which translated system information is attached to the mo file?
 		require
-			correct_file: file_exists and then is_valid
+			correct_file: is_open
 		do
 			Result := extract_string(translated_table_offset, 0)
 		ensure
@@ -115,7 +119,7 @@ feature -- Basic operation
 	get_original(i_th: INTEGER): LIST[STRING_32] is
 			-- get `i_th' original string in the file
 		require else
-			correct_file: file_exists and then is_valid
+			correct_file: is_open
 		do
 			Result := extract_string(original_table_offset, i_th).split('%U')
 		end
@@ -123,7 +127,7 @@ feature -- Basic operation
 	get_translated(i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i-th' translated string?
 		require else
-			correct_file: file_exists and is_valid
+			correct_file: is_open
 		do
 			Result := extract_string(translated_table_offset, i_th).split('%U')
 		end
@@ -135,7 +139,7 @@ feature -- Basic operation
 			"Actually not required, all the strings are hashed on load by the datastructure."
 		require
 			valid_index(i_th)
-			correct_file: file_exists and then is_valid
+			correct_file: is_open
 		do
 
 		end
@@ -143,15 +147,15 @@ feature -- Basic operation
 feature --Errors
 	is_valid: BOOLEAN is
 			-- is the file valid?
-		require
-			the_file_exists: file_exists
 		do
 			Result := is_big_endian or is_little_endian
 		end
 
-	file_exists: BOOLEAN
-		-- Does the file exist?
-
+	file_exists: BOOLEAN is
+			-- Does the file exist?
+		do
+			Result := mo_file.exists
+		end
 
 feature {NONE} --Implementation
 
@@ -160,7 +164,7 @@ feature {NONE} --Implementation
 		require
 			valid_offset: (a_offset = translated_table_offset) or (a_offset = original_table_offset)
 			valid_number: (1 <= a_number) and (a_number <= string_count)
-			correct_file: file_exists and then is_valid
+			correct_file: mo_file.is_open_read and then is_valid
 		local
 			string_length,
 			string_offset: INTEGER
@@ -221,8 +225,10 @@ feature {NONE} --Implementation
 
 	read_integer : INTEGER is
 			-- read an integer from the current
-			-- position in the mo file
+			-- position in the mo file, taking care of the endianness of the file
 			-- it moves the cursor
+		require
+			file_open: mo_file.is_open_read
 		local
 			b0, b1, b2, b3 : NATURAL_32
 		do
@@ -246,7 +252,7 @@ feature {NONE} --Implementation
 			-- extract from the mo file
 			-- the informations abount the plural forms
 		require
-			correct_file: file_exists and then is_valid
+			correct_file: mo_file.is_open_read and then is_valid
 		local
 			t_list : LIST[STRING_32]
 			t_string : STRING_32
@@ -308,5 +314,6 @@ invariant
 	big_xor_little_endian: (file_exists and then is_valid) implies (is_little_endian xor is_big_endian)
 	valid_mo_file: mo_file /= Void
 	is_open implies mo_file.is_open_read
+	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)
 
 end -- class I18N_MO_PARSER
