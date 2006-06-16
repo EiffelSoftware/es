@@ -197,14 +197,14 @@ feature {NONE} --Implementation
 				if ch_len > 0 then
 					-- we are in the middle of a multi-byte char
 					ch_len := ch_len - 1 -- one byte fewer to decode
-					code := code + l_ch.natural_32_code.bit_and (127) * (2^(6*ch_len)).truncated_to_integer.as_natural_32
+					code := code | ( l_ch.natural_32_code.bit_and (63) |<< (6*ch_len) )
 					if ch_len <= 0 then
 						-- this was last byte
 						Result.append_character (code.to_character_32)
 						code := code.zero
 					end
 				elseif utf8.is_encoded_first_byte (l_ch) then
-					ch_len := utf8.character_byte_count (l_ch)
+					ch_len := utf8.encoded_byte_count (l_ch)
 					if ch_len = 1 then
 						-- this is an ascii character
 						Result.append_character (l_ch.to_character_32)
