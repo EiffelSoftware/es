@@ -36,15 +36,12 @@ feature -- Basic operations
 			l_mo_parser: I18N_MO_PARSER
 				-- Temporary parser
 		do
-			create l_mo_parser.make_with_file_name(a_path)
-			l_mo_parser.open_file
-			if l_mo_parser.is_open and then l_mo_parser.is_valid then
+			create l_mo_parser.make_with_path(a_path)
+			if l_mo_parser.file_exists then
 				last_datasource := l_mo_parser
 			else
 				last_datasource := Void
 			end
-		ensure
-			last_datasource /= Void implies last_datasource.is_ready
 		end
 
 	use_empty_source is

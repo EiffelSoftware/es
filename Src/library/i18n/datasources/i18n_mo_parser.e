@@ -17,10 +17,10 @@ inherit
 	UC_IMPORTED_UTF8_ROUTINES
 
 create {I18N_DATASOURCE_FACTORY}
-	make_with_file_name
+	make_with_path
 
 feature {NONE} -- Initialization
-	make_with_file_name(a_name: STRING) is
+	make_with_path(a_name: STRING) is
 			-- Using a_name as the name of the MO file
 		require
 			valid_name: a_name /= Void
