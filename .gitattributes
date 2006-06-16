@@ -2026,6 +2026,8 @@ Src/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/library/gobo_extension/gobo_extension.ecf -text
 Src/library/i18n/documents/ClassDiagram.png -text
 Src/library/i18n/example/README -text
+Src/library/i18n/example/estudio/interface_names.pot -text
+Src/library/i18n/example/estudio/warning_messages.pot -text
 Src/library/i18n/example/it.mo -text
 Src/library/i18n/example/it.po -text
 Src/library/i18n/example/zh.mo -text
@@ -2033,8 +2035,6 @@ Src/library/i18n/example/zh.po -text
 Src/library/i18n/i18n.ecf -text
 Src/library/i18n/mo_files/it.mo -text
 Src/library/i18n/mo_files/zh.mo -text
-Src/library/i18n/po_files/interface_names.pot -text
-Src/library/i18n/po_files/warning_messages.pot -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/library/preferences/storage/preferences_storage_i.e -text
 Src/library/preferences/storage/registry/preference_storage_registry.e -text
