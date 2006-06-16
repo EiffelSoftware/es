@@ -6,6 +6,7 @@
 		</option>
 		<file_rule>
 			<exclude>/\.svn</exclude>
+			<exclude>/documents$</exclude>
 			<exclude>/mo_files$</exclude>
 			<exclude>/po_files$</exclude>
 			<exclude>/EIFGENs$</exclude>
