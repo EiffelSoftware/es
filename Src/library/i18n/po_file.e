@@ -37,9 +37,11 @@ feature
 			-- get an entry by msgid
 			require
 				key_not_void: msgid /= Void
-				entry_exists: has_entry (msgid.to_string_32)
+				entry_exists: has_entry(msgid.to_string_32)
 			do
 				Result := entries.item (msgid.to_string_32)
+			ensure
+				valid_result: Result /= Void
 			end
 
 feature
@@ -48,6 +50,7 @@ feature
 			-- Adds an entry to the .po file
 			-- Note: a .po file should not contain more then one entry with a given msgid
 		require
+			valid_new: new /= Void
 			entry_not_already_present: not has_entry(new.msgid)
 		do
 			entries.put (new, new.msgid)
@@ -68,25 +71,28 @@ feature
 	-- Headers
 
 	--Can be public because it does not allow anything dangerous to be done
-headers: PO_FILE_HEADERS
+	headers: PO_FILE_HEADERS
 
 feature
 	--Output
 
 	to_string: STRING_32 is
 			-- prints the whole .po file as a string_32
-			do
-				Result.append_string(headers.to_string)
-				Result.append_string("%N")
-				from
-					entries.start
-				until
-					entries.after
-				loop
-					Result.append_string(entries.item_for_iteration.to_string)
-					entries.forth
-				end
+		do
+			create Result.make_empty
+			Result.append_string(headers.to_string)
+			Result.append_string("%N")
+			from
+				entries.start
+			until
+				entries.after
+			loop
+				Result.append_string(entries.item_for_iteration.to_string)
+				entries.forth
 			end
+		ensure
+			valid_result: Result /= Void
+		end
 
 
 

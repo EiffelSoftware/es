@@ -59,6 +59,7 @@ create
 				until
 					headers.after
 				loop
+					create Result.make_empty
 					Result.append (headers.key_for_iteration)
 					Result.append (": ")
 					Result.append (headers.item_for_iteration)

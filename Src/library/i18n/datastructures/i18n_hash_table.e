@@ -33,7 +33,9 @@ feature {NONE} -- Initialization
 				i > base_array.count
 			loop
 				base_array.item(i).set_hash(hash_string(base_array.item(i).originals.i_th(1)))
-				hash_table.put(base_array.item(i), base_array.item(i).hash)
+				if not base_array.item(i).get_original(1).is_equal("") then
+					hash_table.put(base_array.item(i), base_array.item(i).hash)
+				end
 				i := i + 1
 			end
 		ensure then

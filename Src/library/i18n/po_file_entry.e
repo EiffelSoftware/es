@@ -56,7 +56,7 @@ feature
 			user_comments.append (lines)
 		end
 
-		add_reference_comment(a_comment:STRING_GENERAL) is
+	add_reference_comment(a_comment:STRING_GENERAL) is
 			-- add a reference comment line (this will be not be wrapped)
 			-- This should give the location of the string
 			--  ideally in FILENAME:linenumber form
@@ -71,7 +71,7 @@ feature
 			reference_comments.extend (temporary)
 		end
 
-		add_automatic_comment(a_comment:STRING_GENERAL) is
+	add_automatic_comment(a_comment:STRING_GENERAL) is
 			-- add a automatic comment line (this will be not be wrapped)
 			-- fantastic GNU documentation does not say anything about this
 			-- type of header apart from the fact that "GNU tools" create and
@@ -87,7 +87,7 @@ feature
 		end
 
 
-		set_fuzzy(new:BOOLEAN) is
+	set_fuzzy(new:BOOLEAN) is
 				-- sets the "fuzzy" flag (this indicates doubts about the translation)
 			do
 				fuzzy := new
@@ -95,7 +95,7 @@ feature
 				fuzzy_set: new = fuzzy
 			end
 
-		set_c_format(new:BOOLEAN) is
+	set_c_format(new:BOOLEAN) is
 				-- sets the "c-format" flag (this indicates a string that is used as an argument for
 				-- a 'printf'-type function and causes msgfmt to do some extra checks on the string)
 			do
@@ -179,6 +179,7 @@ feature {NONE} -- Internal formatting
 	 print_head:STRING_32 is
 	 		-- prints the headers and msgstr of this entry
 	 		do
+	 			create Result.make_empty
 	 			--start with 2 lines of whitespace
 	 			Result.prepend_string("%N%N")
 	 			--first we must print the translator comments
@@ -193,6 +194,7 @@ feature {NONE} -- Internal formatting
 		require
 			argument_not_void: headers /=Void
 		do
+			create Result.make_empty
 			from
 				headers.start
 			until
@@ -208,6 +210,7 @@ feature {NONE} -- Internal formatting
 			argument_not_void: string /= Void
 			key_not_void: key /= Void
 		do
+			create Result.make_empty
 			-- can we fit all on one line?
 			if string.count = 1 and string.first.count < (key.count+3) then
 				Result.append_string(key)
