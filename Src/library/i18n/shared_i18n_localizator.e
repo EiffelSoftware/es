@@ -33,7 +33,7 @@ feature {NONE} -- Basic operations
 		end
 
 	i18n_comp(a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
-			-- What's the completed form of the template?
+			-- Translate and do variables substitution on the template `a_string'
 			-- NOTE: Should change the name!
 		obsolete
 			"You should use a different template engine! The built-in one will be removed."
@@ -51,7 +51,7 @@ feature {NONE} -- Basic operations
 		end
 
 	i18n_comp_pl(a_singular, a_plural: STRING_GENERAL; a_args: TUPLE; i_th: INTEGER): STRING_32 is
-			-- What's the i_th completed form of the template?
+			-- Return plural form of the template `a_string' for `i_th' items and do variables substitution
 			-- NOTE: Should change the name!
 		obsolete
 			"You should use a different template engine! The built-in one will be removed."
@@ -68,6 +68,28 @@ feature {NONE} -- Basic operations
 		ensure
 			valid_result: Result /= Void
 		end
+
+
+feature -- Settings and update
+
+	i18n_load is
+			-- Force (re-)loading of the translated strings
+		do
+			localizator.load
+		end
+
+	i18n_set_resources_path (a_path: STRING) is
+			-- Set path where to look for MO file, default is working directory
+		do
+			localizator.set_resources_path (a_path)
+		end
+
+	i18n_set_language (identifier: STRING) is
+			-- ISO639-2 code for the language to load
+		do
+			localizator.set_language_identifier (identifier)
+		end
+
 
 feature {NONE} -- Implementation
 	localizator: I18N_LOCALIZATOR is

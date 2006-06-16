@@ -150,6 +150,8 @@ feature {NONE} -- Implementation
 	names: NAMES is
 		once
 			create Result
+--			Result.i18n_set_language ("it") -- this is not implemented yet
+			Result.i18n_load
 		end
 
 
