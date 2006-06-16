@@ -139,12 +139,10 @@ feature {NONE} -- Loading
 			until
 				i > i18n_datasource.string_count
 			loop
-				if not i18n_datasource.get_original(i).i_th(1).is_equal("") then
-					create temp_string.make_with_id(i)
-					temp_string.set_plural_forms(i18n_datasource.plural_forms)
-					temp_string.set_original(i18n_datasource.get_original(i))
-					base_array.put(temp_string, i)
-				end
+				create temp_string.make_with_id(i)
+				temp_string.set_plural_forms(i18n_datasource.plural_forms)
+				temp_string.set_original(i18n_datasource.get_original(i))
+				base_array.put(temp_string, i)
 				i := i + 1
 			end
 			from -- spatial locality
