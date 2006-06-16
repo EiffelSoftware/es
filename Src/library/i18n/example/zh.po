@@ -6,35 +6,53 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;"
+
 
 #: str1
+msgid "Application"
+msgstr "您的"
+
+#: str2
 msgid "File"
-msgstr "使用线条图形的"
-
-#: str1
-msgid "Do you count?"
-msgstr "形均衡器"
+msgstr "安装"
 
 
-#: str1
-msgid "Open"
-msgstr "帧速率"
+#: str3
+msgid "Increase n"
+msgstr "建形的新"
 
 
-#: str1
-msgid "Close"
-msgstr "是否有正在运行的"
+#: str4
+msgid "Decrease n"
+msgstr "的法 n"
 
 
-#: str1
+#: str5
 msgid "Save"
-msgstr "法初始化"
+msgstr "初始"
 
 
-#: str1
-msgid "A string?"
-msgstr "建新的"
+#: str6
+msgid "n is now equal $1"
+msgstr "化用条形 $1"
 
-#: str1
-msgid "English version?"
-msgstr "您的安装"
+#: str7
+msgid "Simple label"
+msgstr "均衡"
+
+#: str8
+msgid "This is singular"
+msgid_plural "This is plural"
+msgstr[0] "器速行的使"
+
+#: str9
+msgid "There is 1 file"
+msgid_plural "There are $1 files"
+msgstr[0] "率是"
+
+#: str10
+msgid "singular"
+msgid_plural "plural"
+msgstr[0] "否有在运正"
+msgstr[1] "plurale"
