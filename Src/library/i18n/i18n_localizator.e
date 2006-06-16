@@ -18,7 +18,7 @@ feature {NONE} -- Initialization
 			-- NOTE: For the moment, should set path manually!
 			-- Feel free to suggest a way for determining the path
 			-- (Wiki: http://eiffersoftware.origo.ethz.ch/index.php/Internationalization)
-			create i18n_datasource_factory.make
+			create i18n_datasource_factory.make_empty
 			i18n_datasource_factory.use_mo_file("/home/etienne/messages.mo")
 			if i18n_datasource_factory.last_datasource /= Void then
 				create i18n_datastructure.make_with_datasource(i18n_datasource_factory.last_datasource)
