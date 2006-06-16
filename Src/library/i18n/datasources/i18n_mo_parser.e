@@ -207,8 +207,8 @@ feature {NONE} --Implementation
 					else
 						-- first byte of a multibyte character
 						code := l_ch.natural_32_code.bit_and ({NATURAL_8}.max_value.bit_shift_right (ch_len).as_natural_32).bit_shift_left (6*(ch_len-1))
-						ch_len := ch_len - 1
 					end
+					ch_len := ch_len - 1
 				else
 					-- something was wrong in the bytes sequence
 					-- just discard the character
@@ -224,20 +224,20 @@ feature {NONE} --Implementation
 			-- position in the mo file
 			-- it moves the cursor
 		local
-			b0, b1, b2, b3 : NATURAL_8
+			b0, b1, b2, b3 : NATURAL_32
 		do
 			mo_file.read_natural_8
-			b0 := mo_file.last_natural_8
+			b0 := mo_file.last_natural_8.as_natural_32
 			mo_file.read_natural_8
-			b1 := mo_file.last_natural_8
+			b1 := mo_file.last_natural_8.as_natural_32
 			mo_file.read_natural_8
-			b2 := mo_file.last_natural_8
+			b2 := mo_file.last_natural_8.as_natural_32
 			mo_file.read_natural_8
-			b3 := mo_file.last_natural_8
+			b3 := mo_file.last_natural_8.as_natural_32
 			if is_big_endian then
-				Result :=  (b0 |<< 24) | (b1 |<< 16) | (b2 |<< 8) | b3;
+				Result :=  ((b0 |<< 24) | (b1 |<< 16) | (b2 |<< 8) | b3).as_integer_32
 			else
-				Result :=  b0 | (b1 |<< 8) | (b2 |<< 16) | (b3 |<< 24);
+				Result := (b0 | (b1 |<< 8) | (b2 |<< 16) | (b3 |<< 24)).as_integer_32
 			end
 		end
 
