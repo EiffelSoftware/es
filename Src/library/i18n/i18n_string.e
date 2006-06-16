@@ -32,6 +32,12 @@ feature -- Access
 	translateds: LIST[STRING_32]
 		-- Translated string
 
+	id: INTEGER
+		-- Sequence number into the datasource
+
+	plural_forms: INTEGER
+		-- Number of plural forms of the language in which this string is translated
+
 feature -- Status report
 	valid_plural_form(i_th: INTEGER): BOOLEAN is
 			-- Is i_th a valid plural form?
@@ -124,11 +130,6 @@ feature -- Status setting
 
 
 feature {NONE} -- Implementation
-	id: INTEGER
-		-- Sequence number into the mo file
-
-	plural_forms: INTEGER
-		-- Number of plural forms of the language in which this string is translated
 
 invariant
 	valid_plural_forms: plural_forms >= 1 and plural_forms <= 4

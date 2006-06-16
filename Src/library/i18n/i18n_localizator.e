@@ -14,20 +14,22 @@ create {SHARED_I18N_LOCALIZATOR}
 feature {NONE} -- Initialization
 	make is
 			-- Creation procedure.
+			-- REFACTOR THIS!!!
 		do
 			-- NOTE: For the moment, should set path manually!
 			-- Feel free to suggest a way for determining the path
 			-- (Wiki: http://eiffersoftware.origo.ethz.ch/index.php/Internationalization)
+			create i18n_template_formatter.make
 			create i18n_datasource_factory.make_empty
 			i18n_datasource_factory.use_mo_file("/home/etienne/messages.mo")
-			if i18n_datasource_factory.last_datasource /= Void then
-				create i18n_datastructure.make_with_datasource(i18n_datasource_factory.last_datasource)
-			else
+			if i18n_datasource_factory.last_datasource = Void then
 				i18n_datasource_factory.use_empty_source
-				create i18n_datastructure.make_with_datasource (i18n_datasource_factory.last_datasource)
 			end
-			create i18n_template_formatter.make
+			create i18n_datastructure_factory.make_with_datasource(i18n_datasource_factory.last_datasource)
+			i18n_datastructure_factory.use_hash_table
+			i18n_datastructure := i18n_datastructure_factory.last_datastructure
 		ensure
+			valid_datasource: i18n_datasource /= Void
 			valid_datastructure: i18n_datastructure /= Void
 			valid_template_formatter: i18n_template_formatter /= Void
 		end
@@ -70,11 +72,17 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+	i18n_datasource: I18N_DATASOURCE
+		-- Reference to the datasource
+
 	i18n_datastructure: I18N_DATASTRUCTURE
 		-- Reference to the datastructure
 
 	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
 		-- Reference to the template formatter
+
+	i18n_datastructure_factory: I18N_DATASTRUCTURE_FACTORY
+		-- Reference to the datastructure factory
 
 	i18n_datasource_factory: I18N_DATASOURCE_FACTORY
 		-- Reference to the datasource factory
