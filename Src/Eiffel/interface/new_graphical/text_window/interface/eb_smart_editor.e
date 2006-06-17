@@ -33,6 +33,7 @@ inherit
 			on_text_back_to_its_last_saved_state,
 			on_key_down,
 			make
+--			update_lines
 		end
 
 	EB_TAB_CODE_COMPLETABLE
@@ -212,7 +213,7 @@ feature -- Autocomplete
 			end
 		end
 
-feature {NONE} -- Text folding
+feature {EB_CLICKABLE_MARGIN} -- Text folding
 
 	folding_areas: EB_FOLDING_AREA_TREE
 		-- structure containing all folding regions
@@ -260,6 +261,8 @@ feature {NONE} -- Text folding
 						-- note: don't advance the_features - counter on deletion of a_area
 
 						current_feature := the_features.item
+
+
 						if (a_area = Void) then
 							-- the tree was empty, let's build it from scratch
 							create a_area.make (current_feature)
@@ -344,6 +347,57 @@ feature {NONE} -- Text folding
 				folding_areas_is_initialized := false
 			end
 		end
+
+
+-- folding-project:
+-- may need this code for updating hidden lines
+
+--	update_lines (first, last, x_offset, a_width: INTEGER; buffered: BOOLEAN) is
+--			-- redefinition from KEYBOARD_SELECTABLE_TEXT_PANEL, includes text-hiding.
+--		local
+--			one_time: BOOLEAN
+--		do
+--			Precursor(first, last, x_offset, a_width,buffered)
+--
+--
+--
+--
+-----------------------------------
+----		hiding code goes below --
+-----------------------------------
+--
+----			if not one_time and text_displayed.number_of_lines > 19 then
+----			               -- for test purpose only (together with the attribute one_time)
+----			               text_displayed.hide_lines (14, 6)
+----
+------			               text_displayed.show_lines (13)
+----			                one_time := true
+----			end
+----			update_text
+--		end
+
+
+	update_text is
+			-- iterates over the folding-areas and hides or shows code
+		local
+			a_area: EB_FOLDING_AREA
+		do
+			if folding_areas_is_initialized then
+				-- test: last feature is hidden
+				folding_areas.last.hide
+
+				from a_area := folding_areas.first
+				until a_area = Void
+				loop
+					if a_area.hidden = true then
+						text_displayed.hide_lines (a_area.start_line, a_area.end_line - a_area.start_line)
+					end
+					-- inc
+					a_area := a_area.next
+				end
+			end
+		end
+
 
 	synchronize_folding_line_numbers(a_new: FEATURE_AS; a_old: EB_FOLDING_AREA) is
 			-- updates the start- and endlines of 'old' to reflect those in 'new'
@@ -611,9 +665,10 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			end
 
 				-- Add margin width if necessary
-			if line_numbers_visible then
+			if line_numbers_visible or folding_points_visible then
 				Result := Result + margin.width
 			end
+
 
 			Result := Result - 20
 		end

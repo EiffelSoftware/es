@@ -136,7 +136,7 @@ feature -- Status report
 	has_margin: BOOLEAN is
 			-- Should margin be displayed?
 		do
-			Result := (line_numbers_enabled and line_numbers_visible) or not hidden_breakpoints
+			Result := (line_numbers_enabled and line_numbers_visible) or folding_points_visible or not hidden_breakpoints
 		end
 
 feature -- Status setting
@@ -155,7 +155,7 @@ feature -- Status setting
 			-- Set `has_breakable_slots' to `False' and update display.
 		do
 			margin.hide_breakpoints
-			if not line_numbers_visible and then not margin_container.is_empty then
+			if (not line_numbers_visible) and (not folding_points_visible) and then not margin_container.is_empty then
 				margin_container.prune (margin.widget)
 			end
 			margin.refresh_now

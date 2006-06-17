@@ -76,6 +76,8 @@ feature -- Access
 
 	width: INTEGER is
 			-- Width in pixels calculated based on which tokens should be displayed
+		local
+
 		do
 			if text_panel.line_numbers_enabled and then line_numbers_visible then
 				Result := Result + internal_line_number_area_width
@@ -148,6 +150,7 @@ feature -- Basic operations
 			update_width_cell
 			synch_with_panel
 		end
+
 
 feature {NONE} -- Implementation
 
@@ -228,6 +231,7 @@ feature {NONE} -- Implementation
 			Result := editor_preferences.margin_separator_color
 		end
 
+
 feature {TEXT_PANEL} -- Display functions
 
 	on_repaint (x, y, a_width, a_height: INTEGER) is
@@ -294,6 +298,7 @@ feature {TEXT_PANEL} -- Display functions
  			in_scroll := False
  		end
 
+
 	update_lines (first, last: INTEGER; buffered: BOOLEAN) is
 			-- Update the lines from `first' to `last'.  If `buffered' then draw to `buffered_line'
  			-- before drawing to screen, otherwise draw straight to screen.
@@ -306,6 +311,8 @@ feature {TEXT_PANEL} -- Display functions
  			y_offset,
  			l_line_height: INTEGER
  			l_text_displayed: like text_displayed_type
+-- 			next_fp_line: INTEGER
+
 		do
 			updating_line := True
 			l_text_displayed := text_panel.text_displayed

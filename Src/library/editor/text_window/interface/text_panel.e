@@ -110,6 +110,11 @@ feature {NONE} -- Initialization
 				-- Ensure line numbers are displayed
 			refresh_line_number_agent := agent refresh_line_number_display
 			editor_preferences.show_line_numbers_preference.change_actions.extend (refresh_line_number_agent)
+				-- Folding:
+				-- also call the line-number agent, if toggle-folding-points event is recieved
+			editor_preferences.show_folding_points_preference.change_actions.extend (refresh_line_number_agent)
+
+			-- now refresh the display
 			refresh_line_number_display
 		end
 
@@ -296,7 +301,7 @@ feature -- Query
 	has_margin: BOOLEAN is
 			-- Should margin be displayed?
 		do
-			Result := line_numbers_enabled and line_numbers_visible
+			Result := (line_numbers_enabled and line_numbers_visible) or folding_points_visible
 		end
 
 	is_empty: BOOLEAN is
@@ -316,6 +321,13 @@ feature -- Query
 		do
 			Result := editor_preferences.show_line_numbers
 		end
+
+	folding_points_visible: BOOLEAN is
+			-- Are the folding points currently visible
+		do
+			Result := editor_preferences.show_folding_points
+		end
+
 
 	view_invisible_symbols: BOOLEAN
 			-- Are the spaces, the tabulations and the end_of_line characters visible?			
@@ -408,7 +420,7 @@ feature -- Status setting
 		do
 			if has_margin then
 				if margin_container.is_empty then
-					-- One of line numbers or breakpoints must be visible
+					-- One of line numbers, folding points and breakpoints must be visible
 					margin_container.put (margin.widget)
 				end
 			else

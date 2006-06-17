@@ -315,6 +315,8 @@ feature -- Accelerator, focus label and menu name
 	m_If_block: STRING_32 								is do Result := i18n("&Embed in %"if...%"%TCtrl+I") end
 	m_Indent: STRING_32 								is do Result := i18n("&Indent selection%TTab") end
 	m_Line_numbers: STRING_32 							is do Result := i18n("Toggle &Line numbers") end
+	m_Folding_points: STRING_32							is do Result := i18n("Toggle Folding &points") end
+
 	f_Melt: STRING_32 									is do Result := i18n("Compile current project") end
 	m_Melt_new: STRING_32 								is do Result := i18n("&Compile") end
 	m_New: STRING_32 									is do Result := i18n("&New") end

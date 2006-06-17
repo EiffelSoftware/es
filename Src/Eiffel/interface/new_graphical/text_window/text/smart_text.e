@@ -25,7 +25,8 @@ inherit
 			new_line_from_lexer,
 			after_reading_idle_action,
 			stone_at,
-			make
+			make,
+			text
 		end
 
 	REFACTORING_HELPER
@@ -49,9 +50,133 @@ feature -- Initialization
 		do
 			Precursor {CLICKABLE_TEXT}
 			create click_tool
+
+			-- create hidden lines list (maybe we should implement this in feature load_text)
+			create hidden_lines.make
+		end
+
+feature -- Folding
+
+	hide_lines (base_line_position: INTEGER; num_lines: INTEGER) is
+			-- hides 'num_lines' consecutive lines starting with base_line_position
+			-- the fist and the last line cannot be hidden (for the last line this is only done for the simplicity of this function)
+		require
+			base_line_position_valid: base_line_position > 1 and base_line_position + num_lines <= number_of_lines
+			num_lines_valid: num_lines > 0 and base_line_position + num_lines <= number_of_lines + 1
+		local
+			a_line, next_line: EDITOR_LINE
+			list: LINKED_LIST [EDITOR_LINE]
+		do
+			-- store first visible line after the hidden ones
+			go_i_th (base_line_position + num_lines)
+			next_line := current_line
+
+			-- goto the first hidden line
+			go_i_th (base_line_position)
+
+			-- put lines into list and delete them in the tree (except the last one)
+			from
+				create list.make
+
+				a_line := current_line
+			until
+				a_line = next_line
+			loop
+				-- delete line in the tree
+				a_line.delete
+				-- put line into the list
+				list.extend (a_line)
+
+				a_line := a_line.next
+			end
+
+			-- put list with hidden lines block into list of hidden lines
+			hidden_lines.extend (list)
+
+		ensure
+			number_of_lines_decreased_by_num_lines: number_of_lines = old number_of_lines - num_lines
+		end
+
+	show_lines (base_line_pos: INTEGER) is
+			-- reshows the hidden lines after the 'base_line' / puts
+			-- the lines back into the tree after the 'base_line'
+		require
+			base_line_valid: base_line_pos > 0 and base_line_pos <= number_of_lines
+		local
+			found: BOOLEAN
+			base_line: EDITOR_LINE
+			a_line, previous_line: EDITOR_LINE
+			lines_list: LINKED_LIST [EDITOR_LINE]
+		do
+			-- get base line
+			go_i_th (base_line_pos)
+			base_line := current_line
+
+			-- find right list of hidden lines in 'hidden_lines' ('previous' pointer to 'base_line' of the first line)
+			from
+				found := False
+				hidden_lines.start
+			until
+				found or hidden_lines.after
+			loop
+				if hidden_lines.item.i_th (1).previous = base_line then
+					-- get list of hidden lines
+					lines_list := hidden_lines.item
+
+					-- remove 'lines_list' from 'hidden_lines'
+					-- because the are now displayed again
+					hidden_lines.remove
+
+					found := True
+				else
+					hidden_lines.forth
+				end
+			end
+
+			-- put lines back into the tree (only if hidden lines were found)
+			if found then
+				from
+					a_line := base_line
+
+					lines_list.start
+				until
+					lines_list.after
+				loop
+					previous_line := a_line
+					a_line := lines_list.item
+					-- put element into the tree
+					previous_line.add_right (a_line)
+
+					lines_list.forth
+				end
+			end
+
 		end
 
 feature -- Access
+
+	hidden_lines: LINKED_LIST [LINKED_LIST[EDITOR_LINE]]
+
+	text: STRING is
+			-- Image of text in `Current' (full text always (including the folded features))
+		local
+			li: like current_line
+		do
+			from
+				li := first_line
+
+				Result := ""
+			until
+				li = last_line
+			loop
+				Result.append (li.image)
+				Result.extend ('%N')
+				-- append the text of the hidden lines if necessary
+				Result.append (hidden_lines_text (li))
+
+				li := li.next
+			end
+		end
 
 	last_syntax_error: SYNTAX_ERROR is
 			-- Syntax error found last time file was parsed.
@@ -922,6 +1047,50 @@ feature {NONE} -- Implementation
 						i := i + 1
 					end
 				end
+			end
+		end
+
+	hidden_lines_text (base_line: EDITOR_LINE): STRING is
+			-- returns the text of the hidden lines after the 'base_line'
+		require
+			base_line_not_void: base_line /= Void
+		local
+			found: BOOLEAN
+			lines_list: LINKED_LIST [EDITOR_LINE]
+		do
+			-- find right list of hidden lines in 'hidden_lines' ('previous' pointer to 'base_line' of the first line)
+			from
+				found := False
+				hidden_lines.start
+			until
+				found or hidden_lines.after
+			loop
+				if hidden_lines.item.i_th (1).previous = base_line then
+					-- get list of hidden lines
+					lines_list := hidden_lines.item
+
+					found := True
+				else
+					hidden_lines.forth
+				end
+			end
+
+			if found then
+				-- Construct string with the text of the lines
+				from
+					Result := ""
+
+					lines_list.start
+				until
+					lines_list.after
+				loop
+					Result.append (lines_list.item.image)
+					Result.extend ('%N')
+
+					lines_list.forth
+				end
+			else
+				Result := ""
 			end
 		end
 

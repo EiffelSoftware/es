@@ -1,8 +1,8 @@
 indexing
 	description: "AVL-like tree with linked leaves for storing FOLDING_AREAs"
 	author: "bherlig"
-	date: "$06/14/2006$"
-	revision: "$0.7$"
+	date: "$06/18/2006$"
+	revision: "$0.8$"
 
 class
 	EB_FOLDING_AREA_TREE
@@ -33,6 +33,27 @@ feature -- Access
 				node = Void or else node.is_equal (key)
 			loop
 				if key < node then
+					node := node.left
+				else
+					node := node.right
+				end
+			end
+			if node /= Void then
+				Result := node
+			end
+		end
+
+	item_with_line (a_line: INTEGER): like root is
+			-- searches for a folding-area with starting line 'a_line'
+		local
+			node: like root
+		do
+			from
+				node := root
+			until
+				node = Void or else node.start_line.is_equal (a_line)
+			loop
+				if a_line < node.start_line then
 					node := node.left
 				else
 					node := node.right
@@ -398,7 +419,7 @@ feature {NONE} -- Implementation
 		end
 
 
-feature {EB_SMART_EDITOR} -- Debugging
+feature {EB_SMART_EDITOR, EB_CLICKABLE_MARGIN} -- Debugging
 
 	recursive_dump (node: like root; prefix_string: STRING; is_left_child: BOOLEAN) is
 			-- Dump subtree rooted at `node' with indentation `indent'.
@@ -502,4 +523,3 @@ invariant
 	last_is_last: (last.next = Void) and (last.right = Void)
 
 end -- Class EV_FOLDING_AREA_TREE
-

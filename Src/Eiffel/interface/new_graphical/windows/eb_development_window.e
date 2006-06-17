@@ -1368,6 +1368,7 @@ feature {NONE} -- Menu Building
 			os_cmd: EB_ON_SELECTION_COMMAND
 			editor: EB_SMART_EDITOR
 			ln_cmd: EB_TOGGLE_LINE_NUMBERS_COMMAND
+			fp_cmd: EB_TOGGLE_FOLDING_POINTS_COMMAND
 		do
 			editor := editor_tool.text_area
 			create command_controller.make
@@ -1443,6 +1444,13 @@ feature {NONE} -- Menu Building
 			add_recyclable (command_menu_item)
 			edit_menu.extend (command_menu_item)
 			window.accelerators.extend (ln_cmd.accelerator)
+
+				-- Folding points
+			create fp_cmd.make
+			command_menu_item := fp_cmd.new_menu_item
+			add_recyclable (command_menu_item)
+			edit_menu.extend (command_menu_item)
+			window.accelerators.extend (fp_cmd.accelerator)
 
 
 				-- Separator --------------------------------------
@@ -4126,6 +4134,13 @@ feature {NONE} -- Implementation: Editor commands
 		do
 			preferences.editor_data.show_line_numbers_preference.set_value (not preferences.editor_data.show_line_numbers)
 		end
+
+	toggle_folding_points_display is
+			-- Toggle line number display on/off in editor
+		do
+			preferences.editor_data.show_folding_points_preference.set_value (not preferences.editor_data.show_folding_points)
+		end
+
 
 	find_next is
 			-- Find the next occurrence of the search text.

@@ -111,6 +111,12 @@ feature {NONE} -- Visit
 			build_token_text (a_tok)
 		end
 
+	process_editor_token_folding_point (a_tok: EDITOR_TOKEN_FOLDING_POINT) is
+		do
+			init_tables_with_token (a_tok)
+			build_token_text (a_tok)
+		end
+
 	process_editor_token_class (a_tok: EDITOR_TOKEN_CLASS) is
 		do
 			init_tables_with_token (a_tok)

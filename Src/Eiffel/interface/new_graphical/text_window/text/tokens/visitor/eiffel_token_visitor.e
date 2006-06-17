@@ -19,6 +19,12 @@ feature -- Visit
 		deferred
 		end
 
+	process_editor_token_folding_point (a_tok: EDITOR_TOKEN_FOLDING_POINT) is
+		require
+			a_tok_not_void: a_tok /= Void
+		deferred
+		end
+
 	process_editor_token_class (a_tok: EDITOR_TOKEN_CLASS) is
 		require
 			a_tok_not_void: a_tok /= Void

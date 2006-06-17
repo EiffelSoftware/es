@@ -4,8 +4,8 @@ indexing
 				Objects of this class are nodes of an AVL-tree used by
 				]"
 	author: "bherlig"
-	date: "$06/06/06$"
-	revision: "$0.1$"
+	date: "$06/18/06$"
+	revision: "$0.4$"
 
 class
 	EB_FOLDING_AREA
@@ -95,7 +95,7 @@ feature -- Access
 	height: INTEGER is
 		-- height of the text inside the folding area
 		do
-			result :=  start_line - end_line
+			result :=  end_line - start_line
 		end
 
 feature -- Comparison
@@ -178,5 +178,6 @@ feature {EB_FOLDING_AREA_TREE} -- Element change
 
 invariant
 	small_balance: balance.abs <= 2
+	height_positive: height >= 0
 
 end -- class EB_FOLDING_AREA

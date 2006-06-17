@@ -173,6 +173,12 @@ feature -- Value
 			Result := show_line_numbers_preference.value
 		end
 
+	show_folding_points: BOOLEAN is
+			-- Indicates if the editor should display the folding points
+		do
+			Result := show_folding_points_preference.value
+		end
+
 	smart_home: BOOLEAN is
 			-- Indicates if editor should go to the beginning on the first non-whitespace character, on a line, when the HOME key is pressed
 		do
@@ -366,6 +372,9 @@ feature {ANY} -- Preferences
 	show_line_numbers_preference: BOOLEAN_PREFERENCE
 			-- Indicates if line numbers should be shown in the editor
 
+	show_folding_points_preference: BOOLEAN_PREFERENCE
+			-- indicates if folding-points should be shown in the editor
+
 	smart_home_preference: BOOLEAN_PREFERENCE
 			-- Indicates if editor should go to the beginning on the first non-whitespace character, on a line, when the HOME key is pressed
 
@@ -463,6 +472,7 @@ feature {NONE} -- Preference Strings
 	margin_separator_color_string: STRING is "editor.general.colors.margin_separator_color"
 	line_number_text_color_string: STRING is "editor.general.colors.line_number_text_color"
 	show_line_numbers_string: STRING is "editor.general.show_line_numbers"
+	show_folding_points_string: STRING is "editor.general.show_folding_points"
 	smart_home_string: STRING is "editor.general.smart_home"
 	use_tab_for_indentation_string: STRING is "editor.general.use_tab_for_indentation"
 	scrolling_common_line_count_string: STRING is "editor.general.scrolling_common_line_count"
@@ -611,6 +621,7 @@ feature {NONE} -- Implementation
 			blinking_cursor_preference := l_manager.new_boolean_preference_value (l_manager, blinking_cursor_string, False)
 			automatic_update_preference := l_manager.new_boolean_preference_value (l_manager, automatic_update_string, True)
 			show_line_numbers_preference := l_manager.new_boolean_preference_value (l_manager, show_line_numbers_string, False)
+			show_folding_points_preference := l_manager.new_boolean_preference_value (l_manager, show_folding_points_string, False)
 			smart_home_preference := l_manager.new_boolean_preference_value (l_manager, smart_home_string, True)
 			editor_font_preference := l_manager.new_font_preference_value (l_manager, editor_font_string, create {EV_FONT})
 			font_cell.put (editor_font_preference)
