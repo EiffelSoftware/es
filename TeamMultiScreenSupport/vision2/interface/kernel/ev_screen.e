@@ -1,4 +1,4 @@
-indexing 
+indexing
 	description:
 		"Facilities for direct drawing on the screen."
 	legal: "See notice at end of class."
@@ -30,8 +30,8 @@ feature -- Status report
 			Result := implementation.pointer_position
 		ensure
 			result_not_void: Result /= Void
-		end 
-	
+		end
+
 	widget_at_position (x, y: INTEGER): EV_WIDGET is
 			-- Widget at position (`x', `y') if any.
 		require
@@ -122,7 +122,7 @@ feature -- Measurement
 			bridge_ok: Result = implementation.height
 			positive: Result > 0
 		end
-		
+
 	vertical_resolution: INTEGER is
 			-- Number of pixels per inch along screen height.
 		do
@@ -130,7 +130,7 @@ feature -- Measurement
 		ensure
 			positive: Result > 0
 		end
-		
+
 	horizontal_resolution: INTEGER is
 			-- Number of pixels per inch along screen width.
 		do
@@ -138,6 +138,12 @@ feature -- Measurement
 		ensure
 			positive: Result > 0
 		end
+
+feature -- Multi Screen
+
+	allscreenlist: LINKED_LIST [EV_MULTISCREEN]
+	primary_screen: EV_MULTISCREEN
+
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
