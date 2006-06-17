@@ -27,9 +27,11 @@ feature {NONE} -- Initialization
 			not_empty_path: not a_name.is_empty
 		do
 			create mo_file.make (a_name)
+
+			-- What method should use the datastructure to retrive data?
 			retrieval_method := retrieve_by_type -- Preserve spatial locality
 		ensure
-			mo_file_set: mo_file /= Void
+			mo_file_set: mo_file /= Void and then mo_file.exists
 			file_still_closed: mo_file.is_closed
 			datasource_still_closed: is_closed
 		end
@@ -89,6 +91,8 @@ feature -- File information
 
 	using_hash_table: BOOLEAN is
 			-- Are we using an hash table?
+		obsolete
+			"We are not interested in the datastructure, we'll not use the built-in one."
 		require
 			correct_file: is_open
 		do
@@ -97,20 +101,24 @@ feature -- File information
 
 	original_system_information: STRING_32 is
 			-- Which original system information is attached to the mo file?
+		obsolete
+			"Should get this informations from the datastructure."
 		require
 			correct_file: is_open
 		do
-			Result := extract_string(original_table_offset, 0)
+			Result := extract_string(original_table_offset, 1)
 		ensure
 			result_exists : Result /= Void
 		end
 
 	translated_system_information : STRING_32 is
 			-- Which translated system information is attached to the mo file?
+		obsolete
+			"Should get this informations from the datastructure."
 		require
 			correct_file: is_open
 		do
-			Result := extract_string(translated_table_offset, 0)
+			Result := extract_string(translated_table_offset, 1)
 		ensure
 			result_exists : Result /= Void
 		end
@@ -136,7 +144,7 @@ feature -- Basic operation
 			-- What's the hash of the i-th original string?
 			-- Actually not required, all the strings are hashed on load by the datastructure.
 		obsolete
-			"Actually not required, all the strings are hashed on load by the datastructure."
+			"The datastructure will decide if it needs hashing or not. We'll not use the built-in hash table."
 		require
 			valid_index(i_th)
 			correct_file: is_open
@@ -153,6 +161,8 @@ feature --Errors
 
 	file_exists: BOOLEAN is
 			-- Does the file exist?
+		obsolete
+			"We already receive a valid path from the datastructure, don't need to check."
 		do
 			Result := mo_file.exists
 		end
@@ -312,7 +322,7 @@ feature {NONE} --Implementation
 
 invariant
 	big_xor_little_endian: (file_exists and then is_valid) implies (is_little_endian xor is_big_endian)
-	valid_mo_file: mo_file /= Void
+	valid_mo_file: mo_file /= Void and then mo_file.exists
 	is_open implies mo_file.is_open_read
 	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)
 
