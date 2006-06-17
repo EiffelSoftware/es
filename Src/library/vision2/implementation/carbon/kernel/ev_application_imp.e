@@ -44,6 +44,8 @@ inherit
 
 	CARBONEVENTSCORE_FUNCTIONS_EXTERNAL
 
+	CARBONEVENTS_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -65,7 +67,7 @@ feature {NONE} -- Event loop
 			until
 				is_destroyed
 			loop
-				c_event_loop_iteration
+				event_loop_iteration
 			end
 		end
 
@@ -83,42 +85,21 @@ feature {NONE} -- Event loop
 
 feature {EV_ANY_IMP} -- Implementation
 
-	carbon_event_pending: BOOLEAN is
-		local
-			event: OPAQUE_EVENT_REF_STRUCT
-			ret: INTEGER
-		do
---			create event.make_new_shared
---			ret := receive_next_event_external(0, Void, 1, 1, event)
---			Result := (ret = 0) -- noErr
-		end
-
-
-	c_event_loop_iteration is
-			--
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{	
-					EventRef theEvent;
-					EventTargetRef theTarget;
-					
-					theTarget = GetEventDispatcherTarget();
-					
-					if (ReceiveNextEvent(0, NULL, 1, true, &theEvent) == noErr) {
-						SendEventToEventTarget(theEvent, theTarget);
-						ReleaseEvent(theEvent);
-					}
-				}
-			]"
-		end
-
-	event_loop_iteration (a_relinquish_cpu: BOOLEAN) is
+	event_loop_iteration is
 		local
 			ret: INTEGER
+			ptr, null: POINTER
+			a_event: POINTER
+			a_target: OPAQUE_EVENT_TARGET_REF_STRUCT
 		do
-			ret := run_current_event_loop_external (0.01)
+			ptr := get_event_dispatcher_target_external
+			create a_target.make_shared(ptr)
+			
+			ret := receive_next_event_external(0, null, 1, 1, $a_event)
+			if ret = 0 then -- noErr
+				ret := send_event_to_event_target_external(a_event, a_target.item)
+				release_event_external(a_event)
+			end
 		end
 
 feature -- Access
