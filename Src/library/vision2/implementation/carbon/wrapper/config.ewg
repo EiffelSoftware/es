@@ -51,9 +51,22 @@
 			<wrapper type="default">
    			</wrapper>
 		</rule>
-    	<rule>
-			<match>
+		<rule>
+  			<match>
+   				<header name=".*Controls.h"/>
 			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
+		<rule>
+  			<match>
+   				<header name=".*HIObject.h"/>
+			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
+    	<rule>
+			<match/>
 			<wrapper type="none">
 			</wrapper>
 		</rule>
