@@ -307,6 +307,19 @@ feature -- Status Setting
 			width := get_substring_width (image.count)
 		end
 
+	set_correct is
+			-- sets token to correct
+		do
+			is_correct := true
+		end
+
+	set_incorrect is
+			-- sets token to incorrect, meaning it contained a syntax error
+		do
+			is_correct := false
+		end
+
+
 feature -- Visitor
 
 	process (a_visitor: TOKEN_VISITOR) is
@@ -334,7 +347,6 @@ feature {NONE} -- Implementation
 	display_with_colors(d_y: INTEGER; a_text_color: EV_COLOR; a_background_color: EV_COLOR; device: EV_DRAWABLE) is
 		local
 			text_to_be_drawn: STRING
-			line_y: INTEGER
 		do
 			if image.has ('%T') then
 				text_to_be_drawn := expanded_image_substring (1, image.count)
@@ -356,8 +368,7 @@ feature {NONE} -- Implementation
 
  			-- Draw the underline if incorrect token
  			if not is_correct then
-	 			line_y := d_y+font_offset
-	 			draw_wavy_line(position, line_y, device)
+	 			draw_wavy_line(position, d_y+font_offset, device)
  			end
 		end
 
@@ -382,6 +393,10 @@ feature {NONE} -- Implementation
 
  				-- Display the text.
  			draw_text_top_left (x_offset, d_y, text_to_be_drawn, device)
+ 			-- Draw the underline if incorrect token
+ 			if not is_correct then
+	 			draw_wavy_line(x_offset, d_y+font_offset, device)
+ 			end
 		end
 
 	draw_wavy_line (x, y: INTEGER; device: EV_DRAWABLE) is
