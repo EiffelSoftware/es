@@ -57,6 +57,16 @@ inherit
 			prepare_auto_complete
 		end
 
+	SHARED_EIFFEL_PARSER
+		undefine
+			default_create
+		end
+
+	SHARED_ERROR_HANDLER
+		undefine
+			default_create
+		end
+
 create
 	make
 
@@ -69,6 +79,7 @@ feature {NONE} -- Initialize
 
 				-- Initialize code completion.
 			initialize_code_complete
+			initialize_syntax_checking
 			set_completion_possibilities_provider (text_displayed)
 			text_displayed.set_code_completable (Current)
 		end
@@ -525,6 +536,13 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 			syntax_completed: BOOLEAN
 		do
 			code := ev_key.code
+
+			-- execute parser on certain key events
+			if is_editable then
+			   --(code = Key_space or code = Key_period or code = Key_tab or code = Key_enter) then
+				perform_syntax_checking
+			end
+
 			switch_auto_point := auto_point and then not (code = Key_shift or code = Key_left_meta or code = Key_right_meta)
 			if not is_completing and then code = Key_tab and then allow_tab_selecting and then not shifted_key then
 					-- Tab action
@@ -575,6 +593,7 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 					Precursor (ev_key)
 				end
 			end
+
 			auto_point := switch_auto_point xor auto_point
 		end
 
@@ -605,6 +624,80 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 			end
 			auto_point := auto_point xor switch_auto_point
 		end
+
+feature {NONE} -- syntax checking implementation
+	last_invalidated_line: EDITOR_LINE
+
+	initialize_syntax_checking is
+			-- initalize syntax checking state
+		do
+			last_invalidated_line := void
+		end
+
+	perform_syntax_checking is
+			-- performs syntax checking
+		local
+			list: LINKED_LIST [ERROR]
+			error: ERROR
+			text_line: EDITOR_LINE
+			cursor: TEXT_CURSOR
+			text_token: EDITOR_TOKEN_TEXT
+		do
+				-- create cursor object for helping locate tokens
+				create cursor.make_from_integer (1, text_displayed)
+
+				-- set old error tokens back to valid
+				if last_invalidated_line /= void then
+					from
+						last_invalidated_line.start
+					until
+						last_invalidated_line.after
+					loop
+						text_token ?= last_invalidated_line.item
+						if text_token /= void then
+							text_token.set_correct
+						end
+						last_invalidated_line.forth
+					end
+				end
+
+				Error_handler.error_list.wipe_out -- make sure we dont accumulate error messages
+				Eiffel_validating_parser.parse_from_string (text)
+
+				-- get error list
+				list := Error_handler.error_list
+
+				-- set last invaliated line to current line if errors found				
+				if list.count > 1 then
+					last_invalidated_line := text_displayed.cursor.line
+				else
+					last_invalidated_line := void
+				end
+
+				-- iterate through error list
+--				io.put_string (list.count.out + " errors found%N")
+				from
+					list.start
+				until
+					list.after
+				loop
+					error := list.item
+
+					-- get line of error
+--					io.put_string ("error on line "+error.line.out+" %N")
+
+					cursor.set_y_in_lines (error.line)
+					cursor.set_x_in_characters (error.column)
+
+					-- error should be text-token (otherwise it doesnt make any sence to highlight it)
+					text_token ?= cursor.token
+					text_token.set_incorrect
+
+					-- go to next error
+					list.forth
+				end
+		end
+
 
 feature {NONE} -- Handle keystrokes
 
