@@ -626,16 +626,16 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 		end
 
 feature {NONE} -- syntax checking implementation
-	last_invalidated_line: EDITOR_LINE
+	last_invalidated_line: INTEGER
 
 	initialize_syntax_checking is
 			-- initalize syntax checking state
 		do
-			last_invalidated_line := void
+			last_invalidated_line := -1
 		end
 
 	perform_syntax_checking is
-			-- performs syntax checking
+			-- performs syntax checking of class text
 		local
 			list: LINKED_LIST [ERROR]
 			error: ERROR
@@ -647,20 +647,22 @@ feature {NONE} -- syntax checking implementation
 				create cursor.make_from_integer (1, text_displayed)
 
 				-- set old error tokens back to valid
-				if last_invalidated_line /= void then
+				if last_invalidated_line /= -1 then
+					text_line := text_displayed.line (last_invalidated_line)
 					from
-						last_invalidated_line.start
+						text_line.start
 					until
-						last_invalidated_line.after
+						text_line.after
 					loop
-						text_token ?= last_invalidated_line.item
+						text_token ?= text_line.item
 						if text_token /= void then
 							text_token.set_correct
 						end
-						last_invalidated_line.forth
+						text_line.forth
 					end
 				end
 
+				Error_handler.unset_do_raise_error
 				Error_handler.error_list.wipe_out -- make sure we dont accumulate error messages
 				Eiffel_validating_parser.parse_from_string (text)
 
@@ -669,9 +671,9 @@ feature {NONE} -- syntax checking implementation
 
 				-- set last invaliated line to current line if errors found				
 				if list.count > 1 then
-					last_invalidated_line := text_displayed.cursor.line
+					last_invalidated_line := text_displayed.cursor.y_in_lines
 				else
-					last_invalidated_line := void
+					last_invalidated_line := -1
 				end
 
 				-- iterate through error list
@@ -696,6 +698,9 @@ feature {NONE} -- syntax checking implementation
 					-- go to next error
 					list.forth
 				end
+
+				-- re-establish raising of exceptin
+				Error_handler.set_do_raise_error
 		end
 
 
