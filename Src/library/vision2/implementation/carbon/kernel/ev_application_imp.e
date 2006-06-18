@@ -18,18 +18,14 @@ inherit
 					pointer_button_release_actions_internal
 			end
 
-	--EV_GTK_DEPENDENT_APPLICATION_IMP
-
-	--EV_GTK_EVENT_STRINGS
-
 --	IDENTIFIED
 --		undefine
 --			is_equal,
 --			copy
 --		end
---
+
 	EV_APPLICATION_ACTION_SEQUENCES_IMP
---
+
 --	EXECUTION_ENVIRONMENT
 --		rename
 --			launch as ee_launch
@@ -45,6 +41,13 @@ inherit
 	CARBONEVENTSCORE_FUNCTIONS_EXTERNAL
 
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+
+--	EWG_CALLBACK_CALLBACK_C_GLUE_CODE_FUNCTIONS_EXTERNAL
+--		export {NONE} all end
+
+	EVENT_HANDLER_PROC_PTR_CALLBACK
+
+	
 
 create
 	make
@@ -62,13 +65,9 @@ feature {NONE} -- Event loop
 			-- Display the first window, set up the post_launch_actions,
 			-- and start the event loop.
 		do
-			from
-				enable_foreground_operation
-			until
-				is_destroyed
-			loop
-				event_loop_iteration
-			end
+			enable_foreground_operation
+			install_event_handler
+			run_application_event_loop_external
 		end
 
 	enable_foreground_operation is
@@ -80,27 +79,19 @@ feature {NONE} -- Event loop
 			create psn.make_new_shared
 			ret := get_current_process_external(psn.item)
 			ret := transform_process_type_external(psn.item, 1)
-			--ret := set_front_process_external(psn.item)
+			ret := set_front_process_external(psn.item)
+		end
+
+	install_event_handler is
+			--
+		local
+			null: POINTER
+		do
+			create dispatcher.make (Current)
+			--install_event_handler_external(?, dispatcher.c_dispatcher, 1, , null, null)
 		end
 
 feature {EV_ANY_IMP} -- Implementation
-
-	event_loop_iteration is
-		local
-			ret: INTEGER
-			ptr, null: POINTER
-			a_event: POINTER
-			a_target: OPAQUE_EVENT_TARGET_REF_STRUCT
-		do
-			ptr := get_event_dispatcher_target_external
-			create a_target.make_shared(ptr)
-			
-			ret := receive_next_event_external(0, null, 1, 1, $a_event)
-			if ret = 0 then -- noErr
-				ret := send_event_to_event_target_external(a_event, a_target.item)
-				release_event_external(a_event)
-			end
-		end
 
 feature -- Access
 
@@ -243,36 +234,6 @@ feature -- Implementation
 
 feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
-	eif_object_from_gtk_object (a_gtk_object: POINTER): EV_ANY_IMP is
-			-- Return the EV_ANY_IMP object from `a_gtk_object' if any.
-		do
-		end
-
-	gtk_widget_imp_at_pointer_position: EV_GTK_WIDGET_IMP is
-			-- Gtk Widget implementation at current mouse pointer position (if any)
-		do
-		end
-
-	gtk_is_launchable: BOOLEAN
-		-- Is Gtk launchable?
-
-	default_gtk_window: POINTER is
-			-- Pointer to a default GtkWindow.
-		once
-		end
-
-	gtk_style_has_changed is
-			-- The current gtk style has changed.
-		do
-			-- This is called when the user externally changes the gtk style.
-		end
-
-	default_gdk_window: POINTER is
-			-- Pointer to a default GdkWindow that may be used to
-			-- access default visual information (color depth).
-		do
-		end
-
 	default_window: EV_WINDOW is
 			-- Default Window used for creation of agents and holder of clipboard widget.
 		once
@@ -323,19 +284,6 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 		once
 		end
 
-	c_string_from_eiffel_string (a_string: STRING_GENERAL): EV_GTK_C_STRING is
-			-- Return a EV_GTK_C_STRING from`a_string'
-			-- `Item' of result must not be freed by gtk.
-			-- Result must only be used for temporary setting and should not be persistent.
-		require
-			a_string_not_void: a_string /= Void
-		do
-		end
-
-	reusable_gtk_c_string: EV_GTK_C_STRING is
-			-- Persistent EV_GTK_C_STRING.
-		once
-		end
 
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pnd Handling
 
@@ -378,74 +326,23 @@ feature -- Thread Handling.
 		do
 		end
 
-feature {NONE} -- External implementation
+feature {NONE} -- Carbon callback handling for events
 
-	default_c_string_size: INTEGER is 1000
-		-- Default size to set the reusable gtk C string.
+	dispatcher: EVENT_HANDLER_PROC_PTR_DISPATCHER
+			-- The dispatcher is on the one side connected to a C function,
+			-- that can be given to the C library as a callback target
+			-- and on the other hand to an Eiffel object with a feature
+			-- `on_callback'. Whenn its C function gets called, the dispatcher
+			-- calls `on_callback' in the connected Eiffel object
 
-	internal_set_debug_mode (a_debug_mode: INTEGER) is
-			-- Set `debug_mode' to `a_debug_mode'.
+	on_callback (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Callback target. This feature gets called
+			-- anytime somebody calls `trigger_event_external'
 		do
+			print ("on_callback has been called!%N")
 		end
 
-	saved_debug_mode: INTEGER
-		-- Debug mode before debugger was disabled
 
-	debug_mode: INTEGER is
-			-- State of debugger.
-		do
-		end
-
-	enable_ev_gtk_log (a_mode: INTEGER) is
-			-- Connect GTK+ logging to Eiffel exception handler.
-			-- `a_mode' = 0 means no log messages, 1 = messages, 2 = messages with exceptions.
-		do
-		end
-
-	usleep (micro_seconds: INTEGER) is
-		do
-		end
-
-	gtk_init is
-		do
-		end
-
-	gtk_init_check: BOOLEAN is
-		do
-		end
-
-feature {NONE} -- Externals
-
-	static_mutex: POINTER
-		-- Pointer to the global static mutex
-
-	new_g_static_rec_mutex: POINTER is
-		do
-		end
-
-	frozen g_static_rec_mutex_init (a_static_mutex: POINTER) is
-		do
-		end
-
-	frozen g_static_rec_mutex_lock (a_static_mutex: POINTER) is
-		do
-		end
-
-	frozen g_static_rec_mutex_trylock (a_static_mutex: POINTER): BOOLEAN is
-		do
-		end
-
-	frozen g_static_rec_mutex_unlock (a_static_mutex: POINTER) is
-		do
-		end
-
-	frozen g_thread_supported: BOOLEAN is
-		do
-		end
-
-	frozen g_thread_init is
-		do
-		end
 
 invariant
 	window_oids_not_void: is_usable implies window_oids /= void
