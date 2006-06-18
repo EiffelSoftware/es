@@ -107,6 +107,7 @@
 	<PREF NAME="interface.dialogs.already_editing_class" DESCRIPTION="Display dialog when editing the same class in two development windows."><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="interface.dialogs.executing_command" DESCRIPTION="Display dialog while running an external command."><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="interface.dialogs.file_open_and_save_dialogs_remember_last_directory" DESCRIPTION="File open and save dialogs each remember their last selected directory."><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="interface.dialogs.language" DESCRIPTION="Interface language, set to en,de,it,... (Default is en)"><STRING>en</STRING></PREF>
 	<PREF NAME="interface.dialogs.last_opened_project_directory" DESCRIPTION="Directory of last project opened." HIDDEN="True"><STRING></STRING></PREF>
 	<PREF NAME="interface.dialogs.last_opened_ace_directory" DESCRIPTION="Directory of last ace file opened." HIDDEN="True"><STRING></STRING></PREF>
 	<PREF NAME="interface.dialogs.last_opened_dynamic_lib_directory" DESCRIPTION="Directory of last dynamic lib library opened." HIDDEN="True"><STRING></STRING></PREF>
