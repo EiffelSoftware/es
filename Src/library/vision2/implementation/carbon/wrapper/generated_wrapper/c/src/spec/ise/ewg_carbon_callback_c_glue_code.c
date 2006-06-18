@@ -680,6 +680,136 @@ OSStatus call_event_handler_proc_ptr (void *a_function, EventHandlerCallRef inHa
 	return ((OSStatus (*) (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData))a_function) (inHandlerCallRef, inEvent, inUserData);
 }
 
+struct control_action_proc_ptr_entry_struct control_action_proc_ptr_entry = {NULL, NULL};
+
+void control_action_proc_ptr_stub (ControlRef theControl, ControlPartCode partCode)
+{
+	if (control_action_proc_ptr_entry.a_class != NULL && control_action_proc_ptr_entry.feature != NULL)
+	{
+		control_action_proc_ptr_entry.feature (eif_access(control_action_proc_ptr_entry.a_class), theControl, partCode);
+	}
+}
+
+void set_control_action_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	control_action_proc_ptr_entry.a_class = eif_adopt(a_class);
+	control_action_proc_ptr_entry.feature = (control_action_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_control_action_proc_ptr_stub ()
+{
+	return (void*) control_action_proc_ptr_stub;
+}
+
+void call_control_action_proc_ptr (void *a_function, ControlRef theControl, ControlPartCode partCode)
+{
+	((void (*) (ControlRef theControl, ControlPartCode partCode))a_function) (theControl, partCode);
+}
+
+struct control_def_proc_ptr_entry_struct control_def_proc_ptr_entry = {NULL, NULL};
+
+SInt32 control_def_proc_ptr_stub (SInt16 varCode, ControlRef theControl, ControlDefProcMessage message, SInt32 param)
+{
+	if (control_def_proc_ptr_entry.a_class != NULL && control_def_proc_ptr_entry.feature != NULL)
+	{
+		return control_def_proc_ptr_entry.feature (eif_access(control_def_proc_ptr_entry.a_class), varCode, theControl, message, param);
+	}
+}
+
+void set_control_def_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	control_def_proc_ptr_entry.a_class = eif_adopt(a_class);
+	control_def_proc_ptr_entry.feature = (control_def_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_control_def_proc_ptr_stub ()
+{
+	return (void*) control_def_proc_ptr_stub;
+}
+
+SInt32 call_control_def_proc_ptr (void *a_function, SInt16 varCode, ControlRef theControl, ControlDefProcMessage message, SInt32 param)
+{
+	return ((SInt32 (*) (SInt16 varCode, ControlRef theControl, ControlDefProcMessage message, SInt32 param))a_function) (varCode, theControl, message, param);
+}
+
+struct control_key_filter_proc_ptr_entry_struct control_key_filter_proc_ptr_entry = {NULL, NULL};
+
+ControlKeyFilterResult control_key_filter_proc_ptr_stub (ControlRef theControl, SInt16 *keyCode, SInt16 *charCode, EventModifiers *modifiers)
+{
+	if (control_key_filter_proc_ptr_entry.a_class != NULL && control_key_filter_proc_ptr_entry.feature != NULL)
+	{
+		return control_key_filter_proc_ptr_entry.feature (eif_access(control_key_filter_proc_ptr_entry.a_class), theControl, keyCode, charCode, modifiers);
+	}
+}
+
+void set_control_key_filter_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	control_key_filter_proc_ptr_entry.a_class = eif_adopt(a_class);
+	control_key_filter_proc_ptr_entry.feature = (control_key_filter_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_control_key_filter_proc_ptr_stub ()
+{
+	return (void*) control_key_filter_proc_ptr_stub;
+}
+
+ControlKeyFilterResult call_control_key_filter_proc_ptr (void *a_function, ControlRef theControl, SInt16 *keyCode, SInt16 *charCode, EventModifiers *modifiers)
+{
+	return ((ControlKeyFilterResult (*) (ControlRef theControl, SInt16 *keyCode, SInt16 *charCode, EventModifiers *modifiers))a_function) (theControl, keyCode, charCode, modifiers);
+}
+
+struct control_cntlto_collection_proc_ptr_entry_struct control_cntlto_collection_proc_ptr_entry = {NULL, NULL};
+
+OSStatus control_cntlto_collection_proc_ptr_stub (Rect const *bounds, SInt16 value, Boolean visible, SInt16 max, SInt16 min, SInt16 procID, SInt32 refCon, ConstStr255Param title, Collection collection)
+{
+	if (control_cntlto_collection_proc_ptr_entry.a_class != NULL && control_cntlto_collection_proc_ptr_entry.feature != NULL)
+	{
+		return control_cntlto_collection_proc_ptr_entry.feature (eif_access(control_cntlto_collection_proc_ptr_entry.a_class), bounds, value, visible, max, min, procID, refCon, title, collection);
+	}
+}
+
+void set_control_cntlto_collection_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	control_cntlto_collection_proc_ptr_entry.a_class = eif_adopt(a_class);
+	control_cntlto_collection_proc_ptr_entry.feature = (control_cntlto_collection_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_control_cntlto_collection_proc_ptr_stub ()
+{
+	return (void*) control_cntlto_collection_proc_ptr_stub;
+}
+
+OSStatus call_control_cntlto_collection_proc_ptr (void *a_function, Rect const *bounds, SInt16 value, Boolean visible, SInt16 max, SInt16 min, SInt16 procID, SInt32 refCon, ConstStr255Param title, Collection collection)
+{
+	return ((OSStatus (*) (Rect const *bounds, SInt16 value, Boolean visible, SInt16 max, SInt16 min, SInt16 procID, SInt32 refCon, ConstStr255Param title, Collection collection))a_function) (bounds, value, visible, max, min, procID, refCon, title, collection);
+}
+
+struct control_color_proc_ptr_entry_struct control_color_proc_ptr_entry = {NULL, NULL};
+
+OSStatus control_color_proc_ptr_stub (ControlRef inControl, SInt16 inMessage, SInt16 inDrawDepth, Boolean inDrawInColor)
+{
+	if (control_color_proc_ptr_entry.a_class != NULL && control_color_proc_ptr_entry.feature != NULL)
+	{
+		return control_color_proc_ptr_entry.feature (eif_access(control_color_proc_ptr_entry.a_class), inControl, inMessage, inDrawDepth, inDrawInColor);
+	}
+}
+
+void set_control_color_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	control_color_proc_ptr_entry.a_class = eif_adopt(a_class);
+	control_color_proc_ptr_entry.feature = (control_color_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_control_color_proc_ptr_stub ()
+{
+	return (void*) control_color_proc_ptr_stub;
+}
+
+OSStatus call_control_color_proc_ptr (void *a_function, ControlRef inControl, SInt16 inMessage, SInt16 inDrawDepth, Boolean inDrawInColor)
+{
+	return ((OSStatus (*) (ControlRef inControl, SInt16 inMessage, SInt16 inDrawDepth, Boolean inDrawInColor))a_function) (inControl, inMessage, inDrawDepth, inDrawInColor);
+}
+
 struct window_def_proc_ptr_entry_struct window_def_proc_ptr_entry = {NULL, NULL};
 
 long window_def_proc_ptr_stub (short varCode, WindowRef window, short message, long param)

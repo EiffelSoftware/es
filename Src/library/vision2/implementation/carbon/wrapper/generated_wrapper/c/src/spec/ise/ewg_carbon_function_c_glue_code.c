@@ -7860,6 +7860,261 @@ void* ewg_get_function_address_IsSecureEventInputEnabled (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'HIObjectRegisterSubclass'
+// For ise
+OSStatus  ewg_function_HIObjectRegisterSubclass (CFStringRef ewg_inClassID, CFStringRef ewg_inBaseClassID, OptionBits ewg_inOptions, EventHandlerUPP ewg_inConstructProc, UInt32 ewg_inNumEvents, EventTypeSpec const *ewg_inEventList, void *ewg_inConstructData, HIObjectClassRef *ewg_outClassRef)
+{
+	return HIObjectRegisterSubclass ((CFStringRef)ewg_inClassID, (CFStringRef)ewg_inBaseClassID, (OptionBits)ewg_inOptions, (EventHandlerUPP)ewg_inConstructProc, (UInt32)ewg_inNumEvents, (EventTypeSpec const*)ewg_inEventList, (void*)ewg_inConstructData, (HIObjectClassRef*)ewg_outClassRef);
+}
+
+// Return address of function 'HIObjectRegisterSubclass'
+void* ewg_get_function_address_HIObjectRegisterSubclass (void)
+{
+	return (void*) HIObjectRegisterSubclass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectUnregisterClass'
+// For ise
+OSStatus  ewg_function_HIObjectUnregisterClass (HIObjectClassRef ewg_inClassRef)
+{
+	return HIObjectUnregisterClass ((HIObjectClassRef)ewg_inClassRef);
+}
+
+// Return address of function 'HIObjectUnregisterClass'
+void* ewg_get_function_address_HIObjectUnregisterClass (void)
+{
+	return (void*) HIObjectUnregisterClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectCreate'
+// For ise
+OSStatus  ewg_function_HIObjectCreate (CFStringRef ewg_inClassID, EventRef ewg_inConstructData, HIObjectRef *ewg_outObject)
+{
+	return HIObjectCreate ((CFStringRef)ewg_inClassID, (EventRef)ewg_inConstructData, (HIObjectRef*)ewg_outObject);
+}
+
+// Return address of function 'HIObjectCreate'
+void* ewg_get_function_address_HIObjectCreate (void)
+{
+	return (void*) HIObjectCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectGetEventTarget'
+// For ise
+EventTargetRef  ewg_function_HIObjectGetEventTarget (HIObjectRef ewg_inObject)
+{
+	return HIObjectGetEventTarget ((HIObjectRef)ewg_inObject);
+}
+
+// Return address of function 'HIObjectGetEventTarget'
+void* ewg_get_function_address_HIObjectGetEventTarget (void)
+{
+	return (void*) HIObjectGetEventTarget;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectPrintDebugInfo'
+// For ise
+void  ewg_function_HIObjectPrintDebugInfo (HIObjectRef ewg_inObject)
+{
+	HIObjectPrintDebugInfo ((HIObjectRef)ewg_inObject);
+}
+
+// Return address of function 'HIObjectPrintDebugInfo'
+void* ewg_get_function_address_HIObjectPrintDebugInfo (void)
+{
+	return (void*) HIObjectPrintDebugInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectCopyClassID'
+// For ise
+CFStringRef  ewg_function_HIObjectCopyClassID (HIObjectRef ewg_inObject)
+{
+	return HIObjectCopyClassID ((HIObjectRef)ewg_inObject);
+}
+
+// Return address of function 'HIObjectCopyClassID'
+void* ewg_get_function_address_HIObjectCopyClassID (void)
+{
+	return (void*) HIObjectCopyClassID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectIsOfClass'
+// For ise
+Boolean  ewg_function_HIObjectIsOfClass (HIObjectRef ewg_inObject, CFStringRef ewg_inObjectClassID)
+{
+	return HIObjectIsOfClass ((HIObjectRef)ewg_inObject, (CFStringRef)ewg_inObjectClassID);
+}
+
+// Return address of function 'HIObjectIsOfClass'
+void* ewg_get_function_address_HIObjectIsOfClass (void)
+{
+	return (void*) HIObjectIsOfClass;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectDynamicCast'
+// For ise
+void * ewg_function_HIObjectDynamicCast (HIObjectRef ewg_inObject, CFStringRef ewg_inClassID)
+{
+	return HIObjectDynamicCast ((HIObjectRef)ewg_inObject, (CFStringRef)ewg_inClassID);
+}
+
+// Return address of function 'HIObjectDynamicCast'
+void* ewg_get_function_address_HIObjectDynamicCast (void)
+{
+	return (void*) HIObjectDynamicCast;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectCreateFromBundle'
+// For ise
+OSStatus  ewg_function_HIObjectCreateFromBundle (CFBundleRef ewg_inBundle, HIObjectRef *ewg_outObject)
+{
+	return HIObjectCreateFromBundle ((CFBundleRef)ewg_inBundle, (HIObjectRef*)ewg_outObject);
+}
+
+// Return address of function 'HIObjectCreateFromBundle'
+void* ewg_get_function_address_HIObjectCreateFromBundle (void)
+{
+	return (void*) HIObjectCreateFromBundle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectIsAccessibilityIgnored'
+// For ise
+Boolean  ewg_function_HIObjectIsAccessibilityIgnored (HIObjectRef ewg_inObject)
+{
+	return HIObjectIsAccessibilityIgnored ((HIObjectRef)ewg_inObject);
+}
+
+// Return address of function 'HIObjectIsAccessibilityIgnored'
+void* ewg_get_function_address_HIObjectIsAccessibilityIgnored (void)
+{
+	return (void*) HIObjectIsAccessibilityIgnored;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectSetAccessibilityIgnored'
+// For ise
+OSStatus  ewg_function_HIObjectSetAccessibilityIgnored (HIObjectRef ewg_inObject, Boolean ewg_inIgnored)
+{
+	return HIObjectSetAccessibilityIgnored ((HIObjectRef)ewg_inObject, (Boolean)ewg_inIgnored);
+}
+
+// Return address of function 'HIObjectSetAccessibilityIgnored'
+void* ewg_get_function_address_HIObjectSetAccessibilityIgnored (void)
+{
+	return (void*) HIObjectSetAccessibilityIgnored;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectSetAuxiliaryAccessibilityAttribute'
+// For ise
+OSStatus  ewg_function_HIObjectSetAuxiliaryAccessibilityAttribute (HIObjectRef ewg_inHIObject, UInt64 ewg_inIdentifier, CFStringRef ewg_inAttributeName, CFTypeRef ewg_inAttributeData)
+{
+	return HIObjectSetAuxiliaryAccessibilityAttribute ((HIObjectRef)ewg_inHIObject, (UInt64)ewg_inIdentifier, (CFStringRef)ewg_inAttributeName, (CFTypeRef)ewg_inAttributeData);
+}
+
+// Return address of function 'HIObjectSetAuxiliaryAccessibilityAttribute'
+void* ewg_get_function_address_HIObjectSetAuxiliaryAccessibilityAttribute (void)
+{
+	return (void*) HIObjectSetAuxiliaryAccessibilityAttribute;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectOverrideAccessibilityContainment'
+// For ise
+OSStatus  ewg_function_HIObjectOverrideAccessibilityContainment (HIObjectRef ewg_inHIObject, AXUIElementRef ewg_inDesiredParent, AXUIElementRef ewg_inDesiredWindow, AXUIElementRef ewg_inDesiredTopLevelUIElement)
+{
+	return HIObjectOverrideAccessibilityContainment ((HIObjectRef)ewg_inHIObject, (AXUIElementRef)ewg_inDesiredParent, (AXUIElementRef)ewg_inDesiredWindow, (AXUIElementRef)ewg_inDesiredTopLevelUIElement);
+}
+
+// Return address of function 'HIObjectOverrideAccessibilityContainment'
+void* ewg_get_function_address_HIObjectOverrideAccessibilityContainment (void)
+{
+	return (void*) HIObjectOverrideAccessibilityContainment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectIsArchivingIgnored'
+// For ise
+Boolean  ewg_function_HIObjectIsArchivingIgnored (HIObjectRef ewg_inObject)
+{
+	return HIObjectIsArchivingIgnored ((HIObjectRef)ewg_inObject);
+}
+
+// Return address of function 'HIObjectIsArchivingIgnored'
+void* ewg_get_function_address_HIObjectIsArchivingIgnored (void)
+{
+	return (void*) HIObjectIsArchivingIgnored;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectSetArchivingIgnored'
+// For ise
+OSStatus  ewg_function_HIObjectSetArchivingIgnored (HIObjectRef ewg_inObject, Boolean ewg_inIgnored)
+{
+	return HIObjectSetArchivingIgnored ((HIObjectRef)ewg_inObject, (Boolean)ewg_inIgnored);
+}
+
+// Return address of function 'HIObjectSetArchivingIgnored'
+void* ewg_get_function_address_HIObjectSetArchivingIgnored (void)
+{
+	return (void*) HIObjectSetArchivingIgnored;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectCopyCustomArchiveData'
+// For ise
+OSStatus  ewg_function_HIObjectCopyCustomArchiveData (HIObjectRef ewg_inObject, CFDictionaryRef *ewg_outCustomData)
+{
+	return HIObjectCopyCustomArchiveData ((HIObjectRef)ewg_inObject, (CFDictionaryRef*)ewg_outCustomData);
+}
+
+// Return address of function 'HIObjectCopyCustomArchiveData'
+void* ewg_get_function_address_HIObjectCopyCustomArchiveData (void)
+{
+	return (void*) HIObjectCopyCustomArchiveData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIObjectSetCustomArchiveData'
+// For ise
+OSStatus  ewg_function_HIObjectSetCustomArchiveData (HIObjectRef ewg_inObject, CFDictionaryRef ewg_inCustomData)
+{
+	return HIObjectSetCustomArchiveData ((HIObjectRef)ewg_inObject, (CFDictionaryRef)ewg_inCustomData);
+}
+
+// Return address of function 'HIObjectSetCustomArchiveData'
+void* ewg_get_function_address_HIObjectSetCustomArchiveData (void)
+{
+	return (void*) HIObjectSetCustomArchiveData;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'GetMouse'
 // For ise
 void  ewg_function_GetMouse (Point *ewg_mouseLoc)
@@ -8261,6 +8516,1911 @@ void  ewg_function_LMSetKbdType (UInt8 ewg_value)
 void* ewg_get_function_address_LMSetKbdType (void)
 {
 	return (void*) LMSetKbdType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlActionUPP'
+// For ise
+ControlActionUPP  ewg_function_NewControlActionUPP (ControlActionProcPtr ewg_userRoutine)
+{
+	return NewControlActionUPP ((ControlActionProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlActionUPP'
+void* ewg_get_function_address_NewControlActionUPP (void)
+{
+	return (void*) NewControlActionUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlActionUPP'
+// For ise
+void  ewg_function_DisposeControlActionUPP (ControlActionUPP ewg_userUPP)
+{
+	DisposeControlActionUPP ((ControlActionUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlActionUPP'
+void* ewg_get_function_address_DisposeControlActionUPP (void)
+{
+	return (void*) DisposeControlActionUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlActionUPP'
+// For ise
+void  ewg_function_InvokeControlActionUPP (ControlRef ewg_theControl, ControlPartCode ewg_partCode, ControlActionUPP ewg_userUPP)
+{
+	InvokeControlActionUPP ((ControlRef)ewg_theControl, (ControlPartCode)ewg_partCode, (ControlActionUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlActionUPP'
+void* ewg_get_function_address_InvokeControlActionUPP (void)
+{
+	return (void*) InvokeControlActionUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlDefUPP'
+// For ise
+ControlDefUPP  ewg_function_NewControlDefUPP (ControlDefProcPtr ewg_userRoutine)
+{
+	return NewControlDefUPP ((ControlDefProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlDefUPP'
+void* ewg_get_function_address_NewControlDefUPP (void)
+{
+	return (void*) NewControlDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlDefUPP'
+// For ise
+void  ewg_function_DisposeControlDefUPP (ControlDefUPP ewg_userUPP)
+{
+	DisposeControlDefUPP ((ControlDefUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlDefUPP'
+void* ewg_get_function_address_DisposeControlDefUPP (void)
+{
+	return (void*) DisposeControlDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlDefUPP'
+// For ise
+SInt32  ewg_function_InvokeControlDefUPP (SInt16 ewg_varCode, ControlRef ewg_theControl, ControlDefProcMessage ewg_message, SInt32 ewg_param, ControlDefUPP ewg_userUPP)
+{
+	return InvokeControlDefUPP ((SInt16)ewg_varCode, (ControlRef)ewg_theControl, (ControlDefProcMessage)ewg_message, (SInt32)ewg_param, (ControlDefUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlDefUPP'
+void* ewg_get_function_address_InvokeControlDefUPP (void)
+{
+	return (void*) InvokeControlDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlKeyFilterUPP'
+// For ise
+ControlKeyFilterUPP  ewg_function_NewControlKeyFilterUPP (ControlKeyFilterProcPtr ewg_userRoutine)
+{
+	return NewControlKeyFilterUPP ((ControlKeyFilterProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlKeyFilterUPP'
+void* ewg_get_function_address_NewControlKeyFilterUPP (void)
+{
+	return (void*) NewControlKeyFilterUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlKeyFilterUPP'
+// For ise
+void  ewg_function_DisposeControlKeyFilterUPP (ControlKeyFilterUPP ewg_userUPP)
+{
+	DisposeControlKeyFilterUPP ((ControlKeyFilterUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlKeyFilterUPP'
+void* ewg_get_function_address_DisposeControlKeyFilterUPP (void)
+{
+	return (void*) DisposeControlKeyFilterUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlKeyFilterUPP'
+// For ise
+ControlKeyFilterResult  ewg_function_InvokeControlKeyFilterUPP (ControlRef ewg_theControl, SInt16 *ewg_keyCode, SInt16 *ewg_charCode, EventModifiers *ewg_modifiers, ControlKeyFilterUPP ewg_userUPP)
+{
+	return InvokeControlKeyFilterUPP ((ControlRef)ewg_theControl, (SInt16*)ewg_keyCode, (SInt16*)ewg_charCode, (EventModifiers*)ewg_modifiers, (ControlKeyFilterUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlKeyFilterUPP'
+void* ewg_get_function_address_InvokeControlKeyFilterUPP (void)
+{
+	return (void*) InvokeControlKeyFilterUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateCustomControl'
+// For ise
+OSStatus  ewg_function_CreateCustomControl (WindowRef ewg_owningWindow, Rect const *ewg_contBounds, ControlDefSpec const *ewg_def, Collection ewg_initData, ControlRef *ewg_outControl)
+{
+	return CreateCustomControl ((WindowRef)ewg_owningWindow, (Rect const*)ewg_contBounds, (ControlDefSpec const*)ewg_def, (Collection)ewg_initData, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateCustomControl'
+void* ewg_get_function_address_CreateCustomControl (void)
+{
+	return (void*) CreateCustomControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControl'
+// For ise
+ControlRef  ewg_function_NewControl (WindowRef ewg_owningWindow, Rect const *ewg_boundsRect, ConstStr255Param ewg_controlTitle, Boolean ewg_initiallyVisible, SInt16 ewg_initialValue, SInt16 ewg_minimumValue, SInt16 ewg_maximumValue, SInt16 ewg_procID, SInt32 ewg_controlReference)
+{
+	return NewControl ((WindowRef)ewg_owningWindow, (Rect const*)ewg_boundsRect, (ConstStr255Param)ewg_controlTitle, (Boolean)ewg_initiallyVisible, (SInt16)ewg_initialValue, (SInt16)ewg_minimumValue, (SInt16)ewg_maximumValue, (SInt16)ewg_procID, (SInt32)ewg_controlReference);
+}
+
+// Return address of function 'NewControl'
+void* ewg_get_function_address_NewControl (void)
+{
+	return (void*) NewControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNewControl'
+// For ise
+ControlRef  ewg_function_GetNewControl (SInt16 ewg_resourceID, WindowRef ewg_owningWindow)
+{
+	return GetNewControl ((SInt16)ewg_resourceID, (WindowRef)ewg_owningWindow);
+}
+
+// Return address of function 'GetNewControl'
+void* ewg_get_function_address_GetNewControl (void)
+{
+	return (void*) GetNewControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControl'
+// For ise
+void  ewg_function_DisposeControl (ControlRef ewg_theControl)
+{
+	DisposeControl ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'DisposeControl'
+void* ewg_get_function_address_DisposeControl (void)
+{
+	return (void*) DisposeControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'KillControls'
+// For ise
+void  ewg_function_KillControls (WindowRef ewg_theWindow)
+{
+	KillControls ((WindowRef)ewg_theWindow);
+}
+
+// Return address of function 'KillControls'
+void* ewg_get_function_address_KillControls (void)
+{
+	return (void*) KillControls;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlCNTLToCollectionUPP'
+// For ise
+ControlCNTLToCollectionUPP  ewg_function_NewControlCNTLToCollectionUPP (ControlCNTLToCollectionProcPtr ewg_userRoutine)
+{
+	return NewControlCNTLToCollectionUPP ((ControlCNTLToCollectionProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlCNTLToCollectionUPP'
+void* ewg_get_function_address_NewControlCNTLToCollectionUPP (void)
+{
+	return (void*) NewControlCNTLToCollectionUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlCNTLToCollectionUPP'
+// For ise
+void  ewg_function_DisposeControlCNTLToCollectionUPP (ControlCNTLToCollectionUPP ewg_userUPP)
+{
+	DisposeControlCNTLToCollectionUPP ((ControlCNTLToCollectionUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlCNTLToCollectionUPP'
+void* ewg_get_function_address_DisposeControlCNTLToCollectionUPP (void)
+{
+	return (void*) DisposeControlCNTLToCollectionUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlCNTLToCollectionUPP'
+// For ise
+OSStatus  ewg_function_InvokeControlCNTLToCollectionUPP (Rect const *ewg_bounds, SInt16 ewg_value, Boolean ewg_visible, SInt16 ewg_max, SInt16 ewg_min, SInt16 ewg_procID, SInt32 ewg_refCon, ConstStr255Param ewg_title, Collection ewg_collection, ControlCNTLToCollectionUPP ewg_userUPP)
+{
+	return InvokeControlCNTLToCollectionUPP ((Rect const*)ewg_bounds, (SInt16)ewg_value, (Boolean)ewg_visible, (SInt16)ewg_max, (SInt16)ewg_min, (SInt16)ewg_procID, (SInt32)ewg_refCon, (ConstStr255Param)ewg_title, (Collection)ewg_collection, (ControlCNTLToCollectionUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlCNTLToCollectionUPP'
+void* ewg_get_function_address_InvokeControlCNTLToCollectionUPP (void)
+{
+	return (void*) InvokeControlCNTLToCollectionUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RegisterControlDefinition'
+// For ise
+OSStatus  ewg_function_RegisterControlDefinition (SInt16 ewg_inCDEFResID, ControlDefSpec const *ewg_inControlDef, ControlCNTLToCollectionUPP ewg_inConversionProc)
+{
+	return RegisterControlDefinition ((SInt16)ewg_inCDEFResID, (ControlDefSpec const*)ewg_inControlDef, (ControlCNTLToCollectionUPP)ewg_inConversionProc);
+}
+
+// Return address of function 'RegisterControlDefinition'
+void* ewg_get_function_address_RegisterControlDefinition (void)
+{
+	return (void*) RegisterControlDefinition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HiliteControl'
+// For ise
+void  ewg_function_HiliteControl (ControlRef ewg_theControl, ControlPartCode ewg_hiliteState)
+{
+	HiliteControl ((ControlRef)ewg_theControl, (ControlPartCode)ewg_hiliteState);
+}
+
+// Return address of function 'HiliteControl'
+void* ewg_get_function_address_HiliteControl (void)
+{
+	return (void*) HiliteControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowControl'
+// For ise
+void  ewg_function_ShowControl (ControlRef ewg_theControl)
+{
+	ShowControl ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'ShowControl'
+void* ewg_get_function_address_ShowControl (void)
+{
+	return (void*) ShowControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HideControl'
+// For ise
+void  ewg_function_HideControl (ControlRef ewg_theControl)
+{
+	HideControl ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'HideControl'
+void* ewg_get_function_address_HideControl (void)
+{
+	return (void*) HideControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsControlActive'
+// For ise
+Boolean  ewg_function_IsControlActive (ControlRef ewg_inControl)
+{
+	return IsControlActive ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'IsControlActive'
+void* ewg_get_function_address_IsControlActive (void)
+{
+	return (void*) IsControlActive;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsControlVisible'
+// For ise
+Boolean  ewg_function_IsControlVisible (ControlRef ewg_inControl)
+{
+	return IsControlVisible ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'IsControlVisible'
+void* ewg_get_function_address_IsControlVisible (void)
+{
+	return (void*) IsControlVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ActivateControl'
+// For ise
+OSErr  ewg_function_ActivateControl (ControlRef ewg_inControl)
+{
+	return ActivateControl ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'ActivateControl'
+void* ewg_get_function_address_ActivateControl (void)
+{
+	return (void*) ActivateControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DeactivateControl'
+// For ise
+OSErr  ewg_function_DeactivateControl (ControlRef ewg_inControl)
+{
+	return DeactivateControl ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'DeactivateControl'
+void* ewg_get_function_address_DeactivateControl (void)
+{
+	return (void*) DeactivateControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlVisibility'
+// For ise
+OSErr  ewg_function_SetControlVisibility (ControlRef ewg_inControl, Boolean ewg_inIsVisible, Boolean ewg_inDoDraw)
+{
+	return SetControlVisibility ((ControlRef)ewg_inControl, (Boolean)ewg_inIsVisible, (Boolean)ewg_inDoDraw);
+}
+
+// Return address of function 'SetControlVisibility'
+void* ewg_get_function_address_SetControlVisibility (void)
+{
+	return (void*) SetControlVisibility;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsControlEnabled'
+// For ise
+Boolean  ewg_function_IsControlEnabled (ControlRef ewg_inControl)
+{
+	return IsControlEnabled ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'IsControlEnabled'
+void* ewg_get_function_address_IsControlEnabled (void)
+{
+	return (void*) IsControlEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableControl'
+// For ise
+OSStatus  ewg_function_EnableControl (ControlRef ewg_inControl)
+{
+	return EnableControl ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'EnableControl'
+void* ewg_get_function_address_EnableControl (void)
+{
+	return (void*) EnableControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisableControl'
+// For ise
+OSStatus  ewg_function_DisableControl (ControlRef ewg_inControl)
+{
+	return DisableControl ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'DisableControl'
+void* ewg_get_function_address_DisableControl (void)
+{
+	return (void*) DisableControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DrawControls'
+// For ise
+void  ewg_function_DrawControls (WindowRef ewg_theWindow)
+{
+	DrawControls ((WindowRef)ewg_theWindow);
+}
+
+// Return address of function 'DrawControls'
+void* ewg_get_function_address_DrawControls (void)
+{
+	return (void*) DrawControls;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Draw1Control'
+// For ise
+void  ewg_function_Draw1Control (ControlRef ewg_theControl)
+{
+	Draw1Control ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'Draw1Control'
+void* ewg_get_function_address_Draw1Control (void)
+{
+	return (void*) Draw1Control;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UpdateControls'
+// For ise
+void  ewg_function_UpdateControls (WindowRef ewg_inWindow, RgnHandle ewg_inUpdateRegion)
+{
+	UpdateControls ((WindowRef)ewg_inWindow, (RgnHandle)ewg_inUpdateRegion);
+}
+
+// Return address of function 'UpdateControls'
+void* ewg_get_function_address_UpdateControls (void)
+{
+	return (void*) UpdateControls;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetBestControlRect'
+// For ise
+OSErr  ewg_function_GetBestControlRect (ControlRef ewg_inControl, Rect *ewg_outRect, SInt16 *ewg_outBaseLineOffset)
+{
+	return GetBestControlRect ((ControlRef)ewg_inControl, (Rect*)ewg_outRect, (SInt16*)ewg_outBaseLineOffset);
+}
+
+// Return address of function 'GetBestControlRect'
+void* ewg_get_function_address_GetBestControlRect (void)
+{
+	return (void*) GetBestControlRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlFontStyle'
+// For ise
+OSErr  ewg_function_SetControlFontStyle (ControlRef ewg_inControl, ControlFontStyleRec const *ewg_inStyle)
+{
+	return SetControlFontStyle ((ControlRef)ewg_inControl, (ControlFontStyleRec const*)ewg_inStyle);
+}
+
+// Return address of function 'SetControlFontStyle'
+void* ewg_get_function_address_SetControlFontStyle (void)
+{
+	return (void*) SetControlFontStyle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DrawControlInCurrentPort'
+// For ise
+void  ewg_function_DrawControlInCurrentPort (ControlRef ewg_inControl)
+{
+	DrawControlInCurrentPort ((ControlRef)ewg_inControl);
+}
+
+// Return address of function 'DrawControlInCurrentPort'
+void* ewg_get_function_address_DrawControlInCurrentPort (void)
+{
+	return (void*) DrawControlInCurrentPort;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetUpControlBackground'
+// For ise
+OSErr  ewg_function_SetUpControlBackground (ControlRef ewg_inControl, SInt16 ewg_inDepth, Boolean ewg_inIsColorDevice)
+{
+	return SetUpControlBackground ((ControlRef)ewg_inControl, (SInt16)ewg_inDepth, (Boolean)ewg_inIsColorDevice);
+}
+
+// Return address of function 'SetUpControlBackground'
+void* ewg_get_function_address_SetUpControlBackground (void)
+{
+	return (void*) SetUpControlBackground;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetUpControlTextColor'
+// For ise
+OSErr  ewg_function_SetUpControlTextColor (ControlRef ewg_inControl, SInt16 ewg_inDepth, Boolean ewg_inIsColorDevice)
+{
+	return SetUpControlTextColor ((ControlRef)ewg_inControl, (SInt16)ewg_inDepth, (Boolean)ewg_inIsColorDevice);
+}
+
+// Return address of function 'SetUpControlTextColor'
+void* ewg_get_function_address_SetUpControlTextColor (void)
+{
+	return (void*) SetUpControlTextColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewControlColorUPP'
+// For ise
+ControlColorUPP  ewg_function_NewControlColorUPP (ControlColorProcPtr ewg_userRoutine)
+{
+	return NewControlColorUPP ((ControlColorProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewControlColorUPP'
+void* ewg_get_function_address_NewControlColorUPP (void)
+{
+	return (void*) NewControlColorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeControlColorUPP'
+// For ise
+void  ewg_function_DisposeControlColorUPP (ControlColorUPP ewg_userUPP)
+{
+	DisposeControlColorUPP ((ControlColorUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeControlColorUPP'
+void* ewg_get_function_address_DisposeControlColorUPP (void)
+{
+	return (void*) DisposeControlColorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeControlColorUPP'
+// For ise
+OSStatus  ewg_function_InvokeControlColorUPP (ControlRef ewg_inControl, SInt16 ewg_inMessage, SInt16 ewg_inDrawDepth, Boolean ewg_inDrawInColor, ControlColorUPP ewg_userUPP)
+{
+	return InvokeControlColorUPP ((ControlRef)ewg_inControl, (SInt16)ewg_inMessage, (SInt16)ewg_inDrawDepth, (Boolean)ewg_inDrawInColor, (ControlColorUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeControlColorUPP'
+void* ewg_get_function_address_InvokeControlColorUPP (void)
+{
+	return (void*) InvokeControlColorUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlColorProc'
+// For ise
+OSStatus  ewg_function_SetControlColorProc (ControlRef ewg_inControl, ControlColorUPP ewg_inProc)
+{
+	return SetControlColorProc ((ControlRef)ewg_inControl, (ControlColorUPP)ewg_inProc);
+}
+
+// Return address of function 'SetControlColorProc'
+void* ewg_get_function_address_SetControlColorProc (void)
+{
+	return (void*) SetControlColorProc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TrackControl'
+// For ise
+ControlPartCode  ewg_function_TrackControl (ControlRef ewg_theControl, Point *ewg_startPoint, ControlActionUPP ewg_actionProc)
+{
+	return TrackControl ((ControlRef)ewg_theControl, *(Point*)ewg_startPoint, (ControlActionUPP)ewg_actionProc);
+}
+
+// Return address of function 'TrackControl'
+void* ewg_get_function_address_TrackControl (void)
+{
+	return (void*) TrackControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DragControl'
+// For ise
+void  ewg_function_DragControl (ControlRef ewg_theControl, Point *ewg_startPoint, Rect const *ewg_limitRect, Rect const *ewg_slopRect, DragConstraint ewg_axis)
+{
+	DragControl ((ControlRef)ewg_theControl, *(Point*)ewg_startPoint, (Rect const*)ewg_limitRect, (Rect const*)ewg_slopRect, (DragConstraint)ewg_axis);
+}
+
+// Return address of function 'DragControl'
+void* ewg_get_function_address_DragControl (void)
+{
+	return (void*) DragControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'TestControl'
+// For ise
+ControlPartCode  ewg_function_TestControl (ControlRef ewg_theControl, Point *ewg_testPoint)
+{
+	return TestControl ((ControlRef)ewg_theControl, *(Point*)ewg_testPoint);
+}
+
+// Return address of function 'TestControl'
+void* ewg_get_function_address_TestControl (void)
+{
+	return (void*) TestControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FindControl'
+// For ise
+ControlPartCode  ewg_function_FindControl (Point *ewg_testPoint, WindowRef ewg_theWindow, ControlRef *ewg_theControl)
+{
+	return FindControl (*(Point*)ewg_testPoint, (WindowRef)ewg_theWindow, (ControlRef*)ewg_theControl);
+}
+
+// Return address of function 'FindControl'
+void* ewg_get_function_address_FindControl (void)
+{
+	return (void*) FindControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FindControlUnderMouse'
+// For ise
+ControlRef  ewg_function_FindControlUnderMouse (Point *ewg_inWhere, WindowRef ewg_inWindow, ControlPartCode *ewg_outPart)
+{
+	return FindControlUnderMouse (*(Point*)ewg_inWhere, (WindowRef)ewg_inWindow, (ControlPartCode*)ewg_outPart);
+}
+
+// Return address of function 'FindControlUnderMouse'
+void* ewg_get_function_address_FindControlUnderMouse (void)
+{
+	return (void*) FindControlUnderMouse;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HandleControlClick'
+// For ise
+ControlPartCode  ewg_function_HandleControlClick (ControlRef ewg_inControl, Point *ewg_inWhere, EventModifiers ewg_inModifiers, ControlActionUPP ewg_inAction)
+{
+	return HandleControlClick ((ControlRef)ewg_inControl, *(Point*)ewg_inWhere, (EventModifiers)ewg_inModifiers, (ControlActionUPP)ewg_inAction);
+}
+
+// Return address of function 'HandleControlClick'
+void* ewg_get_function_address_HandleControlClick (void)
+{
+	return (void*) HandleControlClick;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HandleControlContextualMenuClick'
+// For ise
+OSStatus  ewg_function_HandleControlContextualMenuClick (ControlRef ewg_inControl, Point *ewg_inWhere, Boolean *ewg_menuDisplayed)
+{
+	return HandleControlContextualMenuClick ((ControlRef)ewg_inControl, *(Point*)ewg_inWhere, (Boolean*)ewg_menuDisplayed);
+}
+
+// Return address of function 'HandleControlContextualMenuClick'
+void* ewg_get_function_address_HandleControlContextualMenuClick (void)
+{
+	return (void*) HandleControlContextualMenuClick;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlClickActivation'
+// For ise
+OSStatus  ewg_function_GetControlClickActivation (ControlRef ewg_inControl, Point *ewg_inWhere, EventModifiers ewg_inModifiers, ClickActivationResult *ewg_outResult)
+{
+	return GetControlClickActivation ((ControlRef)ewg_inControl, *(Point*)ewg_inWhere, (EventModifiers)ewg_inModifiers, (ClickActivationResult*)ewg_outResult);
+}
+
+// Return address of function 'GetControlClickActivation'
+void* ewg_get_function_address_GetControlClickActivation (void)
+{
+	return (void*) GetControlClickActivation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HandleControlKey'
+// For ise
+ControlPartCode  ewg_function_HandleControlKey (ControlRef ewg_inControl, SInt16 ewg_inKeyCode, SInt16 ewg_inCharCode, EventModifiers ewg_inModifiers)
+{
+	return HandleControlKey ((ControlRef)ewg_inControl, (SInt16)ewg_inKeyCode, (SInt16)ewg_inCharCode, (EventModifiers)ewg_inModifiers);
+}
+
+// Return address of function 'HandleControlKey'
+void* ewg_get_function_address_HandleControlKey (void)
+{
+	return (void*) HandleControlKey;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HandleControlSetCursor'
+// For ise
+OSStatus  ewg_function_HandleControlSetCursor (ControlRef ewg_control, Point *ewg_localPoint, EventModifiers ewg_modifiers, Boolean *ewg_cursorWasSet)
+{
+	return HandleControlSetCursor ((ControlRef)ewg_control, *(Point*)ewg_localPoint, (EventModifiers)ewg_modifiers, (Boolean*)ewg_cursorWasSet);
+}
+
+// Return address of function 'HandleControlSetCursor'
+void* ewg_get_function_address_HandleControlSetCursor (void)
+{
+	return (void*) HandleControlSetCursor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MoveControl'
+// For ise
+void  ewg_function_MoveControl (ControlRef ewg_theControl, SInt16 ewg_h, SInt16 ewg_v)
+{
+	MoveControl ((ControlRef)ewg_theControl, (SInt16)ewg_h, (SInt16)ewg_v);
+}
+
+// Return address of function 'MoveControl'
+void* ewg_get_function_address_MoveControl (void)
+{
+	return (void*) MoveControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SizeControl'
+// For ise
+void  ewg_function_SizeControl (ControlRef ewg_theControl, SInt16 ewg_w, SInt16 ewg_h)
+{
+	SizeControl ((ControlRef)ewg_theControl, (SInt16)ewg_w, (SInt16)ewg_h);
+}
+
+// Return address of function 'SizeControl'
+void* ewg_get_function_address_SizeControl (void)
+{
+	return (void*) SizeControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlTitle'
+// For ise
+void  ewg_function_SetControlTitle (ControlRef ewg_theControl, ConstStr255Param ewg_title)
+{
+	SetControlTitle ((ControlRef)ewg_theControl, (ConstStr255Param)ewg_title);
+}
+
+// Return address of function 'SetControlTitle'
+void* ewg_get_function_address_SetControlTitle (void)
+{
+	return (void*) SetControlTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlTitle'
+// For ise
+void  ewg_function_GetControlTitle (ControlRef ewg_theControl, void *ewg_title)
+{
+	GetControlTitle ((ControlRef)ewg_theControl, ewg_title);
+}
+
+// Return address of function 'GetControlTitle'
+void* ewg_get_function_address_GetControlTitle (void)
+{
+	return (void*) GetControlTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlTitleWithCFString'
+// For ise
+OSStatus  ewg_function_SetControlTitleWithCFString (ControlRef ewg_inControl, CFStringRef ewg_inString)
+{
+	return SetControlTitleWithCFString ((ControlRef)ewg_inControl, (CFStringRef)ewg_inString);
+}
+
+// Return address of function 'SetControlTitleWithCFString'
+void* ewg_get_function_address_SetControlTitleWithCFString (void)
+{
+	return (void*) SetControlTitleWithCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyControlTitleAsCFString'
+// For ise
+OSStatus  ewg_function_CopyControlTitleAsCFString (ControlRef ewg_inControl, CFStringRef *ewg_outString)
+{
+	return CopyControlTitleAsCFString ((ControlRef)ewg_inControl, (CFStringRef*)ewg_outString);
+}
+
+// Return address of function 'CopyControlTitleAsCFString'
+void* ewg_get_function_address_CopyControlTitleAsCFString (void)
+{
+	return (void*) CopyControlTitleAsCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlValue'
+// For ise
+SInt16  ewg_function_GetControlValue (ControlRef ewg_theControl)
+{
+	return GetControlValue ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControlValue'
+void* ewg_get_function_address_GetControlValue (void)
+{
+	return (void*) GetControlValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlValue'
+// For ise
+void  ewg_function_SetControlValue (ControlRef ewg_theControl, SInt16 ewg_newValue)
+{
+	SetControlValue ((ControlRef)ewg_theControl, (SInt16)ewg_newValue);
+}
+
+// Return address of function 'SetControlValue'
+void* ewg_get_function_address_SetControlValue (void)
+{
+	return (void*) SetControlValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlMinimum'
+// For ise
+SInt16  ewg_function_GetControlMinimum (ControlRef ewg_theControl)
+{
+	return GetControlMinimum ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControlMinimum'
+void* ewg_get_function_address_GetControlMinimum (void)
+{
+	return (void*) GetControlMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlMinimum'
+// For ise
+void  ewg_function_SetControlMinimum (ControlRef ewg_theControl, SInt16 ewg_newMinimum)
+{
+	SetControlMinimum ((ControlRef)ewg_theControl, (SInt16)ewg_newMinimum);
+}
+
+// Return address of function 'SetControlMinimum'
+void* ewg_get_function_address_SetControlMinimum (void)
+{
+	return (void*) SetControlMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlMaximum'
+// For ise
+SInt16  ewg_function_GetControlMaximum (ControlRef ewg_theControl)
+{
+	return GetControlMaximum ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControlMaximum'
+void* ewg_get_function_address_GetControlMaximum (void)
+{
+	return (void*) GetControlMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlMaximum'
+// For ise
+void  ewg_function_SetControlMaximum (ControlRef ewg_theControl, SInt16 ewg_newMaximum)
+{
+	SetControlMaximum ((ControlRef)ewg_theControl, (SInt16)ewg_newMaximum);
+}
+
+// Return address of function 'SetControlMaximum'
+void* ewg_get_function_address_SetControlMaximum (void)
+{
+	return (void*) SetControlMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlViewSize'
+// For ise
+SInt32  ewg_function_GetControlViewSize (ControlRef ewg_theControl)
+{
+	return GetControlViewSize ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControlViewSize'
+void* ewg_get_function_address_GetControlViewSize (void)
+{
+	return (void*) GetControlViewSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlViewSize'
+// For ise
+void  ewg_function_SetControlViewSize (ControlRef ewg_theControl, SInt32 ewg_newViewSize)
+{
+	SetControlViewSize ((ControlRef)ewg_theControl, (SInt32)ewg_newViewSize);
+}
+
+// Return address of function 'SetControlViewSize'
+void* ewg_get_function_address_SetControlViewSize (void)
+{
+	return (void*) SetControlViewSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControl32BitValue'
+// For ise
+SInt32  ewg_function_GetControl32BitValue (ControlRef ewg_theControl)
+{
+	return GetControl32BitValue ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControl32BitValue'
+void* ewg_get_function_address_GetControl32BitValue (void)
+{
+	return (void*) GetControl32BitValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControl32BitValue'
+// For ise
+void  ewg_function_SetControl32BitValue (ControlRef ewg_theControl, SInt32 ewg_newValue)
+{
+	SetControl32BitValue ((ControlRef)ewg_theControl, (SInt32)ewg_newValue);
+}
+
+// Return address of function 'SetControl32BitValue'
+void* ewg_get_function_address_SetControl32BitValue (void)
+{
+	return (void*) SetControl32BitValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControl32BitMaximum'
+// For ise
+SInt32  ewg_function_GetControl32BitMaximum (ControlRef ewg_theControl)
+{
+	return GetControl32BitMaximum ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControl32BitMaximum'
+void* ewg_get_function_address_GetControl32BitMaximum (void)
+{
+	return (void*) GetControl32BitMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControl32BitMaximum'
+// For ise
+void  ewg_function_SetControl32BitMaximum (ControlRef ewg_theControl, SInt32 ewg_newMaximum)
+{
+	SetControl32BitMaximum ((ControlRef)ewg_theControl, (SInt32)ewg_newMaximum);
+}
+
+// Return address of function 'SetControl32BitMaximum'
+void* ewg_get_function_address_SetControl32BitMaximum (void)
+{
+	return (void*) SetControl32BitMaximum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControl32BitMinimum'
+// For ise
+SInt32  ewg_function_GetControl32BitMinimum (ControlRef ewg_theControl)
+{
+	return GetControl32BitMinimum ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControl32BitMinimum'
+void* ewg_get_function_address_GetControl32BitMinimum (void)
+{
+	return (void*) GetControl32BitMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControl32BitMinimum'
+// For ise
+void  ewg_function_SetControl32BitMinimum (ControlRef ewg_theControl, SInt32 ewg_newMinimum)
+{
+	SetControl32BitMinimum ((ControlRef)ewg_theControl, (SInt32)ewg_newMinimum);
+}
+
+// Return address of function 'SetControl32BitMinimum'
+void* ewg_get_function_address_SetControl32BitMinimum (void)
+{
+	return (void*) SetControl32BitMinimum;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsValidControlHandle'
+// For ise
+Boolean  ewg_function_IsValidControlHandle (ControlRef ewg_theControl)
+{
+	return IsValidControlHandle ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'IsValidControlHandle'
+void* ewg_get_function_address_IsValidControlHandle (void)
+{
+	return (void*) IsValidControlHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlID'
+// For ise
+OSStatus  ewg_function_SetControlID (ControlRef ewg_inControl, ControlID const *ewg_inID)
+{
+	return SetControlID ((ControlRef)ewg_inControl, (ControlID const*)ewg_inID);
+}
+
+// Return address of function 'SetControlID'
+void* ewg_get_function_address_SetControlID (void)
+{
+	return (void*) SetControlID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlID'
+// For ise
+OSStatus  ewg_function_GetControlID (ControlRef ewg_inControl, ControlID *ewg_outID)
+{
+	return GetControlID ((ControlRef)ewg_inControl, (ControlID*)ewg_outID);
+}
+
+// Return address of function 'GetControlID'
+void* ewg_get_function_address_GetControlID (void)
+{
+	return (void*) GetControlID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlByID'
+// For ise
+OSStatus  ewg_function_GetControlByID (WindowRef ewg_inWindow, ControlID const *ewg_inID, ControlRef *ewg_outControl)
+{
+	return GetControlByID ((WindowRef)ewg_inWindow, (ControlID const*)ewg_inID, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'GetControlByID'
+void* ewg_get_function_address_GetControlByID (void)
+{
+	return (void*) GetControlByID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlCommandID'
+// For ise
+OSStatus  ewg_function_SetControlCommandID (ControlRef ewg_inControl, UInt32 ewg_inCommandID)
+{
+	return SetControlCommandID ((ControlRef)ewg_inControl, (UInt32)ewg_inCommandID);
+}
+
+// Return address of function 'SetControlCommandID'
+void* ewg_get_function_address_SetControlCommandID (void)
+{
+	return (void*) SetControlCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlCommandID'
+// For ise
+OSStatus  ewg_function_GetControlCommandID (ControlRef ewg_inControl, UInt32 *ewg_outCommandID)
+{
+	return GetControlCommandID ((ControlRef)ewg_inControl, (UInt32*)ewg_outCommandID);
+}
+
+// Return address of function 'GetControlCommandID'
+void* ewg_get_function_address_GetControlCommandID (void)
+{
+	return (void*) GetControlCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlKind'
+// For ise
+OSStatus  ewg_function_GetControlKind (ControlRef ewg_inControl, ControlKind *ewg_outControlKind)
+{
+	return GetControlKind ((ControlRef)ewg_inControl, (ControlKind*)ewg_outControlKind);
+}
+
+// Return address of function 'GetControlKind'
+void* ewg_get_function_address_GetControlKind (void)
+{
+	return (void*) GetControlKind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlProperty'
+// For ise
+OSStatus  ewg_function_GetControlProperty (ControlRef ewg_control, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 ewg_bufferSize, UInt32 *ewg_actualSize, void *ewg_propertyBuffer)
+{
+	return GetControlProperty ((ControlRef)ewg_control, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32)ewg_bufferSize, (UInt32*)ewg_actualSize, (void*)ewg_propertyBuffer);
+}
+
+// Return address of function 'GetControlProperty'
+void* ewg_get_function_address_GetControlProperty (void)
+{
+	return (void*) GetControlProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlPropertySize'
+// For ise
+OSStatus  ewg_function_GetControlPropertySize (ControlRef ewg_control, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 *ewg_size)
+{
+	return GetControlPropertySize ((ControlRef)ewg_control, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32*)ewg_size);
+}
+
+// Return address of function 'GetControlPropertySize'
+void* ewg_get_function_address_GetControlPropertySize (void)
+{
+	return (void*) GetControlPropertySize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlProperty'
+// For ise
+OSStatus  ewg_function_SetControlProperty (ControlRef ewg_control, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 ewg_propertySize, void const *ewg_propertyData)
+{
+	return SetControlProperty ((ControlRef)ewg_control, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32)ewg_propertySize, (void const*)ewg_propertyData);
+}
+
+// Return address of function 'SetControlProperty'
+void* ewg_get_function_address_SetControlProperty (void)
+{
+	return (void*) SetControlProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveControlProperty'
+// For ise
+OSStatus  ewg_function_RemoveControlProperty (ControlRef ewg_control, OSType ewg_propertyCreator, OSType ewg_propertyTag)
+{
+	return RemoveControlProperty ((ControlRef)ewg_control, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag);
+}
+
+// Return address of function 'RemoveControlProperty'
+void* ewg_get_function_address_RemoveControlProperty (void)
+{
+	return (void*) RemoveControlProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlPropertyAttributes'
+// For ise
+OSStatus  ewg_function_GetControlPropertyAttributes (ControlRef ewg_control, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 *ewg_attributes)
+{
+	return GetControlPropertyAttributes ((ControlRef)ewg_control, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32*)ewg_attributes);
+}
+
+// Return address of function 'GetControlPropertyAttributes'
+void* ewg_get_function_address_GetControlPropertyAttributes (void)
+{
+	return (void*) GetControlPropertyAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeControlPropertyAttributes'
+// For ise
+OSStatus  ewg_function_ChangeControlPropertyAttributes (ControlRef ewg_control, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 ewg_attributesToSet, UInt32 ewg_attributesToClear)
+{
+	return ChangeControlPropertyAttributes ((ControlRef)ewg_control, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32)ewg_attributesToSet, (UInt32)ewg_attributesToClear);
+}
+
+// Return address of function 'ChangeControlPropertyAttributes'
+void* ewg_get_function_address_ChangeControlPropertyAttributes (void)
+{
+	return (void*) ChangeControlPropertyAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlRegion'
+// For ise
+OSStatus  ewg_function_GetControlRegion (ControlRef ewg_inControl, ControlPartCode ewg_inPart, RgnHandle ewg_outRegion)
+{
+	return GetControlRegion ((ControlRef)ewg_inControl, (ControlPartCode)ewg_inPart, (RgnHandle)ewg_outRegion);
+}
+
+// Return address of function 'GetControlRegion'
+void* ewg_get_function_address_GetControlRegion (void)
+{
+	return (void*) GetControlRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlVariant'
+// For ise
+ControlVariant  ewg_function_GetControlVariant (ControlRef ewg_theControl)
+{
+	return GetControlVariant ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControlVariant'
+void* ewg_get_function_address_GetControlVariant (void)
+{
+	return (void*) GetControlVariant;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlAction'
+// For ise
+void  ewg_function_SetControlAction (ControlRef ewg_theControl, ControlActionUPP ewg_actionProc)
+{
+	SetControlAction ((ControlRef)ewg_theControl, (ControlActionUPP)ewg_actionProc);
+}
+
+// Return address of function 'SetControlAction'
+void* ewg_get_function_address_SetControlAction (void)
+{
+	return (void*) SetControlAction;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlAction'
+// For ise
+ControlActionUPP  ewg_function_GetControlAction (ControlRef ewg_theControl)
+{
+	return GetControlAction ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControlAction'
+void* ewg_get_function_address_GetControlAction (void)
+{
+	return (void*) GetControlAction;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlReference'
+// For ise
+void  ewg_function_SetControlReference (ControlRef ewg_theControl, SInt32 ewg_data)
+{
+	SetControlReference ((ControlRef)ewg_theControl, (SInt32)ewg_data);
+}
+
+// Return address of function 'SetControlReference'
+void* ewg_get_function_address_SetControlReference (void)
+{
+	return (void*) SetControlReference;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlReference'
+// For ise
+SInt32  ewg_function_GetControlReference (ControlRef ewg_theControl)
+{
+	return GetControlReference ((ControlRef)ewg_theControl);
+}
+
+// Return address of function 'GetControlReference'
+void* ewg_get_function_address_GetControlReference (void)
+{
+	return (void*) GetControlReference;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SendControlMessage'
+// For ise
+SInt32  ewg_function_SendControlMessage (ControlRef ewg_inControl, SInt16 ewg_inMessage, void *ewg_inParam)
+{
+	return SendControlMessage ((ControlRef)ewg_inControl, (SInt16)ewg_inMessage, (void*)ewg_inParam);
+}
+
+// Return address of function 'SendControlMessage'
+void* ewg_get_function_address_SendControlMessage (void)
+{
+	return (void*) SendControlMessage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DumpControlHierarchy'
+// For ise
+OSErr  ewg_function_DumpControlHierarchy (WindowRef ewg_inWindow, FSSpec const *ewg_inDumpFile)
+{
+	return DumpControlHierarchy ((WindowRef)ewg_inWindow, (FSSpec const*)ewg_inDumpFile);
+}
+
+// Return address of function 'DumpControlHierarchy'
+void* ewg_get_function_address_DumpControlHierarchy (void)
+{
+	return (void*) DumpControlHierarchy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateRootControl'
+// For ise
+OSErr  ewg_function_CreateRootControl (WindowRef ewg_inWindow, ControlRef *ewg_outControl)
+{
+	return CreateRootControl ((WindowRef)ewg_inWindow, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'CreateRootControl'
+void* ewg_get_function_address_CreateRootControl (void)
+{
+	return (void*) CreateRootControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetRootControl'
+// For ise
+OSErr  ewg_function_GetRootControl (WindowRef ewg_inWindow, ControlRef *ewg_outControl)
+{
+	return GetRootControl ((WindowRef)ewg_inWindow, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'GetRootControl'
+void* ewg_get_function_address_GetRootControl (void)
+{
+	return (void*) GetRootControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EmbedControl'
+// For ise
+OSErr  ewg_function_EmbedControl (ControlRef ewg_inControl, ControlRef ewg_inContainer)
+{
+	return EmbedControl ((ControlRef)ewg_inControl, (ControlRef)ewg_inContainer);
+}
+
+// Return address of function 'EmbedControl'
+void* ewg_get_function_address_EmbedControl (void)
+{
+	return (void*) EmbedControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AutoEmbedControl'
+// For ise
+OSErr  ewg_function_AutoEmbedControl (ControlRef ewg_inControl, WindowRef ewg_inWindow)
+{
+	return AutoEmbedControl ((ControlRef)ewg_inControl, (WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'AutoEmbedControl'
+void* ewg_get_function_address_AutoEmbedControl (void)
+{
+	return (void*) AutoEmbedControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetSuperControl'
+// For ise
+OSErr  ewg_function_GetSuperControl (ControlRef ewg_inControl, ControlRef *ewg_outParent)
+{
+	return GetSuperControl ((ControlRef)ewg_inControl, (ControlRef*)ewg_outParent);
+}
+
+// Return address of function 'GetSuperControl'
+void* ewg_get_function_address_GetSuperControl (void)
+{
+	return (void*) GetSuperControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CountSubControls'
+// For ise
+OSErr  ewg_function_CountSubControls (ControlRef ewg_inControl, UInt16 *ewg_outNumChildren)
+{
+	return CountSubControls ((ControlRef)ewg_inControl, (UInt16*)ewg_outNumChildren);
+}
+
+// Return address of function 'CountSubControls'
+void* ewg_get_function_address_CountSubControls (void)
+{
+	return (void*) CountSubControls;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetIndexedSubControl'
+// For ise
+OSErr  ewg_function_GetIndexedSubControl (ControlRef ewg_inControl, UInt16 ewg_inIndex, ControlRef *ewg_outSubControl)
+{
+	return GetIndexedSubControl ((ControlRef)ewg_inControl, (UInt16)ewg_inIndex, (ControlRef*)ewg_outSubControl);
+}
+
+// Return address of function 'GetIndexedSubControl'
+void* ewg_get_function_address_GetIndexedSubControl (void)
+{
+	return (void*) GetIndexedSubControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlSupervisor'
+// For ise
+OSErr  ewg_function_SetControlSupervisor (ControlRef ewg_inControl, ControlRef ewg_inBoss)
+{
+	return SetControlSupervisor ((ControlRef)ewg_inControl, (ControlRef)ewg_inBoss);
+}
+
+// Return address of function 'SetControlSupervisor'
+void* ewg_get_function_address_SetControlSupervisor (void)
+{
+	return (void*) SetControlSupervisor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetKeyboardFocus'
+// For ise
+OSErr  ewg_function_GetKeyboardFocus (WindowRef ewg_inWindow, ControlRef *ewg_outControl)
+{
+	return GetKeyboardFocus ((WindowRef)ewg_inWindow, (ControlRef*)ewg_outControl);
+}
+
+// Return address of function 'GetKeyboardFocus'
+void* ewg_get_function_address_GetKeyboardFocus (void)
+{
+	return (void*) GetKeyboardFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetKeyboardFocus'
+// For ise
+OSErr  ewg_function_SetKeyboardFocus (WindowRef ewg_inWindow, ControlRef ewg_inControl, ControlFocusPart ewg_inPart)
+{
+	return SetKeyboardFocus ((WindowRef)ewg_inWindow, (ControlRef)ewg_inControl, (ControlFocusPart)ewg_inPart);
+}
+
+// Return address of function 'SetKeyboardFocus'
+void* ewg_get_function_address_SetKeyboardFocus (void)
+{
+	return (void*) SetKeyboardFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AdvanceKeyboardFocus'
+// For ise
+OSErr  ewg_function_AdvanceKeyboardFocus (WindowRef ewg_inWindow)
+{
+	return AdvanceKeyboardFocus ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'AdvanceKeyboardFocus'
+void* ewg_get_function_address_AdvanceKeyboardFocus (void)
+{
+	return (void*) AdvanceKeyboardFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReverseKeyboardFocus'
+// For ise
+OSErr  ewg_function_ReverseKeyboardFocus (WindowRef ewg_inWindow)
+{
+	return ReverseKeyboardFocus ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'ReverseKeyboardFocus'
+void* ewg_get_function_address_ReverseKeyboardFocus (void)
+{
+	return (void*) ReverseKeyboardFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClearKeyboardFocus'
+// For ise
+OSErr  ewg_function_ClearKeyboardFocus (WindowRef ewg_inWindow)
+{
+	return ClearKeyboardFocus ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'ClearKeyboardFocus'
+void* ewg_get_function_address_ClearKeyboardFocus (void)
+{
+	return (void*) ClearKeyboardFocus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlFeatures'
+// For ise
+OSErr  ewg_function_GetControlFeatures (ControlRef ewg_inControl, UInt32 *ewg_outFeatures)
+{
+	return GetControlFeatures ((ControlRef)ewg_inControl, (UInt32*)ewg_outFeatures);
+}
+
+// Return address of function 'GetControlFeatures'
+void* ewg_get_function_address_GetControlFeatures (void)
+{
+	return (void*) GetControlFeatures;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlData'
+// For ise
+OSErr  ewg_function_SetControlData (ControlRef ewg_inControl, ControlPartCode ewg_inPart, ResType ewg_inTagName, Size ewg_inSize, void const *ewg_inData)
+{
+	return SetControlData ((ControlRef)ewg_inControl, (ControlPartCode)ewg_inPart, (ResType)ewg_inTagName, (Size)ewg_inSize, (void const*)ewg_inData);
+}
+
+// Return address of function 'SetControlData'
+void* ewg_get_function_address_SetControlData (void)
+{
+	return (void*) SetControlData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlData'
+// For ise
+OSErr  ewg_function_GetControlData (ControlRef ewg_inControl, ControlPartCode ewg_inPart, ResType ewg_inTagName, Size ewg_inBufferSize, void *ewg_inBuffer, Size *ewg_outActualSize)
+{
+	return GetControlData ((ControlRef)ewg_inControl, (ControlPartCode)ewg_inPart, (ResType)ewg_inTagName, (Size)ewg_inBufferSize, (void*)ewg_inBuffer, (Size*)ewg_outActualSize);
+}
+
+// Return address of function 'GetControlData'
+void* ewg_get_function_address_GetControlData (void)
+{
+	return (void*) GetControlData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlDataSize'
+// For ise
+OSErr  ewg_function_GetControlDataSize (ControlRef ewg_inControl, ControlPartCode ewg_inPart, ResType ewg_inTagName, Size *ewg_outMaxSize)
+{
+	return GetControlDataSize ((ControlRef)ewg_inControl, (ControlPartCode)ewg_inPart, (ResType)ewg_inTagName, (Size*)ewg_outMaxSize);
+}
+
+// Return address of function 'GetControlDataSize'
+void* ewg_get_function_address_GetControlDataSize (void)
+{
+	return (void*) GetControlDataSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HandleControlDragTracking'
+// For ise
+OSStatus  ewg_function_HandleControlDragTracking (ControlRef ewg_inControl, DragTrackingMessage ewg_inMessage, DragReference ewg_inDrag, Boolean *ewg_outLikesDrag)
+{
+	return HandleControlDragTracking ((ControlRef)ewg_inControl, (DragTrackingMessage)ewg_inMessage, (DragReference)ewg_inDrag, (Boolean*)ewg_outLikesDrag);
+}
+
+// Return address of function 'HandleControlDragTracking'
+void* ewg_get_function_address_HandleControlDragTracking (void)
+{
+	return (void*) HandleControlDragTracking;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HandleControlDragReceive'
+// For ise
+OSStatus  ewg_function_HandleControlDragReceive (ControlRef ewg_inControl, DragReference ewg_inDrag)
+{
+	return HandleControlDragReceive ((ControlRef)ewg_inControl, (DragReference)ewg_inDrag);
+}
+
+// Return address of function 'HandleControlDragReceive'
+void* ewg_get_function_address_HandleControlDragReceive (void)
+{
+	return (void*) HandleControlDragReceive;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlDragTrackingEnabled'
+// For ise
+OSStatus  ewg_function_SetControlDragTrackingEnabled (ControlRef ewg_inControl, Boolean ewg_inTracks)
+{
+	return SetControlDragTrackingEnabled ((ControlRef)ewg_inControl, (Boolean)ewg_inTracks);
+}
+
+// Return address of function 'SetControlDragTrackingEnabled'
+void* ewg_get_function_address_SetControlDragTrackingEnabled (void)
+{
+	return (void*) SetControlDragTrackingEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsControlDragTrackingEnabled'
+// For ise
+OSStatus  ewg_function_IsControlDragTrackingEnabled (ControlRef ewg_inControl, Boolean *ewg_outTracks)
+{
+	return IsControlDragTrackingEnabled ((ControlRef)ewg_inControl, (Boolean*)ewg_outTracks);
+}
+
+// Return address of function 'IsControlDragTrackingEnabled'
+void* ewg_get_function_address_IsControlDragTrackingEnabled (void)
+{
+	return (void*) IsControlDragTrackingEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetAutomaticControlDragTrackingEnabledForWindow'
+// For ise
+OSStatus  ewg_function_SetAutomaticControlDragTrackingEnabledForWindow (WindowRef ewg_inWindow, Boolean ewg_inTracks)
+{
+	return SetAutomaticControlDragTrackingEnabledForWindow ((WindowRef)ewg_inWindow, (Boolean)ewg_inTracks);
+}
+
+// Return address of function 'SetAutomaticControlDragTrackingEnabledForWindow'
+void* ewg_get_function_address_SetAutomaticControlDragTrackingEnabledForWindow (void)
+{
+	return (void*) SetAutomaticControlDragTrackingEnabledForWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsAutomaticControlDragTrackingEnabledForWindow'
+// For ise
+OSStatus  ewg_function_IsAutomaticControlDragTrackingEnabledForWindow (WindowRef ewg_inWindow, Boolean *ewg_outTracks)
+{
+	return IsAutomaticControlDragTrackingEnabledForWindow ((WindowRef)ewg_inWindow, (Boolean*)ewg_outTracks);
+}
+
+// Return address of function 'IsAutomaticControlDragTrackingEnabledForWindow'
+void* ewg_get_function_address_IsAutomaticControlDragTrackingEnabledForWindow (void)
+{
+	return (void*) IsAutomaticControlDragTrackingEnabledForWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlBounds'
+// For ise
+Rect * ewg_function_GetControlBounds (ControlRef ewg_control, Rect *ewg_bounds)
+{
+	return GetControlBounds ((ControlRef)ewg_control, (Rect*)ewg_bounds);
+}
+
+// Return address of function 'GetControlBounds'
+void* ewg_get_function_address_GetControlBounds (void)
+{
+	return (void*) GetControlBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsControlHilited'
+// For ise
+Boolean  ewg_function_IsControlHilited (ControlRef ewg_control)
+{
+	return IsControlHilited ((ControlRef)ewg_control);
+}
+
+// Return address of function 'IsControlHilited'
+void* ewg_get_function_address_IsControlHilited (void)
+{
+	return (void*) IsControlHilited;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlHilite'
+// For ise
+UInt16  ewg_function_GetControlHilite (ControlRef ewg_control)
+{
+	return GetControlHilite ((ControlRef)ewg_control);
+}
+
+// Return address of function 'GetControlHilite'
+void* ewg_get_function_address_GetControlHilite (void)
+{
+	return (void*) GetControlHilite;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlOwner'
+// For ise
+WindowRef  ewg_function_GetControlOwner (ControlRef ewg_control)
+{
+	return GetControlOwner ((ControlRef)ewg_control);
+}
+
+// Return address of function 'GetControlOwner'
+void* ewg_get_function_address_GetControlOwner (void)
+{
+	return (void*) GetControlOwner;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlDataHandle'
+// For ise
+Handle  ewg_function_GetControlDataHandle (ControlRef ewg_control)
+{
+	return GetControlDataHandle ((ControlRef)ewg_control);
+}
+
+// Return address of function 'GetControlDataHandle'
+void* ewg_get_function_address_GetControlDataHandle (void)
+{
+	return (void*) GetControlDataHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlPopupMenuHandle'
+// For ise
+MenuRef  ewg_function_GetControlPopupMenuHandle (ControlRef ewg_control)
+{
+	return GetControlPopupMenuHandle ((ControlRef)ewg_control);
+}
+
+// Return address of function 'GetControlPopupMenuHandle'
+void* ewg_get_function_address_GetControlPopupMenuHandle (void)
+{
+	return (void*) GetControlPopupMenuHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetControlPopupMenuID'
+// For ise
+short  ewg_function_GetControlPopupMenuID (ControlRef ewg_control)
+{
+	return GetControlPopupMenuID ((ControlRef)ewg_control);
+}
+
+// Return address of function 'GetControlPopupMenuID'
+void* ewg_get_function_address_GetControlPopupMenuID (void)
+{
+	return (void*) GetControlPopupMenuID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlDataHandle'
+// For ise
+void  ewg_function_SetControlDataHandle (ControlRef ewg_control, Handle ewg_dataHandle)
+{
+	SetControlDataHandle ((ControlRef)ewg_control, (Handle)ewg_dataHandle);
+}
+
+// Return address of function 'SetControlDataHandle'
+void* ewg_get_function_address_SetControlDataHandle (void)
+{
+	return (void*) SetControlDataHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlBounds'
+// For ise
+void  ewg_function_SetControlBounds (ControlRef ewg_control, Rect const *ewg_bounds)
+{
+	SetControlBounds ((ControlRef)ewg_control, (Rect const*)ewg_bounds);
+}
+
+// Return address of function 'SetControlBounds'
+void* ewg_get_function_address_SetControlBounds (void)
+{
+	return (void*) SetControlBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlPopupMenuHandle'
+// For ise
+void  ewg_function_SetControlPopupMenuHandle (ControlRef ewg_control, MenuRef ewg_popupMenu)
+{
+	SetControlPopupMenuHandle ((ControlRef)ewg_control, (MenuRef)ewg_popupMenu);
+}
+
+// Return address of function 'SetControlPopupMenuHandle'
+void* ewg_get_function_address_SetControlPopupMenuHandle (void)
+{
+	return (void*) SetControlPopupMenuHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetControlPopupMenuID'
+// For ise
+void  ewg_function_SetControlPopupMenuID (ControlRef ewg_control, short ewg_menuID)
+{
+	SetControlPopupMenuID ((ControlRef)ewg_control, (short)ewg_menuID);
+}
+
+// Return address of function 'SetControlPopupMenuID'
+void* ewg_get_function_address_SetControlPopupMenuID (void)
+{
+	return (void*) SetControlPopupMenuID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IdleControls'
+// For ise
+void  ewg_function_IdleControls (WindowRef ewg_inWindow)
+{
+	IdleControls ((WindowRef)ewg_inWindow);
+}
+
+// Return address of function 'IdleControls'
+void* ewg_get_function_address_IdleControls (void)
+{
+	return (void*) IdleControls;
 }
 
 #include <Carbon/Carbon.h>
@@ -19856,6 +22016,231 @@ OSStatus  ewg_function_call_event_handler_proc_ptr (void *ewg_a_function, EventH
 void* ewg_get_function_address_call_event_handler_proc_ptr (void)
 {
 	return (void*) call_event_handler_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_action_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_action_proc_ptr_stub (void)
+{
+	return get_control_action_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_action_proc_ptr_stub'
+void* ewg_get_function_address_get_control_action_proc_ptr_stub (void)
+{
+	return (void*) get_control_action_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_action_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_action_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_action_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_action_proc_ptr_entry'
+void* ewg_get_function_address_set_control_action_proc_ptr_entry (void)
+{
+	return (void*) set_control_action_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_action_proc_ptr'
+// For ise
+void  ewg_function_call_control_action_proc_ptr (void *ewg_a_function, ControlRef ewg_theControl, ControlPartCode ewg_partCode)
+{
+	call_control_action_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_theControl, (ControlPartCode)ewg_partCode);
+}
+
+// Return address of function 'call_control_action_proc_ptr'
+void* ewg_get_function_address_call_control_action_proc_ptr (void)
+{
+	return (void*) call_control_action_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_def_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_def_proc_ptr_stub (void)
+{
+	return get_control_def_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_def_proc_ptr_stub'
+void* ewg_get_function_address_get_control_def_proc_ptr_stub (void)
+{
+	return (void*) get_control_def_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_def_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_def_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_def_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_def_proc_ptr_entry'
+void* ewg_get_function_address_set_control_def_proc_ptr_entry (void)
+{
+	return (void*) set_control_def_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_def_proc_ptr'
+// For ise
+SInt32  ewg_function_call_control_def_proc_ptr (void *ewg_a_function, SInt16 ewg_varCode, ControlRef ewg_theControl, ControlDefProcMessage ewg_message, SInt32 ewg_param)
+{
+	return call_control_def_proc_ptr ((void*)ewg_a_function, (SInt16)ewg_varCode, (ControlRef)ewg_theControl, (ControlDefProcMessage)ewg_message, (SInt32)ewg_param);
+}
+
+// Return address of function 'call_control_def_proc_ptr'
+void* ewg_get_function_address_call_control_def_proc_ptr (void)
+{
+	return (void*) call_control_def_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_key_filter_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_key_filter_proc_ptr_stub (void)
+{
+	return get_control_key_filter_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_key_filter_proc_ptr_stub'
+void* ewg_get_function_address_get_control_key_filter_proc_ptr_stub (void)
+{
+	return (void*) get_control_key_filter_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_key_filter_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_key_filter_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_key_filter_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_key_filter_proc_ptr_entry'
+void* ewg_get_function_address_set_control_key_filter_proc_ptr_entry (void)
+{
+	return (void*) set_control_key_filter_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_key_filter_proc_ptr'
+// For ise
+ControlKeyFilterResult  ewg_function_call_control_key_filter_proc_ptr (void *ewg_a_function, ControlRef ewg_theControl, SInt16 *ewg_keyCode, SInt16 *ewg_charCode, EventModifiers *ewg_modifiers)
+{
+	return call_control_key_filter_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_theControl, (SInt16*)ewg_keyCode, (SInt16*)ewg_charCode, (EventModifiers*)ewg_modifiers);
+}
+
+// Return address of function 'call_control_key_filter_proc_ptr'
+void* ewg_get_function_address_call_control_key_filter_proc_ptr (void)
+{
+	return (void*) call_control_key_filter_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_cntlto_collection_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_cntlto_collection_proc_ptr_stub (void)
+{
+	return get_control_cntlto_collection_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_cntlto_collection_proc_ptr_stub'
+void* ewg_get_function_address_get_control_cntlto_collection_proc_ptr_stub (void)
+{
+	return (void*) get_control_cntlto_collection_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_cntlto_collection_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_cntlto_collection_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_cntlto_collection_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_cntlto_collection_proc_ptr_entry'
+void* ewg_get_function_address_set_control_cntlto_collection_proc_ptr_entry (void)
+{
+	return (void*) set_control_cntlto_collection_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_cntlto_collection_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_control_cntlto_collection_proc_ptr (void *ewg_a_function, Rect const *ewg_bounds, SInt16 ewg_value, Boolean ewg_visible, SInt16 ewg_max, SInt16 ewg_min, SInt16 ewg_procID, SInt32 ewg_refCon, ConstStr255Param ewg_title, Collection ewg_collection)
+{
+	return call_control_cntlto_collection_proc_ptr ((void*)ewg_a_function, (Rect const*)ewg_bounds, (SInt16)ewg_value, (Boolean)ewg_visible, (SInt16)ewg_max, (SInt16)ewg_min, (SInt16)ewg_procID, (SInt32)ewg_refCon, (ConstStr255Param)ewg_title, (Collection)ewg_collection);
+}
+
+// Return address of function 'call_control_cntlto_collection_proc_ptr'
+void* ewg_get_function_address_call_control_cntlto_collection_proc_ptr (void)
+{
+	return (void*) call_control_cntlto_collection_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_control_color_proc_ptr_stub'
+// For ise
+void * ewg_function_get_control_color_proc_ptr_stub (void)
+{
+	return get_control_color_proc_ptr_stub ();
+}
+
+// Return address of function 'get_control_color_proc_ptr_stub'
+void* ewg_get_function_address_get_control_color_proc_ptr_stub (void)
+{
+	return (void*) get_control_color_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_control_color_proc_ptr_entry'
+// For ise
+void  ewg_function_set_control_color_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_control_color_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_control_color_proc_ptr_entry'
+void* ewg_get_function_address_set_control_color_proc_ptr_entry (void)
+{
+	return (void*) set_control_color_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_control_color_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_control_color_proc_ptr (void *ewg_a_function, ControlRef ewg_inControl, SInt16 ewg_inMessage, SInt16 ewg_inDrawDepth, Boolean ewg_inDrawInColor)
+{
+	return call_control_color_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_inControl, (SInt16)ewg_inMessage, (SInt16)ewg_inDrawDepth, (Boolean)ewg_inDrawInColor);
+}
+
+// Return address of function 'call_control_color_proc_ptr'
+void* ewg_get_function_address_call_control_color_proc_ptr (void)
+{
+	return (void*) call_control_color_proc_ptr;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>
