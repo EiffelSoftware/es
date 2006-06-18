@@ -82,9 +82,39 @@ feature {NONE} -- Initialization
 			-- The `hbox' will contain the child of the window.
 		do
 			carbon_c_magic
+			--create_window
 			set_is_initialized (true)
-			--set_is_initialized
 		end
+
+		create_window is
+				-- 
+			local
+				the_window:OPAQUE_WINDOW_PTR_STRUCT
+				window_attributes: INTEGER
+				rect: RECT_STRUCT
+				res: INTEGER
+				ptr: POINTER
+			do
+
+				--Dimensionen setzten
+				create rect.make_new_shared
+				rect.set_bottom (200)
+				rect.set_left (50)
+				rect.set_right (200)
+				rect.set_top (50)
+
+
+				--Attribute: Dazu benötigt ihr die Konstanten. Wie läufts damit Jann?	
+--				window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kWindowStandardDocumentAttributes).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowStandardHandlerAttribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowInWindowMenuAttribute)
+				
+				--Window generieren: man achte auf $ptr.
+--				res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kDocumentWindowClass, window_attributes, rect.item, $ptr)
+			--OPAQUE_WINDOW_PTR_STRUCT aus ptr generieren.
+				create the_window.make_shared(ptr)
+
+				show_window_external(the_window.item)
+			end
+	
 
 		carbon_c_magic is
 				--
