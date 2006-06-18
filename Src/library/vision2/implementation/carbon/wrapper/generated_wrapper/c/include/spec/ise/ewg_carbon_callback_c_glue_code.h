@@ -445,6 +445,91 @@ OSStatus call_event_handler_proc_ptr (void *a_function, EventHandlerCallRef inHa
 
 #include <Carbon/Carbon.h>
 
+typedef void (*control_action_proc_ptr_eiffel_feature) (void *a_class, ControlRef theControl, ControlPartCode partCode);
+
+void* get_control_action_proc_ptr_stub ();
+
+struct control_action_proc_ptr_entry_struct
+{
+	void* a_class;
+	control_action_proc_ptr_eiffel_feature feature;
+};
+
+void set_control_action_proc_ptr_entry (void* a_class, void* a_feature);
+
+void call_control_action_proc_ptr (void *a_function, ControlRef theControl, ControlPartCode partCode);
+
+
+#include <Carbon/Carbon.h>
+
+typedef SInt32 (*control_def_proc_ptr_eiffel_feature) (void *a_class, SInt16 varCode, ControlRef theControl, ControlDefProcMessage message, SInt32 param);
+
+void* get_control_def_proc_ptr_stub ();
+
+struct control_def_proc_ptr_entry_struct
+{
+	void* a_class;
+	control_def_proc_ptr_eiffel_feature feature;
+};
+
+void set_control_def_proc_ptr_entry (void* a_class, void* a_feature);
+
+SInt32 call_control_def_proc_ptr (void *a_function, SInt16 varCode, ControlRef theControl, ControlDefProcMessage message, SInt32 param);
+
+
+#include <Carbon/Carbon.h>
+
+typedef ControlKeyFilterResult (*control_key_filter_proc_ptr_eiffel_feature) (void *a_class, ControlRef theControl, SInt16 *keyCode, SInt16 *charCode, EventModifiers *modifiers);
+
+void* get_control_key_filter_proc_ptr_stub ();
+
+struct control_key_filter_proc_ptr_entry_struct
+{
+	void* a_class;
+	control_key_filter_proc_ptr_eiffel_feature feature;
+};
+
+void set_control_key_filter_proc_ptr_entry (void* a_class, void* a_feature);
+
+ControlKeyFilterResult call_control_key_filter_proc_ptr (void *a_function, ControlRef theControl, SInt16 *keyCode, SInt16 *charCode, EventModifiers *modifiers);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSStatus (*control_cntlto_collection_proc_ptr_eiffel_feature) (void *a_class, Rect const *bounds, SInt16 value, Boolean visible, SInt16 max, SInt16 min, SInt16 procID, SInt32 refCon, ConstStr255Param title, Collection collection);
+
+void* get_control_cntlto_collection_proc_ptr_stub ();
+
+struct control_cntlto_collection_proc_ptr_entry_struct
+{
+	void* a_class;
+	control_cntlto_collection_proc_ptr_eiffel_feature feature;
+};
+
+void set_control_cntlto_collection_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSStatus call_control_cntlto_collection_proc_ptr (void *a_function, Rect const *bounds, SInt16 value, Boolean visible, SInt16 max, SInt16 min, SInt16 procID, SInt32 refCon, ConstStr255Param title, Collection collection);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSStatus (*control_color_proc_ptr_eiffel_feature) (void *a_class, ControlRef inControl, SInt16 inMessage, SInt16 inDrawDepth, Boolean inDrawInColor);
+
+void* get_control_color_proc_ptr_stub ();
+
+struct control_color_proc_ptr_entry_struct
+{
+	void* a_class;
+	control_color_proc_ptr_eiffel_feature feature;
+};
+
+void set_control_color_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSStatus call_control_color_proc_ptr (void *a_function, ControlRef inControl, SInt16 inMessage, SInt16 inDrawDepth, Boolean inDrawInColor);
+
+
+#include <Carbon/Carbon.h>
+
 typedef long (*window_def_proc_ptr_eiffel_feature) (void *a_class, short varCode, WindowRef window, short message, long param);
 
 void* get_window_def_proc_ptr_stub ();

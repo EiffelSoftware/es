@@ -1017,6 +1017,34 @@
 #define ewg_struct_macro_sizeof_struct_OpaqueEventHandlerRef 1
 
 
+// glue code macros for struct `struct OpaqueHIObjectClassRef'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueHIObjectClassRef 1
+
+
+// glue code macros for struct `struct OpaqueHIObjectRef'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueHIObjectRef 1
+
+
+// glue code macros for struct `struct __CFBundle'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___CFBundle 1
+
+
+// glue code macros for struct `struct __AXUIElement'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___AXUIElement 1
+
+
 // glue code macros for struct `struct EventRecord'
 
 #include<Carbon/Carbon.h>
@@ -1044,6 +1072,13 @@
 #define ewg_struct_macro_struct_EventRecord_member_set_modifiers(an_item, a_value) ((struct EventRecord*)an_item)->modifiers =  (EventModifiers)a_value
 
 
+// glue code macros for struct `struct OpaqueControlRef'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueControlRef 1
+
+
 // glue code macros for struct `struct OpaqueWindowPtr'
 
 #include<Carbon/Carbon.h>
@@ -1051,11 +1086,122 @@
 #define ewg_struct_macro_sizeof_struct_OpaqueWindowPtr 1
 
 
+// glue code macros for struct `struct ControlDefSpec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlDefSpec sizeof (struct ControlDefSpec)
+
+#define ewg_struct_macro_struct_ControlDefSpec_member_get_defType(an_item) ((struct ControlDefSpec*)an_item)->defType
+
+#define ewg_struct_macro_struct_ControlDefSpec_member_set_defType(an_item, a_value) ((struct ControlDefSpec*)an_item)->defType =  (ControlDefType)a_value
+
+
 // glue code macros for struct `struct OpaqueCollection'
 
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_OpaqueCollection 1
+
+
+// glue code macros for struct `struct ControlFontStyleRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlFontStyleRec sizeof (struct ControlFontStyleRec)
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_flags(an_item) ((struct ControlFontStyleRec*)an_item)->flags
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_flags(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->flags =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_font(an_item) ((struct ControlFontStyleRec*)an_item)->font
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_font(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->font =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_size(an_item) ((struct ControlFontStyleRec*)an_item)->size
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_size(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->size =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_style(an_item) ((struct ControlFontStyleRec*)an_item)->style
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_style(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->style =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_mode(an_item) ((struct ControlFontStyleRec*)an_item)->mode
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_mode(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->mode =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_just(an_item) ((struct ControlFontStyleRec*)an_item)->just
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_just(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->just =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_foreColor(an_item) &((struct ControlFontStyleRec*)an_item)->foreColor
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_foreColor(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->foreColor =  *(RGBColor*)a_value
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_backColor(an_item) &((struct ControlFontStyleRec*)an_item)->backColor
+
+#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_backColor(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->backColor =  *(RGBColor*)a_value
+
+
+// glue code macros for struct `struct ControlID'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlID sizeof (struct ControlID)
+
+#define ewg_struct_macro_struct_ControlID_member_get_signature(an_item) ((struct ControlID*)an_item)->signature
+
+#define ewg_struct_macro_struct_ControlID_member_set_signature(an_item, a_value) ((struct ControlID*)an_item)->signature =  (OSType)a_value
+
+#define ewg_struct_macro_struct_ControlID_member_get_id(an_item) ((struct ControlID*)an_item)->id
+
+#define ewg_struct_macro_struct_ControlID_member_set_id(an_item, a_value) ((struct ControlID*)an_item)->id =  (SInt32)a_value
+
+
+// glue code macros for struct `struct ControlKind'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlKind sizeof (struct ControlKind)
+
+#define ewg_struct_macro_struct_ControlKind_member_get_signature(an_item) ((struct ControlKind*)an_item)->signature
+
+#define ewg_struct_macro_struct_ControlKind_member_set_signature(an_item, a_value) ((struct ControlKind*)an_item)->signature =  (OSType)a_value
+
+#define ewg_struct_macro_struct_ControlKind_member_get_kind(an_item) ((struct ControlKind*)an_item)->kind
+
+#define ewg_struct_macro_struct_ControlKind_member_set_kind(an_item, a_value) ((struct ControlKind*)an_item)->kind =  (OSType)a_value
+
+
+// glue code macros for struct `struct FSSpec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_FSSpec sizeof (struct FSSpec)
+
+#define ewg_struct_macro_struct_FSSpec_member_get_vRefNum(an_item) ((struct FSSpec*)an_item)->vRefNum
+
+#define ewg_struct_macro_struct_FSSpec_member_set_vRefNum(an_item, a_value) ((struct FSSpec*)an_item)->vRefNum =  (short)a_value
+
+#define ewg_struct_macro_struct_FSSpec_member_get_parID(an_item) ((struct FSSpec*)an_item)->parID
+
+#define ewg_struct_macro_struct_FSSpec_member_set_parID(an_item, a_value) ((struct FSSpec*)an_item)->parID =  (long)a_value
+
+#define ewg_struct_macro_struct_FSSpec_member_get_name(an_item) ((struct FSSpec*)an_item)->name
+
+
+// glue code macros for struct `struct OpaqueDragRef'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueDragRef 1
+
+
+// glue code macros for struct `struct OpaqueMenuRef'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueMenuRef 1
 
 
 // glue code macros for struct `struct WindowDefSpec'
@@ -1074,30 +1220,6 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_OpaqueWindowGroupRef 1
-
-
-// glue code macros for struct `struct OpaqueMenuRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueMenuRef 1
-
-
-// glue code macros for struct `struct FSSpec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_FSSpec sizeof (struct FSSpec)
-
-#define ewg_struct_macro_struct_FSSpec_member_get_vRefNum(an_item) ((struct FSSpec*)an_item)->vRefNum
-
-#define ewg_struct_macro_struct_FSSpec_member_set_vRefNum(an_item, a_value) ((struct FSSpec*)an_item)->vRefNum =  (short)a_value
-
-#define ewg_struct_macro_struct_FSSpec_member_get_parID(an_item) ((struct FSSpec*)an_item)->parID
-
-#define ewg_struct_macro_struct_FSSpec_member_set_parID(an_item, a_value) ((struct FSSpec*)an_item)->parID =  (long)a_value
-
-#define ewg_struct_macro_struct_FSSpec_member_get_name(an_item) ((struct FSSpec*)an_item)->name
 
 
 // glue code macros for struct `struct AliasRecord'
@@ -1120,13 +1242,6 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_OpaqueIconRef 1
-
-
-// glue code macros for struct `struct OpaqueDragRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueDragRef 1
 
 
 // glue code macros for struct `struct CGRect'
@@ -1180,27 +1295,6 @@
 #define ewg_struct_macro_struct_CGSize_member_get_height(an_item) ((struct CGSize*)an_item)->height
 
 #define ewg_struct_macro_struct_CGSize_member_set_height(an_item, a_value) ((struct CGSize*)an_item)->height =  (float)a_value
-
-
-// glue code macros for struct `struct OpaqueHIObjectRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueHIObjectRef 1
-
-
-// glue code macros for struct `struct __AXUIElement'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct___AXUIElement 1
-
-
-// glue code macros for struct `struct OpaqueControlRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueControlRef 1
 
 
 // glue code macros for struct `struct HICommand'
@@ -1267,21 +1361,6 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_OpaqueToolboxObjectClassRef 1
-
-
-// glue code macros for struct `struct ControlID'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ControlID sizeof (struct ControlID)
-
-#define ewg_struct_macro_struct_ControlID_member_get_signature(an_item) ((struct ControlID*)an_item)->signature
-
-#define ewg_struct_macro_struct_ControlID_member_set_signature(an_item, a_value) ((struct ControlID*)an_item)->signature =  (OSType)a_value
-
-#define ewg_struct_macro_struct_ControlID_member_get_id(an_item) ((struct ControlID*)an_item)->id
-
-#define ewg_struct_macro_struct_ControlID_member_set_id(an_item, a_value) ((struct ControlID*)an_item)->id =  (SInt32)a_value
 
 
 // glue code macros for struct `struct HIViewKind'
@@ -1356,45 +1435,6 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_CGImage 1
-
-
-// glue code macros for struct `struct ControlFontStyleRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ControlFontStyleRec sizeof (struct ControlFontStyleRec)
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_flags(an_item) ((struct ControlFontStyleRec*)an_item)->flags
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_flags(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->flags =  (SInt16)a_value
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_font(an_item) ((struct ControlFontStyleRec*)an_item)->font
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_font(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->font =  (SInt16)a_value
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_size(an_item) ((struct ControlFontStyleRec*)an_item)->size
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_size(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->size =  (SInt16)a_value
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_style(an_item) ((struct ControlFontStyleRec*)an_item)->style
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_style(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->style =  (SInt16)a_value
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_mode(an_item) ((struct ControlFontStyleRec*)an_item)->mode
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_mode(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->mode =  (SInt16)a_value
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_just(an_item) ((struct ControlFontStyleRec*)an_item)->just
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_just(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->just =  (SInt16)a_value
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_foreColor(an_item) &((struct ControlFontStyleRec*)an_item)->foreColor
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_foreColor(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->foreColor =  *(RGBColor*)a_value
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_get_backColor(an_item) &((struct ControlFontStyleRec*)an_item)->backColor
-
-#define ewg_struct_macro_struct_ControlFontStyleRec_member_set_backColor(an_item, a_value) ((struct ControlFontStyleRec*)an_item)->backColor =  *(RGBColor*)a_value
 
 
 // glue code macros for struct `struct ControlButtonContentInfo'
@@ -1984,6 +2024,254 @@
 #define ewg_struct_macro_struct_EvQEl_member_get_evtQModifiers(an_item) ((struct EvQEl*)an_item)->evtQModifiers
 
 #define ewg_struct_macro_struct_EvQEl_member_set_evtQModifiers(an_item, a_value) ((struct EvQEl*)an_item)->evtQModifiers =  (EventModifiers)a_value
+
+
+// glue code macros for struct `struct ControlTemplate'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlTemplate sizeof (struct ControlTemplate)
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlRect(an_item) &((struct ControlTemplate*)an_item)->controlRect
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_controlRect(an_item, a_value) ((struct ControlTemplate*)an_item)->controlRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlValue(an_item) ((struct ControlTemplate*)an_item)->controlValue
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_controlValue(an_item, a_value) ((struct ControlTemplate*)an_item)->controlValue =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlVisible(an_item) ((struct ControlTemplate*)an_item)->controlVisible
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_controlVisible(an_item, a_value) ((struct ControlTemplate*)an_item)->controlVisible =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_fill(an_item) ((struct ControlTemplate*)an_item)->fill
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_fill(an_item, a_value) ((struct ControlTemplate*)an_item)->fill =  (UInt8)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlMaximum(an_item) ((struct ControlTemplate*)an_item)->controlMaximum
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_controlMaximum(an_item, a_value) ((struct ControlTemplate*)an_item)->controlMaximum =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlMinimum(an_item) ((struct ControlTemplate*)an_item)->controlMinimum
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_controlMinimum(an_item, a_value) ((struct ControlTemplate*)an_item)->controlMinimum =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlDefProcID(an_item) ((struct ControlTemplate*)an_item)->controlDefProcID
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_controlDefProcID(an_item, a_value) ((struct ControlTemplate*)an_item)->controlDefProcID =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlReference(an_item) ((struct ControlTemplate*)an_item)->controlReference
+
+#define ewg_struct_macro_struct_ControlTemplate_member_set_controlReference(an_item, a_value) ((struct ControlTemplate*)an_item)->controlReference =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_ControlTemplate_member_get_controlTitle(an_item) ((struct ControlTemplate*)an_item)->controlTitle
+
+
+// glue code macros for struct `struct CtlCTab'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CtlCTab sizeof (struct CtlCTab)
+
+#define ewg_struct_macro_struct_CtlCTab_member_get_ccSeed(an_item) ((struct CtlCTab*)an_item)->ccSeed
+
+#define ewg_struct_macro_struct_CtlCTab_member_set_ccSeed(an_item, a_value) ((struct CtlCTab*)an_item)->ccSeed =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_CtlCTab_member_get_ccRider(an_item) ((struct CtlCTab*)an_item)->ccRider
+
+#define ewg_struct_macro_struct_CtlCTab_member_set_ccRider(an_item, a_value) ((struct CtlCTab*)an_item)->ccRider =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_CtlCTab_member_get_ctSize(an_item) ((struct CtlCTab*)an_item)->ctSize
+
+#define ewg_struct_macro_struct_CtlCTab_member_set_ctSize(an_item, a_value) ((struct CtlCTab*)an_item)->ctSize =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_CtlCTab_member_get_ctTable(an_item) ((struct CtlCTab*)an_item)->ctTable
+
+
+// glue code macros for struct `struct IndicatorDragConstraint'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_IndicatorDragConstraint sizeof (struct IndicatorDragConstraint)
+
+#define ewg_struct_macro_struct_IndicatorDragConstraint_member_get_limitRect(an_item) &((struct IndicatorDragConstraint*)an_item)->limitRect
+
+#define ewg_struct_macro_struct_IndicatorDragConstraint_member_set_limitRect(an_item, a_value) ((struct IndicatorDragConstraint*)an_item)->limitRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_IndicatorDragConstraint_member_get_slopRect(an_item) &((struct IndicatorDragConstraint*)an_item)->slopRect
+
+#define ewg_struct_macro_struct_IndicatorDragConstraint_member_set_slopRect(an_item, a_value) ((struct IndicatorDragConstraint*)an_item)->slopRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_IndicatorDragConstraint_member_get_axis(an_item) ((struct IndicatorDragConstraint*)an_item)->axis
+
+#define ewg_struct_macro_struct_IndicatorDragConstraint_member_set_axis(an_item, a_value) ((struct IndicatorDragConstraint*)an_item)->axis =  (DragConstraint)a_value
+
+
+// glue code macros for struct `struct ControlTrackingRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlTrackingRec sizeof (struct ControlTrackingRec)
+
+#define ewg_struct_macro_struct_ControlTrackingRec_member_get_startPt(an_item) &((struct ControlTrackingRec*)an_item)->startPt
+
+#define ewg_struct_macro_struct_ControlTrackingRec_member_set_startPt(an_item, a_value) ((struct ControlTrackingRec*)an_item)->startPt =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_ControlTrackingRec_member_get_modifiers(an_item) ((struct ControlTrackingRec*)an_item)->modifiers
+
+#define ewg_struct_macro_struct_ControlTrackingRec_member_set_modifiers(an_item, a_value) ((struct ControlTrackingRec*)an_item)->modifiers =  (EventModifiers)a_value
+
+#define ewg_struct_macro_struct_ControlTrackingRec_member_get_action(an_item) ((struct ControlTrackingRec*)an_item)->action
+
+#define ewg_struct_macro_struct_ControlTrackingRec_member_set_action(an_item, a_value) ((struct ControlTrackingRec*)an_item)->action =  (ControlActionUPP)a_value
+
+
+// glue code macros for struct `struct ControlKeyDownRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlKeyDownRec sizeof (struct ControlKeyDownRec)
+
+#define ewg_struct_macro_struct_ControlKeyDownRec_member_get_modifiers(an_item) ((struct ControlKeyDownRec*)an_item)->modifiers
+
+#define ewg_struct_macro_struct_ControlKeyDownRec_member_set_modifiers(an_item, a_value) ((struct ControlKeyDownRec*)an_item)->modifiers =  (EventModifiers)a_value
+
+#define ewg_struct_macro_struct_ControlKeyDownRec_member_get_keyCode(an_item) ((struct ControlKeyDownRec*)an_item)->keyCode
+
+#define ewg_struct_macro_struct_ControlKeyDownRec_member_set_keyCode(an_item, a_value) ((struct ControlKeyDownRec*)an_item)->keyCode =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlKeyDownRec_member_get_charCode(an_item) ((struct ControlKeyDownRec*)an_item)->charCode
+
+#define ewg_struct_macro_struct_ControlKeyDownRec_member_set_charCode(an_item, a_value) ((struct ControlKeyDownRec*)an_item)->charCode =  (SInt16)a_value
+
+
+// glue code macros for struct `struct ControlDataAccessRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlDataAccessRec sizeof (struct ControlDataAccessRec)
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_get_tag(an_item) ((struct ControlDataAccessRec*)an_item)->tag
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_set_tag(an_item, a_value) ((struct ControlDataAccessRec*)an_item)->tag =  (ResType)a_value
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_get_part(an_item) ((struct ControlDataAccessRec*)an_item)->part
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_set_part(an_item, a_value) ((struct ControlDataAccessRec*)an_item)->part =  (ResType)a_value
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_get_size(an_item) ((struct ControlDataAccessRec*)an_item)->size
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_set_size(an_item, a_value) ((struct ControlDataAccessRec*)an_item)->size =  (Size)a_value
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_get_dataPtr(an_item) ((struct ControlDataAccessRec*)an_item)->dataPtr
+
+#define ewg_struct_macro_struct_ControlDataAccessRec_member_set_dataPtr(an_item, a_value) ((struct ControlDataAccessRec*)an_item)->dataPtr =  (Ptr)a_value
+
+
+// glue code macros for struct `struct ControlCalcSizeRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlCalcSizeRec sizeof (struct ControlCalcSizeRec)
+
+#define ewg_struct_macro_struct_ControlCalcSizeRec_member_get_height(an_item) ((struct ControlCalcSizeRec*)an_item)->height
+
+#define ewg_struct_macro_struct_ControlCalcSizeRec_member_set_height(an_item, a_value) ((struct ControlCalcSizeRec*)an_item)->height =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlCalcSizeRec_member_get_width(an_item) ((struct ControlCalcSizeRec*)an_item)->width
+
+#define ewg_struct_macro_struct_ControlCalcSizeRec_member_set_width(an_item, a_value) ((struct ControlCalcSizeRec*)an_item)->width =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlCalcSizeRec_member_get_baseLine(an_item) ((struct ControlCalcSizeRec*)an_item)->baseLine
+
+#define ewg_struct_macro_struct_ControlCalcSizeRec_member_set_baseLine(an_item, a_value) ((struct ControlCalcSizeRec*)an_item)->baseLine =  (SInt16)a_value
+
+
+// glue code macros for struct `struct ControlApplyTextColorRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlApplyTextColorRec sizeof (struct ControlApplyTextColorRec)
+
+#define ewg_struct_macro_struct_ControlApplyTextColorRec_member_get_depth(an_item) ((struct ControlApplyTextColorRec*)an_item)->depth
+
+#define ewg_struct_macro_struct_ControlApplyTextColorRec_member_set_depth(an_item, a_value) ((struct ControlApplyTextColorRec*)an_item)->depth =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_ControlApplyTextColorRec_member_get_colorDevice(an_item) ((struct ControlApplyTextColorRec*)an_item)->colorDevice
+
+#define ewg_struct_macro_struct_ControlApplyTextColorRec_member_set_colorDevice(an_item, a_value) ((struct ControlApplyTextColorRec*)an_item)->colorDevice =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_ControlApplyTextColorRec_member_get_active(an_item) ((struct ControlApplyTextColorRec*)an_item)->active
+
+#define ewg_struct_macro_struct_ControlApplyTextColorRec_member_set_active(an_item, a_value) ((struct ControlApplyTextColorRec*)an_item)->active =  (Boolean)a_value
+
+
+// glue code macros for struct `struct ControlGetRegionRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlGetRegionRec sizeof (struct ControlGetRegionRec)
+
+#define ewg_struct_macro_struct_ControlGetRegionRec_member_get_region(an_item) ((struct ControlGetRegionRec*)an_item)->region
+
+#define ewg_struct_macro_struct_ControlGetRegionRec_member_set_region(an_item, a_value) ((struct ControlGetRegionRec*)an_item)->region =  (RgnHandle)a_value
+
+#define ewg_struct_macro_struct_ControlGetRegionRec_member_get_part(an_item) ((struct ControlGetRegionRec*)an_item)->part
+
+#define ewg_struct_macro_struct_ControlGetRegionRec_member_set_part(an_item, a_value) ((struct ControlGetRegionRec*)an_item)->part =  (ControlPartCode)a_value
+
+
+// glue code macros for struct `struct ControlSetCursorRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlSetCursorRec sizeof (struct ControlSetCursorRec)
+
+#define ewg_struct_macro_struct_ControlSetCursorRec_member_get_localPoint(an_item) &((struct ControlSetCursorRec*)an_item)->localPoint
+
+#define ewg_struct_macro_struct_ControlSetCursorRec_member_set_localPoint(an_item, a_value) ((struct ControlSetCursorRec*)an_item)->localPoint =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_ControlSetCursorRec_member_get_modifiers(an_item) ((struct ControlSetCursorRec*)an_item)->modifiers
+
+#define ewg_struct_macro_struct_ControlSetCursorRec_member_set_modifiers(an_item, a_value) ((struct ControlSetCursorRec*)an_item)->modifiers =  (EventModifiers)a_value
+
+#define ewg_struct_macro_struct_ControlSetCursorRec_member_get_cursorWasSet(an_item) ((struct ControlSetCursorRec*)an_item)->cursorWasSet
+
+#define ewg_struct_macro_struct_ControlSetCursorRec_member_set_cursorWasSet(an_item, a_value) ((struct ControlSetCursorRec*)an_item)->cursorWasSet =  (Boolean)a_value
+
+
+// glue code macros for struct `struct ControlContextualMenuClickRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlContextualMenuClickRec sizeof (struct ControlContextualMenuClickRec)
+
+#define ewg_struct_macro_struct_ControlContextualMenuClickRec_member_get_localPoint(an_item) &((struct ControlContextualMenuClickRec*)an_item)->localPoint
+
+#define ewg_struct_macro_struct_ControlContextualMenuClickRec_member_set_localPoint(an_item, a_value) ((struct ControlContextualMenuClickRec*)an_item)->localPoint =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_ControlContextualMenuClickRec_member_get_menuDisplayed(an_item) ((struct ControlContextualMenuClickRec*)an_item)->menuDisplayed
+
+#define ewg_struct_macro_struct_ControlContextualMenuClickRec_member_set_menuDisplayed(an_item, a_value) ((struct ControlContextualMenuClickRec*)an_item)->menuDisplayed =  (Boolean)a_value
+
+
+// glue code macros for struct `struct ControlClickActivationRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ControlClickActivationRec sizeof (struct ControlClickActivationRec)
+
+#define ewg_struct_macro_struct_ControlClickActivationRec_member_get_localPoint(an_item) &((struct ControlClickActivationRec*)an_item)->localPoint
+
+#define ewg_struct_macro_struct_ControlClickActivationRec_member_set_localPoint(an_item, a_value) ((struct ControlClickActivationRec*)an_item)->localPoint =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_ControlClickActivationRec_member_get_modifiers(an_item) ((struct ControlClickActivationRec*)an_item)->modifiers
+
+#define ewg_struct_macro_struct_ControlClickActivationRec_member_set_modifiers(an_item, a_value) ((struct ControlClickActivationRec*)an_item)->modifiers =  (EventModifiers)a_value
+
+#define ewg_struct_macro_struct_ControlClickActivationRec_member_get_result(an_item) ((struct ControlClickActivationRec*)an_item)->result
+
+#define ewg_struct_macro_struct_ControlClickActivationRec_member_set_result(an_item, a_value) ((struct ControlClickActivationRec*)an_item)->result =  (ClickActivationResult)a_value
 
 
 // glue code macros for struct `struct GetWindowRegionRec'

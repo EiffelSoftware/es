@@ -3143,6 +3143,108 @@ OSStatus  ewg_function_DisableSecureEventInput (void);
 #define ewg_function_macro_IsSecureEventInputEnabled IsSecureEventInputEnabled ()
 
 Boolean  ewg_function_IsSecureEventInputEnabled (void);
+// Wraps call to function 'HIObjectRegisterSubclass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectRegisterSubclass(ewg_param_inClassID, ewg_param_inBaseClassID, ewg_param_inOptions, ewg_param_inConstructProc, ewg_param_inNumEvents, ewg_param_inEventList, ewg_param_inConstructData, ewg_param_outClassRef) HIObjectRegisterSubclass ((CFStringRef)ewg_param_inClassID, (CFStringRef)ewg_param_inBaseClassID, (OptionBits)ewg_param_inOptions, (EventHandlerUPP)ewg_param_inConstructProc, (UInt32)ewg_param_inNumEvents, (EventTypeSpec const*)ewg_param_inEventList, (void*)ewg_param_inConstructData, (HIObjectClassRef*)ewg_param_outClassRef)
+
+OSStatus  ewg_function_HIObjectRegisterSubclass (CFStringRef inClassID, CFStringRef inBaseClassID, OptionBits inOptions, EventHandlerUPP inConstructProc, UInt32 inNumEvents, EventTypeSpec const *inEventList, void *inConstructData, HIObjectClassRef *outClassRef);
+// Wraps call to function 'HIObjectUnregisterClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectUnregisterClass(ewg_param_inClassRef) HIObjectUnregisterClass ((HIObjectClassRef)ewg_param_inClassRef)
+
+OSStatus  ewg_function_HIObjectUnregisterClass (HIObjectClassRef inClassRef);
+// Wraps call to function 'HIObjectCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectCreate(ewg_param_inClassID, ewg_param_inConstructData, ewg_param_outObject) HIObjectCreate ((CFStringRef)ewg_param_inClassID, (EventRef)ewg_param_inConstructData, (HIObjectRef*)ewg_param_outObject)
+
+OSStatus  ewg_function_HIObjectCreate (CFStringRef inClassID, EventRef inConstructData, HIObjectRef *outObject);
+// Wraps call to function 'HIObjectGetEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectGetEventTarget(ewg_param_inObject) HIObjectGetEventTarget ((HIObjectRef)ewg_param_inObject)
+
+EventTargetRef  ewg_function_HIObjectGetEventTarget (HIObjectRef inObject);
+// Wraps call to function 'HIObjectPrintDebugInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectPrintDebugInfo(ewg_param_inObject) HIObjectPrintDebugInfo ((HIObjectRef)ewg_param_inObject)
+
+void  ewg_function_HIObjectPrintDebugInfo (HIObjectRef inObject);
+// Wraps call to function 'HIObjectCopyClassID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectCopyClassID(ewg_param_inObject) HIObjectCopyClassID ((HIObjectRef)ewg_param_inObject)
+
+CFStringRef  ewg_function_HIObjectCopyClassID (HIObjectRef inObject);
+// Wraps call to function 'HIObjectIsOfClass' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectIsOfClass(ewg_param_inObject, ewg_param_inObjectClassID) HIObjectIsOfClass ((HIObjectRef)ewg_param_inObject, (CFStringRef)ewg_param_inObjectClassID)
+
+Boolean  ewg_function_HIObjectIsOfClass (HIObjectRef inObject, CFStringRef inObjectClassID);
+// Wraps call to function 'HIObjectDynamicCast' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectDynamicCast(ewg_param_inObject, ewg_param_inClassID) HIObjectDynamicCast ((HIObjectRef)ewg_param_inObject, (CFStringRef)ewg_param_inClassID)
+
+void * ewg_function_HIObjectDynamicCast (HIObjectRef inObject, CFStringRef inClassID);
+// Wraps call to function 'HIObjectCreateFromBundle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectCreateFromBundle(ewg_param_inBundle, ewg_param_outObject) HIObjectCreateFromBundle ((CFBundleRef)ewg_param_inBundle, (HIObjectRef*)ewg_param_outObject)
+
+OSStatus  ewg_function_HIObjectCreateFromBundle (CFBundleRef inBundle, HIObjectRef *outObject);
+// Wraps call to function 'HIObjectIsAccessibilityIgnored' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectIsAccessibilityIgnored(ewg_param_inObject) HIObjectIsAccessibilityIgnored ((HIObjectRef)ewg_param_inObject)
+
+Boolean  ewg_function_HIObjectIsAccessibilityIgnored (HIObjectRef inObject);
+// Wraps call to function 'HIObjectSetAccessibilityIgnored' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectSetAccessibilityIgnored(ewg_param_inObject, ewg_param_inIgnored) HIObjectSetAccessibilityIgnored ((HIObjectRef)ewg_param_inObject, (Boolean)ewg_param_inIgnored)
+
+OSStatus  ewg_function_HIObjectSetAccessibilityIgnored (HIObjectRef inObject, Boolean inIgnored);
+// Wraps call to function 'HIObjectSetAuxiliaryAccessibilityAttribute' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectSetAuxiliaryAccessibilityAttribute(ewg_param_inHIObject, ewg_param_inIdentifier, ewg_param_inAttributeName, ewg_param_inAttributeData) HIObjectSetAuxiliaryAccessibilityAttribute ((HIObjectRef)ewg_param_inHIObject, (UInt64)ewg_param_inIdentifier, (CFStringRef)ewg_param_inAttributeName, (CFTypeRef)ewg_param_inAttributeData)
+
+OSStatus  ewg_function_HIObjectSetAuxiliaryAccessibilityAttribute (HIObjectRef inHIObject, UInt64 inIdentifier, CFStringRef inAttributeName, CFTypeRef inAttributeData);
+// Wraps call to function 'HIObjectOverrideAccessibilityContainment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectOverrideAccessibilityContainment(ewg_param_inHIObject, ewg_param_inDesiredParent, ewg_param_inDesiredWindow, ewg_param_inDesiredTopLevelUIElement) HIObjectOverrideAccessibilityContainment ((HIObjectRef)ewg_param_inHIObject, (AXUIElementRef)ewg_param_inDesiredParent, (AXUIElementRef)ewg_param_inDesiredWindow, (AXUIElementRef)ewg_param_inDesiredTopLevelUIElement)
+
+OSStatus  ewg_function_HIObjectOverrideAccessibilityContainment (HIObjectRef inHIObject, AXUIElementRef inDesiredParent, AXUIElementRef inDesiredWindow, AXUIElementRef inDesiredTopLevelUIElement);
+// Wraps call to function 'HIObjectIsArchivingIgnored' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectIsArchivingIgnored(ewg_param_inObject) HIObjectIsArchivingIgnored ((HIObjectRef)ewg_param_inObject)
+
+Boolean  ewg_function_HIObjectIsArchivingIgnored (HIObjectRef inObject);
+// Wraps call to function 'HIObjectSetArchivingIgnored' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectSetArchivingIgnored(ewg_param_inObject, ewg_param_inIgnored) HIObjectSetArchivingIgnored ((HIObjectRef)ewg_param_inObject, (Boolean)ewg_param_inIgnored)
+
+OSStatus  ewg_function_HIObjectSetArchivingIgnored (HIObjectRef inObject, Boolean inIgnored);
+// Wraps call to function 'HIObjectCopyCustomArchiveData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectCopyCustomArchiveData(ewg_param_inObject, ewg_param_outCustomData) HIObjectCopyCustomArchiveData ((HIObjectRef)ewg_param_inObject, (CFDictionaryRef*)ewg_param_outCustomData)
+
+OSStatus  ewg_function_HIObjectCopyCustomArchiveData (HIObjectRef inObject, CFDictionaryRef *outCustomData);
+// Wraps call to function 'HIObjectSetCustomArchiveData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIObjectSetCustomArchiveData(ewg_param_inObject, ewg_param_inCustomData) HIObjectSetCustomArchiveData ((HIObjectRef)ewg_param_inObject, (CFDictionaryRef)ewg_param_inCustomData)
+
+OSStatus  ewg_function_HIObjectSetCustomArchiveData (HIObjectRef inObject, CFDictionaryRef inCustomData);
 // Wraps call to function 'GetMouse' in a macro
 #include <Carbon/Carbon.h>
 
@@ -3305,6 +3407,768 @@ UInt8  ewg_function_LMGetKbdType (void);
 #define ewg_function_macro_LMSetKbdType(ewg_param_value) LMSetKbdType ((UInt8)ewg_param_value)
 
 void  ewg_function_LMSetKbdType (UInt8 value);
+// Wraps call to function 'NewControlActionUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlActionUPP(ewg_param_userRoutine) NewControlActionUPP ((ControlActionProcPtr)ewg_param_userRoutine)
+
+ControlActionUPP  ewg_function_NewControlActionUPP (ControlActionProcPtr userRoutine);
+// Wraps call to function 'DisposeControlActionUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlActionUPP(ewg_param_userUPP) DisposeControlActionUPP ((ControlActionUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlActionUPP (ControlActionUPP userUPP);
+// Wraps call to function 'InvokeControlActionUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlActionUPP(ewg_param_theControl, ewg_param_partCode, ewg_param_userUPP) InvokeControlActionUPP ((ControlRef)ewg_param_theControl, (ControlPartCode)ewg_param_partCode, (ControlActionUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeControlActionUPP (ControlRef theControl, ControlPartCode partCode, ControlActionUPP userUPP);
+// Wraps call to function 'NewControlDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlDefUPP(ewg_param_userRoutine) NewControlDefUPP ((ControlDefProcPtr)ewg_param_userRoutine)
+
+ControlDefUPP  ewg_function_NewControlDefUPP (ControlDefProcPtr userRoutine);
+// Wraps call to function 'DisposeControlDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlDefUPP(ewg_param_userUPP) DisposeControlDefUPP ((ControlDefUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlDefUPP (ControlDefUPP userUPP);
+// Wraps call to function 'InvokeControlDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlDefUPP(ewg_param_varCode, ewg_param_theControl, ewg_param_message, ewg_param_param, ewg_param_userUPP) InvokeControlDefUPP ((SInt16)ewg_param_varCode, (ControlRef)ewg_param_theControl, (ControlDefProcMessage)ewg_param_message, (SInt32)ewg_param_param, (ControlDefUPP)ewg_param_userUPP)
+
+SInt32  ewg_function_InvokeControlDefUPP (SInt16 varCode, ControlRef theControl, ControlDefProcMessage message, SInt32 param, ControlDefUPP userUPP);
+// Wraps call to function 'NewControlKeyFilterUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlKeyFilterUPP(ewg_param_userRoutine) NewControlKeyFilterUPP ((ControlKeyFilterProcPtr)ewg_param_userRoutine)
+
+ControlKeyFilterUPP  ewg_function_NewControlKeyFilterUPP (ControlKeyFilterProcPtr userRoutine);
+// Wraps call to function 'DisposeControlKeyFilterUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlKeyFilterUPP(ewg_param_userUPP) DisposeControlKeyFilterUPP ((ControlKeyFilterUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlKeyFilterUPP (ControlKeyFilterUPP userUPP);
+// Wraps call to function 'InvokeControlKeyFilterUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlKeyFilterUPP(ewg_param_theControl, ewg_param_keyCode, ewg_param_charCode, ewg_param_modifiers, ewg_param_userUPP) InvokeControlKeyFilterUPP ((ControlRef)ewg_param_theControl, (SInt16*)ewg_param_keyCode, (SInt16*)ewg_param_charCode, (EventModifiers*)ewg_param_modifiers, (ControlKeyFilterUPP)ewg_param_userUPP)
+
+ControlKeyFilterResult  ewg_function_InvokeControlKeyFilterUPP (ControlRef theControl, SInt16 *keyCode, SInt16 *charCode, EventModifiers *modifiers, ControlKeyFilterUPP userUPP);
+// Wraps call to function 'CreateCustomControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateCustomControl(ewg_param_owningWindow, ewg_param_contBounds, ewg_param_def, ewg_param_initData, ewg_param_outControl) CreateCustomControl ((WindowRef)ewg_param_owningWindow, (Rect const*)ewg_param_contBounds, (ControlDefSpec const*)ewg_param_def, (Collection)ewg_param_initData, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_CreateCustomControl (WindowRef owningWindow, Rect const *contBounds, ControlDefSpec const *def, Collection initData, ControlRef *outControl);
+// Wraps call to function 'NewControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControl(ewg_param_owningWindow, ewg_param_boundsRect, ewg_param_controlTitle, ewg_param_initiallyVisible, ewg_param_initialValue, ewg_param_minimumValue, ewg_param_maximumValue, ewg_param_procID, ewg_param_controlReference) NewControl ((WindowRef)ewg_param_owningWindow, (Rect const*)ewg_param_boundsRect, (ConstStr255Param)ewg_param_controlTitle, (Boolean)ewg_param_initiallyVisible, (SInt16)ewg_param_initialValue, (SInt16)ewg_param_minimumValue, (SInt16)ewg_param_maximumValue, (SInt16)ewg_param_procID, (SInt32)ewg_param_controlReference)
+
+ControlRef  ewg_function_NewControl (WindowRef owningWindow, Rect const *boundsRect, ConstStr255Param controlTitle, Boolean initiallyVisible, SInt16 initialValue, SInt16 minimumValue, SInt16 maximumValue, SInt16 procID, SInt32 controlReference);
+// Wraps call to function 'GetNewControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNewControl(ewg_param_resourceID, ewg_param_owningWindow) GetNewControl ((SInt16)ewg_param_resourceID, (WindowRef)ewg_param_owningWindow)
+
+ControlRef  ewg_function_GetNewControl (SInt16 resourceID, WindowRef owningWindow);
+// Wraps call to function 'DisposeControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControl(ewg_param_theControl) DisposeControl ((ControlRef)ewg_param_theControl)
+
+void  ewg_function_DisposeControl (ControlRef theControl);
+// Wraps call to function 'KillControls' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_KillControls(ewg_param_theWindow) KillControls ((WindowRef)ewg_param_theWindow)
+
+void  ewg_function_KillControls (WindowRef theWindow);
+// Wraps call to function 'NewControlCNTLToCollectionUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlCNTLToCollectionUPP(ewg_param_userRoutine) NewControlCNTLToCollectionUPP ((ControlCNTLToCollectionProcPtr)ewg_param_userRoutine)
+
+ControlCNTLToCollectionUPP  ewg_function_NewControlCNTLToCollectionUPP (ControlCNTLToCollectionProcPtr userRoutine);
+// Wraps call to function 'DisposeControlCNTLToCollectionUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlCNTLToCollectionUPP(ewg_param_userUPP) DisposeControlCNTLToCollectionUPP ((ControlCNTLToCollectionUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlCNTLToCollectionUPP (ControlCNTLToCollectionUPP userUPP);
+// Wraps call to function 'InvokeControlCNTLToCollectionUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlCNTLToCollectionUPP(ewg_param_bounds, ewg_param_value, ewg_param_visible, ewg_param_max, ewg_param_min, ewg_param_procID, ewg_param_refCon, ewg_param_title, ewg_param_collection, ewg_param_userUPP) InvokeControlCNTLToCollectionUPP ((Rect const*)ewg_param_bounds, (SInt16)ewg_param_value, (Boolean)ewg_param_visible, (SInt16)ewg_param_max, (SInt16)ewg_param_min, (SInt16)ewg_param_procID, (SInt32)ewg_param_refCon, (ConstStr255Param)ewg_param_title, (Collection)ewg_param_collection, (ControlCNTLToCollectionUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeControlCNTLToCollectionUPP (Rect const *bounds, SInt16 value, Boolean visible, SInt16 max, SInt16 min, SInt16 procID, SInt32 refCon, ConstStr255Param title, Collection collection, ControlCNTLToCollectionUPP userUPP);
+// Wraps call to function 'RegisterControlDefinition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RegisterControlDefinition(ewg_param_inCDEFResID, ewg_param_inControlDef, ewg_param_inConversionProc) RegisterControlDefinition ((SInt16)ewg_param_inCDEFResID, (ControlDefSpec const*)ewg_param_inControlDef, (ControlCNTLToCollectionUPP)ewg_param_inConversionProc)
+
+OSStatus  ewg_function_RegisterControlDefinition (SInt16 inCDEFResID, ControlDefSpec const *inControlDef, ControlCNTLToCollectionUPP inConversionProc);
+// Wraps call to function 'HiliteControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HiliteControl(ewg_param_theControl, ewg_param_hiliteState) HiliteControl ((ControlRef)ewg_param_theControl, (ControlPartCode)ewg_param_hiliteState)
+
+void  ewg_function_HiliteControl (ControlRef theControl, ControlPartCode hiliteState);
+// Wraps call to function 'ShowControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowControl(ewg_param_theControl) ShowControl ((ControlRef)ewg_param_theControl)
+
+void  ewg_function_ShowControl (ControlRef theControl);
+// Wraps call to function 'HideControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HideControl(ewg_param_theControl) HideControl ((ControlRef)ewg_param_theControl)
+
+void  ewg_function_HideControl (ControlRef theControl);
+// Wraps call to function 'IsControlActive' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsControlActive(ewg_param_inControl) IsControlActive ((ControlRef)ewg_param_inControl)
+
+Boolean  ewg_function_IsControlActive (ControlRef inControl);
+// Wraps call to function 'IsControlVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsControlVisible(ewg_param_inControl) IsControlVisible ((ControlRef)ewg_param_inControl)
+
+Boolean  ewg_function_IsControlVisible (ControlRef inControl);
+// Wraps call to function 'ActivateControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ActivateControl(ewg_param_inControl) ActivateControl ((ControlRef)ewg_param_inControl)
+
+OSErr  ewg_function_ActivateControl (ControlRef inControl);
+// Wraps call to function 'DeactivateControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DeactivateControl(ewg_param_inControl) DeactivateControl ((ControlRef)ewg_param_inControl)
+
+OSErr  ewg_function_DeactivateControl (ControlRef inControl);
+// Wraps call to function 'SetControlVisibility' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlVisibility(ewg_param_inControl, ewg_param_inIsVisible, ewg_param_inDoDraw) SetControlVisibility ((ControlRef)ewg_param_inControl, (Boolean)ewg_param_inIsVisible, (Boolean)ewg_param_inDoDraw)
+
+OSErr  ewg_function_SetControlVisibility (ControlRef inControl, Boolean inIsVisible, Boolean inDoDraw);
+// Wraps call to function 'IsControlEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsControlEnabled(ewg_param_inControl) IsControlEnabled ((ControlRef)ewg_param_inControl)
+
+Boolean  ewg_function_IsControlEnabled (ControlRef inControl);
+// Wraps call to function 'EnableControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableControl(ewg_param_inControl) EnableControl ((ControlRef)ewg_param_inControl)
+
+OSStatus  ewg_function_EnableControl (ControlRef inControl);
+// Wraps call to function 'DisableControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisableControl(ewg_param_inControl) DisableControl ((ControlRef)ewg_param_inControl)
+
+OSStatus  ewg_function_DisableControl (ControlRef inControl);
+// Wraps call to function 'DrawControls' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DrawControls(ewg_param_theWindow) DrawControls ((WindowRef)ewg_param_theWindow)
+
+void  ewg_function_DrawControls (WindowRef theWindow);
+// Wraps call to function 'Draw1Control' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_Draw1Control(ewg_param_theControl) Draw1Control ((ControlRef)ewg_param_theControl)
+
+void  ewg_function_Draw1Control (ControlRef theControl);
+// Wraps call to function 'UpdateControls' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UpdateControls(ewg_param_inWindow, ewg_param_inUpdateRegion) UpdateControls ((WindowRef)ewg_param_inWindow, (RgnHandle)ewg_param_inUpdateRegion)
+
+void  ewg_function_UpdateControls (WindowRef inWindow, RgnHandle inUpdateRegion);
+// Wraps call to function 'GetBestControlRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetBestControlRect(ewg_param_inControl, ewg_param_outRect, ewg_param_outBaseLineOffset) GetBestControlRect ((ControlRef)ewg_param_inControl, (Rect*)ewg_param_outRect, (SInt16*)ewg_param_outBaseLineOffset)
+
+OSErr  ewg_function_GetBestControlRect (ControlRef inControl, Rect *outRect, SInt16 *outBaseLineOffset);
+// Wraps call to function 'SetControlFontStyle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlFontStyle(ewg_param_inControl, ewg_param_inStyle) SetControlFontStyle ((ControlRef)ewg_param_inControl, (ControlFontStyleRec const*)ewg_param_inStyle)
+
+OSErr  ewg_function_SetControlFontStyle (ControlRef inControl, ControlFontStyleRec const *inStyle);
+// Wraps call to function 'DrawControlInCurrentPort' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DrawControlInCurrentPort(ewg_param_inControl) DrawControlInCurrentPort ((ControlRef)ewg_param_inControl)
+
+void  ewg_function_DrawControlInCurrentPort (ControlRef inControl);
+// Wraps call to function 'SetUpControlBackground' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetUpControlBackground(ewg_param_inControl, ewg_param_inDepth, ewg_param_inIsColorDevice) SetUpControlBackground ((ControlRef)ewg_param_inControl, (SInt16)ewg_param_inDepth, (Boolean)ewg_param_inIsColorDevice)
+
+OSErr  ewg_function_SetUpControlBackground (ControlRef inControl, SInt16 inDepth, Boolean inIsColorDevice);
+// Wraps call to function 'SetUpControlTextColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetUpControlTextColor(ewg_param_inControl, ewg_param_inDepth, ewg_param_inIsColorDevice) SetUpControlTextColor ((ControlRef)ewg_param_inControl, (SInt16)ewg_param_inDepth, (Boolean)ewg_param_inIsColorDevice)
+
+OSErr  ewg_function_SetUpControlTextColor (ControlRef inControl, SInt16 inDepth, Boolean inIsColorDevice);
+// Wraps call to function 'NewControlColorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewControlColorUPP(ewg_param_userRoutine) NewControlColorUPP ((ControlColorProcPtr)ewg_param_userRoutine)
+
+ControlColorUPP  ewg_function_NewControlColorUPP (ControlColorProcPtr userRoutine);
+// Wraps call to function 'DisposeControlColorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeControlColorUPP(ewg_param_userUPP) DisposeControlColorUPP ((ControlColorUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeControlColorUPP (ControlColorUPP userUPP);
+// Wraps call to function 'InvokeControlColorUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeControlColorUPP(ewg_param_inControl, ewg_param_inMessage, ewg_param_inDrawDepth, ewg_param_inDrawInColor, ewg_param_userUPP) InvokeControlColorUPP ((ControlRef)ewg_param_inControl, (SInt16)ewg_param_inMessage, (SInt16)ewg_param_inDrawDepth, (Boolean)ewg_param_inDrawInColor, (ControlColorUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeControlColorUPP (ControlRef inControl, SInt16 inMessage, SInt16 inDrawDepth, Boolean inDrawInColor, ControlColorUPP userUPP);
+// Wraps call to function 'SetControlColorProc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlColorProc(ewg_param_inControl, ewg_param_inProc) SetControlColorProc ((ControlRef)ewg_param_inControl, (ControlColorUPP)ewg_param_inProc)
+
+OSStatus  ewg_function_SetControlColorProc (ControlRef inControl, ControlColorUPP inProc);
+// Wraps call to function 'TrackControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TrackControl(ewg_param_theControl, ewg_param_startPoint, ewg_param_actionProc) TrackControl ((ControlRef)ewg_param_theControl, *(Point*)ewg_param_startPoint, (ControlActionUPP)ewg_param_actionProc)
+
+ControlPartCode  ewg_function_TrackControl (ControlRef theControl, Point *startPoint, ControlActionUPP actionProc);
+// Wraps call to function 'DragControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DragControl(ewg_param_theControl, ewg_param_startPoint, ewg_param_limitRect, ewg_param_slopRect, ewg_param_axis) DragControl ((ControlRef)ewg_param_theControl, *(Point*)ewg_param_startPoint, (Rect const*)ewg_param_limitRect, (Rect const*)ewg_param_slopRect, (DragConstraint)ewg_param_axis)
+
+void  ewg_function_DragControl (ControlRef theControl, Point *startPoint, Rect const *limitRect, Rect const *slopRect, DragConstraint axis);
+// Wraps call to function 'TestControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TestControl(ewg_param_theControl, ewg_param_testPoint) TestControl ((ControlRef)ewg_param_theControl, *(Point*)ewg_param_testPoint)
+
+ControlPartCode  ewg_function_TestControl (ControlRef theControl, Point *testPoint);
+// Wraps call to function 'FindControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FindControl(ewg_param_testPoint, ewg_param_theWindow, ewg_param_theControl) FindControl (*(Point*)ewg_param_testPoint, (WindowRef)ewg_param_theWindow, (ControlRef*)ewg_param_theControl)
+
+ControlPartCode  ewg_function_FindControl (Point *testPoint, WindowRef theWindow, ControlRef *theControl);
+// Wraps call to function 'FindControlUnderMouse' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FindControlUnderMouse(ewg_param_inWhere, ewg_param_inWindow, ewg_param_outPart) FindControlUnderMouse (*(Point*)ewg_param_inWhere, (WindowRef)ewg_param_inWindow, (ControlPartCode*)ewg_param_outPart)
+
+ControlRef  ewg_function_FindControlUnderMouse (Point *inWhere, WindowRef inWindow, ControlPartCode *outPart);
+// Wraps call to function 'HandleControlClick' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HandleControlClick(ewg_param_inControl, ewg_param_inWhere, ewg_param_inModifiers, ewg_param_inAction) HandleControlClick ((ControlRef)ewg_param_inControl, *(Point*)ewg_param_inWhere, (EventModifiers)ewg_param_inModifiers, (ControlActionUPP)ewg_param_inAction)
+
+ControlPartCode  ewg_function_HandleControlClick (ControlRef inControl, Point *inWhere, EventModifiers inModifiers, ControlActionUPP inAction);
+// Wraps call to function 'HandleControlContextualMenuClick' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HandleControlContextualMenuClick(ewg_param_inControl, ewg_param_inWhere, ewg_param_menuDisplayed) HandleControlContextualMenuClick ((ControlRef)ewg_param_inControl, *(Point*)ewg_param_inWhere, (Boolean*)ewg_param_menuDisplayed)
+
+OSStatus  ewg_function_HandleControlContextualMenuClick (ControlRef inControl, Point *inWhere, Boolean *menuDisplayed);
+// Wraps call to function 'GetControlClickActivation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlClickActivation(ewg_param_inControl, ewg_param_inWhere, ewg_param_inModifiers, ewg_param_outResult) GetControlClickActivation ((ControlRef)ewg_param_inControl, *(Point*)ewg_param_inWhere, (EventModifiers)ewg_param_inModifiers, (ClickActivationResult*)ewg_param_outResult)
+
+OSStatus  ewg_function_GetControlClickActivation (ControlRef inControl, Point *inWhere, EventModifiers inModifiers, ClickActivationResult *outResult);
+// Wraps call to function 'HandleControlKey' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HandleControlKey(ewg_param_inControl, ewg_param_inKeyCode, ewg_param_inCharCode, ewg_param_inModifiers) HandleControlKey ((ControlRef)ewg_param_inControl, (SInt16)ewg_param_inKeyCode, (SInt16)ewg_param_inCharCode, (EventModifiers)ewg_param_inModifiers)
+
+ControlPartCode  ewg_function_HandleControlKey (ControlRef inControl, SInt16 inKeyCode, SInt16 inCharCode, EventModifiers inModifiers);
+// Wraps call to function 'HandleControlSetCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HandleControlSetCursor(ewg_param_control, ewg_param_localPoint, ewg_param_modifiers, ewg_param_cursorWasSet) HandleControlSetCursor ((ControlRef)ewg_param_control, *(Point*)ewg_param_localPoint, (EventModifiers)ewg_param_modifiers, (Boolean*)ewg_param_cursorWasSet)
+
+OSStatus  ewg_function_HandleControlSetCursor (ControlRef control, Point *localPoint, EventModifiers modifiers, Boolean *cursorWasSet);
+// Wraps call to function 'MoveControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MoveControl(ewg_param_theControl, ewg_param_h, ewg_param_v) MoveControl ((ControlRef)ewg_param_theControl, (SInt16)ewg_param_h, (SInt16)ewg_param_v)
+
+void  ewg_function_MoveControl (ControlRef theControl, SInt16 h, SInt16 v);
+// Wraps call to function 'SizeControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SizeControl(ewg_param_theControl, ewg_param_w, ewg_param_h) SizeControl ((ControlRef)ewg_param_theControl, (SInt16)ewg_param_w, (SInt16)ewg_param_h)
+
+void  ewg_function_SizeControl (ControlRef theControl, SInt16 w, SInt16 h);
+// Wraps call to function 'SetControlTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlTitle(ewg_param_theControl, ewg_param_title) SetControlTitle ((ControlRef)ewg_param_theControl, (ConstStr255Param)ewg_param_title)
+
+void  ewg_function_SetControlTitle (ControlRef theControl, ConstStr255Param title);
+// Wraps call to function 'GetControlTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlTitle(ewg_param_theControl, ewg_param_title) GetControlTitle ((ControlRef)ewg_param_theControl, ewg_param_title)
+
+void  ewg_function_GetControlTitle (ControlRef theControl, void *title);
+// Wraps call to function 'SetControlTitleWithCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlTitleWithCFString(ewg_param_inControl, ewg_param_inString) SetControlTitleWithCFString ((ControlRef)ewg_param_inControl, (CFStringRef)ewg_param_inString)
+
+OSStatus  ewg_function_SetControlTitleWithCFString (ControlRef inControl, CFStringRef inString);
+// Wraps call to function 'CopyControlTitleAsCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyControlTitleAsCFString(ewg_param_inControl, ewg_param_outString) CopyControlTitleAsCFString ((ControlRef)ewg_param_inControl, (CFStringRef*)ewg_param_outString)
+
+OSStatus  ewg_function_CopyControlTitleAsCFString (ControlRef inControl, CFStringRef *outString);
+// Wraps call to function 'GetControlValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlValue(ewg_param_theControl) GetControlValue ((ControlRef)ewg_param_theControl)
+
+SInt16  ewg_function_GetControlValue (ControlRef theControl);
+// Wraps call to function 'SetControlValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlValue(ewg_param_theControl, ewg_param_newValue) SetControlValue ((ControlRef)ewg_param_theControl, (SInt16)ewg_param_newValue)
+
+void  ewg_function_SetControlValue (ControlRef theControl, SInt16 newValue);
+// Wraps call to function 'GetControlMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlMinimum(ewg_param_theControl) GetControlMinimum ((ControlRef)ewg_param_theControl)
+
+SInt16  ewg_function_GetControlMinimum (ControlRef theControl);
+// Wraps call to function 'SetControlMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlMinimum(ewg_param_theControl, ewg_param_newMinimum) SetControlMinimum ((ControlRef)ewg_param_theControl, (SInt16)ewg_param_newMinimum)
+
+void  ewg_function_SetControlMinimum (ControlRef theControl, SInt16 newMinimum);
+// Wraps call to function 'GetControlMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlMaximum(ewg_param_theControl) GetControlMaximum ((ControlRef)ewg_param_theControl)
+
+SInt16  ewg_function_GetControlMaximum (ControlRef theControl);
+// Wraps call to function 'SetControlMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlMaximum(ewg_param_theControl, ewg_param_newMaximum) SetControlMaximum ((ControlRef)ewg_param_theControl, (SInt16)ewg_param_newMaximum)
+
+void  ewg_function_SetControlMaximum (ControlRef theControl, SInt16 newMaximum);
+// Wraps call to function 'GetControlViewSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlViewSize(ewg_param_theControl) GetControlViewSize ((ControlRef)ewg_param_theControl)
+
+SInt32  ewg_function_GetControlViewSize (ControlRef theControl);
+// Wraps call to function 'SetControlViewSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlViewSize(ewg_param_theControl, ewg_param_newViewSize) SetControlViewSize ((ControlRef)ewg_param_theControl, (SInt32)ewg_param_newViewSize)
+
+void  ewg_function_SetControlViewSize (ControlRef theControl, SInt32 newViewSize);
+// Wraps call to function 'GetControl32BitValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControl32BitValue(ewg_param_theControl) GetControl32BitValue ((ControlRef)ewg_param_theControl)
+
+SInt32  ewg_function_GetControl32BitValue (ControlRef theControl);
+// Wraps call to function 'SetControl32BitValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControl32BitValue(ewg_param_theControl, ewg_param_newValue) SetControl32BitValue ((ControlRef)ewg_param_theControl, (SInt32)ewg_param_newValue)
+
+void  ewg_function_SetControl32BitValue (ControlRef theControl, SInt32 newValue);
+// Wraps call to function 'GetControl32BitMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControl32BitMaximum(ewg_param_theControl) GetControl32BitMaximum ((ControlRef)ewg_param_theControl)
+
+SInt32  ewg_function_GetControl32BitMaximum (ControlRef theControl);
+// Wraps call to function 'SetControl32BitMaximum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControl32BitMaximum(ewg_param_theControl, ewg_param_newMaximum) SetControl32BitMaximum ((ControlRef)ewg_param_theControl, (SInt32)ewg_param_newMaximum)
+
+void  ewg_function_SetControl32BitMaximum (ControlRef theControl, SInt32 newMaximum);
+// Wraps call to function 'GetControl32BitMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControl32BitMinimum(ewg_param_theControl) GetControl32BitMinimum ((ControlRef)ewg_param_theControl)
+
+SInt32  ewg_function_GetControl32BitMinimum (ControlRef theControl);
+// Wraps call to function 'SetControl32BitMinimum' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControl32BitMinimum(ewg_param_theControl, ewg_param_newMinimum) SetControl32BitMinimum ((ControlRef)ewg_param_theControl, (SInt32)ewg_param_newMinimum)
+
+void  ewg_function_SetControl32BitMinimum (ControlRef theControl, SInt32 newMinimum);
+// Wraps call to function 'IsValidControlHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsValidControlHandle(ewg_param_theControl) IsValidControlHandle ((ControlRef)ewg_param_theControl)
+
+Boolean  ewg_function_IsValidControlHandle (ControlRef theControl);
+// Wraps call to function 'SetControlID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlID(ewg_param_inControl, ewg_param_inID) SetControlID ((ControlRef)ewg_param_inControl, (ControlID const*)ewg_param_inID)
+
+OSStatus  ewg_function_SetControlID (ControlRef inControl, ControlID const *inID);
+// Wraps call to function 'GetControlID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlID(ewg_param_inControl, ewg_param_outID) GetControlID ((ControlRef)ewg_param_inControl, (ControlID*)ewg_param_outID)
+
+OSStatus  ewg_function_GetControlID (ControlRef inControl, ControlID *outID);
+// Wraps call to function 'GetControlByID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlByID(ewg_param_inWindow, ewg_param_inID, ewg_param_outControl) GetControlByID ((WindowRef)ewg_param_inWindow, (ControlID const*)ewg_param_inID, (ControlRef*)ewg_param_outControl)
+
+OSStatus  ewg_function_GetControlByID (WindowRef inWindow, ControlID const *inID, ControlRef *outControl);
+// Wraps call to function 'SetControlCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlCommandID(ewg_param_inControl, ewg_param_inCommandID) SetControlCommandID ((ControlRef)ewg_param_inControl, (UInt32)ewg_param_inCommandID)
+
+OSStatus  ewg_function_SetControlCommandID (ControlRef inControl, UInt32 inCommandID);
+// Wraps call to function 'GetControlCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlCommandID(ewg_param_inControl, ewg_param_outCommandID) GetControlCommandID ((ControlRef)ewg_param_inControl, (UInt32*)ewg_param_outCommandID)
+
+OSStatus  ewg_function_GetControlCommandID (ControlRef inControl, UInt32 *outCommandID);
+// Wraps call to function 'GetControlKind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlKind(ewg_param_inControl, ewg_param_outControlKind) GetControlKind ((ControlRef)ewg_param_inControl, (ControlKind*)ewg_param_outControlKind)
+
+OSStatus  ewg_function_GetControlKind (ControlRef inControl, ControlKind *outControlKind);
+// Wraps call to function 'GetControlProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlProperty(ewg_param_control, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_bufferSize, ewg_param_actualSize, ewg_param_propertyBuffer) GetControlProperty ((ControlRef)ewg_param_control, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32)ewg_param_bufferSize, (UInt32*)ewg_param_actualSize, (void*)ewg_param_propertyBuffer)
+
+OSStatus  ewg_function_GetControlProperty (ControlRef control, OSType propertyCreator, OSType propertyTag, UInt32 bufferSize, UInt32 *actualSize, void *propertyBuffer);
+// Wraps call to function 'GetControlPropertySize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlPropertySize(ewg_param_control, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_size) GetControlPropertySize ((ControlRef)ewg_param_control, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32*)ewg_param_size)
+
+OSStatus  ewg_function_GetControlPropertySize (ControlRef control, OSType propertyCreator, OSType propertyTag, UInt32 *size);
+// Wraps call to function 'SetControlProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlProperty(ewg_param_control, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_propertySize, ewg_param_propertyData) SetControlProperty ((ControlRef)ewg_param_control, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32)ewg_param_propertySize, (void const*)ewg_param_propertyData)
+
+OSStatus  ewg_function_SetControlProperty (ControlRef control, OSType propertyCreator, OSType propertyTag, UInt32 propertySize, void const *propertyData);
+// Wraps call to function 'RemoveControlProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveControlProperty(ewg_param_control, ewg_param_propertyCreator, ewg_param_propertyTag) RemoveControlProperty ((ControlRef)ewg_param_control, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag)
+
+OSStatus  ewg_function_RemoveControlProperty (ControlRef control, OSType propertyCreator, OSType propertyTag);
+// Wraps call to function 'GetControlPropertyAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlPropertyAttributes(ewg_param_control, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_attributes) GetControlPropertyAttributes ((ControlRef)ewg_param_control, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32*)ewg_param_attributes)
+
+OSStatus  ewg_function_GetControlPropertyAttributes (ControlRef control, OSType propertyCreator, OSType propertyTag, UInt32 *attributes);
+// Wraps call to function 'ChangeControlPropertyAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeControlPropertyAttributes(ewg_param_control, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_attributesToSet, ewg_param_attributesToClear) ChangeControlPropertyAttributes ((ControlRef)ewg_param_control, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32)ewg_param_attributesToSet, (UInt32)ewg_param_attributesToClear)
+
+OSStatus  ewg_function_ChangeControlPropertyAttributes (ControlRef control, OSType propertyCreator, OSType propertyTag, UInt32 attributesToSet, UInt32 attributesToClear);
+// Wraps call to function 'GetControlRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlRegion(ewg_param_inControl, ewg_param_inPart, ewg_param_outRegion) GetControlRegion ((ControlRef)ewg_param_inControl, (ControlPartCode)ewg_param_inPart, (RgnHandle)ewg_param_outRegion)
+
+OSStatus  ewg_function_GetControlRegion (ControlRef inControl, ControlPartCode inPart, RgnHandle outRegion);
+// Wraps call to function 'GetControlVariant' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlVariant(ewg_param_theControl) GetControlVariant ((ControlRef)ewg_param_theControl)
+
+ControlVariant  ewg_function_GetControlVariant (ControlRef theControl);
+// Wraps call to function 'SetControlAction' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlAction(ewg_param_theControl, ewg_param_actionProc) SetControlAction ((ControlRef)ewg_param_theControl, (ControlActionUPP)ewg_param_actionProc)
+
+void  ewg_function_SetControlAction (ControlRef theControl, ControlActionUPP actionProc);
+// Wraps call to function 'GetControlAction' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlAction(ewg_param_theControl) GetControlAction ((ControlRef)ewg_param_theControl)
+
+ControlActionUPP  ewg_function_GetControlAction (ControlRef theControl);
+// Wraps call to function 'SetControlReference' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlReference(ewg_param_theControl, ewg_param_data) SetControlReference ((ControlRef)ewg_param_theControl, (SInt32)ewg_param_data)
+
+void  ewg_function_SetControlReference (ControlRef theControl, SInt32 data);
+// Wraps call to function 'GetControlReference' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlReference(ewg_param_theControl) GetControlReference ((ControlRef)ewg_param_theControl)
+
+SInt32  ewg_function_GetControlReference (ControlRef theControl);
+// Wraps call to function 'SendControlMessage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SendControlMessage(ewg_param_inControl, ewg_param_inMessage, ewg_param_inParam) SendControlMessage ((ControlRef)ewg_param_inControl, (SInt16)ewg_param_inMessage, (void*)ewg_param_inParam)
+
+SInt32  ewg_function_SendControlMessage (ControlRef inControl, SInt16 inMessage, void *inParam);
+// Wraps call to function 'DumpControlHierarchy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DumpControlHierarchy(ewg_param_inWindow, ewg_param_inDumpFile) DumpControlHierarchy ((WindowRef)ewg_param_inWindow, (FSSpec const*)ewg_param_inDumpFile)
+
+OSErr  ewg_function_DumpControlHierarchy (WindowRef inWindow, FSSpec const *inDumpFile);
+// Wraps call to function 'CreateRootControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateRootControl(ewg_param_inWindow, ewg_param_outControl) CreateRootControl ((WindowRef)ewg_param_inWindow, (ControlRef*)ewg_param_outControl)
+
+OSErr  ewg_function_CreateRootControl (WindowRef inWindow, ControlRef *outControl);
+// Wraps call to function 'GetRootControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetRootControl(ewg_param_inWindow, ewg_param_outControl) GetRootControl ((WindowRef)ewg_param_inWindow, (ControlRef*)ewg_param_outControl)
+
+OSErr  ewg_function_GetRootControl (WindowRef inWindow, ControlRef *outControl);
+// Wraps call to function 'EmbedControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EmbedControl(ewg_param_inControl, ewg_param_inContainer) EmbedControl ((ControlRef)ewg_param_inControl, (ControlRef)ewg_param_inContainer)
+
+OSErr  ewg_function_EmbedControl (ControlRef inControl, ControlRef inContainer);
+// Wraps call to function 'AutoEmbedControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AutoEmbedControl(ewg_param_inControl, ewg_param_inWindow) AutoEmbedControl ((ControlRef)ewg_param_inControl, (WindowRef)ewg_param_inWindow)
+
+OSErr  ewg_function_AutoEmbedControl (ControlRef inControl, WindowRef inWindow);
+// Wraps call to function 'GetSuperControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetSuperControl(ewg_param_inControl, ewg_param_outParent) GetSuperControl ((ControlRef)ewg_param_inControl, (ControlRef*)ewg_param_outParent)
+
+OSErr  ewg_function_GetSuperControl (ControlRef inControl, ControlRef *outParent);
+// Wraps call to function 'CountSubControls' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CountSubControls(ewg_param_inControl, ewg_param_outNumChildren) CountSubControls ((ControlRef)ewg_param_inControl, (UInt16*)ewg_param_outNumChildren)
+
+OSErr  ewg_function_CountSubControls (ControlRef inControl, UInt16 *outNumChildren);
+// Wraps call to function 'GetIndexedSubControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetIndexedSubControl(ewg_param_inControl, ewg_param_inIndex, ewg_param_outSubControl) GetIndexedSubControl ((ControlRef)ewg_param_inControl, (UInt16)ewg_param_inIndex, (ControlRef*)ewg_param_outSubControl)
+
+OSErr  ewg_function_GetIndexedSubControl (ControlRef inControl, UInt16 inIndex, ControlRef *outSubControl);
+// Wraps call to function 'SetControlSupervisor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlSupervisor(ewg_param_inControl, ewg_param_inBoss) SetControlSupervisor ((ControlRef)ewg_param_inControl, (ControlRef)ewg_param_inBoss)
+
+OSErr  ewg_function_SetControlSupervisor (ControlRef inControl, ControlRef inBoss);
+// Wraps call to function 'GetKeyboardFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetKeyboardFocus(ewg_param_inWindow, ewg_param_outControl) GetKeyboardFocus ((WindowRef)ewg_param_inWindow, (ControlRef*)ewg_param_outControl)
+
+OSErr  ewg_function_GetKeyboardFocus (WindowRef inWindow, ControlRef *outControl);
+// Wraps call to function 'SetKeyboardFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetKeyboardFocus(ewg_param_inWindow, ewg_param_inControl, ewg_param_inPart) SetKeyboardFocus ((WindowRef)ewg_param_inWindow, (ControlRef)ewg_param_inControl, (ControlFocusPart)ewg_param_inPart)
+
+OSErr  ewg_function_SetKeyboardFocus (WindowRef inWindow, ControlRef inControl, ControlFocusPart inPart);
+// Wraps call to function 'AdvanceKeyboardFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AdvanceKeyboardFocus(ewg_param_inWindow) AdvanceKeyboardFocus ((WindowRef)ewg_param_inWindow)
+
+OSErr  ewg_function_AdvanceKeyboardFocus (WindowRef inWindow);
+// Wraps call to function 'ReverseKeyboardFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReverseKeyboardFocus(ewg_param_inWindow) ReverseKeyboardFocus ((WindowRef)ewg_param_inWindow)
+
+OSErr  ewg_function_ReverseKeyboardFocus (WindowRef inWindow);
+// Wraps call to function 'ClearKeyboardFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClearKeyboardFocus(ewg_param_inWindow) ClearKeyboardFocus ((WindowRef)ewg_param_inWindow)
+
+OSErr  ewg_function_ClearKeyboardFocus (WindowRef inWindow);
+// Wraps call to function 'GetControlFeatures' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlFeatures(ewg_param_inControl, ewg_param_outFeatures) GetControlFeatures ((ControlRef)ewg_param_inControl, (UInt32*)ewg_param_outFeatures)
+
+OSErr  ewg_function_GetControlFeatures (ControlRef inControl, UInt32 *outFeatures);
+// Wraps call to function 'SetControlData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlData(ewg_param_inControl, ewg_param_inPart, ewg_param_inTagName, ewg_param_inSize, ewg_param_inData) SetControlData ((ControlRef)ewg_param_inControl, (ControlPartCode)ewg_param_inPart, (ResType)ewg_param_inTagName, (Size)ewg_param_inSize, (void const*)ewg_param_inData)
+
+OSErr  ewg_function_SetControlData (ControlRef inControl, ControlPartCode inPart, ResType inTagName, Size inSize, void const *inData);
+// Wraps call to function 'GetControlData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlData(ewg_param_inControl, ewg_param_inPart, ewg_param_inTagName, ewg_param_inBufferSize, ewg_param_inBuffer, ewg_param_outActualSize) GetControlData ((ControlRef)ewg_param_inControl, (ControlPartCode)ewg_param_inPart, (ResType)ewg_param_inTagName, (Size)ewg_param_inBufferSize, (void*)ewg_param_inBuffer, (Size*)ewg_param_outActualSize)
+
+OSErr  ewg_function_GetControlData (ControlRef inControl, ControlPartCode inPart, ResType inTagName, Size inBufferSize, void *inBuffer, Size *outActualSize);
+// Wraps call to function 'GetControlDataSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlDataSize(ewg_param_inControl, ewg_param_inPart, ewg_param_inTagName, ewg_param_outMaxSize) GetControlDataSize ((ControlRef)ewg_param_inControl, (ControlPartCode)ewg_param_inPart, (ResType)ewg_param_inTagName, (Size*)ewg_param_outMaxSize)
+
+OSErr  ewg_function_GetControlDataSize (ControlRef inControl, ControlPartCode inPart, ResType inTagName, Size *outMaxSize);
+// Wraps call to function 'HandleControlDragTracking' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HandleControlDragTracking(ewg_param_inControl, ewg_param_inMessage, ewg_param_inDrag, ewg_param_outLikesDrag) HandleControlDragTracking ((ControlRef)ewg_param_inControl, (DragTrackingMessage)ewg_param_inMessage, (DragReference)ewg_param_inDrag, (Boolean*)ewg_param_outLikesDrag)
+
+OSStatus  ewg_function_HandleControlDragTracking (ControlRef inControl, DragTrackingMessage inMessage, DragReference inDrag, Boolean *outLikesDrag);
+// Wraps call to function 'HandleControlDragReceive' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HandleControlDragReceive(ewg_param_inControl, ewg_param_inDrag) HandleControlDragReceive ((ControlRef)ewg_param_inControl, (DragReference)ewg_param_inDrag)
+
+OSStatus  ewg_function_HandleControlDragReceive (ControlRef inControl, DragReference inDrag);
+// Wraps call to function 'SetControlDragTrackingEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlDragTrackingEnabled(ewg_param_inControl, ewg_param_inTracks) SetControlDragTrackingEnabled ((ControlRef)ewg_param_inControl, (Boolean)ewg_param_inTracks)
+
+OSStatus  ewg_function_SetControlDragTrackingEnabled (ControlRef inControl, Boolean inTracks);
+// Wraps call to function 'IsControlDragTrackingEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsControlDragTrackingEnabled(ewg_param_inControl, ewg_param_outTracks) IsControlDragTrackingEnabled ((ControlRef)ewg_param_inControl, (Boolean*)ewg_param_outTracks)
+
+OSStatus  ewg_function_IsControlDragTrackingEnabled (ControlRef inControl, Boolean *outTracks);
+// Wraps call to function 'SetAutomaticControlDragTrackingEnabledForWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetAutomaticControlDragTrackingEnabledForWindow(ewg_param_inWindow, ewg_param_inTracks) SetAutomaticControlDragTrackingEnabledForWindow ((WindowRef)ewg_param_inWindow, (Boolean)ewg_param_inTracks)
+
+OSStatus  ewg_function_SetAutomaticControlDragTrackingEnabledForWindow (WindowRef inWindow, Boolean inTracks);
+// Wraps call to function 'IsAutomaticControlDragTrackingEnabledForWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsAutomaticControlDragTrackingEnabledForWindow(ewg_param_inWindow, ewg_param_outTracks) IsAutomaticControlDragTrackingEnabledForWindow ((WindowRef)ewg_param_inWindow, (Boolean*)ewg_param_outTracks)
+
+OSStatus  ewg_function_IsAutomaticControlDragTrackingEnabledForWindow (WindowRef inWindow, Boolean *outTracks);
+// Wraps call to function 'GetControlBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlBounds(ewg_param_control, ewg_param_bounds) GetControlBounds ((ControlRef)ewg_param_control, (Rect*)ewg_param_bounds)
+
+Rect * ewg_function_GetControlBounds (ControlRef control, Rect *bounds);
+// Wraps call to function 'IsControlHilited' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsControlHilited(ewg_param_control) IsControlHilited ((ControlRef)ewg_param_control)
+
+Boolean  ewg_function_IsControlHilited (ControlRef control);
+// Wraps call to function 'GetControlHilite' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlHilite(ewg_param_control) GetControlHilite ((ControlRef)ewg_param_control)
+
+UInt16  ewg_function_GetControlHilite (ControlRef control);
+// Wraps call to function 'GetControlOwner' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlOwner(ewg_param_control) GetControlOwner ((ControlRef)ewg_param_control)
+
+WindowRef  ewg_function_GetControlOwner (ControlRef control);
+// Wraps call to function 'GetControlDataHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlDataHandle(ewg_param_control) GetControlDataHandle ((ControlRef)ewg_param_control)
+
+Handle  ewg_function_GetControlDataHandle (ControlRef control);
+// Wraps call to function 'GetControlPopupMenuHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlPopupMenuHandle(ewg_param_control) GetControlPopupMenuHandle ((ControlRef)ewg_param_control)
+
+MenuRef  ewg_function_GetControlPopupMenuHandle (ControlRef control);
+// Wraps call to function 'GetControlPopupMenuID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetControlPopupMenuID(ewg_param_control) GetControlPopupMenuID ((ControlRef)ewg_param_control)
+
+short  ewg_function_GetControlPopupMenuID (ControlRef control);
+// Wraps call to function 'SetControlDataHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlDataHandle(ewg_param_control, ewg_param_dataHandle) SetControlDataHandle ((ControlRef)ewg_param_control, (Handle)ewg_param_dataHandle)
+
+void  ewg_function_SetControlDataHandle (ControlRef control, Handle dataHandle);
+// Wraps call to function 'SetControlBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlBounds(ewg_param_control, ewg_param_bounds) SetControlBounds ((ControlRef)ewg_param_control, (Rect const*)ewg_param_bounds)
+
+void  ewg_function_SetControlBounds (ControlRef control, Rect const *bounds);
+// Wraps call to function 'SetControlPopupMenuHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlPopupMenuHandle(ewg_param_control, ewg_param_popupMenu) SetControlPopupMenuHandle ((ControlRef)ewg_param_control, (MenuRef)ewg_param_popupMenu)
+
+void  ewg_function_SetControlPopupMenuHandle (ControlRef control, MenuRef popupMenu);
+// Wraps call to function 'SetControlPopupMenuID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetControlPopupMenuID(ewg_param_control, ewg_param_menuID) SetControlPopupMenuID ((ControlRef)ewg_param_control, (short)ewg_param_menuID)
+
+void  ewg_function_SetControlPopupMenuID (ControlRef control, short menuID);
+// Wraps call to function 'IdleControls' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IdleControls(ewg_param_inWindow) IdleControls ((WindowRef)ewg_param_inWindow)
+
+void  ewg_function_IdleControls (WindowRef inWindow);
 // Wraps call to function 'NewWindowDefUPP' in a macro
 #include <Carbon/Carbon.h>
 
@@ -7943,6 +8807,96 @@ void  ewg_function_set_event_handler_proc_ptr_entry (void *a_class, void *a_feat
 #define ewg_function_macro_call_event_handler_proc_ptr(ewg_param_a_function, ewg_param_inHandlerCallRef, ewg_param_inEvent, ewg_param_inUserData) call_event_handler_proc_ptr ((void*)ewg_param_a_function, (EventHandlerCallRef)ewg_param_inHandlerCallRef, (EventRef)ewg_param_inEvent, (void*)ewg_param_inUserData)
 
 OSStatus  ewg_function_call_event_handler_proc_ptr (void *a_function, EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData);
+// Wraps call to function 'get_control_action_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_action_proc_ptr_stub get_control_action_proc_ptr_stub ()
+
+void * ewg_function_get_control_action_proc_ptr_stub (void);
+// Wraps call to function 'set_control_action_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_action_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_action_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_action_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_action_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_action_proc_ptr(ewg_param_a_function, ewg_param_theControl, ewg_param_partCode) call_control_action_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_theControl, (ControlPartCode)ewg_param_partCode)
+
+void  ewg_function_call_control_action_proc_ptr (void *a_function, ControlRef theControl, ControlPartCode partCode);
+// Wraps call to function 'get_control_def_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_def_proc_ptr_stub get_control_def_proc_ptr_stub ()
+
+void * ewg_function_get_control_def_proc_ptr_stub (void);
+// Wraps call to function 'set_control_def_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_def_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_def_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_def_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_def_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_def_proc_ptr(ewg_param_a_function, ewg_param_varCode, ewg_param_theControl, ewg_param_message, ewg_param_param) call_control_def_proc_ptr ((void*)ewg_param_a_function, (SInt16)ewg_param_varCode, (ControlRef)ewg_param_theControl, (ControlDefProcMessage)ewg_param_message, (SInt32)ewg_param_param)
+
+SInt32  ewg_function_call_control_def_proc_ptr (void *a_function, SInt16 varCode, ControlRef theControl, ControlDefProcMessage message, SInt32 param);
+// Wraps call to function 'get_control_key_filter_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_key_filter_proc_ptr_stub get_control_key_filter_proc_ptr_stub ()
+
+void * ewg_function_get_control_key_filter_proc_ptr_stub (void);
+// Wraps call to function 'set_control_key_filter_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_key_filter_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_key_filter_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_key_filter_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_key_filter_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_key_filter_proc_ptr(ewg_param_a_function, ewg_param_theControl, ewg_param_keyCode, ewg_param_charCode, ewg_param_modifiers) call_control_key_filter_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_theControl, (SInt16*)ewg_param_keyCode, (SInt16*)ewg_param_charCode, (EventModifiers*)ewg_param_modifiers)
+
+ControlKeyFilterResult  ewg_function_call_control_key_filter_proc_ptr (void *a_function, ControlRef theControl, SInt16 *keyCode, SInt16 *charCode, EventModifiers *modifiers);
+// Wraps call to function 'get_control_cntlto_collection_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_cntlto_collection_proc_ptr_stub get_control_cntlto_collection_proc_ptr_stub ()
+
+void * ewg_function_get_control_cntlto_collection_proc_ptr_stub (void);
+// Wraps call to function 'set_control_cntlto_collection_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_cntlto_collection_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_cntlto_collection_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_cntlto_collection_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_cntlto_collection_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_cntlto_collection_proc_ptr(ewg_param_a_function, ewg_param_bounds, ewg_param_value, ewg_param_visible, ewg_param_max, ewg_param_min, ewg_param_procID, ewg_param_refCon, ewg_param_title, ewg_param_collection) call_control_cntlto_collection_proc_ptr ((void*)ewg_param_a_function, (Rect const*)ewg_param_bounds, (SInt16)ewg_param_value, (Boolean)ewg_param_visible, (SInt16)ewg_param_max, (SInt16)ewg_param_min, (SInt16)ewg_param_procID, (SInt32)ewg_param_refCon, (ConstStr255Param)ewg_param_title, (Collection)ewg_param_collection)
+
+OSStatus  ewg_function_call_control_cntlto_collection_proc_ptr (void *a_function, Rect const *bounds, SInt16 value, Boolean visible, SInt16 max, SInt16 min, SInt16 procID, SInt32 refCon, ConstStr255Param title, Collection collection);
+// Wraps call to function 'get_control_color_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_control_color_proc_ptr_stub get_control_color_proc_ptr_stub ()
+
+void * ewg_function_get_control_color_proc_ptr_stub (void);
+// Wraps call to function 'set_control_color_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_control_color_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_control_color_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_control_color_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_control_color_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_control_color_proc_ptr(ewg_param_a_function, ewg_param_inControl, ewg_param_inMessage, ewg_param_inDrawDepth, ewg_param_inDrawInColor) call_control_color_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_inControl, (SInt16)ewg_param_inMessage, (SInt16)ewg_param_inDrawDepth, (Boolean)ewg_param_inDrawInColor)
+
+OSStatus  ewg_function_call_control_color_proc_ptr (void *a_function, ControlRef inControl, SInt16 inMessage, SInt16 inDrawDepth, Boolean inDrawInColor);
 // Wraps call to function 'get_window_def_proc_ptr_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 
