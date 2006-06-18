@@ -5,10 +5,10 @@ indexing
 	keywords: "widget list, container"
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 deferred class
 	EV_WIDGET_LIST_IMP
-	
+
 inherit
 	EV_WIDGET_LIST_I
 		undefine
@@ -31,7 +31,7 @@ inherit
 			interface,
 			initialize
 		end
-		
+
 feature {NONE} -- Initialization
 
 	initialize is
@@ -52,11 +52,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Implementation
-
-	gtk_reorder_child (a_container, a_child: POINTER; a_position: INTEGER) is
-			-- Move `a_child' to `a_position' in `a_container'.
-		deferred
-		end
 
 	list_widget: POINTER is
 			-- Pointer to the actual widget list container.

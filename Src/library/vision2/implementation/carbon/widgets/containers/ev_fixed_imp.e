@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision fixed. GTK+ implementation."
+		"Eiffel Vision fixed. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -11,9 +11,6 @@ class
 
 inherit
 	EV_FIXED_I
-		undefine
-			propagate_foreground_color,
-			propagate_background_color
 		redefine
 			interface
 		end
@@ -24,6 +21,8 @@ inherit
 			on_removed_item,
 			initialize
 		end
+
+	CONTROLS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -45,13 +44,27 @@ feature -- Status setting
 	set_item_position (a_widget: EV_WIDGET; an_x, a_y: INTEGER) is
 			-- Set `a_widget.x_position' to `an_x'.
 			-- Set `a_widget.y_position' to `a_y'.
+		local
+			w_imp : EV_WIDGET_IMP
 		do
+			w_imp ?= a_widget.implementation
+			check
+				w_imp_not_void : w_imp /= Void
+			end
+			move_control_external( w_imp.carbon_item , an_x, a_y )
 		end
 
 	set_item_size (a_widget: EV_WIDGET; a_width, a_height: INTEGER) is
 			-- Set `a_widget.width' to `a_width'.
 			-- Set `a_widget.height' to `a_height'.
+		local
+			w_imp : EV_WIDGET_IMP
 		do
+			w_imp ?= a_widget.implementation
+			check
+				w_imp_not_void : w_imp /= Void
+			end
+			size_control_external( w_imp.carbon_item, a_width, a_height )
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -73,19 +86,6 @@ feature {EV_ANY_I} -- Implementation
 
 	i_th_fixed_child (i: INTEGER): POINTER is
 			-- `i-th' fixed child of `Current'.
-		do
-		end
-
-	frozen gtk_fixed_child_struct_x (a_c_struct: POINTER): INTEGER is
-		do
-		end
-
-	frozen gtk_fixed_child_struct_y (a_c_struct: POINTER): INTEGER is
-		do
-		end
-
-	gtk_reorder_child (a_container, a_child: POINTER; a_position: INTEGER) is
-			-- Move `a_child' to `a_position' in `a_container'.
 		do
 		end
 
