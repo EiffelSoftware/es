@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision widget. GTK implementation.%N%
+		"Eiffel Vision widget. Carbon implementation.%N%
 		%See ev_widget.e"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -175,6 +175,10 @@ feature -- Element change
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
 		end
+
+feature -- Carbon
+
+	carbon_item : POINTER
 
 feature -- Measurement
 
