@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 		do
 			create error_list.make
 			create warning_list.make
+			set_do_raise_error
 		end
 
 feature -- Properties
@@ -49,6 +50,18 @@ feature -- Status
 			Result := not error_list.is_empty
 		end
 
+feature -- raise_error settings
+	set_do_raise_error is
+			-- set error raising to true
+		do
+			do_raise_error := true
+		end
+
+	unset_do_raise_error is
+			-- set error raising to true
+		do
+			do_raise_error := false
+		end
 
 feature {E_PROJECT, COMPILER_EXPORTER, SHARED_ERROR_HANDLER} -- Element change
 
@@ -138,6 +151,8 @@ feature {COMPILER_EXPORTER} -- Error handling primitives
 			Result := not warning_list.is_empty
 		end
 
+	do_raise_error: BOOLEAN
+
 	raise_error is
 			-- Raise an exception retrieved by routine `recompile'
 			-- of class SYSTEM_I
@@ -145,8 +160,10 @@ feature {COMPILER_EXPORTER} -- Error handling primitives
 			non_void_error_displayer: error_displayer /= Void
 			has_error: has_error
 		do
-			Rescue_status.set_is_error_exception (True)
-			raise ("Compiler error")
+			if do_raise_error then
+				Rescue_status.set_is_error_exception (True)
+				raise ("Compiler error")
+			end
 		end
 
 	checksum is
