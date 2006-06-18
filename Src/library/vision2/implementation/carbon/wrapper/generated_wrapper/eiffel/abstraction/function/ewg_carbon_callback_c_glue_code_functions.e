@@ -478,6 +478,96 @@ feature
 			Result := call_event_handler_proc_ptr_external (a_function, inhandlercallref, inevent, inuserdata)
 		end
 
+	get_control_action_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_control_action_proc_ptr_stub_external
+		end
+
+	set_control_action_proc_ptr_entry (a_class: CONTROL_ACTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_control_action_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_control_action_proc_ptr (a_function: POINTER; thecontrol: POINTER; partcode: INTEGER) is
+		local
+		do
+			call_control_action_proc_ptr_external (a_function, thecontrol, partcode)
+		end
+
+	get_control_def_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_control_def_proc_ptr_stub_external
+		end
+
+	set_control_def_proc_ptr_entry (a_class: CONTROL_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_control_def_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_control_def_proc_ptr (a_function: POINTER; varcode: INTEGER; thecontrol: POINTER; message: INTEGER; param: INTEGER): INTEGER is
+		local
+		do
+			Result := call_control_def_proc_ptr_external (a_function, varcode, thecontrol, message, param)
+		end
+
+	get_control_key_filter_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_control_key_filter_proc_ptr_stub_external
+		end
+
+	set_control_key_filter_proc_ptr_entry (a_class: CONTROL_KEY_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_control_key_filter_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_control_key_filter_proc_ptr (a_function: POINTER; thecontrol: POINTER; keycode: POINTER; charcode: POINTER; modifiers: POINTER): INTEGER is
+		local
+		do
+			Result := call_control_key_filter_proc_ptr_external (a_function, thecontrol, keycode, charcode, modifiers)
+		end
+
+	get_control_cntlto_collection_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_control_cntlto_collection_proc_ptr_stub_external
+		end
+
+	set_control_cntlto_collection_proc_ptr_entry (a_class: CONTROL_CNTLTO_COLLECTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_control_cntlto_collection_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_control_cntlto_collection_proc_ptr (a_function: POINTER; bounds: POINTER; value: INTEGER; visible: INTEGER; max: INTEGER; min: INTEGER; procid: INTEGER; refcon: INTEGER; title: POINTER; collection: POINTER): INTEGER is
+		local
+		do
+			Result := call_control_cntlto_collection_proc_ptr_external (a_function, bounds, value, visible, max, min, procid, refcon, title, collection)
+		end
+
+	get_control_color_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_control_color_proc_ptr_stub_external
+		end
+
+	set_control_color_proc_ptr_entry (a_class: CONTROL_COLOR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_control_color_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_control_color_proc_ptr (a_function: POINTER; incontrol: POINTER; inmessage: INTEGER; indrawdepth: INTEGER; indrawincolor: INTEGER): INTEGER is
+		local
+		do
+			Result := call_control_color_proc_ptr_external (a_function, incontrol, inmessage, indrawdepth, indrawincolor)
+		end
+
 	get_window_def_proc_ptr_stub: POINTER is
 		local
 		do

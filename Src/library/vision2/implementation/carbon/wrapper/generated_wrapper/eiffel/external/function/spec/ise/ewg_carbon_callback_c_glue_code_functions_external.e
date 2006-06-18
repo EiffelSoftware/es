@@ -1173,6 +1173,231 @@ feature
 			"(void*) call_event_handler_proc_ptr"
 		end
 
+	get_control_action_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_control_action_proc_ptr_stub"
+		end
+
+	get_control_action_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_control_action_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_control_action_proc_ptr_stub"
+		end
+
+	set_control_action_proc_ptr_entry_external (a_class: CONTROL_ACTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_control_action_proc_ptr_entry"
+		end
+
+	set_control_action_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_control_action_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_control_action_proc_ptr_entry"
+		end
+
+	call_control_action_proc_ptr_external (a_function: POINTER; thecontrol: POINTER; partcode: INTEGER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, ControlPartCode)"
+		alias
+			"ewg_function_macro_call_control_action_proc_ptr"
+		end
+
+	call_control_action_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_control_action_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_control_action_proc_ptr"
+		end
+
+	get_control_def_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_control_def_proc_ptr_stub"
+		end
+
+	get_control_def_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_control_def_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_control_def_proc_ptr_stub"
+		end
+
+	set_control_def_proc_ptr_entry_external (a_class: CONTROL_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_control_def_proc_ptr_entry"
+		end
+
+	set_control_def_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_control_def_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_control_def_proc_ptr_entry"
+		end
+
+	call_control_def_proc_ptr_external (a_function: POINTER; varcode: INTEGER; thecontrol: POINTER; message: INTEGER; param: INTEGER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, SInt16, ControlRef, ControlDefProcMessage, SInt32):SInt32"
+		alias
+			"ewg_function_macro_call_control_def_proc_ptr"
+		end
+
+	call_control_def_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_control_def_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_control_def_proc_ptr"
+		end
+
+	get_control_key_filter_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_control_key_filter_proc_ptr_stub"
+		end
+
+	get_control_key_filter_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_control_key_filter_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_control_key_filter_proc_ptr_stub"
+		end
+
+	set_control_key_filter_proc_ptr_entry_external (a_class: CONTROL_KEY_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_control_key_filter_proc_ptr_entry"
+		end
+
+	set_control_key_filter_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_control_key_filter_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_control_key_filter_proc_ptr_entry"
+		end
+
+	call_control_key_filter_proc_ptr_external (a_function: POINTER; thecontrol: POINTER; keycode: POINTER; charcode: POINTER; modifiers: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, SInt16*, SInt16*, EventModifiers*):ControlKeyFilterResult"
+		alias
+			"ewg_function_macro_call_control_key_filter_proc_ptr"
+		end
+
+	call_control_key_filter_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_control_key_filter_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_control_key_filter_proc_ptr"
+		end
+
+	get_control_cntlto_collection_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_control_cntlto_collection_proc_ptr_stub"
+		end
+
+	get_control_cntlto_collection_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_control_cntlto_collection_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_control_cntlto_collection_proc_ptr_stub"
+		end
+
+	set_control_cntlto_collection_proc_ptr_entry_external (a_class: CONTROL_CNTLTO_COLLECTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_control_cntlto_collection_proc_ptr_entry"
+		end
+
+	set_control_cntlto_collection_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_control_cntlto_collection_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_control_cntlto_collection_proc_ptr_entry"
+		end
+
+	call_control_cntlto_collection_proc_ptr_external (a_function: POINTER; bounds: POINTER; value: INTEGER; visible: INTEGER; max: INTEGER; min: INTEGER; procid: INTEGER; refcon: INTEGER; title: POINTER; collection: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, Rect const*, SInt16, Boolean, SInt16, SInt16, SInt16, SInt32, ConstStr255Param, Collection):OSStatus"
+		alias
+			"ewg_function_macro_call_control_cntlto_collection_proc_ptr"
+		end
+
+	call_control_cntlto_collection_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_control_cntlto_collection_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_control_cntlto_collection_proc_ptr"
+		end
+
+	get_control_color_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_control_color_proc_ptr_stub"
+		end
+
+	get_control_color_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_control_color_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_control_color_proc_ptr_stub"
+		end
+
+	set_control_color_proc_ptr_entry_external (a_class: CONTROL_COLOR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_control_color_proc_ptr_entry"
+		end
+
+	set_control_color_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_control_color_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_control_color_proc_ptr_entry"
+		end
+
+	call_control_color_proc_ptr_external (a_function: POINTER; incontrol: POINTER; inmessage: INTEGER; indrawdepth: INTEGER; indrawincolor: INTEGER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, SInt16, SInt16, Boolean):OSStatus"
+		alias
+			"ewg_function_macro_call_control_color_proc_ptr"
+		end
+
+	call_control_color_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_control_color_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_control_color_proc_ptr"
+		end
+
 	get_window_def_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
