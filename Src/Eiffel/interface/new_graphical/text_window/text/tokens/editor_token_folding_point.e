@@ -33,7 +33,7 @@ feature -- Initialization
 	make_with_folding_area (a_area: like folding_area) is
 			-- creates a new folding-point token with associated folding-area
 		require
-			area_exists: folding_area /= Void
+			area_exists: a_area /= Void
 		do
 			image := ""
 			length := 0

@@ -15,7 +15,6 @@ inherit
 			draw_line_to_screen,
 			text_panel,
 			line_numbers_visible,
---			folding_points_visible,
 			user_initialization,
 			width,
 			text_displayed_type
@@ -27,7 +26,6 @@ feature -- Initialization
 			-- Build margin drawable area
 		do
 			Precursor {MARGIN_WIDGET}
-			smart_text_panel ?= text_panel
 			margin_area.pointer_button_press_actions.extend (agent on_mouse_button_down)
 			hide_breakpoints
 		end
@@ -50,18 +48,6 @@ feature -- Status Setting
 		do
 			hidden_breakpoints := False
 		end
-
---	hide_folding_points is
---			-- Do not show breakpoints even if there are some.
---		do
---			hidden_folding_points := True
---		end
---
---	show_folding_points is
---			-- Show breakpoints if there are some.
---		do
---			hidden_folding_points := False
---		end
 
 feature -- Access
 
@@ -137,10 +123,11 @@ feature {NONE} -- Implementation
 						next_folding_area := next_folding_area.next
 					end
 
-					-- debug output
---					if next_folding_area /= Void then
---						io.put_string("first:%T" + first.out + "%Nlast:%T" + last.out + "%N%Tnext fp is on line " + next_folding_area.start_line.out + "%N%N")
---					end
+					debug("code-folding:")
+						if next_folding_area /= Void then
+							io.put_string("first:%T" + first.out + "%Nlast:%T" + last.out + "%N%Tnext fp is on line " + next_folding_area.start_line.out + "%N%N")
+						end
+					end
 				end
 			end
 
@@ -155,6 +142,7 @@ feature {NONE} -- Implementation
  				if buffered then
  					-- We do not currently buffer for the margin
 				else
+					-- did we arrive at the next fp?
 					if folding_points_visible then
 						if next_folding_area /= Void and then curr_line = next_folding_area.start_line then
 							draw_next_folding_point := true
@@ -304,7 +292,7 @@ feature {NONE} -- Events
 --									smart_text_panel.text_displayed.show_lines (fp_clicked.start_line)
 --								else
 --									fp_clicked.hide
---									smart_text_panel.text_displayed.hide_lines (fp_clicked.start_line, fp_clicked.height)
+--									smart_text_panel.text_displayed.hide_lines (fp_clicked.start_line + 1, fp_clicked.height)
 								end
 								current.refresh_now
 							end
