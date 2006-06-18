@@ -243,6 +243,8 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 	last_saved_system_generate_key_directory_preference: STRING_PREFERENCE
 	file_open_and_save_dialogs_remember_last_directory: BOOLEAN_PREFERENCE
 
+	dialog_language_preference: STRING_PREFERENCE
+
 feature -- Preference strings
 
 	confirm_on_terminate_freezing_string: STRING is "interface.dialogs.confirm_on_terminate_freezing"
@@ -290,6 +292,8 @@ feature -- Preference strings
 	last_saved_save_file_as_directory_preference_string: STRING is "interface.dialogs.last_saved_save_file_as_directory"
 	last_saved_profile_result_directory_preference_string: STRING is "interface.dialogs.last_saved_profile_result_directory"
 	last_saved_system_generate_key_directory_preference_string: STRING is "interface.dialogs.last_saved_system_generate_key_directory"
+
+	dialog_language_preference_string: STRING is "interface.dialogs.language"
 
 feature {NONE} -- Implementation
 
@@ -341,6 +345,7 @@ feature {NONE} -- Implementation
 			last_saved_save_file_as_directory_preference := l_manager.new_string_preference_value (l_manager, last_saved_save_file_as_directory_preference_string, "")
 			last_saved_profile_result_directory_preference := l_manager.new_string_preference_value (l_manager, last_saved_profile_result_directory_preference_string, "")
 			last_saved_system_generate_key_directory_preference := l_manager.new_string_preference_value (l_manager, last_saved_system_generate_key_directory_preference_string, "")
+			dialog_language_preference := l_manager.new_string_preference_value (l_manager, dialog_language_preference_string, "en")
 		end
 
 	preferences: PREFERENCES
