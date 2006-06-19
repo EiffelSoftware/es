@@ -1057,4 +1057,42 @@ feature -- Attributes
         "kHIWindowScaleModeFrameworkScaled"
     end
 
+    frozen kWindowResizableAttribute : INTEGER is
+    external
+        "C inline use <Carbon/Carbon.h>"
+    alias
+        "kWindowResizableAttribute"
+    end
+	
+    frozen kWindowStandardDocumentAttributes : INTEGER is
+    external
+        "C inline use <Carbon/Carbon.h>"
+    alias
+        "kWindowStandardDocumentAttributes"
+    end
+
+    frozen kDocumentWindowClass : INTEGER is
+    external
+        "C inline use <Carbon/Carbon.h>"
+    alias
+        "kDocumentWindowClass"
+    end
+
+    frozen kWindowNoAttributes : INTEGER is
+    external
+        "C inline use <Carbon/Carbon.h>"
+    alias
+        "kWindowNoAttributes"
+    end
+    frozen kWindowContentRgn : INTEGER is
+    external
+        "C inline use <Carbon/Carbon.h>"
+    alias
+        "kWindowContentRgn"
+    end
+
+
+
+    
+
 end

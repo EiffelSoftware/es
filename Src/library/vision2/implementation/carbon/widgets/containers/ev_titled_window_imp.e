@@ -23,7 +23,7 @@ inherit
 	EV_WINDOW_IMP
 		redefine
 			interface,
-			make,
+--			make,
 			default_wm_decorations,
 			is_displayed,
 			initialize,
@@ -37,11 +37,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface) is
-			-- Create the titled window.
-		do
-
-		end
+--	make (an_interface: like interface) is
+--			-- Create the titled window.
+--		do
+--
+--		end
 
 	initialize is
 			-- Setup accelerators for window

@@ -53,7 +53,8 @@ inherit
 			interface,
 			on_key_event,
 			has_focus,
-			show
+			show,
+			set_size
 		end
 
 	EV_WINDOW_ACTION_SEQUENCES_IMP
@@ -61,7 +62,10 @@ inherit
 			interface
 		end
 
+	QUICKDRAW_FUNCTIONS_EXTERNAL
 	MACWINDOWS_FUNCTIONS_EXTERNAL
+	PROCESSES_FUNCTIONS_EXTERNAL
+	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -70,8 +74,28 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create the window.
-		do
---			carbon_initialize -- needs to be here since initialize seems to be called twice...(why?)
+			local
+					the_window:OPAQUE_WINDOW_PTR_STRUCT
+					window_attributes: INTEGER
+					rect: RECT_STRUCT
+					res: INTEGER
+					ptr: POINTER
+			do
+					base_make (an_interface)
+					create rect.make_new_shared
+
+					rect.set_bottom (20)
+					rect.set_left (13)
+					rect.set_right (20)
+					rect.set_top (12)
+					window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute)
+					res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
+					create the_window.make_shared(ptr)
+
+				--	show_window_external(the_window.item)
+
+
+					set_c_object (ptr)
 		end
 
 	initialize is
@@ -80,68 +104,71 @@ feature {NONE} -- Initialization
 			-- The `vbox' will be able to contain the menu bar, the `hbox'
 			-- and the status bar.
 			-- The `hbox' will contain the child of the window.
+		local
+
+			app_imp: like app_implementation
+
+			l_c_object: POINTER
 		do
-			carbon_c_magic
-			--create_window
-			set_is_initialized (true)
+			set_is_initialized (False)
+			l_c_object := c_object
+			create upper_bar
+			create lower_bar
+
+			maximum_width := interface.maximum_dimension
+			maximum_height := interface.maximum_dimension
+			app_imp := app_implementation
+			--l_gtk_marshal := app_imp.gtk_marshal
+
+			--signal_connect_true (app_imp.delete_event_string, agent (l_gtk_marshal).on_window_close_request (l_c_object))
+			initialize_client_area
+
+			default_height := -1
+			default_width := -1
+
+			--on_key_event_intermediary_agent := agent (l_gtk_marshal).on_key_event_intermediary (internal_id, ?, ?, ?)
+			--signal_connect (l_c_object, app_imp.key_press_event_string, on_key_event_intermediary_agent, key_event_translate_agent, False)
+			--signal_connect (l_c_object, app_imp.key_release_event_string, on_key_event_intermediary_agent, key_event_translate_agent, False)
+
+			--signal_connect (l_c_object, app_imp.set_focus_event_string, agent (l_gtk_marshal).on_set_focus_event_intermediary (internal_id, ?), set_focus_event_translate_agent, True)
+				-- Used to propagate focus events between internal gtk widgets.
+
+			--signal_connect (l_c_object, app_imp.focus_in_event_string, agent (l_gtk_marshal).window_focus_intermediary (internal_id, True), Void, True)
+			--signal_connect (l_c_object, app_imp.focus_out_event_string, agent (l_gtk_marshal).window_focus_intermediary (internal_id, False), Void, True)
+				--Used to handle explicit Window focus handling.
+
+			--signal_connect (l_c_object, app_imp.configure_event_string, agent (l_gtk_marshal).on_size_allocate_intermediate (internal_id, ?, ?, ?, ?), configure_translate_agent, False)
+
+			--{EV_GTK_EXTERNALS}.gtk_window_set_default_size (l_c_object, 1, 1)
+			Precursor {EV_CONTAINER_IMP}
+				-- Need to set decorations after window is realized.
+			--{EV_GTK_EXTERNALS}.gdk_window_set_decorations ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object), default_wm_decorations)
+			internal_is_border_enabled := True
+			user_can_resize := True
+			set_is_initialized (True)
 		end
 
-		create_window is
-				-- 
-			local
-				the_window:OPAQUE_WINDOW_PTR_STRUCT
-				window_attributes: INTEGER
-				rect: RECT_STRUCT
-				res: INTEGER
-				ptr: POINTER
-			do
 
-				--Dimensionen setzten
-				create rect.make_new_shared
-				rect.set_bottom (200)
-				rect.set_left (50)
-				rect.set_right (200)
-				rect.set_top (50)
-
-
-				--Attribute: Dazu benötigt ihr die Konstanten. Wie läufts damit Jann?	
---				window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kWindowStandardDocumentAttributes).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowStandardHandlerAttribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowInWindowMenuAttribute)
-				
-				--Window generieren: man achte auf $ptr.
---				res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kDocumentWindowClass, window_attributes, rect.item, $ptr)
-			--OPAQUE_WINDOW_PTR_STRUCT aus ptr generieren.
-				create the_window.make_shared(ptr)
-
-				show_window_external(the_window.item)
-			end
-	
-
-		carbon_c_magic is
-				--
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{	
-					WindowRef theWindow;
-					WindowAttributes windowAttrs;
-					Rect contentRect = {45, 45, 245, 345};
-				
-					windowAttrs = kWindowStandardDocumentAttributes | kWindowStandardHandlerAttribute;
-	
-					CreateNewWindow (kDocumentWindowClass, windowAttrs, &contentRect, &theWindow);
-
-					ShowWindow (theWindow);
-					BringToFront (theWindow);
-				}
-			]"
-		end
+		carbon_foreground is
+				local
+					psn: PROCESS_SERIAL_NUMBER_STRUCT
+					ret: INTEGER
+				do
+					create psn.make_new_unshared
+					ret:= get_current_process_external(psn.item)
+					ret:=transform_process_type_external(psn.item,1)
+					ret:=set_front_process_external(psn.item)
+				end
 
 feature  -- Access
 
 	has_focus: BOOLEAN is
 			-- Does `Current' have the keyboard focus?
+		local
+			the_window:OPAQUE_WINDOW_PTR_STRUCT
 		do
+			create the_window.make_shared(c_object)
+			Result := (is_window_active_external (the_window.item)/=0)
 		end
 
 	item: EV_WIDGET
@@ -198,14 +225,33 @@ feature -- Status setting
 
 	allow_resize is
 			-- Allow the resize of the window.
+		local
+			the_window: OPAQUE_WINDOW_PTR_STRUCT
+			res: INTEGER
 		do
-			-- Shouldn't this return a BOOLEAN?
+			create the_window.make_shared(c_object)
+			res:=change_window_attributes_external(the_window.item, {MACWINDOWS_ANON_ENUMS}.kwindowresizableattribute, {MACWINDOWS_ANON_ENUMS}.kwindownoattributes)
+			internal_enable_border
 		end
 
 	show is
 			-- Map the Window to the screen.
+		local
+			the_window: OPAQUE_WINDOW_PTR_STRUCT
 		do
+			if not is_show_requested then
+				call_show_actions := True
+				--Precursor {EV_GTK_WINDOW_IMP}
 
+
+				is_positioned := True
+			end
+			if blocking_window /= Void then
+				set_blocking_window (Void)
+			end
+			create the_window.make_shared(c_object)
+			show_window_external(the_window.item)
+			carbon_foreground
 		end
 
 	is_positioned: BOOLEAN
@@ -242,28 +288,38 @@ feature -- Element change
 			a_rect: RECT_STRUCT
 			ret: INTEGER
 		do
-			ret := get_window_bounds_external(c_object, 33, a_rect.item)
+			create a_rect.make_new_shared
+			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
 			a_rect.set_right(a_rect.left + a_width)
-			ret := set_window_bounds_external(c_object, 33, a_rect.item) -- kWindowContentRgn
+			ret := set_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item) -- kWindowContentRgn
 		end
 
 	set_height (a_height: INTEGER) is
 			-- Set the vertical size to `a_height'.
+		local
+			a_rect: RECT_STRUCT
+			ret: INTEGER
 		do
+			create a_rect.make_new_shared
+			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
+
+			a_rect.set_bottom(a_rect.top + a_height)
+			ret := set_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item) -- kWindowContentRgn
 		end
+
+		set_size (a_width, a_height: INTEGER) is
+			-- Set the horizontal size to `a_width'.
+			-- Set the vertical size to `a_height'.
+		do
+			set_width(a_width)
+			set_height(a_height)
+		end
+
 
 	set_title (new_title: STRING_GENERAL) is
 			-- Set `title' to `new_title'.
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{	
-					WindowRef aWindow;
-					aWindow = GetWindowList();
-					SetWindowAlternateTitle(aWindow, "dongdong");
-				}
-			]"
+		do
+
 		end
 
 	set_menu_bar (a_menu_bar: EV_MENU_BAR) is
@@ -280,14 +336,23 @@ feature {EV_ANY_IMP} -- Implementation
 
 	destroy is
 			-- Destroy `Current'
+			-- 19.6.2006 Ueli
 		do
+			disable_capture
+			hide
+			Precursor {EV_CONTAINER_IMP}
 		end
 
 feature {NONE} -- Implementation
 
 	on_widget_mapped is
 			-- `Current' has been mapped to the screen.
+			-- 19.6.06 Ueli
 		do
+			if show_actions_internal /= Void and call_show_actions then
+				show_actions_internal.call (Void)
+			end
+			call_show_actions := False
 		end
 
 	internal_set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is
@@ -313,6 +378,12 @@ feature {NONE} -- Implementation
 			-- Called from focus intermediary agents when focus for `Current' has changed.
 			-- if `a_has_focus' then `Current' has just received focus.
 		do
+			if a_has_focus then
+				on_set_focus_event (get_user_focus_window_external)
+			else
+				on_set_focus_event (default_pointer)
+			end
+			Precursor {EV_CONTAINER_IMP} (a_has_focus)
 		end
 
 	previous_x_position, previous_y_position: INTEGER

@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision widget. Carbon implementation.%N%
+		"Eiffel Vision widget. GTK implementation.%N%
 		%See ev_widget.e"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -153,7 +153,8 @@ feature -- Status setting
 
 	is_show_requested: BOOLEAN is
 			-- Will `Current' be displayed when its parent is?
-			-- See also `is_displayed'.
+			-- See also `is_displayed'
+			
 		do
 			Result := true
 		end
@@ -175,10 +176,6 @@ feature -- Element change
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
 		end
-
-feature -- Carbon
-
-	carbon_item : POINTER
 
 feature -- Measurement
 
