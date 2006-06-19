@@ -179,6 +179,8 @@ feature -- Element change
 
 feature -- Measurement
 
+carbon_item:POINTER
+
 	x_position: INTEGER is
 			-- Horizontal offset relative to parent `x_position'.
 			-- Unit of measurement: screen pixels.
