@@ -664,7 +664,9 @@ feature {NONE} -- syntax checking implementation
 
 				Error_handler.unset_do_raise_error
 				Error_handler.error_list.wipe_out -- make sure we dont accumulate error messages
+				error_handler.unset_do_raise_error
 				Eiffel_validating_parser.parse_from_string (text)
+				error_handler.set_do_raise_error
 
 				-- get error list
 				list := Error_handler.error_list
@@ -693,7 +695,9 @@ feature {NONE} -- syntax checking implementation
 
 					-- error should be text-token (otherwise it doesnt make any sence to highlight it)
 					text_token ?= cursor.token
-					text_token.set_incorrect
+					if text_token /= void then
+						text_token.set_incorrect
+					end
 
 					-- go to next error
 					list.forth
