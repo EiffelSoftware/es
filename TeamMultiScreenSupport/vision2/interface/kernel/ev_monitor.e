@@ -9,14 +9,14 @@ indexing
 class
 	EV_MONITOR
 
-inherit
-	EV_SCREEN
-	  redefine
-	  	width,
-	  	height,
-	  	vertical_resolution,
-	  	horizontal_resolution
-	  end
+--inherit
+--	EV_SCREEN
+--	  redefine
+--	  	width,
+--	  	height,
+--	  	vertical_resolution,
+--	  	horizontal_resolution
+--	  end
 
 create
 	default_create
