@@ -141,8 +141,8 @@ feature -- Measurement
 
 feature -- Multi Screen
 
-	allscreenlist: LINKED_LIST [EV_MULTISCREEN]
-	primary_screen: EV_MULTISCREEN
+	allmonitors: LINKED_LIST [EV_MONITOR]
+	primary_monitor: EV_MONITOR
 
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

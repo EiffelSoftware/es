@@ -7,7 +7,7 @@ indexing
 	revision: "$Revision: 59442 $"
 
 class
-	EV_MULTISCREEN
+	EV_MONITOR
 
 inherit
 	EV_SCREEN
