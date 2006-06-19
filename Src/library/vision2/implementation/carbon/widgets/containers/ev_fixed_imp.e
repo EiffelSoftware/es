@@ -16,6 +16,9 @@ inherit
 		end
 
 	EV_WIDGET_LIST_IMP
+		undefine
+			propagate_background_color,
+			propagate_foreground_color
 		redefine
 			interface,
 			on_removed_item,

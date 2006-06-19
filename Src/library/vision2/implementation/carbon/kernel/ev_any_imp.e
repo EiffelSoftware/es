@@ -1,10 +1,10 @@
 indexing
 	description:
-		"Base class for GTK implementation (_IMP) classes. %N%
-		%Handles interaction between Eiffel objects and GTK objects %N%
+		"Base class for Carbon implementation (_IMP) classes. %N%
+		%Handles interaction between Eiffel objects and Carbon objects %N%
 		%See important notes on memory management at end of class"
 	legal: "See notice at end of class."
-	keywords: "implementation, gtk, any, base"
+	keywords: "implementation, carbon, any, base"
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
