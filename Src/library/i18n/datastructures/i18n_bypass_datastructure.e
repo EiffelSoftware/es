@@ -12,6 +12,7 @@ inherit
 	I18N_DATASTRUCTURE
 
 create {I18N_DATASTRUCTURE_FACTORY}
+	make,
 	make_with_datasource
 
 feature {NONE} -- Initialization

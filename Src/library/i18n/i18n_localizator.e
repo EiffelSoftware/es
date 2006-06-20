@@ -19,12 +19,13 @@ feature {NONE} -- Initialization
 			create i18n_template_formatter.make
 
 			-- Create the datasource
-			create i18n_datasource_factory.make_empty
+			create i18n_datasource_factory.make
 			i18n_datasource := i18n_datasource_factory.last_datasource
 
 			-- Create the datastructure
-			create i18n_datastructure_factory.make_with_datasource (i18n_datasource)
+			create i18n_datastructure_factory.make
 			i18n_datastructure := i18n_datastructure_factory.last_datastructure
+			i18n_datastructure.load(i18n_datasource)
 		ensure
 			valid_datasource: i18n_datasource /= Void
 			valid_datastructure: i18n_datastructure /= Void
@@ -32,8 +33,37 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Loading
+	use_datasource(a_datasource: I18N_DATASOURCE) is
+			-- Use this datasource.
+		require
+			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
+		do
+			i18n_datasource := a_datasource
+		ensure
+			datasource_set: i18n_datasource = a_datasource
+		end
+
+	use_datastructure(a_datastructure: I18N_DATASTRUCTURE) is
+			-- Use this datastructure.
+		require
+			valid_datastructure: a_datastructure /= Void
+		do
+			i18n_datastructure := a_datastructure
+		ensure
+			datastructure_set: i18n_datastructure = a_datastructure
+		end
+
+	load is
+			-- Load the localizator.
+		do
+			i18n_datastructure.load(i18n_datasource)
+		end
+
+
 	set_resources_path(a_path: STRING) is
 			-- Set the resources path.
+		obsolete
+			"We don't need this at the moment."
 		require
 			valid_path: a_path /= Void
 			not_empty_path: not a_path.is_empty
@@ -47,6 +77,8 @@ feature -- Loading
 
 	set_language_identifier(a_identifier: STRING) is
 			-- Set the language identifier.
+		obsolete
+			"We don't need this at the moment."
 		require
 			valid_identifier: a_identifier /= Void
 			not_empty_identifier: not a_identifier.is_empty
@@ -58,12 +90,11 @@ feature -- Loading
 			language_identifier_set: language_identifier.is_equal(a_identifier)
 		end
 
-	load is
+	load_old is
 			-- Loads data, using actual parameters
+		obsolete
+			"This work should be done out of the localizator; use_datasource and use_datastructure should help you."
 		do
-			-- CCONTI
-			-- Should change this to use the two functions above!
-
 			-- Create the datasource
 				-- NOTE: For the moment, should set path manually!
 				-- Feel free to suggest a way for determining the path
@@ -123,9 +154,11 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 feature {NONE} -- Implementation
 	resources_path: STRING
 		-- Path where to find the resources
+		-- OBSOLETE: We don't need this at the moment.
 
 	language_identifier: STRING
 		-- Language identifier to be used
+		-- OBSOLETE: We don't need this at the moment.
 
 	i18n_datasource: I18N_DATASOURCE
 		-- Reference to the datasource
@@ -138,11 +171,14 @@ feature {NONE} -- Implementation
 
 	i18n_datastructure_factory: I18N_DATASTRUCTURE_FACTORY
 		-- Reference to the datastructure factory
+		-- OBSOLETE: We don't need this at the moment.
 
 	i18n_datasource_factory: I18N_DATASOURCE_FACTORY
 		-- Reference to the datasource factory
+		-- OBSOLETE: We don't need this at the moment.
 
 invariant
+	valid_datasource: i18n_datasource /= Void and then i18n_datasource.is_ready
 	valid_datastructure: i18n_datastructure /= Void
 	valid_template_formatter: i18n_template_formatter /= Void
 

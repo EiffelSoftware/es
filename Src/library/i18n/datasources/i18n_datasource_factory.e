@@ -9,10 +9,10 @@ class
 	I18N_DATASOURCE_FACTORY
 
 create {I18N_LOCALIZATOR}
-	make_empty
+	make
 
-feature {NONE}
-	make_empty is
+feature {NONE} -- Initialization
+	make is
 			-- Creation procedure.
 		do
 			create {I18N_EMPTY_DATASOURCE} last_datasource.make
@@ -37,7 +37,7 @@ feature -- Basic operations
 				-- Temporary parser
 		do
 			create l_mo_parser.make_with_path(a_path)
-			if l_mo_parser.file_exists then
+			if l_mo_parser.is_ready then
 				last_datasource := l_mo_parser
 			else
 				last_datasource := Void
@@ -56,6 +56,5 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 invariant
-	valid_datasource: last_datasource /= Void
 
 end

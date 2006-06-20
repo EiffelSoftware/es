@@ -12,6 +12,7 @@ inherit
 	I18N_DATASTRUCTURE
 
 create {I18N_DATASTRUCTURE_FACTORY}
+	make,
 	make_with_datasource
 
 feature {NONE} -- Initialization
@@ -95,7 +96,7 @@ feature {NONE} -- Miscellaneous
 			Result := l_result.as_integer_32
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 	hash_table: HASH_TABLE[I18N_STRING, INTEGER]
 		-- Table with all the strings
 

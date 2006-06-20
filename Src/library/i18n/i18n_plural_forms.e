@@ -12,7 +12,6 @@ create {I18N_DATASTRUCTURE}
 	make_with_identifier
 
 feature {NONE} -- Initialization
-
 	make_with_identifier(a_n: INTEGER; a_identifier: STRING_32) is
 			-- Initialize `Current'.
 			-- NOTE: Should check the identifiers!

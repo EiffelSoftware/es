@@ -29,6 +29,11 @@ feature -- Source information
 			-- Defines the retrieval methods
 
 feature -- Status setting
+	initialize is
+			-- Check the datasource.
+		deferred
+		end
+
 	open is
 			-- Open and prepare the datasource.
 		deferred
@@ -49,14 +54,11 @@ feature -- Status report
 	valid_index(a_index: INTEGER): BOOLEAN is
 			-- Is the index in valid range?
 		do
-			Result := (a_index >= 0) and (a_index <= string_count)
+			Result := (a_index >= 1) and (a_index <= string_count)
 		end
 
-	is_ready: BOOLEAN is
-			-- Is the datasource ready to load the strings?
-		do
-			Result := is_open
-		end
+	is_ready: BOOLEAN
+			-- Is the datasource valid and ready to load the strings?
 
 	is_open: BOOLEAN
 			-- Is the datasource open?
@@ -93,6 +95,5 @@ invariant
 	valid_plural_form_identifier: plural_form_identifier /= Void and then not plural_form_identifier.is_empty
 
 	is_open = not is_closed
-	is_ready = is_open
 
 end

@@ -82,7 +82,7 @@ feature -- Basic operations
 			valid_translateds: translateds /= Void
 			valid_plural_form(i_th)
 		do
-			if (i_th <= translateds.count and then translateds.i_th(i_th) /= Void) then
+			if has_translation(i_th) then
 				Result := translateds.i_th(i_th)
 			else
 				Result := translateds.i_th(translateds.count)

@@ -9,22 +9,39 @@ deferred class
 	I18N_DATASTRUCTURE
 
 feature {I18N_DATASTRUCTURE_FACTORY} -- Initialization
+	make is
+			-- Initialize `Current'.
+		do
+			
+		end
+
+
 	make_with_datasource(a_datasource: I18N_DATASOURCE) is
 			-- Initialize `Current'.
 		require
-			valid_datasource: a_datasource /= Void
+			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
+		do
+			load(a_datasource)
+		end
+
+feature -- Loading
+	load(a_datasource: I18N_DATASOURCE) is
+			-- Load this datasource.
+		require
+			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
 		do
 			i18n_datasource := a_datasource
 			if not i18n_datasource.is_open then
 				i18n_datasource.open
-			end
-			if i18n_datasource.is_ready then
 				populate_array
 				i18n_datasource.close
 				initialize
 			end
 			create i18n_plural_forms.make_with_identifier (i18n_datasource.plural_forms, i18n_datasource.plural_form_identifier)
+		ensure
+			datasource_set: i18n_datasource = a_datasource
 		end
+
 
 feature {NONE} -- Basic operations
 	initialize is

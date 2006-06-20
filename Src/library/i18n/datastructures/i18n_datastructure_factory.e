@@ -9,17 +9,26 @@ class
 	I18N_DATASTRUCTURE_FACTORY
 
 create {I18N_LOCALIZATOR}
+	make,
 	make_with_datasource
 
 feature {NONE} -- Initialization
+	make is
+			-- Create factory.
+		do
+			create {I18N_BYPASS_DATASTRUCTURE} last_datastructure.make
+		end
 
 	make_with_datasource(a_datasource: I18N_DATASOURCE) is
 			-- Create factory with datasource.
+		obsolete
+			"Should not load directly the datasource."
 		require
-			valid_datasource: a_datasource /= Void
+			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
 		do
+			make
 			i18n_datasource := a_datasource
-			create {I18N_BYPASS_DATASTRUCTURE} last_datastructure.make_with_datasource(i18n_datasource)
+			last_datastructure.load(i18n_datasource)
 		ensure
 			datasource_set: i18n_datasource = a_datasource
 		end
@@ -32,13 +41,21 @@ feature -- Basic operations
 	use_hash_table is
 			-- Create a datastructure using an hash table.
 		do
-			create {I18N_HASH_TABLE} last_datastructure.make_with_datasource(i18n_datasource)
+			if i18n_datasource /= Void and then i18n_datasource.is_ready then
+				create {I18N_HASH_TABLE} last_datastructure.make_with_datasource(i18n_datasource)
+			else
+				create {I18N_HASH_TABLE} last_datastructure.make
+			end
 		end
 
 	use_dummy is
 			-- Create a dummy datastructure.
 		do
-			create {I18N_BYPASS_DATASTRUCTURE} last_datastructure.make_with_datasource(i18n_datasource)
+			if i18n_datasource /= Void and then i18n_datasource.is_ready then
+				create {I18N_BYPASS_DATASTRUCTURE} last_datastructure.make_with_datasource(i18n_datasource)
+			else
+				create {I18N_BYPASS_DATASTRUCTURE} last_datastructure.make
+			end
 		end
 
 
@@ -47,6 +64,5 @@ feature {NONE} -- Implementation
 		-- Reference to the actual datasource
 
 invariant
-	valid_datastructure: last_datastructure /= Void
 
 end

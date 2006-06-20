@@ -71,12 +71,31 @@ feature {NONE} -- Basic operations
 
 
 feature -- Settings and update
+	i18n_use_datasource(a_datasource: I18N_DATASOURCE) is
+			-- Use this datasource.
+		require
+			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
+		do
+			localizator.use_datasource(a_datasource)
+		end
+
+	i18n_use_datastructure(a_datastructure: I18N_DATASTRUCTURE) is
+			-- Use this datastructure.
+		require
+			valid_datastructure: a_datastructure /= Void
+		do
+			localizator.use_datastructure(a_datastructure)
+		end
 
 	i18n_load is
-			-- Force (re-)loading of the translated strings
+			-- Load the translated strings from the new datasource into the new datastructure.
 		do
 			localizator.load
 		end
+
+	-- OBSOLETE: should pass a valid datasource and a valid datastructure to the localizator, the work
+	--           of selecting the path and the language identifier is done out of the i18n library.
+	-- See functions above for more details.
 
 	i18n_set_resources_path (a_path: STRING) is
 			-- Set path where to look for MO file, default is working directory

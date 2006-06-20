@@ -11,8 +11,7 @@ class
 inherit
 	I18N_DATASOURCE
 		rename
-			close as close_file,
-			open as open_file
+			close as close_file
 		end
 	UC_IMPORTED_UTF8_ROUTINES
 
@@ -26,19 +25,21 @@ feature {NONE} -- Initialization
 			valid_name: a_name /= Void
 			not_empty_path: not a_name.is_empty
 		do
-			create mo_file.make (a_name)
+			create mo_file.make(a_name)
 
 			-- What method should use the datastructure to retrive data?
 			retrieval_method := retrieve_by_type -- Preserve spatial locality
+
+			if mo_file.exists then
+				initialize
+			end
 		ensure
-			mo_file_set: mo_file /= Void and then mo_file.exists
-			file_still_closed: mo_file.is_closed
-			datasource_still_closed: is_closed
+			mo_file_set: mo_file /= Void
 		end
 
 feature -- Status setting
-	open_file is
-			-- Open mo_file.
+	initialize is
+			-- Initialize the parser.
 		require else
 			not_already_open: is_closed
 		do
@@ -46,6 +47,7 @@ feature -- Status setting
 			is_big_endian := False
 			is_little_endian := False
 			if mo_file.is_open_read then
+				is_open := true
 				-- Read magic number.
 				mo_file.read_integer
 				if mo_file.last_integer = 0xde120495 then
@@ -54,25 +56,32 @@ feature -- Status setting
 					is_little_endian := True
 				end
 				if is_valid then
-					-- Read mo file version.
-					version := read_integer
-					-- Read number of strings.
-					string_count := read_integer
-					-- Read offset of original strings' table.
-					original_table_offset := read_integer
-					-- Read offset of translated strings' table.
-					translated_table_offset := read_integer
-					-- Read size of hashing table.
-					hash_table_size := read_integer
-					-- Read offset of hashing table.
-					hash_table_offset := read_integer
-					extract_plural_informations
-					is_open := true
+					is_ready := true
 				else
 					close_file
 				end
 			end
-			is_open := not mo_file.is_closed
+		end
+
+	open is
+			-- Open datasource.
+		require else
+			already_open: is_open
+				-- Can't reopen the datasource, should be loaded only once.
+		do
+			-- Read mo file version.
+			version := read_integer
+			-- Read number of strings.
+			string_count := read_integer
+			-- Read offset of original strings' table.
+			original_table_offset := read_integer
+			-- Read offset of translated strings' table.
+			translated_table_offset := read_integer
+			-- Read size of hashing table.
+			hash_table_size := read_integer
+			-- Read offset of hashing table.
+			hash_table_offset := read_integer
+			extract_plural_informations
 		end
 
 	close_file is
@@ -80,15 +89,12 @@ feature -- Status setting
 		do
 			mo_file.close
 			is_open := not mo_file.is_closed
+
+			-- Prevent datastructures from reloading this source.
+			is_ready := false
 		end
 
 feature -- File information
-	is_big_endian,
-	is_little_endian: BOOLEAN
-
-	version: INTEGER
-		-- Version of the mo file
-
 	using_hash_table: BOOLEAN is
 			-- Are we using an hash table?
 		obsolete
@@ -162,13 +168,34 @@ feature --Errors
 	file_exists: BOOLEAN is
 			-- Does the file exist?
 		obsolete
-			"We already receive a valid path from the datastructure, don't need to check."
+			"Not used, use mo_file.exists instead."
 		do
 			Result := mo_file.exists
 		end
 
-feature {NONE} --Implementation
+feature {NONE} -- Implementation (parameters)
+	is_big_endian,
+	is_little_endian: BOOLEAN
 
+	version: INTEGER
+		-- Version of the mo file
+
+	mo_file: RAW_FILE
+		-- Reference to the mo file
+
+	original_table_offset: INTEGER
+		-- Offset of the table containing the original strings
+
+	translated_table_offset: INTEGER
+		-- Offset of the table containing the translated strings
+
+	hash_table_size: INTEGER
+		-- Size of the hash table
+
+	hash_table_offset: INTEGER
+		-- Offset of the hash table
+
+feature {NONE} -- Implementation (helpers)
 	extract_string (a_offset, a_number: INTEGER): STRING_32 is
 			-- Which is the a_number-th string into the table at a_offset?
 		require
@@ -257,7 +284,6 @@ feature {NONE} --Implementation
 			end
 		end
 
-
 	extract_plural_informations is
 			-- extract from the mo file
 			-- the informations abount the plural forms
@@ -304,24 +330,8 @@ feature {NONE} --Implementation
 			plural_form_identifier_exists : plural_form_identifier /= Void
 		end
 
-
-	mo_file: RAW_FILE
-		-- Reference to the mo file
-
-	original_table_offset: INTEGER
-		-- Offset of the table containing the original strings
-
-	translated_table_offset: INTEGER
-		-- Offset of the table containing the translated strings
-
-	hash_table_size: INTEGER
-		-- Size of the hash table
-
-	hash_table_offset: INTEGER
-		-- Offset of the hash table
-
 invariant
-	big_xor_little_endian: (file_exists and then is_valid) implies (is_little_endian xor is_big_endian)
+	big_xor_little_endian: (mo_file.exists and then is_valid) implies (is_little_endian xor is_big_endian)
 	valid_mo_file: mo_file /= Void and then mo_file.exists
 	is_open implies mo_file.is_open_read
 	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)

@@ -22,20 +22,30 @@ feature {NONE} -- Initialization
 			plural_forms := 2
 			plural_form_identifier := "n != 1;"
 			retrieval_method := retrieve_by_string -- Object-oriented
+			initialize
 		end
 
 
 feature -- Status setting
-	close is
+	initialize is
+			-- Initialize the datasource.
 		do
 			-- Do nothing
-			is_open := false
+			is_ready := true
 		end
 
 	open is
+			-- Open the datasource.
 		do
 			-- Do nothing
 			is_open := true
+		end
+
+	close is
+			-- Close the datasource.
+		do
+			-- Do nothing
+			is_open := false
 		end
 
 feature -- Basic operations
