@@ -8,7 +8,7 @@ indexing
 class
 	I18N_DATASTRUCTURE_FACTORY
 
-create {I18N_LOCALIZATOR}
+create
 	make,
 	make_with_datasource
 

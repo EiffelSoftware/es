@@ -8,7 +8,7 @@ indexing
 class
 	I18N_DATASOURCE_FACTORY
 
-create {I18N_LOCALIZATOR}
+create
 	make
 
 feature {NONE} -- Initialization
