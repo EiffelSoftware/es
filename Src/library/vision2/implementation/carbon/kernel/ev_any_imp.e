@@ -41,6 +41,7 @@ feature {EV_ANY_I} -- Access
 		require
 			a_c_object_not_null: a_c_object /= NULL
 		do
+			c_object := a_c_object
 		ensure
 			c_object_coupled: eif_object_from_c (c_object) = Current
 		end
