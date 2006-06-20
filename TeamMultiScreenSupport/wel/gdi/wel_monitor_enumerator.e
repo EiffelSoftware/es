@@ -49,7 +49,7 @@ feature {NONE} -- Implementation
 			a_default_pointer: POINTER
 		do
 			init_action
-			cwin_enum_monitor (a_default_pointer, a_default_pointer, cwel_enum_monitor_procedure, a_default_pointer)
+--			cwin_enum_monitor (a_default_pointer, a_default_pointer, cwel_enum_monitor_procedure, a_default_pointer)
 			finish_action
 		end
 
@@ -86,9 +86,9 @@ feature {NONE} -- Externals
 	cwin_enum_monitor (hdc, lprcClip, enum_proc, dwData: POINTER) is
 			-- SDK EnumFontFamilies
 		external
-			"C [macro %"enummonitor.h%"] (NULL, NULL, MONITORENUMPROC, 0)"
+			"C [macro %"enummonitor.h%"] (HDC, LPCRECT, MONITORENUMPROC, LPARAM)"
 		alias
-			"EnumDisplayFamilies"
+			"EnumDisplayMonitors"
 		end
 
 indexing

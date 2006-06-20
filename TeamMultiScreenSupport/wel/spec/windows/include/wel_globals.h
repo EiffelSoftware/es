@@ -20,6 +20,10 @@ description: "WEL: library of reusable components for Windows."
 #	include "disptchr.h"
 #endif
 
+#ifndef __WEL_ENUMMONITOR__
+#	include "enummonitor.h"
+#endif
+
 #ifndef __WEL_ENUMFONT__
 #	include "enumfont.h"
 #endif
@@ -70,6 +74,16 @@ typedef struct tag_wel_globals
 	/* Address of the Eiffel object WEL_DISPATCHER created 
 	 * for each application */
 
+/* enummonitor.c */
+
+	EIF_ENUM_MONITOR_PROCEDURE wel_enum_monitor_procedure_cx;
+	/* Address of the Eiffel routine `converter' 
+	 * (class WEL_MONITOR_ENUMERATOR) */
+
+	EIF_OBJ monitor_enumerator_cx;
+	/* Address of the Eiffel object WEL_MONITOR_ENUMERATOR 
+	 * created */
+
 /* enumfont.c */
 
 	EIF_ENUM_FONT_FAMILY_PROCEDURE wel_enum_font_fam_procedure_cx;
@@ -113,6 +127,12 @@ extern wel_global_context_t * wel_thr_context(void);
 #define wel_dlgproc	(wel_globals->wel_dlgproc_cx)
 #define dispatcher	(wel_globals->dispatcher_cx)
 
+/* enummonitor.c */
+
+#define wel_enum_monitor_procedure		(wel_globals->wel_enum_monitor_procedure_cx)
+#define monitor_enumerator			(wel_globals->monitor_enumerator_cx)
+
+
 /* enumfont.c */
 
 #define wel_enum_font_fam_procedure		(wel_globals->wel_enum_font_fam_procedure_cx)
@@ -141,6 +161,11 @@ extern wel_global_context_t * wel_thr_context(void);
 	extern EIF_WNDPROC wel_wndproc;
 	extern EIF_DLGPROC wel_dlgproc;
 	extern EIF_OBJ dispatcher;
+
+/* enummonitor.c */
+
+	extern EIF_ENUM_MONITOR_PROCEDURE wel_enum_monitor_procedure;
+	extern EIF_OBJ monitor_enumerator;
 
 /* enumfont.c */
 

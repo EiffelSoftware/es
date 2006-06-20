@@ -28,7 +28,7 @@ extern "C" {
 typedef void (* EIF_ENUM_MONITOR_PROCEDURE) (
 	EIF_OBJ,     /* WEL_MONITOR_ENUMERATOR Eiffel object */
 #else
-typedef void (__stdcall * EIF_ENUM_MONITOR_PROCEDURE) (
+typedef void (bool * EIF_ENUM_MONITOR_PROCEDURE) (
 #endif
 	 EIF_POINTER, /* handle to display monitor * */
 	 EIF_POINTER, /* handle to monitor DC * */
@@ -51,7 +51,7 @@ extern "C" {
 
 
 /* Eiffel routine signature for `converter' */
-int CALLBACK cwel_enum_monitor_procedure (HMONITOR, HDC, LPRECT, LPARAM);
+bool CALLBACK cwel_enum_monitor_procedure (HMONITOR, HDC, LPRECT, LPARAM);
 
 #ifdef EIF_THREADS
 
