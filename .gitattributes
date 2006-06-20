@@ -2266,6 +2266,10 @@ TeamMultiScreenSupport/vision2[!!-~]not[!!-~]working/spec/msc/lib/mtvision2.lib 
 TeamMultiScreenSupport/vision2[!!-~]not[!!-~]working/spec/msc/lib/vision2.lib -text
 TeamMultiScreenSupport/vision2[!!-~]not[!!-~]working/spec/msc/lib/zlib.lib -text
 TeamMultiScreenSupport/vision2[!!-~]not[!!-~]working/vision2.ecf -text
+TeamMultiScreenSupport/vision2/Clib/default_vision2_icon.ico -text
+TeamMultiScreenSupport/vision2/implementation/carbon/Readme.txt -text
+TeamMultiScreenSupport/vision2/implementation/carbon/kernel/ev_any_imp.fig -text
+TeamMultiScreenSupport/vision2/implementation/carbon/wrapper/config.ewg -text
 TeamMultiScreenSupport/wel[!!-~]not[!!-~]working/clib/makefile.bcb -text
 TeamMultiScreenSupport/wel[!!-~]not[!!-~]working/clib/makefile.bcb.il -text
 TeamMultiScreenSupport/wel[!!-~]not[!!-~]working/clib/makefile.gnu -text
