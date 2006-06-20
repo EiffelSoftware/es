@@ -90,31 +90,9 @@ feature -- Loading
 			language_identifier_set: language_identifier.is_equal(a_identifier)
 		end
 
-	load_old is
-			-- Loads data, using actual parameters
-		obsolete
-			"This work should be done out of the localizator; use_datasource and use_datastructure should help you."
-		do
-			-- Create the datasource
-				-- NOTE: For the moment, should set path manually!
-				-- Feel free to suggest a way for determining the path
-				-- (Wiki: http://eiffersoftware.origo.ethz.ch/index.php/Internationalization)
-			i18n_datasource_factory.use_mo_file("/home/etienne/messages.mo")
-			if i18n_datasource_factory.last_datasource = Void then
-				i18n_datasource_factory.use_empty_source
-			end
-
-			-- Create the datastructure
-			create i18n_datastructure_factory.make_with_datasource(i18n_datasource_factory.last_datasource)
-			i18n_datastructure_factory.use_hash_table
-			if i18n_datastructure_factory.last_datastructure = Void then
-				i18n_datastructure_factory.use_dummy
-			end
-			i18n_datastructure := i18n_datastructure_factory.last_datastructure
-		end
-
 
 feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
+
 	translate(a_string: STRING_GENERAL): STRING_32 is
 			-- What's the translated version of the string?
 		require

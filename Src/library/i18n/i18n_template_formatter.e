@@ -12,10 +12,11 @@ indexing
 class
 	I18N_TEMPLATE_FORMATTER
 -- Should this class inherit from the ST_FORMATTER from the gobo library?
+-- Actually ST_FORMATTER is explicitly excluded from the library, why? -- [vaninic]
 -- Let us know your opinion on the wiki: http://eiffelsoftware.origo.ethz.ch/index.php/Internationalization/translation_function
 -- Answer: no, the templates handling will be moved out of this library.
 
-create {I18N_LOCALIZATOR}
+create
 	make,
 	make_with_escape
 

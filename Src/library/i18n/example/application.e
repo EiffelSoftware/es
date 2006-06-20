@@ -7,11 +7,6 @@ class
 
 inherit
 	EV_APPLICATION
-	SHARED_I18N_LOCALIZATOR
-		undefine
-			default_create,	--How to avoid this ?
-			copy
-		end
 
 create
 	make_and_launch
@@ -23,36 +18,8 @@ feature {NONE} -- Initialization
 		do
 			n := 1
 			default_create
-			prepare_i18n
 			prepare
 			launch
-		end
-
-	prepare_i18n is
-			-- Prepare the localization framework.
-		local
-			l_source_factory: I18N_DATASOURCE_FACTORY
-			l_structure_factory: I18N_DATASTRUCTURE_FACTORY
-		do
-			create l_source_factory.make
-			l_source_factory.use_mo_file("D:\Projects\i18n\mo_files\it.mo")
-			if l_source_factory.last_datasource /= Void then
-				i18n_use_datasource(l_source_factory.last_datasource)
-			else
-				l_source_factory.use_empty_source
-				i18n_use_datasource(l_source_factory.last_datasource)
-			end
-
-			create l_structure_factory.make
-			l_structure_factory.use_hash_table
-			if l_structure_factory.last_datastructure /= Void then
-				i18n_use_datastructure(l_structure_factory.last_datastructure)
-			else
-				l_structure_factory.use_dummy
-				i18n_use_datastructure(l_structure_factory.last_datastructure)
-			end
-
-			i18n_load
 		end
 
 	prepare is
@@ -87,7 +54,6 @@ feature -- Create window elements
 			create decrease.make_with_text (names.decrease)
 			decrease.select_actions.extend (agent decrement)
 			decrease.select_actions.extend (agent update_labels)
-			decrease.select_actions.extend (agent disp_3)
 
 			create save.make_with_text (names.save)
 
@@ -115,15 +81,12 @@ feature -- Create window elements
 	update_labels is
 			--
 		do
-			label.set_text (i18n_comp ("n is now equal $1", [n]))
+			label.set_text (formatter.solve_template(names.now_equal, [n]))
 			simple_label.set_text (names.simple)
-			simple_comp_label.set_text (i18n_pl ("This is singular","This is plural",n))
-			plural_comp_label.set_text (i18n_comp_pl ("There is 1 file","There are $1 files", [n], n))
+			simple_comp_label.set_text (names.this_singular_plural (n))
+			plural_comp_label.set_text (formatter.solve_template (names.there_are_n_files (n), [n]))
 			first_window.refresh_now
-			io.put_string (label.text+"%N"+simple_label.text+"%N"+simple_comp_label.text+"%N"+plural_comp_label.text+"%N")
 		end
-
-
 
 	increment is
 			--
@@ -138,26 +101,6 @@ feature -- Create window elements
 				n := n - 1
 			end
 		end
-
-
-	disp is
-			--
-		do
-			io.put_string (n.out+"%N")
-		end
-
-	disp_2 is
-			--
-		do
-			io.put_string (i18n_pl ("singular","plural", n)+"%N")
-		end
-
-	disp_3 is
-			--
-		do
-			io.put_string (i18n_comp_pl ("singular: $1","plura: $1", [n], n)+"%N")
-		end
-
 
 	n : INTEGER
 
@@ -177,7 +120,12 @@ feature {NONE} -- Implementation
 
 	names: NAMES is
 		once
-			create Result
+			create Result.make ("it")
+		end
+
+	formatter: I18N_TEMPLATE_FORMATTER is
+		once
+			create Result.make
 		end
 
 

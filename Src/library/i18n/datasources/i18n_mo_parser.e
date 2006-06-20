@@ -18,6 +18,7 @@ inherit
 create {I18N_DATASOURCE_FACTORY}
 	make_with_path
 
+
 feature {NONE} -- Initialization
 	make_with_path(a_name: STRING) is
 			-- Using a_name as the name of the MO file
@@ -55,9 +56,9 @@ feature -- Status setting
 				is_open := true
 				-- Read magic number.
 				t_magic_number := get_integer
-				if t_magic_number = l_mn_big then
+				if t_magic_number.is_equal (l_mn_big) then
 					is_big_endian := True
-				elseif t_magic_number = l_mn_little then
+				elseif t_magic_number.is_equal (l_mn_little) then
 					is_little_endian := True
 				end
 				if is_valid then

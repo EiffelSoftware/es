@@ -104,7 +104,7 @@ feature -- Settings and update
 		end
 
 	i18n_set_language (identifier: STRING) is
-			-- ISO639-2 code for the language to load
+			-- ISO639-1 code for the language to load
 		do
 			localizator.set_language_identifier (identifier)
 		end
