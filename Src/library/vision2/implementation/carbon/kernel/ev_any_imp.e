@@ -30,7 +30,7 @@ inherit
 feature {EV_ANY_I} -- Access
 
 	c_object: POINTER
-			-- C pointer to an object conforming to GtkWidget.
+			-- C pointer to corresponding carbon struct
 
 feature {EV_ANY_I} -- Access
 
@@ -64,79 +64,6 @@ feature {EV_ANY, EV_ANY_IMP} -- Implementation
 		end
 
 feature {EV_ANY_I, EV_APPLICATION_IMP} -- Event handling
-
-	signal_connect_true (
-		a_signal_name: EV_GTK_C_STRING;
-		an_agent: PROCEDURE [ANY, TUPLE]
-		) is
-			-- Connect `an_agent' to `a_signal_name'.
-			-- Use `translate' to convert GTK+ event data to TUPLE.
-		require
-			a_signal_name_not_void: a_signal_name /= Void
-			an_agent_not_void: an_agent /= Void
-		do
-		end
-
-	real_signal_connect (
-		a_c_object: like c_object;
-		a_signal_name: STRING_GENERAL;
-		an_agent: PROCEDURE [ANY, TUPLE];
-		translate: FUNCTION [ANY, TUPLE [INTEGER, POINTER], TUPLE];
-		) is
-				-- Connect `an_agent' to `a_signal_name' of `a_c_object'.
-		require
-			a_c_object_not_void: a_c_object /= NULL
-			a_signal_name_not_void: a_signal_name /= Void
-			a_signal_name_not_empty: not a_signal_name.is_empty
-			an_agent_not_void: an_agent /= Void
-		do
---			signal_connect (a_c_object, app_implementation.c_string_from_eiffel_string (a_signal_name), an_agent, translate, False)
-		end
-
-	real_signal_connect_after (
-		a_c_object: like c_object;
-		a_signal_name: STRING_GENERAL;
-		an_agent: PROCEDURE [ANY, TUPLE];
-		translate: FUNCTION [ANY, TUPLE [INTEGER, POINTER], TUPLE];
-		) is
-				-- Connect `an_agent' to `a_signal_name' of `a_c_object'.
-				-- 'an_agent' called after default gtk signal handler for `a_signal_name'
-		require
-			a_c_object_not_void: a_c_object /= NULL
-			a_signal_name_not_void: a_signal_name /= Void
-			a_signal_name_not_empty: not a_signal_name.is_empty
-			an_agent_not_void: an_agent /= Void
-		do
---			signal_connect (a_c_object, app_implementation.c_string_from_eiffel_string (a_signal_name), an_agent, translate, True)
-		end
-
-	signal_connect (
-		a_c_object: like c_object;
-		a_signal_name: EV_GTK_C_STRING;
-		an_agent: PROCEDURE [ANY, TUPLE];
-		translate: FUNCTION [ANY, TUPLE [INTEGER, POINTER], TUPLE];
-		invoke_after_handler: BOOLEAN) is
-				--
-		local
-			l_agent: PROCEDURE [ANY, TUPLE]
-		do
---			if translate = Void then
---					-- If we have no translate agent then we call the agent directly.
---				l_agent := an_agent
---			else
-----				l_agent := agent (App_implementation.gtk_marshal).translate_and_call (an_agent, translate)
---			end
---
---			last_signal_connection_id := {EV_GTK_CALLBACK_MARSHAL}.c_signal_connect (
---				a_c_object,
---				a_signal_name.item,
---				l_agent,
---				invoke_after_handler
---			)
-		end
-
-	last_signal_connection_id: INTEGER
-			-- GTK signal connection id of the most recent `signal_connect'.
 
 feature {NONE} -- Implementation
 

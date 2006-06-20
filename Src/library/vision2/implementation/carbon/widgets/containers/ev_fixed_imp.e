@@ -54,7 +54,7 @@ feature -- Status setting
 			check
 				w_imp_not_void : w_imp /= Void
 			end
-			move_control_external( w_imp.carbon_item , an_x, a_y )
+			move_control_external( w_imp.c_object , an_x, a_y )
 		end
 
 	set_item_size (a_widget: EV_WIDGET; a_width, a_height: INTEGER) is
@@ -67,7 +67,7 @@ feature -- Status setting
 			check
 				w_imp_not_void : w_imp /= Void
 			end
-			size_control_external( w_imp.carbon_item, a_width, a_height )
+			size_control_external( w_imp.c_object, a_width, a_height )
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -79,12 +79,24 @@ feature {EV_ANY_I} -- Implementation
 
 	x_position_of_child (a_widget_imp: EV_WIDGET_IMP): INTEGER is
 			-- X position of `a_widget_imp' within `Current'.
+		local
+			rect : RECT_STRUCT
+			dummy : POINTER
 		do
+			create rect.make_new_unshared
+			dummy := get_control_bounds_external ( a_widget_imp.c_object, rect.item )
+			Result := rect.get_left
 		end
 
 	y_position_of_child (a_widget_imp: EV_WIDGET_IMP): INTEGER is
 			-- Y position of `a_widget_imp' within `Current'.
+		local
+			rect : RECT_STRUCT
+			dummy : POINTER
 		do
+			create rect.make_new_unshared
+			dummy := get_control_bounds_external ( a_widget_imp.c_object, rect.item )
+			Result := rect.get_top
 		end
 
 	i_th_fixed_child (i: INTEGER): POINTER is
