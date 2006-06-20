@@ -268,3 +268,7 @@ Src/library/wel/clib/make.log
 Src/library/wel/clib/wel.lib
 Src/library/wel/spec/msc
 TeamMultiScreenSupport/vision2/spec/msc
+TeamMultiScreenSupport/wel/clib/ilwel.lib
+TeamMultiScreenSupport/wel/clib/make.log
+TeamMultiScreenSupport/wel/clib/wel.lib
+TeamMultiScreenSupport/wel/spec/msc

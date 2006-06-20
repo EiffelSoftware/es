@@ -2297,6 +2297,10 @@ TeamMultiScreenSupport/wel[!!-~]not[!!-~]working/spec/msc/lib/wel.lib -text
 TeamMultiScreenSupport/wel[!!-~]not[!!-~]working/version.txt -text
 TeamMultiScreenSupport/wel[!!-~]not[!!-~]working/wel.ecf -text
 TeamMultiScreenSupport/wel[!!-~]not[!!-~]working/wel.txt -text
+TeamMultiScreenSupport/wel/extra/h2e.ico svneol=native#unset
+TeamMultiScreenSupport/wel/extra/h2e1.ico svneol=native#unset
+TeamMultiScreenSupport/wel/extra/h2e2.ico svneol=native#unset
+TeamMultiScreenSupport/wel/structs/wel_xform.e -text
 free_add_ons/eclop/doc/eclop.pdf -text
 free_add_ons/gobo/gobo_34_unix.tgz -text
 free_add_ons/gobo/gobo_34_win.tgz -text
