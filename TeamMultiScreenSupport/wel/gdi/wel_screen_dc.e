@@ -56,7 +56,7 @@ feature {NONE} -- Implementation
 		local
 			a_default_pointer: POINTER	-- Default_pointer
 		do
-				-- Protect the call to DeleteDC, because `destroy_item' can 
+				-- Protect the call to DeleteDC, because `destroy_item' can
 				-- be called by the GC so without assertions.
 			if item /= a_default_pointer then
 				unselect_all

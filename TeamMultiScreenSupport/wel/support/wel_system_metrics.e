@@ -168,6 +168,13 @@ feature -- Status report
 			Result := cwin_get_system_metrics (Sm_cymin)
 		end
 
+	monitor_count: INTEGER is
+			-- count of monitors in system
+		do
+			Result := cwin_get_system_metrics (Sm_cmonitors)
+		end
+
+
 	screen_width: INTEGER is
 			-- Screen width
 		do

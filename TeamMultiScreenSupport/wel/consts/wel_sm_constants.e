@@ -102,6 +102,8 @@ feature -- Access
 
 	Sm_cmetrics: INTEGER is 76
 
+	Sm_cmonitors: INTEGER is 80
+
 	Sm_xvirtualscreen: INTEGER is 76
 
 	Sm_yvirtualscreen: INTEGER is 77
