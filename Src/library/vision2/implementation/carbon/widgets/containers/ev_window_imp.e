@@ -94,7 +94,6 @@ feature {NONE} -- Initialization
 
 				--	show_window_external(the_window.item)
 
-
 					set_c_object (ptr)
 		end
 
