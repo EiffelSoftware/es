@@ -42,6 +42,8 @@ feature -- Status setting
 			-- Initialize the parser.
 		require else
 			not_already_open: is_closed
+		local
+			t_magic_number : ARRAY[NATURAL_8]
 		do
 			mo_file.open_read
 			is_big_endian := False
@@ -49,10 +51,10 @@ feature -- Status setting
 			if mo_file.is_open_read then
 				is_open := true
 				-- Read magic number.
-				mo_file.read_integer
-				if mo_file.last_integer = 0xde120495 then
+				t_magic_number := get_integer
+				if t_magic_number = <<0xde,0x12,0x04,0x95>> then
 					is_big_endian := True
-				elseif mo_file.last_integer = 0x950412de then
+				elseif t_magic_number = <<0x95,0x04,0x12,0xde>> then
 					is_little_endian := True
 				end
 				if is_valid then
@@ -162,7 +164,7 @@ feature --Errors
 	is_valid: BOOLEAN is
 			-- is the file valid?
 		do
-			Result := is_big_endian or is_little_endian
+			Result := is_big_endian xor is_little_endian
 		end
 
 	file_exists: BOOLEAN is
@@ -196,6 +198,7 @@ feature {NONE} -- Implementation (parameters)
 		-- Offset of the hash table
 
 feature {NONE} -- Implementation (helpers)
+
 	extract_string (a_offset, a_number: INTEGER): STRING_32 is
 			-- Which is the a_number-th string into the table at a_offset?
 		require
@@ -263,26 +266,43 @@ feature {NONE} -- Implementation (helpers)
 	read_integer : INTEGER is
 			-- read an integer from the current
 			-- position in the mo file, taking care of the endianness of the file
-			-- it moves the cursor
 		require
 			file_open: mo_file.is_open_read
 		local
 			b0, b1, b2, b3 : NATURAL_32
+			t_array : ARRAY[NATURAL_8]
 		do
-			mo_file.read_natural_8
-			b0 := mo_file.last_natural_8.as_natural_32
-			mo_file.read_natural_8
-			b1 := mo_file.last_natural_8.as_natural_32
-			mo_file.read_natural_8
-			b2 := mo_file.last_natural_8.as_natural_32
-			mo_file.read_natural_8
-			b3 := mo_file.last_natural_8.as_natural_32
+			t_array := get_integer
+			b0 := t_array.item (1).as_natural_32
+			b1 := t_array.item (2).as_natural_32
+			b2 := t_array.item (3).as_natural_32
+			b3 := t_array.item (4).as_natural_32
 			if is_big_endian then
 				Result :=  ((b0 |<< 24) | (b1 |<< 16) | (b2 |<< 8) | b3).as_integer_32
 			else
 				Result := (b0 | (b1 |<< 8) | (b2 |<< 16) | (b3 |<< 24)).as_integer_32
 			end
 		end
+
+	get_integer : ARRAY[NATURAL_8] is
+			-- read an integer byte to byte
+			-- and put them a tuple in the
+			-- order they where encountered
+			-- it moves the cursor of the file
+		local
+			b0, b1, b2, b3 : NATURAL_8
+		do
+			mo_file.read_natural_8
+			b0 := mo_file.last_natural_8
+			mo_file.read_natural_8
+			b1 := mo_file.last_natural_8
+			mo_file.read_natural_8
+			b2 := mo_file.last_natural_8
+			mo_file.read_natural_8
+			b3 := mo_file.last_natural_8
+			Result := << b0, b1, b2, b3 >>
+		end
+
 
 	extract_plural_informations is
 			-- extract from the mo file
