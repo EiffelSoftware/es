@@ -23,8 +23,36 @@ feature {NONE} -- Initialization
 		do
 			n := 1
 			default_create
+			prepare_i18n
 			prepare
 			launch
+		end
+
+	prepare_i18n is
+			-- Prepare the localization framework.
+		local
+			l_source_factory: I18N_DATASOURCE_FACTORY
+			l_structure_factory: I18N_DATASTRUCTURE_FACTORY
+		do
+			create l_source_factory.make
+			l_source_factory.use_mo_file("D:\Projects\i18n\mo_files\it.mo")
+			if l_source_factory.last_datasource /= Void then
+				i18n_use_datasource(l_source_factory.last_datasource)
+			else
+				l_source_factory.use_empty_source
+				i18n_use_datasource(l_source_factory.last_datasource)
+			end
+
+			create l_structure_factory.make
+			l_structure_factory.use_hash_table
+			if l_structure_factory.last_datastructure /= Void then
+				i18n_use_datastructure(l_structure_factory.last_datastructure)
+			else
+				l_structure_factory.use_dummy
+				i18n_use_datastructure(l_structure_factory.last_datastructure)
+			end
+
+			i18n_load
 		end
 
 	prepare is
@@ -150,8 +178,6 @@ feature {NONE} -- Implementation
 	names: NAMES is
 		once
 			create Result
---			Result.i18n_set_language ("it") -- this is not implemented yet
-			Result.i18n_load
 		end
 
 
