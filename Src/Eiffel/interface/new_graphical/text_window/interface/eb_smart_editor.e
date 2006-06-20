@@ -541,6 +541,7 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 			if is_editable then
 			   --(code = Key_space or code = Key_period or code = Key_tab or code = Key_enter) then
 				perform_syntax_checking
+				refresh_now -- should only be done if syntax errors were found...
 			end
 
 			switch_auto_point := auto_point and then not (code = Key_shift or code = Key_left_meta or code = Key_right_meta)
@@ -635,10 +636,11 @@ feature {NONE} -- syntax checking implementation
 		end
 
 	perform_syntax_checking is
-			-- performs syntax checking of class text
+			-- performs syntax checking of class text using Eiffel_validating_parser
+			-- Janick Bernet, June 2006
 		local
 			list: LINKED_LIST [ERROR]
-			error: ERROR
+			error: SYNTAX_ERROR
 			text_line: EDITOR_LINE
 			cursor: TEXT_CURSOR
 			text_token: EDITOR_TOKEN_TEXT
@@ -662,11 +664,15 @@ feature {NONE} -- syntax checking implementation
 					end
 				end
 
+				-- prevent from raising exception
 				Error_handler.unset_do_raise_error
-				Error_handler.error_list.wipe_out -- make sure we dont accumulate error messages
-				error_handler.unset_do_raise_error
+
+				-- make sure we dont accumulate error messages
+				Error_handler.error_list.wipe_out
 				Eiffel_validating_parser.parse_from_string (text)
-				error_handler.set_do_raise_error
+
+				-- re-establish raising of exceptin
+				Error_handler.set_do_raise_error
 
 				-- get error list
 				list := Error_handler.error_list
@@ -685,26 +691,25 @@ feature {NONE} -- syntax checking implementation
 				until
 					list.after
 				loop
-					error := list.item
+					error ?= list.item
 
-					-- get line of error
---					io.put_string ("error on line "+error.line.out+" %N")
+					if error /= void then
+						-- get line of error
+	--					io.put_string ("error on line "+error.line.out+" %N")
 
-					cursor.set_y_in_lines (error.line)
-					cursor.set_x_in_characters (error.column)
+						cursor.set_y_in_lines (error.line)
+						cursor.set_x_in_characters (error.column)
 
-					-- error should be text-token (otherwise it doesnt make any sence to highlight it)
-					text_token ?= cursor.token
-					if text_token /= void then
-						text_token.set_incorrect
+						-- error should be text-token (otherwise it doesnt make any sence to highlight it)
+						text_token ?= cursor.token
+						if text_token /= void then
+							text_token.set_incorrect
+						end
 					end
 
 					-- go to next error
 					list.forth
 				end
-
-				-- re-establish raising of exceptin
-				Error_handler.set_do_raise_error
 		end
 
 
