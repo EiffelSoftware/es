@@ -256,7 +256,7 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 			current_feature: FEATURE_AS
 			a_area, temp_next: EB_FOLDING_AREA
 		do
-			if (text_displayed.click_tool_enabled and then syntax_is_correct) then
+			if (text_displayed.click_tool_enabled and then syntax_is_correct) and then (text_displayed.click_tool.current_class_as.features /= Void) then
 				the_feature_clauses := text_displayed.click_tool.current_class_as.features
 				a_area := folding_areas.first
 
@@ -358,35 +358,6 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 				folding_areas_is_initialized := false
 			end
 		end
-
-
--- folding-project:
--- may need this code for updating hidden lines
-
---	update_lines (first, last, x_offset, a_width: INTEGER; buffered: BOOLEAN) is
---			-- redefinition from KEYBOARD_SELECTABLE_TEXT_PANEL, includes text-hiding.
---		local
---			one_time: BOOLEAN
---		do
---			Precursor(first, last, x_offset, a_width,buffered)
---
---
---
---
------------------------------------
-----		hiding code goes below --
------------------------------------
---
-----			if not one_time and text_displayed.number_of_lines > 19 then
-----			               -- for test purpose only (together with the attribute one_time)
-----			               text_displayed.hide_lines (14, 6)
-----
-------			               text_displayed.show_lines (13)
-----			                one_time := true
-----			end
-----			update_text
---		end
-
 
 	update_text is
 			-- iterates over the folding-areas and hides or shows code
