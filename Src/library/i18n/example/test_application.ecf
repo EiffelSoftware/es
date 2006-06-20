@@ -13,10 +13,7 @@
 		<setting name="inlining_size" value="4"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="multithreaded" value="false"/>
-		<external_include location="\$(ISE_LIBRARY)/library/event/Clib"/>
-		<external_include location="\$(ISE_LIBRARY)/library/vision2/spec/include"/>
-		<external_include location="\$(ISE_LIBRARY)/library/vision2/implementation/gtk/Clib `$ISE_LIBRARY/library/vision2/implementation/gtk/Clib/vision2-gtk-config --include_path`"/>
-		<external_object location="`$(ISE_LIBRARY)/library/vision2/implementation/gtk/Clib/vision2-gtk-config --object`"/>
+
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="true"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf" readonly="false"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="true"/>
