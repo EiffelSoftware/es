@@ -10,7 +10,7 @@ class
 inherit
 	SHARED_I18N_LOCALIZATOR
 
-creation
+create
 	make
 
 feature -- text
