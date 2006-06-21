@@ -274,6 +274,8 @@ feature -- Element change
 		local
 			w: EV_WIDGET_IMP
 			i: EV_WIDGET
+			root_control_ptr : POINTER
+			err : INTEGER
 		do
 			i := item
 			if i /= Void then
@@ -286,7 +288,8 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
-
+				err := get_root_control_external ( c_object, root_control_ptr )
+				err := embed_control_external ( w.c_object, root_control_ptr )
 				on_new_item (w)
 			end
 			item := v
