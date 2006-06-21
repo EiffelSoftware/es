@@ -20,12 +20,13 @@ feature {NONE} -- Initialization
 
 			-- Create the datasource
 			create i18n_datasource_factory.make
-			i18n_datasource := i18n_datasource_factory.last_datasource
+			use_datasource(i18n_datasource_factory.last_datasource)
 
 			-- Create the datastructure
 			create i18n_datastructure_factory.make
-			i18n_datastructure := i18n_datastructure_factory.last_datastructure
-			i18n_datastructure.load(i18n_datasource)
+			use_datastructure(i18n_datastructure_factory.last_datastructure)
+
+			load
 		ensure
 			valid_datasource: i18n_datasource /= Void
 			valid_datastructure: i18n_datastructure /= Void
@@ -38,9 +39,9 @@ feature -- Loading
 		require
 			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
 		do
-			i18n_datasource := a_datasource
+			new_i18n_datasource := a_datasource
 		ensure
-			datasource_set: i18n_datasource = a_datasource
+			datasource_set: new_i18n_datasource = a_datasource
 		end
 
 	use_datastructure(a_datastructure: I18N_DATASTRUCTURE) is
@@ -48,15 +49,21 @@ feature -- Loading
 		require
 			valid_datastructure: a_datastructure /= Void
 		do
-			i18n_datastructure := a_datastructure
+			new_i18n_datastructure := a_datastructure
 		ensure
-			datastructure_set: i18n_datastructure = a_datastructure
+			datastructure_set: new_i18n_datastructure = a_datastructure
 		end
 
 	load is
 			-- Load the localizator.
 		do
-			i18n_datastructure.load(i18n_datasource)
+			if new_i18n_datasource /= Void and new_i18n_datastructure /= Void then
+				i18n_datasource := new_i18n_datasource
+				i18n_datastructure := new_i18n_datastructure
+				i18n_datastructure.load(i18n_datasource)
+				new_i18n_datasource := Void
+				new_i18n_datastructure := Void
+			end
 		end
 
 
@@ -143,6 +150,12 @@ feature {NONE} -- Implementation
 
 	i18n_datastructure: I18N_DATASTRUCTURE
 		-- Reference to the datastructure
+
+	new_i18n_datasource: I18N_DATASOURCE
+		-- Reference to the new datasource
+
+	new_i18n_datastructure: I18N_DATASTRUCTURE
+		-- Reference to the new datastructure
 
 	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
 		-- Reference to the template formatter
