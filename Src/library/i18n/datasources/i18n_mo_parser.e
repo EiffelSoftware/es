@@ -212,10 +212,7 @@ feature {NONE} -- Implementation (helpers)
 		local
 			string_length,
 			string_offset: INTEGER
-			c_str: POINTER
 			i: INTEGER
-			ptr: MANAGED_POINTER
-			uc_str: UC_STRING
 			l_ch: CHARACTER
 			ch_len: INTEGER
 			code: NATURAL_32

@@ -83,8 +83,6 @@ feature -- Translation
 		local
 			l_plural_form: INTEGER
 				-- Plural form
-			temp_string: STRING_GENERAL
-				-- Temporary string
 			l_string: STRING_32
 				-- STRING_32 representation
 		do

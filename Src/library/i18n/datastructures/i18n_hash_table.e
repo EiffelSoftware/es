@@ -49,10 +49,6 @@ feature -- Basic operations
 		local
 			l_hash: INTEGER
 				-- Temporary hash
-			temp_string: STRING_GENERAL
-				-- Temporary string
-			l_string: STRING_32
-				-- STRING_32 representation
 		do
 			l_hash := hash_string(a_string)
 			if hash_table.has(l_hash) then

@@ -115,9 +115,6 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		require
 			valid_singular: a_singular /= Void
 			valid_plural: a_plural /= Void
-		local
-			temp_string: STRING_GENERAL
-				-- Temporary string
 		do
 			Result := i18n_datastructure.translate(a_singular, a_plural, a_num)
 		ensure
