@@ -45,10 +45,7 @@ feature -- Status setting
 			not_already_open: is_closed
 		local
 			t_magic_number : ARRAY[NATURAL_8]
-			l_mn_big, l_mn_little: ARRAY[NATURAL_8]
 		do
-			l_mn_big := <<0xde,0x12,0x04,0x95>>
-			l_mn_little := <<0x95,0x04,0x12,0xde>>
 			mo_file.open_read
 			is_big_endian := False
 			is_little_endian := False
@@ -56,9 +53,9 @@ feature -- Status setting
 				is_open := true
 				-- Read magic number.
 				t_magic_number := get_integer
-				if t_magic_number.is_equal (l_mn_big) then
+				if t_magic_number.is_equal (<<0xde,0x12,0x04,0x95>>) then
 					is_big_endian := True
-				elseif t_magic_number.is_equal (l_mn_little) then
+				elseif t_magic_number.is_equal (<<0x95,0x04,0x12,0xde>>) then
 					is_little_endian := True
 				end
 				if is_valid then
