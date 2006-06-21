@@ -201,8 +201,8 @@ feature {NONE} -- Implementation
 		-- Reference to the plural form resolver
 
 invariant
-	--valid_array: base_array /= Void
-	--valid_datasource: i18n_datasource /= Void
-	--valid_plural_forms: i18n_plural_forms /= Void
+	valid_array: base_array /= Void
+	valid_datasource: i18n_datasource /= Void
+	valid_plural_forms: i18n_plural_forms /= Void
 
 end

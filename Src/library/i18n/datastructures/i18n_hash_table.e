@@ -98,5 +98,6 @@ feature {NONE} -- Implementation
 
 invariant
 	valid_hash_table: hash_table /= Void
+	hash_table.count <= base_array.count
 
 end

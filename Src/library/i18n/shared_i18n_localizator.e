@@ -93,23 +93,6 @@ feature -- Settings and update
 			localizator.load
 		end
 
-	-- OBSOLETE: should pass a valid datasource and a valid datastructure to the localizator, the work
-	--           of selecting the path and the language identifier is done out of the i18n library.
-	-- See functions above for more details.
-
-	i18n_set_resources_path (a_path: STRING) is
-			-- Set path where to look for MO file, default is working directory
-		do
-			localizator.set_resources_path (a_path)
-		end
-
-	i18n_set_language (identifier: STRING) is
-			-- ISO639-1 code for the language to load
-		do
-			localizator.set_language_identifier (identifier)
-		end
-
-
 feature {NONE} -- Implementation
 	localizator: I18N_LOCALIZATOR is
 			-- Unique instance of the localizator

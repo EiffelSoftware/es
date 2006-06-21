@@ -14,17 +14,21 @@ create {SHARED_I18N_LOCALIZATOR}
 feature {NONE} -- Initialization
 	make is
 			-- Creation procedure.
+		local
+			l_source_factory: I18N_DATASOURCE_FACTORY
+			l_structure_factory: I18N_DATASTRUCTURE_FACTORY
+				-- Temporary factories
 		do
 			-- Create the template formatter
 			create i18n_template_formatter.make
 
 			-- Create the datasource
-			create i18n_datasource_factory.make
-			use_datasource(i18n_datasource_factory.last_datasource)
+			create l_source_factory.make
+			use_datasource(l_source_factory.last_datasource)
 
 			-- Create the datastructure
-			create i18n_datastructure_factory.make
-			use_datastructure(i18n_datastructure_factory.last_datastructure)
+			create l_structure_factory.make
+			use_datastructure(l_structure_factory.last_datastructure)
 
 			load
 		ensure
@@ -66,38 +70,6 @@ feature -- Loading
 			end
 		end
 
-
-	set_resources_path(a_path: STRING) is
-			-- Set the resources path.
-		obsolete
-			"We don't need this at the moment."
-		require
-			valid_path: a_path /= Void
-			not_empty_path: not a_path.is_empty
-		do
-			-- CCONTI
-			-- To be implemented
-		ensure
-			valid_resources_path: resources_path /= Void
-			resources_path_set: resources_path.is_equal(a_path)
-		end
-
-	set_language_identifier(a_identifier: STRING) is
-			-- Set the language identifier.
-		obsolete
-			"We don't need this at the moment."
-		require
-			valid_identifier: a_identifier /= Void
-			not_empty_identifier: not a_identifier.is_empty
-		do
-			-- CCONTI
-			-- To be implemented
-		ensure
-			valid_language_identifier: language_identifier /= Void
-			language_identifier_set: language_identifier.is_equal(a_identifier)
-		end
-
-
 feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 
 	translate(a_string: STRING_GENERAL): STRING_32 is
@@ -134,14 +106,6 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		end
 
 feature {NONE} -- Implementation
-	resources_path: STRING
-		-- Path where to find the resources
-		-- OBSOLETE: We don't need this at the moment.
-
-	language_identifier: STRING
-		-- Language identifier to be used
-		-- OBSOLETE: We don't need this at the moment.
-
 	i18n_datasource: I18N_DATASOURCE
 		-- Reference to the datasource
 
@@ -156,14 +120,6 @@ feature {NONE} -- Implementation
 
 	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
 		-- Reference to the template formatter
-
-	i18n_datastructure_factory: I18N_DATASTRUCTURE_FACTORY
-		-- Reference to the datastructure factory
-		-- OBSOLETE: We don't need this at the moment.
-
-	i18n_datasource_factory: I18N_DATASOURCE_FACTORY
-		-- Reference to the datasource factory
-		-- OBSOLETE: We don't need this at the moment.
 
 invariant
 	valid_datasource: i18n_datasource /= Void and then i18n_datasource.is_ready

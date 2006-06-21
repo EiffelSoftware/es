@@ -56,5 +56,6 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 invariant
+	last_datasource /= Void implies last_datasource.is_ready
 
 end
