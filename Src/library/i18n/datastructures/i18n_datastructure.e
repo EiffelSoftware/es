@@ -11,8 +11,18 @@ deferred class
 feature {I18N_DATASTRUCTURE_FACTORY} -- Initialization
 	make is
 			-- Initialize `Current'.
+		local
+			datasource_factory: I18N_DATASOURCE_FACTORY
+				-- Temporary factory
 		do
-			
+			create datasource_factory.make
+			i18n_datasource := datasource_factory.last_datasource
+			create base_array.make(1, (1 + i18n_datasource.string_count))
+			create i18n_plural_forms.make_with_identifier(i18n_datasource.plural_forms, i18n_datasource.plural_form_identifier)
+		ensure
+			base_array /= Void
+			i18n_datasource /= Void
+			i18n_plural_forms /= Void
 		end
 
 
@@ -21,7 +31,12 @@ feature {I18N_DATASTRUCTURE_FACTORY} -- Initialization
 		require
 			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
 		do
+			make
 			load(a_datasource)
+		ensure
+			base_array /= Void
+			i18n_datasource /= Void
+			i18n_plural_forms /= Void
 		end
 
 feature -- Loading
@@ -39,7 +54,9 @@ feature -- Loading
 			end
 			create i18n_plural_forms.make_with_identifier (i18n_datasource.plural_forms, i18n_datasource.plural_form_identifier)
 		ensure
+			base_array_set: base_array /= Void and then base_array.count = i18n_datasource.string_count
 			datasource_set: i18n_datasource = a_datasource
+			i18n_plural_forms_set: i18n_plural_forms /= Void
 		end
 
 
@@ -186,8 +203,8 @@ feature {NONE} -- Implementation
 		-- Reference to the plural form resolver
 
 invariant
-	valid_array: base_array /= Void
-	valid_datasource: i18n_datasource /= Void
-	valid_plural_forms: i18n_plural_forms /= Void
+	--valid_array: base_array /= Void
+	--valid_datasource: i18n_datasource /= Void
+	--valid_plural_forms: i18n_plural_forms /= Void
 
 end

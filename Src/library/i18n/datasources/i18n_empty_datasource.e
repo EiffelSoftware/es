@@ -18,6 +18,7 @@ feature {NONE} -- Initialization
 	make is
 			-- Initialization procedure
 		do
+			-- See class invariants
 			string_count := 0
 			plural_forms := 2
 			plural_form_identifier := "n != 1;"
@@ -62,6 +63,9 @@ feature -- Basic operations
 		end
 
 invariant
-	invariant_clause: True -- Your invariant here
+	string_count = 0
+	plural_forms = 2
+	plural_form_identifier.is_equal("n != 1;")
+	retrieval_method = retrieve_by_string
 
 end

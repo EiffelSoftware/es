@@ -360,4 +360,6 @@ invariant
 	is_open implies mo_file.is_open_read
 	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)
 
+	retrieval_method = retrieve_by_type
+
 end -- class I18N_MO_PARSER
