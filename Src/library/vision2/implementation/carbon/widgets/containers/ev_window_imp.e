@@ -76,7 +76,6 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create the window.
 			local
-					--the_window:OPAQUE_WINDOW_PTR_STRUCT
 					window_attributes: INTEGER
 					rect: RECT_STRUCT
 					res: INTEGER
@@ -86,16 +85,14 @@ feature {NONE} -- Initialization
 					base_make (an_interface)
 					create rect.make_new_shared
 
-					rect.set_bottom (20)
-					rect.set_left (13)
-					rect.set_right (20)
-					rect.set_top (12)
+					rect.set_bottom (51)
+					rect.set_left (50)
+					rect.set_right (51)
+					rect.set_top (50)
 					window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute)
 					res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
 					res := create_root_control_external( ptr, root_control_ptr )
-					-- create the_window.make_shared(ptr) We don't need this, do we ?
 
-				--	show_window_external(the_window.item)
 
 					set_c_object (ptr)
 			end
@@ -284,7 +281,7 @@ feature -- Element change
 				check
 					item_has_implementation: w /= Void
 				end
-				dispose_control_external( w.c_object )
+				dispose_control_external(w.c_object )
 			end
 			if v /= Void then
 				w ?= v.implementation

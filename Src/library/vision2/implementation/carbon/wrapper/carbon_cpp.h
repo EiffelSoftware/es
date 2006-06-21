@@ -20,11 +20,11 @@
 
 
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/types.h" 1 3 4
-# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/types.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/types.h" 1 3 4
-# 64 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/types.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/_types.h" 1 3 4
-# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/_types.h" 3 4
+# 32 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/types.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/types.h" 1 3 4
+# 64 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/types.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_types.h" 1 3 4
+# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_types.h" 3 4
 typedef signed char __int8_t;
 
 
@@ -39,7 +39,7 @@ typedef unsigned long long __uint64_t;
 
 typedef long __darwin_intptr_t;
 typedef unsigned int __darwin_natural_t;
-# 64 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/_types.h" 3 4
+# 64 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_types.h" 3 4
 typedef int __darwin_ct_rune_t;
 
 
@@ -89,7 +89,7 @@ typedef unsigned long __darwin_clock_t;
 typedef __uint32_t __darwin_socklen_t;
 typedef long __darwin_ssize_t;
 typedef long __darwin_time_t;
-# 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/types.h" 2 3 4
+# 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/types.h" 2 3 4
 
 
 
@@ -116,11 +116,7 @@ typedef long long int64_t;
 
 typedef unsigned long long u_int64_t;
 
-
-
-
 typedef int32_t register_t;
-
 
 
 
@@ -128,8 +124,12 @@ typedef __darwin_intptr_t intptr_t;
 
 
 
-typedef unsigned long uintptr_t;
-# 112 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/types.h" 3 4
+typedef unsigned long int uintptr_t;
+
+
+
+
+
 typedef u_int64_t user_addr_t;
 typedef u_int64_t user_size_t;
 typedef int64_t user_ssize_t;
@@ -141,7 +141,7 @@ typedef int64_t user_time_t;
 
 
 typedef u_int64_t syscall_arg_t;
-# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/types.h" 2 3 4
+# 33 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/types.h" 2 3 4
 # 73 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/types.h" 2 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_types.h" 1 3 4
 # 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_types.h" 3 4
@@ -267,13 +267,13 @@ typedef struct ucontext64 __darwin_ucontext64_t;
 # 74 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/types.h" 2 3 4
 
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/endian.h" 1 3 4
-# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/endian.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/endian.h" 1 3 4
-# 107 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/endian.h" 3 4
+# 32 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/endian.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/endian.h" 1 3 4
+# 92 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/endian.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_endian.h" 1 3 4
 # 88 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_endian.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h" 1 3 4
-# 34 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdint.h" 1 3 4
+# 34 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdint.h" 3 4
 typedef unsigned char uint8_t;
 
 
@@ -312,15 +312,50 @@ typedef uint8_t uint_fast8_t;
 typedef uint16_t uint_fast16_t;
 typedef uint32_t uint_fast32_t;
 typedef uint64_t uint_fast64_t;
-# 91 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h" 3 4
+# 91 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdint.h" 3 4
 typedef long long int intmax_t;
-# 100 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h" 3 4
+# 100 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdint.h" 3 4
 typedef long long unsigned int uintmax_t;
 # 89 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_endian.h" 2 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h" 1 3 4
-# 52 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/ppc/OSByteOrder.h" 1 3 4
-# 40 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/ppc/OSByteOrder.h" 3 4
+# 54 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/i386/OSByteOrder.h" 1 3 4
+# 40 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/i386/OSByteOrder.h" 3 4
+static __inline__
+uint16_t
+_OSSwapInt16(
+    uint16_t data
+)
+{
+    __asm__ ("rolw   $8, %w0" : "+r" (data));
+    return data;
+}
+
+static __inline__
+uint32_t
+_OSSwapInt32(
+    uint32_t data
+)
+{
+    __asm__ ("bswap   %0" : "+r" (data));
+    return data;
+}
+
+static __inline__
+uint64_t
+_OSSwapInt64(
+    uint64_t data
+)
+{
+    __asm__ ("bswap   %%eax\n\t"
+             "bswap   %%edx\n\t"
+             "xchgl   %%eax, %%edx"
+             : "+A" (data));
+    return data;
+}
+
+
+
 static __inline__
 uint16_t
 OSReadSwapInt16(
@@ -329,12 +364,9 @@ OSReadSwapInt16(
 )
 {
     uint16_t result;
-    volatile uint16_t *addr = (volatile uint16_t *)((uintptr_t)base + byteOffset);
 
-    __asm__ ("lhbrx %0, %2, %1"
-             : "=r" (result)
-             : "r" (base), "bO" (byteOffset), "m" (*addr));
-    return result;
+    result = *(volatile uint16_t *)((uintptr_t)base + byteOffset);
+    return _OSSwapInt16(result);
 }
 
 static __inline__
@@ -345,12 +377,9 @@ OSReadSwapInt32(
 )
 {
     uint32_t result;
-    volatile uint32_t *addr = (volatile uint32_t *)((uintptr_t)base + byteOffset);
 
-    __asm__ ("lwbrx %0, %2, %1"
-             : "=r" (result)
-             : "r" (base), "bO" (byteOffset), "m" (*addr));
-    return result;
+    result = *(volatile uint32_t *)((uintptr_t)base + byteOffset);
+    return _OSSwapInt32(result);
 }
 
 static __inline__
@@ -360,17 +389,10 @@ OSReadSwapInt64(
     uintptr_t byteOffset
 )
 {
-    volatile uint64_t *addr = (volatile uint64_t *)((uintptr_t)base + byteOffset);
-    union {
-        uint64_t u64;
-        uint32_t u32[2];
-    } u;
+    uint64_t result;
 
-    __asm__ ("lwbrx %0, %3, %2\n\t"
-             "lwbrx %1, %4, %2"
-             : "=&r" (u.u32[1]), "=r" (u.u32[0])
-             : "r" (base), "bO" (byteOffset), "b" (byteOffset + 4), "m" (*addr));
-    return u.u64;
+    result = *(volatile uint64_t *)((uintptr_t)base + byteOffset);
+    return _OSSwapInt64(result);
 }
 
 
@@ -383,11 +405,7 @@ OSWriteSwapInt16(
     uint16_t data
 )
 {
-    volatile uint16_t *addr = (volatile uint16_t *)((uintptr_t)base + byteOffset);
-
-    __asm__ ("sthbrx %1, %3, %2"
-             : "=m" (*addr)
-             : "r" (data), "r" (base), "bO" (byteOffset));
+    *(volatile uint16_t *)((uintptr_t)base + byteOffset) = _OSSwapInt16(data);
 }
 
 static __inline__
@@ -398,11 +416,7 @@ OSWriteSwapInt32(
     uint32_t data
 )
 {
-    volatile uint32_t *addr = (volatile uint32_t *)((uintptr_t)base + byteOffset);
-
-    __asm__ ("stwbrx %1, %3, %2"
-             : "=m" (*addr)
-             : "r" (data), "r" (base), "bO" (byteOffset));
+    *(volatile uint32_t *)((uintptr_t)base + byteOffset) = _OSSwapInt32(data);
 }
 
 static __inline__
@@ -413,45 +427,9 @@ OSWriteSwapInt64(
     uint64_t data
 )
 {
-    volatile uint64_t *addr = (volatile uint64_t *)((uintptr_t)base + byteOffset);
-    uint32_t hi = data >> 32;
-    uint32_t lo = data & 0xffffffff;
-
-    __asm__ ("stwbrx %1, %4, %3\n\t"
-             "stwbrx %2, %5, %3"
-             : "=m" (*addr)
-             : "r" (lo), "r" (hi), "r" (base), "bO" (byteOffset), "b" (byteOffset + 4));
+    *(volatile uint64_t *)((uintptr_t)base + byteOffset) = _OSSwapInt64(data);
 }
-
-
-
-static __inline__
-uint16_t
-_OSSwapInt16(
-    uint16_t data
-)
-{
-    return OSReadSwapInt16(&data, 0);
-}
-
-static __inline__
-uint32_t
-_OSSwapInt32(
-    uint32_t data
-)
-{
-    return OSReadSwapInt32(&data, 0);
-}
-
-static __inline__
-uint64_t
-_OSSwapInt64(
-    uint64_t data
-)
-{
-    return OSReadSwapInt64(&data, 0);
-}
-# 53 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h" 2 3 4
+# 55 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h" 2 3 4
 # 80 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h" 3 4
 enum {
     OSUnknownByteOrder,
@@ -463,9 +441,9 @@ static __inline__
 int32_t
 OSHostByteOrder(void) {
 
+    return OSLittleEndian;
 
 
-    return OSBigEndian;
 
 
 
@@ -543,8 +521,8 @@ uint16_t htons(uint16_t);
 uint32_t ntohl(uint32_t);
 uint32_t htonl(uint32_t);
 
-# 108 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/endian.h" 2 3 4
-# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/endian.h" 2 3 4
+# 93 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/endian.h" 2 3 4
+# 33 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/endian.h" 2 3 4
 # 76 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/types.h" 2 3 4
 
 
@@ -728,10 +706,10 @@ typedef __darwin_fsblkcnt_t fsblkcnt_t;
 
 typedef __darwin_fsfilcnt_t fsfilcnt_t;
 # 12 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdarg.h" 1 3 4
-# 43 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdarg.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdarg.h" 1 3 4
+# 43 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdarg.h" 3 4
 typedef __builtin_va_list __gnuc_va_list;
-# 105 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdarg.h" 3 4
+# 105 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdarg.h" 3 4
 typedef __gnuc_va_list va_list;
 # 13 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/assert.h" 1 3 4
@@ -912,19 +890,19 @@ extern int * __error(void);
 
 # 24 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/errno.h" 2 3 4
 # 16 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/float.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/float.h" 1 3 4
 # 17 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/limits.h" 1 3 4
-# 11 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/limits.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/syslimits.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/limits.h" 1 3 4
+# 11 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/limits.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/syslimits.h" 1 3 4
 
 
 
 
 
 
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/limits.h" 1 3 4
-# 122 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/limits.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/limits.h" 1 3 4
+# 122 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/limits.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/limits.h" 1 3 4
 # 63 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/limits.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/limits.h" 1 3 4
@@ -933,17 +911,19 @@ extern int * __error(void);
 
 
 
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/limits.h" 1 3 4
-# 39 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/limits.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/_limits.h" 1 3 4
-# 40 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/limits.h" 2 3 4
-# 7 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/limits.h" 2 3 4
+
+
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/limits.h" 1 3 4
+# 39 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/limits.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_limits.h" 1 3 4
+# 40 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/limits.h" 2 3 4
+# 9 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/limits.h" 2 3 4
 # 64 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/limits.h" 2 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/syslimits.h" 1 3 4
 # 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/limits.h" 2 3 4
-# 123 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/limits.h" 2 3 4
-# 8 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/syslimits.h" 2 3 4
-# 12 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/limits.h" 2 3 4
+# 123 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/limits.h" 2 3 4
+# 8 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/syslimits.h" 2 3 4
+# 12 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/limits.h" 2 3 4
 # 18 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/locale.h" 1 3 4
 # 40 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/locale.h" 3 4
@@ -990,12 +970,12 @@ char *setlocale(int, const char *);
 
 # 19 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/math.h" 1 3 4
-# 26 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/math.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 1 3 4
-# 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/math.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 1 3 4
+# 49 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
  typedef float float_t;
  typedef double double_t;
-# 93 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+# 78 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
 enum {
  _FP_NAN = 1,
  _FP_INFINITE = 2,
@@ -1004,34 +984,39 @@ enum {
  _FP_SUBNORMAL = 5,
  _FP_SUPERNORMAL = 6
 };
-# 123 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+# 112 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
 extern unsigned int __math_errhandling ( void );
-# 170 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
-extern int __fpclassify( long double );
-extern int __isnormal( long double );
-extern int __isfinite( long double );
-extern int __isinf( long double );
-extern int __isnan( long double );
-extern int __signbitl( long double );
-# 198 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
-extern int __fpclassifyd( double );
-extern int __fpclassifyf( float );
+# 157 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
+extern int __fpclassifyf(float );
+extern int __fpclassifyd(double );
+extern int __fpclassify (long double);
 
-extern int __isnormald( double );
-extern int __isnormalf( float );
+extern int __isnormalf (float );
+extern int __isnormald (double );
+extern int __isnormal (long double);
 
-extern int __isfinited( double );
-extern int __isfinitef( float );
+extern int __isfinitef (float );
+extern int __isfinited (double );
+extern int __isfinite (long double);
 
-extern int __isinfd( double );
-extern int __isinff( float );
+extern int __isinff (float );
+extern int __isinfd (double );
+extern int __isinf (long double);
 
-extern int __isnand( double );
-extern int __isnanf( float );
+extern int __isnanf (float );
+extern int __isnand (double );
+extern int __isnan (long double);
 
-extern int __signbitd( double );
-extern int __signbitf( float );
-# 223 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+extern int __signbitf (float );
+extern int __signbitd (double );
+extern int __signbitl (long double);
+
+
+
+
+
+
+
 extern double acos( double );
 extern float acosf( float );
 
@@ -1071,47 +1056,47 @@ extern float sinhf( float );
 extern double tanh( double );
 extern float tanhf( float );
 
-extern double exp( double );
-extern float expf( float );
+extern double exp ( double );
+extern float expf ( float );
 
-extern double exp2( double );
-extern float exp2f( float );
+extern double exp2 ( double );
+extern float exp2f ( float );
 
-extern double expm1( double );
-extern float expm1f( float );
+extern double expm1 ( double );
+extern float expm1f ( float );
 
-extern double log( double );
-extern float logf( float );
+extern double log ( double );
+extern float logf ( float );
 
-extern double log10( double );
-extern float log10f( float );
+extern double log10 ( double );
+extern float log10f ( float );
 
-extern double log2( double );
-extern float log2f( float );
+extern double log2 ( double );
+extern float log2f ( float );
 
-extern double log1p( double );
-extern float log1pf( float );
+extern double log1p ( double );
+extern float log1pf ( float );
 
-extern double logb( double );
-extern float logbf( float );
+extern double logb ( double );
+extern float logbf ( float );
 
-extern double modf( double, double * );
-extern float modff( float, float * );
+extern double modf ( double, double * );
+extern float modff ( float, float * );
 
-extern double ldexp( double, int );
-extern float ldexpf( float, int );
+extern double ldexp ( double, int );
+extern float ldexpf ( float, int );
 
-extern double frexp( double, int * );
-extern float frexpf( float, int * );
+extern double frexp ( double, int * );
+extern float frexpf ( float, int * );
 
-extern int ilogb( double );
-extern int ilogbf( float );
+extern int ilogb ( double );
+extern int ilogbf ( float );
 
-extern double scalbn( double, int );
-extern float scalbnf( float, int );
+extern double scalbn ( double, int );
+extern float scalbnf ( float, int );
 
-extern double scalbln( double, long int );
-extern float scalblnf( float, long int );
+extern double scalbln ( double, long int );
+extern float scalblnf ( float, long int );
 
 extern double fabs( double );
 extern float fabsf( float );
@@ -1119,11 +1104,11 @@ extern float fabsf( float );
 extern double cbrt( double );
 extern float cbrtf( float );
 
-extern double hypot( double, double );
-extern float hypotf( float, float );
+extern double hypot ( double, double );
+extern float hypotf ( float, float );
 
-extern double pow( double, double );
-extern float powf( float, float );
+extern double pow ( double, double );
+extern float powf ( float, float );
 
 extern double sqrt( double );
 extern float sqrtf( float );
@@ -1140,173 +1125,152 @@ extern float lgammaf( float );
 extern double tgamma( double );
 extern float tgammaf( float );
 
-extern double ceil( double );
-extern float ceilf( float );
+extern double ceil ( double );
+extern float ceilf ( float );
 
-extern double floor( double );
-extern float floorf( float );
+extern double floor ( double );
+extern float floorf ( float );
 
-extern double nearbyint( double );
-extern float nearbyintf( float );
+extern double nearbyint ( double );
+extern float nearbyintf ( float );
 
-extern double rint( double );
-extern float rintf( float );
+extern double rint ( double );
+extern float rintf ( float );
 
-extern long int lrint( double );
-extern long int lrintf( float );
+extern long int lrint ( double );
+extern long int lrintf ( float );
 
-extern long long int llrint( double );
-extern long long int llrintf( float );
+extern long long int llrint ( double );
+extern long long int llrintf ( float );
 
-extern double round( double );
-extern float roundf( float );
+extern double round ( double );
+extern float roundf ( float );
 
-extern long int lround( double );
-extern long int lroundf( float );
+extern long int lround ( double );
+extern long int lroundf ( float );
 
-extern long long int llround( double );
-extern long long int llroundf( float );
+extern long long int llround ( double );
+extern long long int llroundf ( float );
 
-extern double trunc( double );
-extern float truncf( float );
+extern double trunc ( double );
+extern float truncf ( float );
 
-extern double fmod( double, double );
-extern float fmodf( float, float );
+extern double fmod ( double, double );
+extern float fmodf ( float, float );
 
-extern double remainder( double, double );
-extern float remainderf( float, float );
+extern double remainder ( double, double );
+extern float remainderf ( float, float );
 
-extern double remquo( double, double, int * );
-extern float remquof( float, float, int * );
+extern double remquo ( double, double, int * );
+extern float remquof ( float, float, int * );
 
-extern double copysign( double, double );
-extern float copysignf( float, float );
+extern double copysign ( double, double );
+extern float copysignf ( float, float );
 
 extern double nan( const char * );
 extern float nanf( const char * );
 
-extern double nextafter( double, double );
-extern float nextafterf( float, float );
+extern double nextafter ( double, double );
+extern float nextafterf ( float, float );
 
+extern double fdim ( double, double );
+extern float fdimf ( float, float );
 
-extern double fdim( double, double );
-extern float fdimf( float, float );
+extern double fmax ( double, double );
+extern float fmaxf ( float, float );
 
-extern double fmax( double, double );
-extern float fmaxf( float, float );
+extern double fmin ( double, double );
+extern float fminf ( float, float );
 
-extern double fmin( double, double );
-extern float fminf( float, float );
+extern double fma ( double, double, double );
+extern float fmaf ( float, float, float );
 
-extern double fma( double, double, double );
-extern float fmaf( float, float, float );
-
-
-extern long double acosl( long double ) __asm("_" "acosl" "$LDBL128");
-extern long double asinl( long double ) __asm("_" "asinl" "$LDBL128");
-extern long double atanl( long double ) __asm("_" "atanl" "$LDBL128");
-extern long double atan2l( long double, long double ) __asm("_" "atan2l" "$LDBL128");
-extern long double cosl( long double ) __asm("_" "cosl" "$LDBL128");
-extern long double sinl( long double ) __asm("_" "sinl" "$LDBL128");
-extern long double tanl( long double ) __asm("_" "tanl" "$LDBL128");
-extern long double acoshl( long double ) __asm("_" "acoshl" "$LDBL128");
-extern long double asinhl( long double ) __asm("_" "asinhl" "$LDBL128");
-extern long double atanhl( long double ) __asm("_" "atanhl" "$LDBL128");
-extern long double coshl( long double ) __asm("_" "coshl" "$LDBL128");
-extern long double sinhl( long double ) __asm("_" "sinhl" "$LDBL128");
-extern long double tanhl( long double ) __asm("_" "tanhl" "$LDBL128");
-extern long double expl( long double ) __asm("_" "expl" "$LDBL128");
-extern long double exp2l( long double ) __asm("_" "exp2l" "$LDBL128");
-extern long double expm1l( long double ) __asm("_" "expm1l" "$LDBL128");
-extern long double logl( long double ) __asm("_" "logl" "$LDBL128");
-extern long double log10l( long double ) __asm("_" "log10l" "$LDBL128");
-extern long double log2l( long double ) __asm("_" "log2l" "$LDBL128");
-extern long double log1pl( long double ) __asm("_" "log1pl" "$LDBL128");
-extern long double logbl( long double ) __asm("_" "logbl" "$LDBL128");
-extern long double modfl( long double, long double * ) __asm("_" "modfl" "$LDBL128");
-extern long double ldexpl( long double, int ) __asm("_" "ldexpl" "$LDBL128");
-extern long double frexpl( long double, int * ) __asm("_" "frexpl" "$LDBL128");
-extern int ilogbl( long double ) __asm("_" "ilogbl" "$LDBL128");
-extern long double scalbnl( long double, int ) __asm("_" "scalbnl" "$LDBL128");
-extern long double scalblnl( long double, long int ) __asm("_" "scalblnl" "$LDBL128");
-extern long double fabsl( long double ) __asm("_" "fabsl" "$LDBL128");
-extern long double cbrtl( long double ) __asm("_" "cbrtl" "$LDBL128");
-extern long double hypotl( long double, long double ) __asm("_" "hypotl" "$LDBL128");
-extern long double powl( long double, long double ) __asm("_" "powl" "$LDBL128");
-extern long double sqrtl( long double ) __asm("_" "sqrtl" "$LDBL128");
-extern long double erfl( long double ) __asm("_" "erfl" "$LDBL128");
-extern long double erfcl( long double ) __asm("_" "erfcl" "$LDBL128");
-extern long double lgammal( long double ) __asm("_" "lgammal" "$LDBL128");
-extern long double tgammal( long double ) __asm("_" "tgammal" "$LDBL128");
-extern long double ceill( long double ) __asm("_" "ceill" "$LDBL128");
-extern long double floorl( long double ) __asm("_" "floorl" "$LDBL128");
-extern long double nearbyintl( long double ) __asm("_" "nearbyintl" "$LDBL128");
-extern long double rintl( long double ) __asm("_" "rintl" "$LDBL128");
-extern long int lrintl( long double ) __asm("_" "lrintl" "$LDBL128");
-extern long long int llrintl( long double ) __asm("_" "llrintl" "$LDBL128");
-extern long double roundl( long double ) __asm("_" "roundl" "$LDBL128");
-extern long int lroundl( long double ) __asm("_" "lroundl" "$LDBL128");
-extern long long int llroundl( long double ) __asm("_" "llroundl" "$LDBL128");
-extern long double truncl( long double ) __asm("_" "truncl" "$LDBL128");
-extern long double fmodl( long double, long double) __asm("_" "fmodl" "$LDBL128");
-extern long double remainderl( long double, long double ) __asm("_" "remainderl" "$LDBL128");
-extern long double remquol( long double, long double, int * ) __asm("_" "remquol" "$LDBL128");
-extern long double copysignl( long double, long double ) __asm("_" "copysignl" "$LDBL128");
-extern long double nanl( const char * ) __asm("_" "nanl" "$LDBL128");
-extern long double nextafterl( long double, long double ) __asm("_" "nextafterl" "$LDBL128");
-extern double nexttoward( double, long double ) __asm("_" "nexttoward" "$LDBL128");
-extern float nexttowardf( float, long double ) __asm("_" "nexttowardf" "$LDBL128");
-extern long double nexttowardl( long double, long double ) __asm("_" "nexttowardl" "$LDBL128");
-extern long double fdiml( long double, long double ) __asm("_" "fdiml" "$LDBL128");
-extern long double fmaxl( long double, long double ) __asm("_" "fmaxl" "$LDBL128");
-extern long double fminl( long double, long double ) __asm("_" "fminl" "$LDBL128");
-extern long double fmal( long double, long double, long double ) __asm("_" "fmal" "$LDBL128");
-# 461 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+extern long double acosl(long double);
+extern long double asinl(long double);
+extern long double atanl(long double);
+extern long double atan2l(long double, long double);
+extern long double cosl(long double);
+extern long double sinl(long double);
+extern long double tanl(long double);
+extern long double acoshl(long double);
+extern long double asinhl(long double);
+extern long double atanhl(long double);
+extern long double coshl(long double);
+extern long double sinhl(long double);
+extern long double tanhl(long double);
+extern long double expl(long double);
+extern long double exp2l(long double);
+extern long double expm1l(long double);
+extern long double logl(long double);
+extern long double log10l(long double);
+extern long double log2l(long double);
+extern long double log1pl(long double);
+extern long double logbl(long double);
+extern long double modfl(long double, long double *);
+extern long double ldexpl(long double, int);
+extern long double frexpl(long double, int *);
+extern int ilogbl(long double);
+extern long double scalbnl(long double, int);
+extern long double scalblnl(long double, long int);
+extern long double fabsl(long double);
+extern long double cbrtl(long double);
+extern long double hypotl(long double, long double);
+extern long double powl(long double, long double);
+extern long double sqrtl(long double);
+extern long double erfl(long double);
+extern long double erfcl(long double);
+extern long double lgammal(long double);
+extern long double tgammal(long double);
+extern long double ceill(long double);
+extern long double floorl(long double);
+extern long double nearbyintl(long double);
+extern long double rintl(long double);
+extern long int lrintl(long double);
+extern long long int llrintl(long double);
+extern long double roundl(long double);
+extern long int lroundl(long double);
+extern long long int llroundl(long double);
+extern long double truncl(long double);
+extern long double fmodl(long double, long double);
+extern long double remainderl(long double, long double);
+extern long double remquol(long double, long double, int *);
+extern long double copysignl(long double, long double);
+extern long double nanl(const char *);
+extern long double nextafterl(long double, long double);
+extern double nexttoward(double, long double);
+extern float nexttowardf(float, long double);
+extern long double nexttowardl(long double, long double);
+extern long double fdiml(long double, long double);
+extern long double fmaxl(long double, long double);
+extern long double fminl(long double, long double);
+extern long double fmal(long double, long double, long double);
+# 422 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
 extern double __inf( void );
 extern float __inff( void );
+extern long double __infl( void );
 extern float __nan( void );
 
 
 extern double j0 ( double );
+
 extern double j1 ( double );
+
 extern double jn ( int, double );
 
 extern double y0 ( double );
+
 extern double y1 ( double );
+
 extern double yn ( int, double );
 
-
-
-
-extern double scalb ( double, int );
-# 495 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+extern double scalb ( double, double );
+# 458 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
 extern int signgam;
-# 508 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+# 472 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
 extern long int rinttol ( double );
 
 extern long int roundtol ( double );
-
-typedef struct __complex_s {
-        double Real;
-        double Imag;
-} __complex_t;
-
-
-
-
-
-
-
-enum fdversion {_fdlibm_ieee = -1, _fdlibm_svid, _fdlibm_xopen, _fdlibm_posix};
-# 539 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
-extern enum fdversion _fdlib_version;
-
-
-
-
-
-
-
+# 483 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
 struct exception {
  int type;
  char *name;
@@ -1314,7 +1278,7 @@ struct exception {
  double arg2;
  double retval;
 };
-# 576 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/math.h" 3 4
+# 512 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h" 3 4
 extern int finite ( double );
 
 extern double gamma ( double );
@@ -1334,70 +1298,46 @@ extern double significand ( double );
 
 
 extern double drem ( double, double );
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/math.h" 2 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/math.h" 2 3 4
 # 20 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/setjmp.h" 1 3 4
 # 26 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/setjmp.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/setjmp.h" 1 3 4
-# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/setjmp.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/setjmp.h" 1 3 4
-# 32 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/setjmp.h" 3 4
+# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/setjmp.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/setjmp.h" 1 3 4
+# 32 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/setjmp.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/signal.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/signal.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/signal.h" 1 3 4
-# 32 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/signal.h" 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/signal.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/signal.h" 1 3 4
+# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/signal.h" 3 4
 typedef int sig_atomic_t;
-# 50 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/signal.h" 3 4
-typedef enum {
- REGS_SAVED_NONE,
- REGS_SAVED_CALLER,
-
-
- REGS_SAVED_ALL
-} regs_saved_t;
-# 66 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/signal.h" 3 4
-struct sigcontext32 {
-    int sc_onstack;
-    int sc_mask;
-    int sc_ir;
-    int sc_psw;
-    int sc_sp;
-    void *sc_regs;
-};
-
-struct sigcontext64 {
-    int sc_onstack;
-    int sc_mask;
-    long long sc_ir;
-    long long sc_psw;
-    long long sc_sp;
-    void *sc_regs;
-};
-
-
-
-
-
+# 46 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/signal.h" 3 4
 struct sigcontext {
     int sc_onstack;
     int sc_mask;
-    int sc_ir;
-    int sc_psw;
-    int sc_sp;
-    void *sc_regs;
+    unsigned int sc_eax;
+    unsigned int sc_ebx;
+    unsigned int sc_ecx;
+    unsigned int sc_edx;
+    unsigned int sc_edi;
+    unsigned int sc_esi;
+    unsigned int sc_ebp;
+    unsigned int sc_esp;
+    unsigned int sc_ss;
+    unsigned int sc_eflags;
+    unsigned int sc_eip;
+    unsigned int sc_cs;
+    unsigned int sc_ds;
+    unsigned int sc_es;
+    unsigned int sc_fs;
+    unsigned int sc_gs;
 };
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/signal.h" 2 3 4
-# 33 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/setjmp.h" 2 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/signal.h" 2 3 4
+# 33 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/setjmp.h" 2 3 4
+# 47 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/setjmp.h" 3 4
+typedef int jmp_buf[(18)];
+typedef int sigjmp_buf[(18) + 1];
 
-struct _jmp_buf {
- struct sigcontext sigcontext;
- unsigned int vmask __attribute__((aligned(8)));
- unsigned int vreg[32 * 4] __attribute__((aligned(16)));
-
-};
-# 82 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/setjmp.h" 3 4
-typedef int jmp_buf[(26 + 18*2 + 129 + 1)];
-typedef int sigjmp_buf[(26 + 18*2 + 129 + 1) + 1];
 
 
 
@@ -1415,7 +1355,7 @@ void siglongjmp(sigjmp_buf env, int val);
 void longjmperror(void);
 
 
-# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/setjmp.h" 2 3 4
+# 32 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/setjmp.h" 2 3 4
 # 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/setjmp.h" 2 3 4
 # 21 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/signal.h" 1 3 4
@@ -1564,8 +1504,8 @@ int sigvec(int, struct sigvec *, struct sigvec *);
 
 
 # 22 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
-# 152 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stddef.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
+# 152 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stddef.h" 3 4
 typedef int ptrdiff_t;
 # 23 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 2 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdio.h" 1 3 4
@@ -1633,13 +1573,13 @@ int fgetc(FILE *);
 int fgetpos(FILE * , fpos_t *);
 char *fgets(char * , int, FILE *);
 FILE *fopen(const char * , const char * );
-int fprintf(FILE * , const char * , ...) __asm("_" "fprintf" "$LDBLStub");
+int fprintf(FILE * , const char * , ...) ;
 int fputc(int, FILE *);
 int fputs(const char * , FILE * );
 size_t fread(void * , size_t, size_t, FILE * );
 FILE *freopen(const char * , const char * ,
      FILE * ) ;
-int fscanf(FILE * , const char * , ...) __asm("_" "fscanf" "$LDBLStub");
+int fscanf(FILE * , const char * , ...) ;
 int fseek(FILE *, long, int);
 int fsetpos(FILE *, const fpos_t *);
 long ftell(FILE *);
@@ -1652,27 +1592,27 @@ extern const int sys_nerr;
 extern const char *const sys_errlist[];
 
 void perror(const char *);
-int printf(const char * , ...) __asm("_" "printf" "$LDBLStub");
+int printf(const char * , ...) ;
 int putc(int, FILE *);
 int putchar(int);
 int puts(const char *);
 int remove(const char *);
 int rename (const char *, const char *);
 void rewind(FILE *);
-int scanf(const char * , ...) __asm("_" "scanf" "$LDBLStub");
+int scanf(const char * , ...) ;
 void setbuf(FILE * , char * );
 int setvbuf(FILE * , char * , int, size_t);
-int sprintf(char * , const char * , ...) __asm("_" "sprintf" "$LDBLStub");
-int sscanf(const char * , const char * , ...) __asm("_" "sscanf" "$LDBLStub");
+int sprintf(char * , const char * , ...) ;
+int sscanf(const char * , const char * , ...) ;
 FILE *tmpfile(void);
 char *tmpnam(char *);
 int ungetc(int, FILE *);
-int vfprintf(FILE * , const char * , va_list) __asm("_" "vfprintf" "$LDBLStub");
-int vprintf(const char * , va_list) __asm("_" "vprintf" "$LDBLStub");
-int vsprintf(char * , const char * , va_list) __asm("_" "vsprintf" "$LDBLStub");
+int vfprintf(FILE * , const char * , va_list) ;
+int vprintf(const char * , va_list) ;
+int vsprintf(char * , const char * , va_list) ;
 
-int asprintf(char **, const char *, ...) __asm("_" "asprintf" "$LDBLStub");
-int vasprintf(char **, const char *, va_list) __asm("_" "vasprintf" "$LDBLStub");
+int asprintf(char **, const char *, ...) ;
+int vasprintf(char **, const char *, va_list) ;
 
 
 # 308 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdio.h" 3 4
@@ -1710,12 +1650,12 @@ int putw(int, FILE *);
 void setbuffer(FILE *, char *, int);
 int setlinebuf(FILE *);
 
-int snprintf(char * , size_t, const char * , ...) __asm("_" "snprintf" "$LDBLStub");
+int snprintf(char * , size_t, const char * , ...) ;
 char *tempnam(const char *, const char *);
-int vfscanf(FILE * , const char * , va_list) __asm("_" "vfscanf" "$LDBLStub");
-int vscanf(const char * , va_list) __asm("_" "vscanf" "$LDBLStub");
-int vsnprintf(char * , size_t, const char * , va_list) __asm("_" "vsnprintf" "$LDBLStub");
-int vsscanf(const char * , const char * , va_list) __asm("_" "vsscanf" "$LDBLStub");
+int vfscanf(FILE * , const char * , va_list) ;
+int vscanf(const char * , va_list) ;
+int vsnprintf(char * , size_t, const char * , va_list) ;
+int vsscanf(const char * , const char * , va_list) ;
 
 FILE *zopen(const char *, const char *, int);
 
@@ -1735,7 +1675,7 @@ FILE *funopen(const void *,
 # 372 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdio.h" 3 4
 
 int __srget(FILE *);
-int __svfscanf(FILE *, const char *, va_list) __asm("_" "__svfscanf" "$LDBLStub");
+int __svfscanf(FILE *, const char *, va_list) ;
 int __swbuf(int, FILE *);
 
 
@@ -1817,16 +1757,16 @@ union wait {
 
  struct {
 
-
-
-
-
-
-
-  unsigned int w_Filler:16,
-    w_Retcode:8,
+  unsigned int w_Termsig:7,
     w_Coredump:1,
-    w_Termsig:7;
+    w_Retcode:8,
+    w_Filler:16;
+
+
+
+
+
+
 
  } w_T;
 
@@ -1836,14 +1776,14 @@ union wait {
 
  struct {
 
-
-
-
-
-
-  unsigned int w_Filler:16,
+  unsigned int w_Stopval:8,
     w_Stopsig:8,
-    w_Stopval:8;
+    w_Filler:16;
+
+
+
+
+
 
  } w_S;
 };
@@ -1924,7 +1864,7 @@ double strtod(const char *, char **);
 float strtof(const char *, char **);
 long strtol(const char *, char **, int);
 long double
-  strtold(const char *, char **) __asm("_" "strtold" "$LDBLStub");
+  strtold(const char *, char **) ;
 
 long long
   strtoll(const char *, char **, int);
@@ -2176,7 +2116,7 @@ int nanosleep(const struct timespec *, struct timespec *) ;
 # 38 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h" 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFBase.h" 1 3
 # 22 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFBase.h" 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdbool.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stdbool.h" 1 3 4
 # 23 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFBase.h" 2 3
 
 
@@ -2209,19 +2149,15 @@ typedef signed short SInt16;
 
 typedef unsigned long UInt32;
 typedef signed long SInt32;
-
-
-
-
-
+# 121 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/../Frameworks/CarbonCore.framework/Headers/MacTypes.h" 3
 struct wide {
-  SInt32 hi;
   UInt32 lo;
+  SInt32 hi;
 };
 typedef struct wide wide;
 struct UnsignedWide {
-  UInt32 hi;
   UInt32 lo;
+  UInt32 hi;
 };
 typedef struct UnsignedWide UnsignedWide;
 # 152 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/../Frameworks/CarbonCore.framework/Headers/MacTypes.h" 3
@@ -2403,16 +2339,17 @@ struct TimeRecord {
   TimeBase base;
 };
 typedef struct TimeRecord TimeRecord;
-# 584 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/../Frameworks/CarbonCore.framework/Headers/MacTypes.h" 3
+# 593 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/../Frameworks/CarbonCore.framework/Headers/MacTypes.h" 3
 struct NumVersion {
 
-  UInt8 majorRev;
-  UInt8 minorAndBugRev;
-  UInt8 stage;
   UInt8 nonRelRev;
+  UInt8 stage;
+  UInt8 minorAndBugRev;
+  UInt8 majorRev;
 };
 typedef struct NumVersion NumVersion;
-# 603 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Headers/../Frameworks/CarbonCore.framework/Headers/MacTypes.h" 3
+
+
 enum {
 
   developStage = 0x20,
@@ -4033,26 +3970,24 @@ Boolean CFURLGetFSRef(CFURLRef url, struct FSRef *fsRef);
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/boolean.h" 1 3 4
 # 67 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/boolean.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/boolean.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/boolean.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/boolean.h" 1 3 4
-# 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/boolean.h" 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/boolean.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/boolean.h" 1 3 4
+# 62 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/boolean.h" 3 4
 typedef int boolean_t;
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/boolean.h" 2 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/boolean.h" 2 3 4
 # 68 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/boolean.h" 2 3 4
 # 79 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/port.h" 2 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_types.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_types.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/vm_types.h" 1 3 4
-# 67 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/vm_types.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/ppc/vmparam.h" 1 3 4
-# 68 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/vm_types.h" 2 3 4
-# 87 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/vm_types.h" 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_types.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/vm_types.h" 1 3 4
+# 86 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/vm_types.h" 3 4
 typedef __darwin_natural_t natural_t;
 typedef int integer_t;
-# 98 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/vm_types.h" 3 4
+# 96 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/vm_types.h" 3 4
 typedef natural_t vm_offset_t;
+# 107 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/vm_types.h" 3 4
 typedef natural_t vm_size_t;
-# 120 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/vm_types.h" 3 4
+# 117 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/vm_types.h" 3 4
 typedef uint64_t mach_vm_address_t;
 typedef uint64_t mach_vm_offset_t;
 typedef uint64_t mach_vm_size_t;
@@ -4062,7 +3997,7 @@ typedef uint64_t mach_vm_size_t;
 typedef uint64_t vm_map_offset_t;
 typedef uint64_t vm_map_address_t;
 typedef uint64_t vm_map_size_t;
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_types.h" 2 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_types.h" 2 3 4
 # 80 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/port.h" 2 3 4
 # 93 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/port.h" 3 4
 typedef natural_t mach_port_name_t;
@@ -5853,32 +5788,16 @@ static __inline__ __attribute__((always_inline)) CFByteOrder CFByteOrderGetCurre
 
 static __inline__ __attribute__((always_inline)) uint16_t CFSwapInt16(uint16_t arg) {
 
-
-
-
-    uint16_t result;
-    __asm__("lhbrx %0,0,%1" : "=r" (result) : "r" (&arg), "m" (arg));
-    return result;
-
-
-
-
-
+    __asm__("xchgb %b0, %h0" : "+q" (arg));
+    return arg;
+# 46 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFByteOrder.h" 3
 }
 
 static __inline__ __attribute__((always_inline)) uint32_t CFSwapInt32(uint32_t arg) {
 
-
-
-
-    uint32_t result;
-    __asm__("lwbrx %0,0,%1" : "=r" (result) : "r" (&arg), "m" (arg));
-    return result;
-
-
-
-
-
+    __asm__("bswap %0" : "+r" (arg));
+    return arg;
+# 61 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFByteOrder.h" 3
 }
 
 static __inline__ __attribute__((always_inline)) uint64_t CFSwapInt64(uint64_t arg) {
@@ -5894,97 +5813,97 @@ static __inline__ __attribute__((always_inline)) uint64_t CFSwapInt64(uint64_t a
 
 static __inline__ __attribute__((always_inline)) uint16_t CFSwapInt16BigToHost(uint16_t arg) {
 
-    return arg;
 
 
+    return CFSwapInt16(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint32_t CFSwapInt32BigToHost(uint32_t arg) {
 
-    return arg;
 
 
+    return CFSwapInt32(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint64_t CFSwapInt64BigToHost(uint64_t arg) {
 
-    return arg;
 
 
+    return CFSwapInt64(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint16_t CFSwapInt16HostToBig(uint16_t arg) {
 
-    return arg;
 
 
+    return CFSwapInt16(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint32_t CFSwapInt32HostToBig(uint32_t arg) {
 
-    return arg;
 
 
+    return CFSwapInt32(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint64_t CFSwapInt64HostToBig(uint64_t arg) {
 
+
+
+    return CFSwapInt64(arg);
+
+}
+
+static __inline__ __attribute__((always_inline)) uint16_t CFSwapInt16LittleToHost(uint16_t arg) {
+
     return arg;
 
 
 
 }
 
-static __inline__ __attribute__((always_inline)) uint16_t CFSwapInt16LittleToHost(uint16_t arg) {
-
-
-
-    return CFSwapInt16(arg);
-
-}
-
 static __inline__ __attribute__((always_inline)) uint32_t CFSwapInt32LittleToHost(uint32_t arg) {
 
+    return arg;
 
 
-    return CFSwapInt32(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint64_t CFSwapInt64LittleToHost(uint64_t arg) {
 
+    return arg;
 
 
-    return CFSwapInt64(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint16_t CFSwapInt16HostToLittle(uint16_t arg) {
 
+    return arg;
 
 
-    return CFSwapInt16(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint32_t CFSwapInt32HostToLittle(uint32_t arg) {
 
+    return arg;
 
 
-    return CFSwapInt32(arg);
 
 }
 
 static __inline__ __attribute__((always_inline)) uint64_t CFSwapInt64HostToLittle(uint64_t arg) {
 
+    return arg;
 
 
-    return CFSwapInt64(arg);
 
 }
 
@@ -5998,7 +5917,7 @@ static __inline__ __attribute__((always_inline)) CFSwappedFloat32 CFConvertFloat
     } result;
     result.v = arg;
 
-
+    result.sv.v = CFSwapInt32(result.sv.v);
 
     return result.sv;
 }
@@ -6010,7 +5929,7 @@ static __inline__ __attribute__((always_inline)) Float32 CFConvertFloat32Swapped
     } result;
     result.sv = arg;
 
-
+    result.sv.v = CFSwapInt32(result.sv.v);
 
     return result.v;
 }
@@ -6022,7 +5941,7 @@ static __inline__ __attribute__((always_inline)) CFSwappedFloat64 CFConvertFloat
     } result;
     result.v = arg;
 
-
+    result.sv.v = CFSwapInt64(result.sv.v);
 
     return result.sv;
 }
@@ -6034,7 +5953,7 @@ static __inline__ __attribute__((always_inline)) Float64 CFConvertFloat64Swapped
     } result;
     result.sv = arg;
 
-
+    result.sv.v = CFSwapInt64(result.sv.v);
 
     return result.v;
 }
@@ -6046,7 +5965,7 @@ static __inline__ __attribute__((always_inline)) CFSwappedFloat32 CFConvertFloat
     } result;
     result.v = arg;
 
-
+    result.sv.v = CFSwapInt32(result.sv.v);
 
     return result.sv;
 }
@@ -6058,7 +5977,7 @@ static __inline__ __attribute__((always_inline)) float CFConvertFloatSwappedToHo
     } result;
     result.sv = arg;
 
-
+    result.sv.v = CFSwapInt32(result.sv.v);
 
     return result.v;
 }
@@ -6070,7 +5989,7 @@ static __inline__ __attribute__((always_inline)) CFSwappedFloat64 CFConvertDoubl
     } result;
     result.v = arg;
 
-
+    result.sv.v = CFSwapInt64(result.sv.v);
 
     return result.sv;
 }
@@ -6082,7 +6001,7 @@ static __inline__ __attribute__((always_inline)) double CFConvertDoubleSwappedTo
     } result;
     result.sv = arg;
 
-
+    result.sv.v = CFSwapInt64(result.sv.v);
 
     return result.v;
 }
@@ -7518,14 +7437,16 @@ struct UntokenTable {
 typedef struct UntokenTable UntokenTable;
 typedef UntokenTable * UntokenTablePtr;
 typedef UntokenTablePtr * UntokenTableHandle;
-# 220 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/IntlResources.h" 3
+# 209 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/IntlResources.h" 3
 union WideChar {
-  char a[2];
+  struct {
+    char lo;
+    char hi;
+  } a;
   short b;
 };
 typedef union WideChar WideChar;
-
-
+# 227 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/IntlResources.h" 3
 struct WideCharArr {
   short size;
   WideChar data[10];
@@ -8609,19 +8530,19 @@ typedef struct TokenBlock TokenBlock;
 typedef TokenBlock * TokenBlockPtr;
 # 1038 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern short
-GetSysDirection(void) ;
+GetSysDirection(void) __attribute__((deprecated));
 # 1056 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern void
-SetSysDirection(short value) ;
+SetSysDirection(short value) __attribute__((deprecated));
 # 1075 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern short
-FontScript(void) ;
+FontScript(void) __attribute__((deprecated));
 # 1094 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern short
-IntlScript(void) ;
+IntlScript(void) __attribute__((deprecated));
 # 1113 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern short
-FontToScript(short fontNumber) ;
+FontToScript(short fontNumber) __attribute__((deprecated));
 # 1125 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern long
 GetScriptManagerVariable(short selector) ;
@@ -8646,13 +8567,13 @@ extern short
 CharacterByteType(
   Ptr textBuf,
   short textOffset,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 1213 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern short
 CharacterType(
   Ptr textBuf,
   short textOffset,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 1235 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern OSErr
 TransliterateText(
@@ -8660,18 +8581,18 @@ TransliterateText(
   Handle dstHandle,
   short target,
   long srcMask,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 1261 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern Boolean
 FillParseTable(
   CharByteTable table,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 1275 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern Handle
 GetIntlResource(short theID) ;
 # 1293 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern void
-ClearIntlResourceCache(void) ;
+ClearIntlResourceCache(void) __attribute__((deprecated));
 # 1311 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern void
 GetIntlResourceTable(
@@ -8679,10 +8600,10 @@ GetIntlResourceTable(
   short tableCode,
   Handle * itlHandle,
   long * offset,
-  long * length) ;
+  long * length) __attribute__((deprecated));
 # 1425 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 extern TokenResults
-IntlTokenize(TokenBlockPtr tokenParam) ;
+IntlTokenize(TokenBlockPtr tokenParam) __attribute__((deprecated));
 # 1446 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Script.h" 3
 #pragma options align=reset
 # 42 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h" 2 3
@@ -11627,42 +11548,42 @@ typedef LocalDateTimePtr * LocalDateTimeHandle;
 extern OSStatus
 ConvertLocalTimeToUTC(
   UInt32 localSeconds,
-  UInt32 * utcSeconds) ;
+  UInt32 * utcSeconds) __attribute__((deprecated));
 # 100 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/UTCUtils.h" 3
 extern OSStatus
 ConvertUTCToLocalTime(
   UInt32 utcSeconds,
-  UInt32 * localSeconds) ;
+  UInt32 * localSeconds) __attribute__((deprecated));
 # 122 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/UTCUtils.h" 3
 extern OSStatus
 ConvertUTCToLocalDateTime(
   const UTCDateTime * utcDateTime,
-  LocalDateTime * localDateTime) ;
+  LocalDateTime * localDateTime) __attribute__((deprecated));
 # 143 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/UTCUtils.h" 3
 extern OSStatus
 ConvertLocalToUTCDateTime(
   const LocalDateTime * localDateTime,
-  UTCDateTime * utcDateTime) ;
+  UTCDateTime * utcDateTime) __attribute__((deprecated));
 # 165 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/UTCUtils.h" 3
 extern OSStatus
 GetUTCDateTime(
   UTCDateTime * utcDateTime,
-  OptionBits options) ;
+  OptionBits options) __attribute__((deprecated));
 # 186 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/UTCUtils.h" 3
 extern OSStatus
 SetUTCDateTime(
   const UTCDateTime * utcDateTime,
-  OptionBits options) ;
+  OptionBits options) __attribute__((deprecated));
 # 207 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/UTCUtils.h" 3
 extern OSStatus
 GetLocalDateTime(
   LocalDateTime * localDateTime,
-  OptionBits options) ;
+  OptionBits options) __attribute__((deprecated));
 # 228 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/UTCUtils.h" 3
 extern OSStatus
 SetLocalDateTime(
   const LocalDateTime * localDateTime,
-  OptionBits options) ;
+  OptionBits options) __attribute__((deprecated));
 
 
 
@@ -13008,14 +12929,35 @@ UnflattenCollectionFromHdl(
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Endian.h" 1 3
 # 39 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Endian.h" 3
 #pragma options align=mac68k
-# 283 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Endian.h" 3
-typedef long BigEndianLong;
-typedef unsigned long BigEndianUnsignedLong;
-typedef short BigEndianShort;
-typedef unsigned short BigEndianUnsignedShort;
-typedef Fixed BigEndianFixed;
-typedef UnsignedFixed BigEndianUnsignedFixed;
-typedef OSType BigEndianOSType;
+# 253 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Endian.h" 3
+struct BigEndianLong {
+  long bigEndianValue;
+};
+typedef struct BigEndianLong BigEndianLong;
+struct BigEndianUnsignedLong {
+  unsigned long bigEndianValue;
+};
+typedef struct BigEndianUnsignedLong BigEndianUnsignedLong;
+struct BigEndianShort {
+  short bigEndianValue;
+};
+typedef struct BigEndianShort BigEndianShort;
+struct BigEndianUnsignedShort {
+  unsigned short bigEndianValue;
+};
+typedef struct BigEndianUnsignedShort BigEndianUnsignedShort;
+struct BigEndianFixed {
+  Fixed bigEndianValue;
+};
+typedef struct BigEndianFixed BigEndianFixed;
+struct BigEndianUnsignedFixed {
+  UnsignedFixed bigEndianValue;
+};
+typedef struct BigEndianUnsignedFixed BigEndianUnsignedFixed;
+struct BigEndianOSType {
+  OSType bigEndianValue;
+};
+typedef struct BigEndianOSType BigEndianOSType;
 # 309 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Endian.h" 3
 enum {
   kCoreEndianResourceManagerDomain = 'rsrc',
@@ -13070,12 +13012,12 @@ extern OSErr
 ReplaceGestalt(
   OSType selector,
   SelectorFunctionUPP gestaltFunction,
-  SelectorFunctionUPP * oldGestaltFunction) ;
+  SelectorFunctionUPP * oldGestaltFunction) __attribute__((deprecated));
 # 228 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Gestalt.h" 3
 extern OSErr
 NewGestalt(
   OSType selector,
-  SelectorFunctionUPP gestaltFunction) ;
+  SelectorFunctionUPP gestaltFunction) __attribute__((deprecated));
 # 273 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Gestalt.h" 3
 extern OSErr
 NewGestaltValue(
@@ -14955,37 +14897,37 @@ typedef struct VolumeVirtualMemoryInfo VolumeVirtualMemoryInfo;
 typedef VolumeVirtualMemoryInfo * VolumeVirtualMemoryInfoPtr;
 # 159 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern GrowZoneUPP
-NewGrowZoneUPP(GrowZoneProcPtr userRoutine) ;
+NewGrowZoneUPP(GrowZoneProcPtr userRoutine) __attribute__((deprecated));
 # 170 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern PurgeUPP
-NewPurgeUPP(PurgeProcPtr userRoutine) ;
+NewPurgeUPP(PurgeProcPtr userRoutine) __attribute__((deprecated));
 # 181 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern UserFnUPP
-NewUserFnUPP(UserFnProcPtr userRoutine) ;
+NewUserFnUPP(UserFnProcPtr userRoutine) __attribute__((deprecated));
 # 192 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-DisposeGrowZoneUPP(GrowZoneUPP userUPP) ;
+DisposeGrowZoneUPP(GrowZoneUPP userUPP) __attribute__((deprecated));
 # 203 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-DisposePurgeUPP(PurgeUPP userUPP) ;
+DisposePurgeUPP(PurgeUPP userUPP) __attribute__((deprecated));
 # 214 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-DisposeUserFnUPP(UserFnUPP userUPP) ;
+DisposeUserFnUPP(UserFnUPP userUPP) __attribute__((deprecated));
 # 225 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern long
 InvokeGrowZoneUPP(
   Size cbNeeded,
-  GrowZoneUPP userUPP) ;
+  GrowZoneUPP userUPP) __attribute__((deprecated));
 # 238 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
 InvokePurgeUPP(
   Handle blockToPurge,
-  PurgeUPP userUPP) ;
+  PurgeUPP userUPP) __attribute__((deprecated));
 # 251 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
 InvokeUserFnUPP(
   void * parameter,
-  UserFnUPP userUPP) ;
+  UserFnUPP userUPP) __attribute__((deprecated));
 # 299 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern OSErr
 MemError(void) ;
@@ -15030,10 +14972,10 @@ extern void
 HUnlock(Handle h) ;
 # 798 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-HPurge(Handle h) ;
+HPurge(Handle h) __attribute__((deprecated));
 # 827 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-HNoPurge(Handle h) ;
+HNoPurge(Handle h) __attribute__((deprecated));
 # 878 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Handle
 TempNewHandle(
@@ -15041,16 +14983,16 @@ TempNewHandle(
   OSErr * resultCode) ;
 # 909 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Size
-TempMaxMem(Size * grow) ;
+TempMaxMem(Size * grow) __attribute__((deprecated));
 # 934 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern long
-TempFreeMem(void) ;
+TempFreeMem(void) __attribute__((deprecated));
 # 958 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Size
-CompactMem(Size cbNeeded) ;
+CompactMem(Size cbNeeded) __attribute__((deprecated));
 # 982 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-PurgeMem(Size cbNeeded) ;
+PurgeMem(Size cbNeeded) __attribute__((deprecated));
 # 1006 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern long
 FreeMem(void) ;
@@ -15059,13 +15001,13 @@ extern Size
 MaxMem(Size * grow) ;
 # 1062 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-SetGrowZone(GrowZoneUPP growZone) ;
+SetGrowZone(GrowZoneUPP growZone) __attribute__((deprecated));
 # 1084 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern GrowZoneUPP
-GetGrowZone(void) ;
+GetGrowZone(void) __attribute__((deprecated));
 # 1115 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-MoveHHi(Handle h) ;
+MoveHHi(Handle h) __attribute__((deprecated));
 # 1148 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
 DisposePtr(Ptr p) ;
@@ -15180,20 +15122,20 @@ PtrAndHand(
   long size) ;
 # 1839 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-MoreMasters(void) ;
+MoreMasters(void) __attribute__((deprecated));
 # 1863 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-MoreMasterPointers(UInt32 inCount) ;
+MoreMasterPointers(UInt32 inCount) __attribute__((deprecated));
 # 1883 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
 TempHLock(
   Handle h,
-  OSErr * resultCode) ;
+  OSErr * resultCode) __attribute__((deprecated));
 # 1904 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
 TempHUnlock(
   Handle h,
-  OSErr * resultCode) ;
+  OSErr * resultCode) __attribute__((deprecated));
 # 1925 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
 TempDisposeHandle(
@@ -15201,60 +15143,60 @@ TempDisposeHandle(
   OSErr * resultCode) ;
 # 1946 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Ptr
-TempTopMem(void) ;
+TempTopMem(void) __attribute__((deprecated));
 # 1971 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern OSErr
 HoldMemory(
   void * address,
-  unsigned long count) ;
+  unsigned long count) __attribute__((deprecated));
 # 1992 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern OSErr
 UnholdMemory(
   void * address,
-  unsigned long count) ;
+  unsigned long count) __attribute__((deprecated));
 # 2021 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern OSErr
 MakeMemoryResident(
   void * address,
-  unsigned long count) ;
+  unsigned long count) __attribute__((deprecated));
 # 2050 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern OSErr
 ReleaseMemoryData(
   void * address,
-  unsigned long count) ;
+  unsigned long count) __attribute__((deprecated));
 # 2079 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern OSErr
 MakeMemoryNonResident(
   void * address,
-  unsigned long count) ;
+  unsigned long count) __attribute__((deprecated));
 # 2108 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern OSErr
 FlushMemory(
   void * address,
-  unsigned long count) ;
+  unsigned long count) __attribute__((deprecated));
 # 2129 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Handle
-GZSaveHnd(void) ;
+GZSaveHnd(void) __attribute__((deprecated));
 # 2147 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Ptr
-TopMem(void) ;
+TopMem(void) __attribute__((deprecated));
 # 2165 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-ReserveMem(Size cbNeeded) ;
+ReserveMem(Size cbNeeded) __attribute__((deprecated));
 # 2193 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
 PurgeSpace(
   long * total,
-  long * contig) ;
+  long * contig) __attribute__((deprecated));
 # 2218 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern long
-PurgeSpaceTotal(void) ;
+PurgeSpaceTotal(void) __attribute__((deprecated));
 # 2241 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern long
-PurgeSpaceContiguous(void) ;
+PurgeSpaceContiguous(void) __attribute__((deprecated));
 # 2263 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Boolean
-CheckAllHeaps(void) ;
+CheckAllHeaps(void) __attribute__((deprecated));
 # 2281 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern Boolean
 IsHeapValid(void) ;
@@ -15266,16 +15208,16 @@ extern Boolean
 IsPointerValid(Ptr p) ;
 # 2346 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern THz
-LMGetSysZone(void) ;
+LMGetSysZone(void) __attribute__((deprecated));
 # 2364 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-LMSetSysZone(THz value) ;
+LMSetSysZone(THz value) __attribute__((deprecated));
 # 2382 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern THz
-LMGetApplZone(void) ;
+LMGetApplZone(void) __attribute__((deprecated));
 # 2400 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 extern void
-LMSetApplZone(THz value) ;
+LMSetApplZone(THz value) __attribute__((deprecated));
 # 2462 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MacMemory.h" 3
 #pragma options align=reset
 # 66 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h" 2 3
@@ -15383,6 +15325,12 @@ extern SInt64
 S64ShiftLeft(
   SInt64 value,
   UInt32 shift);
+# 664 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Math64.h" 3
+extern long double
+SInt64ToLongDouble(SInt64 value);
+# 691 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Math64.h" 3
+extern SInt64
+LongDoubleToSInt64(long double value);
 # 716 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Math64.h" 3
 extern UInt64
 U64Max(void);
@@ -15477,6 +15425,12 @@ extern UInt64
 U64ShiftLeft(
   UInt64 value,
   UInt32 shift);
+# 1248 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Math64.h" 3
+extern long double
+UInt64ToLongDouble(UInt64 value);
+# 1271 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Math64.h" 3
+extern UInt64
+LongDoubleToUInt64(long double value);
 # 1296 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Math64.h" 3
 extern SInt64
 UInt64ToSInt64(UInt64 value);
@@ -15603,16 +15557,17 @@ struct DateTimeRec {
 typedef struct DateTimeRec DateTimeRec;
 
 typedef SInt64 LongDateTime;
-
+# 191 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 union LongDateCvt {
   SInt64 c;
   struct {
-    UInt32 lHigh;
     UInt32 lLow;
+    UInt32 lHigh;
   } hl;
 };
 typedef union LongDateCvt LongDateCvt;
-# 201 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
+
+
 union LongDateRec {
   struct {
     short era;
@@ -15682,31 +15637,31 @@ DateString(
   long dateTime,
   DateForm longFlag,
   Str255 result,
-  Handle intlHandle) ;
+  Handle intlHandle) __attribute__((deprecated));
 # 477 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
 TimeString(
   long dateTime,
   Boolean wantSeconds,
   Str255 result,
-  Handle intlHandle) ;
+  Handle intlHandle) __attribute__((deprecated));
 # 500 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
 LongDateString(
   const LongDateTime * dateTime,
   DateForm longFlag,
   Str255 result,
-  Handle intlHandle) ;
+  Handle intlHandle) __attribute__((deprecated));
 # 523 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
 LongTimeString(
   const LongDateTime * dateTime,
   Boolean wantSeconds,
   Str255 result,
-  Handle intlHandle) ;
+  Handle intlHandle) __attribute__((deprecated));
 # 549 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern OSErr
-InitDateCache(DateCachePtr theCache) ;
+InitDateCache(DateCachePtr theCache) __attribute__((deprecated));
 # 568 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern StringToDateStatus
 StringToDate(
@@ -15714,7 +15669,7 @@ StringToDate(
   long textLen,
   DateCachePtr theCache,
   long * lengthUsed,
-  LongDateRec * dateTime) ;
+  LongDateRec * dateTime) __attribute__((deprecated));
 # 592 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern StringToDateStatus
 StringToTime(
@@ -15722,17 +15677,17 @@ StringToTime(
   long textLen,
   DateCachePtr theCache,
   long * lengthUsed,
-  LongDateRec * dateTime) ;
+  LongDateRec * dateTime) __attribute__((deprecated));
 # 616 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
 LongDateToSeconds(
   const LongDateRec * lDate,
-  LongDateTime * lSecs) ;
+  LongDateTime * lSecs) __attribute__((deprecated));
 # 637 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
 LongSecondsToDate(
   const LongDateTime * lSecs,
-  LongDateRec * lDate) ;
+  LongDateRec * lDate) __attribute__((deprecated));
 # 658 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern ToggleResults
 ToggleDate(
@@ -15740,38 +15695,38 @@ ToggleDate(
   LongDateField field,
   DateDelta delta,
   short ch,
-  const TogglePB * params) ;
+  const TogglePB * params) __attribute__((deprecated));
 # 682 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern short
 ValidDate(
   const LongDateRec * vDate,
   long flags,
-  LongDateTime * newSecs) ;
+  LongDateTime * newSecs) __attribute__((deprecated));
 # 704 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern OSErr
-ReadDateTime(unsigned long * time) ;
+ReadDateTime(unsigned long * time) __attribute__((deprecated));
 # 723 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
-GetDateTime(unsigned long * secs) ;
+GetDateTime(unsigned long * secs) __attribute__((deprecated));
 # 742 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern OSErr
-SetDateTime(unsigned long time) ;
+SetDateTime(unsigned long time) __attribute__((deprecated));
 # 761 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
-SetTime(const DateTimeRec * d) ;
+SetTime(const DateTimeRec * d) __attribute__((deprecated));
 # 780 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
-GetTime(DateTimeRec * d) ;
+GetTime(DateTimeRec * d) __attribute__((deprecated));
 # 799 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
 DateToSeconds(
   const DateTimeRec * d,
-  unsigned long * secs) ;
+  unsigned long * secs) __attribute__((deprecated));
 # 820 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 extern void
 SecondsToDate(
   unsigned long secs,
-  DateTimeRec * d) ;
+  DateTimeRec * d) __attribute__((deprecated));
 # 977 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DateTimeUtils.h" 3
 #pragma options align=reset
 # 35 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 2 3
@@ -15859,12 +15814,12 @@ struct MachineLocation {
     Fract longitude;
     union {
 
-        SInt8 dlsDelta;
+
 
         long gmtDelta;
         struct {
 
-
+            SInt8 pad[3];
 
             SInt8 Delta;
         } dls;
@@ -15876,13 +15831,13 @@ extern Boolean
 IsMetric(void) ;
 # 237 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern SysPPtr
-GetSysPPtr(void) ;
+GetSysPPtr(void) __attribute__((deprecated));
 # 264 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern OSErr
-DTInstall(DeferredTaskPtr dtTaskPtr) ;
+DTInstall(DeferredTaskPtr dtTaskPtr) __attribute__((deprecated));
 # 284 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern OSErr
-DTUninstall(DeferredTaskPtr dtTaskPtr) ;
+DTUninstall(DeferredTaskPtr dtTaskPtr) __attribute__((deprecated));
 # 301 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern void
 Delay(
@@ -15890,7 +15845,7 @@ Delay(
   unsigned long * finalTicks) ;
 # 319 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern OSErr
-WriteParam(void) ;
+WriteParam(void) __attribute__((deprecated));
 # 331 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern void
 Enqueue(
@@ -15903,13 +15858,13 @@ Dequeue(
   QHdrPtr qHeader) ;
 # 363 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern long
-SetCurrentA5(void) ;
+SetCurrentA5(void) __attribute__((deprecated));
 # 378 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern long
-SetA5(long newA5) ;
+SetA5(long newA5) __attribute__((deprecated));
 # 390 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern OSErr
-InitUtil(void) ;
+InitUtil(void) __attribute__((deprecated));
 # 402 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h" 3
 extern void
 MakeDataExecutable(
@@ -16262,11 +16217,11 @@ extern char *acl_to_text(acl_t acl, ssize_t *len_p);
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/kern_return.h" 1 3 4
 # 64 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/kern_return.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/kern_return.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/kern_return.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/kern_return.h" 1 3 4
-# 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/kern_return.h" 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/kern_return.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/kern_return.h" 1 3 4
+# 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/kern_return.h" 3 4
 typedef int kern_return_t;
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/kern_return.h" 2 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/kern_return.h" 2 3 4
 # 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/kern_return.h" 2 3 4
 # 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/message.h" 2 3 4
 # 76 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/message.h" 3 4
@@ -16804,221 +16759,195 @@ typedef struct memory_object_attr_info memory_object_attr_info_data_t;
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/exception_types.h" 1 3 4
 # 56 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/exception_types.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/exception.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/exception.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/exception.h" 1 3 4
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/exception.h" 2 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/exception.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/exception.h" 1 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/exception.h" 2 3 4
 # 57 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/exception_types.h" 2 3 4
 # 147 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/exception_types.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/thread_status.h" 1 3 4
 # 70 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/thread_status.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_status.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_status.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/thread_status.h" 1 3 4
-# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/thread_status.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/_types.h" 1 3 4
-# 36 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/_types.h" 3 4
-struct ppc_thread_state
-
-
-
-{
- unsigned int srr0;
- unsigned int srr1;
- unsigned int r0;
- unsigned int r1;
- unsigned int r2;
- unsigned int r3;
- unsigned int r4;
- unsigned int r5;
- unsigned int r6;
- unsigned int r7;
- unsigned int r8;
- unsigned int r9;
- unsigned int r10;
- unsigned int r11;
- unsigned int r12;
- unsigned int r13;
- unsigned int r14;
- unsigned int r15;
- unsigned int r16;
- unsigned int r17;
- unsigned int r18;
- unsigned int r19;
- unsigned int r20;
- unsigned int r21;
- unsigned int r22;
- unsigned int r23;
- unsigned int r24;
- unsigned int r25;
- unsigned int r26;
- unsigned int r27;
- unsigned int r28;
- unsigned int r29;
- unsigned int r30;
- unsigned int r31;
-
- unsigned int cr;
- unsigned int xer;
- unsigned int lr;
- unsigned int ctr;
- unsigned int mq;
-
- unsigned int vrsave;
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_status.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 1 3 4
+# 65 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/fp_reg.h" 1 3 4
+# 60 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/fp_reg.h" 3 4
+struct i386_fp_save {
+ unsigned short fp_control;
+ unsigned short fp_unused_1;
+ unsigned short fp_status;
+ unsigned short fp_unused_2;
+ unsigned short fp_tag;
+ unsigned short fp_unused_3;
+ unsigned int fp_eip;
+ unsigned short fp_cs;
+ unsigned short fp_opcode;
+ unsigned int fp_dp;
+ unsigned short fp_ds;
+ unsigned short fp_unused_4;
 };
 
-
-#pragma pack(4)
-struct ppc_thread_state64 {
- unsigned long long srr0;
- unsigned long long srr1;
- unsigned long long r0;
- unsigned long long r1;
- unsigned long long r2;
- unsigned long long r3;
- unsigned long long r4;
- unsigned long long r5;
- unsigned long long r6;
- unsigned long long r7;
- unsigned long long r8;
- unsigned long long r9;
- unsigned long long r10;
- unsigned long long r11;
- unsigned long long r12;
- unsigned long long r13;
- unsigned long long r14;
- unsigned long long r15;
- unsigned long long r16;
- unsigned long long r17;
- unsigned long long r18;
- unsigned long long r19;
- unsigned long long r20;
- unsigned long long r21;
- unsigned long long r22;
- unsigned long long r23;
- unsigned long long r24;
- unsigned long long r25;
- unsigned long long r26;
- unsigned long long r27;
- unsigned long long r28;
- unsigned long long r29;
- unsigned long long r30;
- unsigned long long r31;
-
- unsigned int cr;
- unsigned long long xer;
- unsigned long long lr;
- unsigned long long ctr;
-
- unsigned int vrsave;
-};
-
-#pragma pack()
-
-
-
-
-
-struct ppc_float_state
-
-
-
-{
- double fpregs[32];
-
- unsigned int fpscr_pad;
- unsigned int fpscr;
-};
-
-#pragma pack(4)
-
-
-struct ppc_vector_state
-
-
-
-{
-
-
-
-
- unsigned long save_vr[32][4];
- unsigned long save_vscr[4];
-
- unsigned int save_pad5[4];
- unsigned int save_vrvalid;
- unsigned int save_pad6[7];
-};
-#pragma pack()
-# 186 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/_types.h" 3 4
-#pragma pack(4)
-
-
-struct ppc_exception_state
-
-
-
-{
-
-
-
-
-
-
-
- unsigned long dar;
- unsigned long dsisr;
- unsigned long exception;
- unsigned long pad0;
- unsigned long pad1[4];
+struct i386_fp_regs {
+ unsigned short fp_reg_word[5][8];
 
 };
 
 
-struct ppc_exception_state64 {
- unsigned long long dar;
+struct i386_fx_save {
+        unsigned short fx_control;
+        unsigned short fx_status;
+        unsigned char fx_tag;
+        unsigned char fx_bbz1;
+        unsigned short fx_opcode;
+        unsigned int fx_eip;
+        unsigned short fx_cs;
+        unsigned short fx_bbz2;
+        unsigned int fx_dp;
+        unsigned short fx_ds;
+        unsigned short fx_bbz3;
+        unsigned int fx_MXCSR;
+        unsigned int fx_MXCSR_MASK;
+        unsigned short fx_reg_word[8][8];
+        unsigned short fx_XMM_reg[8][8];
+        unsigned char fx_reserved[16*14];
+};
+# 66 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 2 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_state.h" 1 3 4
+# 67 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 2 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/eflags.h" 1 3 4
+# 68 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 2 3 4
+# 113 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 3 4
+struct i386_thread_state {
+    unsigned int eax;
+    unsigned int ebx;
+    unsigned int ecx;
+    unsigned int edx;
+    unsigned int edi;
+    unsigned int esi;
+    unsigned int ebp;
+    unsigned int esp;
+    unsigned int ss;
+    unsigned int eflags;
+    unsigned int eip;
+    unsigned int cs;
+    unsigned int ds;
+    unsigned int es;
+    unsigned int fs;
+    unsigned int gs;
+} ;
+
+typedef struct i386_thread_state i386_thread_state_t;
+# 145 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 3 4
+typedef struct fp_control {
+    unsigned short invalid :1,
+        denorm :1,
+    zdiv :1,
+    ovrfl :1,
+    undfl :1,
+    precis :1,
+     :2,
+    pc :2,
+
+
+
+    rc :2,
 
 
 
 
+            :1,
+     :3;
+} fp_control_t;
 
- unsigned long dsisr;
- unsigned long exception;
- unsigned long pad1[4];
 
+
+
+typedef struct fp_status {
+    unsigned short invalid :1,
+        denorm :1,
+    zdiv :1,
+    ovrfl :1,
+    undfl :1,
+    precis :1,
+    stkflt :1,
+    errsumm :1,
+    c0 :1,
+    c1 :1,
+    c2 :1,
+    tos :3,
+    c3 :1,
+    busy :1;
+} fp_status_t;
+
+
+struct mmst_reg {
+ char mmst_reg[10];
+ char mmst_rsrv[6];
 };
 
 
-#pragma pack()
-# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/thread_status.h" 2 3 4
-# 63 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/thread_status.h" 3 4
-typedef struct ppc_thread_state ppc_thread_state_t;
+
+struct xmm_reg {
+ char xmm_reg[16];
+};
+# 205 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/thread_status.h" 3 4
+struct i386_float_state {
+ int fpu_reserved[2];
+ fp_control_t fpu_fcw;
+ fp_status_t fpu_fsw;
+ uint8_t fpu_ftw;
+ uint8_t fpu_rsrv1;
+ uint16_t fpu_fop;
+ uint32_t fpu_ip;
+ uint16_t fpu_cs;
+ uint16_t fpu_rsrv2;
+ uint32_t fpu_dp;
+ uint16_t fpu_ds;
+ uint16_t fpu_rsrv3;
+ uint32_t fpu_mxcsr;
+ uint32_t fpu_mxcsrmask;
+ struct mmst_reg fpu_stmm0;
+ struct mmst_reg fpu_stmm1;
+ struct mmst_reg fpu_stmm2;
+ struct mmst_reg fpu_stmm3;
+ struct mmst_reg fpu_stmm4;
+ struct mmst_reg fpu_stmm5;
+ struct mmst_reg fpu_stmm6;
+ struct mmst_reg fpu_stmm7;
+ struct xmm_reg fpu_xmm0;
+ struct xmm_reg fpu_xmm1;
+ struct xmm_reg fpu_xmm2;
+ struct xmm_reg fpu_xmm3;
+ struct xmm_reg fpu_xmm4;
+ struct xmm_reg fpu_xmm5;
+ struct xmm_reg fpu_xmm6;
+ struct xmm_reg fpu_xmm7;
+ char fpu_rsrv4[14*16];
+ int fpu_reserved1;
+};
 
 
 
 
 
-typedef struct ppc_thread_state64 ppc_thread_state64_t;
-
-
-
-typedef struct ppc_float_state ppc_float_state_t;
+typedef struct i386_float_state i386_float_state_t;
 
 
 
 
 
-typedef struct ppc_vector_state ppc_vector_state_t;
-# 99 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/thread_status.h" 3 4
-typedef struct ppc_thread_state ppc_saved_state_t;
-# 121 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/thread_status.h" 3 4
-typedef struct ppc_exception_state ppc_exception_state_t;
-typedef struct ppc_exception_state64 ppc_exception_state64_t;
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_status.h" 2 3 4
+
+
+struct i386_exception_state {
+    unsigned int trapno;
+    unsigned int err;
+    unsigned int faultvaddr;
+};
+
+typedef struct i386_exception_state i386_exception_state_t;
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_status.h" 2 3 4
 # 71 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/thread_status.h" 2 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_state.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_state.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/thread_state.h" 1 3 4
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/thread_state.h" 2 3 4
 # 72 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/thread_status.h" 2 3 4
 
 
@@ -17028,7 +16957,7 @@ typedef struct ppc_exception_state64 ppc_exception_state64_t;
 typedef natural_t *thread_state_t;
 
 
-typedef natural_t thread_state_data_t[(144)];
+typedef natural_t thread_state_data_t[144];
 
 
 
@@ -17054,9 +16983,9 @@ typedef mach_port_t *exception_port_array_t;
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/processor_info.h" 1 3 4
 # 66 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/processor_info.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/processor_info.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/processor_info.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/processor_info.h" 1 3 4
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/processor_info.h" 2 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/processor_info.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/processor_info.h" 1 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/processor_info.h" 2 3 4
 # 67 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/processor_info.h" 2 3 4
 
 
@@ -17477,9 +17406,9 @@ typedef unsigned vm_sync_t;
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/vm_region.h" 1 3 4
 # 41 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/vm_region.h" 3 4
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_param.h" 1 3 4
-# 27 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_param.h" 3 4
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/ppc/vm_param.h" 1 3 4
-# 28 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_param.h" 2 3 4
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_param.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/i386/vm_param.h" 1 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/machine/vm_param.h" 2 3 4
 # 42 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/vm_region.h" 2 3 4
 # 58 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/mach/vm_region.h" 3 4
 typedef int *vm_region_info_t;
@@ -21187,198 +21116,198 @@ extern OSErr PBDeleteFileIDRefSync(HParmBlkPtr paramBlock) ;
 # 6907 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr PBDeleteFileIDRefAsync(HParmBlkPtr paramBlock) ;
 # 6924 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBXGetVolInfoSync(XVolumeParamPtr paramBlock) ;
+extern OSErr PBXGetVolInfoSync(XVolumeParamPtr paramBlock) __attribute__((deprecated));
 # 6939 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBXGetVolInfoAsync(XVolumeParamPtr paramBlock) ;
+extern OSErr PBXGetVolInfoAsync(XVolumeParamPtr paramBlock) __attribute__((deprecated));
 # 6954 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBAllocateSync(ParmBlkPtr paramBlock) ;
+extern OSErr PBAllocateSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 6969 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBAllocateAsync(ParmBlkPtr paramBlock) ;
+extern OSErr PBAllocateAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 6984 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetEOFSync(ParmBlkPtr paramBlock) ;
+extern OSErr PBGetEOFSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 6999 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetEOFAsync(ParmBlkPtr paramBlock) ;
+extern OSErr PBGetEOFAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7014 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetEOFSync(ParmBlkPtr paramBlock) ;
+extern OSErr PBSetEOFSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7029 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetEOFAsync(ParmBlkPtr paramBlock) ;
+extern OSErr PBSetEOFAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7044 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetFPosSync(ParmBlkPtr paramBlock) ;
+extern OSErr PBGetFPosSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7059 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetFPosAsync(ParmBlkPtr paramBlock) ;
+extern OSErr PBGetFPosAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7074 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetFPosSync(ParmBlkPtr paramBlock) ;
+extern OSErr PBSetFPosSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7089 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetFPosAsync(ParmBlkPtr paramBlock) ;
+extern OSErr PBSetFPosAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7104 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBFlushFileSync(ParmBlkPtr paramBlock) ;
+extern OSErr PBFlushFileSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7119 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBFlushFileAsync(ParmBlkPtr paramBlock) ;
+extern OSErr PBFlushFileAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7134 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBUnmountVol(ParmBlkPtr paramBlock) ;
+extern OSErr PBUnmountVol(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7149 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBCatSearchSync(CSParamPtr paramBlock) ;
+extern OSErr PBCatSearchSync(CSParamPtr paramBlock) __attribute__((deprecated));
 # 7164 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBCatSearchAsync(CSParamPtr paramBlock) ;
+extern OSErr PBCatSearchAsync(CSParamPtr paramBlock) __attribute__((deprecated));
 # 7179 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 UnmountVol(
   ConstStr63Param volName,
-  short vRefNum) ;
+  short vRefNum) __attribute__((deprecated));
 # 7197 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HSetVol(
   ConstStr63Param volName,
   short vRefNum,
-  long dirID) ;
+  long dirID) __attribute__((deprecated));
 # 7218 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-FSClose(short refNum) ;
+FSClose(short refNum) __attribute__((deprecated));
 # 7234 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSRead(
   short refNum,
   long * count,
-  void * buffPtr) ;
+  void * buffPtr) __attribute__((deprecated));
 # 7253 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSWrite(
   short refNum,
   long * count,
-  const void * buffPtr) ;
+  const void * buffPtr) __attribute__((deprecated));
 # 7272 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 Allocate(
   short refNum,
-  long * count) ;
+  long * count) __attribute__((deprecated));
 # 7290 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 GetEOF(
   short refNum,
-  long * logEOF) ;
+  long * logEOF) __attribute__((deprecated));
 # 7308 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 SetEOF(
   short refNum,
-  long logEOF) ;
+  long logEOF) __attribute__((deprecated));
 # 7326 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 GetFPos(
   short refNum,
-  long * filePos) ;
+  long * filePos) __attribute__((deprecated));
 # 7344 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 SetFPos(
   short refNum,
   short posMode,
-  long posOff) ;
+  long posOff) __attribute__((deprecated));
 # 7363 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 GetVRefNum(
   short fileRefNum,
-  short * vRefNum) ;
+  short * vRefNum) __attribute__((deprecated));
 # 7381 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-PBLockRangeSync(ParmBlkPtr paramBlock) ;
+PBLockRangeSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7397 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-PBLockRangeAsync(ParmBlkPtr paramBlock) ;
+PBLockRangeAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7413 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-PBUnlockRangeSync(ParmBlkPtr paramBlock) ;
+PBUnlockRangeSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7429 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-PBUnlockRangeAsync(ParmBlkPtr paramBlock) ;
+PBUnlockRangeAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7445 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHSetVolSync(WDPBPtr paramBlock) ;
+extern OSErr PBHSetVolSync(WDPBPtr paramBlock) __attribute__((deprecated));
 # 7460 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHSetVolAsync(WDPBPtr paramBlock) ;
+extern OSErr PBHSetVolAsync(WDPBPtr paramBlock) __attribute__((deprecated));
 # 7475 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetVolSync(WDPBPtr paramBlock) ;
+extern OSErr PBHGetVolSync(WDPBPtr paramBlock) __attribute__((deprecated));
 # 7490 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetVolAsync(WDPBPtr paramBlock) ;
+extern OSErr PBHGetVolAsync(WDPBPtr paramBlock) __attribute__((deprecated));
 # 7505 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBCatMoveSync(CMovePBPtr paramBlock) ;
+extern OSErr PBCatMoveSync(CMovePBPtr paramBlock) __attribute__((deprecated));
 # 7520 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBCatMoveAsync(CMovePBPtr paramBlock) ;
+extern OSErr PBCatMoveAsync(CMovePBPtr paramBlock) __attribute__((deprecated));
 # 7535 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDirCreateSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBDirCreateSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7550 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDirCreateAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBDirCreateAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7565 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetFCBInfoSync(FCBPBPtr paramBlock) ;
+extern OSErr PBGetFCBInfoSync(FCBPBPtr paramBlock) __attribute__((deprecated));
 # 7580 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetFCBInfoAsync(FCBPBPtr paramBlock) ;
+extern OSErr PBGetFCBInfoAsync(FCBPBPtr paramBlock) __attribute__((deprecated));
 # 7595 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetCatInfoSync(CInfoPBPtr paramBlock) ;
+extern OSErr PBGetCatInfoSync(CInfoPBPtr paramBlock) __attribute__((deprecated));
 # 7610 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetCatInfoAsync(CInfoPBPtr paramBlock) ;
+extern OSErr PBGetCatInfoAsync(CInfoPBPtr paramBlock) __attribute__((deprecated));
 # 7625 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetCatInfoSync(CInfoPBPtr paramBlock) ;
+extern OSErr PBSetCatInfoSync(CInfoPBPtr paramBlock) __attribute__((deprecated));
 # 7640 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetCatInfoAsync(CInfoPBPtr paramBlock) ;
+extern OSErr PBSetCatInfoAsync(CInfoPBPtr paramBlock) __attribute__((deprecated));
 # 7655 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBAllocContigSync(ParmBlkPtr paramBlock) ;
+extern OSErr PBAllocContigSync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7670 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBAllocContigAsync(ParmBlkPtr paramBlock) ;
+extern OSErr PBAllocContigAsync(ParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7685 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetVInfoSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBSetVInfoSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7700 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetVInfoAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBSetVInfoAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7715 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetVInfoSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHGetVInfoSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7730 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetVInfoAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHGetVInfoAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7745 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHOpenSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHOpenSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7760 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHOpenAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHOpenAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7775 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHOpenRFSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHOpenRFSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7790 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHOpenRFAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHOpenRFAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7805 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHOpenDFSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHOpenDFSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7820 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHOpenDFAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHOpenDFAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7835 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHCreateSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHCreateSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7850 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHCreateAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHCreateAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7865 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHDeleteSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHDeleteSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7880 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHDeleteAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHDeleteAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7895 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHRenameSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHRenameSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7910 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHRenameAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHRenameAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7925 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHRstFLockSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHRstFLockSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7940 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHRstFLockAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHRstFLockAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7955 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHSetFLockSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHSetFLockSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7970 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHSetFLockAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHSetFLockAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 7985 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetFInfoSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHGetFInfoSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8000 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetFInfoAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHGetFInfoAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8015 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHSetFInfoSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHSetFInfoSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8030 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHSetFInfoAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHSetFInfoAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8045 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBMakeFSSpecSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBMakeFSSpecSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8060 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBMakeFSSpecAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBMakeFSSpecAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8075 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HGetVol(
   StringPtr volName,
   short * vRefNum,
-  long * dirID) ;
+  long * dirID) __attribute__((deprecated));
 # 8094 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HOpen(
@@ -21386,7 +21315,7 @@ HOpen(
   long dirID,
   ConstStr255Param fileName,
   SInt8 permission,
-  short * refNum) ;
+  short * refNum) __attribute__((deprecated));
 # 8115 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HOpenDF(
@@ -21394,7 +21323,7 @@ HOpenDF(
   long dirID,
   ConstStr255Param fileName,
   SInt8 permission,
-  short * refNum) ;
+  short * refNum) __attribute__((deprecated));
 # 8136 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HOpenRF(
@@ -21402,12 +21331,12 @@ HOpenRF(
   long dirID,
   ConstStr255Param fileName,
   SInt8 permission,
-  short * refNum) ;
+  short * refNum) __attribute__((deprecated));
 # 8157 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 AllocContig(
   short refNum,
-  long * count) ;
+  long * count) __attribute__((deprecated));
 # 8175 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HCreate(
@@ -21415,53 +21344,53 @@ HCreate(
   long dirID,
   ConstStr255Param fileName,
   OSType creator,
-  OSType fileType) ;
+  OSType fileType) __attribute__((deprecated));
 # 8196 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 DirCreate(
   short vRefNum,
   long parentDirID,
   ConstStr255Param directoryName,
-  long * createdDirID) ;
+  long * createdDirID) __attribute__((deprecated));
 # 8216 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HDelete(
   short vRefNum,
   long dirID,
-  ConstStr255Param fileName) ;
+  ConstStr255Param fileName) __attribute__((deprecated));
 # 8235 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HGetFInfo(
   short vRefNum,
   long dirID,
   ConstStr255Param fileName,
-  FInfo * fndrInfo) ;
+  FInfo * fndrInfo) __attribute__((deprecated));
 # 8255 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HSetFInfo(
   short vRefNum,
   long dirID,
   ConstStr255Param fileName,
-  const FInfo * fndrInfo) ;
+  const FInfo * fndrInfo) __attribute__((deprecated));
 # 8275 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HSetFLock(
   short vRefNum,
   long dirID,
-  ConstStr255Param fileName) ;
+  ConstStr255Param fileName) __attribute__((deprecated));
 # 8294 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HRstFLock(
   short vRefNum,
   long dirID,
-  ConstStr255Param fileName) ;
+  ConstStr255Param fileName) __attribute__((deprecated));
 # 8313 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 HRename(
   short vRefNum,
   long dirID,
   ConstStr255Param oldName,
-  ConstStr255Param newName) ;
+  ConstStr255Param newName) __attribute__((deprecated));
 # 8333 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 CatMove(
@@ -21469,31 +21398,31 @@ CatMove(
   long dirID,
   ConstStr255Param oldName,
   long newDirID,
-  ConstStr255Param newName) ;
+  ConstStr255Param newName) __attribute__((deprecated));
 # 8354 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetLogInInfoSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHGetLogInInfoSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8369 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHGetLogInInfoAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHGetLogInInfoAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8384 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHMoveRenameSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHMoveRenameSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8399 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBHMoveRenameAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBHMoveRenameAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8414 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetXCatInfoSync(XCInfoPBPtr paramBlock) ;
+extern OSErr PBGetXCatInfoSync(XCInfoPBPtr paramBlock) __attribute__((deprecated));
 # 8429 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetXCatInfoAsync(XCInfoPBPtr paramBlock) ;
+extern OSErr PBGetXCatInfoAsync(XCInfoPBPtr paramBlock) __attribute__((deprecated));
 # 8444 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBExchangeFilesSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBExchangeFilesSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8459 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBExchangeFilesAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBExchangeFilesAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8474 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetForeignPrivsSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBGetForeignPrivsSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8489 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetForeignPrivsAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBGetForeignPrivsAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8504 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetForeignPrivsSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBSetForeignPrivsSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 8519 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBSetForeignPrivsAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBSetForeignPrivsAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 
 
 
@@ -21517,141 +21446,141 @@ enum {
   kSmall8BitIconSize = 256
 };
 # 8554 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetPath(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetPath(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8568 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTCloseDown(DTPBPtr paramBlock) ;
+extern OSErr PBDTCloseDown(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8582 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTAddIconSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTAddIconSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8596 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTAddIconAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTAddIconAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8610 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetIconSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetIconSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8624 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetIconAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetIconAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8638 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetIconInfoSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetIconInfoSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8652 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetIconInfoAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetIconInfoAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8666 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTAddAPPLSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTAddAPPLSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8680 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTAddAPPLAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTAddAPPLAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8694 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTRemoveAPPLSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTRemoveAPPLSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8708 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTRemoveAPPLAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTRemoveAPPLAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8722 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetAPPLSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetAPPLSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8736 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetAPPLAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetAPPLAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8750 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTSetCommentSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTSetCommentSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8764 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTSetCommentAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTSetCommentAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8778 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTRemoveCommentSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTRemoveCommentSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8792 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTRemoveCommentAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTRemoveCommentAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8806 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetCommentSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetCommentSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8820 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetCommentAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetCommentAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8834 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTFlushSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTFlushSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8848 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTFlushAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTFlushAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8862 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTResetSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTResetSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8876 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTResetAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTResetAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8890 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetInfoSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetInfoSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8904 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTGetInfoAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTGetInfoAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8918 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTOpenInform(DTPBPtr paramBlock) ;
+extern OSErr PBDTOpenInform(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8932 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTDeleteSync(DTPBPtr paramBlock) ;
+extern OSErr PBDTDeleteSync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8946 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBDTDeleteAsync(DTPBPtr paramBlock) ;
+extern OSErr PBDTDeleteAsync(DTPBPtr paramBlock) __attribute__((deprecated));
 # 8962 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSMakeFSSpec(
   short vRefNum,
   long dirID,
   ConstStr255Param fileName,
-  FSSpec * spec) ;
+  FSSpec * spec) __attribute__((deprecated));
 # 8982 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpOpenDF(
   const FSSpec * spec,
   SInt8 permission,
-  short * refNum) ;
+  short * refNum) __attribute__((deprecated));
 # 9001 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpOpenRF(
   const FSSpec * spec,
   SInt8 permission,
-  short * refNum) ;
+  short * refNum) __attribute__((deprecated));
 # 9020 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpCreate(
   const FSSpec * spec,
   OSType creator,
   OSType fileType,
-  ScriptCode scriptTag) ;
+  ScriptCode scriptTag) __attribute__((deprecated));
 # 9040 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpDirCreate(
   const FSSpec * spec,
   ScriptCode scriptTag,
-  long * createdDirID) ;
+  long * createdDirID) __attribute__((deprecated));
 # 9059 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-FSpDelete(const FSSpec * spec) ;
+FSpDelete(const FSSpec * spec) __attribute__((deprecated));
 # 9075 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpGetFInfo(
   const FSSpec * spec,
-  FInfo * fndrInfo) ;
+  FInfo * fndrInfo) __attribute__((deprecated));
 # 9093 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpSetFInfo(
   const FSSpec * spec,
-  const FInfo * fndrInfo) ;
+  const FInfo * fndrInfo) __attribute__((deprecated));
 # 9111 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-FSpSetFLock(const FSSpec * spec) ;
+FSpSetFLock(const FSSpec * spec) __attribute__((deprecated));
 # 9127 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
-FSpRstFLock(const FSSpec * spec) ;
+FSpRstFLock(const FSSpec * spec) __attribute__((deprecated));
 # 9143 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpRename(
   const FSSpec * spec,
-  ConstStr255Param newName) ;
+  ConstStr255Param newName) __attribute__((deprecated));
 # 9161 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpCatMove(
   const FSSpec * source,
-  const FSSpec * dest) ;
+  const FSSpec * dest) __attribute__((deprecated));
 # 9179 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 extern OSErr
 FSpExchangeFiles(
   const FSSpec * source,
-  const FSSpec * dest) ;
+  const FSSpec * dest) __attribute__((deprecated));
 # 9198 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBShareSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBShareSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 9213 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBShareAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBShareAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 9228 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBUnshareSync(HParmBlkPtr paramBlock) ;
+extern OSErr PBUnshareSync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 9243 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBUnshareAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBUnshareAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 9258 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetUGEntrySync(HParmBlkPtr paramBlock) ;
+extern OSErr PBGetUGEntrySync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 9273 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
-extern OSErr PBGetUGEntryAsync(HParmBlkPtr paramBlock) ;
+extern OSErr PBGetUGEntryAsync(HParmBlkPtr paramBlock) __attribute__((deprecated));
 # 9359 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Files.h" 3
 #pragma options align=reset
 # 33 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Components.h" 2 3
@@ -23122,13 +23051,13 @@ enum {
   kMotorola68KCFragArch = 'm68k',
   kAnyCFragArch = 0x3F3F3F3F
 };
-
-
-
+# 92 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CodeFragments.h" 3
 enum {
-  kCompiledCFragArch = kPowerPCCFragArch
+  kCompiledCFragArch = 'none'
 };
-# 98 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CodeFragments.h" 3
+
+
+
 typedef UInt32 CFragVersionNumber;
 enum {
   kNullCFragVersion = 0,
@@ -23454,14 +23383,12 @@ enum {
   kResolveAliasFileNoUI = 0x00000001,
   kResolveAliasTryFileIDFirst = 0x00000002
 };
-# 95 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
+# 90 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 struct AliasRecord {
-  OSType userType;
-  unsigned short aliasSize;
+  UInt8 hidden[6];
 };
 typedef struct AliasRecord AliasRecord;
-
-
+# 102 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 typedef AliasRecord * AliasPtr;
 typedef AliasPtr * AliasHandle;
 
@@ -23489,12 +23416,12 @@ extern OSErr
 NewAlias(
   const FSSpec * fromFile,
   const FSSpec * target,
-  AliasHandle * alias) ;
+  AliasHandle * alias) __attribute__((deprecated));
 # 176 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 NewAliasMinimal(
   const FSSpec * target,
-  AliasHandle * alias) ;
+  AliasHandle * alias) __attribute__((deprecated));
 # 205 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 NewAliasMinimalFromFullPath(
@@ -23502,26 +23429,26 @@ NewAliasMinimalFromFullPath(
   const void * fullPath,
   ConstStr32Param zoneName,
   ConstStr31Param serverName,
-  AliasHandle * alias) ;
+  AliasHandle * alias) __attribute__((deprecated));
 # 232 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 ResolveAlias(
   const FSSpec * fromFile,
   AliasHandle alias,
   FSSpec * target,
-  Boolean * wasChanged) ;
+  Boolean * wasChanged) __attribute__((deprecated));
 # 261 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 GetAliasInfo(
   AliasHandle alias,
   AliasInfoType index,
-  Str63 theString) ;
+  Str63 theString) __attribute__((deprecated));
 # 286 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 IsAliasFile(
   const FSSpec * fileFSSpec,
   Boolean * aliasFileFlag,
-  Boolean * folderFlag) ;
+  Boolean * folderFlag) __attribute__((deprecated));
 # 313 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 ResolveAliasWithMountFlags(
@@ -23529,14 +23456,14 @@ ResolveAliasWithMountFlags(
   AliasHandle alias,
   FSSpec * target,
   Boolean * wasChanged,
-  unsigned long mountFlags) ;
+  unsigned long mountFlags) __attribute__((deprecated));
 # 339 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 ResolveAliasFile(
   FSSpec * theSpec,
   Boolean resolveAliasChains,
   Boolean * targetIsFolder,
-  Boolean * wasAliased) ;
+  Boolean * wasAliased) __attribute__((deprecated));
 # 359 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 ResolveAliasFileWithMountFlags(
@@ -23559,7 +23486,7 @@ UpdateAlias(
   const FSSpec * fromFile,
   const FSSpec * target,
   AliasHandle alias,
-  Boolean * wasChanged) ;
+  Boolean * wasChanged) __attribute__((deprecated));
 
 
 
@@ -23588,7 +23515,7 @@ MatchAlias(
   FSSpecArrayPtr aliasList,
   Boolean * needsUpdate,
   AliasFilterUPP aliasFilter,
-  void * yourDataPtr) ;
+  void * yourDataPtr) __attribute__((deprecated));
 # 499 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 ResolveAliasFileWithMountFlagsNoUI(
@@ -23596,7 +23523,7 @@ ResolveAliasFileWithMountFlagsNoUI(
   Boolean resolveAliasChains,
   Boolean * targetIsFolder,
   Boolean * wasAliased,
-  unsigned long mountFlags) ;
+  unsigned long mountFlags) __attribute__((deprecated));
 # 522 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Aliases.h" 3
 extern OSErr
 MatchAliasNoUI(
@@ -24019,68 +23946,68 @@ InvokeDebugAssertOutputHandlerUPP(
 extern short
 PLstrcmp(
   ConstStr255Param str1,
-  ConstStr255Param str2) ;
+  ConstStr255Param str2) __attribute__((deprecated));
 # 127 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern short
 PLstrncmp(
   ConstStr255Param str1,
   ConstStr255Param str2,
-  short num) ;
+  short num) __attribute__((deprecated));
 # 170 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern StringPtr
 PLstrcpy(
   StringPtr dest,
-  ConstStr255Param source) ;
+  ConstStr255Param source) __attribute__((deprecated));
 # 218 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern StringPtr
 PLstrncpy(
   StringPtr dest,
   ConstStr255Param source,
-  short num) ;
+  short num) __attribute__((deprecated));
 # 265 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern StringPtr
 PLstrcat(
   StringPtr str,
-  ConstStr255Param append) ;
+  ConstStr255Param append) __attribute__((deprecated));
 # 315 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern StringPtr
 PLstrncat(
   StringPtr str1,
   ConstStr255Param append,
-  short num) ;
+  short num) __attribute__((deprecated));
 # 358 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern Ptr
 PLstrchr(
   ConstStr255Param str1,
-  short ch1) ;
+  short ch1) __attribute__((deprecated));
 # 400 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern Ptr
 PLstrrchr(
   ConstStr255Param str1,
-  short ch1) ;
+  short ch1) __attribute__((deprecated));
 # 444 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern Ptr
 PLstrpbrk(
   ConstStr255Param str1,
-  ConstStr255Param charSet) ;
+  ConstStr255Param charSet) __attribute__((deprecated));
 # 490 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern short
 PLstrspn(
   ConstStr255Param str1,
-  ConstStr255Param charSet) ;
+  ConstStr255Param charSet) __attribute__((deprecated));
 # 534 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern Ptr
 PLstrstr(
   ConstStr255Param str1,
-  ConstStr255Param searchStr) ;
+  ConstStr255Param searchStr) __attribute__((deprecated));
 # 571 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern short
-PLstrlen(ConstStr255Param str) ;
+PLstrlen(ConstStr255Param str) __attribute__((deprecated));
 # 614 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/PLStringFuncs.h" 3
 extern short
 PLpos(
   ConstStr255Param str1,
-  ConstStr255Param searchStr) ;
+  ConstStr255Param searchStr) __attribute__((deprecated));
 # 114 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h" 2 3
 
 
@@ -24526,6 +24453,3212 @@ typedef OSStatus ( * ShimEntryPoint)(Ptr paramBlock, Ptr refcon);
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h" 1 3
 # 32 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/DriverServices.h" 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h" 1 3
+# 29 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h" 3
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 1 3 4
+# 39 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/mmintrin.h" 1 3 4
+# 38 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/mmintrin.h" 3 4
+typedef int __m64 __attribute__ ((__vector_size__ (8)));
+
+
+typedef int __v2si __attribute__ ((__vector_size__ (8)));
+typedef short __v4hi __attribute__ ((__vector_size__ (8)));
+typedef char __v8qi __attribute__ ((__vector_size__ (8)));
+
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_empty (void)
+{
+  __builtin_ia32_emms ();
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_m_empty (void)
+{
+  _mm_empty ();
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsi32_si64 (int __i)
+{
+  return (__m64) __builtin_ia32_vec_init_v2si (__i, 0);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_from_int (int __i)
+{
+  return _mm_cvtsi32_si64 (__i);
+}
+# 89 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/mmintrin.h" 3 4
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsi64_si32 (__m64 __i)
+{
+  return __builtin_ia32_vec_ext_v2si ((__v2si)__i, 0);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_m_to_int (__m64 __i)
+{
+  return _mm_cvtsi64_si32 (__i);
+}
+# 113 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/mmintrin.h" 3 4
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_packs_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_packsswb ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_packsswb (__m64 __m1, __m64 __m2)
+{
+  return _mm_packs_pi16 (__m1, __m2);
+}
+
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_packs_pi32 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_packssdw ((__v2si)__m1, (__v2si)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_packssdw (__m64 __m1, __m64 __m2)
+{
+  return _mm_packs_pi32 (__m1, __m2);
+}
+
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_packs_pu16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_packuswb ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_packuswb (__m64 __m1, __m64 __m2)
+{
+  return _mm_packs_pu16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_punpckhbw ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_punpckhbw (__m64 __m1, __m64 __m2)
+{
+  return _mm_unpackhi_pi8 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_punpckhwd ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_punpckhwd (__m64 __m1, __m64 __m2)
+{
+  return _mm_unpackhi_pi16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_pi32 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_punpckhdq ((__v2si)__m1, (__v2si)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_punpckhdq (__m64 __m1, __m64 __m2)
+{
+  return _mm_unpackhi_pi32 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_punpcklbw ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_punpcklbw (__m64 __m1, __m64 __m2)
+{
+  return _mm_unpacklo_pi8 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_punpcklwd ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_punpcklwd (__m64 __m1, __m64 __m2)
+{
+  return _mm_unpacklo_pi16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_pi32 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_punpckldq ((__v2si)__m1, (__v2si)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_punpckldq (__m64 __m1, __m64 __m2)
+{
+  return _mm_unpacklo_pi32 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_add_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_paddb (__m64 __m1, __m64 __m2)
+{
+  return _mm_add_pi8 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_add_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_paddw (__m64 __m1, __m64 __m2)
+{
+  return _mm_add_pi16 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_add_pi32 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddd ((__v2si)__m1, (__v2si)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_paddd (__m64 __m1, __m64 __m2)
+{
+  return _mm_add_pi32 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_add_si64 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddq ((long long)__m1, (long long)__m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_adds_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddsb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_paddsb (__m64 __m1, __m64 __m2)
+{
+  return _mm_adds_pi8 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_adds_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddsw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_paddsw (__m64 __m1, __m64 __m2)
+{
+  return _mm_adds_pi16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_adds_pu8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddusb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_paddusb (__m64 __m1, __m64 __m2)
+{
+  return _mm_adds_pu8 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_adds_pu16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_paddusw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_paddusw (__m64 __m1, __m64 __m2)
+{
+  return _mm_adds_pu16 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sub_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psubb (__m64 __m1, __m64 __m2)
+{
+  return _mm_sub_pi8 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sub_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psubw (__m64 __m1, __m64 __m2)
+{
+  return _mm_sub_pi16 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sub_pi32 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubd ((__v2si)__m1, (__v2si)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psubd (__m64 __m1, __m64 __m2)
+{
+  return _mm_sub_pi32 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sub_si64 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubq ((long long)__m1, (long long)__m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_subs_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubsb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psubsb (__m64 __m1, __m64 __m2)
+{
+  return _mm_subs_pi8 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_subs_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubsw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psubsw (__m64 __m1, __m64 __m2)
+{
+  return _mm_subs_pi16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_subs_pu8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubusb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psubusb (__m64 __m1, __m64 __m2)
+{
+  return _mm_subs_pu8 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_subs_pu16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_psubusw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psubusw (__m64 __m1, __m64 __m2)
+{
+  return _mm_subs_pu16 (__m1, __m2);
+}
+
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_madd_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pmaddwd ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pmaddwd (__m64 __m1, __m64 __m2)
+{
+  return _mm_madd_pi16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_mulhi_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pmulhw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pmulhw (__m64 __m1, __m64 __m2)
+{
+  return _mm_mulhi_pi16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_mullo_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pmullw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pmullw (__m64 __m1, __m64 __m2)
+{
+  return _mm_mullo_pi16 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sll_pi16 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_psllw ((__v4hi)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psllw (__m64 __m, __m64 __count)
+{
+  return _mm_sll_pi16 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_slli_pi16 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_psllw ((__v4hi)__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psllwi (__m64 __m, int __count)
+{
+  return _mm_slli_pi16 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sll_pi32 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_pslld ((__v2si)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pslld (__m64 __m, __m64 __count)
+{
+  return _mm_sll_pi32 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_slli_pi32 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_pslld ((__v2si)__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pslldi (__m64 __m, int __count)
+{
+  return _mm_slli_pi32 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sll_si64 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_psllq ((long long)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psllq (__m64 __m, __m64 __count)
+{
+  return _mm_sll_si64 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_slli_si64 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_psllq ((long long)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psllqi (__m64 __m, int __count)
+{
+  return _mm_slli_si64 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sra_pi16 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_psraw ((__v4hi)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psraw (__m64 __m, __m64 __count)
+{
+  return _mm_sra_pi16 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srai_pi16 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_psraw ((__v4hi)__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrawi (__m64 __m, int __count)
+{
+  return _mm_srai_pi16 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sra_pi32 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_psrad ((__v2si)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrad (__m64 __m, __m64 __count)
+{
+  return _mm_sra_pi32 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srai_pi32 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_psrad ((__v2si)__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psradi (__m64 __m, int __count)
+{
+  return _mm_srai_pi32 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srl_pi16 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_psrlw ((__v4hi)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrlw (__m64 __m, __m64 __count)
+{
+  return _mm_srl_pi16 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srli_pi16 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_psrlw ((__v4hi)__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrlwi (__m64 __m, int __count)
+{
+  return _mm_srli_pi16 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srl_pi32 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_psrld ((__v2si)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrld (__m64 __m, __m64 __count)
+{
+  return _mm_srl_pi32 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srli_pi32 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_psrld ((__v2si)__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrldi (__m64 __m, int __count)
+{
+  return _mm_srli_pi32 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srl_si64 (__m64 __m, __m64 __count)
+{
+  return (__m64) __builtin_ia32_psrlq ((long long)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrlq (__m64 __m, __m64 __count)
+{
+  return _mm_srl_si64 (__m, __count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_srli_si64 (__m64 __m, int __count)
+{
+  return (__m64) __builtin_ia32_psrlq ((long long)__m, (long long)__count);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psrlqi (__m64 __m, int __count)
+{
+  return _mm_srli_si64 (__m, __count);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_and_si64 (__m64 __m1, __m64 __m2)
+{
+  return __builtin_ia32_pand (__m1, __m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pand (__m64 __m1, __m64 __m2)
+{
+  return _mm_and_si64 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_andnot_si64 (__m64 __m1, __m64 __m2)
+{
+  return __builtin_ia32_pandn (__m1, __m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pandn (__m64 __m1, __m64 __m2)
+{
+  return _mm_andnot_si64 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_or_si64 (__m64 __m1, __m64 __m2)
+{
+  return __builtin_ia32_por (__m1, __m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_por (__m64 __m1, __m64 __m2)
+{
+  return _mm_or_si64 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_xor_si64 (__m64 __m1, __m64 __m2)
+{
+  return __builtin_ia32_pxor (__m1, __m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pxor (__m64 __m1, __m64 __m2)
+{
+  return _mm_xor_si64 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pcmpeqb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pcmpeqb (__m64 __m1, __m64 __m2)
+{
+  return _mm_cmpeq_pi8 (__m1, __m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_pi8 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pcmpgtb ((__v8qi)__m1, (__v8qi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pcmpgtb (__m64 __m1, __m64 __m2)
+{
+  return _mm_cmpgt_pi8 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pcmpeqw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pcmpeqw (__m64 __m1, __m64 __m2)
+{
+  return _mm_cmpeq_pi16 (__m1, __m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_pi16 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pcmpgtw ((__v4hi)__m1, (__v4hi)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pcmpgtw (__m64 __m1, __m64 __m2)
+{
+  return _mm_cmpgt_pi16 (__m1, __m2);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_pi32 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pcmpeqd ((__v2si)__m1, (__v2si)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pcmpeqd (__m64 __m1, __m64 __m2)
+{
+  return _mm_cmpeq_pi32 (__m1, __m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_pi32 (__m64 __m1, __m64 __m2)
+{
+  return (__m64) __builtin_ia32_pcmpgtd ((__v2si)__m1, (__v2si)__m2);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pcmpgtd (__m64 __m1, __m64 __m2)
+{
+  return _mm_cmpgt_pi32 (__m1, __m2);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_setzero_si64 (void)
+{
+  return (__m64)0LL;
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_set_pi32 (int __i1, int __i0)
+{
+  return (__m64) __builtin_ia32_vec_init_v2si (__i0, __i1);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_set_pi16 (short __w3, short __w2, short __w1, short __w0)
+{
+  return (__m64) __builtin_ia32_vec_init_v4hi (__w0, __w1, __w2, __w3);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_set_pi8 (char __b7, char __b6, char __b5, char __b4,
+      char __b3, char __b2, char __b1, char __b0)
+{
+  return (__m64) __builtin_ia32_vec_init_v8qi (__b0, __b1, __b2, __b3,
+            __b4, __b5, __b6, __b7);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_setr_pi32 (int __i0, int __i1)
+{
+  return _mm_set_pi32 (__i1, __i0);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_setr_pi16 (short __w0, short __w1, short __w2, short __w3)
+{
+  return _mm_set_pi16 (__w3, __w2, __w1, __w0);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_setr_pi8 (char __b0, char __b1, char __b2, char __b3,
+       char __b4, char __b5, char __b6, char __b7)
+{
+  return _mm_set_pi8 (__b7, __b6, __b5, __b4, __b3, __b2, __b1, __b0);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_set1_pi32 (int __i)
+{
+  return _mm_set_pi32 (__i, __i);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_set1_pi16 (short __w)
+{
+  return _mm_set_pi16 (__w, __w, __w, __w);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_set1_pi8 (char __b)
+{
+  return _mm_set_pi8 (__b, __b, __b, __b, __b, __b, __b, __b);
+}
+# 40 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 2 3 4
+
+
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/mm_malloc.h" 1 3 4
+# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/mm_malloc.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/errno.h" 1 3 4
+# 32 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/mm_malloc.h" 2 3 4
+
+static __inline__ void*
+_mm_malloc (size_t size, size_t align)
+{
+  void * malloc_ptr;
+  void * aligned_ptr;
+
+
+  if (align & (align - 1))
+    {
+      (*__error()) = 22;
+      return ((void*) 0);
+    }
+
+  if (size == 0)
+    return ((void *) 0);
+
+
+
+
+
+    if (align < 2 * sizeof (void *))
+      align = 2 * sizeof (void *);
+
+  malloc_ptr = malloc (size + align);
+  if (!malloc_ptr)
+    return ((void *) 0);
+
+
+  aligned_ptr = (void *) (((size_t) malloc_ptr + align)
+     & ~((size_t) (align) - 1));
+
+
+  ((void **) aligned_ptr) [-1] = malloc_ptr;
+
+  return aligned_ptr;
+}
+
+static __inline__ void
+_mm_free (void * aligned_ptr)
+{
+  if (aligned_ptr)
+    free (((void **) aligned_ptr) [-1]);
+}
+# 43 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 2 3 4
+
+
+typedef float __m128 __attribute__ ((__vector_size__ (16)));
+
+
+typedef float __v4sf __attribute__ ((__vector_size__ (16)));
+
+
+
+
+
+
+enum _mm_hint
+{
+  _MM_HINT_T0 = 3,
+  _MM_HINT_T1 = 2,
+  _MM_HINT_T2 = 1,
+  _MM_HINT_NTA = 0
+};
+# 92 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_setzero_ps (void)
+{
+  return __extension__ (__m128){ 0.0f, 0.0f, 0.0f, 0.0f };
+}
+
+
+
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_add_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_addss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_sub_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_subss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_mul_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_mulss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_div_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_divss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_sqrt_ss (__m128 __A)
+{
+  return (__m128) __builtin_ia32_sqrtss ((__v4sf)__A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_rcp_ss (__m128 __A)
+{
+  return (__m128) __builtin_ia32_rcpss ((__v4sf)__A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_rsqrt_ss (__m128 __A)
+{
+  return (__m128) __builtin_ia32_rsqrtss ((__v4sf)__A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_min_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_minss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_max_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_maxss ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_add_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_addps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_sub_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_subps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_mul_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_mulps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_div_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_divps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_sqrt_ps (__m128 __A)
+{
+  return (__m128) __builtin_ia32_sqrtps ((__v4sf)__A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_rcp_ps (__m128 __A)
+{
+  return (__m128) __builtin_ia32_rcpps ((__v4sf)__A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_rsqrt_ps (__m128 __A)
+{
+  return (__m128) __builtin_ia32_rsqrtps ((__v4sf)__A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_min_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_minps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_max_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_maxps ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_and_ps (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_andps (__A, __B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_andnot_ps (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_andnps (__A, __B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_or_ps (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_orps (__A, __B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_xor_ps (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_xorps (__A, __B);
+}
+
+
+
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpeqss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmplt_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpltss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmple_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpless ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_movss ((__v4sf) __A,
+     (__v4sf)
+     __builtin_ia32_cmpltss ((__v4sf) __B,
+        (__v4sf)
+        __A));
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpge_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_movss ((__v4sf) __A,
+     (__v4sf)
+     __builtin_ia32_cmpless ((__v4sf) __B,
+        (__v4sf)
+        __A));
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpneq_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpneqss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnlt_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpnltss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnle_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpnless ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpngt_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_movss ((__v4sf) __A,
+     (__v4sf)
+     __builtin_ia32_cmpnltss ((__v4sf) __B,
+         (__v4sf)
+         __A));
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnge_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_movss ((__v4sf) __A,
+     (__v4sf)
+     __builtin_ia32_cmpnless ((__v4sf) __B,
+         (__v4sf)
+         __A));
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpord_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpordss ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpunord_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpunordss ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpeqps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmplt_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpltps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmple_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpleps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpgtps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpge_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpgeps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpneq_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpneqps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnlt_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpnltps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnle_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpnleps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpngt_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpngtps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnge_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpngeps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpord_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpordps ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cmpunord_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_cmpunordps ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comieq_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_comieq ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comilt_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_comilt ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comile_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_comile ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comigt_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_comigt ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comige_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_comige ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comineq_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_comineq ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomieq_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_ucomieq ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomilt_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_ucomilt ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomile_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_ucomile ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomigt_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_ucomigt ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomige_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_ucomige ((__v4sf)__A, (__v4sf)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomineq_ss (__m128 __A, __m128 __B)
+{
+  return __builtin_ia32_ucomineq ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvtss_si32 (__m128 __A)
+{
+  return __builtin_ia32_cvtss2si ((__v4sf) __A);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvt_ss2si (__m128 __A)
+{
+  return _mm_cvtss_si32 (__A);
+}
+# 507 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtps_pi32 (__m128 __A)
+{
+  return (__m64) __builtin_ia32_cvtps2pi ((__v4sf) __A);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvt_ps2pi (__m128 __A)
+{
+  return _mm_cvtps_pi32 (__A);
+}
+
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvttss_si32 (__m128 __A)
+{
+  return __builtin_ia32_cvttss2si ((__v4sf) __A);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvtt_ss2si (__m128 __A)
+{
+  return _mm_cvttss_si32 (__A);
+}
+# 543 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvttps_pi32 (__m128 __A)
+{
+  return (__m64) __builtin_ia32_cvttps2pi ((__v4sf) __A);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtt_ps2pi (__m128 __A)
+{
+  return _mm_cvttps_pi32 (__A);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsi32_ss (__m128 __A, int __B)
+{
+  return (__m128) __builtin_ia32_cvtsi2ss ((__v4sf) __A, __B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvt_si2ss (__m128 __A, int __B)
+{
+  return _mm_cvtsi32_ss (__A, __B);
+}
+# 579 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpi32_ps (__m128 __A, __m64 __B)
+{
+  return (__m128) __builtin_ia32_cvtpi2ps ((__v4sf) __A, (__v2si)__B);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvt_pi2ps (__m128 __A, __m64 __B)
+{
+  return _mm_cvtpi32_ps (__A, __B);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpi16_ps (__m64 __A)
+{
+  __v4hi __sign;
+  __v2si __hisi, __losi;
+  __v4sf __r;
+
+
+
+
+  __sign = __builtin_ia32_pcmpgtw ((__v4hi)0LL, (__v4hi)__A);
+
+
+  __hisi = (__v2si) __builtin_ia32_punpckhwd ((__v4hi)__A, __sign);
+  __losi = (__v2si) __builtin_ia32_punpcklwd ((__v4hi)__A, __sign);
+
+
+  __r = (__v4sf) _mm_setzero_ps ();
+  __r = __builtin_ia32_cvtpi2ps (__r, __hisi);
+  __r = __builtin_ia32_movlhps (__r, __r);
+  __r = __builtin_ia32_cvtpi2ps (__r, __losi);
+
+  return (__m128) __r;
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpu16_ps (__m64 __A)
+{
+  __v2si __hisi, __losi;
+  __v4sf __r;
+
+
+  __hisi = (__v2si) __builtin_ia32_punpckhwd ((__v4hi)__A, (__v4hi)0LL);
+  __losi = (__v2si) __builtin_ia32_punpcklwd ((__v4hi)__A, (__v4hi)0LL);
+
+
+  __r = (__v4sf) _mm_setzero_ps ();
+  __r = __builtin_ia32_cvtpi2ps (__r, __hisi);
+  __r = __builtin_ia32_movlhps (__r, __r);
+  __r = __builtin_ia32_cvtpi2ps (__r, __losi);
+
+  return (__m128) __r;
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpi8_ps (__m64 __A)
+{
+  __v8qi __sign;
+
+
+
+
+  __sign = __builtin_ia32_pcmpgtb ((__v8qi)0LL, (__v8qi)__A);
+
+
+  __A = (__m64) __builtin_ia32_punpcklbw ((__v8qi)__A, __sign);
+
+  return _mm_cvtpi16_ps(__A);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpu8_ps(__m64 __A)
+{
+  __A = (__m64) __builtin_ia32_punpcklbw ((__v8qi)__A, (__v8qi)0LL);
+  return _mm_cvtpu16_ps(__A);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpi32x2_ps(__m64 __A, __m64 __B)
+{
+  __v4sf __zero = (__v4sf) _mm_setzero_ps ();
+  __v4sf __sfa = __builtin_ia32_cvtpi2ps (__zero, (__v2si)__A);
+  __v4sf __sfb = __builtin_ia32_cvtpi2ps (__zero, (__v2si)__B);
+  return (__m128) __builtin_ia32_movlhps (__sfa, __sfb);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtps_pi16(__m128 __A)
+{
+  __v4sf __hisf = (__v4sf)__A;
+  __v4sf __losf = __builtin_ia32_movhlps (__hisf, __hisf);
+  __v2si __hisi = __builtin_ia32_cvtps2pi (__hisf);
+  __v2si __losi = __builtin_ia32_cvtps2pi (__losf);
+  return (__m64) __builtin_ia32_packssdw (__hisi, __losi);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtps_pi8(__m128 __A)
+{
+  __v4hi __tmp = (__v4hi) _mm_cvtps_pi16 (__A);
+  return (__m64) __builtin_ia32_packsswb (__tmp, (__v4hi)0LL);
+}
+# 705 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_unpckhps ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_unpcklps ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_loadh_pi (__m128 __A, __m64 const *__P)
+{
+  return (__m128) __builtin_ia32_loadhps ((__v4sf)__A, (__v2si *)__P);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storeh_pi (__m64 *__P, __m128 __A)
+{
+  __builtin_ia32_storehps ((__v2si *)__P, (__v4sf)__A);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_movehl_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_movhlps ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_movelh_ps (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_movlhps ((__v4sf)__A, (__v4sf)__B);
+}
+
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_loadl_pi (__m128 __A, __m64 const *__P)
+{
+  return (__m128) __builtin_ia32_loadlps ((__v4sf)__A, (__v2si *)__P);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storel_pi (__m64 *__P, __m128 __A)
+{
+  __builtin_ia32_storelps ((__v2si *)__P, (__v4sf)__A);
+}
+
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_movemask_ps (__m128 __A)
+{
+  return __builtin_ia32_movmskps ((__v4sf)__A);
+}
+
+
+static __inline unsigned int __attribute__((__always_inline__, __nodebug__))
+_mm_getcsr (void)
+{
+  return __builtin_ia32_stmxcsr ();
+}
+
+
+static __inline unsigned int __attribute__((__always_inline__, __nodebug__))
+_MM_GET_EXCEPTION_STATE (void)
+{
+  return _mm_getcsr() & 0x003f;
+}
+
+static __inline unsigned int __attribute__((__always_inline__, __nodebug__))
+_MM_GET_EXCEPTION_MASK (void)
+{
+  return _mm_getcsr() & 0x1f80;
+}
+
+static __inline unsigned int __attribute__((__always_inline__, __nodebug__))
+_MM_GET_ROUNDING_MODE (void)
+{
+  return _mm_getcsr() & 0x6000;
+}
+
+static __inline unsigned int __attribute__((__always_inline__, __nodebug__))
+_MM_GET_FLUSH_ZERO_MODE (void)
+{
+  return _mm_getcsr() & 0x8000;
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_setcsr (unsigned int __I)
+{
+  __builtin_ia32_ldmxcsr (__I);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_MM_SET_EXCEPTION_STATE(unsigned int __mask)
+{
+  _mm_setcsr((_mm_getcsr() & ~0x003f) | __mask);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_MM_SET_EXCEPTION_MASK (unsigned int __mask)
+{
+  _mm_setcsr((_mm_getcsr() & ~0x1f80) | __mask);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_MM_SET_ROUNDING_MODE (unsigned int __mode)
+{
+  _mm_setcsr((_mm_getcsr() & ~0x6000) | __mode);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_MM_SET_FLUSH_ZERO_MODE (unsigned int __mode)
+{
+  _mm_setcsr((_mm_getcsr() & ~0x8000) | __mode);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_set_ss (float __F)
+{
+  return __extension__ (__m128)(__v4sf){ __F, 0, 0, 0 };
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_set1_ps (float __F)
+{
+  return __extension__ (__m128)(__v4sf){ __F, __F, __F, __F };
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_set_ps1 (float __F)
+{
+  return _mm_set1_ps (__F);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_load_ss (float const *__P)
+{
+  return _mm_set_ss (*__P);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_load1_ps (float const *__P)
+{
+  return _mm_set1_ps (*__P);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_load_ps1 (float const *__P)
+{
+  return _mm_load1_ps (__P);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_load_ps (float const *__P)
+{
+  return (__m128) *(__v4sf *)__P;
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_loadu_ps (float const *__P)
+{
+  return (__m128) __builtin_ia32_loadups (__P);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_loadr_ps (float const *__P)
+{
+  __v4sf __tmp = *(__v4sf *)__P;
+  return (__m128) __builtin_ia32_shufps (__tmp, __tmp, (((0) << 6) | ((1) << 4) | ((2) << 2) | (3)));
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_set_ps (const float __Z, const float __Y, const float __X, const float __W)
+{
+  return __extension__ (__m128)(__v4sf){ __W, __X, __Y, __Z };
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_setr_ps (float __Z, float __Y, float __X, float __W)
+{
+  return __extension__ (__m128)(__v4sf){ __Z, __Y, __X, __W };
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store_ss (float *__P, __m128 __A)
+{
+  *__P = __builtin_ia32_vec_ext_v4sf ((__v4sf)__A, 0);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store_ps (float *__P, __m128 __A)
+{
+  *(__v4sf *)__P = (__v4sf)__A;
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storeu_ps (float *__P, __m128 __A)
+{
+  __builtin_ia32_storeups (__P, (__v4sf)__A);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store1_ps (float *__P, __m128 __A)
+{
+  __v4sf __va = (__v4sf)__A;
+  __v4sf __tmp = __builtin_ia32_shufps (__va, __va, (((0) << 6) | ((0) << 4) | ((0) << 2) | (0)));
+  _mm_storeu_ps (__P, __tmp);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store_ps1 (float *__P, __m128 __A)
+{
+  _mm_store1_ps (__P, __A);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storer_ps (float *__P, __m128 __A)
+{
+  __v4sf __va = (__v4sf)__A;
+  __v4sf __tmp = __builtin_ia32_shufps (__va, __va, (((0) << 6) | ((1) << 4) | ((2) << 2) | (3)));
+  _mm_store_ps (__P, __tmp);
+}
+
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_move_ss (__m128 __A, __m128 __B)
+{
+  return (__m128) __builtin_ia32_movss ((__v4sf)__A, (__v4sf)__B);
+}
+# 1000 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_max_pi16 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_pmaxsw ((__v4hi)__A, (__v4hi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pmaxsw (__m64 __A, __m64 __B)
+{
+  return _mm_max_pi16 (__A, __B);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_max_pu8 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_pmaxub ((__v8qi)__A, (__v8qi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pmaxub (__m64 __A, __m64 __B)
+{
+  return _mm_max_pu8 (__A, __B);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_min_pi16 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_pminsw ((__v4hi)__A, (__v4hi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pminsw (__m64 __A, __m64 __B)
+{
+  return _mm_min_pi16 (__A, __B);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_min_pu8 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_pminub ((__v8qi)__A, (__v8qi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pminub (__m64 __A, __m64 __B)
+{
+  return _mm_min_pu8 (__A, __B);
+}
+
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_movemask_pi8 (__m64 __A)
+{
+  return __builtin_ia32_pmovmskb ((__v8qi)__A);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_m_pmovmskb (__m64 __A)
+{
+  return _mm_movemask_pi8 (__A);
+}
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_mulhi_pu16 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_pmulhuw ((__v4hi)__A, (__v4hi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pmulhuw (__m64 __A, __m64 __B)
+{
+  return _mm_mulhi_pu16 (__A, __B);
+}
+# 1101 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_maskmove_si64 (__m64 __A, __m64 __N, char *__P)
+{
+  __builtin_ia32_maskmovq ((__v8qi)__A, (__v8qi)__N, __P);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_m_maskmovq (__m64 __A, __m64 __N, char *__P)
+{
+  _mm_maskmove_si64 (__A, __N, __P);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_avg_pu8 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_pavgb ((__v8qi)__A, (__v8qi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pavgb (__m64 __A, __m64 __B)
+{
+  return _mm_avg_pu8 (__A, __B);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_avg_pu16 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_pavgw ((__v4hi)__A, (__v4hi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_pavgw (__m64 __A, __m64 __B)
+{
+  return _mm_avg_pu16 (__A, __B);
+}
+
+
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_sad_pu8 (__m64 __A, __m64 __B)
+{
+  return (__m64) __builtin_ia32_psadbw ((__v8qi)__A, (__v8qi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_m_psadbw (__m64 __A, __m64 __B)
+{
+  return _mm_sad_pu8 (__A, __B);
+}
+# 1168 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_stream_pi (__m64 *__P, __m64 __A)
+{
+  __builtin_ia32_movntq ((unsigned long long *)__P, (unsigned long long)__A);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_stream_ps (float *__P, __m128 __A)
+{
+  __builtin_ia32_movntps (__P, (__v4sf)__A);
+}
+
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_sfence (void)
+{
+  __builtin_ia32_sfence ();
+}
+
+
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_pause (void)
+{
+  __asm__ __volatile__ ("rep; nop" : : );
+}
+# 1217 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 1 3 4
+# 35 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 1 3 4
+# 36 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 2 3 4
+
+
+typedef double __v2df __attribute__ ((__vector_size__ (16)));
+typedef long long __v2di __attribute__ ((__vector_size__ (16)));
+typedef int __v4si __attribute__ ((__vector_size__ (16)));
+typedef short __v8hi __attribute__ ((__vector_size__ (16)));
+typedef char __v16qi __attribute__ ((__vector_size__ (16)));
+
+typedef __v2di __m128i;
+typedef __v2df __m128d;
+
+
+
+
+
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_set_sd (double __F)
+{
+  return __extension__ (__m128d){ __F, 0 };
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_set1_pd (double __F)
+{
+  return __extension__ (__m128d){ __F, __F };
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_set_pd1 (double __F)
+{
+  return _mm_set1_pd (__F);
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_set_pd (double __W, double __X)
+{
+  return __extension__ (__m128d){ __X, __W };
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_setr_pd (double __W, double __X)
+{
+  return __extension__ (__m128d){ __W, __X };
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_setzero_pd (void)
+{
+  return __extension__ (__m128d){ 0.0, 0.0 };
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_move_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d) __builtin_ia32_movsd ((__v2df)__A, (__v2df)__B);
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_load_pd (double const *__P)
+{
+  return *(__m128d *)__P;
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_loadu_pd (double const *__P)
+{
+  return __builtin_ia32_loadupd (__P);
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_load1_pd (double const *__P)
+{
+  return _mm_set1_pd (*__P);
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_load_sd (double const *__P)
+{
+  return _mm_set_sd (*__P);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_load_pd1 (double const *__P)
+{
+  return _mm_load1_pd (__P);
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_loadr_pd (double const *__P)
+{
+  __m128d __tmp = _mm_load_pd (__P);
+  return __builtin_ia32_shufpd (__tmp, __tmp, (((0) << 1) | (1)));
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store_pd (double *__P, __m128d __A)
+{
+  *(__m128d *)__P = __A;
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storeu_pd (double *__P, __m128d __A)
+{
+  __builtin_ia32_storeupd (__P, __A);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store_sd (double *__P, __m128d __A)
+{
+  *__P = __builtin_ia32_vec_ext_v2df (__A, 0);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storel_pd (double *__P, __m128d __A)
+{
+  _mm_store_sd (__P, __A);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storeh_pd (double *__P, __m128d __A)
+{
+  *__P = __builtin_ia32_vec_ext_v2df (__A, 1);
+}
+
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store1_pd (double *__P, __m128d __A)
+{
+  _mm_store_pd (__P, __builtin_ia32_shufpd (__A, __A, (((0) << 1) | (0))));
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store_pd1 (double *__P, __m128d __A)
+{
+  _mm_store1_pd (__P, __A);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storer_pd (double *__P, __m128d __A)
+{
+  _mm_store_pd (__P, __builtin_ia32_shufpd (__A, __A, (((0) << 1) | (1))));
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsi128_si32 (__m128i __A)
+{
+  return __builtin_ia32_vec_ext_v4si ((__v4si)__A, 0);
+}
+# 211 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_add_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_addpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_add_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_addsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_sub_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_subpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_sub_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_subsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_mul_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_mulpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_mul_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_mulsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_div_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_divpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_div_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_divsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_sqrt_pd (__m128d __A)
+{
+  return (__m128d)__builtin_ia32_sqrtpd ((__v2df)__A);
+}
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_sqrt_sd (__m128d __A, __m128d __B)
+{
+  __v2df __tmp = __builtin_ia32_movsd ((__v2df)__A, (__v2df)__B);
+  return (__m128d)__builtin_ia32_sqrtsd ((__v2df)__tmp);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_min_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_minpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_min_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_minsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_max_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_maxpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_max_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_maxsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_and_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_andpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_andnot_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_andnpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_or_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_orpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_xor_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_xorpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpeqpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmplt_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpltpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmple_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmplepd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpgtpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpge_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpgepd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpneq_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpneqpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnlt_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpnltpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnle_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpnlepd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpngt_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpngtpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnge_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpngepd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpord_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpordpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpunord_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpunordpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpeqsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmplt_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpltsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmple_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmplesd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
+      (__v2df)
+      __builtin_ia32_cmpltsd ((__v2df) __B,
+         (__v2df)
+         __A));
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpge_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
+      (__v2df)
+      __builtin_ia32_cmplesd ((__v2df) __B,
+         (__v2df)
+         __A));
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpneq_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpneqsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnlt_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpnltsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnle_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpnlesd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpngt_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
+      (__v2df)
+      __builtin_ia32_cmpnltsd ((__v2df) __B,
+          (__v2df)
+          __A));
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpnge_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
+      (__v2df)
+      __builtin_ia32_cmpnlesd ((__v2df) __B,
+          (__v2df)
+          __A));
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpord_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpordsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cmpunord_sd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_cmpunordsd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comieq_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_comisdeq ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comilt_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_comisdlt ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comile_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_comisdle ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comigt_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_comisdgt ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comige_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_comisdge ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_comineq_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_comisdneq ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomieq_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_ucomisdeq ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomilt_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_ucomisdlt ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomile_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_ucomisdle ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomigt_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_ucomisdgt ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomige_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_ucomisdge ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_ucomineq_sd (__m128d __A, __m128d __B)
+{
+  return __builtin_ia32_ucomisdneq ((__v2df)__A, (__v2df)__B);
+}
+
+
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set_epi64x (long long __q1, long long __q0)
+{
+  return __extension__ (__m128i)(__v2di){ __q0, __q1 };
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set_epi64 (__m64 __q1, __m64 __q0)
+{
+  return _mm_set_epi64x ((long long)__q1, (long long)__q0);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set_epi32 (int __q3, int __q2, int __q1, int __q0)
+{
+  return __extension__ (__m128i)(__v4si){ __q0, __q1, __q2, __q3 };
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set_epi16 (short __q7, short __q6, short __q5, short __q4,
+        short __q3, short __q2, short __q1, short __q0)
+{
+  return __extension__ (__m128i)(__v8hi){
+    __q0, __q1, __q2, __q3, __q4, __q5, __q6, __q7 };
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set_epi8 (char __q15, char __q14, char __q13, char __q12,
+       char __q11, char __q10, char __q09, char __q08,
+       char __q07, char __q06, char __q05, char __q04,
+       char __q03, char __q02, char __q01, char __q00)
+{
+  return __extension__ (__m128i)(__v16qi){
+    __q00, __q01, __q02, __q03, __q04, __q05, __q06, __q07,
+    __q08, __q09, __q10, __q11, __q12, __q13, __q14, __q15
+  };
+}
+# 600 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_setr_epi64 (__m64 __q0, __m64 __q1)
+{
+  return _mm_set_epi64 (__q1, __q0);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_setr_epi32 (int __q0, int __q1, int __q2, int __q3)
+{
+  return _mm_set_epi32 (__q3, __q2, __q1, __q0);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_setr_epi16 (short __q0, short __q1, short __q2, short __q3,
+         short __q4, short __q5, short __q6, short __q7)
+{
+  return _mm_set_epi16 (__q7, __q6, __q5, __q4, __q3, __q2, __q1, __q0);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_setr_epi8 (char __q00, char __q01, char __q02, char __q03,
+        char __q04, char __q05, char __q06, char __q07,
+        char __q08, char __q09, char __q10, char __q11,
+        char __q12, char __q13, char __q14, char __q15)
+{
+  return _mm_set_epi8 (__q15, __q14, __q13, __q12, __q11, __q10, __q09, __q08,
+         __q07, __q06, __q05, __q04, __q03, __q02, __q01, __q00);
+}
+
+
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_load_si128 (__m128i const *__P)
+{
+  return *__P;
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_loadu_si128 (__m128i const *__P)
+{
+  return (__m128i) __builtin_ia32_loaddqu ((char const *)__P);
+}
+
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_loadl_epi64 (__m128i const *__P)
+{
+  return (__m128i)__builtin_ia32_loadlv4si ((__v2si *)__P);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_store_si128 (__m128i *__P, __m128i __B)
+{
+  *__P = __B;
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storeu_si128 (__m128i *__P, __m128i __B)
+{
+  __builtin_ia32_storedqu ((char *)__P, (__v16qi)__B);
+}
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_storel_epi64 (__m128i *__P, __m128i __B)
+{
+  __builtin_ia32_storelv4si ((__v2si *)__P, __B);
+}
+
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_movepi64_pi64 (__m128i __B)
+{
+  return (__m64) __builtin_ia32_vec_ext_v2di ((__v2di)__B, 0);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_movpi64_epi64 (__m64 __A)
+{
+  return _mm_set_epi64 ((__m64)0LL, __A);
+}
+
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_move_epi64 (__m128i __A)
+{
+  return (__m128i)__builtin_ia32_movqv4si ((__v4si)__A) ;
+}
+
+
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_setzero_si128 (void)
+{
+  return __extension__ (__m128i)(__v4si){ 0, 0, 0, 0 };
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cvtepi32_pd (__m128i __A)
+{
+  return (__m128d)__builtin_ia32_cvtdq2pd ((__v4si) __A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtepi32_ps (__m128i __A)
+{
+  return (__m128)__builtin_ia32_cvtdq2ps ((__v4si) __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpd_epi32 (__m128d __A)
+{
+  return (__m128i)__builtin_ia32_cvtpd2dq ((__v2df) __A);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpd_pi32 (__m128d __A)
+{
+  return (__m64)__builtin_ia32_cvtpd2pi ((__v2df) __A);
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpd_ps (__m128d __A)
+{
+  return (__m128)__builtin_ia32_cvtpd2ps ((__v2df) __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cvttpd_epi32 (__m128d __A)
+{
+  return (__m128i)__builtin_ia32_cvttpd2dq ((__v2df) __A);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_cvttpd_pi32 (__m128d __A)
+{
+  return (__m64)__builtin_ia32_cvttpd2pi ((__v2df) __A);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cvtpi32_pd (__m64 __A)
+{
+  return (__m128d)__builtin_ia32_cvtpi2pd ((__v2si) __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cvtps_epi32 (__m128 __A)
+{
+  return (__m128i)__builtin_ia32_cvtps2dq ((__v4sf) __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cvttps_epi32 (__m128 __A)
+{
+  return (__m128i)__builtin_ia32_cvttps2dq ((__v4sf) __A);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cvtps_pd (__m128 __A)
+{
+  return (__m128d)__builtin_ia32_cvtps2pd ((__v4sf) __A);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsd_si32 (__m128d __A)
+{
+  return __builtin_ia32_cvtsd2si ((__v2df) __A);
+}
+# 778 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_cvttsd_si32 (__m128d __A)
+{
+  return __builtin_ia32_cvttsd2si ((__v2df) __A);
+}
+# 792 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsd_ss (__m128 __A, __m128d __B)
+{
+  return (__m128)__builtin_ia32_cvtsd2ss ((__v4sf) __A, (__v2df) __B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsi32_sd (__m128d __A, int __B)
+{
+  return (__m128d)__builtin_ia32_cvtsi2sd ((__v2df) __A, __B);
+}
+# 812 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_cvtss_sd (__m128d __A, __m128 __B)
+{
+  return (__m128d)__builtin_ia32_cvtss2sd ((__v2df) __A, (__v4sf)__B);
+}
+
+
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_unpckhpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_pd (__m128d __A, __m128d __B)
+{
+  return (__m128d)__builtin_ia32_unpcklpd ((__v2df)__A, (__v2df)__B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_loadh_pd (__m128d __A, double const *__B)
+{
+  return (__m128d)__builtin_ia32_loadhpd ((__v2df)__A, __B);
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_loadl_pd (__m128d __A, double const *__B)
+{
+  return (__m128d)__builtin_ia32_loadlpd ((__v2df)__A, __B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_movemask_pd (__m128d __A)
+{
+  return __builtin_ia32_movmskpd ((__v2df)__A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_packs_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_packsswb128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_packs_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_packssdw128 ((__v4si)__A, (__v4si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_packus_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_packuswb128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpckhbw128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpckhwd128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpckhdq128 ((__v4si)__A, (__v4si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpackhi_epi64 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpckhqdq128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpcklbw128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpcklwd128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpckldq128 ((__v4si)__A, (__v4si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_unpacklo_epi64 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_punpcklqdq128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_add_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_add_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_add_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddd128 ((__v4si)__A, (__v4si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_add_epi64 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddq128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_adds_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddsb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_adds_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddsw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_adds_epu8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddusb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_adds_epu16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_paddusw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sub_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sub_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sub_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubd128 ((__v4si)__A, (__v4si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sub_epi64 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubq128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_subs_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubsb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_subs_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubsw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_subs_epu8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubusb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_subs_epu16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psubusw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_madd_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pmaddwd128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_mulhi_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pmulhw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_mullo_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pmullw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m64 __attribute__((__always_inline__, __nodebug__))
+_mm_mul_su32 (__m64 __A, __m64 __B)
+{
+  return (__m64)__builtin_ia32_pmuludq ((__v2si)__A, (__v2si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_mul_epu32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pmuludq128 ((__v4si)__A, (__v4si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_slli_epi16 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_psllwi128 ((__v8hi)__A, __B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_slli_epi32 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_pslldi128 ((__v4si)__A, __B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_slli_epi64 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_psllqi128 ((__v2di)__A, __B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srai_epi16 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_psrawi128 ((__v8hi)__A, __B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srai_epi32 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_psradi128 ((__v4si)__A, __B);
+}
+# 1091 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srli_epi16 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_psrlwi128 ((__v8hi)__A, __B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srli_epi32 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_psrldi128 ((__v4si)__A, __B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srli_epi64 (__m128i __A, int __B)
+{
+  return (__m128i)__builtin_ia32_psrlqi128 ((__v2di)__A, __B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sll_epi16 (__m128i __A, __m128i __B)
+{
+  return _mm_slli_epi16 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sll_epi32 (__m128i __A, __m128i __B)
+{
+  return _mm_slli_epi32 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sll_epi64 (__m128i __A, __m128i __B)
+{
+  return _mm_slli_epi64 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sra_epi16 (__m128i __A, __m128i __B)
+{
+  return _mm_srai_epi16 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sra_epi32 (__m128i __A, __m128i __B)
+{
+  return _mm_srai_epi32 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srl_epi16 (__m128i __A, __m128i __B)
+{
+  return _mm_srli_epi16 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srl_epi32 (__m128i __A, __m128i __B)
+{
+  return _mm_srli_epi32 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_srl_epi64 (__m128i __A, __m128i __B)
+{
+  return _mm_srli_epi64 (__A, _mm_cvtsi128_si32 (__B));
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_and_si128 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pand128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_andnot_si128 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pandn128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_or_si128 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_por128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_xor_si128 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pxor128 ((__v2di)__A, (__v2di)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpeqb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpeqw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmpeq_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpeqd128 ((__v4si)__A, (__v4si)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmplt_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpgtb128 ((__v16qi)__B, (__v16qi)__A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmplt_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpgtw128 ((__v8hi)__B, (__v8hi)__A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmplt_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpgtd128 ((__v4si)__B, (__v4si)__A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_epi8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpgtb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpgtw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cmpgt_epi32 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pcmpgtd128 ((__v4si)__A, (__v4si)__B);
+}
+# 1254 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_max_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pmaxsw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_max_epu8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pmaxub128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_min_epi16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pminsw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_min_epu8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pminub128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline int __attribute__((__always_inline__, __nodebug__))
+_mm_movemask_epi8 (__m128i __A)
+{
+  return __builtin_ia32_pmovmskb128 ((__v16qi)__A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_mulhi_epu16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pmulhuw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+
+
+
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_maskmoveu_si128 (__m128i __A, __m128i __B, char *__C)
+{
+  __builtin_ia32_maskmovdqu ((__v16qi)__A, (__v16qi)__B, __C);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_avg_epu8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pavgb128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_avg_epu16 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_pavgw128 ((__v8hi)__A, (__v8hi)__B);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_sad_epu8 (__m128i __A, __m128i __B)
+{
+  return (__m128i)__builtin_ia32_psadbw128 ((__v16qi)__A, (__v16qi)__B);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_stream_si32 (int *__A, int __B)
+{
+  __builtin_ia32_movnti (__A, __B);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_stream_si128 (__m128i *__A, __m128i __B)
+{
+  __builtin_ia32_movntdq ((__v2di *)__A, (__v2di)__B);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_stream_pd (double *__A, __m128d __B)
+{
+  __builtin_ia32_movntpd (__A, (__v2df)__B);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_clflush (void const *__A)
+{
+  __builtin_ia32_clflush (__A);
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_lfence (void)
+{
+  __builtin_ia32_lfence ();
+}
+
+static __inline void __attribute__((__always_inline__, __nodebug__))
+_mm_mfence (void)
+{
+  __builtin_ia32_mfence ();
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_cvtsi32_si128 (int __A)
+{
+  return _mm_set_epi32 (0, 0, 0, __A);
+}
+# 1370 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/emmintrin.h" 3 4
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_castpd_ps(__m128d __A)
+{
+  return (__m128) __A;
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_castpd_si128(__m128d __A)
+{
+  return (__m128i) __A;
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_castps_pd(__m128 __A)
+{
+  return (__m128d) __A;
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_castps_si128(__m128 __A)
+{
+  return (__m128i) __A;
+}
+
+static __inline __m128 __attribute__((__always_inline__, __nodebug__))
+_mm_castsi128_ps(__m128i __A)
+{
+  return (__m128) __A;
+}
+
+static __inline __m128d __attribute__((__always_inline__, __nodebug__))
+_mm_castsi128_pd(__m128i __A)
+{
+  return (__m128d) __A;
+}
+
+
+
+
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set1_epi64x (long long __A)
+{
+  return _mm_set_epi64x (__A, __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set1_epi64 (__m64 __A)
+{
+  return _mm_set_epi64 (__A, __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set1_epi32 (int __A)
+{
+  return _mm_set_epi32 (__A, __A, __A, __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set1_epi16 (short __A)
+{
+  return _mm_set_epi16 (__A, __A, __A, __A, __A, __A, __A, __A);
+}
+
+static __inline __m128i __attribute__((__always_inline__, __nodebug__))
+_mm_set1_epi8 (char __A)
+{
+    __m128i temp, temp2, temp3, temp4;
+    temp = _mm_cvtsi32_si128 ((int)__A);
+    temp2 = _mm_unpacklo_epi8 (temp, temp);
+    temp3 = _mm_unpacklo_epi8 (temp2, temp2);
+    temp4 = ((__m128i)__builtin_ia32_pshufd ((__v4si)temp3, 0));
+    return temp4;
+}
+# 1218 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/xmmintrin.h" 2 3 4
+# 30 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h" 2 3
 # 43 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h" 3
 #pragma options align=power
 
@@ -24656,12 +27789,70 @@ struct ExceptionInformationPowerPC {
   VectorInformationPowerPC * vectorImage;
 };
 typedef struct ExceptionInformationPowerPC ExceptionInformationPowerPC;
+# 215 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h" 3
+struct MachineInformationIntel {
+  unsigned long CS;
+  unsigned long DS;
+  unsigned long SS;
+  unsigned long ES;
+  unsigned long FS;
+  unsigned long GS;
+  unsigned long EFLAGS;
+  unsigned long EIP;
+  unsigned long ExceptTrap;
+  unsigned long ExceptErr;
+  unsigned long ExceptAddr;
+};
+typedef struct MachineInformationIntel MachineInformationIntel;
+struct RegisterInformationIntel {
+  unsigned long EAX;
+  unsigned long EBX;
+  unsigned long ECX;
+  unsigned long EDX;
+  unsigned long ESI;
+  unsigned long EDI;
+  unsigned long EBP;
+  unsigned long ESP;
+};
+typedef struct RegisterInformationIntel RegisterInformationIntel;
 
-typedef ExceptionInformationPowerPC ExceptionInformation;
-typedef MachineInformationPowerPC MachineInformation;
-typedef RegisterInformationPowerPC RegisterInformation;
-typedef FPUInformationPowerPC FPUInformation;
-typedef VectorInformationPowerPC VectorInformation;
+typedef unsigned char FPRegIntel[10];
+struct FPUInformationIntel {
+  FPRegIntel Registers[8];
+  unsigned short Control;
+  unsigned short Status;
+  unsigned short Tag;
+  unsigned short Opcode;
+  unsigned int EIP;
+  unsigned int DP;
+  unsigned int DS;
+};
+typedef struct FPUInformationIntel FPUInformationIntel;
+union Vector128Intel {
+  __m128 s;
+  __m128i si;
+  __m128d sd;
+  unsigned char c[16];
+};
+typedef union Vector128Intel Vector128Intel;
+struct VectorInformationIntel {
+  Vector128Intel Registers[8];
+};
+typedef struct VectorInformationIntel VectorInformationIntel;
+
+typedef MachineInformationIntel MachineInformation;
+typedef RegisterInformationIntel RegisterInformation;
+typedef FPUInformationIntel FPUInformation;
+typedef VectorInformationIntel VectorInformation;
+struct ExceptionInformation {
+  ExceptionKind theKind;
+  MachineInformation * machineState;
+  RegisterInformation * registerImage;
+  FPUInformation * FPUImage;
+  ExceptionInfo info;
+  VectorInformation * vectorImage;
+};
+typedef struct ExceptionInformation ExceptionInformation;
 # 286 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/MachineExceptions.h" 3
 typedef OSStatus ( * ExceptionHandlerProcPtr)(ExceptionInformation * theException);
 typedef ExceptionHandlerProcPtr ExceptionHandlerUPP;
@@ -25028,39 +28219,39 @@ numtostring(
 extern void
 StringToNum(
   ConstStr255Param theString,
-  long * theNum) ;
+  long * theNum) __attribute__((deprecated));
 # 166 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/NumberFormatting.h" 3
 extern void
 NumToString(
   long theNum,
-  Str255 theString) ;
+  Str255 theString) __attribute__((deprecated));
 # 187 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/NumberFormatting.h" 3
 extern FormatStatus
 ExtendedToString(
   const extended80 * x,
   const NumFormatString * myCanonical,
   const NumberParts * partsTable,
-  Str255 outString) ;
+  Str255 outString) __attribute__((deprecated));
 # 210 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/NumberFormatting.h" 3
 extern FormatStatus
 StringToExtended(
   ConstStr255Param source,
   const NumFormatString * myCanonical,
   const NumberParts * partsTable,
-  extended80 * x) ;
+  extended80 * x) __attribute__((deprecated));
 # 233 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/NumberFormatting.h" 3
 extern FormatStatus
 StringToFormatRec(
   ConstStr255Param inString,
   const NumberParts * partsTable,
-  NumFormatString * outString) ;
+  NumFormatString * outString) __attribute__((deprecated));
 # 255 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/NumberFormatting.h" 3
 extern FormatStatus
 FormatRecToString(
   const NumFormatString * myCanonical,
   const NumberParts * partsTable,
   Str255 outString,
-  TripleInt positions) ;
+  TripleInt positions) __attribute__((deprecated));
 # 276 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/NumberFormatting.h" 3
 #pragma options align=reset
 # 134 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h" 2 3
@@ -25097,24 +28288,24 @@ extern short
 ReplaceText(
   Handle baseText,
   Handle substitutionText,
-  Str15 key) ;
+  Str15 key) __attribute__((deprecated));
 # 141 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 ScriptOrder(
   ScriptCode script1,
-  ScriptCode script2) ;
+  ScriptCode script2) __attribute__((deprecated));
 # 165 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 CompareString(
   ConstStr255Param aStr,
   ConstStr255Param bStr,
-  Handle itl2Handle) ;
+  Handle itl2Handle) __attribute__((deprecated));
 # 187 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 IdenticalString(
   ConstStr255Param aStr,
   ConstStr255Param bStr,
-  Handle itl2Handle) ;
+  Handle itl2Handle) __attribute__((deprecated));
 # 209 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 StringOrder(
@@ -25123,7 +28314,7 @@ StringOrder(
   ScriptCode aScript,
   ScriptCode bScript,
   LangCode aLang,
-  LangCode bLang) ;
+  LangCode bLang) __attribute__((deprecated));
 # 234 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 CompareText(
@@ -25131,7 +28322,7 @@ CompareText(
   const void * bPtr,
   short aLen,
   short bLen,
-  Handle itl2Handle) ;
+  Handle itl2Handle) __attribute__((deprecated));
 # 258 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 IdenticalText(
@@ -25139,7 +28330,7 @@ IdenticalText(
   const void * bPtr,
   short aLen,
   short bLen,
-  Handle itl2Handle) ;
+  Handle itl2Handle) __attribute__((deprecated));
 # 282 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 TextOrder(
@@ -25150,33 +28341,33 @@ TextOrder(
   ScriptCode aScript,
   ScriptCode bScript,
   LangCode aLang,
-  LangCode bLang) ;
+  LangCode bLang) __attribute__((deprecated));
 # 309 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 LanguageOrder(
   LangCode language1,
-  LangCode language2) ;
+  LangCode language2) __attribute__((deprecated));
 # 525 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 RelString(
   ConstStr255Param str1,
   ConstStr255Param str2,
   Boolean caseSensitive,
-  Boolean diacSensitive) ;
+  Boolean diacSensitive) __attribute__((deprecated));
 # 548 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern Boolean
 EqualString(
   ConstStr255Param str1,
   ConstStr255Param str2,
   Boolean caseSensitive,
-  Boolean diacSensitive) ;
+  Boolean diacSensitive) __attribute__((deprecated));
 # 571 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/StringCompare.h" 3
 extern short
 relstring(
   const char * str1,
   const char * str2,
   Boolean caseSensitive,
-  Boolean diacSensitive) ;
+  Boolean diacSensitive) __attribute__((deprecated));
 # 142 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h" 2 3
 
 
@@ -25223,21 +28414,21 @@ Munger(
   long len2) ;
 # 140 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern StringHandle
-NewString(ConstStr255Param theString) ;
+NewString(ConstStr255Param theString) __attribute__((deprecated));
 # 159 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 SetString(
   StringHandle theString,
-  ConstStr255Param strNew) ;
+  ConstStr255Param strNew) __attribute__((deprecated));
 # 180 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern StringHandle
-GetString(short stringID) ;
+GetString(short stringID) __attribute__((deprecated));
 # 199 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 GetIndString(
   Str255 theString,
   short strListID,
-  short index) ;
+  short index) __attribute__((deprecated));
 # 258 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 FindWordBreaks(
@@ -25247,79 +28438,79 @@ FindWordBreaks(
   Boolean leadingEdge,
   BreakTablePtr breaks,
   OffsetTable offsets,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 284 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 LowercaseText(
   Ptr textPtr,
   short len,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 306 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 UppercaseText(
   Ptr textPtr,
   short len,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 328 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 StripDiacritics(
   Ptr textPtr,
   short len,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 350 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 UppercaseStripDiacritics(
   Ptr textPtr,
   short len,
-  ScriptCode script) ;
+  ScriptCode script) __attribute__((deprecated));
 # 371 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern ScriptRunStatus
 FindScriptRun(
   Ptr textPtr,
   long textLen,
-  long * lenUsed) ;
+  long * lenUsed) __attribute__((deprecated));
 # 477 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 UpperString(
   Str255 theString,
-  Boolean diacSensitive) ;
+  Boolean diacSensitive) __attribute__((deprecated));
 # 498 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 upperstring(
   char * theString,
-  Boolean diacSensitive) ;
+  Boolean diacSensitive) __attribute__((deprecated));
 # 553 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 c2pstrcpy(
   Str255 dst,
-  const char * src) ;
+  const char * src) __attribute__((deprecated));
 # 574 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 p2cstrcpy(
   char * dst,
-  ConstStr255Param src) ;
+  ConstStr255Param src) __attribute__((deprecated));
 # 595 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 CopyPascalStringToC(
   ConstStr255Param src,
-  char * dst) ;
+  char * dst) __attribute__((deprecated));
 # 616 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern void
 CopyCStringToPascal(
   const char * src,
-  Str255 dst) ;
+  Str255 dst) __attribute__((deprecated));
 # 630 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern StringPtr
-c2pstr(char * aStr) ;
+c2pstr(char * aStr) __attribute__((deprecated));
 # 642 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern StringPtr
-C2PStr(Ptr cString) ;
+C2PStr(Ptr cString) __attribute__((deprecated));
 # 654 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern char *
-p2cstr(StringPtr aStr) ;
+p2cstr(StringPtr aStr) __attribute__((deprecated));
 # 666 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 extern Ptr
-P2CStr(StringPtr pString) ;
+P2CStr(StringPtr pString) __attribute__((deprecated));
 # 690 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextUtils.h" 3
 #pragma options align=reset
 # 146 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h" 2 3
@@ -25905,102 +29096,6 @@ extern float dec2f(const decimal * d) ;
 extern short dec2s(const decimal * d) ;
 # 1424 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
 extern long dec2l(const decimal * d) ;
-# 1454 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double cosl(long double x);
-# 1473 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double sinl(long double x);
-# 1492 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double tanl(long double x);
-# 1511 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double acosl(long double x);
-# 1530 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double asinl(long double x);
-# 1549 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double atanl(long double x);
-# 1568 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double atan2l(long double y, long double x);
-# 1587 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double coshl(long double x);
-# 1606 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double sinhl(long double x);
-# 1625 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double tanhl(long double x);
-# 1644 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double acoshl(long double x);
-# 1663 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double asinhl(long double x);
-# 1682 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double atanhl(long double x);
-# 1701 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double expl(long double x);
-# 1720 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double expm1l(long double x);
-# 1739 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double exp2l(long double x);
-# 1758 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double frexpl(long double x, int *exponent);
-# 1777 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double ldexpl(long double x, int n);
-# 1796 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double logl(long double x);
-# 1815 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double log1pl(long double x);
-# 1834 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double log10l(long double x);
-# 1853 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double log2l(long double x);
-# 1872 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double logbl(long double x);
-# 1914 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double fabsl(long double x);
-# 1933 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double hypotl(long double x, long double y);
-# 1952 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double powl(long double x, long double y);
-# 1971 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double sqrtl(long double x);
-# 1990 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double erfl(long double x);
-# 2009 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double erfcl(long double x);
-# 2028 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double gammal(long double x);
-# 2047 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double lgammal(long double x);
-# 2066 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double ceill(long double x);
-# 2085 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double floorl(long double x);
-# 2104 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double rintl(long double x);
-# 2123 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double nearbyintl(long double x);
-# 2142 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long rinttoll(long double x);
-# 2161 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double roundl(long double x);
-# 2180 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long roundtoll(long double x);
-# 2199 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double truncl(long double x);
-# 2218 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double remainderl(long double x, long double y);
-# 2237 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double remquol(long double x, long double y, int *quo);
-# 2256 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double copysignl(long double x, long double y);
-# 2275 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double fdiml(long double x, long double y);
-# 2294 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double fmaxl(long double x, long double y);
-# 2313 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double fminl(long double x, long double y);
-# 2333 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern relop relationl(long double x, long double y);
-# 2352 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern void num2decl(const decform *f, long double x, decimal *d);
-# 2371 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
-extern long double dec2numl(const decimal * d);
 # 2400 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
 extern double x80tod(const extended80 * x80) ;
 # 2411 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/fp.h" 3
@@ -26020,28 +29115,36 @@ extern void ldtox80(const long double *x, extended80 *x80);
 
 
 
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 1 3 4
-# 35 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
+
+
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 1 3 4
+# 35 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
 #pragma GCC fenv
-# 62 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
-typedef unsigned int fenv_t;
-typedef unsigned int fexcept_t;
+# 83 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+typedef struct {
+    unsigned short __control;
+    unsigned short __status;
+    unsigned int __mxcsr;
+    char __reserved[8];
+} fenv_t;
+
+typedef unsigned short fexcept_t;
 
 
 enum {
-  _FE_INEXACT = 0x02000000,
-  _FE_DIVBYZERO = 0x04000000,
-  _FE_UNDERFLOW = 0x08000000,
-  _FE_OVERFLOW = 0x10000000,
-  _FE_INVALID = 0x20000000,
-  _FE_ALL_EXCEPT = 0x3E000000
+  _FE_INEXACT = 0x0020,
+  _FE_DIVBYZERO = 0x0004,
+  _FE_UNDERFLOW = 0x0010,
+  _FE_OVERFLOW = 0x0008,
+  _FE_INVALID = 0x0001,
+  _FE_ALL_EXCEPT = 0x003D
 };
-# 83 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
+# 110 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
 enum {
-  _FE_TONEAREST = 0x00000000,
-  _FE_TOWARDZERO = 0x00000001,
-  _FE_UPWARD = 0x00000002,
-  _FE_DOWNWARD = 0x00000003
+  _FE_TONEAREST = 0x0000,
+  _FE_TOWARDZERO = 0x0C00,
+  _FE_UPWARD = 0x0800,
+  _FE_DOWNWARD = 0x0400
 };
 
 
@@ -26051,38 +29154,31 @@ enum {
 
 
 extern const fenv_t _FE_DFL_ENV;
-# 110 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
-extern int feclearexcept(int);
-# 119 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
-extern int fegetexceptflag(fexcept_t *, int);
-
-
-
-
-
-
-
-extern int feraiseexcept(int);
-# 139 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
-extern int fesetexceptflag(const fexcept_t *, int);
-# 150 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
-extern int fetestexcept(int);
-# 162 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
+# 140 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern const fenv_t _FE_DFL_DISABLE_SSE_DENORMS_ENV;
+# 154 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int feclearexcept(int );
+# 164 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int fegetexceptflag(fexcept_t * , int );
+# 173 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int feraiseexcept(int );
+# 186 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int fesetexceptflag(const fexcept_t * , int );
+# 201 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int fetestexcept(int );
+# 215 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
 extern int fegetround(void);
-# 172 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/ppc/fenv.h" 3 4
-extern int fesetround(int);
-
-
-
-
-
-
-
-extern int fegetenv(fenv_t *);
-extern int feholdexcept(fenv_t *);
-extern int fesetenv(const fenv_t *);
-extern int feupdateenv(const fenv_t *);
-# 31 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/fenv.h" 2 3 4
+# 226 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int fesetround(int );
+# 238 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int fegetenv(fenv_t * );
+# 248 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int feholdexcept(fenv_t * );
+# 273 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int fesetenv(const fenv_t * );
+# 286 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/fenv.h" 3 4
+extern int feupdateenv(const fenv_t * );
+# 33 "/Developer/SDKs/MacOSX10.4u.sdk/usr/include/fenv.h" 2 3 4
 # 165 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/CarbonCore.h" 2 3
 
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/TextEncodingConverter.h" 1 3
@@ -26895,13 +29991,13 @@ CreateThreadPool(
 extern OSErr
 GetFreeThreadCount(
   ThreadStyle threadStyle,
-  SInt16 * freeCount) ;
+  SInt16 * freeCount) __attribute__((deprecated));
 # 497 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Threads.h" 3
 extern OSErr
 GetSpecificFreeThreadCount(
   ThreadStyle threadStyle,
   Size stackSize,
-  SInt16 * freeCount) ;
+  SInt16 * freeCount) __attribute__((deprecated));
 # 512 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Threads.h" 3
 extern OSErr
 GetDefaultThreadStackSize(
@@ -27042,12 +30138,12 @@ FindFolderExtended(
   UInt32 flags,
   void * data,
   short * foundVRefNum,
-  long * foundDirID) ;
+  long * foundDirID) __attribute__((deprecated));
 # 323 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 ReleaseFolder(
   short vRefNum,
-  OSType folderType) ;
+  OSType folderType) __attribute__((deprecated));
 # 395 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 FSFindFolder(
@@ -27063,7 +30159,7 @@ FSFindFolderExtended(
   Boolean createFolder,
   UInt32 flags,
   void * data,
-  FSRef * foundRef) ;
+  FSRef * foundRef) __attribute__((deprecated));
 # 495 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 enum {
   kExtensionDisabledFolderType = 'extD',
@@ -27409,7 +30505,7 @@ extern OSErr
 GetFolderDescriptor(
   FolderType foldType,
   Size descSize,
-  FolderDesc * foldDesc) ;
+  FolderDesc * foldDesc) __attribute__((deprecated));
 # 1011 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 GetFolderTypes(
@@ -27433,26 +30529,26 @@ AddFolderRouting(
   FolderType routeFromFolder,
   FolderType routeToFolder,
   RoutingFlags flags,
-  Boolean replaceFlag) ;
+  Boolean replaceFlag) __attribute__((deprecated));
 # 1183 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 RemoveFolderRouting(
   OSType fileType,
-  FolderType routeFromFolder) ;
+  FolderType routeFromFolder) __attribute__((deprecated));
 # 1235 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 FindFolderRouting(
   OSType fileType,
   FolderType routeFromFolder,
   FolderType * routeToFolder,
-  RoutingFlags * flags) ;
+  RoutingFlags * flags) __attribute__((deprecated));
 # 1289 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 GetFolderRoutings(
   UInt32 requestedRoutingCount,
   UInt32 * totalRoutingCount,
   Size routingSize,
-  FolderRouting * theRoutings) ;
+  FolderRouting * theRoutings) __attribute__((deprecated));
 # 1336 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 InvalidateFolderDescriptorCache(
@@ -27491,18 +30587,18 @@ extern OSErr
 FolderManagerRegisterNotificationProc(
   FolderManagerNotificationUPP notificationProc,
   void * refCon,
-  UInt32 options) ;
+  UInt32 options) __attribute__((deprecated));
 # 1623 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSErr
 FolderManagerUnregisterNotificationProc(
   FolderManagerNotificationUPP notificationProc,
-  void * refCon) ;
+  void * refCon) __attribute__((deprecated));
 # 1654 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 extern OSStatus
 FolderManagerRegisterCallNotificationProcs(
   OSType message,
   void * arg,
-  UInt32 options) ;
+  UInt32 options) __attribute__((deprecated));
 # 1674 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Folders.h" 3
 struct MultiUserGestalt {
 
@@ -27589,32 +30685,32 @@ struct TMTask {
 };
 # 141 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern void
-InsTime(QElemPtr tmTaskPtr) ;
+InsTime(QElemPtr tmTaskPtr) __attribute__((deprecated));
 # 156 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern void
-InsXTime(QElemPtr tmTaskPtr) ;
+InsXTime(QElemPtr tmTaskPtr) __attribute__((deprecated));
 # 171 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern void
 PrimeTime(
   QElemPtr tmTaskPtr,
-  long count) ;
+  long count) __attribute__((deprecated));
 # 188 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern void
-RmvTime(QElemPtr tmTaskPtr) ;
+RmvTime(QElemPtr tmTaskPtr) __attribute__((deprecated));
 # 228 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern OSErr
-InstallTimeTask(QElemPtr tmTaskPtr) ;
+InstallTimeTask(QElemPtr tmTaskPtr) __attribute__((deprecated));
 # 278 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern OSErr
-InstallXTimeTask(QElemPtr tmTaskPtr) ;
+InstallXTimeTask(QElemPtr tmTaskPtr) __attribute__((deprecated));
 # 341 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern OSErr
 PrimeTimeTask(
   QElemPtr tmTaskPtr,
-  long count) ;
+  long count) __attribute__((deprecated));
 # 391 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern OSErr
-RemoveTimeTask(QElemPtr tmTaskPtr) ;
+RemoveTimeTask(QElemPtr tmTaskPtr) __attribute__((deprecated));
 # 404 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Timer.h" 3
 extern TimerUPP
 NewTimerUPP(TimerProcPtr userRoutine) ;
@@ -27749,41 +30845,41 @@ typedef struct MPAddressSpaceInfo MPAddressSpaceInfo;
 # 52 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 #pragma options align=mac68k
 # 123 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetMemTop(void) ;
+extern Ptr LMGetMemTop(void) __attribute__((deprecated));
 # 134 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetMemTop(Ptr value) ;
+extern void LMSetMemTop(Ptr value) __attribute__((deprecated));
 # 146 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetBufPtr(void) ;
+extern Ptr LMGetBufPtr(void) __attribute__((deprecated));
 # 157 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetBufPtr(Ptr value) ;
+extern void LMSetBufPtr(Ptr value) __attribute__((deprecated));
 # 169 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetHeapEnd(void) ;
+extern Ptr LMGetHeapEnd(void) __attribute__((deprecated));
 # 180 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetHeapEnd(Ptr value) ;
+extern void LMSetHeapEnd(Ptr value) __attribute__((deprecated));
 # 191 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern UInt8 LMGetCPUFlag(void) ;
+extern UInt8 LMGetCPUFlag(void) __attribute__((deprecated));
 # 202 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetCPUFlag(UInt8 value) ;
+extern void LMSetCPUFlag(UInt8 value) __attribute__((deprecated));
 # 214 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern SInt32 LMGetRndSeed(void) ;
 # 225 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetRndSeed(SInt32 value) ;
 # 237 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern UInt8 LMGetSEvtEnb(void) ;
+extern UInt8 LMGetSEvtEnb(void) __attribute__((deprecated));
 # 248 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetSEvtEnb(UInt8 value) ;
+extern void LMSetSEvtEnb(UInt8 value) __attribute__((deprecated));
 # 259 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern SInt16 LMGetBootDrive(void) ;
 # 270 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetBootDrive(SInt16 value) ;
 # 282 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern UInt8 LMGetSdVolume(void) ;
+extern UInt8 LMGetSdVolume(void) __attribute__((deprecated));
 # 293 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetSdVolume(UInt8 value) ;
+extern void LMSetSdVolume(UInt8 value) __attribute__((deprecated));
 # 305 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetSoundPtr(void) ;
+extern Ptr LMGetSoundPtr(void) __attribute__((deprecated));
 # 316 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetSoundPtr(Ptr value) ;
+extern void LMSetSoundPtr(Ptr value) __attribute__((deprecated));
 # 328 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern Ptr LMGetSoundBase(void) ;
 # 339 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
@@ -27797,9 +30893,9 @@ extern SInt16 LMGetCurPitch(void) ;
 # 385 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetCurPitch(SInt16 value) ;
 # 580 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern UInt8 LMGetScrDmpEnb(void) ;
+extern UInt8 LMGetScrDmpEnb(void) __attribute__((deprecated));
 # 591 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetScrDmpEnb(UInt8 value) ;
+extern void LMSetScrDmpEnb(UInt8 value) __attribute__((deprecated));
 # 603 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern SInt32 LMGetBufTgFNum(void) ;
 # 614 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
@@ -27825,9 +30921,9 @@ extern SInt32 LMGetDefltStack(void) ;
 # 728 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetDefltStack(SInt32 value) ;
 # 740 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Handle LMGetGZRootHnd(void) ;
+extern Handle LMGetGZRootHnd(void) __attribute__((deprecated));
 # 751 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetGZRootHnd(Handle value) ;
+extern void LMSetGZRootHnd(Handle value) __attribute__((deprecated));
 # 763 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern Handle LMGetGZMoveHnd(void) ;
 # 774 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
@@ -27845,29 +30941,29 @@ extern SInt16 LMGetCurApRefNum(void) ;
 # 840 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetCurApRefNum(SInt16 value) ;
 # 856 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetCurStackBase(void) ;
+extern Ptr LMGetCurStackBase(void) __attribute__((deprecated));
 # 870 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetCurStackBase(Ptr value) ;
+extern void LMSetCurStackBase(Ptr value) __attribute__((deprecated));
 # 881 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern SInt16 LMGetCurPageOption(void) ;
+extern SInt16 LMGetCurPageOption(void) __attribute__((deprecated));
 # 892 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetCurPageOption(SInt16 value) ;
+extern void LMSetCurPageOption(SInt16 value) __attribute__((deprecated));
 # 905 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern SInt16 LMGetPrintErr(void) ;
+extern SInt16 LMGetPrintErr(void) __attribute__((deprecated));
 # 916 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetPrintErr(SInt16 value) ;
+extern void LMSetPrintErr(SInt16 value) __attribute__((deprecated));
 # 931 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern SInt16 LMGetApFontID(void) ;
+extern SInt16 LMGetApFontID(void) __attribute__((deprecated));
 # 946 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetApFontID(SInt16 value) ;
+extern void LMSetApFontID(SInt16 value) __attribute__((deprecated));
 # 957 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern SInt32 LMGetOneOne(void) ;
 # 968 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetOneOne(SInt32 value) ;
 # 979 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern SInt32 LMGetMinusOne(void) ;
+extern SInt32 LMGetMinusOne(void) __attribute__((deprecated));
 # 990 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetMinusOne(SInt32 value) ;
+extern void LMSetMinusOne(SInt32 value) __attribute__((deprecated));
 # 1001 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern SInt16 LMGetSysMap(void) ;
 # 1012 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
@@ -27889,11 +30985,11 @@ extern Ptr LMGetIntlSpec(void) ;
 # 1101 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetIntlSpec(Ptr value) ;
 # 1117 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern SInt16 LMGetSysFontFam(void) ;
+extern SInt16 LMGetSysFontFam(void) __attribute__((deprecated));
 # 1132 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetSysFontFam(SInt16 value) ;
+extern void LMSetSysFontFam(SInt16 value) __attribute__((deprecated));
 # 1147 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern SInt16 LMGetSysFontSize(void) ;
+extern SInt16 LMGetSysFontSize(void) __attribute__((deprecated));
 # 1162 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetSysFontSize(SInt16 value) ;
 # 1178 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
@@ -27901,33 +30997,33 @@ extern StringPtr LMGetCurApName(void) ;
 # 1189 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
 extern void LMSetCurApName(ConstStr31Param curApNameValue) ;
 # 1204 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern StringPtr LMGetSysResName(void) ;
+extern StringPtr LMGetSysResName(void) __attribute__((deprecated));
 # 1219 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetSysResName(ConstStr15Param sysResNameValue) ;
+extern void LMSetSysResName(ConstStr15Param sysResNameValue) __attribute__((deprecated));
 # 1236 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern StringPtr LMGetFinderName(void) ;
+extern StringPtr LMGetFinderName(void) __attribute__((deprecated));
 # 1251 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetFinderName(ConstStr15Param finderNameValue) ;
+extern void LMSetFinderName(ConstStr15Param finderNameValue) __attribute__((deprecated));
 # 1268 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetToolScratch(void) ;
+extern Ptr LMGetToolScratch(void) __attribute__((deprecated));
 # 1285 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetToolScratch(const void * toolScratchValue) ;
+extern void LMSetToolScratch(const void * toolScratchValue) __attribute__((deprecated));
 # 1302 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern UniversalProcPtr LMGetLvl2DT(short vectorNumber) ;
+extern UniversalProcPtr LMGetLvl2DT(short vectorNumber) __attribute__((deprecated));
 # 1313 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetLvl2DT(UniversalProcPtr Lvl2DTValue, short vectorNumber) ;
+extern void LMSetLvl2DT(UniversalProcPtr Lvl2DTValue, short vectorNumber) __attribute__((deprecated));
 # 1337 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetHighHeapMark(void) ;
+extern Ptr LMGetHighHeapMark(void) __attribute__((deprecated));
 # 1348 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetHighHeapMark(Ptr value) ;
+extern void LMSetHighHeapMark(Ptr value) __attribute__((deprecated));
 # 1360 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetStackLowPoint(void) ;
+extern Ptr LMGetStackLowPoint(void) __attribute__((deprecated));
 # 1371 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetStackLowPoint(Ptr value) ;
+extern void LMSetStackLowPoint(Ptr value) __attribute__((deprecated));
 # 1383 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern Ptr LMGetDiskFormatingHFSDefaults(void) ;
+extern Ptr LMGetDiskFormatingHFSDefaults(void) __attribute__((deprecated));
 # 1394 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers/LowMem.h" 3
-extern void LMSetDiskFormatingHFSDefaults(Ptr value) ;
+extern void LMSetDiskFormatingHFSDefaults(Ptr value) __attribute__((deprecated));
 
 
 
@@ -30429,15 +33525,15 @@ typedef void ( * SCSICallbackProcPtr)(void * scsiPB);
 typedef SCSICallbackProcPtr SCSICallbackUPP;
 # 209 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/SCSI.h" 3
 extern SCSICallbackUPP
-NewSCSICallbackUPP(SCSICallbackProcPtr userRoutine) ;
+NewSCSICallbackUPP(SCSICallbackProcPtr userRoutine) __attribute__((deprecated));
 # 220 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/SCSI.h" 3
 extern void
-DisposeSCSICallbackUPP(SCSICallbackUPP userUPP) ;
+DisposeSCSICallbackUPP(SCSICallbackUPP userUPP) __attribute__((deprecated));
 # 231 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/SCSI.h" 3
 extern void
 InvokeSCSICallbackUPP(
   void * scsiPB,
-  SCSICallbackUPP userUPP) ;
+  SCSICallbackUPP userUPP) __attribute__((deprecated));
 
 
 
@@ -31110,7 +34206,7 @@ enum {
 };
 # 951 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/SCSI.h" 3
 extern OSErr
-SCSIAction(SCSI_PB * parameterBlock) ;
+SCSIAction(SCSI_PB * parameterBlock) __attribute__((deprecated));
 # 998 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/SCSI.h" 3
 #pragma options align=reset
 # 38 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OSServices.h" 2 3
@@ -31469,10 +34565,10 @@ typedef void ( * OTNotifyProcPtr)(void *contextPtr, OTEventCode code, OTResult r
 typedef OTNotifyProcPtr OTNotifyUPP;
 # 861 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTNotifyUPP
-NewOTNotifyUPP(OTNotifyProcPtr userRoutine) ;
+NewOTNotifyUPP(OTNotifyProcPtr userRoutine) __attribute__((deprecated));
 # 872 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-DisposeOTNotifyUPP(OTNotifyUPP userUPP) ;
+DisposeOTNotifyUPP(OTNotifyUPP userUPP) __attribute__((deprecated));
 # 883 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 InvokeOTNotifyUPP(
@@ -31480,7 +34576,7 @@ InvokeOTNotifyUPP(
   OTEventCode code,
   OTResult result,
   void * cookie,
-  OTNotifyUPP userUPP) ;
+  OTNotifyUPP userUPP) __attribute__((deprecated));
 
 
 
@@ -31763,28 +34859,28 @@ OTCreatePortRef(
   OTBusType busType,
   OTDeviceType devType,
   OTSlotNumber slot,
-  UInt16 other) ;
+  UInt16 other) __attribute__((deprecated));
 # 1254 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTDeviceType
-OTGetDeviceTypeFromPortRef(OTPortRef ref) ;
+OTGetDeviceTypeFromPortRef(OTPortRef ref) __attribute__((deprecated));
 # 1266 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern UInt16
-OTGetBusTypeFromPortRef(OTPortRef ref) ;
+OTGetBusTypeFromPortRef(OTPortRef ref) __attribute__((deprecated));
 # 1278 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTSlotNumber
 OTGetSlotFromPortRef(
   OTPortRef ref,
-  UInt16 * other) ;
+  UInt16 * other) __attribute__((deprecated));
 # 1292 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTPortRef
 OTSetDeviceTypeInPortRef(
   OTPortRef ref,
-  OTDeviceType devType) ;
+  OTDeviceType devType) __attribute__((deprecated));
 # 1306 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTPortRef
 OTSetBusTypeInPortRef(
   OTPortRef ref,
-  OTBusType busType) ;
+  OTBusType busType) __attribute__((deprecated));
 # 1328 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 enum {
   kMaxModuleNameLength = 31,
@@ -31843,17 +34939,17 @@ typedef struct OTPortRecord OTPortRecord;
 extern Boolean
 OTGetIndexedPort(
   OTPortRecord * portRecord,
-  OTItemCount index) ;
+  OTItemCount index) __attribute__((deprecated));
 # 1419 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTFindPort(
   OTPortRecord * portRecord,
-  const char * portName) ;
+  const char * portName) __attribute__((deprecated));
 # 1434 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTFindPortByRef(
   OTPortRecord * portRecord,
-  OTPortRef ref) ;
+  OTPortRef ref) __attribute__((deprecated));
 # 1491 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 struct TNetbuf {
   ByteCount maxlen;
@@ -32061,113 +35157,113 @@ enum {
 extern OSStatus
 InitOpenTransportInContext(
   OTInitializationFlags flags,
-  OTClientContextPtr * outClientContext) ;
+  OTClientContextPtr * outClientContext) __attribute__((deprecated));
 # 1797 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-CloseOpenTransportInContext(OTClientContextPtr clientContext) ;
+CloseOpenTransportInContext(OTClientContextPtr clientContext) __attribute__((deprecated));
 # 1865 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTRegisterAsClientInContext(
   OTClientName name,
   OTNotifyUPP proc,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 1880 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTUnregisterAsClientInContext(OTClientContextPtr clientContext) ;
+OTUnregisterAsClientInContext(OTClientContextPtr clientContext) __attribute__((deprecated));
 # 1946 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 typedef void ( * OTProcessProcPtr)(void * arg);
 typedef OTProcessProcPtr OTProcessUPP;
 # 1956 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTProcessUPP
-NewOTProcessUPP(OTProcessProcPtr userRoutine) ;
+NewOTProcessUPP(OTProcessProcPtr userRoutine) __attribute__((deprecated));
 # 1967 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-DisposeOTProcessUPP(OTProcessUPP userUPP) ;
+DisposeOTProcessUPP(OTProcessUPP userUPP) __attribute__((deprecated));
 # 1978 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 InvokeOTProcessUPP(
   void * arg,
-  OTProcessUPP userUPP) ;
+  OTProcessUPP userUPP) __attribute__((deprecated));
 # 1997 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern long
 OTCreateDeferredTaskInContext(
   OTProcessUPP upp,
   void * arg,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 2012 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 typedef long OTDeferredTaskRef;
 # 2031 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
-OTScheduleDeferredTask(OTDeferredTaskRef dtCookie) ;
+OTScheduleDeferredTask(OTDeferredTaskRef dtCookie) __attribute__((deprecated));
 # 2053 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTDestroyDeferredTask(OTDeferredTaskRef dtCookie) ;
+OTDestroyDeferredTask(OTDeferredTaskRef dtCookie) __attribute__((deprecated));
 # 2070 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 typedef long OTSystemTaskRef;
 # 2119 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
-OTCanMakeSyncCall(void) ;
+OTCanMakeSyncCall(void) __attribute__((deprecated));
 # 2155 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTCloseProvider(ProviderRef ref) ;
+OTCloseProvider(ProviderRef ref) __attribute__((deprecated));
 # 2197 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern SInt32
 OTIoctl(
   ProviderRef ref,
   UInt32 cmd,
-  void * data) ;
+  void * data) __attribute__((deprecated));
 # 2252 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTSetAsynchronous(ProviderRef ref) ;
+OTSetAsynchronous(ProviderRef ref) __attribute__((deprecated));
 # 2264 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTSetSynchronous(ProviderRef ref) ;
+OTSetSynchronous(ProviderRef ref) __attribute__((deprecated));
 # 2276 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
-OTIsSynchronous(ProviderRef ref) ;
+OTIsSynchronous(ProviderRef ref) __attribute__((deprecated));
 # 2288 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTSetBlocking(ProviderRef ref) ;
+OTSetBlocking(ProviderRef ref) __attribute__((deprecated));
 # 2300 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTSetNonBlocking(ProviderRef ref) ;
+OTSetNonBlocking(ProviderRef ref) __attribute__((deprecated));
 # 2312 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
-OTIsBlocking(ProviderRef ref) ;
+OTIsBlocking(ProviderRef ref) __attribute__((deprecated));
 # 2324 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTInstallNotifier(
   ProviderRef ref,
   OTNotifyUPP proc,
-  void * contextPtr) ;
+  void * contextPtr) __attribute__((deprecated));
 # 2339 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTUseSyncIdleEvents(
   ProviderRef ref,
-  Boolean useEvents) ;
+  Boolean useEvents) __attribute__((deprecated));
 # 2353 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-OTRemoveNotifier(ProviderRef ref) ;
+OTRemoveNotifier(ProviderRef ref) __attribute__((deprecated));
 # 2365 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-OTLeaveNotifier(ProviderRef ref) ;
+OTLeaveNotifier(ProviderRef ref) __attribute__((deprecated));
 # 2377 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
-OTEnterNotifier(ProviderRef ref) ;
+OTEnterNotifier(ProviderRef ref) __attribute__((deprecated));
 # 2389 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTAckSends(ProviderRef ref) ;
+OTAckSends(ProviderRef ref) __attribute__((deprecated));
 # 2401 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTDontAckSends(ProviderRef ref) ;
+OTDontAckSends(ProviderRef ref) __attribute__((deprecated));
 # 2413 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
-OTIsAckingSends(ProviderRef ref) ;
+OTIsAckingSends(ProviderRef ref) __attribute__((deprecated));
 # 2425 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTCancelSynchronousCalls(
   ProviderRef ref,
-  OSStatus err) ;
+  OSStatus err) __attribute__((deprecated));
 # 2453 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern EndpointRef
 OTOpenEndpointInContext(
@@ -32175,7 +35271,7 @@ OTOpenEndpointInContext(
   OTOpenFlags oflag,
   TEndpointInfo * info,
   OSStatus * err,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 2470 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTAsyncOpenEndpointInContext(
@@ -32184,36 +35280,36 @@ OTAsyncOpenEndpointInContext(
   TEndpointInfo * info,
   OTNotifyUPP upp,
   void * contextPtr,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 2518 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTGetEndpointInfo(
   EndpointRef ref,
-  TEndpointInfo * info) ;
+  TEndpointInfo * info) __attribute__((deprecated));
 # 2532 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTResult
-OTGetEndpointState(EndpointRef ref) ;
+OTGetEndpointState(EndpointRef ref) __attribute__((deprecated));
 # 2544 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTResult
-OTLook(EndpointRef ref) ;
+OTLook(EndpointRef ref) __attribute__((deprecated));
 # 2566 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTResult
 OTCountDataBytes(
   EndpointRef ref,
-  OTByteCount * countPtr) ;
+  OTByteCount * countPtr) __attribute__((deprecated));
 # 2580 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTGetProtAddress(
   EndpointRef ref,
   TBind * boundAddr,
-  TBind * peerAddr) ;
+  TBind * peerAddr) __attribute__((deprecated));
 # 2595 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTResolveAddress(
   EndpointRef ref,
   TBind * reqAddr,
   TBind * retAddr,
-  OTTimeout timeOut) ;
+  OTTimeout timeOut) __attribute__((deprecated));
 # 2625 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void *
 OTAllocInContext(
@@ -32221,108 +35317,108 @@ OTAllocInContext(
   OTStructType structType,
   UInt32 fields,
   OSStatus * err,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 2657 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTResult
 OTFree(
   void * ptr,
-  OTStructType structType) ;
+  OTStructType structType) __attribute__((deprecated));
 # 2675 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTOptionManagement(
   EndpointRef ref,
   TOptMgmt * req,
-  TOptMgmt * ret) ;
+  TOptMgmt * ret) __attribute__((deprecated));
 # 2712 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTNextOption(
   UInt8 * buffer,
   UInt32 buflen,
-  TOption ** prevOptPtr) ;
+  TOption ** prevOptPtr) __attribute__((deprecated));
 # 2727 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern TOption *
 OTFindOption(
   UInt8 * buffer,
   UInt32 buflen,
   OTXTILevel level,
-  OTXTIName name) ;
+  OTXTIName name) __attribute__((deprecated));
 # 2745 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTBind(
   EndpointRef ref,
   TBind * reqAddr,
-  TBind * retAddr) ;
+  TBind * retAddr) __attribute__((deprecated));
 # 2760 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTUnbind(EndpointRef ref) ;
+OTUnbind(EndpointRef ref) __attribute__((deprecated));
 # 2774 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTConnect(
   EndpointRef ref,
   TCall * sndCall,
-  TCall * rcvCall) ;
+  TCall * rcvCall) __attribute__((deprecated));
 # 2789 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTRcvConnect(
   EndpointRef ref,
-  TCall * call) ;
+  TCall * call) __attribute__((deprecated));
 # 2803 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTListen(
   EndpointRef ref,
-  TCall * call) ;
+  TCall * call) __attribute__((deprecated));
 # 2817 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTAccept(
   EndpointRef listener,
   EndpointRef worker,
-  TCall * call) ;
+  TCall * call) __attribute__((deprecated));
 # 2832 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTSndDisconnect(
   EndpointRef ref,
-  TCall * call) ;
+  TCall * call) __attribute__((deprecated));
 # 2846 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTSndOrderlyDisconnect(EndpointRef ref) ;
+OTSndOrderlyDisconnect(EndpointRef ref) __attribute__((deprecated));
 # 2858 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTRcvDisconnect(
   EndpointRef ref,
-  TDiscon * discon) ;
+  TDiscon * discon) __attribute__((deprecated));
 # 2872 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
-OTRcvOrderlyDisconnect(EndpointRef ref) ;
+OTRcvOrderlyDisconnect(EndpointRef ref) __attribute__((deprecated));
 # 2886 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTResult
 OTRcv(
   EndpointRef ref,
   void * buf,
   OTByteCount nbytes,
-  OTFlags * flags) ;
+  OTFlags * flags) __attribute__((deprecated));
 # 2902 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTResult
 OTSnd(
   EndpointRef ref,
   void * buf,
   OTByteCount nbytes,
-  OTFlags flags) ;
+  OTFlags flags) __attribute__((deprecated));
 # 2920 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTSndUData(
   EndpointRef ref,
-  TUnitData * udata) ;
+  TUnitData * udata) __attribute__((deprecated));
 # 2934 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTRcvUData(
   EndpointRef ref,
   TUnitData * udata,
-  OTFlags * flags) ;
+  OTFlags * flags) __attribute__((deprecated));
 # 2949 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTRcvUDErr(
   EndpointRef ref,
-  TUDErr * uderr) ;
+  TUDErr * uderr) __attribute__((deprecated));
 # 3096 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTAsyncOpenMapperInContext(
@@ -32330,132 +35426,132 @@ OTAsyncOpenMapperInContext(
   OTOpenFlags oflag,
   OTNotifyUPP upp,
   void * contextPtr,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 3113 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern MapperRef
 OTOpenMapperInContext(
   OTConfigurationRef config,
   OTOpenFlags oflag,
   OSStatus * err,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 3156 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTRegisterName(
   MapperRef ref,
   TRegisterRequest * req,
-  TRegisterReply * reply) ;
+  TRegisterReply * reply) __attribute__((deprecated));
 # 3171 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTDeleteName(
   MapperRef ref,
-  TNetbuf * name) ;
+  TNetbuf * name) __attribute__((deprecated));
 # 3185 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTDeleteNameByID(
   MapperRef ref,
-  OTNameID nameID) ;
+  OTNameID nameID) __attribute__((deprecated));
 # 3199 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OSStatus
 OTLookupName(
   MapperRef ref,
   TLookupRequest * req,
-  TLookupReply * reply) ;
+  TLookupReply * reply) __attribute__((deprecated));
 # 3216 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTConfigurationRef
-OTCreateConfiguration(const char * path) ;
+OTCreateConfiguration(const char * path) __attribute__((deprecated));
 # 3228 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTConfigurationRef
-OTCloneConfiguration(OTConfigurationRef cfig) ;
+OTCloneConfiguration(OTConfigurationRef cfig) __attribute__((deprecated));
 # 3240 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-OTDestroyConfiguration(OTConfigurationRef cfig) ;
+OTDestroyConfiguration(OTConfigurationRef cfig) __attribute__((deprecated));
 # 3266 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void *
 OTAllocMemInContext(
   OTByteCount size,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 3290 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-OTFreeMem(void * mem) ;
+OTFreeMem(void * mem) __attribute__((deprecated));
 # 3314 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-OTDelay(UInt32 seconds) ;
+OTDelay(UInt32 seconds) __attribute__((deprecated));
 # 3326 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-OTIdle(void) ;
+OTIdle(void) __attribute__((deprecated));
 # 3351 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTMemcpy(
   void * dest,
   const void * src,
-  OTByteCount nBytes) ;
+  OTByteCount nBytes) __attribute__((deprecated));
 # 3366 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTMemcmp(
   const void * mem1,
   const void * mem2,
-  OTByteCount nBytes) ;
+  OTByteCount nBytes) __attribute__((deprecated));
 # 3381 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTMemmove(
   void * dest,
   const void * src,
-  OTByteCount nBytes) ;
+  OTByteCount nBytes) __attribute__((deprecated));
 # 3396 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTMemzero(
   void * dest,
-  OTByteCount nBytes) ;
+  OTByteCount nBytes) __attribute__((deprecated));
 # 3410 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTMemset(
   void * dest,
   OTUInt8Param toSet,
-  OTByteCount nBytes) ;
+  OTByteCount nBytes) __attribute__((deprecated));
 # 3425 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTByteCount
-OTStrLength(const char * str) ;
+OTStrLength(const char * str) __attribute__((deprecated));
 # 3437 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTStrCopy(
   char * dest,
-  const char * src) ;
+  const char * src) __attribute__((deprecated));
 # 3451 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTStrCat(
   char * dest,
-  const char * src) ;
+  const char * src) __attribute__((deprecated));
 # 3465 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTStrEqual(
   const char * src1,
-  const char * src2) ;
+  const char * src2) __attribute__((deprecated));
 # 3483 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 typedef UnsignedWide OTTimeStamp;
 # 3492 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-OTGetTimeStamp(OTTimeStamp * currentTime) ;
+OTGetTimeStamp(OTTimeStamp * currentTime) __attribute__((deprecated));
 # 3504 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTTimeStamp *
 OTSubtractTimeStamps(
   OTTimeStamp * result,
   OTTimeStamp * startTime,
-  OTTimeStamp * endEnd) ;
+  OTTimeStamp * endEnd) __attribute__((deprecated));
 # 3519 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern UInt32
-OTTimeStampInMilliseconds(OTTimeStamp * delta) ;
+OTTimeStampInMilliseconds(OTTimeStamp * delta) __attribute__((deprecated));
 # 3531 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern UInt32
-OTTimeStampInMicroseconds(OTTimeStamp * delta) ;
+OTTimeStampInMicroseconds(OTTimeStamp * delta) __attribute__((deprecated));
 # 3543 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern UInt32
-OTElapsedMilliseconds(OTTimeStamp * startTime) ;
+OTElapsedMilliseconds(OTTimeStamp * startTime) __attribute__((deprecated));
 # 3555 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern UInt32
-OTElapsedMicroseconds(OTTimeStamp * startTime) ;
+OTElapsedMicroseconds(OTTimeStamp * startTime) __attribute__((deprecated));
 # 3567 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern UInt32
-OTGetClockTimeInSecs(void) ;
+OTGetClockTimeInSecs(void) __attribute__((deprecated));
 # 3580 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 struct OTLink {
   struct OTLink * fNext;
@@ -32472,31 +35568,31 @@ typedef struct OTLIFO OTLIFO;
 extern void
 OTLIFOEnqueue(
   OTLIFO * list,
-  OTLink * link) ;
+  OTLink * link) __attribute__((deprecated));
 # 3658 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
-OTLIFODequeue(OTLIFO * list) ;
+OTLIFODequeue(OTLIFO * list) __attribute__((deprecated));
 # 3674 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
-OTLIFOStealList(OTLIFO * list) ;
+OTLIFOStealList(OTLIFO * list) __attribute__((deprecated));
 # 3691 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
-OTReverseList(OTLink * list) ;
+OTReverseList(OTLink * list) __attribute__((deprecated));
 # 3721 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 typedef Boolean ( * OTListSearchProcPtr)(const void *ref, OTLink *linkToCheck);
 typedef OTListSearchProcPtr OTListSearchUPP;
 # 3731 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTListSearchUPP
-NewOTListSearchUPP(OTListSearchProcPtr userRoutine) ;
+NewOTListSearchUPP(OTListSearchProcPtr userRoutine) __attribute__((deprecated));
 # 3742 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
-DisposeOTListSearchUPP(OTListSearchUPP userUPP) ;
+DisposeOTListSearchUPP(OTListSearchUPP userUPP) __attribute__((deprecated));
 # 3753 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 InvokeOTListSearchUPP(
   const void * ref,
   OTLink * linkToCheck,
-  OTListSearchUPP userUPP) ;
+  OTListSearchUPP userUPP) __attribute__((deprecated));
 
 struct OTList {
   OTLink * fHead;
@@ -32507,116 +35603,116 @@ typedef struct OTList OTList;
 extern void
 OTAddFirst(
   OTList * list,
-  OTLink * link) ;
+  OTLink * link) __attribute__((deprecated));
 # 3807 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTAddLast(
   OTList * list,
-  OTLink * link) ;
+  OTLink * link) __attribute__((deprecated));
 # 3822 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
-OTRemoveFirst(OTList * list) ;
+OTRemoveFirst(OTList * list) __attribute__((deprecated));
 # 3835 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
-OTRemoveLast(OTList * list) ;
+OTRemoveLast(OTList * list) __attribute__((deprecated));
 # 3848 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
-OTGetFirst(OTList * list) ;
+OTGetFirst(OTList * list) __attribute__((deprecated));
 # 3861 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
-OTGetLast(OTList * list) ;
+OTGetLast(OTList * list) __attribute__((deprecated));
 # 3874 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTIsInList(
   OTList * list,
-  OTLink * link) ;
+  OTLink * link) __attribute__((deprecated));
 # 3895 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
 OTFindLink(
   OTList * list,
   OTListSearchUPP proc,
-  const void * ref) ;
+  const void * ref) __attribute__((deprecated));
 # 3911 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTRemoveLink(
   OTList * list,
-  OTLink * link) ;
+  OTLink * link) __attribute__((deprecated));
 # 3926 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
 OTFindAndRemoveLink(
   OTList * list,
   OTListSearchUPP proc,
-  const void * ref) ;
+  const void * ref) __attribute__((deprecated));
 # 3942 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern OTLink *
 OTGetIndexedLink(
   OTList * list,
-  OTItemCount index) ;
+  OTItemCount index) __attribute__((deprecated));
 # 3969 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void
 OTEnqueue(
   void ** listHead,
   void * object,
-  OTByteCount linkOffset) ;
+  OTByteCount linkOffset) __attribute__((deprecated));
 # 3988 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern void *
 OTDequeue(
   void ** listHead,
-  OTByteCount linkOffset) ;
+  OTByteCount linkOffset) __attribute__((deprecated));
 # 4039 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTAtomicSetBit(
   UInt8 * bytePtr,
-  OTByteCount bitNumber) ;
+  OTByteCount bitNumber) __attribute__((deprecated));
 # 4059 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTAtomicClearBit(
   UInt8 * bytePtr,
-  OTByteCount bitNumber) ;
+  OTByteCount bitNumber) __attribute__((deprecated));
 # 4079 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTAtomicTestBit(
   UInt8 * bytePtr,
-  OTByteCount bitNumber) ;
+  OTByteCount bitNumber) __attribute__((deprecated));
 # 4099 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTCompareAndSwapPtr(
   void * oldValue,
   void * newValue,
-  void ** dest) ;
+  void ** dest) __attribute__((deprecated));
 # 4119 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTCompareAndSwap32(
   UInt32 oldValue,
   UInt32 newValue,
-  UInt32 * dest) ;
+  UInt32 * dest) __attribute__((deprecated));
 # 4139 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTCompareAndSwap16(
   UInt32 oldValue,
   UInt32 newValue,
-  UInt16 * dest) ;
+  UInt16 * dest) __attribute__((deprecated));
 # 4159 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern Boolean
 OTCompareAndSwap8(
   UInt32 oldValue,
   UInt32 newValue,
-  UInt8 * dest) ;
+  UInt8 * dest) __attribute__((deprecated));
 # 4179 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern SInt32
 OTAtomicAdd32(
   SInt32 toAdd,
-  SInt32 * dest) ;
+  SInt32 * dest) __attribute__((deprecated));
 # 4201 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern SInt16
 OTAtomicAdd16(
   SInt32 toAdd,
-  SInt16 * dest) ;
+  SInt16 * dest) __attribute__((deprecated));
 # 4216 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransport.h" 3
 extern SInt8
 OTAtomicAdd8(
   SInt32 toAdd,
-  SInt8 * dest) ;
+  SInt8 * dest) __attribute__((deprecated));
 
 
 
@@ -32851,40 +35947,40 @@ extern void
 OTInitInetAddress(
   InetAddress * addr,
   InetPort port,
-  InetHost host) ;
+  InetHost host) __attribute__((deprecated));
 # 352 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OTByteCount
 OTInitDNSAddress(
   DNSAddress * addr,
-  char * str) ;
+  char * str) __attribute__((deprecated));
 # 366 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetStringToHost(
   const char * str,
-  InetHost * host) ;
+  InetHost * host) __attribute__((deprecated));
 # 380 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern void
 OTInetHostToString(
   InetHost host,
-  char * str) ;
+  char * str) __attribute__((deprecated));
 # 394 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetGetInterfaceInfo(
   InetInterfaceInfo * info,
-  SInt32 val) ;
+  SInt32 val) __attribute__((deprecated));
 # 408 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetGetSecondaryAddresses(
   InetHost * addr,
   UInt32 * count,
-  SInt32 val) ;
+  SInt32 val) __attribute__((deprecated));
 # 441 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern InetSvcRef
 OTOpenInternetServicesInContext(
   OTConfigurationRef cfig,
   OTOpenFlags oflag,
   OSStatus * err,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 457 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTAsyncOpenInternetServicesInContext(
@@ -32892,32 +35988,32 @@ OTAsyncOpenInternetServicesInContext(
   OTOpenFlags oflag,
   OTNotifyUPP upp,
   void * contextPtr,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 500 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetStringToAddress(
   InetSvcRef ref,
   char * name,
-  InetHostInfo * hinfo) ;
+  InetHostInfo * hinfo) __attribute__((deprecated));
 # 515 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetAddressToName(
   InetSvcRef ref,
   InetHost addr,
-  InetDomainName name) ;
+  InetDomainName name) __attribute__((deprecated));
 # 530 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetSysInfo(
   InetSvcRef ref,
   char * name,
-  InetSysInfo * sysinfo) ;
+  InetSysInfo * sysinfo) __attribute__((deprecated));
 # 545 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetMailExchange(
   InetSvcRef ref,
   char * name,
   UInt16 * num,
-  InetMailExchange * mx) ;
+  InetMailExchange * mx) __attribute__((deprecated));
 # 561 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTInetQuery(
@@ -32929,7 +36025,7 @@ OTInetQuery(
   OTByteCount buflen,
   void ** argv,
   OTByteCount argvlen,
-  OTFlags flags) ;
+  OTFlags flags) __attribute__((deprecated));
 # 616 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 enum {
   ATK_DDP = 'DDP ',
@@ -33040,34 +36136,34 @@ OTAsyncOpenAppleTalkServicesInContext(
   OTOpenFlags flags,
   OTNotifyUPP proc,
   void * contextPtr,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 800 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern ATSvcRef
 OTOpenAppleTalkServicesInContext(
   OTConfigurationRef cfig,
   OTOpenFlags flags,
   OSStatus * err,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 843 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTATalkGetMyZone(
   ATSvcRef ref,
-  TNetbuf * zone) ;
+  TNetbuf * zone) __attribute__((deprecated));
 # 861 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTATalkGetLocalZones(
   ATSvcRef ref,
-  TNetbuf * zones) ;
+  TNetbuf * zones) __attribute__((deprecated));
 # 876 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTATalkGetZoneList(
   ATSvcRef ref,
-  TNetbuf * zones) ;
+  TNetbuf * zones) __attribute__((deprecated));
 # 891 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OSStatus
 OTATalkGetInfo(
   ATSvcRef ref,
-  TNetbuf * info) ;
+  TNetbuf * info) __attribute__((deprecated));
 # 928 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 enum {
   AF_ATALK_FAMILY = 0x0100,
@@ -33115,12 +36211,12 @@ OTInitDDPAddress(
   UInt16 net,
   UInt8 node,
   UInt8 socket,
-  UInt8 ddpType) ;
+  UInt8 ddpType) __attribute__((deprecated));
 # 1060 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OTByteCount
 OTInitNBPAddress(
   NBPAddress * addr,
-  const char * name) ;
+  const char * name) __attribute__((deprecated));
 # 1074 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OTByteCount
 OTInitDDPNBPAddress(
@@ -33129,65 +36225,65 @@ OTInitDDPNBPAddress(
   UInt16 net,
   UInt8 node,
   UInt8 socket,
-  UInt8 ddpType) ;
+  UInt8 ddpType) __attribute__((deprecated));
 # 1093 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern Boolean
 OTCompareDDPAddresses(
   const DDPAddress * addr1,
-  const DDPAddress * addr2) ;
+  const DDPAddress * addr2) __attribute__((deprecated));
 # 1108 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern void
-OTInitNBPEntity(NBPEntity * entity) ;
+OTInitNBPEntity(NBPEntity * entity) __attribute__((deprecated));
 # 1121 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OTByteCount
-OTGetNBPEntityLengthAsAddress(const NBPEntity * entity) ;
+OTGetNBPEntityLengthAsAddress(const NBPEntity * entity) __attribute__((deprecated));
 # 1134 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OTByteCount
 OTSetAddressFromNBPEntity(
   UInt8 * nameBuf,
-  const NBPEntity * entity) ;
+  const NBPEntity * entity) __attribute__((deprecated));
 # 1149 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern OTByteCount
 OTSetAddressFromNBPString(
   UInt8 * addrBuf,
   const char * name,
-  SInt32 len) ;
+  SInt32 len) __attribute__((deprecated));
 # 1168 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern Boolean
 OTSetNBPEntityFromAddress(
   NBPEntity * entity,
   const UInt8 * addrBuf,
-  OTByteCount len) ;
+  OTByteCount len) __attribute__((deprecated));
 # 1184 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern Boolean
 OTSetNBPName(
   NBPEntity * entity,
-  const char * name) ;
+  const char * name) __attribute__((deprecated));
 # 1198 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern Boolean
 OTSetNBPType(
   NBPEntity * entity,
-  const char * typeVal) ;
+  const char * typeVal) __attribute__((deprecated));
 # 1212 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern Boolean
 OTSetNBPZone(
   NBPEntity * entity,
-  const char * zone) ;
+  const char * zone) __attribute__((deprecated));
 # 1227 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern void
 OTExtractNBPName(
   const NBPEntity * entity,
-  char * name) ;
+  char * name) __attribute__((deprecated));
 # 1241 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern void
 OTExtractNBPType(
   const NBPEntity * entity,
-  char * typeVal) ;
+  char * typeVal) __attribute__((deprecated));
 # 1255 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 extern void
 OTExtractNBPZone(
   const NBPEntity * entity,
-  char * zone) ;
+  char * zone) __attribute__((deprecated));
 # 1498 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h" 3
 struct AppleTalkInfo {
   DDPAddress fOurAddress;
@@ -34067,51 +37163,51 @@ extern long
 OTCreateTimerTaskInContext(
   OTProcessUPP upp,
   void * arg,
-  OTClientContextPtr clientContext) ;
+  OTClientContextPtr clientContext) __attribute__((deprecated));
 # 3214 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern Boolean
-OTCancelTimerTask(OTTimerTask timerTask) ;
+OTCancelTimerTask(OTTimerTask timerTask) __attribute__((deprecated));
 # 3226 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern void
-OTDestroyTimerTask(OTTimerTask timerTask) ;
+OTDestroyTimerTask(OTTimerTask timerTask) __attribute__((deprecated));
 # 3238 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern Boolean
 OTScheduleTimerTask(
   OTTimerTask timerTask,
-  OTTimeout milliSeconds) ;
+  OTTimeout milliSeconds) __attribute__((deprecated));
 # 3268 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern OTByteCount
-OTBufferDataSize(OTBuffer * buffer) ;
+OTBufferDataSize(OTBuffer * buffer) __attribute__((deprecated));
 # 3280 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern Boolean
 OTReadBuffer(
   OTBufferInfo * buffer,
   void * dest,
-  OTByteCount * len) ;
+  OTByteCount * len) __attribute__((deprecated));
 # 3295 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern void
-OTReleaseBuffer(OTBuffer * buffer) ;
+OTReleaseBuffer(OTBuffer * buffer) __attribute__((deprecated));
 # 4281 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern OTResult
 OTSetFirstClearBit(
   UInt8 * bitMap,
   OTByteCount startBit,
-  OTByteCount numBits) ;
+  OTByteCount numBits) __attribute__((deprecated));
 # 4297 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern Boolean
 OTClearBit(
   UInt8 * bitMap,
-  OTByteCount bitNo) ;
+  OTByteCount bitNo) __attribute__((deprecated));
 # 4311 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern Boolean
 OTSetBit(
   UInt8 * bitMap,
-  OTByteCount bitNo) ;
+  OTByteCount bitNo) __attribute__((deprecated));
 # 4325 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 extern Boolean
 OTTestBit(
   UInt8 * bitMap,
-  OTByteCount bitNo) ;
+  OTByteCount bitNo) __attribute__((deprecated));
 # 4338 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProtocol.h" 3
 typedef UInt32 ( * OTHashProcPtr)(OTLink * linkToHash);
 typedef Boolean ( * OTHashSearchProcPtr)(const void *ref, OTLink *linkToCheck);
@@ -35449,20 +38545,20 @@ CFNetServiceBrowserUnscheduleFromRunLoop(
 extern Boolean
 CFNetServiceRegister(
   CFNetServiceRef theService,
-  CFStreamError * error) ;
+  CFStreamError * error) __attribute__((deprecated));
 # 1642 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CFNetwork.framework/Headers/CFNetServices.h" 3
 extern Boolean
 CFNetServiceResolve(
   CFNetServiceRef theService,
-  CFStreamError * error) ;
+  CFStreamError * error) __attribute__((deprecated));
 # 1685 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CFNetwork.framework/Headers/CFNetServices.h" 3
 extern CFStringRef
-CFNetServiceGetProtocolSpecificInformation(CFNetServiceRef theService) ;
+CFNetServiceGetProtocolSpecificInformation(CFNetServiceRef theService) __attribute__((deprecated));
 # 1718 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CFNetwork.framework/Headers/CFNetServices.h" 3
 extern void
 CFNetServiceSetProtocolSpecificInformation(
   CFNetServiceRef theService,
-  CFStringRef theInfo) ;
+  CFStringRef theInfo) __attribute__((deprecated));
 
 
 
@@ -35620,7 +38716,7 @@ extern Boolean
 CFSocketStreamPairSetSecurityProtocol(
   CFReadStreamRef socketReadStream,
   CFWriteStreamRef socketWriteStream,
-  CFStreamSocketSecurityProtocol securityProtocol) ;
+  CFStreamSocketSecurityProtocol securityProtocol) __attribute__((deprecated));
 # 753 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CFNetwork.framework/Headers/CFSocketStream.h" 3
 extern const CFStringRef kCFStreamPropertyProxyLocalBypass ;
 # 30 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CFNetwork.framework/Headers/CFNetwork.h" 2 3
@@ -35870,13 +38966,13 @@ CFReadStreamCreateForStreamedHTTPRequest(
 extern void
 CFHTTPReadStreamSetRedirectsAutomatically(
   CFReadStreamRef httpStream,
-  Boolean shouldAutoRedirect) ;
+  Boolean shouldAutoRedirect) __attribute__((deprecated));
 # 400 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CFNetwork.framework/Headers/CFHTTPStream.h" 3
 extern void
 CFHTTPReadStreamSetProxy(
   CFReadStreamRef httpStream,
   CFStringRef proxyHost,
-  CFIndex proxyPort) ;
+  CFIndex proxyPort) __attribute__((deprecated));
 # 46 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/CFNetwork.framework/Headers/CFNetwork.h" 2 3
 
 
@@ -36728,10 +39824,10 @@ typedef enum SKSearchType SKSearchType;
 typedef Boolean ( * SKSearchResultsFilterCallBack)(SKIndexRef inIndex, SKDocumentRef inDocument, void *inContext);
 # 180 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 extern SKSearchGroupRef
-SKSearchGroupCreate(CFArrayRef inArrayOfInIndexes) ;
+SKSearchGroupCreate(CFArrayRef inArrayOfInIndexes) __attribute__((deprecated));
 # 198 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 extern CFArrayRef
-SKSearchGroupCopyIndexes(SKSearchGroupRef inSearchGroup) ;
+SKSearchGroupCopyIndexes(SKSearchGroupRef inSearchGroup) __attribute__((deprecated));
 # 244 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 extern SKSearchResultsRef
 SKSearchResultsCreateWithQuery(
@@ -36740,7 +39836,7 @@ SKSearchResultsCreateWithQuery(
   SKSearchType inSearchType,
   CFIndex inMaxFoundDocuments,
   void * inContext,
-  SKSearchResultsFilterCallBack inFilterCallBack) ;
+  SKSearchResultsFilterCallBack inFilterCallBack) __attribute__((deprecated));
 # 294 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 extern SKSearchResultsRef
 SKSearchResultsCreateWithDocuments(
@@ -36748,10 +39844,10 @@ SKSearchResultsCreateWithDocuments(
   CFArrayRef inExampleDocuments,
   CFIndex inMaxFoundDocuments,
   void * inContext,
-  SKSearchResultsFilterCallBack inFilterCallBack) ;
+  SKSearchResultsFilterCallBack inFilterCallBack) __attribute__((deprecated));
 # 314 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 extern CFIndex
-SKSearchResultsGetCount(SKSearchResultsRef inSearchResults) ;
+SKSearchResultsGetCount(SKSearchResultsRef inSearchResults) __attribute__((deprecated));
 # 363 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 extern CFIndex
 SKSearchResultsGetInfoInRange(
@@ -36759,12 +39855,12 @@ SKSearchResultsGetInfoInRange(
   CFRange inRange,
   SKDocumentRef * outDocumentsArray,
   SKIndexRef * outIndexesArray,
-  float * outScoresArray) ;
+  float * outScoresArray) __attribute__((deprecated));
 # 395 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 extern CFArrayRef
 SKSearchResultsCopyMatchingTerms(
   SKSearchResultsRef inSearchResults,
-  CFIndex inItem) ;
+  CFIndex inItem) __attribute__((deprecated));
 # 411 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
 typedef struct __SKSearch* SKSearchRef;
 # 423 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/SearchKit.framework/Headers/SKSearch.h" 3
@@ -36973,9 +40069,9 @@ extern const CFStringRef kMDItemFSCreationDate ;
 extern const CFStringRef kMDItemFSContentChangeDate ;
 extern const CFStringRef kMDItemFSOwnerUserID ;
 extern const CFStringRef kMDItemFSOwnerGroupID ;
-extern const CFStringRef kMDItemFSExists ;
-extern const CFStringRef kMDItemFSIsReadable ;
-extern const CFStringRef kMDItemFSIsWriteable ;
+extern const CFStringRef kMDItemFSExists __attribute__((deprecated));
+extern const CFStringRef kMDItemFSIsReadable __attribute__((deprecated));
+extern const CFStringRef kMDItemFSIsWriteable __attribute__((deprecated));
 extern const CFStringRef kMDItemFSIsExtensionHidden ;
 extern const CFStringRef kMDItemFSInvisible ;
 extern const CFStringRef kMDItemFSLabel ;
@@ -40138,7 +43234,7 @@ typedef struct scalerStreamData scalerStreamData;
 # 10 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CoreGraphics.h" 3
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGBase.h" 1 3
 # 10 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGBase.h" 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
 # 11 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGBase.h" 2 3
 # 21 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGBase.h" 3
 
@@ -40505,7 +43601,7 @@ typedef struct CGDataProvider *CGDataProviderRef;
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGBase.h" 1 3
 # 12 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGDataProvider.h" 2 3
 
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
 # 14 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGDataProvider.h" 2 3
 
 
@@ -40608,7 +43704,7 @@ extern CGDataProviderRef CGDataProviderCreateWithFilename(const char *filename);
 
 
 # 13 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGColorSpace.h" 2 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
 # 14 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGColorSpace.h" 2 3
 
 enum CGColorRenderingIntent {
@@ -42448,7 +45544,7 @@ typedef struct CGDataConsumer *CGDataConsumerRef;
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGBase.h" 1 3
 # 12 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGDataConsumer.h" 2 3
 
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
 # 14 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGDataConsumer.h" 2 3
 
 
@@ -44122,7 +47218,13 @@ typedef union {
         SInt32 reserved2[4];
     } proximity;
 } NXEventData;
-# 506 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/IOKit.framework/Headers/hidsystem/IOLLEvent.h" 3
+
+
+
+
+
+
+
 typedef struct _NXEvent {
  int type;
     struct {
@@ -44131,9 +47233,9 @@ typedef struct _NXEvent {
     unsigned long long time;
     int flags;
     unsigned int window;
-    NXEventData data;
     UInt64 service_id;
     int ext_pid;
+    NXEventData data;
 } NXEvent, *NXEventPtr;
 # 14 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGEventTypes.h" 2 3
 
@@ -44506,7 +47608,7 @@ extern CGEventRef CGEventCreateCopy(CGEventRef event) ;
 
 
 
-extern CGEventSourceRef CGEventGetSource(CGEventRef event) ;
+extern CGEventSourceRef CGEventGetSource(CGEventRef event) __attribute__((deprecated));
 # 106 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGEvent.h" 3
 extern CGEventSourceRef CGEventCreateSourceFromEvent(CGEventRef event) ;
 extern void CGEventSetSource(CGEventRef event, CGEventSourceRef source) ;
@@ -47231,7 +50333,7 @@ CMGetPS2ColorRenderingVMSize(
 
 # 1 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/ColorSync.framework/Headers/CMFloatBitmap.h" 1 3
 # 19 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/ColorSync.framework/Headers/CMFloatBitmap.h" 3
-# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
+# 1 "/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include/stddef.h" 1 3 4
 # 20 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/ColorSync.framework/Headers/CMFloatBitmap.h" 2 3
 # 37 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/ColorSync.framework/Headers/CMFloatBitmap.h" 3
 #pragma options align=mac68k
@@ -50382,23 +53484,23 @@ typedef FormatOrder * FormatOrderPtr;
 extern OSStatus
 StandardGlyphs(
   void * dataStream,
-  ByteCount size) ;
+  ByteCount size) __attribute__((deprecated));
 
 
 typedef Boolean ( * StyleRunDirectionProcPtr)(short styleRunIndex, void *dirParam);
 typedef StyleRunDirectionProcPtr StyleRunDirectionUPP;
 # 153 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern StyleRunDirectionUPP
-NewStyleRunDirectionUPP(StyleRunDirectionProcPtr userRoutine) ;
+NewStyleRunDirectionUPP(StyleRunDirectionProcPtr userRoutine) __attribute__((deprecated));
 # 164 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-DisposeStyleRunDirectionUPP(StyleRunDirectionUPP userUPP) ;
+DisposeStyleRunDirectionUPP(StyleRunDirectionUPP userUPP) __attribute__((deprecated));
 # 175 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern Boolean
 InvokeStyleRunDirectionUPP(
   short styleRunIndex,
   void * dirParam,
-  StyleRunDirectionUPP userUPP) ;
+  StyleRunDirectionUPP userUPP) __attribute__((deprecated));
 # 209 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
 PixelToChar(
@@ -50410,7 +53512,7 @@ PixelToChar(
   Fixed * widthRemaining,
   JustStyleCode styleRunPosition,
   Point numer,
-  Point denom) ;
+  Point denom) __attribute__((deprecated));
 # 230 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
 CharToPixel(
@@ -50421,7 +53523,7 @@ CharToPixel(
   short direction,
   JustStyleCode styleRunPosition,
   Point numer,
-  Point denom) ;
+  Point denom) __attribute__((deprecated));
 # 250 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 DrawJustified(
@@ -50430,7 +53532,7 @@ DrawJustified(
   Fixed slop,
   JustStyleCode styleRunPosition,
   Point numer,
-  Point denom) ;
+  Point denom) __attribute__((deprecated));
 # 268 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 MeasureJustified(
@@ -50440,7 +53542,7 @@ MeasureJustified(
   Ptr charLocs,
   JustStyleCode styleRunPosition,
   Point numer,
-  Point denom) ;
+  Point denom) __attribute__((deprecated));
 # 287 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern Fixed
 PortionLine(
@@ -50448,7 +53550,7 @@ PortionLine(
   long textLen,
   JustStyleCode styleRunPosition,
   Point numer,
-  Point denom) ;
+  Point denom) __attribute__((deprecated));
 # 304 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 HiliteText(
@@ -50456,12 +53558,12 @@ HiliteText(
   short textLength,
   short firstOffset,
   short secondOffset,
-  OffsetTable offsets) ;
+  OffsetTable offsets) __attribute__((deprecated));
 # 351 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern long
 VisibleLength(
   Ptr textPtr,
-  long textLength) ;
+  long textLength) __attribute__((deprecated));
 # 365 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 GetFormatOrder(
@@ -50470,65 +53572,65 @@ GetFormatOrder(
   short lastFormat,
   Boolean lineRight,
   StyleRunDirectionUPP rlDirProc,
-  Ptr dirParam) ;
+  Ptr dirParam) __attribute__((deprecated));
 # 383 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-TextFont(short font) ;
+TextFont(short font) __attribute__((deprecated));
 # 395 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-TextFace(StyleParameter face) ;
+TextFace(StyleParameter face) __attribute__((deprecated));
 # 407 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-TextMode(short mode) ;
+TextMode(short mode) __attribute__((deprecated));
 # 419 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-TextSize(short size) ;
+TextSize(short size) __attribute__((deprecated));
 # 431 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-SpaceExtra(Fixed extra) ;
+SpaceExtra(Fixed extra) __attribute__((deprecated));
 # 443 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-DrawChar(CharParameter ch) ;
+DrawChar(CharParameter ch) __attribute__((deprecated));
 # 455 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-DrawString(ConstStr255Param s) ;
+DrawString(ConstStr255Param s) __attribute__((deprecated));
 # 470 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 DrawText(
   const void * textBuf,
   short firstByte,
-  short byteCount) ;
+  short byteCount) __attribute__((deprecated));
 # 485 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
-CharWidth(CharParameter ch) ;
+CharWidth(CharParameter ch) __attribute__((deprecated));
 # 497 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
-StringWidth(ConstStr255Param s) ;
+StringWidth(ConstStr255Param s) __attribute__((deprecated));
 # 509 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
 TextWidth(
   const void * textBuf,
   short firstByte,
-  short byteCount) ;
+  short byteCount) __attribute__((deprecated));
 # 524 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 MeasureText(
   short count,
   const void * textAddr,
-  void * charLocs) ;
+  void * charLocs) __attribute__((deprecated));
 # 539 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-GetFontInfo(FontInfo * info) ;
+GetFontInfo(FontInfo * info) __attribute__((deprecated));
 # 551 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
-CharExtra(Fixed extra) ;
+CharExtra(Fixed extra) __attribute__((deprecated));
 # 563 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 StdText(
   short count,
   const void * textAddr,
   Point numer,
-  Point denom) ;
+  Point denom) __attribute__((deprecated));
 # 579 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
 StdTxMeas(
@@ -50536,7 +53638,7 @@ StdTxMeas(
   const void * textAddr,
   Point * numer,
   Point * denom,
-  FontInfo * info) ;
+  FontInfo * info) __attribute__((deprecated));
 # 596 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern StyledLineBreakCode
 StyledLineBreak(
@@ -50546,30 +53648,30 @@ StyledLineBreak(
   long textEnd,
   long flags,
   Fixed * textWidth,
-  long * textOffset) ;
+  long * textOffset) __attribute__((deprecated));
 # 615 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
 TruncString(
   short width,
   Str255 theString,
-  TruncCode truncWhere) ;
+  TruncCode truncWhere) __attribute__((deprecated));
 # 630 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern short
 TruncText(
   short width,
   Ptr textPtr,
   short * length,
-  TruncCode truncWhere) ;
+  TruncCode truncWhere) __attribute__((deprecated));
 # 667 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern void
 stdtext(
   short count,
   const void * textAddr,
   const Point * numer,
-  const Point * denom) ;
+  const Point * denom) __attribute__((deprecated));
 # 686 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 extern UInt32
-SwapQDTextFlags(UInt32 newFlags) ;
+SwapQDTextFlags(UInt32 newFlags) __attribute__((deprecated));
 # 704 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QuickdrawText.h" 3
 #pragma options align=reset
 # 29 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 2 3
@@ -50860,100 +53962,100 @@ typedef struct QDProcs QDProcs;
 typedef QDProcs * QDProcsPtr;
 # 383 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDTextUPP
-NewQDTextUPP(QDTextProcPtr userRoutine) ;
+NewQDTextUPP(QDTextProcPtr userRoutine) __attribute__((deprecated));
 # 394 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDLineUPP
-NewQDLineUPP(QDLineProcPtr userRoutine) ;
+NewQDLineUPP(QDLineProcPtr userRoutine) __attribute__((deprecated));
 # 405 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDRectUPP
-NewQDRectUPP(QDRectProcPtr userRoutine) ;
+NewQDRectUPP(QDRectProcPtr userRoutine) __attribute__((deprecated));
 # 416 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDRRectUPP
-NewQDRRectUPP(QDRRectProcPtr userRoutine) ;
+NewQDRRectUPP(QDRRectProcPtr userRoutine) __attribute__((deprecated));
 # 427 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDOvalUPP
-NewQDOvalUPP(QDOvalProcPtr userRoutine) ;
+NewQDOvalUPP(QDOvalProcPtr userRoutine) __attribute__((deprecated));
 # 438 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDArcUPP
-NewQDArcUPP(QDArcProcPtr userRoutine) ;
+NewQDArcUPP(QDArcProcPtr userRoutine) __attribute__((deprecated));
 # 449 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDPolyUPP
-NewQDPolyUPP(QDPolyProcPtr userRoutine) ;
+NewQDPolyUPP(QDPolyProcPtr userRoutine) __attribute__((deprecated));
 # 460 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDRgnUPP
-NewQDRgnUPP(QDRgnProcPtr userRoutine) ;
+NewQDRgnUPP(QDRgnProcPtr userRoutine) __attribute__((deprecated));
 # 471 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDBitsUPP
-NewQDBitsUPP(QDBitsProcPtr userRoutine) ;
+NewQDBitsUPP(QDBitsProcPtr userRoutine) __attribute__((deprecated));
 # 482 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDCommentUPP
-NewQDCommentUPP(QDCommentProcPtr userRoutine) ;
+NewQDCommentUPP(QDCommentProcPtr userRoutine) __attribute__((deprecated));
 # 493 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDTxMeasUPP
-NewQDTxMeasUPP(QDTxMeasProcPtr userRoutine) ;
+NewQDTxMeasUPP(QDTxMeasProcPtr userRoutine) __attribute__((deprecated));
 # 504 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDGetPicUPP
-NewQDGetPicUPP(QDGetPicProcPtr userRoutine) ;
+NewQDGetPicUPP(QDGetPicProcPtr userRoutine) __attribute__((deprecated));
 # 515 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDPutPicUPP
-NewQDPutPicUPP(QDPutPicProcPtr userRoutine) ;
+NewQDPutPicUPP(QDPutPicProcPtr userRoutine) __attribute__((deprecated));
 # 526 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDOpcodeUPP
-NewQDOpcodeUPP(QDOpcodeProcPtr userRoutine) ;
+NewQDOpcodeUPP(QDOpcodeProcPtr userRoutine) __attribute__((deprecated));
 # 537 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDStdGlyphsUPP
-NewQDStdGlyphsUPP(QDStdGlyphsProcPtr userRoutine) ;
+NewQDStdGlyphsUPP(QDStdGlyphsProcPtr userRoutine) __attribute__((deprecated));
 # 548 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern QDJShieldCursorUPP
-NewQDJShieldCursorUPP(QDJShieldCursorProcPtr userRoutine) ;
+NewQDJShieldCursorUPP(QDJShieldCursorProcPtr userRoutine) __attribute__((deprecated));
 # 559 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDTextUPP(QDTextUPP userUPP) ;
+DisposeQDTextUPP(QDTextUPP userUPP) __attribute__((deprecated));
 # 570 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDLineUPP(QDLineUPP userUPP) ;
+DisposeQDLineUPP(QDLineUPP userUPP) __attribute__((deprecated));
 # 581 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDRectUPP(QDRectUPP userUPP) ;
+DisposeQDRectUPP(QDRectUPP userUPP) __attribute__((deprecated));
 # 592 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDRRectUPP(QDRRectUPP userUPP) ;
+DisposeQDRRectUPP(QDRRectUPP userUPP) __attribute__((deprecated));
 # 603 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDOvalUPP(QDOvalUPP userUPP) ;
+DisposeQDOvalUPP(QDOvalUPP userUPP) __attribute__((deprecated));
 # 614 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDArcUPP(QDArcUPP userUPP) ;
+DisposeQDArcUPP(QDArcUPP userUPP) __attribute__((deprecated));
 # 625 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDPolyUPP(QDPolyUPP userUPP) ;
+DisposeQDPolyUPP(QDPolyUPP userUPP) __attribute__((deprecated));
 # 636 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDRgnUPP(QDRgnUPP userUPP) ;
+DisposeQDRgnUPP(QDRgnUPP userUPP) __attribute__((deprecated));
 # 647 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDBitsUPP(QDBitsUPP userUPP) ;
+DisposeQDBitsUPP(QDBitsUPP userUPP) __attribute__((deprecated));
 # 658 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDCommentUPP(QDCommentUPP userUPP) ;
+DisposeQDCommentUPP(QDCommentUPP userUPP) __attribute__((deprecated));
 # 669 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDTxMeasUPP(QDTxMeasUPP userUPP) ;
+DisposeQDTxMeasUPP(QDTxMeasUPP userUPP) __attribute__((deprecated));
 # 680 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDGetPicUPP(QDGetPicUPP userUPP) ;
+DisposeQDGetPicUPP(QDGetPicUPP userUPP) __attribute__((deprecated));
 # 691 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDPutPicUPP(QDPutPicUPP userUPP) ;
+DisposeQDPutPicUPP(QDPutPicUPP userUPP) __attribute__((deprecated));
 # 702 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDOpcodeUPP(QDOpcodeUPP userUPP) ;
+DisposeQDOpcodeUPP(QDOpcodeUPP userUPP) __attribute__((deprecated));
 # 713 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDStdGlyphsUPP(QDStdGlyphsUPP userUPP) ;
+DisposeQDStdGlyphsUPP(QDStdGlyphsUPP userUPP) __attribute__((deprecated));
 # 724 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeQDJShieldCursorUPP(QDJShieldCursorUPP userUPP) ;
+DisposeQDJShieldCursorUPP(QDJShieldCursorUPP userUPP) __attribute__((deprecated));
 # 735 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDTextUPP(
@@ -50961,18 +54063,18 @@ InvokeQDTextUPP(
   const void * textBuf,
   Point numer,
   Point denom,
-  QDTextUPP userUPP) ;
+  QDTextUPP userUPP) __attribute__((deprecated));
 # 751 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDLineUPP(
   Point newPt,
-  QDLineUPP userUPP) ;
+  QDLineUPP userUPP) __attribute__((deprecated));
 # 764 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDRectUPP(
   GrafVerb verb,
   const Rect * r,
-  QDRectUPP userUPP) ;
+  QDRectUPP userUPP) __attribute__((deprecated));
 # 778 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDRRectUPP(
@@ -50980,13 +54082,13 @@ InvokeQDRRectUPP(
   const Rect * r,
   short ovalWidth,
   short ovalHeight,
-  QDRRectUPP userUPP) ;
+  QDRRectUPP userUPP) __attribute__((deprecated));
 # 794 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDOvalUPP(
   GrafVerb verb,
   const Rect * r,
-  QDOvalUPP userUPP) ;
+  QDOvalUPP userUPP) __attribute__((deprecated));
 # 808 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDArcUPP(
@@ -50994,19 +54096,19 @@ InvokeQDArcUPP(
   const Rect * r,
   short startAngle,
   short arcAngle,
-  QDArcUPP userUPP) ;
+  QDArcUPP userUPP) __attribute__((deprecated));
 # 824 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDPolyUPP(
   GrafVerb verb,
   PolyHandle poly,
-  QDPolyUPP userUPP) ;
+  QDPolyUPP userUPP) __attribute__((deprecated));
 # 838 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDRgnUPP(
   GrafVerb verb,
   RgnHandle rgn,
-  QDRgnUPP userUPP) ;
+  QDRgnUPP userUPP) __attribute__((deprecated));
 # 852 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDBitsUPP(
@@ -51015,14 +54117,14 @@ InvokeQDBitsUPP(
   const Rect * dstRect,
   short mode,
   RgnHandle maskRgn,
-  QDBitsUPP userUPP) ;
+  QDBitsUPP userUPP) __attribute__((deprecated));
 # 869 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDCommentUPP(
   short kind,
   short dataSize,
   Handle dataHandle,
-  QDCommentUPP userUPP) ;
+  QDCommentUPP userUPP) __attribute__((deprecated));
 # 884 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern short
 InvokeQDTxMeasUPP(
@@ -51031,19 +54133,19 @@ InvokeQDTxMeasUPP(
   Point * numer,
   Point * denom,
   FontInfo * info,
-  QDTxMeasUPP userUPP) ;
+  QDTxMeasUPP userUPP) __attribute__((deprecated));
 # 901 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDGetPicUPP(
   void * dataPtr,
   short byteCount,
-  QDGetPicUPP userUPP) ;
+  QDGetPicUPP userUPP) __attribute__((deprecated));
 # 915 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDPutPicUPP(
   const void * dataPtr,
   short byteCount,
-  QDPutPicUPP userUPP) ;
+  QDPutPicUPP userUPP) __attribute__((deprecated));
 # 929 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDOpcodeUPP(
@@ -51051,13 +54153,13 @@ InvokeQDOpcodeUPP(
   const Rect * toRect,
   UInt16 opcode,
   SInt16 version,
-  QDOpcodeUPP userUPP) ;
+  QDOpcodeUPP userUPP) __attribute__((deprecated));
 # 945 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 InvokeQDStdGlyphsUPP(
   void * dataStream,
   ByteCount size,
-  QDStdGlyphsUPP userUPP) ;
+  QDStdGlyphsUPP userUPP) __attribute__((deprecated));
 # 959 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeQDJShieldCursorUPP(
@@ -51065,7 +54167,7 @@ InvokeQDJShieldCursorUPP(
   short top,
   short right,
   short bottom,
-  QDJShieldCursorUPP userUPP) ;
+  QDJShieldCursorUPP userUPP) __attribute__((deprecated));
 # 1007 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 typedef struct OpaqueWindowPtr* WindowPtr;
 typedef struct OpaqueDialogPtr* DialogPtr;
@@ -51103,36 +54205,36 @@ typedef ColorSearchProcPtr ColorSearchUPP;
 typedef ColorComplementProcPtr ColorComplementUPP;
 # 1049 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern DragGrayRgnUPP
-NewDragGrayRgnUPP(DragGrayRgnProcPtr userRoutine) ;
+NewDragGrayRgnUPP(DragGrayRgnProcPtr userRoutine) __attribute__((deprecated));
 # 1060 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern ColorSearchUPP
-NewColorSearchUPP(ColorSearchProcPtr userRoutine) ;
+NewColorSearchUPP(ColorSearchProcPtr userRoutine) __attribute__((deprecated));
 # 1071 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern ColorComplementUPP
-NewColorComplementUPP(ColorComplementProcPtr userRoutine) ;
+NewColorComplementUPP(ColorComplementProcPtr userRoutine) __attribute__((deprecated));
 # 1082 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeDragGrayRgnUPP(DragGrayRgnUPP userUPP) ;
+DisposeDragGrayRgnUPP(DragGrayRgnUPP userUPP) __attribute__((deprecated));
 # 1093 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeColorSearchUPP(ColorSearchUPP userUPP) ;
+DisposeColorSearchUPP(ColorSearchUPP userUPP) __attribute__((deprecated));
 # 1104 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeColorComplementUPP(ColorComplementUPP userUPP) ;
+DisposeColorComplementUPP(ColorComplementUPP userUPP) __attribute__((deprecated));
 # 1115 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-InvokeDragGrayRgnUPP(DragGrayRgnUPP userUPP) ;
+InvokeDragGrayRgnUPP(DragGrayRgnUPP userUPP) __attribute__((deprecated));
 # 1126 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 InvokeColorSearchUPP(
   RGBColor * rgb,
   long * position,
-  ColorSearchUPP userUPP) ;
+  ColorSearchUPP userUPP) __attribute__((deprecated));
 # 1140 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 InvokeColorComplementUPP(
   RGBColor * rgb,
-  ColorComplementUPP userUPP) ;
+  ColorComplementUPP userUPP) __attribute__((deprecated));
 
 struct ColorSpec {
   short value;
@@ -51403,10 +54505,10 @@ typedef void ( * DeviceLoopDrawingProcPtr)(short depth, short deviceFlags, GDHan
 typedef DeviceLoopDrawingProcPtr DeviceLoopDrawingUPP;
 # 1512 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern DeviceLoopDrawingUPP
-NewDeviceLoopDrawingUPP(DeviceLoopDrawingProcPtr userRoutine) ;
+NewDeviceLoopDrawingUPP(DeviceLoopDrawingProcPtr userRoutine) __attribute__((deprecated));
 # 1532 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeDeviceLoopDrawingUPP(DeviceLoopDrawingUPP userUPP) ;
+DisposeDeviceLoopDrawingUPP(DeviceLoopDrawingUPP userUPP) __attribute__((deprecated));
 # 1552 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvokeDeviceLoopDrawingUPP(
@@ -51414,13 +54516,13 @@ InvokeDeviceLoopDrawingUPP(
   short deviceFlags,
   GDHandle targetDevice,
   long userData,
-  DeviceLoopDrawingUPP userUPP) ;
+  DeviceLoopDrawingUPP userUPP) __attribute__((deprecated));
 # 1651 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
-LockPortBits(GrafPtr port) ;
+LockPortBits(GrafPtr port) __attribute__((deprecated));
 # 1666 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
-UnlockPortBits(GrafPtr port) ;
+UnlockPortBits(GrafPtr port) __attribute__((deprecated));
 
 
 
@@ -51445,10 +54547,10 @@ typedef OSStatus ( * RegionToRectsProcPtr)(UInt16 message, RgnHandle rgn, const 
 typedef RegionToRectsProcPtr RegionToRectsUPP;
 # 1698 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern RegionToRectsUPP
-NewRegionToRectsUPP(RegionToRectsProcPtr userRoutine) ;
+NewRegionToRectsUPP(RegionToRectsProcPtr userRoutine) __attribute__((deprecated));
 # 1709 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeRegionToRectsUPP(RegionToRectsUPP userUPP) ;
+DisposeRegionToRectsUPP(RegionToRectsUPP userUPP) __attribute__((deprecated));
 # 1720 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 InvokeRegionToRectsUPP(
@@ -51456,20 +54558,20 @@ InvokeRegionToRectsUPP(
   RgnHandle rgn,
   const Rect * rect,
   void * refCon,
-  RegionToRectsUPP userUPP) ;
+  RegionToRectsUPP userUPP) __attribute__((deprecated));
 # 1739 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 QDRegionToRects(
   RgnHandle rgn,
   QDRegionParseDirection dir,
   RegionToRectsUPP proc,
-  void * userData) ;
+  void * userData) __attribute__((deprecated));
 # 1846 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetPort(GrafPtr port) ;
+SetPort(GrafPtr port) __attribute__((deprecated));
 # 1861 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GetPort(GrafPtr * port) ;
+GetPort(GrafPtr * port) __attribute__((deprecated));
 # 1900 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 QDSwapPort(
@@ -51477,110 +54579,110 @@ QDSwapPort(
   CGrafPtr * outOldPort) ;
 # 1917 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GrafDevice(short device) ;
+GrafDevice(short device) __attribute__((deprecated));
 # 1932 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetPortBits(const BitMap * bm) ;
+SetPortBits(const BitMap * bm) __attribute__((deprecated));
 # 1947 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 PortSize(
   short width,
-  short height) ;
+  short height) __attribute__((deprecated));
 # 1964 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MovePortTo(
   short leftGlobal,
-  short topGlobal) ;
+  short topGlobal) __attribute__((deprecated));
 # 1981 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetOrigin(
   short h,
-  short v) ;
+  short v) __attribute__((deprecated));
 # 1998 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetClip(RgnHandle rgn) ;
+SetClip(RgnHandle rgn) __attribute__((deprecated));
 # 2013 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GetClip(RgnHandle rgn) ;
+GetClip(RgnHandle rgn) __attribute__((deprecated));
 # 2028 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ClipRect(const Rect * r) ;
+ClipRect(const Rect * r) __attribute__((deprecated));
 # 2043 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-BackPat(const Pattern * pat) ;
+BackPat(const Pattern * pat) __attribute__((deprecated));
 # 2058 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-InitCursor(void) ;
+InitCursor(void) __attribute__((deprecated));
 # 2076 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetCursor(const Cursor * crsr) ;
+SetCursor(const Cursor * crsr) __attribute__((deprecated));
 # 2091 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-HideCursor(void) ;
+HideCursor(void) __attribute__((deprecated));
 # 2109 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ShowCursor(void) ;
+ShowCursor(void) __attribute__((deprecated));
 # 2124 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ObscureCursor(void) ;
+ObscureCursor(void) __attribute__((deprecated));
 # 2139 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-HidePen(void) ;
+HidePen(void) __attribute__((deprecated));
 # 2154 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ShowPen(void) ;
+ShowPen(void) __attribute__((deprecated));
 # 2169 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GetPen(Point * pt) ;
+GetPen(Point * pt) __attribute__((deprecated));
 # 2184 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GetPenState(PenState * pnState) ;
+GetPenState(PenState * pnState) __attribute__((deprecated));
 # 2199 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetPenState(const PenState * pnState) ;
+SetPenState(const PenState * pnState) __attribute__((deprecated));
 # 2214 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 PenSize(
   short width,
-  short height) ;
+  short height) __attribute__((deprecated));
 # 2231 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PenMode(short mode) ;
+PenMode(short mode) __attribute__((deprecated));
 # 2246 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PenPat(const Pattern * pat) ;
+PenPat(const Pattern * pat) __attribute__((deprecated));
 # 2261 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PenNormal(void) ;
+PenNormal(void) __attribute__((deprecated));
 # 2276 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MoveTo(
   short h,
-  short v) ;
+  short v) __attribute__((deprecated));
 # 2293 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 Move(
   short dh,
-  short dv) ;
+  short dv) __attribute__((deprecated));
 # 2313 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 LineTo(
   short h,
-  short v) ;
+  short v) __attribute__((deprecated));
 # 2330 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 Line(
   short dh,
-  short dv) ;
+  short dv) __attribute__((deprecated));
 # 2347 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ForeColor(long color) ;
+ForeColor(long color) __attribute__((deprecated));
 # 2362 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-BackColor(long color) ;
+BackColor(long color) __attribute__((deprecated));
 # 2377 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ColorBit(short whichBit) ;
+ColorBit(short whichBit) __attribute__((deprecated));
 # 2395 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetRect(
@@ -51588,149 +54690,149 @@ SetRect(
   short left,
   short top,
   short right,
-  short bottom) ;
+  short bottom) __attribute__((deprecated));
 # 2418 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 OffsetRect(
   Rect * r,
   short dh,
-  short dv) ;
+  short dv) __attribute__((deprecated));
 # 2439 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InsetRect(
   Rect * r,
   short dh,
-  short dv) ;
+  short dv) __attribute__((deprecated));
 # 2457 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 SectRect(
   const Rect * src1,
   const Rect * src2,
-  Rect * dstRect) ;
+  Rect * dstRect) __attribute__((deprecated));
 # 2478 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 UnionRect(
   const Rect * src1,
   const Rect * src2,
-  Rect * dstRect) ;
+  Rect * dstRect) __attribute__((deprecated));
 # 2499 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 EqualRect(
   const Rect * rect1,
-  const Rect * rect2) ;
+  const Rect * rect2) __attribute__((deprecated));
 # 2516 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-EmptyRect(const Rect * r) ;
+EmptyRect(const Rect * r) __attribute__((deprecated));
 # 2534 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-FrameRect(const Rect * r) ;
+FrameRect(const Rect * r) __attribute__((deprecated));
 # 2549 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PaintRect(const Rect * r) ;
+PaintRect(const Rect * r) __attribute__((deprecated));
 # 2564 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-EraseRect(const Rect * r) ;
+EraseRect(const Rect * r) __attribute__((deprecated));
 # 2582 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-InvertRect(const Rect * r) ;
+InvertRect(const Rect * r) __attribute__((deprecated));
 # 2600 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillRect(
   const Rect * r,
-  const Pattern * pat) ;
+  const Pattern * pat) __attribute__((deprecated));
 # 2617 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-FrameOval(const Rect * r) ;
+FrameOval(const Rect * r) __attribute__((deprecated));
 # 2632 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PaintOval(const Rect * r) ;
+PaintOval(const Rect * r) __attribute__((deprecated));
 # 2647 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-EraseOval(const Rect * r) ;
+EraseOval(const Rect * r) __attribute__((deprecated));
 # 2662 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-InvertOval(const Rect * r) ;
+InvertOval(const Rect * r) __attribute__((deprecated));
 # 2677 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillOval(
   const Rect * r,
-  const Pattern * pat) ;
+  const Pattern * pat) __attribute__((deprecated));
 # 2694 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FrameRoundRect(
   const Rect * r,
   short ovalWidth,
-  short ovalHeight) ;
+  short ovalHeight) __attribute__((deprecated));
 # 2712 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 PaintRoundRect(
   const Rect * r,
   short ovalWidth,
-  short ovalHeight) ;
+  short ovalHeight) __attribute__((deprecated));
 # 2730 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 EraseRoundRect(
   const Rect * r,
   short ovalWidth,
-  short ovalHeight) ;
+  short ovalHeight) __attribute__((deprecated));
 # 2748 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvertRoundRect(
   const Rect * r,
   short ovalWidth,
-  short ovalHeight) ;
+  short ovalHeight) __attribute__((deprecated));
 # 2766 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillRoundRect(
   const Rect * r,
   short ovalWidth,
   short ovalHeight,
-  const Pattern * pat) ;
+  const Pattern * pat) __attribute__((deprecated));
 # 2785 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FrameArc(
   const Rect * r,
   short startAngle,
-  short arcAngle) ;
+  short arcAngle) __attribute__((deprecated));
 # 2803 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 PaintArc(
   const Rect * r,
   short startAngle,
-  short arcAngle) ;
+  short arcAngle) __attribute__((deprecated));
 # 2821 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 EraseArc(
   const Rect * r,
   short startAngle,
-  short arcAngle) ;
+  short arcAngle) __attribute__((deprecated));
 # 2839 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InvertArc(
   const Rect * r,
   short startAngle,
-  short arcAngle) ;
+  short arcAngle) __attribute__((deprecated));
 # 2857 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillArc(
   const Rect * r,
   short startAngle,
   short arcAngle,
-  const Pattern * pat) ;
+  const Pattern * pat) __attribute__((deprecated));
 # 2876 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern RgnHandle
-NewRgn(void) ;
+NewRgn(void) __attribute__((deprecated));
 # 2891 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-OpenRgn(void) ;
+OpenRgn(void) __attribute__((deprecated));
 # 2906 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-CloseRgn(RgnHandle dstRgn) ;
+CloseRgn(RgnHandle dstRgn) __attribute__((deprecated));
 # 2921 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
 BitMapToRegion(
   RgnHandle region,
-  const BitMap * bMap) ;
+  const BitMap * bMap) __attribute__((deprecated));
 # 2962 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 RgnToHandle(
@@ -51740,18 +54842,18 @@ RgnToHandle(
 extern void
 HandleToRgn(
   Handle oldRegion,
-  RgnHandle region) ;
+  RgnHandle region) __attribute__((deprecated));
 # 2996 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeRgn(RgnHandle rgn) ;
+DisposeRgn(RgnHandle rgn) __attribute__((deprecated));
 # 3014 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CopyRgn(
   RgnHandle srcRgn,
-  RgnHandle dstRgn) ;
+  RgnHandle dstRgn) __attribute__((deprecated));
 # 3031 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetEmptyRgn(RgnHandle rgn) ;
+SetEmptyRgn(RgnHandle rgn) __attribute__((deprecated));
 # 3049 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetRectRgn(
@@ -51759,85 +54861,85 @@ SetRectRgn(
   short left,
   short top,
   short right,
-  short bottom) ;
+  short bottom) __attribute__((deprecated));
 # 3069 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 RectRgn(
   RgnHandle rgn,
-  const Rect * r) ;
+  const Rect * r) __attribute__((deprecated));
 # 3089 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 OffsetRgn(
   RgnHandle rgn,
   short dh,
-  short dv) ;
+  short dv) __attribute__((deprecated));
 # 3107 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InsetRgn(
   RgnHandle rgn,
   short dh,
-  short dv) ;
+  short dv) __attribute__((deprecated));
 # 3125 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SectRgn(
   RgnHandle srcRgnA,
   RgnHandle srcRgnB,
-  RgnHandle dstRgn) ;
+  RgnHandle dstRgn) __attribute__((deprecated));
 # 3146 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 UnionRgn(
   RgnHandle srcRgnA,
   RgnHandle srcRgnB,
-  RgnHandle dstRgn) ;
+  RgnHandle dstRgn) __attribute__((deprecated));
 # 3164 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 DiffRgn(
   RgnHandle srcRgnA,
   RgnHandle srcRgnB,
-  RgnHandle dstRgn) ;
+  RgnHandle dstRgn) __attribute__((deprecated));
 # 3185 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 XorRgn(
   RgnHandle srcRgnA,
   RgnHandle srcRgnB,
-  RgnHandle dstRgn) ;
+  RgnHandle dstRgn) __attribute__((deprecated));
 # 3203 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 RectInRgn(
   const Rect * r,
-  RgnHandle rgn) ;
+  RgnHandle rgn) __attribute__((deprecated));
 # 3223 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 EqualRgn(
   RgnHandle rgnA,
-  RgnHandle rgnB) ;
+  RgnHandle rgnB) __attribute__((deprecated));
 # 3240 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-EmptyRgn(RgnHandle rgn) ;
+EmptyRgn(RgnHandle rgn) __attribute__((deprecated));
 # 3258 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-FrameRgn(RgnHandle rgn) ;
+FrameRgn(RgnHandle rgn) __attribute__((deprecated));
 # 3276 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PaintRgn(RgnHandle rgn) ;
+PaintRgn(RgnHandle rgn) __attribute__((deprecated));
 # 3291 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-EraseRgn(RgnHandle rgn) ;
+EraseRgn(RgnHandle rgn) __attribute__((deprecated));
 # 3309 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-InvertRgn(RgnHandle rgn) ;
+InvertRgn(RgnHandle rgn) __attribute__((deprecated));
 # 3327 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillRgn(
   RgnHandle rgn,
-  const Pattern * pat) ;
+  const Pattern * pat) __attribute__((deprecated));
 # 3344 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 ScrollRect(
   const Rect * r,
   short dh,
   short dv,
-  RgnHandle updateRgn) ;
+  RgnHandle updateRgn) __attribute__((deprecated));
 # 3363 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CopyBits(
@@ -51846,7 +54948,7 @@ CopyBits(
   const Rect * srcRect,
   const Rect * dstRect,
   short mode,
-  RgnHandle maskRgn) ;
+  RgnHandle maskRgn) __attribute__((deprecated));
 # 3384 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SeedFill(
@@ -51857,7 +54959,7 @@ SeedFill(
   short height,
   short words,
   short seedH,
-  short seedV) ;
+  short seedV) __attribute__((deprecated));
 # 3407 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CalcMask(
@@ -51866,7 +54968,7 @@ CalcMask(
   short srcRow,
   short dstRow,
   short height,
-  short words) ;
+  short words) __attribute__((deprecated));
 # 3428 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CopyMask(
@@ -51875,19 +54977,19 @@ CopyMask(
   const BitMap * dstBits,
   const Rect * srcRect,
   const Rect * maskRect,
-  const Rect * dstRect) ;
+  const Rect * dstRect) __attribute__((deprecated));
 # 3449 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PicHandle
-OpenPicture(const Rect * picFrame) ;
+OpenPicture(const Rect * picFrame) __attribute__((deprecated));
 # 3464 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 PicComment(
   short kind,
   short dataSize,
-  Handle dataHandle) ;
+  Handle dataHandle) __attribute__((deprecated));
 # 3482 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ClosePicture(void) ;
+ClosePicture(void) __attribute__((deprecated));
 # 3497 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Rect *
 QDGetPictureBounds(
@@ -51897,134 +54999,134 @@ QDGetPictureBounds(
 extern void
 DrawPicture(
   PicHandle myPicture,
-  const Rect * dstRect) ;
+  const Rect * dstRect) __attribute__((deprecated));
 # 3531 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-KillPicture(PicHandle myPicture) ;
+KillPicture(PicHandle myPicture) __attribute__((deprecated));
 # 3546 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PolyHandle
-OpenPoly(void) ;
+OpenPoly(void) __attribute__((deprecated));
 # 3561 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ClosePoly(void) ;
+ClosePoly(void) __attribute__((deprecated));
 # 3576 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-KillPoly(PolyHandle poly) ;
+KillPoly(PolyHandle poly) __attribute__((deprecated));
 # 3591 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 OffsetPoly(
   PolyHandle poly,
   short dh,
-  short dv) ;
+  short dv) __attribute__((deprecated));
 # 3609 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-FramePoly(PolyHandle poly) ;
+FramePoly(PolyHandle poly) __attribute__((deprecated));
 # 3624 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PaintPoly(PolyHandle poly) ;
+PaintPoly(PolyHandle poly) __attribute__((deprecated));
 # 3639 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-ErasePoly(PolyHandle poly) ;
+ErasePoly(PolyHandle poly) __attribute__((deprecated));
 # 3654 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-InvertPoly(PolyHandle poly) ;
+InvertPoly(PolyHandle poly) __attribute__((deprecated));
 # 3669 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillPoly(
   PolyHandle poly,
-  const Pattern * pat) ;
+  const Pattern * pat) __attribute__((deprecated));
 # 3686 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPt(
   Point * pt,
   short h,
-  short v) ;
+  short v) __attribute__((deprecated));
 # 3704 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LocalToGlobal(Point * pt) ;
+LocalToGlobal(Point * pt) __attribute__((deprecated));
 # 3719 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GlobalToLocal(Point * pt) ;
+GlobalToLocal(Point * pt) __attribute__((deprecated));
 # 3734 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern short
-Random(void) ;
+Random(void) __attribute__((deprecated));
 # 3749 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StuffHex(
   void * thingPtr,
-  ConstStr255Param s) ;
+  ConstStr255Param s) __attribute__((deprecated));
 # 3769 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 GetPixel(
   short h,
-  short v) ;
+  short v) __attribute__((deprecated));
 # 3786 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 ScalePt(
   Point * pt,
   const Rect * srcRect,
-  const Rect * dstRect) ;
+  const Rect * dstRect) __attribute__((deprecated));
 # 3804 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MapPt(
   Point * pt,
   const Rect * srcRect,
-  const Rect * dstRect) ;
+  const Rect * dstRect) __attribute__((deprecated));
 # 3822 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MapRect(
   Rect * r,
   const Rect * srcRect,
-  const Rect * dstRect) ;
+  const Rect * dstRect) __attribute__((deprecated));
 # 3840 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MapRgn(
   RgnHandle rgn,
   const Rect * srcRect,
-  const Rect * dstRect) ;
+  const Rect * dstRect) __attribute__((deprecated));
 # 3858 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MapPoly(
   PolyHandle poly,
   const Rect * srcRect,
-  const Rect * dstRect) ;
+  const Rect * dstRect) __attribute__((deprecated));
 # 3876 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetStdProcs(QDProcs * procs) ;
+SetStdProcs(QDProcs * procs) __attribute__((deprecated));
 # 3891 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdRect(
   GrafVerb verb,
-  const Rect * r) ;
+  const Rect * r) __attribute__((deprecated));
 # 3908 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdRRect(
   GrafVerb verb,
   const Rect * r,
   short ovalWidth,
-  short ovalHeight) ;
+  short ovalHeight) __attribute__((deprecated));
 # 3927 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdOval(
   GrafVerb verb,
-  const Rect * r) ;
+  const Rect * r) __attribute__((deprecated));
 # 3944 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdArc(
   GrafVerb verb,
   const Rect * r,
   short startAngle,
-  short arcAngle) ;
+  short arcAngle) __attribute__((deprecated));
 # 3963 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdPoly(
   GrafVerb verb,
-  PolyHandle poly) ;
+  PolyHandle poly) __attribute__((deprecated));
 # 3980 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdRgn(
   GrafVerb verb,
-  RgnHandle rgn) ;
+  RgnHandle rgn) __attribute__((deprecated));
 # 3997 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdBits(
@@ -52032,167 +55134,167 @@ StdBits(
   const Rect * srcRect,
   const Rect * dstRect,
   short mode,
-  RgnHandle maskRgn) ;
+  RgnHandle maskRgn) __attribute__((deprecated));
 # 4017 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdComment(
   short kind,
   short dataSize,
-  Handle dataHandle) ;
+  Handle dataHandle) __attribute__((deprecated));
 # 4035 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdGetPic(
   void * dataPtr,
-  short byteCount) ;
+  short byteCount) __attribute__((deprecated));
 # 4052 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdPutPic(
   const void * dataPtr,
-  short byteCount) ;
+  short byteCount) __attribute__((deprecated));
 # 4069 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 StdOpcode(
   const Rect * fromRect,
   const Rect * toRect,
   UInt16 opcode,
-  SInt16 version) ;
+  SInt16 version) __attribute__((deprecated));
 # 4088 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 AddPt(
   Point src,
-  Point * dst) ;
+  Point * dst) __attribute__((deprecated));
 # 4105 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 EqualPt(
   Point pt1,
-  Point pt2) ;
+  Point pt2) __attribute__((deprecated));
 # 4125 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 PtInRect(
   Point pt,
-  const Rect * r) ;
+  const Rect * r) __attribute__((deprecated));
 # 4142 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 Pt2Rect(
   Point pt1,
   Point pt2,
-  Rect * dstRect) ;
+  Rect * dstRect) __attribute__((deprecated));
 # 4160 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 PtToAngle(
   const Rect * r,
   Point pt,
-  short * angle) ;
+  short * angle) __attribute__((deprecated));
 # 4178 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SubPt(
   Point src,
-  Point * dst) ;
+  Point * dst) __attribute__((deprecated));
 # 4195 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 PtInRgn(
   Point pt,
-  RgnHandle rgn) ;
+  RgnHandle rgn) __attribute__((deprecated));
 # 4212 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-StdLine(Point newPt) ;
+StdLine(Point newPt) __attribute__((deprecated));
 # 4257 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PixMapHandle
-NewPixMap(void) ;
+NewPixMap(void) __attribute__((deprecated));
 # 4272 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposePixMap(PixMapHandle pm) ;
+DisposePixMap(PixMapHandle pm) __attribute__((deprecated));
 # 4287 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CopyPixMap(
   PixMapHandle srcPM,
-  PixMapHandle dstPM) ;
+  PixMapHandle dstPM) __attribute__((deprecated));
 # 4304 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PixPatHandle
-NewPixPat(void) ;
+NewPixPat(void) __attribute__((deprecated));
 # 4319 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposePixPat(PixPatHandle pp) ;
+DisposePixPat(PixPatHandle pp) __attribute__((deprecated));
 # 4334 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CopyPixPat(
   PixPatHandle srcPP,
-  PixPatHandle dstPP) ;
+  PixPatHandle dstPP) __attribute__((deprecated));
 # 4351 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-PenPixPat(PixPatHandle pp) ;
+PenPixPat(PixPatHandle pp) __attribute__((deprecated));
 # 4366 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-BackPixPat(PixPatHandle pp) ;
+BackPixPat(PixPatHandle pp) __attribute__((deprecated));
 # 4381 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PixPatHandle
-GetPixPat(short patID) ;
+GetPixPat(short patID) __attribute__((deprecated));
 # 4396 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MakeRGBPat(
   PixPatHandle pp,
-  const RGBColor * myColor) ;
+  const RGBColor * myColor) __attribute__((deprecated));
 # 4413 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillCRect(
   const Rect * r,
-  PixPatHandle pp) ;
+  PixPatHandle pp) __attribute__((deprecated));
 # 4430 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillCOval(
   const Rect * r,
-  PixPatHandle pp) ;
+  PixPatHandle pp) __attribute__((deprecated));
 # 4447 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillCRoundRect(
   const Rect * r,
   short ovalWidth,
   short ovalHeight,
-  PixPatHandle pp) ;
+  PixPatHandle pp) __attribute__((deprecated));
 # 4466 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillCArc(
   const Rect * r,
   short startAngle,
   short arcAngle,
-  PixPatHandle pp) ;
+  PixPatHandle pp) __attribute__((deprecated));
 # 4485 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillCRgn(
   RgnHandle rgn,
-  PixPatHandle pp) ;
+  PixPatHandle pp) __attribute__((deprecated));
 # 4502 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 FillCPoly(
   PolyHandle poly,
-  PixPatHandle pp) ;
+  PixPatHandle pp) __attribute__((deprecated));
 # 4519 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-RGBForeColor(const RGBColor * color) ;
+RGBForeColor(const RGBColor * color) __attribute__((deprecated));
 # 4534 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-RGBBackColor(const RGBColor * color) ;
+RGBBackColor(const RGBColor * color) __attribute__((deprecated));
 # 4549 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetCPixel(
   short h,
   short v,
-  const RGBColor * cPix) ;
+  const RGBColor * cPix) __attribute__((deprecated));
 # 4567 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetPortPix(PixMapHandle pm) ;
+SetPortPix(PixMapHandle pm) __attribute__((deprecated));
 # 4582 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 GetCPixel(
   short h,
   short v,
-  RGBColor * cPix) ;
+  RGBColor * cPix) __attribute__((deprecated));
 # 4600 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GetForeColor(RGBColor * color) ;
+GetForeColor(RGBColor * color) __attribute__((deprecated));
 # 4615 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-GetBackColor(RGBColor * color) ;
+GetBackColor(RGBColor * color) __attribute__((deprecated));
 # 4630 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SeedCFill(
@@ -52203,7 +55305,7 @@ SeedCFill(
   short seedH,
   short seedV,
   ColorSearchUPP matchProc,
-  long matchData) ;
+  long matchData) __attribute__((deprecated));
 # 4653 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CalcCMask(
@@ -52213,155 +55315,155 @@ CalcCMask(
   const Rect * dstRect,
   const RGBColor * seedRGB,
   ColorSearchUPP matchProc,
-  long matchData) ;
+  long matchData) __attribute__((deprecated));
 # 4675 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PicHandle
-OpenCPicture(const OpenCPicParams * newHeader) ;
+OpenCPicture(const OpenCPicParams * newHeader) __attribute__((deprecated));
 # 4690 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-OpColor(const RGBColor * color) ;
+OpColor(const RGBColor * color) __attribute__((deprecated));
 # 4705 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-HiliteColor(const RGBColor * color) ;
+HiliteColor(const RGBColor * color) __attribute__((deprecated));
 # 4720 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeCTable(CTabHandle cTable) ;
+DisposeCTable(CTabHandle cTable) __attribute__((deprecated));
 # 4735 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CTabHandle
-GetCTable(short ctID) ;
+GetCTable(short ctID) __attribute__((deprecated));
 # 4750 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CCrsrHandle
-GetCCursor(short crsrID) ;
+GetCCursor(short crsrID) __attribute__((deprecated));
 # 4765 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetCCursor(CCrsrHandle cCrsr) ;
+SetCCursor(CCrsrHandle cCrsr) __attribute__((deprecated));
 # 4780 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-AllocCursor(void) ;
+AllocCursor(void) __attribute__((deprecated));
 # 4795 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeCCursor(CCrsrHandle cCrsr) ;
+DisposeCCursor(CCrsrHandle cCrsr) __attribute__((deprecated));
 # 4812 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetStdCProcs(CQDProcs * procs) ;
+SetStdCProcs(CQDProcs * procs) __attribute__((deprecated));
 # 4827 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-GetMaxDevice(const Rect * globalRect) ;
+GetMaxDevice(const Rect * globalRect) __attribute__((deprecated));
 # 4842 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern long
-GetCTSeed(void) ;
+GetCTSeed(void) __attribute__((deprecated));
 # 4857 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-GetDeviceList(void) ;
+GetDeviceList(void) __attribute__((deprecated));
 # 4872 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-GetMainDevice(void) ;
+GetMainDevice(void) __attribute__((deprecated));
 # 4887 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-GetNextDevice(GDHandle curDevice) ;
+GetNextDevice(GDHandle curDevice) __attribute__((deprecated));
 # 4902 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 TestDeviceAttribute(
   GDHandle gdh,
-  short attribute) ;
+  short attribute) __attribute__((deprecated));
 # 4919 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetDeviceAttribute(
   GDHandle gdh,
   short attribute,
-  Boolean value) ;
+  Boolean value) __attribute__((deprecated));
 # 4937 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 InitGDevice(
   short qdRefNum,
   long mode,
-  GDHandle gdh) ;
+  GDHandle gdh) __attribute__((deprecated));
 # 4955 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
 NewGDevice(
   short refNum,
-  long mode) ;
+  long mode) __attribute__((deprecated));
 # 4972 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposeGDevice(GDHandle gdh) ;
+DisposeGDevice(GDHandle gdh) __attribute__((deprecated));
 # 4987 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetGDevice(GDHandle gd) ;
+SetGDevice(GDHandle gd) __attribute__((deprecated));
 # 5002 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-GetGDevice(void) ;
+GetGDevice(void) __attribute__((deprecated));
 # 5017 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern long
-Color2Index(const RGBColor * myColor) ;
+Color2Index(const RGBColor * myColor) __attribute__((deprecated));
 # 5032 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 Index2Color(
   long index,
-  RGBColor * aColor) ;
+  RGBColor * aColor) __attribute__((deprecated));
 # 5049 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-InvertColor(RGBColor * myColor) ;
+InvertColor(RGBColor * myColor) __attribute__((deprecated));
 # 5064 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-RealColor(const RGBColor * color) ;
+RealColor(const RGBColor * color) __attribute__((deprecated));
 # 5079 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 GetSubTable(
   CTabHandle myColors,
   short iTabRes,
-  CTabHandle targetTbl) ;
+  CTabHandle targetTbl) __attribute__((deprecated));
 # 5097 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 MakeITable(
   CTabHandle cTabH,
   ITabHandle iTabH,
-  short res) ;
+  short res) __attribute__((deprecated));
 # 5115 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-AddSearch(ColorSearchUPP searchProc) ;
+AddSearch(ColorSearchUPP searchProc) __attribute__((deprecated));
 # 5130 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-AddComp(ColorComplementUPP compProc) ;
+AddComp(ColorComplementUPP compProc) __attribute__((deprecated));
 # 5145 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DelSearch(ColorSearchUPP searchProc) ;
+DelSearch(ColorSearchUPP searchProc) __attribute__((deprecated));
 # 5160 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DelComp(ColorComplementUPP compProc) ;
+DelComp(ColorComplementUPP compProc) __attribute__((deprecated));
 # 5175 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetClientID(short id) ;
+SetClientID(short id) __attribute__((deprecated));
 # 5190 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 ProtectEntry(
   short index,
-  Boolean protect) ;
+  Boolean protect) __attribute__((deprecated));
 # 5207 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 ReserveEntry(
   short index,
-  Boolean reserve) ;
+  Boolean reserve) __attribute__((deprecated));
 # 5224 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetEntries(
   short start,
   short count,
-  CSpecArray aTable) ;
+  CSpecArray aTable) __attribute__((deprecated));
 # 5242 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SaveEntries(
   CTabHandle srcTable,
   CTabHandle resultTable,
-  ReqListRec * selection) ;
+  ReqListRec * selection) __attribute__((deprecated));
 # 5260 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 RestoreEntries(
   CTabHandle srcTable,
   CTabHandle dstTable,
-  ReqListRec * selection) ;
+  ReqListRec * selection) __attribute__((deprecated));
 # 5278 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern short
-QDError(void) ;
+QDError(void) __attribute__((deprecated));
 # 5293 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 CopyDeepMask(
@@ -52372,47 +55474,47 @@ CopyDeepMask(
   const Rect * maskRect,
   const Rect * dstRect,
   short mode,
-  RgnHandle maskRgn) ;
+  RgnHandle maskRgn) __attribute__((deprecated));
 # 5316 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 DeviceLoop(
   RgnHandle drawingRgn,
   DeviceLoopDrawingUPP drawingProc,
   long userData,
-  DeviceLoopFlags flags) ;
+  DeviceLoopFlags flags) __attribute__((deprecated));
 # 5337 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Ptr
-GetMaskTable(void) ;
+GetMaskTable(void) __attribute__((deprecated));
 # 5353 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PatHandle
-GetPattern(short patternID) ;
+GetPattern(short patternID) __attribute__((deprecated));
 # 5371 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CursHandle
-GetCursor(short cursorID) ;
+GetCursor(short cursorID) __attribute__((deprecated));
 # 5386 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PicHandle
-GetPicture(short pictureID) ;
+GetPicture(short pictureID) __attribute__((deprecated));
 # 5401 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern long
 DeltaPoint(
   Point ptA,
-  Point ptB) ;
+  Point ptB) __attribute__((deprecated));
 # 5418 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 ShieldCursor(
   const Rect * shieldRect,
-  Point offsetPt) ;
+  Point offsetPt) __attribute__((deprecated));
 # 5435 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 ScreenRes(
   short * scrnHRes,
-  short * scrnVRes) ;
+  short * scrnVRes) __attribute__((deprecated));
 # 5452 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 GetIndPattern(
   Pattern * thePat,
   short patternListID,
-  short index) ;
+  short index) __attribute__((deprecated));
 # 5570 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern long
 deltapoint(
@@ -52423,19 +55525,19 @@ extern void
 PackBits(
   Ptr * srcPtr,
   Ptr * dstPtr,
-  short srcBytes) ;
+  short srcBytes) __attribute__((deprecated));
 # 5616 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 UnpackBits(
   Ptr * srcPtr,
   Ptr * dstPtr,
-  short dstBytes) ;
+  short dstBytes) __attribute__((deprecated));
 # 5634 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Fixed
-SlopeFromAngle(short angle) ;
+SlopeFromAngle(short angle) __attribute__((deprecated));
 # 5649 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern short
-AngleFromSlope(Fixed slope) ;
+AngleFromSlope(Fixed slope) __attribute__((deprecated));
 
 
 
@@ -52471,14 +55573,14 @@ GetPortCustomXFerProc(
   CGrafPtr port,
   CustomXFerProcPtr * proc,
   UInt32 * flags,
-  UInt32 * refCon) ;
+  UInt32 * refCon) __attribute__((deprecated));
 # 5710 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
 SetPortCustomXFerProc(
   CGrafPtr port,
   CustomXFerProcPtr proc,
   UInt32 flags,
-  UInt32 refCon) ;
+  UInt32 refCon) __attribute__((deprecated));
 
 
 
@@ -52531,28 +55633,28 @@ enum {
 extern OSErr
 OpenCursorComponent(
   Component c,
-  ComponentInstance * ci) ;
+  ComponentInstance * ci) __attribute__((deprecated));
 # 5793 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
-CloseCursorComponent(ComponentInstance ci) ;
+CloseCursorComponent(ComponentInstance ci) __attribute__((deprecated));
 # 5808 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
-SetCursorComponent(ComponentInstance ci) ;
+SetCursorComponent(ComponentInstance ci) __attribute__((deprecated));
 # 5823 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
-CursorComponentChanged(ComponentInstance ci) ;
+CursorComponentChanged(ComponentInstance ci) __attribute__((deprecated));
 # 5838 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSErr
 CursorComponentSetData(
   ComponentInstance ci,
-  long data) ;
+  long data) __attribute__((deprecated));
 # 5856 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CMError
 CWMatchPixMap(
   CMWorldRef cw,
   PixMap * myPixMap,
   CMBitmapCallBackUPP progressProc,
-  void * refCon) ;
+  void * refCon) __attribute__((deprecated));
 # 5875 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CMError
 CWCheckPixMap(
@@ -52560,39 +55662,39 @@ CWCheckPixMap(
   PixMap * myPixMap,
   CMBitmapCallBackUPP progressProc,
   void * refCon,
-  BitMap * resultBitMap) ;
+  BitMap * resultBitMap) __attribute__((deprecated));
 # 5895 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CMError
 NCMBeginMatching(
   CMProfileRef src,
   CMProfileRef dst,
-  CMMatchRef * myRef) ;
+  CMMatchRef * myRef) __attribute__((deprecated));
 # 5913 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-CMEndMatching(CMMatchRef myRef) ;
+CMEndMatching(CMMatchRef myRef) __attribute__((deprecated));
 # 5928 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 NCMDrawMatchedPicture(
   PicHandle myPicture,
   CMProfileRef dst,
-  Rect * myRect) ;
+  Rect * myRect) __attribute__((deprecated));
 # 5946 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-CMEnableMatchingComment(Boolean enableIt) ;
+CMEnableMatchingComment(Boolean enableIt) __attribute__((deprecated));
 # 5961 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CMError
 NCMUseProfileComment(
   CMProfileRef prof,
-  UInt32 flags) ;
+  UInt32 flags) __attribute__((deprecated));
 # 5999 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-IsValidPort(CGrafPtr port) ;
+IsValidPort(CGrafPtr port) __attribute__((deprecated));
 # 6031 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
 IsValidRgnHandle(RgnHandle rgn) ;
 # 6048 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern PixMapHandle
-GetPortPixMap(CGrafPtr port) ;
+GetPortPixMap(CGrafPtr port) __attribute__((deprecated));
 # 6074 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern const BitMap *
 GetPortBitMapForCopyBits(CGrafPtr port) ;
@@ -52736,17 +55838,17 @@ SwapPortRegionSaveHandle(
 extern void
 SetPortBounds(
   CGrafPtr port,
-  const Rect * rect) ;
+  const Rect * rect) __attribute__((deprecated));
 # 6676 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortOpColor(
   CGrafPtr port,
-  const RGBColor * opColor) ;
+  const RGBColor * opColor) __attribute__((deprecated));
 # 6693 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortGrafProcs(
   CGrafPtr port,
-  CQDProcsPtr procs) ;
+  CQDProcsPtr procs) __attribute__((deprecated));
 # 6710 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortTextFont(
@@ -52771,177 +55873,177 @@ SetPortTextMode(
 extern void
 SetPortVisibleRegion(
   CGrafPtr port,
-  RgnHandle visRgn) ;
+  RgnHandle visRgn) __attribute__((deprecated));
 # 6795 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortClipRegion(
   CGrafPtr port,
-  RgnHandle clipRgn) ;
+  RgnHandle clipRgn) __attribute__((deprecated));
 # 6812 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortPenPixPat(
   CGrafPtr port,
-  PixPatHandle penPattern) ;
+  PixPatHandle penPattern) __attribute__((deprecated));
 # 6829 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortFillPixPat(
   CGrafPtr port,
-  PixPatHandle penPattern) ;
+  PixPatHandle penPattern) __attribute__((deprecated));
 # 6846 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortBackPixPat(
   CGrafPtr port,
-  PixPatHandle backPattern) ;
+  PixPatHandle backPattern) __attribute__((deprecated));
 # 6863 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortPenSize(
   CGrafPtr port,
-  Point penSize) ;
+  Point penSize) __attribute__((deprecated));
 # 6880 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortPenMode(
   CGrafPtr port,
-  SInt32 penMode) ;
+  SInt32 penMode) __attribute__((deprecated));
 # 6897 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 SetPortFracHPenLocation(
   CGrafPtr port,
-  short pnLocHFrac) ;
+  short pnLocHFrac) __attribute__((deprecated));
 # 6915 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Rect *
 GetPixBounds(
   PixMapHandle pixMap,
-  Rect * bounds) ;
+  Rect * bounds) __attribute__((deprecated));
 # 6932 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern short
-GetPixDepth(PixMapHandle pixMap) ;
+GetPixDepth(PixMapHandle pixMap) __attribute__((deprecated));
 # 6949 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern long
-GetQDGlobalsRandomSeed(void) ;
+GetQDGlobalsRandomSeed(void) __attribute__((deprecated));
 # 6964 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern BitMap *
-GetQDGlobalsScreenBits(BitMap * screenBits) ;
+GetQDGlobalsScreenBits(BitMap * screenBits) __attribute__((deprecated));
 # 6979 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Cursor *
-GetQDGlobalsArrow(Cursor * arrow) ;
+GetQDGlobalsArrow(Cursor * arrow) __attribute__((deprecated));
 # 6994 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Pattern *
-GetQDGlobalsDarkGray(Pattern * dkGray) ;
+GetQDGlobalsDarkGray(Pattern * dkGray) __attribute__((deprecated));
 # 7009 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Pattern *
-GetQDGlobalsLightGray(Pattern * ltGray) ;
+GetQDGlobalsLightGray(Pattern * ltGray) __attribute__((deprecated));
 # 7024 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Pattern *
-GetQDGlobalsGray(Pattern * gray) ;
+GetQDGlobalsGray(Pattern * gray) __attribute__((deprecated));
 # 7039 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Pattern *
-GetQDGlobalsBlack(Pattern * black) ;
+GetQDGlobalsBlack(Pattern * black) __attribute__((deprecated));
 # 7054 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Pattern *
-GetQDGlobalsWhite(Pattern * white) ;
+GetQDGlobalsWhite(Pattern * white) __attribute__((deprecated));
 # 7069 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CGrafPtr
-GetQDGlobalsThePort(void) ;
+GetQDGlobalsThePort(void) __attribute__((deprecated));
 # 7085 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetQDGlobalsRandomSeed(long randomSeed) ;
+SetQDGlobalsRandomSeed(long randomSeed) __attribute__((deprecated));
 # 7100 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetQDGlobalsArrow(const Cursor * arrow) ;
+SetQDGlobalsArrow(const Cursor * arrow) __attribute__((deprecated));
 # 7116 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Rect *
 GetRegionBounds(
   RgnHandle region,
-  Rect * bounds) ;
+  Rect * bounds) __attribute__((deprecated));
 # 7133 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-IsRegionRectangular(RgnHandle region) ;
+IsRegionRectangular(RgnHandle region) __attribute__((deprecated));
 # 7152 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CGrafPtr
-CreateNewPort(void) ;
+CreateNewPort(void) __attribute__((deprecated));
 # 7167 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-DisposePort(CGrafPtr port) ;
+DisposePort(CGrafPtr port) __attribute__((deprecated));
 # 7183 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-SetQDError(OSErr err) ;
+SetQDError(OSErr err) __attribute__((deprecated));
 # 7200 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Point *
 QDLocalToGlobalPoint(
   CGrafPtr port,
-  Point * point) ;
+  Point * point) __attribute__((deprecated));
 # 7217 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Point *
 QDGlobalToLocalPoint(
   CGrafPtr port,
-  Point * point) ;
+  Point * point) __attribute__((deprecated));
 # 7234 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Rect *
 QDLocalToGlobalRect(
   CGrafPtr port,
-  Rect * bounds) ;
+  Rect * bounds) __attribute__((deprecated));
 # 7251 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Rect *
 QDGlobalToLocalRect(
   CGrafPtr port,
-  Rect * bounds) ;
+  Rect * bounds) __attribute__((deprecated));
 # 7268 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern RgnHandle
 QDLocalToGlobalRegion(
   CGrafPtr port,
-  RgnHandle region) ;
+  RgnHandle region) __attribute__((deprecated));
 # 7285 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern RgnHandle
 QDGlobalToLocalRegion(
   CGrafPtr port,
-  RgnHandle region) ;
+  RgnHandle region) __attribute__((deprecated));
 # 7308 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-QDIsPortBuffered(CGrafPtr port) ;
+QDIsPortBuffered(CGrafPtr port) __attribute__((deprecated));
 # 7323 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-QDIsPortBufferDirty(CGrafPtr port) ;
+QDIsPortBufferDirty(CGrafPtr port) __attribute__((deprecated));
 # 7338 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 QDFlushPortBuffer(
   CGrafPtr port,
-  RgnHandle region) ;
+  RgnHandle region) __attribute__((deprecated));
 # 7355 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 QDGetDirtyRegion(
   CGrafPtr port,
-  RgnHandle rgn) ;
+  RgnHandle rgn) __attribute__((deprecated));
 # 7372 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 QDSetDirtyRegion(
   CGrafPtr port,
-  RgnHandle rgn) ;
+  RgnHandle rgn) __attribute__((deprecated));
 # 7389 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 QDAddRectToDirtyRegion(
   CGrafPtr inPort,
-  const Rect * inBounds) ;
+  const Rect * inBounds) __attribute__((deprecated));
 # 7406 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 QDAddRegionToDirtyRegion(
   CGrafPtr inPort,
-  RgnHandle inRegion) ;
+  RgnHandle inRegion) __attribute__((deprecated));
 # 7424 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 CreateCGContextForPort(
   CGrafPtr inPort,
-  CGContextRef * outContext) ;
+  CGContextRef * outContext) __attribute__((deprecated));
 # 7470 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 ClipCGContextToRegion(
   CGContextRef gc,
   const Rect * portRect,
-  RgnHandle region) ;
+  RgnHandle region) __attribute__((deprecated));
 # 7488 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 SyncCGContextOriginWithPort(
   CGContextRef inContext,
-  CGrafPtr port) ;
+  CGrafPtr port) __attribute__((deprecated));
 # 7531 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern OSStatus
 QDBeginCGContext(
@@ -52967,10 +56069,10 @@ extern OSStatus
 QDDisposeRegionBits(QDRegionBitsRef regionBits) ;
 # 7686 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern CGrafPtr
-CreateNewPortForCGDisplayID(UInt32 inCGDisplayID) ;
+CreateNewPortForCGDisplayID(UInt32 inCGDisplayID) __attribute__((deprecated));
 # 7707 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-QDDisplayWaitCursor(Boolean forceWaitCursor) ;
+QDDisplayWaitCursor(Boolean forceWaitCursor) __attribute__((deprecated));
 # 7748 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
 QDSetPatternOrigin(Point origin) ;
@@ -53051,94 +56153,94 @@ extern CGDirectDisplayID
 QDGetCGDirectDisplayID(GDHandle inGDevice) ;
 # 8160 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern SInt16
-LMGetScrVRes(void) ;
+LMGetScrVRes(void) __attribute__((deprecated));
 # 8175 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetScrVRes(SInt16 value) ;
+LMSetScrVRes(SInt16 value) __attribute__((deprecated));
 # 8190 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern SInt16
-LMGetScrHRes(void) ;
+LMGetScrHRes(void) __attribute__((deprecated));
 # 8205 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetScrHRes(SInt16 value) ;
+LMSetScrHRes(SInt16 value) __attribute__((deprecated));
 # 8220 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-LMGetMainDevice(void) ;
+LMGetMainDevice(void) __attribute__((deprecated));
 # 8235 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetMainDevice(GDHandle value) ;
+LMSetMainDevice(GDHandle value) __attribute__((deprecated));
 # 8250 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-LMGetDeviceList(void) ;
+LMGetDeviceList(void) __attribute__((deprecated));
 # 8265 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetDeviceList(GDHandle value) ;
+LMSetDeviceList(GDHandle value) __attribute__((deprecated));
 # 8280 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Handle
-LMGetQDColors(void) ;
+LMGetQDColors(void) __attribute__((deprecated));
 # 8295 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetQDColors(Handle value) ;
+LMSetQDColors(Handle value) __attribute__((deprecated));
 # 8310 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Handle
-LMGetWidthListHand(void) ;
+LMGetWidthListHand(void) __attribute__((deprecated));
 # 8325 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetWidthListHand(Handle value) ;
+LMSetWidthListHand(Handle value) __attribute__((deprecated));
 # 8340 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern UInt8
-LMGetHiliteMode(void) ;
+LMGetHiliteMode(void) __attribute__((deprecated));
 # 8355 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetHiliteMode(UInt8 value) ;
+LMSetHiliteMode(UInt8 value) __attribute__((deprecated));
 # 8370 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Ptr
-LMGetWidthPtr(void) ;
+LMGetWidthPtr(void) __attribute__((deprecated));
 # 8385 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetWidthPtr(Ptr value) ;
+LMSetWidthPtr(Ptr value) __attribute__((deprecated));
 # 8400 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Handle
-LMGetWidthTabHandle(void) ;
+LMGetWidthTabHandle(void) __attribute__((deprecated));
 # 8415 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetWidthTabHandle(Handle value) ;
+LMSetWidthTabHandle(Handle value) __attribute__((deprecated));
 # 8430 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern SInt32
-LMGetLastSPExtra(void) ;
+LMGetLastSPExtra(void) __attribute__((deprecated));
 # 8445 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetLastSPExtra(SInt32 value) ;
+LMSetLastSPExtra(SInt32 value) __attribute__((deprecated));
 # 8460 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Handle
-LMGetLastFOND(void) ;
+LMGetLastFOND(void) __attribute__((deprecated));
 # 8475 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetLastFOND(Handle value) ;
+LMSetLastFOND(Handle value) __attribute__((deprecated));
 # 8490 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern UInt8
-LMGetFractEnable(void) ;
+LMGetFractEnable(void) __attribute__((deprecated));
 # 8505 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetFractEnable(UInt8 value) ;
+LMSetFractEnable(UInt8 value) __attribute__((deprecated));
 # 8520 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern GDHandle
-LMGetTheGDevice(void) ;
+LMGetTheGDevice(void) __attribute__((deprecated));
 # 8535 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetTheGDevice(GDHandle value) ;
+LMSetTheGDevice(GDHandle value) __attribute__((deprecated));
 # 8551 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMGetHiliteRGB(RGBColor * hiliteRGBValue) ;
+LMGetHiliteRGB(RGBColor * hiliteRGBValue) __attribute__((deprecated));
 # 8566 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetHiliteRGB(const RGBColor * hiliteRGBValue) ;
+LMSetHiliteRGB(const RGBColor * hiliteRGBValue) __attribute__((deprecated));
 # 8581 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern Boolean
-LMGetCursorNew(void) ;
+LMGetCursorNew(void) __attribute__((deprecated));
 # 8596 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 extern void
-LMSetCursorNew(Boolean value) ;
+LMSetCursorNew(Boolean value) __attribute__((deprecated));
 # 8617 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Quickdraw.h" 3
 #pragma options align=reset
 # 43 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QD.h" 2 3
@@ -53201,7 +56303,7 @@ NewGWorld(
   const Rect * boundsRect,
   CTabHandle cTable,
   GDHandle aGDevice,
-  GWorldFlags flags) ;
+  GWorldFlags flags) __attribute__((deprecated));
 
 
 
@@ -53226,13 +56328,13 @@ NewGWorldFromPtr(
   GDHandle aGDevice,
   GWorldFlags flags,
   Ptr newBuffer,
-  long rowBytes) ;
+  long rowBytes) __attribute__((deprecated));
 # 183 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern Boolean
-LockPixels(PixMapHandle pm) ;
+LockPixels(PixMapHandle pm) __attribute__((deprecated));
 # 195 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-UnlockPixels(PixMapHandle pm) ;
+UnlockPixels(PixMapHandle pm) __attribute__((deprecated));
 # 207 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern GWorldFlags
 UpdateGWorld(
@@ -53241,84 +56343,84 @@ UpdateGWorld(
   const Rect * boundsRect,
   CTabHandle cTable,
   GDHandle aGDevice,
-  GWorldFlags flags) ;
+  GWorldFlags flags) __attribute__((deprecated));
 # 225 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-DisposeGWorld(GWorldPtr offscreenGWorld) ;
+DisposeGWorld(GWorldPtr offscreenGWorld) __attribute__((deprecated));
 # 237 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
 GetGWorld(
   CGrafPtr * port,
-  GDHandle * gdh) ;
+  GDHandle * gdh) __attribute__((deprecated));
 # 251 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
 SetGWorld(
   CGrafPtr port,
-  GDHandle gdh) ;
+  GDHandle gdh) __attribute__((deprecated));
 # 265 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-CTabChanged(CTabHandle ctab) ;
+CTabChanged(CTabHandle ctab) __attribute__((deprecated));
 # 277 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-PixPatChanged(PixPatHandle ppat) ;
+PixPatChanged(PixPatHandle ppat) __attribute__((deprecated));
 # 289 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-PortChanged(GrafPtr port) ;
+PortChanged(GrafPtr port) __attribute__((deprecated));
 # 301 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-GDeviceChanged(GDHandle gdh) ;
+GDeviceChanged(GDHandle gdh) __attribute__((deprecated));
 # 313 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-AllowPurgePixels(PixMapHandle pm) ;
+AllowPurgePixels(PixMapHandle pm) __attribute__((deprecated));
 # 325 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-NoPurgePixels(PixMapHandle pm) ;
+NoPurgePixels(PixMapHandle pm) __attribute__((deprecated));
 # 337 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern GWorldFlags
-GetPixelsState(PixMapHandle pm) ;
+GetPixelsState(PixMapHandle pm) __attribute__((deprecated));
 # 349 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
 SetPixelsState(
   PixMapHandle pm,
-  GWorldFlags state) ;
+  GWorldFlags state) __attribute__((deprecated));
 # 363 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern Ptr
-GetPixBaseAddr(PixMapHandle pm) ;
+GetPixBaseAddr(PixMapHandle pm) __attribute__((deprecated));
 # 375 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern long
-GetPixRowBytes(PixMapHandle pm) ;
+GetPixRowBytes(PixMapHandle pm) __attribute__((deprecated));
 # 387 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern QDErr
 NewScreenBuffer(
   const Rect * globalRect,
   Boolean purgeable,
   GDHandle * gdh,
-  PixMapHandle * offscreenPixMap) ;
+  PixMapHandle * offscreenPixMap) __attribute__((deprecated));
 # 403 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern void
-DisposeScreenBuffer(PixMapHandle offscreenPixMap) ;
+DisposeScreenBuffer(PixMapHandle offscreenPixMap) __attribute__((deprecated));
 # 415 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern GDHandle
-GetGWorldDevice(GWorldPtr offscreenGWorld) ;
+GetGWorldDevice(GWorldPtr offscreenGWorld) __attribute__((deprecated));
 # 427 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern Boolean
-QDDone(GrafPtr port) ;
+QDDone(GrafPtr port) __attribute__((deprecated));
 # 439 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern long
-OffscreenVersion(void) ;
+OffscreenVersion(void) __attribute__((deprecated));
 # 451 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern QDErr
 NewTempScreenBuffer(
   const Rect * globalRect,
   Boolean purgeable,
   GDHandle * gdh,
-  PixMapHandle * offscreenPixMap) ;
+  PixMapHandle * offscreenPixMap) __attribute__((deprecated));
 # 467 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern Boolean
-PixMap32Bit(PixMapHandle pmHandle) ;
+PixMap32Bit(PixMapHandle pmHandle) __attribute__((deprecated));
 # 479 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QDOffscreen.h" 3
 extern PixMapHandle
-GetGWorldPixMap(GWorldPtr offscreenGWorld) ;
+GetGWorldPixMap(GWorldPtr offscreenGWorld) __attribute__((deprecated));
 # 47 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QD.h" 2 3
 
 
@@ -53473,43 +56575,43 @@ typedef FMetricRecPtr * FMetricRecHandle;
 extern void
 GetFontName(
   short familyID,
-  Str255 name) ;
+  Str255 name) __attribute__((deprecated));
 # 274 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern void
 GetFNum(
   ConstStr255Param name,
-  short * familyID) ;
+  short * familyID) __attribute__((deprecated));
 # 288 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern Boolean
 RealFont(
   short fontNum,
-  short size) ;
+  short size) __attribute__((deprecated));
 # 312 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern FMOutPtr
-FMSwapFont(const FMInput * inRec) ;
+FMSwapFont(const FMInput * inRec) __attribute__((deprecated));
 # 324 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern void
-SetFScaleDisable(Boolean fscaleDisable) ;
+SetFScaleDisable(Boolean fscaleDisable) __attribute__((deprecated));
 # 336 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern void
-FontMetrics(FMetricRecPtr theMetrics) ;
+FontMetrics(FMetricRecPtr theMetrics) __attribute__((deprecated));
 # 348 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern void
-SetFractEnable(Boolean fractEnable) ;
+SetFractEnable(Boolean fractEnable) __attribute__((deprecated));
 # 360 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern short
-GetDefFontSize(void) ;
+GetDefFontSize(void) __attribute__((deprecated));
 # 372 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern Boolean
 IsOutline(
   Point numer,
-  Point denom) ;
+  Point denom) __attribute__((deprecated));
 # 386 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern void
-SetOutlinePreferred(Boolean outlinePreferred) ;
+SetOutlinePreferred(Boolean outlinePreferred) __attribute__((deprecated));
 # 398 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern Boolean
-GetOutlinePreferred(void) ;
+GetOutlinePreferred(void) __attribute__((deprecated));
 # 410 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSErr
 OutlineMetrics(
@@ -53521,134 +56623,134 @@ OutlineMetrics(
   short * yMin,
   FixedPtr awArray,
   FixedPtr lsbArray,
-  RectPtr boundsArray) ;
+  RectPtr boundsArray) __attribute__((deprecated));
 # 431 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern void
-SetPreserveGlyph(Boolean preserveGlyph) ;
+SetPreserveGlyph(Boolean preserveGlyph) __attribute__((deprecated));
 # 443 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern Boolean
-GetPreserveGlyph(void) ;
+GetPreserveGlyph(void) __attribute__((deprecated));
 # 485 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern short
-GetSysFont(void) ;
+GetSysFont(void) __attribute__((deprecated));
 # 497 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern short
-GetAppFont(void) ;
+GetAppFont(void) __attribute__((deprecated));
 # 510 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 SetAntiAliasedTextEnabled(
   Boolean iEnable,
-  SInt16 iMinFontSize) ;
+  SInt16 iMinFontSize) __attribute__((deprecated));
 # 524 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern Boolean
-IsAntiAliasedTextEnabled(SInt16 * oMinFontSize) ;
+IsAntiAliasedTextEnabled(SInt16 * oMinFontSize) __attribute__((deprecated));
 # 536 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern void
 QDTextBounds(
   short byteCount,
   const void * textAddr,
-  Rect * bounds) ;
+  Rect * bounds) __attribute__((deprecated));
 # 551 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSErr
 FetchFontInfo(
   SInt16 fontID,
   SInt16 fontSize,
   SInt16 fontStyle,
-  FontInfo * info) ;
+  FontInfo * info) __attribute__((deprecated));
 # 568 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMCreateFontFamilyIterator(
   const FMFilter * iFilter,
   void * iRefCon,
   OptionBits iOptions,
-  FMFontFamilyIterator * ioIterator) ;
+  FMFontFamilyIterator * ioIterator) __attribute__((deprecated));
 # 584 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
-FMDisposeFontFamilyIterator(FMFontFamilyIterator * ioIterator) ;
+FMDisposeFontFamilyIterator(FMFontFamilyIterator * ioIterator) __attribute__((deprecated));
 # 596 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMResetFontFamilyIterator(
   const FMFilter * iFilter,
   void * iRefCon,
   OptionBits iOptions,
-  FMFontFamilyIterator * ioIterator) ;
+  FMFontFamilyIterator * ioIterator) __attribute__((deprecated));
 # 612 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetNextFontFamily(
   FMFontFamilyIterator * ioIterator,
-  FMFontFamily * oFontFamily) ;
+  FMFontFamily * oFontFamily) __attribute__((deprecated));
 # 626 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMCreateFontIterator(
   const FMFilter * iFilter,
   void * iRefCon,
   OptionBits iOptions,
-  FMFontIterator * ioIterator) ;
+  FMFontIterator * ioIterator) __attribute__((deprecated));
 # 642 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
-FMDisposeFontIterator(FMFontIterator * ioIterator) ;
+FMDisposeFontIterator(FMFontIterator * ioIterator) __attribute__((deprecated));
 # 654 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMResetFontIterator(
   const FMFilter * iFilter,
   void * iRefCon,
   OptionBits iOptions,
-  FMFontIterator * ioIterator) ;
+  FMFontIterator * ioIterator) __attribute__((deprecated));
 # 670 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetNextFont(
   FMFontIterator * ioIterator,
-  FMFont * oFont) ;
+  FMFont * oFont) __attribute__((deprecated));
 # 684 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMCreateFontFamilyInstanceIterator(
   FMFontFamily iFontFamily,
-  FMFontFamilyInstanceIterator * ioIterator) ;
+  FMFontFamilyInstanceIterator * ioIterator) __attribute__((deprecated));
 # 698 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
-FMDisposeFontFamilyInstanceIterator(FMFontFamilyInstanceIterator * ioIterator) ;
+FMDisposeFontFamilyInstanceIterator(FMFontFamilyInstanceIterator * ioIterator) __attribute__((deprecated));
 # 710 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMResetFontFamilyInstanceIterator(
   FMFontFamily iFontFamily,
-  FMFontFamilyInstanceIterator * ioIterator) ;
+  FMFontFamilyInstanceIterator * ioIterator) __attribute__((deprecated));
 # 724 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetNextFontFamilyInstance(
   FMFontFamilyInstanceIterator * ioIterator,
   FMFont * oFont,
   FMFontStyle * oStyle,
-  FMFontSize * oSize) ;
+  FMFontSize * oSize) __attribute__((deprecated));
 # 740 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern FMFontFamily
-FMGetFontFamilyFromName(ConstStr255Param iName) ;
+FMGetFontFamilyFromName(ConstStr255Param iName) __attribute__((deprecated));
 # 752 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontFamilyName(
   FMFontFamily iFontFamily,
-  Str255 oName) ;
+  Str255 oName) __attribute__((deprecated));
 # 766 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontFamilyTextEncoding(
   FMFontFamily iFontFamily,
-  TextEncoding * oTextEncoding) ;
+  TextEncoding * oTextEncoding) __attribute__((deprecated));
 # 780 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontFamilyGeneration(
   FMFontFamily iFontFamily,
-  FMGeneration * oGeneration) ;
+  FMGeneration * oGeneration) __attribute__((deprecated));
 # 794 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontFormat(
   FMFont iFont,
-  FourCharCode * oFormat) ;
+  FourCharCode * oFormat) __attribute__((deprecated));
 # 808 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontTableDirectory(
   FMFont iFont,
   ByteCount iLength,
   void * iBuffer,
-  ByteCount * oActualLength) ;
+  ByteCount * oActualLength) __attribute__((deprecated));
 # 824 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontTable(
@@ -53657,60 +56759,60 @@ FMGetFontTable(
   ByteOffset iOffset,
   ByteCount iLength,
   void * iBuffer,
-  ByteCount * oActualLength) ;
+  ByteCount * oActualLength) __attribute__((deprecated));
 # 842 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontGeneration(
   FMFont iFont,
-  FMGeneration * oGeneration) ;
+  FMGeneration * oGeneration) __attribute__((deprecated));
 # 856 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontContainer(
   FMFont iFont,
-  FSSpec * oFontContainer) ;
+  FSSpec * oFontContainer) __attribute__((deprecated));
 # 870 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontFromFontFamilyInstance(
   FMFontFamily iFontFamily,
   FMFontStyle iStyle,
   FMFont * oFont,
-  FMFontStyle * oIntrinsicStyle) ;
+  FMFontStyle * oIntrinsicStyle) __attribute__((deprecated));
 # 886 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontFamilyInstanceFromFont(
   FMFont iFont,
   FMFontFamily * oFontFamily,
-  FMFontStyle * oStyle) ;
+  FMFontStyle * oStyle) __attribute__((deprecated));
 # 901 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern ATSFontFamilyRef
-FMGetATSFontFamilyRefFromFontFamily(FMFontFamily iFamily) ;
+FMGetATSFontFamilyRefFromFontFamily(FMFontFamily iFamily) __attribute__((deprecated));
 # 913 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern FMFontFamily
-FMGetFontFamilyFromATSFontFamilyRef(ATSFontFamilyRef iFamily) ;
+FMGetFontFamilyFromATSFontFamilyRef(ATSFontFamilyRef iFamily) __attribute__((deprecated));
 # 925 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMActivateFonts(
   const FSSpec * iFontContainer,
   const FMFilter * iFilter,
   void * iRefCon,
-  OptionBits iOptions) ;
+  OptionBits iOptions) __attribute__((deprecated));
 # 941 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMDeactivateFonts(
   const FSSpec * iFontContainer,
   const FMFilter * iFilter,
   void * iRefCon,
-  OptionBits iOptions) ;
+  OptionBits iOptions) __attribute__((deprecated));
 # 957 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern FMGeneration
-FMGetGeneration(void) ;
+FMGetGeneration(void) __attribute__((deprecated));
 # 969 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontContainerFromFontFamilyInstance(
   FMFontFamily iFontFamily,
   FMFontStyle iStyle,
   FMFontSize iFontSize,
-  FSSpec * oFontContainer) ;
+  FSSpec * oFontContainer) __attribute__((deprecated));
 # 985 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Fonts.h" 3
 extern OSStatus
 FMGetFontFamilyResource(
@@ -53719,7 +56821,7 @@ FMGetFontFamilyResource(
   FMFontSize iFontSize,
   ByteCount iBufferSize,
   void * ioBuffer,
-  ByteCount * oSize) ;
+  ByteCount * oSize) __attribute__((deprecated));
 
 
 typedef FMFontFamily FontFamilyID;
@@ -53904,38 +57006,38 @@ typedef Palette * PalettePtr;
 typedef PalettePtr * PaletteHandle;
 # 82 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-InitPalettes(void) ;
+InitPalettes(void) __attribute__((deprecated));
 # 94 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern PaletteHandle
 NewPalette(
   short entries,
   CTabHandle srcColors,
   short srcUsage,
-  short srcTolerance) ;
+  short srcTolerance) __attribute__((deprecated));
 # 110 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern PaletteHandle
-GetNewPalette(short PaletteID) ;
+GetNewPalette(short PaletteID) __attribute__((deprecated));
 # 122 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-DisposePalette(PaletteHandle srcPalette) ;
+DisposePalette(PaletteHandle srcPalette) __attribute__((deprecated));
 # 134 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-ActivatePalette(WindowRef srcWindow) ;
+ActivatePalette(WindowRef srcWindow) __attribute__((deprecated));
 # 146 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 SetPalette(
   WindowRef dstWindow,
   PaletteHandle srcPalette,
-  Boolean cUpdates) ;
+  Boolean cUpdates) __attribute__((deprecated));
 # 161 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 NSetPalette(
   WindowRef dstWindow,
   PaletteHandle srcPalette,
-  short nCUpdates) ;
+  short nCUpdates) __attribute__((deprecated));
 # 176 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern PaletteHandle
-GetPalette(WindowRef srcWindow) ;
+GetPalette(WindowRef srcWindow) __attribute__((deprecated));
 # 188 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 CopyPalette(
@@ -53943,19 +57045,19 @@ CopyPalette(
   PaletteHandle dstPalette,
   short srcEntry,
   short dstEntry,
-  short dstLength) ;
+  short dstLength) __attribute__((deprecated));
 # 205 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-PmForeColor(short dstEntry) ;
+PmForeColor(short dstEntry) __attribute__((deprecated));
 # 217 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-PmBackColor(short dstEntry) ;
+PmBackColor(short dstEntry) __attribute__((deprecated));
 # 229 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 AnimateEntry(
   WindowRef dstWindow,
   short dstEntry,
-  const RGBColor * srcRGB) ;
+  const RGBColor * srcRGB) __attribute__((deprecated));
 # 247 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 AnimatePalette(
@@ -53963,99 +57065,99 @@ AnimatePalette(
   CTabHandle srcCTab,
   short srcIndex,
   short dstEntry,
-  short dstLength) ;
+  short dstLength) __attribute__((deprecated));
 # 264 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 GetEntryColor(
   PaletteHandle srcPalette,
   short srcEntry,
-  RGBColor * dstRGB) ;
+  RGBColor * dstRGB) __attribute__((deprecated));
 # 279 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 SetEntryColor(
   PaletteHandle dstPalette,
   short dstEntry,
-  const RGBColor * srcRGB) ;
+  const RGBColor * srcRGB) __attribute__((deprecated));
 # 294 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 GetEntryUsage(
   PaletteHandle srcPalette,
   short srcEntry,
   short * dstUsage,
-  short * dstTolerance) ;
+  short * dstTolerance) __attribute__((deprecated));
 # 310 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 SetEntryUsage(
   PaletteHandle dstPalette,
   short dstEntry,
   short srcUsage,
-  short srcTolerance) ;
+  short srcTolerance) __attribute__((deprecated));
 # 326 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 CTab2Palette(
   CTabHandle srcCTab,
   PaletteHandle dstPalette,
   short srcUsage,
-  short srcTolerance) ;
+  short srcTolerance) __attribute__((deprecated));
 # 342 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 Palette2CTab(
   PaletteHandle srcPalette,
-  CTabHandle dstCTab) ;
+  CTabHandle dstCTab) __attribute__((deprecated));
 # 356 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern long
-Entry2Index(short entry) ;
+Entry2Index(short entry) __attribute__((deprecated));
 # 368 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-RestoreDeviceClut(GDHandle gd) ;
+RestoreDeviceClut(GDHandle gd) __attribute__((deprecated));
 # 383 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 ResizePalette(
   PaletteHandle p,
-  short size) ;
+  short size) __attribute__((deprecated));
 # 397 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-SaveFore(ColorSpec * c) ;
+SaveFore(ColorSpec * c) __attribute__((deprecated));
 # 409 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-SaveBack(ColorSpec * c) ;
+SaveBack(ColorSpec * c) __attribute__((deprecated));
 # 421 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-RestoreFore(const ColorSpec * c) ;
+RestoreFore(const ColorSpec * c) __attribute__((deprecated));
 # 433 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
-RestoreBack(const ColorSpec * c) ;
+RestoreBack(const ColorSpec * c) __attribute__((deprecated));
 # 445 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern OSErr
 SetDepth(
   GDHandle gd,
   short depth,
   short whichFlags,
-  short flags) ;
+  short flags) __attribute__((deprecated));
 # 461 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern short
 HasDepth(
   GDHandle gd,
   short depth,
   short whichFlags,
-  short flags) ;
+  short flags) __attribute__((deprecated));
 # 477 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern short
-PMgrVersion(void) ;
+PMgrVersion(void) __attribute__((deprecated));
 # 489 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern void
 SetPaletteUpdates(
   PaletteHandle p,
-  short updates) ;
+  short updates) __attribute__((deprecated));
 # 503 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern short
-GetPaletteUpdates(PaletteHandle p) ;
+GetPaletteUpdates(PaletteHandle p) __attribute__((deprecated));
 # 515 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Palettes.h" 3
 extern Boolean
 GetGray(
   GDHandle device,
   const RGBColor * backGround,
-  RGBColor * foreGround) ;
+  RGBColor * foreGround) __attribute__((deprecated));
 
 
 
@@ -54152,35 +57254,35 @@ typedef CalcColorTableProcPtr CalcColorTableUPP;
 typedef DisposeColorPickMethodProcPtr DisposeColorPickMethodUPP;
 # 129 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern InitPickMethodUPP
-NewInitPickMethodUPP(InitPickMethodProcPtr userRoutine) ;
+NewInitPickMethodUPP(InitPickMethodProcPtr userRoutine) __attribute__((deprecated));
 # 140 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern RecordColorsUPP
-NewRecordColorsUPP(RecordColorsProcPtr userRoutine) ;
+NewRecordColorsUPP(RecordColorsProcPtr userRoutine) __attribute__((deprecated));
 # 151 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern CalcColorTableUPP
-NewCalcColorTableUPP(CalcColorTableProcPtr userRoutine) ;
+NewCalcColorTableUPP(CalcColorTableProcPtr userRoutine) __attribute__((deprecated));
 # 162 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern DisposeColorPickMethodUPP
-NewDisposeColorPickMethodUPP(DisposeColorPickMethodProcPtr userRoutine) ;
+NewDisposeColorPickMethodUPP(DisposeColorPickMethodProcPtr userRoutine) __attribute__((deprecated));
 # 173 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern void
-DisposeInitPickMethodUPP(InitPickMethodUPP userUPP) ;
+DisposeInitPickMethodUPP(InitPickMethodUPP userUPP) __attribute__((deprecated));
 # 184 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern void
-DisposeRecordColorsUPP(RecordColorsUPP userUPP) ;
+DisposeRecordColorsUPP(RecordColorsUPP userUPP) __attribute__((deprecated));
 # 195 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern void
-DisposeCalcColorTableUPP(CalcColorTableUPP userUPP) ;
+DisposeCalcColorTableUPP(CalcColorTableUPP userUPP) __attribute__((deprecated));
 # 206 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern void
-DisposeDisposeColorPickMethodUPP(DisposeColorPickMethodUPP userUPP) ;
+DisposeDisposeColorPickMethodUPP(DisposeColorPickMethodUPP userUPP) __attribute__((deprecated));
 # 217 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 InvokeInitPickMethodUPP(
   SInt16 colorsRequested,
   UInt32 * dataRef,
   SInt16 * colorBankType,
-  InitPickMethodUPP userUPP) ;
+  InitPickMethodUPP userUPP) __attribute__((deprecated));
 # 232 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 InvokeRecordColorsUPP(
@@ -54188,7 +57290,7 @@ InvokeRecordColorsUPP(
   RGBColor * colorsArray,
   SInt32 colorCount,
   SInt32 * uniqueColors,
-  RecordColorsUPP userUPP) ;
+  RecordColorsUPP userUPP) __attribute__((deprecated));
 # 248 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 InvokeCalcColorTableUPP(
@@ -54196,12 +57298,12 @@ InvokeCalcColorTableUPP(
   SInt16 colorsRequested,
   void * colorBankPtr,
   CSpecArray resultPtr,
-  CalcColorTableUPP userUPP) ;
+  CalcColorTableUPP userUPP) __attribute__((deprecated));
 # 264 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 InvokeDisposeColorPickMethodUPP(
   UInt32 dataRef,
-  DisposeColorPickMethodUPP userUPP) ;
+  DisposeColorPickMethodUPP userUPP) __attribute__((deprecated));
 # 277 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 GetPictInfo(
@@ -54210,7 +57312,7 @@ GetPictInfo(
   short verb,
   short colorsRequested,
   short colorPickMethod,
-  short version) ;
+  short version) __attribute__((deprecated));
 # 295 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 GetPixMapInfo(
@@ -54219,7 +57321,7 @@ GetPixMapInfo(
   short verb,
   short colorsRequested,
   short colorPickMethod,
-  short version) ;
+  short version) __attribute__((deprecated));
 # 313 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 NewPictInfo(
@@ -54227,26 +57329,26 @@ NewPictInfo(
   short verb,
   short colorsRequested,
   short colorPickMethod,
-  short version) ;
+  short version) __attribute__((deprecated));
 # 330 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 RecordPictInfo(
   PictInfoID thePictInfoID,
-  PicHandle thePictHandle) ;
+  PicHandle thePictHandle) __attribute__((deprecated));
 # 344 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 RecordPixMapInfo(
   PictInfoID thePictInfoID,
-  PixMapHandle thePixMapHandle) ;
+  PixMapHandle thePixMapHandle) __attribute__((deprecated));
 # 358 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
 RetrievePictInfo(
   PictInfoID thePictInfoID,
   PictInfo * thePictInfo,
-  short colorsRequested) ;
+  short colorsRequested) __attribute__((deprecated));
 # 373 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 extern OSErr
-DisposePictInfo(PictInfoID thePictInfoID) ;
+DisposePictInfo(PictInfoID thePictInfoID) __attribute__((deprecated));
 # 385 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/PictUtils.h" 3
 #pragma options align=reset
 # 67 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/QD.h" 2 3
@@ -55648,100 +58750,100 @@ typedef DMProfileListIteratorProcPtr DMProfileListIteratorUPP;
 typedef DMDisplayListIteratorProcPtr DMDisplayListIteratorUPP;
 # 426 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern DMNotificationUPP
-NewDMNotificationUPP(DMNotificationProcPtr userRoutine) ;
+NewDMNotificationUPP(DMNotificationProcPtr userRoutine) __attribute__((deprecated));
 # 437 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern DMExtendedNotificationUPP
-NewDMExtendedNotificationUPP(DMExtendedNotificationProcPtr userRoutine) ;
+NewDMExtendedNotificationUPP(DMExtendedNotificationProcPtr userRoutine) __attribute__((deprecated));
 # 448 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern DMComponentListIteratorUPP
-NewDMComponentListIteratorUPP(DMComponentListIteratorProcPtr userRoutine) ;
+NewDMComponentListIteratorUPP(DMComponentListIteratorProcPtr userRoutine) __attribute__((deprecated));
 # 459 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern DMDisplayModeListIteratorUPP
-NewDMDisplayModeListIteratorUPP(DMDisplayModeListIteratorProcPtr userRoutine) ;
+NewDMDisplayModeListIteratorUPP(DMDisplayModeListIteratorProcPtr userRoutine) __attribute__((deprecated));
 # 470 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern DMProfileListIteratorUPP
-NewDMProfileListIteratorUPP(DMProfileListIteratorProcPtr userRoutine) ;
+NewDMProfileListIteratorUPP(DMProfileListIteratorProcPtr userRoutine) __attribute__((deprecated));
 # 481 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern DMDisplayListIteratorUPP
-NewDMDisplayListIteratorUPP(DMDisplayListIteratorProcPtr userRoutine) ;
+NewDMDisplayListIteratorUPP(DMDisplayListIteratorProcPtr userRoutine) __attribute__((deprecated));
 # 492 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DisposeDMNotificationUPP(DMNotificationUPP userUPP) ;
+DisposeDMNotificationUPP(DMNotificationUPP userUPP) __attribute__((deprecated));
 # 503 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DisposeDMExtendedNotificationUPP(DMExtendedNotificationUPP userUPP) ;
+DisposeDMExtendedNotificationUPP(DMExtendedNotificationUPP userUPP) __attribute__((deprecated));
 # 514 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DisposeDMComponentListIteratorUPP(DMComponentListIteratorUPP userUPP) ;
+DisposeDMComponentListIteratorUPP(DMComponentListIteratorUPP userUPP) __attribute__((deprecated));
 # 525 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DisposeDMDisplayModeListIteratorUPP(DMDisplayModeListIteratorUPP userUPP) ;
+DisposeDMDisplayModeListIteratorUPP(DMDisplayModeListIteratorUPP userUPP) __attribute__((deprecated));
 # 536 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DisposeDMProfileListIteratorUPP(DMProfileListIteratorUPP userUPP) ;
+DisposeDMProfileListIteratorUPP(DMProfileListIteratorUPP userUPP) __attribute__((deprecated));
 # 547 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DisposeDMDisplayListIteratorUPP(DMDisplayListIteratorUPP userUPP) ;
+DisposeDMDisplayListIteratorUPP(DMDisplayListIteratorUPP userUPP) __attribute__((deprecated));
 # 558 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
 InvokeDMNotificationUPP(
   AppleEvent * theEvent,
-  DMNotificationUPP userUPP) ;
+  DMNotificationUPP userUPP) __attribute__((deprecated));
 # 571 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
 InvokeDMExtendedNotificationUPP(
   void * userData,
   short theMessage,
   void * notifyData,
-  DMExtendedNotificationUPP userUPP) ;
+  DMExtendedNotificationUPP userUPP) __attribute__((deprecated));
 # 586 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
 InvokeDMComponentListIteratorUPP(
   void * userData,
   DMListIndexType itemIndex,
   DMComponentListEntryPtr componentInfo,
-  DMComponentListIteratorUPP userUPP) ;
+  DMComponentListIteratorUPP userUPP) __attribute__((deprecated));
 # 601 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
 InvokeDMDisplayModeListIteratorUPP(
   void * userData,
   DMListIndexType itemIndex,
   DMDisplayModeListEntryPtr displaymodeInfo,
-  DMDisplayModeListIteratorUPP userUPP) ;
+  DMDisplayModeListIteratorUPP userUPP) __attribute__((deprecated));
 # 616 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
 InvokeDMProfileListIteratorUPP(
   void * userData,
   DMListIndexType itemIndex,
   DMProfileListEntryPtr profileInfo,
-  DMProfileListIteratorUPP userUPP) ;
+  DMProfileListIteratorUPP userUPP) __attribute__((deprecated));
 # 631 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
 InvokeDMDisplayListIteratorUPP(
   void * userData,
   DMListIndexType itemIndex,
   DisplayListEntryPtr displaymodeInfo,
-  DMDisplayListIteratorUPP userUPP) ;
+  DMDisplayListIteratorUPP userUPP) __attribute__((deprecated));
 # 757 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern GDHandle
-DMGetFirstScreenDevice(Boolean activeOnly) ;
+DMGetFirstScreenDevice(Boolean activeOnly) __attribute__((deprecated));
 # 769 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern GDHandle
 DMGetNextScreenDevice(
   GDHandle theDevice,
-  Boolean activeOnly) ;
+  Boolean activeOnly) __attribute__((deprecated));
 # 783 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DMDrawDesktopRect(Rect * globalRect) ;
+DMDrawDesktopRect(Rect * globalRect) __attribute__((deprecated));
 # 795 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern void
-DMDrawDesktopRegion(RgnHandle globalRgn) ;
+DMDrawDesktopRegion(RgnHandle globalRgn) __attribute__((deprecated));
 # 809 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMBeginConfigureDisplays(Handle * displayState) ;
+DMBeginConfigureDisplays(Handle * displayState) __attribute__((deprecated));
 # 821 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMEndConfigureDisplays(Handle displayState) ;
+DMEndConfigureDisplays(Handle displayState) __attribute__((deprecated));
 # 833 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMAddDisplay(
@@ -55751,34 +58853,34 @@ DMAddDisplay(
   unsigned long reserved,
   unsigned long displayID,
   Component displayComponent,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 852 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMMoveDisplay(
   GDHandle moveDevice,
   short x,
   short y,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 868 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMDisableDisplay(
   GDHandle disableDevice,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 882 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMEnableDisplay(
   GDHandle enableDevice,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 896 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMRemoveDisplay(
   GDHandle removeDevice,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 913 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMSetMainDisplay(
   GDHandle newMainDevice,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 927 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMSetDisplayMode(
@@ -55786,7 +58888,7 @@ DMSetDisplayMode(
   unsigned long mode,
   unsigned long * depthMode,
   unsigned long reserved,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 944 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMCheckDisplayMode(
@@ -55795,57 +58897,57 @@ DMCheckDisplayMode(
   unsigned long depthMode,
   unsigned long * switchFlags,
   unsigned long reserved,
-  Boolean * modeOk) ;
+  Boolean * modeOk) __attribute__((deprecated));
 # 962 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMGetDeskRegion(RgnHandle * desktopRegion) ;
+DMGetDeskRegion(RgnHandle * desktopRegion) __attribute__((deprecated));
 # 974 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMRegisterNotifyProc(
   DMNotificationUPP notificationProc,
-  DMProcessInfoPtr whichPSN) ;
+  DMProcessInfoPtr whichPSN) __attribute__((deprecated));
 # 988 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMRemoveNotifyProc(
   DMNotificationUPP notificationProc,
-  DMProcessInfoPtr whichPSN) ;
+  DMProcessInfoPtr whichPSN) __attribute__((deprecated));
 # 1002 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMQDIsMirroringCapable(Boolean * qdIsMirroringCapable) ;
+DMQDIsMirroringCapable(Boolean * qdIsMirroringCapable) __attribute__((deprecated));
 # 1014 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMCanMirrorNow(Boolean * canMirrorNow) ;
+DMCanMirrorNow(Boolean * canMirrorNow) __attribute__((deprecated));
 # 1026 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMIsMirroringOn(Boolean * isMirroringOn) ;
+DMIsMirroringOn(Boolean * isMirroringOn) __attribute__((deprecated));
 # 1038 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMMirrorDevices(
   GDHandle gD1,
   GDHandle gD2,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 1053 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMUnmirrorDevice(
   GDHandle gDevice,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 1067 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetNextMirroredDevice(
   GDHandle gDevice,
-  GDHandle * mirroredDevice) ;
+  GDHandle * mirroredDevice) __attribute__((deprecated));
 # 1081 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMBlockMirroring(void) ;
+DMBlockMirroring(void) __attribute__((deprecated));
 # 1093 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMUnblockMirroring(void) ;
+DMUnblockMirroring(void) __attribute__((deprecated));
 # 1115 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetDisplayIDByGDevice(
   GDHandle displayDevice,
   DisplayIDType * displayID,
-  Boolean failToMain) ;
+  Boolean failToMain) __attribute__((deprecated));
 # 1130 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetGDeviceByDisplayID(
@@ -55856,12 +58958,12 @@ DMGetGDeviceByDisplayID(
 extern OSErr
 DMSetDisplayComponent(
   GDHandle theDevice,
-  Component displayComponent) ;
+  Component displayComponent) __attribute__((deprecated));
 # 1159 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetDisplayComponent(
   GDHandle theDevice,
-  Component * displayComponent) ;
+  Component * displayComponent) __attribute__((deprecated));
 # 1173 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewDisplay(
@@ -55871,29 +58973,29 @@ DMNewDisplay(
   unsigned long reserved,
   DisplayIDType displayID,
   Component displayComponent,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 1192 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMDisposeDisplay(
   GDHandle disposeDevice,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 1206 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMResolveDisplayComponents(void) ;
+DMResolveDisplayComponents(void) __attribute__((deprecated));
 # 1218 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMRegisterExtendedNotifyProc(
   DMExtendedNotificationUPP notifyProc,
   void * notifyUserData,
   unsigned short nofifyOnFlags,
-  DMProcessInfoPtr whichPSN) ;
+  DMProcessInfoPtr whichPSN) __attribute__((deprecated));
 # 1234 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMRemoveExtendedNotifyProc(
   DMExtendedNotificationUPP notifyProc,
   void * notifyUserData,
   DMProcessInfoPtr whichPSN,
-  unsigned short removeFlags) ;
+  unsigned short removeFlags) __attribute__((deprecated));
 # 1250 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewAVPanelList(
@@ -55903,7 +59005,7 @@ DMNewAVPanelList(
   unsigned long panelListFlags,
   unsigned long reserved,
   DMListIndexType * thePanelCount,
-  DMListType * thePanelList) ;
+  DMListType * thePanelList) __attribute__((deprecated));
 # 1269 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewAVEngineList(
@@ -55913,7 +59015,7 @@ DMNewAVEngineList(
   unsigned long engineListFlags,
   unsigned long reserved,
   DMListIndexType * engineCount,
-  DMListType * engineList) ;
+  DMListType * engineList) __attribute__((deprecated));
 # 1288 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewAVDeviceList(
@@ -55921,7 +59023,7 @@ DMNewAVDeviceList(
   unsigned long deviceListFlags,
   unsigned long reserved,
   DMListIndexType * deviceCount,
-  DMListType * deviceList) ;
+  DMListType * deviceList) __attribute__((deprecated));
 # 1305 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewAVPortListByPortType(
@@ -55929,7 +59031,7 @@ DMNewAVPortListByPortType(
   unsigned long portListFlags,
   unsigned long reserved,
   DMListIndexType * devicePortCount,
-  DMListType * theDevicePortList) ;
+  DMListType * theDevicePortList) __attribute__((deprecated));
 # 1322 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetIndexedComponentFromList(
@@ -55937,53 +59039,53 @@ DMGetIndexedComponentFromList(
   DMListIndexType itemIndex,
   unsigned long reserved,
   DMComponentListIteratorUPP listIterator,
-  void * userData) ;
+  void * userData) __attribute__((deprecated));
 # 1339 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMDisposeList(DMListType panelList) ;
+DMDisposeList(DMListType panelList) __attribute__((deprecated));
 # 1351 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetNameByAVID(
   AVIDType theID,
   unsigned long nameFlags,
-  Str255 name) ;
+  Str255 name) __attribute__((deprecated));
 # 1366 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewAVIDByPortComponent(
   Component thePortComponent,
   ResType portKind,
   unsigned long reserved,
-  AVIDType * newID) ;
+  AVIDType * newID) __attribute__((deprecated));
 # 1382 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetPortComponentByAVID(
   DisplayIDType thePortID,
   Component * thePortComponent,
   ComponentDescription * theDesciption,
-  ResType * thePortKind) ;
+  ResType * thePortKind) __attribute__((deprecated));
 # 1398 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMSendDependentNotification(
   ResType notifyType,
   ResType notifyClass,
   AVIDType displayID,
-  ComponentInstance notifyComponent) ;
+  ComponentInstance notifyComponent) __attribute__((deprecated));
 # 1414 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
-DMDisposeAVComponent(Component theAVComponent) ;
+DMDisposeAVComponent(Component theAVComponent) __attribute__((deprecated));
 # 1426 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMSaveScreenPrefs(
   unsigned long reserved1,
   unsigned long saveFlags,
-  unsigned long reserved2) ;
+  unsigned long reserved2) __attribute__((deprecated));
 # 1441 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewAVIDByDeviceComponent(
   Component theDeviceComponent,
   ResType portKind,
   unsigned long reserved,
-  DisplayIDType * newID) ;
+  DisplayIDType * newID) __attribute__((deprecated));
 # 1457 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewAVPortListByDeviceAVID(
@@ -55992,14 +59094,14 @@ DMNewAVPortListByDeviceAVID(
   unsigned long portListFlags,
   unsigned long reserved,
   DMListIndexType * devicePortCount,
-  DMListType * theDevicePortList) ;
+  DMListType * theDevicePortList) __attribute__((deprecated));
 # 1475 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetDeviceComponentByAVID(
   AVIDType theDeviceID,
   Component * theDeviceComponent,
   ComponentDescription * theDesciption,
-  ResType * theDeviceKind) ;
+  ResType * theDeviceKind) __attribute__((deprecated));
 # 1491 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMNewDisplayModeList(
@@ -56007,7 +59109,7 @@ DMNewDisplayModeList(
   unsigned long modeListFlags,
   unsigned long reserved,
   DMListIndexType * thePanelCount,
-  DMListType * thePanelList) ;
+  DMListType * thePanelList) __attribute__((deprecated));
 # 1508 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetIndexedDisplayModeFromList(
@@ -56015,56 +59117,56 @@ DMGetIndexedDisplayModeFromList(
   DMListIndexType itemIndex,
   unsigned long reserved,
   DMDisplayModeListIteratorUPP listIterator,
-  void * userData) ;
+  void * userData) __attribute__((deprecated));
 # 1525 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetGraphicInfoByAVID(
   AVIDType theID,
   PicHandle * theAVPcit,
   Handle * theAVIconSuite,
-  AVLocationRec * theAVLocation) ;
+  AVLocationRec * theAVLocation) __attribute__((deprecated));
 # 1541 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetAVPowerState(
   AVIDType theID,
   AVPowerStatePtr getPowerState,
-  unsigned long reserved1) ;
+  unsigned long reserved1) __attribute__((deprecated));
 # 1556 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMSetAVPowerState(
   AVIDType theID,
   AVPowerStatePtr setPowerState,
   unsigned long powerFlags,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 1572 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetDeviceAVIDByPortAVID(
   AVIDType portAVID,
-  AVIDType * deviceAVID) ;
+  AVIDType * deviceAVID) __attribute__((deprecated));
 # 1586 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetEnableByAVID(
   AVIDType theAVID,
   Boolean * isAVIDEnabledNow,
-  Boolean * canChangeEnableNow) ;
+  Boolean * canChangeEnableNow) __attribute__((deprecated));
 # 1601 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMSetEnableByAVID(
   AVIDType theAVID,
   Boolean doEnable,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 # 1616 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMGetDisplayMode(
   GDHandle theDevice,
-  VDSwitchInfoPtr switchInfo) ;
+  VDSwitchInfoPtr switchInfo) __attribute__((deprecated));
 # 1630 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/Displays.h" 3
 extern OSErr
 DMConfirmConfiguration(
   DMModalFilterUPP filterProc,
   UInt32 confirmFlags,
   UInt32 reserved,
-  Handle displayState) ;
+  Handle displayState) __attribute__((deprecated));
 
 
 
@@ -57373,14 +60475,14 @@ extern OSStatus
 ATSUSetFontFallbacks(
   ItemCount iFontFallbacksCount,
   const ATSUFontID iFontIDs[],
-  ATSUFontFallbackMethod iFontFallbackMethod) ;
+  ATSUFontFallbackMethod iFontFallbackMethod) __attribute__((deprecated));
 # 2840 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/ATSUnicodeObjects.h" 3
 extern OSStatus
 ATSUGetFontFallbacks(
   ItemCount iMaxFontFallbacksCount,
   ATSUFontID oFontIDs[],
   ATSUFontFallbackMethod * oFontFallbackMethod,
-  ItemCount * oActualFallbacksCount) ;
+  ItemCount * oActualFallbacksCount) __attribute__((deprecated));
 # 2866 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/ATSUnicodeObjects.h" 3
 extern OSStatus
 ATSUCreateTextLayoutWithTextHandle(
@@ -57597,7 +60699,7 @@ ATSUMeasureText(
   ATSUTextMeasurement * oTextBefore,
   ATSUTextMeasurement * oTextAfter,
   ATSUTextMeasurement * oAscent,
-  ATSUTextMeasurement * oDescent) ;
+  ATSUTextMeasurement * oDescent) __attribute__((deprecated));
 # 29 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/ATSUnicode.h" 2 3
 
 
@@ -57994,12 +61096,12 @@ ATSUGetGlyphInfo(
   UniCharArrayOffset iLineStart,
   UniCharCount iLineLength,
   ByteCount * ioBufferSize,
-  ATSUGlyphInfoArray * oGlyphInfoPtr) ;
+  ATSUGlyphInfoArray * oGlyphInfoPtr) __attribute__((deprecated));
 # 1022 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/ATSUnicodeGlyphs.h" 3
 extern OSStatus
 ATSUDrawGlyphInfo(
   ATSUGlyphInfoArray * iGlyphInfoArray,
-  Float32Point iLocation) ;
+  Float32Point iLocation) __attribute__((deprecated));
 # 37 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/QD.framework/Headers/ATSUnicode.h" 2 3
 
 
@@ -59367,7 +62469,7 @@ GetIconSizesFromIconRef(
   IconSelectorValue iconSelectorInput,
   IconSelectorValue * iconSelectorOutputPtr,
   IconServicesUsageFlags iconServicesUsageFlags,
-  IconRef theIconRef) ;
+  IconRef theIconRef) __attribute__((deprecated));
 # 2379 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/HIServices.framework/Headers/Icons.h" 3
 extern Boolean
 IsDataAvailableInIconRef(
@@ -59377,10 +62479,10 @@ IsDataAvailableInIconRef(
 extern OSErr
 FlushIconRefs(
   OSType creator,
-  OSType iconType) ;
+  OSType iconType) __attribute__((deprecated));
 # 2437 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/HIServices.framework/Headers/Icons.h" 3
 extern OSErr
-FlushIconRefsByVolume(SInt16 vRefNum) ;
+FlushIconRefsByVolume(SInt16 vRefNum) __attribute__((deprecated));
 # 2467 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/HIServices.framework/Headers/Icons.h" 3
 extern OSErr
 SetCustomIconsEnabled(
@@ -61731,99 +64833,99 @@ typedef void ( * PMIdleProcPtr)(void);
 typedef PMIdleProcPtr PMIdleUPP;
 # 2991 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern PMIdleUPP
-NewPMIdleUPP(PMIdleProcPtr userRoutine) ;
+NewPMIdleUPP(PMIdleProcPtr userRoutine) __attribute__((deprecated));
 # 3002 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern void
-DisposePMIdleUPP(PMIdleUPP userUPP) ;
+DisposePMIdleUPP(PMIdleUPP userUPP) __attribute__((deprecated));
 # 3013 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern void
-InvokePMIdleUPP(PMIdleUPP userUPP) ;
+InvokePMIdleUPP(PMIdleUPP userUPP) __attribute__((deprecated));
 # 3025 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionSetIdleProc(
   PMPrintSession printSession,
-  PMIdleUPP idleProc) ;
+  PMIdleUPP idleProc) __attribute__((deprecated));
 # 3042 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionGeneral(
   PMPrintSession printSession,
-  Ptr pData) ;
+  Ptr pData) __attribute__((deprecated));
 # 3056 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionConvertOldPrintRecord(
   PMPrintSession printSession,
   Handle printRecordHandle,
   PMPrintSettings * printSettings,
-  PMPageFormat * pageFormat) ;
+  PMPageFormat * pageFormat) __attribute__((deprecated));
 # 3072 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionMakeOldPrintRecord(
   PMPrintSession printSession,
   PMPrintSettings printSettings,
   PMPageFormat pageFormat,
-  Handle * printRecordHandle) ;
+  Handle * printRecordHandle) __attribute__((deprecated));
 # 3092 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionSetCurrentPrinter(
   PMPrintSession session,
-  CFStringRef printerName) ;
+  CFStringRef printerName) __attribute__((deprecated));
 # 3109 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
-PMSessionPostScriptBegin(PMPrintSession printSession) ;
+PMSessionPostScriptBegin(PMPrintSession printSession) __attribute__((deprecated));
 # 3124 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
-PMSessionPostScriptEnd(PMPrintSession printSession) ;
+PMSessionPostScriptEnd(PMPrintSession printSession) __attribute__((deprecated));
 # 3139 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionPostScriptHandle(
   PMPrintSession printSession,
-  Handle psHandle) ;
+  Handle psHandle) __attribute__((deprecated));
 # 3156 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionPostScriptData(
   PMPrintSession printSession,
   Ptr psPtr,
-  Size len) ;
+  Size len) __attribute__((deprecated));
 # 3174 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionPostScriptFile(
   PMPrintSession printSession,
-  FSSpec * psFile) ;
+  FSSpec * psFile) __attribute__((deprecated));
 # 3191 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionSetPSInjectionData(
   PMPrintSession printSession,
   PMPrintSettings printSettings,
-  CFArrayRef injectionDictArray) ;
+  CFArrayRef injectionDictArray) __attribute__((deprecated));
 # 3209 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionGetDocumentFormatSupported(
   PMPrintSession printSession,
   CFArrayRef * docFormats,
-  UInt32 limit) ;
+  UInt32 limit) __attribute__((deprecated));
 # 3227 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionGetDocumentFormatGeneration(
   PMPrintSession printSession,
-  CFArrayRef * docFormats) ;
+  CFArrayRef * docFormats) __attribute__((deprecated));
 # 3248 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionSetDocumentFormatGeneration(
   PMPrintSession printSession,
   CFStringRef docFormat,
   CFArrayRef graphicsContextTypes,
-  CFTypeRef options) ;
+  CFTypeRef options) __attribute__((deprecated));
 # 3267 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSessionIsDocumentFormatSupported(
   PMPrintSession printSession,
   CFStringRef docFormat,
-  Boolean * supported) ;
+  Boolean * supported) __attribute__((deprecated));
 # 3767 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSetJobName(
   PMPrintSettings printSettings,
-  StringPtr name) ;
+  StringPtr name) __attribute__((deprecated));
 # 3786 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMGetJobNameCFString(
@@ -61833,7 +64935,7 @@ PMGetJobNameCFString(
 extern OSStatus
 PMGetJobName(
   PMPrintSettings printSettings,
-  StringPtr name) ;
+  StringPtr name) __attribute__((deprecated));
 # 3821 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSetUnadjustedPaperRect(
@@ -61843,38 +64945,38 @@ PMSetUnadjustedPaperRect(
 extern OSStatus
 PMGetPhysicalPaperSize(
   PMPageFormat pageFormat,
-  PMRect * paperSize) ;
+  PMRect * paperSize) __attribute__((deprecated));
 # 3856 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSetPhysicalPaperSize(
   PMPageFormat pageFormat,
-  const PMRect * paperSize) ;
+  const PMRect * paperSize) __attribute__((deprecated));
 # 3873 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMGetPhysicalPageSize(
   PMPageFormat pageFormat,
-  PMRect * pageSize) ;
+  PMRect * pageSize) __attribute__((deprecated));
 # 3887 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMGetColorMode(
   PMPrintSettings printSettings,
-  PMColorMode * colorMode) ;
+  PMColorMode * colorMode) __attribute__((deprecated));
 # 3901 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMSetColorMode(
   PMPrintSettings printSettings,
-  PMColorMode colorMode) ;
+  PMColorMode colorMode) __attribute__((deprecated));
 # 3920 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMPrinterGetDescriptionURL(
   PMPrinter printer,
   CFStringRef descriptionType,
-  CFURLRef * fileURL) ;
+  CFURLRef * fileURL) __attribute__((deprecated));
 # 3940 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/PrintCore.framework/Headers/PMCore.h" 3
 extern OSStatus
 PMPrinterGetDeviceURI(
   PMPrinter printer,
-  CFURLRef * deviceURI) ;
+  CFURLRef * deviceURI) __attribute__((deprecated));
 
 
 #pragma mark
@@ -61962,108 +65064,108 @@ typedef Boolean ( * FBCCallbackProcPtr)(UInt16 phase, float percentDone, void *d
 typedef FBCCallbackProcPtr FBCCallbackUPP;
 # 147 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern FBCCallbackUPP
-NewFBCCallbackUPP(FBCCallbackProcPtr userRoutine) ;
+NewFBCCallbackUPP(FBCCallbackProcPtr userRoutine) __attribute__((deprecated));
 # 158 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern void
-DisposeFBCCallbackUPP(FBCCallbackUPP userUPP) ;
+DisposeFBCCallbackUPP(FBCCallbackUPP userUPP) __attribute__((deprecated));
 # 169 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern Boolean
 InvokeFBCCallbackUPP(
   UInt16 phase,
   float percentDone,
   void * data,
-  FBCCallbackUPP userUPP) ;
+  FBCCallbackUPP userUPP) __attribute__((deprecated));
 # 191 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern void
 FBCSetSessionCallback(
   FBCSearchSession searchSession,
   FBCCallbackUPP fn,
-  void * data) ;
+  void * data) __attribute__((deprecated));
 # 207 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern void
 FBCSetCallback(
   FBCCallbackUPP fn,
-  void * data) ;
+  void * data) __attribute__((deprecated));
 # 219 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 typedef Boolean ( * FBCHitTestProcPtr)(const FSRef *theFile, void *data);
 typedef FBCHitTestProcPtr FBCHitTestUPP;
 # 229 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern FBCHitTestUPP
-NewFBCHitTestUPP(FBCHitTestProcPtr userRoutine) ;
+NewFBCHitTestUPP(FBCHitTestProcPtr userRoutine) __attribute__((deprecated));
 # 240 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern void
-DisposeFBCHitTestUPP(FBCHitTestUPP userUPP) ;
+DisposeFBCHitTestUPP(FBCHitTestUPP userUPP) __attribute__((deprecated));
 # 251 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern Boolean
 InvokeFBCHitTestUPP(
   const FSRef * theFile,
   void * data,
-  FBCHitTestUPP userUPP) ;
+  FBCHitTestUPP userUPP) __attribute__((deprecated));
 # 270 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern void
 FBCSetSessionHitTest(
   FBCSearchSession theSession,
   FBCHitTestUPP fn,
-  void * data) ;
+  void * data) __attribute__((deprecated));
 # 293 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern void
-FBCSetHeapReservation(UInt32 bytes) ;
+FBCSetHeapReservation(UInt32 bytes) __attribute__((deprecated));
 # 312 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern Boolean
-FBCVolumeIsIndexed(SInt16 theVRefNum) ;
+FBCVolumeIsIndexed(SInt16 theVRefNum) __attribute__((deprecated));
 # 331 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern Boolean
-FBCVolumeIsRemote(SInt16 theVRefNum) ;
+FBCVolumeIsRemote(SInt16 theVRefNum) __attribute__((deprecated));
 # 350 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCVolumeIndexTimeStamp(
   SInt16 theVRefNum,
-  UInt32 * timeStamp) ;
+  UInt32 * timeStamp) __attribute__((deprecated));
 # 371 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCVolumeIndexPhysicalSize(
   SInt16 theVRefNum,
-  UInt32 * size) ;
+  UInt32 * size) __attribute__((deprecated));
 # 391 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
-FBCCreateSearchSession(FBCSearchSession * searchSession) ;
+FBCCreateSearchSession(FBCSearchSession * searchSession) __attribute__((deprecated));
 # 403 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCCloneSearchSession(
   FBCSearchSession original,
-  FBCSearchSession * clone) ;
+  FBCSearchSession * clone) __attribute__((deprecated));
 # 418 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCAddAllVolumesToSession(
   FBCSearchSession theSession,
-  Boolean includeRemote) ;
+  Boolean includeRemote) __attribute__((deprecated));
 # 433 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCSetSessionVolumes(
   FBCSearchSession theSession,
   const SInt16 vRefNums[],
-  UInt16 numVolumes) ;
+  UInt16 numVolumes) __attribute__((deprecated));
 # 449 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCAddVolumeToSession(
   FBCSearchSession theSession,
-  SInt16 vRefNum) ;
+  SInt16 vRefNum) __attribute__((deprecated));
 # 464 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCRemoveVolumeFromSession(
   FBCSearchSession theSession,
-  SInt16 vRefNum) ;
+  SInt16 vRefNum) __attribute__((deprecated));
 # 479 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetSessionVolumeCount(
   FBCSearchSession theSession,
-  UInt16 * count) ;
+  UInt16 * count) __attribute__((deprecated));
 # 494 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetSessionVolumes(
   FBCSearchSession theSession,
   SInt16 vRefNums[],
-  UInt16 * numVolumes) ;
+  UInt16 * numVolumes) __attribute__((deprecated));
 # 515 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCDoQuerySearch(
@@ -62072,7 +65174,7 @@ FBCDoQuerySearch(
   const FSSpec targetDirs[],
   UInt32 numTargets,
   UInt32 maxHits,
-  UInt32 maxHitWords) ;
+  UInt32 maxHitWords) __attribute__((deprecated));
 # 533 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCDoCFStringSearch(
@@ -62081,7 +65183,7 @@ FBCDoCFStringSearch(
   const FSSpec targetDirs[],
   UInt32 numTargets,
   UInt32 maxHits,
-  UInt32 maxHitWords) ;
+  UInt32 maxHitWords) __attribute__((deprecated));
 # 551 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCDoExampleSearch(
@@ -62091,7 +65193,7 @@ FBCDoExampleSearch(
   const FSSpec targetDirs[],
   UInt32 numTargets,
   UInt32 maxHits,
-  UInt32 maxHitWords) ;
+  UInt32 maxHitWords) __attribute__((deprecated));
 # 571 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCBlindExampleSearch(
@@ -62103,7 +65205,7 @@ FBCBlindExampleSearch(
   UInt32 maxHitWords,
   Boolean allIndexes,
   Boolean includeRemote,
-  FBCSearchSession * theSession) ;
+  FBCSearchSession * theSession) __attribute__((deprecated));
 # 592 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCBlindExampleSearchWithCallback(
@@ -62119,30 +65221,30 @@ FBCBlindExampleSearchWithCallback(
   FBCCallbackUPP callback,
   void * callbackData,
   FBCHitTestUPP userHitTest,
-  void * userHitTestData) ;
+  void * userHitTestData) __attribute__((deprecated));
 # 624 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetHitCount(
   FBCSearchSession theSession,
-  UInt32 * count) ;
+  UInt32 * count) __attribute__((deprecated));
 # 638 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetHitDocument(
   FBCSearchSession theSession,
   UInt32 hitNumber,
-  FSSpec * theDocument) ;
+  FSSpec * theDocument) __attribute__((deprecated));
 # 653 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetHitDocumentRef(
   FBCSearchSession theSession,
   UInt32 hitNumber,
-  FSRef * theDocument) ;
+  FSRef * theDocument) __attribute__((deprecated));
 # 668 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetHitScore(
   FBCSearchSession theSession,
   UInt32 hitNumber,
-  float * score) ;
+  float * score) __attribute__((deprecated));
 # 690 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCSummarize(
@@ -62150,78 +65252,78 @@ FBCSummarize(
   UInt32 inLength,
   void * outBuf,
   UInt32 * outLength,
-  UInt32 * numSentences) ;
+  UInt32 * numSentences) __attribute__((deprecated));
 # 707 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSStatus
 FBCSummarizeCFString(
   CFStringRef inString,
   CFStringRef * outString,
-  UInt32 * numSentences) ;
+  UInt32 * numSentences) __attribute__((deprecated));
 # 722 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSStatus
 FBCGetSummaryOfCFString(
   CFStringRef inString,
-  FBCSummaryRef * summary) ;
+  FBCSummaryRef * summary) __attribute__((deprecated));
 # 736 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSStatus
 FBCGetSummarySentenceCount(
   FBCSummaryRef summary,
-  UInt32 * numSentences) ;
+  UInt32 * numSentences) __attribute__((deprecated));
 # 750 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSStatus
 FBCGetSummarySentences(
   FBCSummaryRef summary,
   CFStringRef * outString,
   UInt32 * numSentences,
-  Boolean paragraphs) ;
+  Boolean paragraphs) __attribute__((deprecated));
 # 766 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSStatus
-FBCDisposeSummary(FBCSummaryRef summary) ;
+FBCDisposeSummary(FBCSummaryRef summary) __attribute__((deprecated));
 # 785 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
-FBCReleaseSessionHits(FBCSearchSession theSession) ;
+FBCReleaseSessionHits(FBCSearchSession theSession) __attribute__((deprecated));
 # 797 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
-FBCDestroySearchSession(FBCSearchSession theSession) ;
+FBCDestroySearchSession(FBCSearchSession theSession) __attribute__((deprecated));
 # 816 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCIndexItems(
   FSSpecArrayPtr theItems,
-  UInt32 itemCount) ;
+  UInt32 itemCount) __attribute__((deprecated));
 # 830 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCIndexItemsInLanguages(
   FSSpecArrayPtr theItems,
   UInt32 itemCount,
   UInt32 languageHighBits,
-  UInt32 languageLowBits) ;
+  UInt32 languageLowBits) __attribute__((deprecated));
 # 853 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCFindIndexFileFolderForFolder(
   const FSRef * inFolder,
-  FSRef * outFolder) ;
+  FSRef * outFolder) __attribute__((deprecated));
 # 873 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
-FBCDeleteIndexFileForFolder(const FSRef * folder) ;
+FBCDeleteIndexFileForFolder(const FSRef * folder) __attribute__((deprecated));
 # 893 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetMatchedWords(
   FBCSearchSession theSession,
   UInt32 hitNumber,
   UInt32 * wordCount,
-  FBCWordList * list) ;
+  FBCWordList * list) __attribute__((deprecated));
 # 910 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCGetTopicWords(
   FBCSearchSession theSession,
   UInt32 hitNumber,
   UInt32 * wordCount,
-  FBCWordList * list) ;
+  FBCWordList * list) __attribute__((deprecated));
 # 927 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/FindByContent.framework/Headers/FindByContent.h" 3
 extern OSErr
 FBCDestroyWordList(
   FBCWordList theList,
-  UInt32 wordCount) ;
+  UInt32 wordCount) __attribute__((deprecated));
 
 
 
@@ -64098,10 +67200,10 @@ enum {
 };
 # 160 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/LaunchServices.framework/Headers/LSInfo.h" 3
 extern OSStatus
-LSInit(LSInitializeFlags inFlags) ;
+LSInit(LSInitializeFlags inFlags) __attribute__((deprecated));
 # 176 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/LaunchServices.framework/Headers/LSInfo.h" 3
 extern OSStatus
-LSTerm(void) ;
+LSTerm(void) __attribute__((deprecated));
 # 210 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/LaunchServices.framework/Headers/LSInfo.h" 3
 extern OSStatus
 LSCopyItemInfoForRef(
@@ -71337,95 +74439,95 @@ typedef TextStylePtr * TextStyleHandle;
 typedef short TEIntHook;
 # 437 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern HighHookUPP
-NewHighHookUPP(HighHookProcPtr userRoutine) ;
+NewHighHookUPP(HighHookProcPtr userRoutine) __attribute__((deprecated));
 # 448 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern EOLHookUPP
-NewEOLHookUPP(EOLHookProcPtr userRoutine) ;
+NewEOLHookUPP(EOLHookProcPtr userRoutine) __attribute__((deprecated));
 # 459 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern CaretHookUPP
-NewCaretHookUPP(CaretHookProcPtr userRoutine) ;
+NewCaretHookUPP(CaretHookProcPtr userRoutine) __attribute__((deprecated));
 # 470 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern WidthHookUPP
-NewWidthHookUPP(WidthHookProcPtr userRoutine) ;
+NewWidthHookUPP(WidthHookProcPtr userRoutine) __attribute__((deprecated));
 # 481 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TextWidthHookUPP
-NewTextWidthHookUPP(TextWidthHookProcPtr userRoutine) ;
+NewTextWidthHookUPP(TextWidthHookProcPtr userRoutine) __attribute__((deprecated));
 # 492 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern NWidthHookUPP
-NewNWidthHookUPP(NWidthHookProcPtr userRoutine) ;
+NewNWidthHookUPP(NWidthHookProcPtr userRoutine) __attribute__((deprecated));
 # 503 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern DrawHookUPP
-NewDrawHookUPP(DrawHookProcPtr userRoutine) ;
+NewDrawHookUPP(DrawHookProcPtr userRoutine) __attribute__((deprecated));
 # 514 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern HitTestHookUPP
-NewHitTestHookUPP(HitTestHookProcPtr userRoutine) ;
+NewHitTestHookUPP(HitTestHookProcPtr userRoutine) __attribute__((deprecated));
 # 525 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEFindWordUPP
-NewTEFindWordUPP(TEFindWordProcPtr userRoutine) ;
+NewTEFindWordUPP(TEFindWordProcPtr userRoutine) __attribute__((deprecated));
 # 536 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TERecalcUPP
-NewTERecalcUPP(TERecalcProcPtr userRoutine) ;
+NewTERecalcUPP(TERecalcProcPtr userRoutine) __attribute__((deprecated));
 # 547 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEDoTextUPP
-NewTEDoTextUPP(TEDoTextProcPtr userRoutine) ;
+NewTEDoTextUPP(TEDoTextProcPtr userRoutine) __attribute__((deprecated));
 # 558 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEClickLoopUPP
-NewTEClickLoopUPP(TEClickLoopProcPtr userRoutine) ;
+NewTEClickLoopUPP(TEClickLoopProcPtr userRoutine) __attribute__((deprecated));
 # 578 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeHighHookUPP(HighHookUPP userUPP) ;
+DisposeHighHookUPP(HighHookUPP userUPP) __attribute__((deprecated));
 # 589 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeEOLHookUPP(EOLHookUPP userUPP) ;
+DisposeEOLHookUPP(EOLHookUPP userUPP) __attribute__((deprecated));
 # 600 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeCaretHookUPP(CaretHookUPP userUPP) ;
+DisposeCaretHookUPP(CaretHookUPP userUPP) __attribute__((deprecated));
 # 611 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeWidthHookUPP(WidthHookUPP userUPP) ;
+DisposeWidthHookUPP(WidthHookUPP userUPP) __attribute__((deprecated));
 # 622 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeTextWidthHookUPP(TextWidthHookUPP userUPP) ;
+DisposeTextWidthHookUPP(TextWidthHookUPP userUPP) __attribute__((deprecated));
 # 633 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeNWidthHookUPP(NWidthHookUPP userUPP) ;
+DisposeNWidthHookUPP(NWidthHookUPP userUPP) __attribute__((deprecated));
 # 644 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeDrawHookUPP(DrawHookUPP userUPP) ;
+DisposeDrawHookUPP(DrawHookUPP userUPP) __attribute__((deprecated));
 # 655 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeHitTestHookUPP(HitTestHookUPP userUPP) ;
+DisposeHitTestHookUPP(HitTestHookUPP userUPP) __attribute__((deprecated));
 # 666 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeTEFindWordUPP(TEFindWordUPP userUPP) ;
+DisposeTEFindWordUPP(TEFindWordUPP userUPP) __attribute__((deprecated));
 # 677 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeTERecalcUPP(TERecalcUPP userUPP) ;
+DisposeTERecalcUPP(TERecalcUPP userUPP) __attribute__((deprecated));
 # 688 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeTEDoTextUPP(TEDoTextUPP userUPP) ;
+DisposeTEDoTextUPP(TEDoTextUPP userUPP) __attribute__((deprecated));
 # 699 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-DisposeTEClickLoopUPP(TEClickLoopUPP userUPP) ;
+DisposeTEClickLoopUPP(TEClickLoopUPP userUPP) __attribute__((deprecated));
 # 719 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 InvokeHighHookUPP(
   const Rect * r,
   TEPtr pTE,
-  HighHookUPP userUPP) ;
+  HighHookUPP userUPP) __attribute__((deprecated));
 # 733 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern Boolean
 InvokeEOLHookUPP(
   char theChar,
   TEPtr pTE,
   TEHandle hTE,
-  EOLHookUPP userUPP) ;
+  EOLHookUPP userUPP) __attribute__((deprecated));
 # 748 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 InvokeCaretHookUPP(
   const Rect * r,
   TEPtr pTE,
-  CaretHookUPP userUPP) ;
+  CaretHookUPP userUPP) __attribute__((deprecated));
 # 762 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern unsigned short
 InvokeWidthHookUPP(
@@ -71434,7 +74536,7 @@ InvokeWidthHookUPP(
   void * textBufferPtr,
   TEPtr pTE,
   TEHandle hTE,
-  WidthHookUPP userUPP) ;
+  WidthHookUPP userUPP) __attribute__((deprecated));
 # 779 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern unsigned short
 InvokeTextWidthHookUPP(
@@ -71443,7 +74545,7 @@ InvokeTextWidthHookUPP(
   void * textBufferPtr,
   TEPtr pTE,
   TEHandle hTE,
-  TextWidthHookUPP userUPP) ;
+  TextWidthHookUPP userUPP) __attribute__((deprecated));
 # 796 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern unsigned short
 InvokeNWidthHookUPP(
@@ -71455,7 +74557,7 @@ InvokeNWidthHookUPP(
   short * lineStart,
   TEPtr pTE,
   TEHandle hTE,
-  NWidthHookUPP userUPP) ;
+  NWidthHookUPP userUPP) __attribute__((deprecated));
 # 816 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 InvokeDrawHookUPP(
@@ -71464,7 +74566,7 @@ InvokeDrawHookUPP(
   void * textBufferPtr,
   TEPtr pTE,
   TEHandle hTE,
-  DrawHookUPP userUPP) ;
+  DrawHookUPP userUPP) __attribute__((deprecated));
 # 833 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern Boolean
 InvokeHitTestHookUPP(
@@ -71477,7 +74579,7 @@ InvokeHitTestHookUPP(
   unsigned short * pixelWidth,
   unsigned short * charOffset,
   Boolean * pixelInChar,
-  HitTestHookUPP userUPP) ;
+  HitTestHookUPP userUPP) __attribute__((deprecated));
 # 854 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 InvokeTEFindWordUPP(
@@ -71487,7 +74589,7 @@ InvokeTEFindWordUPP(
   TEHandle hTE,
   unsigned short * wordStart,
   unsigned short * wordEnd,
-  TEFindWordUPP userUPP) ;
+  TEFindWordUPP userUPP) __attribute__((deprecated));
 # 872 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 InvokeTERecalcUPP(
@@ -71496,7 +74598,7 @@ InvokeTERecalcUPP(
   unsigned short * lineStart,
   unsigned short * firstChar,
   unsigned short * lastChar,
-  TERecalcUPP userUPP) ;
+  TERecalcUPP userUPP) __attribute__((deprecated));
 # 889 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 InvokeTEDoTextUPP(
@@ -71506,12 +74608,12 @@ InvokeTEDoTextUPP(
   short selector,
   GrafPtr * currentGrafPort,
   short * charPosition,
-  TEDoTextUPP userUPP) ;
+  TEDoTextUPP userUPP) __attribute__((deprecated));
 # 907 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern Boolean
 InvokeTEClickLoopUPP(
   TEPtr pTE,
-  TEClickLoopUPP userUPP) ;
+  TEClickLoopUPP userUPP) __attribute__((deprecated));
 # 921 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 enum {
 
@@ -71519,134 +74621,134 @@ enum {
 };
 # 947 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern Handle
-TEScrapHandle(void) ;
+TEScrapHandle(void) __attribute__((deprecated));
 # 963 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern long
-TEGetScrapLength(void) ;
+TEGetScrapLength(void) __attribute__((deprecated));
 # 991 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEHandle
 TENew(
   const Rect * destRect,
-  const Rect * viewRect) ;
+  const Rect * viewRect) __attribute__((deprecated));
 # 1008 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TEDispose(TEHandle hTE) ;
+TEDispose(TEHandle hTE) __attribute__((deprecated));
 # 1023 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TESetText(
   const void * text,
   long length,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1041 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern CharsHandle
-TEGetText(TEHandle hTE) ;
+TEGetText(TEHandle hTE) __attribute__((deprecated));
 # 1056 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TEIdle(TEHandle hTE) ;
+TEIdle(TEHandle hTE) __attribute__((deprecated));
 # 1071 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TESetSelect(
   long selStart,
   long selEnd,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1089 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TEActivate(TEHandle hTE) ;
+TEActivate(TEHandle hTE) __attribute__((deprecated));
 # 1104 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TEDeactivate(TEHandle hTE) ;
+TEDeactivate(TEHandle hTE) __attribute__((deprecated));
 # 1119 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEKey(
   CharParameter key,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1136 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TECut(TEHandle hTE) ;
+TECut(TEHandle hTE) __attribute__((deprecated));
 # 1151 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TECopy(TEHandle hTE) ;
+TECopy(TEHandle hTE) __attribute__((deprecated));
 # 1166 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TEPaste(TEHandle hTE) ;
+TEPaste(TEHandle hTE) __attribute__((deprecated));
 # 1181 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TEDelete(TEHandle hTE) ;
+TEDelete(TEHandle hTE) __attribute__((deprecated));
 # 1196 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEInsert(
   const void * text,
   long length,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1214 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TESetAlignment(
   short just,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1231 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEUpdate(
   const Rect * rUpdate,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1248 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TETextBox(
   const void * text,
   long length,
   const Rect * box,
-  short just) ;
+  short just) __attribute__((deprecated));
 # 1267 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEScroll(
   short dh,
   short dv,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1285 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TESelView(TEHandle hTE) ;
+TESelView(TEHandle hTE) __attribute__((deprecated));
 # 1300 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEPinScroll(
   short dh,
   short dv,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1318 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEAutoView(
   Boolean fAuto,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1335 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TECalText(TEHandle hTE) ;
+TECalText(TEHandle hTE) __attribute__((deprecated));
 # 1350 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern short
 TEGetOffset(
   Point pt,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1367 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern Point
 TEGetPoint(
   short offset,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1384 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEClick(
   Point pt,
   Boolean fExtend,
-  TEHandle h) ;
+  TEHandle h) __attribute__((deprecated));
 # 1402 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEHandle
 TEStyleNew(
   const Rect * destRect,
-  const Rect * viewRect) ;
+  const Rect * viewRect) __attribute__((deprecated));
 # 1419 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TESetStyleHandle(
   TEStyleHandle theHandle,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1436 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEStyleHandle
-TEGetStyleHandle(TEHandle hTE) ;
+TEGetStyleHandle(TEHandle hTE) __attribute__((deprecated));
 # 1451 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEGetStyle(
@@ -71654,17 +74756,17 @@ TEGetStyle(
   TextStyle * theStyle,
   short * lineHeight,
   short * fontAscent,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1471 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TEStylePaste(TEHandle hTE) ;
+TEStylePaste(TEHandle hTE) __attribute__((deprecated));
 # 1486 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TESetStyle(
   short mode,
   const TextStyle * newStyle,
   Boolean fRedraw,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1505 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEReplaceStyle(
@@ -71672,29 +74774,29 @@ TEReplaceStyle(
   const TextStyle * oldStyle,
   const TextStyle * newStyle,
   Boolean fRedraw,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1525 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern StScrpHandle
-TEGetStyleScrapHandle(TEHandle hTE) ;
+TEGetStyleScrapHandle(TEHandle hTE) __attribute__((deprecated));
 # 1540 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEStyleInsert(
   const void * text,
   long length,
   StScrpHandle hST,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1559 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern long
 TEGetHeight(
   long endLine,
   long startLine,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1577 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern Boolean
 TEContinuousStyle(
   short * mode,
   TextStyle * aStyle,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1595 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TEUseStyleScrap(
@@ -71702,74 +74804,74 @@ TEUseStyleScrap(
   long rangeEnd,
   StScrpHandle newStyles,
   Boolean fRedraw,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1615 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TECustomHook(
   TEIntHook which,
   UniversalProcPtr * addr,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1633 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern long
 TENumStyles(
   long rangeStart,
   long rangeEnd,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1651 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern short
 TEFeatureFlag(
   short feature,
   short action,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1669 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern OSErr
 TEGetHiliteRgn(
   RgnHandle region,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1706 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TESetScrapLength(long length) ;
+TESetScrapLength(long length) __attribute__((deprecated));
 # 1721 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern OSErr
-TEFromScrap(void) ;
+TEFromScrap(void) __attribute__((deprecated));
 # 1736 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern OSErr
-TEToScrap(void) ;
+TEToScrap(void) __attribute__((deprecated));
 # 1751 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
 TESetClickLoop(
   TEClickLoopUPP clikProc,
-  TEHandle hTE) ;
+  TEHandle hTE) __attribute__((deprecated));
 # 1786 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEDoTextUPP
-TEGetDoTextHook(void) ;
+TEGetDoTextHook(void) __attribute__((deprecated));
 # 1801 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TESetDoTextHook(TEDoTextUPP value) ;
+TESetDoTextHook(TEDoTextUPP value) __attribute__((deprecated));
 # 1816 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TERecalcUPP
-TEGetRecalcHook(void) ;
+TEGetRecalcHook(void) __attribute__((deprecated));
 # 1831 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TESetRecalcHook(TERecalcUPP value) ;
+TESetRecalcHook(TERecalcUPP value) __attribute__((deprecated));
 # 1846 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern TEFindWordUPP
-TEGetFindWordHook(void) ;
+TEGetFindWordHook(void) __attribute__((deprecated));
 # 1861 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TESetFindWordHook(TEFindWordUPP value) ;
+TESetFindWordHook(TEFindWordUPP value) __attribute__((deprecated));
 # 1876 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern Handle
-TEGetScrapHandle(void) ;
+TEGetScrapHandle(void) __attribute__((deprecated));
 # 1891 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-TESetScrapHandle(Handle value) ;
+TESetScrapHandle(Handle value) __attribute__((deprecated));
 # 1912 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern UInt8
-LMGetWordRedraw(void) ;
+LMGetWordRedraw(void) __attribute__((deprecated));
 # 1927 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 extern void
-LMSetWordRedraw(UInt8 value) ;
+LMSetWordRedraw(UInt8 value) __attribute__((deprecated));
 # 1966 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TextEdit.h"
 #pragma options align=reset
 # 41 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Controls.h" 2
@@ -72352,7 +75454,7 @@ SetDragImage(
   PixMapHandle inImagePixMap,
   RgnHandle inImageRgn,
   Point inImageOffsetPt,
-  DragImageFlags inImageFlags) ;
+  DragImageFlags inImageFlags) __attribute__((deprecated));
 # 1780 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Drag.h"
 typedef DragRef DragReference;
 typedef DragItemRef ItemReference;
@@ -73649,7 +76751,7 @@ SetControlPopupMenuID(
   short menuID) ;
 # 4333 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Controls.h"
 extern void
-IdleControls(WindowRef inWindow) ;
+IdleControls(WindowRef inWindow) __attribute__((deprecated));
 
 
 
@@ -78337,52 +81439,52 @@ CreateMouseTrackingRegion(
   MouseTrackingRegionID inID,
   void * inRefCon,
   EventTargetRef inTargetToNotify,
-  MouseTrackingRef * outTrackingRef) ;
+  MouseTrackingRef * outTrackingRef) __attribute__((deprecated));
 # 14001 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
-RetainMouseTrackingRegion(MouseTrackingRef inMouseRef) ;
+RetainMouseTrackingRegion(MouseTrackingRef inMouseRef) __attribute__((deprecated));
 # 14035 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
-ReleaseMouseTrackingRegion(MouseTrackingRef inMouseRef) ;
+ReleaseMouseTrackingRegion(MouseTrackingRef inMouseRef) __attribute__((deprecated));
 # 14074 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 ChangeMouseTrackingRegion(
   MouseTrackingRef inMouseRef,
   RgnHandle inRegion,
-  RgnHandle inClip) ;
+  RgnHandle inClip) __attribute__((deprecated));
 # 14114 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 ClipMouseTrackingRegion(
   MouseTrackingRef inMouseRef,
-  RgnHandle inRegion) ;
+  RgnHandle inRegion) __attribute__((deprecated));
 # 14155 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 GetMouseTrackingRegionID(
   MouseTrackingRef inMouseRef,
-  MouseTrackingRegionID * outID) ;
+  MouseTrackingRegionID * outID) __attribute__((deprecated));
 # 14192 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 GetMouseTrackingRegionRefCon(
   MouseTrackingRef inMouseRef,
-  void ** outRefCon) ;
+  void ** outRefCon) __attribute__((deprecated));
 # 14238 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 MoveMouseTrackingRegion(
   MouseTrackingRef inMouseRef,
   SInt16 deltaH,
   SInt16 deltaV,
-  RgnHandle inClip) ;
+  RgnHandle inClip) __attribute__((deprecated));
 # 14279 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 SetMouseTrackingRegionEnabled(
   MouseTrackingRef inMouseRef,
-  Boolean inEnabled) ;
+  Boolean inEnabled) __attribute__((deprecated));
 # 14327 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 ClipWindowMouseTrackingRegions(
   WindowRef inWindow,
   OSType inSignature,
-  RgnHandle inClip) ;
+  RgnHandle inClip) __attribute__((deprecated));
 # 14378 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 MoveWindowMouseTrackingRegions(
@@ -78390,18 +81492,18 @@ MoveWindowMouseTrackingRegions(
   OSType inSignature,
   SInt16 deltaH,
   SInt16 deltaV,
-  RgnHandle inClip) ;
+  RgnHandle inClip) __attribute__((deprecated));
 # 14424 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 SetWindowMouseTrackingRegionsEnabled(
   WindowRef inWindow,
   OSType inSignature,
-  Boolean inEnabled) ;
+  Boolean inEnabled) __attribute__((deprecated));
 # 14461 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 extern OSStatus
 ReleaseWindowMouseTrackingRegions(
   WindowRef inWindow,
-  OSType inSignature) ;
+  OSType inSignature) __attribute__((deprecated));
 # 14481 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
 typedef struct OpaqueToolboxObjectClassRef* ToolboxObjectClassRef;
 # 14493 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/CarbonEvents.h"
@@ -85270,16 +88372,16 @@ typedef CFStringRef ( * TXNActionKeyMapperProcPtr)(TXNActionKey actionKey, UInt3
 typedef TXNActionKeyMapperProcPtr TXNActionKeyMapperUPP;
 # 6224 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern TXNActionKeyMapperUPP
-NewTXNActionKeyMapperUPP(TXNActionKeyMapperProcPtr userRoutine) ;
+NewTXNActionKeyMapperUPP(TXNActionKeyMapperProcPtr userRoutine) __attribute__((deprecated));
 # 6235 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern void
-DisposeTXNActionKeyMapperUPP(TXNActionKeyMapperUPP userUPP) ;
+DisposeTXNActionKeyMapperUPP(TXNActionKeyMapperUPP userUPP) __attribute__((deprecated));
 # 6246 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern CFStringRef
 InvokeTXNActionKeyMapperUPP(
   TXNActionKey actionKey,
   UInt32 commandID,
-  TXNActionKeyMapperUPP userUPP) ;
+  TXNActionKeyMapperUPP userUPP) __attribute__((deprecated));
 
 
 
@@ -85306,7 +88408,7 @@ enum {
 extern void
 TXNSetViewRect(
   TXNObject iTXNObject,
-  const Rect * iViewRect) ;
+  const Rect * iViewRect) __attribute__((deprecated));
 # 6406 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNNewObject(
@@ -85319,10 +88421,10 @@ TXNNewObject(
   TXNPermanentTextEncodingType iPermanentEncoding,
   TXNObject * oTXNObject,
   TXNFrameID * oTXNFrameID,
-  TXNObjectRefcon iRefCon) ;
+  TXNObjectRefcon iRefCon) __attribute__((deprecated));
 # 6439 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern void
-TXNTerminateTextension(void) ;
+TXNTerminateTextension(void) __attribute__((deprecated));
 # 6495 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNSetDataFromFile(
@@ -85331,93 +88433,93 @@ TXNSetDataFromFile(
   OSType iFileType,
   ByteCount iFileLength,
   TXNOffset iStartOffset,
-  TXNOffset iEndOffset) ;
+  TXNOffset iEndOffset) __attribute__((deprecated));
 # 6531 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
-TXNConvertToPublicScrap(void) ;
+TXNConvertToPublicScrap(void) __attribute__((deprecated));
 # 6563 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
-TXNConvertFromPublicScrap(void) ;
+TXNConvertFromPublicScrap(void) __attribute__((deprecated));
 # 6608 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern void
 TXNDraw(
   TXNObject iTXNObject,
-  GWorldPtr iDrawPort) ;
+  GWorldPtr iDrawPort) __attribute__((deprecated));
 # 6657 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNAttachObjectToWindow(
   TXNObject iTXNObject,
   GWorldPtr iWindow,
-  Boolean iIsActualWindow) ;
+  Boolean iIsActualWindow) __attribute__((deprecated));
 # 6691 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern Boolean
-TXNIsObjectAttachedToWindow(TXNObject iTXNObject) ;
+TXNIsObjectAttachedToWindow(TXNObject iTXNObject) __attribute__((deprecated));
 # 6729 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNIsObjectAttachedToSpecificWindow(
   TXNObject iTXNObject,
   WindowRef iWindow,
-  Boolean * oAttached) ;
+  Boolean * oAttached) __attribute__((deprecated));
 # 6776 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern void
 TXNSetRectBounds(
   TXNObject iTXNObject,
   const Rect * iViewRect,
   const TXNLongRect * iDestinationRect,
-  Boolean iUpdate) ;
+  Boolean iUpdate) __attribute__((deprecated));
 # 6824 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNGetRectBounds(
   TXNObject iTXNObject,
   Rect * oViewRect,
   TXNLongRect * oDestinationRect,
-  TXNLongRect * oTextRect) ;
+  TXNLongRect * oTextRect) __attribute__((deprecated));
 # 6879 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNActivate(
   TXNObject iTXNObject,
   TXNFrameID iTXNFrameID,
-  TXNScrollBarState iActiveState) ;
+  TXNScrollBarState iActiveState) __attribute__((deprecated));
 # 6917 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNPointToOffset(
   TXNObject iTXNObject,
   Point iPoint,
-  TXNOffset * oOffset) ;
+  TXNOffset * oOffset) __attribute__((deprecated));
 # 6954 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNOffsetToPoint(
   TXNObject iTXNObject,
   TXNOffset iOffset,
-  Point * oPoint) ;
+  Point * oPoint) __attribute__((deprecated));
 # 7034 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern Boolean
 TXNCanUndo(
   TXNObject iTXNObject,
-  TXNActionKey * oTXNActionKey) ;
+  TXNActionKey * oTXNActionKey) __attribute__((deprecated));
 # 7073 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern Boolean
 TXNCanRedo(
   TXNObject iTXNObject,
-  TXNActionKey * oTXNActionKey) ;
+  TXNActionKey * oTXNActionKey) __attribute__((deprecated));
 # 7116 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNGetActionChangeCount(
   TXNObject iTXNObject,
   TXNCountOptions iOptions,
-  ItemCount * oCount) ;
+  ItemCount * oCount) __attribute__((deprecated));
 # 7156 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNClearActionChangeCount(
   TXNObject iTXNObject,
-  TXNCountOptions iOptions) ;
+  TXNCountOptions iOptions) __attribute__((deprecated));
 # 7208 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNSetDataFromCFURLRef(
   TXNObject iTXNObject,
   CFURLRef iURL,
   TXNOffset iStartOffset,
-  TXNOffset iEndOffset) ;
+  TXNOffset iEndOffset) __attribute__((deprecated));
 # 7277 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 extern OSStatus
 TXNSave(
@@ -85427,7 +88529,7 @@ TXNSave(
   TXNPermanentTextEncodingType iPermanentEncoding,
   const FSSpec * iFileSpecification,
   SInt16 iDataReference,
-  SInt16 iResourceReference) ;
+  SInt16 iResourceReference) __attribute__((deprecated));
 
 
 
@@ -86850,7 +89952,7 @@ CreateEditTextControl(
   Boolean isPassword,
   Boolean useInlineInput,
   const ControlFontStyleRec * style,
-  ControlRef * outControl) ;
+  ControlRef * outControl) __attribute__((deprecated));
 
 
 
@@ -88930,22 +92032,22 @@ typedef TSMTERec * TSMTERecPtr;
 typedef TSMTERecPtr * TSMTERecHandle;
 # 117 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern TSMTEPreUpdateUPP
-NewTSMTEPreUpdateUPP(TSMTEPreUpdateProcPtr userRoutine) ;
+NewTSMTEPreUpdateUPP(TSMTEPreUpdateProcPtr userRoutine) __attribute__((deprecated));
 # 128 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern TSMTEPostUpdateUPP
-NewTSMTEPostUpdateUPP(TSMTEPostUpdateProcPtr userRoutine) ;
+NewTSMTEPostUpdateUPP(TSMTEPostUpdateProcPtr userRoutine) __attribute__((deprecated));
 # 139 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern void
-DisposeTSMTEPreUpdateUPP(TSMTEPreUpdateUPP userUPP) ;
+DisposeTSMTEPreUpdateUPP(TSMTEPreUpdateUPP userUPP) __attribute__((deprecated));
 # 150 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern void
-DisposeTSMTEPostUpdateUPP(TSMTEPostUpdateUPP userUPP) ;
+DisposeTSMTEPostUpdateUPP(TSMTEPostUpdateUPP userUPP) __attribute__((deprecated));
 # 161 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern void
 InvokeTSMTEPreUpdateUPP(
   TEHandle textH,
   long refCon,
-  TSMTEPreUpdateUPP userUPP) ;
+  TSMTEPreUpdateUPP userUPP) __attribute__((deprecated));
 # 175 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern void
 InvokeTSMTEPostUpdateUPP(
@@ -88956,26 +92058,26 @@ InvokeTSMTEPostUpdateUPP(
   long pinStart,
   long pinEnd,
   long refCon,
-  TSMTEPostUpdateUPP userUPP) ;
+  TSMTEPostUpdateUPP userUPP) __attribute__((deprecated));
 # 197 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern Boolean
-IsTSMTEDialog(DialogRef dialog) ;
+IsTSMTEDialog(DialogRef dialog) __attribute__((deprecated));
 # 213 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern TSMDocumentID
-GetTSMTEDialogDocumentID(DialogRef dialog) ;
+GetTSMTEDialogDocumentID(DialogRef dialog) __attribute__((deprecated));
 # 228 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern TSMTERecHandle
-GetTSMTEDialogTSMTERecHandle(DialogRef dialog) ;
+GetTSMTEDialogTSMTERecHandle(DialogRef dialog) __attribute__((deprecated));
 # 244 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern void
 SetTSMTEDialogDocumentID(
   DialogRef dialog,
-  TSMDocumentID documentID) ;
+  TSMDocumentID documentID) __attribute__((deprecated));
 # 261 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TSMTE.h"
 extern void
 SetTSMTEDialogTSMTERecHandle(
   DialogRef dialog,
-  TSMTERecHandle tsmteRecHandle) ;
+  TSMTERecHandle tsmteRecHandle) __attribute__((deprecated));
 
 
 
@@ -89051,13 +92153,13 @@ typedef long TranslationRefNum;
 extern OSErr
 SetTranslationAdvertisement(
   TranslationRefNum refNum,
-  PicHandle advertisement) ;
+  PicHandle advertisement) __attribute__((deprecated));
 # 175 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TranslationExtensions.h"
 extern OSErr
 UpdateTranslationProgress(
   TranslationRefNum refNum,
   short percentDone,
-  Boolean * canceled) ;
+  Boolean * canceled) __attribute__((deprecated));
 
 
 
@@ -89136,14 +92238,14 @@ extern OSErr
 GetFileTypesThatAppCanNativelyOpen(
   short appVRefNumHint,
   OSType appSignature,
-  FileType * nativeTypes) ;
+  FileType * nativeTypes) __attribute__((deprecated));
 # 110 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern OSErr
 ExtendFileTypeList(
   const FileType * originalTypeList,
   short numberOriginalTypes,
   FileType * extendedTypeList,
-  short * numberExtendedTypes) ;
+  short * numberExtendedTypes) __attribute__((deprecated));
 # 132 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern OSErr
 CanDocBeOpened(
@@ -89153,14 +92255,14 @@ CanDocBeOpened(
   const FileType * nativeTypes,
   Boolean onlyNative,
   DocOpenMethod * howToOpen,
-  FileTranslationSpec * howToTranslate) ;
+  FileTranslationSpec * howToTranslate) __attribute__((deprecated));
 # 158 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern short
 GetFileTranslationPaths(
   const FSSpec * srcDocument,
   FileType dstDocType,
   unsigned short maxResultCount,
-  FileTranslationSpecArrayPtr resultBuffer) ;
+  FileTranslationSpecArrayPtr resultBuffer) __attribute__((deprecated));
 # 182 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern OSErr
 GetPathFromTranslationDialog(
@@ -89168,25 +92270,25 @@ GetPathFromTranslationDialog(
   const FSSpec * theApplication,
   TypesBlockPtr typeList,
   DocOpenMethod * howToOpen,
-  FileTranslationSpec * howToTranslate) ;
+  FileTranslationSpec * howToTranslate) __attribute__((deprecated));
 # 205 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern OSErr
 TranslateFile(
   const FSSpec * sourceDocument,
   const FSSpec * destinationDocument,
-  const FileTranslationSpec * howToTranslate) ;
+  const FileTranslationSpec * howToTranslate) __attribute__((deprecated));
 # 226 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern OSErr
 GetDocumentKindString(
   short docVRefNum,
   OSType docType,
   OSType docCreator,
-  Str63 kindString) ;
+  Str63 kindString) __attribute__((deprecated));
 # 251 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern OSErr
 GetTranslationExtensionName(
   const FileTranslationSpec * translationMethod,
-  Str31 extensionName) ;
+  Str31 extensionName) __attribute__((deprecated));
 
 
 
@@ -89197,17 +92299,17 @@ typedef OSErr ( * GetScrapDataProcPtr)(ScrapType requestedFormat, Handle dataH, 
 typedef GetScrapDataProcPtr GetScrapDataUPP;
 # 271 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern GetScrapDataUPP
-NewGetScrapDataUPP(GetScrapDataProcPtr userRoutine) ;
+NewGetScrapDataUPP(GetScrapDataProcPtr userRoutine) __attribute__((deprecated));
 # 282 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern void
-DisposeGetScrapDataUPP(GetScrapDataUPP userUPP) ;
+DisposeGetScrapDataUPP(GetScrapDataUPP userUPP) __attribute__((deprecated));
 # 293 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
 extern OSErr
 InvokeGetScrapDataUPP(
   ScrapType requestedFormat,
   Handle dataH,
   void * srcDataGetterRefCon,
-  GetScrapDataUPP userUPP) ;
+  GetScrapDataUPP userUPP) __attribute__((deprecated));
 
 typedef GetScrapDataUPP GetScrapData;
 # 315 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/Translation.h"
@@ -89217,7 +92319,7 @@ TranslateScrap(
   void * sourceDataGetterRefCon,
   ScrapType destinationFormat,
   Handle destinationData,
-  short progressDialogID) ;
+  short progressDialogID) __attribute__((deprecated));
 
 
 
@@ -89253,12 +92355,12 @@ typedef Boolean ( * IndexToStringProcPtr)(short item, ScriptCode *itemsScript, S
 typedef IndexToStringProcPtr IndexToStringUPP;
 # 70 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TypeSelect.h"
 extern void
-TypeSelectClear(TypeSelectRecord * tsr) ;
+TypeSelectClear(TypeSelectRecord * tsr) __attribute__((deprecated));
 # 98 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TypeSelect.h"
 extern Boolean
 TypeSelectNewKey(
   const EventRecord * theEvent,
-  TypeSelectRecord * tsr) ;
+  TypeSelectRecord * tsr) __attribute__((deprecated));
 # 122 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TypeSelect.h"
 extern short
 TypeSelectFindItem(
@@ -89266,13 +92368,13 @@ TypeSelectFindItem(
   short listSize,
   TSCode selectMode,
   IndexToStringUPP getStringProc,
-  void * yourDataPtr) ;
+  void * yourDataPtr) __attribute__((deprecated));
 # 150 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TypeSelect.h"
 extern short
 TypeSelectCompare(
   const TypeSelectRecord * tsr,
   ScriptCode testStringScript,
-  StringPtr testStringPtr) ;
+  StringPtr testStringPtr) __attribute__((deprecated));
 # 165 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/TypeSelect.h"
 extern IndexToStringUPP
 NewIndexToStringUPP(IndexToStringProcPtr userRoutine) ;
@@ -89997,15 +93099,13 @@ enum {
   kVariableDurationDVAudioFormat = 'vdva',
   kMPEG4AudioFormat = 'mp4a'
 };
-# 504 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/CarbonSound.framework/Headers/Sound.h"
+
+
 enum {
-  k16BitNativeEndianFormat = k16BitBigEndianFormat,
-  k16BitNonNativeEndianFormat = k16BitLittleEndianFormat
+  k16BitNativeEndianFormat = k16BitLittleEndianFormat,
+  k16BitNonNativeEndianFormat = k16BitBigEndianFormat
 };
-
-
-
-
+# 512 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/CarbonSound.framework/Headers/Sound.h"
 enum {
   k8BitRawIn = (1 << 0),
   k8BitTwosIn = (1 << 1),
@@ -93124,25 +96224,25 @@ extern PMSheetDoneUPP
 NewPMSheetDoneUPP(PMSheetDoneProcPtr userRoutine) ;
 # 74 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern PMItemUPP
-NewPMItemUPP(PMItemProcPtr userRoutine) ;
+NewPMItemUPP(PMItemProcPtr userRoutine) __attribute__((deprecated));
 # 85 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern PMPrintDialogInitUPP
-NewPMPrintDialogInitUPP(PMPrintDialogInitProcPtr userRoutine) ;
+NewPMPrintDialogInitUPP(PMPrintDialogInitProcPtr userRoutine) __attribute__((deprecated));
 # 96 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern PMPageSetupDialogInitUPP
-NewPMPageSetupDialogInitUPP(PMPageSetupDialogInitProcPtr userRoutine) ;
+NewPMPageSetupDialogInitUPP(PMPageSetupDialogInitProcPtr userRoutine) __attribute__((deprecated));
 # 107 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern void
 DisposePMSheetDoneUPP(PMSheetDoneUPP userUPP) ;
 # 118 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern void
-DisposePMItemUPP(PMItemUPP userUPP) ;
+DisposePMItemUPP(PMItemUPP userUPP) __attribute__((deprecated));
 # 129 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern void
-DisposePMPrintDialogInitUPP(PMPrintDialogInitUPP userUPP) ;
+DisposePMPrintDialogInitUPP(PMPrintDialogInitUPP userUPP) __attribute__((deprecated));
 # 140 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern void
-DisposePMPageSetupDialogInitUPP(PMPageSetupDialogInitUPP userUPP) ;
+DisposePMPageSetupDialogInitUPP(PMPageSetupDialogInitUPP userUPP) __attribute__((deprecated));
 # 151 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern void
 InvokePMSheetDoneUPP(
@@ -93155,19 +96255,19 @@ extern void
 InvokePMItemUPP(
   DialogRef theDialog,
   short item,
-  PMItemUPP userUPP) ;
+  PMItemUPP userUPP) __attribute__((deprecated));
 # 180 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern void
 InvokePMPrintDialogInitUPP(
   PMPrintSettings printSettings,
   PMDialog * theDialog,
-  PMPrintDialogInitUPP userUPP) ;
+  PMPrintDialogInitUPP userUPP) __attribute__((deprecated));
 # 194 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern void
 InvokePMPageSetupDialogInitUPP(
   PMPageFormat pageFormat,
   PMDialog * theDialog,
-  PMPageSetupDialogInitUPP userUPP) ;
+  PMPageSetupDialogInitUPP userUPP) __attribute__((deprecated));
 # 224 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSessionBeginCGDocument(
@@ -93231,14 +96331,14 @@ extern OSStatus
 PMSessionPageSetupDialogInit(
   PMPrintSession printSession,
   PMPageFormat pageFormat,
-  PMDialog * newDialog) ;
+  PMDialog * newDialog) __attribute__((deprecated));
 # 429 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSessionPrintDialogInit(
   PMPrintSession printSession,
   PMPrintSettings printSettings,
   PMPageFormat constPageFormat,
-  PMDialog * newDialog) ;
+  PMDialog * newDialog) __attribute__((deprecated));
 # 449 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSessionPrintDialogMain(
@@ -93246,59 +96346,59 @@ PMSessionPrintDialogMain(
   PMPrintSettings printSettings,
   PMPageFormat constPageFormat,
   Boolean * accepted,
-  PMPrintDialogInitUPP myInitProc) ;
+  PMPrintDialogInitUPP myInitProc) __attribute__((deprecated));
 # 470 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSessionPageSetupDialogMain(
   PMPrintSession printSession,
   PMPageFormat pageFormat,
   Boolean * accepted,
-  PMPageSetupDialogInitUPP myInitProc) ;
+  PMPageSetupDialogInitUPP myInitProc) __attribute__((deprecated));
 # 688 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMGetDialogPtr(
   PMDialog pmDialog,
-  DialogRef * theDialog) ;
+  DialogRef * theDialog) __attribute__((deprecated));
 # 707 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMGetModalFilterProc(
   PMDialog pmDialog,
-  ModalFilterUPP * filterProc) ;
+  ModalFilterUPP * filterProc) __attribute__((deprecated));
 # 725 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSetModalFilterProc(
   PMDialog pmDialog,
-  ModalFilterUPP filterProc) ;
+  ModalFilterUPP filterProc) __attribute__((deprecated));
 # 743 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMGetItemProc(
   PMDialog pmDialog,
-  PMItemUPP * itemProc) ;
+  PMItemUPP * itemProc) __attribute__((deprecated));
 # 761 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSetItemProc(
   PMDialog pmDialog,
-  PMItemUPP itemProc) ;
+  PMItemUPP itemProc) __attribute__((deprecated));
 # 779 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMGetDialogAccepted(
   PMDialog pmDialog,
-  Boolean * process) ;
+  Boolean * process) __attribute__((deprecated));
 # 797 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSetDialogAccepted(
   PMDialog pmDialog,
-  Boolean process) ;
+  Boolean process) __attribute__((deprecated));
 # 815 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMGetDialogDone(
   PMDialog pmDialog,
-  Boolean * done) ;
+  Boolean * done) __attribute__((deprecated));
 # 833 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/PMApplication.h"
 extern OSStatus
 PMSetDialogDone(
   PMDialog pmDialog,
-  Boolean done) ;
+  Boolean done) __attribute__((deprecated));
 # 31 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Print.framework/Headers/Print.h" 2
 # 42 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Versions/A/Headers/Carbon.h" 2
 
@@ -94801,7 +97901,7 @@ FCFontDescriptorCreateWithName(
 typedef struct OpaqueHRReference* HRReference;
 # 59 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
-HRGetHTMLRenderingLibVersion(NumVersion * returnVers) ;
+HRGetHTMLRenderingLibVersion(NumVersion * returnVers) __attribute__((deprecated));
 # 77 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 enum {
   kHRRendererHTML32Type = 'ht32'
@@ -94811,89 +97911,89 @@ extern OSStatus
 HRNewReference(
   HRReference * hrRef,
   OSType rendererType,
-  GrafPtr grafPtr) ;
+  GrafPtr grafPtr) __attribute__((deprecated));
 # 124 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRNewReferenceInWindow(
   HRReference * hrRef,
   OSType rendererType,
-  WindowRef inWindowRef) ;
+  WindowRef inWindowRef) __attribute__((deprecated));
 # 139 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
-HRDisposeReference(HRReference hrRef) ;
+HRDisposeReference(HRReference hrRef) __attribute__((deprecated));
 # 152 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern SInt32
-HRFreeMemory(Size inBytesNeeded) ;
+HRFreeMemory(Size inBytesNeeded) __attribute__((deprecated));
 # 166 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-HRScreenConfigurationChanged(void) ;
+HRScreenConfigurationChanged(void) __attribute__((deprecated));
 # 178 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern Boolean
-HRIsHREvent(const EventRecord * eventRecord) ;
+HRIsHREvent(const EventRecord * eventRecord) __attribute__((deprecated));
 # 192 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRSetGrafPtr(
   HRReference hrRef,
-  GrafPtr grafPtr) ;
+  GrafPtr grafPtr) __attribute__((deprecated));
 # 220 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRSetWindowRef(
   HRReference hrRef,
-  WindowRef windowRef) ;
+  WindowRef windowRef) __attribute__((deprecated));
 # 250 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRSetEmbeddingControl(
   HRReference hrRef,
-  ControlRef controlRef) ;
+  ControlRef controlRef) __attribute__((deprecated));
 # 264 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
-HRActivate(HRReference hrRef) ;
+HRActivate(HRReference hrRef) __attribute__((deprecated));
 # 276 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
-HRDeactivate(HRReference hrRef) ;
+HRDeactivate(HRReference hrRef) __attribute__((deprecated));
 # 288 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRDraw(
   HRReference hrRef,
-  RgnHandle updateRgnH) ;
+  RgnHandle updateRgnH) __attribute__((deprecated));
 # 319 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRDrawInPort(
   HRReference hrRef,
   RgnHandle updateRgnH,
-  CGrafPtr grafPtr) ;
+  CGrafPtr grafPtr) __attribute__((deprecated));
 # 334 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRSetRenderingRect(
   HRReference hrRef,
-  const Rect * renderingRect) ;
+  const Rect * renderingRect) __attribute__((deprecated));
 # 348 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetRenderedImageSize(
   HRReference hrRef,
-  Point * renderingSize) ;
+  Point * renderingSize) __attribute__((deprecated));
 # 377 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetRenderedImageSize32(
   HRReference hrRef,
   UInt32 * height,
-  UInt32 * width) ;
+  UInt32 * width) __attribute__((deprecated));
 # 392 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRScrollToLocation(
   HRReference hrRef,
-  Point * location) ;
+  Point * location) __attribute__((deprecated));
 # 421 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRScrollToImageLocation32(
   HRReference hrRef,
   SInt32 h,
-  SInt32 v) ;
+  SInt32 v) __attribute__((deprecated));
 # 436 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRForceQuickdraw(
   HRReference hrRef,
-  Boolean forceQuickdraw) ;
+  Boolean forceQuickdraw) __attribute__((deprecated));
 
 
 typedef SInt16 HRScrollbarState;
@@ -94907,36 +98007,36 @@ extern OSStatus
 HRSetScrollbarState(
   HRReference hrRef,
   HRScrollbarState hScrollbarState,
-  HRScrollbarState vScrollbarState) ;
+  HRScrollbarState vScrollbarState) __attribute__((deprecated));
 # 472 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRSetDrawBorder(
   HRReference hrRef,
-  Boolean drawBorder) ;
+  Boolean drawBorder) __attribute__((deprecated));
 # 486 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRSetGrowboxCutout(
   HRReference hrRef,
-  Boolean allowCutout) ;
+  Boolean allowCutout) __attribute__((deprecated));
 # 501 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToFile(
   HRReference hrRef,
   const FSSpec * fsspec,
   Boolean addToHistory,
-  Boolean forceRefresh) ;
+  Boolean forceRefresh) __attribute__((deprecated));
 # 517 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToURL(
   HRReference hrRef,
   const char * url,
   Boolean addToHistory,
-  Boolean forceRefresh) ;
+  Boolean forceRefresh) __attribute__((deprecated));
 # 533 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToAnchor(
   HRReference hrRef,
-  const char * anchorName) ;
+  const char * anchorName) __attribute__((deprecated));
 # 547 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToPtr(
@@ -94944,117 +98044,117 @@ HRGoToPtr(
   char * buffer,
   UInt32 bufferSize,
   Boolean addToHistory,
-  Boolean forceRefresh) ;
+  Boolean forceRefresh) __attribute__((deprecated));
 # 585 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToFSRef(
   HRReference hrRef,
   const FSRef * fref,
   Boolean addToHistory,
-  Boolean forceRefresh) ;
+  Boolean forceRefresh) __attribute__((deprecated));
 # 622 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToCFURL(
   HRReference hrRef,
   CFURLRef url,
   Boolean addToHistory,
-  Boolean forceRefresh) ;
+  Boolean forceRefresh) __attribute__((deprecated));
 # 653 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToAnchorCFString(
   HRReference hrRef,
-  CFStringRef anchorName) ;
+  CFStringRef anchorName) __attribute__((deprecated));
 # 688 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGoToData(
   HRReference hrRef,
   CFDataRef data,
   Boolean addToHistory,
-  Boolean forceRefresh) ;
+  Boolean forceRefresh) __attribute__((deprecated));
 # 706 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetRootURL(
   HRReference hrRef,
-  Handle rootURLH) ;
+  Handle rootURLH) __attribute__((deprecated));
 # 721 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetBaseURL(
   HRReference hrRef,
-  Handle baseURLH) ;
+  Handle baseURLH) __attribute__((deprecated));
 # 736 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetHTMLURL(
   HRReference hrRef,
-  Handle HTMLURLH) ;
+  Handle HTMLURLH) __attribute__((deprecated));
 # 750 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetTitle(
   HRReference hrRef,
-  StringPtr title) ;
+  StringPtr title) __attribute__((deprecated));
 # 764 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetHTMLFile(
   HRReference hrRef,
-  FSSpec * fsspec) ;
+  FSSpec * fsspec) __attribute__((deprecated));
 # 794 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetRootURLAsCFString(
   HRReference hrRef,
-  CFStringRef * rootString) ;
+  CFStringRef * rootString) __attribute__((deprecated));
 # 823 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetBaseURLAsCFString(
   HRReference hrRef,
-  CFStringRef * baseString) ;
+  CFStringRef * baseString) __attribute__((deprecated));
 # 852 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetHTMLURLAsCFURL(
   HRReference hrRef,
-  CFURLRef * theURL) ;
+  CFURLRef * theURL) __attribute__((deprecated));
 # 881 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetTitleAsCFString(
   HRReference hrRef,
-  CFStringRef * title) ;
+  CFStringRef * title) __attribute__((deprecated));
 # 910 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRGetHTMLFileAsFSRef(
   HRReference hrRef,
-  FSRef * fref) ;
+  FSRef * fref) __attribute__((deprecated));
 # 925 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRUtilCreateFullURL(
   const char * rootURL,
   const char * linkURL,
-  Handle fullURLH) ;
+  Handle fullURLH) __attribute__((deprecated));
 # 940 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRUtilGetFSSpecFromURL(
   const char * rootURL,
   const char * linkURL,
-  FSSpec * destSpec) ;
+  FSSpec * destSpec) __attribute__((deprecated));
 # 956 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRUtilGetURLFromFSSpec(
   const FSSpec * fsspec,
-  Handle urlHandle) ;
+  Handle urlHandle) __attribute__((deprecated));
 # 990 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRUtilCreateFullCFURL(
   CFStringRef rootString,
   CFStringRef linkString,
-  CFURLRef * url) ;
+  CFURLRef * url) __attribute__((deprecated));
 # 1025 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRUtilGetFSRefFromURL(
   CFStringRef rootString,
   CFStringRef linkString,
-  FSRef * destRef) ;
+  FSRef * destRef) __attribute__((deprecated));
 # 1057 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 HRUtilGetURLFromFSRef(
   const FSRef * fileRef,
-  CFURLRef * url) ;
+  CFURLRef * url) __attribute__((deprecated));
 # 1075 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 typedef Boolean ( * HRWasURLVisitedProcPtr)(const char *url, void *refCon);
 typedef HRWasURLVisitedProcPtr HRWasURLVisitedUPP;
@@ -95063,10 +98163,10 @@ extern void
 HRRegisterWasURLVisitedUPP(
   HRWasURLVisitedUPP inWasURLVisitedUPP,
   HRReference hrRef,
-  void * inRefCon) ;
+  void * inRefCon) __attribute__((deprecated));
 # 1100 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-HRUnregisterWasURLVisitedUPP(HRReference hrRef) ;
+HRUnregisterWasURLVisitedUPP(HRReference hrRef) __attribute__((deprecated));
 # 1110 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 typedef Boolean ( * HRWasCFURLVisitedProcPtr)(CFURLRef url, void *refCon);
 typedef HRWasCFURLVisitedProcPtr HRWasCFURLVisitedUPP;
@@ -95075,10 +98175,10 @@ extern void
 HRRegisterWasCFURLVisitedUPP(
   HRWasCFURLVisitedUPP inWasCFURLVisitedUPP,
   HRReference hrRef,
-  void * inRefCon) ;
+  void * inRefCon) __attribute__((deprecated));
 # 1135 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-HRUnregisterWasCFURLVisitedUPP(HRReference hrRef) ;
+HRUnregisterWasCFURLVisitedUPP(HRReference hrRef) __attribute__((deprecated));
 # 1151 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 typedef OSStatus ( * HRNewURLProcPtr)(const char *url, const char *targetFrame, Boolean addToHistory, void *refCon);
 typedef HRNewURLProcPtr HRNewURLUPP;
@@ -95087,10 +98187,10 @@ extern void
 HRRegisterNewURLUPP(
   HRNewURLUPP inNewURLUPP,
   HRReference hrRef,
-  void * inRefCon) ;
+  void * inRefCon) __attribute__((deprecated));
 # 1176 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-HRUnregisterNewURLUPP(HRReference hrRef) ;
+HRUnregisterNewURLUPP(HRReference hrRef) __attribute__((deprecated));
 # 1186 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 typedef OSStatus ( * HRNewCFURLProcPtr)(CFURLRef url, CFStringRef targetString, Boolean addToHistory, void *refCon);
 typedef HRNewCFURLProcPtr HRNewCFURLUPP;
@@ -95099,10 +98199,10 @@ extern void
 HRRegisterNewCFURLUPP(
   HRNewCFURLUPP inURLUPP,
   HRReference hrRef,
-  void * inRefCon) ;
+  void * inRefCon) __attribute__((deprecated));
 # 1211 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-HRUnregisterNewCFURLUPP(HRReference hrRef) ;
+HRUnregisterNewCFURLUPP(HRReference hrRef) __attribute__((deprecated));
 # 1225 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 typedef UInt16 URLSourceType;
 enum {
@@ -95120,10 +98220,10 @@ extern void
 HRRegisterURLToFSSpecUPP(
   HRURLToFSSpecUPP inURLToFSSpecUPP,
   HRReference hrRef,
-  void * inRefCon) ;
+  void * inRefCon) __attribute__((deprecated));
 # 1259 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-HRUnregisterURLToFSSpecUPP(HRReference hrRef) ;
+HRUnregisterURLToFSSpecUPP(HRReference hrRef) __attribute__((deprecated));
 # 1269 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 typedef OSStatus ( * HRURLToFSRefProcPtr)(CFStringRef rootString, CFStringRef linkString, FSRef *fref, URLSourceType urlSourceType, void *refCon);
 typedef HRURLToFSRefProcPtr HRURLToFSRefUPP;
@@ -95132,58 +98232,58 @@ extern void
 HRRegisterURLToFSRefUPP(
   HRURLToFSRefUPP inURLToFSRefUPP,
   HRReference hrRef,
-  void * inRefCon) ;
+  void * inRefCon) __attribute__((deprecated));
 # 1294 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-HRUnregisterURLToFSRefUPP(HRReference hrRef) ;
+HRUnregisterURLToFSRefUPP(HRReference hrRef) __attribute__((deprecated));
 # 1306 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern HRWasURLVisitedUPP
-NewHRWasURLVisitedUPP(HRWasURLVisitedProcPtr userRoutine) ;
+NewHRWasURLVisitedUPP(HRWasURLVisitedProcPtr userRoutine) __attribute__((deprecated));
 # 1317 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern HRWasCFURLVisitedUPP
-NewHRWasCFURLVisitedUPP(HRWasCFURLVisitedProcPtr userRoutine) ;
+NewHRWasCFURLVisitedUPP(HRWasCFURLVisitedProcPtr userRoutine) __attribute__((deprecated));
 # 1328 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern HRNewURLUPP
-NewHRNewURLUPP(HRNewURLProcPtr userRoutine) ;
+NewHRNewURLUPP(HRNewURLProcPtr userRoutine) __attribute__((deprecated));
 # 1339 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern HRNewCFURLUPP
-NewHRNewCFURLUPP(HRNewCFURLProcPtr userRoutine) ;
+NewHRNewCFURLUPP(HRNewCFURLProcPtr userRoutine) __attribute__((deprecated));
 # 1350 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern HRURLToFSSpecUPP
-NewHRURLToFSSpecUPP(HRURLToFSSpecProcPtr userRoutine) ;
+NewHRURLToFSSpecUPP(HRURLToFSSpecProcPtr userRoutine) __attribute__((deprecated));
 # 1361 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern HRURLToFSRefUPP
-NewHRURLToFSRefUPP(HRURLToFSRefProcPtr userRoutine) ;
+NewHRURLToFSRefUPP(HRURLToFSRefProcPtr userRoutine) __attribute__((deprecated));
 # 1372 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-DisposeHRWasURLVisitedUPP(HRWasURLVisitedUPP userUPP) ;
+DisposeHRWasURLVisitedUPP(HRWasURLVisitedUPP userUPP) __attribute__((deprecated));
 # 1383 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-DisposeHRWasCFURLVisitedUPP(HRWasCFURLVisitedUPP userUPP) ;
+DisposeHRWasCFURLVisitedUPP(HRWasCFURLVisitedUPP userUPP) __attribute__((deprecated));
 # 1394 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-DisposeHRNewURLUPP(HRNewURLUPP userUPP) ;
+DisposeHRNewURLUPP(HRNewURLUPP userUPP) __attribute__((deprecated));
 # 1405 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-DisposeHRNewCFURLUPP(HRNewCFURLUPP userUPP) ;
+DisposeHRNewCFURLUPP(HRNewCFURLUPP userUPP) __attribute__((deprecated));
 # 1416 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-DisposeHRURLToFSSpecUPP(HRURLToFSSpecUPP userUPP) ;
+DisposeHRURLToFSSpecUPP(HRURLToFSSpecUPP userUPP) __attribute__((deprecated));
 # 1427 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern void
-DisposeHRURLToFSRefUPP(HRURLToFSRefUPP userUPP) ;
+DisposeHRURLToFSRefUPP(HRURLToFSRefUPP userUPP) __attribute__((deprecated));
 # 1438 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern Boolean
 InvokeHRWasURLVisitedUPP(
   const char * url,
   void * refCon,
-  HRWasURLVisitedUPP userUPP) ;
+  HRWasURLVisitedUPP userUPP) __attribute__((deprecated));
 # 1452 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern Boolean
 InvokeHRWasCFURLVisitedUPP(
   CFURLRef url,
   void * refCon,
-  HRWasCFURLVisitedUPP userUPP) ;
+  HRWasCFURLVisitedUPP userUPP) __attribute__((deprecated));
 # 1466 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 InvokeHRNewURLUPP(
@@ -95191,7 +98291,7 @@ InvokeHRNewURLUPP(
   const char * targetFrame,
   Boolean addToHistory,
   void * refCon,
-  HRNewURLUPP userUPP) ;
+  HRNewURLUPP userUPP) __attribute__((deprecated));
 # 1482 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 InvokeHRNewCFURLUPP(
@@ -95199,7 +98299,7 @@ InvokeHRNewCFURLUPP(
   CFStringRef targetString,
   Boolean addToHistory,
   void * refCon,
-  HRNewCFURLUPP userUPP) ;
+  HRNewCFURLUPP userUPP) __attribute__((deprecated));
 # 1498 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 InvokeHRURLToFSSpecUPP(
@@ -95208,7 +98308,7 @@ InvokeHRURLToFSSpecUPP(
   FSSpec * fsspec,
   URLSourceType urlSourceType,
   void * refCon,
-  HRURLToFSSpecUPP userUPP) ;
+  HRURLToFSSpecUPP userUPP) __attribute__((deprecated));
 # 1515 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HTMLRendering.framework/Headers/HTMLRendering.h"
 extern OSStatus
 InvokeHRURLToFSRefUPP(
@@ -95217,7 +98317,7 @@ InvokeHRURLToFSRefUPP(
   FSRef * fref,
   URLSourceType urlSourceType,
   void * refCon,
-  HRURLToFSRefUPP userUPP) ;
+  HRURLToFSRefUPP userUPP) __attribute__((deprecated));
 # 54 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Versions/A/Headers/Carbon.h" 2
 
 
@@ -95872,7 +98972,7 @@ enum {
 };
 # 174 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
-URLGetURLAccessVersion(UInt32 * returnVers) ;
+URLGetURLAccessVersion(UInt32 * returnVers) __attribute__((deprecated));
 # 194 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 typedef OSStatus ( * URLNotifyProcPtr)(void *userContext, URLEvent event, URLCallbackInfo *callbackInfo);
 typedef OSStatus ( * URLSystemEventProcPtr)(void *userContext, EventRecord *event);
@@ -95880,29 +98980,29 @@ typedef URLNotifyProcPtr URLNotifyUPP;
 typedef URLSystemEventProcPtr URLSystemEventUPP;
 # 206 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern URLNotifyUPP
-NewURLNotifyUPP(URLNotifyProcPtr userRoutine) ;
+NewURLNotifyUPP(URLNotifyProcPtr userRoutine) __attribute__((deprecated));
 # 217 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern URLSystemEventUPP
-NewURLSystemEventUPP(URLSystemEventProcPtr userRoutine) ;
+NewURLSystemEventUPP(URLSystemEventProcPtr userRoutine) __attribute__((deprecated));
 # 228 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern void
-DisposeURLNotifyUPP(URLNotifyUPP userUPP) ;
+DisposeURLNotifyUPP(URLNotifyUPP userUPP) __attribute__((deprecated));
 # 239 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern void
-DisposeURLSystemEventUPP(URLSystemEventUPP userUPP) ;
+DisposeURLSystemEventUPP(URLSystemEventUPP userUPP) __attribute__((deprecated));
 # 250 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 InvokeURLNotifyUPP(
   void * userContext,
   URLEvent event,
   URLCallbackInfo * callbackInfo,
-  URLNotifyUPP userUPP) ;
+  URLNotifyUPP userUPP) __attribute__((deprecated));
 # 265 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 InvokeURLSystemEventUPP(
   void * userContext,
   EventRecord * event,
-  URLSystemEventUPP userUPP) ;
+  URLSystemEventUPP userUPP) __attribute__((deprecated));
 # 279 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLSimpleDownload(
@@ -95911,7 +99011,7 @@ URLSimpleDownload(
   Handle destinationHandle,
   URLOpenFlags openFlags,
   URLSystemEventUPP eventProc,
-  void * userContext) ;
+  void * userContext) __attribute__((deprecated));
 # 297 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLDownload(
@@ -95920,7 +99020,7 @@ URLDownload(
   Handle destinationHandle,
   URLOpenFlags openFlags,
   URLSystemEventUPP eventProc,
-  void * userContext) ;
+  void * userContext) __attribute__((deprecated));
 # 315 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLSimpleUpload(
@@ -95928,7 +99028,7 @@ URLSimpleUpload(
   const FSSpec * source,
   URLOpenFlags openFlags,
   URLSystemEventUPP eventProc,
-  void * userContext) ;
+  void * userContext) __attribute__((deprecated));
 # 332 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLUpload(
@@ -95936,15 +99036,15 @@ URLUpload(
   const FSSpec * source,
   URLOpenFlags openFlags,
   URLSystemEventUPP eventProc,
-  void * userContext) ;
+  void * userContext) __attribute__((deprecated));
 # 349 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLNewReference(
   const char * url,
-  URLReference * urlRef) ;
+  URLReference * urlRef) __attribute__((deprecated));
 # 363 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
-URLDisposeReference(URLReference urlRef) ;
+URLDisposeReference(URLReference urlRef) __attribute__((deprecated));
 # 375 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLOpen(
@@ -95953,65 +99053,65 @@ URLOpen(
   URLOpenFlags openFlags,
   URLNotifyUPP notifyProc,
   URLEventMask eventRegister,
-  void * userContext) ;
+  void * userContext) __attribute__((deprecated));
 # 393 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
-URLAbort(URLReference urlRef) ;
+URLAbort(URLReference urlRef) __attribute__((deprecated));
 # 405 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLGetDataAvailable(
   URLReference urlRef,
-  Size * dataSize) ;
+  Size * dataSize) __attribute__((deprecated));
 # 419 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLGetBuffer(
   URLReference urlRef,
   void ** buffer,
-  Size * bufferSize) ;
+  Size * bufferSize) __attribute__((deprecated));
 # 434 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLReleaseBuffer(
   URLReference urlRef,
-  void * buffer) ;
+  void * buffer) __attribute__((deprecated));
 # 448 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLGetProperty(
   URLReference urlRef,
   const char * property,
   void * propertyBuffer,
-  Size bufferSize) ;
+  Size bufferSize) __attribute__((deprecated));
 # 464 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLGetPropertySize(
   URLReference urlRef,
   const char * property,
-  Size * propertySize) ;
+  Size * propertySize) __attribute__((deprecated));
 # 479 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLSetProperty(
   URLReference urlRef,
   const char * property,
   void * propertyBuffer,
-  Size bufferSize) ;
+  Size bufferSize) __attribute__((deprecated));
 # 495 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLGetCurrentState(
   URLReference urlRef,
-  URLState * state) ;
+  URLState * state) __attribute__((deprecated));
 # 509 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLGetError(
   URLReference urlRef,
-  OSStatus * urlError) ;
+  OSStatus * urlError) __attribute__((deprecated));
 # 523 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
-URLIdle(void) ;
+URLIdle(void) __attribute__((deprecated));
 # 535 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/SecurityHI.framework/Headers/URLAccess.h"
 extern OSStatus
 URLGetFileInfo(
   StringPtr fName,
   OSType * fType,
-  OSType * fCreator) ;
+  OSType * fCreator) __attribute__((deprecated));
 
 
 
@@ -96378,7 +99478,7 @@ AHSearch(
   CFStringRef query) ;
 # 104 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Help.framework/Headers/AppleHelp.h"
 extern OSStatus
-AHGotoMainTOC(AHTOCType toctype) ;
+AHGotoMainTOC(AHTOCType toctype) __attribute__((deprecated));
 # 144 "/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/Help.framework/Headers/AppleHelp.h"
 extern OSStatus
 AHGotoPage(
