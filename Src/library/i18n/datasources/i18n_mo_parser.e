@@ -54,9 +54,9 @@ feature -- Status setting
 				-- Read magic number.
 				t_magic_number := get_integer
 				if t_magic_number.is_equal (<<0xde,0x12,0x04,0x95>>) then
-					is_big_endian := True
-				elseif t_magic_number.is_equal (<<0x95,0x04,0x12,0xde>>) then
 					is_little_endian := True
+				elseif t_magic_number.is_equal (<<0x95,0x04,0x12,0xde>>) then
+					is_big_endian := True
 				end
 				if is_valid then
 					is_ready := true
