@@ -1763,18 +1763,18 @@ feature -- Carbon constants
 		"kWindowActivationScopeAll"
 	end
 
-	frozen kNextWindowGrouptrue: INTEGER is
+	frozen kNextWindowGroup: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
-		"kNextWindowGrouptrue"
+		"kNextWindowGroup"
 	end
 
-	frozen kPreviousWindowGroupfalse: INTEGER is
+	frozen kPreviousWindowGroup: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
-		"kPreviousWindowGroupfalse"
+		"kPreviousWindowGroup"
 	end
 
 	frozen kWindowGroupContentsReturnWindows: INTEGER is
@@ -2092,11 +2092,11 @@ feature -- Carbon constants
 		"kHIWindowScaleModeFrameworkScaled"
 	end
 
-	frozen kHIWinodwScaleModeApplicationScaled: INTEGER is
+	frozen kHIWindowScaleModeApplicationScaled: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
-		"kHIWinodwScaleModeApplicationScaled"
+		"kHIWindowScaleModeApplicationScaled"
 	end
 
 	frozen kWindowPropertyPersistent: INTEGER is
