@@ -1246,6 +1246,7 @@ feature {NONE} -- Scroll bars management
 				draw_cursor (buffered_line, current_cursor_position, (text_displayed.cursor.y_in_lines - first_line_displayed) * line_height, cursor_width)
 				let_blink := True
  			end
+ 			margin.refresh
  		end
 
 	on_horizontal_scroll (scroll_pos: INTEGER) is

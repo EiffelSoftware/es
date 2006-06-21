@@ -301,7 +301,7 @@ feature -- Query
 	has_margin: BOOLEAN is
 			-- Should margin be displayed?
 		do
-			Result := (line_numbers_enabled and line_numbers_visible) or folding_points_visible
+			Result := (line_numbers_enabled and line_numbers_visible)
 		end
 
 	is_empty: BOOLEAN is
@@ -321,13 +321,6 @@ feature -- Query
 		do
 			Result := editor_preferences.show_line_numbers
 		end
-
-	folding_points_visible: BOOLEAN is
-			-- Are the folding points currently visible
-		do
-			Result := editor_preferences.show_folding_points
-		end
-
 
 	view_invisible_symbols: BOOLEAN
 			-- Are the spaces, the tabulations and the end_of_line characters visible?			

@@ -1,8 +1,8 @@
 indexing
 	description: "AVL-like tree with linked leaves for storing FOLDING_AREAs"
 	author: "bherlig"
-	date: "$06/18/2006$"
-	revision: "$0.8$"
+	date: "$06/21/2006$"
+	revision: "$0.9$"
 
 class
 	EB_FOLDING_AREA_TREE
@@ -63,6 +63,15 @@ feature -- Access
 				Result := node
 			end
 		end
+
+	first_item_after_line(a_line: INTEGER): like root is
+			-- returns the first folding-area after "a_line"
+		require
+			only_on_existing_tree: root /= Void
+		do
+			result := recursive_first_item_after_line (a_line, root)
+		end
+
 
 	has(key: like root): BOOLEAN is
 			-- does the tree have an item with 'key'?
@@ -415,6 +424,30 @@ feature {NONE} -- Implementation
 				node.set_balance (node.balance - delta)
 			else
 				node.set_balance (node.balance + delta)
+			end
+		end
+
+	recursive_first_item_after_line(a_line: INTEGER; a_node:like root): like root is
+			-- recursive call for "first_item_after_line"
+		local
+			node_line: INTEGER
+		do
+			node_line := a_node.start_line
+			if node_line = a_line then
+				result := a_node
+			elseif node_line > a_line then
+				if a_node.left /= Void then
+					result := recursive_first_item_after_line (a_line, a_node.left)
+				else
+					result := a_node
+				end
+			else
+				-- node_line < a_line
+				if a_node.right /= Void then
+					result := recursive_first_item_after_line (a_line, a_node.right)
+				else
+					result := a_node.next
+				end
 			end
 		end
 

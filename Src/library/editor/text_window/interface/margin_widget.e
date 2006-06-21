@@ -311,8 +311,6 @@ feature {TEXT_PANEL} -- Display functions
  			y_offset,
  			l_line_height: INTEGER
  			l_text_displayed: like text_displayed_type
--- 			next_fp_line: INTEGER
-
 		do
 			updating_line := True
 			l_text_displayed := text_panel.text_displayed

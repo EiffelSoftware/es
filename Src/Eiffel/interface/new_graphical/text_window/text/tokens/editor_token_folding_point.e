@@ -1,8 +1,8 @@
 indexing
 	description: "items inside the folding-area part of the clickable margin, used for toggling the folding of features"
 	author: "bherlig"
-	date: "$06/18/2006$"
-	revision: "$0.5$"
+	date: "$06/21/2006$"
+	revision: "$0.6$"
 
 class
 	EDITOR_TOKEN_FOLDING_POINT
@@ -30,8 +30,8 @@ create
 
 feature -- Initialization
 
-	make_with_folding_area (a_area: like folding_area) is
-			-- creates a new folding-point token with associated folding-area
+	make_with_folding_area (a_area: like folding_area; a_line: INTEGER) is
+			-- creates a new folding-point token on line 'a_line' with associated folding-area
 		require
 			area_exists: a_area /= Void
 		do
@@ -39,7 +39,8 @@ feature -- Initialization
 			length := 0
 			width := 8
 			folding_area := a_area
-			pixmap.pointer_button_press_actions.extend (agent on_mouse_button_down)
+			fp_line := a_line
+--			pixmap.pointer_button_press_actions.extend (agent on_mouse_button_down)
 		ensure
 			folding_area = a_area
 		end
@@ -55,24 +56,18 @@ feature -- folding
 	on_mouse_button_down (abs_x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
 			-- Process single click on mouse buttons.			
 		do
---			if button = 1 then
+			if button = 1 then
 				if folding_area.hidden then
 					folding_area.show
 				else
 					folding_area.hide
 				end
 
-				io.put_string("folding-point on line " + folding_area.start_line.out + " was clicked!%N")
---			end
+				debug("code-folding:")
+					io.put_string("folding-point on line " + folding_area.start_line.out + " was clicked!%N")
+				end
+			end
 		end
-
-	on_click is
-			-- the fp was clicked
-		do
-			io.put_string("folding-point on line " + folding_area.start_line.out + " was clicked!%N")
-		end
-
-
 
 feature -- Width & height
 
@@ -129,25 +124,37 @@ feature -- Miscellaneous
 		end
 
 	pixmap: EV_PIXMAP is
-			-- Graphical representation of the breakable mark.
-			-- 10 different representations whether the breakpoint
-			-- is enabled, disabled or not set , whether it has a condition or not,
-			-- and whether the application is stopped at this point or not.
+			-- Graphical representation of the folding-point mark.
+			-- 4 different representations whether the associated folding-area is
+			-- hidden or shown, and if the the mark is on the beginning or end of the folding-area
 		local
 			pixmaps: ARRAY [EV_PIXMAP]
 			index: INTEGER 	-- index in the pixmap array.
+			sensitive: BOOLEAN
 		do
 			pixmaps := icons.icon_group_fp
 
-			if folding_area.hidden then
-				index := 1
+			if fp_line = folding_area.start_line then
+				-- pixmap at the beginning of a folding-area
+				if folding_area.hidden then
+					index := 1
+				else
+					index := 2
+				end
+				-- make token sensible to clicks
+				sensitive := true
+			elseif fp_line = folding_area.end_line then
+				-- pixmap at the end of a folding-area
+				index := 4
 			else
-				index := 2
+				-- pixmap in the middle of a folding-area
+				index := 3
 			end
-
 			Result := pixmaps.item (index)
+			if sensitive then
+				Result.pointer_button_press_actions.extend (agent on_mouse_button_down)
+			end
 		end
-
 
 	editor_preferences: EB_EDITOR_DATA is
 			--
@@ -164,6 +171,9 @@ feature -- Visitor
 		end
 
 feature {MARGIN_WIDGET} -- Implementation
+
+	fp_line: INTEGER
+		-- the line the current foldingpoint is on
 
 	icons: EB_SHARED_PIXMAPS_8 is
 			-- Breakpoint icon resources

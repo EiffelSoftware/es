@@ -4,8 +4,8 @@ indexing
 				Objects of this class are nodes of an AVL-tree used by
 				]"
 	author: "bherlig"
-	date: "$06/18/06$"
-	revision: "$0.4$"
+	date: "$06/21/06$"
+	revision: "$0.5$"
 
 class
 	EB_FOLDING_AREA
@@ -24,25 +24,25 @@ feature -- Initialization
 			key_exists: k /= Void
 		do
 			item := k
+			hidden := false
 			start_line := k.start_location.line
 			end_line := k.end_location.line
-			hidden := false
 		ensure
 			item_set: item = k
 		end
 
-	make_with_hidden_status(k: FEATURE_AS; h: BOOLEAN) is
-			-- initialize current, set item start- & endlines, hidden := h
-		require
-			key_exists: k /= Void
-		do
-			item := k
-			start_line := k.start_location.line
-			end_line := k.end_location.line
-			hidden := true
-		ensure
-			item_set: item = k
-		end
+--	make_with_hidden_status(k: FEATURE_AS; h: BOOLEAN) is
+--			-- initialize current, set item start- & endlines, hidden := h
+--		require
+--			key_exists: k /= Void
+--		do
+--			item := k
+--			start_line := k.start_location.line
+--			end_line := k.end_location.line
+--			hidden := true
+--		ensure
+--			item_set: item = k
+--		end
 
 feature -- hidden status change
 
@@ -70,6 +70,7 @@ feature -- hidden - access
 		-- is 'current' hidden?
 
 feature -- Access
+
 	item: FEATURE_AS
 			-- Data associated with `key'.
 
@@ -81,7 +82,6 @@ feature -- Access
 
 	balance: INTEGER
 			-- Height of right subtree minus height of left subtree.
-
 
 	next, previous: like current
 		-- pointers to other elements in the doubly-linked-leaf - list
@@ -106,7 +106,7 @@ feature -- Comparison
 			result := (current.start_line < other.start_line)
 		end
 
-feature {EB_SMART_EDITOR} -- Element change
+feature {EB_SMART_EDITOR, EB_CLICKABLE_MARGIN} -- Element change
 
 	set_start_line(a_line: like start_line) is
 			-- sets 'start_line' to 'a_line'

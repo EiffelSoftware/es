@@ -32,8 +32,8 @@ inherit
 			on_text_saved,
 			on_text_back_to_its_last_saved_state,
 			on_key_down,
-			make
---			update_lines
+			make,
+			on_vertical_scroll
 		end
 
 	EB_TAB_CODE_COMPLETABLE
@@ -270,17 +270,24 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 					until the_features.after
 					loop
 						-- note: don't advance the_features - counter on deletion of a_area
-
 						current_feature := the_features.item
-
 
 						if (a_area = Void) then
 							-- the tree was empty, let's build it from scratch
-							create a_area.make (current_feature)
-							folding_areas.extend (a_area)
+
+							if current_feature.body.content /= Void then
+								-- we have a feature with a feature-body, i.e. do-end keywords,
+								--> make this a folding area
+								create a_area.make (current_feature)
+								folding_areas.extend (a_area)
+
+								-- inc
+								a_area := a_area.next
+							else
+								-- the current feature is an attribut -> don't generate a folding-area', do nothing
+							end
 
 							-- inc
-							a_area := a_area.next
 							the_features.forth
 						elseif (current_feature.feature_name.out.is_equal(a_area.item.feature_name.out)) then
 							-- the features are the same (i.e. have the same name)
@@ -1107,6 +1114,16 @@ feature -- Text Loading
 			end
 			load_without_save := False
 		end
+
+feature {NONE} -- Scroll bars management
+
+	on_vertical_scroll (vscroll_pos: INTEGER) is
+ 			-- Process vertical scroll event. `vertical_scrollbar.value' has changed.
+		do
+			precursor (vscroll_pos)
+			margin.refresh
+		end
+
 
 feature -- Memory management
 

@@ -393,12 +393,26 @@ feature -- Pixmap Icons from constant
 			result_not_void: Result /= Void
 		end
 
+	icon_fp_basic_straight: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (icon_fp_basic_straight_value)
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	icon_fp_basic_end: EV_PIXMAP is
+		once
+			Result := pixmap_from_constant (icon_fp_basic_end_value)
+		ensure
+			result_not_void: Result /= Void
+		end
+
 feature -- groups
 
 	icon_group_fp: ARRAY [EV_PIXMAP] is
 			-- Regular (no modifiers) breakpoint icon group.
 		once
-			Result := <<icon_fp_basic_plus, icon_fp_basic_minus>>
+			Result := <<icon_fp_basic_plus, icon_fp_basic_minus, icon_fp_basic_straight, icon_fp_basic_end>>
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -480,6 +494,8 @@ feature {NONE} -- {EB_SHARED_PIXMAP_FACTORY} Implementation
 			Result.add_pixmap (1, 4, icon_remember_window_size_value)
 			Result.add_pixmap (2, 4, icon_fp_basic_plus_value)
 			Result.add_pixmap (3, 4, icon_fp_basic_minus_value)
+			Result.add_pixmap (4, 4, icon_fp_basic_straight_value)
+			Result.add_pixmap (5, 4, icon_fp_basic_end_value)
 		end
 
 feature {NONE} -- Constants
@@ -534,7 +550,9 @@ feature {NONE} -- Constants
 	icon_clipboard_value,
 	icon_remember_window_size_value,
 	icon_fp_basic_plus_value,
-	icon_fp_basic_minus_value
+	icon_fp_basic_minus_value,
+	icon_fp_basic_straight_value,
+	icon_fp_basic_end_value
 		: INTEGER is unique;
 		-- Constants used for pixmap lookup.
 

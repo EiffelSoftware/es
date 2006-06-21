@@ -64,7 +64,7 @@ feature -- Access
 
 			smart_text_panel ?= text_panel
 			if smart_text_panel /= Void and then folding_points_visible then
-				-- folding-point pixmaps have width 8px
+				-- folding-points have a pixmap of 8px width
 				Result := Result + separator_width + 8 + separator_width
 			end
 		end
@@ -89,11 +89,12 @@ feature -- Query
 feature {NONE} -- Implementation
 
 	next_folding_area: EB_FOLDING_AREA
-		-- the next area to draw
-	draw_next_folding_point: BOOLEAN
-		-- indicates if the next line to process contains a folding-point
+			-- the next area to display
 
-		update_lines (first, last: INTEGER; buffered: BOOLEAN) is
+	draw_next_folding_point: BOOLEAN
+			-- indicates if the next line to process contains a folding-point
+
+	update_lines (first, last: INTEGER; buffered: BOOLEAN) is
 			-- Update the lines from `first' to `last'.  If `buffered' then draw to `buffered_line'
  			-- before drawing to screen, otherwise draw straight to screen.
 		local
@@ -101,7 +102,7 @@ feature {NONE} -- Implementation
  			y_offset,
  			l_line_height: INTEGER
  			l_text_displayed: like text_displayed_type
- 			a_fp_line: INTEGER
+ 			move_x_lines: INTEGER
 		do
 			updating_line := True
 			l_text_displayed := text_panel.text_displayed
@@ -115,19 +116,13 @@ feature {NONE} -- Implementation
 				-- we are inside the main code-editor and have to show folding-areas
 
 					-- search for the next folding-area after 'first'
-					from
-						next_folding_area := smart_text_panel.folding_areas.first
-					until
-						next_folding_area = Void or else next_folding_area.start_line > first
-					loop
-						next_folding_area := next_folding_area.next
-					end
+					next_folding_area := smart_text_panel.folding_areas.first_item_after_line (first)
 
-					debug("code-folding:")
+--					debug("code-folding:")
 						if next_folding_area /= Void then
 							io.put_string("first:%T" + first.out + "%Nlast:%T" + last.out + "%N%Tnext fp is on line " + next_folding_area.start_line.out + "%N%N")
 						end
-					end
+--					end
 				end
 			end
 
@@ -139,20 +134,38 @@ feature {NONE} -- Implementation
  			until
  				curr_line > last or else l_text_displayed.after
  			loop
+ 				move_x_lines := 1
  				if buffered then
  					-- We do not currently buffer for the margin
 				else
 					-- did we arrive at the next fp?
 					if folding_points_visible then
-						if next_folding_area /= Void and then curr_line = next_folding_area.start_line then
-							draw_next_folding_point := true
+						if next_folding_area /= Void then -- and then curr_line = next_folding_area.start_line then
+
+--io.putstring("feature on line " + next_folding_area.start_line.out + "has height: " + next_folding_area.height.out + "%N")
+
+							if (next_folding_area.hidden or (not next_folding_area.hidden and next_folding_area.height > 0)) and then (curr_line >= next_folding_area.start_line and curr_line <= next_folding_area.end_line) then
+								draw_next_folding_point := true
+							else
+								draw_next_folding_point := false
+							end
+
+							-- if hidden advance x lines where x = height of folding-area
+--							if next_folding_area.hidden and then curr_line = next_folding_area.start_line then
+--								move_x_lines := next_folding_area.height + 1
+--							end
 						end
 					end
 					draw_line_to_screen (0, y_offset, l_text_displayed.line (curr_line), curr_line)
 				end
- 				curr_line := curr_line + 1
+
+
+-- 				curr_line := curr_line + 1
+				curr_line := curr_line + move_x_lines
+
 				y_offset := y_offset + l_line_height
  				l_text_displayed.forth
+
  			end
  			updating_line := False
 		end
@@ -225,10 +238,14 @@ feature {NONE} -- Implementation
 
 			-- folding-point
 			if folding_points_visible and then draw_next_folding_point then
-				create fp_token.make_with_folding_area (next_folding_area)
+				create fp_token.make_with_folding_area (next_folding_area, xline)
 				fp_token.display_with_offset (fp_offset + separator_width, y + ((text_panel.line_height - 8) / 2).ceiling, margin_area, text_panel)
-				next_folding_area := next_folding_area.next
-				draw_next_folding_point := false
+				if xline >= next_folding_area.end_line or next_folding_area.hidden then
+					-- advance to the next folding-area
+					next_folding_area := next_folding_area.next
+					draw_next_folding_point := false
+				end
+
 			elseif (fp_token /= Void) then
 				fp_token.hide
 			end
@@ -249,6 +266,7 @@ feature {NONE} -- Events
 			x_offset: INTEGER
 			ln_token: EDITOR_TOKEN_LINE_NUMBER
 			fp_clicked: EB_FOLDING_AREA
+			num_lines: INTEGER
 		do
 			if button = 1 then
 				l_number := (y_pos - margin_viewport.y_offset + (first_line_displayed * text_panel.line_height)) // text_panel.line_height
@@ -275,37 +293,61 @@ feature {NONE} -- Events
 						end
 					else
 						-- click onto folding_area
-						debug("code-folding:")
-							io.put_string ("click into the folding-point-area%N")
-						end
-						smart_text_panel ?= text_panel
-						if smart_text_panel /= Void then
-							fp_clicked := smart_text_panel.folding_areas.item_with_line (l_number)
-							if fp_clicked /= Void then
-								if fp_clicked.hidden then
 
 -- NOTE:
 -- To enable actions when clicking on a folding-point, uncomment the next few lines
--- | bherlig, 06/18/2006
-
+-- | bherlig, 06/21/2006
+--						debug("code-folding:")
+--							io.put_string ("click into the folding-point-area%N")
+--						end
+--						smart_text_panel ?= text_panel
+--						if smart_text_panel /= Void then
+--							fp_clicked := smart_text_panel.folding_areas.item_with_line (l_number)
+--							if fp_clicked /= Void then
+--								num_lines := fp_clicked.height
+--								if fp_clicked.hidden then
 --									fp_clicked.show
 --									smart_text_panel.text_displayed.show_lines (fp_clicked.start_line)
+--									sync_folding_areas(fp_clicked, num_lines, true)
 --								else
 --									fp_clicked.hide
 --									smart_text_panel.text_displayed.hide_lines (fp_clicked.start_line + 1, fp_clicked.height)
-								end
-								current.refresh_now
-							end
-						end
-
-
+--									sync_folding_areas(fp_clicked, num_lines, false)
+--								end
+--							end
+--						end
+--
+-- END commented area
 					end
 					text_panel.on_mouse_button_down (abs_x_pos, y_pos, 1, 0, 0, 0, a_screen_x, a_screen_y)
+					current.refresh
 				end
 			elseif button = 3 then
 				if not text_panel.text_displayed.is_empty then
 					text_panel.on_click_in_text (abs_x_pos - width, y_pos, 3, a_screen_x, a_screen_y)
 				end
+			end
+		end
+
+feature -- Folding
+
+	sync_folding_areas(a_area: like next_folding_area; nb_lines: INTEGER; addition: BOOLEAN) is
+			-- syncs all folding areas to proper begin/end values
+			-- NOTE: ugly hack... sorry 'bout that
+		local
+			f_area: like a_area
+		do
+			from f_area := a_area.next
+			until f_area = Void
+			loop
+				if addition then
+					f_area.set_start_line (f_area.start_line + nb_lines)
+                  	f_area.set_end_line (f_area.end_line + nb_lines)
+				else
+					f_area.set_start_line (f_area.start_line - nb_lines)
+                  	f_area.set_end_line (f_area.end_line - nb_lines)
+				end
+				f_area := f_area.next
 			end
 		end
 

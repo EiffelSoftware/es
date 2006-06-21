@@ -562,6 +562,14 @@ feature {EB_EDITOR_TOOL} -- Update
 			end
 		end
 
+feature -- Query
+
+	folding_points_visible: BOOLEAN is
+			-- Are the folding points currently visible
+		do
+			Result := editor_preferences.show_folding_points
+		end
+		
 feature -- Access
 
 	text_displayed: CLICKABLE_TEXT
