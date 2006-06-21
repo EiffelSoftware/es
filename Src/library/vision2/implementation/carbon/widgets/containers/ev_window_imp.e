@@ -66,6 +66,7 @@ inherit
 	MACWINDOWS_FUNCTIONS_EXTERNAL
 	PROCESSES_FUNCTIONS_EXTERNAL
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+	CONTROLS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -75,11 +76,12 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create the window.
 			local
-					the_window:OPAQUE_WINDOW_PTR_STRUCT
+					--the_window:OPAQUE_WINDOW_PTR_STRUCT
 					window_attributes: INTEGER
 					rect: RECT_STRUCT
 					res: INTEGER
 					ptr: POINTER
+					root_control_ptr : POINTER
 			do
 					base_make (an_interface)
 					create rect.make_new_shared
@@ -90,12 +92,13 @@ feature {NONE} -- Initialization
 					rect.set_top (12)
 					window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute)
 					res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
-					create the_window.make_shared(ptr)
+					res := create_root_control_external( ptr, root_control_ptr )
+					-- create the_window.make_shared(ptr) We don't need this, do we ?
 
 				--	show_window_external(the_window.item)
 
 					set_c_object (ptr)
-		end
+			end
 
 	initialize is
 			-- Create the vertical box `vbox' and horizontal box `hbox'
@@ -268,7 +271,25 @@ feature -- Element change
 
 	replace (v: like item) is
 			-- Replace `item' with `v'.
+		local
+			w: EV_WIDGET_IMP
+			i: EV_WIDGET
 		do
+			i := item
+			if i /= Void then
+				w ?= i.implementation
+				on_removed_item (w)
+				check
+					item_has_implementation: w /= Void
+				end
+				dispose_control_external( w.c_object )
+			end
+			if v /= Void then
+				w ?= v.implementation
+
+				on_new_item (w)
+			end
+			item := v
 		end
 
 	set_maximum_width (max_width: INTEGER) is

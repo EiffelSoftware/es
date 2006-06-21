@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision button. GTK implementation."
+		"Eiffel Vision button. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "press, push, label, pixmap"

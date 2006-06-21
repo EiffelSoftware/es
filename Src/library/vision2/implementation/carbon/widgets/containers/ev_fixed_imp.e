@@ -34,7 +34,12 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create the fixed container.
+		local
+			ptr : POINTER
 		do
+			base_make( an_interface )
+
+			--set_c_object (a_c_object: POINTER)
 		end
 
 	initialize is

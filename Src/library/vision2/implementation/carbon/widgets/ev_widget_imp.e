@@ -154,7 +154,7 @@ feature -- Status setting
 	is_show_requested: BOOLEAN is
 			-- Will `Current' be displayed when its parent is?
 			-- See also `is_displayed'
-			
+
 		do
 			Result := true
 		end
@@ -178,8 +178,6 @@ feature -- Element change
 		end
 
 feature -- Measurement
-
-carbon_item:POINTER
 
 	x_position: INTEGER is
 			-- Horizontal offset relative to parent `x_position'.
