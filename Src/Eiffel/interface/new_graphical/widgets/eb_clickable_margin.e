@@ -118,11 +118,11 @@ feature {NONE} -- Implementation
 					-- search for the next folding-area after 'first'
 					next_folding_area := smart_text_panel.folding_areas.first_item_after_line (first)
 
---					debug("code-folding:")
+					debug("code-folding:")
 						if next_folding_area /= Void then
 							io.put_string("first:%T" + first.out + "%Nlast:%T" + last.out + "%N%Tnext fp is on line " + next_folding_area.start_line.out + "%N%N")
 						end
---					end
+					end
 				end
 			end
 
