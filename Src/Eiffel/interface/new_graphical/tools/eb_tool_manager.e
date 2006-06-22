@@ -182,6 +182,11 @@ feature {NONE} -- Initialization
 			build_refactoring_toolbar
 			toolbars_area.extend (refactoring_toolbar)
 			toolbars_area.disable_item_expand (refactoring_toolbar)
+			---added by EMU-PROJECT---
+			build_emu_toolbar
+			toolbars_area.extend(emu_toolbar)
+			toolbars_area.disable_item_expand (emu_toolbar)
+			--------------------------
 		end
 
 	build_toolbars_area is
@@ -202,9 +207,17 @@ feature {NONE} -- Initialization
 			toolbars_area.extend (project_toolbar)
 			toolbars_area.disable_item_expand (project_toolbar)
 
+			----EMU-PROJECT add new toolbar ------
+			build_emu_toolbar
+			toolbars_area.extend (emu_toolbar)
+			toolbars_area.disable_item_expand (emu_toolbar)
+			--------------------------------------
+
 			build_refactoring_toolbar
 			toolbars_area.extend (refactoring_toolbar)
 			toolbars_area.disable_item_expand (refactoring_toolbar)
+
+
 
 			view_menu.put_front (build_toolbar_menu)
 		end
@@ -225,6 +238,12 @@ feature {NONE} -- Initialization
 		end
 
 	build_refactoring_toolbar is
+			-- Build toolbar for the refactorings.
+		deferred
+		end
+
+	----added by EMU-PROJECT----
+	build_emu_toolbar is
 			-- Build toolbar for the refactorings.
 		deferred
 		end
@@ -463,6 +482,11 @@ feature {NONE} -- Vision2 architechture
 	project_customizable_toolbar: EB_TOOLBAR
 			-- Customizable part of `project_toolbar'.
 
+	----added by EMU-PROJECT-----
+	emu_toolbar_not_customizable: EB_TOOLBAR
+			-- Emu toolbar not customizable.
+	-----------------------------
+
 	refactoring_customizable_toolbar: EB_TOOLBAR
 			-- Customizable part of `refactoring_toolbar'.
 
@@ -477,6 +501,12 @@ feature {NONE} -- Vision2 architechture
 	refactoring_toolbar: EV_VERTICAL_BOX
 			-- Refactoring toolbar
 			-- The vertical box contains the separator and then the toolbar.
+
+	-----added by EMU-PROJECT ----
+	emu_toolbar: EV_VERTICAL_BOX
+			-- Emu toolbar
+			-- The vertical box contains the separator and then the toolbar.
+	------------------------------
 
 feature {NONE} -- Menus.
 
@@ -682,6 +712,11 @@ feature {NONE} -- Implementation / Commands
 	show_refactoring_toolbar_command: EB_SHOW_TOOLBAR_COMMAND
 			-- Command to show/hide the refactoring toolbar.
 
+	----added by EMU-PROJECT----
+	show_emu_toolbar_command: EB_SHOW_TOOLBAR_COMMAND
+			-- Command to show/hide the refactoring toolbar.
+	----------------------------
+
 	show_address_toolbar_command: EB_SHOW_TOOLBAR_COMMAND
 			-- Command to show/hide the address toolbar.
 
@@ -714,6 +749,7 @@ feature {NONE} -- Implementation / Commands
 				preferences.development_window_data.show_all_text_in_refactoring_toolbar_preference.set_value (refactoring_customizable_toolbar.is_text_displayed)
 			end
 		end
+
 
 
 	save_toolbar_state is
