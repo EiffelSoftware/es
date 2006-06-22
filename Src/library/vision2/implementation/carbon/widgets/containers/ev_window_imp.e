@@ -96,7 +96,7 @@ feature {NONE} -- Initialization
 
 
 					set_c_object (ptr)
-					replace(void)
+	
 			end
 
 	initialize is
