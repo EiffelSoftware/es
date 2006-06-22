@@ -44,18 +44,33 @@ feature -- Status setting
 			not_already_open: is_closed
 		local
 			t_magic_number : ARRAY[NATURAL_8]
+			l_magic_number: INTEGER
 		do
 			mo_file.open_read
-			is_big_endian := False
-			is_little_endian := False
+			is_big_endian_file := False
+			is_little_endian_file := False
 			if mo_file.is_open_read then
-				is_open := true
+				--is_open := true
 				-- Read magic number.
+				mo_file.read_integer
+				l_magic_number := mo_file.last_integer
+				mo_file.go(0)
+				-- Read magic number byte-by-byte.
 				t_magic_number := get_integer
 				if t_magic_number.is_equal (<<0xde,0x12,0x04,0x95>>) then
-					is_little_endian := True
+					is_little_endian_file := True
+					if l_magic_number = 0xde120495 then
+						is_big_endian_machine := True
+					elseif l_magic_number = 0x950412de then
+						is_little_endian_machine := True
+					end
 				elseif t_magic_number.is_equal (<<0x95,0x04,0x12,0xde>>) then
-					is_big_endian := True
+					is_big_endian_file := True
+					if l_magic_number = 0xde120495 then
+						is_little_endian_machine := True
+					elseif l_magic_number = 0x950412de then
+						is_big_endian_machine := True
+					end
 				end
 				if is_valid then
 					is_ready := true
@@ -67,9 +82,6 @@ feature -- Status setting
 
 	open is
 			-- Open datasource.
-		require else
-			already_open: is_open
-				-- Can't reopen the datasource, should be loaded only once.
 		do
 			-- Read mo file version.
 			version := read_integer
@@ -84,6 +96,7 @@ feature -- Status setting
 			-- Read offset of hashing table.
 			hash_table_offset := read_integer
 			extract_plural_informations
+			is_open := True
 		end
 
 	close_file is
@@ -164,7 +177,7 @@ feature --Errors
 	is_valid: BOOLEAN is
 			-- is the file valid?
 		do
-			Result := is_big_endian xor is_little_endian
+			Result := is_big_endian_file xor is_little_endian_file
 		end
 
 	file_exists: BOOLEAN is
@@ -176,8 +189,13 @@ feature --Errors
 		end
 
 feature {NONE} -- Implementation (parameters)
-	is_big_endian,
-	is_little_endian: BOOLEAN
+	is_big_endian_file,
+	is_little_endian_file: BOOLEAN
+		-- File endianness
+
+	is_big_endian_machine,
+	is_little_endian_machine: BOOLEAN
+		-- Machine endianness
 
 	version: INTEGER
 		-- Version of the mo file
@@ -274,7 +292,7 @@ feature {NONE} -- Implementation (helpers)
 			b1 := t_array.item (2).as_natural_32
 			b2 := t_array.item (3).as_natural_32
 			b3 := t_array.item (4).as_natural_32
-			if is_big_endian then
+			if is_big_endian_file then
 				Result :=  ((b0 |<< 24) | (b1 |<< 16) | (b2 |<< 8) | b3).as_integer_32
 			else
 				Result := (b0 | (b1 |<< 8) | (b2 |<< 16) | (b3 |<< 24)).as_integer_32
@@ -348,7 +366,7 @@ feature {NONE} -- Implementation (helpers)
 		end
 
 invariant
-	big_xor_little_endian: (mo_file.exists and then is_valid) implies (is_little_endian xor is_big_endian)
+	big_xor_little_endian: (mo_file.exists and then is_valid) implies (is_little_endian_file xor is_big_endian_file)
 	valid_mo_file: mo_file /= Void and then mo_file.exists
 	is_open implies mo_file.is_open_read
 	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)

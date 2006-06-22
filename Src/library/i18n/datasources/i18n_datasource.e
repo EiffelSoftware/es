@@ -35,6 +35,8 @@ feature -- Status setting
 
 	open is
 			-- Open and prepare the datasource.
+		require
+			is_ready
 		deferred
 		ensure
 			is_open and then is_ready
