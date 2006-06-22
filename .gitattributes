@@ -1545,6 +1545,7 @@ Delivery/xmldoc/tools/wizards/com/images/wizard-12.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-13.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-8.gif -text
 EiffelMultiUser/emu_group.png -text
+EiffelMultiUser/server/Shortcut[!!-~]to[!!-~]emu_server.exe.lnk -text svneol=native#application/octet-stream
 Src/C/CONFIGS/linux-sparc -text
 Src/C/CONFIGS/macosx-x86 -text
 Src/C/ipc/daemon/estudio.ico -text
