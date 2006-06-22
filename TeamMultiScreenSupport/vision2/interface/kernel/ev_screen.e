@@ -165,7 +165,12 @@ feature -- Mutli Monitor
 
 	all_monitors: ARRAYED_LIST[EV_MONITOR]
 
-	default_monitor: EV_MONITOR
+	default_monitor: EV_MONITOR is
+			-- default monitor of system
+		do
+			result := implementation.default_monitor
+		end
+
 
 
 feature {EV_ANY, EV_ANY_I} -- Implementation

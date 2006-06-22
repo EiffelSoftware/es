@@ -115,6 +115,12 @@ feature -- Multi Monitor
 		deferred
 		end
 
+	default_monitor: EV_MONITOR is
+			-- default monitor of system
+		deferred
+		end
+
+
 feature {NONE} -- Implementation
 
 	interface: EV_SCREEN;

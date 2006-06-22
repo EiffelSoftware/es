@@ -314,6 +314,13 @@ feature -- Multi-Monitor
 			result := interface.all_monitors[mon_nr+1]
 		end
 
+	default_monitor: EV_MONITOR is
+			-- default monitor of system
+		do
+			result := interface.all_monitors[1]
+		end
+
+
 feature {NONE} -- Externals (XTEST extension)
 
 	frozen x_keysym_to_keycode (a_display: POINTER; a_keycode: INTEGER): INTEGER is
