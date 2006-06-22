@@ -25,6 +25,9 @@ feature -- Properties
 		deferred
 		end
 
+	message: STRING
+			-- Syntax error message
+
 feature {NONE} -- Output
 
 	display_line (a_text_formatter: TEXT_FORMATTER; a_line: STRING) is

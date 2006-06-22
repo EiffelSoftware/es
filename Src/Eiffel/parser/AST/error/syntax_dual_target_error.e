@@ -1,37 +1,59 @@
 indexing
-	description: "Not implemented yet."
+	description:
+		"Represents a syntax error that had two possible error locations for reporting"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
+	revision: "$Revision $"
 
-class
-	SYNTAX_WARNING
+class SYNTAX_DUAL_TARGET_ERROR
 
 inherit
-	SYNTAX_MESSAGE
+	SYNTAX_ERROR
 		rename
-			make as make_syntax_message
+			make as make_error
 		end
 
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
-	make (a_line, a_column: INTEGER; a_file_name: like file_name; a_message: STRING) is
-			-- create a new SYNTAX_WARNING instance.
+	make (a_line: like line; a_column: like column; a_alt_line: like alt_line; a_alt_column: like alt_column; a_message: like message; a_file_name: like file_name) is
+			-- Initialize a sytax error message with two coordinates.
+		require
+			a_line_positive: a_line > 0
+			a_column_positive: a_column > 0
+			a_alt_line_positive: a_alt_line > 0
+			a_alt_column_positive: a_alt_column > 0
+			a_message_attached: a_message /= Void
+			not_a_message_is_empty: not a_message.is_empty
+			a_file_name_attached: a_file_name /= Void
+			not_a_file_name_is_empty: not a_file_name.is_empty
+			a_file_name_exists: (create {PLAIN_TEXT_FILE}.make (a_file_name)).exists
 		do
-			make_syntax_message(a_line,a_column, a_file_name, a_message, false)
+			make_error (a_line, a_column, a_file_name, a_message, false)
+			alt_line := a_alt_line
+			alt_column := a_alt_column
+		ensure
+			line_set: line = a_line
+			column_set: column = a_column
+			alt_line_set: alt_line = a_alt_line
+			alt_column_set: alt_column = a_alt_column
+			file_name_set: file_name = a_file_name
 		end
-
 
 feature -- Access
 
-	code: STRING is
-			-- Error code
-		once
-			Result := "Warning"
-		end
+	alt_line: INTEGER
+			-- Alternative line number of token involved in syntax issue
+
+	alt_column: INTEGER
+			-- Alternative column number of token involved in syntax issue
+
+invariant
+	alt_line_positive: alt_line > 0
+	alt_column_positive: alt_column > 0
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
@@ -65,4 +87,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class SYNTAX_WARNING
+end -- class SYNTAX_DUAL_TARGET_ERROR

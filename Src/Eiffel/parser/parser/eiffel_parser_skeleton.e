@@ -133,6 +133,24 @@ feature -- Parser type setting
 			parsing_type_set: has_parsing_type
 		end
 
+	set_recoverable_parser is
+			-- recover from errors
+		do
+			recoverable_parser := true
+		ensure
+			recoverable: recoverable_parser
+		end
+
+	unset_recoverable_parser is
+			-- do not recover from errors
+		do
+			recoverable_parser := false
+		ensure
+			not_recoverable: not recoverable_parser
+		end
+
+
+
 feature -- Status report [hide]
 
 	has_parsing_type: BOOLEAN is
@@ -184,6 +202,9 @@ feature -- Status report
 
 	has_externals: BOOLEAN
 			-- Did last parse find external declarations?
+
+	recoverable_parser: BOOLEAN
+			-- Does parser recover from errors?
 
 feature -- Parsing
 
@@ -383,6 +404,8 @@ feature {NONE} -- Implementation
 			-- Temporary locals in semantic actions.
 
 	last_rsqure: SYMBOL_AS
+
+	if_part_tuple: TUPLE [if_keyword: KEYWORD_AS; expr: EXPR_AS; then_keyword: KEYWORD_AS; compound: EIFFEL_LIST [INSTRUCTION_AS]]
 
 feature {NONE} -- Counters
 
@@ -673,11 +696,11 @@ feature {AST_FACTORY} -- Error handling
 			-- A syntax error has been detected.
 			-- Print error message.
 		local
-			an_error: SYNTAX_ERROR
+--			an_error: SYNTAX_ERROR
 		do
-			create an_error.make (line, column, filename, "", False)
-			Error_handler.insert_error (an_error)
-			Error_handler.raise_error
+--			create an_error.make (line, column, filename, a_message, False)
+--			Error_handler.insert_error (an_error)
+--			Error_handler.raise_error
 		end
 
 feature{NONE} -- Roundtrip

@@ -382,7 +382,10 @@
 		<cluster name="parser" location="$EIFFEL_SRC\Eiffel\parser\" recursive="true">
 			<file_rule>
 				<exclude>/compiler_override$</exclude>
-				<exclude>/error$</exclude>
+				<exclude>/error.e$</exclude>
+				<exclude>/syntax_message.e$</exclude>
+				<exclude>/syntax_error.e$</exclude>
+				<exclude>/syntax_warning.e$</exclude>
 			</file_rule>
 		</cluster>
 		<cluster name="process_gui" location="$ISE_LIBRARY\library\process\gui\" recursive="true"/>

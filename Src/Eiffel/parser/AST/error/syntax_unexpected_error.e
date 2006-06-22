@@ -1,66 +1,53 @@
 indexing
 
-	description: "Syntax error for invalid external declaration."
+	description:
+		"Syntax error."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision $"
 
-class EXTERNAL_SYNTAX_ERROR
+class SYNTAX_UNEXPECTED_ERROR
 
 inherit
-
 	SYNTAX_ERROR
 		rename
-			syntax_message as external_error_message
-		redefine
-			external_error_message
+			make as make_error
 		end
 
-create {EXTERNAL_LANG_AS, EXTERNAL_EXTENSION_AS}
+create
+	make
 
-	init
+feature {NONE} -- Initialization
 
-feature -- Property
-
-	external_error_message: STRING
-			-- Specific syntax message
-
-feature {EXTERNAL_LANG_AS, EXTERNAL_EXTENSION_AS} -- Setting
-
-	set_external_error_message (msg: STRING) is
-			-- Assign `external_error_message' with `message'.
+	make (a_line: like line; a_column: like column; a_unexpected: like unexpected; a_file_name: like file_name) is
+			-- Initialize a sytax message
 		require
-			message_not_void: msg /= Void
+			a_line_positive: a_line > 0
+			a_column_positive: a_column > 0
+			a_unexpected_attached: a_unexpected /= Void
+			not_a_unexpected_is_empty: not a_unexpected.is_empty
+			a_file_name_attached: a_file_name /= Void
+			not_a_file_name_is_empty: not a_file_name.is_empty
+			a_file_name_exists: (create {PLAIN_TEXT_FILE}.make (a_file_name)).exists
 		do
-			external_error_message := msg.twin
-		end
-
-	set_file_name (new_filename: FILE_NAME) is
-			-- Assign `new_filename' to `file_name'.
-		do
-			file_name := new_filename
-		end
-
-	set_line (i: INTEGER) is
-			-- Assign `i' to `line'.
-		do
-			line := i
+			make_error (a_line, a_column, a_file_name, once "Unexpected `" + a_unexpected + "' in class text.", false)
+			unexpected := a_unexpected
 		ensure
-			line_set: line = i
+			line_set: line = a_line
+			column_set: column = a_column
+			unexpected_set: unexpected = a_unexpected
+			file_name_set: file_name = a_file_name
 		end
 
-	set_column (i: INTEGER) is
-			-- Assign `i' to `column'.
-		do
-			column := i
-		ensure
-			column_set: column = i
-		end
+feature -- Access
+
+	unexpected: STRING;
+			-- Unxpected text
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -90,4 +77,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class EXTERNAL_SYNTAX_ERROR
+end -- class SYNTAX_UNEXPECTED_ERROR
