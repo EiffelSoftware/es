@@ -1,8 +1,8 @@
 indexing
 	description: "Command to upload class to emu server[button in EMU-TOOLBAR]"
 	author: "EMU-TEAM"
-	date: ""
-	revision: ""
+	date: "$Date"
+	revision: "$Revision"
 
 class
 	EB_EMU_CLASS_UPLOAD_COMMAND
@@ -35,7 +35,7 @@ feature -- Status setting
 			current_file_in_editor := Window_manager.last_focused_development_window.file_name
 			if(current_file_in_editor /= void) then
 				--call emu client upload
-				--¦to be implemented
+				--Å to be implemented
 				--show upload dialog
 				show_upload_dialog
 			else
