@@ -1,11 +1,10 @@
 indexing
 	description: "This class supplies functions for filling templates strings with other dinamically generated objects' representations."
-	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
 	remark: "[
 	  Feel free to use other template engines instead of this, by not using the i18n_comp* functions.
 	  These functions will not be available in a future version of the library!
 	  ]"
-	author: "Originally created from Martino Trosi, ETH Zurich"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 

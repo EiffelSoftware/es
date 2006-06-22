@@ -1,6 +1,5 @@
 indexing
 	description: "Parser for accessing MO files."
-	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
 	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"

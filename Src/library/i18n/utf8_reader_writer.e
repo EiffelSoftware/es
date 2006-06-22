@@ -1,7 +1,7 @@
 indexing
 	description: "Facilities to convert from FILE, POINTER, ARRAY[NATURAL_8], SPECIAL[NATURAL_8] to STRING_32 and viceversa."
 	status: "NOTE: This class has NEVER been tested, don't use it in production environments!"
-	author: "Originally written by Martino Trosi, ETH Zurich"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 

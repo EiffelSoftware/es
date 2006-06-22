@@ -1,7 +1,6 @@
 indexing
 	description: "Object containing original and translated strings, for localization purposes."
-	status: "NOTE: This class is NOT production ready, we reccommend that you don't use it!"
-	author: "Originally created by Martino Trosi, ETH Zurich"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
