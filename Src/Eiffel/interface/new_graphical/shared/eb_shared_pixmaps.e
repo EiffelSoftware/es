@@ -1283,6 +1283,33 @@ feature -- Icons
 			Result := pixmap_from_constant (Icon_first_result_reached_icon_value)
 		end
 
+	--added by EMU-PROJECT --
+	Icon_emu_upload_class_icon: EV_PIXMAP is
+		once
+			Result := emu_pixmap_from_constant (Icon_emu_upload_class_icon_value)
+		end
+	Icon_emu_download_class_icon: EV_PIXMAP is
+		once
+			Result := emu_pixmap_from_constant (Icon_emu_download_class_icon_value)
+		end
+	Icon_emu_lock_class_icon: EV_PIXMAP is
+		once
+			Result := emu_pixmap_from_constant (Icon_emu_lock_class_icon_value)
+		end
+	Icon_emu_unlock_class_icon: EV_PIXMAP is
+		once
+			Result := emu_pixmap_from_constant (Icon_emu_unlock_class_icon_value)
+		end
+	Icon_emu_server_class_icon: EV_PIXMAP is
+		once
+			Result := emu_pixmap_from_constant (Icon_emu_server_class_icon_value)
+		end
+	Icon_emu_add_user_class_icon: EV_PIXMAP is
+		once
+			Result := emu_pixmap_from_constant (Icon_emu_add_user_class_icon_value)
+		end
+	-------------------------
+
 	Icon_expand_all: EV_PIXMAP is
 		once
 			Result := pixmap_from_constant (Icon_expand_all_value)
@@ -1365,6 +1392,59 @@ feature {NONE} -- Implementation
 		once
 			Result := load_pixmap_from_repository ("icon_matrix_16")
 		end
+
+	--added by EMU-PROJECT---
+	emu_image_matrix: EV_PIXMAP is
+			-- Matrix pixmap containing all of the EMU ICONS
+		once
+			Result := load_pixmap_from_repository ("icon_emu_matrix_16")
+		end
+
+	emu_pixmap_lookup_table: ES_PIXMAP_LOOKUP_TABLE is
+			-- Lookup hash table for EMU pixmaps
+		once
+			create Result.make_with_values (3, 2)
+			Result.add_pixmap (1, 1, Icon_emu_lock_class_icon_value)
+			Result.add_pixmap (2, 1, Icon_emu_upload_class_icon_value)
+			Result.add_pixmap (1, 2, Icon_emu_unlock_class_icon_value)
+			Result.add_pixmap (2, 2, Icon_emu_download_class_icon_value)
+			Result.add_pixmap (3, 1, Icon_emu_server_class_icon_value)
+			Result.add_pixmap (3, 2, Icon_emu_add_user_class_icon_value)
+		end
+
+	-- actually copy/paste from pixmap_from_constant
+	-- better define new function with parameter,which pixmap to lookup and which image_matrix
+	emu_pixmap_from_constant (a_pixmap_constant: INTEGER): EV_PIXMAP is
+			-- Return pixmap in matrix associated with `a_pixmap_constant'.
+		local
+			a_coord: INTEGER
+			a_row, a_column: INTEGER
+			l_columns, a_x_offset, a_y_offset, l_pix_width, l_pix_height: INTEGER
+			l_table: like emu_pixmap_lookup_table
+			l_rectangle: like reusable_rectangle
+		do
+			l_table := emu_pixmap_lookup_table
+			a_coord := l_table @ a_pixmap_constant
+			l_columns := l_table.columns
+			a_column := (a_coord - 1) \\ l_columns
+			a_row := (a_coord - a_column) // l_columns
+				-- Both column and row are off by -1 as this is what is needed by the offset calculation.
+			l_pix_width := pixmap_width
+			l_pix_height := pixmap_height
+
+				-- Work out offsets, taking pixmap border in to account.
+			a_x_offset := (a_column) * (1 + l_pix_width) + 1
+			a_y_offset := (a_row) * (1 + l_pix_height) + 1
+
+			l_rectangle := reusable_rectangle
+			l_rectangle.set_x (a_x_offset)
+			l_rectangle.set_y (a_y_offset)
+			l_rectangle.set_width (l_pix_width)
+			l_rectangle.set_height (l_pix_height)
+			Result := emu_image_matrix.implementation.sub_pixmap (l_rectangle)
+		end
+
+	----------------------------------------------
 
 	pixmap_lookup_table: ES_PIXMAP_LOOKUP_TABLE is
 			-- Lookup hash table for Studio pixmaps
@@ -1842,6 +1922,12 @@ feature {NONE} -- Constants
 			Icon_warning_output_view_icon_value,
 			Icon_diagram_tool_icon_value,
 			Icon_bottom_reached_icon_value,
+			Icon_emu_upload_class_icon_value,
+			Icon_emu_download_class_icon_value,
+			Icon_emu_lock_class_icon_value,
+			Icon_emu_unlock_class_icon_value,
+			Icon_emu_server_class_icon_value,
+			Icon_emu_add_user_class_icon_value,
 			Icon_first_result_reached_icon_value,
 			Icon_expand_all_value,
 			Icon_collapse_all_value,
