@@ -48,7 +48,7 @@ msgstr[1] "これは複数である"
 #: str9
 msgid "There is 1 file"
 msgid_plural "There are $1 files"
-msgstr[0] "1 つのファイルがある"
+msgstr[0] "$1 つのファイルがある"
 msgstr[1] "$1 のファイルがある"
 
 #: str10
