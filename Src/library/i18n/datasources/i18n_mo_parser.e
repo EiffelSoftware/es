@@ -283,21 +283,43 @@ feature {NONE} -- Implementation (helpers)
 			-- position in the mo file, taking care of the endianness of the file
 		require
 			file_open: mo_file.is_open_read
+		do
+			if is_little_endian_file = is_little_endian_machine then
+				Result := read_integer_same_endianness
+			else
+				Result := read_integer_opposite_endianness
+			end
+		end
+
+	read_integer_same_endianness: INTEGER is
+			-- Reading an integer on the same architecture where the MO file was created
+		require
+			file_open: mo_file.is_open_read
+		do
+			mo_file.read_integer
+			Result := mo_file.last_integer
+		end
+
+	read_integer_opposite_endianness: INTEGER is
+			-- Reading an integer on the opposite architecture of which where the MO file was created
+		require
+			file_open: mo_file.is_open_read
 		local
 			b0, b1, b2, b3 : NATURAL_32
 			t_array : ARRAY[NATURAL_8]
 		do
 			t_array := get_integer
-			b0 := t_array.item (1).as_natural_32
-			b1 := t_array.item (2).as_natural_32
-			b2 := t_array.item (3).as_natural_32
-			b3 := t_array.item (4).as_natural_32
-			if is_big_endian_file then
-				Result :=  ((b0 |<< 24) | (b1 |<< 16) | (b2 |<< 8) | b3).as_integer_32
-			else
+			b0 := t_array.item(1).as_natural_32
+			b1 := t_array.item(2).as_natural_32
+			b2 := t_array.item(3).as_natural_32
+			b3 := t_array.item(4).as_natural_32
+			if is_little_endian_file then
 				Result := (b0 | (b1 |<< 8) | (b2 |<< 16) | (b3 |<< 24)).as_integer_32
+			else
+				Result := (b3 | (b2 |<< 8) | (b1 |<< 16) | (b0 |<< 24)).as_integer_32
 			end
 		end
+
 
 	get_integer : ARRAY[NATURAL_8] is
 			-- read an integer byte to byte
