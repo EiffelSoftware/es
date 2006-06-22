@@ -100,6 +100,21 @@ feature {EB_DEVELOPMENT_WINDOW_DATA, EB_SHARED_PREFERENCES} -- Value
 			-- Show the refactoring toolbar.
 		deferred
 		end
+	---added by EMU-PROJECT----
+	show_emu_toolbar: BOOLEAN is
+			-- Show the refactoring toolbar.
+		deferred
+		end
+	show_text_in_emu_toolbar: BOOLEAN is
+			-- Show only selected text in emu toolbar?
+		deferred
+		end
+	show_all_text_in_emu_toolbar: BOOLEAN is
+			-- Show all text in the emu toolbar?
+		deferred
+		end
+
+	---------------------------
 
 	show_search_options: BOOLEAN is
 			-- Are search tool options displayed ?
@@ -186,7 +201,12 @@ feature -- Basic operations
 			-- Retreive the refactoring toolbar using the available commands in `command_pool'
 		deferred
 		end
-
+	---added by EMU-PROJECT-----
+	retrieve_emu_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): EB_TOOLBAR is
+			-- Retreive the refactoring toolbar using the available commands in `command_pool'
+		deferred
+		end
+	----------------------------
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
