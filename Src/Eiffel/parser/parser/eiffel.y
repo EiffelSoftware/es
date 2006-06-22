@@ -9,12 +9,8 @@ indexing
 class EIFFEL_PARSER
 
 inherit
-	EIFFEL_PARSER_SKELETON
 
 	EIFFEL_PARSER_ERROR_REPORTER
-		export
-			{NONE} all
-		end
 
 	SHARED_NAMES_HEAP
 	
@@ -170,7 +166,7 @@ create
 %type <STRING_AS>			Manifest_string Non_empty_string Empty_string Error_non_empty_string Non_empty_string_comma Default_manifest_string Typed_manifest_string Infix_string Prefix_string Alias_name
 %type <TAGGED_AS>			Assertion_clause
 %type <TUPLE_AS>			Manifest_tuple
-%type <TYPE_AS>				Type Type_comma Non_class_type Typed Class_or_tuple_type Class_type Tuple_type
+%type <TYPE_AS>				Type Type_comma Non_class_type Typed Class_or_tuple_type Class_type Tuple_type Type_no_id
 %type <CLASS_TYPE_AS>		Parent_class_type
 %type <TYPE_DEC_AS>			Entity_declaration_group 
 %type <VARIANT_AS>			Variant
