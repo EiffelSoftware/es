@@ -17,6 +17,7 @@ feature {NONE} -- Initialization
 			-- Initialize and launch application
 		do
 			n := 1
+			create names.make ("")
 			default_create
 			prepare
 			launch
@@ -48,16 +49,20 @@ feature -- Create window elements
 			create standard_menu_bar.default_create
 		-- File
 			create file.make_with_text (names.file)
+			file.set_data (agent names.file)
 
 			create increase.make_with_text (names.increase)
+			increase.set_data (agent names.increase)
 			increase.select_actions.extend (agent increment)
 			increase.select_actions.extend (agent update_labels)
 
 			create decrease.make_with_text (names.decrease)
+			decrease.set_data (agent names.decrease)
 			decrease.select_actions.extend (agent decrement)
 			decrease.select_actions.extend (agent update_labels)
 
 			create save.make_with_text (names.save)
+			save.set_data (agent names.save)
 
 			file.extend (increase)
 			file.extend (decrease)
@@ -66,15 +71,32 @@ feature -- Create window elements
 
 		-- Language selection
 			create language_selection.make_with_text (names.language)
+			language_selection.set_data (agent names.language)
 
 			create arabic.make_with_text (names.arabic)
+			arabic.set_data (agent names.arabic)
+			arabic.select_actions.extend (agent update_language ("ar"))
 			create chinese.make_with_text (names.chinese)
+			chinese.set_data (agent names.chinese)
+			chinese.select_actions.extend (agent update_language ("zh_CN"))
 			create english.make_with_text (names.english)
+			english.set_data (agent names.english)
+			english.select_actions.extend (agent update_language ("en"))
 			create greek.make_with_text (names.greek)
+			greek.set_data (agent names.greek)
+			greek.select_actions.extend (agent update_language ("gr"))
 			create hebrew.make_with_text (names.hebrew)
+			hebrew.set_data (agent names.hebrew)
+			hebrew.select_actions.extend (agent update_language ("he"))
 			create italian.make_with_text (names.italian)
+			italian.set_data (agent names.italian)
+			italian.select_actions.extend (agent update_language ("it"))
 			create japanese.make_with_text (names.japanese)
+			japanese.set_data (agent names.japanese)
+			japanese.select_actions.extend (agent update_language ("jp"))
 			create russian.make_with_text (names.russian)
+			russian.set_data (agent names.russian)
+			russian.select_actions.extend (agent update_language ("ru"))
 
 			language_selection.extend (arabic)
 			language_selection.extend (chinese)
@@ -127,6 +149,38 @@ feature -- Create window elements
 			end
 		end
 
+	update_language (a_lang: STRING) is
+			-- Reload strings in a new language
+		do
+			names := create {NAMES}.make (a_lang)
+			update_menu_bar
+			update_labels
+		end
+
+	update_menu (a_menu: EV_MENU_ITEM) is
+			--
+		local
+			sub_menu: EV_MENU
+			text: FUNCTION [ANY, TUPLE, STRING_32]
+		do
+			text ?= a_menu.data
+			if text /= Void then
+				a_menu.set_text (text.item([]))
+			end
+			sub_menu ?= a_menu
+			if sub_menu /= Void then
+				-- means sub_menu is not just an item but a submenu
+				sub_menu.do_all (agent update_menu (?))
+			end
+		end
+
+	update_menu_bar is
+			--
+		do
+			standard_menu_bar.do_all (agent update_menu(?))
+		end
+
+
 	n : INTEGER
 
 
@@ -143,10 +197,7 @@ feature {NONE} -- Implementation
 	simple_comp_label,
 	plural_comp_label  : EV_LABEL
 
-	names: NAMES is
-		once
-			create Result.make ("it")
-		end
+	names: NAMES
 
 	formatter: I18N_TEMPLATE_FORMATTER is
 		once
