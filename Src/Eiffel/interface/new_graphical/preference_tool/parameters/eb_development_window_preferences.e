@@ -137,7 +137,6 @@ feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_SESSION_DATA} -- Value
 			Result := show_refactoring_toolbar_preference.value
 		end
 
-
 	show_search_options: BOOLEAN is
 			-- Are search tool options displayed ?
 		do
@@ -155,6 +154,34 @@ feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_SESSION_DATA} -- Value
 		do
 			Result := refactoring_toolbar_layout_preference.value
 		end
+
+	---added by EMU-PROJECT----
+	emu_toolbar_layout: ARRAY [STRING] is
+			-- Toolbar organization
+		do
+			Result := emu_toolbar_layout_preference.value
+		end
+
+	show_emu_toolbar: BOOLEAN is
+			-- Show the refactoring toolbar.
+		do
+			Result := show_emu_toolbar_preference.value
+		end
+
+
+	show_text_in_emu_toolbar: BOOLEAN is
+			-- Show only selected text in the refactoring toolbar?
+		do
+			Result := show_text_in_emu_toolbar_preference.value
+		end
+
+	show_all_text_in_emu_toolbar: BOOLEAN is
+			-- Show all text in the refactoring toolbar?
+		do
+			Result := show_all_text_in_emu_toolbar_preference.value
+		end
+	---------------------
+
 
 	max_history_size: INTEGER is
 			-- Maximum number of items displayed in the history (in the address combo boxes).
@@ -291,6 +318,15 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 	show_project_toolbar_preference: BOOLEAN_PREFERENCE
 			-- Show the project toolbar (Breakpoints, ...)?
 
+	---added by EMU-PROJECT ----
+	show_emu_toolbar_preference: BOOLEAN_PREFERENCE
+			-- Show the emu toolbar?
+	show_text_in_emu_toolbar_preference: BOOLEAN_PREFERENCE
+			-- Show only selected text in the emu toolbar?
+	show_all_text_in_emu_toolbar_preference: BOOLEAN_PREFERENCE
+			-- Show all text in the emu toolbar?
+	----------------------------
+
 	show_refactoring_toolbar_preference: BOOLEAN_PREFERENCE
 			-- Show the refactoring toolbar.
 
@@ -302,6 +338,11 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 
 	refactoring_toolbar_layout_preference: ARRAY_PREFERENCE
 			-- Refactoring toolbar layout.
+	---added by EMU-PROJECT---
+	emu_toolbar_layout_preference: ARRAY_PREFERENCE
+			-- Emu toolbar layout.
+	--------------------------
+
 
 	max_history_size_preference: INTEGER_PREFERENCE
 
@@ -414,6 +455,14 @@ feature -- Basic operations
 		do
 			Result := retrieve_toolbar (command_pool, refactoring_toolbar_layout)
 		end
+	--added by EMU-PROJECT---
+	retrieve_emu_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): EB_TOOLBAR is
+			-- Retreive the emu toolbar using the available commands in `command_pool'
+		do
+			Result := retrieve_toolbar (command_pool, emu_toolbar_layout)
+		end
+	-------------------------
+
 
 feature {NONE} -- Preference Strings
 
@@ -450,6 +499,12 @@ feature {NONE} -- Preference Strings
 	graphical_output_disabled_string: STRING is "interface.development_window.graphical_output_disabled"
 	use_animated_icons_string: STRING is "interface.development_window.use_animated_icons"
 	c_output_panel_prompted_string: STRING is "interface.development_window.c_output_panel_prompted"
+		--added by EMU-PROJECT --
+	emu_toolbar_layout_string: STRING is "interface.development_window.emu_toolbar_layout"
+	show_emu_toolbar_string: STRING is "interface.development_window.show_emu_toolbar"
+	show_text_in_emu_toolbar_string: STRING is "interface.development_window.show_text_in_emu_toolbar"
+	show_all_text_in_emu_toolbar_string: STRING is "interface.development_window.show_all_text_in_emu_toolbar"
+	-------------------------
 
 	estudio_dbg_menu_allowed_string: STRING is "interface.development_window.estudio_dbg_menu_allowed"
 	estudio_dbg_menu_accelerator_allowed_string: STRING is "interface.development_window.estudio_dbg_menu_accelerator_allowed"
@@ -478,6 +533,8 @@ feature {NONE} -- Implementation
 			show_text_in_general_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_text_in_general_toolbar_string, False)
 			show_all_text_in_general_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_all_text_in_general_toolbar_string, False)
 			refactoring_toolbar_layout_preference := l_manager.new_array_preference_value (l_manager, refactoring_toolbar_layout_string, <<"RF_pull__visible", "RF_rename__visible", "Separator", "RF_undo__visible", "RF_redo__visible">>)
+
+
 			show_text_in_refactoring_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_text_in_refactoring_toolbar_string, True)
 			show_all_text_in_refactoring_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_all_text_in_refactoring_toolbar_string, False)
 			show_refactoring_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_refactoring_toolbar_string, True)
@@ -498,6 +555,16 @@ feature {NONE} -- Implementation
 			graphical_output_disabled_preference := l_manager.new_boolean_preference_value (l_manager, graphical_output_disabled_string, False)
 			use_animated_icons_preference := l_manager.new_boolean_preference_value (l_manager, use_animated_icons_string, True)
 			c_output_panel_prompted_preference := l_manager.new_boolean_preference_value (l_manager, c_output_panel_prompted_string, False)
+
+			--added by EMU-PROJECT --
+			emu_toolbar_layout_preference := l_manager.new_array_preference_value (l_manager, emu_toolbar_layout_string ,<<"Open_Emu_Upload_tool__visible", "Open_Emu_Download_tool__visible", "Separator", "Open_Emu_Lock_tool__visible", "Open_Emu_Unlock_tool__visible", "Separator", "Open_Emu_Server_tool__visible", "Open_Emu_Add_User_tool__visible">>)
+			show_emu_toolbar_preference := l_manager.new_boolean_preference_value(l_manager,show_emu_toolbar_string, True)
+			show_text_in_emu_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_text_in_emu_toolbar_string, True)
+			show_all_text_in_emu_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_all_text_in_emu_toolbar_string, False)
+			-------------------------
+
+
+
 
 			estudio_dbg_menu_allowed_preference := l_manager.new_boolean_preference_value (l_manager, estudio_dbg_menu_allowed_string, True)
 			estudio_dbg_menu_allowed_preference.set_hidden (True)
