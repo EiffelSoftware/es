@@ -37,13 +37,28 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'
 		do
+			Precursor {EV_CONTAINER_IMP}
+			Precursor {EV_DYNAMIC_LIST_IMP}
 		end
 
 feature {NONE} -- Implementation
 
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
+		local
+			v_imp : EV_WIDGET_IMP
+			err : INTEGER
 		do
+			if v /= Void then
+				v_imp ?= v.implementation
+				check
+					v_imp_not_void : v_imp /= Void
+				end
+				err := embed_control_external (v_imp.c_object, c_object  )
+				--child_array.go_i_th (i)
+				--child_array.put_left (v)
+			end
+			on_new_item (v_imp)
 		end
 
 	remove_i_th (i: INTEGER) is

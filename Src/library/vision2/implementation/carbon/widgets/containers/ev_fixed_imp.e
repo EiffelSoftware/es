@@ -25,7 +25,7 @@ inherit
 			initialize
 		end
 
-	CONTROLS_FUNCTIONS_EXTERNAL
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -35,16 +35,25 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create the fixed container.
 		local
-			ptr : POINTER
+			control_ptr : POINTER
+			rect : RECT_STRUCT
+			res : INTEGER
 		do
 			base_make( an_interface )
-
-			--set_c_object (a_c_object: POINTER)
+			create rect.make_new_unshared
+			rect.set_top ( 0 )
+			rect.set_left ( 0 )
+			rect.set_right ( 200 )
+			rect.set_bottom ( 200 )
+			res := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
+			set_c_object ( control_ptr )
 		end
 
 	initialize is
 			-- Initialize `Current'.
 		do
+
+			Precursor
 		end
 
 feature -- Status setting

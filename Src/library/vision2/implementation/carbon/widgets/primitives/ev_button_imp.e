@@ -57,6 +57,8 @@ inherit
 			interface
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -64,13 +66,22 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.
+		local
+			err : INTEGER
+			rect : RECT_STRUCT
+			struct_ptr : POINTER
 		do
+			base_make (an_interface)
+			create rect.make_new_unshared
+			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )
+			set_c_object ( struct_ptr )
 		end
 
 	initialize is
 			-- `Precursor' initialization,
 			-- create button box to hold label and pixmap.
 		do
+			Precursor {EV_PRIMITIVE_IMP}
 		end
 
 	initialize_button_box is
