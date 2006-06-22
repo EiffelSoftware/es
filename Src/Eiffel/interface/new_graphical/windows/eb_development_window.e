@@ -333,6 +333,20 @@ feature {NONE} -- Initialization
 				create show_profiler
 			end
 
+			--added by EMU-PROJECT -----------
+			create upload_class_cmd.make
+			toolbarable_commands.extend(upload_class_cmd)
+			create download_class_cmd.make
+			toolbarable_commands.extend(download_class_cmd)
+			create lock_class_cmd.make
+			toolbarable_commands.extend(lock_class_cmd)
+			create unlock_class_cmd.make
+			toolbarable_commands.extend(unlock_class_cmd)
+			create server_class_cmd.make
+			toolbarable_commands.extend(server_class_cmd)
+			create add_user_class_cmd.make
+			toolbarable_commands.extend(add_user_class_cmd)
+
 				-- Undo/redo, cut, copy, paste.
 			create undo_cmd.make (Current)
 			toolbarable_commands.extend (undo_cmd)
@@ -1212,6 +1226,56 @@ feature -- Graphical Interface
 				show_refactoring_toolbar_command.disable_visible
 			end
 		end
+
+	----added by EMU-PROJECT----
+	build_emu_toolbar is
+			-- Build emu toolbar.
+		local
+			cell: EV_CELL
+			hsep: EV_HORIZONTAL_SEPARATOR
+			hbox: EV_HORIZONTAL_BOX
+		do
+			create emu_toolbar
+			emu_toolbar_not_customizable := development_window_data.retrieve_emu_toolbar (toolbarable_commands)
+				---display text
+			if development_window_data.show_text_in_emu_toolbar then
+				emu_toolbar_not_customizable.enable_important_text
+			elseif development_window_data.show_all_text_in_emu_toolbar then
+				emu_toolbar_not_customizable.enable_text_displayed
+			end
+
+			create hbox
+			hbox.extend (emu_toolbar_not_customizable.widget)
+			hbox.disable_item_expand (emu_toolbar_not_customizable.widget)
+
+
+			--generate toolbar
+			emu_toolbar_not_customizable.update_toolbar
+
+				-- Cell to fill in empty space and receive the right click menu holder.
+			create cell
+			cell.pointer_button_release_actions.extend (agent toolbar_right_click_action)
+			hbox.extend (cell)
+
+				-- Create the vertical layout (separator + toolbar)
+			create hsep
+			emu_toolbar.set_padding (2)
+			emu_toolbar.extend (hsep)
+			emu_toolbar.disable_item_expand (hsep)
+			emu_toolbar.extend (hbox)
+
+
+				-- Create the command to show/hide this toolbar.
+			create show_emu_toolbar_command.make (emu_toolbar, "&Emu-Toolbar")
+			show_toolbar_commands.extend (show_emu_toolbar_command)
+			if development_window_data.show_emu_toolbar then
+				show_emu_toolbar_command.enable_visible
+			else
+				show_emu_toolbar_command.disable_visible
+			end
+
+		end
+	-----------------------------	
 
 
 feature {NONE} -- Menu Building
@@ -4252,6 +4316,21 @@ feature {EB_TOOL} -- Implementation / Commands
 	melt_cmd: EB_MELT_PROJECT_COMMAND
 			-- Command to start compilation.
 
+	--added by EMU-PROJECT --
+	upload_class_cmd: EB_EMU_CLASS_UPLOAD_COMMAND
+			-- Command to upload a class to emu-server
+	download_class_cmd: EB_EMU_CLASS_DOWNLOAD_COMMAND
+			-- Command to download class from emu-server
+	lock_class_cmd: EB_EMU_CLASS_LOCK_COMMAND
+			-- Command to lock class on emu-server
+	unlock_class_cmd: EB_EMU_CLASS_UNLOCK_COMMAND
+			-- Command to unlock class on emu-server
+	server_class_cmd: EB_EMU_SERVER_COMMAND
+			-- Command create an emu-server
+	add_user_class_cmd: EB_EMU_ADD_USER_COMMAND
+			-- Command to add a user to emu-server
+	-------------------------
+
 feature{EB_TOOL, EB_C_COMPILER_LAUNCHER}
 
 	c_workbench_compilation_cmd: EB_C_COMPILATION_COMMAND
@@ -4490,6 +4569,17 @@ feature {NONE} -- Execution
 			c_workbench_compilation_cmd.enable_sensitive
 			c_finalized_compilation_cmd.enable_sensitive
 			refactoring_manager.enable_sensitive
+
+			--added by EMU-PROJECT
+			---just testing -- should only be sensitive and all if in EMU-MODE
+			---when emu-mode ...a class in editor window?!...
+			upload_class_cmd.enable_sensitive
+			download_class_cmd.enable_sensitive
+			lock_class_cmd.enable_sensitive
+			unlock_class_cmd.enable_sensitive
+			server_class_cmd.enable_sensitive
+			add_user_class_cmd.enable_sensitive
+			--------------------------
 		end
 
 	disable_commands_on_project_unloaded is
@@ -4513,6 +4603,15 @@ feature {NONE} -- Execution
 			c_finalized_compilation_cmd.disable_sensitive
 			refactoring_manager.disable_sensitive
 			refactoring_manager.forget_undo_redo
+
+			--added by EMU-PROJECT----check if in EMU-MODE!
+			upload_class_cmd.disable_sensitive
+			download_class_cmd.disable_sensitive
+			lock_class_cmd.disable_sensitive
+			unlock_class_cmd.disable_sensitive
+			server_class_cmd.disable_sensitive
+			add_user_class_cmd.disable_sensitive
+			------------------------
 		end
 
 feature {NONE} -- Access
