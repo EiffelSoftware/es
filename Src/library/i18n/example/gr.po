@@ -56,3 +56,39 @@ msgid "singular"
 msgid_plural "plural"
 msgstr[0] "ενικός αριθμός"
 msgstr[1] "πληθυντικός"
+
+#: str11
+msgid "Select language"
+msgstr "Επιλέξτε τη γλώσσα"
+
+#: str12
+msgid "arabic"
+msgstr "αραβικά"
+
+#: str13
+msgid "italian"
+msgstr "ιταλικά"
+
+#: str14
+msgid "greek"
+msgstr "ελληνικά"
+
+#: str15
+msgid "hebrew"
+msgstr "εβραϊκά"
+
+#: str16
+msgid "japanese"
+msgstr "ιαπωνικά"
+
+#: str17
+msgid "russian"
+msgstr "ρωσικά"
+
+#: str18
+msgid "chinese"
+msgstr "κινεζικά"
+
+#: str19
+msgid "english"
+msgstr "αγγλικά"

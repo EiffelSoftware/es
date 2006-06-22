@@ -55,3 +55,39 @@ msgid "singular"
 msgid_plural "plural"
 msgstr[0] "singolare"
 msgstr[1] "plurale"
+
+#: str11
+msgid "Select language"
+msgstr "Seleziona lingua"
+
+#: str12
+msgid "arabic"
+msgstr "arabo"
+
+#: str13
+msgid "italian"
+msgstr "italiano"
+
+#: str14
+msgid "greek"
+msgstr "greco"
+
+#: str15
+msgid "hebrew"
+msgstr "ebraico"
+
+#: str16
+msgid "japanese"
+msgstr "giapponese"
+
+#: str17
+msgid "russian"
+msgstr "russo"
+
+#: str18
+msgid "chinese"
+msgstr "cinese"
+
+#: str19
+msgid "english"
+msgstr "inglese"

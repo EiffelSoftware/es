@@ -56,3 +56,39 @@ msgid "singular"
 msgid_plural "plural"
 msgstr[0] "否有在运正"
 msgstr[1] "plurale"
+
+#: str11
+msgid "Select language"
+msgstr "選擇語言"
+
+#: str12
+msgid "arabic"
+msgstr "阿拉伯"
+
+#: str13
+msgid "italian"
+msgstr "義大利語"
+
+#: str14
+msgid "greek"
+msgstr "希臘語"
+
+#: str15
+msgid "hebrew"
+msgstr "希伯來語"
+
+#: str16
+msgid "japanese"
+msgstr "日語"
+
+#: str17
+msgid "russian"
+msgstr "俄語"
+
+#: str18
+msgid "chinese"
+msgstr "漢語"
+
+#: str19
+msgid "english"
+msgstr "英語"

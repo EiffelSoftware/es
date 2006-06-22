@@ -41,10 +41,12 @@ feature -- Create window elements
 	build_menu_bar is
 			-- build the menu bar
 		local
-			increase,decrease,save : EV_MENU_ITEM
-			file: EV_MENU
+			increase,decrease,save,
+			italian, arabic, greek, hebrew, japanese, russian, chinese, english : EV_MENU_ITEM
+			file, language_selection: EV_MENU
 		do
 			create standard_menu_bar.default_create
+		-- File
 			create file.make_with_text (names.file)
 
 			create increase.make_with_text (names.increase)
@@ -61,6 +63,29 @@ feature -- Create window elements
 			file.extend (decrease)
 			file.extend (save)
 			standard_menu_bar.extend (file)
+
+		-- Language selection
+			create language_selection.make_with_text (names.language)
+
+			create arabic.make_with_text (names.arabic)
+			create chinese.make_with_text (names.chinese)
+			create english.make_with_text (names.english)
+			create greek.make_with_text (names.greek)
+			create hebrew.make_with_text (names.hebrew)
+			create italian.make_with_text (names.italian)
+			create japanese.make_with_text (names.japanese)
+			create russian.make_with_text (names.russian)
+
+			language_selection.extend (arabic)
+			language_selection.extend (chinese)
+			language_selection.extend (english)
+			language_selection.extend (greek)
+			language_selection.extend (hebrew)
+			language_selection.extend (italian)
+			language_selection.extend (japanese)
+			language_selection.extend (russian)
+			standard_menu_bar.extend (language_selection)
+
 		end
 
 	build_lables is

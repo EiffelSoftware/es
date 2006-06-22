@@ -56,6 +56,54 @@ feature -- text
 			Result := i18n_pl ("There is 1 file","There are $1 files", n)
 		end
 
+	language : STRING_32 is
+		do
+			Result := i18n ("Select language")
+		end
+
+	italian : STRING_32 is
+		do
+			Result := i18n ("italian")
+		end
+
+
+	arabic : STRING_32 is
+		do
+			Result := i18n ("arabic")
+		end
+
+	greek : STRING_32 is
+		do
+			Result := i18n ("greek")
+		end
+
+	hebrew : STRING_32 is
+		do
+			Result := i18n ("hebrew")
+		end
+
+	japanese : STRING_32 is
+		do
+			Result := i18n ("japanese")
+		end
+
+	russian : STRING_32 is
+		do
+			Result := i18n ("russian")
+		end
+
+	chinese : STRING_32 is
+		do
+			Result := i18n ("chinese")
+		end
+
+	english : STRING_32 is
+		do
+			Result := i18n ("english")
+		end
+
+
+
 feature -- creation
 
 	make (a_language: STRING) is
