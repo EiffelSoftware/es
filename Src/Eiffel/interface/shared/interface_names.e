@@ -1000,10 +1000,7 @@ feature -- Description texts
 	e_Compiling: STRING_32 										is do Result := i18n("System is being compiled") end
 	e_Copy_call_stack_to_clipboard: STRING_32					is do Result := i18n("Copy call stack to clipboard") end
 	e_Cursor_position: STRING_32 								is do Result := i18n("Cursor position (line:column)") end
-	e_Diagram_hole: STRING_32 									is do Result := i18n("Please drop a class or a cluster on this button %N%
-										%to view its diagram.%N%
-<<<<<<< .mine
-										%Use right click for both pick and drop actions."
+	e_Diagram_hole: STRING_32 									is do Result := i18n("Please drop a class or a cluster on this button %N%	%to view its diagram.%N %%Use right click for both pick and drop actions.") end
 	e_Diagram_class_header: STRING is 	"Please drop a class on this button.%NUse right click for both%N%
 										%pick and drop actions."
 	e_Diagram_remove_anchor: STRING is	"Please drop a class or a cluster with an%Nanchor on this button.%NUse right click for both%N%
@@ -1074,10 +1071,9 @@ feature -- Description texts
 	e_Unify_stone: STRING is			"Link the context tool to the other components"
 	e_Terminate_c_compilation: STRING is "Terminate current C compilation in progress"
 
-										%Use right click for both pick and drop actions.") end
 	e_Diagram_class_header: STRING_32 is do Result := i18n("Please drop a class on this button.%NUse right click for both%N%
 															%pick and drop actions.") end
->>>>>>> .r60150
+
 
 	e_Diagram_remove_anchor: STRING_32 is do Result := i18n("Please drop a class or a cluster with an%Nanchor on this button.%NUse right click for both%N%
 															%pick and drop actions.") end
@@ -1176,7 +1172,7 @@ feature -- Description texts
 	e_external_editor_not_defined: STRING_32 					is do Result := i18n("External editor not defined") end
 	e_external_command_is_running: STRING_32 					is do Result := i18n("An external command is running now. %NPlease wait until it exits.") end
 	e_external_command_list_full: STRING_32 					is do Result := i18n("Your external command list is full.%NUse Tools->External Command... to delete one.") end
->>>>>>> .r60150
+
 feature -- Wizard texts
 
 	wt_Profiler_welcome: STRING_32 								is do Result := i18n("Welcome to the Profiler Wizard") end
