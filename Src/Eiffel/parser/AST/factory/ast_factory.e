@@ -181,6 +181,13 @@ feature -- Access
 			create Result.make (a_scn.text, a_scn.line, a_scn.column, a_scn.position, a_scn.text_count)
 		end
 
+	new_keyword_expression_list_pair(a_keyword: KEYWORD_AS; an_expression: EXPR_AS): PAIR[KEYWORD_AS,EXPR_AS] is
+			-- new keyword,expression pair
+		do
+			create Result.make (a_keyword, an_expression)
+		end
+
+
 feature -- Number AST creation
 
 	new_integer_value (a_psr: EIFFEL_PARSER_SKELETON; sign_symbol: CHARACTER; a_type: TYPE_AS; buffer: STRING; s_as: SYMBOL_AS): INTEGER_AS is
