@@ -47,7 +47,7 @@ inherit
 
 	EVENT_HANDLER_PROC_PTR_CALLBACK
 
-	
+
 
 create
 	make
@@ -82,13 +82,31 @@ feature {NONE} -- Event loop
 			ret := set_front_process_external(psn.item)
 		end
 
+	frozen kEventClassKeyboard: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kEventClassKeyboard"
+	end
+
+
 	install_event_handler is
 			--
 		local
 			null: POINTER
+			ret: INTEGER
+			event_target: POINTER
+			event_type: EVENT_TYPE_SPEC_STRUCT
 		do
 			create dispatcher.make (Current)
-			--install_event_handler_external(?, dispatcher.c_dispatcher, 1, , null, null)
+			event_target := get_application_event_target_external
+			-- TODO: Find out how to create a struct array ...
+
+			create event_type.make_new_unshared
+			event_type.set_eventclass(kEventClassKeyboard) -- kEventClassKeyboard
+			event_type.set_eventkind(1) -- kEventRawKeyDown
+
+			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, null, null)
 		end
 
 feature {EV_ANY_IMP} -- Implementation
@@ -151,7 +169,7 @@ feature -- Basic operation
 	process_carbon_event is
 			-- Process all carbon events
 		do
-			
+
 		end
 
 	handle_dnd (a_event: POINTER) is
@@ -340,6 +358,8 @@ feature {NONE} -- Carbon callback handling for events
 			-- anytime somebody calls `trigger_event_external'
 		do
 			print ("on_callback has been called!%N")
+			windows.start
+			windows.item.close_request_actions.call ([])
 		end
 
 
