@@ -101,6 +101,20 @@ feature -- Basic operation
 		deferred
 		end
 
+feature -- Multi Monitor
+
+	get_monitor_for_widget (a_widget: EV_WIDGET): EV_MONITOR is
+			-- get the monitor in which a_widget is most
+		require
+			widget_not_void: a_widget/=void
+		deferred
+		end
+
+	get_monitor_at_point (x, y: INTEGER): EV_MONITOR is
+			-- get the monitor that has the global coordinates x,y
+		deferred
+		end
+
 feature {NONE} -- Implementation
 
 	interface: EV_SCREEN;

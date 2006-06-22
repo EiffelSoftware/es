@@ -26,6 +26,14 @@ inherit
 
 	EV_GTK_DEPENDENT_ROUTINES
 
+	EV_ANY_IMP
+		redefine
+			interface,
+			dispose,
+			destroy,
+			App_implementation
+		end
+
 create
 	make
 
@@ -35,6 +43,7 @@ feature {NONE} -- Initialization
 			-- Create an empty drawing area.
 		do
 			base_make (an_interface)
+			create_monitors
 		end
 
 	initialize is
@@ -45,6 +54,28 @@ feature {NONE} -- Initialization
 			init_default_values
 			set_is_initialized (True)
 		end
+
+	create_monitors is
+			-- sets up all monitors
+		local
+			monitor_count,i: INTEGER
+			tmp_monitor: EV_MONITOR
+		do
+			monitor_count := {EV_GTK_EXTERNALS}.gdk_screen_get_n_monitors ({EV_GTK_EXTERNALS}.gdk_screen_get_default)
+			interface.all_monitors.make (monitor_count)
+
+			from
+				i := 0
+			until
+				i = monitor_count
+			loop
+				create tmp_monitor.make (i+1)
+				interface.all_monitors.extend (tmp_monitor)
+				i := i+1
+			end
+
+		end
+
 
 feature -- Status report
 
@@ -258,6 +289,31 @@ feature -- Measurement
 			Result := {EV_GTK_EXTERNALS}.gdk_screen_width
 		end
 
+feature -- Multi-Monitor
+
+	get_monitor_for_widget (a_widget: EV_WIDGET): EV_MONITOR is
+			-- get the monitor in which a_widget is most
+		local
+			mon_nr: INTEGER
+			w_imp: EV_WIDGET_IMP
+		do
+			w_imp ?= a_widget.implementation
+			check
+				w_imp_not_void: w_imp /= void
+			end
+			mon_nr := {EV_GTK_EXTERNALS}.gdk_screen_get_monitor_at_window(default_screen, {EV_GTK_EXTERNALS}.gtk_widget_struct_window(w_imp.c_object))
+			result := interface.all_monitors[mon_nr+1]
+		end
+
+	get_monitor_at_point (x, y: INTEGER): EV_MONITOR is
+			-- get the monitor that has the global coordinates x,y
+		local
+			mon_nr: INTEGER
+		do
+			mon_nr := {EV_GTK_EXTERNALS}.gdk_screen_get_monitor_at_point(default_screen, x, y)
+			result := interface.all_monitors[mon_nr+1]
+		end
+
 feature {NONE} -- Externals (XTEST extension)
 
 	frozen x_keysym_to_keycode (a_display: POINTER; a_keycode: INTEGER): INTEGER is
@@ -301,6 +357,12 @@ feature {NONE} -- Externals (XTEST extension)
 		end
 
 feature {NONE} -- Implementation
+
+	default_screen: POINTER is
+			-- pointer to the default screen
+		do
+			result := {EV_GTK_EXTERNALS}.gdk_screen_get_default
+		end
 
 	app_implementation: EV_APPLICATION_IMP is
 			-- Return the instance of EV_APPLICATION_IMP.
