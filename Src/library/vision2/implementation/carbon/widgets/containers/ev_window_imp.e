@@ -94,7 +94,9 @@ feature {NONE} -- Initialization
 					res := create_root_control_external( ptr, root_control_ptr )
 
 
+
 					set_c_object (ptr)
+					replace(void)
 			end
 
 	initialize is
@@ -235,8 +237,6 @@ feature -- Status setting
 
 	show is
 			-- Map the Window to the screen.
-		local
-			the_window: OPAQUE_WINDOW_PTR_STRUCT
 		do
 			if not is_show_requested then
 				call_show_actions := True
@@ -248,8 +248,8 @@ feature -- Status setting
 			if blocking_window /= Void then
 				set_blocking_window (Void)
 			end
-			create the_window.make_shared(c_object)
-			show_window_external(the_window.item)
+			show_window_external(c_object)
+
 			carbon_foreground
 		end
 
@@ -275,6 +275,7 @@ feature -- Element change
 			err : INTEGER
 		do
 			i := item
+
 			if i /= Void then
 				w ?= i.implementation
 				on_removed_item (w)
@@ -285,7 +286,7 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
-				err := get_root_control_external ( c_object, root_control_ptr )
+				err := get_root_control_external ( c_object, $root_control_ptr )
 				err := embed_control_external ( w.c_object, root_control_ptr )
 				on_new_item (w)
 			end

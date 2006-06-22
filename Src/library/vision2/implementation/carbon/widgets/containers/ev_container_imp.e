@@ -84,7 +84,7 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
-				err := get_root_control_external ( c_object, root_control_ptr )
+				err := get_root_control_external ( c_object, $root_control_ptr )
 				err := embed_control_external ( w.c_object, root_control_ptr )
 				on_new_item (w)
 			end
