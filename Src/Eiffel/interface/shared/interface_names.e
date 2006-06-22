@@ -130,6 +130,15 @@ feature -- Button texts
 	b_Dbg_assertion_checking_disable: STRING_32	is do Result := i18n("Disable assertion checking") end
 	b_Dbg_assertion_checking_restore: STRING_32 is do Result := i18n("Restore assertion checking") end
 
+	--added by EMU-PROJECT--
+	b_emu_upload_class: STRING is "Upload"
+	b_emu_download_class: STRING is "Download"
+	b_emu_lock_class: STRING is "Lock"
+	b_emu_unlock_class: STRING is "Unlock"
+	b_emu_server_class: STRING is "Create Server"
+	b_emu_add_user_class: STRING is "Add User"
+	------------------------
+
 feature -- Graphical degree output
 
 	d_Classes_to_go: STRING_32 						is do Result := i18n("Classes to Go:") end
@@ -479,6 +488,15 @@ feature -- Menu mnenomics
 	m_Unify_stone: STRING_32 							is do Result := i18n("Lin&k Context Tool") end
 	m_View: STRING_32 									is do Result := i18n("&View") end
 	m_Window: STRING_32 								is do Result := i18n("&Window") end
+
+	--added by EMU-PROJECT--
+	m_emu_upload_class: STRING is "&Emu upload ..."
+	m_emu_download_class: STRING is "&Emu download..."
+	m_emu_lock_class: STRING is "&Emu lock..."
+	m_emu_unlock_class: STRING is "&Emu unlock..."
+	m_emu_server_class: STRING is "&Emu create Server..."
+	m_emu_add_user_class: STRING is "&Emu add user..."
+	------------------------
 
 feature -- Label texts
 
@@ -984,15 +1002,98 @@ feature -- Description texts
 	e_Cursor_position: STRING_32 								is do Result := i18n("Cursor position (line:column)") end
 	e_Diagram_hole: STRING_32 									is do Result := i18n("Please drop a class or a cluster on this button %N%
 										%to view its diagram.%N%
+<<<<<<< .mine
+										%Use right click for both pick and drop actions."
+	e_Diagram_class_header: STRING is 	"Please drop a class on this button.%NUse right click for both%N%
+										%pick and drop actions."
+	e_Diagram_remove_anchor: STRING is	"Please drop a class or a cluster with an%Nanchor on this button.%NUse right click for both%N%
+										%pick and drop actions."
+	e_Diagram_create_class: STRING is	"Please drop this button on the diagram.%N%
+										%Use right click for both%Npick and drop actions."
+	e_Diagram_delete_figure: STRING is	"Please drop a class, a cluster or a midpoint%N%
+										%on this button. Use right click for both%Npick and drop actions."
+	e_Diagram_add_class_figure_relations: STRING is "A class figure(s) must either be selected%N%
+										%or dropped on this button via right clicking."
+	e_Diagram_delete_item: STRING is	"Please drop a class, a cluster or a link%N%
+										%on this button. Use right click for both%Npick and drop actions."
+	e_Display_error_help: STRING is		"Give help on compilation errors"
+	e_Display_system_info: STRING is	"Display information concerning current system"
+	e_Drop_an_error_stone: STRING is	"Pick the code of a compilation error (such as VEEN, VTCT,...)%N%
+										%and drop it here to have extended information about it."
+	e_Edit_exported_feature: STRING is	"Edit the properties of the selected feature"
+	e_Edit_expression: STRING is		"Edit an expression"
+	e_Edited: STRING is					"Some classes were edited since last compilation"
+	e_Exec_debug: STRING is				"Start application and stop at breakpoints"
+	e_Exec_kill: STRING is				"Stop application"
+	e_Exec_into: STRING is				"Step into a routine"
+	e_Exec_no_stop: STRING is			"Start application and stop at breakpoints"
+	e_Exec_out: STRING is				"Step out of a routine"
+	e_Exec_step: STRING is				"Execute the application one line at a time"
+	e_Exec_stop: STRING is				"Pause application at current point"
+	e_History_back: STRING is			"Back"
+	e_History_forth: STRING is			"Forward"
+	e_Minimize_all: STRING is			"Minimize all windows"
+	e_New_context_tool: STRING is		"Open a new context window"
+	e_New_dynamic_lib_definition: STRING is	"Create a new dynamic library definition"
+	e_New_editor: STRING is				"Open a new editor window"
+	e_New_expression: STRING is			"Create a new expression"
+	e_Not_running: STRING is			"Application is not running"
+	e_Open_dynamic_lib_definition: STRING is "Open a dynamic library definition"
+	e_Open_file: STRING is				"Open a file"
+	e_Open_eac_browser: STRING is		"Open the Eiffel Assembly Cache browser tool"
+	e_Paste: STRING is					"Paste"
+	e_Paused: STRING is					"Application is paused"
+	e_Pretty_print: STRING is			"Display an expanded view of objects"
+	e_Print: STRING is					"Print the currently edited text"
+	e_Project_name: STRING is			"Name of the current project"
+	e_Project_settings: STRING is		"Change project settings"
+	e_Quick_compile: STRING is			"Recompile classes that were edited in EiffelStudio"
+	e_Raise_all: STRING is				"Raise all windows"
+	e_Raise_all_unsaved: STRING is		"Raise all unsaved windows"
+	e_Redo: STRING is					"Redo"
+	e_Remove_class_cluster: STRING is	"Remove a class or a cluster from the system"
+	e_Remove_exported_feature: STRING is	"Remove the selected feature from this dynamic library definition"
+	e_Remove_expressions: STRING is		"Remove selected expressions"
+	e_Remove_object: STRING is			"Remove currently selected object"
+	e_Running: STRING is				"Application is running"
+	e_Running_no_stop_points: STRING is	"Application is running (ignoring breakpoints)"
+	e_Save_call_stack: STRING is		"Save call stack to a text file"
+	e_Save_dynamic_lib_definition: STRING is "Save this dynamic library definition"
+	e_Show_class_cluster: STRING is		"Locate currently edited class or cluster"
+	e_Send_stone_to_context: STRING is	"Synchronize context"
+	e_Separate_stone: STRING is			"Unlink the context tool from the other components"
+	e_Set_stack_depth: STRING is		"Set maximum call stack depth"
+	e_Shell: STRING is					"Send to external editor"
+	e_Switch_num_format_to_hex: STRING is "Switch to hexadecimal format"
+	e_Switch_num_format_to_dec: STRING is "Switch to decimal format"
+	e_Switch_num_formating: STRING is "Hexadecimal/Decimal formating"
+	e_Toggle_state_of_expressions: STRING is		"Enable/Disable expressions"
+	e_Toggle_stone_management: STRING is "Link or not the context tool to other components"
+	e_Undo: STRING is					"Undo"
+	e_Up_to_date: STRING is				"Executable is up-to-date"
+	e_Unify_stone: STRING is			"Link the context tool to the other components"
+	e_Terminate_c_compilation: STRING is "Terminate current C compilation in progress"
+
 										%Use right click for both pick and drop actions.") end
 	e_Diagram_class_header: STRING_32 is do Result := i18n("Please drop a class on this button.%NUse right click for both%N%
 															%pick and drop actions.") end
+>>>>>>> .r60150
 
 	e_Diagram_remove_anchor: STRING_32 is do Result := i18n("Please drop a class or a cluster with an%Nanchor on this button.%NUse right click for both%N%
 															%pick and drop actions.") end
 
 	e_Diagram_create_class: STRING_32 is do Result := i18n("Please drop this button on the diagram.%N%
 															%Use right click for both%Npick and drop actions.") end
+
+
+	--added by EMU-PROJECT--
+	e_emu_upload_class: STRING is "Upload class to Emu Server"
+	e_emu_download_class: STRING is "Download class from Emu Server"
+	e_emu_lock_class: STRING is "Lock class on Emu Server"
+	e_emu_unlock_class: STRING is "Unlock class on Emu Server"
+	e_emu_server_class: STRING is "Create emu server"
+	e_emu_add_user_class: STRING is "Add user to emu-project"
+	------------------------
 
 	e_Diagram_delete_figure: STRING_32 is do Result := i18n("Please drop a class, a cluster or a midpoint%N%
 															%on this button. Use right click for both%Npick and drop actions.") end
@@ -1075,6 +1176,7 @@ feature -- Description texts
 	e_external_editor_not_defined: STRING_32 					is do Result := i18n("External editor not defined") end
 	e_external_command_is_running: STRING_32 					is do Result := i18n("An external command is running now. %NPlease wait until it exits.") end
 	e_external_command_list_full: STRING_32 					is do Result := i18n("Your external command list is full.%NUse Tools->External Command... to delete one.") end
+>>>>>>> .r60150
 feature -- Wizard texts
 
 	wt_Profiler_welcome: STRING_32 								is do Result := i18n("Welcome to the Profiler Wizard") end
