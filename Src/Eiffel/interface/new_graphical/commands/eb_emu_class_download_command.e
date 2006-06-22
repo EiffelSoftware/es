@@ -1,6 +1,6 @@
 indexing
 	description: "Command to download class from emu server[EMU-TOOLBAR BUTTON]"
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

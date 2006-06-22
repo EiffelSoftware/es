@@ -1,6 +1,6 @@
 indexing
 	description: "Command to unlock a class on the emu server[EMU-TOOLBAR BUTTON]"
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

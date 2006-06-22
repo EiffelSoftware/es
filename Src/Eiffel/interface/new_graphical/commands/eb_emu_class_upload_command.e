@@ -1,8 +1,8 @@
 indexing
 	description: "Command to upload class to emu server[button in EMU-TOOLBAR]"
 	author: "EMU-TEAM"
-	date: "$Date"
-	revision: "$Revision"
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	EB_EMU_CLASS_UPLOAD_COMMAND

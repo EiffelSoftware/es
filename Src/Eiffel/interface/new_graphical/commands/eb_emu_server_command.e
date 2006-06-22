@@ -1,6 +1,6 @@
 indexing
 	description: "Create and initialize emu server[Button to open external server-wizard]"
-	author: ""
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 

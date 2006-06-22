@@ -1,9 +1,9 @@
 indexing
 	description: "Add a user to project on emu server[button to call external wizard]"
-	author: "EMU-TEAM"
-	date: ""
-	revision: ""
-	
+	author: "$Author$"
+	date: "$Date$"
+	revision: "$Revistion$"
+
 
 class
 	EB_EMU_ADD_USER_COMMAND
