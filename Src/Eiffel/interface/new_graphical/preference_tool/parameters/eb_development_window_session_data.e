@@ -38,6 +38,9 @@ feature {NONE} -- Creation
 			show_all_text_in_general_toolbar := a_window_data.show_all_text_in_general_toolbar
 			show_text_in_general_toolbar := a_window_data.show_text_in_general_toolbar
 			show_address_toolbar := a_window_data.show_address_toolbar
+			--added by EMU-PROJECT---
+			show_emu_toolbar := a_window_data.show_emu_toolbar
+			-------------------------
 		end
 
 feature {EB_DEVELOPMENT_WINDOW} -- Access
@@ -111,6 +114,15 @@ feature {EB_DEVELOPMENT_WINDOW} -- Access
 	show_project_toolbar: BOOLEAN
 			-- Show the project toolbar (Breakpoints, ...)?
 
+	---added by EMU-PROJECT----
+	show_emu_toolbar: BOOLEAN
+			-- Show the emu toolbar?
+	show_text_in_emu_toolbar: BOOLEAN
+		-- Show only selected text in the emu toolbar?
+	show_all_text_in_emu_toolbar: BOOLEAN
+		-- Show all text in the emu toolbar?
+	---------------------------
+
 	show_refactoring_toolbar: BOOLEAN
 			-- Show the refactoring toolbar.
 
@@ -125,7 +137,10 @@ feature {EB_DEVELOPMENT_WINDOW} -- Access
 
 	refactoring_toolbar_layout: ARRAY [STRING]
 			-- Toolbar organization
-
+	--added by EMU-PROJECT----
+	emu_toolbar_layout: ARRAY [STRING]
+			-- Toolbar organization
+	--------------------------
 feature {EB_DEVELOPMENT_WINDOW} -- Element change
 
 	save_filename (a_filename: like file_name) is
@@ -215,6 +230,15 @@ feature -- Basic operations
 		do
 			Result := retrieve_toolbar (command_pool, refactoring_toolbar_layout)
 		end
+	---added by EMU-PROJECT----
+	retrieve_emu_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): EB_TOOLBAR is
+			-- Retreive the emu toolbar using the available commands in `command_pool'
+		do
+			Result := retrieve_toolbar (command_pool, emu_toolbar_layout)
+		end
+	---------------------------
+
+
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
