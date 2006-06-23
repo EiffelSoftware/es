@@ -1545,6 +1545,16 @@ Delivery/xmldoc/tools/wizards/com/images/wizard-12.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-13.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-8.gif -text
 EiffelMultiUser/emu_group.png -text
+EiffelMultiUser/project_admin/adduser_wizard/arguments.wb -text
+EiffelMultiUser/project_admin/adduser_wizard/pixmaps/emu_icon_01.png -text
+EiffelMultiUser/project_admin/adduser_wizard/pixmaps/emu_icon_01_60.png -text
+EiffelMultiUser/project_admin/adduser_wizard/pixmaps/emu_wizard.png -text
+EiffelMultiUser/project_admin/adduser_wizard/preferences.wb -text
+EiffelMultiUser/project_admin/new_project_wizard/Diagrams/EV_WINDOW.xml -text
+EiffelMultiUser/project_admin/new_project_wizard/arguments.wb -text
+EiffelMultiUser/project_admin/new_project_wizard/pixmaps/emu_icon_01.png -text
+EiffelMultiUser/project_admin/new_project_wizard/pixmaps/emu_wizard.png -text
+EiffelMultiUser/project_admin/new_project_wizard/preferences.wb -text
 EiffelMultiUser/server/Shortcut[!!-~]to[!!-~]emu_server.exe.lnk -text svneol=native#application/octet-stream
 Src/C/CONFIGS/linux-sparc -text
 Src/C/CONFIGS/macosx-x86 -text
