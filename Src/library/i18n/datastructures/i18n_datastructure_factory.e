@@ -28,6 +28,13 @@ feature -- Basic operations
 			create {I18N_HASH_TABLE} last_datastructure.make
 		end
 
+	use_binary_search is
+			-- Create a datastructure that uses binary search.
+		do
+			create {I18N_BINARY_SEARCH} last_datastructure.make
+		end
+
+
 	use_dummy is
 			-- Create a dummy datastructure.
 		do
