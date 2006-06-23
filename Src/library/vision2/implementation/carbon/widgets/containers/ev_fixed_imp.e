@@ -41,12 +41,14 @@ feature {NONE} -- Initialization
 		do
 			base_make( an_interface )
 			create rect.make_new_unshared
-			rect.set_top ( 0 )
-			rect.set_left ( 0 )
-			rect.set_right ( 200 )
-			rect.set_bottom ( 200 )
+			rect.set_top ( 50 )
+			rect.set_left ( 50 )
+			rect.set_right ( 240 )
+			rect.set_bottom ( 240 )
 			res := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
+
 			set_c_object ( control_ptr )
+			id:=app_implementation.get_id (current)  --getting an id from the application
 		end
 
 	initialize is
@@ -57,6 +59,26 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Status setting
+
+	embed_all is
+			local
+				i:INTEGER
+				a_imp: EV_WIDGET_IMP
+				err:INTEGER
+			do
+				from i:=1
+				until i> child_array.count
+				loop
+					a_imp?=child_array.i_th(i).implementation
+					if a_imp/=void then
+						err := embed_control_external (a_imp.c_object, c_object)
+					end
+					i:=i+1
+				end
+
+
+			end
+
 
 	set_item_position (a_widget: EV_WIDGET; an_x, a_y: INTEGER) is
 			-- Set `a_widget.x_position' to `an_x'.

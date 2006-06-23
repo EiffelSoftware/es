@@ -45,7 +45,7 @@ feature -- Access
 			app_imp: EV_APPLICATION_IMP
 		once
 			app_imp ?= application.implementation
---			Result := app_imp.readable_pixbuf_formats.linear_representation
+		--	Result := app_imp.readable_pixbuf_formats.linear_representation
 			Result.compare_objects
 		end
 
@@ -70,7 +70,7 @@ feature -- Access
 			app_imp: EV_APPLICATION_IMP
 		once
 			app_imp ?= application.implementation
---			Result := app_imp.font_names_on_system.linear_representation
+	--		Result := app_imp.font_names_on_system.linear_representation
 			Result.compare_objects
 		end
 

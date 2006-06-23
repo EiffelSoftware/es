@@ -63,6 +63,9 @@ feature {NONE} -- Initialization
 			-- Initialize default options, colors and sizes.
 			-- Connect action sequences to GTK signals.
 		do
+			
+
+
 		end
 
 	initialize_file_drop (a_widget: POINTER) is
@@ -119,6 +122,7 @@ feature {EV_APPLICATION_IMP} -- Implementation
 
 feature -- Access
 
+	id: INTEGER  -- id is a unique integer to identifie the widgets
 	parent: EV_CONTAINER is
 			-- Container widget that contains `Current'.
 			-- (Void if `Current' is not in a container)

@@ -85,18 +85,16 @@ feature {NONE} -- Initialization
 					base_make (an_interface)
 					create rect.make_new_shared
 
-					rect.set_bottom (51)
-					rect.set_left (50)
-					rect.set_right (51)
-					rect.set_top (50)
+					rect.set_bottom (46)
+					rect.set_left (45)
+					rect.set_right (46)
+					rect.set_top (45)
 					window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute)
 					res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
-					res := create_root_control_external( ptr, root_control_ptr )
-
-
-
+					res := create_root_control_external( ptr, $root_control_ptr )
 					set_c_object (ptr)
-	
+					allow_resize
+					id:=app_implementation.get_id (current)  --getting an id from the application
 			end
 
 	initialize is
@@ -147,6 +145,8 @@ feature {NONE} -- Initialization
 			internal_is_border_enabled := True
 			user_can_resize := True
 			set_is_initialized (True)
+
+
 		end
 
 
@@ -266,6 +266,7 @@ feature -- Status setting
 
 feature -- Element change
 
+
 	replace (v: like item) is
 			-- Replace `item' with `v'.
 		local
@@ -273,6 +274,7 @@ feature -- Element change
 			i: EV_WIDGET
 			root_control_ptr : POINTER
 			err : INTEGER
+			a_fixe: EV_FIXED_IMP
 		do
 			i := item
 
@@ -288,7 +290,12 @@ feature -- Element change
 				w ?= v.implementation
 				err := get_root_control_external ( c_object, $root_control_ptr )
 				err := embed_control_external ( w.c_object, root_control_ptr )
+
 				on_new_item (w)
+				a_fixe?=v.implementation
+				if a_fixe/=void then
+					a_fixe.embed_all
+				end
 			end
 			item := v
 		end

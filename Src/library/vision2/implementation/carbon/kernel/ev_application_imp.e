@@ -18,20 +18,20 @@ inherit
 					pointer_button_release_actions_internal
 			end
 
---	IDENTIFIED
---		undefine
---			is_equal,
---			copy
---		end
+	IDENTIFIED
+		undefine
+			is_equal,
+			copy
+		end
 
 	EV_APPLICATION_ACTION_SEQUENCES_IMP
 
---	EXECUTION_ENVIRONMENT
---		rename
---			launch as ee_launch
---		end
---
---	PLATFORM
+	EXECUTION_ENVIRONMENT
+		rename
+			launch as ee_launch
+		end
+
+	PLATFORM
 
 
 	EXCEPTIONS
@@ -55,8 +55,12 @@ create
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Set up the callback marshal and initialize GTK+.
+			-- Set up the callback marshal
 		do
+			id_count:=1
+			base_make (an_interface)
+			create window_oids.make
+			create widget_list.make (1, 200)
 		end
 
 feature {NONE} -- Event loop
@@ -65,8 +69,9 @@ feature {NONE} -- Event loop
 			-- Display the first window, set up the post_launch_actions,
 			-- and start the event loop.
 		do
+
 			enable_foreground_operation
-			install_event_handler
+			--install_event_handler
 			run_application_event_loop_external
 		end
 
@@ -90,7 +95,7 @@ feature {NONE} -- Event loop
 	end
 
 
-	install_event_handler is
+	install_event_handler(a_id:INTEGER ; a_target:POINTER; a_event_class: INTEGER; a_event_kind:INTEGER) is
 			--
 		local
 			null: POINTER
@@ -99,19 +104,25 @@ feature {NONE} -- Event loop
 			event_type: EVENT_TYPE_SPEC_STRUCT
 		do
 			create dispatcher.make (Current)
-			event_target := get_application_event_target_external
+			event_target:=a_target
+			--event_target := get_application_event_target_external
 			-- TODO: Find out how to create a struct array ...
 
 			create event_type.make_new_unshared
-			event_type.set_eventclass(kEventClassKeyboard) -- kEventClassKeyboard
-			event_type.set_eventkind(1) -- kEventRawKeyDown
-
-			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, null, null)
+			  event_type.set_eventclass(a_event_class)
+			  event_type.set_eventkind (a_event_kind)
+			--event_type.set_eventclass(kEventClassKeyboard) -- kEventClassKeyboard
+			--event_type.set_eventkind(1) -- kEventRawKeyDown
+			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, $a_id, null)
 		end
 
 feature {EV_ANY_IMP} -- Implementation
 
 feature -- Access
+
+	id_count: INTEGER  --the next id.
+
+	widget_list: ARRAY[EV_WIDGET_IMP]
 
 	ctrl_pressed: BOOLEAN is
 			-- Is ctrl key currently pressed?
@@ -197,6 +208,13 @@ feature -- Status setting
 	set_tooltip_delay (a_delay: INTEGER) is
 			-- Set `tooltip_delay' to `a_delay'.
 		do
+		end
+
+		get_id(a_widget: EV_WIDGET_IMP): INTEGER is
+		do
+			widget_list.force (a_widget,id_count)
+			Result:=id_count
+			id_count:=id_count+1
 		end
 
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
