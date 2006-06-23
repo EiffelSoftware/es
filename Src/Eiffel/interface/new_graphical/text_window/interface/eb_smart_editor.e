@@ -256,6 +256,7 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 			current_feature: FEATURE_AS
 			a_area, temp_next: EB_FOLDING_AREA
 		do
+
 			if (text_displayed.click_tool_enabled and then syntax_is_correct) and then (text_displayed.click_tool.current_class_as.features /= Void) then
 				the_feature_clauses := text_displayed.click_tool.current_class_as.features
 				a_area := folding_areas.first
@@ -356,6 +357,8 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 					io.put_new_line
 				end
 
+    			-- update margins
+    			margin.refresh
 				folding_areas_is_initialized := true
 			else
 				-- we cant do anything.
@@ -393,8 +396,10 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 		require
 			not_void: a_old /= Void and a_new /= Void
 		do
-			if (a_new.start_location.line /= a_old.start_line) then
+			if a_new.start_location.line /= a_old.start_line then
 				a_old.set_start_line (a_new.start_location.line)
+			end
+			if a_new.end_location.line /= a_old.end_line then
 				a_old.set_end_line (a_new.end_location.line)
 			end
 		ensure
@@ -663,7 +668,7 @@ feature {NONE} -- syntax checking implementation
 				end
 
 				-- iterate through error list
---				io.put_string (list.count.out + " errors found%N")
+				io.put_string (list.count.out + " errors found%N")
 				from
 					list.start
 				until
