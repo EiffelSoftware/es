@@ -32,14 +32,12 @@ feature
 				left := base_array.lower
 				right := base_array.upper
 			invariant
-				right >= base_array.lower
-						implies base_array.item(right + 1).get_original(1) >= base_array.item(base_array.upper).get_original(1)
+				right < base_array.upper
+						implies base_array.item(right + 1).get_original(1) <= base_array.item(base_array.upper).get_original(1)
 				left <= base_array.upper and left > base_array.lower
 						implies base_array.item(left - 1).get_original(1) <= base_array.item(base_array.upper).get_original(1)
-			--variant
-			--	right - left + 1
-			-- The invariant must decrease by 1 every iteration
-			-- Should try with a log_2(right - left) + 1
+			variant
+				right - left + 1
 			until
 				left > right or found
 			loop
@@ -53,6 +51,7 @@ feature
 					-- Found
 					found := True
 					Result := base_array.item(middle).get_translated(i_th)
+					left := left + 1 -- not nice but required to decrease variant
 				end
 			end
 		end
@@ -60,7 +59,48 @@ feature
 	initialize is
 			-- Initialize the datastructure.
 		do
-			-- !! We can't guarantee that the strings in base_array are ordered!
+			bubble_sort
+		end
+
+feature {NONE} --implementation
+
+	bubble_sort is
+			-- Sort `base_array'
+			-- I use bubble sort because it is efficent
+			-- when the array is already sorted, which is
+			-- the case when the datasource is a MO file
+		require
+			base_array_exists: base_array /= Void
+		local
+			sorted : BOOLEAN
+			t_string : I18N_STRING
+			i,j : INTEGER
+		do
+			from
+				sorted := False
+			variant
+				base_array.upper - j + 1
+			until
+				sorted
+			loop
+				from
+					i := 1
+					sorted := True
+				variant
+					base_array.upper - j - i + 1
+				until
+					i = base_array.upper - j
+				loop
+					if base_array.item (i+1).get_original (i+1) <  base_array.item (i+1).get_original (i) then
+						t_string := base_array.item (i)
+						base_array.put (base_array.item (i+1), i)
+						base_array.put (t_string, i+1)
+						sorted := False
+					end
+					i := i +1
+				end
+				j := j +1
+			end
 		end
 
 end
