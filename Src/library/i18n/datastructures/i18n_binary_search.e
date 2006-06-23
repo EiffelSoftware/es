@@ -42,7 +42,7 @@ feature
 			until
 				left > right or exit
 			loop
-				middle := (left + right) // 2
+				middle := ((left + right).as_natural_32 |>> 1).as_integer_32
 				t_s := base_array.item (middle).get_original (1).as_string_32
 				if a_string < base_array.item (middle).get_original (1).as_string_32 then
 					right := middle - 1
