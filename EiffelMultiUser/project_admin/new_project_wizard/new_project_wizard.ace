@@ -46,19 +46,19 @@ default
 -- EiffelVision2
 
 cluster
-	all base:		"$ISE_EIFFEL\library\base"
+	all base:		"$ISE_LIBRARY\library\base"
 		exclude
 			"table_eiffel3"; "desc"; "dotnet";
 		end
 
-	all wel:		"$ISE_EIFFEL\library\wel"
+	all wel:		"$ISE_LIBRARY\library\wel"
         exclude
             "dotnet";
         end
 
-	all vision2:		"$ISE_EIFFEL\library\vision2"
+	all vision2:		"$ISE_LIBRARY\library\vision2"
 		exclude
-			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; "dotnet";
+			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; "dotnet"; "carbon";
 		end
 
 	all wizard:		"$ISE_LIBRARY\library\wizard"
@@ -68,11 +68,11 @@ cluster
 
 	all emu_protocol:		"..\..\protocol"
 
-	all net:		"$ISE_EIFFEL\library\net"
+	all net:		"$ISE_LIBRARY\library\net"
 
 	emu_project_wizard:		"."
 
-	all time:		"$ISE_EIFFEL\library\time"
+	all time:		"$ISE_LIBRARY\library\time"
 		exclude
 			"german"; "french"; "dotnet";
 		end
@@ -80,16 +80,16 @@ cluster
 external
 
 	include_path:
-		"$(ISE_EIFFEL)\library\wel\spec\windows\include",
-		"$(ISE_EIFFEL)\library\vision2\spec\include",
+		"$(ISE_LIBRARY)\library\wel\spec\windows\include",
+		"$(ISE_LIBRARY)\library\vision2\spec\include",
 		"$(ISE_LIBRARY)\library\wizard\help\Clib"
 
 	object:
-		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",
-		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib",
-		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
-		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib",
+		"$(ISE_LIBRARY)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",
+		"$(ISE_LIBRARY)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib",
+		"$(ISE_LIBRARY)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
+		"$(ISE_LIBRARY)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib",
 		"$(ISE_LIBRARY)\library\wizard\help\Clib\htmlhelp.lib",
-		"$(ISE_EIFFEL)\library\net\spec\$(ISE_C_COMPILER)\lib\net.lib"
+		"$(ISE_LIBRARY)\library\net\spec\$(ISE_C_COMPILER)\lib\net.lib"
 
 end
