@@ -48,17 +48,20 @@ default
 cluster
 	all base:		"$ISE_EIFFEL\library\base"
 		exclude
-			"table_eiffel3"; "desc"; 
+			"table_eiffel3"; "desc"; "dotnet";
 		end
 
 	all wel:		"$ISE_EIFFEL\library\wel"
+        exclude
+            "dotnet";
+        end
 
 	all vision2:		"$ISE_EIFFEL\library\vision2"
 		exclude
-			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; 
+			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; "dotnet";
 		end
 
-	all wizard:		"$ISE_EIFFEL\library\wizard"
+	all wizard:		"$ISE_LIBRARY\library\wizard"
 		exclude
 			"unix"; 
 		end
@@ -71,7 +74,7 @@ cluster
 
 	all time:		"$ISE_EIFFEL\library\time"
 		exclude
-			"german"; "french"; 
+			"german"; "french"; "dotnet";
 		end
 
 external
@@ -79,14 +82,14 @@ external
 	include_path:
 		"$(ISE_EIFFEL)\library\wel\spec\windows\include",
 		"$(ISE_EIFFEL)\library\vision2\spec\include",
-		"$(ISE_EIFFEL)\library\wizard\help\Clib"
+		"$(ISE_LIBRARY)\library\wizard\help\Clib"
 
 	object:
 		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",
 		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib",
 		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
 		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib",
-		"$(ISE_EIFFEL)\library\wizard\help\Clib\htmlhelp.lib",
+		"$(ISE_LIBRARY)\library\wizard\help\Clib\htmlhelp.lib",
 		"$(ISE_EIFFEL)\library\net\spec\$(ISE_C_COMPILER)\lib\net.lib"
 
 end

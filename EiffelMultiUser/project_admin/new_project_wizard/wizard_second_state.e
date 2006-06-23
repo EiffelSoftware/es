@@ -30,12 +30,12 @@ feature -- Creation
 		do
 			Precursor(an_info)
 		end
-		
+
 
 feature -- Basic Operation
 
 
-	build is 
+	build is
 			-- Build entries.
 		local
 			label_text_vb: EV_VERTICAL_BOX
@@ -61,12 +61,12 @@ feature -- Basic Operation
 			create space
 			space.set_minimum_width (80)
 			system.add_without_expand (center_hb, space)
-			
+
 			-- fill label and text field box
 			create proj_name_hb
 			system.add_label (proj_name_hb, "project name: ", label_width)
 			create project_name_txt
-			project_name_txt.set_minimum_width_in_characters (9)
+			project_name_txt.set_minimum_width_in_characters (20)
 			if system.project_name /= Void then
 				project_name_txt.set_text (system.project_name)
 			end
@@ -75,10 +75,10 @@ feature -- Basic Operation
 			create proj_pass_hb
 			system.add_label (proj_pass_hb, "project password: ", label_width)
 			create password_txt
-			if system.project_password /= Void then 
+			if system.project_password /= Void then
 				password_txt.set_text (system.project_password)
 			end
-			password_txt.set_minimum_width_in_characters (9)
+			password_txt.set_minimum_width_in_characters (20)
 			system.add_without_expand (proj_pass_hb, password_txt)
 			system.add_without_expand (label_text_vb, proj_pass_hb)
 
@@ -102,7 +102,7 @@ feature -- Basic Operation
 			-- save entries
 			system ?= current_application
 			if system /= Void then
-				if not project_name_txt.text.is_empty then 
+				if not project_name_txt.text.is_empty then
 					system.set_project_name (project_name_txt.text)
 				end
 				if not password_txt.text.is_empty then
@@ -119,7 +119,7 @@ feature -- Queries
 		do
 			Result := not (project_name_txt.text.is_empty or password_txt.text.is_empty)
 		end
-		
+
 
 
 feature {NONE} -- Implementation
@@ -135,10 +135,10 @@ feature {NONE} -- Implementation
 
 
 feature -- Text fields
-	
+
 	project_name_txt: EV_TEXT_FIELD
 			-- the text field for the name of the project.
-			
+
 	password_txt: EV_TEXT_FIELD
 			-- project password.
 
