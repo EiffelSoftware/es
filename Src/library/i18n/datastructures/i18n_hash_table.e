@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 			hash_table /= Void
 		end
 
-feature -- Basic operations
+feature {NONE} -- Basic operations
 	search(a_string: STRING_32; i_th: INTEGER): STRING_32 is
 			-- Can you give me the translation?
 		local

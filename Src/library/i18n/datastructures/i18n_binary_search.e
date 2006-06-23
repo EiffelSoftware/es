@@ -14,7 +14,7 @@ create {I18N_DATASTRUCTURE_FACTORY}
 	make,
 	make_with_datasource
 
-feature
+feature {NONE} -- Basic operations
 	search (a_string : STRING_32; i_th : INTEGER) : STRING_32 is
 			-- search string in base_array
 			-- and return the i_th translated plural form of it
@@ -72,12 +72,15 @@ feature {NONE} --implementation
 		require
 			base_array_exists: base_array /= Void
 		local
-			sorted : BOOLEAN
-			t_string : I18N_STRING
-			i,j : INTEGER
+			sorted: BOOLEAN
+			t_string: I18N_STRING
+			i,j: INTEGER
 		do
 			from
+				j := 0
 				sorted := False
+			invariant
+				j >= 0
 			variant
 				base_array.upper - j + 1
 			until
@@ -86,20 +89,22 @@ feature {NONE} --implementation
 				from
 					i := 1
 					sorted := True
+				invariant
+					i >= 1
 				variant
 					base_array.upper - j - i + 1
 				until
-					i = base_array.upper - j
+					i >= base_array.upper - j
 				loop
-					if base_array.item (i+1).get_original (i+1) <  base_array.item (i+1).get_original (i) then
-						t_string := base_array.item (i)
-						base_array.put (base_array.item (i+1), i)
-						base_array.put (t_string, i+1)
+					if base_array.item(i+1).get_original(1) <  base_array.item(i).get_original(1) then
+						t_string := base_array.item(i)
+						base_array.put(base_array.item(i+1), i)
+						base_array.put(t_string, i+1)
 						sorted := False
 					end
-					i := i +1
+					i := i + 1
 				end
-				j := j +1
+				j := j + 1
 			end
 		end
 
