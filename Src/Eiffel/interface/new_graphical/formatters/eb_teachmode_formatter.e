@@ -1,10 +1,10 @@
 indexing
-	description: "Formatter that displays the text of a feature with no analysis."
+	description: "Formatter that displays only text of a feature with no analysis in editor-mode"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "Xavier Rousselot"
+	author: "ESTeaching Project, ETH SE SS 2006"
 	date: "$Date$"
-	revision: "$Revision: 58663 $"
+	revision: "$Revision: 58664 $"
 
 class
 	EB_TEACHMODE_FORMATTER
@@ -73,19 +73,10 @@ feature -- Formatting
 				if ebw /= Void AND fs /= Void then
 					associated_feature := fs.e_feature
 					if associated_feature /= Void then
+						associated_feature_stone := fs
 						teaching_mode := True
---					else
---						editor.load_text (fs.origin_text)
 					end
-					--editor.display_message ("Yes: both")
---				elseif ebw /= Void then
---					editor.display_message ("Yes: ebw")
---				elseif fs /= Void then
---					editor.display_message ("Yes: fs")
---				else
---					editor.display_message ("ERROR")
 				end
-
 
 				display_temp_header
 				create class_file.make (classi.file_name)
@@ -122,30 +113,70 @@ feature -- Formatting
 					editor.disable_has_breakable_slots
 				end
 
+				if NOT teaching_mode then
+					editor.display_message ("no feature for TEACHING-Mode selected!")
+					editable := false
+				end
+
 				display_header
 			end
 		end
 
+	full_text is
+			-- Create `formatted_text'.
+		local
+			feature_text : STRING
+			class_text: STRING
+		do
+			feature_text := editor.text
+			class_text := class_header_text + feature_text + class_footer_text
+			editor.set_stone (stone)
+			editor.load_text (class_text)
+		end
+
+	get_full_text:STRING is
+			-- Create `formatted_text'.
+		local
+			feature_text : STRING
+			class_text: STRING
+		do
+			feature_text := editor.text
+			class_text := class_header_text + feature_text + class_footer_text
+			Result := class_text
+		end
 
 feature {NONE} -- Implementation
 
 	associated_feature: E_FEATURE
 			-- Feature about which information is displayed.
 
-	generate_text is
+	associated_feature_stone:  FEATURE_STONE
+
+	class_header_text: STRING
+	class_footer_text: STRING
+
+generate_text is
 			-- Create `formatted_text'.
 		local
 			retried: BOOLEAN
 			ynk_win: YANK_STRING_WINDOW
+			ynk_win1: YANK_STRING_WINDOW
+			ynk_win2: YANK_STRING_WINDOW
 		do
 			if associated_feature /= Void then
 				create ynk_win.make
+				create ynk_win1.make
+				create ynk_win2.make
 				if not retried then
-					last_was_error := associated_feature.text (ynk_win)
+					last_was_error := associated_feature.plain_text (ynk_win)
+					last_was_error := associated_feature.class_header_text (ynk_win1) OR ELSE last_was_error
+					last_was_error := associated_feature.class_footer_text (ynk_win2) OR ELSE last_was_error
 				else
 					last_was_error := True
 				end
 				if not last_was_error then
+					class_header_text := ynk_win1.stored_output
+					class_footer_text := ynk_win2.stored_output
 					editor.set_stone (stone)
 					editor.load_text (ynk_win.stored_output)
 				end
@@ -154,7 +185,6 @@ feature {NONE} -- Implementation
 			retried := True
 			retry
 		end
-
 
 
 indexing

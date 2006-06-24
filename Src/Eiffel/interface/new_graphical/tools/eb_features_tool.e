@@ -312,6 +312,7 @@ feature {EB_FEATURES_TREE} -- Status setting
 				development_window.set_stone (feature_stone)
 				development_window.set_feature_locating (false)
 
+				-- quick stone-update for teaching mode
 				etf ?= development_window.pos_container
 				if etf /= Void then
 					etf.set_stone (feature_stone)

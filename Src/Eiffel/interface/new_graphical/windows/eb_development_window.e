@@ -45,6 +45,7 @@ inherit
 			update_save_symbol,
 			position,
 			pos_container
+--			save_text
 		select
 			set_stone
 		end
@@ -65,6 +66,7 @@ inherit
 			update_save_symbol,
 			position,
 			pos_container
+--			save_text
 		end
 
 
@@ -2561,6 +2563,7 @@ feature -- Resource Update
 		do
 			Precursor
 			editor_tool.on_text_saved
+
 			text_saved := True
 			if not save_only then
 				editor_tool.text_area.update_click_list (True)
@@ -2577,6 +2580,7 @@ feature -- Resource Update
 			else
 				status_bar.display_message (Interface_names.L_syntax_error)
 			end
+
 			text_edited := False
 		end
 

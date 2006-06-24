@@ -369,6 +369,115 @@ feature -- Access
 			end
 		end;
 
+	plain_text (a_text_formatter: TEXT_FORMATTER): BOOLEAN is
+			-- Plain-Text of the feature.
+			-- Void if unreadable file
+		local
+			class_text: STRING;
+			start_position, end_position: INTEGER;
+			body_as: FEATURE_AS;
+			rout_as: ROUTINE_AS
+			c: like written_class;
+		do
+			c := written_class;
+			class_text := c.text;
+			if class_text /= Void then
+				body_as := ast;
+				start_position := body_as.start_position
+				rout_as ?= body_as.body.content
+				if rout_as = Void then
+						-- `body_as.end_position' excludes feature comments
+						-- Let's use take the text up-to the next syntax construct
+					end_position := body_as.next_position - 1
+				else
+					end_position := body_as.end_position
+				end
+				if
+					class_text.count >= end_position and
+					start_position < end_position
+				then
+					class_text := class_text.substring
+								(start_position, end_position);
+					a_text_formatter.add_feature (Current, class_text)
+				end
+			else
+				Result := true
+			end
+		end;
+
+	class_header_text (a_text_formatter: TEXT_FORMATTER): BOOLEAN is
+			-- Class-Text above the feature.
+			-- Void if unreadable file
+		local
+			class_text: STRING;
+			start_position, end_position: INTEGER;
+			body_as: FEATURE_AS;
+			rout_as: ROUTINE_AS
+			c: like written_class;
+		do
+			c := written_class;
+			class_text := c.text;
+			if class_text /= Void then
+				body_as := ast;
+				start_position := body_as.start_position
+				rout_as ?= body_as.body.content
+				if rout_as = Void then
+						-- `body_as.end_position' excludes feature comments
+						-- Let's use take the text up-to the next syntax construct
+					end_position := body_as.next_position - 1
+				else
+					end_position := body_as.end_position
+				end
+				if
+					class_text.count >= end_position and
+					start_position < end_position
+				then
+					class_text := class_text.substring
+								(1, start_position-1);
+					a_text_formatter.add_feature (Current, class_text)
+				end
+			else
+				Result := true
+			end
+		end;
+
+	class_footer_text (a_text_formatter: TEXT_FORMATTER): BOOLEAN is
+			-- Class-Text below the feature.
+			-- Void if unreadable file
+		local
+			class_text: STRING;
+			start_position, end_position: INTEGER;
+			body_as: FEATURE_AS;
+			rout_as: ROUTINE_AS
+			c: like written_class;
+		do
+			c := written_class;
+			class_text := c.text;
+			if class_text /= Void then
+				body_as := ast;
+				start_position := body_as.start_position
+				rout_as ?= body_as.body.content
+				if rout_as = Void then
+						-- `body_as.end_position' excludes feature comments
+						-- Let's use take the text up-to the next syntax construct
+					end_position := body_as.next_position - 1
+				else
+					end_position := body_as.end_position
+				end
+				if
+					class_text.count >= end_position and
+					start_position < end_position
+				then
+					class_text := class_text.substring
+								(end_position+1, class_text.count);
+					a_text_formatter.add_feature (Current, class_text)
+				end
+			else
+				Result := true
+			end
+		end;
+
+
 	associated_class: CLASS_C is
 			-- Class where the feature was evaluated in
 		do

@@ -66,6 +66,8 @@ feature -- Execution
 		local
 			compileok: BOOLEAN
 			wd: EV_WARNING_DIALOG
+			target_text : STRING
+			etf : EB_TEACHMODE_FORMATTER
 		do
 				-- FIXME XR: We add a test `is_sensitive' to prevent calls from the accelerator.
 				-- It would be nicer to use the `executable' feature but that's 5.1 :)
@@ -85,7 +87,16 @@ feature -- Execution
 					target.check_passed and then
 					compileok
 				then
-					save (target.file_name, target.text)
+					-- get entire class-text in teaching-mode
+					target_text := target.text
+					if target.pos_container /= Void then
+						etf ?= target.pos_container
+						if etf /= void then
+							target_text := etf.get_full_text
+						end
+					end
+
+					save (target.file_name, target_text)
 					target.set_last_saving_date (last_saving_date)
 					target.on_text_saved
 					target.update_save_symbol
