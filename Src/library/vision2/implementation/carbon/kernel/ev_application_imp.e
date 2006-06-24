@@ -55,7 +55,7 @@ create
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Set up the callback marshal
+			-- Set up the callback marshalL
 		do
 			id_count:=1
 			base_make (an_interface)
@@ -87,13 +87,9 @@ feature {NONE} -- Event loop
 			ret := set_front_process_external(psn.item)
 		end
 
-	frozen kEventClassKeyboard: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-		"kEventClassKeyboard"
-	end
 
+
+feature {EV_ANY_IMP} -- Implementation
 
 	install_event_handler(a_id:INTEGER ; a_target:POINTER; a_event_class: INTEGER; a_event_kind:INTEGER) is
 			--
@@ -102,21 +98,23 @@ feature {NONE} -- Event loop
 			ret: INTEGER
 			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
+			dummy: RECT_STRUCT
 		do
+			-- this hack with dummy is just a worke around, because i dont know how to get the integer object given a pinter in eiffel
+			create dummy.make_new_shared
+			dummy.set_top (a_id)
+
 			create dispatcher.make (Current)
+
 			event_target:=a_target
-			--event_target := get_application_event_target_external
-			-- TODO: Find out how to create a struct array ...
 
-			create event_type.make_new_unshared
-			  event_type.set_eventclass(a_event_class)
-			  event_type.set_eventkind (a_event_kind)
-			--event_type.set_eventclass(kEventClassKeyboard) -- kEventClassKeyboard
-			--event_type.set_eventkind(1) -- kEventRawKeyDown
-			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, $a_id, null)
+			create event_type.make_new_shared
+			event_type.set_eventclass(a_event_class)
+			event_type.set_eventkind (a_event_kind)
+			print("event pointer: " + event_type.item.to_integer_32.out)
+
+			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, a_event_kind, event_type.item, dummy.item, null)
 		end
-
-feature {EV_ANY_IMP} -- Implementation
 
 feature -- Access
 
@@ -374,11 +372,36 @@ feature {NONE} -- Carbon callback handling for events
 	on_callback (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
 			-- Callback target. This feature gets called
 			-- anytime somebody calls `trigger_event_external'
+		local
+			dummy: RECT_STRUCT
+			null: POINTER
+			event_type: EVENT_TYPE_SPEC_STRUCT
+			a_button: EV_BUTTON_IMP
+			a_data: TUPLE
 		do
-			print ("on_callback has been called!%N")
-			windows.start
-			windows.item.close_request_actions.call ([])
+
+			if a_inuserdata /= null then
+				create dummy.make_shared (a_inuserdata) --just a hack, because i dont know how to get to integer from a pointer in eiffel.
+
+				print ("on_callback has been called by id:" + dummy.top.out+"%N")
+
+				--widget_list.item (dummy.top).
+
+			--	create event_type.make_shared (a_inevent)
+
+			--  this part doesent work. Seems that the a_inevent pointer isnt. a pointer to a valid event_type_spec_struct
+
+				--if event_type.eventkind={carbonevents_anon_enums}.kEventMouseDown and event_type.eventclass={carbonevents_anon_enums}.kEventClassControl then
+
+					a_button?=widget_list.item (dummy.top)
+					if a_button/=void then
+						a_button.select_actions.call (void)
+					end
+				--end
+			end
+
 		end
+
 
 
 

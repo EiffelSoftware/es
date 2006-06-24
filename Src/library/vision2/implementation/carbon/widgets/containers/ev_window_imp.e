@@ -81,6 +81,7 @@ feature {NONE} -- Initialization
 					res: INTEGER
 					ptr: POINTER
 					root_control_ptr : POINTER
+					target: POINTER
 			do
 					base_make (an_interface)
 					create rect.make_new_shared
@@ -95,6 +96,7 @@ feature {NONE} -- Initialization
 					set_c_object (ptr)
 					allow_resize
 					id:=app_implementation.get_id (current)  --getting an id from the application
+
 			end
 
 	initialize is

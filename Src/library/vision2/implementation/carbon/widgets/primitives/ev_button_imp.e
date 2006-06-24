@@ -58,6 +58,7 @@ inherit
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -70,6 +71,7 @@ feature {NONE} -- Initialization
 			err : INTEGER
 			rect : RECT_STRUCT
 			struct_ptr : POINTER
+			target: POINTER
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
@@ -80,6 +82,9 @@ feature {NONE} -- Initialization
 			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )
 			set_c_object ( struct_ptr )
 			id:=app_implementation.get_id (current)  --getting an id from the application
+			target:=get_control_event_target_external(struct_ptr)
+				--	app_implementation.install_event_handler(id,res ,1 ,2)
+			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 
 		end
 
