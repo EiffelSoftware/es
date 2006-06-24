@@ -2,13 +2,14 @@ indexing
 	description	: "EMU CLIENT, connects to server, handles communication between user and server"
 	author		: "Andrea Zimmermann, Domenic Schroeder, Ramon Schwammberger"
 	date		: "$Date$"
+	revision: "$Revision$"
 
 class
 	EMU_CLIENT
 
 inherit
 	THREAD_CONTROL
-	
+
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -42,7 +43,7 @@ feature -- Initialization
 					socket.make_client_by_port (server_port, server_ip)
 				end
 				register_to_server()
-				
+
 				-- register default commands. we use agents to be able to replace the features by an admin.
 				idle_cmd := agent idle
 				process_server_cmd := agent process_server
@@ -57,25 +58,25 @@ feature -- Initialization
 		end
 
 feature -- Access	
-	
+
 	server_port: INTEGER
 			-- the port to which the listen socket is bound. Lies between 0 and 65535.
-			
+
 	server_ip: STRING
 			-- ip of the server
-			
+
 	user_name: STRING
 			-- user name
-			
+
 	password: STRING
 			-- password
-	
+
 	project_name: STRING
 			-- the project to which the client connects
-			
-			
+
+
 feature -- Sockets  -- former {USER_CMD}
-		
+
 	socket: NETWORK_STREAM_SOCKET
 			-- the client socket that sends data to the server.
 
@@ -96,7 +97,7 @@ feature {USER_CMD} -- Termination
 		ensure
 			system_is_shutdown: is_shutdown
 		end
-		
+
 
 feature -- Process
 
@@ -104,7 +105,7 @@ feature -- Process
     		-- register this client to the server
     	require
     		socket_not_void: socket /= void
-    		
+
     	do
     		socket.connect
     		socket.independent_store (create {USER_LOGIN}.make (user_name, password, project_name))
@@ -112,7 +113,7 @@ feature -- Process
             io.readline
             socket.cleanup
     	end
-    	
+
 
 	idle is
 			-- the idle routine simply waits for something to happen
@@ -124,7 +125,7 @@ feature -- Process
 			loop
 				-- check for incoming data
 				if socket.readable then
-					process_server_cmd.apply	
+					process_server_cmd.apply
 				end
 				sleep (sleep_time)
 			end
@@ -140,8 +141,8 @@ feature -- Process
 				retry
 			end
 		end
-	
-	
+
+
 	--commands implementing 'client features', these are LOCK, UNLOCK, UPLOAD, DOWNLOAD
 	unlock (a_class_name:STRING) is
 			-- unlocking a class, ie. send the unlock request
@@ -154,7 +155,7 @@ feature -- Process
             io.readline
             socket.cleanup
     	end
-	
+
 	lock (a_class_name:STRING) is
 			-- locking a class, ie. send the lock request
 		require
@@ -165,8 +166,8 @@ feature -- Process
             io.putstring ("requested to lock class: " + a_class_name +"!%N")
             io.readline
             socket.cleanup
-    	end	
-	
+    	end
+
 	upload (a_class_name:STRING) is
 			-- uploading a class
 		require
@@ -177,8 +178,8 @@ feature -- Process
             io.putstring ("uploaded class: " + a_class_name +"!%N")
             io.readline
             socket.cleanup
-    	end	
-    	
+    	end
+
     download () is
 			-- downloading ALL classes
 			-- might be better to download unly modified classes
@@ -190,8 +191,8 @@ feature -- Process
             io.putstring ("downloaded classes for project: " + project_name +"!%N")
             io.readline
             socket.cleanup
-    	end	
-	
+    	end
+
 	process_server (a_client: CLIENT_STATE[like socket]) is --##### not yet implemented!
 			-- process incoming messages from server
 		local
@@ -250,10 +251,10 @@ feature -- Commands
 
 	idle_cmd: PROCEDURE [ANY, TUPLE]
 			-- the idle command that will be executed by the server.
-			
+
 	process_server_cmd: PROCEDURE [ANY, TUPLE]
 			-- the process client command that will be executed to process clients.
-		
+
 
 feature -- Status
 
@@ -277,7 +278,7 @@ feature {NONE} -- Defaults
 	sleep_time_default: INTEGER_64 is 200000000
 			-- the default sleep time is 0.2 seconds (= 200'000'000 nanoseconds)
 
-			
+
 --feature -- Queries
 --	--UNUSED
 --	has_project (a_project_name: STRING): BOOLEAN is
@@ -348,5 +349,5 @@ feature {NONE} -- Defaults
 invariant
 	server_port_valid: server_port >= 0 and server_port <= 65535
 	sleep_time_positive: sleep_time >= 0
-	
+
 end -- class ROOT_CLASS
