@@ -65,32 +65,32 @@ msgstr "выберите язык"
 
 #: str12
 msgid "arabic"
-msgstr "арабско"
+msgstr "арабско [ar]"
 
 #: str13
 msgid "italian"
-msgstr "итальянско"
+msgstr "итальянско [it]"
 
 #: str14
 msgid "greek"
-msgstr "греческо"
+msgstr "греческо [gr]"
 
 #: str15
 msgid "hebrew"
-msgstr "древнееврейско"
+msgstr "древнееврейско [he]"
 
 #: str16
 msgid "japanese"
-msgstr "японско"
+msgstr "японско [ja]"
 
 #: str17
 msgid "russian"
-msgstr "русско"
+msgstr "русско [ru]"
 
 #: str18
 msgid "chinese"
-msgstr "китайско"
+msgstr "китайско [zh_CN]"
 
 #: str19
 msgid "english"
-msgstr "английско"
+msgstr "английско [en]"

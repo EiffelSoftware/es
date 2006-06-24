@@ -63,32 +63,32 @@ msgstr "言語を選びなさい"
 
 #: str12
 msgid "arabic"
-msgstr "アラビア"
+msgstr "アラビア [ar]"
 
 #: str13
 msgid "italian"
-msgstr "イタリア語"
+msgstr "イタリア語 [it]"
 
 #: str14
 msgid "greek"
-msgstr "ギリシャ語"
+msgstr "ギリシャ語 [gr]"
 
 #: str15
 msgid "hebrew"
-msgstr "ヘブライ"
+msgstr "ヘブライ[he]"
 
 #: str16
 msgid "japanese"
-msgstr "日本語"
+msgstr "日本語 [ja]"
 
 #: str17
 msgid "russian"
-msgstr "ロシア語"
+msgstr "ロシア語 [ru]"
 
 #: str18
 msgid "chinese"
-msgstr "中国語"
+msgstr "中国語 [zh_CN]"
 
 #: str19
 msgid "english"
-msgstr "英語"
+msgstr "英語 [en]"

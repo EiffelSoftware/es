@@ -93,7 +93,7 @@ feature -- Create window elements
 			italian.select_actions.extend (agent update_language ("it"))
 			create japanese.make_with_text (names.japanese)
 			japanese.set_data (agent names.japanese)
-			japanese.select_actions.extend (agent update_language ("jp"))
+			japanese.select_actions.extend (agent update_language ("ja"))
 			create russian.make_with_text (names.russian)
 			russian.set_data (agent names.russian)
 			russian.select_actions.extend (agent update_language ("ru"))

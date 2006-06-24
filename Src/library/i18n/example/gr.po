@@ -63,32 +63,32 @@ msgstr "Επιλέξτε τη γλώσσα"
 
 #: str12
 msgid "arabic"
-msgstr "αραβικά"
+msgstr "αραβικά [ar]"
 
 #: str13
 msgid "italian"
-msgstr "ιταλικά"
+msgstr "ιταλικά [it]"
 
 #: str14
 msgid "greek"
-msgstr "ελληνικά"
+msgstr "ελληνικά [gr]"
 
 #: str15
 msgid "hebrew"
-msgstr "εβραϊκά"
+msgstr "εβραϊκά [he]"
 
 #: str16
 msgid "japanese"
-msgstr "ιαπωνικά"
+msgstr "ιαπωνικά [ja]"
 
 #: str17
 msgid "russian"
-msgstr "ρωσικά"
+msgstr "ρωσικά [ru]"
 
 #: str18
 msgid "chinese"
-msgstr "κινεζικά"
+msgstr "κινεζικά [zh_CN"
 
 #: str19
 msgid "english"
-msgstr "αγγλικά"
+msgstr "αγγλικά [en]"
