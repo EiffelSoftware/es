@@ -25,9 +25,18 @@ feature
 			-- Makes a new, empty representation of a .po file
 		do
 			--create headers.
-			headers.make
-			entries.make (20)
-			--TODO: decide on what headers and how to set them.
+			create headers.make
+			create entries.make (20)
+
+			-- We (should) do everything in UTF-8
+		    headers.add_header ("Content-Type", "text/plain; charset=UTF-8")
+
+		    -- According to gettext doc this "should always be set to 8" (what's the point of having it then?)
+		    headers.add_header ("Content-Transfer-Encoding", "8bit")
+
+		    headers.add_header ("Last-Translator", "YOUR NAME HERE")
+		    headers.add_header ("Language-Team", "YOUR TEAM HERE")
+		    headers.add_header ("MIME-Version", "1.0")
 
 		end
 
@@ -45,7 +54,7 @@ feature
 			end
 
 feature
-	--Modification
+		--Modification
 	add_entry(new: PO_FILE_ENTRY) is
 			-- Adds an entry to the .po file
 			-- Note: a .po file should not contain more then one entry with a given msgid

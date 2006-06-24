@@ -1,10 +1,13 @@
 indexing
-	description: "When inheriting from this class, call initialize_datastructures in your creation procedure!"
+	description: "[
+				A representation of the parts common to all types of entry in a .po file - comments and msgid (original string in singular form)
+				When inheriting from this class, call initialize_datastructures in your creation procedure!
+				]"
 	author: "leof@student.ethz.ch"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+ class
 	PO_FILE_ENTRY
 
 feature --Creation
@@ -114,7 +117,17 @@ feature --Indexes
 feature	-- Output
 	to_string:STRING_32 is
 				-- Output the entry as a unicode string
-		deferred
+		do
+				create Result.make_empty
+	 			--start with 2 lines of whitespace
+	 			Result.prepend_string("%N%N")
+	 			--first we must print the translator comments
+	 			Result.append_string (prepare_headers (user_comments))
+	 			Result.append_string (prepare_headers (automatic_comments))
+	 			Result.append_string (prepare_headers (reference_comments))
+				-- now the msgid
+				Result.append_string(prepare_string("msgid", msgid_lines))
+
 		end
 feature --Flags
 
@@ -125,8 +138,30 @@ feature --Flags
 
 feature {NONE} -- Internal formatting
 
+	wrap_line(line:STRING_32):LINKED_LIST[STRING_32] is
+			-- wraps a line into more sensible chunks
+		require
+			line_not_void: line /= Void
+		local
+			words: ARRAY[TUPLE[INTEGER, INTEGER]]
+		do
+			--  simple algorithm:
+			--	1: break line into words
+			--		implementation: array holding integers representing start & length of word
+			--		We wish to keep spaces, as they are part of the string, so a "word" for our purposes
+			--		contains all whitespace until the next real word
+			--	2: place words in line on a greedy basis. It is also possible to do this with dynamic programming
+
+			--parse line and fill words array
+			 create words.make (1, 20)
+
+
+		end
+
+
 	break_line(line:STRING_32):LINKED_LIST[STRING_32] is
-			-- breaks a line into 80-character chunks and returns them in a list
+			-- breaks a line into 78-character chunks and returns them in a list
+			-- NOTE: this will break in the middle of words.
 			local
 				linear : LINEAR[WIDE_CHARACTER]
 				counter: INTEGER
@@ -179,15 +214,7 @@ feature {NONE} -- Internal formatting
 	 print_head:STRING_32 is
 	 		-- prints the headers and msgstr of this entry
 	 		do
-	 			create Result.make_empty
-	 			--start with 2 lines of whitespace
-	 			Result.prepend_string("%N%N")
-	 			--first we must print the translator comments
-	 			Result.append_string (prepare_headers (user_comments))
-	 			Result.append_string (prepare_headers (automatic_comments))
-	 			Result.append_string (prepare_headers (reference_comments))
-				-- now the msgid
-				Result.append_string(prepare_string("msgid", msgid_lines))
+
 	 		end
 
 	prepare_headers (headers:LINKED_LIST[STRING_32]):STRING_32 is
@@ -212,7 +239,7 @@ feature {NONE} -- Internal formatting
 		do
 			create Result.make_empty
 			-- can we fit all on one line?
-			if string.count = 1 and string.first.count < (key.count+3) then
+			if string.count = 1 and (string.first.count + key.count +3) <= 80 then
 				Result.append_string(key)
 				Result.append_string(" %"")
 				Result.append_string(string.first)

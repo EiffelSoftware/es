@@ -1,6 +1,8 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "[
+					Represents a .po file entry where the string should have its plural forms translated
+				]"
+	author: "leof@student.ethz.ch"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,7 +12,7 @@ class
 inherit
 	PO_FILE_ENTRY
 	redefine
-		make
+		make, to_string
 	end
 
 create
@@ -83,7 +85,7 @@ feature --output
 		local
 			counter: INTEGER
 		do
-			Result := print_head
+			Result := Precursor
 			Result.append_string(prepare_string ("msgid_plural", msgid_plural_lines))
 			from
 				counter := msgstr_n_lines.lower

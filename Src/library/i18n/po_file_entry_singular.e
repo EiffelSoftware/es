@@ -1,6 +1,9 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "[
+					This is a .po file entry for a string that is only used in the singular.
+					The translated string is stored in msgstr.
+					]"
+	author: "leof@student.ethz.ch"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,7 +14,7 @@ class
 inherit
 	PO_FILE_ENTRY
 	redefine
-		make
+		make, to_string
 	end
 
 create
@@ -53,7 +56,7 @@ feature --output
 	to_string:STRING_32 is
 			-- outputs the entry as a string
 		do
-			Result := print_head
+			Result := Precursor
 			--add the msgstr
 			Result.append_string(prepare_string ("msgstr", msgstr_lines))
 		end

@@ -1,6 +1,16 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "[
+					This class models the header entry of a .po file. 
+					A header entry is a singular entry with the empty string as msgid. The msgstr contains the headers;
+					each line normally contains one header. The headers are used to contain such things as copyright information, 
+					the names of the people responsible for producing it etc. etc.
+					From a technical standpoint the important headers are:
+					1. Content-Type  (for syntax please see gettext documentation or make in PO_FILE)
+					2. Content-Transfer-Encoding ("should always be se to 8", unless presumably you want to use 7 bit encoding :) )
+					3. Pural-Forms  (this describes the number of separate forms for plurals. For syntax see either the gettext documentation
+									or FIXME: the eiffel wiki at ETH)
+				]"
+	author: "leof@student.ethz.ch"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -27,6 +37,7 @@ create
 				-- makes new headers entry
 			do
 				make_old ("")
+				create headers.make (10) --10 headers should be enough for anybody
 			end
 
 
@@ -49,7 +60,7 @@ create
 			end
 
 		msgstr: STRING_32 is
-				-- Resturn the msgstr.
+				-- Return the msgstr.
 			do
 				-- In this case the msgstr is _not_ stored in msgstr_lines like a normal entry,
 				-- because the msgtr is a multi-line string where each line is a header. We keep them in a
@@ -75,17 +86,17 @@ create
 		add_header(key:STRING_GENERAL; value:STRING_GENERAL) is
 			require
 				arguments_not_void: key /= Void and value /= Void
-				header_is_not_already_present: not headers.has(key.to_string_32)
+				header_is_not_already_present: not has_header (key)
 			do
 				headers.put (value.to_string_32, key.to_string_32)
 			ensure
-				header_set: has_header (key.to_string_32) and then get_header (key) = value.to_string_32
+				header_set: has_header (key) and then get_header (key).is_equal(value.to_string_32)
 			end
 
 		modify_header(key:STRING_GENERAL; value: STRING_GENERAL) is
 			require
 				arguments_not_void: key /= Void and value /= Void
-				header_is_already_present: headers.has(key.to_string_32)
+				header_is_already_present: has_header(key)
 			do
 				headers.replace (value.as_string_32, key.as_string_32)
 			ensure
