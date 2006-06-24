@@ -44,13 +44,14 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	
+
 
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
 		local
 			v_imp : EV_WIDGET_IMP
 			err : INTEGER
+			a_fixe: EV_FIXED_IMP
 		do
 			if v /= Void then
 				v_imp ?= v.implementation
@@ -61,6 +62,10 @@ feature {NONE} -- Implementation
 				child_array.go_i_th (i)
 				child_array.put_left (v)
 			end
+			a_fixe?=v.implementation
+				if a_fixe/=void then
+					a_fixe.embed_all
+				end
 			on_new_item (v_imp)
 		end
 
@@ -79,6 +84,32 @@ feature {NONE} -- Implementation
 	interface: EV_WIDGET_LIST;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
+feature
+	--set
+		embed_all is
+			local
+				i:INTEGER
+				a_imp: EV_WIDGET_IMP
+				err:INTEGER
+				a_list: EV_WIDGET_LIST_IMP
+			do
+				from i:=1
+				until i> child_array.count
+				loop
+					a_imp?=child_array.i_th(i).implementation
+					if a_imp/=void then
+						err := embed_control_external (a_imp.c_object, c_object)
+
+						a_list?=a_imp
+						if a_list/=void then
+							a_list.embed_all
+						end
+					end
+					i:=i+1
+				end
+
+
+			end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

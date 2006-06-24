@@ -60,24 +60,7 @@ feature {NONE} -- Initialization
 
 feature -- Status setting
 
-	embed_all is
-			local
-				i:INTEGER
-				a_imp: EV_WIDGET_IMP
-				err:INTEGER
-			do
-				from i:=1
-				until i> child_array.count
-				loop
-					a_imp?=child_array.i_th(i).implementation
-					if a_imp/=void then
-						err := embed_control_external (a_imp.c_object, c_object)
-					end
-					i:=i+1
-				end
 
-
-			end
 
 
 	set_item_position (a_widget: EV_WIDGET; an_x, a_y: INTEGER) is

@@ -277,7 +277,7 @@ feature -- Element change
 			i: EV_WIDGET
 			root_control_ptr : POINTER
 			err : INTEGER
-			a_fixe: EV_FIXED_IMP
+			a_list: EV_WIDGET_LIST_IMP
 		do
 			i := item
 
@@ -295,9 +295,9 @@ feature -- Element change
 				err := embed_control_external ( w.c_object, root_control_ptr )
 
 				on_new_item (w)
-				a_fixe?=v.implementation
-				if a_fixe/=void then
-					a_fixe.embed_all
+				a_list?=v.implementation
+				if a_list/=void then
+					a_list.embed_all
 				end
 			end
 			item := v

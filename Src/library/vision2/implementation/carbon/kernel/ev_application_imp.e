@@ -71,7 +71,6 @@ feature {NONE} -- Event loop
 		do
 
 			enable_foreground_operation
-			--install_event_handler
 			run_application_event_loop_external
 		end
 
@@ -194,6 +193,7 @@ feature -- Basic operation
 	destroy is
 			-- End the application.
 		do
+			quit_application_event_loop_external
 		end
 
 feature -- Status report
