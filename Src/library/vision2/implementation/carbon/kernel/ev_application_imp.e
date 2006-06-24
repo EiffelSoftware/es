@@ -110,10 +110,12 @@ feature {EV_ANY_IMP} -- Implementation
 			create event_type.make_new_shared
 			event_type.set_eventclass(a_event_class)
 			event_type.set_eventkind (a_event_kind)
-			print("event pointer: " + event_type.item.to_integer_32.out)
 
-			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, a_event_kind, event_type.item, dummy.item, null)
+
+			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, dummy.item, null)
+			print("event Handler for: " + a_id.out + " installed with kind: "+ a_event_kind.out + " ret: " + ret.out + "%N")
 		end
+
 
 feature -- Access
 
@@ -377,6 +379,7 @@ feature {NONE} -- Carbon callback handling for events
 			null: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
 			a_button: EV_BUTTON_IMP
+			a_window: EV_WINDOW_IMP
 		do
 
 			if a_inuserdata /= null then
@@ -395,6 +398,10 @@ feature {NONE} -- Carbon callback handling for events
 					a_button?=widget_list.item (dummy.top)
 					if a_button/=void then
 						a_button.select_actions.call (void)
+					end
+					a_window?=widget_list.item (dummy.top)
+					if a_window/=void then
+						a_window.close_request_actions.call (void)
 					end
 				--end
 			end

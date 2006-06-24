@@ -96,7 +96,10 @@ feature {NONE} -- Initialization
 					res := create_root_control_external( ptr, $root_control_ptr )
 					set_c_object (ptr)
 					allow_resize
+
 					id:=app_implementation.get_id (current)  --getting an id from the application
+					target:=get_window_event_target_external(ptr)
+					app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
 
 			end
 
