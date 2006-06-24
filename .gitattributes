@@ -2051,6 +2051,7 @@ Src/library/i18n/example/it.mo -text
 Src/library/i18n/example/it.po -text
 Src/library/i18n/example/ja.mo -text
 Src/library/i18n/example/ja.po -text
+Src/library/i18n/example/logo.png -text
 Src/library/i18n/example/ru.mo -text
 Src/library/i18n/example/ru.po -text
 Src/library/i18n/example/zh_CN.mo -text

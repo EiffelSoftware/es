@@ -1,6 +1,6 @@
 indexing
 	description	: "Test application for the internationalization library"
-	author		: "Etienne Reichenbach and Somainiii Ivano"
+	author: "i18n Team, ETH Zurich"
 
 class
 	APPLICATION
@@ -24,10 +24,16 @@ feature {NONE} -- Initialization
 		end
 
 	prepare is
+		local
+			pixmap : EV_PIXMAP
 		do
 			create first_window.make_with_title (names.application)
 			first_window.close_request_actions.extend (agent destroy)
 			first_window.set_size (500,500)
+			create pixmap
+			pixmap.set_with_named_file (Operating_environment.current_directory_name_representation
+					+ Operating_environment.directory_separator.out + "logo.png")
+			first_window.set_icon_pixmap (pixmap)
 			build_menu_bar
 			build_lables
 			first_window.set_menu_bar (standard_menu_bar)
@@ -42,7 +48,7 @@ feature -- Create window elements
 	build_menu_bar is
 			-- build the menu bar
 		local
-			increase,decrease,save,
+			increase,decrease,about,
 			italian, arabic, greek, hebrew, japanese, russian, chinese, english : EV_MENU_ITEM
 			file, language_selection: EV_MENU
 		do
@@ -61,12 +67,13 @@ feature -- Create window elements
 			decrease.select_actions.extend (agent decrement)
 			decrease.select_actions.extend (agent update_labels)
 
-			create save.make_with_text (names.save)
-			save.set_data (agent names.save)
+			create about.make_with_text (names.about)
+			about.set_data (agent names.about)
+			about.select_actions.extend (agent on_about)
 
 			file.extend (increase)
 			file.extend (decrease)
-			file.extend (save)
+			file.extend (about)
 			standard_menu_bar.extend (file)
 
 		-- Language selection
@@ -183,8 +190,19 @@ feature -- Create window elements
 
 	n : INTEGER
 
+feature {NONE} -- About Dialog Implementation
+
+	on_about is
+			-- Display the About dialog.
+		local
+			about_dialog: ABOUT_DIALOG
+		do
+			create about_dialog
+			about_dialog.show
+		end
 
 feature {NONE} -- Implementation
+
 	first_window: EV_TITLED_WINDOW
 			-- Main window.
 	standard_menu_bar: EV_MENU_BAR

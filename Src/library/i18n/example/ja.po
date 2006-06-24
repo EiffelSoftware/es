@@ -92,3 +92,19 @@ msgstr "中国語 [zh_CN]"
 #: str19
 msgid "english"
 msgstr "英語 [en]"
+
+#: str21
+msgid "OK"
+msgstr ""
+
+#: str22
+msgid "Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, please write a mail to: es-i18n@origo.ethz.ch%N%N"
+msgstr "i18n のチームETHZ がなすデモの塗布%N%N虫のために、提案か他は、郵便をに書く: es-i18n@origo.ethz.ch%N%N"
+
+#: str23
+msgid "Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgstr "チームのメンバー:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+
+#: str24
+msgid "About Dialog"
+msgstr "ダイアログについて"
