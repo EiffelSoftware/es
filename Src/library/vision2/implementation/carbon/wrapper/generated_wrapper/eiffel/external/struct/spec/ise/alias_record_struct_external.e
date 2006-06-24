@@ -12,44 +12,13 @@ feature {NONE} -- Implementation
 			"sizeof(struct AliasRecord)"
 		end
 
-	get_usertype_external (an_item: POINTER): INTEGER is
+	get_hidden_external (an_item: POINTER): POINTER is
 		require
 			an_item_not_null: an_item /= default_pointer
 		external
 			"C [macro <ewg_carbon_struct_c_glue_code.h>]"
 		alias
-			"ewg_struct_macro_struct_AliasRecord_member_get_userType"
-		end
-
-	set_usertype_external (an_item: POINTER; a_value: INTEGER) is
-		require
-			an_item_not_null: an_item /= default_pointer
-		external
-			"C [macro <ewg_carbon_struct_c_glue_code.h>]"
-		alias
-			"ewg_struct_macro_struct_AliasRecord_member_set_userType"
-		ensure
-			a_value_set: a_value = get_usertype_external (an_item)
-		end
-
-	get_aliassize_external (an_item: POINTER): INTEGER is
-		require
-			an_item_not_null: an_item /= default_pointer
-		external
-			"C [macro <ewg_carbon_struct_c_glue_code.h>]"
-		alias
-			"ewg_struct_macro_struct_AliasRecord_member_get_aliasSize"
-		end
-
-	set_aliassize_external (an_item: POINTER; a_value: INTEGER) is
-		require
-			an_item_not_null: an_item /= default_pointer
-		external
-			"C [macro <ewg_carbon_struct_c_glue_code.h>]"
-		alias
-			"ewg_struct_macro_struct_AliasRecord_member_set_aliasSize"
-		ensure
-			a_value_set: a_value = get_aliassize_external (an_item)
+			"ewg_struct_macro_struct_AliasRecord_member_get_hidden"
 		end
 
 end

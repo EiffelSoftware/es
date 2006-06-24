@@ -22,6 +22,8 @@ inherit
 		redefine
 			interface
 		end
+	CFSTRING_FUNCTIONS_EXTERNAL
+	CONTROLS_FUNCTIONS_EXTERNAL
 
 feature {NONE} -- Initialization
 
@@ -63,8 +65,32 @@ feature -- Element change
 
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
+		local
+			c_str: C_STRING
+			ptr: POINTER
+			res: INTEGER
 		do
+
+			create c_str.make (a_text)
+			ptr:=c_string_to_cfstring_ptr(c_str)
+			res:=set_control_title_with_cfstring_external (c_object, ptr)
 		end
+
+	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
+			local
+				null_ptr:POINTER
+			do
+				Result:= cfstring_create_with_cstring_external(null_ptr, c_str.item,  kCFStringEncodingASCII)
+			end
+
+	frozen kCFStringEncodingASCII: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kCFStringEncodingASCII"
+	end
+
+
 
 feature {EV_ANY_IMP} -- Implementation
 

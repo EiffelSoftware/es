@@ -1,5 +1,1179 @@
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'CFStringGetTypeID'
+// For ise
+CFTypeID  ewg_function_CFStringGetTypeID (void)
+{
+	return CFStringGetTypeID ();
+}
+
+// Return address of function 'CFStringGetTypeID'
+void* ewg_get_function_address_CFStringGetTypeID (void)
+{
+	return (void*) CFStringGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithPascalString'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithPascalString (CFAllocatorRef ewg_alloc, ConstStr255Param ewg_pStr, CFStringEncoding ewg_encoding)
+{
+	return CFStringCreateWithPascalString ((CFAllocatorRef)ewg_alloc, (ConstStr255Param)ewg_pStr, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringCreateWithPascalString'
+void* ewg_get_function_address_CFStringCreateWithPascalString (void)
+{
+	return (void*) CFStringCreateWithPascalString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithCString'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithCString (CFAllocatorRef ewg_alloc, char const *ewg_cStr, CFStringEncoding ewg_encoding)
+{
+	return CFStringCreateWithCString ((CFAllocatorRef)ewg_alloc, (char const*)ewg_cStr, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringCreateWithCString'
+void* ewg_get_function_address_CFStringCreateWithCString (void)
+{
+	return (void*) CFStringCreateWithCString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithCharacters'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithCharacters (CFAllocatorRef ewg_alloc, UniChar const *ewg_chars, CFIndex ewg_numChars)
+{
+	return CFStringCreateWithCharacters ((CFAllocatorRef)ewg_alloc, (UniChar const*)ewg_chars, (CFIndex)ewg_numChars);
+}
+
+// Return address of function 'CFStringCreateWithCharacters'
+void* ewg_get_function_address_CFStringCreateWithCharacters (void)
+{
+	return (void*) CFStringCreateWithCharacters;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithPascalStringNoCopy'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithPascalStringNoCopy (CFAllocatorRef ewg_alloc, ConstStr255Param ewg_pStr, CFStringEncoding ewg_encoding, CFAllocatorRef ewg_contentsDeallocator)
+{
+	return CFStringCreateWithPascalStringNoCopy ((CFAllocatorRef)ewg_alloc, (ConstStr255Param)ewg_pStr, (CFStringEncoding)ewg_encoding, (CFAllocatorRef)ewg_contentsDeallocator);
+}
+
+// Return address of function 'CFStringCreateWithPascalStringNoCopy'
+void* ewg_get_function_address_CFStringCreateWithPascalStringNoCopy (void)
+{
+	return (void*) CFStringCreateWithPascalStringNoCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithCStringNoCopy'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithCStringNoCopy (CFAllocatorRef ewg_alloc, char const *ewg_cStr, CFStringEncoding ewg_encoding, CFAllocatorRef ewg_contentsDeallocator)
+{
+	return CFStringCreateWithCStringNoCopy ((CFAllocatorRef)ewg_alloc, (char const*)ewg_cStr, (CFStringEncoding)ewg_encoding, (CFAllocatorRef)ewg_contentsDeallocator);
+}
+
+// Return address of function 'CFStringCreateWithCStringNoCopy'
+void* ewg_get_function_address_CFStringCreateWithCStringNoCopy (void)
+{
+	return (void*) CFStringCreateWithCStringNoCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithCharactersNoCopy'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithCharactersNoCopy (CFAllocatorRef ewg_alloc, UniChar const *ewg_chars, CFIndex ewg_numChars, CFAllocatorRef ewg_contentsDeallocator)
+{
+	return CFStringCreateWithCharactersNoCopy ((CFAllocatorRef)ewg_alloc, (UniChar const*)ewg_chars, (CFIndex)ewg_numChars, (CFAllocatorRef)ewg_contentsDeallocator);
+}
+
+// Return address of function 'CFStringCreateWithCharactersNoCopy'
+void* ewg_get_function_address_CFStringCreateWithCharactersNoCopy (void)
+{
+	return (void*) CFStringCreateWithCharactersNoCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithSubstring'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithSubstring (CFAllocatorRef ewg_alloc, CFStringRef ewg_str, CFRange *ewg_range)
+{
+	return CFStringCreateWithSubstring ((CFAllocatorRef)ewg_alloc, (CFStringRef)ewg_str, *(CFRange*)ewg_range);
+}
+
+// Return address of function 'CFStringCreateWithSubstring'
+void* ewg_get_function_address_CFStringCreateWithSubstring (void)
+{
+	return (void*) CFStringCreateWithSubstring;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateCopy'
+// For ise
+CFStringRef  ewg_function_CFStringCreateCopy (CFAllocatorRef ewg_alloc, CFStringRef ewg_theString)
+{
+	return CFStringCreateCopy ((CFAllocatorRef)ewg_alloc, (CFStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringCreateCopy'
+void* ewg_get_function_address_CFStringCreateCopy (void)
+{
+	return (void*) CFStringCreateCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithFormat'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithFormat (CFAllocatorRef ewg_alloc, CFDictionaryRef ewg_formatOptions, CFStringRef ewg_format)
+{
+	return CFStringCreateWithFormat ((CFAllocatorRef)ewg_alloc, (CFDictionaryRef)ewg_formatOptions, (CFStringRef)ewg_format);
+}
+
+// Return address of function 'CFStringCreateWithFormat'
+void* ewg_get_function_address_CFStringCreateWithFormat (void)
+{
+	return (void*) CFStringCreateWithFormat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateMutable'
+// For ise
+CFMutableStringRef  ewg_function_CFStringCreateMutable (CFAllocatorRef ewg_alloc, CFIndex ewg_maxLength)
+{
+	return CFStringCreateMutable ((CFAllocatorRef)ewg_alloc, (CFIndex)ewg_maxLength);
+}
+
+// Return address of function 'CFStringCreateMutable'
+void* ewg_get_function_address_CFStringCreateMutable (void)
+{
+	return (void*) CFStringCreateMutable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateMutableCopy'
+// For ise
+CFMutableStringRef  ewg_function_CFStringCreateMutableCopy (CFAllocatorRef ewg_alloc, CFIndex ewg_maxLength, CFStringRef ewg_theString)
+{
+	return CFStringCreateMutableCopy ((CFAllocatorRef)ewg_alloc, (CFIndex)ewg_maxLength, (CFStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringCreateMutableCopy'
+void* ewg_get_function_address_CFStringCreateMutableCopy (void)
+{
+	return (void*) CFStringCreateMutableCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateMutableWithExternalCharactersNoCopy'
+// For ise
+CFMutableStringRef  ewg_function_CFStringCreateMutableWithExternalCharactersNoCopy (CFAllocatorRef ewg_alloc, UniChar *ewg_chars, CFIndex ewg_numChars, CFIndex ewg_capacity, CFAllocatorRef ewg_externalCharactersAllocator)
+{
+	return CFStringCreateMutableWithExternalCharactersNoCopy ((CFAllocatorRef)ewg_alloc, (UniChar*)ewg_chars, (CFIndex)ewg_numChars, (CFIndex)ewg_capacity, (CFAllocatorRef)ewg_externalCharactersAllocator);
+}
+
+// Return address of function 'CFStringCreateMutableWithExternalCharactersNoCopy'
+void* ewg_get_function_address_CFStringCreateMutableWithExternalCharactersNoCopy (void)
+{
+	return (void*) CFStringCreateMutableWithExternalCharactersNoCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetLength'
+// For ise
+CFIndex  ewg_function_CFStringGetLength (CFStringRef ewg_theString)
+{
+	return CFStringGetLength ((CFStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringGetLength'
+void* ewg_get_function_address_CFStringGetLength (void)
+{
+	return (void*) CFStringGetLength;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetCharacterAtIndex'
+// For ise
+UniChar  ewg_function_CFStringGetCharacterAtIndex (CFStringRef ewg_theString, CFIndex ewg_idx)
+{
+	return CFStringGetCharacterAtIndex ((CFStringRef)ewg_theString, (CFIndex)ewg_idx);
+}
+
+// Return address of function 'CFStringGetCharacterAtIndex'
+void* ewg_get_function_address_CFStringGetCharacterAtIndex (void)
+{
+	return (void*) CFStringGetCharacterAtIndex;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetCharacters'
+// For ise
+void  ewg_function_CFStringGetCharacters (CFStringRef ewg_theString, CFRange *ewg_range, UniChar *ewg_buffer)
+{
+	CFStringGetCharacters ((CFStringRef)ewg_theString, *(CFRange*)ewg_range, (UniChar*)ewg_buffer);
+}
+
+// Return address of function 'CFStringGetCharacters'
+void* ewg_get_function_address_CFStringGetCharacters (void)
+{
+	return (void*) CFStringGetCharacters;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetPascalString'
+// For ise
+Boolean  ewg_function_CFStringGetPascalString (CFStringRef ewg_theString, StringPtr ewg_buffer, CFIndex ewg_bufferSize, CFStringEncoding ewg_encoding)
+{
+	return CFStringGetPascalString ((CFStringRef)ewg_theString, (StringPtr)ewg_buffer, (CFIndex)ewg_bufferSize, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringGetPascalString'
+void* ewg_get_function_address_CFStringGetPascalString (void)
+{
+	return (void*) CFStringGetPascalString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetCString'
+// For ise
+Boolean  ewg_function_CFStringGetCString (CFStringRef ewg_theString, char *ewg_buffer, CFIndex ewg_bufferSize, CFStringEncoding ewg_encoding)
+{
+	return CFStringGetCString ((CFStringRef)ewg_theString, (char*)ewg_buffer, (CFIndex)ewg_bufferSize, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringGetCString'
+void* ewg_get_function_address_CFStringGetCString (void)
+{
+	return (void*) CFStringGetCString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetPascalStringPtr'
+// For ise
+ConstStringPtr  ewg_function_CFStringGetPascalStringPtr (CFStringRef ewg_theString, CFStringEncoding ewg_encoding)
+{
+	return CFStringGetPascalStringPtr ((CFStringRef)ewg_theString, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringGetPascalStringPtr'
+void* ewg_get_function_address_CFStringGetPascalStringPtr (void)
+{
+	return (void*) CFStringGetPascalStringPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetCStringPtr'
+// For ise
+char const * ewg_function_CFStringGetCStringPtr (CFStringRef ewg_theString, CFStringEncoding ewg_encoding)
+{
+	return CFStringGetCStringPtr ((CFStringRef)ewg_theString, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringGetCStringPtr'
+void* ewg_get_function_address_CFStringGetCStringPtr (void)
+{
+	return (void*) CFStringGetCStringPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetCharactersPtr'
+// For ise
+UniChar const * ewg_function_CFStringGetCharactersPtr (CFStringRef ewg_theString)
+{
+	return CFStringGetCharactersPtr ((CFStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringGetCharactersPtr'
+void* ewg_get_function_address_CFStringGetCharactersPtr (void)
+{
+	return (void*) CFStringGetCharactersPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetBytes'
+// For ise
+CFIndex  ewg_function_CFStringGetBytes (CFStringRef ewg_theString, CFRange *ewg_range, CFStringEncoding ewg_encoding, UInt8 ewg_lossByte, Boolean ewg_isExternalRepresentation, UInt8 *ewg_buffer, CFIndex ewg_maxBufLen, CFIndex *ewg_usedBufLen)
+{
+	return CFStringGetBytes ((CFStringRef)ewg_theString, *(CFRange*)ewg_range, (CFStringEncoding)ewg_encoding, (UInt8)ewg_lossByte, (Boolean)ewg_isExternalRepresentation, (UInt8*)ewg_buffer, (CFIndex)ewg_maxBufLen, (CFIndex*)ewg_usedBufLen);
+}
+
+// Return address of function 'CFStringGetBytes'
+void* ewg_get_function_address_CFStringGetBytes (void)
+{
+	return (void*) CFStringGetBytes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithBytes'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithBytes (CFAllocatorRef ewg_alloc, UInt8 const *ewg_bytes, CFIndex ewg_numBytes, CFStringEncoding ewg_encoding, Boolean ewg_isExternalRepresentation)
+{
+	return CFStringCreateWithBytes ((CFAllocatorRef)ewg_alloc, (UInt8 const*)ewg_bytes, (CFIndex)ewg_numBytes, (CFStringEncoding)ewg_encoding, (Boolean)ewg_isExternalRepresentation);
+}
+
+// Return address of function 'CFStringCreateWithBytes'
+void* ewg_get_function_address_CFStringCreateWithBytes (void)
+{
+	return (void*) CFStringCreateWithBytes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateFromExternalRepresentation'
+// For ise
+CFStringRef  ewg_function_CFStringCreateFromExternalRepresentation (CFAllocatorRef ewg_alloc, CFDataRef ewg_data, CFStringEncoding ewg_encoding)
+{
+	return CFStringCreateFromExternalRepresentation ((CFAllocatorRef)ewg_alloc, (CFDataRef)ewg_data, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringCreateFromExternalRepresentation'
+void* ewg_get_function_address_CFStringCreateFromExternalRepresentation (void)
+{
+	return (void*) CFStringCreateFromExternalRepresentation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateExternalRepresentation'
+// For ise
+CFDataRef  ewg_function_CFStringCreateExternalRepresentation (CFAllocatorRef ewg_alloc, CFStringRef ewg_theString, CFStringEncoding ewg_encoding, UInt8 ewg_lossByte)
+{
+	return CFStringCreateExternalRepresentation ((CFAllocatorRef)ewg_alloc, (CFStringRef)ewg_theString, (CFStringEncoding)ewg_encoding, (UInt8)ewg_lossByte);
+}
+
+// Return address of function 'CFStringCreateExternalRepresentation'
+void* ewg_get_function_address_CFStringCreateExternalRepresentation (void)
+{
+	return (void*) CFStringCreateExternalRepresentation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetSmallestEncoding'
+// For ise
+CFStringEncoding  ewg_function_CFStringGetSmallestEncoding (CFStringRef ewg_theString)
+{
+	return CFStringGetSmallestEncoding ((CFStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringGetSmallestEncoding'
+void* ewg_get_function_address_CFStringGetSmallestEncoding (void)
+{
+	return (void*) CFStringGetSmallestEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetFastestEncoding'
+// For ise
+CFStringEncoding  ewg_function_CFStringGetFastestEncoding (CFStringRef ewg_theString)
+{
+	return CFStringGetFastestEncoding ((CFStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringGetFastestEncoding'
+void* ewg_get_function_address_CFStringGetFastestEncoding (void)
+{
+	return (void*) CFStringGetFastestEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetSystemEncoding'
+// For ise
+CFStringEncoding  ewg_function_CFStringGetSystemEncoding (void)
+{
+	return CFStringGetSystemEncoding ();
+}
+
+// Return address of function 'CFStringGetSystemEncoding'
+void* ewg_get_function_address_CFStringGetSystemEncoding (void)
+{
+	return (void*) CFStringGetSystemEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetMaximumSizeForEncoding'
+// For ise
+CFIndex  ewg_function_CFStringGetMaximumSizeForEncoding (CFIndex ewg_length, CFStringEncoding ewg_encoding)
+{
+	return CFStringGetMaximumSizeForEncoding ((CFIndex)ewg_length, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringGetMaximumSizeForEncoding'
+void* ewg_get_function_address_CFStringGetMaximumSizeForEncoding (void)
+{
+	return (void*) CFStringGetMaximumSizeForEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetFileSystemRepresentation'
+// For ise
+Boolean  ewg_function_CFStringGetFileSystemRepresentation (CFStringRef ewg_string, char *ewg_buffer, CFIndex ewg_maxBufLen)
+{
+	return CFStringGetFileSystemRepresentation ((CFStringRef)ewg_string, (char*)ewg_buffer, (CFIndex)ewg_maxBufLen);
+}
+
+// Return address of function 'CFStringGetFileSystemRepresentation'
+void* ewg_get_function_address_CFStringGetFileSystemRepresentation (void)
+{
+	return (void*) CFStringGetFileSystemRepresentation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetMaximumSizeOfFileSystemRepresentation'
+// For ise
+CFIndex  ewg_function_CFStringGetMaximumSizeOfFileSystemRepresentation (CFStringRef ewg_string)
+{
+	return CFStringGetMaximumSizeOfFileSystemRepresentation ((CFStringRef)ewg_string);
+}
+
+// Return address of function 'CFStringGetMaximumSizeOfFileSystemRepresentation'
+void* ewg_get_function_address_CFStringGetMaximumSizeOfFileSystemRepresentation (void)
+{
+	return (void*) CFStringGetMaximumSizeOfFileSystemRepresentation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateWithFileSystemRepresentation'
+// For ise
+CFStringRef  ewg_function_CFStringCreateWithFileSystemRepresentation (CFAllocatorRef ewg_alloc, char const *ewg_buffer)
+{
+	return CFStringCreateWithFileSystemRepresentation ((CFAllocatorRef)ewg_alloc, (char const*)ewg_buffer);
+}
+
+// Return address of function 'CFStringCreateWithFileSystemRepresentation'
+void* ewg_get_function_address_CFStringCreateWithFileSystemRepresentation (void)
+{
+	return (void*) CFStringCreateWithFileSystemRepresentation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCompareWithOptions'
+// For ise
+CFComparisonResult  ewg_function_CFStringCompareWithOptions (CFStringRef ewg_theString1, CFStringRef ewg_theString2, CFRange *ewg_rangeToCompare, CFOptionFlags ewg_compareOptions)
+{
+	return CFStringCompareWithOptions ((CFStringRef)ewg_theString1, (CFStringRef)ewg_theString2, *(CFRange*)ewg_rangeToCompare, (CFOptionFlags)ewg_compareOptions);
+}
+
+// Return address of function 'CFStringCompareWithOptions'
+void* ewg_get_function_address_CFStringCompareWithOptions (void)
+{
+	return (void*) CFStringCompareWithOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCompare'
+// For ise
+CFComparisonResult  ewg_function_CFStringCompare (CFStringRef ewg_theString1, CFStringRef ewg_theString2, CFOptionFlags ewg_compareOptions)
+{
+	return CFStringCompare ((CFStringRef)ewg_theString1, (CFStringRef)ewg_theString2, (CFOptionFlags)ewg_compareOptions);
+}
+
+// Return address of function 'CFStringCompare'
+void* ewg_get_function_address_CFStringCompare (void)
+{
+	return (void*) CFStringCompare;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringFindWithOptions'
+// For ise
+Boolean  ewg_function_CFStringFindWithOptions (CFStringRef ewg_theString, CFStringRef ewg_stringToFind, CFRange *ewg_rangeToSearch, CFOptionFlags ewg_searchOptions, CFRange *ewg_result)
+{
+	return CFStringFindWithOptions ((CFStringRef)ewg_theString, (CFStringRef)ewg_stringToFind, *(CFRange*)ewg_rangeToSearch, (CFOptionFlags)ewg_searchOptions, (CFRange*)ewg_result);
+}
+
+// Return address of function 'CFStringFindWithOptions'
+void* ewg_get_function_address_CFStringFindWithOptions (void)
+{
+	return (void*) CFStringFindWithOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateArrayWithFindResults'
+// For ise
+CFArrayRef  ewg_function_CFStringCreateArrayWithFindResults (CFAllocatorRef ewg_alloc, CFStringRef ewg_theString, CFStringRef ewg_stringToFind, CFRange *ewg_rangeToSearch, CFOptionFlags ewg_compareOptions)
+{
+	return CFStringCreateArrayWithFindResults ((CFAllocatorRef)ewg_alloc, (CFStringRef)ewg_theString, (CFStringRef)ewg_stringToFind, *(CFRange*)ewg_rangeToSearch, (CFOptionFlags)ewg_compareOptions);
+}
+
+// Return address of function 'CFStringCreateArrayWithFindResults'
+void* ewg_get_function_address_CFStringCreateArrayWithFindResults (void)
+{
+	return (void*) CFStringCreateArrayWithFindResults;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringFind'
+// For ise
+CFRange * ewg_function_CFStringFind (CFStringRef ewg_theString, CFStringRef ewg_stringToFind, CFOptionFlags ewg_compareOptions)
+{
+	CFRange *result = (CFRange*) malloc (sizeof(CFRange));
+	*result = CFStringFind ((CFStringRef)ewg_theString, (CFStringRef)ewg_stringToFind, (CFOptionFlags)ewg_compareOptions);
+	return result;
+}
+
+// Return address of function 'CFStringFind'
+void* ewg_get_function_address_CFStringFind (void)
+{
+	return (void*) CFStringFind;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringHasPrefix'
+// For ise
+Boolean  ewg_function_CFStringHasPrefix (CFStringRef ewg_theString, CFStringRef ewg_prefix)
+{
+	return CFStringHasPrefix ((CFStringRef)ewg_theString, (CFStringRef)ewg_prefix);
+}
+
+// Return address of function 'CFStringHasPrefix'
+void* ewg_get_function_address_CFStringHasPrefix (void)
+{
+	return (void*) CFStringHasPrefix;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringHasSuffix'
+// For ise
+Boolean  ewg_function_CFStringHasSuffix (CFStringRef ewg_theString, CFStringRef ewg_suffix)
+{
+	return CFStringHasSuffix ((CFStringRef)ewg_theString, (CFStringRef)ewg_suffix);
+}
+
+// Return address of function 'CFStringHasSuffix'
+void* ewg_get_function_address_CFStringHasSuffix (void)
+{
+	return (void*) CFStringHasSuffix;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetRangeOfComposedCharactersAtIndex'
+// For ise
+CFRange * ewg_function_CFStringGetRangeOfComposedCharactersAtIndex (CFStringRef ewg_theString, CFIndex ewg_theIndex)
+{
+	CFRange *result = (CFRange*) malloc (sizeof(CFRange));
+	*result = CFStringGetRangeOfComposedCharactersAtIndex ((CFStringRef)ewg_theString, (CFIndex)ewg_theIndex);
+	return result;
+}
+
+// Return address of function 'CFStringGetRangeOfComposedCharactersAtIndex'
+void* ewg_get_function_address_CFStringGetRangeOfComposedCharactersAtIndex (void)
+{
+	return (void*) CFStringGetRangeOfComposedCharactersAtIndex;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringFindCharacterFromSet'
+// For ise
+Boolean  ewg_function_CFStringFindCharacterFromSet (CFStringRef ewg_theString, CFCharacterSetRef ewg_theSet, CFRange *ewg_rangeToSearch, CFOptionFlags ewg_searchOptions, CFRange *ewg_result)
+{
+	return CFStringFindCharacterFromSet ((CFStringRef)ewg_theString, (CFCharacterSetRef)ewg_theSet, *(CFRange*)ewg_rangeToSearch, (CFOptionFlags)ewg_searchOptions, (CFRange*)ewg_result);
+}
+
+// Return address of function 'CFStringFindCharacterFromSet'
+void* ewg_get_function_address_CFStringFindCharacterFromSet (void)
+{
+	return (void*) CFStringFindCharacterFromSet;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetLineBounds'
+// For ise
+void  ewg_function_CFStringGetLineBounds (CFStringRef ewg_theString, CFRange *ewg_range, CFIndex *ewg_lineBeginIndex, CFIndex *ewg_lineEndIndex, CFIndex *ewg_contentsEndIndex)
+{
+	CFStringGetLineBounds ((CFStringRef)ewg_theString, *(CFRange*)ewg_range, (CFIndex*)ewg_lineBeginIndex, (CFIndex*)ewg_lineEndIndex, (CFIndex*)ewg_contentsEndIndex);
+}
+
+// Return address of function 'CFStringGetLineBounds'
+void* ewg_get_function_address_CFStringGetLineBounds (void)
+{
+	return (void*) CFStringGetLineBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateByCombiningStrings'
+// For ise
+CFStringRef  ewg_function_CFStringCreateByCombiningStrings (CFAllocatorRef ewg_alloc, CFArrayRef ewg_theArray, CFStringRef ewg_separatorString)
+{
+	return CFStringCreateByCombiningStrings ((CFAllocatorRef)ewg_alloc, (CFArrayRef)ewg_theArray, (CFStringRef)ewg_separatorString);
+}
+
+// Return address of function 'CFStringCreateByCombiningStrings'
+void* ewg_get_function_address_CFStringCreateByCombiningStrings (void)
+{
+	return (void*) CFStringCreateByCombiningStrings;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCreateArrayBySeparatingStrings'
+// For ise
+CFArrayRef  ewg_function_CFStringCreateArrayBySeparatingStrings (CFAllocatorRef ewg_alloc, CFStringRef ewg_theString, CFStringRef ewg_separatorString)
+{
+	return CFStringCreateArrayBySeparatingStrings ((CFAllocatorRef)ewg_alloc, (CFStringRef)ewg_theString, (CFStringRef)ewg_separatorString);
+}
+
+// Return address of function 'CFStringCreateArrayBySeparatingStrings'
+void* ewg_get_function_address_CFStringCreateArrayBySeparatingStrings (void)
+{
+	return (void*) CFStringCreateArrayBySeparatingStrings;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetIntValue'
+// For ise
+SInt32  ewg_function_CFStringGetIntValue (CFStringRef ewg_str)
+{
+	return CFStringGetIntValue ((CFStringRef)ewg_str);
+}
+
+// Return address of function 'CFStringGetIntValue'
+void* ewg_get_function_address_CFStringGetIntValue (void)
+{
+	return (void*) CFStringGetIntValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetDoubleValue'
+// For ise
+double  ewg_function_CFStringGetDoubleValue (CFStringRef ewg_str)
+{
+	return CFStringGetDoubleValue ((CFStringRef)ewg_str);
+}
+
+// Return address of function 'CFStringGetDoubleValue'
+void* ewg_get_function_address_CFStringGetDoubleValue (void)
+{
+	return (void*) CFStringGetDoubleValue;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringAppend'
+// For ise
+void  ewg_function_CFStringAppend (CFMutableStringRef ewg_theString, CFStringRef ewg_appendedString)
+{
+	CFStringAppend ((CFMutableStringRef)ewg_theString, (CFStringRef)ewg_appendedString);
+}
+
+// Return address of function 'CFStringAppend'
+void* ewg_get_function_address_CFStringAppend (void)
+{
+	return (void*) CFStringAppend;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringAppendCharacters'
+// For ise
+void  ewg_function_CFStringAppendCharacters (CFMutableStringRef ewg_theString, UniChar const *ewg_chars, CFIndex ewg_numChars)
+{
+	CFStringAppendCharacters ((CFMutableStringRef)ewg_theString, (UniChar const*)ewg_chars, (CFIndex)ewg_numChars);
+}
+
+// Return address of function 'CFStringAppendCharacters'
+void* ewg_get_function_address_CFStringAppendCharacters (void)
+{
+	return (void*) CFStringAppendCharacters;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringAppendPascalString'
+// For ise
+void  ewg_function_CFStringAppendPascalString (CFMutableStringRef ewg_theString, ConstStr255Param ewg_pStr, CFStringEncoding ewg_encoding)
+{
+	CFStringAppendPascalString ((CFMutableStringRef)ewg_theString, (ConstStr255Param)ewg_pStr, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringAppendPascalString'
+void* ewg_get_function_address_CFStringAppendPascalString (void)
+{
+	return (void*) CFStringAppendPascalString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringAppendCString'
+// For ise
+void  ewg_function_CFStringAppendCString (CFMutableStringRef ewg_theString, char const *ewg_cStr, CFStringEncoding ewg_encoding)
+{
+	CFStringAppendCString ((CFMutableStringRef)ewg_theString, (char const*)ewg_cStr, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringAppendCString'
+void* ewg_get_function_address_CFStringAppendCString (void)
+{
+	return (void*) CFStringAppendCString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringAppendFormat'
+// For ise
+void  ewg_function_CFStringAppendFormat (CFMutableStringRef ewg_theString, CFDictionaryRef ewg_formatOptions, CFStringRef ewg_format)
+{
+	CFStringAppendFormat ((CFMutableStringRef)ewg_theString, (CFDictionaryRef)ewg_formatOptions, (CFStringRef)ewg_format);
+}
+
+// Return address of function 'CFStringAppendFormat'
+void* ewg_get_function_address_CFStringAppendFormat (void)
+{
+	return (void*) CFStringAppendFormat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringInsert'
+// For ise
+void  ewg_function_CFStringInsert (CFMutableStringRef ewg_str, CFIndex ewg_idx, CFStringRef ewg_insertedStr)
+{
+	CFStringInsert ((CFMutableStringRef)ewg_str, (CFIndex)ewg_idx, (CFStringRef)ewg_insertedStr);
+}
+
+// Return address of function 'CFStringInsert'
+void* ewg_get_function_address_CFStringInsert (void)
+{
+	return (void*) CFStringInsert;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringDelete'
+// For ise
+void  ewg_function_CFStringDelete (CFMutableStringRef ewg_theString, CFRange *ewg_range)
+{
+	CFStringDelete ((CFMutableStringRef)ewg_theString, *(CFRange*)ewg_range);
+}
+
+// Return address of function 'CFStringDelete'
+void* ewg_get_function_address_CFStringDelete (void)
+{
+	return (void*) CFStringDelete;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringReplace'
+// For ise
+void  ewg_function_CFStringReplace (CFMutableStringRef ewg_theString, CFRange *ewg_range, CFStringRef ewg_replacement)
+{
+	CFStringReplace ((CFMutableStringRef)ewg_theString, *(CFRange*)ewg_range, (CFStringRef)ewg_replacement);
+}
+
+// Return address of function 'CFStringReplace'
+void* ewg_get_function_address_CFStringReplace (void)
+{
+	return (void*) CFStringReplace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringReplaceAll'
+// For ise
+void  ewg_function_CFStringReplaceAll (CFMutableStringRef ewg_theString, CFStringRef ewg_replacement)
+{
+	CFStringReplaceAll ((CFMutableStringRef)ewg_theString, (CFStringRef)ewg_replacement);
+}
+
+// Return address of function 'CFStringReplaceAll'
+void* ewg_get_function_address_CFStringReplaceAll (void)
+{
+	return (void*) CFStringReplaceAll;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringFindAndReplace'
+// For ise
+CFIndex  ewg_function_CFStringFindAndReplace (CFMutableStringRef ewg_theString, CFStringRef ewg_stringToFind, CFStringRef ewg_replacementString, CFRange *ewg_rangeToSearch, CFOptionFlags ewg_compareOptions)
+{
+	return CFStringFindAndReplace ((CFMutableStringRef)ewg_theString, (CFStringRef)ewg_stringToFind, (CFStringRef)ewg_replacementString, *(CFRange*)ewg_rangeToSearch, (CFOptionFlags)ewg_compareOptions);
+}
+
+// Return address of function 'CFStringFindAndReplace'
+void* ewg_get_function_address_CFStringFindAndReplace (void)
+{
+	return (void*) CFStringFindAndReplace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringSetExternalCharactersNoCopy'
+// For ise
+void  ewg_function_CFStringSetExternalCharactersNoCopy (CFMutableStringRef ewg_theString, UniChar *ewg_chars, CFIndex ewg_length, CFIndex ewg_capacity)
+{
+	CFStringSetExternalCharactersNoCopy ((CFMutableStringRef)ewg_theString, (UniChar*)ewg_chars, (CFIndex)ewg_length, (CFIndex)ewg_capacity);
+}
+
+// Return address of function 'CFStringSetExternalCharactersNoCopy'
+void* ewg_get_function_address_CFStringSetExternalCharactersNoCopy (void)
+{
+	return (void*) CFStringSetExternalCharactersNoCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringPad'
+// For ise
+void  ewg_function_CFStringPad (CFMutableStringRef ewg_theString, CFStringRef ewg_padString, CFIndex ewg_length, CFIndex ewg_indexIntoPad)
+{
+	CFStringPad ((CFMutableStringRef)ewg_theString, (CFStringRef)ewg_padString, (CFIndex)ewg_length, (CFIndex)ewg_indexIntoPad);
+}
+
+// Return address of function 'CFStringPad'
+void* ewg_get_function_address_CFStringPad (void)
+{
+	return (void*) CFStringPad;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringTrim'
+// For ise
+void  ewg_function_CFStringTrim (CFMutableStringRef ewg_theString, CFStringRef ewg_trimString)
+{
+	CFStringTrim ((CFMutableStringRef)ewg_theString, (CFStringRef)ewg_trimString);
+}
+
+// Return address of function 'CFStringTrim'
+void* ewg_get_function_address_CFStringTrim (void)
+{
+	return (void*) CFStringTrim;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringTrimWhitespace'
+// For ise
+void  ewg_function_CFStringTrimWhitespace (CFMutableStringRef ewg_theString)
+{
+	CFStringTrimWhitespace ((CFMutableStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringTrimWhitespace'
+void* ewg_get_function_address_CFStringTrimWhitespace (void)
+{
+	return (void*) CFStringTrimWhitespace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringLowercase'
+// For ise
+void  ewg_function_CFStringLowercase (CFMutableStringRef ewg_theString, CFLocaleRef ewg_locale)
+{
+	CFStringLowercase ((CFMutableStringRef)ewg_theString, (CFLocaleRef)ewg_locale);
+}
+
+// Return address of function 'CFStringLowercase'
+void* ewg_get_function_address_CFStringLowercase (void)
+{
+	return (void*) CFStringLowercase;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringUppercase'
+// For ise
+void  ewg_function_CFStringUppercase (CFMutableStringRef ewg_theString, CFLocaleRef ewg_locale)
+{
+	CFStringUppercase ((CFMutableStringRef)ewg_theString, (CFLocaleRef)ewg_locale);
+}
+
+// Return address of function 'CFStringUppercase'
+void* ewg_get_function_address_CFStringUppercase (void)
+{
+	return (void*) CFStringUppercase;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringCapitalize'
+// For ise
+void  ewg_function_CFStringCapitalize (CFMutableStringRef ewg_theString, CFLocaleRef ewg_locale)
+{
+	CFStringCapitalize ((CFMutableStringRef)ewg_theString, (CFLocaleRef)ewg_locale);
+}
+
+// Return address of function 'CFStringCapitalize'
+void* ewg_get_function_address_CFStringCapitalize (void)
+{
+	return (void*) CFStringCapitalize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringNormalize'
+// For ise
+void  ewg_function_CFStringNormalize (CFMutableStringRef ewg_theString, CFStringNormalizationForm ewg_theForm)
+{
+	CFStringNormalize ((CFMutableStringRef)ewg_theString, (CFStringNormalizationForm)ewg_theForm);
+}
+
+// Return address of function 'CFStringNormalize'
+void* ewg_get_function_address_CFStringNormalize (void)
+{
+	return (void*) CFStringNormalize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringTransform'
+// For ise
+Boolean  ewg_function_CFStringTransform (CFMutableStringRef ewg_string, CFRange *ewg_range, CFStringRef ewg_transform, Boolean ewg_reverse)
+{
+	return CFStringTransform ((CFMutableStringRef)ewg_string, (CFRange*)ewg_range, (CFStringRef)ewg_transform, (Boolean)ewg_reverse);
+}
+
+// Return address of function 'CFStringTransform'
+void* ewg_get_function_address_CFStringTransform (void)
+{
+	return (void*) CFStringTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringIsEncodingAvailable'
+// For ise
+Boolean  ewg_function_CFStringIsEncodingAvailable (CFStringEncoding ewg_encoding)
+{
+	return CFStringIsEncodingAvailable ((CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringIsEncodingAvailable'
+void* ewg_get_function_address_CFStringIsEncodingAvailable (void)
+{
+	return (void*) CFStringIsEncodingAvailable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetListOfAvailableEncodings'
+// For ise
+CFStringEncoding const * ewg_function_CFStringGetListOfAvailableEncodings (void)
+{
+	return CFStringGetListOfAvailableEncodings ();
+}
+
+// Return address of function 'CFStringGetListOfAvailableEncodings'
+void* ewg_get_function_address_CFStringGetListOfAvailableEncodings (void)
+{
+	return (void*) CFStringGetListOfAvailableEncodings;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetNameOfEncoding'
+// For ise
+CFStringRef  ewg_function_CFStringGetNameOfEncoding (CFStringEncoding ewg_encoding)
+{
+	return CFStringGetNameOfEncoding ((CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringGetNameOfEncoding'
+void* ewg_get_function_address_CFStringGetNameOfEncoding (void)
+{
+	return (void*) CFStringGetNameOfEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringConvertEncodingToNSStringEncoding'
+// For ise
+UInt32  ewg_function_CFStringConvertEncodingToNSStringEncoding (CFStringEncoding ewg_encoding)
+{
+	return CFStringConvertEncodingToNSStringEncoding ((CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringConvertEncodingToNSStringEncoding'
+void* ewg_get_function_address_CFStringConvertEncodingToNSStringEncoding (void)
+{
+	return (void*) CFStringConvertEncodingToNSStringEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringConvertNSStringEncodingToEncoding'
+// For ise
+CFStringEncoding  ewg_function_CFStringConvertNSStringEncodingToEncoding (UInt32 ewg_encoding)
+{
+	return CFStringConvertNSStringEncodingToEncoding ((UInt32)ewg_encoding);
+}
+
+// Return address of function 'CFStringConvertNSStringEncodingToEncoding'
+void* ewg_get_function_address_CFStringConvertNSStringEncodingToEncoding (void)
+{
+	return (void*) CFStringConvertNSStringEncodingToEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringConvertEncodingToWindowsCodepage'
+// For ise
+UInt32  ewg_function_CFStringConvertEncodingToWindowsCodepage (CFStringEncoding ewg_encoding)
+{
+	return CFStringConvertEncodingToWindowsCodepage ((CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringConvertEncodingToWindowsCodepage'
+void* ewg_get_function_address_CFStringConvertEncodingToWindowsCodepage (void)
+{
+	return (void*) CFStringConvertEncodingToWindowsCodepage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringConvertWindowsCodepageToEncoding'
+// For ise
+CFStringEncoding  ewg_function_CFStringConvertWindowsCodepageToEncoding (UInt32 ewg_codepage)
+{
+	return CFStringConvertWindowsCodepageToEncoding ((UInt32)ewg_codepage);
+}
+
+// Return address of function 'CFStringConvertWindowsCodepageToEncoding'
+void* ewg_get_function_address_CFStringConvertWindowsCodepageToEncoding (void)
+{
+	return (void*) CFStringConvertWindowsCodepageToEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringConvertIANACharSetNameToEncoding'
+// For ise
+CFStringEncoding  ewg_function_CFStringConvertIANACharSetNameToEncoding (CFStringRef ewg_theString)
+{
+	return CFStringConvertIANACharSetNameToEncoding ((CFStringRef)ewg_theString);
+}
+
+// Return address of function 'CFStringConvertIANACharSetNameToEncoding'
+void* ewg_get_function_address_CFStringConvertIANACharSetNameToEncoding (void)
+{
+	return (void*) CFStringConvertIANACharSetNameToEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringConvertEncodingToIANACharSetName'
+// For ise
+CFStringRef  ewg_function_CFStringConvertEncodingToIANACharSetName (CFStringEncoding ewg_encoding)
+{
+	return CFStringConvertEncodingToIANACharSetName ((CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringConvertEncodingToIANACharSetName'
+void* ewg_get_function_address_CFStringConvertEncodingToIANACharSetName (void)
+{
+	return (void*) CFStringConvertEncodingToIANACharSetName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFStringGetMostCompatibleMacStringEncoding'
+// For ise
+CFStringEncoding  ewg_function_CFStringGetMostCompatibleMacStringEncoding (CFStringEncoding ewg_encoding)
+{
+	return CFStringGetMostCompatibleMacStringEncoding ((CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFStringGetMostCompatibleMacStringEncoding'
+void* ewg_get_function_address_CFStringGetMostCompatibleMacStringEncoding (void)
+{
+	return (void*) CFStringGetMostCompatibleMacStringEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFShow'
+// For ise
+void  ewg_function_CFShow (CFTypeRef ewg_obj)
+{
+	CFShow ((CFTypeRef)ewg_obj);
+}
+
+// Return address of function 'CFShow'
+void* ewg_get_function_address_CFShow (void)
+{
+	return (void*) CFShow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFShowStr'
+// For ise
+void  ewg_function_CFShowStr (CFStringRef ewg_str)
+{
+	CFShowStr ((CFStringRef)ewg_str);
+}
+
+// Return address of function 'CFShowStr'
+void* ewg_get_function_address_CFShowStr (void)
+{
+	return (void*) CFShowStr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function '__CFStringMakeConstantString'
+// For ise
+CFStringRef  ewg_function___CFStringMakeConstantString (char const *ewg_cStr)
+{
+	return __CFStringMakeConstantString ((char const*)ewg_cStr);
+}
+
+// Return address of function '__CFStringMakeConstantString'
+void* ewg_get_function_address___CFStringMakeConstantString (void)
+{
+	return (void*) __CFStringMakeConstantString;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'AEInstallEventHandler'
 // For ise
 OSErr  ewg_function_AEInstallEventHandler (AEEventClass ewg_theAEEventClass, AEEventID ewg_theAEEventID, AEEventHandlerUPP ewg_handler, long ewg_handlerRefcon, Boolean ewg_isSysHandler)

@@ -8,6 +8,63 @@
 #define ewg_struct_macro_sizeof_struct___CFAllocator 1
 
 
+// glue code macros for struct `struct __CFString'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___CFString 1
+
+
+// glue code macros for struct `CFRange'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_CFRange sizeof (CFRange)
+
+#define ewg_struct_macro_CFRange_member_get_location(an_item) ((CFRange*)an_item)->location
+
+#define ewg_struct_macro_CFRange_member_set_location(an_item, a_value) ((CFRange*)an_item)->location =  (CFIndex)a_value
+
+#define ewg_struct_macro_CFRange_member_get_length(an_item) ((CFRange*)an_item)->length
+
+#define ewg_struct_macro_CFRange_member_set_length(an_item, a_value) ((CFRange*)an_item)->length =  (CFIndex)a_value
+
+
+// glue code macros for struct `struct __CFDictionary'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___CFDictionary 1
+
+
+// glue code macros for struct `struct __CFData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___CFData 1
+
+
+// glue code macros for struct `struct __CFArray'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___CFArray 1
+
+
+// glue code macros for struct `struct __CFCharacterSet'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___CFCharacterSet 1
+
+
+// glue code macros for struct `struct __CFLocale'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___CFLocale 1
+
+
 // glue code macros for struct `struct __CFURL'
 
 #include<Carbon/Carbon.h>
@@ -37,25 +94,11 @@
 #define ewg_struct_macro_CFStreamError_member_set_error(an_item, a_value) ((CFStreamError*)an_item)->error =  (SInt32)a_value
 
 
-// glue code macros for struct `struct __CFArray'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct___CFArray 1
-
-
 // glue code macros for struct `struct __CFRunLoop'
 
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct___CFRunLoop 1
-
-
-// glue code macros for struct `struct __CFString'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct___CFString 1
 
 
 // glue code macros for struct `struct AERemoteProcessResolverContext'
@@ -937,13 +980,6 @@
 #define ewg_struct_macro_struct_ProcessInfoRec_member_set_processAppSpec(an_item, a_value) ((struct ProcessInfoRec*)an_item)->processAppSpec =  (FSSpecPtr)a_value
 
 
-// glue code macros for struct `struct __CFDictionary'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct___CFDictionary 1
-
-
 // glue code macros for struct `struct FSRef'
 
 #include<Carbon/Carbon.h>
@@ -1043,6 +1079,17 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct___AXUIElement 1
+
+
+// glue code macros for struct `struct BigEndianLong'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_BigEndianLong sizeof (struct BigEndianLong)
+
+#define ewg_struct_macro_struct_BigEndianLong_member_get_bigEndianValue(an_item) ((struct BigEndianLong*)an_item)->bigEndianValue
+
+#define ewg_struct_macro_struct_BigEndianLong_member_set_bigEndianValue(an_item, a_value) ((struct BigEndianLong*)an_item)->bigEndianValue =  (long)a_value
 
 
 // glue code macros for struct `struct EventRecord'
@@ -1228,13 +1275,7 @@
 
 #define ewg_struct_macro_sizeof_struct_AliasRecord sizeof (struct AliasRecord)
 
-#define ewg_struct_macro_struct_AliasRecord_member_get_userType(an_item) ((struct AliasRecord*)an_item)->userType
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_userType(an_item, a_value) ((struct AliasRecord*)an_item)->userType =  (OSType)a_value
-
-#define ewg_struct_macro_struct_AliasRecord_member_get_aliasSize(an_item) ((struct AliasRecord*)an_item)->aliasSize
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_aliasSize(an_item, a_value) ((struct AliasRecord*)an_item)->aliasSize =  (unsigned short)a_value
+#define ewg_struct_macro_struct_AliasRecord_member_get_hidden(an_item) ((struct AliasRecord*)an_item)->hidden
 
 
 // glue code macros for struct `struct OpaqueIconRef'
@@ -1614,6 +1655,35 @@
 #define ewg_struct_macro_struct_DataBrowserAccessibilityItemInfo_member_get_version(an_item) ((struct DataBrowserAccessibilityItemInfo*)an_item)->version
 
 #define ewg_struct_macro_struct_DataBrowserAccessibilityItemInfo_member_set_version(an_item, a_value) ((struct DataBrowserAccessibilityItemInfo*)an_item)->version =  (UInt32)a_value
+
+
+// glue code macros for struct `CFStringInlineBuffer'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_CFStringInlineBuffer sizeof (CFStringInlineBuffer)
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_get_buffer(an_item) ((CFStringInlineBuffer*)an_item)->buffer
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_get_theString(an_item) ((CFStringInlineBuffer*)an_item)->theString
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_set_theString(an_item, a_value) ((CFStringInlineBuffer*)an_item)->theString =  (CFStringRef)a_value
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_get_directBuffer(an_item) ((CFStringInlineBuffer*)an_item)->directBuffer
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_set_directBuffer(an_item, a_value) ((CFStringInlineBuffer*)an_item)->directBuffer =  (UniChar const*)a_value
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_get_rangeToBuffer(an_item) &((CFStringInlineBuffer*)an_item)->rangeToBuffer
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_set_rangeToBuffer(an_item, a_value) ((CFStringInlineBuffer*)an_item)->rangeToBuffer =  *(CFRange*)a_value
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_get_bufferedRangeStart(an_item) ((CFStringInlineBuffer*)an_item)->bufferedRangeStart
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_set_bufferedRangeStart(an_item, a_value) ((CFStringInlineBuffer*)an_item)->bufferedRangeStart =  (CFIndex)a_value
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_get_bufferedRangeEnd(an_item) ((CFStringInlineBuffer*)an_item)->bufferedRangeEnd
+
+#define ewg_struct_macro_CFStringInlineBuffer_member_set_bufferedRangeEnd(an_item, a_value) ((CFStringInlineBuffer*)an_item)->bufferedRangeEnd =  (CFIndex)a_value
 
 
 // glue code macros for struct `struct PrinterFontStatus'

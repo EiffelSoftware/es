@@ -67,6 +67,7 @@ inherit
 	PROCESSES_FUNCTIONS_EXTERNAL
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 	CONTROLS_FUNCTIONS_EXTERNAL
+	CFSTRING_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -348,9 +349,37 @@ feature -- Element change
 
 	set_title (new_title: STRING_GENERAL) is
 			-- Set `title' to `new_title'.
+			local
+			c_str: C_STRING
+			ptr: POINTER
+			res: INTEGER
 		do
 
+			create c_str.make (new_title)
+			ptr:=c_string_to_cfstring_ptr(c_str)
+			res:=set_window_title_with_cfstring_external (c_object, ptr)
+		--	res:=set_control_title_with_cfstring_external (c_object, ptr)
+
+
 		end
+
+	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
+			local
+				null_ptr:POINTER
+			do
+				Result:= cfstring_create_with_cstring_external(null_ptr, c_str.item,  kCFStringEncodingASCII)
+			end
+
+	frozen kCFStringEncodingASCII: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kCFStringEncodingASCII"
+	end
+
+
+
+
 
 	set_menu_bar (a_menu_bar: EV_MENU_BAR) is
 			-- Set `menu_bar' to `a_menu_bar'.

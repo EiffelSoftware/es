@@ -1,4 +1,472 @@
 
+// Wraps call to function 'CFStringGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetTypeID CFStringGetTypeID ()
+
+CFTypeID  ewg_function_CFStringGetTypeID (void);
+// Wraps call to function 'CFStringCreateWithPascalString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithPascalString(ewg_param_alloc, ewg_param_pStr, ewg_param_encoding) CFStringCreateWithPascalString ((CFAllocatorRef)ewg_param_alloc, (ConstStr255Param)ewg_param_pStr, (CFStringEncoding)ewg_param_encoding)
+
+CFStringRef  ewg_function_CFStringCreateWithPascalString (CFAllocatorRef alloc, ConstStr255Param pStr, CFStringEncoding encoding);
+// Wraps call to function 'CFStringCreateWithCString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithCString(ewg_param_alloc, ewg_param_cStr, ewg_param_encoding) CFStringCreateWithCString ((CFAllocatorRef)ewg_param_alloc, (char const*)ewg_param_cStr, (CFStringEncoding)ewg_param_encoding)
+
+CFStringRef  ewg_function_CFStringCreateWithCString (CFAllocatorRef alloc, char const *cStr, CFStringEncoding encoding);
+// Wraps call to function 'CFStringCreateWithCharacters' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithCharacters(ewg_param_alloc, ewg_param_chars, ewg_param_numChars) CFStringCreateWithCharacters ((CFAllocatorRef)ewg_param_alloc, (UniChar const*)ewg_param_chars, (CFIndex)ewg_param_numChars)
+
+CFStringRef  ewg_function_CFStringCreateWithCharacters (CFAllocatorRef alloc, UniChar const *chars, CFIndex numChars);
+// Wraps call to function 'CFStringCreateWithPascalStringNoCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithPascalStringNoCopy(ewg_param_alloc, ewg_param_pStr, ewg_param_encoding, ewg_param_contentsDeallocator) CFStringCreateWithPascalStringNoCopy ((CFAllocatorRef)ewg_param_alloc, (ConstStr255Param)ewg_param_pStr, (CFStringEncoding)ewg_param_encoding, (CFAllocatorRef)ewg_param_contentsDeallocator)
+
+CFStringRef  ewg_function_CFStringCreateWithPascalStringNoCopy (CFAllocatorRef alloc, ConstStr255Param pStr, CFStringEncoding encoding, CFAllocatorRef contentsDeallocator);
+// Wraps call to function 'CFStringCreateWithCStringNoCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithCStringNoCopy(ewg_param_alloc, ewg_param_cStr, ewg_param_encoding, ewg_param_contentsDeallocator) CFStringCreateWithCStringNoCopy ((CFAllocatorRef)ewg_param_alloc, (char const*)ewg_param_cStr, (CFStringEncoding)ewg_param_encoding, (CFAllocatorRef)ewg_param_contentsDeallocator)
+
+CFStringRef  ewg_function_CFStringCreateWithCStringNoCopy (CFAllocatorRef alloc, char const *cStr, CFStringEncoding encoding, CFAllocatorRef contentsDeallocator);
+// Wraps call to function 'CFStringCreateWithCharactersNoCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithCharactersNoCopy(ewg_param_alloc, ewg_param_chars, ewg_param_numChars, ewg_param_contentsDeallocator) CFStringCreateWithCharactersNoCopy ((CFAllocatorRef)ewg_param_alloc, (UniChar const*)ewg_param_chars, (CFIndex)ewg_param_numChars, (CFAllocatorRef)ewg_param_contentsDeallocator)
+
+CFStringRef  ewg_function_CFStringCreateWithCharactersNoCopy (CFAllocatorRef alloc, UniChar const *chars, CFIndex numChars, CFAllocatorRef contentsDeallocator);
+// Wraps call to function 'CFStringCreateWithSubstring' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithSubstring(ewg_param_alloc, ewg_param_str, ewg_param_range) CFStringCreateWithSubstring ((CFAllocatorRef)ewg_param_alloc, (CFStringRef)ewg_param_str, *(CFRange*)ewg_param_range)
+
+CFStringRef  ewg_function_CFStringCreateWithSubstring (CFAllocatorRef alloc, CFStringRef str, CFRange *range);
+// Wraps call to function 'CFStringCreateCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateCopy(ewg_param_alloc, ewg_param_theString) CFStringCreateCopy ((CFAllocatorRef)ewg_param_alloc, (CFStringRef)ewg_param_theString)
+
+CFStringRef  ewg_function_CFStringCreateCopy (CFAllocatorRef alloc, CFStringRef theString);
+// Wraps call to function 'CFStringCreateWithFormat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithFormat(ewg_param_alloc, ewg_param_formatOptions, ewg_param_format) CFStringCreateWithFormat ((CFAllocatorRef)ewg_param_alloc, (CFDictionaryRef)ewg_param_formatOptions, (CFStringRef)ewg_param_format)
+
+CFStringRef  ewg_function_CFStringCreateWithFormat (CFAllocatorRef alloc, CFDictionaryRef formatOptions, CFStringRef format);
+// Wraps call to function 'CFStringCreateMutable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateMutable(ewg_param_alloc, ewg_param_maxLength) CFStringCreateMutable ((CFAllocatorRef)ewg_param_alloc, (CFIndex)ewg_param_maxLength)
+
+CFMutableStringRef  ewg_function_CFStringCreateMutable (CFAllocatorRef alloc, CFIndex maxLength);
+// Wraps call to function 'CFStringCreateMutableCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateMutableCopy(ewg_param_alloc, ewg_param_maxLength, ewg_param_theString) CFStringCreateMutableCopy ((CFAllocatorRef)ewg_param_alloc, (CFIndex)ewg_param_maxLength, (CFStringRef)ewg_param_theString)
+
+CFMutableStringRef  ewg_function_CFStringCreateMutableCopy (CFAllocatorRef alloc, CFIndex maxLength, CFStringRef theString);
+// Wraps call to function 'CFStringCreateMutableWithExternalCharactersNoCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateMutableWithExternalCharactersNoCopy(ewg_param_alloc, ewg_param_chars, ewg_param_numChars, ewg_param_capacity, ewg_param_externalCharactersAllocator) CFStringCreateMutableWithExternalCharactersNoCopy ((CFAllocatorRef)ewg_param_alloc, (UniChar*)ewg_param_chars, (CFIndex)ewg_param_numChars, (CFIndex)ewg_param_capacity, (CFAllocatorRef)ewg_param_externalCharactersAllocator)
+
+CFMutableStringRef  ewg_function_CFStringCreateMutableWithExternalCharactersNoCopy (CFAllocatorRef alloc, UniChar *chars, CFIndex numChars, CFIndex capacity, CFAllocatorRef externalCharactersAllocator);
+// Wraps call to function 'CFStringGetLength' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetLength(ewg_param_theString) CFStringGetLength ((CFStringRef)ewg_param_theString)
+
+CFIndex  ewg_function_CFStringGetLength (CFStringRef theString);
+// Wraps call to function 'CFStringGetCharacterAtIndex' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetCharacterAtIndex(ewg_param_theString, ewg_param_idx) CFStringGetCharacterAtIndex ((CFStringRef)ewg_param_theString, (CFIndex)ewg_param_idx)
+
+UniChar  ewg_function_CFStringGetCharacterAtIndex (CFStringRef theString, CFIndex idx);
+// Wraps call to function 'CFStringGetCharacters' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetCharacters(ewg_param_theString, ewg_param_range, ewg_param_buffer) CFStringGetCharacters ((CFStringRef)ewg_param_theString, *(CFRange*)ewg_param_range, (UniChar*)ewg_param_buffer)
+
+void  ewg_function_CFStringGetCharacters (CFStringRef theString, CFRange *range, UniChar *buffer);
+// Wraps call to function 'CFStringGetPascalString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetPascalString(ewg_param_theString, ewg_param_buffer, ewg_param_bufferSize, ewg_param_encoding) CFStringGetPascalString ((CFStringRef)ewg_param_theString, (StringPtr)ewg_param_buffer, (CFIndex)ewg_param_bufferSize, (CFStringEncoding)ewg_param_encoding)
+
+Boolean  ewg_function_CFStringGetPascalString (CFStringRef theString, StringPtr buffer, CFIndex bufferSize, CFStringEncoding encoding);
+// Wraps call to function 'CFStringGetCString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetCString(ewg_param_theString, ewg_param_buffer, ewg_param_bufferSize, ewg_param_encoding) CFStringGetCString ((CFStringRef)ewg_param_theString, (char*)ewg_param_buffer, (CFIndex)ewg_param_bufferSize, (CFStringEncoding)ewg_param_encoding)
+
+Boolean  ewg_function_CFStringGetCString (CFStringRef theString, char *buffer, CFIndex bufferSize, CFStringEncoding encoding);
+// Wraps call to function 'CFStringGetPascalStringPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetPascalStringPtr(ewg_param_theString, ewg_param_encoding) CFStringGetPascalStringPtr ((CFStringRef)ewg_param_theString, (CFStringEncoding)ewg_param_encoding)
+
+ConstStringPtr  ewg_function_CFStringGetPascalStringPtr (CFStringRef theString, CFStringEncoding encoding);
+// Wraps call to function 'CFStringGetCStringPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetCStringPtr(ewg_param_theString, ewg_param_encoding) CFStringGetCStringPtr ((CFStringRef)ewg_param_theString, (CFStringEncoding)ewg_param_encoding)
+
+char const * ewg_function_CFStringGetCStringPtr (CFStringRef theString, CFStringEncoding encoding);
+// Wraps call to function 'CFStringGetCharactersPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetCharactersPtr(ewg_param_theString) CFStringGetCharactersPtr ((CFStringRef)ewg_param_theString)
+
+UniChar const * ewg_function_CFStringGetCharactersPtr (CFStringRef theString);
+// Wraps call to function 'CFStringGetBytes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetBytes(ewg_param_theString, ewg_param_range, ewg_param_encoding, ewg_param_lossByte, ewg_param_isExternalRepresentation, ewg_param_buffer, ewg_param_maxBufLen, ewg_param_usedBufLen) CFStringGetBytes ((CFStringRef)ewg_param_theString, *(CFRange*)ewg_param_range, (CFStringEncoding)ewg_param_encoding, (UInt8)ewg_param_lossByte, (Boolean)ewg_param_isExternalRepresentation, (UInt8*)ewg_param_buffer, (CFIndex)ewg_param_maxBufLen, (CFIndex*)ewg_param_usedBufLen)
+
+CFIndex  ewg_function_CFStringGetBytes (CFStringRef theString, CFRange *range, CFStringEncoding encoding, UInt8 lossByte, Boolean isExternalRepresentation, UInt8 *buffer, CFIndex maxBufLen, CFIndex *usedBufLen);
+// Wraps call to function 'CFStringCreateWithBytes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithBytes(ewg_param_alloc, ewg_param_bytes, ewg_param_numBytes, ewg_param_encoding, ewg_param_isExternalRepresentation) CFStringCreateWithBytes ((CFAllocatorRef)ewg_param_alloc, (UInt8 const*)ewg_param_bytes, (CFIndex)ewg_param_numBytes, (CFStringEncoding)ewg_param_encoding, (Boolean)ewg_param_isExternalRepresentation)
+
+CFStringRef  ewg_function_CFStringCreateWithBytes (CFAllocatorRef alloc, UInt8 const *bytes, CFIndex numBytes, CFStringEncoding encoding, Boolean isExternalRepresentation);
+// Wraps call to function 'CFStringCreateFromExternalRepresentation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateFromExternalRepresentation(ewg_param_alloc, ewg_param_data, ewg_param_encoding) CFStringCreateFromExternalRepresentation ((CFAllocatorRef)ewg_param_alloc, (CFDataRef)ewg_param_data, (CFStringEncoding)ewg_param_encoding)
+
+CFStringRef  ewg_function_CFStringCreateFromExternalRepresentation (CFAllocatorRef alloc, CFDataRef data, CFStringEncoding encoding);
+// Wraps call to function 'CFStringCreateExternalRepresentation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateExternalRepresentation(ewg_param_alloc, ewg_param_theString, ewg_param_encoding, ewg_param_lossByte) CFStringCreateExternalRepresentation ((CFAllocatorRef)ewg_param_alloc, (CFStringRef)ewg_param_theString, (CFStringEncoding)ewg_param_encoding, (UInt8)ewg_param_lossByte)
+
+CFDataRef  ewg_function_CFStringCreateExternalRepresentation (CFAllocatorRef alloc, CFStringRef theString, CFStringEncoding encoding, UInt8 lossByte);
+// Wraps call to function 'CFStringGetSmallestEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetSmallestEncoding(ewg_param_theString) CFStringGetSmallestEncoding ((CFStringRef)ewg_param_theString)
+
+CFStringEncoding  ewg_function_CFStringGetSmallestEncoding (CFStringRef theString);
+// Wraps call to function 'CFStringGetFastestEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetFastestEncoding(ewg_param_theString) CFStringGetFastestEncoding ((CFStringRef)ewg_param_theString)
+
+CFStringEncoding  ewg_function_CFStringGetFastestEncoding (CFStringRef theString);
+// Wraps call to function 'CFStringGetSystemEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetSystemEncoding CFStringGetSystemEncoding ()
+
+CFStringEncoding  ewg_function_CFStringGetSystemEncoding (void);
+// Wraps call to function 'CFStringGetMaximumSizeForEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetMaximumSizeForEncoding(ewg_param_length, ewg_param_encoding) CFStringGetMaximumSizeForEncoding ((CFIndex)ewg_param_length, (CFStringEncoding)ewg_param_encoding)
+
+CFIndex  ewg_function_CFStringGetMaximumSizeForEncoding (CFIndex length, CFStringEncoding encoding);
+// Wraps call to function 'CFStringGetFileSystemRepresentation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetFileSystemRepresentation(ewg_param_string, ewg_param_buffer, ewg_param_maxBufLen) CFStringGetFileSystemRepresentation ((CFStringRef)ewg_param_string, (char*)ewg_param_buffer, (CFIndex)ewg_param_maxBufLen)
+
+Boolean  ewg_function_CFStringGetFileSystemRepresentation (CFStringRef string, char *buffer, CFIndex maxBufLen);
+// Wraps call to function 'CFStringGetMaximumSizeOfFileSystemRepresentation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetMaximumSizeOfFileSystemRepresentation(ewg_param_string) CFStringGetMaximumSizeOfFileSystemRepresentation ((CFStringRef)ewg_param_string)
+
+CFIndex  ewg_function_CFStringGetMaximumSizeOfFileSystemRepresentation (CFStringRef string);
+// Wraps call to function 'CFStringCreateWithFileSystemRepresentation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateWithFileSystemRepresentation(ewg_param_alloc, ewg_param_buffer) CFStringCreateWithFileSystemRepresentation ((CFAllocatorRef)ewg_param_alloc, (char const*)ewg_param_buffer)
+
+CFStringRef  ewg_function_CFStringCreateWithFileSystemRepresentation (CFAllocatorRef alloc, char const *buffer);
+// Wraps call to function 'CFStringCompareWithOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCompareWithOptions(ewg_param_theString1, ewg_param_theString2, ewg_param_rangeToCompare, ewg_param_compareOptions) CFStringCompareWithOptions ((CFStringRef)ewg_param_theString1, (CFStringRef)ewg_param_theString2, *(CFRange*)ewg_param_rangeToCompare, (CFOptionFlags)ewg_param_compareOptions)
+
+CFComparisonResult  ewg_function_CFStringCompareWithOptions (CFStringRef theString1, CFStringRef theString2, CFRange *rangeToCompare, CFOptionFlags compareOptions);
+// Wraps call to function 'CFStringCompare' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCompare(ewg_param_theString1, ewg_param_theString2, ewg_param_compareOptions) CFStringCompare ((CFStringRef)ewg_param_theString1, (CFStringRef)ewg_param_theString2, (CFOptionFlags)ewg_param_compareOptions)
+
+CFComparisonResult  ewg_function_CFStringCompare (CFStringRef theString1, CFStringRef theString2, CFOptionFlags compareOptions);
+// Wraps call to function 'CFStringFindWithOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringFindWithOptions(ewg_param_theString, ewg_param_stringToFind, ewg_param_rangeToSearch, ewg_param_searchOptions, ewg_param_result) CFStringFindWithOptions ((CFStringRef)ewg_param_theString, (CFStringRef)ewg_param_stringToFind, *(CFRange*)ewg_param_rangeToSearch, (CFOptionFlags)ewg_param_searchOptions, (CFRange*)ewg_param_result)
+
+Boolean  ewg_function_CFStringFindWithOptions (CFStringRef theString, CFStringRef stringToFind, CFRange *rangeToSearch, CFOptionFlags searchOptions, CFRange *result);
+// Wraps call to function 'CFStringCreateArrayWithFindResults' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateArrayWithFindResults(ewg_param_alloc, ewg_param_theString, ewg_param_stringToFind, ewg_param_rangeToSearch, ewg_param_compareOptions) CFStringCreateArrayWithFindResults ((CFAllocatorRef)ewg_param_alloc, (CFStringRef)ewg_param_theString, (CFStringRef)ewg_param_stringToFind, *(CFRange*)ewg_param_rangeToSearch, (CFOptionFlags)ewg_param_compareOptions)
+
+CFArrayRef  ewg_function_CFStringCreateArrayWithFindResults (CFAllocatorRef alloc, CFStringRef theString, CFStringRef stringToFind, CFRange *rangeToSearch, CFOptionFlags compareOptions);
+// Wraps call to function 'CFStringFind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringFind(ewg_param_theString, ewg_param_stringToFind, ewg_param_compareOptions) CFStringFind ((CFStringRef)ewg_param_theString, (CFStringRef)ewg_param_stringToFind, (CFOptionFlags)ewg_param_compareOptions)
+
+CFRange * ewg_function_CFStringFind (CFStringRef theString, CFStringRef stringToFind, CFOptionFlags compareOptions);
+// Wraps call to function 'CFStringHasPrefix' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringHasPrefix(ewg_param_theString, ewg_param_prefix) CFStringHasPrefix ((CFStringRef)ewg_param_theString, (CFStringRef)ewg_param_prefix)
+
+Boolean  ewg_function_CFStringHasPrefix (CFStringRef theString, CFStringRef prefix);
+// Wraps call to function 'CFStringHasSuffix' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringHasSuffix(ewg_param_theString, ewg_param_suffix) CFStringHasSuffix ((CFStringRef)ewg_param_theString, (CFStringRef)ewg_param_suffix)
+
+Boolean  ewg_function_CFStringHasSuffix (CFStringRef theString, CFStringRef suffix);
+// Wraps call to function 'CFStringGetRangeOfComposedCharactersAtIndex' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetRangeOfComposedCharactersAtIndex(ewg_param_theString, ewg_param_theIndex) CFStringGetRangeOfComposedCharactersAtIndex ((CFStringRef)ewg_param_theString, (CFIndex)ewg_param_theIndex)
+
+CFRange * ewg_function_CFStringGetRangeOfComposedCharactersAtIndex (CFStringRef theString, CFIndex theIndex);
+// Wraps call to function 'CFStringFindCharacterFromSet' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringFindCharacterFromSet(ewg_param_theString, ewg_param_theSet, ewg_param_rangeToSearch, ewg_param_searchOptions, ewg_param_result) CFStringFindCharacterFromSet ((CFStringRef)ewg_param_theString, (CFCharacterSetRef)ewg_param_theSet, *(CFRange*)ewg_param_rangeToSearch, (CFOptionFlags)ewg_param_searchOptions, (CFRange*)ewg_param_result)
+
+Boolean  ewg_function_CFStringFindCharacterFromSet (CFStringRef theString, CFCharacterSetRef theSet, CFRange *rangeToSearch, CFOptionFlags searchOptions, CFRange *result);
+// Wraps call to function 'CFStringGetLineBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetLineBounds(ewg_param_theString, ewg_param_range, ewg_param_lineBeginIndex, ewg_param_lineEndIndex, ewg_param_contentsEndIndex) CFStringGetLineBounds ((CFStringRef)ewg_param_theString, *(CFRange*)ewg_param_range, (CFIndex*)ewg_param_lineBeginIndex, (CFIndex*)ewg_param_lineEndIndex, (CFIndex*)ewg_param_contentsEndIndex)
+
+void  ewg_function_CFStringGetLineBounds (CFStringRef theString, CFRange *range, CFIndex *lineBeginIndex, CFIndex *lineEndIndex, CFIndex *contentsEndIndex);
+// Wraps call to function 'CFStringCreateByCombiningStrings' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateByCombiningStrings(ewg_param_alloc, ewg_param_theArray, ewg_param_separatorString) CFStringCreateByCombiningStrings ((CFAllocatorRef)ewg_param_alloc, (CFArrayRef)ewg_param_theArray, (CFStringRef)ewg_param_separatorString)
+
+CFStringRef  ewg_function_CFStringCreateByCombiningStrings (CFAllocatorRef alloc, CFArrayRef theArray, CFStringRef separatorString);
+// Wraps call to function 'CFStringCreateArrayBySeparatingStrings' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCreateArrayBySeparatingStrings(ewg_param_alloc, ewg_param_theString, ewg_param_separatorString) CFStringCreateArrayBySeparatingStrings ((CFAllocatorRef)ewg_param_alloc, (CFStringRef)ewg_param_theString, (CFStringRef)ewg_param_separatorString)
+
+CFArrayRef  ewg_function_CFStringCreateArrayBySeparatingStrings (CFAllocatorRef alloc, CFStringRef theString, CFStringRef separatorString);
+// Wraps call to function 'CFStringGetIntValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetIntValue(ewg_param_str) CFStringGetIntValue ((CFStringRef)ewg_param_str)
+
+SInt32  ewg_function_CFStringGetIntValue (CFStringRef str);
+// Wraps call to function 'CFStringGetDoubleValue' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetDoubleValue(ewg_param_str) CFStringGetDoubleValue ((CFStringRef)ewg_param_str)
+
+double  ewg_function_CFStringGetDoubleValue (CFStringRef str);
+// Wraps call to function 'CFStringAppend' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringAppend(ewg_param_theString, ewg_param_appendedString) CFStringAppend ((CFMutableStringRef)ewg_param_theString, (CFStringRef)ewg_param_appendedString)
+
+void  ewg_function_CFStringAppend (CFMutableStringRef theString, CFStringRef appendedString);
+// Wraps call to function 'CFStringAppendCharacters' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringAppendCharacters(ewg_param_theString, ewg_param_chars, ewg_param_numChars) CFStringAppendCharacters ((CFMutableStringRef)ewg_param_theString, (UniChar const*)ewg_param_chars, (CFIndex)ewg_param_numChars)
+
+void  ewg_function_CFStringAppendCharacters (CFMutableStringRef theString, UniChar const *chars, CFIndex numChars);
+// Wraps call to function 'CFStringAppendPascalString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringAppendPascalString(ewg_param_theString, ewg_param_pStr, ewg_param_encoding) CFStringAppendPascalString ((CFMutableStringRef)ewg_param_theString, (ConstStr255Param)ewg_param_pStr, (CFStringEncoding)ewg_param_encoding)
+
+void  ewg_function_CFStringAppendPascalString (CFMutableStringRef theString, ConstStr255Param pStr, CFStringEncoding encoding);
+// Wraps call to function 'CFStringAppendCString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringAppendCString(ewg_param_theString, ewg_param_cStr, ewg_param_encoding) CFStringAppendCString ((CFMutableStringRef)ewg_param_theString, (char const*)ewg_param_cStr, (CFStringEncoding)ewg_param_encoding)
+
+void  ewg_function_CFStringAppendCString (CFMutableStringRef theString, char const *cStr, CFStringEncoding encoding);
+// Wraps call to function 'CFStringAppendFormat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringAppendFormat(ewg_param_theString, ewg_param_formatOptions, ewg_param_format) CFStringAppendFormat ((CFMutableStringRef)ewg_param_theString, (CFDictionaryRef)ewg_param_formatOptions, (CFStringRef)ewg_param_format)
+
+void  ewg_function_CFStringAppendFormat (CFMutableStringRef theString, CFDictionaryRef formatOptions, CFStringRef format);
+// Wraps call to function 'CFStringInsert' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringInsert(ewg_param_str, ewg_param_idx, ewg_param_insertedStr) CFStringInsert ((CFMutableStringRef)ewg_param_str, (CFIndex)ewg_param_idx, (CFStringRef)ewg_param_insertedStr)
+
+void  ewg_function_CFStringInsert (CFMutableStringRef str, CFIndex idx, CFStringRef insertedStr);
+// Wraps call to function 'CFStringDelete' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringDelete(ewg_param_theString, ewg_param_range) CFStringDelete ((CFMutableStringRef)ewg_param_theString, *(CFRange*)ewg_param_range)
+
+void  ewg_function_CFStringDelete (CFMutableStringRef theString, CFRange *range);
+// Wraps call to function 'CFStringReplace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringReplace(ewg_param_theString, ewg_param_range, ewg_param_replacement) CFStringReplace ((CFMutableStringRef)ewg_param_theString, *(CFRange*)ewg_param_range, (CFStringRef)ewg_param_replacement)
+
+void  ewg_function_CFStringReplace (CFMutableStringRef theString, CFRange *range, CFStringRef replacement);
+// Wraps call to function 'CFStringReplaceAll' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringReplaceAll(ewg_param_theString, ewg_param_replacement) CFStringReplaceAll ((CFMutableStringRef)ewg_param_theString, (CFStringRef)ewg_param_replacement)
+
+void  ewg_function_CFStringReplaceAll (CFMutableStringRef theString, CFStringRef replacement);
+// Wraps call to function 'CFStringFindAndReplace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringFindAndReplace(ewg_param_theString, ewg_param_stringToFind, ewg_param_replacementString, ewg_param_rangeToSearch, ewg_param_compareOptions) CFStringFindAndReplace ((CFMutableStringRef)ewg_param_theString, (CFStringRef)ewg_param_stringToFind, (CFStringRef)ewg_param_replacementString, *(CFRange*)ewg_param_rangeToSearch, (CFOptionFlags)ewg_param_compareOptions)
+
+CFIndex  ewg_function_CFStringFindAndReplace (CFMutableStringRef theString, CFStringRef stringToFind, CFStringRef replacementString, CFRange *rangeToSearch, CFOptionFlags compareOptions);
+// Wraps call to function 'CFStringSetExternalCharactersNoCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringSetExternalCharactersNoCopy(ewg_param_theString, ewg_param_chars, ewg_param_length, ewg_param_capacity) CFStringSetExternalCharactersNoCopy ((CFMutableStringRef)ewg_param_theString, (UniChar*)ewg_param_chars, (CFIndex)ewg_param_length, (CFIndex)ewg_param_capacity)
+
+void  ewg_function_CFStringSetExternalCharactersNoCopy (CFMutableStringRef theString, UniChar *chars, CFIndex length, CFIndex capacity);
+// Wraps call to function 'CFStringPad' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringPad(ewg_param_theString, ewg_param_padString, ewg_param_length, ewg_param_indexIntoPad) CFStringPad ((CFMutableStringRef)ewg_param_theString, (CFStringRef)ewg_param_padString, (CFIndex)ewg_param_length, (CFIndex)ewg_param_indexIntoPad)
+
+void  ewg_function_CFStringPad (CFMutableStringRef theString, CFStringRef padString, CFIndex length, CFIndex indexIntoPad);
+// Wraps call to function 'CFStringTrim' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringTrim(ewg_param_theString, ewg_param_trimString) CFStringTrim ((CFMutableStringRef)ewg_param_theString, (CFStringRef)ewg_param_trimString)
+
+void  ewg_function_CFStringTrim (CFMutableStringRef theString, CFStringRef trimString);
+// Wraps call to function 'CFStringTrimWhitespace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringTrimWhitespace(ewg_param_theString) CFStringTrimWhitespace ((CFMutableStringRef)ewg_param_theString)
+
+void  ewg_function_CFStringTrimWhitespace (CFMutableStringRef theString);
+// Wraps call to function 'CFStringLowercase' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringLowercase(ewg_param_theString, ewg_param_locale) CFStringLowercase ((CFMutableStringRef)ewg_param_theString, (CFLocaleRef)ewg_param_locale)
+
+void  ewg_function_CFStringLowercase (CFMutableStringRef theString, CFLocaleRef locale);
+// Wraps call to function 'CFStringUppercase' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringUppercase(ewg_param_theString, ewg_param_locale) CFStringUppercase ((CFMutableStringRef)ewg_param_theString, (CFLocaleRef)ewg_param_locale)
+
+void  ewg_function_CFStringUppercase (CFMutableStringRef theString, CFLocaleRef locale);
+// Wraps call to function 'CFStringCapitalize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringCapitalize(ewg_param_theString, ewg_param_locale) CFStringCapitalize ((CFMutableStringRef)ewg_param_theString, (CFLocaleRef)ewg_param_locale)
+
+void  ewg_function_CFStringCapitalize (CFMutableStringRef theString, CFLocaleRef locale);
+// Wraps call to function 'CFStringNormalize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringNormalize(ewg_param_theString, ewg_param_theForm) CFStringNormalize ((CFMutableStringRef)ewg_param_theString, (CFStringNormalizationForm)ewg_param_theForm)
+
+void  ewg_function_CFStringNormalize (CFMutableStringRef theString, CFStringNormalizationForm theForm);
+// Wraps call to function 'CFStringTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringTransform(ewg_param_string, ewg_param_range, ewg_param_transform, ewg_param_reverse) CFStringTransform ((CFMutableStringRef)ewg_param_string, (CFRange*)ewg_param_range, (CFStringRef)ewg_param_transform, (Boolean)ewg_param_reverse)
+
+Boolean  ewg_function_CFStringTransform (CFMutableStringRef string, CFRange *range, CFStringRef transform, Boolean reverse);
+// Wraps call to function 'CFStringIsEncodingAvailable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringIsEncodingAvailable(ewg_param_encoding) CFStringIsEncodingAvailable ((CFStringEncoding)ewg_param_encoding)
+
+Boolean  ewg_function_CFStringIsEncodingAvailable (CFStringEncoding encoding);
+// Wraps call to function 'CFStringGetListOfAvailableEncodings' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetListOfAvailableEncodings CFStringGetListOfAvailableEncodings ()
+
+CFStringEncoding const * ewg_function_CFStringGetListOfAvailableEncodings (void);
+// Wraps call to function 'CFStringGetNameOfEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetNameOfEncoding(ewg_param_encoding) CFStringGetNameOfEncoding ((CFStringEncoding)ewg_param_encoding)
+
+CFStringRef  ewg_function_CFStringGetNameOfEncoding (CFStringEncoding encoding);
+// Wraps call to function 'CFStringConvertEncodingToNSStringEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringConvertEncodingToNSStringEncoding(ewg_param_encoding) CFStringConvertEncodingToNSStringEncoding ((CFStringEncoding)ewg_param_encoding)
+
+UInt32  ewg_function_CFStringConvertEncodingToNSStringEncoding (CFStringEncoding encoding);
+// Wraps call to function 'CFStringConvertNSStringEncodingToEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringConvertNSStringEncodingToEncoding(ewg_param_encoding) CFStringConvertNSStringEncodingToEncoding ((UInt32)ewg_param_encoding)
+
+CFStringEncoding  ewg_function_CFStringConvertNSStringEncodingToEncoding (UInt32 encoding);
+// Wraps call to function 'CFStringConvertEncodingToWindowsCodepage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringConvertEncodingToWindowsCodepage(ewg_param_encoding) CFStringConvertEncodingToWindowsCodepage ((CFStringEncoding)ewg_param_encoding)
+
+UInt32  ewg_function_CFStringConvertEncodingToWindowsCodepage (CFStringEncoding encoding);
+// Wraps call to function 'CFStringConvertWindowsCodepageToEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringConvertWindowsCodepageToEncoding(ewg_param_codepage) CFStringConvertWindowsCodepageToEncoding ((UInt32)ewg_param_codepage)
+
+CFStringEncoding  ewg_function_CFStringConvertWindowsCodepageToEncoding (UInt32 codepage);
+// Wraps call to function 'CFStringConvertIANACharSetNameToEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringConvertIANACharSetNameToEncoding(ewg_param_theString) CFStringConvertIANACharSetNameToEncoding ((CFStringRef)ewg_param_theString)
+
+CFStringEncoding  ewg_function_CFStringConvertIANACharSetNameToEncoding (CFStringRef theString);
+// Wraps call to function 'CFStringConvertEncodingToIANACharSetName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringConvertEncodingToIANACharSetName(ewg_param_encoding) CFStringConvertEncodingToIANACharSetName ((CFStringEncoding)ewg_param_encoding)
+
+CFStringRef  ewg_function_CFStringConvertEncodingToIANACharSetName (CFStringEncoding encoding);
+// Wraps call to function 'CFStringGetMostCompatibleMacStringEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFStringGetMostCompatibleMacStringEncoding(ewg_param_encoding) CFStringGetMostCompatibleMacStringEncoding ((CFStringEncoding)ewg_param_encoding)
+
+CFStringEncoding  ewg_function_CFStringGetMostCompatibleMacStringEncoding (CFStringEncoding encoding);
+// Wraps call to function 'CFShow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFShow(ewg_param_obj) CFShow ((CFTypeRef)ewg_param_obj)
+
+void  ewg_function_CFShow (CFTypeRef obj);
+// Wraps call to function 'CFShowStr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFShowStr(ewg_param_str) CFShowStr ((CFStringRef)ewg_param_str)
+
+void  ewg_function_CFShowStr (CFStringRef str);
+// Wraps call to function '__CFStringMakeConstantString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro___CFStringMakeConstantString(ewg_param_cStr) __CFStringMakeConstantString ((char const*)ewg_param_cStr)
+
+CFStringRef  ewg_function___CFStringMakeConstantString (char const *cStr);
 // Wraps call to function 'AEInstallEventHandler' in a macro
 #include <Carbon/Carbon.h>
 

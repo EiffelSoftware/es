@@ -76,7 +76,7 @@ feature {NONE} -- Initialization
 			base_make (an_interface)
 			create rect.make_new_unshared
 			rect.set_left(60)
-			rect.set_right(90)
+			rect.set_right(150)
 			rect.set_bottom(90)
 			rect.set_top (60)
 			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )

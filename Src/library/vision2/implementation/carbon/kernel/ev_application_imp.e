@@ -377,7 +377,6 @@ feature {NONE} -- Carbon callback handling for events
 			null: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
 			a_button: EV_BUTTON_IMP
-			a_data: TUPLE
 		do
 
 			if a_inuserdata /= null then
