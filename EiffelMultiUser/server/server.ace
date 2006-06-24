@@ -31,7 +31,7 @@ default
 cluster
 	library base:		"$ISE_LIBRARY\library\base"
 		exclude
-			"table_eiffel3"; "desc"; 
+			"table_eiffel3"; "desc"; "dotnet";
 		end
 
 	all net:		"$ISE_LIBRARY\library\net"

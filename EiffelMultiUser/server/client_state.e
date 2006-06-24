@@ -107,6 +107,7 @@ feature -- Process Messages
 		local
 			admin_login: ADMIN_LOGIN; admin_cmd: ADMIN_CMD
 			project_msg: EMU_PROJECT_MSG
+			client_msg: EMU_CLIENT_MESSAGE
 		do
 			received_msg := get_msg
 			admin_login ?= received_msg
@@ -133,7 +134,10 @@ feature -- Process Messages
 			if project_msg /= Void then
 				process_project_msg
 			end
-			
+			client_msg ?= received_msg
+			if client_msg /= Void then
+				process_client_msg
+			end
 		end
 		
 	
@@ -277,7 +281,124 @@ feature -- Process Messages
 			send_msg(create {PROJECT_USER_LIST}.make(msg.project_name, system.get_project(msg.project_name).users))
 		end
 		
-	
+	process_client_msg is
+			-- process a client message.
+			-- determine the type of the client message.
+		require
+			system_not_void: system /= Void
+		local
+			download: CLIENT_CLASS_DOWNLOAD
+			list_request: CLIENT_CLASS_LIST_REQUEST -- not yet used
+			lock_request: CLIENT_CLASS_LOCK_REQUEST
+			unlock_request: CLIENT_CLASS_UNLOCK_REQUEST
+			upload: CLIENT_CLASS_UPLOAD
+			
+			--class_list_request: PROJECT_CLASS_LIST_REQUEST
+			
+		do
+			download ?= received_msg
+			if download /= Void then
+				process_client_download (download)
+			end
+			list_request ?= received_msg
+			if list_request /= Void then
+				--process_client_list_request (class_list_request)
+				-- not yet used nor implemented
+			end
+			lock_request ?= received_msg
+			if lock_request /= Void then
+				process_client_lock_request (lock_request)
+			end
+			unlock_request ?= received_msg
+			if unlock_request /= Void then
+				process_client_unlock_request (unlock_request)
+			end
+			upload ?= received_msg
+			if upload /= Void then
+				process_client_upload (upload)
+			end
+--			user_list_request ?= received_msg
+--			if user_list_request /= Void then
+--				process_project_user_list_request (user_list_request)
+--			end
+		end
+		
+		process_client_download (msg: CLIENT_CLASS_DOWNLOAD) is
+			-- respond to download request.
+		local
+			project: EMU_PROJECT
+		do
+			-- try go get project from server
+			project := system.get_project(msg.project_name)
+			if project = Void then
+				-- project does not exist
+				-- send error message to client
+				-- adapt error message! :
+				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+			else	
+				-- start download
+				-- TO BE IMPLEMENTED
+			end
+		end
+		
+		
+		process_client_lock_request (msg: CLIENT_CLASS_LOCK_REQUEST) is
+			-- lock requested class for user, ie. the class is
+			-- free again for other users!
+		local
+			project: EMU_PROJECT
+		do
+			-- try go get project from server
+			project := system.get_project(msg.project_name)
+			if project = Void then
+				-- project does not exist
+				-- send error message to client
+				-- adapt error message! :
+				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+			else	
+				-- do lock of class
+				-- TO BE IMPLEMENTED
+			end
+		end
+		
+		process_client_unlock_request (msg: CLIENT_CLASS_UNLOCK_REQUEST) is
+			-- unlock requested class for user, ie. the class is
+			-- not editable for other users!
+		local
+			project: EMU_PROJECT
+		do
+			-- try go get project from server
+			project := system.get_project(msg.project_name)
+			if project = Void then
+				-- project does not exist
+				-- send error message to client
+				-- adapt error message! :
+				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+			else	
+				-- do unlock of class
+				-- TO BE IMPLEMENTED
+			end
+		end
+		
+		process_client_upload (msg: CLIENT_CLASS_UPLOAD) is
+			-- include uploaded class into class-/clusterlist
+		local
+			project: EMU_PROJECT
+		do
+			-- try go get project from server
+			project := system.get_project(msg.project_name)
+			if project = Void then
+				-- project does not exist
+				-- send error message to client
+				-- adapt error message! :
+				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+			else	
+				-- do upload
+				-- TO BE IMPLEMENTED
+			end
+		end
+
+		
 feature -- Commands
 
 	send_msg(emu_message: EMU_MESSAGE) is
