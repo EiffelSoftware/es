@@ -66,10 +66,12 @@ feature -- Access
 
 	first_item_after_line(a_line: INTEGER): like root is
 			-- returns the first folding-area after "a_line"
-		require
-			only_on_existing_tree: root /= Void
 		do
-			result := recursive_first_item_after_line (a_line, root)
+			if root /= Void then
+				result := recursive_first_item_after_line (a_line, root)
+			else
+				Result := Void
+			end
 		end
 
 

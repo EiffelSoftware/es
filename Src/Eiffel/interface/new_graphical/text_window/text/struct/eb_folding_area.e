@@ -85,7 +85,7 @@ feature -- Access
 
 	next, previous: like current
 		-- pointers to other elements in the doubly-linked-leaf - list
-		-- may be void
+		-- may be void	
 
 	start_line: INTEGER
 		-- line on which the area starts
