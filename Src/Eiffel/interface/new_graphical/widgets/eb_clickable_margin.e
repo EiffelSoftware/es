@@ -109,6 +109,7 @@ feature {NONE} -- Implementation
 			l_text_displayed.go_i_th (first)
 			l_line_height := text_panel.line_height
 
+
 			-- get the next folding-point line
 			smart_text_panel ?= text_panel
 			if folding_points_visible then
@@ -133,6 +134,7 @@ feature {NONE} -- Implementation
  				y_offset := margin_viewport.y_offset + ((curr_line - first_line_displayed) * l_line_height)
  			until
  				curr_line > last or else l_text_displayed.after
+ 				--l_text_displayed.after
  			loop
  				move_x_lines := 1
  				if buffered then
@@ -301,23 +303,46 @@ feature {NONE} -- Events
 --							io.put_string ("click into the folding-point-area%N")
 --						end
 --						smart_text_panel ?= text_panel
---						if smart_text_panel /= Void then
---							fp_clicked := smart_text_panel.folding_areas.item_with_line (l_number)
---							if fp_clicked /= Void then
---								num_lines := fp_clicked.height
---								if fp_clicked.hidden then
---									fp_clicked.show
---									smart_text_panel.text_displayed.show_lines (fp_clicked.start_line)
---									sync_folding_areas(fp_clicked, num_lines, true)
---								else
---									fp_clicked.hide
---									smart_text_panel.text_displayed.hide_lines (fp_clicked.start_line + 1, fp_clicked.height)
---									sync_folding_areas(fp_clicked, num_lines, false)
---								end
---							end
---						end
---
--- END commented area
+						if smart_text_panel /= Void then
+							fp_clicked := smart_text_panel.folding_areas.item_with_line (l_number)
+							if fp_clicked /= Void then
+								num_lines := fp_clicked.height
+								if fp_clicked.hidden then
+									fp_clicked.show
+									num_lines := smart_text_panel.text_displayed.show_lines (fp_clicked.start_line)
+									-- correct start/end of feature
+									from
+										fp_clicked := fp_clicked.next
+									until
+										fp_clicked = Void
+									loop
+										fp_clicked.set_start_line (fp_clicked.start_line + num_lines)
+										fp_clicked.set_end_line (fp_clicked.end_line + num_lines)
+
+										fp_clicked := fp_clicked.next
+									end
+
+								else
+									fp_clicked.hide
+									smart_text_panel.text_displayed.hide_lines (fp_clicked.start_line + 1, fp_clicked.height)
+									-- correct start/end of feature
+									from
+										num_lines := fp_clicked.height
+										fp_clicked := fp_clicked.next
+									until
+										fp_clicked = Void
+									loop
+										fp_clicked.set_start_line (fp_clicked.start_line - num_lines)
+										fp_clicked.set_end_line (fp_clicked.end_line - num_lines)
+
+										fp_clicked := fp_clicked.next
+									end
+								end
+
+								current.refresh_now
+							end
+						end
+
 					end
 					text_panel.on_mouse_button_down (abs_x_pos, y_pos, 1, 0, 0, 0, a_screen_x, a_screen_y)
 					current.refresh
