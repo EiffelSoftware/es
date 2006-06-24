@@ -1,0 +1,16 @@
+#!/bin/sh
+#Written by Eric Lo 2006 for ETHZ DB course, changed by Domenic for Eiffel :-)
+find . -name "*.ace" -print | while read filename
+do
+	mv -f $filename $filename.out
+        sed -r 's/\//\\/g' $filename.out > $filename.2
+ 	sed -r 's/libmtnet.a/mtnet.lib/g' $filename.2 > $filename.3
+	sed -r 's/ISE_PLATFORM/ISE_C_COMPILER/g' $filename.3 > $filename
+
+	rm -f $filename.3
+	rm -f $filename.2
+        rm -f $filename.out
+done 
+
+echo "Changed / --> \, libmtnet.a --> mtnet.lib, linux-x86 --> \$ISE_C_COMPILER" 
+echo "Should now be Windows-Eiffel readable"
