@@ -1967,6 +1967,7 @@ feature {NONE} -- Menu Building
 		do
 			create tools_menu.make_with_text (Interface_names.m_tools)
 
+
 				-- New Cluster command.
 			command_menu_item := new_cluster_cmd.new_menu_item
 			add_recyclable (command_menu_item)
@@ -2030,6 +2031,15 @@ feature {NONE} -- Menu Building
 				add_recyclable (command_menu_item)
 				tools_menu.extend (command_menu_item)
 			end
+
+				-- Separator -------------------------------------------------
+			tools_menu.extend (create {EV_MENU_SEPARATOR})
+
+			     --PO generation
+
+			 command_menu_item := create_po_cmd.new_menu_item
+			add_recyclable (command_menu_item)
+			tools_menu.extend (command_menu_item)
 
 				-- Separator -------------------------------------------------
 			tools_menu.extend (create {EV_MENU_SEPARATOR})
@@ -4382,6 +4392,7 @@ feature{EB_TOOL}
 	save_as_cmd: EB_SAVE_FILE_AS_COMMAND
 			-- Command to save a class with a different file name.
 
+
 feature{EB_TOOL, EB_EXTERNAL_OUTPUT_TOOL}
 
 	Edit_external_commands_cmd: EB_EXTERNAL_COMMANDS_EDITOR is
@@ -4574,6 +4585,9 @@ feature {NONE} -- Execution
 			c_finalized_compilation_cmd.enable_sensitive
 			refactoring_manager.enable_sensitive
 
+			-- Added by sa-18n for translation
+			create_po_cmd.enable_sensitive
+
 			--added by EMU-PROJECT
 			---just testing -- should only be sensitive and all if in EMU-MODE
 			---when emu-mode ...a class in editor window?!...
@@ -4607,6 +4621,9 @@ feature {NONE} -- Execution
 			c_finalized_compilation_cmd.disable_sensitive
 			refactoring_manager.disable_sensitive
 			refactoring_manager.forget_undo_redo
+			
+			--added by sa-i18n
+			create_po_cmd.disable_sensitive
 
 			--added by EMU-PROJECT----check if in EMU-MODE!
 			upload_class_cmd.disable_sensitive

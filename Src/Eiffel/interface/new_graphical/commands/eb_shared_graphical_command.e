@@ -145,6 +145,13 @@ feature -- Commands
 			create Result.make
 		end
 
+	create_po_cmd: EB_CREATE_PO_COMMAND is
+			-- Command that generates a .po file for localisation
+		once
+			create Result
+		end
+
+
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -578,6 +578,7 @@ feature -- Actions on all windows
 			if process_manager.is_c_compilation_running then
 				on_c_compilation_start
 			end
+			create_po_cmd.enable_sensitive
 			for_all (agent synchronize_action)
 		end
 
@@ -958,6 +959,7 @@ feature -- Events
 			Precompilation_cmd.disable_sensitive
 			Project_cancel_cmd.enable_sensitive
 			refactoring_manager.disable_sensitive
+			create_po_cmd.disable_sensitive
 			for_all (agent c_compilation_start_action)
 		end
 
