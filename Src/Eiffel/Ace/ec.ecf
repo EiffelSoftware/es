@@ -431,6 +431,7 @@
 				<exclude>/ewb_case_storage\.e$</exclude>
 			</file_rule>
 		</cluster>
+		<cluster name="emu_client" location="$EIFFEL_SRC\Eiffel\emu_client\" recursive="true" />
 		<override name="table_eiffel3" location="$ISE_LIBRARY\library\obsolete\base\table_eiffel3\"/>
 	</target>
 </system>
