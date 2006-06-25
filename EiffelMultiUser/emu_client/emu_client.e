@@ -298,6 +298,7 @@ feature -- Process
 	--#####################################################################
 	-- process_server (a_client:CLIENT_STATE [like socket]) is
 	--	client_state is only for testing purposes here!! don't forget to remove!!!
+	-- client_state: CLIENT_STATE[like socket]
 	--#####################################################################
 	process_server () is
 			-- process incoming messages from server

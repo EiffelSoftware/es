@@ -25,6 +25,7 @@ feature -- Creation
 		do
 			Precursor (a_name, a_creator)
 			free := True
+			create current_user.make_empty
 			-- SET CONTENT
 			-- to be implemented...
 			-- => do this in feature, which is called in upload...
@@ -42,12 +43,16 @@ feature -- Procedures
 			free_set: is_free()
 		end
 
-	set_to_occupied() is
+	set_to_occupied( a_user: STRING ) is
 			-- set attribute 'free' to false
+		require
+			a_user_not_void: a_user /= Void
 		do
 			free:= False
+			current_user.make_from_string (a_user)
 		ensure
 			occupied_set: not is_free()
+			current_user_set: current_user.is_equal (a_user)
 		end
 
 	set_content (a_file:RAW_FILE) is
@@ -64,7 +69,7 @@ feature -- Queries
 	is_free():BOOLEAN is
 			-- may the client unlock this class?
 		do
-			result:= free
+			result:= free and (current_user = Void)
 		end
 
 
@@ -85,6 +90,6 @@ feature -- Attributes
 	free: BOOLEAN
 			-- true <=> class may be unlocked by client
 			
-	current_user: EMU_USER
+	current_user: STRING
 
 end
