@@ -1,11 +1,11 @@
 indexing
-	description: "Create and initialize emu server[Button to open external server-wizard]"
+	description: "Create a new emu-project[Button to open external new_project-wizard]"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EB_EMU_SERVER_COMMAND
+	EB_EMU_NEW_PROJECT_COMMAND
 inherit
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine

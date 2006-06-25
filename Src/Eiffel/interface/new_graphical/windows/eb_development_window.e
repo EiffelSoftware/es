@@ -4397,7 +4397,7 @@ feature {EB_TOOL} -- Implementation / Commands
 			-- Command to lock class on emu-server
 	unlock_class_cmd: EB_EMU_CLASS_UNLOCK_COMMAND
 			-- Command to unlock class on emu-server
-	new_project_class_cmd: EB_EMU_SERVER_COMMAND
+	new_project_class_cmd: EB_EMU_NEW_PROJECT_COMMAND
 			-- Command create an emu-project
 	add_user_class_cmd: EB_EMU_ADD_USER_COMMAND
 			-- Command to add a user to emu-project
