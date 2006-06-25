@@ -817,6 +817,8 @@ Declaration_body: TE_COLON Type Assigner_mark_opt Dotnet_indexing
 				$$ := ast_factory.new_body_as (Void, Void, Void, $3, Void, $1, Void, $2)
 				feature_indexes := $2
 			}
+	|	TE_IS Indexing
+			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body_or_constant, True) }
 	|	TE_COLON Type Assigner_mark_opt TE_IS Indexing Routine
 			{
 					-- Function without arguments
@@ -828,12 +830,23 @@ Declaration_body: TE_COLON Type Assigner_mark_opt Dotnet_indexing
 				
 				feature_indexes := $5
 			}
+	|	TE_COLON Type Assigner_mark_opt TE_IS Indexing
+			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body_or_constant, True) }
+	|	TE_COLON TE_IS Indexing
+			error {
+				report_expected_after_error (parser_errors.colon_symbol, $1, parser_errors.a_class_name, False) 
+				report_expected_after_error (parser_errors.is_keyword, $2, parser_errors.a_routine_body_or_constant, True) 
+			}
+	|	TE_COLON Indexing
+			error { report_expected_after_error (parser_errors.colon_symbol, $1, parser_errors.a_class_name, True) }
 	|	Formal_arguments TE_IS Indexing Routine
 			{
 					-- procedure with arguments
 				$$ := ast_factory.new_body_as ($1, Void, Void, $4, Void, $2, Void, $3)
 				feature_indexes := $3
 			}
+	|	Formal_arguments TE_IS Indexing
+			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body, True) }
 	|	Formal_arguments TE_COLON Type Assigner_mark_opt TE_IS Indexing Routine
 			{
 					-- Function with arguments
@@ -844,6 +857,21 @@ Declaration_body: TE_COLON Type Assigner_mark_opt Dotnet_indexing
 				end				
 				feature_indexes := $6
 			}
+	|	Formal_arguments TE_COLON Type Assigner_mark_opt TE_IS Indexing
+			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body, True) }
+	|	Formal_arguments TE_COLON TE_IS Indexing
+			error { 
+				report_expected_after_error (parser_errors.colon_symbol, $2, parser_errors.a_class_name, False) 
+				report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body, True)
+			}
+	|	Formal_arguments TE_COLON Indexing
+			error { 
+				report_expected_after_error (parser_errors.colon_symbol, $2, parser_errors.a_class_name, False) 
+				report_expected_after_error (parser_errors.feature_declaration, $2, parser_errors.is_keyword, False)
+				report_expected_after_error (parser_errors.feature_declaration, Void, parser_errors.a_routine_body, True)
+			}
+	|	Formal_arguments Indexing
+			error { report_expected_after_error (parser_errors.feature_declaration, $1, parser_errors.is_keyword, True) }
 	;
 
 Assigner_mark_opt: -- Empty
@@ -854,6 +882,8 @@ Assigner_mark_opt: -- Empty
 			{
 				$$ := ast_factory.new_assigner_mark_as ($1, $2)
 			}
+	|	TE_ASSIGN 
+			error { report_expected_after_error (parser_errors.assign_keyword, $1, parser_errors.a_indentifier, False) }
 	;
 
 Constant_attribute: Manifest_constant
@@ -1797,8 +1827,12 @@ Creation_constraint: -- Empty
 
 -- Instructions
 
+--
+-- `if' construct
+--
 
-Conditional: TE_IF Expression TE_THEN Compound TE_END
+Conditional: 
+		TE_IF Expression TE_THEN Compound TE_END
 			{ $$ := ast_factory.new_if_as ($2, $4, Void, Void, $5, $1, $3, Void) }
 	|	TE_IF Expression TE_THEN Compound Else_part TE_END
 			{
@@ -1821,11 +1855,16 @@ Conditional: TE_IF Expression TE_THEN Compound TE_END
 			}
 	;
 
-Elseif_list: Add_counter Elseif_part_list Remove_counter
-		{ $$ := $2 }
+
+Elseif_list: 
+		Add_counter Elseif_part_list Remove_counter
+			{ $$ := $2 }
+	|	Add_counter Elseif_part_list Remove_counter error
+			{ report_unexpected_error (text, Void, True) }
 	;
 
-Elseif_part_list: Elseif_part
+Elseif_part_list: 
+		Elseif_part
 			{
 				$$ := ast_factory.new_eiffel_list_elseif_as (counter_value + 1)
 				if $$ /= Void and $1 /= Void then
@@ -1835,14 +1874,23 @@ Elseif_part_list: Elseif_part
 	|	Elseif_part { increment_counter } Elseif_part_list
 			{
 				$$ := $3
-				if $$ /= Void and $1 /= Void then
+				if $$ /= Void and $1 /= Void and counter_value > 0 then
 					$$.reverse_extend ($1)
 				end
 			}
+	|	Elseif_part error
+			{ report_unexpected_error (text, Void, True) }
 	;
 
-Elseif_part: TE_ELSEIF Expression TE_THEN Compound
+Elseif_part:
+		TE_ELSEIF Expression TE_THEN Compound
 			{ $$ := ast_factory.new_elseif_as ($2, $4, $1, $3) }
+	|	TE_ELSEIF Expression error
+			{ report_expected_match_error (parser_errors.elseif_keyword, $1, parser_errors.then_keyword, Void, True) }
+	|	TE_ELSEIF TE_THEN Compound error
+			{ report_expected_before_error (parser_errors.then_keyword, $2, parser_errors.an_expression, False) }
+	|	TE_ELSEIF error
+			{ report_expected_after_error (parser_errors.elseif_keyword, $1, parser_errors.an_expression, True) }
 	;
 
 Else_part: TE_ELSE Compound
