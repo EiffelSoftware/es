@@ -1272,10 +1272,11 @@ feature -- Graphical Interface
 			show_toolbar_commands.extend (show_emu_toolbar_command)
 			if development_window_data.show_emu_toolbar then
 				show_emu_toolbar_command.enable_visible
+				server_class_cmd.enable_sensitive
+				add_user_class_cmd.enable_sensitive
 			else
 				show_emu_toolbar_command.disable_visible
 			end
-
 		end
 	-----------------------------	
 
@@ -2369,6 +2370,16 @@ feature -- Resource Update
 				show_refactoring_toolbar_command.disable_visible
 			end
 
+			--added by emu-project---
+			if(project_manager.is_in_emu_mode) then
+				if development_window_data.show_emu_toolbar then
+					show_emu_toolbar_command.enable_visible
+				else
+					show_emu_toolbar_command.disable_visible
+				end
+			end
+			-------------------------
+
 			left_panel.load_from_resource (development_window_data.left_panel_layout)
 			right_panel.load_from_resource (development_window_data.right_panel_layout)
 			splitter_position := development_window_data.left_panel_width
@@ -2463,6 +2474,7 @@ feature -- Resource Update
 			if has_profiler then
 				show_profiler.enable_sensitive
 			end
+
 		end
 
 	on_project_loaded is
@@ -2473,6 +2485,8 @@ feature -- Resource Update
 			cluster_tool.on_project_loaded
 			context_tool.on_project_loaded
 			breakpoints_tool.on_project_loaded
+
+
 		end
 
 	on_project_unloaded is
@@ -2616,6 +2630,26 @@ feature -- Resource Update
 				an_action.call(Void)
 			end
 		end
+
+		--added by EMU-PROJECT-----
+	enable_emu_class_buttons is
+			-- enable buttons for upload,download,lock,unlock in emu-toolbar
+		do
+			upload_class_cmd.enable_sensitive
+			download_class_cmd.enable_sensitive
+			lock_class_cmd.enable_sensitive
+			unlock_class_cmd.enable_sensitive
+		end
+
+	disable_emu_class_buttons is
+			-- disable buttons for upload,download,lock,unlock in emu-toolbar
+		do
+			upload_class_cmd.disable_sensitive
+			download_class_cmd.disable_sensitive
+			lock_class_cmd.disable_sensitive
+			unlock_class_cmd.disable_sensitive
+		end
+	----------------------------------------------
 
 feature -- Window management
 
@@ -2911,6 +2945,7 @@ feature {EB_WINDOW_MANAGER} -- Window management / Implementation
 				stone := Void
 			end
 		end
+
 
 feature -- C output pixmap management
 
@@ -3713,6 +3748,21 @@ feature {NONE} -- Implementation
 					managed_main_formatters.first.execute
 				end
 			end
+
+			--added by EMU-PROJECT--
+			if(project_manager.is_in_emu_mode) then
+				if cist /= Void then
+					--cist.class_name is locked or unlocked in emu_client list of locked - unlocked classes?!
+					managed_main_formatters.first.disable_sensitive
+					editor_tool.text_area.set_read_only (true)
+				elseif cst /= Void then
+					-- cst.class_name is locked or unlocked in emu_client list of locked - unlocked classes?!
+					managed_main_formatters.first.disable_sensitive
+					editor_tool.text_area.set_read_only (true)
+				end
+			end
+			--
+			------------------------
 		end
 
 	enable_dotnet_formatters is
@@ -3750,6 +3800,12 @@ feature {NONE} -- Implementation
 			status_bar.reset
 			status_bar.remove_cursor_position
 			text_edited := False
+
+			--added by emu-project---
+			if(project_manager.is_in_emu_mode) then
+				disable_emu_class_buttons
+			end
+			------------------------
 		end
 
 	on_cursor_moved is
@@ -4585,19 +4641,17 @@ feature {NONE} -- Execution
 			c_finalized_compilation_cmd.enable_sensitive
 			refactoring_manager.enable_sensitive
 
+				--added by EMU-PROJECT---
+			if(project_manager.is_in_emu_mode) then
+				show_emu_toolbar_command.enable_visible
+				server_class_cmd.enable_sensitive
+				add_user_class_cmd.enable_sensitive
+			end
+			-------------------------
+
 			-- Added by sa-18n for translation
 			create_po_cmd.enable_sensitive
 
-			--added by EMU-PROJECT
-			---just testing -- should only be sensitive and all if in EMU-MODE
-			---when emu-mode ...a class in editor window?!...
-			upload_class_cmd.enable_sensitive
-			download_class_cmd.enable_sensitive
-			lock_class_cmd.enable_sensitive
-			unlock_class_cmd.enable_sensitive
-			server_class_cmd.enable_sensitive
-			add_user_class_cmd.enable_sensitive
-			--------------------------
 		end
 
 	disable_commands_on_project_unloaded is
@@ -4625,14 +4679,6 @@ feature {NONE} -- Execution
 			--added by sa-i18n
 			create_po_cmd.disable_sensitive
 
-			--added by EMU-PROJECT----check if in EMU-MODE!
-			upload_class_cmd.disable_sensitive
-			download_class_cmd.disable_sensitive
-			lock_class_cmd.disable_sensitive
-			unlock_class_cmd.disable_sensitive
-			server_class_cmd.disable_sensitive
-			add_user_class_cmd.disable_sensitive
-			------------------------
 		end
 
 feature {NONE} -- Access
