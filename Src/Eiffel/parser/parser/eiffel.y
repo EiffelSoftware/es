@@ -1992,7 +1992,8 @@ Choice: Integer_constant
 
 	;
 
-Loop: TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound TE_END
+Loop: 
+		TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound TE_END
 			{
 				if $3 /= Void then
 					$$ := ast_factory.new_loop_as ($2, $3.second, $4, $6, $8, $9, $1, $3.first, $5, $7)
@@ -2000,6 +2001,40 @@ Loop: TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound TE
 					$$ := ast_factory.new_loop_as ($2, Void, $4, $6, $8, $9, $1, Void, $5, $7)
 				end
 			}
+	|	TE_FROM Compound Invariant Variant TE_UNTIL TE_LOOP Compound TE_END
+			{ report_expected_after_error (parser_errors.until_keyword, $6, parser_errors.an_expression, False) }
+	|	TE_FROM Compound Invariant Variant TE_UNTIL TE_LOOP Compound error
+			{ 
+				report_expected_after_error (parser_errors.until_keyword, $6, parser_errors.an_expression, False) 
+				report_expected_match_error (parser_errors.from_keyword, $1, parser_errors.end_keyword, Void, True)
+			}
+	|	TE_FROM Compound Invariant Variant TE_UNTIL TE_END
+			{ report_expected_after_error (parser_errors.until_keyword, $5, parser_errors.an_expression, False) }
+	|	TE_FROM Compound Invariant Variant TE_LOOP Compound TE_END
+			{
+				report_expected_after_error (parser_errors.loop_keyword, $5, parser_errors.end_keyword, True)
+				report_expected_match_error (parser_errors.from_keyword, $1, parser_errors.end_keyword, Void, True)
+			}
+	|	TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound error
+			{ report_expected_match_error (parser_errors.from_keyword, $1, parser_errors.end_keyword, Void, True) }
+	|	TE_FROM Compound Invariant Variant TE_UNTIL Expression error
+			{ report_expected_after_error (parser_errors.until_expression, $6, parser_errors.loop_keyword, True) }
+	|	TE_FROM Compound Invariant Variant TE_UNTIL error
+			{ report_expected_after_error (parser_errors.until_keyword, $5, parser_errors.an_expression, True) }
+	|	TE_FROM Compound Invariant Variant error
+			{ 
+				if $4 /= Void then
+					report_expected_after_error (parser_errors.variant_block, $4, parser_errors.until_keyword, True) 
+				elseif $3 /= Void then
+					report_expected_after_error (parser_errors.invariant_block, $3.first, parser_errors.until_keyword, True) 
+				elseif $2 /= Void then
+					report_expected_after_error (parser_errors.from_block, $2, parser_errors.until_keyword, True) 
+				else
+					report_expected_after_error (parser_errors.from_keyword, $1, parser_errors.until_keyword, True) 
+				end
+			}
+	|	TE_FROM error 
+			{report_unexpected_error (text, Void, True)}
 	;
 
 Invariant: -- Empty
@@ -2024,8 +2059,12 @@ Variant: -- Empty
 			-- { $$ := Void }
 	|	TE_VARIANT Identifier_as_lower TE_COLON Expression
 			{ $$ := ast_factory.new_variant_as ($2, $4, $1, $3) }
+	|	TE_VARIANT Identifier_as_lower TE_COLON
+			error { report_expected_after_error (parser_errors.colon_symbol, $3, parser_errors.an_expression, False) }
 	|	TE_VARIANT Expression
 			{ $$ := ast_factory.new_variant_as (Void, $2, $1, Void) }
+	|	TE_VARIANT
+			error { report_expected_after_error (parser_errors.variant_keyword, $1, parser_errors.an_assertion, True) }			
 	;
 
 Debug: TE_DEBUG Debug_keys Compound TE_END
