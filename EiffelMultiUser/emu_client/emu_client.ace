@@ -27,31 +27,31 @@ default
 
 cluster
 	
-	library base:		"$ISE_LIBRARY\library\base"
+	library base:		"$ISE_LIBRARY/library/base"
 		exclude
 			"table_eiffel3"; "desc"; 
 		end
 
-	all net:		"$ISE_LIBRARY\library\net"
+	all net:		"$ISE_LIBRARY/library/net"
 	
 	emu_client: "."
 
-	emu_server:		"..\server"
+	emu_server:		"../server"
 
-	all emu_protocol:		"..\protocol"
+	all emu_protocol:		"../protocol"
 
-	all thread:		"$ISE_LIBRARY\library\thread"
+	all thread:		"$ISE_LIBRARY/library/thread"
 
-	time:		"$ISE_LIBRARY\library\time"
+	time:		"$ISE_LIBRARY/library/time"
 
-	format (time):		"$ISE_LIBRARY\library\time\format"
+	format (time):		"$ISE_LIBRARY/library/time/format"
 
-	english (format):		"$ISE_LIBRARY\library\time\format\english"
+	english (format):		"$ISE_LIBRARY/library/time/format/english"
 
 
 external
 
 	object:
-		"$(ISE_LIBRARY)\library\net\spec\$(ISE_C_COMPILER)\lib\mtnet.lib"
+		"$(ISE_LIBRARY)/library/net/spec/$(ISE_PLATFORM)/lib/libmtnet.a"
 	
 end

@@ -347,17 +347,40 @@ feature -- Process Messages
 			-- free again for other users!
 		local
 			project: EMU_PROJECT
+			found: BOOLEAN
+			locked_class: EMU_PROJECT_CLASS
 		do
 			-- try go get project from server
 			project := system.get_project(msg.project_name)
 			if project = Void then
 				-- project does not exist
 				-- send error message to client
-				-- adapt error message! :
-				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+				send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
 			else	
-				-- do lock of class
-				-- TO BE IMPLEMENTED
+				-- search the right class
+				from
+					project.clusters.start
+					found:= False
+				until
+					project.clusters.after or found=True
+				loop
+					if project.clusters.item.has_class (msg.emu_class_name) then
+						-- do lock of class
+						locked_class:= project.clusters.item.get_class (msg.emu_class_name)
+						found:= True
+						if username /= Void and then locked_class.current_user.name = username then
+							locked_class.set_to_free
+						else
+							send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
+							-- error, class isn't used by this user
+						end		
+					end
+					project.clusters.forth
+				end
+				if found = False then
+					send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
+					-- error, class doesn't exist
+				end
 			end
 		end
 		
@@ -395,6 +418,8 @@ feature -- Process Messages
 			else	
 				-- do upload
 				-- TO BE IMPLEMENTED
+				-- find or make emu_project_class
+				-- set content of emu_project_class
 			end
 		end
 

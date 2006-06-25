@@ -29,6 +29,7 @@ feature -- Creation
 			free := True
 			-- SET CONTENT
 			-- to be implemented...
+			-- => do this in feature, which is called in upload...
 		ensure then
 			free_set: is_free()
 		end
@@ -51,6 +52,15 @@ feature -- Procedures
 			occupied_set: not is_free()
 		end
 		
+	set_content (a_file:RAW_FILE) is
+			-- set content of class
+		require
+			a_file_exists: a_file /= void
+		do
+			content := a_file
+		end
+		
+		
 feature -- Queries
 
 	is_free():BOOLEAN is
@@ -63,7 +73,7 @@ feature -- Queries
 feature -- Content
 	
 	content: RAW_FILE
-			-- the code content of the class. Represented as a long string.
+			-- the code content of the class. Represented as a RAW_FILE.
 
 
 feature -- Attributes
@@ -76,6 +86,7 @@ feature -- Attributes
 			
 	free: BOOLEAN
 			-- true <=> class may be unlocked by client
+			
+	current_user: EMU_USER
 
--- new ### end
 end
