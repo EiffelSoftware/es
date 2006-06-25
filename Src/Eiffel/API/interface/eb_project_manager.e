@@ -74,7 +74,30 @@ feature -- Status report
 			-- Have some classes been edited since last compilation was launched?
 			-- In that case we might need to recompile to take the changes into account.
 
+	--added by emu_project--
+	is_in_emu_mode: BOOLEAN
+			--is current project an emu project
+
+	-------------------------
+
+
 feature -- Status setting
+
+	--added by EMU-PROJECT--
+
+	set_emu_mode is
+			-- set emu mode to on
+		do
+			is_in_emu_mode := True
+		end
+
+	emu_client: EMU_CLIENT is
+			-- emu_client for project
+		once
+			create Result.default_create
+		end
+
+	------------------------
 
 	class_is_edited (ci: CLASS_I) is
 			-- Add `ci' to the list of classes that were edited since last compilation.
