@@ -156,6 +156,7 @@ feature -- creation
 
 			-- create datasource, where translated strings reside
 			l_source_factory.use_mo_file (Operating_environment.current_directory_name_representation
+					+ Operating_environment.directory_separator.out + "mo_files"
 					+ Operating_environment.directory_separator.out + l_lang + ".mo")
 			if l_source_factory.last_datasource /= Void then
 				i18n_use_datasource(l_source_factory.last_datasource)
