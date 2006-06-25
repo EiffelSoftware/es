@@ -8,11 +8,13 @@ class
 
 inherit
 	THREAD_CONTROL
-	
+
 	EXCEPTIONS
 		export
 			{NONE} all
 		end
+
+	EMU_SERVER_CONSTANTS
 
 create
 	make
@@ -21,6 +23,7 @@ feature -- Initialization
 
 	make (argv: ARRAY [STRING]) is
 			-- main entry point of application.
+			-- expects 2 args: port admin_pwd
 		local
 			rescued: BOOLEAN
 		do
@@ -35,7 +38,7 @@ feature -- Initialization
     	        	sleep_time := sleep_time_default
 					create listen.make_server_by_port (server_port)
 					create clients.make
-					create project_list.make
+					initialize_projects
 				else
 					listen.make_server_by_port (server_port)
 					--clients.start
@@ -53,6 +56,65 @@ feature -- Initialization
 				clean_up	-- upon an exception clean_up all sockets and restart server.
 				retry
 			end
+		end
+
+	initialize_projects is
+			-- create project list and folder for storage
+			-- Recover after crash / server restart
+		local
+			file: RAW_FILE
+			project_folder: DIRECTORY
+			project :EMU_PROJECT
+			project_name:STRING
+			project_names:ARRAYED_LIST[STRING]
+			retried: BOOLEAN
+			delete_tried: BOOLEAN
+		do
+			if not retried then
+			 	-- restore the project list
+			 	create project_list.make
+			 	-- restore the project folder
+			 	create project_folder.make(project_folder_name)
+			 	project_folder.open_read
+			 	if not project_folder.exists then
+			 		project_folder.create_dir
+			 	end
+				project_names := project_folder.linear_representation
+		 		project_folder.close
+				project_names.start
+				-- remove first two entries in list (. and ..)
+				project_names.remove
+				project_names.remove
+			else
+				if not delete_tried and then file.exists then
+					-- if file delete causes an exception, it will not be retried.					
+					file.close
+					delete_tried := True
+					file.delete
+				end
+				delete_tried := False
+				project_names.forth
+			end
+			-- restore project list from files
+			from
+			until
+				project_names.after
+			loop
+				project_name := project_names.item
+				create file.make(project_folder_name +"\\"+project_name+"\\"+project_name+".emu")
+				if file.exists then
+					file.open_read
+		 			project ?= file.retrieved
+		 			file.close
+		 			if project /= Void then
+			 			project_list.extend(project)
+		 			end
+				end
+				project_names.forth
+			end
+		rescue
+			retried := True
+			retry
 		end
 
 
@@ -82,7 +144,7 @@ feature {ADMIN_CMD} -- Termination
 		ensure
 			system_is_shutdown: is_shutdown
 		end
-		
+
 
 feature -- Process
 
@@ -139,7 +201,7 @@ feature -- Process
 				retry
 			end
 		end
-	
+
 	connect_client is
 			-- upon a client connection request this routine will accept the request
 			-- and create a new socket that will handle the connection.
@@ -164,7 +226,7 @@ feature -- Process
 				end
 			end
 		end
-	
+
 	process_client (a_client: CLIENT_STATE[like listen]) is
 			-- process a client's incoming communication.
 		local
@@ -206,10 +268,10 @@ feature -- Commands
 
 	idle_cmd: PROCEDURE [ANY, TUPLE]
 			-- the idle command that will be executed by the server.
-	
+
 	connect_client_cmd: PROCEDURE [ANY, TUPLE]
 			-- the connect client command that will be executed to connect clients.
-			
+
 	process_client_cmd: PROCEDURE [ANY, TUPLE]
 			-- the process client command that will be executed to process clients.
 
@@ -227,17 +289,24 @@ feature {CLIENT_STATE} -- Modification
 		ensure
 			new_user_added: project_list.count = old project_list.count + 1
 		end
-	
+
 	remove_project (a_project_name: STRING) is
-			-- remove a user with name username from the userlist.
+			-- remove a project with name a_project_name from the project list.
+			-- delete the persist storage on disk aswell.
 		require
 			project_name_valid: a_project_name /= Void and then not a_project_name.is_empty
 			project_name_exists: has_project (a_project_name)
+		local
+			folder: DIRECTORY
 		do
-			-- we require user to exist in the list.
+			-- we require project to exist in the list.
 			project_list.go_i_th (index_of_project (a_project_name))
 			project_list.remove
-			
+			--delete project folder.
+			create folder.make(project_folder_name +"\\"+a_project_name)
+			if folder.exists then
+				folder.recursive_delete	-- may raise an exception.
+			end
 		ensure
 			project_removed: not has_project (a_project_name)
 		end
@@ -256,7 +325,7 @@ feature -- Attributes
 
 	server_port: INTEGER
 			-- the port to which the listen socket is bound.
-	
+
 	project_list: LINKED_LIST[EMU_PROJECT]
 			-- a list of all emu projects on this server
 
@@ -268,6 +337,7 @@ feature {ADMIN_CMD} -- Control Attributes
 
 	sleep_time: INTEGER_64
 			-- amount of nanoseconds to sleep when idle.
+
 
 feature {NONE} -- Defaults
 
@@ -281,18 +351,18 @@ feature {ADMIN_CMD, CLIENT_STATE} -- Administration
 			-- an admin connected via a client authorization.
 		do
 			admin_online := True
-		end	
+		end
 
 	admin_disconnected is
 			-- an admin disconnected.
 		do
 			admin_online := False
-		end			
+		end
 
 	admin_password: STRING
 			-- admin password needed to administrate the server.
 			-- set using a program argument at startup.
-			
+
 	admin_online: BOOLEAN
 			-- indicates if an admin is connected.
 
@@ -301,12 +371,12 @@ feature {ADMIN_CMD} -- Sockets
 
 	listen: NETWORK_STREAM_SOCKET
 			-- the server socket that listens for new connection requests.
-			
+
 	clients: LINKED_LIST [CLIENT_STATE[like listen]]
 			-- a list of sockets that are used to communicate with the clients.
-			
+
 feature -- Queries
-	
+
 	has_project (a_project_name: STRING): BOOLEAN is
 			-- checks if a project named "a_project_name" is in the project list.
 			require
@@ -316,7 +386,7 @@ feature -- Queries
 			ensure
 				result_reasonable: project_list.is_empty implies (Result = False)
 			end
-			
+
 	project_count: INTEGER is
 			-- returns the number of projects in the project list.
 			do
@@ -324,7 +394,7 @@ feature -- Queries
 			ensure
 				result_correct: Result = project_list.count
 			end
-			
+
 	index_of_project (project_name: STRING): INTEGER is
 			-- returns the index of a project in the project list.
 			-- returns -1 if a project does not exist.
@@ -355,7 +425,7 @@ feature -- Queries
 		ensure
 			result_valid: Result >= -1 or Result < project_list.count
 		end
-		
+
 	get_project (a_project_name: STRING): EMU_PROJECT is
 			-- returns the project called "a_project_name".
 			-- returns Void if the project does not exist.
@@ -377,6 +447,6 @@ invariant
 	sleep_time_positive: sleep_time >= 0
 	project_list_exists: project_list /= void
 	clients_exist: clients /= void
-	
-	
+
+
 end -- class ROOT_CLASS

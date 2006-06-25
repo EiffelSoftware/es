@@ -2,16 +2,17 @@ indexing
 	description:	"Every EMU project is represented by an object of this type."
 					"It is defined by its name and has a list of associated users."
 	author: "Bernhard S. Buss, Claudia Kuster"
-	date: "21.May.2006"
+	created: "21.May.2006"
+	date: "$Date$"
 	revision: "$Revision$"
 	discussion:		"Alternatively inherit from LINKED_LIST, but the project 'has' a list of users, and 'is' not."
-	
+
 class
 	EMU_PROJECT
 
 inherit
 	STORABLE
-
+	EMU_SERVER_CONSTANTS
 	ANY
 		undefine
 			default_create
@@ -32,8 +33,10 @@ feature {EMU_SERVER} -- creation
 			name := a_name
 			password := a_pass
 			create users.make
+			create clusters.make
 			create creation_date.make_now
 			create creation_time.make_now
+			update_persist_storage
 		ensure
 			name_set: name.is_equal(a_name)
 			password_set: password.is_equal(a_pass)
@@ -53,7 +56,7 @@ feature {CLIENT_STATE} -- Modification
 		ensure
 			new_user_added: users.count = old users.count + 1
 		end
-	
+
 	remove_user (username: STRING) is
 			-- remove a user with name username from the userlist.
 		require
@@ -65,6 +68,37 @@ feature {CLIENT_STATE} -- Modification
 			users.remove
 		ensure
 			user_removed: not has_user (username)
+		end
+
+--	add_cluser (a_cluster_name, parent_cluster: STRING) is
+--			-- create a cluster in a given parent cluster.
+--		require
+--			parent_cluster_exists:
+
+
+
+feature {NONE} -- Update
+
+	update_persist_storage is
+			-- update project file if project has changed
+		local
+			file: RAW_FILE
+			folder: DIRECTORY
+		do
+			-- create folder for project
+			create folder.make (project_folder_name +"\\"+name)
+			if not folder.exists then
+				folder.create_dir
+			end
+			-- write this project object to a file
+			-- delete old file if nessecary
+			create file.make(project_folder_name +"\\"+name+"\\"+name+".emu")
+			if file.exists then
+				file.delete
+			end
+			file.open_write
+			file.independent_store (current)
+			file.close
 		end
 
 
@@ -79,7 +113,7 @@ feature -- Queries
 		ensure
 			result_valid: users.is_empty implies (Result = False)
 		end
-	
+
 	user_count: INTEGER is
 			-- returns the amount of users associated with this project.
 		do
@@ -88,8 +122,6 @@ feature -- Queries
 			result_valid: (users.is_empty implies (Result = 0)) or else (Result = users.count)
 		end
 
-
-feature -- Queries
 
 	index_of_user (username: STRING): INTEGER is
 			-- returns the index of the user with name username in the userlist.
@@ -121,29 +153,44 @@ feature -- Queries
 		ensure
 			result_valid: Result >= -1 or Result < users.count
 		end
-		
+
+	is_password_correct (a_pass: STRING): BOOLEAN is
+			-- checks if provided password is correct.
+		require
+			a_pass_not_empty: a_pass /= Void and then not a_pass.is_empty
+		do
+			Result := password.is_equal (a_pass)
+		ensure
+			result_correct: a_pass.is_equal (password)
+		end
+
+	get_list_of_users: LINKED_LIST[EMU_USER] is
+			-- return a copy of the user list.
+		do
+			Result.copy (users)
+		end
+
 
 feature -- Attributes
 
 	name: STRING
 			-- the project name, used for identification.
-			
+
+
+feature {NONE} -- Private Attributes
+
 	users: LINKED_LIST [EMU_USER]
 			-- a list of users assigned to this project.
-	
+
 	clusters: LINKED_LIST [EMU_PROJECT_CLUSTER]
 			-- a list of source clusters used in this project (excluding library clusters).
 			-- at the top level it is not allowed to have classes, thats why we don't use EMU_PROJECT_UNIT here.
-	
+
 	creation_date: DATE
 			-- date of project creation
-			
+
 	creation_time: TIME
 			-- time of project creation
-			
-
-	
-feature {NONE} -- Private Attributes
 
 	password: STRING
 			-- the project password, used for project administration.
@@ -152,5 +199,5 @@ feature {NONE} -- Private Attributes
 invariant
 	project_name_exists: name /= Void and then not name.is_empty
 	user_list_exists: users /= Void
-
+	cluster_list_exists: clusters /= Void
 end

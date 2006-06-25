@@ -7,10 +7,10 @@ indexing
 class
 	EMU_PROJECT_CLASS
 
-inherit			-- new ### start
+inherit
 	EMU_PROJECT_UNIT
-	
-	redefine 
+
+	redefine
 		make
 	end
 
@@ -23,9 +23,7 @@ feature -- Creation
 	make (a_name: STRING; a_creator: EMU_USER) is
 			-- create a project unit by its name and the creator.
 		do
-			name := a_name
-			create creation_date.make_now
-			creator := a_creator
+			Precursor (a_name, a_creator)
 			free := True
 			-- SET CONTENT
 			-- to be implemented...
@@ -43,7 +41,7 @@ feature -- Procedures
 		ensure
 			free_set: is_free()
 		end
-		
+
 	set_to_occupied() is
 			-- set attribute 'free' to false
 		do
@@ -51,7 +49,7 @@ feature -- Procedures
 		ensure
 			occupied_set: not is_free()
 		end
-		
+
 	set_content (a_file:RAW_FILE) is
 			-- set content of class
 		require
@@ -68,10 +66,10 @@ feature -- Queries
 		do
 			result:= free
 		end
-		
+
 
 feature -- Content
-	
+
 	content: RAW_FILE
 			-- the code content of the class. Represented as a RAW_FILE.
 
@@ -80,10 +78,10 @@ feature -- Attributes
 
 	modification_date: DATE
 			-- last date and time of modification.
-	
+
 	modification_user: EMU_USER
 			-- user who did the last modification.
-			
+
 	free: BOOLEAN
 			-- true <=> class may be unlocked by client
 			

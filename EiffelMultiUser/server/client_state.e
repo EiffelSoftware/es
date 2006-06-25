@@ -12,7 +12,7 @@ create
 	make
 
 feature -- Initialization
-	
+
 	make (a_socket: G; a_system: EMU_SERVER) is
 			-- create a new client and set its socket.
 		require
@@ -58,14 +58,14 @@ feature -- Attributes
 
 	is_admin: BOOLEAN
 			-- is this client a server administrator?
-	
+
 	system: EMU_SERVER
 			-- the system that is having the project list.
-	
+
 	received_msg: EMU_MESSAGE
 			-- the received emu message.
-	
-			
+
+
 feature -- Modification
 
 	set_admin is
@@ -75,7 +75,7 @@ feature -- Modification
 		ensure
 			admin_set: is_admin
 		end
-	
+
 	set_username (a_name: STRING) is
 			-- set the username of this client.
 		require
@@ -139,8 +139,8 @@ feature -- Process Messages
 				process_client_msg
 			end
 		end
-		
-	
+
+
 	process_project_msg is
 			-- process a project message.
 			-- determine the type of the project message.
@@ -153,45 +153,56 @@ feature -- Process Messages
 			project_delete: PROJECT_DELETE
 			remove_user: PROJECT_REMOVE_USER
 			user_list_request: PROJECT_USER_LIST_REQUEST
+			project_msg: EMU_PROJECT_MSG
 		do
-			add_user ?= received_msg
-			if add_user /= Void then
-				process_project_add_user (add_user)
-			end
-			class_list_request ?= received_msg
-			if class_list_request /= Void then
-				process_project_class_list_request (class_list_request)
-			end
-			project_create ?= received_msg
-			if project_create /= Void then
-				process_project_create (project_create)
-			end
-			project_delete ?= received_msg
-			if project_delete /= Void then
-				process_project_delete (project_delete)
-			end
-			remove_user ?= received_msg
-			if remove_user /= Void then
-				process_project_remove_user (remove_user)
-			end
-			user_list_request ?= received_msg
-			if user_list_request /= Void then
-				process_project_user_list_request (user_list_request)
+			project_msg ?= received_msg	-- requires msg to be of the correct type (caller process msg).
+			-- check message for invalid attributes.
+			if project_msg.project_name = Void or else project_msg.project_name.is_empty then
+				send_msg (create {PROJECT_ERROR}.make ("empty", {PROJECT_ERROR}.general_error, "INVALID: empty project name provided."))
+			elseif project_msg.project_password = Void or else project_msg.project_password.is_empty then
+				send_msg (create {PROJECT_ERROR}.make (project_msg.project_name, {PROJECT_ERROR}.general_error, "INVALID: empty project password provided."))
+			else
+				add_user ?= received_msg
+				if add_user /= Void then
+					process_project_add_user (add_user)
+				end
+				class_list_request ?= received_msg
+				if class_list_request /= Void then
+					process_project_class_list_request (class_list_request)
+				end
+				project_create ?= received_msg
+				if project_create /= Void then
+					process_project_create (project_create)
+				end
+				project_delete ?= received_msg
+				if project_delete /= Void then
+					process_project_delete (project_delete)
+				end
+				remove_user ?= received_msg
+				if remove_user /= Void then
+					process_project_remove_user (remove_user)
+				end
+				user_list_request ?= received_msg
+				if user_list_request /= Void then
+					process_project_user_list_request (user_list_request)
+				end
 			end
 		end
-	
+
 	process_project_add_user (msg: PROJECT_ADD_USER) is
 			-- process the add user message.
 		local
 			project: EMU_PROJECT
 		do
-			-- try go get project from server
+			-- try to get project from server
 			project := system.get_project(msg.project_name)
 			if project = Void then
 				-- project does not exist
 				-- send error message to client
 				send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
-			else	
+			elseif not project.is_password_correct (msg.project_password) then
+				send_msg (create {PROJECT_ERROR}.make_admin_password_incorrect (msg.project_name))
+			else
 				-- check if the project already has a user with that name
 				if project.has_user (msg.user_name) then
 					-- if user already exists send an error message to the client
@@ -203,67 +214,73 @@ feature -- Process Messages
 				end
 			end
 		end
-	
+
 	process_project_class_list_request (msg: PROJECT_CLASS_LIST_REQUEST) is
 			-- process the class list request message.
 		do
 			-- send a message containing the class list to the client
 			-- to be implemented
 		end
-		
+
 	process_project_create (msg: PROJECT_CREATE) is
 			-- process the project create message.
 		do
 			-- check if a project with that name allready exists
 			io.put_string ("create project: " + msg.project_name + "%N")
-			if	
-				system.has_project (msg.project_name) 
-			then
+			if system.has_project (msg.project_name) then
 				-- if project already exists send an error message to the client
 				send_msg (create {PROJECT_ERROR}.make_project_already_exists(msg.project_name))
 			else
 				-- create project, add it to the project list and send ok message to the client
-				system.project_list.extend (create {EMU_PROJECT}.make(msg.project_name, msg.admin_password))
+				system.project_list.extend (create {EMU_PROJECT}.make(msg.project_name, msg.project_password))
 				send_msg (create {PROJECT_OK}.make_project_created(msg.project_name))
 			end
 
 		end
-	
+
 	process_project_delete (msg: PROJECT_DELETE) is
 			-- process the project delete message.
+		local
+			rescued: BOOLEAN
+			project: EMU_PROJECT
 		do
-			-- check if a project with that name exists
-			if	
-				not system.has_project (msg.project_name) 
-			then
-				-- if project does not exist send an error message to the client
-				send_msg(create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+			if not rescued then
+				-- try to get project from system.
+				project := system.get_project (msg.project_name)
+				if project = Void then
+					-- if project does not exist send an error message to the client
+					send_msg(create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+				elseif not project.is_password_correct (msg.project_password) then
+					send_msg (create {PROJECT_ERROR}.make_admin_password_incorrect (msg.project_name))
+				else
+					-- remove project and send ok message to the client
+					system.remove_project (msg.project_name) -- may cause an exception.
+					send_msg(create {PROJECT_OK}.make_project_deleted(msg.project_name))
+				end
 			else
-				-- remove project from the project list and send ok message to the client
-				system.remove_project (msg.project_name)
-				send_msg(create {PROJECT_OK}.make_project_deleted(msg.project_name))
+				send_msg(create {PROJECT_ERROR}.make (msg.project_name, {PROJECT_ERROR}.general_error, "EXCEPTION: Project deletion failed!"))
 			end
-
+		rescue
+			rescued := True
+			retry
 		end
-		
+
 	process_project_remove_user (msg: PROJECT_REMOVE_USER) is
 			-- process the project remove user message.
 		local
 			project: EMU_PROJECT
 		do
-			-- try go get project from server
+			-- try to get project from server
 			project := system.get_project (msg.project_name)
-			if	
-				project = Void
-			then
+			if project = Void then
 				-- project does not exist
 				-- send error message to client
 				send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
-			else	
-				if 
-					-- check if the project has a user with that name
-					not project.has_user(msg.user_name)	 
-				then
+			elseif not project.is_password_correct (msg.project_password) then
+				send_msg (create {PROJECT_ERROR}.make_admin_password_incorrect (msg.project_name))
+			else
+				-- check if the project has a user with that name
+				if not project.has_user(msg.user_name) then
 					-- if there is no such user for this project send error message to client
 					send_msg(create {PROJECT_ERROR}.make_user_not_found(msg.project_name))
 				else
@@ -273,14 +290,26 @@ feature -- Process Messages
 				end
 			end
 		end
-		
+
 	process_project_user_list_request (msg: PROJECT_USER_LIST_REQUEST) is
 			-- process the project user list request message.
+		local
+			project: EMU_PROJECT
 		do
-			-- send a message to the client containing the user list of this project
-			send_msg(create {PROJECT_USER_LIST}.make(msg.project_name, system.get_project(msg.project_name).users))
+			-- try to get project from server
+			project := system.get_project (msg.project_name)
+			if project = Void then
+				-- project does not exist
+				-- send error message to client
+				send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+			elseif not project.is_password_correct (msg.project_password) then
+				send_msg (create {PROJECT_ERROR}.make_admin_password_incorrect (msg.project_name))
+			else
+				-- send a message to the client containing the user list of this project.
+				send_msg(create {PROJECT_USER_LIST}.make(msg.project_name, system.get_project(msg.project_name).get_list_of_users))
+			end
 		end
-		
+
 	process_client_msg is
 			-- process a client message.
 			-- determine the type of the client message.
@@ -292,9 +321,9 @@ feature -- Process Messages
 			lock_request: CLIENT_CLASS_LOCK_REQUEST
 			unlock_request: CLIENT_CLASS_UNLOCK_REQUEST
 			upload: CLIENT_CLASS_UPLOAD
-			
+
 			--class_list_request: PROJECT_CLASS_LIST_REQUEST
-			
+
 		do
 			download ?= received_msg
 			if download /= Void then
@@ -322,8 +351,8 @@ feature -- Process Messages
 --				process_project_user_list_request (user_list_request)
 --			end
 		end
-		
-		process_client_download (msg: CLIENT_CLASS_DOWNLOAD) is
+
+	process_client_download (msg: CLIENT_CLASS_DOWNLOAD) is
 			-- respond to download request.
 		local
 			project: EMU_PROJECT
@@ -335,14 +364,14 @@ feature -- Process Messages
 				-- send error message to client
 				-- adapt error message! :
 				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
-			else	
+			else
 				-- start download
 				-- TO BE IMPLEMENTED
 			end
 		end
-		
-		
-		process_client_lock_request (msg: CLIENT_CLASS_LOCK_REQUEST) is
+
+
+	process_client_lock_request (msg: CLIENT_CLASS_LOCK_REQUEST) is
 			-- lock requested class for user, ie. the class is
 			-- free again for other users!
 		local
@@ -356,7 +385,7 @@ feature -- Process Messages
 				-- project does not exist
 				-- send error message to client
 				send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
-			else	
+			else
 				-- search the right class
 				from
 					project.clusters.start
@@ -383,8 +412,8 @@ feature -- Process Messages
 				end
 			end
 		end
-		
-		process_client_unlock_request (msg: CLIENT_CLASS_UNLOCK_REQUEST) is
+
+	process_client_unlock_request (msg: CLIENT_CLASS_UNLOCK_REQUEST) is
 			-- unlock requested class for user, ie. the class is
 			-- not editable for other users!
 		local
@@ -397,13 +426,13 @@ feature -- Process Messages
 				-- send error message to client
 				-- adapt error message! :
 				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
-			else	
+			else
 				-- do unlock of class
 				-- TO BE IMPLEMENTED
 			end
 		end
-		
-		process_client_upload (msg: CLIENT_CLASS_UPLOAD) is
+
+	process_client_upload (msg: CLIENT_CLASS_UPLOAD) is
 			-- include uploaded class into class-/clusterlist
 		local
 			project: EMU_PROJECT
@@ -415,7 +444,7 @@ feature -- Process Messages
 				-- send error message to client
 				-- adapt error message! :
 				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
-			else	
+			else
 				-- do upload
 				-- TO BE IMPLEMENTED
 				-- find or make emu_project_class
@@ -423,24 +452,24 @@ feature -- Process Messages
 			end
 		end
 
-		
+
 feature -- Commands
 
 	send_msg(emu_message: EMU_MESSAGE) is
 			-- send a message to the client
-			
+
 		require
 			emu_message_not_void: emu_message /= Void
 		do
 			socket.independent_store (emu_message)
 		end
-		
+
 	get_msg: EMU_MESSAGE is
 			-- get a recieved message
 			-- returns void if the messgae is not of type EMU_MESSAGE
 			-- causes an exception if there is no message to retrieve
 			-- the caller has to handle this exception
-	
+
 		do
 			Result ?= socket.retrieved
 		end
@@ -448,5 +477,5 @@ feature -- Commands
 
 invariant
 	system_is_set: system /= Void
-	
+
 end
