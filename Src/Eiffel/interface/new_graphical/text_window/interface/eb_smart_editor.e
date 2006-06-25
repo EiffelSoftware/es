@@ -622,8 +622,10 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 			-- execute parser on certain key events
 			if is_editable then
 			   --(code = Key_space or code = Key_period or code = Key_tab or code = Key_enter) then
-				perform_syntax_checking
-				refresh_now -- should only be done if syntax errors were found...
+				if perform_syntax_checking = false then
+					-- refresh if errors found
+					refresh_now
+				end
 			end
 
 			switch_auto_point := auto_point and then not (code = Key_shift or code = Key_left_meta or code = Key_right_meta)
@@ -717,12 +719,21 @@ feature {NONE} -- syntax checking implementation
 			last_invalidated_line := -1
 		end
 
-	perform_syntax_checking is
+	syntax_parser: EIFFEL_PARSER is
+			-- parser used for syntax checking
+		once
+			Result := Eiffel_Validating_parser.deep_twin
+			Result.set_recoverable_parser
+			Result.set_has_syntax_warning (true)
+		end
+
+	perform_syntax_checking: BOOLEAN is
 			-- performs syntax checking of class text using Eiffel_validating_parser
-			-- Janick Bernet, June 2006
+			-- returns false if errors were found
 		local
 			list: LINKED_LIST [ERROR]
 			error: SYNTAX_ERROR
+			warning: SYNTAX_WARNING
 			text_line: EDITOR_LINE
 			cursor: TEXT_CURSOR
 			text_token: EDITOR_TOKEN_TEXT
@@ -730,7 +741,7 @@ feature {NONE} -- syntax checking implementation
 				-- create cursor object for helping locate tokens
 				create cursor.make_from_integer (1, text_displayed)
 
-				-- set old error tokens back to valid
+				-- set old error tokens on last edited line back to valid
 				if last_invalidated_line /= -1 then
 					text_line := text_displayed.line (last_invalidated_line)
 					from
@@ -751,7 +762,8 @@ feature {NONE} -- syntax checking implementation
 
 				-- make sure we dont accumulate error messages
 				Error_handler.error_list.wipe_out
-				Eiffel_validating_parser.parse_from_string (text)
+				-- execute parser
+				syntax_parser.parse_from_string (text)
 
 				-- re-establish raising of exceptin
 				Error_handler.set_do_raise_error
@@ -768,24 +780,37 @@ feature {NONE} -- syntax checking implementation
 
 				-- iterate through error list
 				io.put_string (list.count.out + " errors found%N")
+				Result := list.count > 0
 				from
 					list.start
 				until
 					list.after
 				loop
 					error ?= list.item
-
 					if error /= void then
-						-- get line of error
-	--					io.put_string ("error on line "+error.line.out+" %N")
-
+--						io.put_string ("error on line "+error.line.out+" %N")
+						-- place cursor at position of error
 						cursor.set_y_in_lines (error.line)
 						cursor.set_x_in_characters (error.column)
 
 						-- error should be text-token (otherwise it doesnt make any sence to highlight it)
 						text_token ?= cursor.token
 						if text_token /= void then
-							text_token.set_incorrect
+								text_token.set_incorrect (error.error_message)
+						end
+					else
+						warning ?= list.item
+						if warning /= void then
+--							io.put_string ("warning on line "+warning.line.out+" %N")
+							-- place cursor at position of error
+							cursor.set_y_in_lines (warning.line)
+							cursor.set_x_in_characters (warning.column)
+
+							-- error should be text-token (otherwise it doesnt make any sence to highlight it)
+							text_token ?= cursor.token
+							if text_token /= void then
+								text_token.set_incorrect (warning.warning_message)
+							end
 						end
 					end
 
@@ -1183,11 +1208,13 @@ feature {NONE} -- Implementation
 	show_syntax_error is
 			--
 		do
-			if syntax_error_dialog = Void or else syntax_error_dialog.is_destroyed then
-				create syntax_error_dialog.make_with_text (Warning_messages.w_Syntax_error)
-				syntax_error_dialog.default_push_button.select_actions.extend (agent set_focus)
-				syntax_error_dialog.show_relative_to_window (reference_window)
-			end
+			-- we dont show the error dialog anymore, as we have error highlighting
+
+--			if syntax_error_dialog = Void or else syntax_error_dialog.is_destroyed then
+--				create syntax_error_dialog.make_with_text (Warning_messages.w_Syntax_error)
+--				syntax_error_dialog.default_push_button.select_actions.extend (agent set_focus)
+--				syntax_error_dialog.show_relative_to_window (reference_window)
+--			end
 		end
 
 	syntax_error_dialog: EV_WARNING_DIALOG
@@ -1202,6 +1229,10 @@ feature -- Text Loading
 				dev_window.save_and (agent load_file (a_file_name))
 			else
 				Precursor {EB_CLICKABLE_EDITOR} (a_file_name)
+				if perform_syntax_checking = false  then
+					-- refresh if errors found
+					refresh_now
+				end
 			end
 			load_without_save := False
 		end
@@ -1214,6 +1245,10 @@ feature -- Text Loading
 				dev_window.save_and (agent load_text (s))
 			else
 				Precursor {EB_CLICKABLE_EDITOR} (s)
+				if perform_syntax_checking = false then
+					-- refresh if errors found
+					refresh_now
+				end
 				initialize_folding_areas
 			end
 			load_without_save := False
