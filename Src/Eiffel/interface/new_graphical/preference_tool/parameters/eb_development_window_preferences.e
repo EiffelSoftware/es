@@ -557,7 +557,7 @@ feature {NONE} -- Implementation
 			c_output_panel_prompted_preference := l_manager.new_boolean_preference_value (l_manager, c_output_panel_prompted_string, False)
 
 			--added by EMU-PROJECT --
-			emu_toolbar_layout_preference := l_manager.new_array_preference_value (l_manager, emu_toolbar_layout_string ,<<"Open_Emu_Upload_tool__visible", "Open_Emu_Download_tool__visible", "Separator", "Open_Emu_Lock_tool__visible", "Open_Emu_Unlock_tool__visible", "Separator", "Open_Emu_Server_tool__visible", "Open_Emu_Add_User_tool__visible">>)
+			emu_toolbar_layout_preference := l_manager.new_array_preference_value (l_manager, emu_toolbar_layout_string ,<<"Open_Emu_Upload_tool__visible", "Open_Emu_Download_tool__visible", "Separator", "Open_Emu_Lock_tool__visible", "Open_Emu_Unlock_tool__visible", "Separator", "Open_Emu_New_Project_tool__visible", "Open_Emu_Add_User_tool__visible">>)
 			show_emu_toolbar_preference := l_manager.new_boolean_preference_value(l_manager,show_emu_toolbar_string, True)
 			show_text_in_emu_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_text_in_emu_toolbar_string, True)
 			show_all_text_in_emu_toolbar_preference := l_manager.new_boolean_preference_value (l_manager, show_all_text_in_emu_toolbar_string, False)
