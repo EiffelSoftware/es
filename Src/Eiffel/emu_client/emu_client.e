@@ -8,7 +8,7 @@ class
 
 inherit
 	THREAD_CONTROL
-
+	
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -19,6 +19,43 @@ create
 
 feature -- Initialization
 
+	make (argv: ARRAY [STRING]) is
+			-- main entry point of application.
+			-- takes four arguments: server_adress server_port user_name password project_name
+		local
+			rescued: BOOLEAN
+		do
+			if argv.count /= 6 or else argv.item(2).to_integer > 65535 or else argv.item(2).to_integer < 0 then
+				io.error.putstring ("Usage: ")
+                io.error.putstring (argv.item (0))
+                io.error.putstring (" hostname portnumber user_name password")
+            else
+            	if not rescued then
+            		server_ip := argv.item(1)
+            		server_port := argv.item(2).to_integer
+            		user_name := argv.item (3)
+            		password := argv.item (4)
+            		project_name := argv.item(5)
+    	        	sleep_time := sleep_time_default
+					create socket.make_client_by_port (server_port, server_ip)
+				else
+					socket.make_client_by_port (server_port, server_ip)
+				end
+				register_to_server()
+				
+				-- register default commands. we use agents to be able to replace the features by an admin.
+				idle_cmd := agent idle
+				process_server_cmd := agent process_server
+				idle_cmd.apply	-- start client idle process
+			end
+		rescue
+			if not assertion_violation then
+				rescued := True
+				clean_up	-- upon an exception clean_up all sockets and restart client.
+				retry
+			end
+		end
+	
 	connect_to_server (ip,u_name,pwd,proj_name:STRING; port:INTEGER) is
 			-- main entry point of application.
 			-- takes four arguments: server_adress server_port user_name password project_name
@@ -51,7 +88,7 @@ feature -- Initialization
 		end
 
 feature -- Access	
-
+	
 	set_project_path (a_path:STRING) is
 			-- sets project path
 		require
@@ -61,7 +98,7 @@ feature -- Access
 		ensure
 			path_set: project_path.is_equal(a_path)
 		end
-
+		
 	is_class_unlocked (a_class_name:STRING): BOOLEAN is
 			-- returns true if class is unlocked
 		require
@@ -81,29 +118,29 @@ feature -- Access
 			end
 		end
 
-
-
+		
+	
 	server_port: INTEGER
 			-- the port to which the listen socket is bound. Lies between 0 and 65535.
-
+			
 	server_ip: STRING
 			-- ip of the server
-
+			
 	user_name: STRING
 			-- user name
-
+			
 	password: STRING
 			-- password
-
+	
 	project_name: STRING
 			-- the project to which the client connects
-
+			
 	project_path: STRING
 			-- path on the local machine to the project location
-
+			
 	unlocked_classes: LINKED_LIST [STRING]
 			-- a list uf unlocked classes
-
+			
 feature {NONE} -- Implementation
 
 	remove_from_unlocked_list (a_class_name:STRING) is
@@ -123,7 +160,7 @@ feature {NONE} -- Implementation
 				unlocked_classes.forth
 			end
 		end
-
+	
 	parse_class_name (a_path:STRING): STRING is
 			-- parse class name from a path and returns this name
 		require
@@ -142,15 +179,15 @@ feature {NONE} -- Implementation
 				ind:=a
 			elseif b /= 0 then
 				ind:=b
-			else
+			else	
 				ind:=1
 			end
 			result.set(a_path,ind,c)
 		end
-
-
+		
+			
 feature -- Sockets  -- former {USER_CMD}
-
+		
 	socket: NETWORK_STREAM_SOCKET
 			-- the client socket that sends data to the server.
 
@@ -172,7 +209,7 @@ feature {USER_CMD} -- Termination
 		ensure
 			system_is_shutdown: is_shutdown
 		end
-
+		
 
 feature -- Process
 
@@ -180,7 +217,7 @@ feature -- Process
     		-- register this client to the server
     	require
     		socket_not_void: socket /= void
-
+    		
     	do
     		socket.connect
     		socket.independent_store (create {USER_LOGIN}.make (user_name, password, project_name))
@@ -188,7 +225,7 @@ feature -- Process
             io.readline
             socket.cleanup
     	end
-
+    	
 
 	idle is
 			-- the idle routine simply waits for something to happen
@@ -200,7 +237,7 @@ feature -- Process
 			loop
 				-- check for incoming data
 				if socket.readable then
-					process_server_cmd.apply
+					process_server_cmd.apply	
 				end
 				sleep (sleep_time)
 			end
@@ -216,61 +253,62 @@ feature -- Process
 				retry
 			end
 		end
-
-
+	
+	
 	--commands implementing 'client features', these are LOCK, UNLOCK, UPLOAD, DOWNLOAD
-	unlock (a_relative_class_path: STRING): BOOLEAN is
+	unlock (an_absolute_path: STRING): BOOLEAN is
 			-- unlocking a class, ie. send the unlock request
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
-			path_not_void: a_relative_class_path /= Void
+			path_not_void: an_absolute_path /= Void
+		local
+			a_class_name:STRING
 		do
+			a_class_name := parse_class_name(an_absolute_path)
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_relative_class_path))
-            --io.putstring ("requested to unlock class: " + a_relative_class_path +"!%N")
-            --io.readline
+    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
-            unlocked_classes.extend (parse_class_name(a_relative_class_path))
+            unlocked_classes.extend (a_class_name)
             -- check for ok message before set result to true !!!
             -- not done yet
             result:=True
     	end
-
-	lock (a_relative_class_path: STRING): BOOLEAN is
+	
+	lock (an_absolute_path: STRING): BOOLEAN is
 			-- locking a class, ie. send the lock request
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
-			path_not_void: a_relative_class_path /= Void
+			path_not_void: an_absolute_path /= Void
+		local
+			a_class_name:STRING
 		do
+			a_class_name := parse_class_name(an_absolute_path)
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_relative_class_path))
-            --io.putstring ("requested to lock class: " + a_relative_class_path +"!%N")
-            --io.readline
+    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
-            remove_from_unlocked_list (parse_class_name(a_relative_class_path))
+            remove_from_unlocked_list (a_class_name)
             -- check for ok message before set result to true !!!
             -- not done yet
             result:=True
-    	end
-
-	upload (a_relative_class_path:STRING): BOOLEAN is
+    	end	
+	
+	upload (an_absolute_path:STRING): BOOLEAN is
 			-- uploading a class
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
+			path_not_void: an_absolute_path /= Void
 		do
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, a_relative_class_path))
-            --io.putstring ("uploaded class: " + a_relative_class_path +"!%N")
-            --io.readline
+    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, an_absolute_path, project_path))
             socket.cleanup
       		-- check for ok message before set result to true !!!
             -- not done yet
             result:=True
-    	end
-
+    	end	
+    	
     download (): BOOLEAN is
 			-- downloading ALL classes
 			-- might be better to download unly modified classes
@@ -287,11 +325,12 @@ feature -- Process
             -- download is completed, after get_download.execute()
             -- not done yet
             result:=True
-    	end
-
+    	end	
+    	
 	--#####################################################################
 	-- process_server (a_client:CLIENT_STATE [like socket]) is
 	--	client_state is only for testing purposes here!! don't forget to remove!!!
+	-- client_state: CLIENT_STATE[like socket]
 	--#####################################################################
 	process_server () is
 			-- process incoming messages from server
@@ -344,10 +383,10 @@ feature -- Commands
 
 	idle_cmd: PROCEDURE [ANY, TUPLE]
 			-- the idle command that will be executed by the server.
-
+			
 	process_server_cmd: PROCEDURE [ANY, TUPLE]
 			-- the process client command that will be executed to process clients.
-
+		
 
 feature -- Status
 -- not used yet
@@ -371,9 +410,9 @@ feature {NONE} -- Defaults
 	sleep_time_default: INTEGER_64 is 200000000
 			-- the default sleep time is 0.2 seconds (= 200'000'000 nanoseconds)
 
-
+			
 invariant
 	server_port_valid: server_port >= 0 and server_port <= 65535
 	sleep_time_positive: sleep_time >= 0
-
+	
 end -- class ROOT_CLASS
