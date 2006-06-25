@@ -96,13 +96,13 @@ feature -- Time statistics
 	i18n_translation_time: STRING is
 			-- What is the actual translation time?
 		do
-			Result := localizator.translation_time.minute.out + ":" + localizator.translation_time.second.out
+			Result := localizator.translation_time.fine_seconds_count.out
 		end
 
 	i18n_loading_time: STRING is
 			-- What is the actual loading time?
 		do
-			Result := localizator.loading_time.minute.out + ":" + localizator.loading_time.second.out
+			Result := localizator.loading_time.fine_seconds_count.out
 		end
 
 feature {NONE} -- Implementation
