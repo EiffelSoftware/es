@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 class
-	LOCALE
+	I18N_LOCALE
 
 feature -- Access
 	language_id: STRING
@@ -21,4 +21,4 @@ feature -- Basic operations
 invariant
 	invariant_clause: True -- Your invariant here
 
-end -- class LOCALE
+end

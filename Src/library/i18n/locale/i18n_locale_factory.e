@@ -11,11 +11,11 @@ feature -- locale
 
 	language_id: STRING
 
-	get_locale: LOCALE is
+	get_locale: I18N_LOCALE is
 		require
 		deferred
 		ensure
 			Result /= Void
 		end
 
-end -- class I18N_LOCALE_FACTORY
+end

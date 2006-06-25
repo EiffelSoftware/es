@@ -14,9 +14,9 @@ feature -- Basic Operations
 			platform: PLATFORM
 		once
 			if platform.is_windows then
-				create {I18N_LOCALE_WINDOWS} Result
+				create {I18N_WINDOWS_LOCALE_FACTORY} Result
 			elseif platform.is_unix then
-				create {I18N_LOCALE_LINUX} Result
+				create {I18N_LINUX_LOCALE_FACTORY} Result
 --			elseif is_mac then
 --				create {I18N_LOCALE_MACOSX} Result
 --				there is no query under class PLATFORM for macosx other than the unix one
@@ -26,4 +26,4 @@ feature -- Basic Operations
 invariant
 	invariant_clause: True -- Your invariant here
 
-end -- class SHARED_FACTORY
+end

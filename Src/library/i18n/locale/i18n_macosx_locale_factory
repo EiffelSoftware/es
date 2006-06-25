@@ -5,17 +5,13 @@ indexing
 	revision: "$Revision$"
 
 class
-	I18N_LOCALE_MACOSX
+	I18N_MACOSX_LOCALE_FACTORY
+
 inherit
---	SHARED_EXEC_ENVIRONMENT
---		Error code: VTCT
---		Error: type is based on unknown class.
---		What to do: use an identifier that is the name of a class in the universe.
 	I18N_LOCALE_FACTORY
 	EXECUTION_ENVIRONMENT
 
-feature -- locale
-
+feature -- Locale
 	get_locale is
 		require else
 		do
@@ -26,4 +22,4 @@ feature -- locale
 invariant
 	invariant_clause: True -- Your invariant here
 
-end -- class I18N_LOCALE_MACOSX
+end

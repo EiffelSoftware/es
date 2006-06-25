@@ -5,12 +5,12 @@ indexing
 	revision: "$Revision$"
 
 class
-	I18N_LOCALE_WINDOWS
+	I18N_WINDOWS_LOCALE_FACTORY
 
 inherit
 	I18N_LOCALE_FACTORY
 
-feature -- locale
+feature -- Locale
 	get_locale: LOCALE is
 		require else
 		local
@@ -39,4 +39,4 @@ feature -- Implementation
 			result_not_void: Result /= Void
 		end
 
-end -- class I18N_LOCALE_WINDOWS
+end
