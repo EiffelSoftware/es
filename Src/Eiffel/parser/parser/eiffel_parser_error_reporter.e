@@ -14,7 +14,7 @@ inherit
 		end
 	EIFFEL_PARSER_SKELETON
 		redefine
-			make, reset, make_with_factory
+			make, reset, make_with_factory, report_error
 		end
 
 
@@ -61,7 +61,7 @@ feature -- Access
 	leaf_list_as: LEAF_AS_LIST
 
 	successful: BOOLEAN
-			-- FIXME: what is successful?
+			-- FIXME: not used yet
 
 	end_recover is
 			-- FIXME: what should it do?
@@ -83,6 +83,16 @@ feature -- Access
 		end
 
 feature -- Reporting
+
+	report_error (a_message: STRING) is
+			-- A syntax error has been detected.
+			-- Print error message.
+		local
+			an_error: SYNTAX_ERROR
+		do
+			create an_error.make (line, column, filename, a_message, False)
+			insert_error (an_error, false)
+		end
 
 	report_warning (a_warning: STRING; a_target_as: AST_EIFFEL) is
 			-- Reports a warning `a_warning' in class text.

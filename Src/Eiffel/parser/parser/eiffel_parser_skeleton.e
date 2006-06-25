@@ -15,7 +15,7 @@ inherit
 			parse as yyparse,
 			make as make_parser_skeleton
 		redefine
-			report_error, clear_all
+			clear_all
 		end
 
 	EIFFEL_SCANNER
@@ -690,17 +690,6 @@ feature {AST_FACTORY} -- Error handling
 			create an_error.make (line, column, filename, "Integer value " + an_int + " is too small for any integer type.", False)
 			Error_handler.insert_error (an_error)
 			Error_handler.raise_error
-		end
-
-	report_error (a_message: STRING) is
-			-- A syntax error has been detected.
-			-- Print error message.
-		local
---			an_error: SYNTAX_ERROR
-		do
---			create an_error.make (line, column, filename, a_message, False)
---			Error_handler.insert_error (an_error)
---			Error_handler.raise_error
 		end
 
 feature{NONE} -- Roundtrip
