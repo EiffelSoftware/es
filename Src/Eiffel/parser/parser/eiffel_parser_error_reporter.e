@@ -262,7 +262,7 @@ feature -- Reporting
 				l_line := line
 				l_column := column
 			end
-			create l_error.make (l_line, l_column, a_identifer, a_expected, "")
+			create l_error.make (l_line, l_column, a_identifer, a_expected, filename)
 			insert_error (l_error, a_fatal)
 		end
 
