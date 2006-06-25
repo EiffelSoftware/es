@@ -58,9 +58,24 @@ feature -- Status setting
 			-- Change the associated class to `a_class'.
 		local
 			name: STRING
+			manager:EB_PROJECT_MANAGER --added by EMU
+			display_name:STRING
 		do
 			name := a_class.name_in_upper
-			set_text (name)
+
+			--added by emu-project--
+			manager := eiffel_project.manager
+			if(manager.is_in_emu_mode) then
+				--if(manager.emu_client.is_class_unlocked(a_class.name)) then
+					create display_name.make_from_string (name)
+					display_name.prepend("**")
+					set_text (display_name)
+				--end
+			else
+				set_text (name)
+			end
+			-------------------------
+
 			data := a_class
 			set_pebble_function (agent stone)
 			drop_actions.wipe_out
