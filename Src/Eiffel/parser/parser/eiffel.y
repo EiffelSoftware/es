@@ -169,7 +169,7 @@ create
 %type <CLASS_TYPE_AS>		Parent_class_type
 %type <TYPE_DEC_AS>			Entity_declaration_group
 %type <VARIANT_AS>			Variant
-%type <FEATURE_NAME>		Infix Prefix Feature_name Extended_feature_name New_feature
+%type <FEATURE_NAME>		Infix Prefix Feature_name Extended_feature_name New_feature New_feature_comma
 
 %type <EIFFEL_LIST [ATOMIC_AS]>			Index_terms
 %type <EIFFEL_LIST [CASE_AS]>			When_part_list_opt When_part_list
@@ -182,7 +182,7 @@ create
 %type <PARAMETER_LIST_AS> 	Parameters
 %type <EIFFEL_LIST [FEATURE_AS]>		Feature_declaration_list
 %type <EIFFEL_LIST [FEATURE_CLAUSE_AS]>	Features Feature_clause_list
-%type <EIFFEL_LIST [FEATURE_NAME]>		Feature_list Feature_list_impl New_feature_list
+%type <EIFFEL_LIST [FEATURE_NAME]>		Feature_list Feature_list_impl New_feature_list New_feature_list_impl
 %type <CREATION_CONSTRAIN_TRIPLE>	Creation_constraint
 %type <UNDEFINE_CLAUSE_AS>	Undefine Undefine_opt
 %type <REDEFINE_CLAUSE_AS> Redefine Redefine_opt
@@ -684,21 +684,43 @@ Feature_declaration: Add_counter New_feature_list Remove_counter Declaration_bod
 			}
 	;
 
-New_feature_list: New_feature
+New_feature_list:
+		New_feature_list_impl
+			{ $$ := $1}
+	|	New_feature_list_impl error
+			{ report_unexpected_error (text, Void, True) }
+	;
+
+New_feature_list_impl: 
+		New_feature
 			{
 				$$ := ast_factory.new_eiffel_list_feature_name (counter_value + 1)
 				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
 				end
 			}
-	|	New_feature { increment_counter } TE_COMMA New_feature_list
+	|	New_feature_comma New_feature_list
 			{
-				$$ := $4
-				if $$ /= Void and $1 /= Void then
+				$$ := $2
+				if $$ /= Void and $1 /= Void and counter_value > 0 then
 					$$.reverse_extend ($1)
-					ast_factory.reverse_extend_separator ($$, $3)
+					ast_factory.reverse_extend_separator ($$, last_symbol_as_value)
 				end
 			}
+	|	New_feature_comma
+			error { report_expected_after_error (parser_errors.comma_symbol, last_symbol_as_value, parser_errors.a_feature_name, False) }
+	;
+
+New_feature_comma: New_feature New_feature_comma_comma_list
+			{
+				increment_counter
+				$$ := $1
+			}
+	;
+	
+New_feature_comma_comma_list: TE_COMMA
+	|	TE_COMMA New_feature_comma_comma_list
+			{ report_expected_after_error (parser_errors.comma_symbol, $1, parser_errors.a_feature_name, False) }
 	;
 
 New_feature: Extended_feature_name
@@ -1100,8 +1122,7 @@ Select: TE_SELECT
 -- Feature declaration
 
 
-Formal_arguments:	
-		TE_LPARAN TE_RPARAN
+Formal_arguments:	TE_LPARAN TE_RPARAN
 			{
 				$$ := ast_factory.new_formal_argu_dec_list_as (Void, $1, $2) 
 				report_warning (parser_errors.empty_parenthesis_warning, $1)
@@ -1147,7 +1168,9 @@ Identifier_list:
 		Add_counter Identifier_list_impl Remove_counter
 			{ $$ := $2 }
 	|	Add_counter Identifier_list_impl error Remove_counter
-			{ report_unexpected_error (text, Void, True) }
+			{ 
+				report_unexpected_error (text, Void, True) 
+			}
 	;
 
 Identifier_list_impl: Identifier_as_lower
@@ -1175,6 +1198,7 @@ Identifier_list_impl: Identifier_as_lower
 	
 Identifier_as_lower_comma: Identifier_as_lower Identifier_as_lower_comma_list
 			{
+				increment_counter
 				$$ := $1
 			}
 	;
