@@ -168,7 +168,7 @@ feature -- Accelerator, focus label and menu name
 
 	m_About: STRING_32 is
 		once
-			Result := i18n_comp("&About $1...",[Workbench_name])
+			Result := formatter.solve_template (i18n ("&About $1..."), [Workbench_name])
 		end
 	m_Advanced: STRING_32 								is do Result := i18n("Ad&vanced") end
 	m_Add_to_favorites: STRING_32 						is do Result := i18n("&Add to Favorites") end
@@ -573,7 +573,7 @@ feature -- Label texts
 	l_Execution_interrupted: STRING_32 					is do Result := i18n("Execution interrupted") end
 	l_Exit_application: STRING_32 is
 		once
-			Result := i18n_comp ("Are you sure you want to quit $1?", [Workbench_name])
+			Result :=formatter.solve_template ("Are you sure you want to quit $1?", [Workbench_name])
 		end
 	l_Exit_warning: STRING_32 							is do Result := i18n("Some files have not been saved.%NDo you want to save them before exiting?") end
 	l_Expanded: STRING_32 								is do Result := i18n("expanded") end
@@ -760,9 +760,10 @@ feature -- Stone names
 feature -- Title part
 
 	t_About: STRING_32 is
-		once
-			Result := "About " + Workbench_name
+		do
+			Result := i18n ("About")-- "About " + Workbench_name
 		end
+
 	t_Add_search_scope: STRING_32 						is do Result := i18n("Add Search Scope") end
 	t_Alias: STRING_32 									is do Result := i18n("Alias") end
 	t_Breakpoints_tool: STRING_32 						is do Result := i18n("Breakpoints") end
@@ -848,14 +849,14 @@ feature -- Title part
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Move Class '$1'",[a_name])
+			Result :=formatter.solve_template ("Move Class '$1'",[a_name])
 		end
 
 	t_Diagram_move_cluster_cmd (a_name: STRING_32): STRING_32 is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Move Cluster '$1'",[a_name])
+			Result := formatter.solve_template ("Move Cluster '$1'",[a_name])
 		end
 
 	t_Diagram_move_midpoint_cmd: STRING_32 					is do Result := i18n("Move Midpoint") end
@@ -864,35 +865,35 @@ feature -- Title part
 		require
 			exists: client_name /= Void	and supplier_name /= Void
 		do
-			Result := i18n_comp("Add Client-Supplier Relation Between '$1' and '$2'",[client_name,supplier_name])
+			Result := formatter.solve_template ("Add Client-Supplier Relation Between '$1' and '$2'", [client_name,supplier_name])
 		end
 
 	t_Diagram_add_inh_link_cmd (ancestor_name, descendant_name: STRING_32): STRING_32 is
 		require
 			exists: ancestor_name /= Void and descendant_name /= Void
 		do
-			Result := i18n_comp("Add Inheritance Relation Between '$1' and '$2'",[ancestor_name,descendant_name])
+			Result := formatter.solve_template ("Add Inheritance Relation Between '$1' and '$2'", [ancestor_name,descendant_name])
 		end
 
 	t_Diagram_include_class_cmd (a_name: STRING_32): STRING_32 is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Include Class '$1'",[a_name])
+			Result := formatter.solve_template ("Include Class '$1'", [a_name])
 		end
 
 	t_Diagram_include_cluster_cmd (a_name: STRING_32): STRING_32 is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Include Cluster '$1'",[a_name])
+			Result := formatter.solve_template ("Include Cluster '$1'",[a_name])
 		end
 
 	t_Diagram_include_library_cmd (a_name: STRING_32): STRING_32 is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Include Library '$1'",[a_name])
+			Result := formatter.solve_template ("Include Library '$1'",[a_name])
 		end
 
 	t_Diagram_insert_midpoint_cmd: STRING_32 					is do Result := i18n("Insert Midpoint") end
@@ -902,35 +903,35 @@ feature -- Title part
 		require
 			exists: old_name /= Void and new_name /= Void
 		do
-			Result := i18n_comp("Rename Class '$1' Locally to '$2'",[old_name,new_name])
+			Result := formatter.solve_template ("Rename Class '$1' Locally to '$2'",[old_name,new_name])
 		end
 
 	t_Diagram_rename_class_globally_cmd (old_name, new_name: STRING_32): STRING_32 is
 		require
 			exists: old_name /= Void and new_name /= Void
 		do
-			Result := i18n_comp("Rename Class '$1' Globally to '$2'",[old_name,new_name])
+			Result := formatter.solve_template ("Rename Class '$1' Globally to '$2'",[old_name,new_name])
 		end
 
 	t_Diagram_delete_client_link_cmd (a_name: STRING_32): STRING_32 is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Delete Client Link '$1'",[a_name])
+			Result := formatter.solve_template ("Delete Client Link '$1'",[a_name])
 		end
 
 	t_Diagram_delete_inheritance_link_cmd (an_ancestor, a_descendant: STRING_32): STRING_32 is
 		require
 			exists: an_ancestor /= Void and a_descendant /= Void
 		do
-			Result := i18n_comp("Delete Inheritance Link Between '$1' and '$2'",[an_ancestor,a_descendant])
+			Result := formatter.solve_template ("Delete Inheritance Link Between '$1' and '$2'",[an_ancestor,a_descendant])
 		end
 
 	t_Diagram_erase_cluster_cmd (a_name: STRING_32): STRING_32 is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Erase Cluster '$1'",[a_name])
+			Result := formatter.solve_template ("Erase Cluster '$1'",[a_name])
 		end
 
 	t_Diagram_delete_midpoint_cmd: STRING_32 					is do Result := i18n("Erase Midpoint") end
@@ -939,7 +940,7 @@ feature -- Title part
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Erase Class '$1'",[a_name])
+			Result := formatter.solve_template ("Erase Class '$1'",[a_name])
 		end
 
 	t_Diagram_erase_classes_cmd: STRING_32 							is do Result := i18n(	"Erase Classes") end
@@ -958,14 +959,14 @@ feature -- Title part
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Expand cluster '$1'",[a_name])
+			Result := formatter.solve_template ("Expand cluster '$1'",[a_name])
 		end
 
 	t_Diagram_cluster_collapse (a_name: STRING_32): STRING_32 is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Collapse Cluster '$1'",[a_name])
+			Result := formatter.solve_template ("Collapse Cluster '$1'",[a_name])
 		end
 
 	t_Diagram_disable_high_quality: STRING_32 					is do Result := i18n("Disable High Quality") end
@@ -1158,8 +1159,7 @@ feature -- Wizard texts
 	wt_Runtime_information_record_error: STRING_32 						is do Result := i18n("Runtime Information Record Error") end
 	wb_Runtime_information_record_error (generation_path: STRING_32): STRING_32 is
 		do
-			Result := i18n_comp(
-				"The file you have supplied as Runtime Information Record%N%
+			Result := formatter.solve_template ("The file you have supplied as Runtime Information Record%N%
 				%does not exist or is not valid.%N%
 				%Do not forget that the Runtime Information Record has to%N%
 				%be located in the project directory:%N%
@@ -1295,6 +1295,13 @@ feature -- Metric constants (tooltips)
 	metric_new_metrics: STRING_32 					is do Result := i18n("&New metrics") end
 	metric_management: STRING_32 					is do Result := i18n("&Metric management") end
 	metric_archive: STRING_32 						is do Result := i18n("A&rchive") end
+
+feature {NONE} -- Template formatter
+
+	formatter: I18N_TEMPLATE_FORMATTER is
+		once
+			create Result.make
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
