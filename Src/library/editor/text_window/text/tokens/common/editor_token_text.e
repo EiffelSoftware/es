@@ -49,6 +49,9 @@ feature -- Miscellaneous
 	is_correct: BOOLEAN
 			-- Is this token syntacitacaly correct or has it been invalidated by parser?
 
+	error_message: STRING
+			-- error message for incorrect tokens		
+
 	get_substring_width (n: INTEGER): INTEGER is
 			-- Compute the width in pixels of the first
 			-- `n' characters of the current string.
@@ -311,12 +314,14 @@ feature -- Status Setting
 			-- sets token to correct
 		do
 			is_correct := true
+			error_message := void
 		end
 
-	set_incorrect is
+	set_incorrect (msg: STRING) is
 			-- sets token to incorrect, meaning it contained a syntax error
 		do
 			is_correct := false
+			error_message := msg
 		end
 
 
