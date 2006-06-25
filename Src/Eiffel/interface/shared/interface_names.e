@@ -131,12 +131,12 @@ feature -- Button texts
 	b_Dbg_assertion_checking_restore: STRING_32 is do Result := i18n("Restore assertion checking") end
 
 	--added by EMU-PROJECT--
-	b_emu_upload_class: STRING is "Upload"
-	b_emu_download_class: STRING is "Download"
-	b_emu_lock_class: STRING is "Lock"
-	b_emu_unlock_class: STRING is "Unlock"
-	b_emu_server_class: STRING is "Create Server"
-	b_emu_add_user_class: STRING is "Add User"
+	b_emu_upload_class: STRING_32 				is do Result := i18n("Upload") end
+	b_emu_download_class: STRING_32 			is do Result := i18n("Download") end
+	b_emu_lock_class: STRING_32 				is do Result := i18n("Lock") end
+	b_emu_unlock_class: STRING_32 				is do Result := i18n("Unlock") end
+	b_emu_server_class: STRING_32 				is do Result := i18n("Create Project") end
+	b_emu_add_user_class: STRING_32 			is do Result := i18n("Add User") end
 	------------------------
 
 feature -- Graphical degree output
@@ -490,12 +490,12 @@ feature -- Menu mnenomics
 	m_Window: STRING_32 								is do Result := i18n("&Window") end
 
 	--added by EMU-PROJECT--
-	m_emu_upload_class: STRING is "&Emu upload ..."
-	m_emu_download_class: STRING is "&Emu download..."
-	m_emu_lock_class: STRING is "&Emu lock..."
-	m_emu_unlock_class: STRING is "&Emu unlock..."
-	m_emu_server_class: STRING is "&Emu create Server..."
-	m_emu_add_user_class: STRING is "&Emu add user..."
+	m_emu_upload_class: STRING_32 						is do Result := i18n("Emu &upload ...") end
+	m_emu_download_class: STRING_32 					is do Result := i18n("Emu &download...") end
+	m_emu_lock_class: STRING_32 						is do Result := i18n("Emu &lock...") end
+	m_emu_unlock_class: STRING_32 						is do Result := i18n("Emu u&nlock...") end
+	m_emu_server_class: STRING_32 						is do Result := i18n("Emu create &Project...") end
+	m_emu_add_user_class: STRING_32 					is do Result := i18n("Emu &add user...") end
 	------------------------
 
 feature -- Label texts
@@ -1001,7 +1001,7 @@ feature -- Description texts
 	e_Copy_call_stack_to_clipboard: STRING_32					is do Result := i18n("Copy call stack to clipboard") end
 	e_Cursor_position: STRING_32 								is do Result := i18n("Cursor position (line:column)") end
 	e_Diagram_hole: STRING_32 									is do Result := i18n("Please drop a class or a cluster on this button %N%	%to view its diagram.%N %%Use right click for both pick and drop actions.") end
-	
+
 
 	e_Diagram_class_header: STRING_32 is do Result := i18n("Please drop a class on this button.%NUse right click for both%N%
 															%pick and drop actions.") end
@@ -1015,12 +1015,12 @@ feature -- Description texts
 
 
 	--added by EMU-PROJECT--
-	e_emu_upload_class: STRING is "Upload class to Emu Server"
-	e_emu_download_class: STRING is "Download class from Emu Server"
-	e_emu_lock_class: STRING is "Lock class on Emu Server"
-	e_emu_unlock_class: STRING is "Unlock class on Emu Server"
-	e_emu_server_class: STRING is "Create emu server"
-	e_emu_add_user_class: STRING is "Add user to emu-project"
+	e_emu_upload_class: STRING_32 			is do Result := i18n("Upload class to Emu Server") end
+	e_emu_download_class: STRING_32 		is do Result := i18n("Download class from Emu Server") end
+	e_emu_lock_class: STRING_32 			is do Result := i18n("Lock class on Emu Server") end
+	e_emu_unlock_class: STRING_32 			is do Result := i18n("Unlock class for me on Emu Server") end
+	e_emu_server_class: STRING_32 			is do Result := i18n("Create emu project") end
+	e_emu_add_user_class: STRING_32 		is do Result := i18n("Add user to emu-project") end
 	------------------------
 
 	e_Diagram_delete_figure: STRING_32 is do Result := i18n("Please drop a class, a cluster or a midpoint%N%
