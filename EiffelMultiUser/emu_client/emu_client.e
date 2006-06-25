@@ -225,52 +225,53 @@ feature -- Process
 	
 	
 	--commands implementing 'client features', these are LOCK, UNLOCK, UPLOAD, DOWNLOAD
-	unlock (a_relative_class_path: STRING): BOOLEAN is
+	unlock (an_absolute_path: STRING): BOOLEAN is
 			-- unlocking a class, ie. send the unlock request
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
-			path_not_void: a_relative_class_path /= Void
+			path_not_void: an_absolute_path /= Void
+		local
+			a_class_name:STRING
 		do
+			a_class_name := parse_class_name(an_absolute_path)
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_relative_class_path))
-            --io.putstring ("requested to unlock class: " + a_relative_class_path +"!%N")
-            --io.readline
+    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
-            unlocked_classes.extend (parse_class_name(a_relative_class_path))
+            unlocked_classes.extend (a_class_name)
             -- check for ok message before set result to true !!!
             -- not done yet
             result:=True
     	end
 	
-	lock (a_relative_class_path: STRING): BOOLEAN is
+	lock (an_absolute_path: STRING): BOOLEAN is
 			-- locking a class, ie. send the lock request
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
-			path_not_void: a_relative_class_path /= Void
+			path_not_void: an_absolute_path /= Void
+		local
+			a_class_name:STRING
 		do
+			a_class_name := parse_class_name(an_absolute_path)
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_relative_class_path))
-            --io.putstring ("requested to lock class: " + a_relative_class_path +"!%N")
-            --io.readline
+    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
-            remove_from_unlocked_list (parse_class_name(a_relative_class_path))
+            remove_from_unlocked_list (a_class_name)
             -- check for ok message before set result to true !!!
             -- not done yet
             result:=True
     	end	
 	
-	upload (a_relative_class_path:STRING): BOOLEAN is
+	upload (an_absolute_path:STRING): BOOLEAN is
 			-- uploading a class
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
+			path_not_void: an_absolute_path /= Void
 		do
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, a_relative_class_path))
-            --io.putstring ("uploaded class: " + a_relative_class_path +"!%N")
-            --io.readline
+    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, an_absolute_path, project_path))
             socket.cleanup
       		-- check for ok message before set result to true !!!
             -- not done yet
