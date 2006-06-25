@@ -2,14 +2,13 @@ indexing
 	description	: "EMU CLIENT, connects to server, handles communication between user and server"
 	author		: "Andrea Zimmermann, Domenic Schroeder, Ramon Schwammberger"
 	date		: "$Date$"
-	revision: "$Revision$"
 
 class
 	EMU_CLIENT
 
 inherit
 	THREAD_CONTROL
-
+	
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -43,7 +42,7 @@ feature -- Initialization
 					socket.make_client_by_port (server_port, server_ip)
 				end
 				register_to_server()
-
+				
 				-- register default commands. we use agents to be able to replace the features by an admin.
 				idle_cmd := agent idle
 				process_server_cmd := agent process_server
@@ -58,29 +57,111 @@ feature -- Initialization
 		end
 
 feature -- Access	
+	
+	set_project_path (a_path:STRING) is
+			-- sets project path
+		require
+			a_path_not_void: a_path /= void
+		do
+			project_path:=a_path
+		ensure
+			path_set: project_path.is_equal(a_path)
+		end
+		
+	is_class_unlocked (a_class_name:STRING): BOOLEAN is
+			-- returns true if class is unlocked
+		require
+			class_name_not_void: a_class_name /= Void
+			class_name_not_empty: not a_class_name.is_empty
+		do
+			result:=False
+			from
+				unlocked_classes.start
+			until
+				unlocked_classes.after
+			loop
+				if unlocked_classes.item.is_equal(a_class_name) then
+					result := True
+				end
+				unlocked_classes.forth
+			end
+		end
 
+		
+	
 	server_port: INTEGER
 			-- the port to which the listen socket is bound. Lies between 0 and 65535.
-
+			
 	server_ip: STRING
 			-- ip of the server
-
+			
 	user_name: STRING
 			-- user name
-
+			
 	password: STRING
 			-- password
-
+	
 	project_name: STRING
 			-- the project to which the client connects
+			
+	project_path: STRING
+			-- path on the local machine to the project location
+			
+	unlocked_classes: LINKED_LIST [STRING]
+			-- a list uf unlocked classes
+			
+feature {NONE} -- Implementation
 
-
+	remove_from_unlocked_list (a_class_name:STRING) is
+			-- remove class, if it exists in the list
+			require
+			class_name_not_void: a_class_name /= Void
+			class_name_not_empty: not a_class_name.is_empty
+		do
+			from
+				unlocked_classes.start
+			until
+				unlocked_classes.after
+			loop
+				if unlocked_classes.item.is_equal(a_class_name) then
+					unlocked_classes.remove
+				end
+				unlocked_classes.forth
+			end
+		end
+	
+	parse_class_name (a_path:STRING): STRING is
+			-- parse class name from a path and returns this name
+		require
+			a_path_not_void: a_path /= Void
+			a_path_not_empty: not a_path.is_empty
+		local
+			a,b,c,ind:INTEGER
+		do
+			ind:=0
+			a:=0
+			b:=0
+			c:=a_path.count
+			a := a_path.last_index_of('/',c)
+			b := a_path.last_index_of('\',c)
+			if a /= 0 then
+				ind:=a
+			elseif b /= 0 then
+				ind:=b
+			else	
+				ind:=1
+			end
+			result.set(a_path,ind,c)
+		end
+		
+			
 feature -- Sockets  -- former {USER_CMD}
-
+		
 	socket: NETWORK_STREAM_SOCKET
 			-- the client socket that sends data to the server.
 
 feature {USER_CMD} -- Termination
+-- discussion: are these features needed by emu_client?
 
 	clean_up is
 			-- disconnect and close all sockets.	
@@ -97,7 +178,7 @@ feature {USER_CMD} -- Termination
 		ensure
 			system_is_shutdown: is_shutdown
 		end
-
+		
 
 feature -- Process
 
@@ -105,7 +186,7 @@ feature -- Process
     		-- register this client to the server
     	require
     		socket_not_void: socket /= void
-
+    		
     	do
     		socket.connect
     		socket.independent_store (create {USER_LOGIN}.make (user_name, password, project_name))
@@ -113,7 +194,7 @@ feature -- Process
             io.readline
             socket.cleanup
     	end
-
+    	
 
 	idle is
 			-- the idle routine simply waits for something to happen
@@ -125,7 +206,7 @@ feature -- Process
 			loop
 				-- check for incoming data
 				if socket.readable then
-					process_server_cmd.apply
+					process_server_cmd.apply	
 				end
 				sleep (sleep_time)
 			end
@@ -141,89 +222,107 @@ feature -- Process
 				retry
 			end
 		end
-
-
+	
+	
 	--commands implementing 'client features', these are LOCK, UNLOCK, UPLOAD, DOWNLOAD
-	unlock (a_class_name:STRING) is
+	unlock (a_relative_class_path: STRING): BOOLEAN is
 			-- unlocking a class, ie. send the unlock request
+			-- result== true means success
 		require
 			socket_not_void: socket /= void
+			path_not_void: a_relative_class_path /= Void
 		do
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
-            io.putstring ("requested to unlock class: " + a_class_name +"!%N")
-            io.readline
+    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_relative_class_path))
+            --io.putstring ("requested to unlock class: " + a_relative_class_path +"!%N")
+            --io.readline
             socket.cleanup
+            unlocked_classes.extend (parse_class_name(a_relative_class_path))
+            -- check for ok message before set result to true !!!
+            -- not done yet
+            result:=True
     	end
-
-	lock (a_class_name:STRING) is
+	
+	lock (a_relative_class_path: STRING): BOOLEAN is
 			-- locking a class, ie. send the lock request
+			-- result== true means success
 		require
 			socket_not_void: socket /= void
+			path_not_void: a_relative_class_path /= Void
 		do
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
-            io.putstring ("requested to lock class: " + a_class_name +"!%N")
-            io.readline
+    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_relative_class_path))
+            --io.putstring ("requested to lock class: " + a_relative_class_path +"!%N")
+            --io.readline
             socket.cleanup
-    	end
-
-	upload (a_class_name:STRING) is
+            remove_from_unlocked_list (parse_class_name(a_relative_class_path))
+            -- check for ok message before set result to true !!!
+            -- not done yet
+            result:=True
+    	end	
+	
+	upload (a_relative_class_path:STRING): BOOLEAN is
 			-- uploading a class
+			-- result== true means success
 		require
 			socket_not_void: socket /= void
 		do
 			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, a_class_name))
-            io.putstring ("uploaded class: " + a_class_name +"!%N")
-            io.readline
+    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, a_relative_class_path))
+            --io.putstring ("uploaded class: " + a_relative_class_path +"!%N")
+            --io.readline
             socket.cleanup
-    	end
-
-    download () is
+      		-- check for ok message before set result to true !!!
+            -- not done yet
+            result:=True
+    	end	
+    	
+    download (): BOOLEAN is
 			-- downloading ALL classes
 			-- might be better to download unly modified classes
+			-- result== true means success
 		require
 			socket_not_void: socket /= void
 		do
 			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_DOWNLOAD}.make (project_name))
-            io.putstring ("downloaded classes for project: " + project_name +"!%N")
-            io.readline
+            --io.putstring ("downloaded classes for project: " + project_name +"!%N")
+            --io.readline
             socket.cleanup
-    	end
-
-	process_server (a_client: CLIENT_STATE[like socket]) is --##### not yet implemented!
+            -- check for ok message before set result to true !!!
+            -- download is completed, after get_download.execute()
+            -- not done yet
+            result:=True
+    	end	
+    	
+	--#####################################################################
+	-- process_server (a_client:CLIENT_STATE [like socket]) is
+	--	client_state is only for testing purposes here!! don't forget to remove!!!
+	--#####################################################################
+	process_server () is
 			-- process incoming messages from server
 		local
 			rescued: BOOLEAN
 			a_message: EMU_MESSAGE
-
 			user_cmd: USER_CMD
+			get_download: GET_DOWNLOAD
+			server_closing: SERVER_CLOSING
 		do
 			if not rescued then
-				a_message ?= a_client.get_msg		-- used to check if it is a valid emu_message
 				user_cmd ?= a_message
 				if user_cmd /= Void then
---					if admin_login.password.is_equal(admin_password) then
---						-- admin successfully authenticated.
---						if admin_online then
---							-- only one admin allowed
---							--|TODO: tell client which admin is online.
---						else
---							a_client.set_admin
---							a_client.set_username (admin_login.username)
---							admin_online := True
---							io.putstring ("Admin '" + a_client.username + "' successfully logged in.%N")
---						end
---					end
-				else
---					admin_cmd ?= a_message
---					if admin_cmd /= Void then
---						admin_cmd.execute (Current)
---					end
+					get_download?=user_cmd
+					if  get_download/= Void then
+						get_download.execute()
+					end
+					server_closing ?= user_cmd
+					if server_closing /= Void then
+						server_closing.execute()
+					end
 				end
 			end
+		-- TO DO
+		-- rescue clause:
 --		rescue
 --			if not assertion_violation then
 --				-- 1. received message is not an Eiffel Storable Object of type EMU_MESSAGE
@@ -251,13 +350,13 @@ feature -- Commands
 
 	idle_cmd: PROCEDURE [ANY, TUPLE]
 			-- the idle command that will be executed by the server.
-
+			
 	process_server_cmd: PROCEDURE [ANY, TUPLE]
 			-- the process client command that will be executed to process clients.
-
+		
 
 feature -- Status
-
+-- not used yet
 	is_online: BOOLEAN is
 			-- indicates if the server is online.
 		do
@@ -266,7 +365,7 @@ feature -- Status
 
 
 feature {USER_CMD} -- Control Attributes
-
+-- not used yet
 	is_shutdown: BOOLEAN
 			-- if set to true, the server has to shutdown.
 
@@ -278,76 +377,9 @@ feature {NONE} -- Defaults
 	sleep_time_default: INTEGER_64 is 200000000
 			-- the default sleep time is 0.2 seconds (= 200'000'000 nanoseconds)
 
-
---feature -- Queries
---	--UNUSED
---	has_project (a_project_name: STRING): BOOLEAN is
---			-- checks if a project named "a_project_name" is in the project list.
---			require
---				a_project_name_valid: a_project_name /= void and then not a_project_name.is_empty
---			do
---				Result := (index_of_project (a_project_name) >= 0)
---			ensure
---				result_reasonable: project_list.is_empty implies (Result = False)
---			end
---			
---	project_count: INTEGER is
---			-- returns the number of projects in the project list.
---			do
---				result := project_list.count
---			ensure
---				result_correct: Result = project_list.count
---			end
---			
---	index_of_project (project_name: STRING): INTEGER is
---			-- returns the index of a project in the project list.
---			-- returns -1 if a project does not exist.
---		require
---			project_name_valid: project_name /= Void and then not project_name.is_empty
---		local
---			found: BOOLEAN
---			i: INTEGER
---		do
---			from
---				project_list.start
---				Result := -1
---				i := 0
---			invariant
---				project_list.index < project_list.count
---			variant
---				project_list.count - i + 1
---			until
---				project_list.after or found
---			loop
---				if project_list.item.name.is_equal(project_name) then
---					found := True
---					Result := i
---				end
---				i := i + 1
---				project_list.forth
---			end
---		ensure
---			result_valid: Result >= -1 or Result < project_list.count
---		end
---		
---	get_project (a_project_name: STRING): EMU_PROJECT is
---			-- returns the project called "a_project_name".
---			-- returns Void if the project does not exist.
---		require
---			project_name_valid: a_project_name /= Void and then not a_project_name.is_empty
---		local
---			index: INTEGER
---		do
---			index := index_of_project (a_project_name)
---			if index >= 0 then
---				-- return project
---				Result := project_list.i_th(index)
---			end
---		end
-
-
+			
 invariant
 	server_port_valid: server_port >= 0 and server_port <= 65535
 	sleep_time_positive: sleep_time >= 0
-
+	
 end -- class ROOT_CLASS

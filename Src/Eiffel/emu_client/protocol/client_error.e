@@ -186,6 +186,8 @@ feature -- Attributes
 	error_code :INTEGER
 	
 	error_message: STRING
+	
+	emu_class_name: STRING
 
 end
 
