@@ -723,7 +723,7 @@ feature {NONE} -- syntax checking implementation
 			-- parser used for syntax checking
 		once
 			Result := Eiffel_Validating_parser.deep_twin
-			Result.set_recoverable_parser
+			Result.set_recoverable_parser (true)
 			Result.set_has_syntax_warning (true)
 		end
 

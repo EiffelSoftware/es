@@ -420,11 +420,8 @@ Index_clause_impl: Identifier_as_lower TE_COLON Index_terms ASemi
 	|	Index_terms ASemi
 			{
 				$$ := ast_factory.new_index_as (Void, $1, Void)
-				if has_syntax_warning and $1 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($1.start_location.line,
-						$1.start_location.column, filename,
-						once "Missing `Index' part of `Index_clause'."))
+				if $1 /= Void then
+					report_warning(parser_errors.missing_index_part_warning, $1)
 				end
 			}
 	;
@@ -850,12 +847,7 @@ Inheritance: -- Empty
 			-- { $$ := Void }
 	|	TE_INHERIT ASemi
 			{
-				if has_syntax_warning then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make (line, column, filename,
-						once "Use `inherit ANY' or do not specify an empty inherit clause"))
-				end
-				--- $$ := Void
+				report_warning (parser_errors.empty_inherit_clause_warning, Void)
 				$$ := ast_factory.new_eiffel_list_parent_as (0)
 				if $$ /= Void then
 					$$.set_inherit_keyword ($1)
@@ -1111,9 +1103,7 @@ Select: TE_SELECT
 Formal_arguments:	TE_LPARAN TE_RPARAN
 			{
 				$$ := ast_factory.new_formal_argu_dec_list_as (Void, $1, $2) 
-				if has_syntax_warning then
-					report_warning ("Empty paranthesis `()' are not ECMA-Eiffel compliant, please remove them.", $1)
-				end
+				report_warning (parser_errors.empty_parenthesis_warning, $1)
 			}
 	|	TE_LPARAN Add_counter Entity_declaration_list Remove_counter TE_RPARAN
 			{ $$ := ast_factory.new_formal_argu_dec_list_as ($3, $1, $5) }
@@ -1429,11 +1419,7 @@ Non_class_type: TE_EXPANDED Class_type
 			{
 				$$ := $2
 				ast_factory.set_expanded_class_type ($$, True, $1)
-				if has_syntax_warning and $2 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						once "Make an expanded version of the base class associated with this type."))
-				end
+				report_warning (parser_errors.declared_expanded_warning, $1)
 			}
 	|	TE_SEPARATE Class_or_tuple_type
 			{
@@ -1947,7 +1933,10 @@ Debug: TE_DEBUG Debug_keys Compound TE_END
 Debug_keys: -- Empty
 			-- { $$ := Void }
 	|	TE_LPARAN TE_RPARAN
-		{ $$ := ast_factory.new_debug_key_list_as (Void, $1, $2) }
+			{
+				$$ := ast_factory.new_debug_key_list_as (Void, $1, $2)
+				report_warning (parser_errors.empty_parenthesis_warning, $1)
+			}
 	|	TE_LPARAN Add_counter String_list Remove_counter TE_RPARAN
 			{ $$ := ast_factory.new_debug_key_list_as ($3, $1, $5) }
 	;
@@ -2046,29 +2035,17 @@ Creation_clause:
 	|	TE_CREATION
 			{
 				$$ := ast_factory.new_create_as (Void, Void, $1)
-				if has_syntax_warning and $1 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						once "Use keyword `create' instead."))
-				end
+					report_warning (parser_errors.creation_use_warning, $1)
 			}
 	|	TE_CREATION Clients Feature_list
 			{
 				$$ := ast_factory.new_create_as ($2, $3, $1)
-				if has_syntax_warning and $1 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						once "Use keyword `create' instead."))
-				end
+				report_warning (parser_errors.creation_use_warning, $1)
 			}
 	|	TE_CREATION Client_list
 			{
 				$$ := ast_factory.new_create_as (ast_factory.new_client_as ($2), Void, $1)
-				if has_syntax_warning and $1 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($1.line, $1.column, filename,
-						once "Use keyword `create' instead."))
-				end
+				report_warning (parser_errors.creation_use_warning, $1)
 			}
 	;
 
@@ -2093,11 +2070,7 @@ Agent_call: TE_AGENT Feature_name_for_call Delayed_actuals
 		{
 			if $1 /= Void then
 				$$ := $1.first
-				if has_syntax_warning and $1.second /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($1.second.line,
-						$1.second.column, filename, once "Use keyword `agent' instead."))
-				end
+				report_warning(parser_errors.tilda_use_warning, void)
 			end
 		}
 	;
@@ -2173,7 +2146,10 @@ Agent_target: Identifier_as_lower
 Delayed_actuals: -- Empty
 			-- { $$ := Void }
 	|	TE_LPARAN TE_RPARAN
-			{ $$ := ast_factory.new_delayed_actual_list_as (Void, $1, $2) }
+			{ 
+				$$ := ast_factory.new_delayed_actual_list_as (Void, $1, $2) 
+				report_warning (parser_errors.empty_parenthesis_warning, $1)
+			}
 	|	TE_LPARAN Add_counter Delayed_actual_list Remove_counter TE_RPARAN
 			{ $$ := ast_factory.new_delayed_actual_list_as ($3, $1, $5) }
 	;
@@ -2218,20 +2194,12 @@ Delayed_actual: TE_QUESTION
 Creation: TE_BANG TE_BANG Creation_target Creation_call
 			{
 				$$ := ast_factory.new_bang_creation_as (Void, $3, $4, $1, $2)
-				if has_syntax_warning and $3 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($3.start_location.line,
-						$3.start_location.column, filename, "Use keyword `create' instead."))
-				end
+				report_warning (parser_errors.bang_bang_use_warning, $1)
 			}
 	|	TE_BANG Type TE_BANG Creation_target Creation_call
 			{
 				$$ := ast_factory.new_bang_creation_as ($2, $4, $5, $1, $3)
-				if has_syntax_warning and $4 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($4.start_location.line,
-						$4.start_location.column, filename, "Use keyword `create' instead."))
-				end
+				report_warning (parser_errors.bang_type_bang_use_warning, $1)
 			}
 	|	TE_CREATE Creation_target Creation_call
 			{ $$ := ast_factory.new_create_creation_as (Void, $2, $3, $1) }
@@ -2244,11 +2212,7 @@ Creation_expression: TE_CREATE Typed Creation_call
 	|	TE_BANG Type TE_BANG Creation_call
 			{
 				$$ := ast_factory.new_bang_creation_expr_as ($2, $4, $1, $3)
-				if has_syntax_warning and $2 /= Void then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make ($2.start_location.line,
-						$2.start_location.column, filename, "Use keyword `create' instead."))
-				end
+				report_warning (parser_errors.bang_type_bang_use_warning, $1)
 			}
 	;
 
@@ -2458,17 +2422,8 @@ New_a_static_call:
 Old_a_static_call:
 		TE_FEATURE Typed TE_DOT Identifier_as_lower Parameters
 			{
+				report_warning (parser_errors.static_feature_use_warning, $1)
 				$$ := ast_factory.new_static_access_as ($2, $4, $5, $1, $3);
-				if has_syntax_warning and ($1 /= Void or $2 /= Void) then
-					if $1 /= Void then
-						ast_location := $1.start_location
-					else
-						ast_location := $2.start_location
-					end
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make (ast_location.line,
-							ast_location.column, filename, once "Remove the `feature' keyword."))
-				end
 			}
 	;
 
@@ -2537,7 +2492,10 @@ Bracket_target:
 Parameters: -- Empty
 			-- { $$ := Void }
 	|	TE_LPARAN TE_RPARAN
-			{ $$ := ast_factory.new_parameter_list_as (Void, $1, $2) }
+			{ 
+				$$ := ast_factory.new_parameter_list_as (Void, $1, $2) 
+				report_warning (parser_errors.empty_parenthesis_warning, $1)
+			}
 	|	TE_LPARAN Add_counter Expression_list Remove_counter TE_RPARAN
 			{ $$ := ast_factory.new_parameter_list_as ($3, $1, $5) }
 	;
@@ -2583,11 +2541,7 @@ Class_identifier: TE_ID
 			{
 					-- Keyword used as identifier
 				process_id_as_with_existing_stub (last_keyword_as_id_index)
-				if has_syntax_warning then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make (line, column, filename,
-							once "Use of `assign', possibly a new keyword in future definition of `Eiffel'."))
-				end
+				report_warning (parser_errors.assign_keyword_warning, $1)
 
 				if not case_sensitive and last_id_as_value /= Void then
 					last_id_as_value.to_upper
@@ -2616,11 +2570,7 @@ Identifier_as_lower: TE_ID
 			{
 					-- Keyword used as identifier
 				process_id_as_with_existing_stub (last_keyword_as_id_index)
-				if has_syntax_warning then
-					Error_handler.insert_warning (
-						create {SYNTAX_WARNING}.make (line, column, filename,
-							once "Use of `assign', possibly a new keyword in future definition of `Eiffel'."))
-				end
+				report_warning (parser_errors.assign_keyword_warning, $1)
 				if not case_sensitive and last_id_as_value /= Void then
 					last_id_as_value.to_lower
 				end
@@ -3080,3 +3030,4 @@ indexing
 		]"
 
 end -- class EIFFEL_PARSER
+

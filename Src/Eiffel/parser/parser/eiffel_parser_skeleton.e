@@ -133,22 +133,13 @@ feature -- Parser type setting
 			parsing_type_set: has_parsing_type
 		end
 
-	set_recoverable_parser is
-			-- recover from errors
+	set_recoverable_parser(b: BOOLEAN) is
+			-- recover from errors?
 		do
-			recoverable_parser := true
+			recoverable_parser := b
 		ensure
 			recoverable: recoverable_parser
 		end
-
-	unset_recoverable_parser is
-			-- do not recover from errors
-		do
-			recoverable_parser := false
-		ensure
-			not_recoverable: not recoverable_parser
-		end
-
 
 
 feature -- Status report [hide]

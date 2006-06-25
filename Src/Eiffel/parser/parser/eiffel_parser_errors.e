@@ -194,24 +194,24 @@ feature -- Keywords
 			-- when keyword
 
 	xor_keyword: STRING is "`xor' keyword"
-	
-	
+
+
 feature -- Inspect Errors
-	
+
 	inspect_expression: STRING is "`inspect' expression"
-	
+
 	when_else_or_end_block: STRING is "`when' blocks, an `else' block or a matching `end' keyword"
-	
+
 feature -- Loop Errors
 
 	from_block: STRING is "`from' block"
-	
+
 	invariant_block: STRING is "`invariant' block"
-	
+
 	variant_block: STRING is "`variant' block"
-	
+
 	until_expression: STRING is "`until' expression"
-	
+
 	loop_block: STRING is "`loop' block"
 
 feature -- Symbols
@@ -330,7 +330,7 @@ feature -- Expected Values
 
 	a_formal_argument: STRING is "a formal argument declaration"
 	colon_or_lparan_symbols: STRING is "`:' or `('"
-	
+
 	a_renamed_feature: STRING is "a renamed feature"
 
 	a_generic_parameter: STRING is "a generic parameter"
@@ -394,11 +394,13 @@ feature -- Full Error Strings
 
 feature -- Warning Strings
 
-	empty_paranthesis_warning: STRING is "Empty paranthesis `()' are not ECMA-Eiffel compliant, please remove them."
+	empty_parenthesis_warning: STRING is "Empty paranthesis `()' are not ECMA-Eiffel compliant, please remove them."
 
 	assign_keyword_warning: STRING is  "`assign' is now an Eiffel keyword, please reevaluate the use of it."
 
 	indexing_value_missing_warning: STRING is "An indexing clause term should have an associated value."
+
+	missing_index_part_warning: STRING is "Missing `Index' part of `Index_clause'."
 
 	empty_inherit_clause_warning: STRING is "Use `inherit ANY' or do not specify an empty inherit clause"
 
@@ -406,9 +408,9 @@ feature -- Warning Strings
 
 	creation_use_warning: STRING is "Use `create' keyword instead of `creation' keyword."
 
-	tilder_use_warning: STRING is "Use `agent' keyword instead of tilde `~' symbol."
+	tilda_use_warning: STRING is "Use `agent' keyword instead of tilde `~' symbol."
 
-	bang_bang_use_warning: STRING is "Use `create' keyword instead or `!!'."
+	bang_bang_use_warning: STRING is "Use `create' keyword instead of `!!'."
 
 	bang_type_bang_use_warning: STRING is "Use `create {A}' instead of `!A!'."
 

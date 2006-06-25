@@ -60,14 +60,6 @@ feature -- Access
 
 	leaf_list_as: LEAF_AS_LIST
 
-	successful: BOOLEAN
-			-- FIXME: not used yet
-
-	end_recover is
-			-- FIXME: what should it do?
-		do
-		end
-
 	max_errors: INTEGER
 			-- Maximum number of errors that can be reported
 
