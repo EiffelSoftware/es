@@ -31,6 +31,7 @@ inherit
 		end
 
 	EV_TITLED_WINDOW_ACTION_SEQUENCES_IMP
+	MACWINDOWS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -118,17 +119,12 @@ feature -- Status setting
 
 	minimize is
 			-- Display iconified/minimised.
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{	
-					WindowRef aWindow;
-					aWindow = GetWindowList();
-					CollapseWindow(aWindow, TRUE);
-				}
-			]"
+		local
+			ret: INTEGER
+		do
+			ret:=collapse_window_external(c_object,1)
 		end
+
 
 	maximize is
 			-- Display at maximum size.
@@ -147,16 +143,10 @@ feature -- Status setting
 
 	restore is
 			-- Restore to original position when minimized or maximized.
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{	
-					WindowRef aWindow;
-					aWindow = GetWindowList();
-					CollapseWindow(aWindow, FALSE);
-				}
-			]"
+		local
+			ret: INTEGER
+		do
+			ret:=collapse_window_external(c_object,0)
 		end
 
 feature -- Element change
