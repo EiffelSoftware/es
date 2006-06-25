@@ -1,6 +1,6 @@
 indexing
-	description: "Facilities to convert from FILE, POINTER, ARRAY[NATURAL_8], SPECIAL[NATURAL_8] to STRING_32 and vice versa."
-	status: "NOTE: This class has NEVER been tested, don't use it in production environments!"
+	description: "Facilities to convert, read and write STRING_32 objects."
+	status: "testing"
 	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -15,7 +15,7 @@ inherit
 feature -- Reading Wrappers
 
 	file_read_string_32_with_length (a_file: FILE; n_bytes: INTEGER): STRING_32 is
-			-- Read n_bytes' from a_file' and interpret them as the UTF-8 encoding of a string
+			-- Read `n_bytes' from `a_file' and interpret them as the UTF-8 encoding of a string
 		require
 			file_open_readable: a_file.is_open_read
 			n_non_negative: n_bytes >= 0
@@ -29,20 +29,30 @@ feature -- Reading Wrappers
 				a_file.read_to_managed_pointer (l_pointer, 0, n_bytes)
 				Result := special_natural_8_to_string_32 (l_pointer.read_array (0, n_bytes).to_special)
 			end
+		ensure
+			result_not_void: Result /= Void
 		end
 
 	array_natural_8_to_string_32 (a_array: ARRAY[NATURAL_8]): STRING_32 is
-			-- Read from an array of natural8 numbers and return a string32
+			-- Read from an array of `NATURAL_8' and return a `STRING_32'
+		require
+			array_not_void: a_array /= Void
 		do
 			Result := special_natural_8_to_string_32(a_array.to_special)
+		ensure
+			result_not_void: Result /= Void
 		end
 
 
 feature -- Reading
 
 	special_natural_8_to_string_32 (a_special: SPECIAL[NATURAL_8]): STRING_32 is
-			-- Read from a special of natural8 numbers and return a string32
-			-- a_special' should be a sequence of bytes representing an UTF-8 encoded string
+			-- Read from a special of natural_8 and return a string32
+			-- `a_special' should be a sequence of bytes representing an UTF-8 encoded string
+			-- This function also interprets 5 and 6-bytes characters, which are not part
+			-- of the UFT-8 standard.
+		require
+			special_not_void: a_special /= Void
 		local
 			i, ch_len: INTEGER
 			l_ch: CHARACTER
@@ -74,24 +84,29 @@ feature -- Reading
 						Result.append_character (l_ch.to_character_32)
 					else
 						-- first byte of a multibyte character
-						code := l_ch.natural_32_code.bit_and ({NATURAL_8}.max_value.bit_shift_right (ch_len).as_natural_32).bit_shift_left (6*(ch_len-1))
+						code := l_ch.natural_32_code & ({NATURAL_8}.max_value.bit_shift_right (ch_len).as_natural_32) |<< (6*(ch_len-1))
 					end
 					ch_len := ch_len - 1
 				else
 					-- something was wrong in the bytes sequence
-					-- just discard the character and put a whitespace
+					-- just discard the character
 					ch_len := 0
 					code := 0
 				end
 				i := i + 1
 			end
+		ensure
+			result_not_void: Result /= Void
 		end
 
 feature -- Writing
 
 	file_write_string_32 (a_file: FILE; a_string: STRING_32) is
-		-- Write a_string' to a_file' using UTF-8 encoding
-		-- this function also writes 5 and 6-bytes characters, which are not part of UTF-8
+		-- Write `a_string' to `a_file' at current position using UTF-8 encoding
+		-- This function also writes 5 and 6-bytes characters, which are not part of the UTF-8 standard
+	require
+		file_open_writeable: a_file.is_open_write
+		string_not_void: a_string /= Void
 	local
 		ch_len, i: INTEGER
 		l_byte: NATURAL_8
