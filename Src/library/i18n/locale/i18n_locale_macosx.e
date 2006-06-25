@@ -12,15 +12,14 @@ inherit
 --		Error: type is based on unknown class.
 --		What to do: use an identifier that is the name of a class in the universe.
 	I18N_LOCALE_FACTORY
+	EXECUTION_ENVIRONMENT
 
-feature -- get locale informations
-	
-	language_id: STRING
-	lang: EXECUTION_ENVIRONMENT
+feature -- locale
 
 	get_locale is
 		require else
 		do
+			language_id := get("LANG")
 		ensure then
  	   end
 
