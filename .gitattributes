@@ -2057,6 +2057,7 @@ Src/library/i18n/example/ru.po -text
 Src/library/i18n/example/zh_CN.mo -text
 Src/library/i18n/example/zh_CN.po -text
 Src/library/i18n/i18n.ecf -text
+Src/library/i18n/locale/TODO -text
 Src/library/i18n/mo_files/it.mo -text
 Src/library/i18n/mo_files/zh.mo -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
