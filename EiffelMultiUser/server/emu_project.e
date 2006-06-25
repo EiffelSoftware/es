@@ -177,7 +177,7 @@ feature -- Attributes
 			-- the project name, used for identification.
 
 
-feature {CLIENT_STATE} -- Private Attributes
+feature {NONE} -- Private Attributes
 
 	users: LINKED_LIST [EMU_USER]
 			-- a list of users assigned to this project.

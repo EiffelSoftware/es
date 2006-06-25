@@ -46,7 +46,7 @@ default
 -- EiffelVision2
 
 cluster
-	all base:		"$ISE_LIBRARY/library/base"
+	all base:		"$ISE_LIBRARY\library\base"
 		exclude
 			"table_eiffel3"; "desc"; "dotnet"; ".svn";
 		end
@@ -61,17 +61,17 @@ cluster
 			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; "dotnet"; "carbon"; ".svn";
 		end
 
-	all wizard:		"$ISE_LIBRARY/library/wizard"
+	all wizard:		"$ISE_LIBRARY\library\wizard"
 		exclude
 			"unix"; ".svn";
 		end
 
-	all emu_protocol:		"../../protocol"
+	all emu_protocol:		"..\..\protocol"
         exclude
             ".svn";
         end
 
-	all net:		"$ISE_LIBRARY/library/net"
+	all net:		"$ISE_LIBRARY\library\net"
         exclude
             ".svn";
         end
@@ -80,7 +80,7 @@ cluster
         exclude
             ".svn";
         end
-	all time:		"$ISE_LIBRARY/library/time"
+	all time:		"$ISE_LIBRARY\library\time"
 		exclude
 			"german"; "french"; "dotnet"; ".svn";
 		end

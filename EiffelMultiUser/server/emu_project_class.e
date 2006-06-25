@@ -25,10 +25,8 @@ feature -- Creation
 		do
 			Precursor (a_name, a_creator)
 			free := True
-			create current_user.make_empty
 			-- SET CONTENT
 			-- to be implemented...
-			-- => do this in feature, which is called in upload...
 		ensure then
 			free_set: is_free()
 		end
@@ -43,40 +41,27 @@ feature -- Procedures
 			free_set: is_free()
 		end
 
-	set_to_occupied( a_user: STRING ) is
+	set_to_occupied() is
 			-- set attribute 'free' to false
-		require
-			a_user_not_void: a_user /= Void
 		do
 			free:= False
-			current_user.make_from_string (a_user)
 		ensure
 			occupied_set: not is_free()
-			current_user_set: current_user.is_equal (a_user)
 		end
 
-	set_content (a_file:RAW_FILE) is
-			-- set content of class
-		require
-			a_file_exists: a_file /= void
-		do
-			content := a_file
-		end
-		
-		
 feature -- Queries
 
 	is_free():BOOLEAN is
 			-- may the client unlock this class?
 		do
-			result:= free and (current_user = Void)
+			result:= free
 		end
 
 
 feature -- Content
 
-	content: RAW_FILE
-			-- the code content of the class. Represented as a RAW_FILE.
+	content: STRING
+			-- the code content of the class. Represented as a long string.
 
 
 feature -- Attributes
@@ -89,7 +74,5 @@ feature -- Attributes
 
 	free: BOOLEAN
 			-- true <=> class may be unlocked by client
-			
-	current_user: STRING
 
 end
