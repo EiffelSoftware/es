@@ -4646,7 +4646,7 @@ feature {NONE} -- Execution
 				--added by EMU-PROJECT---
 			if(project_manager.is_in_emu_mode) then
 				show_emu_toolbar_command.enable_visible
-				server_class_cmd.enable_sensitive
+				new_project_class_cmd.enable_sensitive
 				add_user_class_cmd.enable_sensitive
 			end
 			-------------------------
