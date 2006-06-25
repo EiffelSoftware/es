@@ -161,6 +161,8 @@ feature -- Reporting
 				l_opener_column := l_column
 			end
 			create l_error.make (l_line, l_column, l_opener_line, l_opener_column, a_opener, a_missing, void, filename)
+			error_handler.error_list.finish
+			error_handler.error_list.remove
 			insert_error (l_error, a_fatal)
 		end
 
