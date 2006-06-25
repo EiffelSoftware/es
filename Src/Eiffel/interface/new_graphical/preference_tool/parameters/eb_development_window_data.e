@@ -102,7 +102,7 @@ feature {EB_DEVELOPMENT_WINDOW_DATA, EB_SHARED_PREFERENCES} -- Value
 		end
 	---added by EMU-PROJECT----
 	show_emu_toolbar: BOOLEAN is
-			-- Show the refactoring toolbar.
+			-- Show the emu toolbar.
 		deferred
 		end
 	show_text_in_emu_toolbar: BOOLEAN is
@@ -203,7 +203,7 @@ feature -- Basic operations
 		end
 	---added by EMU-PROJECT-----
 	retrieve_emu_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): EB_TOOLBAR is
-			-- Retreive the refactoring toolbar using the available commands in `command_pool'
+			-- Retreive the emu toolbar using the available commands in `command_pool'
 		deferred
 		end
 	----------------------------

@@ -714,7 +714,7 @@ feature {NONE} -- Implementation / Commands
 
 	----added by EMU-PROJECT----
 	show_emu_toolbar_command: EB_SHOW_TOOLBAR_COMMAND
-			-- Command to show/hide the refactoring toolbar.
+			-- Command to show/hide the emu toolbar.
 	----------------------------
 
 	show_address_toolbar_command: EB_SHOW_TOOLBAR_COMMAND

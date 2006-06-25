@@ -494,7 +494,7 @@ feature -- Menu mnenomics
 	m_emu_download_class: STRING_32 					is do Result := i18n("Emu &download...") end
 	m_emu_lock_class: STRING_32 						is do Result := i18n("Emu &lock...") end
 	m_emu_unlock_class: STRING_32 						is do Result := i18n("Emu u&nlock...") end
-	m_emu_new_project_class: STRING_32 						is do Result := i18n("Emu create &Project...") end
+	m_emu_new_project_class: STRING_32 					is do Result := i18n("Emu create &Project...") end
 	m_emu_add_user_class: STRING_32 					is do Result := i18n("Emu &add user...") end
 	------------------------
 
