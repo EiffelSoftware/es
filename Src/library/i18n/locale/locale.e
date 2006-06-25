@@ -6,21 +6,17 @@ indexing
 
 class
 	LOCALE
-inherit
-	SHARED_FACTORY
 
-feature
+feature -- Access
+	language_id: STRING
+		-- Language id
 
-	find_locale is
-			-- find infos about locale of the user/os
+feature -- Basic operations
+	set_language_id(a_id: STRING) is
+			-- Set language id.
 		do
-			fact := factory
-			fact.get_locale
-		ensure
+			language_id := a_id
 		end
-
-
-
 
 invariant
 	invariant_clause: True -- Your invariant here

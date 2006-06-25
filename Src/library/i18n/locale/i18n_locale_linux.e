@@ -16,10 +16,11 @@ inherit
 
 feature -- locale
 
-	get_locale is
+	get_locale: LOCALE is
 		require else
 		do
-			language_id := get("LANG")
+			create Result
+			Result.set_language_id(get("LANG"))
 		ensure then
  	   end
 
