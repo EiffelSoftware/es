@@ -12,7 +12,8 @@ inherit
 		rename
 			close as close_file
 		end
-	UC_IMPORTED_UTF8_ROUTINES
+
+	IMPORTED_UTF8_READER_WRITER
 
 create {I18N_DATASOURCE_FACTORY}
 	make_with_path
@@ -235,45 +236,7 @@ feature {NONE} -- Implementation (helpers)
 			string_length := read_integer
 			string_offset := read_integer
 			mo_file.go(string_offset)
-			create Result.make_empty
-			from
-				i := 1
-				ch_len := 0
-			invariant
-				i >= 1
-				i <= string_length + 1
-			variant
-				string_length + 1 - i
-			until
-				i > string_length or mo_file.end_of_file
-			loop
-				mo_file.read_character
-				l_ch := mo_file.last_character
-				if ch_len > 0 then
-					-- we are in the middle of a multi-byte char
-					ch_len := ch_len - 1 -- one byte fewer to decode
-					code := code | ( l_ch.natural_32_code.bit_and (63) |<< (6*ch_len) )
-					if ch_len <= 0 then
-						-- this was last byte
-						Result.append_character (code.to_character_32)
-						code := code.zero
-					end
-				elseif utf8.is_encoded_first_byte (l_ch) then
-					ch_len := utf8.encoded_byte_count (l_ch)
-					if ch_len = 1 then
-						-- this is an ascii character
-						Result.append_character (l_ch.to_character_32)
-					else
-						-- first byte of a multibyte character
-						code := l_ch.natural_32_code.bit_and ({NATURAL_8}.max_value.bit_shift_right (ch_len).as_natural_32).bit_shift_left (6*(ch_len-1))
-					end
-					ch_len := ch_len - 1
-				else
-					-- something was wrong in the bytes sequence
-					-- just discard the character
-				end
-				i := i + 1
-			end
+			Result := utf8_rw.file_read_string_32_with_length (mo_file, string_length)
 		ensure
 			result_exists : Result /= Void
 		end

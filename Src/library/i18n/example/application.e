@@ -160,6 +160,7 @@ feature -- Create window elements
 			-- Reload strings in a new language
 		do
 			names := create {NAMES}.make (a_lang)
+			first_window.set_title (names.application)
 			update_menu_bar
 			update_labels
 		end

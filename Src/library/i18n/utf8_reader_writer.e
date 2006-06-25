@@ -14,13 +14,21 @@ inherit
 
 feature -- Reading Wrappers
 
-	file_read_string_32 (a_file: FILE; limit: CHARACTER): STRING_32 is
-			-- Read a UTF-8 string32 from current position in a_file'
-			-- String end is delemited by limit', which is ? discarded
+	file_read_string_32_with_length (a_file: FILE; n_bytes: INTEGER): STRING_32 is
+			-- Read n_bytes' from a_file' and interpret them as the UTF-8 encoding of a string
+		require
+			file_open_readable: a_file.is_open_read
+			n_non_negative: n_bytes >= 0
 		local
-			l_array: ARRAY[NATURAL_8]
+			l_pointer: MANAGED_POINTER
 		do
-			Result := special_natural_8_to_string_32 (l_array.to_special)
+			if n_bytes = 0 then
+				Result := ""
+			else
+				create l_pointer.make (n_bytes)
+				a_file.read_to_managed_pointer (l_pointer, 0, n_bytes)
+				Result := special_natural_8_to_string_32 (l_pointer.read_array (0, n_bytes).to_special)
+			end
 		end
 
 	array_natural_8_to_string_32 (a_array: ARRAY[NATURAL_8]): STRING_32 is
@@ -83,6 +91,7 @@ feature -- Writing
 
 	file_write_string_32 (a_file: FILE; a_string: STRING_32) is
 		-- Write a_string' to a_file' using UTF-8 encoding
+		-- this function also writes 5 and 6-bytes characters, which are not part of UTF-8
 	local
 		ch_len, i: INTEGER
 		l_byte: NATURAL_8
