@@ -14,6 +14,7 @@
 		</file_rule>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="True"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo.ecf" readonly="True"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="True"/>
 		<cluster name="i18n" location="." recursive="true"/>
 	</target>
 </system>

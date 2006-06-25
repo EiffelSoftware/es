@@ -63,20 +63,24 @@ feature -- Loading
 			if new_i18n_datasource /= Void and new_i18n_datastructure /= Void then
 				i18n_datasource := new_i18n_datasource
 				i18n_datastructure := new_i18n_datastructure
+				reset_times
+				start_loading_timer
 				i18n_datastructure.load(i18n_datasource)
+				stop_loading_timer
 				new_i18n_datasource := Void
 				new_i18n_datastructure := Void
 			end
 		end
 
 feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
-
 	translate(a_string: STRING_GENERAL): STRING_32 is
 			-- What's the translated version of the string?
 		require
 			valid_string: a_string /= Void
 		do
+			start_translation_timer
 			Result := i18n_datastructure.translate(a_string, "", 1)
+			stop_translation_timer
 		ensure
 			valid_result: Result /= Void
 		end
@@ -87,7 +91,9 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			valid_singular: a_singular /= Void
 			valid_plural: a_plural /= Void
 		do
+			start_translation_timer
 			Result := i18n_datastructure.translate(a_singular, a_plural, a_num)
+			stop_translation_timer
 		ensure
 			valid_result: Result /= Void
 		end
@@ -119,6 +125,55 @@ feature {NONE} -- Implementation
 
 	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
 		-- Reference to the template formatter
+
+feature {SHARED_I18N_LOCALIZATOR} -- Timing access
+	translation_time, loading_time: TIME_DURATION
+
+feature {NONE} -- Timing implementation
+	translation_timer, loading_timer: TIME
+
+	reset_times is
+			-- Reset all the timers.
+		do
+			create translation_time.make_by_seconds(0)
+			create loading_time.make_by_seconds(0)
+		end
+
+	start_translation_timer is
+			-- Starts the translation timer.
+		do
+			create translation_timer.make_now
+		end
+
+	stop_translation_timer is
+			-- Stops the translation timer and add the duration to translation_time.
+		require
+			translation_time /= Void
+			translation_timer /= Void
+		local
+			now: TIME
+		do
+			create now.make_now
+			translation_time := translation_time + (now.duration - translation_timer.duration)
+		end
+
+	start_loading_timer is
+			-- Start the translation timer.
+		do
+			create loading_timer.make_now
+		end
+
+	stop_loading_timer is
+			-- Stops the loading timer and add the duration to loading_time.
+		require
+			loading_time /= Void
+			loading_timer /= Void
+		local
+			now: TIME
+		do
+			create now.make_now
+			loading_time := loading_time + (now.duration - loading_timer.duration)
+		end
 
 invariant
 	valid_datasource: i18n_datasource /= Void and then i18n_datasource.is_ready
