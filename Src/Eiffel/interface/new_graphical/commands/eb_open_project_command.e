@@ -118,7 +118,7 @@ feature -- Execution
 		local
 			fnemu: FILE_NAME
 			emu_file: PLAIN_TEXT_FILE
-			cd: EV_CONFIRMATION_DIALOG
+			--cd: EV_CONFIRMATION_DIALOG
 			user_name, pass, proj_name, server_ip: STRING
 			server_port: INTEGER
 		do
@@ -155,15 +155,17 @@ feature -- Execution
 
 		end
 
-
-
 	emu_login (user_name, pass, proj_name, server_ip: STRING; server_port:INTEGER) is
 			-- Login to a EMU project
 		local
-			project_manager:EB_PROJECT_MANAGER
+			emu_client:EMU_CLIENT
+			proj_dir:STRING
 		do
-			project_manager := window_manager.development_window_from_window (parent_window).project_manager
-			project_manager.emu_client.connect_to_server(server_ip,user_name,pass,proj_name,server_port)
+			emu_client := window_manager.development_window_from_window (parent_window).project_manager.emu_client
+			proj_dir := window_manager.development_window_from_window (parent_window).project_manager.eiffel_project.project_location.location
+
+			emu_client.set_project_path(proj_dir)
+			emu_client.connect_to_server(server_ip,user_name,pass,proj_name,server_port)
 			---need errorhandling in emu_client...!
 			is_emu_logged := true
 		end
