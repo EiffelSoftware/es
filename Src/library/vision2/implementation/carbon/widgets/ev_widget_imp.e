@@ -24,7 +24,8 @@ inherit
 			destroy,
 			minimum_width,
 			minimum_height,
-			on_key_event
+			on_key_event,
+			show
 		end
 
 	EV_SENSITIVE_IMP
@@ -55,6 +56,7 @@ inherit
 		redefine
 			interface
 		end
+	CONTROLS_FUNCTIONS_EXTERNAL
 
 feature {NONE} -- Initialization
 
@@ -63,7 +65,7 @@ feature {NONE} -- Initialization
 			-- Initialize default options, colors and sizes.
 			-- Connect action sequences to GTK signals.
 		do
-			
+
 
 
 		end
@@ -153,7 +155,15 @@ feature -- Status setting
 	hide is
 			-- Request that `Current' not be displayed even when its parent is.
 		do
+			hide_control_external(c_object)
+
 		end
+
+	show is
+		do
+			show_control_external(c_object)
+		end
+
 
 	is_show_requested: BOOLEAN is
 			-- Will `Current' be displayed when its parent is?
