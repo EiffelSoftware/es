@@ -157,6 +157,9 @@ feature -- Actions
 			l_item: EV_GRID_LABEL_ITEM
 			l_factory: USER_OPTIONS_FACTORY
 			l_project_initialized: BOOLEAN
+--EMU
+			open_project_command: EB_OPEN_PROJECT_COMMAND
+--EMU
 		do
 				-- Remove data associated to user file for selected project/target if any.
 			if remove_user_file.is_sensitive and then remove_user_file.is_selected then
@@ -180,6 +183,13 @@ feature -- Actions
 				selected_target,
 				location_combo.text,
 				clean_button.is_selected)
+
+			--EMU
+			create open_project_command.make
+			open_project_command.check_for_emu_project_file (l_item.text)
+			--
+
+
 
 			if not l_loader.has_error then
 					-- No error occurred, we can now perform action selected in `action_combo'.
