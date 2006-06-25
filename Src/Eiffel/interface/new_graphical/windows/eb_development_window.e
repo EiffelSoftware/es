@@ -1272,7 +1272,7 @@ feature -- Graphical Interface
 			show_toolbar_commands.extend (show_emu_toolbar_command)
 			if development_window_data.show_emu_toolbar then
 				show_emu_toolbar_command.enable_visible
-				server_class_cmd.enable_sensitive
+				new_project_class_cmd.enable_sensitive
 				add_user_class_cmd.enable_sensitive
 			else
 				show_emu_toolbar_command.disable_visible
