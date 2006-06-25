@@ -2038,7 +2038,7 @@ feature {NONE} -- Menu Building
 
 			     --PO generation
 
-			 command_menu_item := create_po_cmd.new_menu_item
+			 --command_menu_item := create_po_cmd.new_menu_item
 			add_recyclable (command_menu_item)
 			tools_menu.extend (command_menu_item)
 
@@ -3752,13 +3752,15 @@ feature {NONE} -- Implementation
 			--added by EMU-PROJECT--
 			if(project_manager.is_in_emu_mode) then
 				if cist /= Void then
-					--cist.class_name is locked or unlocked in emu_client list of locked - unlocked classes?!
-					managed_main_formatters.first.disable_sensitive
-					editor_tool.text_area.set_read_only (true)
+					--if(not(project_manager.emu_client.is_class_unlocked(cist.class_name))) then
+						managed_main_formatters.first.disable_sensitive
+						editor_tool.text_area.set_read_only (true)
+					--end
 				elseif cst /= Void then
-					-- cst.class_name is locked or unlocked in emu_client list of locked - unlocked classes?!
+					--if(not(project_manager.emu_client.is_class_unlocked(cst.class_name))) then
 					managed_main_formatters.first.disable_sensitive
 					editor_tool.text_area.set_read_only (true)
+					--end
 				end
 			end
 			--
@@ -4675,7 +4677,7 @@ feature {NONE} -- Execution
 			c_finalized_compilation_cmd.disable_sensitive
 			refactoring_manager.disable_sensitive
 			refactoring_manager.forget_undo_redo
-			
+
 			--added by sa-i18n
 			create_po_cmd.disable_sensitive
 
