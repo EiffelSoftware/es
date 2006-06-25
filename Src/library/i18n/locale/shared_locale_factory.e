@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Objects used to create the right factory, and only once."
+	status: "NOTE: This class is not stable yet, don't use it in production environments!"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,8 +18,8 @@ feature -- Basic Operations
 				create {I18N_WINDOWS_LOCALE_FACTORY} Result
 			elseif platform.is_unix then
 				create {I18N_LINUX_LOCALE_FACTORY} Result
---			elseif is_mac then
---				create {I18N_LOCALE_MACOSX} Result
+--			elseif platform.is_mac then
+--				create {I18N_MACOSX_LOCALE_FACTORY} Result
 --				there is no query under class PLATFORM for macosx other than the unix one
 			end
 		end

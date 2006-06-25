@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Factory to create a I18N_LOCALE object under windows."
+	status: "NOTE: This class is not stable yet, don't use it in production environments!"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,32 +12,23 @@ inherit
 	I18N_LOCALE_FACTORY
 
 feature -- Locale
-	get_locale: LOCALE is
+	get_actual_locale: I18N_LOCALE is
 		require else
 		local
 			id: STRING
 		do
 			create Result
-			id := convert_code(language_id_code)
+			id := language_id_code.to_hex_string
 			Result.set_language_id(id)
 		ensure then
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 	language_id_code: NATURAL_32 is
 		external
 			"C inline use <windows.h>"
 		alias
 			"return GetUserDefaultLCID();"
-		end
-
-	convert_code (a_code: NATURAL_32): STRING is
-		require
-			a_code_exists: a_code /= Void
-		do
-			Result := a_code.to_hex_string
-		ensure
-			result_not_void: Result /= Void
 		end
 
 end

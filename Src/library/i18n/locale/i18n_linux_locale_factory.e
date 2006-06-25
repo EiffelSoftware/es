@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Factory to create a I18N_LOCALE object under linux."
+	status: "NOTE: This class is not stable yet, don't use it in production environments!"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,17 +10,18 @@ class
 
 inherit
 	I18N_LOCALE_FACTORY
-	EXECUTION_ENVIRONMENT
 
 feature -- Locale
-
-	get_locale: LOCALE is
+	get_actual_locale: I18N_LOCALE is
 		require else
+		local
+			environment: EXECUTION_ENVIRONMENT
 		do
 			create Result
-			Result.set_language_id(get("LANG"))
+			create environment
+			Result.set_language_id(environment.get("LANG"))
 		ensure then
- 	   end
+		end
 
 invariant
 	invariant_clause: True -- Your invariant here
