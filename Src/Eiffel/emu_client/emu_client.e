@@ -117,8 +117,6 @@ feature -- Access
 				unlocked_classes.forth
 			end
 		end
-
-		
 	
 	server_port: INTEGER
 			-- the port to which the listen socket is bound. Lies between 0 and 65535.
@@ -140,6 +138,9 @@ feature -- Access
 			
 	unlocked_classes: LINKED_LIST [STRING]
 			-- a list uf unlocked classes
+			
+	ok_message: CLIENT_OK
+			-- last recieved client_ok message
 			
 feature {NONE} -- Implementation
 
@@ -185,14 +186,51 @@ feature {NONE} -- Implementation
 			result.set(a_path,ind,c)
 		end
 		
+	wait_for_ok (ok_code:INTEGER):BOOLEAN is
+			-- wait until an ok_message with ok_code arrives
+		require
+			ok_code_valid: ok_code > 0
+		local
+			i:INTEGER
+			ok:BOOLEAN
+			rescued: BOOLEAN
+		do
+			if not rescued then
+				ok := False
+				from
+					i:=200
+				until
+					(i < 0) or ok
+				loop
+					if ok_message /= void then
+						if ok_message.ok_code = ok_code then
+							ok := True
+							ok_message := void
+						end
+					end
+				
+					i:= i-1
+					--sleep(sleep_time_default)	
+					-- no sleep, so the system is blocked by this feature
+				end
+				result:=ok
+			end
+			rescue
+				--to be implemented <==
+			
+		end
+		
+			
+			
+		
+		
 			
 feature -- Sockets  -- former {USER_CMD}
 		
 	socket: NETWORK_STREAM_SOCKET
 			-- the client socket that sends data to the server.
 
-feature {USER_CMD} -- Termination
--- discussion: are these features needed by emu_client?
+feature {NONE} -- Termination
 
 	clean_up is
 			-- disconnect and close all sockets.	
@@ -202,6 +240,7 @@ feature {USER_CMD} -- Termination
 			offline: not is_online
 		end
 
+-- discussion: is this feature needed by emu_client?
 	shutdown is
 			-- set the system to initiate a shutdown.
 		do
@@ -239,7 +278,7 @@ feature -- Process
 				if socket.readable then
 					process_server_cmd.apply	
 				end
-				sleep (sleep_time)
+				sleep (sleep_time_default)
 			end
 			clean_up
 		rescue
@@ -270,9 +309,8 @@ feature -- Process
     		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
             unlocked_classes.extend (a_class_name)
-            -- check for ok message before set result to true !!!
-            -- not done yet
-            result:=True
+            -- what happens, if unlock successful, but ok_message lost???? <==
+            result := wait_for_ok(303)
     	end
 	
 	lock (an_absolute_path: STRING): BOOLEAN is
@@ -289,9 +327,8 @@ feature -- Process
     		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
             remove_from_unlocked_list (a_class_name)
-            -- check for ok message before set result to true !!!
-            -- not done yet
-            result:=True
+            -- what happens when ok_message from server got lost??
+            result := wait_for_ok(302)
     	end	
 	
 	upload (an_absolute_path:STRING): BOOLEAN is
@@ -304,9 +341,8 @@ feature -- Process
 			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, an_absolute_path, project_path))
             socket.cleanup
-      		-- check for ok message before set result to true !!!
-            -- not done yet
-            result:=True
+      		-- no problem if ok_message got lost, just redo upload, no harm done
+      		result := wait_for_ok(304)
     	end	
     	
     download (): BOOLEAN is
@@ -318,13 +354,9 @@ feature -- Process
 		do
 			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_DOWNLOAD}.make (project_name))
-            --io.putstring ("downloaded classes for project: " + project_name +"!%N")
-            --io.readline
             socket.cleanup
-            -- check for ok message before set result to true !!!
-            -- download is completed, after get_download.execute()
-            -- not done yet
-            result:=True
+            -- what happens, if ok_message got lost?
+            result := wait_for_ok(305)
     	end	
     	
 	--#####################################################################
@@ -340,17 +372,25 @@ feature -- Process
 			user_cmd: USER_CMD
 			get_download: GET_DOWNLOAD
 			server_closing: SERVER_CLOSING
+			ok_msg: CLIENT_OK
 		do
 			if not rescued then
-				user_cmd ?= a_message
-				if user_cmd /= Void then
-					get_download?=user_cmd
-					if  get_download/= Void then
-						get_download.execute()
+				a_message ?= socket.retrieved
+				if a_message/=void then
+					user_cmd ?= a_message
+					if user_cmd /= Void then
+						get_download?=user_cmd
+						if  get_download/= Void then
+							get_download.execute()
+						end
+						server_closing ?= user_cmd
+						if server_closing /= Void then
+							server_closing.execute()
+						end
 					end
-					server_closing ?= user_cmd
-					if server_closing /= Void then
-						server_closing.execute()
+					ok_msg ?= a_message
+					if ok_msg /= void then
+						ok_message:= ok_msg
 					end
 				end
 			end
@@ -389,7 +429,7 @@ feature -- Commands
 		
 
 feature -- Status
--- not used yet
+-- not used yet?
 	is_online: BOOLEAN is
 			-- indicates if the server is online.
 		do
@@ -397,8 +437,8 @@ feature -- Status
 		end
 
 
-feature {USER_CMD} -- Control Attributes
--- not used yet
+feature {NONE} -- Control Attributes
+-- not used yet?
 	is_shutdown: BOOLEAN
 			-- if set to true, the server has to shutdown.
 

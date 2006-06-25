@@ -163,5 +163,9 @@ feature -- Attributes
 	
 	ok_message: STRING
 	
+	emu_class_name: STRING
+	
+	
+	
 
 end
