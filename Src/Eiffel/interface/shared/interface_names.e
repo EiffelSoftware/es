@@ -135,7 +135,7 @@ feature -- Button texts
 	b_emu_download_class: STRING_32 			is do Result := i18n("Download") end
 	b_emu_lock_class: STRING_32 				is do Result := i18n("Lock") end
 	b_emu_unlock_class: STRING_32 				is do Result := i18n("Unlock") end
-	b_emu_server_class: STRING_32 				is do Result := i18n("Create Project") end
+	b_emu_new_project_class: STRING_32 			is do Result := i18n("Create Project") end
 	b_emu_add_user_class: STRING_32 			is do Result := i18n("Add User") end
 	------------------------
 
@@ -494,7 +494,7 @@ feature -- Menu mnenomics
 	m_emu_download_class: STRING_32 					is do Result := i18n("Emu &download...") end
 	m_emu_lock_class: STRING_32 						is do Result := i18n("Emu &lock...") end
 	m_emu_unlock_class: STRING_32 						is do Result := i18n("Emu u&nlock...") end
-	m_emu_server_class: STRING_32 						is do Result := i18n("Emu create &Project...") end
+	m_emu_new_project_class: STRING_32 						is do Result := i18n("Emu create &Project...") end
 	m_emu_add_user_class: STRING_32 					is do Result := i18n("Emu &add user...") end
 	------------------------
 
@@ -1020,7 +1020,7 @@ feature -- Description texts
 	e_emu_download_class: STRING_32 		is do Result := i18n("Download class from Emu Server") end
 	e_emu_lock_class: STRING_32 			is do Result := i18n("Lock class on Emu Server") end
 	e_emu_unlock_class: STRING_32 			is do Result := i18n("Unlock class for me on Emu Server") end
-	e_emu_server_class: STRING_32 			is do Result := i18n("Create emu project") end
+	e_emu_new_project_class: STRING_32 		is do Result := i18n("Create emu project") end
 	e_emu_add_user_class: STRING_32 		is do Result := i18n("Add user to emu-project") end
 	------------------------
 

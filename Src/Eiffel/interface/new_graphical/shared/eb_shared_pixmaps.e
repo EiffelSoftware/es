@@ -1300,9 +1300,9 @@ feature -- Icons
 		once
 			Result := emu_pixmap_from_constant (Icon_emu_unlock_class_icon_value)
 		end
-	Icon_emu_server_class_icon: EV_PIXMAP is
+	Icon_emu_new_project_class_icon: EV_PIXMAP is
 		once
-			Result := emu_pixmap_from_constant (Icon_emu_server_class_icon_value)
+			Result := emu_pixmap_from_constant (Icon_emu_new_project_class_icon_value)
 		end
 	Icon_emu_add_user_class_icon: EV_PIXMAP is
 		once
@@ -1408,7 +1408,7 @@ feature {NONE} -- Implementation
 			Result.add_pixmap (2, 1, Icon_emu_upload_class_icon_value)
 			Result.add_pixmap (1, 2, Icon_emu_unlock_class_icon_value)
 			Result.add_pixmap (2, 2, Icon_emu_download_class_icon_value)
-			Result.add_pixmap (3, 1, Icon_emu_server_class_icon_value)
+			Result.add_pixmap (3, 1, Icon_emu_new_project_class_icon_value)
 			Result.add_pixmap (3, 2, Icon_emu_add_user_class_icon_value)
 		end
 
@@ -1926,7 +1926,7 @@ feature {NONE} -- Constants
 			Icon_emu_download_class_icon_value,
 			Icon_emu_lock_class_icon_value,
 			Icon_emu_unlock_class_icon_value,
-			Icon_emu_server_class_icon_value,
+			Icon_emu_new_project_class_icon_value,
 			Icon_emu_add_user_class_icon_value,
 			Icon_first_result_reached_icon_value,
 			Icon_expand_all_value,

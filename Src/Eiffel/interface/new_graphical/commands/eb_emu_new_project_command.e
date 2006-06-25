@@ -29,7 +29,7 @@ feature -- Status setting
 	execute is
 			--open external server wizard
 		do
-			create server_wizard.make(Window_manager.last_focused_development_window.window)
+			create new_project_wizard.make(Window_manager.last_focused_development_window.window)
 		end
 
 	execute_with_stone (st: ERROR_STONE) is
@@ -51,34 +51,34 @@ feature -- Status report
 	description: STRING is
 			-- Explanatory text for this command.
 		do
-			Result := Interface_names.e_emu_server_class
+			Result := Interface_names.e_emu_new_project_class
 		end
 
 	tooltip: STRING is
 			-- Tooltip for `Current's toolbar button.
 		do
-			Result := Interface_names.e_emu_server_class
+			Result := Interface_names.e_emu_new_project_class
 		end
 
 	tooltext: STRING is
 			-- Text for `Current's toolbar button.
 		do
-			Result := Interface_names.b_emu_server_class
+			Result := Interface_names.b_emu_new_project_class
 		end
 
-	name: STRING is "Open_Emu_Server_tool"
+	name: STRING is "Open_Emu_New_Project_tool"
 			-- Internal textual representation.
 
 	pixmap: EV_PIXMAP is
 			-- Image used for `Current's toolbar buttons.
 		do
-			Result := Pixmaps.Icon_emu_server_class_icon
+			Result := Pixmaps.Icon_emu_new_project_class_icon
 		end
 
 	menu_name: STRING is
 			-- Text used for menu items for `Current'.
 		do
-			Result := Interface_names.m_emu_server_class
+			Result := Interface_names.m_emu_new_project_class
 		end
 
 	new_toolbar_item (display_text: BOOLEAN): EB_COMMAND_TOOL_BAR_BUTTON is
@@ -89,8 +89,8 @@ feature -- Status report
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
 		end
 
-	server_wizard: EB_EXTERNAL_COMMAND
-			--create new emu server command
+	new_project_wizard: EB_EXTERNAL_COMMAND
+			--create new emu project command
 
 feature {NONE} -- Implementation
 
