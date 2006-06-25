@@ -197,6 +197,18 @@ feature -- Status report
 	recoverable_parser: BOOLEAN
 			-- Does parser recover from errors?
 
+	single_parser_type: BOOLEAN is
+			-- Does parser only have one type?
+		do
+			Result := 	(    type_parser and not expression_parser and not feature_parser and not indexing_parser and not invariant_parser and not entity_declaration_parser) or
+						(not type_parser and     expression_parser and not feature_parser and not indexing_parser and not invariant_parser and not entity_declaration_parser) or
+						(not type_parser and not expression_parser and     feature_parser and not indexing_parser and not invariant_parser and not entity_declaration_parser) or
+						(not type_parser and not expression_parser and not feature_parser and     indexing_parser and not invariant_parser and not entity_declaration_parser) or
+						(not type_parser and not expression_parser and not feature_parser and not indexing_parser and     invariant_parser and not entity_declaration_parser) or
+						(not type_parser and not expression_parser and not feature_parser and not indexing_parser and not invariant_parser and     entity_declaration_parser)
+		end
+
+
 feature -- Parsing
 
 	parse (a_file: KL_BINARY_INPUT_FILE) is

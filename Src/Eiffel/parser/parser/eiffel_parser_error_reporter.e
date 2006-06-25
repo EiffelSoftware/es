@@ -74,16 +74,17 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+
 feature -- Reporting
 
 	report_error (a_message: STRING) is
 			-- A syntax error has been detected.
 			-- Print error message.
 		local
-			an_error: SYNTAX_ERROR
+			l_error: SYNTAX_ERROR
 		do
-			create an_error.make (line, column, filename, a_message, False)
-			insert_error (an_error, false)
+			create l_error.make (line, column, filename, a_message, False)
+			insert_error (l_error, true)
 		end
 
 	report_warning (a_warning: STRING; a_target_as: AST_EIFFEL) is
@@ -153,8 +154,6 @@ feature -- Reporting
 				l_opener_column := l_column
 			end
 			create l_error.make (l_line, l_column, l_opener_line, l_opener_column, a_opener, a_missing, void, filename)
-			error_handler.error_list.finish
-			error_handler.error_list.remove
 			insert_error (l_error, a_fatal)
 		end
 
@@ -183,7 +182,7 @@ feature -- Reporting
 			if a_use_text then
 				l_text := text
 			end
-			create l_error.make (l_line, l_column, a_expected,void, l_text)
+			create l_error.make (l_line, l_column, a_expected, l_text, filename)
 			insert_error (l_error, a_fatal)
 		end
 
@@ -279,6 +278,7 @@ feature {NONE} -- Implementation
 				error_handler.raise_error
 			end
 		end
+
 
 invariant
 	error_counter_small_enough: error_counter <= max_errors

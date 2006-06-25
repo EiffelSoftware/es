@@ -1507,151 +1507,151 @@ feature {NONE} -- Semantic actions
 					--|#line 1103 "eiffel.y"
 				yy_do_action_151
 			when 152 then
-					--|#line 1108 "eiffel.y"
+					--|#line 1109 "eiffel.y"
 				yy_do_action_152
 			when 153 then
-					--|#line 1110 "eiffel.y"
+					--|#line 1111 "eiffel.y"
 				yy_do_action_153
 			when 154 then
-					--|#line 1112 "eiffel.y"
+					--|#line 1113 "eiffel.y"
 				yy_do_action_154
 			when 155 then
-					--|#line 1116 "eiffel.y"
+					--|#line 1117 "eiffel.y"
 				yy_do_action_155
 			when 156 then
-					--|#line 1123 "eiffel.y"
+					--|#line 1124 "eiffel.y"
 				yy_do_action_156
 			when 157 then
-					--|#line 1123 "eiffel.y"
+					--|#line 1124 "eiffel.y"
 				yy_do_action_157
 			when 158 then
-					--|#line 1132 "eiffel.y"
+					--|#line 1131 "eiffel.y"
 				yy_do_action_158
 			when 159 then
-					--|#line 1136 "eiffel.y"
+					--|#line 1135 "eiffel.y"
 				yy_do_action_159
 			when 160 then
-					--|#line 1145 "eiffel.y"
+					--|#line 1138 "eiffel.y"
 				yy_do_action_160
 			when 161 then
-					--|#line 1145 "eiffel.y"
+					--|#line 1140 "eiffel.y"
 				yy_do_action_161
 			when 162 then
-					--|#line 1157 "eiffel.y"
+					--|#line 1142 "eiffel.y"
 				yy_do_action_162
 			when 163 then
-					--|#line 1159 "eiffel.y"
+					--|#line 1146 "eiffel.y"
 				yy_do_action_163
 			when 164 then
-					--|#line 1163 "eiffel.y"
+					--|#line 1149 "eiffel.y"
 				yy_do_action_164
 			when 165 then
-					--|#line 1163 "eiffel.y"
+					--|#line 1155 "eiffel.y"
 				yy_do_action_165
 			when 166 then
-					--|#line 1189 "eiffel.y"
+					--|#line 1164 "eiffel.y"
 				yy_do_action_166
 			when 167 then
-					--|#line 1191 "eiffel.y"
+					--|#line 1164 "eiffel.y"
 				yy_do_action_167
 			when 168 then
-					--|#line 1193 "eiffel.y"
+					--|#line 1174 "eiffel.y"
 				yy_do_action_168
 			when 169 then
-					--|#line 1197 "eiffel.y"
+					--|#line 1178 "eiffel.y"
 				yy_do_action_169
 			when 170 then
-					--|#line 1197 "eiffel.y"
+					--|#line 1184 "eiffel.y"
 				yy_do_action_170
 			when 171 then
-					--|#line 1215 "eiffel.y"
+					--|#line 1185 "eiffel.y"
 				yy_do_action_171
 			when 172 then
-					--|#line 1220 "eiffel.y"
+					--|#line 1189 "eiffel.y"
 				yy_do_action_172
 			when 173 then
-					--|#line 1222 "eiffel.y"
+					--|#line 1191 "eiffel.y"
 				yy_do_action_173
 			when 174 then
-					--|#line 1228 "eiffel.y"
+					--|#line 1195 "eiffel.y"
 				yy_do_action_174
 			when 175 then
-					--|#line 1230 "eiffel.y"
+					--|#line 1195 "eiffel.y"
 				yy_do_action_175
 			when 176 then
-					--|#line 1234 "eiffel.y"
+					--|#line 1221 "eiffel.y"
 				yy_do_action_176
 			when 177 then
-					--|#line 1236 "eiffel.y"
+					--|#line 1223 "eiffel.y"
 				yy_do_action_177
 			when 178 then
-					--|#line 1238 "eiffel.y"
+					--|#line 1225 "eiffel.y"
 				yy_do_action_178
 			when 179 then
-					--|#line 1242 "eiffel.y"
+					--|#line 1229 "eiffel.y"
 				yy_do_action_179
 			when 180 then
-					--|#line 1244 "eiffel.y"
+					--|#line 1229 "eiffel.y"
 				yy_do_action_180
 			when 181 then
-					--|#line 1248 "eiffel.y"
+					--|#line 1247 "eiffel.y"
 				yy_do_action_181
 			when 182 then
-					--|#line 1255 "eiffel.y"
+					--|#line 1252 "eiffel.y"
 				yy_do_action_182
 			when 183 then
-					--|#line 1255 "eiffel.y"
+					--|#line 1254 "eiffel.y"
 				yy_do_action_183
 			when 184 then
-					--|#line 1264 "eiffel.y"
+					--|#line 1260 "eiffel.y"
 				yy_do_action_184
 			when 185 then
-					--|#line 1273 "eiffel.y"
+					--|#line 1262 "eiffel.y"
 				yy_do_action_185
 			when 186 then
-					--|#line 1274 "eiffel.y"
+					--|#line 1266 "eiffel.y"
 				yy_do_action_186
 			when 187 then
-					--|#line 1277 "eiffel.y"
+					--|#line 1268 "eiffel.y"
 				yy_do_action_187
 			when 188 then
-					--|#line 1279 "eiffel.y"
+					--|#line 1270 "eiffel.y"
 				yy_do_action_188
 			when 189 then
-					--|#line 1290 "eiffel.y"
+					--|#line 1274 "eiffel.y"
 				yy_do_action_189
 			when 190 then
-					--|#line 1292 "eiffel.y"
+					--|#line 1276 "eiffel.y"
 				yy_do_action_190
 			when 191 then
-					--|#line 1294 "eiffel.y"
+					--|#line 1280 "eiffel.y"
 				yy_do_action_191
 			when 192 then
-					--|#line 1296 "eiffel.y"
+					--|#line 1287 "eiffel.y"
 				yy_do_action_192
 			when 193 then
-					--|#line 1298 "eiffel.y"
+					--|#line 1287 "eiffel.y"
 				yy_do_action_193
 			when 194 then
-					--|#line 1300 "eiffel.y"
+					--|#line 1296 "eiffel.y"
 				yy_do_action_194
 			when 195 then
-					--|#line 1302 "eiffel.y"
+					--|#line 1305 "eiffel.y"
 				yy_do_action_195
 			when 196 then
-					--|#line 1304 "eiffel.y"
+					--|#line 1306 "eiffel.y"
 				yy_do_action_196
 			when 197 then
-					--|#line 1306 "eiffel.y"
+					--|#line 1309 "eiffel.y"
 				yy_do_action_197
 			when 198 then
-					--|#line 1310 "eiffel.y"
+					--|#line 1311 "eiffel.y"
 				yy_do_action_198
 			when 199 then
-					--|#line 1312 "eiffel.y"
+					--|#line 1322 "eiffel.y"
 				yy_do_action_199
 			when 200 then
-					--|#line 1312 "eiffel.y"
+					--|#line 1324 "eiffel.y"
 				yy_do_action_200
 			else
 				debug ("GEYACC")
@@ -1668,604 +1668,604 @@ feature {NONE} -- Semantic actions
 		do
 			inspect yy_act
 			when 201 then
-					--|#line 1319 "eiffel.y"
+					--|#line 1326 "eiffel.y"
 				yy_do_action_201
 			when 202 then
-					--|#line 1319 "eiffel.y"
+					--|#line 1328 "eiffel.y"
 				yy_do_action_202
 			when 203 then
-					--|#line 1328 "eiffel.y"
+					--|#line 1330 "eiffel.y"
 				yy_do_action_203
 			when 204 then
-					--|#line 1330 "eiffel.y"
+					--|#line 1332 "eiffel.y"
 				yy_do_action_204
 			when 205 then
-					--|#line 1330 "eiffel.y"
+					--|#line 1334 "eiffel.y"
 				yy_do_action_205
 			when 206 then
-					--|#line 1337 "eiffel.y"
+					--|#line 1336 "eiffel.y"
 				yy_do_action_206
 			when 207 then
-					--|#line 1337 "eiffel.y"
+					--|#line 1338 "eiffel.y"
 				yy_do_action_207
 			when 208 then
-					--|#line 1346 "eiffel.y"
+					--|#line 1342 "eiffel.y"
 				yy_do_action_208
 			when 209 then
-					--|#line 1348 "eiffel.y"
+					--|#line 1344 "eiffel.y"
 				yy_do_action_209
 			when 210 then
-					--|#line 1357 "eiffel.y"
+					--|#line 1344 "eiffel.y"
 				yy_do_action_210
 			when 211 then
-					--|#line 1370 "eiffel.y"
+					--|#line 1351 "eiffel.y"
 				yy_do_action_211
 			when 212 then
-					--|#line 1370 "eiffel.y"
+					--|#line 1351 "eiffel.y"
 				yy_do_action_212
 			when 213 then
-					--|#line 1386 "eiffel.y"
+					--|#line 1360 "eiffel.y"
 				yy_do_action_213
 			when 214 then
-					--|#line 1388 "eiffel.y"
+					--|#line 1362 "eiffel.y"
 				yy_do_action_214
 			when 215 then
-					--|#line 1390 "eiffel.y"
+					--|#line 1362 "eiffel.y"
 				yy_do_action_215
 			when 216 then
-					--|#line 1403 "eiffel.y"
+					--|#line 1369 "eiffel.y"
 				yy_do_action_216
 			when 217 then
-					--|#line 1405 "eiffel.y"
+					--|#line 1369 "eiffel.y"
 				yy_do_action_217
 			when 218 then
-					--|#line 1409 "eiffel.y"
+					--|#line 1378 "eiffel.y"
 				yy_do_action_218
 			when 219 then
-					--|#line 1412 "eiffel.y"
+					--|#line 1380 "eiffel.y"
 				yy_do_action_219
 			when 220 then
-					--|#line 1414 "eiffel.y"
+					--|#line 1389 "eiffel.y"
 				yy_do_action_220
 			when 221 then
-					--|#line 1418 "eiffel.y"
+					--|#line 1402 "eiffel.y"
 				yy_do_action_221
 			when 222 then
-					--|#line 1424 "eiffel.y"
+					--|#line 1402 "eiffel.y"
 				yy_do_action_222
 			when 223 then
-					--|#line 1433 "eiffel.y"
+					--|#line 1418 "eiffel.y"
 				yy_do_action_223
 			when 224 then
-					--|#line 1435 "eiffel.y"
+					--|#line 1420 "eiffel.y"
 				yy_do_action_224
 			when 225 then
-					--|#line 1437 "eiffel.y"
+					--|#line 1422 "eiffel.y"
 				yy_do_action_225
 			when 226 then
-					--|#line 1439 "eiffel.y"
+					--|#line 1435 "eiffel.y"
 				yy_do_action_226
 			when 227 then
-					--|#line 1443 "eiffel.y"
+					--|#line 1437 "eiffel.y"
 				yy_do_action_227
 			when 228 then
-					--|#line 1445 "eiffel.y"
+					--|#line 1441 "eiffel.y"
 				yy_do_action_228
 			when 229 then
-					--|#line 1449 "eiffel.y"
+					--|#line 1444 "eiffel.y"
 				yy_do_action_229
 			when 230 then
-					--|#line 1453 "eiffel.y"
+					--|#line 1446 "eiffel.y"
 				yy_do_action_230
 			when 231 then
-					--|#line 1455 "eiffel.y"
+					--|#line 1450 "eiffel.y"
 				yy_do_action_231
 			when 232 then
-					--|#line 1461 "eiffel.y"
+					--|#line 1456 "eiffel.y"
 				yy_do_action_232
 			when 233 then
-					--|#line 1468 "eiffel.y"
+					--|#line 1465 "eiffel.y"
 				yy_do_action_233
 			when 234 then
-					--|#line 1477 "eiffel.y"
+					--|#line 1467 "eiffel.y"
 				yy_do_action_234
 			when 235 then
-					--|#line 1481 "eiffel.y"
+					--|#line 1469 "eiffel.y"
 				yy_do_action_235
 			when 236 then
-					--|#line 1488 "eiffel.y"
+					--|#line 1471 "eiffel.y"
 				yy_do_action_236
 			when 237 then
-					--|#line 1488 "eiffel.y"
+					--|#line 1475 "eiffel.y"
 				yy_do_action_237
 			when 238 then
-					--|#line 1498 "eiffel.y"
+					--|#line 1477 "eiffel.y"
 				yy_do_action_238
 			when 239 then
-					--|#line 1500 "eiffel.y"
+					--|#line 1481 "eiffel.y"
 				yy_do_action_239
 			when 240 then
-					--|#line 1511 "eiffel.y"
+					--|#line 1485 "eiffel.y"
 				yy_do_action_240
 			when 241 then
-					--|#line 1520 "eiffel.y"
+					--|#line 1487 "eiffel.y"
 				yy_do_action_241
 			when 242 then
-					--|#line 1531 "eiffel.y"
+					--|#line 1493 "eiffel.y"
 				yy_do_action_242
 			when 243 then
-					--|#line 1539 "eiffel.y"
+					--|#line 1500 "eiffel.y"
 				yy_do_action_243
 			when 244 then
-					--|#line 1550 "eiffel.y"
+					--|#line 1509 "eiffel.y"
 				yy_do_action_244
 			when 245 then
-					--|#line 1560 "eiffel.y"
+					--|#line 1513 "eiffel.y"
 				yy_do_action_245
 			when 246 then
-					--|#line 1577 "eiffel.y"
+					--|#line 1520 "eiffel.y"
 				yy_do_action_246
 			when 247 then
-					--|#line 1594 "eiffel.y"
+					--|#line 1520 "eiffel.y"
 				yy_do_action_247
 			when 248 then
-					--|#line 1618 "eiffel.y"
+					--|#line 1530 "eiffel.y"
 				yy_do_action_248
 			when 249 then
-					--|#line 1623 "eiffel.y"
+					--|#line 1532 "eiffel.y"
 				yy_do_action_249
 			when 250 then
-					--|#line 1632 "eiffel.y"
+					--|#line 1543 "eiffel.y"
 				yy_do_action_250
 			when 251 then
-					--|#line 1642 "eiffel.y"
+					--|#line 1552 "eiffel.y"
 				yy_do_action_251
 			when 252 then
-					--|#line 1649 "eiffel.y"
+					--|#line 1563 "eiffel.y"
 				yy_do_action_252
 			when 253 then
-					--|#line 1649 "eiffel.y"
+					--|#line 1571 "eiffel.y"
 				yy_do_action_253
 			when 254 then
-					--|#line 1659 "eiffel.y"
+					--|#line 1582 "eiffel.y"
 				yy_do_action_254
 			when 255 then
-					--|#line 1673 "eiffel.y"
+					--|#line 1592 "eiffel.y"
 				yy_do_action_255
 			when 256 then
-					--|#line 1688 "eiffel.y"
+					--|#line 1609 "eiffel.y"
 				yy_do_action_256
 			when 257 then
-					--|#line 1704 "eiffel.y"
+					--|#line 1626 "eiffel.y"
 				yy_do_action_257
 			when 258 then
-					--|#line 1704 "eiffel.y"
+					--|#line 1650 "eiffel.y"
 				yy_do_action_258
 			when 259 then
-					--|#line 1727 "eiffel.y"
+					--|#line 1655 "eiffel.y"
 				yy_do_action_259
 			when 260 then
-					--|#line 1729 "eiffel.y"
+					--|#line 1664 "eiffel.y"
 				yy_do_action_260
 			when 261 then
-					--|#line 1735 "eiffel.y"
+					--|#line 1674 "eiffel.y"
 				yy_do_action_261
 			when 262 then
-					--|#line 1737 "eiffel.y"
+					--|#line 1681 "eiffel.y"
 				yy_do_action_262
 			when 263 then
-					--|#line 1747 "eiffel.y"
+					--|#line 1681 "eiffel.y"
 				yy_do_action_263
 			when 264 then
-					--|#line 1749 "eiffel.y"
+					--|#line 1691 "eiffel.y"
 				yy_do_action_264
 			when 265 then
-					--|#line 1758 "eiffel.y"
+					--|#line 1705 "eiffel.y"
 				yy_do_action_265
 			when 266 then
-					--|#line 1760 "eiffel.y"
+					--|#line 1720 "eiffel.y"
 				yy_do_action_266
 			when 267 then
-					--|#line 1770 "eiffel.y"
+					--|#line 1736 "eiffel.y"
 				yy_do_action_267
 			when 268 then
-					--|#line 1774 "eiffel.y"
+					--|#line 1736 "eiffel.y"
 				yy_do_action_268
 			when 269 then
-					--|#line 1781 "eiffel.y"
+					--|#line 1759 "eiffel.y"
 				yy_do_action_269
 			when 270 then
-					--|#line 1781 "eiffel.y"
+					--|#line 1761 "eiffel.y"
 				yy_do_action_270
 			when 271 then
-					--|#line 1790 "eiffel.y"
+					--|#line 1767 "eiffel.y"
 				yy_do_action_271
 			when 272 then
-					--|#line 1794 "eiffel.y"
+					--|#line 1769 "eiffel.y"
 				yy_do_action_272
 			when 273 then
-					--|#line 1798 "eiffel.y"
+					--|#line 1779 "eiffel.y"
 				yy_do_action_273
 			when 274 then
-					--|#line 1800 "eiffel.y"
+					--|#line 1781 "eiffel.y"
 				yy_do_action_274
 			when 275 then
-					--|#line 1811 "eiffel.y"
+					--|#line 1790 "eiffel.y"
 				yy_do_action_275
 			when 276 then
-					--|#line 1813 "eiffel.y"
+					--|#line 1792 "eiffel.y"
 				yy_do_action_276
 			when 277 then
-					--|#line 1817 "eiffel.y"
+					--|#line 1802 "eiffel.y"
 				yy_do_action_277
 			when 278 then
-					--|#line 1824 "eiffel.y"
+					--|#line 1806 "eiffel.y"
 				yy_do_action_278
 			when 279 then
-					--|#line 1824 "eiffel.y"
+					--|#line 1813 "eiffel.y"
 				yy_do_action_279
 			when 280 then
-					--|#line 1833 "eiffel.y"
+					--|#line 1813 "eiffel.y"
 				yy_do_action_280
 			when 281 then
-					--|#line 1837 "eiffel.y"
+					--|#line 1822 "eiffel.y"
 				yy_do_action_281
 			when 282 then
-					--|#line 1844 "eiffel.y"
+					--|#line 1826 "eiffel.y"
 				yy_do_action_282
 			when 283 then
-					--|#line 1844 "eiffel.y"
+					--|#line 1830 "eiffel.y"
 				yy_do_action_283
 			when 284 then
-					--|#line 1854 "eiffel.y"
+					--|#line 1832 "eiffel.y"
 				yy_do_action_284
 			when 285 then
-					--|#line 1856 "eiffel.y"
+					--|#line 1843 "eiffel.y"
 				yy_do_action_285
 			when 286 then
-					--|#line 1858 "eiffel.y"
+					--|#line 1845 "eiffel.y"
 				yy_do_action_286
 			when 287 then
-					--|#line 1860 "eiffel.y"
+					--|#line 1849 "eiffel.y"
 				yy_do_action_287
 			when 288 then
-					--|#line 1862 "eiffel.y"
+					--|#line 1856 "eiffel.y"
 				yy_do_action_288
 			when 289 then
-					--|#line 1864 "eiffel.y"
+					--|#line 1856 "eiffel.y"
 				yy_do_action_289
 			when 290 then
-					--|#line 1866 "eiffel.y"
+					--|#line 1865 "eiffel.y"
 				yy_do_action_290
 			when 291 then
-					--|#line 1868 "eiffel.y"
+					--|#line 1869 "eiffel.y"
 				yy_do_action_291
 			when 292 then
-					--|#line 1870 "eiffel.y"
+					--|#line 1876 "eiffel.y"
 				yy_do_action_292
 			when 293 then
-					--|#line 1872 "eiffel.y"
+					--|#line 1876 "eiffel.y"
 				yy_do_action_293
 			when 294 then
-					--|#line 1874 "eiffel.y"
+					--|#line 1886 "eiffel.y"
 				yy_do_action_294
 			when 295 then
-					--|#line 1876 "eiffel.y"
+					--|#line 1888 "eiffel.y"
 				yy_do_action_295
 			when 296 then
-					--|#line 1878 "eiffel.y"
+					--|#line 1890 "eiffel.y"
 				yy_do_action_296
 			when 297 then
-					--|#line 1880 "eiffel.y"
+					--|#line 1892 "eiffel.y"
 				yy_do_action_297
 			when 298 then
-					--|#line 1882 "eiffel.y"
+					--|#line 1894 "eiffel.y"
 				yy_do_action_298
 			when 299 then
-					--|#line 1884 "eiffel.y"
+					--|#line 1896 "eiffel.y"
 				yy_do_action_299
 			when 300 then
-					--|#line 1886 "eiffel.y"
+					--|#line 1898 "eiffel.y"
 				yy_do_action_300
 			when 301 then
-					--|#line 1888 "eiffel.y"
+					--|#line 1900 "eiffel.y"
 				yy_do_action_301
 			when 302 then
-					--|#line 1893 "eiffel.y"
+					--|#line 1902 "eiffel.y"
 				yy_do_action_302
 			when 303 then
-					--|#line 1903 "eiffel.y"
+					--|#line 1904 "eiffel.y"
 				yy_do_action_303
 			when 304 then
-					--|#line 1905 "eiffel.y"
+					--|#line 1906 "eiffel.y"
 				yy_do_action_304
 			when 305 then
-					--|#line 1909 "eiffel.y"
+					--|#line 1908 "eiffel.y"
 				yy_do_action_305
 			when 306 then
-					--|#line 1911 "eiffel.y"
+					--|#line 1910 "eiffel.y"
 				yy_do_action_306
 			when 307 then
-					--|#line 1911 "eiffel.y"
+					--|#line 1912 "eiffel.y"
 				yy_do_action_307
 			when 308 then
-					--|#line 1921 "eiffel.y"
+					--|#line 1914 "eiffel.y"
 				yy_do_action_308
 			when 309 then
-					--|#line 1923 "eiffel.y"
+					--|#line 1916 "eiffel.y"
 				yy_do_action_309
 			when 310 then
-					--|#line 1925 "eiffel.y"
+					--|#line 1918 "eiffel.y"
 				yy_do_action_310
 			when 311 then
-					--|#line 1929 "eiffel.y"
+					--|#line 1920 "eiffel.y"
 				yy_do_action_311
 			when 312 then
-					--|#line 1933 "eiffel.y"
+					--|#line 1925 "eiffel.y"
 				yy_do_action_312
 			when 313 then
 					--|#line 1935 "eiffel.y"
 				yy_do_action_313
 			when 314 then
-					--|#line 1940 "eiffel.y"
+					--|#line 1937 "eiffel.y"
 				yy_do_action_314
 			when 315 then
-					--|#line 1944 "eiffel.y"
+					--|#line 1941 "eiffel.y"
 				yy_do_action_315
 			when 316 then
-					--|#line 1951 "eiffel.y"
+					--|#line 1943 "eiffel.y"
 				yy_do_action_316
 			when 317 then
-					--|#line 1951 "eiffel.y"
+					--|#line 1943 "eiffel.y"
 				yy_do_action_317
 			when 318 then
-					--|#line 1961 "eiffel.y"
+					--|#line 1953 "eiffel.y"
 				yy_do_action_318
 			when 319 then
-					--|#line 1963 "eiffel.y"
+					--|#line 1955 "eiffel.y"
 				yy_do_action_319
 			when 320 then
-					--|#line 1973 "eiffel.y"
+					--|#line 1957 "eiffel.y"
 				yy_do_action_320
 			when 321 then
-					--|#line 1976 "eiffel.y"
+					--|#line 1961 "eiffel.y"
 				yy_do_action_321
 			when 322 then
-					--|#line 1978 "eiffel.y"
+					--|#line 1965 "eiffel.y"
 				yy_do_action_322
 			when 323 then
-					--|#line 1980 "eiffel.y"
+					--|#line 1967 "eiffel.y"
 				yy_do_action_323
 			when 324 then
-					--|#line 1984 "eiffel.y"
+					--|#line 1972 "eiffel.y"
 				yy_do_action_324
 			when 325 then
-					--|#line 1988 "eiffel.y"
+					--|#line 1976 "eiffel.y"
 				yy_do_action_325
 			when 326 then
-					--|#line 1990 "eiffel.y"
+					--|#line 1983 "eiffel.y"
 				yy_do_action_326
 			when 327 then
-					--|#line 1994 "eiffel.y"
+					--|#line 1983 "eiffel.y"
 				yy_do_action_327
 			when 328 then
-					--|#line 1996 "eiffel.y"
+					--|#line 1993 "eiffel.y"
 				yy_do_action_328
 			when 329 then
-					--|#line 2000 "eiffel.y"
+					--|#line 1995 "eiffel.y"
 				yy_do_action_329
 			when 330 then
-					--|#line 2002 "eiffel.y"
+					--|#line 2005 "eiffel.y"
 				yy_do_action_330
 			when 331 then
-					--|#line 2006 "eiffel.y"
+					--|#line 2008 "eiffel.y"
 				yy_do_action_331
 			when 332 then
-					--|#line 2013 "eiffel.y"
+					--|#line 2010 "eiffel.y"
 				yy_do_action_332
 			when 333 then
-					--|#line 2013 "eiffel.y"
+					--|#line 2012 "eiffel.y"
 				yy_do_action_333
 			when 334 then
-					--|#line 2022 "eiffel.y"
+					--|#line 2016 "eiffel.y"
 				yy_do_action_334
 			when 335 then
-					--|#line 2027 "eiffel.y"
+					--|#line 2020 "eiffel.y"
 				yy_do_action_335
 			when 336 then
-					--|#line 2031 "eiffel.y"
+					--|#line 2022 "eiffel.y"
 				yy_do_action_336
 			when 337 then
-					--|#line 2035 "eiffel.y"
+					--|#line 2026 "eiffel.y"
 				yy_do_action_337
 			when 338 then
-					--|#line 2040 "eiffel.y"
+					--|#line 2028 "eiffel.y"
 				yy_do_action_338
 			when 339 then
-					--|#line 2045 "eiffel.y"
+					--|#line 2032 "eiffel.y"
 				yy_do_action_339
 			when 340 then
-					--|#line 2052 "eiffel.y"
+					--|#line 2034 "eiffel.y"
 				yy_do_action_340
 			when 341 then
-					--|#line 2057 "eiffel.y"
+					--|#line 2038 "eiffel.y"
 				yy_do_action_341
 			when 342 then
-					--|#line 2069 "eiffel.y"
+					--|#line 2045 "eiffel.y"
 				yy_do_action_342
 			when 343 then
-					--|#line 2085 "eiffel.y"
+					--|#line 2045 "eiffel.y"
 				yy_do_action_343
 			when 344 then
-					--|#line 2089 "eiffel.y"
+					--|#line 2054 "eiffel.y"
 				yy_do_action_344
 			when 345 then
-					--|#line 2093 "eiffel.y"
+					--|#line 2059 "eiffel.y"
 				yy_do_action_345
 			when 346 then
-					--|#line 2101 "eiffel.y"
+					--|#line 2063 "eiffel.y"
 				yy_do_action_346
 			when 347 then
-					--|#line 2105 "eiffel.y"
+					--|#line 2067 "eiffel.y"
 				yy_do_action_347
 			when 348 then
-					--|#line 2109 "eiffel.y"
+					--|#line 2072 "eiffel.y"
 				yy_do_action_348
 			when 349 then
-					--|#line 2116 "eiffel.y"
+					--|#line 2077 "eiffel.y"
 				yy_do_action_349
 			when 350 then
-					--|#line 2126 "eiffel.y"
+					--|#line 2084 "eiffel.y"
 				yy_do_action_350
 			when 351 then
-					--|#line 2128 "eiffel.y"
+					--|#line 2089 "eiffel.y"
 				yy_do_action_351
 			when 352 then
-					--|#line 2130 "eiffel.y"
+					--|#line 2101 "eiffel.y"
 				yy_do_action_352
 			when 353 then
-					--|#line 2132 "eiffel.y"
+					--|#line 2117 "eiffel.y"
 				yy_do_action_353
 			when 354 then
-					--|#line 2134 "eiffel.y"
+					--|#line 2121 "eiffel.y"
 				yy_do_action_354
 			when 355 then
-					--|#line 2136 "eiffel.y"
+					--|#line 2125 "eiffel.y"
 				yy_do_action_355
 			when 356 then
-					--|#line 2146 "eiffel.y"
+					--|#line 2133 "eiffel.y"
 				yy_do_action_356
 			when 357 then
-					--|#line 2148 "eiffel.y"
+					--|#line 2137 "eiffel.y"
 				yy_do_action_357
 			when 358 then
-					--|#line 2153 "eiffel.y"
+					--|#line 2141 "eiffel.y"
 				yy_do_action_358
 			when 359 then
-					--|#line 2157 "eiffel.y"
+					--|#line 2148 "eiffel.y"
 				yy_do_action_359
 			when 360 then
-					--|#line 2164 "eiffel.y"
+					--|#line 2158 "eiffel.y"
 				yy_do_action_360
 			when 361 then
-					--|#line 2164 "eiffel.y"
+					--|#line 2160 "eiffel.y"
 				yy_do_action_361
 			when 362 then
-					--|#line 2174 "eiffel.y"
+					--|#line 2162 "eiffel.y"
 				yy_do_action_362
 			when 363 then
-					--|#line 2184 "eiffel.y"
+					--|#line 2164 "eiffel.y"
 				yy_do_action_363
 			when 364 then
-					--|#line 2190 "eiffel.y"
+					--|#line 2166 "eiffel.y"
 				yy_do_action_364
 			when 365 then
-					--|#line 2194 "eiffel.y"
+					--|#line 2168 "eiffel.y"
 				yy_do_action_365
 			when 366 then
-					--|#line 2199 "eiffel.y"
+					--|#line 2178 "eiffel.y"
 				yy_do_action_366
 			when 367 then
-					--|#line 2204 "eiffel.y"
+					--|#line 2180 "eiffel.y"
 				yy_do_action_367
 			when 368 then
-					--|#line 2206 "eiffel.y"
+					--|#line 2185 "eiffel.y"
 				yy_do_action_368
 			when 369 then
-					--|#line 2210 "eiffel.y"
+					--|#line 2189 "eiffel.y"
 				yy_do_action_369
 			when 370 then
-					--|#line 2212 "eiffel.y"
+					--|#line 2196 "eiffel.y"
 				yy_do_action_370
 			when 371 then
-					--|#line 2219 "eiffel.y"
+					--|#line 2196 "eiffel.y"
 				yy_do_action_371
 			when 372 then
-					--|#line 2221 "eiffel.y"
+					--|#line 2206 "eiffel.y"
 				yy_do_action_372
 			when 373 then
-					--|#line 2225 "eiffel.y"
+					--|#line 2216 "eiffel.y"
 				yy_do_action_373
 			when 374 then
-					--|#line 2227 "eiffel.y"
+					--|#line 2222 "eiffel.y"
 				yy_do_action_374
 			when 375 then
-					--|#line 2235 "eiffel.y"
+					--|#line 2226 "eiffel.y"
 				yy_do_action_375
 			when 376 then
-					--|#line 2237 "eiffel.y"
+					--|#line 2231 "eiffel.y"
 				yy_do_action_376
 			when 377 then
-					--|#line 2239 "eiffel.y"
+					--|#line 2236 "eiffel.y"
 				yy_do_action_377
 			when 378 then
-					--|#line 2241 "eiffel.y"
+					--|#line 2238 "eiffel.y"
 				yy_do_action_378
 			when 379 then
-					--|#line 2245 "eiffel.y"
+					--|#line 2242 "eiffel.y"
 				yy_do_action_379
 			when 380 then
-					--|#line 2252 "eiffel.y"
+					--|#line 2244 "eiffel.y"
 				yy_do_action_380
 			when 381 then
-					--|#line 2261 "eiffel.y"
+					--|#line 2251 "eiffel.y"
 				yy_do_action_381
 			when 382 then
-					--|#line 2264 "eiffel.y"
+					--|#line 2253 "eiffel.y"
 				yy_do_action_382
 			when 383 then
-					--|#line 2266 "eiffel.y"
+					--|#line 2257 "eiffel.y"
 				yy_do_action_383
 			when 384 then
-					--|#line 2268 "eiffel.y"
+					--|#line 2259 "eiffel.y"
 				yy_do_action_384
 			when 385 then
-					--|#line 2270 "eiffel.y"
+					--|#line 2267 "eiffel.y"
 				yy_do_action_385
 			when 386 then
-					--|#line 2272 "eiffel.y"
+					--|#line 2269 "eiffel.y"
 				yy_do_action_386
 			when 387 then
-					--|#line 2274 "eiffel.y"
+					--|#line 2271 "eiffel.y"
 				yy_do_action_387
 			when 388 then
-					--|#line 2278 "eiffel.y"
+					--|#line 2273 "eiffel.y"
 				yy_do_action_388
 			when 389 then
-					--|#line 2281 "eiffel.y"
+					--|#line 2277 "eiffel.y"
 				yy_do_action_389
 			when 390 then
-					--|#line 2283 "eiffel.y"
+					--|#line 2284 "eiffel.y"
 				yy_do_action_390
 			when 391 then
-					--|#line 2285 "eiffel.y"
+					--|#line 2293 "eiffel.y"
 				yy_do_action_391
 			when 392 then
-					--|#line 2287 "eiffel.y"
+					--|#line 2296 "eiffel.y"
 				yy_do_action_392
 			when 393 then
-					--|#line 2289 "eiffel.y"
+					--|#line 2298 "eiffel.y"
 				yy_do_action_393
 			when 394 then
-					--|#line 2291 "eiffel.y"
+					--|#line 2300 "eiffel.y"
 				yy_do_action_394
 			when 395 then
-					--|#line 2293 "eiffel.y"
+					--|#line 2302 "eiffel.y"
 				yy_do_action_395
 			when 396 then
-					--|#line 2295 "eiffel.y"
+					--|#line 2304 "eiffel.y"
 				yy_do_action_396
 			when 397 then
-					--|#line 2297 "eiffel.y"
+					--|#line 2306 "eiffel.y"
 				yy_do_action_397
 			when 398 then
-					--|#line 2299 "eiffel.y"
+					--|#line 2310 "eiffel.y"
 				yy_do_action_398
 			when 399 then
-					--|#line 2301 "eiffel.y"
+					--|#line 2313 "eiffel.y"
 				yy_do_action_399
 			when 400 then
-					--|#line 2303 "eiffel.y"
+					--|#line 2315 "eiffel.y"
 				yy_do_action_400
 			else
 				debug ("GEYACC")
@@ -2282,512 +2282,542 @@ feature {NONE} -- Semantic actions
 		do
 			inspect yy_act
 			when 401 then
-					--|#line 2305 "eiffel.y"
+					--|#line 2317 "eiffel.y"
 				yy_do_action_401
 			when 402 then
-					--|#line 2307 "eiffel.y"
+					--|#line 2319 "eiffel.y"
 				yy_do_action_402
 			when 403 then
-					--|#line 2309 "eiffel.y"
+					--|#line 2321 "eiffel.y"
 				yy_do_action_403
 			when 404 then
-					--|#line 2311 "eiffel.y"
+					--|#line 2323 "eiffel.y"
 				yy_do_action_404
 			when 405 then
-					--|#line 2313 "eiffel.y"
+					--|#line 2325 "eiffel.y"
 				yy_do_action_405
 			when 406 then
-					--|#line 2317 "eiffel.y"
+					--|#line 2327 "eiffel.y"
 				yy_do_action_406
 			when 407 then
-					--|#line 2319 "eiffel.y"
+					--|#line 2329 "eiffel.y"
 				yy_do_action_407
 			when 408 then
-					--|#line 2321 "eiffel.y"
+					--|#line 2331 "eiffel.y"
 				yy_do_action_408
 			when 409 then
-					--|#line 2323 "eiffel.y"
+					--|#line 2333 "eiffel.y"
 				yy_do_action_409
 			when 410 then
-					--|#line 2325 "eiffel.y"
+					--|#line 2335 "eiffel.y"
 				yy_do_action_410
 			when 411 then
-					--|#line 2329 "eiffel.y"
+					--|#line 2337 "eiffel.y"
 				yy_do_action_411
 			when 412 then
-					--|#line 2331 "eiffel.y"
+					--|#line 2339 "eiffel.y"
 				yy_do_action_412
 			when 413 then
-					--|#line 2335 "eiffel.y"
+					--|#line 2341 "eiffel.y"
 				yy_do_action_413
 			when 414 then
-					--|#line 2339 "eiffel.y"
+					--|#line 2343 "eiffel.y"
 				yy_do_action_414
 			when 415 then
-					--|#line 2343 "eiffel.y"
+					--|#line 2345 "eiffel.y"
 				yy_do_action_415
 			when 416 then
-					--|#line 2345 "eiffel.y"
+					--|#line 2349 "eiffel.y"
 				yy_do_action_416
 			when 417 then
-					--|#line 2349 "eiffel.y"
+					--|#line 2351 "eiffel.y"
 				yy_do_action_417
 			when 418 then
-					--|#line 2352 "eiffel.y"
+					--|#line 2353 "eiffel.y"
 				yy_do_action_418
 			when 419 then
-					--|#line 2354 "eiffel.y"
+					--|#line 2355 "eiffel.y"
 				yy_do_action_419
 			when 420 then
-					--|#line 2356 "eiffel.y"
+					--|#line 2357 "eiffel.y"
 				yy_do_action_420
 			when 421 then
-					--|#line 2358 "eiffel.y"
+					--|#line 2361 "eiffel.y"
 				yy_do_action_421
 			when 422 then
-					--|#line 2362 "eiffel.y"
+					--|#line 2363 "eiffel.y"
 				yy_do_action_422
 			when 423 then
-					--|#line 2365 "eiffel.y"
+					--|#line 2367 "eiffel.y"
 				yy_do_action_423
 			when 424 then
-					--|#line 2367 "eiffel.y"
+					--|#line 2371 "eiffel.y"
 				yy_do_action_424
 			when 425 then
-					--|#line 2371 "eiffel.y"
+					--|#line 2375 "eiffel.y"
 				yy_do_action_425
 			when 426 then
-					--|#line 2383 "eiffel.y"
+					--|#line 2377 "eiffel.y"
 				yy_do_action_426
 			when 427 then
-					--|#line 2386 "eiffel.y"
+					--|#line 2381 "eiffel.y"
 				yy_do_action_427
 			when 428 then
-					--|#line 2388 "eiffel.y"
+					--|#line 2384 "eiffel.y"
 				yy_do_action_428
 			when 429 then
-					--|#line 2390 "eiffel.y"
+					--|#line 2386 "eiffel.y"
 				yy_do_action_429
 			when 430 then
-					--|#line 2392 "eiffel.y"
+					--|#line 2388 "eiffel.y"
 				yy_do_action_430
 			when 431 then
-					--|#line 2394 "eiffel.y"
+					--|#line 2390 "eiffel.y"
 				yy_do_action_431
 			when 432 then
-					--|#line 2398 "eiffel.y"
+					--|#line 2394 "eiffel.y"
 				yy_do_action_432
 			when 433 then
-					--|#line 2400 "eiffel.y"
+					--|#line 2397 "eiffel.y"
 				yy_do_action_433
 			when 434 then
-					--|#line 2411 "eiffel.y"
+					--|#line 2399 "eiffel.y"
 				yy_do_action_434
 			when 435 then
-					--|#line 2413 "eiffel.y"
+					--|#line 2403 "eiffel.y"
 				yy_do_action_435
 			when 436 then
-					--|#line 2417 "eiffel.y"
+					--|#line 2415 "eiffel.y"
 				yy_do_action_436
 			when 437 then
-					--|#line 2422 "eiffel.y"
+					--|#line 2418 "eiffel.y"
 				yy_do_action_437
 			when 438 then
-					--|#line 2430 "eiffel.y"
+					--|#line 2420 "eiffel.y"
 				yy_do_action_438
 			when 439 then
-					--|#line 2432 "eiffel.y"
+					--|#line 2422 "eiffel.y"
 				yy_do_action_439
 			when 440 then
-					--|#line 2436 "eiffel.y"
+					--|#line 2424 "eiffel.y"
 				yy_do_action_440
 			when 441 then
-					--|#line 2438 "eiffel.y"
+					--|#line 2426 "eiffel.y"
 				yy_do_action_441
 			when 442 then
-					--|#line 2442 "eiffel.y"
+					--|#line 2430 "eiffel.y"
 				yy_do_action_442
 			when 443 then
-					--|#line 2444 "eiffel.y"
+					--|#line 2432 "eiffel.y"
 				yy_do_action_443
 			when 444 then
-					--|#line 2450 "eiffel.y"
+					--|#line 2443 "eiffel.y"
 				yy_do_action_444
 			when 445 then
-					--|#line 2458 "eiffel.y"
+					--|#line 2445 "eiffel.y"
 				yy_do_action_445
 			when 446 then
-					--|#line 2471 "eiffel.y"
+					--|#line 2449 "eiffel.y"
 				yy_do_action_446
 			when 447 then
-					--|#line 2475 "eiffel.y"
+					--|#line 2454 "eiffel.y"
 				yy_do_action_447
 			when 448 then
-					--|#line 2478 "eiffel.y"
+					--|#line 2462 "eiffel.y"
 				yy_do_action_448
 			when 449 then
-					--|#line 2480 "eiffel.y"
+					--|#line 2464 "eiffel.y"
 				yy_do_action_449
 			when 450 then
-					--|#line 2482 "eiffel.y"
+					--|#line 2468 "eiffel.y"
 				yy_do_action_450
 			when 451 then
-					--|#line 2484 "eiffel.y"
+					--|#line 2470 "eiffel.y"
 				yy_do_action_451
 			when 452 then
-					--|#line 2486 "eiffel.y"
+					--|#line 2474 "eiffel.y"
 				yy_do_action_452
 			when 453 then
-					--|#line 2488 "eiffel.y"
+					--|#line 2476 "eiffel.y"
 				yy_do_action_453
 			when 454 then
-					--|#line 2492 "eiffel.y"
+					--|#line 2482 "eiffel.y"
 				yy_do_action_454
 			when 455 then
-					--|#line 2494 "eiffel.y"
+					--|#line 2490 "eiffel.y"
 				yy_do_action_455
 			when 456 then
-					--|#line 2499 "eiffel.y"
+					--|#line 2503 "eiffel.y"
 				yy_do_action_456
 			when 457 then
-					--|#line 2503 "eiffel.y"
+					--|#line 2507 "eiffel.y"
 				yy_do_action_457
 			when 458 then
 					--|#line 2510 "eiffel.y"
 				yy_do_action_458
 			when 459 then
-					--|#line 2510 "eiffel.y"
+					--|#line 2512 "eiffel.y"
 				yy_do_action_459
 			when 460 then
-					--|#line 2520 "eiffel.y"
+					--|#line 2514 "eiffel.y"
 				yy_do_action_460
 			when 461 then
-					--|#line 2527 "eiffel.y"
+					--|#line 2516 "eiffel.y"
 				yy_do_action_461
 			when 462 then
-					--|#line 2533 "eiffel.y"
+					--|#line 2518 "eiffel.y"
 				yy_do_action_462
 			when 463 then
-					--|#line 2540 "eiffel.y"
+					--|#line 2520 "eiffel.y"
 				yy_do_action_463
 			when 464 then
-					--|#line 2551 "eiffel.y"
+					--|#line 2524 "eiffel.y"
 				yy_do_action_464
 			when 465 then
-					--|#line 2555 "eiffel.y"
+					--|#line 2526 "eiffel.y"
 				yy_do_action_465
 			when 466 then
-					--|#line 2562 "eiffel.y"
+					--|#line 2531 "eiffel.y"
 				yy_do_action_466
 			when 467 then
-					--|#line 2569 "eiffel.y"
+					--|#line 2535 "eiffel.y"
 				yy_do_action_467
 			when 468 then
-					--|#line 2579 "eiffel.y"
+					--|#line 2542 "eiffel.y"
 				yy_do_action_468
 			when 469 then
-					--|#line 2583 "eiffel.y"
+					--|#line 2542 "eiffel.y"
 				yy_do_action_469
 			when 470 then
-					--|#line 2585 "eiffel.y"
+					--|#line 2552 "eiffel.y"
 				yy_do_action_470
 			when 471 then
-					--|#line 2587 "eiffel.y"
+					--|#line 2559 "eiffel.y"
 				yy_do_action_471
 			when 472 then
-					--|#line 2589 "eiffel.y"
+					--|#line 2565 "eiffel.y"
 				yy_do_action_472
 			when 473 then
-					--|#line 2591 "eiffel.y"
+					--|#line 2572 "eiffel.y"
 				yy_do_action_473
 			when 474 then
-					--|#line 2593 "eiffel.y"
+					--|#line 2583 "eiffel.y"
 				yy_do_action_474
 			when 475 then
-					--|#line 2598 "eiffel.y"
+					--|#line 2587 "eiffel.y"
 				yy_do_action_475
 			when 476 then
-					--|#line 2601 "eiffel.y"
+					--|#line 2594 "eiffel.y"
 				yy_do_action_476
 			when 477 then
-					--|#line 2603 "eiffel.y"
+					--|#line 2601 "eiffel.y"
 				yy_do_action_477
 			when 478 then
-					--|#line 2605 "eiffel.y"
+					--|#line 2611 "eiffel.y"
 				yy_do_action_478
 			when 479 then
-					--|#line 2607 "eiffel.y"
+					--|#line 2615 "eiffel.y"
 				yy_do_action_479
 			when 480 then
-					--|#line 2609 "eiffel.y"
+					--|#line 2617 "eiffel.y"
 				yy_do_action_480
 			when 481 then
-					--|#line 2611 "eiffel.y"
+					--|#line 2619 "eiffel.y"
 				yy_do_action_481
 			when 482 then
-					--|#line 2613 "eiffel.y"
+					--|#line 2621 "eiffel.y"
 				yy_do_action_482
 			when 483 then
-					--|#line 2615 "eiffel.y"
+					--|#line 2623 "eiffel.y"
 				yy_do_action_483
 			when 484 then
-					--|#line 2626 "eiffel.y"
+					--|#line 2625 "eiffel.y"
 				yy_do_action_484
 			when 485 then
-					--|#line 2628 "eiffel.y"
+					--|#line 2630 "eiffel.y"
 				yy_do_action_485
 			when 486 then
-					--|#line 2632 "eiffel.y"
+					--|#line 2633 "eiffel.y"
 				yy_do_action_486
 			when 487 then
-					--|#line 2637 "eiffel.y"
+					--|#line 2635 "eiffel.y"
 				yy_do_action_487
 			when 488 then
-					--|#line 2648 "eiffel.y"
+					--|#line 2637 "eiffel.y"
 				yy_do_action_488
 			when 489 then
-					--|#line 2651 "eiffel.y"
+					--|#line 2639 "eiffel.y"
 				yy_do_action_489
 			when 490 then
-					--|#line 2653 "eiffel.y"
+					--|#line 2641 "eiffel.y"
 				yy_do_action_490
 			when 491 then
-					--|#line 2657 "eiffel.y"
+					--|#line 2643 "eiffel.y"
 				yy_do_action_491
 			when 492 then
-					--|#line 2661 "eiffel.y"
+					--|#line 2645 "eiffel.y"
 				yy_do_action_492
 			when 493 then
-					--|#line 2667 "eiffel.y"
+					--|#line 2647 "eiffel.y"
 				yy_do_action_493
 			when 494 then
-					--|#line 2673 "eiffel.y"
+					--|#line 2658 "eiffel.y"
 				yy_do_action_494
 			when 495 then
-					--|#line 2675 "eiffel.y"
+					--|#line 2660 "eiffel.y"
 				yy_do_action_495
 			when 496 then
-					--|#line 2679 "eiffel.y"
+					--|#line 2664 "eiffel.y"
 				yy_do_action_496
 			when 497 then
-					--|#line 2685 "eiffel.y"
+					--|#line 2669 "eiffel.y"
 				yy_do_action_497
 			when 498 then
-					--|#line 2689 "eiffel.y"
+					--|#line 2680 "eiffel.y"
 				yy_do_action_498
 			when 499 then
-					--|#line 2698 "eiffel.y"
+					--|#line 2683 "eiffel.y"
 				yy_do_action_499
 			when 500 then
-					--|#line 2700 "eiffel.y"
+					--|#line 2685 "eiffel.y"
 				yy_do_action_500
 			when 501 then
-					--|#line 2702 "eiffel.y"
+					--|#line 2689 "eiffel.y"
 				yy_do_action_501
 			when 502 then
-					--|#line 2706 "eiffel.y"
+					--|#line 2693 "eiffel.y"
 				yy_do_action_502
 			when 503 then
-					--|#line 2712 "eiffel.y"
+					--|#line 2699 "eiffel.y"
 				yy_do_action_503
 			when 504 then
-					--|#line 2716 "eiffel.y"
+					--|#line 2705 "eiffel.y"
 				yy_do_action_504
 			when 505 then
-					--|#line 2722 "eiffel.y"
+					--|#line 2707 "eiffel.y"
 				yy_do_action_505
 			when 506 then
-					--|#line 2724 "eiffel.y"
+					--|#line 2711 "eiffel.y"
 				yy_do_action_506
 			when 507 then
-					--|#line 2728 "eiffel.y"
+					--|#line 2717 "eiffel.y"
 				yy_do_action_507
 			when 508 then
-					--|#line 2734 "eiffel.y"
+					--|#line 2721 "eiffel.y"
 				yy_do_action_508
 			when 509 then
-					--|#line 2738 "eiffel.y"
+					--|#line 2730 "eiffel.y"
 				yy_do_action_509
 			when 510 then
-					--|#line 2747 "eiffel.y"
+					--|#line 2732 "eiffel.y"
 				yy_do_action_510
 			when 511 then
-					--|#line 2754 "eiffel.y"
+					--|#line 2734 "eiffel.y"
 				yy_do_action_511
 			when 512 then
-					--|#line 2756 "eiffel.y"
+					--|#line 2738 "eiffel.y"
 				yy_do_action_512
 			when 513 then
-					--|#line 2760 "eiffel.y"
+					--|#line 2744 "eiffel.y"
 				yy_do_action_513
 			when 514 then
-					--|#line 2762 "eiffel.y"
+					--|#line 2748 "eiffel.y"
 				yy_do_action_514
 			when 515 then
-					--|#line 2766 "eiffel.y"
+					--|#line 2754 "eiffel.y"
 				yy_do_action_515
 			when 516 then
-					--|#line 2772 "eiffel.y"
+					--|#line 2756 "eiffel.y"
 				yy_do_action_516
 			when 517 then
-					--|#line 2786 "eiffel.y"
+					--|#line 2760 "eiffel.y"
 				yy_do_action_517
 			when 518 then
-					--|#line 2790 "eiffel.y"
+					--|#line 2766 "eiffel.y"
 				yy_do_action_518
 			when 519 then
-					--|#line 2794 "eiffel.y"
+					--|#line 2770 "eiffel.y"
 				yy_do_action_519
 			when 520 then
-					--|#line 2798 "eiffel.y"
+					--|#line 2779 "eiffel.y"
 				yy_do_action_520
 			when 521 then
-					--|#line 2802 "eiffel.y"
+					--|#line 2786 "eiffel.y"
 				yy_do_action_521
 			when 522 then
-					--|#line 2806 "eiffel.y"
+					--|#line 2788 "eiffel.y"
 				yy_do_action_522
 			when 523 then
-					--|#line 2810 "eiffel.y"
+					--|#line 2792 "eiffel.y"
 				yy_do_action_523
 			when 524 then
-					--|#line 2814 "eiffel.y"
+					--|#line 2794 "eiffel.y"
 				yy_do_action_524
 			when 525 then
-					--|#line 2818 "eiffel.y"
+					--|#line 2798 "eiffel.y"
 				yy_do_action_525
 			when 526 then
-					--|#line 2822 "eiffel.y"
+					--|#line 2804 "eiffel.y"
 				yy_do_action_526
 			when 527 then
-					--|#line 2826 "eiffel.y"
+					--|#line 2818 "eiffel.y"
 				yy_do_action_527
 			when 528 then
-					--|#line 2830 "eiffel.y"
+					--|#line 2822 "eiffel.y"
 				yy_do_action_528
 			when 529 then
-					--|#line 2834 "eiffel.y"
+					--|#line 2826 "eiffel.y"
 				yy_do_action_529
 			when 530 then
-					--|#line 2838 "eiffel.y"
+					--|#line 2830 "eiffel.y"
 				yy_do_action_530
 			when 531 then
-					--|#line 2842 "eiffel.y"
+					--|#line 2834 "eiffel.y"
 				yy_do_action_531
 			when 532 then
-					--|#line 2846 "eiffel.y"
+					--|#line 2838 "eiffel.y"
 				yy_do_action_532
 			when 533 then
-					--|#line 2850 "eiffel.y"
+					--|#line 2842 "eiffel.y"
 				yy_do_action_533
 			when 534 then
-					--|#line 2854 "eiffel.y"
+					--|#line 2846 "eiffel.y"
 				yy_do_action_534
 			when 535 then
-					--|#line 2858 "eiffel.y"
+					--|#line 2850 "eiffel.y"
 				yy_do_action_535
 			when 536 then
-					--|#line 2862 "eiffel.y"
+					--|#line 2854 "eiffel.y"
 				yy_do_action_536
 			when 537 then
-					--|#line 2866 "eiffel.y"
+					--|#line 2858 "eiffel.y"
 				yy_do_action_537
 			when 538 then
-					--|#line 2870 "eiffel.y"
+					--|#line 2862 "eiffel.y"
 				yy_do_action_538
 			when 539 then
-					--|#line 2876 "eiffel.y"
+					--|#line 2866 "eiffel.y"
 				yy_do_action_539
 			when 540 then
-					--|#line 2880 "eiffel.y"
+					--|#line 2870 "eiffel.y"
 				yy_do_action_540
 			when 541 then
-					--|#line 2884 "eiffel.y"
+					--|#line 2874 "eiffel.y"
 				yy_do_action_541
 			when 542 then
-					--|#line 2888 "eiffel.y"
+					--|#line 2878 "eiffel.y"
 				yy_do_action_542
 			when 543 then
-					--|#line 2894 "eiffel.y"
+					--|#line 2882 "eiffel.y"
 				yy_do_action_543
 			when 544 then
-					--|#line 2898 "eiffel.y"
+					--|#line 2886 "eiffel.y"
 				yy_do_action_544
 			when 545 then
-					--|#line 2902 "eiffel.y"
+					--|#line 2890 "eiffel.y"
 				yy_do_action_545
 			when 546 then
-					--|#line 2906 "eiffel.y"
+					--|#line 2894 "eiffel.y"
 				yy_do_action_546
 			when 547 then
-					--|#line 2910 "eiffel.y"
+					--|#line 2898 "eiffel.y"
 				yy_do_action_547
 			when 548 then
-					--|#line 2914 "eiffel.y"
+					--|#line 2902 "eiffel.y"
 				yy_do_action_548
 			when 549 then
-					--|#line 2918 "eiffel.y"
+					--|#line 2908 "eiffel.y"
 				yy_do_action_549
 			when 550 then
-					--|#line 2922 "eiffel.y"
+					--|#line 2912 "eiffel.y"
 				yy_do_action_550
 			when 551 then
-					--|#line 2926 "eiffel.y"
+					--|#line 2916 "eiffel.y"
 				yy_do_action_551
 			when 552 then
-					--|#line 2930 "eiffel.y"
+					--|#line 2920 "eiffel.y"
 				yy_do_action_552
 			when 553 then
-					--|#line 2934 "eiffel.y"
+					--|#line 2926 "eiffel.y"
 				yy_do_action_553
 			when 554 then
-					--|#line 2938 "eiffel.y"
+					--|#line 2930 "eiffel.y"
 				yy_do_action_554
 			when 555 then
-					--|#line 2942 "eiffel.y"
+					--|#line 2934 "eiffel.y"
 				yy_do_action_555
 			when 556 then
-					--|#line 2946 "eiffel.y"
+					--|#line 2938 "eiffel.y"
 				yy_do_action_556
 			when 557 then
-					--|#line 2950 "eiffel.y"
+					--|#line 2942 "eiffel.y"
 				yy_do_action_557
 			when 558 then
-					--|#line 2954 "eiffel.y"
+					--|#line 2946 "eiffel.y"
 				yy_do_action_558
 			when 559 then
-					--|#line 2958 "eiffel.y"
+					--|#line 2950 "eiffel.y"
 				yy_do_action_559
 			when 560 then
-					--|#line 2962 "eiffel.y"
+					--|#line 2954 "eiffel.y"
 				yy_do_action_560
 			when 561 then
-					--|#line 2968 "eiffel.y"
+					--|#line 2958 "eiffel.y"
 				yy_do_action_561
 			when 562 then
-					--|#line 2972 "eiffel.y"
+					--|#line 2962 "eiffel.y"
 				yy_do_action_562
 			when 563 then
-					--|#line 2976 "eiffel.y"
+					--|#line 2966 "eiffel.y"
 				yy_do_action_563
 			when 564 then
-					--|#line 2978 "eiffel.y"
+					--|#line 2970 "eiffel.y"
 				yy_do_action_564
 			when 565 then
-					--|#line 2982 "eiffel.y"
+					--|#line 2974 "eiffel.y"
 				yy_do_action_565
 			when 566 then
-					--|#line 2985 "eiffel.y"
+					--|#line 2978 "eiffel.y"
 				yy_do_action_566
 			when 567 then
-					--|#line 2988 "eiffel.y"
+					--|#line 2982 "eiffel.y"
 				yy_do_action_567
 			when 568 then
-					--|#line 2991 "eiffel.y"
+					--|#line 2986 "eiffel.y"
 				yy_do_action_568
 			when 569 then
-					--|#line 2994 "eiffel.y"
+					--|#line 2990 "eiffel.y"
 				yy_do_action_569
+			when 570 then
+					--|#line 2994 "eiffel.y"
+				yy_do_action_570
+			when 571 then
+					--|#line 3000 "eiffel.y"
+				yy_do_action_571
+			when 572 then
+					--|#line 3004 "eiffel.y"
+				yy_do_action_572
+			when 573 then
+					--|#line 3008 "eiffel.y"
+				yy_do_action_573
+			when 574 then
+					--|#line 3010 "eiffel.y"
+				yy_do_action_574
+			when 575 then
+					--|#line 3014 "eiffel.y"
+				yy_do_action_575
+			when 576 then
+					--|#line 3017 "eiffel.y"
+				yy_do_action_576
+			when 577 then
+					--|#line 3020 "eiffel.y"
+				yy_do_action_577
+			when 578 then
+					--|#line 3023 "eiffel.y"
+				yy_do_action_578
+			when 579 then
+					--|#line 3026 "eiffel.y"
+				yy_do_action_579
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: unknown rule id: ")
@@ -2868,7 +2898,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 241")
 end
 
-				if not feature_parser or type_parser or expression_parser or indexing_parser or entity_declaration_parser or invariant_parser then
+				if not feature_parser or not single_parser_type then
 					raise_error
 				end
 				feature_node := yyvs51.item (yyvsp51)
@@ -2908,7 +2938,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 248")
 end
 
-				if not expression_parser or type_parser or feature_parser or indexing_parser or entity_declaration_parser or invariant_parser then
+				if not expression_parser or not single_parser_type then
 					raise_error
 				end
 				expression_node := yyvs48.item (yyvsp48)
@@ -2948,7 +2978,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 255")
 end
 
-				if not indexing_parser or type_parser or expression_parser or feature_parser or entity_declaration_parser or invariant_parser then
+				if not indexing_parser or not single_parser_type then
 					raise_error
 				end
 				indexing_node := yyvs102.item (yyvsp102)
@@ -2987,7 +3017,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 262")
 end
 
-				if not invariant_parser or type_parser or expression_parser or feature_parser or indexing_parser or entity_declaration_parser then
+				if not invariant_parser or not single_parser_type then
 					raise_error
 				end
 				invariant_node := yyvs62.item (yyvsp62)
@@ -3027,7 +3057,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 269")
 end
 
-				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
+				if not entity_declaration_parser or not single_parser_type then
 					raise_error
 				end
 				entity_declaration_node := Void
@@ -3066,7 +3096,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 276")
 end
 
-				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
+				if not entity_declaration_parser or not single_parser_type then
 					raise_error
 				end
 				entity_declaration_node := yyvs112.item (yyvsp112)
@@ -7784,13 +7814,13 @@ end
 		end
 
 	yy_do_action_152 is
-			--|#line 1108 "eiffel.y"
+			--|#line 1109 "eiffel.y"
 		local
 			yyval114: FORMAL_ARGU_DEC_LIST_AS
 		do
---|#line 1108 "eiffel.y"
+--|#line 1109 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1108")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1109")
 end
 
 yyval114 := ast_factory.new_formal_argu_dec_list_as (yyvs112.item (yyvsp112), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -7821,13 +7851,13 @@ end
 		end
 
 	yy_do_action_153 is
-			--|#line 1110 "eiffel.y"
+			--|#line 1111 "eiffel.y"
 		local
 			yyval114: FORMAL_ARGU_DEC_LIST_AS
 		do
---|#line 1110 "eiffel.y"
+--|#line 1111 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1110")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1111")
 end
 
 report_expected_match_error (parser_errors.open_paran_symbol, yyvs4.item (yyvsp4), parser_errors.close_paran_symbol, Void, False) 
@@ -7858,13 +7888,13 @@ end
 		end
 
 	yy_do_action_154 is
-			--|#line 1112 "eiffel.y"
+			--|#line 1113 "eiffel.y"
 		local
 			yyval114: FORMAL_ARGU_DEC_LIST_AS
 		do
---|#line 1112 "eiffel.y"
+--|#line 1113 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1112")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1113")
 end
 
 report_expected_after_error (parser_errors.open_paran_symbol, yyvs4.item (yyvsp4), parser_errors.a_formal_argument, True) 
@@ -7894,13 +7924,13 @@ end
 		end
 
 	yy_do_action_155 is
-			--|#line 1116 "eiffel.y"
+			--|#line 1117 "eiffel.y"
 		local
 			yyval112: TYPE_DEC_LIST_AS
 		do
---|#line 1116 "eiffel.y"
+--|#line 1117 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1116")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1117")
 end
 
 				yyval112 := ast_factory.new_eiffel_list_type_dec_as (counter_value + 1)
@@ -7933,13 +7963,13 @@ end
 		end
 
 	yy_do_action_156 is
-			--|#line 1123 "eiffel.y"
+			--|#line 1124 "eiffel.y"
 		local
 			yyval112: TYPE_DEC_LIST_AS
 		do
---|#line 1123 "eiffel.y"
+--|#line 1124 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1123")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1124")
 end
 
 				yyval112 := yyvs112.item (yyvsp112)
@@ -7956,13 +7986,13 @@ end
 		end
 
 	yy_do_action_157 is
-			--|#line 1123 "eiffel.y"
+			--|#line 1124 "eiffel.y"
 		local
 			yyval112: TYPE_DEC_LIST_AS
 		do
---|#line 1123 "eiffel.y"
+--|#line 1124 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1123")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1124")
 end
 
 increment_counter 
@@ -7990,20 +8020,55 @@ end
 		end
 
 	yy_do_action_158 is
-			--|#line 1132 "eiffel.y"
+			--|#line 1131 "eiffel.y"
+		local
+			yyval112: TYPE_DEC_LIST_AS
+		do
+--|#line 1131 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1131")
+end
+
+report_unexpected_error (text, Void, True) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 2
+	yyvsp112 := yyvsp112 + 1
+	yyvsp81 := yyvsp81 -1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp112 >= yyvsc112 then
+		if yyvs112 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs112")
+			end
+			create yyspecial_routines112
+			yyvsc112 := yyInitial_yyvs_size
+			yyvs112 := yyspecial_routines112.make (yyvsc112)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs112")
+			end
+			yyvsc112 := yyvsc112 + yyInitial_yyvs_size
+			yyvs112 := yyspecial_routines112.resize (yyvs112, yyvsc112)
+		end
+	end
+	yyvs112.put (yyval112, yyvsp112)
+end
+		end
+
+	yy_do_action_159 is
+			--|#line 1135 "eiffel.y"
 		local
 			yyval81: TYPE_DEC_AS
 		do
---|#line 1132 "eiffel.y"
+--|#line 1135 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1132")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1135")
 end
 
 yyval81 := ast_factory.new_type_dec_as (yyvs20.item (yyvsp20), yyvs79.item (yyvsp79), yyvs4.item (yyvsp4 - 1)) 
 if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 6
+	yyssp := yyssp - 4
 	yyvsp81 := yyvsp81 + 1
-	yyvsp1 := yyvsp1 -2
 	yyvsp20 := yyvsp20 -1
 	yyvsp4 := yyvsp4 -2
 	yyvsp79 := yyvsp79 -1
@@ -8027,14 +8092,163 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_159 is
-			--|#line 1136 "eiffel.y"
+	yy_do_action_160 is
+			--|#line 1138 "eiffel.y"
+		local
+			yyval81: TYPE_DEC_AS
+		do
+--|#line 1138 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1138")
+end
+
+report_expected_after_error (parser_errors.colon_symbol, yyvs4.item (yyvsp4 - 1), parser_errors.a_class_name, False) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 4
+	yyvsp81 := yyvsp81 + 1
+	yyvsp20 := yyvsp20 -1
+	yyvsp4 := yyvsp4 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp81 >= yyvsc81 then
+		if yyvs81 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs81")
+			end
+			create yyspecial_routines81
+			yyvsc81 := yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.make (yyvsc81)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs81")
+			end
+			yyvsc81 := yyvsc81 + yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.resize (yyvs81, yyvsc81)
+		end
+	end
+	yyvs81.put (yyval81, yyvsp81)
+end
+		end
+
+	yy_do_action_161 is
+			--|#line 1140 "eiffel.y"
+		local
+			yyval81: TYPE_DEC_AS
+		do
+--|#line 1140 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1140")
+end
+
+report_expected_before_error (parser_errors.a_class_name, yyvs79.item (yyvsp79), parser_errors.colon_symbol, False)
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 4
+	yyvsp81 := yyvsp81 + 1
+	yyvsp20 := yyvsp20 -1
+	yyvsp79 := yyvsp79 -1
+	yyvsp4 := yyvsp4 -1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp81 >= yyvsc81 then
+		if yyvs81 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs81")
+			end
+			create yyspecial_routines81
+			yyvsc81 := yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.make (yyvsc81)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs81")
+			end
+			yyvsc81 := yyvsc81 + yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.resize (yyvs81, yyvsc81)
+		end
+	end
+	yyvs81.put (yyval81, yyvsp81)
+end
+		end
+
+	yy_do_action_162 is
+			--|#line 1142 "eiffel.y"
+		local
+			yyval81: TYPE_DEC_AS
+		do
+--|#line 1142 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1142")
+end
+
+report_expected_after_error (parser_errors.formal_argument_declaration, last_id_as_value, parser_errors.colon_symbol, True) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 3
+	yyvsp81 := yyvsp81 + 1
+	yyvsp20 := yyvsp20 -1
+	yyvsp4 := yyvsp4 -1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp81 >= yyvsc81 then
+		if yyvs81 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs81")
+			end
+			create yyspecial_routines81
+			yyvsc81 := yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.make (yyvsc81)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs81")
+			end
+			yyvsc81 := yyvsc81 + yyInitial_yyvs_size
+			yyvs81 := yyspecial_routines81.resize (yyvs81, yyvsc81)
+		end
+	end
+	yyvs81.put (yyval81, yyvsp81)
+end
+		end
+
+	yy_do_action_163 is
+			--|#line 1146 "eiffel.y"
 		local
 			yyval20: IDENTIFIER_LIST
 		do
---|#line 1136 "eiffel.y"
+--|#line 1146 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1136")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1146")
+end
+
+yyval20 := yyvs20.item (yyvsp20) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -2
+	yyvs20.put (yyval20, yyvsp20)
+end
+		end
+
+	yy_do_action_164 is
+			--|#line 1149 "eiffel.y"
+		local
+			yyval20: IDENTIFIER_LIST
+		do
+--|#line 1149 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1149")
+end
+
+				remove_counter
+				report_unexpected_error (text, Void, True) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 4
+	yyvsp1 := yyvsp1 -3
+	yyvs20.put (yyval20, yyvsp20)
+end
+		end
+
+	yy_do_action_165 is
+			--|#line 1155 "eiffel.y"
+		local
+			yyval20: IDENTIFIER_LIST
+		do
+--|#line 1155 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1155")
 end
 
 				yyval20 := ast_factory.new_identifier_list (counter_value + 1)
@@ -8068,41 +8282,40 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_160 is
-			--|#line 1145 "eiffel.y"
+	yy_do_action_166 is
+			--|#line 1164 "eiffel.y"
 		local
 			yyval20: IDENTIFIER_LIST
 		do
---|#line 1145 "eiffel.y"
+--|#line 1164 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1145")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1164")
 end
 
-				yyval20 := yyvs20.item (yyvsp20)
-				if yyval20 /= Void and yyvs2.item (yyvsp2) /= Void then
+				yyval20 := yyvs20.item (yyvsp20 - 1)
+				if yyval20 /= Void and yyvs2.item (yyvsp2) /= Void and counter_value > 0 then
 					Names_heap.put (yyvs2.item (yyvsp2))
 					yyval20.reverse_extend (Names_heap.found_item)
 					ast_factory.reverse_extend_identifier (yyval20.id_list, yyvs2.item (yyvsp2))
-					ast_factory.reverse_extend_separator (yyval20.id_list, yyvs4.item (yyvsp4))
+					ast_factory.reverse_extend_separator (yyval20.id_list, last_symbol_as_value)
 				end
 			
 if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 4
+	yyssp := yyssp - 3
 	yyvsp20 := yyvsp20 -1
 	yyvsp2 := yyvsp2 -1
-	yyvsp4 := yyvsp4 -1
 	yyvs20.put (yyval20, yyvsp20)
 end
 		end
 
-	yy_do_action_161 is
-			--|#line 1145 "eiffel.y"
+	yy_do_action_167 is
+			--|#line 1164 "eiffel.y"
 		local
 			yyval20: IDENTIFIER_LIST
 		do
---|#line 1145 "eiffel.y"
+--|#line 1164 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1145")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1164")
 end
 
 increment_counter 
@@ -8129,14 +8342,122 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_162 is
-			--|#line 1157 "eiffel.y"
+	yy_do_action_168 is
+			--|#line 1174 "eiffel.y"
 		local
 			yyval20: IDENTIFIER_LIST
 		do
---|#line 1157 "eiffel.y"
+--|#line 1174 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1157")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1174")
+end
+
+report_expected_after_error (parser_errors.comma_symbol, last_symbol_as_value, parser_errors.an_identifier, False) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 2
+	yyvsp20 := yyvsp20 + 1
+	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp20 >= yyvsc20 then
+		if yyvs20 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs20")
+			end
+			create yyspecial_routines20
+			yyvsc20 := yyInitial_yyvs_size
+			yyvs20 := yyspecial_routines20.make (yyvsc20)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs20")
+			end
+			yyvsc20 := yyvsc20 + yyInitial_yyvs_size
+			yyvs20 := yyspecial_routines20.resize (yyvs20, yyvsc20)
+		end
+	end
+	yyvs20.put (yyval20, yyvsp20)
+end
+		end
+
+	yy_do_action_169 is
+			--|#line 1178 "eiffel.y"
+		local
+			yyval2: ID_AS
+		do
+--|#line 1178 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1178")
+end
+
+				yyval2 := yyvs2.item (yyvsp2)
+			
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyvs2.put (yyval2, yyvsp2)
+end
+		end
+
+	yy_do_action_170 is
+			--|#line 1184 "eiffel.y"
+		local
+			yyval1: ANY
+		do
+--|#line 1184 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1184")
+end
+
+
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp1 := yyvsp1 + 1
+	yyvsp4 := yyvsp4 -1
+	if yyvsp1 >= yyvsc1 then
+		if yyvs1 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs1")
+			end
+			create yyspecial_routines1
+			yyvsc1 := yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.make (yyvsc1)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs1")
+			end
+			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+		end
+	end
+	yyvs1.put (yyval1, yyvsp1)
+end
+		end
+
+	yy_do_action_171 is
+			--|#line 1185 "eiffel.y"
+		local
+			yyval1: ANY
+		do
+--|#line 1185 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1185")
+end
+
+report_expected_after_error (parser_errors.comma_symbol, yyvs4.item (yyvsp4), parser_errors.an_identifier, False) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 2
+	yyvsp4 := yyvsp4 -1
+	yyvs1.put (yyval1, yyvsp1)
+end
+		end
+
+	yy_do_action_172 is
+			--|#line 1189 "eiffel.y"
+		local
+			yyval20: IDENTIFIER_LIST
+		do
+--|#line 1189 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1189")
 end
 
 yyval20 := ast_factory.new_identifier_list (0) 
@@ -8163,14 +8484,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_163 is
-			--|#line 1159 "eiffel.y"
+	yy_do_action_173 is
+			--|#line 1191 "eiffel.y"
 		local
 			yyval20: IDENTIFIER_LIST
 		do
---|#line 1159 "eiffel.y"
+--|#line 1191 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1159")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1191")
 end
 
 yyval20 := yyvs20.item (yyvsp20) 
@@ -8181,14 +8502,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_164 is
-			--|#line 1163 "eiffel.y"
+	yy_do_action_174 is
+			--|#line 1195 "eiffel.y"
 		local
 			yyval74: ROUTINE_AS
 		do
---|#line 1163 "eiffel.y"
+--|#line 1195 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1163")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1195")
 end
 
 				if yyvs19.item (yyvsp19) /= Void then
@@ -8218,14 +8539,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_165 is
-			--|#line 1163 "eiffel.y"
+	yy_do_action_175 is
+			--|#line 1195 "eiffel.y"
 		local
 			yyval74: ROUTINE_AS
 		do
---|#line 1163 "eiffel.y"
+--|#line 1195 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1163")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1195")
 end
 
 fbody_pos := position 
@@ -8252,14 +8573,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_166 is
-			--|#line 1189 "eiffel.y"
+	yy_do_action_176 is
+			--|#line 1221 "eiffel.y"
 		local
 			yyval73: ROUT_BODY_AS
 		do
---|#line 1189 "eiffel.y"
+--|#line 1221 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1189")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1221")
 end
 
 yyval73 := yyvs60.item (yyvsp60) 
@@ -8287,14 +8608,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_167 is
-			--|#line 1191 "eiffel.y"
+	yy_do_action_177 is
+			--|#line 1223 "eiffel.y"
 		local
 			yyval73: ROUT_BODY_AS
 		do
---|#line 1191 "eiffel.y"
+--|#line 1223 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1191")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1223")
 end
 
 yyval73 := yyvs49.item (yyvsp49) 
@@ -8322,14 +8643,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_168 is
-			--|#line 1193 "eiffel.y"
+	yy_do_action_178 is
+			--|#line 1225 "eiffel.y"
 		local
 			yyval73: ROUT_BODY_AS
 		do
---|#line 1193 "eiffel.y"
+--|#line 1225 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1193")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1225")
 end
 
 yyval73 := yyvs10.item (yyvsp10) 
@@ -8357,14 +8678,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_169 is
-			--|#line 1197 "eiffel.y"
+	yy_do_action_179 is
+			--|#line 1229 "eiffel.y"
 		local
 			yyval49: EXTERNAL_AS
 		do
---|#line 1197 "eiffel.y"
+--|#line 1229 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1197")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1229")
 end
 
 				if yyvs19.item (yyvsp19) /= Void then
@@ -8384,14 +8705,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_170 is
-			--|#line 1197 "eiffel.y"
+	yy_do_action_180 is
+			--|#line 1229 "eiffel.y"
 		local
 			yyval49: EXTERNAL_AS
 		do
---|#line 1197 "eiffel.y"
+--|#line 1229 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1197")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1229")
 end
 
 					-- To avoid warnings for manifest string used to represent external data.
@@ -8421,14 +8742,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_171 is
-			--|#line 1215 "eiffel.y"
+	yy_do_action_181 is
+			--|#line 1247 "eiffel.y"
 		local
 			yyval50: EXTERNAL_LANG_AS
 		do
---|#line 1215 "eiffel.y"
+--|#line 1247 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1215")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1247")
 end
 
 yyval50 := ast_factory.new_external_lang_as (yyvs18.item (yyvsp18)) 
@@ -8456,14 +8777,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_172 is
-			--|#line 1220 "eiffel.y"
+	yy_do_action_182 is
+			--|#line 1252 "eiffel.y"
 		local
 			yyval19: PAIR [KEYWORD_AS, STRING_AS]
 		do
---|#line 1220 "eiffel.y"
+--|#line 1252 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1220")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1252")
 end
 
 
@@ -8490,14 +8811,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_173 is
-			--|#line 1222 "eiffel.y"
+	yy_do_action_183 is
+			--|#line 1254 "eiffel.y"
 		local
 			yyval19: PAIR [KEYWORD_AS, STRING_AS]
 		do
---|#line 1222 "eiffel.y"
+--|#line 1254 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1222")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1254")
 end
 
 				yyval19 := ast_factory.new_keyword_string_pair (yyvs12.item (yyvsp12), yyvs18.item (yyvsp18))
@@ -8527,14 +8848,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_174 is
-			--|#line 1228 "eiffel.y"
+	yy_do_action_184 is
+			--|#line 1260 "eiffel.y"
 		local
 			yyval60: INTERNAL_AS
 		do
---|#line 1228 "eiffel.y"
+--|#line 1260 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1228")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1260")
 end
 
 yyval60 := ast_factory.new_do_as (yyvs15.item (yyvsp15), yyvs12.item (yyvsp12)) 
@@ -8563,14 +8884,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_175 is
-			--|#line 1230 "eiffel.y"
+	yy_do_action_185 is
+			--|#line 1262 "eiffel.y"
 		local
 			yyval60: INTERNAL_AS
 		do
---|#line 1230 "eiffel.y"
+--|#line 1262 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1230")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1262")
 end
 
 yyval60 := ast_factory.new_once_as (yyvs15.item (yyvsp15), yyvs12.item (yyvsp12)) 
@@ -8599,14 +8920,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_176 is
-			--|#line 1234 "eiffel.y"
+	yy_do_action_186 is
+			--|#line 1266 "eiffel.y"
 		local
 			yyval113: LOCAL_DEC_LIST_AS
 		do
---|#line 1234 "eiffel.y"
+--|#line 1266 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1234")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1266")
 end
 
 
@@ -8633,14 +8954,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_177 is
-			--|#line 1236 "eiffel.y"
+	yy_do_action_187 is
+			--|#line 1268 "eiffel.y"
 		local
 			yyval113: LOCAL_DEC_LIST_AS
 		do
---|#line 1236 "eiffel.y"
+--|#line 1268 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1236")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1268")
 end
 
 yyval113 := ast_factory.new_local_dec_list_as (ast_factory.new_eiffel_list_type_dec_as (0), yyvs12.item (yyvsp12)) 
@@ -8668,14 +8989,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_178 is
-			--|#line 1238 "eiffel.y"
+	yy_do_action_188 is
+			--|#line 1270 "eiffel.y"
 		local
 			yyval113: LOCAL_DEC_LIST_AS
 		do
---|#line 1238 "eiffel.y"
+--|#line 1270 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1238")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1270")
 end
 
 yyval113 := ast_factory.new_local_dec_list_as (yyvs112.item (yyvsp112), yyvs12.item (yyvsp12)) 
@@ -8705,14 +9026,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_179 is
-			--|#line 1242 "eiffel.y"
+	yy_do_action_189 is
+			--|#line 1274 "eiffel.y"
 		local
 			yyval15: EIFFEL_LIST [INSTRUCTION_AS]
 		do
---|#line 1242 "eiffel.y"
+--|#line 1274 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1242")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1274")
 end
 
 
@@ -8740,14 +9061,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_180 is
-			--|#line 1244 "eiffel.y"
+	yy_do_action_190 is
+			--|#line 1276 "eiffel.y"
 		local
 			yyval15: EIFFEL_LIST [INSTRUCTION_AS]
 		do
---|#line 1244 "eiffel.y"
+--|#line 1276 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1244")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1276")
 end
 
 yyval15 := yyvs15.item (yyvsp15) 
@@ -8758,14 +9079,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_181 is
-			--|#line 1248 "eiffel.y"
+	yy_do_action_191 is
+			--|#line 1280 "eiffel.y"
 		local
 			yyval15: EIFFEL_LIST [INSTRUCTION_AS]
 		do
---|#line 1248 "eiffel.y"
+--|#line 1280 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1248")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1280")
 end
 
 				yyval15 := ast_factory.new_eiffel_list_instruction_as (counter_value + 1)
@@ -8797,14 +9118,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_182 is
-			--|#line 1255 "eiffel.y"
+	yy_do_action_192 is
+			--|#line 1287 "eiffel.y"
 		local
 			yyval15: EIFFEL_LIST [INSTRUCTION_AS]
 		do
---|#line 1255 "eiffel.y"
+--|#line 1287 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1255")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1287")
 end
 
 				yyval15 := yyvs15.item (yyvsp15)
@@ -8820,14 +9141,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_183 is
-			--|#line 1255 "eiffel.y"
+	yy_do_action_193 is
+			--|#line 1287 "eiffel.y"
 		local
 			yyval15: EIFFEL_LIST [INSTRUCTION_AS]
 		do
---|#line 1255 "eiffel.y"
+--|#line 1287 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1255")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1287")
 end
 
 increment_counter 
@@ -8854,14 +9175,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_184 is
-			--|#line 1264 "eiffel.y"
+	yy_do_action_194 is
+			--|#line 1296 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1264 "eiffel.y"
+--|#line 1296 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1264")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1296")
 end
 
 				yyval14 := yyvs14.item (yyvsp14) 
@@ -8876,14 +9197,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_185 is
-			--|#line 1273 "eiffel.y"
+	yy_do_action_195 is
+			--|#line 1305 "eiffel.y"
 		local
 			yyval1: ANY
 		do
---|#line 1273 "eiffel.y"
+--|#line 1305 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1273")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1305")
 end
 
 
@@ -8910,14 +9231,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_186 is
-			--|#line 1274 "eiffel.y"
+	yy_do_action_196 is
+			--|#line 1306 "eiffel.y"
 		local
 			yyval1: ANY
 		do
---|#line 1274 "eiffel.y"
+--|#line 1306 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1274")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1306")
 end
 
 
@@ -8928,14 +9249,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_187 is
-			--|#line 1277 "eiffel.y"
+	yy_do_action_197 is
+			--|#line 1309 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1277 "eiffel.y"
+--|#line 1309 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1277")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1309")
 end
 
 yyval14 := yyvs42.item (yyvsp42) 
@@ -8963,14 +9284,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_188 is
-			--|#line 1279 "eiffel.y"
+	yy_do_action_198 is
+			--|#line 1311 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1279 "eiffel.y"
+--|#line 1311 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1279")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1311")
 end
 
 					-- Call production should be used instead,
@@ -9006,14 +9327,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_189 is
-			--|#line 1290 "eiffel.y"
+	yy_do_action_199 is
+			--|#line 1322 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1290 "eiffel.y"
+--|#line 1322 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1290")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1322")
 end
 
 yyval14 := yyvs30.item (yyvsp30) 
@@ -9041,14 +9362,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_190 is
-			--|#line 1292 "eiffel.y"
+	yy_do_action_200 is
+			--|#line 1324 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1292 "eiffel.y"
+--|#line 1324 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1292")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1324")
 end
 
 yyval14 := yyvs29.item (yyvsp29) 
@@ -9076,14 +9397,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_191 is
-			--|#line 1294 "eiffel.y"
+	yy_do_action_201 is
+			--|#line 1326 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1294 "eiffel.y"
+--|#line 1326 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1294")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1326")
 end
 
 yyval14 := yyvs72.item (yyvsp72) 
@@ -9111,14 +9432,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_192 is
-			--|#line 1296 "eiffel.y"
+	yy_do_action_202 is
+			--|#line 1328 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1296 "eiffel.y"
+--|#line 1328 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1296")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1328")
 end
 
 yyval14 := yyvs56.item (yyvsp56) 
@@ -9146,14 +9467,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_193 is
-			--|#line 1298 "eiffel.y"
+	yy_do_action_203 is
+			--|#line 1330 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1298 "eiffel.y"
+--|#line 1330 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1298")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1330")
 end
 
 yyval14 := yyvs58.item (yyvsp58) 
@@ -9181,14 +9502,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_194 is
-			--|#line 1300 "eiffel.y"
+	yy_do_action_204 is
+			--|#line 1332 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1300 "eiffel.y"
+--|#line 1332 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1300")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1332")
 end
 
 yyval14 := yyvs63.item (yyvsp63) 
@@ -9216,14 +9537,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_195 is
-			--|#line 1302 "eiffel.y"
+	yy_do_action_205 is
+			--|#line 1334 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1302 "eiffel.y"
+--|#line 1334 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1302")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1334")
 end
 
 yyval14 := yyvs44.item (yyvsp44) 
@@ -9251,14 +9572,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_196 is
-			--|#line 1304 "eiffel.y"
+	yy_do_action_206 is
+			--|#line 1336 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1304 "eiffel.y"
+--|#line 1336 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1304")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1336")
 end
 
 yyval14 := yyvs37.item (yyvsp37) 
@@ -9286,14 +9607,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_197 is
-			--|#line 1306 "eiffel.y"
+	yy_do_action_207 is
+			--|#line 1338 "eiffel.y"
 		local
 			yyval14: INSTRUCTION_AS
 		do
---|#line 1306 "eiffel.y"
+--|#line 1338 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1306")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1338")
 end
 
 yyval14 := yyvs7.item (yyvsp7) 
@@ -9321,14 +9642,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_198 is
-			--|#line 1310 "eiffel.y"
+	yy_do_action_208 is
+			--|#line 1342 "eiffel.y"
 		local
 			yyval71: REQUIRE_AS
 		do
---|#line 1310 "eiffel.y"
+--|#line 1342 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1310")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1342")
 end
 
 
@@ -9355,14 +9676,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_199 is
-			--|#line 1312 "eiffel.y"
+	yy_do_action_209 is
+			--|#line 1344 "eiffel.y"
 		local
 			yyval71: REQUIRE_AS
 		do
---|#line 1312 "eiffel.y"
+--|#line 1344 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1312")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1344")
 end
 
 				id_level := Normal_level
@@ -9376,14 +9697,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_200 is
-			--|#line 1312 "eiffel.y"
+	yy_do_action_210 is
+			--|#line 1344 "eiffel.y"
 		local
 			yyval71: REQUIRE_AS
 		do
---|#line 1312 "eiffel.y"
+--|#line 1344 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1312")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1344")
 end
 
 id_level := Assert_level 
@@ -9410,14 +9731,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_201 is
-			--|#line 1319 "eiffel.y"
+	yy_do_action_211 is
+			--|#line 1351 "eiffel.y"
 		local
 			yyval71: REQUIRE_AS
 		do
---|#line 1319 "eiffel.y"
+--|#line 1351 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1319")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1351")
 end
 
 				id_level := Normal_level
@@ -9431,14 +9752,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_202 is
-			--|#line 1319 "eiffel.y"
+	yy_do_action_212 is
+			--|#line 1351 "eiffel.y"
 		local
 			yyval71: REQUIRE_AS
 		do
---|#line 1319 "eiffel.y"
+--|#line 1351 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1319")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1351")
 end
 
 id_level := Assert_level 
@@ -9465,14 +9786,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_203 is
-			--|#line 1328 "eiffel.y"
+	yy_do_action_213 is
+			--|#line 1360 "eiffel.y"
 		local
 			yyval46: ENSURE_AS
 		do
---|#line 1328 "eiffel.y"
+--|#line 1360 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1328")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1360")
 end
 
 
@@ -9499,14 +9820,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_204 is
-			--|#line 1330 "eiffel.y"
+	yy_do_action_214 is
+			--|#line 1362 "eiffel.y"
 		local
 			yyval46: ENSURE_AS
 		do
---|#line 1330 "eiffel.y"
+--|#line 1362 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1330")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1362")
 end
 
 				id_level := Normal_level
@@ -9520,14 +9841,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_205 is
-			--|#line 1330 "eiffel.y"
+	yy_do_action_215 is
+			--|#line 1362 "eiffel.y"
 		local
 			yyval46: ENSURE_AS
 		do
---|#line 1330 "eiffel.y"
+--|#line 1362 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1330")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1362")
 end
 
 id_level := Assert_level 
@@ -9554,14 +9875,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_206 is
-			--|#line 1337 "eiffel.y"
+	yy_do_action_216 is
+			--|#line 1369 "eiffel.y"
 		local
 			yyval46: ENSURE_AS
 		do
---|#line 1337 "eiffel.y"
+--|#line 1369 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1337")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1369")
 end
 
 				id_level := Normal_level
@@ -9575,14 +9896,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_207 is
-			--|#line 1337 "eiffel.y"
+	yy_do_action_217 is
+			--|#line 1369 "eiffel.y"
 		local
 			yyval46: ENSURE_AS
 		do
---|#line 1337 "eiffel.y"
+--|#line 1369 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1337")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1369")
 end
 
 id_level := Assert_level 
@@ -9609,14 +9930,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_208 is
-			--|#line 1346 "eiffel.y"
+	yy_do_action_218 is
+			--|#line 1378 "eiffel.y"
 		local
 			yyval22: EIFFEL_LIST [TAGGED_AS]
 		do
---|#line 1346 "eiffel.y"
+--|#line 1378 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1346")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1378")
 end
 
 
@@ -9643,14 +9964,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_209 is
-			--|#line 1348 "eiffel.y"
+	yy_do_action_219 is
+			--|#line 1380 "eiffel.y"
 		local
 			yyval22: EIFFEL_LIST [TAGGED_AS]
 		do
---|#line 1348 "eiffel.y"
+--|#line 1380 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1348")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1380")
 end
 
 				yyval22 := yyvs22.item (yyvsp22)
@@ -9665,14 +9986,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_210 is
-			--|#line 1357 "eiffel.y"
+	yy_do_action_220 is
+			--|#line 1389 "eiffel.y"
 		local
 			yyval22: EIFFEL_LIST [TAGGED_AS]
 		do
---|#line 1357 "eiffel.y"
+--|#line 1389 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1357")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1389")
 end
 
 					-- Special list treatment here as we do not want Void
@@ -9710,14 +10031,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_211 is
-			--|#line 1370 "eiffel.y"
+	yy_do_action_221 is
+			--|#line 1402 "eiffel.y"
 		local
 			yyval22: EIFFEL_LIST [TAGGED_AS]
 		do
---|#line 1370 "eiffel.y"
+--|#line 1402 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1370")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1402")
 end
 
 				yyval22 := yyvs22.item (yyvsp22)
@@ -9733,14 +10054,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_212 is
-			--|#line 1370 "eiffel.y"
+	yy_do_action_222 is
+			--|#line 1402 "eiffel.y"
 		local
 			yyval22: EIFFEL_LIST [TAGGED_AS]
 		do
---|#line 1370 "eiffel.y"
+--|#line 1402 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1370")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1402")
 end
 
 					-- Only increment counter when clause is not Void.
@@ -9771,14 +10092,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_213 is
-			--|#line 1386 "eiffel.y"
+	yy_do_action_223 is
+			--|#line 1418 "eiffel.y"
 		local
 			yyval21: TAGGED_AS
 		do
---|#line 1386 "eiffel.y"
+--|#line 1418 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1386")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1418")
 end
 
 yyval21 := ast_factory.new_tagged_as (Void, yyvs48.item (yyvsp48), Void) 
@@ -9807,14 +10128,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_214 is
-			--|#line 1388 "eiffel.y"
+	yy_do_action_224 is
+			--|#line 1420 "eiffel.y"
 		local
 			yyval21: TAGGED_AS
 		do
---|#line 1388 "eiffel.y"
+--|#line 1420 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1388")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1420")
 end
 
 yyval21 := ast_factory.new_tagged_as (yyvs2.item (yyvsp2), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4 - 1)) 
@@ -9844,14 +10165,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_215 is
-			--|#line 1390 "eiffel.y"
+	yy_do_action_225 is
+			--|#line 1422 "eiffel.y"
 		local
 			yyval21: TAGGED_AS
 		do
---|#line 1390 "eiffel.y"
+--|#line 1422 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1390")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1422")
 end
 
 			-- Always create an object here for roundtrip parser.
@@ -9883,14 +10204,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_216 is
-			--|#line 1403 "eiffel.y"
+	yy_do_action_226 is
+			--|#line 1435 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1403 "eiffel.y"
+--|#line 1435 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1403")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1435")
 end
 
 yyval79 := yyvs79.item (yyvsp79) 
@@ -9900,14 +10221,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_217 is
-			--|#line 1405 "eiffel.y"
+	yy_do_action_227 is
+			--|#line 1437 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1405 "eiffel.y"
+--|#line 1437 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1405")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1437")
 end
 
 yyval79 := yyvs79.item (yyvsp79) 
@@ -9917,14 +10238,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_218 is
-			--|#line 1409 "eiffel.y"
+	yy_do_action_228 is
+			--|#line 1441 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1409 "eiffel.y"
+--|#line 1441 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1409")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1441")
 end
 
 yyval79 := new_class_type (yyvs2.item (yyvsp2), yyvs111.item (yyvsp111)) 
@@ -9953,14 +10274,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_219 is
-			--|#line 1412 "eiffel.y"
+	yy_do_action_229 is
+			--|#line 1444 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1412 "eiffel.y"
+--|#line 1444 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1412")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1444")
 end
 
 yyval79 := yyvs79.item (yyvsp79) 
@@ -9970,14 +10291,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_220 is
-			--|#line 1414 "eiffel.y"
+	yy_do_action_230 is
+			--|#line 1446 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1414 "eiffel.y"
+--|#line 1446 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1414")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1446")
 end
 
 yyval79 := yyvs79.item (yyvsp79) 
@@ -9987,14 +10308,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_221 is
-			--|#line 1418 "eiffel.y"
+	yy_do_action_231 is
+			--|#line 1450 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1418 "eiffel.y"
+--|#line 1450 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1418")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1450")
 end
 
 				yyval79 := yyvs79.item (yyvsp79)
@@ -10008,14 +10329,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_222 is
-			--|#line 1424 "eiffel.y"
+	yy_do_action_232 is
+			--|#line 1456 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1424 "eiffel.y"
+--|#line 1456 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1424")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1456")
 end
 
 				last_class_type ?= yyvs79.item (yyvsp79)
@@ -10032,14 +10353,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_223 is
-			--|#line 1433 "eiffel.y"
+	yy_do_action_233 is
+			--|#line 1465 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1433 "eiffel.y"
+--|#line 1465 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1433")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1465")
 end
 
 yyval79 := ast_factory.new_bits_as (yyvs59.item (yyvsp59), yyvs12.item (yyvsp12)) 
@@ -10068,14 +10389,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_224 is
-			--|#line 1435 "eiffel.y"
+	yy_do_action_234 is
+			--|#line 1467 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1435 "eiffel.y"
+--|#line 1467 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1435")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1467")
 end
 
 yyval79 := ast_factory.new_bits_symbol_as (yyvs2.item (yyvsp2), yyvs12.item (yyvsp12)) 
@@ -10104,14 +10425,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_225 is
-			--|#line 1437 "eiffel.y"
+	yy_do_action_235 is
+			--|#line 1469 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1437 "eiffel.y"
+--|#line 1469 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1437")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1469")
 end
 
 yyval79 := ast_factory.new_like_id_as (yyvs2.item (yyvsp2), yyvs12.item (yyvsp12)) 
@@ -10140,14 +10461,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_226 is
-			--|#line 1439 "eiffel.y"
+	yy_do_action_236 is
+			--|#line 1471 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1439 "eiffel.y"
+--|#line 1471 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1439")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1471")
 end
 
 yyval79 := ast_factory.new_like_current_as (yyvs9.item (yyvsp9), yyvs12.item (yyvsp12)) 
@@ -10176,14 +10497,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_227 is
-			--|#line 1443 "eiffel.y"
+	yy_do_action_237 is
+			--|#line 1475 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1443 "eiffel.y"
+--|#line 1475 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1443")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1475")
 end
 
 yyval79 := yyvs79.item (yyvsp79) 
@@ -10193,14 +10514,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_228 is
-			--|#line 1445 "eiffel.y"
+	yy_do_action_238 is
+			--|#line 1477 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1445 "eiffel.y"
+--|#line 1477 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1445")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1477")
 end
 
 yyval79 := yyvs79.item (yyvsp79) 
@@ -10210,14 +10531,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_229 is
-			--|#line 1449 "eiffel.y"
+	yy_do_action_239 is
+			--|#line 1481 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1449 "eiffel.y"
+--|#line 1481 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1449")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1481")
 end
 
 yyval79 := new_class_type (yyvs2.item (yyvsp2), yyvs111.item (yyvsp111)) 
@@ -10246,14 +10567,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_230 is
-			--|#line 1453 "eiffel.y"
+	yy_do_action_240 is
+			--|#line 1485 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1453 "eiffel.y"
+--|#line 1485 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1453")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1485")
 end
 
 
@@ -10280,14 +10601,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_231 is
-			--|#line 1455 "eiffel.y"
+	yy_do_action_241 is
+			--|#line 1487 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1455 "eiffel.y"
+--|#line 1487 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1455")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1487")
 end
 
 				yyval111 := yyvs111.item (yyvsp111)
@@ -10298,14 +10619,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_232 is
-			--|#line 1461 "eiffel.y"
+	yy_do_action_242 is
+			--|#line 1493 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1461 "eiffel.y"
+--|#line 1493 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1461")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1493")
 end
 
 				yyval111 := yyvs111.item (yyvsp111)
@@ -10320,14 +10641,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_233 is
-			--|#line 1468 "eiffel.y"
+	yy_do_action_243 is
+			--|#line 1500 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1468 "eiffel.y"
+--|#line 1500 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1468")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1500")
 end
 
 				yyval111 := ast_factory.new_eiffel_list_type (0)
@@ -10359,14 +10680,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_234 is
-			--|#line 1477 "eiffel.y"
+	yy_do_action_244 is
+			--|#line 1509 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1477 "eiffel.y"
+--|#line 1509 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1477")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1509")
 end
 
 yyval111 := yyvs111.item (yyvsp111) 
@@ -10377,14 +10698,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_235 is
-			--|#line 1481 "eiffel.y"
+	yy_do_action_245 is
+			--|#line 1513 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1481 "eiffel.y"
+--|#line 1513 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1481")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1513")
 end
 
 				yyval111 := ast_factory.new_eiffel_list_type (counter_value + 1)
@@ -10416,14 +10737,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_236 is
-			--|#line 1488 "eiffel.y"
+	yy_do_action_246 is
+			--|#line 1520 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1488 "eiffel.y"
+--|#line 1520 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1488")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1520")
 end
 
 				yyval111 := yyvs111.item (yyvsp111)
@@ -10441,14 +10762,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_237 is
-			--|#line 1488 "eiffel.y"
+	yy_do_action_247 is
+			--|#line 1520 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1488 "eiffel.y"
+--|#line 1520 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1488")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1520")
 end
 
 increment_counter 
@@ -10475,14 +10796,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_238 is
-			--|#line 1498 "eiffel.y"
+	yy_do_action_248 is
+			--|#line 1530 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1498 "eiffel.y"
+--|#line 1530 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1498")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1530")
 end
 
 yyval79 := ast_factory.new_class_type_as (yyvs2.item (yyvsp2), Void) 
@@ -10510,14 +10831,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_239 is
-			--|#line 1500 "eiffel.y"
+	yy_do_action_249 is
+			--|#line 1532 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1500 "eiffel.y"
+--|#line 1532 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1500")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1532")
 end
 
 			  	last_type_list := ast_factory.new_eiffel_list_type (0)
@@ -10555,14 +10876,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_240 is
-			--|#line 1511 "eiffel.y"
+	yy_do_action_250 is
+			--|#line 1543 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1511 "eiffel.y"
+--|#line 1543 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1511")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1543")
 end
 
 				if yyvs111.item (yyvsp111) /= Void then
@@ -10599,14 +10920,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_241 is
-			--|#line 1520 "eiffel.y"
+	yy_do_action_251 is
+			--|#line 1552 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 1520 "eiffel.y"
+--|#line 1552 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1520")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1552")
 end
 
 				if yyvs112.item (yyvsp112) /= Void then
@@ -10643,14 +10964,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_242 is
-			--|#line 1531 "eiffel.y"
+	yy_do_action_252 is
+			--|#line 1563 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1531 "eiffel.y"
+--|#line 1563 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1531")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1563")
 end
 
 				yyval111 := ast_factory.new_eiffel_list_type (counter_value + 1)
@@ -10684,14 +11005,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_243 is
-			--|#line 1539 "eiffel.y"
+	yy_do_action_253 is
+			--|#line 1571 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1539 "eiffel.y"
+--|#line 1571 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1539")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1571")
 end
 
 				yyval111 := yyvs111.item (yyvsp111)
@@ -10712,14 +11033,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_244 is
-			--|#line 1550 "eiffel.y"
+	yy_do_action_254 is
+			--|#line 1582 "eiffel.y"
 		local
 			yyval111: TYPE_LIST_AS
 		do
---|#line 1550 "eiffel.y"
+--|#line 1582 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1550")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1582")
 end
 
 				yyval111 := yyvs111.item (yyvsp111)
@@ -10737,14 +11058,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_245 is
-			--|#line 1560 "eiffel.y"
+	yy_do_action_255 is
+			--|#line 1592 "eiffel.y"
 		local
 			yyval112: TYPE_DEC_LIST_AS
 		do
---|#line 1560 "eiffel.y"
+--|#line 1592 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1560")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1592")
 end
 
 				yyval112 := ast_factory.new_eiffel_list_type_dec_as (counter2_value + 1)
@@ -10788,14 +11109,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_246 is
-			--|#line 1577 "eiffel.y"
+	yy_do_action_256 is
+			--|#line 1609 "eiffel.y"
 		local
 			yyval112: TYPE_DEC_LIST_AS
 		do
---|#line 1577 "eiffel.y"
+--|#line 1609 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1577")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1609")
 end
 
 				yyval112 := yyvs112.item (yyvsp112)
@@ -10822,14 +11143,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_247 is
-			--|#line 1594 "eiffel.y"
+	yy_do_action_257 is
+			--|#line 1626 "eiffel.y"
 		local
 			yyval112: TYPE_DEC_LIST_AS
 		do
---|#line 1594 "eiffel.y"
+--|#line 1626 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1594")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1626")
 end
 
 				yyval112 := yyvs112.item (yyvsp112)
@@ -10859,14 +11180,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_248 is
-			--|#line 1618 "eiffel.y"
+	yy_do_action_258 is
+			--|#line 1650 "eiffel.y"
 		local
 			yyval100: FORMAL_GENERIC_LIST_AS
 		do
---|#line 1618 "eiffel.y"
+--|#line 1650 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1618")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1650")
 end
 
 				-- $$ := Void
@@ -10895,14 +11216,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_249 is
-			--|#line 1623 "eiffel.y"
+	yy_do_action_259 is
+			--|#line 1655 "eiffel.y"
 		local
 			yyval100: FORMAL_GENERIC_LIST_AS
 		do
---|#line 1623 "eiffel.y"
+--|#line 1655 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1623")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1655")
 end
 
 				formal_generics_end_position := position
@@ -10936,14 +11257,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_250 is
-			--|#line 1632 "eiffel.y"
+	yy_do_action_260 is
+			--|#line 1664 "eiffel.y"
 		local
 			yyval100: FORMAL_GENERIC_LIST_AS
 		do
---|#line 1632 "eiffel.y"
+--|#line 1664 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1632")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1664")
 end
 
 				formal_generics_end_position := position
@@ -10960,14 +11281,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_251 is
-			--|#line 1642 "eiffel.y"
+	yy_do_action_261 is
+			--|#line 1674 "eiffel.y"
 		local
 			yyval100: FORMAL_GENERIC_LIST_AS
 		do
---|#line 1642 "eiffel.y"
+--|#line 1674 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1642")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1674")
 end
 
 				yyval100 := ast_factory.new_eiffel_list_formal_dec_as (counter_value + 1)
@@ -10999,14 +11320,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_252 is
-			--|#line 1649 "eiffel.y"
+	yy_do_action_262 is
+			--|#line 1681 "eiffel.y"
 		local
 			yyval100: FORMAL_GENERIC_LIST_AS
 		do
---|#line 1649 "eiffel.y"
+--|#line 1681 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1649")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1681")
 end
 
 				yyval100 := yyvs100.item (yyvsp100)
@@ -11024,14 +11345,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_253 is
-			--|#line 1649 "eiffel.y"
+	yy_do_action_263 is
+			--|#line 1681 "eiffel.y"
 		local
 			yyval100: FORMAL_GENERIC_LIST_AS
 		do
---|#line 1649 "eiffel.y"
+--|#line 1681 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1649")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1681")
 end
 
 increment_counter 
@@ -11058,14 +11379,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_254 is
-			--|#line 1659 "eiffel.y"
+	yy_do_action_264 is
+			--|#line 1691 "eiffel.y"
 		local
 			yyval54: FORMAL_AS
 		do
---|#line 1659 "eiffel.y"
+--|#line 1691 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1659")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1691")
 end
 
 				if equal (None_classname, yyvs2.item (yyvsp2)) then
@@ -11105,14 +11426,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_255 is
-			--|#line 1673 "eiffel.y"
+	yy_do_action_265 is
+			--|#line 1705 "eiffel.y"
 		local
 			yyval54: FORMAL_AS
 		do
---|#line 1673 "eiffel.y"
+--|#line 1705 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1673")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1705")
 end
 
 				if equal (None_classname, yyvs2.item (yyvsp2)) then
@@ -11152,14 +11473,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_256 is
-			--|#line 1688 "eiffel.y"
+	yy_do_action_266 is
+			--|#line 1720 "eiffel.y"
 		local
 			yyval54: FORMAL_AS
 		do
---|#line 1688 "eiffel.y"
+--|#line 1720 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1688")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1720")
 end
 
 				if equal (None_classname, yyvs2.item (yyvsp2)) then
@@ -11198,14 +11519,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_257 is
-			--|#line 1704 "eiffel.y"
+	yy_do_action_267 is
+			--|#line 1736 "eiffel.y"
 		local
 			yyval55: FORMAL_DEC_AS
 		do
---|#line 1704 "eiffel.y"
+--|#line 1736 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1704")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1736")
 end
 
 				if yyvs115.item (yyvsp115) /= Void then
@@ -11226,14 +11547,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_258 is
-			--|#line 1704 "eiffel.y"
+	yy_do_action_268 is
+			--|#line 1736 "eiffel.y"
 		local
 			yyval55: FORMAL_DEC_AS
 		do
---|#line 1704 "eiffel.y"
+--|#line 1736 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1704")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1736")
 end
 
 				if yyvs54.item (yyvsp54) /= Void then
@@ -11266,14 +11587,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_259 is
-			--|#line 1727 "eiffel.y"
+	yy_do_action_269 is
+			--|#line 1759 "eiffel.y"
 		local
 			yyval115: CONSTRAINT_TRIPLE
 		do
---|#line 1727 "eiffel.y"
+--|#line 1759 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1727")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1759")
 end
 
 
@@ -11300,14 +11621,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_260 is
-			--|#line 1729 "eiffel.y"
+	yy_do_action_270 is
+			--|#line 1761 "eiffel.y"
 		local
 			yyval115: CONSTRAINT_TRIPLE
 		do
---|#line 1729 "eiffel.y"
+--|#line 1761 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1729")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1761")
 end
 
 				yyval115 := ast_factory.new_constraint_triple (yyvs4.item (yyvsp4), yyvs79.item (yyvsp79), yyvs96.item (yyvsp96))
@@ -11338,14 +11659,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_261 is
-			--|#line 1735 "eiffel.y"
+	yy_do_action_271 is
+			--|#line 1767 "eiffel.y"
 		local
 			yyval96: CREATION_CONSTRAIN_TRIPLE
 		do
---|#line 1735 "eiffel.y"
+--|#line 1767 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1735")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1767")
 end
 
 
@@ -11372,14 +11693,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_262 is
-			--|#line 1737 "eiffel.y"
+	yy_do_action_272 is
+			--|#line 1769 "eiffel.y"
 		local
 			yyval96: CREATION_CONSTRAIN_TRIPLE
 		do
---|#line 1737 "eiffel.y"
+--|#line 1769 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1737")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1769")
 end
 
 				yyval96 := ast_factory.new_creation_constrain_triple (yyvs95.item (yyvsp95), yyvs12.item (yyvsp12 - 1), yyvs12.item (yyvsp12))
@@ -11409,14 +11730,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_263 is
-			--|#line 1747 "eiffel.y"
+	yy_do_action_273 is
+			--|#line 1779 "eiffel.y"
 		local
 			yyval56: IF_AS
 		do
---|#line 1747 "eiffel.y"
+--|#line 1779 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1747")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1779")
 end
 
 yyval56 := ast_factory.new_if_as (yyvs48.item (yyvsp48), yyvs15.item (yyvsp15), Void, Void, yyvs12.item (yyvsp12), yyvs12.item (yyvsp12 - 2), yyvs12.item (yyvsp12 - 1), Void) 
@@ -11446,14 +11767,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_264 is
-			--|#line 1749 "eiffel.y"
+	yy_do_action_274 is
+			--|#line 1781 "eiffel.y"
 		local
 			yyval56: IF_AS
 		do
---|#line 1749 "eiffel.y"
+--|#line 1781 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1749")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1781")
 end
 
 				if yyvs16.item (yyvsp16) /= Void then
@@ -11490,14 +11811,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_265 is
-			--|#line 1758 "eiffel.y"
+	yy_do_action_275 is
+			--|#line 1790 "eiffel.y"
 		local
 			yyval56: IF_AS
 		do
---|#line 1758 "eiffel.y"
+--|#line 1790 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1758")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1790")
 end
 
 yyval56 := ast_factory.new_if_as (yyvs48.item (yyvsp48), yyvs15.item (yyvsp15), yyvs88.item (yyvsp88), Void, yyvs12.item (yyvsp12), yyvs12.item (yyvsp12 - 2), yyvs12.item (yyvsp12 - 1), Void) 
@@ -11528,14 +11849,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_266 is
-			--|#line 1760 "eiffel.y"
+	yy_do_action_276 is
+			--|#line 1792 "eiffel.y"
 		local
 			yyval56: IF_AS
 		do
---|#line 1760 "eiffel.y"
+--|#line 1792 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1760")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1792")
 end
 
 				if yyvs16.item (yyvsp16) /= Void then
@@ -11572,14 +11893,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_267 is
-			--|#line 1770 "eiffel.y"
+	yy_do_action_277 is
+			--|#line 1802 "eiffel.y"
 		local
 			yyval88: EIFFEL_LIST [ELSIF_AS]
 		do
---|#line 1770 "eiffel.y"
+--|#line 1802 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1770")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1802")
 end
 
 yyval88 := yyvs88.item (yyvsp88) 
@@ -11590,14 +11911,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_268 is
-			--|#line 1774 "eiffel.y"
+	yy_do_action_278 is
+			--|#line 1806 "eiffel.y"
 		local
 			yyval88: EIFFEL_LIST [ELSIF_AS]
 		do
---|#line 1774 "eiffel.y"
+--|#line 1806 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1774")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1806")
 end
 
 				yyval88 := ast_factory.new_eiffel_list_elseif_as (counter_value + 1)
@@ -11629,14 +11950,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_269 is
-			--|#line 1781 "eiffel.y"
+	yy_do_action_279 is
+			--|#line 1813 "eiffel.y"
 		local
 			yyval88: EIFFEL_LIST [ELSIF_AS]
 		do
---|#line 1781 "eiffel.y"
+--|#line 1813 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1781")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1813")
 end
 
 				yyval88 := yyvs88.item (yyvsp88)
@@ -11652,14 +11973,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_270 is
-			--|#line 1781 "eiffel.y"
+	yy_do_action_280 is
+			--|#line 1813 "eiffel.y"
 		local
 			yyval88: EIFFEL_LIST [ELSIF_AS]
 		do
---|#line 1781 "eiffel.y"
+--|#line 1813 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1781")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1813")
 end
 
 increment_counter 
@@ -11686,14 +12007,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_271 is
-			--|#line 1790 "eiffel.y"
+	yy_do_action_281 is
+			--|#line 1822 "eiffel.y"
 		local
 			yyval45: ELSIF_AS
 		do
---|#line 1790 "eiffel.y"
+--|#line 1822 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1790")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1822")
 end
 
 yyval45 := ast_factory.new_elseif_as (yyvs48.item (yyvsp48), yyvs15.item (yyvsp15), yyvs12.item (yyvsp12 - 1), yyvs12.item (yyvsp12)) 
@@ -11723,14 +12044,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_272 is
-			--|#line 1794 "eiffel.y"
+	yy_do_action_282 is
+			--|#line 1826 "eiffel.y"
 		local
 			yyval16: PAIR [KEYWORD_AS, EIFFEL_LIST [INSTRUCTION_AS]]
 		do
---|#line 1794 "eiffel.y"
+--|#line 1826 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1794")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1826")
 end
 
 yyval16 := ast_factory.new_keyword_instruction_list_pair (yyvs12.item (yyvsp12), yyvs15.item (yyvsp15)) 
@@ -11759,14 +12080,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_273 is
-			--|#line 1798 "eiffel.y"
+	yy_do_action_283 is
+			--|#line 1830 "eiffel.y"
 		local
 			yyval58: INSPECT_AS
 		do
---|#line 1798 "eiffel.y"
+--|#line 1830 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1798")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1830")
 end
 
 yyval58 := ast_factory.new_inspect_as (yyvs48.item (yyvsp48), yyvs85.item (yyvsp85), Void, yyvs12.item (yyvsp12), yyvs12.item (yyvsp12 - 1), Void) 
@@ -11796,14 +12117,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_274 is
-			--|#line 1800 "eiffel.y"
+	yy_do_action_284 is
+			--|#line 1832 "eiffel.y"
 		local
 			yyval58: INSPECT_AS
 		do
---|#line 1800 "eiffel.y"
+--|#line 1832 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1800")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1832")
 end
 
 				if yyvs15.item (yyvsp15) /= Void then
@@ -11840,14 +12161,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_275 is
-			--|#line 1811 "eiffel.y"
+	yy_do_action_285 is
+			--|#line 1843 "eiffel.y"
 		local
 			yyval85: EIFFEL_LIST [CASE_AS]
 		do
---|#line 1811 "eiffel.y"
+--|#line 1843 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1811")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1843")
 end
 
 
@@ -11874,14 +12195,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_276 is
-			--|#line 1813 "eiffel.y"
+	yy_do_action_286 is
+			--|#line 1845 "eiffel.y"
 		local
 			yyval85: EIFFEL_LIST [CASE_AS]
 		do
---|#line 1813 "eiffel.y"
+--|#line 1845 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1813")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1845")
 end
 
 yyval85 := yyvs85.item (yyvsp85) 
@@ -11892,14 +12213,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_277 is
-			--|#line 1817 "eiffel.y"
+	yy_do_action_287 is
+			--|#line 1849 "eiffel.y"
 		local
 			yyval85: EIFFEL_LIST [CASE_AS]
 		do
---|#line 1817 "eiffel.y"
+--|#line 1849 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1817")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1849")
 end
 
 				yyval85 := ast_factory.new_eiffel_list_case_as (counter_value + 1)
@@ -11931,14 +12252,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_278 is
-			--|#line 1824 "eiffel.y"
+	yy_do_action_288 is
+			--|#line 1856 "eiffel.y"
 		local
 			yyval85: EIFFEL_LIST [CASE_AS]
 		do
---|#line 1824 "eiffel.y"
+--|#line 1856 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1824")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1856")
 end
 
 				yyval85 := yyvs85.item (yyvsp85)
@@ -11954,14 +12275,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_279 is
-			--|#line 1824 "eiffel.y"
+	yy_do_action_289 is
+			--|#line 1856 "eiffel.y"
 		local
 			yyval85: EIFFEL_LIST [CASE_AS]
 		do
---|#line 1824 "eiffel.y"
+--|#line 1856 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1824")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1856")
 end
 
 increment_counter 
@@ -11988,14 +12309,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_280 is
-			--|#line 1833 "eiffel.y"
+	yy_do_action_290 is
+			--|#line 1865 "eiffel.y"
 		local
 			yyval36: CASE_AS
 		do
---|#line 1833 "eiffel.y"
+--|#line 1865 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1833")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1865")
 end
 
 yyval36 := ast_factory.new_case_as (yyvs103.item (yyvsp103), yyvs15.item (yyvsp15), yyvs12.item (yyvsp12 - 1), yyvs12.item (yyvsp12)) 
@@ -12026,14 +12347,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_281 is
-			--|#line 1837 "eiffel.y"
+	yy_do_action_291 is
+			--|#line 1869 "eiffel.y"
 		local
 			yyval103: EIFFEL_LIST [INTERVAL_AS]
 		do
---|#line 1837 "eiffel.y"
+--|#line 1869 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1837")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1869")
 end
 
 				yyval103 := ast_factory.new_eiffel_list_interval_as (counter_value + 1)
@@ -12065,14 +12386,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_282 is
-			--|#line 1844 "eiffel.y"
+	yy_do_action_292 is
+			--|#line 1876 "eiffel.y"
 		local
 			yyval103: EIFFEL_LIST [INTERVAL_AS]
 		do
---|#line 1844 "eiffel.y"
+--|#line 1876 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1844")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1876")
 end
 
 				yyval103 := yyvs103.item (yyvsp103)
@@ -12090,14 +12411,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_283 is
-			--|#line 1844 "eiffel.y"
+	yy_do_action_293 is
+			--|#line 1876 "eiffel.y"
 		local
 			yyval103: EIFFEL_LIST [INTERVAL_AS]
 		do
---|#line 1844 "eiffel.y"
+--|#line 1876 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1844")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1876")
 end
 
 increment_counter 
@@ -12124,14 +12445,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_284 is
-			--|#line 1854 "eiffel.y"
+	yy_do_action_294 is
+			--|#line 1886 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1854 "eiffel.y"
+--|#line 1886 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1854")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1886")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs59.item (yyvsp59), Void, Void) 
@@ -12159,14 +12480,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_285 is
-			--|#line 1856 "eiffel.y"
+	yy_do_action_295 is
+			--|#line 1888 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1856 "eiffel.y"
+--|#line 1888 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1856")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1888")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs59.item (yyvsp59 - 1), yyvs59.item (yyvsp59), yyvs4.item (yyvsp4)) 
@@ -12195,14 +12516,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_286 is
-			--|#line 1858 "eiffel.y"
+	yy_do_action_296 is
+			--|#line 1890 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1858 "eiffel.y"
+--|#line 1890 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1858")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1890")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs3.item (yyvsp3), Void, Void) 
@@ -12230,14 +12551,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_287 is
-			--|#line 1860 "eiffel.y"
+	yy_do_action_297 is
+			--|#line 1892 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1860 "eiffel.y"
+--|#line 1892 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1860")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1892")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), yyvs4.item (yyvsp4)) 
@@ -12266,14 +12587,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_288 is
-			--|#line 1862 "eiffel.y"
+	yy_do_action_298 is
+			--|#line 1894 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1862 "eiffel.y"
+--|#line 1894 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1862")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1894")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs2.item (yyvsp2), Void, Void) 
@@ -12301,14 +12622,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_289 is
-			--|#line 1864 "eiffel.y"
+	yy_do_action_299 is
+			--|#line 1896 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1864 "eiffel.y"
+--|#line 1896 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1864")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1896")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs4.item (yyvsp4)) 
@@ -12337,14 +12658,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_290 is
-			--|#line 1866 "eiffel.y"
+	yy_do_action_300 is
+			--|#line 1898 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1866 "eiffel.y"
+--|#line 1898 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1866")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1898")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs2.item (yyvsp2), yyvs59.item (yyvsp59), yyvs4.item (yyvsp4)) 
@@ -12374,14 +12695,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_291 is
-			--|#line 1868 "eiffel.y"
+	yy_do_action_301 is
+			--|#line 1900 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1868 "eiffel.y"
+--|#line 1900 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1868")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1900")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs59.item (yyvsp59), yyvs2.item (yyvsp2), yyvs4.item (yyvsp4)) 
@@ -12411,14 +12732,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_292 is
-			--|#line 1870 "eiffel.y"
+	yy_do_action_302 is
+			--|#line 1902 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1870 "eiffel.y"
+--|#line 1902 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1870")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1902")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs2.item (yyvsp2), yyvs3.item (yyvsp3), yyvs4.item (yyvsp4)) 
@@ -12448,14 +12769,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_293 is
-			--|#line 1872 "eiffel.y"
+	yy_do_action_303 is
+			--|#line 1904 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1872 "eiffel.y"
+--|#line 1904 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1872")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1904")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs3.item (yyvsp3), yyvs2.item (yyvsp2), yyvs4.item (yyvsp4)) 
@@ -12485,14 +12806,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_294 is
-			--|#line 1874 "eiffel.y"
+	yy_do_action_304 is
+			--|#line 1906 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1874 "eiffel.y"
+--|#line 1906 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1874")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1906")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs68.item (yyvsp68), Void, Void) 
@@ -12520,14 +12841,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_295 is
-			--|#line 1876 "eiffel.y"
+	yy_do_action_305 is
+			--|#line 1908 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1876 "eiffel.y"
+--|#line 1908 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1876")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1908")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs68.item (yyvsp68), yyvs2.item (yyvsp2), yyvs4.item (yyvsp4)) 
@@ -12557,14 +12878,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_296 is
-			--|#line 1878 "eiffel.y"
+	yy_do_action_306 is
+			--|#line 1910 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1878 "eiffel.y"
+--|#line 1910 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1878")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1910")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs2.item (yyvsp2), yyvs68.item (yyvsp68), yyvs4.item (yyvsp4)) 
@@ -12594,14 +12915,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_297 is
-			--|#line 1880 "eiffel.y"
+	yy_do_action_307 is
+			--|#line 1912 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1880 "eiffel.y"
+--|#line 1912 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1880")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1912")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs68.item (yyvsp68 - 1), yyvs68.item (yyvsp68), yyvs4.item (yyvsp4)) 
@@ -12630,14 +12951,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_298 is
-			--|#line 1882 "eiffel.y"
+	yy_do_action_308 is
+			--|#line 1914 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1882 "eiffel.y"
+--|#line 1914 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1882")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1914")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs68.item (yyvsp68), yyvs59.item (yyvsp59), yyvs4.item (yyvsp4)) 
@@ -12667,14 +12988,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_299 is
-			--|#line 1884 "eiffel.y"
+	yy_do_action_309 is
+			--|#line 1916 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1884 "eiffel.y"
+--|#line 1916 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1884")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1916")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs59.item (yyvsp59), yyvs68.item (yyvsp68), yyvs4.item (yyvsp4)) 
@@ -12704,14 +13025,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_300 is
-			--|#line 1886 "eiffel.y"
+	yy_do_action_310 is
+			--|#line 1918 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1886 "eiffel.y"
+--|#line 1918 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1886")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1918")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs68.item (yyvsp68), yyvs3.item (yyvsp3), yyvs4.item (yyvsp4)) 
@@ -12741,14 +13062,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_301 is
-			--|#line 1888 "eiffel.y"
+	yy_do_action_311 is
+			--|#line 1920 "eiffel.y"
 		local
 			yyval61: INTERVAL_AS
 		do
---|#line 1888 "eiffel.y"
+--|#line 1920 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1888")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1920")
 end
 
 yyval61 := ast_factory.new_interval_as (yyvs3.item (yyvsp3), yyvs68.item (yyvsp68), yyvs4.item (yyvsp4)) 
@@ -12778,14 +13099,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_302 is
-			--|#line 1893 "eiffel.y"
+	yy_do_action_312 is
+			--|#line 1925 "eiffel.y"
 		local
 			yyval63: LOOP_AS
 		do
---|#line 1893 "eiffel.y"
+--|#line 1925 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1893")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1925")
 end
 
 				if yyvs23.item (yyvsp23) /= Void then
@@ -12822,14 +13143,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_303 is
-			--|#line 1903 "eiffel.y"
+	yy_do_action_313 is
+			--|#line 1935 "eiffel.y"
 		local
 			yyval23: PAIR [KEYWORD_AS, EIFFEL_LIST [TAGGED_AS]]
 		do
---|#line 1903 "eiffel.y"
+--|#line 1935 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1903")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1935")
 end
 
 
@@ -12856,14 +13177,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_304 is
-			--|#line 1905 "eiffel.y"
+	yy_do_action_314 is
+			--|#line 1937 "eiffel.y"
 		local
 			yyval23: PAIR [KEYWORD_AS, EIFFEL_LIST [TAGGED_AS]]
 		do
---|#line 1905 "eiffel.y"
+--|#line 1937 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1905")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1937")
 end
 
 yyval23 := ast_factory.new_invariant_pair (yyvs12.item (yyvsp12), yyvs22.item (yyvsp22)) 
@@ -12892,14 +13213,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_305 is
-			--|#line 1909 "eiffel.y"
+	yy_do_action_315 is
+			--|#line 1941 "eiffel.y"
 		local
 			yyval62: INVARIANT_AS
 		do
---|#line 1909 "eiffel.y"
+--|#line 1941 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1909")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1941")
 end
 
 
@@ -12926,14 +13247,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_306 is
-			--|#line 1911 "eiffel.y"
+	yy_do_action_316 is
+			--|#line 1943 "eiffel.y"
 		local
 			yyval62: INVARIANT_AS
 		do
---|#line 1911 "eiffel.y"
+--|#line 1943 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1911")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1943")
 end
 
 				id_level := Normal_level
@@ -12948,14 +13269,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_307 is
-			--|#line 1911 "eiffel.y"
+	yy_do_action_317 is
+			--|#line 1943 "eiffel.y"
 		local
 			yyval62: INVARIANT_AS
 		do
---|#line 1911 "eiffel.y"
+--|#line 1943 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1911")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1943")
 end
 
 id_level := Invariant_level 
@@ -12982,14 +13303,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_308 is
-			--|#line 1921 "eiffel.y"
+	yy_do_action_318 is
+			--|#line 1953 "eiffel.y"
 		local
 			yyval82: VARIANT_AS
 		do
---|#line 1921 "eiffel.y"
+--|#line 1953 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1921")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1953")
 end
 
 
@@ -13016,14 +13337,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_309 is
-			--|#line 1923 "eiffel.y"
+	yy_do_action_319 is
+			--|#line 1955 "eiffel.y"
 		local
 			yyval82: VARIANT_AS
 		do
---|#line 1923 "eiffel.y"
+--|#line 1955 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1923")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1955")
 end
 
 yyval82 := ast_factory.new_variant_as (yyvs2.item (yyvsp2), yyvs48.item (yyvsp48), yyvs12.item (yyvsp12), yyvs4.item (yyvsp4)) 
@@ -13054,14 +13375,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_310 is
-			--|#line 1925 "eiffel.y"
+	yy_do_action_320 is
+			--|#line 1957 "eiffel.y"
 		local
 			yyval82: VARIANT_AS
 		do
---|#line 1925 "eiffel.y"
+--|#line 1957 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1925")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1957")
 end
 
 yyval82 := ast_factory.new_variant_as (Void, yyvs48.item (yyvsp48), yyvs12.item (yyvsp12), Void) 
@@ -13090,14 +13411,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_311 is
-			--|#line 1929 "eiffel.y"
+	yy_do_action_321 is
+			--|#line 1961 "eiffel.y"
 		local
 			yyval44: DEBUG_AS
 		do
---|#line 1929 "eiffel.y"
+--|#line 1961 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1929")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1961")
 end
 
 yyval44 := ast_factory.new_debug_as (yyvs110.item (yyvsp110), yyvs15.item (yyvsp15), yyvs12.item (yyvsp12 - 1), yyvs12.item (yyvsp12)) 
@@ -13127,14 +13448,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_312 is
-			--|#line 1933 "eiffel.y"
+	yy_do_action_322 is
+			--|#line 1965 "eiffel.y"
 		local
 			yyval110: DEBUG_KEY_LIST_AS
 		do
---|#line 1933 "eiffel.y"
+--|#line 1965 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1933")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1965")
 end
 
 
@@ -13161,14 +13482,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_313 is
-			--|#line 1935 "eiffel.y"
+	yy_do_action_323 is
+			--|#line 1967 "eiffel.y"
 		local
 			yyval110: DEBUG_KEY_LIST_AS
 		do
---|#line 1935 "eiffel.y"
+--|#line 1967 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1935")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1967")
 end
 
 				yyval110 := ast_factory.new_debug_key_list_as (Void, yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
@@ -13198,14 +13519,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_314 is
-			--|#line 1940 "eiffel.y"
+	yy_do_action_324 is
+			--|#line 1972 "eiffel.y"
 		local
 			yyval110: DEBUG_KEY_LIST_AS
 		do
---|#line 1940 "eiffel.y"
+--|#line 1972 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1940")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1972")
 end
 
 yyval110 := ast_factory.new_debug_key_list_as (yyvs109.item (yyvsp109), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -13235,14 +13556,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_315 is
-			--|#line 1944 "eiffel.y"
+	yy_do_action_325 is
+			--|#line 1976 "eiffel.y"
 		local
 			yyval109: EIFFEL_LIST [STRING_AS]
 		do
---|#line 1944 "eiffel.y"
+--|#line 1976 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1944")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1976")
 end
 
 				yyval109 := ast_factory.new_eiffel_list_string_as (counter_value + 1)
@@ -13274,14 +13595,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_316 is
-			--|#line 1951 "eiffel.y"
+	yy_do_action_326 is
+			--|#line 1983 "eiffel.y"
 		local
 			yyval109: EIFFEL_LIST [STRING_AS]
 		do
---|#line 1951 "eiffel.y"
+--|#line 1983 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1951")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1983")
 end
 
 				yyval109 := yyvs109.item (yyvsp109)
@@ -13299,14 +13620,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_317 is
-			--|#line 1951 "eiffel.y"
+	yy_do_action_327 is
+			--|#line 1983 "eiffel.y"
 		local
 			yyval109: EIFFEL_LIST [STRING_AS]
 		do
---|#line 1951 "eiffel.y"
+--|#line 1983 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1951")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1983")
 end
 
 increment_counter 
@@ -13333,14 +13654,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_318 is
-			--|#line 1961 "eiffel.y"
+	yy_do_action_328 is
+			--|#line 1993 "eiffel.y"
 		local
 			yyval16: PAIR [KEYWORD_AS, EIFFEL_LIST [INSTRUCTION_AS]]
 		do
---|#line 1961 "eiffel.y"
+--|#line 1993 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1961")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1993")
 end
 
 
@@ -13367,14 +13688,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_319 is
-			--|#line 1963 "eiffel.y"
+	yy_do_action_329 is
+			--|#line 1995 "eiffel.y"
 		local
 			yyval16: PAIR [KEYWORD_AS, EIFFEL_LIST [INSTRUCTION_AS]]
 		do
---|#line 1963 "eiffel.y"
+--|#line 1995 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1963")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1995")
 end
 
 				if yyvs15.item (yyvsp15) = Void then
@@ -13408,14 +13729,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_320 is
-			--|#line 1973 "eiffel.y"
+	yy_do_action_330 is
+			--|#line 2005 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 1973 "eiffel.y"
+--|#line 2005 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1973")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2005")
 end
 
 yyval48 := yyvs32.item (yyvsp32) 
@@ -13443,14 +13764,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_321 is
-			--|#line 1976 "eiffel.y"
+	yy_do_action_331 is
+			--|#line 2008 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 1976 "eiffel.y"
+--|#line 2008 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1976")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2008")
 end
 
 yyval48 := yyvs48.item (yyvsp48) 
@@ -13460,14 +13781,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_322 is
-			--|#line 1978 "eiffel.y"
+	yy_do_action_332 is
+			--|#line 2010 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 1978 "eiffel.y"
+--|#line 2010 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1978")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2010")
 end
 
 yyval48 := ast_factory.new_expr_call_as (yyvs35.item (yyvsp35)) 
@@ -13495,14 +13816,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_323 is
-			--|#line 1980 "eiffel.y"
+	yy_do_action_333 is
+			--|#line 2012 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 1980 "eiffel.y"
+--|#line 2012 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1980")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2012")
 end
 
 yyval48 := yyvs68.item (yyvsp68) 
@@ -13530,14 +13851,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_324 is
-			--|#line 1984 "eiffel.y"
+	yy_do_action_334 is
+			--|#line 2016 "eiffel.y"
 		local
 			yyval30: ASSIGNER_CALL_AS
 		do
---|#line 1984 "eiffel.y"
+--|#line 2016 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1984")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2016")
 end
 
 yyval30 := ast_factory.new_assigner_call_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -13566,14 +13887,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_325 is
-			--|#line 1988 "eiffel.y"
+	yy_do_action_335 is
+			--|#line 2020 "eiffel.y"
 		local
 			yyval29: ASSIGN_AS
 		do
---|#line 1988 "eiffel.y"
+--|#line 2020 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1988")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2020")
 end
 
 yyval29 := ast_factory.new_assign_as (ast_factory.new_access_id_as (yyvs2.item (yyvsp2), Void), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -13603,14 +13924,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_326 is
-			--|#line 1990 "eiffel.y"
+	yy_do_action_336 is
+			--|#line 2022 "eiffel.y"
 		local
 			yyval29: ASSIGN_AS
 		do
---|#line 1990 "eiffel.y"
+--|#line 2022 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1990")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2022")
 end
 
 yyval29 := ast_factory.new_assign_as (yyvs6.item (yyvsp6), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -13640,14 +13961,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_327 is
-			--|#line 1994 "eiffel.y"
+	yy_do_action_337 is
+			--|#line 2026 "eiffel.y"
 		local
 			yyval72: REVERSE_AS
 		do
---|#line 1994 "eiffel.y"
+--|#line 2026 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1994")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2026")
 end
 
 yyval72 := ast_factory.new_reverse_as (ast_factory.new_access_id_as (yyvs2.item (yyvsp2), Void), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -13677,14 +13998,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_328 is
-			--|#line 1996 "eiffel.y"
+	yy_do_action_338 is
+			--|#line 2028 "eiffel.y"
 		local
 			yyval72: REVERSE_AS
 		do
---|#line 1996 "eiffel.y"
+--|#line 2028 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 1996")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2028")
 end
 
 yyval72 := ast_factory.new_reverse_as (yyvs6.item (yyvsp6), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -13714,14 +14035,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_329 is
-			--|#line 2000 "eiffel.y"
+	yy_do_action_339 is
+			--|#line 2032 "eiffel.y"
 		local
 			yyval87: EIFFEL_LIST [CREATE_AS]
 		do
---|#line 2000 "eiffel.y"
+--|#line 2032 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2000")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2032")
 end
 
 
@@ -13748,14 +14069,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_330 is
-			--|#line 2002 "eiffel.y"
+	yy_do_action_340 is
+			--|#line 2034 "eiffel.y"
 		local
 			yyval87: EIFFEL_LIST [CREATE_AS]
 		do
---|#line 2002 "eiffel.y"
+--|#line 2034 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2002")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2034")
 end
 
 yyval87 := yyvs87.item (yyvsp87) 
@@ -13766,14 +14087,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_331 is
-			--|#line 2006 "eiffel.y"
+	yy_do_action_341 is
+			--|#line 2038 "eiffel.y"
 		local
 			yyval87: EIFFEL_LIST [CREATE_AS]
 		do
---|#line 2006 "eiffel.y"
+--|#line 2038 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2006")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2038")
 end
 
 				yyval87 := ast_factory.new_eiffel_list_create_as (counter_value + 1)
@@ -13805,14 +14126,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_332 is
-			--|#line 2013 "eiffel.y"
+	yy_do_action_342 is
+			--|#line 2045 "eiffel.y"
 		local
 			yyval87: EIFFEL_LIST [CREATE_AS]
 		do
---|#line 2013 "eiffel.y"
+--|#line 2045 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2013")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2045")
 end
 
 				yyval87 := yyvs87.item (yyvsp87)
@@ -13828,14 +14149,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_333 is
-			--|#line 2013 "eiffel.y"
+	yy_do_action_343 is
+			--|#line 2045 "eiffel.y"
 		local
 			yyval87: EIFFEL_LIST [CREATE_AS]
 		do
---|#line 2013 "eiffel.y"
+--|#line 2045 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2013")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2045")
 end
 
 increment_counter 
@@ -13862,14 +14183,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_334 is
-			--|#line 2022 "eiffel.y"
+	yy_do_action_344 is
+			--|#line 2054 "eiffel.y"
 		local
 			yyval41: CREATE_AS
 		do
---|#line 2022 "eiffel.y"
+--|#line 2054 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2022")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2054")
 end
 
 				yyval41 := ast_factory.new_create_as (Void, Void, yyvs12.item (yyvsp12))
@@ -13898,14 +14219,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_335 is
-			--|#line 2027 "eiffel.y"
+	yy_do_action_345 is
+			--|#line 2059 "eiffel.y"
 		local
 			yyval41: CREATE_AS
 		do
---|#line 2027 "eiffel.y"
+--|#line 2059 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2027")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2059")
 end
 
 				yyval41 := ast_factory.new_create_as (yyvs38.item (yyvsp38), yyvs95.item (yyvsp95), yyvs12.item (yyvsp12))
@@ -13936,14 +14257,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_336 is
-			--|#line 2031 "eiffel.y"
+	yy_do_action_346 is
+			--|#line 2063 "eiffel.y"
 		local
 			yyval41: CREATE_AS
 		do
---|#line 2031 "eiffel.y"
+--|#line 2063 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2031")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2063")
 end
 
 				yyval41 := ast_factory.new_create_as (ast_factory.new_client_as (yyvs101.item (yyvsp101)), Void, yyvs12.item (yyvsp12))
@@ -13973,14 +14294,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_337 is
-			--|#line 2035 "eiffel.y"
+	yy_do_action_347 is
+			--|#line 2067 "eiffel.y"
 		local
 			yyval41: CREATE_AS
 		do
---|#line 2035 "eiffel.y"
+--|#line 2067 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2035")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2067")
 end
 
 				yyval41 := ast_factory.new_create_as (Void, Void, yyvs12.item (yyvsp12))
@@ -14010,14 +14331,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_338 is
-			--|#line 2040 "eiffel.y"
+	yy_do_action_348 is
+			--|#line 2072 "eiffel.y"
 		local
 			yyval41: CREATE_AS
 		do
---|#line 2040 "eiffel.y"
+--|#line 2072 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2040")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2072")
 end
 
 				yyval41 := ast_factory.new_create_as (yyvs38.item (yyvsp38), yyvs95.item (yyvsp95), yyvs12.item (yyvsp12))
@@ -14049,14 +14370,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_339 is
-			--|#line 2045 "eiffel.y"
+	yy_do_action_349 is
+			--|#line 2077 "eiffel.y"
 		local
 			yyval41: CREATE_AS
 		do
---|#line 2045 "eiffel.y"
+--|#line 2077 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2045")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2077")
 end
 
 				yyval41 := ast_factory.new_create_as (ast_factory.new_client_as (yyvs101.item (yyvsp101)), Void, yyvs12.item (yyvsp12))
@@ -14087,14 +14408,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_340 is
-			--|#line 2052 "eiffel.y"
+	yy_do_action_350 is
+			--|#line 2084 "eiffel.y"
 		local
 			yyval75: ROUTINE_CREATION_AS
 		do
---|#line 2052 "eiffel.y"
+--|#line 2084 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2052")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2084")
 end
 
 			yyval75 := ast_factory.new_agent_routine_creation_as (
@@ -14126,14 +14447,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_341 is
-			--|#line 2057 "eiffel.y"
+	yy_do_action_351 is
+			--|#line 2089 "eiffel.y"
 		local
 			yyval75: ROUTINE_CREATION_AS
 		do
---|#line 2057 "eiffel.y"
+--|#line 2089 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2057")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2089")
 end
 
 			if yyvs24.item (yyvsp24) /= Void then
@@ -14174,14 +14495,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_342 is
-			--|#line 2069 "eiffel.y"
+	yy_do_action_352 is
+			--|#line 2101 "eiffel.y"
 		local
 			yyval75: ROUTINE_CREATION_AS
 		do
---|#line 2069 "eiffel.y"
+--|#line 2101 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2069")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2101")
 end
 
 			if yyvs77.item (yyvsp77) /= Void then
@@ -14213,14 +14534,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_343 is
-			--|#line 2085 "eiffel.y"
+	yy_do_action_353 is
+			--|#line 2117 "eiffel.y"
 		local
 			yyval77: PAIR [ROUTINE_CREATION_AS, LOCATION_AS]
 		do
---|#line 2085 "eiffel.y"
+--|#line 2117 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2085")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2117")
 end
 
 			yyval77 := ast_factory.new_old_routine_creation_as (yyvs2.item (yyvsp2), Void, yyvs2.item (yyvsp2), yyvs105.item (yyvsp105), False, yyvs4.item (yyvsp4))
@@ -14251,14 +14572,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_344 is
-			--|#line 2089 "eiffel.y"
+	yy_do_action_354 is
+			--|#line 2121 "eiffel.y"
 		local
 			yyval77: PAIR [ROUTINE_CREATION_AS, LOCATION_AS]
 		do
---|#line 2089 "eiffel.y"
+--|#line 2121 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2089")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2121")
 end
 
 			yyval77 := ast_factory.new_old_routine_creation_as (yyvs2.item (yyvsp2 - 1), ast_factory.new_operand_as (Void, ast_factory.new_access_id_as (yyvs2.item (yyvsp2 - 1), Void), Void), yyvs2.item (yyvsp2), yyvs105.item (yyvsp105), True, yyvs4.item (yyvsp4))
@@ -14289,14 +14610,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_345 is
-			--|#line 2093 "eiffel.y"
+	yy_do_action_355 is
+			--|#line 2125 "eiffel.y"
 		local
 			yyval77: PAIR [ROUTINE_CREATION_AS, LOCATION_AS]
 		do
---|#line 2093 "eiffel.y"
+--|#line 2125 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2093")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2125")
 end
 
 			yyval77 := ast_factory.new_old_routine_creation_as (yyvs48.item (yyvsp48), ast_factory.new_operand_as (Void, Void, yyvs48.item (yyvsp48)), yyvs2.item (yyvsp2), yyvs105.item (yyvsp105), True, yyvs4.item (yyvsp4))
@@ -14332,14 +14653,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_346 is
-			--|#line 2101 "eiffel.y"
+	yy_do_action_356 is
+			--|#line 2133 "eiffel.y"
 		local
 			yyval77: PAIR [ROUTINE_CREATION_AS, LOCATION_AS]
 		do
---|#line 2101 "eiffel.y"
+--|#line 2133 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2101")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2133")
 end
 
 			yyval77 := ast_factory.new_old_routine_creation_as (yyvs2.item (yyvsp2), ast_factory.new_operand_as (Void, yyvs6.item (yyvsp6), Void), yyvs2.item (yyvsp2), yyvs105.item (yyvsp105), True, yyvs4.item (yyvsp4))
@@ -14371,14 +14692,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_347 is
-			--|#line 2105 "eiffel.y"
+	yy_do_action_357 is
+			--|#line 2137 "eiffel.y"
 		local
 			yyval77: PAIR [ROUTINE_CREATION_AS, LOCATION_AS]
 		do
---|#line 2105 "eiffel.y"
+--|#line 2137 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2105")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2137")
 end
 
 			yyval77 := ast_factory.new_old_routine_creation_as (yyvs2.item (yyvsp2), ast_factory.new_operand_as (Void, yyvs9.item (yyvsp9), Void), yyvs2.item (yyvsp2), yyvs105.item (yyvsp105), True, yyvs4.item (yyvsp4))
@@ -14410,14 +14731,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_348 is
-			--|#line 2109 "eiffel.y"
+	yy_do_action_358 is
+			--|#line 2141 "eiffel.y"
 		local
 			yyval77: PAIR [ROUTINE_CREATION_AS, LOCATION_AS]
 		do
---|#line 2109 "eiffel.y"
+--|#line 2141 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2109")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2141")
 end
 
 			if yyvs79.item (yyvsp79) /= Void then
@@ -14452,14 +14773,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_349 is
-			--|#line 2116 "eiffel.y"
+	yy_do_action_359 is
+			--|#line 2148 "eiffel.y"
 		local
 			yyval77: PAIR [ROUTINE_CREATION_AS, LOCATION_AS]
 		do
---|#line 2116 "eiffel.y"
+--|#line 2148 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2116")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2148")
 end
 
 			temp_operand_as := ast_factory.new_operand_as (Void, Void, Void)
@@ -14494,14 +14815,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_350 is
-			--|#line 2126 "eiffel.y"
+	yy_do_action_360 is
+			--|#line 2158 "eiffel.y"
 		local
 			yyval24: AGENT_TARGET_TRIPLE
 		do
---|#line 2126 "eiffel.y"
+--|#line 2158 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2126")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2158")
 end
 
 yyval24 := ast_factory.new_agent_target_triple (Void, Void, ast_factory.new_operand_as (Void, ast_factory.new_access_id_as (yyvs2.item (yyvsp2), Void), Void)) 
@@ -14529,14 +14850,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_351 is
-			--|#line 2128 "eiffel.y"
+	yy_do_action_361 is
+			--|#line 2160 "eiffel.y"
 		local
 			yyval24: AGENT_TARGET_TRIPLE
 		do
---|#line 2128 "eiffel.y"
+--|#line 2160 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2128")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2160")
 end
 
 yyval24 := ast_factory.new_agent_target_triple (yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), ast_factory.new_operand_as (Void, Void, yyvs48.item (yyvsp48))) 
@@ -14565,14 +14886,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_352 is
-			--|#line 2130 "eiffel.y"
+	yy_do_action_362 is
+			--|#line 2162 "eiffel.y"
 		local
 			yyval24: AGENT_TARGET_TRIPLE
 		do
---|#line 2130 "eiffel.y"
+--|#line 2162 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2130")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2162")
 end
 
 yyval24 := ast_factory.new_agent_target_triple (Void, Void, ast_factory.new_operand_as (Void, yyvs6.item (yyvsp6), Void)) 
@@ -14600,14 +14921,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_353 is
-			--|#line 2132 "eiffel.y"
+	yy_do_action_363 is
+			--|#line 2164 "eiffel.y"
 		local
 			yyval24: AGENT_TARGET_TRIPLE
 		do
---|#line 2132 "eiffel.y"
+--|#line 2164 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2132")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2164")
 end
 
 yyval24 := ast_factory.new_agent_target_triple (Void, Void, ast_factory.new_operand_as (Void, yyvs9.item (yyvsp9), Void)) 
@@ -14635,14 +14956,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_354 is
-			--|#line 2134 "eiffel.y"
+	yy_do_action_364 is
+			--|#line 2166 "eiffel.y"
 		local
 			yyval24: AGENT_TARGET_TRIPLE
 		do
---|#line 2134 "eiffel.y"
+--|#line 2166 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2134")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2166")
 end
 
 yyval24 := ast_factory.new_agent_target_triple (Void, Void, ast_factory.new_operand_as (yyvs79.item (yyvsp79), Void, Void))
@@ -14670,14 +14991,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_355 is
-			--|#line 2136 "eiffel.y"
+	yy_do_action_365 is
+			--|#line 2168 "eiffel.y"
 		local
 			yyval24: AGENT_TARGET_TRIPLE
 		do
---|#line 2136 "eiffel.y"
+--|#line 2168 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2136")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2168")
 end
 
 			temp_operand_as := ast_factory.new_operand_as (Void, Void, Void)
@@ -14710,14 +15031,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_356 is
-			--|#line 2146 "eiffel.y"
+	yy_do_action_366 is
+			--|#line 2178 "eiffel.y"
 		local
 			yyval105: DELAYED_ACTUAL_LIST_AS
 		do
---|#line 2146 "eiffel.y"
+--|#line 2178 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2146")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2178")
 end
 
 
@@ -14744,14 +15065,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_357 is
-			--|#line 2148 "eiffel.y"
+	yy_do_action_367 is
+			--|#line 2180 "eiffel.y"
 		local
 			yyval105: DELAYED_ACTUAL_LIST_AS
 		do
---|#line 2148 "eiffel.y"
+--|#line 2180 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2148")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2180")
 end
 
 				yyval105 := ast_factory.new_delayed_actual_list_as (Void, yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -14781,14 +15102,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_358 is
-			--|#line 2153 "eiffel.y"
+	yy_do_action_368 is
+			--|#line 2185 "eiffel.y"
 		local
 			yyval105: DELAYED_ACTUAL_LIST_AS
 		do
---|#line 2153 "eiffel.y"
+--|#line 2185 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2153")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2185")
 end
 
 yyval105 := ast_factory.new_delayed_actual_list_as (yyvs104.item (yyvsp104), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -14818,14 +15139,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_359 is
-			--|#line 2157 "eiffel.y"
+	yy_do_action_369 is
+			--|#line 2189 "eiffel.y"
 		local
 			yyval104: EIFFEL_LIST [OPERAND_AS]
 		do
---|#line 2157 "eiffel.y"
+--|#line 2189 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2157")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2189")
 end
 
 				yyval104 := ast_factory.new_eiffel_list_operand_as (counter_value + 1)
@@ -14857,14 +15178,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_360 is
-			--|#line 2164 "eiffel.y"
+	yy_do_action_370 is
+			--|#line 2196 "eiffel.y"
 		local
 			yyval104: EIFFEL_LIST [OPERAND_AS]
 		do
---|#line 2164 "eiffel.y"
+--|#line 2196 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2164")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2196")
 end
 
 				yyval104 := yyvs104.item (yyvsp104)
@@ -14882,14 +15203,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_361 is
-			--|#line 2164 "eiffel.y"
+	yy_do_action_371 is
+			--|#line 2196 "eiffel.y"
 		local
 			yyval104: EIFFEL_LIST [OPERAND_AS]
 		do
---|#line 2164 "eiffel.y"
+--|#line 2196 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2164")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2196")
 end
 
 increment_counter 
@@ -14916,14 +15237,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_362 is
-			--|#line 2174 "eiffel.y"
+	yy_do_action_372 is
+			--|#line 2206 "eiffel.y"
 		local
 			yyval65: OPERAND_AS
 		do
---|#line 2174 "eiffel.y"
+--|#line 2206 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2174")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2206")
 end
 
 yyval65 := ast_factory.new_operand_as (Void, Void, Void)
@@ -14955,14 +15276,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_363 is
-			--|#line 2184 "eiffel.y"
+	yy_do_action_373 is
+			--|#line 2216 "eiffel.y"
 		local
 			yyval65: OPERAND_AS
 		do
---|#line 2184 "eiffel.y"
+--|#line 2216 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2184")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2216")
 end
 
 yyval65 := ast_factory.new_operand_as (yyvs79.item (yyvsp79), Void, Void)
@@ -14995,14 +15316,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_364 is
-			--|#line 2190 "eiffel.y"
+	yy_do_action_374 is
+			--|#line 2222 "eiffel.y"
 		local
 			yyval65: OPERAND_AS
 		do
---|#line 2190 "eiffel.y"
+--|#line 2222 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2190")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2222")
 end
 
 yyval65 := ast_factory.new_operand_as (Void, Void, yyvs48.item (yyvsp48)) 
@@ -15030,14 +15351,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_365 is
-			--|#line 2194 "eiffel.y"
+	yy_do_action_375 is
+			--|#line 2226 "eiffel.y"
 		local
 			yyval42: CREATION_AS
 		do
---|#line 2194 "eiffel.y"
+--|#line 2226 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2194")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2226")
 end
 
 				yyval42 := ast_factory.new_bang_creation_as (Void, yyvs25.item (yyvsp25), yyvs27.item (yyvsp27), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
@@ -15069,14 +15390,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_366 is
-			--|#line 2199 "eiffel.y"
+	yy_do_action_376 is
+			--|#line 2231 "eiffel.y"
 		local
 			yyval42: CREATION_AS
 		do
---|#line 2199 "eiffel.y"
+--|#line 2231 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2199")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2231")
 end
 
 				yyval42 := ast_factory.new_bang_creation_as (yyvs79.item (yyvsp79), yyvs25.item (yyvsp25), yyvs27.item (yyvsp27), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
@@ -15109,14 +15430,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_367 is
-			--|#line 2204 "eiffel.y"
+	yy_do_action_377 is
+			--|#line 2236 "eiffel.y"
 		local
 			yyval42: CREATION_AS
 		do
---|#line 2204 "eiffel.y"
+--|#line 2236 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2204")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2236")
 end
 
 yyval42 := ast_factory.new_create_creation_as (Void, yyvs25.item (yyvsp25), yyvs27.item (yyvsp27), yyvs12.item (yyvsp12)) 
@@ -15146,14 +15467,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_368 is
-			--|#line 2206 "eiffel.y"
+	yy_do_action_378 is
+			--|#line 2238 "eiffel.y"
 		local
 			yyval42: CREATION_AS
 		do
---|#line 2206 "eiffel.y"
+--|#line 2238 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2206")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2238")
 end
 
 yyval42 := ast_factory.new_create_creation_as (yyvs79.item (yyvsp79), yyvs25.item (yyvsp25), yyvs27.item (yyvsp27), yyvs12.item (yyvsp12)) 
@@ -15184,14 +15505,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_369 is
-			--|#line 2210 "eiffel.y"
+	yy_do_action_379 is
+			--|#line 2242 "eiffel.y"
 		local
 			yyval43: CREATION_EXPR_AS
 		do
---|#line 2210 "eiffel.y"
+--|#line 2242 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2210")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2242")
 end
 
 yyval43 := ast_factory.new_create_creation_expr_as (yyvs79.item (yyvsp79), yyvs27.item (yyvsp27), yyvs12.item (yyvsp12)) 
@@ -15221,14 +15542,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_370 is
-			--|#line 2212 "eiffel.y"
+	yy_do_action_380 is
+			--|#line 2244 "eiffel.y"
 		local
 			yyval43: CREATION_EXPR_AS
 		do
---|#line 2212 "eiffel.y"
+--|#line 2244 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2212")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2244")
 end
 
 				yyval43 := ast_factory.new_bang_creation_expr_as (yyvs79.item (yyvsp79), yyvs27.item (yyvsp27), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
@@ -15260,14 +15581,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_371 is
-			--|#line 2219 "eiffel.y"
+	yy_do_action_381 is
+			--|#line 2251 "eiffel.y"
 		local
 			yyval25: ACCESS_AS
 		do
---|#line 2219 "eiffel.y"
+--|#line 2251 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2219")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2251")
 end
 
 yyval25 := ast_factory.new_access_id_as (yyvs2.item (yyvsp2), Void) 
@@ -15295,14 +15616,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_372 is
-			--|#line 2221 "eiffel.y"
+	yy_do_action_382 is
+			--|#line 2253 "eiffel.y"
 		local
 			yyval25: ACCESS_AS
 		do
---|#line 2221 "eiffel.y"
+--|#line 2253 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2221")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2253")
 end
 
 yyval25 := yyvs6.item (yyvsp6) 
@@ -15330,14 +15651,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_373 is
-			--|#line 2225 "eiffel.y"
+	yy_do_action_383 is
+			--|#line 2257 "eiffel.y"
 		local
 			yyval27: ACCESS_INV_AS
 		do
---|#line 2225 "eiffel.y"
+--|#line 2257 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2225")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2257")
 end
 
 
@@ -15364,14 +15685,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_374 is
-			--|#line 2227 "eiffel.y"
+	yy_do_action_384 is
+			--|#line 2259 "eiffel.y"
 		local
 			yyval27: ACCESS_INV_AS
 		do
---|#line 2227 "eiffel.y"
+--|#line 2259 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2227")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2259")
 end
 
 yyval27 := ast_factory.new_access_inv_as (yyvs2.item (yyvsp2), yyvs92.item (yyvsp92), yyvs4.item (yyvsp4)) 
@@ -15401,14 +15722,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_375 is
-			--|#line 2235 "eiffel.y"
+	yy_do_action_385 is
+			--|#line 2267 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2235 "eiffel.y"
+--|#line 2267 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2235")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2267")
 end
 
 yyval35 := yyvs25.item (yyvsp25) 
@@ -15436,14 +15757,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_376 is
-			--|#line 2237 "eiffel.y"
+	yy_do_action_386 is
+			--|#line 2269 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2237 "eiffel.y"
+--|#line 2269 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2237")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2269")
 end
 
 yyval35 := yyvs67.item (yyvsp67) 
@@ -15471,14 +15792,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_377 is
-			--|#line 2239 "eiffel.y"
+	yy_do_action_387 is
+			--|#line 2271 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2239 "eiffel.y"
+--|#line 2271 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2239")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2271")
 end
 
 yyval35 := yyvs68.item (yyvsp68) 
@@ -15506,14 +15827,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_378 is
-			--|#line 2241 "eiffel.y"
+	yy_do_action_388 is
+			--|#line 2273 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2241 "eiffel.y"
+--|#line 2273 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2241")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2273")
 end
 
 yyval35 := yyvs35.item (yyvsp35) 
@@ -15523,14 +15844,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_379 is
-			--|#line 2245 "eiffel.y"
+	yy_do_action_389 is
+			--|#line 2277 "eiffel.y"
 		local
 			yyval37: CHECK_AS
 		do
---|#line 2245 "eiffel.y"
+--|#line 2277 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2245")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2277")
 end
 
 yyval37 := ast_factory.new_check_as (yyvs22.item (yyvsp22), yyvs12.item (yyvsp12 - 1), yyvs12.item (yyvsp12)) 
@@ -15559,14 +15880,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_380 is
-			--|#line 2252 "eiffel.y"
+	yy_do_action_390 is
+			--|#line 2284 "eiffel.y"
 		local
 			yyval79: TYPE_AS
 		do
---|#line 2252 "eiffel.y"
+--|#line 2284 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2252")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2284")
 end
 
 yyval79 := yyvs79.item (yyvsp79)
@@ -15582,14 +15903,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_381 is
-			--|#line 2261 "eiffel.y"
+	yy_do_action_391 is
+			--|#line 2293 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2261 "eiffel.y"
+--|#line 2293 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2261")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2293")
 end
 
 yyval48 := yyvs59.item (yyvsp59); has_type := True 
@@ -15617,14 +15938,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_382 is
-			--|#line 2264 "eiffel.y"
+	yy_do_action_392 is
+			--|#line 2296 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2264 "eiffel.y"
+--|#line 2296 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2264")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2296")
 end
 
 yyval48 := yyvs69.item (yyvsp69); has_type := True 
@@ -15652,14 +15973,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_383 is
-			--|#line 2266 "eiffel.y"
+	yy_do_action_393 is
+			--|#line 2298 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2266 "eiffel.y"
+--|#line 2298 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2266")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2298")
 end
 
 yyval48 := yyvs48.item (yyvsp48) 
@@ -15669,14 +15990,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_384 is
-			--|#line 2268 "eiffel.y"
+	yy_do_action_394 is
+			--|#line 2300 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2268 "eiffel.y"
+--|#line 2300 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2268")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2300")
 end
 
 yyval48 := yyvs48.item (yyvsp48); has_type := True 
@@ -15686,14 +16007,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_385 is
-			--|#line 2270 "eiffel.y"
+	yy_do_action_395 is
+			--|#line 2302 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2270 "eiffel.y"
+--|#line 2302 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2270")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2302")
 end
 
 yyval48 := ast_factory.new_bin_eq_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)); has_type := True 
@@ -15705,14 +16026,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_386 is
-			--|#line 2272 "eiffel.y"
+	yy_do_action_396 is
+			--|#line 2304 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2272 "eiffel.y"
+--|#line 2304 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2272")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2304")
 end
 
 yyval48 := ast_factory.new_bin_ne_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)); has_type := True 
@@ -15724,14 +16045,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_387 is
-			--|#line 2274 "eiffel.y"
+	yy_do_action_397 is
+			--|#line 2306 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2274 "eiffel.y"
+--|#line 2306 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2274")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2306")
 end
 
 yyval48 := yyvs32.item (yyvsp32); has_type := True 
@@ -15759,14 +16080,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_388 is
-			--|#line 2278 "eiffel.y"
+	yy_do_action_398 is
+			--|#line 2310 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2278 "eiffel.y"
+--|#line 2310 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2278")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2310")
 end
 
 yyval32 := ast_factory.new_bin_plus_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -15795,14 +16116,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_389 is
-			--|#line 2281 "eiffel.y"
+	yy_do_action_399 is
+			--|#line 2313 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2281 "eiffel.y"
+--|#line 2313 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2281")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2313")
 end
 
 yyval32 := ast_factory.new_bin_minus_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -15831,14 +16152,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_390 is
-			--|#line 2283 "eiffel.y"
+	yy_do_action_400 is
+			--|#line 2315 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2283 "eiffel.y"
+--|#line 2315 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2283")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2315")
 end
 
 yyval32 := ast_factory.new_bin_star_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -15867,14 +16188,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_391 is
-			--|#line 2285 "eiffel.y"
+	yy_do_action_401 is
+			--|#line 2317 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2285 "eiffel.y"
+--|#line 2317 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2285")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2317")
 end
 
 yyval32 := ast_factory.new_bin_slash_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -15903,14 +16224,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_392 is
-			--|#line 2287 "eiffel.y"
+	yy_do_action_402 is
+			--|#line 2319 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2287 "eiffel.y"
+--|#line 2319 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2287")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2319")
 end
 
 yyval32 := ast_factory.new_bin_mod_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -15939,14 +16260,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_393 is
-			--|#line 2289 "eiffel.y"
+	yy_do_action_403 is
+			--|#line 2321 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2289 "eiffel.y"
+--|#line 2321 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2289")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2321")
 end
 
 yyval32 := ast_factory.new_bin_div_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -15975,14 +16296,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_394 is
-			--|#line 2291 "eiffel.y"
+	yy_do_action_404 is
+			--|#line 2323 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2291 "eiffel.y"
+--|#line 2323 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2291")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2323")
 end
 
 yyval32 := ast_factory.new_bin_power_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -16011,14 +16332,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_395 is
-			--|#line 2293 "eiffel.y"
+	yy_do_action_405 is
+			--|#line 2325 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2293 "eiffel.y"
+--|#line 2325 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2293")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2325")
 end
 
 yyval32 := ast_factory.new_bin_and_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs12.item (yyvsp12)) 
@@ -16047,14 +16368,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_396 is
-			--|#line 2295 "eiffel.y"
+	yy_do_action_406 is
+			--|#line 2327 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2295 "eiffel.y"
+--|#line 2327 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2295")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2327")
 end
 
 yyval32 := ast_factory.new_bin_and_then_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs12.item (yyvsp12 - 1), yyvs12.item (yyvsp12)) 
@@ -16083,14 +16404,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_397 is
-			--|#line 2297 "eiffel.y"
+	yy_do_action_407 is
+			--|#line 2329 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2297 "eiffel.y"
+--|#line 2329 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2297")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2329")
 end
 
 yyval32 := ast_factory.new_bin_or_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs12.item (yyvsp12)) 
@@ -16119,14 +16440,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_398 is
-			--|#line 2299 "eiffel.y"
+	yy_do_action_408 is
+			--|#line 2331 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2299 "eiffel.y"
+--|#line 2331 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2299")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2331")
 end
 
 yyval32 := ast_factory.new_bin_or_else_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48),yyvs12.item (yyvsp12 - 1), yyvs12.item (yyvsp12)) 
@@ -16155,14 +16476,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_399 is
-			--|#line 2301 "eiffel.y"
+	yy_do_action_409 is
+			--|#line 2333 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2301 "eiffel.y"
+--|#line 2333 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2301")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2333")
 end
 
 yyval32 := ast_factory.new_bin_implies_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs12.item (yyvsp12)) 
@@ -16191,14 +16512,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_400 is
-			--|#line 2303 "eiffel.y"
+	yy_do_action_410 is
+			--|#line 2335 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2303 "eiffel.y"
+--|#line 2335 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2303")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2335")
 end
 
 yyval32 := ast_factory.new_bin_xor_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs12.item (yyvsp12)) 
@@ -16227,14 +16548,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_401 is
-			--|#line 2305 "eiffel.y"
+	yy_do_action_411 is
+			--|#line 2337 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2305 "eiffel.y"
+--|#line 2337 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2305")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2337")
 end
 
 yyval32 := ast_factory.new_bin_ge_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -16263,14 +16584,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_402 is
-			--|#line 2307 "eiffel.y"
+	yy_do_action_412 is
+			--|#line 2339 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2307 "eiffel.y"
+--|#line 2339 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2307")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2339")
 end
 
 yyval32 := ast_factory.new_bin_gt_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -16299,14 +16620,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_403 is
-			--|#line 2309 "eiffel.y"
+	yy_do_action_413 is
+			--|#line 2341 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2309 "eiffel.y"
+--|#line 2341 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2309")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2341")
 end
 
 yyval32 := ast_factory.new_bin_le_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -16335,14 +16656,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_404 is
-			--|#line 2311 "eiffel.y"
+	yy_do_action_414 is
+			--|#line 2343 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2311 "eiffel.y"
+--|#line 2343 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2311")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2343")
 end
 
 yyval32 := ast_factory.new_bin_lt_as (yyvs48.item (yyvsp48 - 1), yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -16371,14 +16692,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_405 is
-			--|#line 2313 "eiffel.y"
+	yy_do_action_415 is
+			--|#line 2345 "eiffel.y"
 		local
 			yyval32: BINARY_AS
 		do
---|#line 2313 "eiffel.y"
+--|#line 2345 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2313")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2345")
 end
 
 yyval32 := ast_factory.new_bin_free_as (yyvs48.item (yyvsp48 - 1), yyvs2.item (yyvsp2), yyvs48.item (yyvsp48)) 
@@ -16407,14 +16728,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_406 is
-			--|#line 2317 "eiffel.y"
+	yy_do_action_416 is
+			--|#line 2349 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2317 "eiffel.y"
+--|#line 2349 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2317")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2349")
 end
 
 yyval48 := yyvs11.item (yyvsp11); has_type := True 
@@ -16442,14 +16763,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_407 is
-			--|#line 2319 "eiffel.y"
+	yy_do_action_417 is
+			--|#line 2351 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2319 "eiffel.y"
+--|#line 2351 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2319")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2351")
 end
 
 yyval48 := yyvs28.item (yyvsp28); has_type := True 
@@ -16477,14 +16798,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_408 is
-			--|#line 2321 "eiffel.y"
+	yy_do_action_418 is
+			--|#line 2353 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2321 "eiffel.y"
+--|#line 2353 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2321")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2353")
 end
 
 yyval48 := yyvs75.item (yyvsp75); has_type := False 
@@ -16512,14 +16833,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_409 is
-			--|#line 2323 "eiffel.y"
+	yy_do_action_419 is
+			--|#line 2355 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2323 "eiffel.y"
+--|#line 2355 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2323")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2355")
 end
 
 yyval48 := ast_factory.new_un_old_as (yyvs48.item (yyvsp48), yyvs12.item (yyvsp12)); has_type := True 
@@ -16530,14 +16851,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_410 is
-			--|#line 2325 "eiffel.y"
+	yy_do_action_420 is
+			--|#line 2357 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2325 "eiffel.y"
+--|#line 2357 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2325")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2357")
 end
 
 				yyval48 := ast_factory.new_un_strip_as (yyvs20.item (yyvsp20), yyvs12.item (yyvsp12), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)); has_type := True
@@ -16568,14 +16889,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_411 is
-			--|#line 2329 "eiffel.y"
+	yy_do_action_421 is
+			--|#line 2361 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2329 "eiffel.y"
+--|#line 2361 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2329")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2361")
 end
 
 yyval48 := ast_factory.new_address_as (yyvs83.item (yyvsp83), yyvs4.item (yyvsp4)); has_type := True 
@@ -16604,14 +16925,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_412 is
-			--|#line 2331 "eiffel.y"
+	yy_do_action_422 is
+			--|#line 2363 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2331 "eiffel.y"
+--|#line 2363 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2331")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2363")
 end
 
 				yyval48 := ast_factory.new_expr_address_as (yyvs48.item (yyvsp48), yyvs4.item (yyvsp4 - 2), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)); has_type := True
@@ -16623,14 +16944,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_413 is
-			--|#line 2335 "eiffel.y"
+	yy_do_action_423 is
+			--|#line 2367 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2335 "eiffel.y"
+--|#line 2367 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2335")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2367")
 end
 
 				yyval48 := ast_factory.new_address_current_as (yyvs9.item (yyvsp9), yyvs4.item (yyvsp4)); has_type := True
@@ -16660,14 +16981,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_414 is
-			--|#line 2339 "eiffel.y"
+	yy_do_action_424 is
+			--|#line 2371 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2339 "eiffel.y"
+--|#line 2371 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2339")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2371")
 end
 
 				yyval48 := ast_factory.new_address_result_as (yyvs6.item (yyvsp6), yyvs4.item (yyvsp4)); has_type := True
@@ -16697,14 +17018,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_415 is
-			--|#line 2343 "eiffel.y"
+	yy_do_action_425 is
+			--|#line 2375 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2343 "eiffel.y"
+--|#line 2375 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2343")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2375")
 end
 
 yyval48 := yyvs48.item (yyvsp48) 
@@ -16714,14 +17035,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_416 is
-			--|#line 2345 "eiffel.y"
+	yy_do_action_426 is
+			--|#line 2377 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2345 "eiffel.y"
+--|#line 2377 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2345")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2377")
 end
 
 yyval48 := yyvs48.item (yyvsp48); has_type := True 
@@ -16731,14 +17052,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_417 is
-			--|#line 2349 "eiffel.y"
+	yy_do_action_427 is
+			--|#line 2381 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2349 "eiffel.y"
+--|#line 2381 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2349")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2381")
 end
 
 yyval48 := ast_factory.new_bracket_as (yyvs48.item (yyvsp48), yyvs91.item (yyvsp91), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -16751,14 +17072,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_418 is
-			--|#line 2352 "eiffel.y"
+	yy_do_action_428 is
+			--|#line 2384 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2352 "eiffel.y"
+--|#line 2384 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2352")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2384")
 end
 
 yyval48 := ast_factory.new_un_minus_as (yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -16769,14 +17090,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_419 is
-			--|#line 2354 "eiffel.y"
+	yy_do_action_429 is
+			--|#line 2386 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2354 "eiffel.y"
+--|#line 2386 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2354")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2386")
 end
 
 yyval48 := ast_factory.new_un_plus_as (yyvs48.item (yyvsp48), yyvs4.item (yyvsp4)) 
@@ -16787,14 +17108,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_420 is
-			--|#line 2356 "eiffel.y"
+	yy_do_action_430 is
+			--|#line 2388 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2356 "eiffel.y"
+--|#line 2388 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2356")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2388")
 end
 
 yyval48 := ast_factory.new_un_not_as (yyvs48.item (yyvsp48), yyvs12.item (yyvsp12)) 
@@ -16805,14 +17126,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_421 is
-			--|#line 2358 "eiffel.y"
+	yy_do_action_431 is
+			--|#line 2390 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2358 "eiffel.y"
+--|#line 2390 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2358")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2390")
 end
 
 yyval48 := ast_factory.new_un_free_as (yyvs2.item (yyvsp2), yyvs48.item (yyvsp48)) 
@@ -16823,14 +17144,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_422 is
-			--|#line 2362 "eiffel.y"
+	yy_do_action_432 is
+			--|#line 2394 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2362 "eiffel.y"
+--|#line 2394 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2362")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2394")
 end
 
 yyval48 := ast_factory.new_type_expr_as (yyvs79.item (yyvsp79)) 
@@ -16858,14 +17179,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_423 is
-			--|#line 2365 "eiffel.y"
+	yy_do_action_433 is
+			--|#line 2397 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2365 "eiffel.y"
+--|#line 2397 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2365")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2397")
 end
 
 yyval48 := yyvs59.item (yyvsp59) 
@@ -16893,14 +17214,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_424 is
-			--|#line 2367 "eiffel.y"
+	yy_do_action_434 is
+			--|#line 2399 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2367 "eiffel.y"
+--|#line 2399 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2367")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2399")
 end
 
 yyval48 := yyvs69.item (yyvsp69) 
@@ -16928,14 +17249,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_425 is
-			--|#line 2371 "eiffel.y"
+	yy_do_action_435 is
+			--|#line 2403 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2371 "eiffel.y"
+--|#line 2403 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2371")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2403")
 end
 
 				if not case_sensitive and yyvs2.item (yyvsp2) /= Void then
@@ -16949,14 +17270,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_426 is
-			--|#line 2383 "eiffel.y"
+	yy_do_action_436 is
+			--|#line 2415 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2383 "eiffel.y"
+--|#line 2415 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2383")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2415")
 end
 
 yyval35 := ast_factory.new_nested_as (yyvs9.item (yyvsp9), yyvs35.item (yyvsp35), yyvs4.item (yyvsp4)) 
@@ -16968,14 +17289,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_427 is
-			--|#line 2386 "eiffel.y"
+	yy_do_action_437 is
+			--|#line 2418 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2386 "eiffel.y"
+--|#line 2418 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2386")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2418")
 end
 
 yyval35 := ast_factory.new_nested_as (yyvs6.item (yyvsp6), yyvs35.item (yyvsp35), yyvs4.item (yyvsp4)) 
@@ -16987,14 +17308,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_428 is
-			--|#line 2388 "eiffel.y"
+	yy_do_action_438 is
+			--|#line 2420 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2388 "eiffel.y"
+--|#line 2420 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2388")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2420")
 end
 
 yyval35 := ast_factory.new_nested_as (yyvs25.item (yyvsp25), yyvs35.item (yyvsp35), yyvs4.item (yyvsp4)) 
@@ -17006,14 +17327,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_429 is
-			--|#line 2390 "eiffel.y"
+	yy_do_action_439 is
+			--|#line 2422 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2390 "eiffel.y"
+--|#line 2422 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2390")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2422")
 end
 
 yyval35 := ast_factory.new_nested_expr_as (yyvs48.item (yyvsp48), yyvs35.item (yyvsp35), yyvs4.item (yyvsp4), yyvs4.item (yyvsp4 - 2), yyvs4.item (yyvsp4 - 1)) 
@@ -17025,14 +17346,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_430 is
-			--|#line 2392 "eiffel.y"
+	yy_do_action_440 is
+			--|#line 2424 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2392 "eiffel.y"
+--|#line 2424 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2392")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2424")
 end
 
 yyval35 := ast_factory.new_nested_as (yyvs67.item (yyvsp67), yyvs35.item (yyvsp35), yyvs4.item (yyvsp4)) 
@@ -17044,14 +17365,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_431 is
-			--|#line 2394 "eiffel.y"
+	yy_do_action_441 is
+			--|#line 2426 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2394 "eiffel.y"
+--|#line 2426 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2394")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2426")
 end
 
 yyval35 := ast_factory.new_nested_as (yyvs68.item (yyvsp68), yyvs35.item (yyvsp35), yyvs4.item (yyvsp4)) 
@@ -17063,14 +17384,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_432 is
-			--|#line 2398 "eiffel.y"
+	yy_do_action_442 is
+			--|#line 2430 "eiffel.y"
 		local
 			yyval67: PRECURSOR_AS
 		do
---|#line 2398 "eiffel.y"
+--|#line 2430 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2398")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2430")
 end
 
 yyval67 := ast_factory.new_precursor_as (yyvs12.item (yyvsp12), Void, yyvs92.item (yyvsp92)) 
@@ -17099,14 +17420,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_433 is
-			--|#line 2400 "eiffel.y"
+	yy_do_action_443 is
+			--|#line 2432 "eiffel.y"
 		local
 			yyval67: PRECURSOR_AS
 		do
---|#line 2400 "eiffel.y"
+--|#line 2432 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2400")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2432")
 end
 
 				temp_class_type_as := ast_factory.new_class_type_as (yyvs2.item (yyvsp2), Void)
@@ -17143,14 +17464,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_434 is
-			--|#line 2411 "eiffel.y"
+	yy_do_action_444 is
+			--|#line 2443 "eiffel.y"
 		local
 			yyval68: STATIC_ACCESS_AS
 		do
---|#line 2411 "eiffel.y"
+--|#line 2443 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2411")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2443")
 end
 
 yyval68 := yyvs68.item (yyvsp68) 
@@ -17160,14 +17481,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_435 is
-			--|#line 2413 "eiffel.y"
+	yy_do_action_445 is
+			--|#line 2445 "eiffel.y"
 		local
 			yyval68: STATIC_ACCESS_AS
 		do
---|#line 2413 "eiffel.y"
+--|#line 2445 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2413")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2445")
 end
 
 yyval68 := yyvs68.item (yyvsp68) 
@@ -17177,14 +17498,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_436 is
-			--|#line 2417 "eiffel.y"
+	yy_do_action_446 is
+			--|#line 2449 "eiffel.y"
 		local
 			yyval68: STATIC_ACCESS_AS
 		do
---|#line 2417 "eiffel.y"
+--|#line 2449 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2417")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2449")
 end
 
 yyval68 := ast_factory.new_static_access_as (yyvs79.item (yyvsp79), yyvs2.item (yyvsp2), yyvs92.item (yyvsp92), Void, yyvs4.item (yyvsp4)); 
@@ -17215,14 +17536,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_437 is
-			--|#line 2422 "eiffel.y"
+	yy_do_action_447 is
+			--|#line 2454 "eiffel.y"
 		local
 			yyval68: STATIC_ACCESS_AS
 		do
---|#line 2422 "eiffel.y"
+--|#line 2454 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2422")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2454")
 end
 
 				report_warning (parser_errors.static_feature_use_warning, yyvs12.item (yyvsp12))
@@ -17256,14 +17577,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_438 is
-			--|#line 2430 "eiffel.y"
+	yy_do_action_448 is
+			--|#line 2462 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2430 "eiffel.y"
+--|#line 2462 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2430")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2462")
 end
 
 yyval35 := yyvs64.item (yyvsp64) 
@@ -17291,14 +17612,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_439 is
-			--|#line 2432 "eiffel.y"
+	yy_do_action_449 is
+			--|#line 2464 "eiffel.y"
 		local
 			yyval35: CALL_AS
 		do
---|#line 2432 "eiffel.y"
+--|#line 2464 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2432")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2464")
 end
 
 yyval35 := yyvs26.item (yyvsp26) 
@@ -17326,14 +17647,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_440 is
-			--|#line 2436 "eiffel.y"
+	yy_do_action_450 is
+			--|#line 2468 "eiffel.y"
 		local
 			yyval64: NESTED_AS
 		do
---|#line 2436 "eiffel.y"
+--|#line 2468 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2436")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2468")
 end
 
 yyval64 := ast_factory.new_nested_as (yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), yyvs4.item (yyvsp4)) 
@@ -17362,14 +17683,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_441 is
-			--|#line 2438 "eiffel.y"
+	yy_do_action_451 is
+			--|#line 2470 "eiffel.y"
 		local
 			yyval64: NESTED_AS
 		do
---|#line 2438 "eiffel.y"
+--|#line 2470 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2438")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2470")
 end
 
 yyval64 := ast_factory.new_nested_as (yyvs26.item (yyvsp26), yyvs64.item (yyvsp64), yyvs4.item (yyvsp4)) 
@@ -17381,14 +17702,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_442 is
-			--|#line 2442 "eiffel.y"
+	yy_do_action_452 is
+			--|#line 2474 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2442 "eiffel.y"
+--|#line 2474 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2442")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2474")
 end
 
 yyval2 := yyvs2.item (yyvsp2)
@@ -17398,14 +17719,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_443 is
-			--|#line 2444 "eiffel.y"
+	yy_do_action_453 is
+			--|#line 2476 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2444 "eiffel.y"
+--|#line 2476 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2444")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2476")
 end
 
 				if yyvs83.item (yyvsp83) /= Void then
@@ -17436,14 +17757,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_444 is
-			--|#line 2450 "eiffel.y"
+	yy_do_action_454 is
+			--|#line 2482 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2450 "eiffel.y"
+--|#line 2482 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2450")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2482")
 end
 
 				if yyvs83.item (yyvsp83) /= Void then
@@ -17474,14 +17795,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_445 is
-			--|#line 2458 "eiffel.y"
+	yy_do_action_455 is
+			--|#line 2490 "eiffel.y"
 		local
 			yyval25: ACCESS_AS
 		do
---|#line 2458 "eiffel.y"
+--|#line 2490 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2458")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2490")
 end
 
 				inspect id_level
@@ -17518,14 +17839,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_446 is
-			--|#line 2471 "eiffel.y"
+	yy_do_action_456 is
+			--|#line 2503 "eiffel.y"
 		local
 			yyval26: ACCESS_FEAT_AS
 		do
---|#line 2471 "eiffel.y"
+--|#line 2503 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2471")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2503")
 end
 
 yyval26 := ast_factory.new_access_feat_as (yyvs2.item (yyvsp2), yyvs92.item (yyvsp92)) 
@@ -17554,14 +17875,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_447 is
-			--|#line 2475 "eiffel.y"
+	yy_do_action_457 is
+			--|#line 2507 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2475 "eiffel.y"
+--|#line 2507 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2475")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2507")
 end
 
 yyval48 := yyvs31.item (yyvsp31); has_type := True 
@@ -17589,14 +17910,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_448 is
-			--|#line 2478 "eiffel.y"
+	yy_do_action_458 is
+			--|#line 2510 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2478 "eiffel.y"
+--|#line 2510 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2478")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2510")
 end
 
 yyval48 := yyvs78.item (yyvsp78); has_type := True 
@@ -17624,14 +17945,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_449 is
-			--|#line 2480 "eiffel.y"
+	yy_do_action_459 is
+			--|#line 2512 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2480 "eiffel.y"
+--|#line 2512 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2480")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2512")
 end
 
 yyval48 := ast_factory.new_expr_call_as (yyvs9.item (yyvsp9)); has_type := True 
@@ -17659,14 +17980,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_450 is
-			--|#line 2482 "eiffel.y"
+	yy_do_action_460 is
+			--|#line 2514 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2482 "eiffel.y"
+--|#line 2514 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2482")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2514")
 end
 
 yyval48 := ast_factory.new_expr_call_as (yyvs6.item (yyvsp6)); has_type := True 
@@ -17694,14 +18015,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_451 is
-			--|#line 2484 "eiffel.y"
+	yy_do_action_461 is
+			--|#line 2516 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2484 "eiffel.y"
+--|#line 2516 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2484")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2516")
 end
 
 yyval48 := ast_factory.new_expr_call_as (yyvs35.item (yyvsp35)); has_type := False 
@@ -17729,14 +18050,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_452 is
-			--|#line 2486 "eiffel.y"
+	yy_do_action_462 is
+			--|#line 2518 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2486 "eiffel.y"
+--|#line 2518 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2486")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2518")
 end
 
 yyval48 := ast_factory.new_expr_call_as (yyvs43.item (yyvsp43)); has_type := True 
@@ -17764,14 +18085,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_453 is
-			--|#line 2488 "eiffel.y"
+	yy_do_action_463 is
+			--|#line 2520 "eiffel.y"
 		local
 			yyval48: EXPR_AS
 		do
---|#line 2488 "eiffel.y"
+--|#line 2520 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2488")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2520")
 end
 
 yyval48 := ast_factory.new_paran_as (yyvs48.item (yyvsp48), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)); has_type := True 
@@ -17782,14 +18103,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_454 is
-			--|#line 2492 "eiffel.y"
+	yy_do_action_464 is
+			--|#line 2524 "eiffel.y"
 		local
 			yyval92: PARAMETER_LIST_AS
 		do
---|#line 2492 "eiffel.y"
+--|#line 2524 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2492")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2524")
 end
 
 
@@ -17816,14 +18137,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_455 is
-			--|#line 2494 "eiffel.y"
+	yy_do_action_465 is
+			--|#line 2526 "eiffel.y"
 		local
 			yyval92: PARAMETER_LIST_AS
 		do
---|#line 2494 "eiffel.y"
+--|#line 2526 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2494")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2526")
 end
 
 				yyval92 := ast_factory.new_parameter_list_as (Void, yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -17853,14 +18174,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_456 is
-			--|#line 2499 "eiffel.y"
+	yy_do_action_466 is
+			--|#line 2531 "eiffel.y"
 		local
 			yyval92: PARAMETER_LIST_AS
 		do
---|#line 2499 "eiffel.y"
+--|#line 2531 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2499")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2531")
 end
 
 yyval92 := ast_factory.new_parameter_list_as (yyvs91.item (yyvsp91), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -17890,14 +18211,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_457 is
-			--|#line 2503 "eiffel.y"
+	yy_do_action_467 is
+			--|#line 2535 "eiffel.y"
 		local
 			yyval91: EIFFEL_LIST [EXPR_AS]
 		do
---|#line 2503 "eiffel.y"
+--|#line 2535 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2503")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2535")
 end
 
 				yyval91 := ast_factory.new_eiffel_list_expr_as (counter_value + 1)
@@ -17929,14 +18250,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_458 is
-			--|#line 2510 "eiffel.y"
+	yy_do_action_468 is
+			--|#line 2542 "eiffel.y"
 		local
 			yyval91: EIFFEL_LIST [EXPR_AS]
 		do
---|#line 2510 "eiffel.y"
+--|#line 2542 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2510")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2542")
 end
 
 				yyval91 := yyvs91.item (yyvsp91)
@@ -17954,14 +18275,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_459 is
-			--|#line 2510 "eiffel.y"
+	yy_do_action_469 is
+			--|#line 2542 "eiffel.y"
 		local
 			yyval91: EIFFEL_LIST [EXPR_AS]
 		do
---|#line 2510 "eiffel.y"
+--|#line 2542 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2510")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2542")
 end
 
 increment_counter 
@@ -17988,14 +18309,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_460 is
-			--|#line 2520 "eiffel.y"
+	yy_do_action_470 is
+			--|#line 2552 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2520 "eiffel.y"
+--|#line 2552 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2520")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2552")
 end
 
 				if not case_sensitive and yyvs2.item (yyvsp2) /= Void then
@@ -18009,14 +18330,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_461 is
-			--|#line 2527 "eiffel.y"
+	yy_do_action_471 is
+			--|#line 2559 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2527 "eiffel.y"
+--|#line 2559 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2527")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2559")
 end
 
 				yyval2 := yyvs2.item (yyvsp2);
@@ -18027,14 +18348,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_462 is
-			--|#line 2533 "eiffel.y"
+	yy_do_action_472 is
+			--|#line 2565 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2533 "eiffel.y"
+--|#line 2565 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2533")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2565")
 end
 
 				if not case_sensitive and yyvs2.item (yyvsp2) /= Void then
@@ -18048,14 +18369,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_463 is
-			--|#line 2540 "eiffel.y"
+	yy_do_action_473 is
+			--|#line 2572 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2540 "eiffel.y"
+--|#line 2572 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2540")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2572")
 end
 
 					-- Keyword used as identifier
@@ -18091,14 +18412,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_464 is
-			--|#line 2551 "eiffel.y"
+	yy_do_action_474 is
+			--|#line 2583 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2551 "eiffel.y"
+--|#line 2583 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2551")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2583")
 end
 
 report_expected_error (parser_errors.valid_eiffel_class_name, True, Void, False) 
@@ -18108,14 +18429,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_465 is
-			--|#line 2555 "eiffel.y"
+	yy_do_action_475 is
+			--|#line 2587 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2555 "eiffel.y"
+--|#line 2587 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2555")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2587")
 end
 
 				if not case_sensitive and yyvs2.item (yyvsp2) /= Void then
@@ -18129,14 +18450,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_466 is
-			--|#line 2562 "eiffel.y"
+	yy_do_action_476 is
+			--|#line 2594 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2562 "eiffel.y"
+--|#line 2594 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2562")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2594")
 end
 
 				if not case_sensitive and yyvs2.item (yyvsp2) /= Void then
@@ -18150,14 +18471,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_467 is
-			--|#line 2569 "eiffel.y"
+	yy_do_action_477 is
+			--|#line 2601 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2569 "eiffel.y"
+--|#line 2601 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2569")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2601")
 end
 
 					-- Keyword used as identifier
@@ -18192,14 +18513,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_468 is
-			--|#line 2579 "eiffel.y"
+	yy_do_action_478 is
+			--|#line 2611 "eiffel.y"
 		local
 			yyval2: ID_AS
 		do
---|#line 2579 "eiffel.y"
+--|#line 2611 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2579")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2611")
 end
 
 report_expected_error (parser_errors.a_valid_feature_name, True, Void, False) 
@@ -18209,371 +18530,21 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_469 is
-			--|#line 2583 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2583 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2583")
-end
-
-yyval31 := yyvs5.item (yyvsp5) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp5 := yyvsp5 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_470 is
-			--|#line 2585 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2585 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2585")
-end
-
-yyval31 := yyvs3.item (yyvsp3) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp3 := yyvsp3 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_471 is
-			--|#line 2587 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2587 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2587")
-end
-
-yyval31 := yyvs59.item (yyvsp59) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp59 := yyvsp59 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_472 is
-			--|#line 2589 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2589 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2589")
-end
-
-yyval31 := yyvs69.item (yyvsp69) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp69 := yyvsp69 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_473 is
-			--|#line 2591 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2591 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2591")
-end
-
-yyval31 := yyvs33.item (yyvsp33) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp33 := yyvsp33 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_474 is
-			--|#line 2593 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2593 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2593")
-end
-
-yyval31 := yyvs18.item (yyvsp18) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp18 := yyvsp18 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_475 is
-			--|#line 2598 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2598 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2598")
-end
-
-yyval31 := yyvs5.item (yyvsp5) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp5 := yyvsp5 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_476 is
-			--|#line 2601 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2601 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2601")
-end
-
-yyval31 := yyvs59.item (yyvsp59) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp59 := yyvsp59 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_477 is
-			--|#line 2603 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2603 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2603")
-end
-
-yyval31 := yyvs59.item (yyvsp59) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp59 := yyvsp59 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
-	yy_do_action_478 is
-			--|#line 2605 "eiffel.y"
-		local
-			yyval31: ATOMIC_AS
-		do
---|#line 2605 "eiffel.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2605")
-end
-
-yyval31 := yyvs69.item (yyvsp69) 
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp31 := yyvsp31 + 1
-	yyvsp69 := yyvsp69 -1
-	if yyvsp31 >= yyvsc31 then
-		if yyvs31 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs31")
-			end
-			create yyspecial_routines31
-			yyvsc31 := yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.make (yyvsc31)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs31")
-			end
-			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
-		end
-	end
-	yyvs31.put (yyval31, yyvsp31)
-end
-		end
-
 	yy_do_action_479 is
-			--|#line 2607 "eiffel.y"
+			--|#line 2615 "eiffel.y"
 		local
 			yyval31: ATOMIC_AS
 		do
---|#line 2607 "eiffel.y"
+--|#line 2615 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2607")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2615")
 end
 
-yyval31 := yyvs69.item (yyvsp69) 
+yyval31 := yyvs5.item (yyvsp5) 
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvsp31 := yyvsp31 + 1
-	yyvsp69 := yyvsp69 -1
+	yyvsp5 := yyvsp5 -1
 	if yyvsp31 >= yyvsc31 then
 		if yyvs31 = Void then
 			debug ("GEYACC")
@@ -18595,13 +18566,13 @@ end
 		end
 
 	yy_do_action_480 is
-			--|#line 2609 "eiffel.y"
+			--|#line 2617 "eiffel.y"
 		local
 			yyval31: ATOMIC_AS
 		do
---|#line 2609 "eiffel.y"
+--|#line 2617 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2609")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2617")
 end
 
 yyval31 := yyvs3.item (yyvsp3) 
@@ -18630,13 +18601,83 @@ end
 		end
 
 	yy_do_action_481 is
-			--|#line 2611 "eiffel.y"
+			--|#line 2619 "eiffel.y"
 		local
 			yyval31: ATOMIC_AS
 		do
---|#line 2611 "eiffel.y"
+--|#line 2619 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2611")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2619")
+end
+
+yyval31 := yyvs59.item (yyvsp59) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp59 := yyvsp59 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_482 is
+			--|#line 2621 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2621 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2621")
+end
+
+yyval31 := yyvs69.item (yyvsp69) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp69 := yyvsp69 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_483 is
+			--|#line 2623 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2623 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2623")
 end
 
 yyval31 := yyvs33.item (yyvsp33) 
@@ -18664,14 +18705,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_482 is
-			--|#line 2613 "eiffel.y"
+	yy_do_action_484 is
+			--|#line 2625 "eiffel.y"
 		local
 			yyval31: ATOMIC_AS
 		do
---|#line 2613 "eiffel.y"
+--|#line 2625 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2613")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2625")
 end
 
 yyval31 := yyvs18.item (yyvsp18) 
@@ -18699,14 +18740,294 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_483 is
-			--|#line 2615 "eiffel.y"
+	yy_do_action_485 is
+			--|#line 2630 "eiffel.y"
 		local
 			yyval31: ATOMIC_AS
 		do
---|#line 2615 "eiffel.y"
+--|#line 2630 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2615")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2630")
+end
+
+yyval31 := yyvs5.item (yyvsp5) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp5 := yyvsp5 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_486 is
+			--|#line 2633 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2633 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2633")
+end
+
+yyval31 := yyvs59.item (yyvsp59) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp59 := yyvsp59 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_487 is
+			--|#line 2635 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2635 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2635")
+end
+
+yyval31 := yyvs59.item (yyvsp59) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp59 := yyvsp59 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_488 is
+			--|#line 2637 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2637 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2637")
+end
+
+yyval31 := yyvs69.item (yyvsp69) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp69 := yyvsp69 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_489 is
+			--|#line 2639 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2639 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2639")
+end
+
+yyval31 := yyvs69.item (yyvsp69) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp69 := yyvsp69 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_490 is
+			--|#line 2641 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2641 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2641")
+end
+
+yyval31 := yyvs3.item (yyvsp3) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp3 := yyvsp3 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_491 is
+			--|#line 2643 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2643 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2643")
+end
+
+yyval31 := yyvs33.item (yyvsp33) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp33 := yyvsp33 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_492 is
+			--|#line 2645 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2645 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2645")
+end
+
+yyval31 := yyvs18.item (yyvsp18) 
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp31 := yyvsp31 + 1
+	yyvsp18 := yyvsp18 -1
+	if yyvsp31 >= yyvsc31 then
+		if yyvs31 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs31")
+			end
+			create yyspecial_routines31
+			yyvsc31 := yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.make (yyvsc31)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs31")
+			end
+			yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+			yyvs31 := yyspecial_routines31.resize (yyvs31, yyvsc31)
+		end
+	end
+	yyvs31.put (yyval31, yyvsp31)
+end
+		end
+
+	yy_do_action_493 is
+			--|#line 2647 "eiffel.y"
+		local
+			yyval31: ATOMIC_AS
+		do
+--|#line 2647 "eiffel.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2647")
 end
 
 				if yyvs18.item (yyvsp18) /= Void then
@@ -18741,14 +19062,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_484 is
-			--|#line 2626 "eiffel.y"
+	yy_do_action_494 is
+			--|#line 2658 "eiffel.y"
 		local
 			yyval5: BOOL_AS
 		do
---|#line 2626 "eiffel.y"
+--|#line 2658 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2626")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2658")
 end
 
 yyval5 := yyvs5.item (yyvsp5) 
@@ -18758,14 +19079,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_485 is
-			--|#line 2628 "eiffel.y"
+	yy_do_action_495 is
+			--|#line 2660 "eiffel.y"
 		local
 			yyval5: BOOL_AS
 		do
---|#line 2628 "eiffel.y"
+--|#line 2660 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2628")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2660")
 end
 
 yyval5 := yyvs5.item (yyvsp5) 
@@ -18775,14 +19096,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_486 is
-			--|#line 2632 "eiffel.y"
+	yy_do_action_496 is
+			--|#line 2664 "eiffel.y"
 		local
 			yyval3: CHAR_AS
 		do
---|#line 2632 "eiffel.y"
+--|#line 2664 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2632")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2664")
 end
 
 				check is_character: not token_buffer.is_empty end
@@ -18794,14 +19115,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_487 is
-			--|#line 2637 "eiffel.y"
+	yy_do_action_497 is
+			--|#line 2669 "eiffel.y"
 		local
 			yyval3: CHAR_AS
 		do
---|#line 2637 "eiffel.y"
+--|#line 2669 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2637")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2669")
 end
 
 				check is_character: not token_buffer.is_empty end
@@ -18815,14 +19136,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_488 is
-			--|#line 2648 "eiffel.y"
+	yy_do_action_498 is
+			--|#line 2680 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2648 "eiffel.y"
+--|#line 2680 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2648")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2680")
 end
 
 yyval59 := yyvs59.item (yyvsp59) 
@@ -18832,14 +19153,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_489 is
-			--|#line 2651 "eiffel.y"
+	yy_do_action_499 is
+			--|#line 2683 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2651 "eiffel.y"
+--|#line 2683 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2651")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2683")
 end
 
 yyval59 := yyvs59.item (yyvsp59) 
@@ -18849,14 +19170,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_490 is
-			--|#line 2653 "eiffel.y"
+	yy_do_action_500 is
+			--|#line 2685 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2653 "eiffel.y"
+--|#line 2685 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2653")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2685")
 end
 
 yyval59 := yyvs59.item (yyvsp59) 
@@ -18866,14 +19187,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_491 is
-			--|#line 2657 "eiffel.y"
+	yy_do_action_501 is
+			--|#line 2689 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2657 "eiffel.y"
+--|#line 2689 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2657")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2689")
 end
 
 				yyval59 := ast_factory.new_integer_value (Current, '+', Void, token_buffer, yyvs4.item (yyvsp4))
@@ -18903,14 +19224,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_492 is
-			--|#line 2661 "eiffel.y"
+	yy_do_action_502 is
+			--|#line 2693 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2661 "eiffel.y"
+--|#line 2693 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2661")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2693")
 end
 
 				yyval59 := ast_factory.new_integer_value (Current, '-', Void, token_buffer, yyvs4.item (yyvsp4))
@@ -18940,14 +19261,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_493 is
-			--|#line 2667 "eiffel.y"
+	yy_do_action_503 is
+			--|#line 2699 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2667 "eiffel.y"
+--|#line 2699 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2667")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2699")
 end
 
 				yyval59 := ast_factory.new_integer_value (Current, '%U', Void, token_buffer, Void)
@@ -18976,14 +19297,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_494 is
-			--|#line 2673 "eiffel.y"
+	yy_do_action_504 is
+			--|#line 2705 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2673 "eiffel.y"
+--|#line 2705 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2673")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2705")
 end
 
 yyval59 := yyvs59.item (yyvsp59) 
@@ -18993,14 +19314,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_495 is
-			--|#line 2675 "eiffel.y"
+	yy_do_action_505 is
+			--|#line 2707 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2675 "eiffel.y"
+--|#line 2707 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2675")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2707")
 end
 
 yyval59 := yyvs59.item (yyvsp59) 
@@ -19010,14 +19331,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_496 is
-			--|#line 2679 "eiffel.y"
+	yy_do_action_506 is
+			--|#line 2711 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2679 "eiffel.y"
+--|#line 2711 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2679")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2711")
 end
 
 				yyval59 := ast_factory.new_integer_value (Current, '%U', yyvs79.item (yyvsp79), token_buffer, Void)
@@ -19047,14 +19368,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_497 is
-			--|#line 2685 "eiffel.y"
+	yy_do_action_507 is
+			--|#line 2717 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2685 "eiffel.y"
+--|#line 2717 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2685")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2717")
 end
 
 				yyval59 := ast_factory.new_integer_value (Current, '+', yyvs79.item (yyvsp79), token_buffer, yyvs4.item (yyvsp4))
@@ -19085,14 +19406,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_498 is
-			--|#line 2689 "eiffel.y"
+	yy_do_action_508 is
+			--|#line 2721 "eiffel.y"
 		local
 			yyval59: INTEGER_AS
 		do
---|#line 2689 "eiffel.y"
+--|#line 2721 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2689")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2721")
 end
 
 				yyval59 := ast_factory.new_integer_value (Current, '-', yyvs79.item (yyvsp79), token_buffer, yyvs4.item (yyvsp4))
@@ -19123,14 +19444,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_499 is
-			--|#line 2698 "eiffel.y"
+	yy_do_action_509 is
+			--|#line 2730 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2698 "eiffel.y"
+--|#line 2730 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2698")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2730")
 end
 
 yyval69 := yyvs69.item (yyvsp69) 
@@ -19140,14 +19461,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_500 is
-			--|#line 2700 "eiffel.y"
+	yy_do_action_510 is
+			--|#line 2732 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2700 "eiffel.y"
+--|#line 2732 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2700")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2732")
 end
 
 yyval69 := yyvs69.item (yyvsp69) 
@@ -19157,14 +19478,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_501 is
-			--|#line 2702 "eiffel.y"
+	yy_do_action_511 is
+			--|#line 2734 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2702 "eiffel.y"
+--|#line 2734 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2702")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2734")
 end
 
 yyval69 := yyvs69.item (yyvsp69) 
@@ -19174,14 +19495,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_502 is
-			--|#line 2706 "eiffel.y"
+	yy_do_action_512 is
+			--|#line 2738 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2706 "eiffel.y"
+--|#line 2738 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2706")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2738")
 end
 
 				yyval69 := ast_factory.new_real_value (Current, False, '%U', Void, token_buffer, Void)
@@ -19210,14 +19531,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_503 is
-			--|#line 2712 "eiffel.y"
+	yy_do_action_513 is
+			--|#line 2744 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2712 "eiffel.y"
+--|#line 2744 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2712")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2744")
 end
 
 				yyval69 := ast_factory.new_real_value (Current, True, '+', Void, token_buffer, yyvs4.item (yyvsp4))
@@ -19247,14 +19568,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_504 is
-			--|#line 2716 "eiffel.y"
+	yy_do_action_514 is
+			--|#line 2748 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2716 "eiffel.y"
+--|#line 2748 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2716")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2748")
 end
 
 				yyval69 := ast_factory.new_real_value (Current, True, '-', Void, token_buffer, yyvs4.item (yyvsp4))
@@ -19284,14 +19605,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_505 is
-			--|#line 2722 "eiffel.y"
+	yy_do_action_515 is
+			--|#line 2754 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2722 "eiffel.y"
+--|#line 2754 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2722")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2754")
 end
 
 yyval69 := yyvs69.item (yyvsp69) 
@@ -19301,14 +19622,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_506 is
-			--|#line 2724 "eiffel.y"
+	yy_do_action_516 is
+			--|#line 2756 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2724 "eiffel.y"
+--|#line 2756 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2724")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2756")
 end
 
 yyval69 := yyvs69.item (yyvsp69) 
@@ -19318,14 +19639,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_507 is
-			--|#line 2728 "eiffel.y"
+	yy_do_action_517 is
+			--|#line 2760 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2728 "eiffel.y"
+--|#line 2760 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2728")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2760")
 end
 
 				yyval69 := ast_factory.new_real_value (Current, False, '%U', yyvs79.item (yyvsp79), token_buffer, Void)
@@ -19355,14 +19676,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_508 is
-			--|#line 2734 "eiffel.y"
+	yy_do_action_518 is
+			--|#line 2766 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2734 "eiffel.y"
+--|#line 2766 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2734")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2766")
 end
 
 				yyval69 := ast_factory.new_real_value (Current, True, '+', yyvs79.item (yyvsp79), token_buffer, yyvs4.item (yyvsp4))
@@ -19393,14 +19714,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_509 is
-			--|#line 2738 "eiffel.y"
+	yy_do_action_519 is
+			--|#line 2770 "eiffel.y"
 		local
 			yyval69: REAL_AS
 		do
---|#line 2738 "eiffel.y"
+--|#line 2770 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2738")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2770")
 end
 
 				yyval69 := ast_factory.new_real_value (Current, True, '-', yyvs79.item (yyvsp79), token_buffer, yyvs4.item (yyvsp4))
@@ -19431,14 +19752,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_510 is
-			--|#line 2747 "eiffel.y"
+	yy_do_action_520 is
+			--|#line 2779 "eiffel.y"
 		local
 			yyval33: BIT_CONST_AS
 		do
---|#line 2747 "eiffel.y"
+--|#line 2779 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2747")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2779")
 end
 
 yyval33 := ast_factory.new_bit_const_as (yyvs2.item (yyvsp2)) 
@@ -19466,14 +19787,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_511 is
-			--|#line 2754 "eiffel.y"
+	yy_do_action_521 is
+			--|#line 2786 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2754 "eiffel.y"
+--|#line 2786 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2754")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2786")
 end
 
 yyval18 := yyvs18.item (yyvsp18) 
@@ -19483,14 +19804,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_512 is
-			--|#line 2756 "eiffel.y"
+	yy_do_action_522 is
+			--|#line 2788 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2756 "eiffel.y"
+--|#line 2788 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2756")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2788")
 end
 
 yyval18 := yyvs18.item (yyvsp18) 
@@ -19500,14 +19821,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_513 is
-			--|#line 2760 "eiffel.y"
+	yy_do_action_523 is
+			--|#line 2792 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2760 "eiffel.y"
+--|#line 2792 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2760")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2792")
 end
 
 yyval18 := yyvs18.item (yyvsp18) 
@@ -19517,14 +19838,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_514 is
-			--|#line 2762 "eiffel.y"
+	yy_do_action_524 is
+			--|#line 2794 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2762 "eiffel.y"
+--|#line 2794 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2762")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2794")
 end
 
 				yyval18 := ast_factory.new_string_as ("", line, column, string_position, position + text_count - string_position, token_buffer2)
@@ -19553,14 +19874,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_515 is
-			--|#line 2766 "eiffel.y"
+	yy_do_action_525 is
+			--|#line 2798 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2766 "eiffel.y"
+--|#line 2798 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2766")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2798")
 end
 
 				yyval18 := ast_factory.new_verbatim_string_as ("", verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
@@ -19589,14 +19910,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_516 is
-			--|#line 2772 "eiffel.y"
+	yy_do_action_526 is
+			--|#line 2804 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2772 "eiffel.y"
+--|#line 2804 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2772")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2804")
 end
 
 				fixme (once "We should handle `Type' instead of ignoring it.")
@@ -19617,14 +19938,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_517 is
-			--|#line 2786 "eiffel.y"
+	yy_do_action_527 is
+			--|#line 2818 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2786 "eiffel.y"
+--|#line 2818 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2786")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2818")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, string_position, position + text_count - string_position, token_buffer2)
@@ -19653,14 +19974,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_518 is
-			--|#line 2790 "eiffel.y"
+	yy_do_action_528 is
+			--|#line 2822 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2790 "eiffel.y"
+--|#line 2822 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2790")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2822")
 end
 
 				yyval18 := ast_factory.new_verbatim_string_as (cloned_string (token_buffer), verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
@@ -19689,14 +20010,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_519 is
-			--|#line 2794 "eiffel.y"
+	yy_do_action_529 is
+			--|#line 2826 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2794 "eiffel.y"
+--|#line 2826 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2794")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2826")
 end
 
 				yyval18 := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2)
@@ -19725,14 +20046,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_520 is
-			--|#line 2798 "eiffel.y"
+	yy_do_action_530 is
+			--|#line 2830 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2798 "eiffel.y"
+--|#line 2830 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2798")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2830")
 end
 
 				yyval18 := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2)
@@ -19761,14 +20082,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_521 is
-			--|#line 2802 "eiffel.y"
+	yy_do_action_531 is
+			--|#line 2834 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2802 "eiffel.y"
+--|#line 2834 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2802")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2834")
 end
 
 				yyval18 := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2)
@@ -19797,14 +20118,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_522 is
-			--|#line 2806 "eiffel.y"
+	yy_do_action_532 is
+			--|#line 2838 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2806 "eiffel.y"
+--|#line 2838 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2806")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2838")
 end
 
 				yyval18 := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2)
@@ -19833,14 +20154,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_523 is
-			--|#line 2810 "eiffel.y"
+	yy_do_action_533 is
+			--|#line 2842 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2810 "eiffel.y"
+--|#line 2842 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2810")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2842")
 end
 
 				yyval18 := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
@@ -19869,14 +20190,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_524 is
-			--|#line 2814 "eiffel.y"
+	yy_do_action_534 is
+			--|#line 2846 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2814 "eiffel.y"
+--|#line 2846 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2814")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2846")
 end
 
 				yyval18 := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
@@ -19905,14 +20226,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_525 is
-			--|#line 2818 "eiffel.y"
+	yy_do_action_535 is
+			--|#line 2850 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2818 "eiffel.y"
+--|#line 2850 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2818")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2850")
 end
 
 				yyval18 := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2)
@@ -19941,14 +20262,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_526 is
-			--|#line 2822 "eiffel.y"
+	yy_do_action_536 is
+			--|#line 2854 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2822 "eiffel.y"
+--|#line 2854 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2822")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2854")
 end
 
 				yyval18 := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2)
@@ -19977,14 +20298,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_527 is
-			--|#line 2826 "eiffel.y"
+	yy_do_action_537 is
+			--|#line 2858 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2826 "eiffel.y"
+--|#line 2858 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2826")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2858")
 end
 
 				yyval18 := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2)
@@ -20013,14 +20334,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_528 is
-			--|#line 2830 "eiffel.y"
+	yy_do_action_538 is
+			--|#line 2862 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2830 "eiffel.y"
+--|#line 2862 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2830")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2862")
 end
 
 				yyval18 := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2)
@@ -20049,14 +20370,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_529 is
-			--|#line 2834 "eiffel.y"
+	yy_do_action_539 is
+			--|#line 2866 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2834 "eiffel.y"
+--|#line 2866 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2834")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2866")
 end
 
 				yyval18 := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2)
@@ -20085,14 +20406,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_530 is
-			--|#line 2838 "eiffel.y"
+	yy_do_action_540 is
+			--|#line 2870 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2838 "eiffel.y"
+--|#line 2870 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2838")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2870")
 end
 
 				yyval18 := ast_factory.new_string_as ("[]", line, column, position, 4, token_buffer2)
@@ -20121,14 +20442,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_531 is
-			--|#line 2842 "eiffel.y"
+	yy_do_action_541 is
+			--|#line 2874 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2842 "eiffel.y"
+--|#line 2874 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2842")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2874")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
@@ -20157,14 +20478,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_532 is
-			--|#line 2846 "eiffel.y"
+	yy_do_action_542 is
+			--|#line 2878 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2846 "eiffel.y"
+--|#line 2878 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2846")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2878")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 10, token_buffer2)
@@ -20193,14 +20514,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_533 is
-			--|#line 2850 "eiffel.y"
+	yy_do_action_543 is
+			--|#line 2882 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2850 "eiffel.y"
+--|#line 2882 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2850")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2882")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2)
@@ -20229,14 +20550,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_534 is
-			--|#line 2854 "eiffel.y"
+	yy_do_action_544 is
+			--|#line 2886 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2854 "eiffel.y"
+--|#line 2886 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2854")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2886")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 4, token_buffer2)
@@ -20265,14 +20586,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_535 is
-			--|#line 2858 "eiffel.y"
+	yy_do_action_545 is
+			--|#line 2890 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2858 "eiffel.y"
+--|#line 2890 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2858")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2890")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 9, token_buffer2)
@@ -20301,14 +20622,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_536 is
-			--|#line 2862 "eiffel.y"
+	yy_do_action_546 is
+			--|#line 2894 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2862 "eiffel.y"
+--|#line 2894 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2862")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2894")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
@@ -20337,14 +20658,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_537 is
-			--|#line 2866 "eiffel.y"
+	yy_do_action_547 is
+			--|#line 2898 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2866 "eiffel.y"
+--|#line 2898 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2866")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2898")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, 5, token_buffer2)
@@ -20373,14 +20694,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_538 is
-			--|#line 2870 "eiffel.y"
+	yy_do_action_548 is
+			--|#line 2902 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2870 "eiffel.y"
+--|#line 2902 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2870")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2902")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
@@ -20409,14 +20730,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_539 is
-			--|#line 2876 "eiffel.y"
+	yy_do_action_549 is
+			--|#line 2908 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2876 "eiffel.y"
+--|#line 2908 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2876")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2908")
 end
 
 				yyval18 := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
@@ -20445,14 +20766,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_540 is
-			--|#line 2880 "eiffel.y"
+	yy_do_action_550 is
+			--|#line 2912 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2880 "eiffel.y"
+--|#line 2912 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2880")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2912")
 end
 
 				yyval18 := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
@@ -20481,14 +20802,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_541 is
-			--|#line 2884 "eiffel.y"
+	yy_do_action_551 is
+			--|#line 2916 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2884 "eiffel.y"
+--|#line 2916 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2884")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2916")
 end
 
 				yyval18 := ast_factory.new_string_as ("not", line, column, position, 5, token_buffer2)
@@ -20517,14 +20838,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_542 is
-			--|#line 2888 "eiffel.y"
+	yy_do_action_552 is
+			--|#line 2920 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2888 "eiffel.y"
+--|#line 2920 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2888")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2920")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
@@ -20553,14 +20874,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_543 is
-			--|#line 2894 "eiffel.y"
+	yy_do_action_553 is
+			--|#line 2926 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2894 "eiffel.y"
+--|#line 2926 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2894")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2926")
 end
 
 				yyval18 := ast_factory.new_string_as ("<", line, column, position, 3, token_buffer2)
@@ -20589,14 +20910,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_544 is
-			--|#line 2898 "eiffel.y"
+	yy_do_action_554 is
+			--|#line 2930 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2898 "eiffel.y"
+--|#line 2930 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2898")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2930")
 end
 
 				yyval18 := ast_factory.new_string_as ("<=", line, column, position, 4, token_buffer2)
@@ -20625,14 +20946,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_545 is
-			--|#line 2902 "eiffel.y"
+	yy_do_action_555 is
+			--|#line 2934 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2902 "eiffel.y"
+--|#line 2934 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2902")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2934")
 end
 
 				yyval18 := ast_factory.new_string_as (">", line, column, position, 3, token_buffer2)
@@ -20661,14 +20982,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_546 is
-			--|#line 2906 "eiffel.y"
+	yy_do_action_556 is
+			--|#line 2938 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2906 "eiffel.y"
+--|#line 2938 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2906")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2938")
 end
 
 				yyval18 := ast_factory.new_string_as (">=", line, column, position, 4, token_buffer2)
@@ -20697,14 +21018,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_547 is
-			--|#line 2910 "eiffel.y"
+	yy_do_action_557 is
+			--|#line 2942 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2910 "eiffel.y"
+--|#line 2942 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2910")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2942")
 end
 
 				yyval18 := ast_factory.new_string_as ("-", line, column, position, 3, token_buffer2)
@@ -20733,14 +21054,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_548 is
-			--|#line 2914 "eiffel.y"
+	yy_do_action_558 is
+			--|#line 2946 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2914 "eiffel.y"
+--|#line 2946 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2914")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2946")
 end
 
 				yyval18 := ast_factory.new_string_as ("+", line, column, position, 3, token_buffer2)
@@ -20769,14 +21090,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_549 is
-			--|#line 2918 "eiffel.y"
+	yy_do_action_559 is
+			--|#line 2950 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2918 "eiffel.y"
+--|#line 2950 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2918")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2950")
 end
 
 				yyval18 := ast_factory.new_string_as ("*", line, column, position, 3, token_buffer2)
@@ -20805,14 +21126,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_550 is
-			--|#line 2922 "eiffel.y"
+	yy_do_action_560 is
+			--|#line 2954 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2922 "eiffel.y"
+--|#line 2954 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2922")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2954")
 end
 
 				yyval18 := ast_factory.new_string_as ("/", line, column, position, 3, token_buffer2)
@@ -20841,14 +21162,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_551 is
-			--|#line 2926 "eiffel.y"
+	yy_do_action_561 is
+			--|#line 2958 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2926 "eiffel.y"
+--|#line 2958 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2926")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2958")
 end
 
 				yyval18 := ast_factory.new_string_as ("\\", line, column, position, 4, token_buffer2)
@@ -20877,14 +21198,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_552 is
-			--|#line 2930 "eiffel.y"
+	yy_do_action_562 is
+			--|#line 2962 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2930 "eiffel.y"
+--|#line 2962 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2930")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2962")
 end
 
 				yyval18 := ast_factory.new_string_as ("//", line, column, position, 4, token_buffer2)
@@ -20913,14 +21234,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_553 is
-			--|#line 2934 "eiffel.y"
+	yy_do_action_563 is
+			--|#line 2966 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2934 "eiffel.y"
+--|#line 2966 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2934")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2966")
 end
 
 				yyval18 := ast_factory.new_string_as ("^", line, column, position, 3, token_buffer2)
@@ -20949,14 +21270,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_554 is
-			--|#line 2938 "eiffel.y"
+	yy_do_action_564 is
+			--|#line 2970 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2938 "eiffel.y"
+--|#line 2970 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2938")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2970")
 end
 
 				yyval18 := ast_factory.new_string_as ("and", line, column, position, 5, token_buffer2)
@@ -20985,14 +21306,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_555 is
-			--|#line 2942 "eiffel.y"
+	yy_do_action_565 is
+			--|#line 2974 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2942 "eiffel.y"
+--|#line 2974 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2942")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2974")
 end
 
 				yyval18 := ast_factory.new_string_as ("and then", line, column, position, 10, token_buffer2)
@@ -21021,14 +21342,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_556 is
-			--|#line 2946 "eiffel.y"
+	yy_do_action_566 is
+			--|#line 2978 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2946 "eiffel.y"
+--|#line 2978 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2946")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2978")
 end
 
 				yyval18 := ast_factory.new_string_as ("implies", line, column, position, 9, token_buffer2)
@@ -21057,14 +21378,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_557 is
-			--|#line 2950 "eiffel.y"
+	yy_do_action_567 is
+			--|#line 2982 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2950 "eiffel.y"
+--|#line 2982 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2950")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2982")
 end
 
 				yyval18 := ast_factory.new_string_as ("or", line, column, position, 4, token_buffer2)
@@ -21093,14 +21414,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_558 is
-			--|#line 2954 "eiffel.y"
+	yy_do_action_568 is
+			--|#line 2986 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2954 "eiffel.y"
+--|#line 2986 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2954")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2986")
 end
 
 				yyval18 := ast_factory.new_string_as ("or else", line, column, position, 9, token_buffer2)
@@ -21129,14 +21450,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_559 is
-			--|#line 2958 "eiffel.y"
+	yy_do_action_569 is
+			--|#line 2990 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2958 "eiffel.y"
+--|#line 2990 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2958")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2990")
 end
 
 				yyval18 := ast_factory.new_string_as ("xor", line, column, position, 5, token_buffer2)
@@ -21165,14 +21486,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_560 is
-			--|#line 2962 "eiffel.y"
+	yy_do_action_570 is
+			--|#line 2994 "eiffel.y"
 		local
 			yyval18: STRING_AS
 		do
---|#line 2962 "eiffel.y"
+--|#line 2994 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2962")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2994")
 end
 
 				yyval18 := ast_factory.new_string_as (cloned_lower_string (token_buffer), line, column, position, token_buffer.count + 2, token_buffer2)
@@ -21201,14 +21522,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_561 is
-			--|#line 2968 "eiffel.y"
+	yy_do_action_571 is
+			--|#line 3000 "eiffel.y"
 		local
 			yyval28: ARRAY_AS
 		do
---|#line 2968 "eiffel.y"
+--|#line 3000 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2968")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3000")
 end
 
 				yyval28 := ast_factory.new_array_as (ast_factory.new_eiffel_list_expr_as (0), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
@@ -21237,14 +21558,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_562 is
-			--|#line 2972 "eiffel.y"
+	yy_do_action_572 is
+			--|#line 3004 "eiffel.y"
 		local
 			yyval28: ARRAY_AS
 		do
---|#line 2972 "eiffel.y"
+--|#line 3004 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2972")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3004")
 end
 
 yyval28 := ast_factory.new_array_as (yyvs91.item (yyvsp91), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -21274,14 +21595,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_563 is
-			--|#line 2976 "eiffel.y"
+	yy_do_action_573 is
+			--|#line 3008 "eiffel.y"
 		local
 			yyval78: TUPLE_AS
 		do
---|#line 2976 "eiffel.y"
+--|#line 3008 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2976")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3008")
 end
 
 yyval78 := ast_factory.new_tuple_as (ast_factory.new_eiffel_list_expr_as (0), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -21309,14 +21630,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_564 is
-			--|#line 2978 "eiffel.y"
+	yy_do_action_574 is
+			--|#line 3010 "eiffel.y"
 		local
 			yyval78: TUPLE_AS
 		do
---|#line 2978 "eiffel.y"
+--|#line 3010 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2978")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3010")
 end
 
 yyval78 := ast_factory.new_tuple_as (yyvs91.item (yyvsp91), yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4)) 
@@ -21346,14 +21667,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_565 is
-			--|#line 2982 "eiffel.y"
+	yy_do_action_575 is
+			--|#line 3014 "eiffel.y"
 		local
 			yyval1: ANY
 		do
---|#line 2982 "eiffel.y"
+--|#line 3014 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2982")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3014")
 end
 
 add_counter 
@@ -21380,14 +21701,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_566 is
-			--|#line 2985 "eiffel.y"
+	yy_do_action_576 is
+			--|#line 3017 "eiffel.y"
 		local
 			yyval1: ANY
 		do
---|#line 2985 "eiffel.y"
+--|#line 3017 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2985")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3017")
 end
 
 add_counter2 
@@ -21414,14 +21735,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_567 is
-			--|#line 2988 "eiffel.y"
+	yy_do_action_577 is
+			--|#line 3020 "eiffel.y"
 		local
 			yyval1: ANY
 		do
---|#line 2988 "eiffel.y"
+--|#line 3020 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2988")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3020")
 end
 
 increment_counter 
@@ -21448,14 +21769,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_568 is
-			--|#line 2991 "eiffel.y"
+	yy_do_action_578 is
+			--|#line 3023 "eiffel.y"
 		local
 			yyval1: ANY
 		do
---|#line 2991 "eiffel.y"
+--|#line 3023 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2991")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3023")
 end
 
 increment_counter2 
@@ -21482,14 +21803,14 @@ if yy_parsing_status = yyContinue then
 end
 		end
 
-	yy_do_action_569 is
-			--|#line 2994 "eiffel.y"
+	yy_do_action_579 is
+			--|#line 3026 "eiffel.y"
 		local
 			yyval1: ANY
 		do
---|#line 2994 "eiffel.y"
+--|#line 3026 "eiffel.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 2994")
+	std.error.put_line ("Executing parser user-code from file 'eiffel.y' at line 3026")
 end
 
 remove_counter 
@@ -21579,7 +21900,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 933 then
+			when 948 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -21640,68 +21961,69 @@ feature {NONE} -- Table templates
 	yyr1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    0,  315,  315,  315,  315,  315,  315,  315,  315,  316,
-			  320,  321,  322,  289,  289,  323,  289,  291,  291,  291,
-			  324,  290,  290,  325,  198,  199,  199,  258,  258,  326,
-			  258,  154,  154,  154,  154,  319,  319,  319,  319,  327,
-			  327,  328,  328,  167,  167,  142,  142,  273,  273,  274,
-			  274,  329,  188,  188,  169,  330,  168,  168,  287,  287,
-			  288,  288,  331,  272,  272,  332,  135,  135,  187,  277,
-			  277,  334,  257,  257,  256,  256,  255,  255,  255,  253,
-			  254,  137,  240,  240,  240,  136,  136,  159,  159,  159,
-			  159,  159,  159,  140,  140,  170,  170,  297,  297,  297,
+			    0,  317,  317,  317,  317,  317,  317,  317,  317,  318,
+			  322,  323,  324,  291,  291,  325,  291,  293,  293,  293,
+			  326,  292,  292,  327,  200,  201,  201,  260,  260,  328,
+			  260,  155,  155,  155,  155,  321,  321,  321,  321,  329,
+			  329,  330,  330,  168,  168,  142,  142,  275,  275,  276,
+			  276,  331,  189,  189,  170,  332,  169,  169,  289,  289,
+			  290,  290,  333,  274,  274,  334,  135,  135,  188,  279,
+			  279,  336,  259,  259,  258,  258,  257,  257,  257,  255,
+			  256,  137,  242,  242,  242,  136,  136,  160,  160,  160,
+			  160,  160,  160,  140,  140,  171,  171,  299,  299,  299,
 
-			  298,  298,  335,  215,  250,  216,  216,  216,  216,  216,
-			  216,  300,  300,  299,  299,  336,  227,  269,  269,  268,
-			  268,  267,  267,  337,  178,  189,  189,  189,  262,  262,
-			  261,  261,  338,  171,  171,  275,  276,  276,  339,  280,
-			  280,  279,  279,  282,  282,  281,  281,  284,  284,  283,
-			  283,  313,  313,  313,  313,  310,  310,  340,  251,  143,
-			  143,  341,  144,  144,  231,  342,  230,  230,  230,  185,
-			  343,  186,  141,  141,  209,  209,  312,  312,  312,  292,
-			  292,  293,  293,  344,  201,  333,  333,  202,  202,  202,
-			  202,  202,  202,  202,  202,  202,  202,  202,  228,  228,
+			  300,  300,  337,  217,  252,  218,  218,  218,  218,  218,
+			  218,  302,  302,  301,  301,  338,  229,  271,  271,  270,
+			  270,  269,  269,  339,  179,  190,  190,  190,  264,  264,
+			  263,  263,  340,  172,  172,  277,  278,  278,  341,  282,
+			  282,  281,  281,  284,  284,  283,  283,  286,  286,  285,
+			  285,  315,  315,  315,  315,  312,  312,  342,  312,  253,
+			  253,  253,  253,  143,  143,  144,  144,  343,  144,  196,
+			  344,  344,  145,  145,  233,  345,  232,  232,  232,  186,
+			  346,  187,  141,  141,  211,  211,  314,  314,  314,  294,
+			  294,  295,  295,  347,  203,  335,  335,  204,  204,  204,
 
-			  345,  228,  346,  177,  177,  347,  177,  348,  303,  303,
-			  304,  304,  349,  241,  241,  241,  243,  243,  249,  249,
-			  249,  244,  244,  244,  244,  244,  244,  246,  246,  247,
-			  306,  306,  305,  305,  307,  308,  308,  350,  248,  248,
-			  248,  248,  309,  309,  309,  311,  311,  311,  285,  285,
-			  285,  286,  286,  354,  190,  190,  190,  191,  355,  314,
-			  314,  278,  278,  197,  197,  197,  197,  265,  266,  266,
-			  356,  176,  138,  200,  200,  259,  259,  260,  260,  357,
-			  164,  294,  294,  358,  210,  210,  210,  210,  210,  210,
-			  210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
+			  204,  204,  204,  204,  204,  204,  204,  204,  230,  230,
+			  348,  230,  349,  178,  178,  350,  178,  351,  305,  305,
+			  306,  306,  352,  243,  243,  243,  245,  245,  251,  251,
+			  251,  246,  246,  246,  246,  246,  246,  248,  248,  249,
+			  308,  308,  307,  307,  309,  310,  310,  353,  250,  250,
+			  250,  250,  311,  311,  311,  313,  313,  313,  287,  287,
+			  287,  288,  288,  357,  191,  191,  191,  192,  358,  316,
+			  316,  280,  280,  199,  199,  199,  199,  267,  268,  268,
+			  359,  177,  138,  202,  202,  261,  261,  262,  262,  360,
+			  165,  296,  296,  361,  212,  212,  212,  212,  212,  212,
 
-			  210,  210,  212,  145,  145,  211,  211,  359,  252,  252,
-			  252,  175,  302,  302,  302,  301,  301,  360,  139,  139,
-			  182,  182,  182,  182,  153,  152,  152,  229,  229,  263,
-			  263,  264,  264,  361,  172,  172,  172,  172,  172,  172,
-			  232,  232,  232,  233,  233,  233,  233,  233,  233,  233,
-			  146,  146,  146,  146,  146,  146,  296,  296,  296,  295,
-			  295,  362,  214,  214,  214,  173,  173,  173,  173,  174,
-			  174,  148,  148,  150,  150,  161,  161,  161,  161,  166,
-			  245,  180,  180,  180,  180,  180,  180,  180,  157,  157,
-			  157,  157,  157,  157,  157,  157,  157,  157,  157,  157,
+			  212,  212,  212,  212,  212,  212,  212,  212,  212,  212,
+			  212,  212,  214,  146,  146,  213,  213,  362,  254,  254,
+			  254,  176,  304,  304,  304,  303,  303,  363,  139,  139,
+			  183,  183,  183,  183,  154,  153,  153,  231,  231,  265,
+			  265,  266,  266,  364,  173,  173,  173,  173,  173,  173,
+			  234,  234,  234,  235,  235,  235,  235,  235,  235,  235,
+			  147,  147,  147,  147,  147,  147,  298,  298,  298,  297,
+			  297,  365,  216,  216,  216,  174,  174,  174,  174,  175,
+			  175,  149,  149,  151,  151,  162,  162,  162,  162,  167,
+			  247,  181,  181,  181,  181,  181,  181,  181,  158,  158,
 
-			  157,  157,  157,  157,  157,  157,  181,  181,  181,  181,
-			  181,  181,  181,  181,  181,  181,  181,  183,  183,  183,
-			  183,  183,  184,  184,  184,  195,  163,  163,  163,  163,
-			  163,  163,  217,  217,  218,  218,  220,  219,  162,  162,
-			  213,  213,  196,  196,  196,  147,  149,  179,  179,  179,
-			  179,  179,  179,  179,  271,  271,  271,  270,  270,  363,
-			  192,  192,  193,  193,  193,  194,  194,  194,  194,  155,
-			  155,  155,  155,  155,  155,  156,  156,  156,  156,  156,
-			  156,  156,  156,  156,  160,  160,  165,  165,  203,  203,
-			  203,  204,  204,  205,  206,  206,  207,  208,  208,  221,
+			  158,  158,  158,  158,  158,  158,  158,  158,  158,  158,
+			  158,  158,  158,  158,  158,  158,  182,  182,  182,  182,
+			  182,  182,  182,  182,  182,  182,  182,  184,  184,  184,
+			  184,  184,  185,  185,  185,  197,  164,  164,  164,  164,
+			  164,  164,  219,  219,  220,  220,  222,  221,  163,  163,
+			  215,  215,  198,  198,  198,  148,  150,  180,  180,  180,
+			  180,  180,  180,  180,  273,  273,  273,  272,  272,  366,
+			  193,  193,  194,  194,  194,  195,  195,  195,  195,  156,
+			  156,  156,  156,  156,  156,  157,  157,  157,  157,  157,
+			  157,  157,  157,  157,  161,  161,  166,  166,  205,  205,
 
-			  221,  221,  223,  222,  222,  224,  224,  225,  226,  226,
-			  158,  234,  234,  236,  236,  236,  237,  235,  235,  235,
-			  235,  235,  235,  235,  235,  235,  235,  235,  235,  235,
-			  235,  235,  235,  235,  235,  235,  235,  235,  235,  239,
-			  239,  239,  239,  238,  238,  238,  238,  238,  238,  238,
-			  238,  238,  238,  238,  238,  238,  238,  238,  238,  238,
-			  238,  151,  151,  242,  242,  317,  351,  352,  353,  318, yyDummy>>)
+			  205,  206,  206,  207,  208,  208,  209,  210,  210,  223,
+			  223,  223,  225,  224,  224,  226,  226,  227,  228,  228,
+			  159,  236,  236,  238,  238,  238,  239,  237,  237,  237,
+			  237,  237,  237,  237,  237,  237,  237,  237,  237,  237,
+			  237,  237,  237,  237,  237,  237,  237,  237,  237,  241,
+			  241,  241,  241,  240,  240,  240,  240,  240,  240,  240,
+			  240,  240,  240,  240,  240,  240,  240,  240,  240,  240,
+			  240,  152,  152,  244,  244,  319,  354,  355,  356,  320, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER] is
@@ -21721,95 +22043,97 @@ feature {NONE} -- Table templates
 			   69,   69,   69,   69,   75,   77,   18,   18,   18,   18,
 			   78,   79,   83,   83,   12,   12,   12,   12,   12,    2,
 			    2,    2,    2,   79,   79,   79,   79,   79,   12,   10,
-			    1,    1,   81,  112,    1,   62,    1,   12,    2,   83,
-			   83,   83,   83,   83,   95,   18,    4,   79,   79,    9,
-			    6,    4,    4,   24,    2,    2,   79,    1,    1,    1,
-			    1,   18,    4,    4,   92,    1,    1,    1,    1,    1,
+			    1,    1,   20,   81,  112,    1,   62,    1,   12,    2,
+			   83,   83,   83,   83,   83,   95,   18,    4,   79,   79,
+			    9,    6,    4,    4,   24,    2,    2,   79,    1,    1,
+			    1,    1,   18,    4,    4,   92,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,   18,    4,    4,    4,    4,    2,    4,
-			   79,   79,   79,    4,    1,    9,    6,    4,    2,   83,
+			    1,    1,    1,    1,   18,    4,    4,    4,    4,    2,
+			    4,   79,   79,   79,    4,    1,    9,    6,    4,    2,
 
-			    4,    1,   48,   48,    4,   48,    1,    1,   48,   79,
-			    1,    1,   48,    4,    4,    4,    4,    4,    4,    4,
-			    4,    4,    4,    4,    4,    4,    4,    4,   12,   12,
-			   12,   12,    2,    4,   48,   92,    4,    4,    3,    1,
-			    1,    4,    4,    4,   79,    9,    2,   79,    4,    4,
-			    2,   59,   59,   59,   59,   59,   59,   79,    1,    4,
-			  111,  111,   12,    1,   12,   12,   12,   12,   12,    1,
-			  112,    1,   20,    2,   22,    1,   57,  102,    1,   83,
-			   12,   13,   95,    1,   79,    4,    4,   27,   48,    4,
-			    4,  105,    2,    4,    1,    2,   26,   35,    2,    2,
+			   83,    4,    1,   48,   48,    4,   48,    1,    1,   48,
+			   79,    1,    1,   48,    4,    4,    4,    4,    4,    4,
+			    4,    4,    4,    4,    4,    4,    4,    4,    4,   12,
+			   12,   12,   12,    2,    4,   48,   92,    4,    4,    3,
+			    1,    1,    4,    4,    4,   79,    9,    2,   79,    4,
+			    4,    2,   59,   59,   59,   59,   59,   59,   79,    1,
+			    4,  111,  111,   12,    1,   12,   12,   12,   12,   12,
+			    1,    4,    4,    4,   79,    1,  112,    1,   20,    2,
+			    2,   22,    1,   57,  102,    1,   83,   12,   13,   95,
+			    1,   79,    4,    4,   27,   48,    4,    4,  105,    2,
 
-			   64,    2,   35,  105,    2,    4,    4,    4,    4,   48,
-			   91,   48,   91,    4,   20,    1,   35,    1,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   12,   48,   48,   12,   48,   48,   48,    2,   35,
-			   35,    2,    1,    1,    1,    1,    4,    4,    1,    4,
-			  111,    1,    2,    2,    2,    1,    1,  112,    1,   20,
-			   48,    2,   21,   22,  102,    1,    4,    4,    4,   31,
-			   31,   33,    5,    3,   43,    2,   57,   59,   69,   69,
-			   69,   69,   69,   69,   18,   79,   84,    1,    1,   18,
-			   18,    4,   12,    4,    4,   34,  114,    2,    2,    4,
+			    4,    1,    2,   26,   35,    2,    2,   64,    2,   35,
+			  105,    2,    4,    4,    4,    4,   48,   91,   48,   91,
+			    4,   20,    1,   35,    1,   48,   48,   48,   48,   48,
+			   48,   48,   48,   48,   48,   48,   48,   48,   12,   48,
+			   48,   12,   48,   48,   48,    2,   35,   35,    2,    1,
+			    1,    1,    1,    4,    4,    1,    4,  111,    1,    2,
+			    2,    2,    1,    1,    4,   79,    1,    4,  112,    1,
+			    1,    4,    1,    1,   20,   48,    2,   21,   22,  102,
+			    1,    4,    4,    4,   31,   31,   33,    5,    3,   43,
+			    2,   57,   59,   69,   69,   69,   69,   69,   69,   18,
 
-			    2,    4,    1,    4,   91,  105,    4,   92,  105,  105,
-			   27,   18,    2,   91,    1,    4,    1,    4,    4,    4,
-			   20,   91,   48,   48,  105,   92,    4,    4,   79,  111,
-			    4,  100,    4,    4,    4,    4,    4,   22,    1,  102,
-			   84,   12,   78,    4,    1,    4,   12,   12,   95,  102,
-			   79,    4,    1,    1,    1,   12,    4,   92,   92,  105,
-			    4,   48,   65,   79,  104,   92,    1,   26,   64,  105,
-			    4,    4,    4,    2,   35,    1,    1,    4,    2,    2,
-			   79,   79,   79,   79,  111,  112,  111,    1,    4,    1,
-			   12,   19,   79,   20,    4,   48,   22,    4,   12,    2,
+			   79,   84,    1,    1,   18,   18,    4,   12,    4,    4,
+			   34,  114,    2,    2,    4,    2,    4,    1,    4,   91,
+			  105,    4,   92,  105,  105,   27,   18,    2,   91,    1,
+			    4,    1,    4,    4,    4,   20,   91,   48,   48,  105,
+			   92,    4,    4,   79,  111,    4,  100,    1,    4,    1,
+			    1,    1,   20,    4,    4,   22,    1,  102,   84,   12,
+			   78,    4,    1,    4,   12,   12,   95,  102,   79,    4,
+			    1,    1,    1,   12,    4,   92,   92,  105,    4,   48,
+			   65,   79,  104,   92,    1,   26,   64,  105,    4,    4,
+			    4,    2,   35,    1,    1,    4,    2,    2,   79,   79,
 
-			   84,   12,   19,   74,   12,   17,  112,    4,  102,   79,
-			  104,    4,    1,    4,   91,  105,    4,    4,    4,  111,
-			    4,    4,    4,   12,   12,   54,   55,    2,  100,   18,
-			   19,    4,    4,   84,    4,   18,   74,    2,   12,   12,
-			  102,    1,   74,   17,    4,    4,    1,   79,    1,  111,
-			    2,    2,   55,  100,    1,   12,  106,   12,   71,   12,
-			  102,    8,   31,   39,  102,    4,    1,   12,  104,  111,
-			  112,    4,    4,    2,  111,    4,  115,    4,    4,    4,
-			    1,    1,   12,   71,   12,  113,    1,  102,   74,  102,
-			    1,    4,   79,  100,    2,   66,   66,   80,  106,   87,
+			   79,   79,  111,  112,  111,    1,    4,    1,   12,   19,
+			    4,   48,   22,    4,   12,    2,   84,   12,   19,   74,
+			   12,   17,  112,    4,  102,   79,  104,    4,    1,    4,
+			   91,  105,    4,    4,    4,  111,    4,    4,    4,   12,
+			   12,   54,   55,    2,  100,   18,   19,    4,   84,    4,
+			   18,   74,    2,   12,   12,  102,    1,   74,   17,    4,
+			    4,    1,   79,    1,  111,    2,    2,   55,  100,    1,
+			   12,  106,   12,   71,   12,  102,    8,   31,   39,  102,
+			    4,    1,   12,  104,  111,  112,    4,    4,    2,  111,
+			    4,  115,    4,    4,    4,    1,    1,   12,   71,   12,
 
-			    1,   71,   22,    1,   12,   12,   12,   10,   49,   60,
-			   73,  102,   74,    2,  112,    1,   12,   96,  111,  106,
-			    4,   12,   12,   12,   12,   12,   90,   97,   98,   99,
-			  108,    1,   12,   86,   12,   12,   41,   87,   22,  112,
-			   15,    1,   49,   15,   12,   46,    1,    4,   95,    1,
-			  106,   95,   95,    1,   95,    4,    1,   97,   97,   98,
-			   98,   99,   99,   12,   90,   90,    1,   94,    1,    4,
-			   38,  101,   38,  101,   87,    1,    1,    1,   50,   18,
-			   12,   46,   12,   16,   12,    1,   12,   83,   95,   70,
-			   83,  107,   47,   89,  101,   98,   99,   12,   97,   40,
+			  113,    1,  102,   74,  102,    1,    4,   79,  100,    2,
+			   66,   66,   80,  106,   87,    1,   71,   22,    1,   12,
+			   12,   12,   10,   49,   60,   73,  102,   74,    2,  112,
+			    1,   12,   96,  111,  106,    4,   12,   12,   12,   12,
+			   12,   90,   97,   98,   99,  108,    1,   12,   86,   12,
+			   12,   41,   87,   22,  112,   15,    1,   49,   15,   12,
+			   46,    1,    4,   95,    1,  106,   95,   95,    1,   95,
+			    4,    1,   97,   97,   98,   98,   99,   99,   12,   90,
+			   90,    1,   94,    1,    4,   38,  101,   38,  101,   87,
+			    1,    1,    1,   50,   18,   12,   46,   12,   16,   12,
 
-			   83,   86,    1,   12,   38,   52,   94,    4,    1,   95,
-			   95,   87,   12,   12,   12,   12,   12,   12,    7,    6,
-			    4,   29,   30,   32,   35,   37,   42,   44,   48,   48,
-			   48,    2,   56,   58,   14,   14,   63,   68,   72,   15,
-			   19,   46,   22,   15,   12,   95,    1,  107,   12,    1,
-			   89,    1,   12,   53,   95,   99,   12,   98,   86,    4,
-			    4,    1,   62,   38,    1,    1,   94,    1,    2,  101,
-			   48,   48,   15,    4,  110,    6,   25,    2,   79,   22,
-			    4,    4,    4,   79,    4,    4,    4,   15,    1,    1,
-			   22,    4,    4,   83,   89,    4,   12,   99,    4,    4,
+			    1,   12,   83,   95,   70,   83,  107,   47,   89,  101,
+			   98,   99,   12,   97,   40,   83,   86,    1,   12,   38,
+			   52,   94,    4,    1,   95,   95,   87,   12,   12,   12,
+			   12,   12,   12,    7,    6,    4,   29,   30,   32,   35,
+			   37,   42,   44,   48,   48,   48,    2,   56,   58,   14,
+			   14,   63,   68,   72,   15,   19,   46,   22,   15,   12,
+			   95,    1,  107,   12,    1,   89,    1,   12,   53,   95,
+			   99,   12,   98,   86,    4,    4,    1,   62,   38,    1,
+			    1,   94,    1,    2,  101,   48,   48,   15,    4,  110,
+			    6,   25,    2,   79,   22,    4,    4,    4,   79,    4,
 
-			    4,  102,   38,  101,   51,   93,   94,  101,    1,   85,
-			    1,   12,   12,   23,    4,    1,   15,   27,   25,   12,
-			   48,   48,   25,    4,   48,   48,   48,   15,   95,  107,
-			   12,   86,  111,  111,   12,   93,    1,    4,    4,   12,
-			   12,   12,   36,   85,   15,   22,   12,   82,   18,  109,
-			   12,   27,   27,   25,    4,    4,   93,    1,  101,   15,
-			    1,   85,    1,   12,   12,   16,   88,    1,   48,    2,
-			   12,  109,    1,   27,    4,   12,    3,    2,   59,   61,
-			   68,   79,  103,   85,   15,   12,   12,   16,   12,   45,
-			   88,    4,   48,    4,    4,    4,    4,    4,  103,    4,
+			    4,    4,   15,    1,    1,   22,    4,    4,   83,   89,
+			    4,   12,   99,    4,    4,    4,  102,   38,  101,   51,
+			   93,   94,  101,    1,   85,    1,   12,   12,   23,    4,
+			    1,   15,   27,   25,   12,   48,   48,   25,    4,   48,
+			   48,   48,   15,   95,  107,   12,   86,  111,  111,   12,
+			   93,    1,    4,    4,   12,   12,   12,   36,   85,   15,
+			   22,   12,   82,   18,  109,   12,   27,   27,   25,    4,
+			    4,   93,    1,  101,   15,    1,   85,    1,   12,   12,
+			   16,   88,    1,   48,    2,   12,  109,    1,   27,    4,
+			   12,    3,    2,   59,   61,   68,   79,  103,   85,   15,
 
-			    1,   12,   48,   88,    1,   48,   12,  109,    3,    2,
-			   68,   79,    3,    2,   59,   68,    2,   59,   68,   79,
-			    4,    3,    2,   59,   68,   12,   12,   88,   15,  103,
-			   15,   15,   12,    1,    1,    1, yyDummy>>)
+			   12,   12,   16,   12,   45,   88,    4,   48,    4,    4,
+			    4,    4,    4,  103,    4,    1,   12,   48,   88,    1,
+			   48,   12,  109,    3,    2,   68,   79,    3,    2,   59,
+			   68,    2,   59,   68,   79,    4,    3,    2,   59,   68,
+			   12,   12,   88,   15,  103,   15,   15,   12,    1,    1,
+			    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER] is
@@ -21835,468 +22159,474 @@ feature {NONE} -- Table templates
 	yydefact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			   13,  565,  305,   16,  565,    0,  467,  468,  466,  465,
-			    0,   39,    1,  565,  307,    6,  565,    3,    0,  530,
-			  538,  537,  536,  535,  534,  533,  532,  531,  529,  528,
-			  527,  526,  525,  524,  523,  522,  521,  520,  519,  515,
-			  518,  514,  517,    0,    0,    0,    0,    0,  454,    0,
-			  406,  449,  450,  485,  484,    0,    0,    0,    0,    0,
-			  565,    0,  565,  486,  502,  493,  510,    0,    0,    0,
-			    0,  425,    0,    0,  375,  407,  447,  387,  481,  475,
-			  451,  378,  480,  452,  415,    4,  383,  416,  384,  442,
-			    0,  454,  476,  381,  423,  477,  376,  377,  435,  434,
+			   13,  575,  315,   16,  575,    0,  477,  478,  476,  475,
+			    0,   39,    1,  575,  317,    6,  575,    3,    0,  540,
+			  548,  547,  546,  545,  544,  543,  542,  541,  539,  538,
+			  537,  536,  535,  534,  533,  532,  531,  530,  529,  525,
+			  528,  524,  527,    0,    0,    0,    0,    0,  464,    0,
+			  416,  459,  460,  495,  494,    0,    0,    0,    0,    0,
+			  575,    0,  575,  496,  512,  503,  520,    0,    0,    0,
+			    0,  435,    0,    0,  385,  417,  457,  397,  491,  485,
+			  461,  388,  490,  462,  425,    4,  393,  426,  394,  452,
+			    0,  464,  486,  391,  433,  487,  386,  387,  445,  444,
 
-			  478,  382,  424,  479,  408,  342,  482,  513,  511,  512,
-			  448,  422,  443,  444,    0,    0,    0,    0,  463,  464,
-			  565,  462,  230,    2,  217,  216,  227,  228,   40,   41,
-			    0,   41,  157,  569,    0,  565,  565,    0,   76,   77,
-			   78,   74,   72,   71,  569,  483,    0,    0,  373,  353,
-			  352,  355,    0,    0,  442,  356,  354,  542,  541,  540,
-			  539,   80,    0,  565,  432,  560,  559,  558,  557,  556,
-			  555,  554,  553,  552,  551,  550,  549,  548,  547,  546,
-			  545,  544,  543,   79,    0,    0,    0,    0,  356,    0,
-			    0,    0,    0,  561,    0,  413,  414,    0,   76,  411,
+			  488,  392,  434,  489,  418,  352,  492,  523,  521,  522,
+			  458,  432,  453,  454,    0,    0,    0,    0,  473,  474,
+			  575,  472,  240,    2,  227,  226,  237,  238,   40,   41,
+			    0,   41,   66,    0,  579,    0,  575,  575,    0,   76,
+			   77,   78,   74,   72,   71,  579,  493,    0,    0,  383,
+			  363,  362,  365,    0,    0,  452,  366,  364,  552,  551,
+			  550,  549,   80,    0,  575,  442,  570,  569,  568,  567,
+			  566,  565,  564,  563,  562,  561,  560,  559,  558,  557,
+			  556,  555,  554,  553,   79,    0,    0,    0,    0,  366,
+			    0,    0,    0,    0,  571,    0,  423,  424,    0,   76,
 
-			  563,    0,    0,  409,  565,  420,  504,  492,  418,    0,
-			  503,  491,  419,    0,  565,    0,    0,    0,    0,    0,
+			  421,  573,    0,    0,  419,  575,  430,  514,  502,  428,
+			    0,  513,  501,  429,    0,  575,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,  421,  445,    0,    0,  487,  507,
-			  496,    0,    0,    0,  222,  226,  225,  221,    0,    0,
-			  224,  223,  488,  489,  490,  494,  495,    0,  566,  565,
-			  231,  229,   42,   36,   43,   44,    0,   41,   41,   35,
-			  565,    8,  569,  161,  306,    0,   23,  569,    0,   73,
-			    0,   75,    0,    0,    0,    0,    0,  369,    0,    0,
-			  565,  340,    0,  455,    0,  356,  439,  426,  442,  454,
+			    0,    0,    0,    0,    0,  431,  455,    0,    0,  497,
+			  517,  506,    0,    0,    0,  232,  236,  235,  231,    0,
+			    0,  234,  233,  498,  499,  500,  504,  505,    0,  576,
+			  575,  241,  239,   42,   36,   43,   44,    0,   41,   41,
+			   35,   66,   67,    0,   66,  158,  575,    8,    0,  165,
+			    0,  316,    0,   23,  579,    0,   73,    0,   75,    0,
+			    0,    0,    0,    0,  379,    0,    0,  575,  350,    0,
 
-			  438,  356,  427,  343,  356,  373,    0,  380,    0,  459,
-			  569,    0,  569,  453,    0,    0,  428,    0,  394,  393,
-			  392,  391,  390,  389,  388,  401,  403,  402,  404,  385,
-			  386,    0,  395,  400,    0,  397,  399,  405,  356,  430,
-			  431,  454,  509,  498,  508,  497,    0,    0,    0,  233,
-			    0,    0,  460,  248,  461,   38,   37,  156,    0,    0,
-			   66,  442,  212,  569,  565,   14,   30,    0,    0,   29,
-			   32,  473,  469,  470,    0,   31,  569,  471,  472,  499,
-			  500,  501,  505,  506,  474,    0,   66,   84,   83,   82,
-			   85,    0,   13,    0,    0,  185,    0,  454,  454,  351,
+			  465,    0,  366,  449,  436,  452,  464,  448,  366,  437,
+			  353,  366,  383,    0,  390,    0,  469,  579,    0,  579,
+			  463,    0,  575,  438,    0,  404,  403,  402,  401,  400,
+			  399,  398,  411,  413,  412,  414,  395,  396,    0,  405,
+			  410,    0,  407,  409,  415,  366,  440,  441,  464,  519,
+			  508,  518,  507,    0,    0,    0,  243,    0,    0,  470,
+			  258,  471,   38,   37,    0,   66,  162,    0,  156,  579,
+			  163,  170,  169,  168,  575,   66,  452,  222,  579,  575,
+			   14,   30,    0,    0,   29,   32,  483,  479,  480,    0,
+			   31,  579,  481,  482,  509,  510,  511,  515,  516,  484,
 
-			  356,  357,    0,  454,  569,  347,    0,  446,  346,  349,
-			  370,  516,  356,    0,    0,  412,    0,    0,    0,  410,
-			  569,  569,  396,  398,  344,  436,    0,  232,  237,  569,
-			  565,  172,    0,    0,   67,  213,   66,    0,  209,   22,
-			    0,   33,    0,    0,   24,   26,   86,   81,   70,   45,
-			   93,  151,  154,  565,   68,   13,    0,  437,  374,  341,
-			  362,  364,  361,  422,  569,  433,    0,  440,  441,  348,
-			    0,  562,  564,  356,  429,  163,    0,  239,  462,  230,
-			    0,  220,  228,    0,  240,  241,    0,  234,  249,    0,
-			    0,   45,   66,  160,  215,   66,  211,    0,   34,   31,
+			    0,   66,   84,   83,   82,   85,    0,   13,    0,    0,
+			  195,    0,  464,  464,  361,  366,  367,    0,  464,  579,
+			  357,    0,  456,  356,  359,  380,  526,  366,    0,    0,
+			  422,    0,    0,    0,  420,  579,  579,  406,  408,  354,
+			  446,    0,  242,  247,  579,  575,  182,  160,  159,  161,
+			  164,  171,  166,  223,   66,    0,  219,   22,    0,   33,
+			    0,    0,   24,   26,   86,   81,   70,   45,   93,  151,
+			  154,  575,   68,   13,    0,  447,  384,  351,  372,  374,
+			  371,  432,  579,  443,    0,  450,  451,  358,    0,  572,
+			  574,  366,  439,  173,    0,  249,  472,  240,    0,  230,
 
-			   66,    0,  165,   89,    0,   17,  569,  186,   45,   93,
-			    0,  363,    0,  456,  458,  345,  417,  567,    0,  231,
-			  242,  567,    0,    0,    0,  258,  253,  256,  569,  173,
-			   97,  158,  214,   28,   25,   46,  198,   94,   20,   13,
-			   87,    0,   91,    0,    0,  358,    0,   66,    0,  236,
-			  254,  255,  259,    0,    0,  565,   10,  200,  176,   18,
-			  565,   96,   95,   17,   45,  152,  153,   13,  360,  243,
-			  246,  245,  568,  462,  244,    0,  257,    0,  250,   98,
-			    0,  565,  202,  565,  565,    0,  565,   88,   90,   45,
-			    0,  567,  261,  252,  230,  102,   66,  105,  569,  128,
+			  238,    0,  250,  251,    0,  244,  259,    0,    0,   45,
+			  225,   66,  221,    0,   34,   31,   66,    0,  175,   89,
+			    0,   17,  579,  196,   45,   93,    0,  373,    0,  466,
+			  468,  355,  427,  577,    0,  241,  252,  577,    0,    0,
+			    0,  268,  263,  266,  579,  183,   97,  224,   28,   25,
+			   46,  208,   94,   20,   13,   87,    0,   91,    0,    0,
+			  368,    0,   66,    0,  246,  264,  265,  269,    0,    0,
+			  575,   10,  210,  186,   18,  575,   96,   95,   17,   45,
+			  152,  153,   13,  370,  253,  256,  255,  578,  472,  254,
+			    0,  267,    0,  260,   98,    0,  575,  212,  575,  575,
 
-			    0,  565,  199,  565,  185,  170,  185,  168,  167,  166,
-			  203,  569,   92,    0,  247,    0,  565,  260,  104,    0,
-			  103,  565,  565,  565,  565,  565,  139,  143,  147,    0,
-			  117,   99,  565,  565,  334,  337,  333,  569,  201,  569,
-			  175,  565,    0,  174,  205,  318,    0,  567,    0,    0,
-			  101,  142,  150,    0,  146,  120,    0,  140,  143,  144,
-			  147,  148,    0,  106,  118,  139,    0,   11,    0,  565,
-			  565,  336,  565,  339,    0,  330,  178,    0,  172,  171,
-			  207,  565,  185,    0,   19,    0,  262,  138,  569,  115,
-			    0,  569,  123,  569,  565,  147,    0,  107,  143,  132,
+			    0,  575,   88,   90,   45,    0,  577,  271,  262,  240,
+			  102,   66,  105,  579,  128,    0,  575,  209,  575,  195,
+			  180,  195,  178,  177,  176,  213,  579,   92,    0,  257,
+			    0,  575,  270,  104,    0,  103,  575,  575,  575,  575,
+			  575,  139,  143,  147,    0,  117,   99,  575,  575,  344,
+			  347,  343,  579,  211,  579,  185,  575,    0,  184,  215,
+			  328,    0,  577,    0,    0,  101,  142,  150,    0,  146,
+			  120,    0,  140,  143,  144,  147,  148,    0,  106,  118,
+			  139,    0,   11,    0,  575,  575,  346,  575,  349,    0,
+			  340,  188,    0,  182,  181,  217,  575,  195,    0,   19,
 
-			    0,  569,  305,   55,  565,   51,  569,   58,    0,  335,
-			  338,  332,    0,    0,  185,  312,    0,  565,  197,  450,
-			    0,  190,  189,  387,  378,  196,  187,  195,  188,    0,
-			  416,  442,  192,  193,  183,  185,  194,  377,  191,  569,
-			  169,  565,  204,  319,  164,    0,  135,    0,    0,  112,
-			    0,  119,  126,   66,  127,    0,  108,  147,    0,    0,
-			    0,  129,   13,   56,  565,   52,    0,   48,   62,  569,
-			  565,    0,  303,  565,  185,  372,  373,  371,  373,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,  184,  180,
-			  206,    0,    0,  116,  122,  124,  109,    0,    0,  565,
+			    0,  272,  138,  579,  115,    0,  579,  123,  579,  575,
+			  147,    0,  107,  143,  132,    0,  579,  315,   55,  575,
+			   51,  579,   58,    0,  345,  348,  342,    0,    0,  195,
+			  322,    0,  575,  207,  460,    0,  200,  199,  397,  388,
+			  206,  197,  205,  198,    0,  426,  452,  202,  203,  193,
+			  195,  204,  387,  201,  579,  179,  575,  214,  329,  174,
+			    0,  135,    0,    0,  112,    0,  119,  126,   66,  127,
+			    0,  108,  147,    0,    0,    0,  129,   13,   56,  575,
+			   52,    0,   48,   62,  579,  575,    0,  313,  575,  195,
+			  382,  383,  381,  383,    0,    0,    0,    0,    0,    0,
 
-			  565,    0,   54,   57,   65,  569,   50,    0,    0,    0,
-			    0,  185,  565,  308,  313,    0,    0,  367,  373,  379,
-			  328,  326,  373,  373,  324,  327,  325,  182,  137,  114,
-			  110,  131,    0,    0,    9,  565,   12,    0,   59,  185,
-			  273,  565,  279,  569,  565,  304,    0,    0,  317,  569,
-			  311,  368,  365,  373,  134,    0,   64,   53,   61,    0,
-			    0,    0,  276,  185,  263,    0,    0,    0,  310,  442,
-			    0,    0,    0,  366,  133,  274,  286,  288,  284,  283,
-			  294,    0,  569,  278,  272,  264,  265,    0,    0,  270,
-			  569,    0,    0,    0,  314,    0,    0,    0,    0,    0,
+			    0,    0,    0,  194,  190,  216,    0,    0,  116,  122,
+			  124,  109,    0,    0,  575,  575,    0,   54,   57,   65,
+			  579,   50,    0,    0,    0,    0,  195,  575,  318,  323,
+			    0,    0,  377,  383,  389,  338,  336,  383,  383,  334,
+			  337,  335,  192,  137,  114,  110,  131,    0,    0,    9,
+			  575,   12,    0,   59,  195,  283,  575,  289,  579,  575,
+			  314,    0,    0,  327,  579,  321,  378,  375,  383,  134,
+			    0,   64,   53,   61,    0,    0,    0,  286,  195,  273,
+			    0,    0,    0,  320,  452,    0,    0,    0,  376,  133,
+			  284,  296,  298,  294,  293,  304,    0,  579,  288,  282,
 
-			    0,  266,    0,    0,  267,  309,  185,  316,  287,  293,
-			  301,    0,  292,  289,  290,  296,  291,  285,  299,    0,
-			    0,  300,  295,  298,  297,  185,  185,  269,    0,  282,
-			  280,  271,  302,    0,    0,    0, yyDummy>>)
+			  274,  275,    0,    0,  280,  579,    0,    0,    0,  324,
+			    0,    0,    0,    0,    0,    0,  276,    0,    0,  277,
+			  319,  195,  326,  297,  303,  311,    0,  302,  299,  300,
+			  306,  301,  295,  309,    0,    0,  310,  305,  308,  307,
+			  195,  195,  279,    0,  292,  290,  281,  312,    0,    0,
+			    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			  435,  447,  281,  865,  683,  505,  491,  502,  272,  314,
-			  813,  153,   74,  776,  296,  287,   75,  721,  722,  369,
-			  370,   76,   77,   78,  395,   79,   80,  297,   81,  842,
-			   82,  725,  266,  670,  704,  563,  699,  636,  726,   83,
-			  727,  889,  645,  692,   84,  309,   86,  729,   87,   88,
-			  608,  678,  804,  705,  753,  525,  526,  768,  122,   89,
-			   90,   91,  732,  276,  376,  733,  734,  735,  377,   92,
-			   93,  254,   94,   95,  609,  879,   15,  736,  300,  462,
-			  595,  596,   96,   97,   98,   99,  378,  100,  101,  381,
-			  102,  103,  689,  558,  738,  610,  503,  104,  105,  106,
+			  273,  465,  288,  880,  698,  521,  509,  518,  132,  278,
+			  321,  828,  154,   74,  791,  303,  294,   75,  736,  737,
+			  384,  385,   76,   77,   78,  410,   79,   80,  304,   81,
+			  857,   82,  740,  267,  685,  719,  578,  714,  651,  741,
+			   83,  742,  904,  660,  707,   84,  316,   86,  744,   87,
+			   88,  623,  693,  819,  720,  768,  541,  542,  783,  122,
+			   89,  280,   90,   91,  747,  283,  391,  748,  749,  750,
+			  392,   92,   93,  255,   94,   95,  624,  894,   15,  751,
+			  307,  480,  610,  611,   96,   97,   98,   99,  393,  100,
+			  101,  396,  102,  103,  704,  573,  753,  625,  519,  104,
 
-			  107,  108,  109,  183,  161,  390,  362,  110,  480,  124,
-			  111,  125,  126,  127,  483,  597,  132,  847,  112,  113,
-			  141,  142,  143,  386,  809,  843,  701,  633,  599,  637,
-			  866,  890,  693,  626,  665,  310,  164,  805,  667,  706,
-			  648,  688,  144,  617,  657,  658,  659,  660,  661,  662,
-			  431,  528,  694,  769,   11,  277,  540,  640,  739,  882,
-			  464,  291,  556,  598,  691,  630,  849,  774,  274,  363,
-			  260,  261,  350,  429,  569,  133,  570,  585,  396,  576,
-			  933,   12,  275,  271,  130,  581,  702,  765,   16,  560,
-			  364,  440,  131,  263,  766,  763,  807,  835,  641,  282,
+			  105,  106,  107,  108,  109,  184,  162,  405,  377,  110,
+			  498,  124,  111,  125,  126,  127,  501,  612,  133,  862,
+			  112,  113,  142,  143,  144,  401,  824,  858,  716,  648,
+			  614,  652,  881,  905,  708,  641,  680,  317,  165,  820,
+			  682,  721,  663,  703,  145,  632,  672,  673,  674,  675,
+			  676,  677,  446,  544,  709,  784,   11,  284,  555,  655,
+			  754,  897,  482,  298,  571,  613,  706,  645,  864,  789,
+			  281,  378,  261,  262,  357,  444,  584,  134,  585,  600,
+			  411,  591,  948,   12,  282,  277,  130,  596,  717,  780,
+			   16,  575,  379,  458,  131,  264,  781,  778,  822,  850,
 
-			  619,  747,  750,  758,  745,  270,  359,  536,  642,  787,
-			  583,  601,  681,  741,  437,  486,  348,  546,  590,  553,
-			  552,  903,  861,  898,  135,  871,  674,  510,  413, yyDummy>>)
+			  656,  289,  634,  762,  765,  773,  760,  276,  374,  372,
+			  551,  657,  802,  598,  616,  696,  756,  455,  504,  355,
+			  561,  605,  568,  567,  918,  876,  913,  136,  886,  689,
+			  526,  428, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			  830, 1059,  578, 2264, -32768, 1664, -32768, -32768, -32768, -32768,
-			  656,   52, -32768, -32768, -32768, -32768, -32768, -32768, 1096, -32768,
+			  951, 1050,  571, 2384, -32768, 1784, -32768, -32768, -32768, -32768,
+			  685,   51, -32768, -32768, -32768, -32768, -32768, -32768,  714, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, 2405, 1001, 1001, 1457,  454,  245, 2575,
-			 -32768,  232,  217, -32768, -32768,  878,  854,  656,  656,  656,
-			 1011, 1027, 1007, -32768, -32768, -32768, -32768, 1664, 1664, 1015,
-			 1664, -32768, 2024, 1904, 1013, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, 1000, 2773, -32768, -32768, -32768,  983,
-			 1664,  891, -32768, -32768, -32768, -32768, 1003,  997, -32768, -32768,
+			 -32768, -32768, -32768, 2237, 1004, 1004, 1577,  736,  157, 2663,
+			 -32768,  263,  244, -32768, -32768,  720,  837,  685,  685,  685,
+			 1011, 1132, 1006, -32768, -32768, -32768, -32768, 1784, 1784, 1014,
+			 1784, -32768, 2144, 2024, 1009, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768,  996, 2861, -32768, -32768, -32768,  963,
+			 1784,  879, -32768, -32768, -32768, -32768, 1002,  995, -32768, -32768,
 
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, 1226, -32768, -32768,  807,  811,  138,  294, -32768, -32768,
-			 2417, -32768,  765, -32768, -32768, -32768, -32768, -32768, -32768,  900,
-			  526,  359,  457, -32768,  878,   42, -32768,  709,  953, -32768,
-			 -32768, -32768, -32768,  291, -32768, -32768,  656,  993,  323, -32768,
-			 -32768, -32768, 1664,  990,  989,  849, -32768, -32768, -32768, -32768,
-			 -32768, -32768,  138,  965, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768, 1078, -32768, -32768,  645,  638,  256, 1060, -32768, -32768,
+			  988, -32768,  719, -32768, -32768, -32768, -32768, -32768, -32768,  893,
+			  313,   94,  540,  941, -32768,  720,   42, -32768,  501,  953,
+			 -32768, -32768, -32768, -32768,  319, -32768, -32768,  685,  989,  404,
+			 -32768, -32768, -32768, 1784,  986,  985,  818, -32768, -32768, -32768,
+			 -32768, -32768, -32768,  256,  966, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,  878,  709,  878,  709,  849,  878,
-			  959,  958,  263, -32768, 1664, -32768, -32768, 1664, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768,  720,  501,  720,  501,  818,
+			  720,  949,  943,  236, -32768, 1784, -32768, -32768, 1784, -32768,
 
-			 -32768, 1664, 2667, -32768,  955, -32768, -32768, -32768, -32768, 1057,
-			 -32768, -32768, -32768,  709, -32768, 1664, 1664, 1664, 1664, 1664,
-			 1664, 1664, 1664, 1664, 1664, 1664, 1664, 1664, 1544, 1664,
-			 1424, 1664, 1664,  878, -32768, -32768,  709,  709, -32768, -32768,
-			 -32768,  878,  682,  677, -32768, -32768, -32768, -32768,  962,  954,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  517, -32768,  948,
-			 -32768, -32768, -32768, -32768, -32768, -32768,  740,  900,  900, -32768,
-			 -32768, -32768, -32768,   17, -32768, 1664,  546, -32768, 2144, -32768,
-			 2643, -32768,  929,  269,  926,  878,  878, -32768, 2629,  709,
-			  933, -32768,  895, -32768, 1664,  849,  852, -32768, -32768,  891,
+			 -32768, -32768, 1784, 2755, -32768,  964, -32768, -32768, -32768, -32768,
+			  663, -32768, -32768, -32768,  501, -32768, 1784, 1784, 1784, 1784,
+			 1784, 1784, 1784, 1784, 1784, 1784, 1784, 1784, 1784, 1664,
+			 1784, 1544, 1784, 1784,  720, -32768, -32768,  501,  501, -32768,
+			 -32768, -32768,  720,  528,  518, -32768, -32768, -32768, -32768,  954,
+			  952, -32768, -32768, -32768, -32768, -32768, -32768, -32768,   66, -32768,
+			  945, -32768, -32768, -32768, -32768, -32768, -32768,  386,  893,  893,
+			 -32768,  366, -32768,  972,  578, -32768, -32768, -32768,  326,  874,
+			   64, -32768, 1784,  677, -32768, 2264, -32768, 2731, -32768,  915,
+			  144,  911,  720,  720, -32768, 2717,  501,  908, -32768,  909,
 
-			 -32768,  849, -32768, -32768,  849,  323, 2599, -32768,  878, 2571,
-			 -32768, 2611, -32768,  130,  917,  878, -32768, 1664,  606,  606,
-			  606,  606,  606, 1276, 1276, 1366, 1366, 1366, 1366, 1366,
-			 1366, 1664, 2787, 2232, 1664, 2647, 2394, -32768,  849, -32768,
-			 -32768,  891, -32768, -32768, -32768, -32768,  922,  919,  899, -32768,
-			  897,  656, -32768,  896, -32768, -32768, -32768, -32768,  880,  877,
-			 2553,  531,  506, -32768, -32768, -32768, -32768,  660,  631, 1017,
-			 -32768, -32768, -32768, -32768,   83,  879, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, 1361,  567, -32768, -32768, -32768,
-			  845, 1096,  501,  656,   50, -32768,  420,  891,  891, -32768,
+			 -32768, 1784,  818,  845, -32768, -32768,  879, -32768,  818, -32768,
+			 -32768,  818,  404, 2687, -32768,  720, 2661, -32768, 2699, -32768,
+			  150,  898, -32768, -32768, 1784,  505,  505,  505,  505,  505,
+			  797,  797, 1407, 1407, 1407, 1407, 1407, 1407, 1784, 2906,
+			 2892, 1784, 2877, 2736, -32768,  818, -32768, -32768,  879, -32768,
+			 -32768, -32768, -32768,  907,  901,  897, -32768,  890,  685, -32768,
+			  894, -32768, -32768, -32768,  924,  578, -32768,  923, -32768, -32768,
+			 -32768,  874, -32768, -32768, -32768, 2643,  297,  562, -32768, -32768,
+			 -32768, -32768,  478,  360, 1122, -32768, -32768, -32768, -32768,   41,
+			  866, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 
-			  849, -32768, 1784,  891, -32768, -32768,  709, -32768, -32768, -32768,
-			 -32768, -32768,  849,  869,  873, -32768,  876,  878,  709, -32768,
-			 -32768, -32768, 2787, 2647, -32768, -32768,  539, -32768,  390, -32768,
-			  872,  663,  656,  878, -32768, -32768, 1303, 1664, -32768, -32768,
-			  855, -32768,  840, 2144, -32768, -32768, -32768, -32768, -32768,  710,
-			  776, -32768, -32768, -32768,  452,  501,  656, -32768, -32768, -32768,
-			  854, 2773,  847, 1071, -32768, -32768,  846,  852, -32768, -32768,
-			 1664, -32768, -32768,  849, -32768, -32768,  839, -32768,  551,  765,
-			  835,  813,  819,  803, -32768, -32768,  802, -32768, -32768,  221,
-			 2623,  710,  567, -32768, -32768, 2553, -32768, 2144, -32768, -32768,
+			 1110,  578, -32768, -32768, -32768,  844,  714,  504,  685,   57,
+			 -32768,  467,  879,  879, -32768,  818, -32768, 1904,  879, -32768,
+			 -32768,  501, -32768, -32768, -32768, -32768, -32768,  818,  859,  862,
+			 -32768,  864,  720,  501, -32768, -32768, -32768, 2906, 2877, -32768,
+			 -32768,  509, -32768,  309, -32768,  863,  616, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, 1424, 1784, -32768, -32768,  848, -32768,
+			  838, 2264, -32768, -32768, -32768, -32768, -32768,  659,  769, -32768,
+			 -32768, -32768,  477,  504,  685, -32768, -32768, -32768,  837, 2861,
+			  839, 1273, -32768, -32768,  836,  845, -32768, -32768, 1784, -32768,
+			 -32768,  818, -32768, -32768,  828, -32768,  337,  719,  826,  817,
 
-			  567, 2405, -32768, -32768,  878,  116, -32768, -32768,  710,  776,
-			  799, -32768,  801, -32768, -32768, -32768, -32768, -32768,  656,  793,
-			 -32768, -32768,  656,  138,  138, -32768,  797, -32768, -32768, -32768,
-			  739, -32768, -32768, -32768, -32768, -32768,  726, -32768,  766, 2310,
-			 -32768,  119, -32768,  754, 1784, -32768,  608,  259,  595, -32768,
-			 -32768, -32768,  775,  772,  783,  570, -32768,  735,  715, -32768,
-			 -32768, -32768, -32768,  716,  710, -32768, -32768,  501, -32768, -32768,
-			 -32768, -32768, -32768,  756, -32768,  807, -32768,  221, -32768, -32768,
-			  138,  906, -32768,  431,  492,  182, -32768, -32768, -32768,  710,
-			  658, -32768,  725, -32768,  765,  667,  567,  324, -32768,  717,
+			  809,  802, -32768, -32768,  795, -32768, -32768,   28, 2711,  659,
+			 -32768, 2643, -32768, 2264, -32768, -32768,  578, 2237, -32768, -32768,
+			  720,   67, -32768, -32768,  659,  769,  782, -32768,  784, -32768,
+			 -32768, -32768, -32768, -32768,  685,  774, -32768, -32768,  685,  256,
+			  256, -32768,  776, -32768, -32768, -32768,  715, -32768, -32768, -32768,
+			 -32768,  694, -32768,  744, 2430, -32768,   72, -32768,  722, 1904,
+			 -32768,  629,  230,  615, -32768, -32768, -32768,  738,  728,  731,
+			  885, -32768,  689,  687, -32768, -32768, -32768, -32768,  675,  659,
+			 -32768, -32768,  504, -32768, -32768, -32768, -32768, -32768,  713, -32768,
+			  645, -32768,   28, -32768, -32768,  256, 1117, -32768,  531,  906,
 
-			  430,  431, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			  708, -32768, -32768,  465, -32768,  595, -32768, -32768, -32768,  138,
-			 -32768,   24,  729,  666,   10,  449,  626,  573,  490,  706,
-			  693, -32768, -32768,  281,  691,  691,  887, -32768, -32768, -32768,
-			 -32768,  615, 2623, -32768,  670,  652,  687, -32768,  685,  709,
-			 -32768, -32768, -32768,  709, -32768, -32768,  520, -32768,  573, -32768,
-			  490, -32768,  681, -32768, -32768,  626,  709, -32768,  493,  686,
-			 -32768, 1089, -32768, 1089,  430, -32768, -32768, 1158,  663, -32768,
-			 -32768,  -15, -32768,  661, -32768,  658, -32768,  914, -32768,  477,
-			  612, -32768,   12, -32768,  386,  490,  614, -32768,  573, 1020,
+			  869, -32768, -32768, -32768,  659,  655, -32768,  682, -32768,  719,
+			 1303,  578,  891, -32768,  664,  180,  531, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768,  654, -32768, -32768,  329, -32768,
+			  615, -32768, -32768, -32768,  256, -32768,   46,  673,  471,   -7,
+			  212,  593,  576,  507,  670,  648, -32768, -32768,  345,  678,
+			  678,  376, -32768, -32768, -32768, -32768, 2362, 2711, -32768,  609,
+			  602,  668, -32768,  658,  501, -32768, -32768, -32768,  501, -32768,
+			 -32768,  533, -32768,  576, -32768,  507, -32768,  651, -32768, -32768,
+			  593,  501, -32768,  480,  652, -32768, 1263, -32768, 1263,  180,
+			 -32768, -32768, 1287,  616, -32768, -32768,    4, -32768,  624, -32768,
 
-			  425, -32768,  578, -32768,  907,   -6, -32768, -32768,  740, -32768,
-			 -32768, -32768, 1664, 1664, -32768,  633,  300,  597, -32768,   45,
-			  446, -32768, -32768,  649,  647, -32768, -32768, -32768, 2773,  642,
-			  638,   57, -32768, -32768,  928, -32768, -32768,   59, -32768, -32768,
-			 -32768,  -15, -32768, -32768, -32768,  590, -32768,  572,  709, -32768,
-			  520, -32768, -32768,  567, -32768,  558, -32768,  490,  554,  553,
-			  549, -32768,  501,  520, -32768, -32768,  493, -32768,  508, -32768,
-			 2535, 2217,  455,  503, -32768, -32768,  323, -32768,  999,  475,
-			 1664, 1664,  393,  479, 1664, 1664, 1664, 1158,  452, -32768,
-			 -32768,  709,  709, -32768, -32768, -32768, -32768,  426,  709, -32768,
+			  655, -32768, 2540, -32768,  343,  611, -32768,  218, -32768,  365,
+			  507,  620, -32768,  576,  514,  419, -32768,  571, -32768,  499,
+			  271, -32768, -32768,  386, -32768, -32768, -32768, 1784, 1784, -32768,
+			  635, 1085,  588, -32768,  107,  278, -32768, -32768,  650,  649,
+			 -32768, -32768, -32768, 2861,  646,  623,  261, -32768, -32768, 1422,
+			 -32768, -32768,   65, -32768, -32768, -32768,    4, -32768, -32768, -32768,
+			  591, -32768,  590,  501, -32768,  533, -32768, -32768,  578, -32768,
+			  555, -32768,  507,  557,  564,  558, -32768,  504,  533, -32768,
+			 -32768,  480, -32768,  513, -32768, 2560, 2313,  451,  497, -32768,
+			 -32768,  404, -32768,  805,  473, 1784, 1784, 1092,  483, 1784,
 
-			 -32768,  418, -32768, -32768,  428, -32768, -32768,  412,  407,  379,
-			  207, -32768,  354,  321, -32768, 2623,  343, -32768,  323, -32768,
-			 2773, 2773,  323,  999, 2773, 2773, 2773, -32768, -32768, -32768,
-			 -32768, -32768,  383,  371, -32768, -32768, -32768,  740, -32768, -32768,
-			 -32768, -32768,  296, -32768,  295, -32768, 1664,  297,  352, -32768,
-			 -32768, -32768, -32768,  323, -32768,  282, -32768, -32768, -32768,  279,
-			  674,  207, -32768, -32768, -32768,  254,  210,   89, 2773,  313,
-			 1664,  264,  249, -32768, -32768, -32768,  277,  247,  230,  100,
-			  172, 1138, -32768, -32768, -32768, -32768, -32768,  143, 1664,  186,
-			 -32768, 1664, 1295, 2623, -32768,  915,  674,  940,  125,  674,
+			 1784, 1784, 1287,  477, -32768, -32768,  501,  501, -32768, -32768,
+			 -32768, -32768,  458,  501, -32768, -32768,  455, -32768, -32768,  270,
+			 -32768, -32768,  435,  434,  439,  308, -32768,   61,  367, -32768,
+			 2711,  388, -32768,  404, -32768, 2861, 2861,  404,  805, 2861,
+			 2861, 2861, -32768, -32768, -32768, -32768, -32768,  429,  426, -32768,
+			 -32768, -32768,  386, -32768, -32768, -32768, -32768,  340, -32768,  321,
+			 -32768, 1784,  352,  403, -32768, -32768, -32768, -32768,  404, -32768,
+			  382, -32768, -32768, -32768,  347,  851,  308, -32768, -32768, -32768,
+			  279,  258,   43, 2861,  243, 1784,  265,  327, -32768, -32768,
+			 -32768,  316,  300,  295,  165,  264,  902, -32768, -32768, -32768,
 
-			   -9, -32768, 2193,   89, -32768, 2773, -32768, -32768, -32768, -32768,
-			 -32768,  316, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  156,
-			  674, -32768, -32768, -32768, -32768, -32768, -32768, -32768,    3, -32768,
-			 -32768, -32768, -32768,   65,   35, -32768, yyDummy>>)
+			 -32768, -32768,  199, 1784,  223, -32768, 1784, 2515, 2711, -32768,
+			  858,  851, 1055,  204,  851,   89, -32768, 1254,   43, -32768,
+			 2861, -32768, -32768, -32768, -32768, -32768,   93, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768,  603,  851, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768,   88, -32768, -32768, -32768, -32768,   96,   84,
+			 -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			 -343, -32768, -32768,  356, -32768,  711,  541,  727, -274, -32768,
-			 -32768, -32768, -32768, -702,  810, -296, -32768, -32768, -32768, -32768,
-			  675, -32768, -651,  -78, -32768,  -98, -32768, -138, -654, -32768,
-			 -241, -32768, -32768, -619, -32768, -32768, -32768, -32768, -32768, -253,
-			 -32768, -32768, -32768, -32768, -32768,   -1,  679, -32768, -655, -32768,
-			 -32768, -32768, 1203, -32768, -32768, -32768, -32768,  939,  -75,    0,
-			   60,   63, -32768, -32768, -32768, -32768, -32768, -32768, -102,   41,
-			   33, -32768,   -5,  -86, -32768, -32768,  504, -32768,  798, -32768,
-			 -32768, -32768, -32768, -337, -32768, -32768, -32768, -123, -130, -32768,
-			 -205, -242, -32768, -32768, -32768, -32768, -464, -32768, -32768,  -31,
+			 -262, -32768, -32768,  292, -32768,  653,  479,  662, -242, -32768,
+			 -32768, -32768, -32768, -32768, -689,  748, -289, -32768, -32768, -32768,
+			 -32768,  608, -32768, -635, -222, -32768, -225, -32768, -166, -643,
+			 -32768, -280, -32768, -32768, -614, -32768, -32768, -32768, -32768, -32768,
+			 -258, -32768, -32768, -32768, -32768, -32768,   -1,  474, -32768, -651,
+			 -32768, -32768, -32768, 1154, -32768, -32768, -32768, -32768,  882,    2,
+			    0, -32768,  161,  -31, -32768, -32768, -32768, -32768, -32768, -32768,
+			  -65,  -72,  -87, -32768,  -91, -103, -32768, -32768,  431, -32768,
+			  726, -32768, -32768, -32768, -32768, -358, -32768, -32768, -32768, -252,
+			 -253, -32768, -257, -268, -32768, -32768, -32768, -32768, -474, -32768,
 
-			 -480,  889, -32768,  920, -32768, -32768, -32768,  820,   47, -406,
-			  -43, -107, 1068, -407, -32768, -32768, -32768, -32768,  150,   16,
-			  -56, -131, -32768, -390, -32768,  318,  380, -32768, -32768,  502,
-			 -32768,  272,  419,  547, -32768, -193,  -35,  332, -32768,  400,
-			 -495,  374,  769, -32768,  566,  458,  529, -608,  519, -627,
-			 -32768,  579, -596,  273, -360, -347,  545, -579,  328,  178,
-			  563, -141, -32768,  482,  303, -32768,  175, -32768, -543,  637,
-			  588,  471, -101,  535, -402, -259, -412, -32768, -32768, -32768,
-			 -32768, -32768,  241,  560, -32768, -32768, -32768,  228, -32768, -32768,
-			 -32768, -32768, -32768, -103, -32768, -32768, -32768, -32768, -382, -32768,
+			 -32768,  -32, -495,  832, -32768,  853, -32768, -32768, -32768,  747,
+			  116, -320,  -38,  -83, 1017, -351, -32768, -32768, -32768, -32768,
+			  102,   22,  -60, -136, -32768, -391, -32768,  255,  317, -32768,
+			 -32768,  440, -32768,  206,  354,  470, -32768, -183,  -71,  267,
+			 -32768,  328, -562,  301,  696, -32768,  494,  415,  489, -619,
+			  488, -632, -32768,  490, -612,  245, -386, -350,  512, -217,
+			  277,  137,  510, -165, -32768,  432,  257, -32768,  155, -32768,
+			 -554,  606,  565,  450, -231,  520, -402, -266, -416, -32768,
+			 -32768, -32768, -32768, -32768,  320,  574, -32768, -32768, -32768,  202,
+			 -32768, -32768, -32768, -32768, -32768, -115, -32768, -32768, -32768, -32768,
 
+			 -407, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  686,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -500, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, yyDummy>>)
+			 -490, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			   10,  147,  148,  156,   85,  199,  279,  244,  312,  410,
-			  529,  357,  145,  454,  485,  251,  672,  439,  138,  482,
-			  481,  548,  730,  724,  484,  374,  723,  643,  269,  209,
-			  209,  256,  449,  696,  140,  935,  383,  373,  671,  673,
-			  602,  420, -208,  445,  542, -208,  154,  303,  781,  302,
-			  695,  452,   -5,  500,  -49,  188,  235,  123,  638, -159,
-			  786,  198, -323,  932, -159,  934,  202,  203,  755,  205,
-			 -145,  187, -121,  382,  257,  316,  818,  140, -565, -565,
-			  822, -565,  780,  -49, -141,  237,  -49,  292, -208,  234,
-			  757,  615,  451,  494,  785,  508,  186,  925,  339,  340,
+			   10,  200,  286,  472,   85,  388,  148,  149,  157,  364,
+			  368,  146,  367,  545,  257,  156,  270,  398,  139,  319,
+			  236,  467,  309,  425,  310,  503,  256,  389,  397,  457,
+			  254,  245,  395,  394,  210,  210,  687,  686,  688,  502,
+			  141,  745, -218,  711,  617,  253,  155,  563,  323,  739,
+			  557,   -5,  252, -145,  710,  189,  121,  738,  470,  119,
+			  387,  199,  653,  386, -218,  373,  203,  204, -333,  206,
+			  516,  346,  347,  581,  666,  667,   62,  669,  770,  258,
+			  435,  354,  353,  141,  950, -575, -575,  524, -575,  235,
+			  500,  238, -167, -167,  772, -167,  949, -145,  241,  469,
 
-			  588,  404, -208,  743,  190,  191,  192,  533,  233,  155,
-			  129, -121,  255,  128, -145,  246, -121,  250,   62, -121,
-			  566,  853, -565, -141,  421,  612,  651,  652, -141,  654,
-			  797, -208,  730,  724,  273,  772,  723,  138,  742,  482,
-			  481,  482,  481,  441,  802,  232,  574,  685,  380,  531,
-			  253,  288,  532,  140,  405,  379,  418,  534,  252,  493,
-			  408,  565,  679,  409,  355,  356,  121,  803,  139,  119,
-			  888,  347,  346,  920,  779,  709,  899,  710,  614,  564,
-			  372,  417,  241,  539,  295,  298,  301,  298,  240,  304,
-			  374,  354,  256,  284,  506,  816,  311,  424,  790,  754,
+			  118,  459, -218,  448,  833,  603, -141, -218,  837,  129,
+			  796,  540,  128,  453,  580,  247,  630,  251,  419,  242,
+			  140,  499,  548,  724,  903,  725,  123,  239,  539, -575,
+			  627, -218,  452,  188,  554,  279, -167,  420,  139,  463,
+			  812,  436,  757,  423,  795, -141,  424,  769,  947,  868,
+			 -141,  745,  295,  362,  363,  306,  553,  306,  187,  739,
+			  141,  589,  694,  140,  817,  299,  818,  738,  579, -218,
+			 -218,  409,  700,  191,  192,  193,  433,  269,  794,  263,
+			  439,  388,  257,  306,  164,  302,  305,  308,  305,  629,
+			  311,  408,  510,  398,  256,  940,  604,  318,  254,  268,
 
-			  371,  383,  373,  901,  572,  538, -281,  589,  482,  481,
-			  118,  139,  579,  298,  318,  319,  320,  321,  322,  323,
-			  324,  325,  326,  327,  328,  329,  330,  332,  333,  335,
-			  336,  337,  844,  338,  897,  385,  298,  298,  382,  611,
-			  607,  341,   13,  187,  374,   18, -268,  384,  299,  121,
-			  299,  896,  119,  620,  134,  383,  373,  136,  185,  459,
-			  859,  606,  232,  232,  407,  232, -268,  605,  186,  845,
-			  886,  469,  163,  255,  360,  361,  299,  514,  375,  604,
-			  474,  895,  655,  184,  884,  397,  398,  139,  162,  298,
-			  863,  894,  382,  118,  232,  571,  394,  383,  373,  299,
+			  163,  432,  805,  389,  397,  522,  306,  306,  395,  394,
+			  500,  407,  500,  253,  305,  325,  326,  327,  328,  329,
+			  330,  331,  332,  333,  334,  335,  336,  337,  339,  340,
+			  342,  343,  344,  388,  345,  422,  387,  305,  305,  386,
+			  140,  499,  348,  499,  650,  398,  233,  400,  274,  547,
+			  477,  626,  935,  399,  549,  389,  397,  649,  272,  916,
+			  395,  394,  487,  291,  801,  415,  586,  492,  914,  361,
+			  188, -291,  -66,  860,  388,  315,  272,  440, -121,  500,
+			  314,  375,  376, -278,  121,  390,  398,  119,  387,  186,
+			  906,  386,  412,  413,  234,  187,  305,  397,  800,  912,
 
-			  299,  194,  308,  201,  524,  434,  425,  307,  412,  249,
-			  248,  253,  893,  380,  885,  273,  393,  841,  -69,  252,
-			  379,  523,    9,    8,  874,    7,   65,  928,    9,    8,
-			  422,    7,  515,  423,  382,  848,  392,  146,  -69,  875,
-			  737,  -47,  241,  146,  639,  372,  930,  931,  232,  286,
-			  238,  479,  400,  788,  775,  864, -277,  256,  -69,  463,
-			  891,  258,  457,  458,  233,  371,    6,  380,  465,  232,
-			  -47,  232,    6,  -47,  379,  863, -277,  278,  232,  232,
-			  232,  232,  232,  232,  232,  232,  232,  232,  232,  232,
-			  232,  138,  232,  232, -315,  232,  232,  232,  428,  372,
+			  587,  395,  394, -278,  911,  530,  121,  120,  594,  119,
+			  499,  -66,  234,  908,  185,  427,  -66, -121,  901,  -66,
+			  910,   13, -121,  797,   18, -121,  531,  369,  118,  387,
+			  -63,  -49,  386,  135,  752,  863,  137,  437,  878,  900,
+			  438,  475,  476,  803,  454, -245,  -69,  483,  234,  635,
+			  118,  117,  654, -245, -579, -579,  -63, -579,  257,  -63,
+			  -49,  116,  -63,  -49,  233,  233,  -69,  233, -579,  909,
+			  256,  115, -579, -579,  254,  266,  534,  662,  670,  481,
+			  195,  879,  202,  114,  534,  533,  -69,  365,  265,  253,
+			  306,  816,  212,  211,  121,  120,  233,  119, -579, -579,
 
-			  385,  461,  801,  850,  294,  870,  298,  140,  625,  380,
-			  795,  256,  384,  848,  527,  855,  379,  473,  298,  371,
-			  232,    9,    8,  624,    7,  623, -235,  854,  622, -125,
-			  846,  621, -125,  273, -235,  495,  360,  361,  255,  840,
-			  450,  372,  268,  499,  262,  315, -125,  775,  550,  551,
-			  737,  838,  760,  256,  385,  317,  752, -155, -155,  839,
-			  837,  371, -208, -208,  267,    6,  384,  456,  592,  299,
-			  535,  479,  759,  479,  121,  120,  253,  119,  834,  492,
-			  817,  299,  232,  232,  252, -125,  830,  455,  -63, -208,
-			 -125,  782,  255, -125,  635,  434,  385,  499,  507, -155,
+			 -287,  878,  306, -113,  658,  -47,  139,  890, -125, -579,
+			  257, -125,  272,  863,  121,  359,  479,  119,  856, -579,
+			 -287,  305,  256,  400,  889, -125,  254, -113,  141,  399,
+			  293, -579,  491,  305,  -47,  767, -341,  -47,  118,  117,
+			  259,  253, -113,  497,  752, -325,  775, -113,  865,  116,
+			 -113,  257, -341,  511,  375,  376,  233,  285,  118,  115,
+			  885,  515, -341,  256, -125, -341,  774,  254, -341, -125,
+			  870,  114, -125,  869,  443,  400,  861,  233,  853,  233,
+			  758,  399,  253,  852,  301,  550,  233,  233,  233,  233,
+			  233,  233,  233,  233,  233,  233,  233,  233,  233,  855,
 
-			  351,  463,  527,  509,  537,  594, -210,  634,  384,  -66,
-			 -208,  134,  518,  647,  -63, -155, -208,  -63,  118,  117,
-			  -63,  232,  851,  880,  823, -208,  852,  410, -208,  116,
-			  253,  402,  347,  346,  255,  819, -155, -113,  252,  115,
-			  479,  139, -155,  461,  594,  814,  -21,  812,  -66,  240,
-			 -177,  114,  -60,  -66, -155,  232,  -66,  873,  910,  915,
-			  918, -113,  924,  669, -210,  547, -210,  478,  120,  428,
-			  119, -177,  253,  160,  159,  477, -113, -177,  436,  703,
-			  252, -113,  233,  880, -113, -210,  158,  157,  265, -177,
-			    3, -210,  800,  687,  622, -210,  799,  690,  518,  517,
+			  233,  233,  832,  233,  233,  233,  810,  607,  140,  543,
+			  208,  207,  787,  515,  474,  849,  400,  895,  845,  854,
+			  552,  481,  399,  523,  468,  322,  216,   71,  838,    9,
+			    8, -111,    7,  834,  473,  324,  233,  496,  120,  829,
+			  119,  565,  566,  827,  866,  495,  209,  213,  867,  425,
+			  352,  351,  925,  930,  933, -111,  939,  -60,  479,  -12,
+			  350,  349, -220,  497,   49,  497,  718,   47,  121,  120,
+			 -111,  119,  831,    6, -130, -111,  684,  895, -111,  888,
+			  358,  118,  117,  847,  848,  -12,  272,  271,  -12, -218,
+			  525,  -12,  116,    3,  543,  891,  135,  609,  233,  233,
 
-			 -210,  264,  798, -210,  -21,  278,  -21,  -21,  -21, -210,
-			  700,  118,  117,  434, -210, -210,  434,  793,  796,  876,
-			  792,  -21,  116,  573,  120,  -21,  119,  215,   71,  -21,
-			  -66,  -21,  115,  354,  -66,  453,  478,  120,  791,  119,
-			  -21, -321,  -21,  -21,  114,  784,  -66,  -66,  -21,  198,
-			 -322,  -21, -320,  198,  908,  912,  -66, -208,  921,  -66,
-			  773,  507,  -66,  211,  210,  140,  198,  118,  117,  140,
-			   14,  489,  624,  778,  756, -179,  728,  731,  116,  876,
-			  118,  117,  140,  748,  121,  120,  613,  119,  115,  249,
-			  248,  116,  207,  206,  134, -179, -179, -179,  832,  833,
+			 -130,  815,  115, -130,  702,  813, -130,  814,  705,  859,
+			 -218,  637,  118,  117,  114,  811, -218,  417,  354,  353,
+			 -220,  715, -220,  116,  272, -218, -331,  808, -218,  242,
+			  923,  927,  497,  115,  936,  241,  609,  874,  807,  806,
+			  233, -220,  135,  588,  120,  114,  119, -220, -218,  799,
+			  562, -220, -332, -330,  443,  891, -220,  496,  120, -220,
+			  119,  899,  788,   14,  199, -220,    9,    8,  199,    7,
+			 -220, -220,  233,  121,  120,  639,  119,  -21,  244,  243,
+			  771,  199,  763,  628,  759,  508,  141,  118,  117,  242,
+			  141,  743,  746,  793,  135,  246,  722,  239,  116,  285,
 
-			  114,  115,    9,    8,  283,    7,   65, -179,   63,  345,
-			  344,  770,  771,  114,  343,  342,  777,  146, -179,  -56,
-			  -56,  744,  -56, -179, -179, -179, -111, -100,  118,  117,
-			  707, -100,  490,  621,  669,  687,  690,    9,    8,  116,
-			    7,  697,  700, -100, -100,  686,    6,  684,  138,  115,
-			 -111,  208,  212, -100,  -56,  682, -100,  -56,  878, -100,
-			   44,  114,  354,  -56,  140, -111,  663,  783,  121,  352,
-			 -111,  119,   49, -111,  256,   47,  680,  625,  777,  820,
-			  821,    6,  777,  824,  825,  826,  728,  731,  232, -149,
-			  644,  198,  198,  632,  914,  917,  580,  923,  198,  139,
+			  636,  118,  117,  141,  943,  697,  -56,  -56,  115,  -56,
+			    6,  712,  116,  121,  120,  695,  119,  118,  701,  290,
+			  114,  684,  115,  945,  946,  361,  785,  786,  699,  471,
+			  678,  792,  640, -149,  114,  -21,  659,  -21,  -21,  -21,
+			  647,  -56,    9,    8,  -56,    7,  702,  705,    9,    8,
+			  -56,    7,  -21,  715,  260,  517,  -21,  118,  117,  631,
+			  -21,  606,  -21,  139,  553,  507,  140,  593,  116,  597,
+			  140,  -21,  257,  -21,  -21,  138,  592,   49,  115,  -21,
+			   47,  599,  -21,  140,  256,  141,    6,  590,  254,  582,
+			  114,  135,    6,  792,  835,  836,  572,  792,  839,  840,
 
-			  259,  586,  616,  139,  591,  538,  501,  140,  140,  584,
-			  256,  256,  118,  256,  140,  582,  139,  881,  878,  578,
-			  577,  567,  600,  777,  575,  603,  559,  278,  557,  555,
-			  232,  232,  358, -251,  256,  121,  120,  365,  119,    9,
-			    8, -218,    7,  545,  134,  868,  869,  544,  504, -217,
-			  522,  521,  911,  881,  919,  255,  881,  649,    9,    8,
-			  877,    7,  649,  649,  653,  649,  656, -219,  245,  892,
-			  414,  520,  416,  666,  668,  516,  290,  881,  406,  118,
-			  232,  232,  677,    6,  232,  232,  232,  902,  513, -359,
-			  905,  255,  255,  253,  255,  909,  913,  916,  139,  922,
+			  841,  743,  746,  253,  574,  570,  199,  199,  257,  257,
+			  893,  257, -261,  199,  220,  219,  218,  217,  216,   71,
+			  256,  256, -228,  256,  254,  254,  560,  254,  141,  141,
+			  559,  293,  257,    9,    8,  141,    7,  896,  792,  253,
+			  253,  520,  253,  538,  256,  297,  929,  932,  254,  938,
+			  537,  798,  370, -227,  361,  161,  160, -229,  380,  790,
+			  883,  884,  536,  253,  532,  140,  250,  249,  159,  158,
+			  893,  421,  926,  896,  934,  892,  896,    6,  529,    9,
+			    8, -369,    7,   65,  907,   63,    9,    8,  190,    7,
+			  595,  429,   63,  431,  147,  601,  513,  896,  514,  506,
 
-			  498,  252,    6,  497,    5,  189,    9,    8,  488,    7,
-			  708,  649,  472,  649,  471,  255,    4,  470,  163,    3,
-			  877,  446,    2,  438,    1,  433,  443,  432,  232,  253,
-			  253,  430,  253,  427,  426,  649,  444,  252,  252,  403,
-			  252,  139,  139,    9,    8,  764,    7, -331,  139,   63,
-			    6,  345,  232,  253,  343,  249,  248, -136,  146,  419,
-			 -136,  252,  232, -331,  466,  232, -329,  -12,    9,    8,
-			  307,    7,   65, -331, -136,  401, -331,  391, -136, -331,
-			  475,  476, -329,  146,  349,  262,  211,    6, -181,  487,
-			 -136, -136, -329,  -12,  207, -329,  -12, -162, -329,  -12,
+			  490,  147,  917,  489,  233,  920,  164,  488,  140,  140,
+			  924,  928,  931,  461,  937,  140,  615,  354,  353,  618,
+			  464,  285,  371,    6,  449,  447,  442,  622,  242,  445,
+			    6,  272,  441,  352,  241,  892,  239,   44,  135,  350,
+			  434, -155,  275,  450,   44,  -66,  233,  233,  621,  -66,
+			  416,  664,  456,  418,  620,  314,  664,  664,  668,  664,
+			  671,  -66,  -66,  406, -187,  462,  619,  681,  683, -157,
+			 -157,  -66, -157,  366,  -66,  640,  692,  -66,  263,    9,
+			    8,  356,    7, -155,  212, -187,  208,  313, -248, -248,
+			  639, -187,  638,  484,  312,  637,  233,  233,  636, -155,
 
-			 -136,   44,  306, -136,  305,   18, -136,  293, -181, -181,
-			 -181,  810,    6, -136,  815, -350,  289,  -27, -136,  285,
-			 -181, -136,  280,  237,  512,  286,   44,    9,    8,  236,
-			    7, -181,  -27,  -27,  233,  214, -181, -181, -181,  213,
-			  351,  351,  204,  200,  146,  -27,  -27,  -27,  -27,  -27,
-			  -27,  -27,  193,  775,  197,    9,    8,  549,    7,   -7,
-			  -27,  -27,  -27,  -27,  857,  618,  541,  519,  907,  -27,
-			  -27,    6,  243,  242,  496,  -27,   18,  -27,  -27,  -27,
-			 -130,  196,  860,  241,  195,  867,  243,  242,  554,  -27,
-			   49,  238,  -27,   47,  -27,  829,  -27,  241,  929,    6,
+			  233,  233,  233, -187,  723,  664, -172,  664,  300,  493,
+			  494, -360,  296, -157,  234,  292, -248, -248,  505, -248,
+			 -155,  238,  287,    6, -248,    5, -155, -248,  237,  664,
+			 -248,  215, -248, -248, -248,  214, -248,    4, -155,  779,
+			    3,  205,  201,    2,  233,    1, -248,  147, -248, -248,
+			   -7, -248,  194,  872, -248, -248,  528,  451,  564,  633,
+			 -248,  512,  535,  922,  844, -248,  665, -248,  233,  583,
+			  250,  249,  944, -248, -248,  250,  249, -248,  233,  842,
+			 -248,  233,  608,    9,    8, -248,    7,   65,    9,    8,
+			  602,    7,   65,  244,  243,  713,  556,  873,  147,   18,
 
-			  -27,  650,  -27,  240,  239,  238, -130,  568,  587, -130,
-			  858,  -27, -130,  -27,  -27,  827,  629,  -57,  -57,  -27,
-			  -57,  511,  -27,  698,    9,    8,  628,    7,  -27,  -27,
+			  644,  643,  466,  147,  242,  825,  642,  843,  830,  821,
+			  241,  240,  239,    9,    8,  679,    7,  871,  569,  809,
+			    9,    8,  -27,    7,  942,  244,  243,    6,  147,  726,
+			  846,  898,    6,  248,  358,  358,  460,  -27,  -27,  790,
+			  404,   44,  241,  240,  239,  426,  790,  486,  777,  360,
+			  -27,  -27,  -27,  -27,  -27,  -27,  -27,    6,   17,  198,
+			    9,    8,  577,    7,    6,  -27,  -27,  -27,  -27,  485,
+			   18,  546,  755,  902,  -27,  -27,  875, -339,  558,  882,
+			  -27,    0,  -27,  -27,  -27,    0,  197,  646,    0,  196,
+			    0,    0,    0, -339,  -27,   49,    0,  -27,   47,  -27,
+
+			  661,  -27,    0, -339,    6,  -27, -339,  -27,    0, -339,
+			    0,    0,    0,    0,    0,    0,  -27,    0,  -27,  -27,
+			    0,    0,    0,    0,  -27,    0,  690,  -27,  691,    0,
+			    0,    0,    0,  -27,  -27,  -27,  -27,  -27,  -27,  -27,
 			  -27,  -27,  -27,  -27,  -27,  -27,  -27,  -27,  -27,  -27,
-			  -27,  -27,  -27,  -27,  -27,  -27,  -27,  -27,  -27,  -27,
-			  -27,  -27,  -57,  347,  346,  -57,  593,  137,  631,   49,
-			  448,  -57,   47,  627,  241,  828,  806,  856,    6,  794,
-			  240,  646,  238,   73,   72,  927,  711,  664,  831,  883,
-			   71,   70,   69,   68,  247,   67,    9,    8,   66,    7,
-			   65,   64,   63,   62,  442,  411,   61,  675,   60,  676,
-
-			  389,   59,   58,  720,  468,  353,  762,   17,   56,   55,
-			   54,   53,  719,  718,  562,   51,  467,   50,  530,  740,
-			  543,   49,  887,   48,   47,    0,   46,    0,    0,    0,
-			    6,    0,  717,    0,    0,  716,  715,    0,    0,    0,
-			    0,  243,  242,    0,   44,  714,  713,    0,  746,  712,
-			    0,  749,  241,  751,    0,    0,   43,    0,  240,  239,
-			  238,  761,    0,    0,    0,    0,  767,    0,    0,   42,
-			   41,   40,   39,   38,   37,   36,   35,   34,   33,   32,
-			   31,   30,   29,   28,   27,   26,   25,   24,   23,   22,
-			   21,   20,   19,  219,  218,  217,  216,  215,   71,  789,
-
+			  -27,  -27,  -27,  -27,  -27,  -27,  -27,    0,    0,  232,
 			  231,  230,  229,  228,  227,  226,  225,  224,  223,  222,
-			  221,  220,  219,  218,  217,  216,  215,   71,   73,   72,
-			    0,    0,    0,    0,    0,   71,   70,   69,   68,  808,
-			   67,    9,    8,   66,    7,   65,   64,   63,   62,    0,
-			    0,   61,    0,   60,    0,    0,   59,   58,   57,  434,
-			    0,    0,    0,   56,   55,   54,   53,   52,    0,    0,
-			   51,    0,   50,    0,    0,  836,   49,    0,   48,   47,
-			    0,   46,    0,    0,    0,    6,  243,  242,    0,    0,
-			   45,  221,  220,  219,  218,  217,  216,  215,   71,   44,
-			  906,    0,    0,  240,  239,  238,    0,    0,    0,    0,
+			  221,  220,  219,  218,  217,  216,   71,  761,    0,    0,
+			  764,    0,  766,    0,    0,    0,    0,    0,  244,  243,
+			  776,  -57,  -57,    0,  -57,  782,    0,    0,    0,  242,
 
-			    0,   43,    0,  862,    0,    0,    0,    0,    0,  872,
-			    0,    0,    0,    0,   42,   41,   40,   39,   38,   37,
-			   36,   35,   34,   33,   32,   31,   30,   29,   28,   27,
-			   26,   25,   24,   23,   22,   21,   20,   19,    0,   73,
-			   72,    0,  900,    0,    0,    0,   71,   70,   69,   68,
-			  904,   67,    9,    8,   66,    7,   65,   64,   63,   62,
+			    0,    0,   73,   72,    0,  241,  240,  239,    0,   71,
+			   70,   69,   68,    0,   67,    9,    8,   66,    7,   65,
+			   64,   63,   62,  527,    0,   61,  -57,   60,  804,  -57,
+			   59,   58,  735,    0,    0,  -57,    0,   56,   55,   54,
+			   53,  734,  733,    0,   51,    0,   50,    0,    0,    0,
+			   49,    0,   48,   47,    0,   46,    0,    0,  823,    6,
+			  941,  732,    0, -100,  731,  730,    0, -100,    0,    0,
+			    0,    0,    0,   44,  729,  728,    0,    0,  727, -100,
+			 -100,    0,    0,    0,    0,   43,    0,    0,    0, -100,
+			    0,    0, -100,    0,  851, -100,    0,    0,   42,   41,
+
+			   40,   39,   38,   37,   36,   35,   34,   33,   32,   31,
+			   30,   29,   28,   27,   26,   25,   24,   23,   22,   21,
+			   20,   19,  222,  221,  220,  219,  218,  217,  216,   71,
+			    0,    0,  877,    0,    0,    0,    0,    0,  887,   73,
+			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
+			    0,   67,    9,    8,   66,    7,   65,   64,   63,   62,
 			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
-			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
-			    0,   51,    0,   50,  152,    9,    8,   49,    7,   48,
+			  272,  915,    0,    0,   56,   55,   54,   53,   52,  919,
+			    0,   51, -191,   50,    0,    0,    0,   49,    0,   48,
 			   47,    0,   46,    0,    0,    0,    6,    0,    0,    0,
 
-			  146,   45,    0,    0,  334,    0,    0,  151,    0,    0,
-			   44,  150,    0,    0,  149,    0,    0,    0,    0,    0,
+			    0,   45, -191, -191, -191,    0,    0,    0,    0,    0,
+			   44,    0,    0,    0, -191,    0,    0,    0,    0,    0,
+			    0,    0,   43,    0,    0, -191,    0,    0,    0,    0,
+			 -191, -191, -191,    0,    0,   42,   41,   40,   39,   38,
+			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
+			   27,   26,   25,   24,   23,   22,   21,   20,   19,   73,
+			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
+			    0,   67,    9,    8,   66,    7,   65,   64,   63,   62,
+			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
+			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
+
+			    0,   51,    0,   50,  153,    9,    8,   49,    7,   48,
+			   47,    0,   46,    0,    0,    0,    6,    0,    0,    0,
+			  147,   45,    0,    0,  341,    0,    0,  152,    0,    0,
+			   44,  151,    0,    0,  150,    0,    0,    0,    0,    0,
 			   49,    0,   43,   47,    0,    0,    0,    0,    0,    6,
 			    0,    0,    0,    0,    0,   42,   41,   40,   39,   38,
 			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
 			   27,   26,   25,   24,   23,   22,   21,   20,   19,   73,
 			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
 			    0,   67,    9,    8,   66,    7,   65,   64,   63,   62,
-			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
-			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
-
-			    0,   51,    0,   50,    0,    0,    0,   49,    0,   48,
-			   47,    0,   46,    0,    0,    0,    6,    0,    0,    0,
-			    0,   45,    0,    0,    0,    0,    0,    0,    0,    0,
-			   44,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,   43,    0,    0,    0,    0,    0,    0,    0,
-			  331,    0,    0,    0,    0,   42,   41,   40,   39,   38,
-			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
-			   27,   26,   25,   24,   23,   22,   21,   20,   19,   73,
-			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
-			    0,   67,    9,    8,   66,    7,   65,   64,   63,   62,
 
 			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
 			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
@@ -22305,14 +22635,14 @@ feature {NONE} -- Table templates
 			    0,   45,    0,    0,    0,    0,    0,    0,    0,    0,
 			   44,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,   43,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,   42,   41,   40,   39,   38,
+			  338,    0,    0,    0,    0,   42,   41,   40,   39,   38,
 			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
 			   27,   26,   25,   24,   23,   22,   21,   20,   19,   73,
 
 			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
 			    0,   67,    9,    8,   66,    7,   65,   64,   63,   62,
 			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
-			    0,    0,    0,    0,  460,   55,   54,   53,   52,    0,
+			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
 			    0,   51,    0,   50,    0,    0,    0,   49,    0,   48,
 			   47,    0,   46,    0,    0,    0,    6,    0,    0,    0,
 			    0,   45,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -22323,9 +22653,9 @@ feature {NONE} -- Table templates
 			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
 			   27,   26,   25,   24,   23,   22,   21,   20,   19,   73,
 			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
-			    0,   67,    9,    8,   66,    7,  211,  210,   63,   62,
+			    0,   67,    9,    8,   66,    7,   65,   64,   63,   62,
 			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
-			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
+			    0,    0,    0,    0,  478,   55,   54,   53,   52,    0,
 			    0,   51,    0,   50,    0,    0,    0,   49,    0,   48,
 			   47,    0,   46,    0,    0,    0,    6,    0,    0,    0,
 			    0,   45,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -22336,7 +22666,7 @@ feature {NONE} -- Table templates
 			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
 			   27,   26,   25,   24,   23,   22,   21,   20,   19,   73,
 			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
-			    0,   67,    9,    8,   66,    7,  207,  206,   63,   62,
+			    0,   67,    9,    8,   66,    7,  212,  211,   63,   62,
 			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
 			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
 			    0,   51,    0,   50,    0,    0,    0,   49,    0,   48,
@@ -22347,249 +22677,275 @@ feature {NONE} -- Table templates
 			    0,    0,   43,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,   42,   41,   40,   39,   38,
 			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
-			   27,   26,   25,   24,   23,   22,   21,   20,   19,  368,
-			  367,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			   27,   26,   25,   24,   23,   22,   21,   20,   19,   73,
+			   72,    0,    0,    0,    0,    0,   71,   70,   69,   68,
+			    0,   67,    9,    8,   66,    7,  208,  207,   63,   62,
+			    0,    0,   61,    0,   60,    0,    0,   59,   58,   57,
+			    0,    0,    0,    0,   56,   55,   54,   53,   52,    0,
+
+			    0,   51,    0,   50,    0,    0,    0,   49,    0,   48,
+			   47,    0,   46,    0,    0,    0,    6,    0,    0,    0,
+			    0,   45,    0,    0,    0,    0,    0,    0,    0,    0,
+			   44,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,   43,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,   42,   41,   40,   39,   38,
+			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
+			   27,   26,   25,   24,   23,   22,   21,   20,   19,  383,
+			  382,   58,    0,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    9,    8,   66,    7,   65,   64,   63,    0,
-			    0,    0,    0,    0,    0,    0,    0,  146,   58,   57,
-			  366,    0,    0,    0,    0,    0,   54,   53,  231,  230,
 
-			  229,  228,  227,  226,  225,  224,  223,  222,  221,  220,
-			  219,  218,  217,  216,  215,   71,    6,    0,    0,    0,
-			    0,   45,  231,  230,  229,  228,  227,  226,  225,  224,
-			  223,  222,  221,  220,  219,  218,  217,  216,  215,   71,
-			  228,  227,  226,  225,  224,  223,  222,  221,  220,  219,
-			  218,  217,  216,  215,   71,   42,   41,   40,   39,   38,
+			    0,    0,    0,    0,    0,    0,    0,  147,   58,   57,
+			  381,    0,    0,    0,    0,    0,   54,   53,  232,  231,
+			  230,  229,  228,  227,  226,  225,  224,  223,  222,  221,
+			  220,  219,  218,  217,  216,   71,    6,    0,    0,    0,
+			    0,   45,    0,    0,    0,    0,    0,    0,   42,   41,
+			   40,   39,   38,   37,   36,   35,   34,   33,   32,   31,
+			   30,   29,   28,   27,   26,   25,   24,   23,   22,   21,
+			   20,   19,    0,    0,    0,   42,   41,   40,   39,   38,
 			   37,   36,   35,   34,   33,   32,   31,   30,   29,   28,
 			   27,   26,   25,   24,   23,   22,   21,   20,   19,  -15,
-			  -15,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,  -15,  -15,  -15,  -15,  -15,  -15,  -15,  926,
 
-			    0,    0,    0,    0,    0,    0,    0,  -15,  -15,  -15,
+			  -15,    0,    0,    0,    0,    0,    0,    0,  523,    0,
+			    0,    0,  -15,  -15,  -15,  -15,  -15,  -15,  -15,  826,
+			    0,    0, -189,    0,    0,    0,    0,  -15,  -15,  -15,
 			  -15,    0,    0,    0,    0,    0,  -15,  -15,    0,    0,
-			    0,    0,    0,  811,    0,  368,  367,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,  -15,    0,    0,    0,
-			   66,  -15,   65,   64,   63,    0,    0,    0,    0,    0,
-			    0,    0,    0,  146,   58,    0,    0,    0,    0,    0,
-			    0,    0,   54,   53,    0,    0,  561,    0,    0,    0,
+			    0,    0, -189, -189, -189,  383,  382,    0,    0,    0,
+			    0,    0,    0,    0, -189,    0,  -15,    0,    0,    0,
+			   66,  -15,   65,   64,   63, -189,    0,    0,    0,    0,
+			 -189, -189, -189,  147,   58,    0,    0,    0,    0,    0,
+			    0,    0,   54,   53,    0,    0,  576,    0,    0,    0,
 			    0,    0,    0,    0,    0,  -15,  -15,  -15,  -15,  -15,
+
 			  -15,  -15,  -15,  -15,  -15,  -15,  -15,  -15,  -15,  -15,
 			  -15,  -15,  -15,  -15,  -15,  -15,  -15,  -15,  -15,    3,
-
-			  230,  229,  228,  227,  226,  225,  224,  223,  222,  221,
-			  220,  219,  218,  217,  216,  215,   71, -238, -238,    0,
+			  232,  231,  230,  229,  228,  227,  226,  225,  224,  223,
+			  222,  221,  220,  219,  218,  217,  216,   71,    0,    0,
 			    0,   42,   41,   40,   39,   38,   37,   36,   35,   34,
 			   33,   32,   31,   30,   29,   28,   27,   26,   25,   24,
-			   23,   22,   21,   20,   19, -238, -238,    0, -238,   58,
-			    0,    0,    0, -238,    0,    0, -238,    0,    0, -238,
-			    0, -238, -238, -238,    0, -238,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0, -238,    0, -238, -238,    0,
-			 -238,    0,    0, -238, -238,    0,    0,    0,    0, -238,
-			    0,    0,    0,    0, -238,    0, -238,    0,    0,    0,
-
-			    0,    0, -238, -238,    0,    0, -238,    0,    0, -238,
-			    0,    0,    0,    0, -238,    0,   42,   41,   40,   39,
-			   38,   37,   36,   35,   34,   33,   32,   31,   30,   29,
-			   28,   27,   26,   25,   24,   23,   22,   21,   20,   19,
-			  231,  230,  229,  228,  227,  226,  225,  224,  223,  222,
-			  221,  220,  219,  218,  217,  216,  215,   71,  231,  230,
-			  229,  228,  227,  226,  225,  224,  223,  222,  221,  220,
-			  219,  218,  217,  216,  215,   71,  231,  230,  229,  228,
+			   23,   22,   21,   20,   19,  232,  231,  230,  229,  228,
 			  227,  226,  225,  224,  223,  222,  221,  220,  219,  218,
-			  217,  216,  215,   71,    0, -275,    0,    0,    0,  434,
+			  217,  216,   71, -136,    0,    0, -136,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
-			    0,    0,    0,    0,    0,    0,    0, -457,    0,    0,
-			    0,    0, -457, -457,    0, -275,  231,  230,  229,  228,
-			  227,  226,  225,  224,  223,  222,  221,  220,  219,  218,
-			  217,  216,  215,   71,  231,  230,  229,  228,  227,  226,
-			  225,  224,  223,  222,  221,  220,  219,  218,  217,  216,
-			  215,   71,    0,  415,  229,  228,  227,  226,  225,  224,
-			  223,  222,  221,  220,  219,  218,  217,  216,  215,   71,
-			    0,  399,  231,  230,  229,  228,  227,  226,  225,  224,
-			  223,  222,  221,  220,  219,  218,  217,  216,  215,   71,
-			  182,  181,  180,  179,  178,  177,  176,  175,  174,  173,
+			 -136,    0,    0,    0, -136,    0,    0,    0,    0,    0,
+			  921,    0,    0,    0,    0,    0, -136, -136,    0,    0,
+			 -285,    0,    0,    0,    0,    0, -136,    0,    0, -136,
+			    0,    0, -136,    0,    0,    0,    0,    0,    0, -136,
+			 -285,    0,    0,    0, -136,    0,    0, -136,  232,  231,
+			  230,  229,  228,  227,  226,  225,  224,  223,  222,  221,
+			  220,  219,  218,  217,  216,   71,  232,  231,  230,  229,
+			  228,  227,  226,  225,  224,  223,  222,  221,  220,  219,
+			  218,  217,  216,   71,    0,    0,    0,    0,    0,  272,
+			    0,    0,    0,    0,    0,    0,    0, -467,    0,    0,
 
-			  172,  171,  170,  169,  168,  167,  166,    0,  165,  313,
-			   42,   41,   40,   39,   38,   37,   36,   35,   34,   33,
-			   32,   31,   30,   29,   28,   27,   26,   25,   24,   23,
-			   22,   21,   20,   19,   42,    0,   40,    0,   38,   37,
-			   36,   35,   34,   33,   32,   31,   30,   29,   28,   27,
-			   26,   25,   24,   23,   22,   21,   20,   19,  182,  181,
-			  180,  179,  178,  177,  176,  175,  174,  173,  172,  171,
-			  170,  169,  168,  167,  166,  388,  165,  387,  231,  230,
+			    0,    0, -467, -467,  232,  231,  230,  229,  228,  227,
+			  226,  225,  224,  223,  222,  221,  220,  219,  218,  217,
+			  216,   71,  232,  231,  230,  229,  228,  227,  226,  225,
+			  224,  223,  222,  221,  220,  219,  218,  217,  216,   71,
+			    0,  430,  231,  230,  229,  228,  227,  226,  225,  224,
+			  223,  222,  221,  220,  219,  218,  217,  216,   71,  414,
+			  232,  231,  230,  229,  228,  227,  226,  225,  224,  223,
+			  222,  221,  220,  219,  218,  217,  216,   71,  183,  182,
+			  181,  180,  179,  178,  177,  176,  175,  174,  173,  172,
+			  171,  170,  169,  168,  167,    0,  166,  320,   42,   41,
+
+			   40,   39,   38,   37,   36,   35,   34,   33,   32,   31,
+			   30,   29,   28,   27,   26,   25,   24,   23,   22,   21,
+			   20,   19,   42,    0,   40,    0,   38,   37,   36,   35,
+			   34,   33,   32,   31,   30,   29,   28,   27,   26,   25,
+			   24,   23,   22,   21,   20,   19,  183,  182,  181,  180,
+			  179,  178,  177,  176,  175,  174,  173,  172,  171,  170,
+			  169,  168,  167,  403,  166,  402,  232,  231,  230,  229,
+			  228,  227,  226,  225,  224,  223,  222,  221,  220,  219,
+			  218,  217,  216,   71,  230,  229,  228,  227,  226,  225,
+			  224,  223,  222,  221,  220,  219,  218,  217,  216,   71,
+
 			  229,  228,  227,  226,  225,  224,  223,  222,  221,  220,
-			  219,  218,  217,  216,  215,   71,  227,  226,  225,  224,
-
-			  223,  222,  221,  220,  219,  218,  217,  216,  215,   71, yyDummy>>)
+			  219,  218,  217,  216,   71,  228,  227,  226,  225,  224,
+			  223,  222,  221,  220,  219,  218,  217,  216,   71, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    0,   44,   45,   46,    5,   61,  137,  114,  201,  305,
-			  490,  270,   43,  395,  426,  117,  635,  364,   18,  426,
-			  426,  521,  677,  677,  426,  278,  677,  606,  131,   72,
-			   73,  117,  392,  660,   18,    0,  278,  278,  634,  635,
-			  583,  315,    0,  386,  508,   60,   46,  188,    3,  187,
-			  658,    1,    0,  443,   60,   55,   91,   10,  601,   42,
-			    3,   61,    3,   60,   47,    0,   67,   68,  695,   70,
-			   60,   26,   60,  278,  117,  213,  778,   61,   28,   29,
-			  782,   31,   37,   89,   60,   26,   92,  162,  103,   90,
-			  698,  591,   42,  436,   37,  455,   51,  106,  236,  237,
+			    0,   61,  138,  410,    5,  285,   44,   45,   46,  271,
+			  276,   43,  274,  508,  117,   46,  131,  285,   18,  202,
+			   91,  407,  188,  312,  189,  441,  117,  285,  285,  379,
+			  117,  114,  285,  285,   72,   73,  650,  649,  650,  441,
+			   18,  692,    0,  675,  598,  117,   46,  537,  214,  692,
+			  524,    0,  117,   60,  673,   55,   28,  692,    1,   31,
+			  285,   61,  616,  285,   60,    1,   67,   68,    3,   70,
+			  461,  237,  238,    1,  636,  637,   35,  639,  710,  117,
+			  322,   15,   16,   61,    0,   28,   29,  473,   31,   90,
+			  441,   26,   28,   29,  713,   31,    0,  104,   32,   42,
 
-			  564,  294,   60,  682,   57,   58,   59,  497,   51,   46,
-			   58,   99,  117,   61,  104,  115,  104,  117,   35,  107,
-			    1,  823,   72,   99,  317,  589,  621,  622,  104,  624,
-			  757,   89,  787,  787,  134,  714,  787,  137,  681,  546,
-			  546,  548,  548,   60,  763,   85,  548,  647,  278,  492,
-			  117,  152,  495,  137,  295,  278,   26,  500,  117,  433,
-			  301,   42,  642,  304,  267,  268,   28,  763,   18,   31,
-			   81,   15,   16,   48,  717,  670,    4,  672,  590,  539,
-			  278,   51,   26,   67,  184,  185,  186,  187,   32,  189,
-			  443,  266,  278,  146,  453,  774,  197,  338,  741,  694,
+			   72,   60,   60,  365,  793,  579,   60,  103,  797,   58,
+			    3,   83,   61,  375,   42,  115,  606,  117,  301,   26,
+			   18,  441,  513,  685,   81,  687,   10,   34,  100,   72,
+			  604,   89,  374,   26,   67,  135,   72,  302,  138,  401,
+			  772,  324,  696,  308,   37,   99,  311,  709,   60,  838,
+			  104,  802,  153,  268,  269,  186,   89,  188,   51,  802,
+			  138,  563,  657,   61,  778,  163,  778,  802,  554,  108,
+			  109,   27,  662,   57,   58,   59,   26,   83,  732,   85,
+			  345,  461,  285,  214,   27,  185,  186,  187,  188,  605,
+			  190,   47,  454,  461,  285,  106,  582,  198,  285,  105,
 
-			  278,  443,  443,   60,  547,   89,  106,  567,  615,  615,
-			   72,   61,  555,  213,  215,  216,  217,  218,  219,  220,
+			   43,   51,  756,  461,  461,  471,  237,  238,  461,  461,
+			  561,   67,  563,  285,  214,  216,  217,  218,  219,  220,
 			  221,  222,  223,  224,  225,  226,  227,  228,  229,  230,
-			  231,  232,  811,  233,    4,  278,  236,  237,  443,  586,
-			   58,  241,    1,   26,  497,    4,   60,  278,  185,   28,
-			  187,    4,   31,  596,   13,  497,  497,   16,   26,  400,
-			  839,   79,  202,  203,  299,  205,   80,   85,   51,  812,
-			   60,  412,   27,  278,  275,  275,  213,  470,  278,   97,
-			  418,    4,  625,   51,  863,  285,  286,  137,   43,  289,
-			   80,   42,  497,   72,  234,   36,   27,  539,  539,  236,
+			  231,  232,  233,  513,  234,  306,  461,  237,  238,  461,
+			  138,  561,  242,  563,   64,  513,   85,  285,  132,  511,
+			  415,  601,   48,  285,  516,  513,  513,   77,   46,   60,
+			  513,  513,  427,  147,    3,  296,   36,  433,    4,  267,
+			   26,  106,   60,  827,  554,   39,   46,  348,   60,  630,
+			   44,  282,  282,   60,   28,  285,  554,   31,  513,   26,
+			   47,  513,  292,  293,   51,   51,  296,  554,   37,    4,
 
-			  237,   60,   39,   62,   83,   46,  341,   44,  308,   15,
-			   16,  278,   48,  443,   60,  315,   47,  110,   27,  278,
-			  443,  100,   28,   29,   42,   31,   32,  906,   28,   29,
-			  331,   31,  473,  334,  539,  815,   67,   43,   47,   60,
-			  677,   60,   26,   43,  603,  443,  925,  926,  288,   26,
-			   34,  426,  289,  735,   54,   60,   60,  443,   67,  402,
-			   47,  120,  397,  398,   51,  443,   72,  497,  403,  309,
-			   89,  311,   72,   92,  497,   80,   80,  136,  318,  319,
-			  320,  321,  322,  323,  324,  325,  326,  327,  328,  329,
-			  330,  391,  332,  333,   42,  335,  336,  337,  351,  497,
+			  562,  554,  554,   80,    4,  488,   28,   29,  570,   31,
+			  630,   99,   51,   48,   51,  315,  104,   99,   60,  107,
+			    4,    1,  104,   45,    4,  107,  491,    1,   72,  554,
+			   60,   60,  554,   13,  692,  830,   16,  338,   80,   60,
+			  341,  412,  413,  750,   47,   36,   27,  418,   51,  611,
+			   72,   73,  618,   44,   28,   29,   86,   31,  461,   89,
+			   89,   83,   92,   92,  203,  204,   47,  206,   42,   42,
+			  461,   93,   46,   47,  461,   62,   47,   48,  640,  417,
+			   60,   60,   62,  105,   47,   48,   67,  271,   75,  461,
+			  421,  777,   32,   33,   28,   29,  235,   31,   72,   73,
 
-			  443,  402,  762,   60,  163,  108,  406,  391,   84,  539,
-			  753,  497,  443,  893,  489,   44,  539,  417,  418,  497,
-			  360,   28,   29,   99,   31,  101,   36,   44,  104,   43,
-			  109,  107,   46,  433,   44,  436,  437,  437,  443,   60,
-			  393,  539,   83,  443,   85,  204,   60,   54,  523,  524,
-			  787,   44,   27,  539,  497,  214,   70,    0,    1,   80,
-			   48,  539,  108,  109,  105,   72,  497,   47,  575,  406,
-			  501,  546,   47,  548,   28,   29,  443,   31,   60,  432,
-			  776,  418,  422,  423,  443,   99,   60,   67,   60,   58,
-			  104,   45,  497,  107,   64,   46,  539,  497,   46,   42,
+			   60,   80,  433,   60,  621,   60,  406,   60,   43,   83,
+			  513,   46,   46,  908,   28,   29,  417,   31,  110,   93,
+			   80,  421,  513,  461,   42,   60,  513,   84,  406,  461,
+			   26,  105,  432,  433,   89,   70,   60,   92,   72,   73,
+			  120,  513,   99,  441,  802,   42,   27,  104,   60,   83,
+			  107,  554,   76,  454,  455,  455,  295,  137,   72,   93,
+			  108,  461,   86,  554,   99,   89,   47,  554,   92,  104,
+			   44,  105,  107,   44,  358,  513,  109,  316,   44,  318,
+			  697,  513,  554,   48,  164,  517,  325,  326,  327,  328,
+			  329,  330,  331,  332,  333,  334,  335,  336,  337,   60,
 
-			  259,  544,  577,  456,  504,  580,    0,   77,  539,   60,
-			   79,  270,   47,   48,   86,   58,   85,   89,   72,   73,
-			   92,  461,  818,  860,   45,   94,  822,  823,   97,   83,
-			  497,  290,   15,   16,  539,   60,   79,   60,  497,   93,
-			  615,  391,   85,  544,  619,   42,    0,   92,   99,   32,
-			   58,  105,   44,  104,   97,  495,  107,  853,  895,  896,
-			  897,   84,  899,   43,   58,  518,   60,   28,   29,  522,
-			   31,   79,  539,  119,  120,   36,   99,   85,   47,   86,
-			  539,  104,   51,  920,  107,   79,  132,  133,   62,   97,
-			   89,   85,   43,  649,  104,   89,   43,  653,   47,   48,
+			  339,  340,  791,  342,  343,  344,  768,  590,  406,  507,
+			   32,   33,  729,  513,   47,   60,  554,  875,   60,   80,
+			  520,  559,  554,   46,  408,  205,   21,   22,   45,   28,
+			   29,   60,   31,   60,   67,  215,  375,   28,   29,   42,
+			   31,  539,  540,   92,  833,   36,   72,   73,  837,  838,
+			   32,   33,  910,  911,  912,   84,  914,   44,  559,   60,
+			   32,   33,    0,  561,   63,  563,   86,   66,   28,   29,
+			   99,   31,  789,   72,   60,  104,   43,  935,  107,  868,
+			  260,   72,   73,  814,  815,   86,   46,   47,   89,   58,
+			  474,   92,   83,   89,  592,  875,  276,  595,  437,  438,
 
-			   94,   75,   48,   97,   58,  364,   60,   61,   62,  103,
-			  666,   72,   73,   46,  108,  109,   46,  748,   60,  860,
-			   48,   75,   83,   28,   29,   79,   31,   21,   22,   83,
-			   60,   85,   93,  708,   64,  394,   28,   29,   48,   31,
-			   94,    3,   96,   97,  105,    3,   76,   77,  102,  649,
-			    3,  105,    3,  653,  895,  896,   86,   60,  899,   89,
-			   27,   46,   92,   32,   33,  649,  666,   72,   73,  653,
-			   92,  430,   99,  716,   60,   60,  677,  677,   83,  920,
-			   72,   73,  666,   71,   28,   29,   28,   31,   93,   15,
-			   16,   83,   32,   33,  453,   80,   81,   82,  799,  800,
+			   86,   43,   93,   89,  664,   48,   92,   43,  668,  826,
+			   79,  104,   72,   73,  105,   60,   85,  297,   15,   16,
+			   58,  681,   60,   83,   46,   94,    3,  763,   97,   26,
+			  910,  911,  630,   93,  914,   32,  634,  854,   48,   48,
+			  479,   79,  322,   28,   29,  105,   31,   85,   60,    3,
+			  534,   89,    3,    3,  538,  935,   94,   28,   29,   97,
+			   31,  878,   27,   92,  664,  103,   28,   29,  668,   31,
+			  108,  109,  511,   28,   29,   99,   31,    0,   15,   16,
+			   60,  681,   71,   28,   60,   69,  664,   72,   73,   26,
+			  668,  692,  692,  731,  374,   57,   44,   34,   83,  379,
 
-			  105,   93,   28,   29,  144,   31,   32,   92,   34,   32,
-			   33,  712,  713,  105,   32,   33,  716,   43,  103,   28,
-			   29,   60,   31,  108,  109,  110,   60,   60,   72,   73,
-			   44,   64,   69,  107,   43,  791,  792,   28,   29,   83,
-			   31,   60,  798,   76,   77,   60,   72,   60,  748,   93,
-			   84,   72,   73,   86,   63,  103,   89,   66,  860,   92,
-			   86,  105,  837,   72,  748,   99,   60,  720,   28,   29,
-			  104,   31,   63,  107,  860,   66,  106,   84,  778,  780,
-			  781,   72,  782,  784,  785,  786,  787,  787,  728,   60,
-			   82,  791,  792,   76,  896,  897,  555,  899,  798,  649,
+			  107,   72,   73,  681,  921,  103,   28,   29,   93,   31,
+			   72,   60,   83,   28,   29,  106,   31,   72,   60,  145,
+			  105,   43,   93,  940,  941,  723,  727,  728,   60,  409,
+			   60,  731,   84,   60,  105,   58,   82,   60,   61,   62,
+			   76,   63,   28,   29,   66,   31,  806,  807,   28,   29,
+			   72,   31,   75,  813,   35,   96,   79,   72,   73,   77,
+			   83,   48,   85,  763,   89,  445,  664,   36,   83,   80,
+			  668,   94,  875,   96,   97,   61,   48,   63,   93,  102,
+			   66,   94,  105,  681,  875,  763,   72,   49,  875,   67,
+			  105,  471,   72,  793,  795,  796,  102,  797,  799,  800,
 
-			   35,  560,   77,  653,   48,   89,   96,  791,  792,   94,
-			  896,  897,   72,  899,  798,   80,  666,  860,  920,   36,
-			   48,   67,  581,  823,   49,  584,   60,  586,  102,   90,
-			  770,  771,  272,   36,  920,   28,   29,  277,   31,   28,
-			   29,   48,   31,   42,  603,  846,  846,   48,   72,   36,
-			   48,   48,  895,  896,  897,  860,  899,  616,   28,   29,
-			  860,   31,  621,  622,  623,  624,  625,   48,   57,  870,
-			  310,   36,  312,  632,  633,   36,   27,  920,   26,   72,
-			  820,  821,  641,   72,  824,  825,  826,  888,   42,   42,
-			  891,  896,  897,  860,  899,  895,  896,  897,  748,  899,
+			  801,  802,  802,  875,   60,   90,  806,  807,  911,  912,
+			  875,  914,   36,  813,   17,   18,   19,   20,   21,   22,
+			  911,  912,   48,  914,  911,  912,   42,  914,  806,  807,
+			   48,   26,  935,   28,   29,  813,   31,  875,  838,  911,
+			  912,   72,  914,   48,  935,   27,  911,  912,  935,  914,
+			   48,  735,  278,   36,  852,  119,  120,   48,  284,   54,
+			  861,  861,   36,  935,   36,  763,   15,   16,  132,  133,
+			  935,   26,  910,  911,  912,  875,  914,   72,   42,   28,
+			   29,   42,   31,   32,  885,   34,   28,   29,   51,   31,
+			  570,  317,   34,  319,   43,  575,   48,  935,   60,   36,
 
-			   60,  860,   72,   48,   74,   51,   28,   29,   36,   31,
-			  669,  670,   36,  672,   41,  920,   86,   48,   27,   89,
-			  920,   76,   92,  363,   94,   48,   47,   47,  868,  896,
-			  897,   35,  899,   36,   35,  694,  376,  896,  897,   44,
-			  899,  791,  792,   28,   29,  704,   31,   60,  798,   34,
-			   72,   32,  892,  920,   32,   15,   16,   43,   43,   42,
-			   46,  920,  902,   76,  404,  905,   60,   60,   28,   29,
-			   44,   31,   32,   86,   60,   42,   89,   48,   64,   92,
-			  420,  421,   76,   43,   36,   85,   32,   72,   60,  429,
-			   76,   77,   86,   86,   32,   89,   89,   42,   92,   92,
+			   36,   43,  903,   41,  743,  906,   27,   48,  806,  807,
+			  910,  911,  912,   47,  914,  813,  596,   15,   16,  599,
+			   76,  601,   48,   72,    1,    1,   36,   58,   26,   35,
+			   72,   46,   35,   32,   32,  935,   34,   86,  618,   32,
+			   42,    0,    1,  369,   86,   60,  785,  786,   79,   64,
+			   42,  631,  378,   44,   85,   44,  636,  637,  638,  639,
+			  640,   76,   77,   48,   58,  391,   97,  647,  648,   28,
+			   29,   86,   31,    1,   89,   84,  656,   92,   85,   28,
+			   29,   36,   31,   42,   32,   79,   32,   44,    0,    1,
+			   99,   85,  101,  419,   45,  104,  835,  836,  107,   58,
 
-			   86,   86,   44,   89,   45,  764,   92,   42,   80,   81,
-			   82,  770,   72,   99,  773,   26,   26,    0,  104,   26,
-			   92,  107,   69,   26,  464,   26,   86,   28,   29,   26,
-			   31,  103,   15,   16,   51,   35,  108,  109,  110,   26,
-			  799,  800,   27,   36,   43,   28,   29,   30,   31,   32,
-			   33,   34,   41,   54,   27,   28,   29,  522,   31,    0,
-			   43,   44,   45,   46,  836,  594,  506,  479,  893,   52,
-			   53,   72,   15,   16,  437,   58,  835,   60,   61,   62,
-			   60,   54,  841,   26,   57,  844,   15,   16,  528,   72,
-			   63,   34,   75,   66,   77,  792,   79,   26,  920,   72,
+			  839,  840,  841,   97,  684,  685,   42,  687,   42,  435,
+			  436,   26,   26,   72,   51,   26,   28,   29,  444,   31,
+			   79,   26,   69,   72,   36,   74,   85,   39,   26,  709,
+			   42,   35,   44,   45,   46,   26,   48,   86,   97,  719,
+			   89,   27,   36,   92,  883,   94,   58,   43,   60,   61,
+			    0,   63,   41,  851,   66,   67,  482,  371,  538,  609,
+			   72,  455,  497,  908,  807,   77,  634,   79,  907,  559,
+			   15,   16,  935,   85,   86,   15,   16,   89,  917,  802,
+			   92,  920,  592,   28,   29,   97,   31,   32,   28,   29,
+			  578,   31,   32,   15,   16,  680,  522,  852,   43,  779,
 
-			   83,  619,   85,   32,   33,   34,   86,  544,  563,   89,
-			  837,   94,   92,   96,   97,  787,  597,   28,   29,  102,
-			   31,   50,  105,  665,   28,   29,  597,   31,  111,  112,
+			  612,  612,  406,   43,   26,  785,  612,  806,  788,  781,
+			   32,   33,   34,   28,   29,  645,   31,  850,  544,  765,
+			   28,   29,    0,   31,  918,   15,   16,   72,   43,  689,
+			  813,  876,   72,  116,  814,  815,  389,   15,   16,   54,
+			  287,   86,   32,   33,   34,  313,   54,  421,  717,  267,
+			   28,   29,   30,   31,   32,   33,   34,   72,    4,   27,
+			   28,   29,  554,   31,   72,   43,   44,   45,   46,  421,
+			  850,  509,  693,  881,   52,   53,  856,   60,  525,  859,
+			   58,   -1,   60,   61,   62,   -1,   54,  613,   -1,   57,
+			   -1,   -1,   -1,   76,   72,   63,   -1,   75,   66,   77,
+
+			  626,   79,   -1,   86,   72,   83,   89,   85,   -1,   92,
+			   -1,   -1,   -1,   -1,   -1,   -1,   94,   -1,   96,   97,
+			   -1,   -1,   -1,   -1,  102,   -1,  652,  105,  654,   -1,
+			   -1,   -1,   -1,  111,  112,  113,  114,  115,  116,  117,
+			  118,  119,  120,  121,  122,  123,  124,  125,  126,  127,
+			  128,  129,  130,  131,  132,  133,  134,   -1,   -1,    5,
+			    6,    7,    8,    9,   10,   11,   12,   13,   14,   15,
+			   16,   17,   18,   19,   20,   21,   22,  703,   -1,   -1,
+			  706,   -1,  708,   -1,   -1,   -1,   -1,   -1,   15,   16,
+			  716,   28,   29,   -1,   31,  721,   -1,   -1,   -1,   26,
+
+			   -1,   -1,   15,   16,   -1,   32,   33,   34,   -1,   22,
+			   23,   24,   25,   -1,   27,   28,   29,   30,   31,   32,
+			   33,   34,   35,   50,   -1,   38,   63,   40,  754,   66,
+			   43,   44,   45,   -1,   -1,   72,   -1,   50,   51,   52,
+			   53,   54,   55,   -1,   57,   -1,   59,   -1,   -1,   -1,
+			   63,   -1,   65,   66,   -1,   68,   -1,   -1,  784,   72,
+			  106,   74,   -1,   60,   77,   78,   -1,   64,   -1,   -1,
+			   -1,   -1,   -1,   86,   87,   88,   -1,   -1,   91,   76,
+			   77,   -1,   -1,   -1,   -1,   98,   -1,   -1,   -1,   86,
+			   -1,   -1,   89,   -1,  820,   92,   -1,   -1,  111,  112,
+
 			  113,  114,  115,  116,  117,  118,  119,  120,  121,  122,
 			  123,  124,  125,  126,  127,  128,  129,  130,  131,  132,
-			  133,  134,   63,   15,   16,   66,  577,   61,  598,   63,
-			  391,   72,   66,  597,   26,  791,  766,  835,   72,  750,
-			   32,  611,   34,   15,   16,  903,  674,  630,  798,  861,
-			   22,   23,   24,   25,  116,   27,   28,   29,   30,   31,
-			   32,   33,   34,   35,  374,  306,   38,  637,   40,  639,
-
-			  280,   43,   44,   45,  406,  266,  702,    4,   50,   51,
-			   52,   53,   54,   55,  539,   57,  406,   59,  491,  678,
-			  509,   63,  866,   65,   66,   -1,   68,   -1,   -1,   -1,
-			   72,   -1,   74,   -1,   -1,   77,   78,   -1,   -1,   -1,
-			   -1,   15,   16,   -1,   86,   87,   88,   -1,  688,   91,
-			   -1,  691,   26,  693,   -1,   -1,   98,   -1,   32,   33,
-			   34,  701,   -1,   -1,   -1,   -1,  706,   -1,   -1,  111,
-			  112,  113,  114,  115,  116,  117,  118,  119,  120,  121,
-			  122,  123,  124,  125,  126,  127,  128,  129,  130,  131,
-			  132,  133,  134,   17,   18,   19,   20,   21,   22,  739,
-
-			    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,
-			   15,   16,   17,   18,   19,   20,   21,   22,   15,   16,
-			   -1,   -1,   -1,   -1,   -1,   22,   23,   24,   25,  769,
-			   27,   28,   29,   30,   31,   32,   33,   34,   35,   -1,
-			   -1,   38,   -1,   40,   -1,   -1,   43,   44,   45,   46,
-			   -1,   -1,   -1,   50,   51,   52,   53,   54,   -1,   -1,
-			   57,   -1,   59,   -1,   -1,  805,   63,   -1,   65,   66,
-			   -1,   68,   -1,   -1,   -1,   72,   15,   16,   -1,   -1,
-			   77,   15,   16,   17,   18,   19,   20,   21,   22,   86,
-			   95,   -1,   -1,   32,   33,   34,   -1,   -1,   -1,   -1,
-
-			   -1,   98,   -1,  843,   -1,   -1,   -1,   -1,   -1,  849,
-			   -1,   -1,   -1,   -1,  111,  112,  113,  114,  115,  116,
-			  117,  118,  119,  120,  121,  122,  123,  124,  125,  126,
-			  127,  128,  129,  130,  131,  132,  133,  134,   -1,   15,
-			   16,   -1,  882,   -1,   -1,   -1,   22,   23,   24,   25,
-			  890,   27,   28,   29,   30,   31,   32,   33,   34,   35,
+			  133,  134,   15,   16,   17,   18,   19,   20,   21,   22,
+			   -1,   -1,  858,   -1,   -1,   -1,   -1,   -1,  864,   15,
+			   16,   -1,   -1,   -1,   -1,   -1,   22,   23,   24,   25,
+			   -1,   27,   28,   29,   30,   31,   32,   33,   34,   35,
 			   -1,   -1,   38,   -1,   40,   -1,   -1,   43,   44,   45,
-			   -1,   -1,   -1,   -1,   50,   51,   52,   53,   54,   -1,
-			   -1,   57,   -1,   59,   27,   28,   29,   63,   31,   65,
+			   46,  897,   -1,   -1,   50,   51,   52,   53,   54,  905,
+			   -1,   57,   60,   59,   -1,   -1,   -1,   63,   -1,   65,
 			   66,   -1,   68,   -1,   -1,   -1,   72,   -1,   -1,   -1,
 
+			   -1,   77,   80,   81,   82,   -1,   -1,   -1,   -1,   -1,
+			   86,   -1,   -1,   -1,   92,   -1,   -1,   -1,   -1,   -1,
+			   -1,   -1,   98,   -1,   -1,  103,   -1,   -1,   -1,   -1,
+			  108,  109,  110,   -1,   -1,  111,  112,  113,  114,  115,
+			  116,  117,  118,  119,  120,  121,  122,  123,  124,  125,
+			  126,  127,  128,  129,  130,  131,  132,  133,  134,   15,
+			   16,   -1,   -1,   -1,   -1,   -1,   22,   23,   24,   25,
+			   -1,   27,   28,   29,   30,   31,   32,   33,   34,   35,
+			   -1,   -1,   38,   -1,   40,   -1,   -1,   43,   44,   45,
+			   -1,   -1,   -1,   -1,   50,   51,   52,   53,   54,   -1,
+
+			   -1,   57,   -1,   59,   27,   28,   29,   63,   31,   65,
+			   66,   -1,   68,   -1,   -1,   -1,   72,   -1,   -1,   -1,
 			   43,   77,   -1,   -1,   80,   -1,   -1,   50,   -1,   -1,
 			   86,   54,   -1,   -1,   57,   -1,   -1,   -1,   -1,   -1,
 			   63,   -1,   98,   66,   -1,   -1,   -1,   -1,   -1,   72,
@@ -22598,9 +22954,9 @@ feature {NONE} -- Table templates
 			  126,  127,  128,  129,  130,  131,  132,  133,  134,   15,
 			   16,   -1,   -1,   -1,   -1,   -1,   22,   23,   24,   25,
 			   -1,   27,   28,   29,   30,   31,   32,   33,   34,   35,
+
 			   -1,   -1,   38,   -1,   40,   -1,   -1,   43,   44,   45,
 			   -1,   -1,   -1,   -1,   50,   51,   52,   53,   54,   -1,
-
 			   -1,   57,   -1,   59,   -1,   -1,   -1,   63,   -1,   65,
 			   66,   -1,   68,   -1,   -1,   -1,   72,   -1,   -1,   -1,
 			   -1,   77,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -22609,19 +22965,6 @@ feature {NONE} -- Table templates
 			  106,   -1,   -1,   -1,   -1,  111,  112,  113,  114,  115,
 			  116,  117,  118,  119,  120,  121,  122,  123,  124,  125,
 			  126,  127,  128,  129,  130,  131,  132,  133,  134,   15,
-			   16,   -1,   -1,   -1,   -1,   -1,   22,   23,   24,   25,
-			   -1,   27,   28,   29,   30,   31,   32,   33,   34,   35,
-
-			   -1,   -1,   38,   -1,   40,   -1,   -1,   43,   44,   45,
-			   -1,   -1,   -1,   -1,   50,   51,   52,   53,   54,   -1,
-			   -1,   57,   -1,   59,   -1,   -1,   -1,   63,   -1,   65,
-			   66,   -1,   68,   -1,   -1,   -1,   72,   -1,   -1,   -1,
-			   -1,   77,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-			   86,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-			   -1,   -1,   98,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-			   -1,   -1,   -1,   -1,   -1,  111,  112,  113,  114,  115,
-			  116,  117,  118,  119,  120,  121,  122,  123,  124,  125,
-			  126,  127,  128,  129,  130,  131,  132,  133,  134,   15,
 
 			   16,   -1,   -1,   -1,   -1,   -1,   22,   23,   24,   25,
 			   -1,   27,   28,   29,   30,   31,   32,   33,   34,   35,
@@ -22662,78 +23005,91 @@ feature {NONE} -- Table templates
 			   -1,   -1,   -1,   -1,   -1,  111,  112,  113,  114,  115,
 			  116,  117,  118,  119,  120,  121,  122,  123,  124,  125,
 			  126,  127,  128,  129,  130,  131,  132,  133,  134,   15,
-			   16,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   16,   -1,   -1,   -1,   -1,   -1,   22,   23,   24,   25,
+			   -1,   27,   28,   29,   30,   31,   32,   33,   34,   35,
+			   -1,   -1,   38,   -1,   40,   -1,   -1,   43,   44,   45,
+			   -1,   -1,   -1,   -1,   50,   51,   52,   53,   54,   -1,
+
+			   -1,   57,   -1,   59,   -1,   -1,   -1,   63,   -1,   65,
+			   66,   -1,   68,   -1,   -1,   -1,   72,   -1,   -1,   -1,
+			   -1,   77,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   86,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   -1,   -1,   98,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+			   -1,   -1,   -1,   -1,   -1,  111,  112,  113,  114,  115,
+			  116,  117,  118,  119,  120,  121,  122,  123,  124,  125,
+			  126,  127,  128,  129,  130,  131,  132,  133,  134,   15,
+			   16,   44,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
 			   -1,   -1,   28,   29,   30,   31,   32,   33,   34,   -1,
+
 			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   43,   44,   45,
 			   46,   -1,   -1,   -1,   -1,   -1,   52,   53,    5,    6,
-
 			    7,    8,    9,   10,   11,   12,   13,   14,   15,   16,
 			   17,   18,   19,   20,   21,   22,   72,   -1,   -1,   -1,
-			   -1,   77,    5,    6,    7,    8,    9,   10,   11,   12,
-			   13,   14,   15,   16,   17,   18,   19,   20,   21,   22,
-			    8,    9,   10,   11,   12,   13,   14,   15,   16,   17,
-			   18,   19,   20,   21,   22,  111,  112,  113,  114,  115,
+			   -1,   77,   -1,   -1,   -1,   -1,   -1,   -1,  111,  112,
+			  113,  114,  115,  116,  117,  118,  119,  120,  121,  122,
+			  123,  124,  125,  126,  127,  128,  129,  130,  131,  132,
+			  133,  134,   -1,   -1,   -1,  111,  112,  113,  114,  115,
 			  116,  117,  118,  119,  120,  121,  122,  123,  124,  125,
 			  126,  127,  128,  129,  130,  131,  132,  133,  134,   15,
-			   16,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-			   -1,   -1,   28,   29,   30,   31,   32,   33,   34,  106,
 
-			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   43,   44,   45,
+			   16,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   46,   -1,
+			   -1,   -1,   28,   29,   30,   31,   32,   33,   34,  106,
+			   -1,   -1,   60,   -1,   -1,   -1,   -1,   43,   44,   45,
 			   46,   -1,   -1,   -1,   -1,   -1,   52,   53,   -1,   -1,
-			   -1,   -1,   -1,  106,   -1,   15,   16,   -1,   -1,   -1,
-			   -1,   -1,   -1,   -1,   -1,   -1,   72,   -1,   -1,   -1,
-			   30,   77,   32,   33,   34,   -1,   -1,   -1,   -1,   -1,
-			   -1,   -1,   -1,   43,   44,   -1,   -1,   -1,   -1,   -1,
+			   -1,   -1,   80,   81,   82,   15,   16,   -1,   -1,   -1,
+			   -1,   -1,   -1,   -1,   92,   -1,   72,   -1,   -1,   -1,
+			   30,   77,   32,   33,   34,  103,   -1,   -1,   -1,   -1,
+			  108,  109,  110,   43,   44,   -1,   -1,   -1,   -1,   -1,
 			   -1,   -1,   52,   53,   -1,   -1,   56,   -1,   -1,   -1,
 			   -1,   -1,   -1,   -1,   -1,  111,  112,  113,  114,  115,
+
 			  116,  117,  118,  119,  120,  121,  122,  123,  124,  125,
 			  126,  127,  128,  129,  130,  131,  132,  133,  134,   89,
-
-			    6,    7,    8,    9,   10,   11,   12,   13,   14,   15,
-			   16,   17,   18,   19,   20,   21,   22,    0,    1,   -1,
+			    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,
+			   15,   16,   17,   18,   19,   20,   21,   22,   -1,   -1,
 			   -1,  111,  112,  113,  114,  115,  116,  117,  118,  119,
 			  120,  121,  122,  123,  124,  125,  126,  127,  128,  129,
-			  130,  131,  132,  133,  134,   28,   29,   -1,   31,   44,
-			   -1,   -1,   -1,   36,   -1,   -1,   39,   -1,   -1,   42,
-			   -1,   44,   45,   46,   -1,   48,   -1,   -1,   -1,   -1,
-			   -1,   -1,   -1,   -1,   -1,   58,   -1,   60,   61,   -1,
-			   63,   -1,   -1,   66,   67,   -1,   -1,   -1,   -1,   72,
-			   -1,   -1,   -1,   -1,   77,   -1,   79,   -1,   -1,   -1,
+			  130,  131,  132,  133,  134,    5,    6,    7,    8,    9,
+			   10,   11,   12,   13,   14,   15,   16,   17,   18,   19,
+			   20,   21,   22,   43,   -1,   -1,   46,   -1,   -1,   -1,
+			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
 
-			   -1,   -1,   85,   86,   -1,   -1,   89,   -1,   -1,   92,
-			   -1,   -1,   -1,   -1,   97,   -1,  111,  112,  113,  114,
-			  115,  116,  117,  118,  119,  120,  121,  122,  123,  124,
-			  125,  126,  127,  128,  129,  130,  131,  132,  133,  134,
-			    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,
-			   15,   16,   17,   18,   19,   20,   21,   22,    5,    6,
+			   60,   -1,   -1,   -1,   64,   -1,   -1,   -1,   -1,   -1,
+			   95,   -1,   -1,   -1,   -1,   -1,   76,   77,   -1,   -1,
+			   60,   -1,   -1,   -1,   -1,   -1,   86,   -1,   -1,   89,
+			   -1,   -1,   92,   -1,   -1,   -1,   -1,   -1,   -1,   99,
+			   80,   -1,   -1,   -1,  104,   -1,   -1,  107,    5,    6,
 			    7,    8,    9,   10,   11,   12,   13,   14,   15,   16,
 			   17,   18,   19,   20,   21,   22,    5,    6,    7,    8,
 			    9,   10,   11,   12,   13,   14,   15,   16,   17,   18,
-			   19,   20,   21,   22,   -1,   60,   -1,   -1,   -1,   46,
-
+			   19,   20,   21,   22,   -1,   -1,   -1,   -1,   -1,   46,
 			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   36,   -1,   -1,
-			   -1,   -1,   41,   42,   -1,   80,    5,    6,    7,    8,
-			    9,   10,   11,   12,   13,   14,   15,   16,   17,   18,
-			   19,   20,   21,   22,    5,    6,    7,    8,    9,   10,
+
+			   -1,   -1,   41,   42,    5,    6,    7,    8,    9,   10,
 			   11,   12,   13,   14,   15,   16,   17,   18,   19,   20,
-			   21,   22,   -1,   42,    7,    8,    9,   10,   11,   12,
+			   21,   22,    5,    6,    7,    8,    9,   10,   11,   12,
 			   13,   14,   15,   16,   17,   18,   19,   20,   21,   22,
-			   -1,   42,    5,    6,    7,    8,    9,   10,   11,   12,
+			   -1,   42,    6,    7,    8,    9,   10,   11,   12,   13,
+			   14,   15,   16,   17,   18,   19,   20,   21,   22,   42,
+			    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,
+			   15,   16,   17,   18,   19,   20,   21,   22,  115,  116,
+			  117,  118,  119,  120,  121,  122,  123,  124,  125,  126,
+			  127,  128,  129,  130,  131,   -1,  133,   42,  111,  112,
+
+			  113,  114,  115,  116,  117,  118,  119,  120,  121,  122,
+			  123,  124,  125,  126,  127,  128,  129,  130,  131,  132,
+			  133,  134,  111,   -1,  113,   -1,  115,  116,  117,  118,
+			  119,  120,  121,  122,  123,  124,  125,  126,  127,  128,
+			  129,  130,  131,  132,  133,  134,  115,  116,  117,  118,
+			  119,  120,  121,  122,  123,  124,  125,  126,  127,  128,
+			  129,  130,  131,  132,  133,  134,    5,    6,    7,    8,
+			    9,   10,   11,   12,   13,   14,   15,   16,   17,   18,
+			   19,   20,   21,   22,    7,    8,    9,   10,   11,   12,
 			   13,   14,   15,   16,   17,   18,   19,   20,   21,   22,
-			  115,  116,  117,  118,  119,  120,  121,  122,  123,  124,
 
-			  125,  126,  127,  128,  129,  130,  131,   -1,  133,   42,
-			  111,  112,  113,  114,  115,  116,  117,  118,  119,  120,
-			  121,  122,  123,  124,  125,  126,  127,  128,  129,  130,
-			  131,  132,  133,  134,  111,   -1,  113,   -1,  115,  116,
-			  117,  118,  119,  120,  121,  122,  123,  124,  125,  126,
-			  127,  128,  129,  130,  131,  132,  133,  134,  115,  116,
-			  117,  118,  119,  120,  121,  122,  123,  124,  125,  126,
-			  127,  128,  129,  130,  131,  132,  133,  134,    5,    6,
-			    7,    8,    9,   10,   11,   12,   13,   14,   15,   16,
-			   17,   18,   19,   20,   21,   22,    9,   10,   11,   12,
-
-			   13,   14,   15,   16,   17,   18,   19,   20,   21,   22, yyDummy>>)
+			    8,    9,   10,   11,   12,   13,   14,   15,   16,   17,
+			   18,   19,   20,   21,   22,    9,   10,   11,   12,   13,
+			   14,   15,   16,   17,   18,   19,   20,   21,   22, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -24120,7 +24476,7 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER is 935
+	yyFinal: INTEGER is 950
 			-- Termination state id
 
 	yyFlag: INTEGER is -32768
@@ -24129,14 +24485,14 @@ feature {NONE} -- Constants
 	yyNtbase: INTEGER is 135
 			-- Number of tokens
 
-	yyLast: INTEGER is 2809
+	yyLast: INTEGER is 2928
 			-- Upper bound of `yytable' and `yycheck'
 
 	yyMax_token: INTEGER is 389
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER is 364
+	yyNsyms: INTEGER is 367
 			-- Number of symbols
 			-- (terminal and nonterminal)
 
@@ -24177,4 +24533,6 @@ indexing
 		]"
 
 end -- class EIFFEL_PARSER
+
+
 

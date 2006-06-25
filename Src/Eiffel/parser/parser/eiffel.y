@@ -101,7 +101,7 @@ create
 
 %type <PAIR[KEYWORD_AS, ID_AS]> Assigner_mark_opt
 %type <PAIR[KEYWORD_AS, STRING_AS]> External_name Obsolete
-%type <IDENTIFIER_LIST>		Identifier_list Strip_identifier_list
+%type <IDENTIFIER_LIST>		Identifier_list Identifier_list_impl Strip_identifier_list
 %type <PAIR [KEYWORD_AS, EIFFEL_LIST [TAGGED_AS]]> Invariant
 %type <AGENT_TARGET_TRIPLE> Agent_target
 
@@ -139,7 +139,7 @@ create
 %type <FEATURE_SET_AS>		Feature_set
 %type <FORMAL_AS>			Formal_parameter
 %type <FORMAL_DEC_AS>		Formal_generic
-%type <ID_AS>				Class_or_tuple_identifier Class_identifier Identifier_as_lower Free_operator Feature_name_for_call
+%type <ID_AS>				Class_or_tuple_identifier Class_identifier Identifier_as_lower Identifier_as_lower_comma Free_operator Feature_name_for_call
 %type <IF_AS>				Conditional
 %type <INDEX_AS>			Index_clause Index_clause_impl
 %type <INSPECT_AS>			Multi_branch
@@ -240,42 +240,42 @@ Eiffel_parser:
 			}
 	|	TE_FEATURE Feature_declaration
 			{
-				if not feature_parser or type_parser or expression_parser or indexing_parser or entity_declaration_parser or invariant_parser then
+				if not feature_parser or not single_parser_type then
 					raise_error
 				end
 				feature_node := $2
 			}
 	|	TE_CHECK Expression
 			{
-				if not expression_parser or type_parser or feature_parser or indexing_parser or entity_declaration_parser or invariant_parser then
+				if not expression_parser or not single_parser_type then
 					raise_error
 				end
 				expression_node := $2
 			}
 	|	Indexing
 			{
-				if not indexing_parser or type_parser or expression_parser or feature_parser or entity_declaration_parser or invariant_parser then
+				if not indexing_parser or not single_parser_type then
 					raise_error
 				end
 				indexing_node := $1
 			}
 	|	TE_INVARIANT Class_invariant
 			{
-				if not invariant_parser or type_parser or expression_parser or feature_parser or indexing_parser or entity_declaration_parser then
+				if not invariant_parser or not single_parser_type then
 					raise_error
 				end
 				invariant_node := $2
 			}
 	|	TE_LOCAL
 			{
-				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
+				if not entity_declaration_parser or not single_parser_type then
 					raise_error
 				end
 				entity_declaration_node := Void
 			}
 	|	TE_LOCAL Add_counter Entity_declaration_list Remove_counter
 			{
-				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
+				if not entity_declaration_parser or not single_parser_type then
 					raise_error
 				end
 				entity_declaration_node := $3
@@ -1100,7 +1100,8 @@ Select: TE_SELECT
 -- Feature declaration
 
 
-Formal_arguments:	TE_LPARAN TE_RPARAN
+Formal_arguments:	
+		TE_LPARAN TE_RPARAN
 			{
 				$$ := ast_factory.new_formal_argu_dec_list_as (Void, $1, $2) 
 				report_warning (parser_errors.empty_parenthesis_warning, $1)
@@ -1127,13 +1128,29 @@ Entity_declaration_list: Entity_declaration_group
 					$$.reverse_extend ($1)
 				end
 			}
+	|	Entity_declaration_group error
+			{ report_unexpected_error (text, Void, True) }
 	;
 
-Entity_declaration_group: Add_counter Identifier_list Remove_counter TE_COLON Type ASemi
-			{ $$ := ast_factory.new_type_dec_as ($2, $5, $4) }
+Entity_declaration_group:
+		Identifier_list TE_COLON Type ASemi
+			{ $$ := ast_factory.new_type_dec_as ($1, $3, $2) }
+	|	Identifier_list TE_COLON ASemi
+			error { report_expected_after_error (parser_errors.colon_symbol, $2, parser_errors.a_class_name, False) }
+	|	Identifier_list Type ASemi
+			error { report_expected_before_error (parser_errors.a_class_name, $2, parser_errors.colon_symbol, False)}
+	|	Identifier_list ASemi
+			error { report_expected_after_error (parser_errors.formal_argument_declaration, last_id_as_value, parser_errors.colon_symbol, True) }
 	;
 
-Identifier_list: Identifier_as_lower
+Identifier_list: 
+		Add_counter Identifier_list_impl Remove_counter
+			{ $$ := $2 }
+	|	Add_counter Identifier_list_impl error Remove_counter
+			{ report_unexpected_error (text, Void, True) }
+	;
+
+Identifier_list_impl: Identifier_as_lower
 			{
 				$$ := ast_factory.new_identifier_list (counter_value + 1)
 				if $$ /= Void and $1 /= Void then
@@ -1142,16 +1159,29 @@ Identifier_list: Identifier_as_lower
 					ast_factory.reverse_extend_identifier ($$.id_list, $1)
 				end
 			}
-	|	Identifier_as_lower { increment_counter } TE_COMMA Identifier_list
+	|	Identifier_as_lower_comma { increment_counter } Identifier_list
 			{
-				$$ := $4
-				if $$ /= Void and $1 /= Void then
+				$$ := $2
+				if $$ /= Void and $1 /= Void and counter_value > 0 then
 					Names_heap.put ($1)
 					$$.reverse_extend (Names_heap.found_item)
 					ast_factory.reverse_extend_identifier ($$.id_list, $1)
-					ast_factory.reverse_extend_separator ($$.id_list, $3)
+					ast_factory.reverse_extend_separator ($$.id_list, last_symbol_as_value)
 				end
 			}
+	|	Identifier_as_lower_comma
+			error { report_expected_after_error (parser_errors.comma_symbol, last_symbol_as_value, parser_errors.an_identifier, False) }
+	;
+	
+Identifier_as_lower_comma: Identifier_as_lower Identifier_as_lower_comma_list
+			{
+				$$ := $1
+			}
+	;
+
+Identifier_as_lower_comma_list: TE_COMMA
+	|	TE_COMMA Identifier_as_lower_comma_list
+			{ report_expected_after_error (parser_errors.comma_symbol, $1, parser_errors.an_identifier, False) }
 	;
 
 Strip_identifier_list: -- Empty
@@ -3030,4 +3060,6 @@ indexing
 		]"
 
 end -- class EIFFEL_PARSER
+
+
 
