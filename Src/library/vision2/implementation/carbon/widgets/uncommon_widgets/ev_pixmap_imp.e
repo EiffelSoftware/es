@@ -59,9 +59,28 @@ feature {NONE} -- Initialization
 		-- Needed to receive events on GtkImage
 
 	make (an_interface: like interface) is
-			-- Create a gtk pixmap of size (1 * 1) with no mask.
+			-- Connect interface and initialize `c_object'.
+		local
+			err : INTEGER
+			rect : RECT_STRUCT
+			struct_ptr : POINTER
+			target: POINTER
 		do
+			base_make (an_interface)
+			create rect.make_new_unshared
+			rect.set_left(60)
+			rect.set_right(150)
+			rect.set_bottom(90)
+			rect.set_top (60)
+			err := create_image_well_control_external( null, rect.item, null, $struct_ptr )
+			set_c_object ( struct_ptr )
+			id:=app_implementation.get_id (current)  --getting an id from the application
+			target:=get_control_event_target_external(struct_ptr)
+				--	app_implementation.install_event_handler(id,res ,1 ,2)
+			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+
 		end
+
 
 	initialize is
 			-- Initialize `Current'
@@ -119,7 +138,7 @@ feature -- Element change
 
 	set_size (a_width, a_height: INTEGER) is
 			-- Set the size of the pixmap to `a_width' by `a_height'.
-		do
+		do	
 		end
 
 	reset_for_buffering (a_width, a_height: INTEGER) is
