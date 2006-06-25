@@ -1461,10 +1461,12 @@ Assertion_list: Assertion_clause
 		Assertion_list
 			{
 				$$ := $3
-				if $$ /= Void and $1 /= Void then
+				if $$ /= Void and $1 /= Void and counter_value > 0 then
 					$$.reverse_extend ($1)
 				end
 			}
+	|	Assertion_clause error
+			{ report_unexpected_error (text, Void, True) }
 	;
 
 Assertion_clause: Expression ASemi
