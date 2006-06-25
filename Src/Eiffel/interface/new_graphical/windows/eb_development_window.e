@@ -344,8 +344,8 @@ feature {NONE} -- Initialization
 			toolbarable_commands.extend(lock_class_cmd)
 			create unlock_class_cmd.make
 			toolbarable_commands.extend(unlock_class_cmd)
-			create server_class_cmd.make
-			toolbarable_commands.extend(server_class_cmd)
+			create new_project_class_cmd.make
+			toolbarable_commands.extend(new_project_class_cmd)
 			create add_user_class_cmd.make
 			toolbarable_commands.extend(add_user_class_cmd)
 
@@ -4397,10 +4397,10 @@ feature {EB_TOOL} -- Implementation / Commands
 			-- Command to lock class on emu-server
 	unlock_class_cmd: EB_EMU_CLASS_UNLOCK_COMMAND
 			-- Command to unlock class on emu-server
-	server_class_cmd: EB_EMU_SERVER_COMMAND
-			-- Command create an emu-server
+	new_project_class_cmd: EB_EMU_SERVER_COMMAND
+			-- Command create an emu-project
 	add_user_class_cmd: EB_EMU_ADD_USER_COMMAND
-			-- Command to add a user to emu-server
+			-- Command to add a user to emu-project
 	-------------------------
 
 feature{EB_TOOL, EB_C_COMPILER_LAUNCHER}
