@@ -55,6 +55,37 @@ feature -- Initialization
 				retry
 			end
 		end
+	
+	connect_to_server (ip,u_name,pwd,proj_name:STRING; port:INTEGER) is
+			-- main entry point of application.
+			-- takes four arguments: server_adress server_port user_name password project_name
+		local
+			rescued: BOOLEAN
+		do
+           	if not rescued then
+           		server_ip := ip
+           		server_port := port
+           		user_name := u_name
+            	password := pwd
+            	project_name := proj_name
+    	       	sleep_time := sleep_time_default
+				create socket.make_client_by_port (server_port, server_ip)
+			else
+					socket.make_client_by_port (server_port, server_ip)
+			end
+				register_to_server()
+
+				-- register default commands. we use agents to be able to replace the features by an admin.
+				idle_cmd := agent idle
+				process_server_cmd := agent process_server
+				idle_cmd.apply	-- start client idle process
+		rescue
+			if not assertion_violation then
+				rescued := True
+				clean_up	-- upon an exception clean_up all sockets and restart client.
+				retry
+			end
+		end
 
 feature -- Access	
 	
