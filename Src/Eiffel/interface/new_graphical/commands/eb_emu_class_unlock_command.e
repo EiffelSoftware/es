@@ -28,11 +28,23 @@ feature -- Status setting
 
 	execute is
 			-- Unlock current class in editor window on emu server
+		local
+			unlock_done: BOOLEAN
+			status_bar: EB_DEVELOPMENT_WINDOW_STATUS_BAR
+			window:EB_DEVELOPMENT_WINDOW
 		do
-			current_file_in_editor := Window_manager.last_focused_development_window.file_name
-			if(current_file_in_editor /= void) then
-				Window_manager.last_focused_development_window.managed_main_formatters.first.enable_sensitive
-				Window_manager.last_focused_development_window.editor_tool.text_area.set_read_only (false)
+			window := Window_manager.last_focused_development_window
+			status_bar := window.status_bar
+			current_file_in_editor := window.file_name
+
+			status_bar.display_message ("Unlocking class on emu_server...")
+			--unlock_done := emu_client.unlock (current_file_in_editor)
+			if (unlock_done) then
+				status_bar.display_message ("Unlock done")
+				window.managed_main_formatters.first.enable_sensitive
+				window.editor_tool.text_area.set_read_only (false)
+			else
+				show_emu_error (emu_unlock_error_text)
 			end
 		end
 
@@ -91,8 +103,37 @@ feature -- Status report
 	current_file_in_editor: STRING
 			-- filename of class in editor
 
+	emu_client: EMU_CLIENT is
+			-- associated emu_client
+		do
+			Result := window_manager.last_focused_development_window.project_manager.emu_client
+		end
+
+feature -- constants
+
+
+	emu_unlock_error_text: STRING is "Unlocking crashed"
+			-- text if emu_client unlocking failed
+
 feature {NONE} -- Implementation
 
+	show_emu_error (error_text: STRING) is
+			-- little popup  with error msg
+		do
+			show_warning_message (error_text)
+		end
+
+	show_warning_message (a_message: STRING) is
+			-- show `a_message' in a dialog window		
+			-- (from TEXT_PANEL)
+		local
+			wd: EV_WARNING_DIALOG
+		do
+			create wd.make_with_text (a_message)
+			wd.pointer_button_release_actions.force_extend (agent wd.destroy)
+			wd.key_press_actions.force_extend (agent wd.destroy)
+			wd.show_modal_to_window (window_manager.last_focused_development_window.window)
+		end
 
 
 end

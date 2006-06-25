@@ -28,19 +28,26 @@ feature -- Status setting
 
 	execute is
 			-- Lock current class in editor window on emu server
+		local
+			lock_done: BOOLEAN
+			status_bar: EB_DEVELOPMENT_WINDOW_STATUS_BAR
+			window:EB_DEVELOPMENT_WINDOW
 		do
-			current_file_in_editor := Window_manager.last_focused_development_window.file_name
-			if(current_file_in_editor /= void) then
-				Window_manager.last_focused_development_window.managed_main_formatters.first.disable_sensitive
-				Window_manager.last_focused_development_window.editor_tool.text_area.set_read_only (true)
+			window := Window_manager.last_focused_development_window
+			status_bar := window.status_bar
+			current_file_in_editor := window.file_name
+
+			status_bar.display_message ("Locking class on emu_server...")
+			--lock_done := emu_client.lock (current_file_in_editor)
+			if (lock_done) then
+				status_bar.display_message ("Locking done")
+				window.managed_main_formatters.first.disable_sensitive
+				window.editor_tool.text_area.set_read_only (true)
+			else
+				show_emu_error (emu_lock_error_text)
 			end
 		end
 
-	execute_with_stone (st: ERROR_STONE) is
-			-- Pop up a new dialog and display the help text of `st' inside it.
-		do
-
-		end
 
 feature -- Status
 
@@ -91,22 +98,40 @@ feature -- Status report
 			-- it will never be garbage collected.
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
-			Result.drop_actions.extend (agent execute_with_stone)
 		end
 
 	current_file_in_editor: STRING
 			-- filename of class in editor
 
+	emu_client: EMU_CLIENT is
+		-- associated emu_client
+	do
+		Result := window_manager.last_focused_development_window.project_manager.emu_client
+	end
+
+feature -- constants
+
+	emu_lock_error_text: STRING is "Locking crashed"
+			-- text if emu_client unlocking failed
+
 feature {NONE} -- Implementation
 
-
-	set_stone (editor: SELECTABLE_TEXT_PANEL; st: ERROR_STONE) is
-			-- Display the help text associated with `st' in `editor'.
-		require
-			valid_stone: st /= Void
-			valid_editor: editor /= Void
+	show_emu_error (error_text: STRING) is
+			-- little popup  with error msg
 		do
-			editor.load_text (st.help_text)
+			show_warning_message (error_text)
+		end
+
+	show_warning_message (a_message: STRING) is
+			-- show `a_message' in a dialog window		
+			-- (from TEXT_PANEL)
+		local
+			wd: EV_WARNING_DIALOG
+		do
+			create wd.make_with_text (a_message)
+			wd.pointer_button_release_actions.force_extend (agent wd.destroy)
+			wd.key_press_actions.force_extend (agent wd.destroy)
+			wd.show_modal_to_window (window_manager.last_focused_development_window.window)
 		end
 
 end

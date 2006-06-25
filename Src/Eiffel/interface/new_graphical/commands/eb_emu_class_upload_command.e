@@ -1,6 +1,6 @@
 indexing
 	description: "Command to upload class to emu server[button in EMU-TOOLBAR]"
-	author: "EMU-TEAM"
+	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -30,16 +30,26 @@ feature -- Status setting
 
 	execute is
 			-- Upload current class in editor window to emu server
+		local
+			upload_done: BOOLEAN
+			status_bar: EB_DEVELOPMENT_WINDOW_STATUS_BAR
 		do
-
+			status_bar := Window_manager.last_focused_development_window.status_bar
 			current_file_in_editor := Window_manager.last_focused_development_window.file_name
 			if(current_file_in_editor /= void) then
-				--call emu client upload
-				--Što be implemented
-				--show upload dialog
-				show_upload_dialog
+				--show_upload_dialog --not used,otherwise would make it threaded?!
+				status_bar.display_message ("Uploading class to emu_server...")
+
+				--upload_done := emu_client.upload(current_file_in_editor)
+
+				if(upload_done) then
+					status_bar.display_message ("Upload done")
+				else
+					show_emu_error(emu_upload_error_text)
+				end
+
 			else
-				show_emu_no_class_in_editor_error
+				show_emu_error(emu_no_class_warning_text)
 			end
 		end
 
@@ -98,6 +108,12 @@ feature -- Status report
 	current_file_in_editor: STRING
 			-- filename of class in editor
 
+	emu_client: EMU_CLIENT is
+			-- associated emu_client
+		do
+			Result := window_manager.last_focused_development_window.project_manager.emu_client
+		end
+
 
 feature -- constants
 
@@ -113,6 +129,8 @@ feature -- constants
 			-- text for cancel operation button in dialog
 	emu_no_class_warning_text: STRING is "No class in Editor Window"
 			-- text for warning message
+	emu_upload_error_text: STRING is "Upload crashed"
+			-- text if emu_client upload didn't go well
 
 feature {NONE} -- Implementation
 
@@ -127,10 +145,10 @@ feature {NONE} -- Implementation
 			current_dialog := Void
 		end
 
-	show_emu_no_class_in_editor_error is
-			-- little popup that no class is in editor window
+	show_emu_error(error_text: STRING) is
+			-- little popup  with error msg
 		do
-			show_warning_message (emu_no_class_warning_text)
+			show_warning_message (error_text)
 		end
 
 	show_warning_message (a_message: STRING) is
@@ -145,7 +163,7 @@ feature {NONE} -- Implementation
 			wd.show_modal_to_window (Window_manager.last_focused_development_window.window)
 		end
 
-	create_new_dialog is
+	create_new_dialog is --not used,otherwise would have to make threaded - overkill?!
 			-- Fill `current_dialog' with a newly created dialog.
 		local
 			but: EV_BUTTON
@@ -206,7 +224,7 @@ feature {NONE} -- Implementation
 			valid_dialog: current_dialog /= Void and then not current_dialog.is_destroyed
 		end
 
-		abort_current_upload is
+		abort_current_upload is --not used either, because not making a new thread to upload class
 				-- abort current class upload to emu_server
 			do
 				--notify emu-client that aborted

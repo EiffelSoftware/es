@@ -2,7 +2,7 @@ indexing
 	description: "Add a user to project on emu server[button to call external wizard]"
 	author: "$Author$"
 	date: "$Date$"
-	revision: "$Revistion$"
+	revision: "$Revision$"
 
 
 class
