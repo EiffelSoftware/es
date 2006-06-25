@@ -283,6 +283,14 @@ feature -- Element change
 				known_formatters.forth
 			end
 			known_formatters.go_to (cur)
+
+			---EMU---
+			if(parent_widget /= Void) then
+				if(parent_widget.project_manager.is_in_emu_mode) then
+					parent_widget.disable_emu_class_buttons
+				end
+			end
+			---------
 		end
 
 	enable_formatters is
@@ -302,7 +310,16 @@ feature -- Element change
 				known_formatters.forth
 			end
 			known_formatters.go_to (cur)
+
+			---EMU---
+			if(parent_widget /= Void) then
+				if(parent_widget.project_manager.is_in_emu_mode) then
+					parent_widget.enable_emu_class_buttons
+				end
+			end
+			---------
 		end
+
 
 	reset is
 			-- Reset the address manager.
