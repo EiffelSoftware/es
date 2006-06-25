@@ -125,8 +125,9 @@ feature -- Execution
 				create fnemu.make_from_string (a_project_file_name)
 				if not fnemu.is_empty then
 					fnemu.add_extension ("emu")
-					create emu_file.make_open_read (fnemu)
+					create emu_file.make (fnemu)
 					if emu_file.exists  then --and then not emu_file.is_plain
+						emu_file.open_read
 						emu_file.readline
 						if emu_file.last_string.is_equal ("EMU USER FILE") then
 							emu_file.readline
