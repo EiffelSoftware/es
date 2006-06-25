@@ -40,7 +40,7 @@ create
 %left		TE_DOT
 %right		TE_LPARAN
 
-%token <ID_AS> TE_FREE TE_ID TE_TUPLE TE_A_BIT
+%token <ID_AS> TE_FREE TE_ID TE_TUPLE TE_A_BIT TE_BAD_ID
 %token TE_INTEGER
 %token TE_REAL
 %token <CHAR_AS>TE_CHAR
@@ -1109,9 +1109,18 @@ Select: TE_SELECT
 
 
 Formal_arguments:	TE_LPARAN TE_RPARAN
-			{ $$ := ast_factory.new_formal_argu_dec_list_as (Void, $1, $2) }
+			{
+				$$ := ast_factory.new_formal_argu_dec_list_as (Void, $1, $2) 
+				if has_syntax_warning then
+					report_warning ("Empty paranthesis `()' are not ECMA-Eiffel compliant, please remove them.", $1)
+				end
+			}
 	|	TE_LPARAN Add_counter Entity_declaration_list Remove_counter TE_RPARAN
 			{ $$ := ast_factory.new_formal_argu_dec_list_as ($3, $1, $5) }
+	|	TE_LPARAN Add_counter Entity_declaration_list Remove_counter
+			error { report_expected_match_error (parser_errors.open_paran_symbol, $1, parser_errors.close_paran_symbol, Void, False) }
+	|	TE_LPARAN 
+			error { report_expected_after_error (parser_errors.open_paran_symbol, $1, parser_errors.a_formal_argument, True) }
 	;
   
 Entity_declaration_list: Entity_declaration_group
@@ -1124,7 +1133,7 @@ Entity_declaration_list: Entity_declaration_group
 	|	Entity_declaration_group { increment_counter } Entity_declaration_list
 			{
 				$$ := $3
-				if $$ /= Void and $1 /= Void then
+				if $$ /= Void and $1 /= Void and counter_value > 0 then
 					$$.reverse_extend ($1)
 				end
 			}
@@ -2585,6 +2594,8 @@ Class_identifier: TE_ID
 				end
 				$$ := last_id_as_value
 			}
+	|	TE_BAD_ID
+			{ report_expected_error (parser_errors.valid_eiffel_class_name, True, Void, False) }
 	;
 
 Identifier_as_lower: TE_ID
@@ -2615,6 +2626,8 @@ Identifier_as_lower: TE_ID
 				end
 				$$ := last_id_as_value
 			}
+	|	TE_BAD_ID
+			{ report_expected_error (parser_errors.a_valid_feature_name, True, Void, False) }
 	;
 
 Manifest_constant: Boolean_constant
