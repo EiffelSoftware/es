@@ -221,16 +221,12 @@ feature {NONE} -- Implementation (helpers)
 	extract_string (a_offset, a_number: INTEGER): STRING_32 is
 			-- Which is the a_number-th string into the table at a_offset?
 		require
-			valid_offset: (a_offset = translated_table_offset) or (a_offset = original_table_offset)
-			valid_number: (1 <= a_number) and (a_number <= string_count)
 			correct_file: mo_file.is_open_read and then is_valid
+			valid_offset: (a_offset = translated_table_offset) or (a_offset = original_table_offset)
+			valid_index: valid_index(a_number) -- defined in the abstract datasource
 		local
 			string_length,
 			string_offset: INTEGER
-			i: INTEGER
-			l_ch: CHARACTER
-			ch_len: INTEGER
-			code: NATURAL_32
 		do
 			mo_file.go(a_offset + (a_number - 1) * 8)
 			string_length := read_integer
@@ -351,11 +347,10 @@ feature {NONE} -- Implementation (helpers)
 		end
 
 invariant
-	big_xor_little_endian: (mo_file.exists and then is_valid) implies (is_little_endian_file xor is_big_endian_file)
 	valid_mo_file: mo_file /= Void and then mo_file.exists
-	is_open implies mo_file.is_open_read
+	big_xor_little_endian: is_valid implies (is_little_endian_file xor is_big_endian_file)
 	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)
-
+	
 	retrieval_method = retrieve_by_type
 
 end -- class I18N_MO_PARSER
