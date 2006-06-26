@@ -217,7 +217,7 @@ feature -- Setting datastructure
 			structure_factory: I18N_DATASTRUCTURE_FACTORY
 		do
 			create structure_factory.make
-			structure_factory.use_hash_table
+			structure_factory.use_binary_search
 			if structure_factory.last_datastructure /= Void then
 				i18n_use_datastructure (structure_factory.last_datastructure)
 				i18n_structure_error := False
