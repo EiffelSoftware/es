@@ -103,7 +103,7 @@ LSRC = malloc.c garcol.c local.c store.c retrieve.c \
 	       error.c umain.c memory.c argv.c boolstr.c search.c \
 	       run_idr.c path_name.c object_id.c eif_threads.c eif_project.c \
 	       eif_rw_lock.c gen_conf.c eif_type_id.c rout_obj.c \
-	       option.c compress.c console.c
+	       option.c compress.c console.c locale.c
 
 OTHER = main.c except.c
 
@@ -158,6 +158,7 @@ WOBJ = \
 	       woption.o \
 	       wcompress.o \
 	       wconsole.o \
+	       wlocale.o \
 	       wmain.o \
 	       wexcept.o 
 
@@ -205,6 +206,7 @@ LOBJ = \
 	       option.o \
 	       compress.o \
 	       console.o \
+	       locale.o \
 	       main.o \
 	       except.o 
 
@@ -256,6 +258,7 @@ EOBJ = \
 	       woption.o \
 	       wcompress.o \
 	       wconsole.o \
+	       wlocale.o \
 	       bmain.o \
 	       bexcept.o 
 
@@ -308,6 +311,7 @@ MT_WOBJ = \
 	       MTwoption.o \
 	       MTwcompress.o \
 	       MTwconsole.o \
+	       MTwlocale.o \
 	       MTwmain.o \
 	       MTwexcept.o 
 
@@ -355,6 +359,7 @@ MT_LOBJ = \
 	       MToption.o \
 	       MTcompress.o \
 	       MTconsole.o \
+	       MTlocale.o \
 	       MTmain.o \
 	       MTexcept.o 
 
@@ -406,6 +411,7 @@ MT_EOBJ = \
 	       MTwoption.o \
 	       MTwcompress.o \
 	       MTwconsole.o \
+	       MTwlocale.o \
 	       MTbmain.o \
 	       MTbexcept.o 
 
@@ -533,6 +539,9 @@ wcompress.o: compress.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
 
 wconsole.o: console.c
+	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
+
+wlocale.o: locale.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
 
 wmain.o: main.c
@@ -668,6 +677,9 @@ MTcompress.o: compress.c
 MTconsole.o: console.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
+MTlocale.o: locale.c
+	       $(CC) -c $(JMTCFLAGS) $? -o $@
+
 MTmain.o: main.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
@@ -799,6 +811,9 @@ MTwcompress.o: compress.c
 	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
 
 MTwconsole.o: console.c
+	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
+
+MTwlocale.o: locale.c
 	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
 
 MTwmain.o: main.c

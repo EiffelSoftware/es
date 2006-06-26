@@ -25,6 +25,7 @@
 				<exclude>/imp_macos$</exclude>
 			</file_rule>
 		</cluster>
+		<external_include location="$(ISE_LIBRARY)/C/run-time"/>
 		<cluster name="locale_mswin" location="./locale" recursive="true">
 			<condition><platform value="windows"/></condition>
 			<file_rule>

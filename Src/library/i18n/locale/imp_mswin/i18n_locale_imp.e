@@ -24,7 +24,7 @@ feature -- Initialization
 		local
 			id: STRING
 		do
-			id := language_id_code.to_hex_string
+			id := locale_getUserDefaultLCID.to_hex_string
 			id.tail (4)
 			id := to_iso_format(id)
 			language_id := id
@@ -32,11 +32,9 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
-	language_id_code: NATURAL_32 is
+	locale_getUserDefaultLCID: NATURAL_32 is
 		external
-			"C inline use <windows.h>"
-		alias
-			"return GetUserDefaultLCID();"
+			"C inline use %"eif_locale.h%""
 		end
 
 	registry: AUT_REGISTRY
