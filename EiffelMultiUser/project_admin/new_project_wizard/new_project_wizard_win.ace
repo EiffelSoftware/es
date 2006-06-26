@@ -1,0 +1,103 @@
+system
+	"new_project_wizard"
+
+root
+	APPLICATION: make_and_launch
+
+default
+	assertion (check)
+	assertion (require)
+	assertion (ensure)
+	assertion (loop)
+	arguments (".")
+	working_directory (".")
+	disabled_debug (yes)
+	disabled_debug ("dlg_dispatcher")
+	disabled_debug ("refactor_fixme")
+	disabled_debug ("vision2_windows")
+	disabled_debug ("vision2_windows_gdi")
+	disabled_debug ("wel")
+	disabled_debug ("wel_gdi_count")
+	disabled_debug ("wel_gdi_references")
+	disabled_debug ("win_dispatcher")
+	debug (no)
+	line_generation (no)
+	profile (no)
+	trace (no)
+	check_vape (yes)
+	console_application (no)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (yes)
+	dynamic_runtime (no)
+	exception_trace (no)
+	inlining (no)
+	multithreaded (no)
+
+
+-------------------------------------------------
+-- This ace file has been generated for you by --
+-- The New Vision2 Application Wizard.         --
+-------------------------------------------------
+-- The application
+-- EiffelBase
+-- WEL
+-- EiffelVision2
+
+cluster
+	all base:		"$ISE_LIBRARY\library\base"
+		exclude
+			"table_eiffel3"; "desc"; "dotnet"; ".svn";
+		end
+
+	all wel:		"$EIFFEL_SRC_TRUNK\library\wel"
+        exclude
+            "dotnet"; ".svn";
+        end
+
+	all vision2:		"$EIFFEL_SRC_TRUNK\library\vision2"
+		exclude
+			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; "dotnet"; "carbon"; ".svn";
+		end
+
+	all wizard:		"$ISE_LIBRARY\library\wizard"
+		exclude
+			"unix"; ".svn";
+		end
+
+	all emu_protocol:		"..\..\protocol"
+        exclude
+            ".svn";
+        end
+
+	all net:		"$ISE_LIBRARY\library\net"
+        exclude
+            ".svn";
+        end
+        
+	emu_project_wizard:		"."
+        exclude
+            ".svn";
+        end
+	all time:		"$ISE_LIBRARY\library\time"
+		exclude
+			"german"; "french"; "dotnet"; ".svn";
+		end
+
+external
+
+	include_path:
+		"$(EIFFEL_SRC_TRUNK)\library\wel\spec\windows\include",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\include",
+		"$(ISE_LIBRARY)\library\wizard\help\Clib"
+
+	object:
+		"$(EIFFEL_SRC_TRUNK)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib",
+		"$(ISE_LIBRARY)\library\wizard\help\Clib\htmlhelp.lib",
+		"$(ISE_LIBRARY)\library\net\spec\$(ISE_C_COMPILER)\lib\net.lib"
+
+end
