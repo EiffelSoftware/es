@@ -17,7 +17,8 @@ create
 	make_lock_not_successful,
 	make_unlock_not_successful,
 	make_upload_not_successful,
-	make_class_not_found
+	make_class_not_found,
+	make_class_already_unlocked
 	
 feature -- Initialization
 
@@ -111,16 +112,32 @@ feature -- Initialization
 			error_message_set: error_message.is_equal(upload_not_successful_msg)
 		end
 	
-	make_class_not_found (a_project_name: STRING) is
+	make_class_not_found (a_project_name, a_class_name: STRING) is
 		-- generate a class not found error
 		do
 			project_name := a_project_name
+			emu_class_name := a_class_name
 			error_code := class_not_found
 			error_message := class_not_found_msg
 		ensure	
 			project_name_set : a_project_name = project_name
+			class_name_set : a_class_name = emu_class_name
 			error_code_set: error_code = class_not_found
 			error_message_set: error_message.is_equal(class_not_found_msg)
+		end
+	
+	make_class_already_unlocked (a_project_name, a_class_name: STRING) is
+		-- generate a class already unlocked error
+		do
+			project_name := a_project_name
+			emu_class_name := a_class_name
+			error_code := class_already_unlocked
+			error_message := class_already_unlocked_msg
+		ensure	
+			project_name_set : a_project_name = project_name
+			emu_class_name_set : a_class_name = emu_class_name
+			error_code_set: error_code = class_already_unlocked
+			error_message_set: error_message.is_equal(class_already_unlocked_msg)
 		end
 		
 	
@@ -145,6 +162,8 @@ feature -- Error Codes
 		
 	class_not_found:  INTEGER is 505
 			-- the wanted class does not exist
+			
+	class_already_unlocked: INTEGER is 506
 	
 	
 feature -- Error Messages
@@ -176,8 +195,14 @@ feature -- Error Messages
 	
 	class_not_found_msg: STRING is 
 		do
-			Result := "Class does not exist."
+			Result := "Class " + emu_class_name + " does not exist."
 		end
+		
+	class_already_unlocked_msg: STRING is
+		do
+			Result := "Class " + emu_class_name + " is already unlocked by another user."
+		end
+		
 
 
 

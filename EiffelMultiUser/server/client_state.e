@@ -229,7 +229,7 @@ feature -- Process Messages
 			project := system.get_project(msg.project_name)
 			if project = Void then
 				-- send an error message
-				-- to be implemented
+				send_msg (create {CLIENT_ERROR}.make_no_class_list (msg.project_name))
 			else
 				create class_list.make
 				from

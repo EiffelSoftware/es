@@ -46,32 +46,32 @@ default
 -- EiffelVision2
 
 cluster
-	all base:		"$ISE_LIBRARY/library/base"
+	all base:		"$ISE_LIBRARY\library\base"
 		exclude
 			"table_eiffel3"; "desc"; "dotnet"; ".svn";
 		end
 
-	all wel:		"$EIFFEL_SRC_TRUNK/library/wel"
+	all wel:		"$EIFFEL_SRC_TRUNK\library\wel"
         exclude
             "dotnet"; ".svn";
         end
 
-	all vision2:		"$EIFFEL_SRC_TRUNK/library/vision2"
+	all vision2:		"$EIFFEL_SRC_TRUNK\library\vision2"
 		exclude
 			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; "dotnet"; "carbon"; ".svn";
 		end
 
-	all wizard:		"$ISE_LIBRARY/library/wizard"
+	all wizard:		"$ISE_LIBRARY\library\wizard"
 		exclude
 			"unix"; ".svn";
 		end
 
-	all emu_protocol:		"../../protocol"
+	all emu_protocol:		"..\..\protocol"
         exclude
             ".svn";
         end
 
-	all net:		"$ISE_LIBRARY/library/net"
+	all net:		"$ISE_LIBRARY\library\net"
         exclude
             ".svn";
         end
@@ -80,7 +80,7 @@ cluster
         exclude
             ".svn";
         end
-	all time:		"$ISE_LIBRARY/library/time"
+	all time:		"$ISE_LIBRARY\library\time"
 		exclude
 			"german"; "french"; "dotnet"; ".svn";
 		end
@@ -88,16 +88,16 @@ cluster
 external
 
 	include_path:
-		"$(EIFFEL_SRC_TRUNK)/library/wel/spec/windows/include",
-		"$(EIFFEL_SRC_TRUNK)/library/vision2/spec/include",
-		"$(ISE_LIBRARY)/library/wizard/help/Clib"
+		"$(EIFFEL_SRC_TRUNK)\library\wel\spec\windows\include",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\include",
+		"$(ISE_LIBRARY)\library\wizard\help\Clib"
 
 	object:
-		"$(EIFFEL_SRC_TRUNK)/library/wel/spec/$(ISE_PLATFORM)/lib/wel.lib",
-		"$(EIFFEL_SRC_TRUNK)/library/vision2/spec/$(ISE_PLATFORM)/lib/vision2.lib",
-		"$(EIFFEL_SRC_TRUNK)/library/vision2/spec/$(ISE_PLATFORM)/lib/zlib.lib",
-		"$(EIFFEL_SRC_TRUNK)/library/vision2/spec/$(ISE_PLATFORM)/lib/libpng.lib",
-		"$(ISE_LIBRARY)/library/wizard/help/Clib/htmlhelp.lib",
-		"$(ISE_LIBRARY)/library/net/spec/$(ISE_PLATFORM)/lib/net.lib"
+		"$(EIFFEL_SRC_TRUNK)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib",
+		"$(ISE_LIBRARY)\library\wizard\help\Clib\htmlhelp.lib",
+		"$(ISE_LIBRARY)\library\net\spec\$(ISE_C_COMPILER)\lib\net.lib"
 
 end
