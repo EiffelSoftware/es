@@ -111,6 +111,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+
 	i18n_datasource: I18N_DATASOURCE
 		-- Reference to the datasource
 
@@ -126,10 +127,14 @@ feature {NONE} -- Implementation
 	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
 		-- Reference to the template formatter
 
+
 feature {SHARED_I18N_LOCALIZATOR} -- Timing access
+
 	translation_time, loading_time: TIME_DURATION
 
+
 feature {NONE} -- Timing implementation
+
 	translation_timer, loading_timer: TIME
 
 	reset_times is

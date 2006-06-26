@@ -7,6 +7,10 @@ class
 
 inherit
 	EV_APPLICATION
+	SHARED_NAMES
+		undefine
+			default_create, copy
+		end
 
 create
 	make_and_launch
@@ -17,7 +21,12 @@ feature {NONE} -- Initialization
 			-- Initialize and launch application
 		do
 			n := 1
-			create names.make ("")
+			names.i18n_set_resources_path ("." +
+				Operating_environment.directory_separator.out + "mo_files")
+			names.i18n_set_language ("")
+			names.i18n_use_mo_file
+			names.i18n_use_binary_search
+			names.i18n_load
 			default_create
 			prepare
 			launch
@@ -159,7 +168,10 @@ feature -- Create window elements
 	update_language (a_lang: STRING) is
 			-- Reload strings in a new language
 		do
-			names := create {NAMES}.make (a_lang)
+			names.i18n_set_language (a_lang)
+			names.i18n_use_mo_file
+			names.i18n_use_binary_search
+			names.i18n_load
 			first_window.set_title (names.application)
 			update_menu_bar
 			update_labels
@@ -215,8 +227,6 @@ feature {NONE} -- Implementation
 	simple_label,
 	simple_comp_label,
 	plural_comp_label  : EV_LABEL
-
-	names: NAMES
 
 	formatter: I18N_TEMPLATE_FORMATTER is
 		once

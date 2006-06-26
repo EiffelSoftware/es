@@ -11,6 +11,10 @@ inherit
 		redefine
 			initialize
 		end
+	SHARED_NAMES
+		undefine
+			default_create, copy
+		end
 
 
 create
@@ -29,7 +33,6 @@ feature {NONE} -- Initialization
 			ev_cell: EV_CELL
 		do
 			Precursor
-			create names.make ("")
 			create pixmap
 			pixmap.set_with_named_file (Operating_environment.current_directory_name_representation
 					+ Operating_environment.directory_separator.out + "logo.png")
@@ -125,9 +128,5 @@ feature {NONE} -- Implementation
 
 	ok_button: EV_BUTTON
 			-- "OK" button.
-
-feature {NONE} -- Implementation
-
-	names : NAMES
 
 end -- class ABOUT_DIALOG

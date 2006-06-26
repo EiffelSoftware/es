@@ -1,6 +1,6 @@
 indexing
 	description: "Strings used in the interface"
-	author: "i18m team"
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,8 +10,6 @@ class
 inherit
 	SHARED_I18N_LOCALIZATOR
 
-create
-	make
 
 feature -- text
 
@@ -135,51 +133,5 @@ feature -- about dialog
 		do
 			Result := i18n ("About Dialog")
 		end
-
-
-
-feature -- creation
-
-	make (a_language: STRING) is
-			-- Load translated strings
-		local
-			l_source_factory: I18N_DATASOURCE_FACTORY
-			l_structure_factory: I18N_DATASTRUCTURE_FACTORY
-			l_lang: STRING
-		do
-			l_lang := a_language
-			-- check if no language was given and use en as default
-			if l_lang = Void or else l_lang.is_empty then
-				l_lang := "en"
-			end
-			create l_source_factory.make
-
-			-- create datasource, where translated strings reside
-			l_source_factory.use_mo_file (Operating_environment.current_directory_name_representation
-					+ Operating_environment.directory_separator.out + "mo_files"
-					+ Operating_environment.directory_separator.out + l_lang + ".mo")
-			if l_source_factory.last_datasource /= Void then
-				i18n_use_datasource(l_source_factory.last_datasource)
-			else
-				l_source_factory.use_empty_source
-				i18n_use_datasource(l_source_factory.last_datasource)
-			end
-
-			-- create datastructure, where strings will be loaded
-			create l_structure_factory.make
-			l_structure_factory.use_hash_table
---			l_structure_factory.use_binary_search
-			if l_structure_factory.last_datastructure /= Void then
-				i18n_use_datastructure(l_structure_factory.last_datastructure)
-			else
-				l_structure_factory.use_dummy
-				i18n_use_datastructure(l_structure_factory.last_datastructure)
-			end
-
-			-- load strings
-			i18n_load
-
-		end
-
 
 end
