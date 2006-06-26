@@ -31,7 +31,7 @@ feature -- Execution
 	initialize is
 			-- Initialize
 		do
-			create accelerator.make_with_key_combination (create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_p), True, False, False)
+			create accelerator.make_with_key_combination (create {EV_KEY}.make_with_code ({EV_KEY_CONSTANTS}.key_p), True, False, True)
 			accelerator.actions.extend (agent execute)
 			enable_sensitive
 		end

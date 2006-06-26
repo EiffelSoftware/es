@@ -97,7 +97,7 @@ feature -- Folding
 			number_of_lines_decreased_by_num_lines: number_of_lines = old number_of_lines - num_lines
 		end
 
-	show_lines (base_line_pos: INTEGER): INTEGER is
+	show_lines (base_line_pos: INTEGER) is
 			-- reshows the hidden lines after the 'base_line' / puts
 			-- the lines back into the tree after the 'base_line'
 			-- returns the number of lines that were shown again
@@ -123,8 +123,6 @@ feature -- Folding
 				if hidden_lines.item.i_th (1).previous = base_line then
 					-- get list of hidden lines
 					lines_list := hidden_lines.item
-					-- number of lines that we will show again
-					Result := lines_list.count
 					-- remove 'lines_list' from 'hidden_lines'
 					-- because the are now displayed again
 					hidden_lines.remove

@@ -219,11 +219,13 @@ feature -- Autocomplete
 			-- update the click tool
 			-- `after_save' must be True if current class text has just been saved
 			-- and False otherwise.
+		local
+			dummy: BOOLEAN
 		do
 			if dev_window.stone /= Void and then text_displayed.click_tool_enabled then
 				text_displayed.update_click_list (dev_window.stone, after_save)
 				process_click_tool_error
-				update_folding_areas
+				dummy := update_folding_areas
 			end
 		end
 
@@ -236,14 +238,17 @@ feature -- Handle text modifications
 		do
 			Precursor {EB_CLICKABLE_EDITOR} (line_number)
 
-			-- calculate how many lines were removed since last call
-			-- necessary because it seems that not every event is captured
-			lines_changed := number_of_lines - old_number_of_lines
-			old_number_of_lines := number_of_lines
+			-- Code Folding: if folding_areas exist, update them
+			if folding_areas /= Void then
+				-- calculate how many lines were removed since last call
+				-- necessary because it seems that not every event is captured
+				lines_changed := number_of_lines - old_number_of_lines
+				old_number_of_lines := number_of_lines
 
-			-- adapt folding areas
-			if lines_changed /= 0 then
-				update_folding_areas_partially (line_number, lines_changed)
+				-- adapt folding areas
+				if lines_changed /= 0 then
+					update_folding_areas_partially (line_number, lines_changed)
+				end
 			end
 		end
 
@@ -254,13 +259,16 @@ feature -- Handle text modifications
 		do
 			Precursor {EB_CLICKABLE_EDITOR} (line_number)
 
-			-- calculate how many lines were removed since last call
-			-- necessary because it seems that not every event is captured
-			lines_removed := number_of_lines - old_number_of_lines
-			old_number_of_lines := number_of_lines
+			-- Code Folding: if folding_areas exist, update them
+			if folding_areas /= Void then
+				-- calculate how many lines were removed since last call
+				-- necessary because it seems that not every event is captured
+				lines_removed := number_of_lines - old_number_of_lines
+				old_number_of_lines := number_of_lines
 
-			-- adapt folding areas
-			update_folding_areas_partially (line_number, lines_removed)
+				-- adapt folding areas
+				update_folding_areas_partially (line_number, lines_removed)
+			end
 		end
 
 	on_line_inserted (line_number: INTEGER) is
@@ -270,13 +278,16 @@ feature -- Handle text modifications
 		do
 			Precursor {EB_CLICKABLE_EDITOR} (line_number)
 
-			-- calculate how many lines were added since last call
-			-- necessary because it seems that not every event is captured and the auto completion
-			lines_inserted := number_of_lines - old_number_of_lines
-			old_number_of_lines := number_of_lines
+			-- Code Folding: if folding_areas exist, update them
+			if folding_areas /= Void then
+				-- calculate how many lines were added since last call
+				-- necessary because it seems that not every event is captured and the auto completion
+				lines_inserted := number_of_lines - old_number_of_lines
+				old_number_of_lines := number_of_lines
 
-			-- adapt folding areas
-			update_folding_areas_partially (line_number, lines_inserted)
+				-- adapt folding areas
+				update_folding_areas_partially (line_number, lines_inserted)
+			end
 		end
 
 	old_number_of_lines: like number_of_lines
@@ -294,10 +305,11 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 
 			-- init the folding_area datastructure
 			create folding_areas.make
-			folding_areas_is_initialized := false
 
 			-- update all areas
-			update_folding_areas
+			if not update_folding_areas then
+				folding_areas := Void
+			end
 
 			-- intialize 'old_number_of_lines'
 			old_number_of_lines := number_of_lines
@@ -307,17 +319,16 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 			end
 		end
 
-	update_folding_areas is
+	update_folding_areas: BOOLEAN is
 			-- updates the folding_areas to reflect all changes in the currently loaded class
-
+			-- returns false if nothing was or could be done
 		local
 			the_feature_clauses: EIFFEL_LIST[FEATURE_CLAUSE_AS]
 			the_features: EIFFEL_LIST[FEATURE_AS]
 			current_feature: FEATURE_AS
 			a_area, temp_next: EB_FOLDING_AREA
 		do
-
-			if (text_displayed.click_tool_enabled and then syntax_is_correct) and then (text_displayed.click_tool.current_class_as.features /= Void) then
+			if (text_displayed.click_tool_enabled and text_displayed.click_and_complete_is_active) and then syntax_is_correct and then text_displayed.click_tool.current_class_as /= Void and then text_displayed.click_tool.current_class_as.features /= Void then
 				the_feature_clauses := text_displayed.click_tool.current_class_as.features
 				a_area := folding_areas.first
 
@@ -419,13 +430,13 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 
     			-- update margins
     			margin.refresh
-				folding_areas_is_initialized := true
+				result := true
 			else
 				-- we cant do anything.
 				debug ("code_folding")
 					io.put_string("syntax error or click-tool not enabled, folding_areas not updated%N")
 				end
-				folding_areas_is_initialized := false
+				result := false
 			end
 		end
 
@@ -466,29 +477,6 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 			-- update margins
 			margin.refresh
 		end
-
-
-	update_text is
-			-- iterates over the folding-areas and hides or shows code
-		local
-			a_area: EB_FOLDING_AREA
-		do
-			if folding_areas_is_initialized then
-				-- test: last feature is hidden
-				folding_areas.last.hide
-
-				from a_area := folding_areas.first
-				until a_area = Void
-				loop
-					if a_area.hidden = true then
-						text_displayed.hide_lines (a_area.start_line, a_area.end_line - a_area.start_line)
-					end
-					-- inc
-					a_area := a_area.next
-				end
-			end
-		end
-
 
 	synchronize_folding_line_numbers(a_new: FEATURE_AS; a_old: EB_FOLDING_AREA) is
 			-- updates the start- and endlines of 'old' to reflect those in 'new'

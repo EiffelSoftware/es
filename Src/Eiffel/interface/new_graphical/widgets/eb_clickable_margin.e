@@ -81,9 +81,9 @@ feature -- Query
 		end
 
 	folding_points_visible: BOOLEAN is
-			-- Are line numbers hidden?
+			-- Are folding_points displayed?
 		do
-		    Result := text_panel.folding_points_visible
+		    Result := (hidden_breakpoints and then text_panel.folding_points_visible)
 		end
 
 feature {NONE} -- Implementation
@@ -109,10 +109,9 @@ feature {NONE} -- Implementation
 			l_text_displayed.go_i_th (first)
 			l_line_height := text_panel.line_height
 
-
 			-- get the next folding-point line
-			smart_text_panel ?= text_panel
 			if folding_points_visible then
+				smart_text_panel ?= text_panel
 				if smart_text_panel /= Void and then smart_text_panel.folding_areas /= Void then
 				-- we are inside the main code-editor and have to show folding-areas
 
@@ -143,9 +142,9 @@ feature {NONE} -- Implementation
 					-- did we arrive at the next fp?
 					if folding_points_visible then
 						if next_folding_area /= Void then -- and then curr_line = next_folding_area.start_line then
-
---io.putstring("feature on line " + next_folding_area.start_line.out + "has height: " + next_folding_area.height.out + "%N")
-
+							debug ("code-folding:")
+								io.putstring("feature on line " + next_folding_area.start_line.out + "has height: " + next_folding_area.height.out + "%N")
+							end
 							if (next_folding_area.hidden or (not next_folding_area.hidden and next_folding_area.height > 0)) and then (curr_line >= next_folding_area.start_line and curr_line <= next_folding_area.end_line) then
 								draw_next_folding_point := true
 							else
@@ -295,51 +294,20 @@ feature {NONE} -- Events
 						end
 					else
 						-- click onto folding_area
-
--- NOTE:
--- To enable actions when clicking on a folding-point, uncomment the next few lines
--- | bherlig, 06/21/2006
---						debug("code-folding:")
---							io.put_string ("click into the folding-point-area%N")
---						end
---						smart_text_panel ?= text_panel
-						if smart_text_panel /= Void then
+						smart_text_panel ?= text_panel
+						if smart_text_panel /= Void and then smart_text_panel.folding_areas /= Void then
 							fp_clicked := smart_text_panel.folding_areas.item_with_line (l_number)
 							if fp_clicked /= Void then
 								num_lines := fp_clicked.height
 								if fp_clicked.hidden then
 									fp_clicked.show
-									num_lines := smart_text_panel.text_displayed.show_lines (fp_clicked.start_line)
-									-- correct start/end of feature
-									from
-										fp_clicked := fp_clicked.next
-									until
-										fp_clicked = Void
-									loop
-										fp_clicked.set_start_line (fp_clicked.start_line + num_lines)
-										fp_clicked.set_end_line (fp_clicked.end_line + num_lines)
-
-										fp_clicked := fp_clicked.next
-									end
-
+									smart_text_panel.text_displayed.show_lines (fp_clicked.start_line)
+									sync_folding_areas(fp_clicked, num_lines, true)
 								else
 									fp_clicked.hide
 									smart_text_panel.text_displayed.hide_lines (fp_clicked.start_line + 1, fp_clicked.height)
-									-- correct start/end of feature
-									from
-										num_lines := fp_clicked.height
-										fp_clicked := fp_clicked.next
-									until
-										fp_clicked = Void
-									loop
-										fp_clicked.set_start_line (fp_clicked.start_line - num_lines)
-										fp_clicked.set_end_line (fp_clicked.end_line - num_lines)
-
-										fp_clicked := fp_clicked.next
-									end
+									sync_folding_areas(fp_clicked, num_lines, false)
 								end
-
-								current.refresh_now
 							end
 						end
 
