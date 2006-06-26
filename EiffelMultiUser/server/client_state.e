@@ -64,6 +64,9 @@ feature -- Attributes
 
 	received_msg: EMU_MESSAGE
 			-- the received emu message.
+			
+	class_list: LINKED_LIST[EMU_PROJECT_CLASS]
+			-- linked list of classes of a project
 
 
 feature -- Modification
@@ -217,9 +220,33 @@ feature -- Process Messages
 
 	process_project_class_list_request (msg: PROJECT_CLASS_LIST_REQUEST) is
 			-- process the class list request message.
+		local
+			project: EMU_PROJECT
+			project_class: EMU_PROJECT_CLASS
+			project_cluster: EMU_PROJECT_CLUSTER
 		do
 			-- send a message containing the class list to the client
-			-- to be implemented
+			project := system.get_project(msg.project_name)
+			if project = Void then
+				-- send an error message
+				-- to be implemented
+			else
+				create class_list.make
+				from
+					project.clusters.start
+				until
+					project.clusters.after
+				loop
+					project_class ?= project.clusters.item
+					if project_class /= Void then
+						class_list.extend (project_class)
+					end
+					project_cluster ?= project.clusters.item
+					if project_cluster /= Void then
+						find_classes_of_cluster(project_cluster)
+					end
+				end
+			end
 		end
 
 	process_project_create (msg: PROJECT_CREATE) is
@@ -382,11 +409,32 @@ feature -- Process Messages
 			if project = Void then
 				-- project does not exist
 				-- send error message to client
-				-- adapt error message! :
-				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
-			else
-				-- do lock of class
-				-- TO BE IMPLEMENTED
+				send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
+			else	
+				-- search the right class
+				from
+					project.clusters.start
+					found:= False
+				until
+					project.clusters.after or found=True
+				loop
+					if project.clusters.item.has_class (msg.emu_class_name) then
+						-- do lock of class
+						locked_class:= project.clusters.item.get_class (msg.emu_class_name)
+						found:= True
+						if locked_class.is_free and then locked_class.current_user.is_equal (username) then
+							locked_class.set_to_free
+						else
+							send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
+							-- error, class isn't used by this user
+						end		
+					end
+					project.clusters.forth
+				end
+				if found = False then
+					send_msg (create {CLIENT_ERROR}.make_class_not_found (msg.project_name, msg.emu_class_name))
+					-- error, class doesn't exist
+				end
 			end
 		end
 
@@ -401,11 +449,32 @@ feature -- Process Messages
 			if project = Void then
 				-- project does not exist
 				-- send error message to client
-				-- adapt error message! :
-				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
-			else
-				-- do unlock of class
-				-- TO BE IMPLEMENTED
+				send_msg (create {CLIENT_ERROR}.make_unlock_not_successful (msg.project_name, msg.emu_class_name))
+			else	
+					-- search the right class
+				from
+					project.clusters.start
+					found:= False
+				until
+					project.clusters.after or found=True
+				loop
+					if project.clusters.item.has_class (msg.emu_class_name) then
+						-- do unlock of class
+						unlocked_class:= project.clusters.item.get_class (msg.emu_class_name)
+						found:= True
+						if unlocked_class.is_free then
+							unlocked_class.set_to_occupied (username)
+						else
+							send_msg (create {CLIENT_ERROR}.make_class_already_unlocked (msg.project_name, msg.emu_class_name))
+							-- error, class is not free
+						end		
+					end
+					project.clusters.forth
+				end
+				if found = False then
+					send_msg (create {CLIENT_ERROR}.make_class_not_found (msg.project_name, msg.emu_class_name))
+					-- error, class doesn't exist
+				end
 			end
 		end
 
@@ -448,6 +517,33 @@ feature -- Commands
 		do
 			Result ?= socket.retrieved
 		end
+		
+feature {NONE} -- Recursive Feature
+
+	find_classes_of_cluster (a_cluster: EMU_PROJECT_CLUSTER) is
+			-- find the classes in a cluster, put them in a linked list
+			-- recursive feature
+		local
+			project_class: EMU_PROJECT_CLASS
+			project_cluster: EMU_PROJECT_CLUSTER
+		do
+			from
+				a_cluster.start
+			until
+				a_cluster.after
+			loop
+				project_class ?= a_cluster.item
+				if project_class /= Void then
+					class_list.extend (project_class)
+				end
+				project_cluster ?= a_cluster.item
+				if project_cluster /= Void then
+					find_classes_of_cluster (project_cluster)
+				end
+				a_cluster.forth
+			end
+		end
+		
 
 
 invariant
