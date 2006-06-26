@@ -36,14 +36,16 @@ feature -- Status setting
 			current_file_in_editor := Window_manager.last_focused_development_window.file_name
 			if(current_file_in_editor /= void) then
 				status_bar.display_message ("Downloading class to emu_server...")
+
 				--download_done := emu_client.upload (current_file_in_editor)
+
 				if (download_done) then
 					status_bar.display_message ("Download done")
 				else
 					show_emu_error (emu_download_error_text)
 				end
 			else
-				show_emu_error (emu_no_class_warning_text)
+				show_emu_error (emu_no_class_warning_text) --shouldn't happen,button is disabled anyway
 			end
 
 

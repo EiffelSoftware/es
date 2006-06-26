@@ -29,7 +29,8 @@ feature -- Status setting
 	execute is
 			--open external server wizard
 		do
-			create new_project_wizard.make(Window_manager.last_focused_development_window.window)
+			create external_execution
+			external_execution.launch ("~/project_wizard ~")
 		end
 
 	execute_with_stone (st: ERROR_STONE) is
@@ -89,8 +90,9 @@ feature -- Status report
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
 		end
 
-	new_project_wizard: EB_EXTERNAL_COMMAND
-			--create new emu project command
+
+	external_execution: EXECUTION_ENVIRONMENT
+			-- to launch external wizard
 
 feature {NONE} -- Implementation
 

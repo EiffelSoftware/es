@@ -48,8 +48,9 @@ feature -- Status setting
 					show_emu_error(emu_upload_error_text)
 				end
 
+
 			else
-				show_emu_error(emu_no_class_warning_text)
+				show_emu_error(emu_no_class_warning_text)--shouldn't happen,button is disabled anyway
 			end
 		end
 
