@@ -101,7 +101,7 @@ feature -- Initialization
 				project_names.after
 			loop
 				project_name := project_names.item
-				create file.make(project_folder_name +"/"+project_name+"/"+project_name+".emu")
+				create file.make(project_folder_name+"/"+project_name+"/"+project_name+".emu")
 				if file.exists then
 					file.open_read
 		 			project ?= file.retrieved
@@ -303,7 +303,7 @@ feature {CLIENT_STATE} -- Modification
 			project_list.go_i_th (index_of_project (a_project_name))
 			project_list.remove
 			--delete project folder.
-			create folder.make(project_folder_name +"\\"+a_project_name)
+			create folder.make(project_folder_name +"/"+a_project_name)
 			if folder.exists then
 				folder.recursive_delete	-- may raise an exception.
 			end
