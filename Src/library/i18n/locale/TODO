@@ -1,5 +1,4 @@
-TODO: conversion from hex to string format for windows (since we now have a factory can't we simply avoid to convert in string form?)
+TODO: conversion from LCID to ISO format for windows
 TODO: adapt so that it works with the rest of the project, ie set correctly attributes, inheritances,... (these classes alone work)
-TODO: check contracts and information hiding
 TODO: find out what's exactly the format of the output in linux
 TODO: see if on macos works the same way as linux, if not a new function to check which platform is in use is needed
