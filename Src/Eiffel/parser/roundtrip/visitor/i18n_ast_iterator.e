@@ -73,21 +73,20 @@ feature
 			if called_id /= Void and then called_id.same_as (translator) then
 				param1 ?= node.parameters.first
 				if param1 /= Void then
-				--	create {PO_FILE_ENTRY_SINGULAR}entry.make (param1.value)
 					po_file.add_entry (create {PO_FILE_ENTRY_SINGULAR}.make (eiffel_string (param1.value)))
-				else if called_id /= Void and then called_id.same_as (plural) then
-					param1 ?= node.parameters.first
-					param2 ?= node.parameters.i_th (node.parameters.index_set.lower+1) --should be 2d item :)
-					if param1 /= Void and then param2 /= Void then
-						create plural_entry.make (eiffel_string (param1.value))
-						plural_entry.set_msgid_plural (eiffel_string (param2.value))
-						po_file.add_entry (plural_entry)
-					end
 				end
-					io.put_string(node.parameters.first.text (match_list)+"%N")
+			elseif called_id /= Void and then called_id.same_as (plural) then
+				param1 ?= node.parameters.first
+				param2 ?= node.parameters.i_th (node.parameters.index_set.lower+1) --should be 2d item :)
+				if param1 /= Void and then param2 /= Void then
+					create plural_entry.make (eiffel_string (param1.value))
+					plural_entry.set_msgid_plural (eiffel_string (param2.value))
+					po_file.add_entry (plural_entry)
 				end
 			end
 		end
+
+
 
 	process_access_id_as(l_as: ACCESS_ID_AS) is
 			-- eh?

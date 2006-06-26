@@ -52,7 +52,6 @@ feature --Access
 
 									translation_function :=	compiled_translator.feature_named ("i18n").rout_id_set
 									plural_form_translation_function := compiled_translator.feature_named ("i18n_pl").rout_id_set
-
 									po_file := build_po_file (find_clients(compiled_translator))
 									-- ask where to put it
 									create file_dialog.make_with_preference (preferences.dialog_data.last_saved_save_file_as_directory_preference)
