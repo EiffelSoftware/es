@@ -150,19 +150,24 @@ feature {NONE} -- Implementation
 
 	remove_from_unlocked_list (a_class_name:STRING) is
 			-- remove class, if it exists in the list
-			require
+		require
 			class_name_not_void: a_class_name /= Void
 			class_name_not_empty: not a_class_name.is_empty
+		local
+			abort:BOOLEAN
 		do
 			from
 				unlocked_classes.start
 			until
-				unlocked_classes.after
+				unlocked_classes.after or abort
 			loop
 				if unlocked_classes.item.is_equal(a_class_name) then
 					unlocked_classes.remove
+					abort := true  --added abort,because otherwise conflict with only one element in list....
 				end
-				unlocked_classes.forth
+				if (not abort) then
+					unlocked_classes.forth
+				end
 			end
 		end
 
@@ -187,7 +192,9 @@ feature {NONE} -- Implementation
 			else
 				ind:=1
 			end
+			create result.make_empty --added
 			result.set(a_path,ind,c)
+			result.remove_head (1) --now  "root_class.e" ...but still don't like it--obsolete
 		end
 
 	wait_for_ok (ok_code:INTEGER):BOOLEAN is
@@ -212,7 +219,7 @@ feature {NONE} -- Implementation
 							ok_message := void
 						end
 					end
-				
+
 					i:= i-1
 					--sleep(sleep_time_default)	
 					-- no sleep, so the system is blocked by this feature
@@ -221,7 +228,7 @@ feature {NONE} -- Implementation
 			end
 			rescue
 				--to be implemented <==
-			
+
 		end
 
 
@@ -297,16 +304,14 @@ feature -- Process
 
 
 	--commands implementing 'client features', these are LOCK, UNLOCK, UPLOAD, DOWNLOAD
-	unlock (an_absolute_path: STRING): BOOLEAN is
+	unlock (an_absolute_path,a_class_name: STRING): BOOLEAN is
 			-- unlocking a class, ie. send the unlock request
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
-		local
-			a_class_name:STRING
 		do
-			a_class_name := parse_class_name(an_absolute_path)
+			--a_class_name := parse_class_name(an_absolute_path)
 			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
@@ -315,16 +320,14 @@ feature -- Process
             result := wait_for_ok(303)
     	end
 
-	lock (an_absolute_path: STRING): BOOLEAN is
+	lock (an_absolute_path,a_class_name: STRING): BOOLEAN is
 			-- locking a class, ie. send the lock request
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
-		local
-			a_class_name:STRING
 		do
-			a_class_name := parse_class_name(an_absolute_path)
+			--a_class_name := parse_class_name(an_absolute_path)
 			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
             socket.cleanup
