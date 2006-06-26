@@ -106,15 +106,12 @@ feature -- Setting datasource
 			-- `i18n_set_resources_path' to specify where to look for files
 			-- (fallback is current working directory). If no file can be loaded an empty
 			-- source will be used and `i18n_source_error' will be set.
+		require
+			i18n_language /= Void
+			i18n_resources_path /= Void
 		local
 			sys_lang, dir_separator: STRING
 		do
-			if i18n_language = Void then
-				i18n_language := ""
-			end
-			if i18n_resources_path = Void then
-				i18n_resources_path := ""
-			end
 			dir_separator := Operating_environment.directory_separator.out
 			if not i18n_language.is_empty then
 				-- give preference to language, and then to path
@@ -130,7 +127,7 @@ feature -- Setting datasource
 						dir_separator + i18n_language + ".mo", i18n_language)
 				end
 			end
-			if i18n_source_error then
+			if i18n_source_error or i18n_language.is_empty then
 				-- language fallback
 --				sys_lang := (create {SHARED_LOCALE_FACTORY}).factory.get_actual_locale.language_id
 				sys_lang := "en" -- [FIXME]
