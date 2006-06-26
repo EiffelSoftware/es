@@ -1,6 +1,6 @@
 indexing
 	description: "Object to access windows' registry."
-	author: "i18n Team, ETH Zurich"
+	author: "Ilinca Ciupa"
 	date: "$Date$"
 	revision: "$Revision$"
 
