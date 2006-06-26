@@ -19,6 +19,8 @@ feature -- Locale
 		do
 			create Result
 			id := language_id_code.to_hex_string
+			id.tail (4)
+			id := to_iso_format(id)
 			Result.set_language_id(id)
 		ensure then
 		end
@@ -30,5 +32,20 @@ feature {NONE} -- Implementation
 		alias
 			"return GetUserDefaultLCID();"
 		end
+
+	to_iso_format (lcid: STRING): STRING is
+			-- feature that converts hex LCID into ISO format
+		require
+			lcid /= Void
+		do
+			-- Result := the data that can be found before the ";" in the registry key named "lcid"
+			if lcid.is_equal ("0810") then
+				Result := "it-ch"
+			else
+				Result := lcid
+			end
+		ensure
+		end
+
 
 end
