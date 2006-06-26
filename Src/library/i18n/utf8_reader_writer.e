@@ -135,8 +135,9 @@ feature -- Writing
 					l_byte := (0x80).to_natural_8 | (l_code |>> (ch_len*6) & 0x3F).to_natural_8
 					a_file.put_natural_8 (l_byte)
 				end
-				i := i + 1
+			--	i := i + 1
 			end
+			i := i + 1
 		end
 	end
 

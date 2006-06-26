@@ -24,7 +24,7 @@ inherit
 		-- This is not a nice or elegant thing to do, I know.
 		{NONE} make_old
 	redefine
-		msgstr
+		msgstr, to_string
 	end
 
 
@@ -104,6 +104,32 @@ create
 			end
 
 
-	feature --Implementation
+	feature --output
+			to_string:STRING_32 is
+					-- prints header entry as string_32
+				local
+					counter: INTEGER
+					accumulator: STRING_32
+				do
+					---put header lines into msgstr for Precursor
+					msgstr_lines.wipe_out
+					from
+						headers.start
+						msgstr_lines.start
+						create accumulator.make_empty
+					until
+						headers.after
+					loop
+						accumulator.wipe_out
+						accumulator.append_string (headers.key_for_iteration)
+						accumulator.append_string (": ")
+						accumulator.append_string (headers.item_for_iteration)
+						msgstr_lines.extend (accumulator.twin)
+						headers.forth
+					end
+					Result := Precursor
+				end
+
+	feature {NONE} --Implementation
 			headers: HASH_TABLE[STRING_32, STRING_32]
 end
