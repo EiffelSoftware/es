@@ -136,16 +136,18 @@ feature -- Process Messages
 					admin_cmd.execute (system)
 				end
 			end
+			-- check for project msg
 			project_msg ?= received_msg
 			if project_msg /= Void then
 				process_project_msg
-			end
-			client_msg ?= received_msg
-			if client_msg /= Void then
-				process_client_msg
+			else
+				-- check for client msg
+				client_msg ?= received_msg
+				if client_msg /= Void then
+					process_client_msg
+				end
 			end
 		end
-
 
 	process_project_msg is
 			-- process a project message.
@@ -351,10 +353,15 @@ feature -- Process Messages
 			lock_request: CLIENT_CLASS_LOCK_REQUEST
 			unlock_request: CLIENT_CLASS_UNLOCK_REQUEST
 			upload: CLIENT_CLASS_UPLOAD
+			login_msg: USER_LOGIN
 
 			--class_list_request: PROJECT_CLASS_LIST_REQUEST
 
 		do
+			login_msg ?= received_msg
+			if login_msg /= Void then
+				process_client_login (login_msg)
+			end
 			download ?= received_msg
 			if download /= Void then
 				process_client_download (download)
@@ -380,6 +387,38 @@ feature -- Process Messages
 --			if user_list_request /= Void then
 --				process_project_user_list_request (user_list_request)
 --			end
+		end
+
+	process_client_login (msg: USER_LOGIN) is
+			-- authenticate user login.
+		require
+			msg_not_void: msg /= Void
+		local
+			project: EMU_PROJECT
+			a_user: EMU_USER
+		do
+			--try to get project
+			project := system.get_project (msg.project_name)
+			if project = Void then
+				-- project does not exist.
+				send_msg (create {CLIENT_ERROR}.make (msg.project_name, {CLIENT_ERROR}.general_error, "Project does not exist!"))
+			else
+				-- check if project has this user
+				if not project.has_user (msg.username) then
+					-- project does not have a user with that name.
+					send_msg (create {CLIENT_ERROR}.make (msg.project_name, {CLIENT_ERROR}.general_error, "Unknown username for that project."))
+				else
+					-- user is known, test password.
+					a_user := project.get_user (msg.username)
+					if a_user.is_password_correct (msg.password) then
+						-- client successfully logged in.
+						project_user := a_user
+					else
+						-- wrong password
+						send_msg (create {CLIENT_ERROR}.make (msg.project_name, {CLIENT_ERROR}.general_error, "Invalid password."))
+					end
+				end
+			end
 		end
 
 	process_client_download (msg: CLIENT_CLASS_DOWNLOAD) is

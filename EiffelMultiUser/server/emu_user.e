@@ -38,7 +38,19 @@ feature -- Initialization
 			password_set: password.is_equal(a_pass)
 			project_set: project = a_project
 		end
-		
+
+
+feature -- Queries
+
+	is_password_correct (a_pass: STRING): BOOLEAN is
+			-- is the provided password correct?
+		require
+			a_pass_not_empty: a_pass /= Void and then not a_pass.is_empty
+		do
+			Result := password.is_equal (a_pass)
+		ensure
+			result_valid: Result = password.is_equal (a_pass)
+		end
 
 
 feature -- Attributes
@@ -51,7 +63,7 @@ feature -- Attributes
 
 	creation_date: DATE
 			-- date of creation (added to project)
-			
+
 	creation_time: TIME
 			-- time of creation (added to project)
 
