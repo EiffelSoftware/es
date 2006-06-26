@@ -3752,15 +3752,15 @@ feature {NONE} -- Implementation
 			--added by EMU-PROJECT--
 			if(project_manager.is_in_emu_mode) then
 				if cist /= Void then
-					--if(not(project_manager.emu_client.is_class_unlocked(cist.class_name))) then
+					if(not(project_manager.emu_client.is_class_unlocked(cist.class_name))) then
 						managed_main_formatters.first.disable_sensitive
 						editor_tool.text_area.set_read_only (true)
-					--end
+					end
 				elseif cst /= Void then
-					--if(not(project_manager.emu_client.is_class_unlocked(cst.class_name))) then
-					managed_main_formatters.first.disable_sensitive
-					editor_tool.text_area.set_read_only (true)
-					--end
+					if(not(project_manager.emu_client.is_class_unlocked(cst.class_name))) then
+						managed_main_formatters.first.disable_sensitive
+						editor_tool.text_area.set_read_only (true)
+					end
 				end
 			end
 			--
