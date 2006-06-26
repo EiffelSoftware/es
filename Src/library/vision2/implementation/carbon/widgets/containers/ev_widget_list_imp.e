@@ -93,19 +93,19 @@ feature
 				err:INTEGER
 				a_list: EV_WIDGET_LIST_IMP
 			do
-				from i:=1
-				until i> child_array.count
+				from i := 1
+				until i > child_array.count
 				loop
-					a_imp?=child_array.i_th(i).implementation
-					if a_imp/=void then
+					a_imp ?= child_array.i_th(i).implementation
+					if a_imp /= void then
 						err := embed_control_external (a_imp.c_object, c_object)
 
-						a_list?=a_imp
-						if a_list/=void then
+						a_list ?= a_imp
+						if a_list /= void then
 							a_list.embed_all
 						end
 					end
-					i:=i+1
+					i := i + 1
 				end
 
 

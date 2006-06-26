@@ -98,6 +98,7 @@ feature {EV_ANY_IMP} -- Implementation
 			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
 			dummy: RECT_STRUCT
+			id: INTEGER_REF
 		do
 			-- this hack with dummy is just a worke around, because i dont know how to get the integer object given a pinter in eiffel
 			create dummy.make_new_shared
@@ -110,7 +111,8 @@ feature {EV_ANY_IMP} -- Implementation
 			create event_type.make_new_shared
 			event_type.set_eventclass(a_event_class)
 			event_type.set_eventkind (a_event_kind)
-
+			create id
+			id:=a_id
 
 			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, dummy.item, null)
 			print("event Handler for: " + a_id.out + " installed with kind: "+ a_event_kind.out + " ret: " + ret.out + "%N")
@@ -386,7 +388,6 @@ feature {NONE} -- Carbon callback handling for events
 				create dummy.make_shared (a_inuserdata) --just a hack, because i dont know how to get to integer from a pointer in eiffel.
 
 				print ("on_callback has been called by id:" + dummy.top.out+"%N")
-
 				--widget_list.item (dummy.top).
 
 			--	create event_type.make_shared (a_inevent)
