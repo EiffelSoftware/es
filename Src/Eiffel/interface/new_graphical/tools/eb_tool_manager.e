@@ -758,6 +758,9 @@ feature {NONE} -- Implementation / Commands
 			preferences.development_window_data.show_general_toolbar_preference.set_value (show_general_toolbar_command.is_visible)
 			preferences.development_window_data.show_address_toolbar_preference.set_value (show_address_toolbar_command.is_visible)
 			preferences.development_window_data.show_project_toolbar_preference.set_value (show_project_toolbar_command.is_visible)
+			---added by emu-project--
+			preferences.development_window_data.show_emu_toolbar_preference.set_value (show_emu_toolbar_command.is_visible)
+			-------------------------
 --			preference.preferences.save
 		end
 
