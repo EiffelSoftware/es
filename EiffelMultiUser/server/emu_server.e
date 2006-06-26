@@ -101,7 +101,7 @@ feature -- Initialization
 				project_names.after
 			loop
 				project_name := project_names.item
-				create file.make(project_folder_name +"\\"+project_name+"\\"+project_name+".emu")
+				create file.make(project_folder_name +"/"+project_name+"/"+project_name+".emu")
 				if file.exists then
 					file.open_read
 		 			project ?= file.retrieved
