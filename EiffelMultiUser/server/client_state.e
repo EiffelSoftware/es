@@ -413,6 +413,7 @@ feature -- Process Messages
 					if a_user.is_password_correct (msg.password) then
 						-- client successfully logged in.
 						project_user := a_user
+						send_msg (create {CLIENT_OK}.make_login_granted (msg.project_name))
 					else
 						-- wrong password
 						send_msg (create {CLIENT_ERROR}.make (msg.project_name, {CLIENT_ERROR}.general_error, "Invalid password."))
