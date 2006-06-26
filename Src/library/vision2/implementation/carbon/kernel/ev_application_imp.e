@@ -97,25 +97,20 @@ feature {EV_ANY_IMP} -- Implementation
 			ret: INTEGER
 			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
-			dummy: RECT_STRUCT
-			id: INTEGER_REF
+			user_data: RECT_STRUCT
 		do
-			-- this hack with dummy is just a worke around, because i dont know how to get the integer object given a pinter in eiffel
-			create dummy.make_new_shared
-			dummy.set_top (a_id)
+			-- this hack with RECT_STRUCT is just a worke around, because i dont know how to get the integer object given a pinter in eiffel
+			create user_data.make_new_shared
+			user_data.set_top (a_id)
 
 			create dispatcher.make (Current)
-
-			event_target:=a_target
+			event_target := a_target
 
 			create event_type.make_new_shared
 			event_type.set_eventclass(a_event_class)
 			event_type.set_eventkind (a_event_kind)
-			create id
-			id:=a_id
-
-			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, dummy.item, null)
-			print("event Handler for: " + a_id.out + " installed with kind: "+ a_event_kind.out + " ret: " + ret.out + "%N")
+			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, null)
+		--	print("event Handler for: " + a_id.out + " installed with class: " + user_data.left.out + " ret: " + ret.out + "%N")
 		end
 
 
@@ -377,36 +372,34 @@ feature {NONE} -- Carbon callback handling for events
 			-- Callback target. This feature gets called
 			-- anytime somebody calls `trigger_event_external'
 		local
-			dummy: RECT_STRUCT
+			user_data: RECT_STRUCT
 			null: POINTER
-			event_type: EVENT_TYPE_SPEC_STRUCT
 			a_button: EV_BUTTON_IMP
 			a_window: EV_WINDOW_IMP
+			event_class, event_kind, a_id: INTEGER
 		do
 
-			if a_inuserdata /= null then
-				create dummy.make_shared (a_inuserdata) --just a hack, because i dont know how to get to integer from a pointer in eiffel.
+				if a_inuserdata /= null then
+					create user_data.make_shared (a_inuserdata) --just a hack, because i dont know how to get to integer from a pointer in eiffel.
+					event_class := get_event_class_external (a_inevent)
+					event_kind := get_event_kind_external (a_inevent)
+					a_id := user_data.top
+				--	print ("on_callback has been called by id:" + a_id.out + "%N")
 
-				print ("on_callback has been called by id:" + dummy.top.out+"%N")
-				--widget_list.item (dummy.top).
+					-- fill in the event kinds and classes to all the events, for whiche Handlers are installed
 
-			--	create event_type.make_shared (a_inevent)
-
-			--  this part doesent work. Seems that the a_inevent pointer isnt. a pointer to a valid event_type_spec_struct
-
-				--if event_type.eventkind={carbonevents_anon_enums}.kEventMouseDown and event_type.eventclass={carbonevents_anon_enums}.kEventClassControl then
-
-					a_button?=widget_list.item (dummy.top)
-					if a_button/=void then
-						a_button.select_actions.call (void)
-					end
-					a_window?=widget_list.item (dummy.top)
-					if a_window/=void then
-						a_window.close_request_actions.call (void)
-					end
-				--end
-			end
-
+						if event_kind = {carbonevents_anon_enums}.kEventMouseDown and event_class = {carbonevents_anon_enums}.kEventClassControl then
+							a_button?=widget_list.item (a_id)
+							if a_button/=void then
+								a_button.select_actions.call (void)
+							end
+						elseif  event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
+							a_window?=widget_list.item (a_id)
+							if a_window/=void then
+								a_window.close_request_actions.call (void)
+							end
+						end
+				end
 		end
 
 
