@@ -9,6 +9,7 @@ class
 	SHARED_LOCALE_FACTORY
 
 feature -- Basic Operations
+
 	factory: I18N_LOCALE_FACTORY is
 			-- Factory used for get_locale feature
 		local
@@ -26,6 +27,7 @@ feature -- Basic Operations
 		end
 
 invariant
+
 	invariant_clause: True -- Your invariant here
 
 end

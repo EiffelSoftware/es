@@ -11,9 +11,11 @@ inherit
 	I18N_DATASOURCE
 
 create {I18N_DATASOURCE_FACTORY}
+
 	make
 
 feature {NONE} -- Initialization
+
 	make is
 			-- Initialization procedure
 		do
@@ -27,6 +29,7 @@ feature {NONE} -- Initialization
 
 
 feature -- Status setting
+
 	initialize is
 			-- Initialize the datasource.
 		do
@@ -49,19 +52,21 @@ feature -- Status setting
 		end
 
 feature -- Basic operations
-	get_original(i_th: INTEGER): LIST[STRING_32] is
+
+	get_original (i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' original string?
 		do
 			-- Do nothing.
 		end
 
-	get_translated(i_th: INTEGER): LIST[STRING_32] is
+	get_translated (i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' translated string?
 		do
 			-- Do nothing.
 		end
 
 invariant
+
 	string_count = 0
 	plural_forms = 2
 	plural_form_identifier.is_equal("n != 1;")

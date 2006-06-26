@@ -11,7 +11,6 @@ class
 inherit
 	UC_IMPORTED_UTF8_ROUTINES
 
-
 feature -- Reading Wrappers
 
 	file_read_string_32_with_length (a_file: FILE; n_bytes: INTEGER): STRING_32 is
@@ -42,7 +41,6 @@ feature -- Reading Wrappers
 		ensure
 			result_not_void: Result /= Void
 		end
-
 
 feature -- Reading
 

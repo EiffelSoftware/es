@@ -8,10 +8,12 @@ class
 	I18N_PLURAL_FORMS
 
 create {I18N_DATASTRUCTURE}
+
 	make_with_identifier
 
 feature {NONE} -- Initialization
-	make_with_identifier(a_n: INTEGER; a_identifier: STRING_32) is
+
+	make_with_identifier (a_n: INTEGER; a_identifier: STRING_32) is
 			-- Initialize `Current'.
 			-- NOTE: Should check the identifiers!
 			-- PLEASE: see the wiki page for this purpose (http://eiffelsoftware.origo.ethz.ch/index.php/Internationalization)!
@@ -49,7 +51,8 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
-	get_plural_form(a_n: INTEGER): INTEGER is
+
+	get_plural_form (a_n: INTEGER): INTEGER is
 			-- Which plural form should be used for the number a_n?
 		do
 			Result := plural_function_agent.item([a_n])
@@ -58,7 +61,8 @@ feature -- Access
 		end
 
 feature {NONE} -- Conversion
-	one_form(a_n: INTEGER): INTEGER is
+
+	one_form (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Finno-Ugric family, Hungarian, Asian family,
 			--            Japanese, Korean Turkic/Altaic family, Turkish
@@ -68,7 +72,7 @@ feature {NONE} -- Conversion
 			Result = 1
 		end
 
-	two_forms_spec1(a_n: INTEGER): INTEGER is
+	two_forms_spec1 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Germanic family, Danish, Dutch, English, German,
 			--            Norwegian, Swedish, Finno-Ugric family, Estonian,
@@ -85,7 +89,7 @@ feature {NONE} -- Conversion
 			Result >= 1 and Result <= 2
 		end
 
-	two_forms_spec01(a_n: INTEGER): INTEGER is
+	two_forms_spec01 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Romanic family, French, Brazilian Portuguese
 		do
@@ -98,7 +102,7 @@ feature {NONE} -- Conversion
 			Result >= 1 and Result <= 2
 		end
 
-	three_forms_spec0(a_n: INTEGER): INTEGER is
+	three_forms_spec0 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Baltic family, Latvian
 		do
@@ -113,7 +117,7 @@ feature {NONE} -- Conversion
 			Result >= 1 and Result <= 3
 		end
 
-	three_forms_spec1_spec2(a_n: INTEGER): INTEGER is
+	three_forms_spec1_spec2 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Celtic, Gaeilge (Irish)
 		do
@@ -128,7 +132,7 @@ feature {NONE} -- Conversion
 			Result >= 1 and Result <= 3
 		end
 
-	three_forms_spec1_spec1_29(a_n: INTEGER): INTEGER is
+	three_forms_spec1_spec1_29 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Baltic family, Lithuanian
 		do
@@ -143,7 +147,7 @@ feature {NONE} -- Conversion
 			Result >= 1 and Result <= 3
 		end
 
-	three_forms_spec1_spec24_spec1_14(a_n: INTEGER): INTEGER is
+	three_forms_spec1_spec24_spec1_14 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Slavic family, Croatian, Czech, Russian, Slovak, Ukrainian
 		do
@@ -158,7 +162,7 @@ feature {NONE} -- Conversion
 			Result >= 1 and Result <= 3
 		end
 
-	three_forms_spec1_spec24(a_n: INTEGER): INTEGER is
+	three_forms_spec1_spec24 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Slavic family, Polish
 		do
@@ -173,7 +177,7 @@ feature {NONE} -- Conversion
 			Result >= 1 and Result <= 3
 		end
 
-	four_forms_spec1_spec02_spec0304(a_n: INTEGER): INTEGER is
+	four_forms_spec1_spec02_spec0304 (a_n: INTEGER): INTEGER is
 			-- Which form of plural should be used?
 			-- Languages: Slavic family, Slovenian
 		do
@@ -191,10 +195,12 @@ feature {NONE} -- Conversion
 		end
 
 feature {NONE} -- Implementation
+
 	plural_function_agent: FUNCTION[I18N_PLURAL_FORMS, TUPLE[INTEGER], INTEGER]
 		-- Agent to plural form function
 
 invariant
+
 	plural_function_agent_set: plural_function_agent /= Void
 		-- Should always be set
 

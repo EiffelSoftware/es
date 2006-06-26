@@ -8,9 +8,11 @@ class
 	I18N_DATASTRUCTURE_FACTORY
 
 create
+
 	make
 
 feature {NONE} -- Initialization
+
 	make is
 			-- Create factory.
 		do
@@ -18,10 +20,12 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
+
 	last_datastructure: I18N_DATASTRUCTURE
 		-- Reference to the last datastructure
 
 feature -- Basic operations
+
 	use_hash_table is
 			-- Create a datastructure using an hash table.
 		do

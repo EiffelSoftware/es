@@ -11,10 +11,12 @@ inherit
 	I18N_DATASTRUCTURE
 
 create {I18N_DATASTRUCTURE_FACTORY}
+
 	make,
 	make_with_datasource
 
 feature {NONE} -- Initialization
+
 	initialize is
 			-- Dummy initialization.
 		do
@@ -22,7 +24,8 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Basic operations
-	search(a_string: STRING_32; i_th: INTEGER): STRING_32 is
+
+	search (a_string: STRING_32; i_th: INTEGER): STRING_32 is
 			-- Can you please give me back the same string?
 		do
 			Result := a_string
@@ -31,6 +34,7 @@ feature {NONE} -- Basic operations
 		end
 
 invariant
+
 	invariant_clause: True -- Your invariant here
 
 end

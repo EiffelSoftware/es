@@ -8,7 +8,8 @@ class
 	SHARED_I18N_LOCALIZATOR
 
 feature {NONE} -- Basic operations
-	i18n(a_string: STRING_GENERAL): STRING_32 is
+
+	i18n (a_string: STRING_GENERAL): STRING_32 is
 			-- What is the translation of `a_string'?
 		require
 			valid_string: a_string /= Void
@@ -18,7 +19,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_pl(a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
+	i18n_pl (a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
 			-- What's the `a_num'-th plural of the string?
 		require
 			valid_singular: a_singular /= Void
@@ -29,7 +30,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_comp(a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
+	i18n_comp (a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
 			-- Translate and do variables substitution on the template `a_string'
 			-- NOTE: Should change the name!
 		obsolete
@@ -47,7 +48,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_comp_pl(a_singular, a_plural: STRING_GENERAL; a_args: TUPLE; i_th: INTEGER): STRING_32 is
+	i18n_comp_pl (a_singular, a_plural: STRING_GENERAL; a_args: TUPLE; i_th: INTEGER): STRING_32 is
 			-- Return plural form of the template `a_string' for `i_th' items and do variables substitution
 			-- NOTE: Should change the name!
 		obsolete
@@ -67,6 +68,7 @@ feature {NONE} -- Basic operations
 		end
 
 feature -- Settings and update
+
 	i18n_set_language (a_string: STRING) is
 			-- set the language
 		require
@@ -77,7 +79,7 @@ feature -- Settings and update
 			i18n_language /= Void and then i18n_language.is_equal (a_string)
 		end
 
-	i18n_set_resources_path(a_path: STRING) is
+	i18n_set_resources_path (a_path: STRING) is
 			-- Set the path where to look for translation files
 		require
 			path_not_void: a_path /= Void
@@ -94,6 +96,7 @@ feature -- Settings and update
 		end
 
 feature -- Setting datasource
+
 	i18n_use_mo_file is
 			-- Load translations from the MO file for current language.
 			-- See `i18n_set_language' to specify the language (fallback is system language,
@@ -108,7 +111,7 @@ feature -- Setting datasource
 			i18n_localizator.use_mo_file
 		end
 
-	i18n_use_mo_file_with_name(a_name, a_language: STRING) is
+	i18n_use_mo_file_with_name (a_name, a_language: STRING) is
 			-- Load translations from MO file `a_name', you are encouraged to specify the language you
 			-- are using as `a_language'. If the file cannot be used `i18n_source_error' will be set and
 			-- an empty source will be used.
@@ -122,7 +125,7 @@ feature -- Setting datasource
 			no_error_then_language_set: not i18n_source_error implies i18n_language.is_equal(a_language)
 		end
 
-	i18n_use_datasource(a_datasource: I18N_DATASOURCE) is
+	i18n_use_datasource (a_datasource: I18N_DATASOURCE) is
 			-- Use `a_datasource' to load translations.
 			-- You are responsible to supply a valid `a_datasource', `i18n_source_error' is not updated.
 		require
@@ -132,6 +135,7 @@ feature -- Setting datasource
 		end
 
 feature -- Setting datastructure
+
 	i18n_use_heap is
 			-- Use hashing to retrieve translated strings.
 			-- Fallback to a dummy datastructure on error.
@@ -146,7 +150,7 @@ feature -- Setting datastructure
 			i18n_localizator.use_binary_search
 		end
 
-	i18n_use_datastructure(a_datastructure: I18N_DATASTRUCTURE) is
+	i18n_use_datastructure (a_datastructure: I18N_DATASTRUCTURE) is
 			-- Use `a_datastructure' to keep translations in memory and retrieve them.
 			-- You are responsible to supply a `valid a_datastructure', `i18n_structure_error' is not updated.
 		require
@@ -156,6 +160,7 @@ feature -- Setting datastructure
 		end
 
 feature -- Status
+
 	i18n_source_error: BOOLEAN is
 			-- True if the lats requested datasource could not be used.
 		do
@@ -168,7 +173,7 @@ feature -- Status
 			Result := i18n_localizator.structure_error
 		end
 
-	i18n_language : STRING is
+	i18n_language: STRING is
 			-- Last requested language; NOTE: this doesn't necessarily reflect the currently used one.
 		do
 			Result := i18n_localizator.language
@@ -181,6 +186,7 @@ feature -- Status
 		end
 
 feature -- Time statistics
+
 	i18n_translation_time: STRING is
 			-- What is the actual translation time?
 		do
@@ -194,6 +200,7 @@ feature -- Time statistics
 		end
 
 feature {NONE} -- Implementation
+
 	i18n_localizator: I18N_LOCALIZATOR is
 			-- Unique instance of the localizator
 		once

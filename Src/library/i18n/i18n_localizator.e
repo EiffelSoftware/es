@@ -11,6 +11,7 @@ create {SHARED_I18N_LOCALIZATOR}
 	make
 
 feature {NONE} -- Initialization
+
 	make is
 			-- Creation procedure.
 		local
@@ -46,6 +47,7 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Settings and update
+
 	load is
 			-- Load the localizator.
 		require
@@ -76,7 +78,7 @@ feature -- Settings and update
 			language_set: language.is_equal(a_string)
 		end
 
-	set_resources_path(a_path: STRING) is
+	set_resources_path (a_path: STRING) is
 			-- Set the path where to look for translation files
 		require
 			path_not_void: a_path /= Void
@@ -87,6 +89,7 @@ feature -- Settings and update
 		end
 
 feature -- Setting datasource
+
 	use_mo_file is
 			-- Load translations from the MO file for current language.
 			-- See `i18n_set_language' to specify the language (fallback is system language,
@@ -154,7 +157,7 @@ feature -- Setting datasource
 			no_error_then_language_set: not source_error implies language.is_equal(a_language)
 		end
 
-	use_datasource(a_datasource: I18N_DATASOURCE) is
+	use_datasource (a_datasource: I18N_DATASOURCE) is
 			-- Use this datasource.
 		require
 			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
@@ -165,6 +168,7 @@ feature -- Setting datasource
 		end
 
 feature -- Setting datastructure
+
 	use_heap is
 			-- Use hashing to retrieve translated strings.
 			-- Fallback to a dummy datastructure on error.
@@ -201,7 +205,7 @@ feature -- Setting datastructure
 			end
 		end
 
-	use_datastructure(a_datastructure: I18N_DATASTRUCTURE) is
+	use_datastructure (a_datastructure: I18N_DATASTRUCTURE) is
 			-- Use this datastructure.
 		require
 			valid_datastructure: a_datastructure /= Void
@@ -212,7 +216,8 @@ feature -- Setting datastructure
 		end
 
 feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
-	translate(a_string: STRING_GENERAL): STRING_32 is
+
+	translate (a_string: STRING_GENERAL): STRING_32 is
 			-- What's the translated version of the string?
 		require
 			valid_string: a_string /= Void
@@ -224,7 +229,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	translate_plural(a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
+	translate_plural (a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
 			-- What's the a_num-th translated plural of the string?
 		require
 			valid_singular: a_singular /= Void
@@ -237,7 +242,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	solve_template(a_string: STRING_32; a_args: TUPLE): STRING_32 is
+	solve_template (a_string: STRING_32; a_args: TUPLE): STRING_32 is
 			-- What's the completed form of the template?
 			-- NOTE: this feature doesn't connect to the datastructure!
 		require
@@ -250,6 +255,7 @@ feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 		end
 
 feature -- Status
+
 	source_error: BOOLEAN
 		-- True if the lats requested datasource could not be used.
 
@@ -263,6 +269,7 @@ feature -- Status
 		-- Path where the translation files are located
 
 feature {NONE} -- Implementation
+
 	i18n_datasource: I18N_DATASOURCE
 		-- Reference to the datasource
 
@@ -273,11 +280,14 @@ feature {NONE} -- Implementation
 		-- Reference to the template formatter
 
 feature {SHARED_I18N_LOCALIZATOR} -- Timing access
+
 	translation_time, loading_time: TIME_DURATION
+		-- Total translation/loading time
 
 feature {NONE} -- Timing implementation
 
 	translation_timer, loading_timer: TIME
+		-- Time of last translation/loading timer start
 
 	reset_times is
 			-- Reset all the timers.
@@ -323,10 +333,10 @@ feature {NONE} -- Timing implementation
 		end
 
 invariant
+
 	valid_datasource: i18n_datasource /= Void and then i18n_datasource.is_ready
 	valid_datastructure: i18n_datastructure /= Void
 	valid_template_formatter: i18n_template_formatter /= Void
-
 	valid_language: language /= Void
 	valid_resource_path: resources_path /= Void
 

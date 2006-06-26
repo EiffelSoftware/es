@@ -12,6 +12,7 @@ inherit
 	I18N_LOCALE_FACTORY
 
 feature -- Locale
+
 	get_actual_locale: I18N_LOCALE is
 		require else
 		local
@@ -26,6 +27,7 @@ feature -- Locale
 		end
 
 feature {NONE} -- Implementation
+
 	language_id_code: NATURAL_32 is
 		external
 			"C inline use <windows.h>"
@@ -46,6 +48,5 @@ feature {NONE} -- Implementation
 			end
 		ensure
 		end
-
 
 end

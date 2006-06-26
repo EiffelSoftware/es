@@ -11,10 +11,12 @@ inherit
 	I18N_DATASTRUCTURE
 
 create {I18N_DATASTRUCTURE_FACTORY}
+
 	make,
 	make_with_datasource
 
 feature {NONE} -- Initialization
+
 	initialize is
 			-- Initialize the hash table
 		local
@@ -43,7 +45,8 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Basic operations
-	search(a_string: STRING_32; i_th: INTEGER): STRING_32 is
+
+	search (a_string: STRING_32; i_th: INTEGER): STRING_32 is
 			-- Can you give me the translation?
 		local
 			l_hash: INTEGER
@@ -60,7 +63,8 @@ feature {NONE} -- Basic operations
 
 
 feature {NONE} -- Miscellaneous
-    hash_string(a_string: STRING_32): INTEGER is
+
+    hash_string (a_string: STRING_32): INTEGER is
 			-- What is the hash of a_string?
 		require
 			valid_string: a_string /= Void
@@ -92,10 +96,12 @@ feature {NONE} -- Miscellaneous
 		end
 
 feature {NONE} -- Implementation
+
 	hash_table: HASH_TABLE[I18N_STRING, INTEGER]
 		-- Table with all the strings
 
 invariant
+
 	valid_hash_table: hash_table /= Void
 	hash_table.count <= base_array.count
 

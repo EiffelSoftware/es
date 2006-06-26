@@ -16,11 +16,12 @@ inherit
 	IMPORTED_UTF8_READER_WRITER
 
 create {I18N_DATASOURCE_FACTORY}
+
 	make_with_path
 
-
 feature {NONE} -- Initialization
-	make_with_path(a_name: STRING) is
+
+	make_with_path (a_name: STRING) is
 			-- Using a_name as the name of the MO file
 		require
 			valid_name: a_name /= Void
@@ -39,6 +40,7 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Status setting
+
 	initialize is
 			-- Initialize the parser.
 		require else
@@ -111,6 +113,7 @@ feature -- Status setting
 		end
 
 feature -- File information
+
 	using_hash_table: BOOLEAN is
 			-- Are we using an hash table?
 		obsolete
@@ -146,7 +149,8 @@ feature -- File information
 		end
 
 feature -- Basic operation
-	get_original(i_th: INTEGER): LIST[STRING_32] is
+
+	get_original (i_th: INTEGER): LIST[STRING_32] is
 			-- get `i_th' original string in the file
 		require else
 			correct_file: is_open
@@ -154,7 +158,7 @@ feature -- Basic operation
 			Result := extract_string(original_table_offset, i_th).split('%U')
 		end
 
-	get_translated(i_th: INTEGER): LIST[STRING_32] is
+	get_translated (i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i-th' translated string?
 		require else
 			correct_file: is_open
@@ -162,7 +166,7 @@ feature -- Basic operation
 			Result := extract_string(translated_table_offset, i_th).split('%U')
 		end
 
-	get_hash(i_th: INTEGER): INTEGER is
+	get_hash (i_th: INTEGER): INTEGER is
 			-- What's the hash of the i-th original string?
 			-- Actually not required, all the strings are hashed on load by the datastructure.
 		obsolete
@@ -175,6 +179,7 @@ feature -- Basic operation
 		end
 
 feature --Errors
+
 	is_valid: BOOLEAN is
 			-- is the file valid?
 		do
@@ -190,6 +195,7 @@ feature --Errors
 		end
 
 feature {NONE} -- Implementation (parameters)
+
 	is_big_endian_file,
 	is_little_endian_file: BOOLEAN
 		-- File endianness
@@ -237,7 +243,7 @@ feature {NONE} -- Implementation (helpers)
 			result_exists : Result /= Void
 		end
 
-	read_integer : INTEGER is
+	read_integer: INTEGER is
 			-- read an integer from the current
 			-- position in the mo file, taking care of the endianness of the file
 		require
@@ -279,8 +285,7 @@ feature {NONE} -- Implementation (helpers)
 			end
 		end
 
-
-	get_integer : ARRAY[NATURAL_8] is
+	get_integer: ARRAY[NATURAL_8] is
 			-- read an integer byte to byte
 			-- and put them a tuple in the
 			-- order they where encountered
@@ -298,7 +303,6 @@ feature {NONE} -- Implementation (helpers)
 			b3 := mo_file.last_natural_8
 			Result := << b0, b1, b2, b3 >>
 		end
-
 
 	extract_plural_informations is
 			-- extract from the mo file
@@ -347,10 +351,10 @@ feature {NONE} -- Implementation (helpers)
 		end
 
 invariant
+
 	valid_mo_file: mo_file /= Void and then mo_file.exists
 	big_xor_little_endian: is_valid implies (is_little_endian_file xor is_big_endian_file)
 	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)
-	
 	retrieval_method = retrieve_by_type
 
 end -- class I18N_MO_PARSER

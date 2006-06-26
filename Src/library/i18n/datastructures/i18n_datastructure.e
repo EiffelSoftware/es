@@ -8,6 +8,7 @@ deferred class
 	I18N_DATASTRUCTURE
 
 feature {I18N_DATASTRUCTURE_FACTORY} -- Initialization
+
 	make is
 			-- Initialize `Current'.
 		local
@@ -24,8 +25,7 @@ feature {I18N_DATASTRUCTURE_FACTORY} -- Initialization
 			i18n_plural_forms /= Void
 		end
 
-
-	make_with_datasource(a_datasource: I18N_DATASOURCE) is
+	make_with_datasource (a_datasource: I18N_DATASOURCE) is
 			-- Initialize `Current'.
 		require
 			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
@@ -39,7 +39,8 @@ feature {I18N_DATASTRUCTURE_FACTORY} -- Initialization
 		end
 
 feature -- Loading
-	load(a_datasource: I18N_DATASOURCE) is
+
+	load (a_datasource: I18N_DATASOURCE) is
 			-- Load this datasource.
 		require
 			valid_datasource: a_datasource /= Void and then a_datasource.is_ready
@@ -60,12 +61,13 @@ feature -- Loading
 
 
 feature {NONE} -- Basic operations
+
 	initialize is
 			-- Initialize this datastructure.
 		deferred
 		end
 
-	search(a_string: STRING_32; i_th: INTEGER): STRING_32 is
+	search (a_string: STRING_32; i_th: INTEGER): STRING_32 is
 			-- What is the translation of a_string?
 		require
 			valid_string: a_string /= Void
@@ -73,7 +75,8 @@ feature {NONE} -- Basic operations
 		end
 
 feature -- Translation
-	translate(a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
+
+	translate (a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
 			-- Can you give me the translation?
 			-- aka interface to the LOCALIZATOR class
 		require
@@ -102,10 +105,9 @@ feature -- Translation
 		end
 
 feature {NONE} -- Loading
+
 	populate_array is
 			-- Populates the array.
-		local
-
 		do
 			create base_array.make(1, i18n_datasource.string_count)
 			if i18n_datasource.retrieval_method = i18n_datasource.retrieve_by_type then
@@ -190,6 +192,7 @@ feature {NONE} -- Loading
 		end
 
 feature {NONE} -- Implementation
+
 	base_array: ARRAY[I18N_STRING]
 		-- Where all the strings are stored
 
@@ -200,6 +203,7 @@ feature {NONE} -- Implementation
 		-- Reference to the plural form resolver
 
 invariant
+
 	valid_array: base_array /= Void
 	valid_datasource: i18n_datasource /= Void
 	valid_plural_forms: i18n_plural_forms /= Void

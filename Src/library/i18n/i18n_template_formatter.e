@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			make_with_escape('$')
 		end
 
-	make_with_escape(a_escape: WIDE_CHARACTER) is
+	make_with_escape (a_escape: WIDE_CHARACTER) is
 			-- Initialize `Current'.
 		do
 			escape_character := a_escape
@@ -36,11 +36,13 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
+
 	escape_character: WIDE_CHARACTER
 		-- Escape character
 
 feature -- Basic operations
-	solve_template(a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
+
+	solve_template (a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
 			-- What's the completed template?
 		require
 			valid_string: a_string /= Void
@@ -139,6 +141,7 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+
 	code_pre: NATURAL_32 is
 			-- Code for character '1'
 		local
@@ -176,6 +179,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
+
 	invariant_clause: True -- Your invariant here
 
 end

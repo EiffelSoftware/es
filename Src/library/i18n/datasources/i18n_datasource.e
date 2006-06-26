@@ -8,6 +8,7 @@ deferred class
 	I18N_DATASOURCE
 
 feature -- Source information
+
 	string_count: INTEGER
 			-- How many string are there in this source?
 
@@ -28,6 +29,7 @@ feature -- Source information
 			-- Defines the retrieval methods
 
 feature -- Status setting
+
 	initialize is
 			-- Check the datasource.
 		deferred
@@ -52,7 +54,8 @@ feature -- Status setting
 		end
 
 feature -- Status report
-	valid_index(a_index: INTEGER): BOOLEAN is
+
+	valid_index (a_index: INTEGER): BOOLEAN is
 			-- Is the index in valid range?
 		do
 			Result := (a_index >= 1) and (a_index <= string_count)
@@ -71,7 +74,8 @@ feature -- Status report
 		end
 
 feature -- Basic operations
-	get_original(i_th: INTEGER): LIST[STRING_32] is
+
+	get_original (i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' original string?
 		require
 			valid_index: valid_index(i_th)
@@ -80,7 +84,7 @@ feature -- Basic operations
 			result_exists: Result /= Void
 		end
 
-	get_translated(i_th: INTEGER): LIST[STRING_32] is
+	get_translated (i_th: INTEGER): LIST[STRING_32] is
 			-- What's the `i_th' translated string?
 		require
 			valid_index: valid_index(i_th)
@@ -92,9 +96,9 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 invariant
+
 	valid_plural_forms: plural_forms >= 1 and plural_forms <= 4
 	valid_plural_form_identifier: plural_form_identifier /= Void and then not plural_form_identifier.is_empty
-
 	is_open = not is_closed
 
 end

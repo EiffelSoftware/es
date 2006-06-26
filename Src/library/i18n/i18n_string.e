@@ -8,11 +8,12 @@ class
 	I18N_STRING
 
 create {I18N_DATASTRUCTURE}
+
 	make_with_id
 
 feature {NONE} -- Initialization
 
-	make_with_id(a_id: INTEGER) is
+	make_with_id (a_id: INTEGER) is
 			-- Initialize `Current'.
 		do
 			id := a_id
@@ -22,6 +23,7 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
+
 	hash: INTEGER
 		-- Hash of the string
 
@@ -38,7 +40,8 @@ feature -- Access
 		-- Number of plural forms of the language in which this string is translated
 
 feature -- Status report
-	valid_plural_form(i_th: INTEGER): BOOLEAN is
+
+	valid_plural_form (i_th: INTEGER): BOOLEAN is
 			-- Is i_th a valid plural form?
 		do
 			Result := (i_th >= 1) and (i_th <= plural_forms)
@@ -52,7 +55,7 @@ feature -- Status report
 			Result := originals.count > 1
 		end
 
-	has_translation(i_th: INTEGER): BOOLEAN is
+	has_translation (i_th: INTEGER): BOOLEAN is
 			-- Is there the i_th translated version?
 		require
 			valid_plural_form(i_th)
@@ -63,7 +66,8 @@ feature -- Status report
 		end
 
 feature -- Basic operations
-	get_original(i_th: INTEGER): STRING_32 is
+
+	get_original (i_th: INTEGER): STRING_32 is
 			-- Which is the i_th plural of the original string?
 		require
 			valid_originals: originals /= Void
@@ -75,7 +79,7 @@ feature -- Basic operations
 			end
 		end
 
-	get_translated(i_th: INTEGER): STRING_32 is
+	get_translated (i_th: INTEGER): STRING_32 is
 			-- Which is the i_th plural of the translated string?
 		require
 			valid_translateds: translateds /= Void
@@ -88,7 +92,7 @@ feature -- Basic operations
 			end
 		end
 
-	set_hash(a_hash: INTEGER) is
+	set_hash (a_hash: INTEGER) is
 			-- Set the hash of the original string.
 		do
 			hash := a_hash
@@ -96,7 +100,7 @@ feature -- Basic operations
 			hash_set: hash = a_hash
 		end
 
-	set_original(a_originals: LIST[STRING_32]) is
+	set_original (a_originals: LIST[STRING_32]) is
 			-- Set the i_th original string.
 		require
 			valid_string: a_originals /= Void
@@ -106,7 +110,7 @@ feature -- Basic operations
 			originals_set: originals.count = a_originals.count
 		end
 
-	set_translated(a_translateds: LIST[STRING_32]) is
+	set_translated (a_translateds: LIST[STRING_32]) is
 			-- Set the i_th translated string.
 		require
 			valid_string: a_translateds /= Void
@@ -117,7 +121,8 @@ feature -- Basic operations
 		end
 
 feature -- Status setting
-	set_plural_forms(a_num: INTEGER) is
+
+	set_plural_forms (a_num: INTEGER) is
 			-- Set plural_forms to a_num.
 		require
 			valid_num: (a_num >= 1) and (a_num <= 4)
@@ -131,6 +136,7 @@ feature -- Status setting
 feature {NONE} -- Implementation
 
 invariant
+
 	valid_plural_forms: plural_forms >= 1 and plural_forms <= 4
 
 end

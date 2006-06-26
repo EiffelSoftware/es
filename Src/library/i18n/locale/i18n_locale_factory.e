@@ -9,6 +9,7 @@ deferred class
 	I18N_LOCALE_FACTORY
 
 feature -- locale
+
 	get_actual_locale: I18N_LOCALE is
 		require
 		deferred
