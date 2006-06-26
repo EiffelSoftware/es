@@ -12,7 +12,6 @@ inherit
 	I18N_LOCALE_FACTORY
 
 feature -- Locale
-
 	get_actual_locale: I18N_LOCALE is
 		require else
 		local
@@ -25,7 +24,6 @@ feature -- Locale
 		end
 
 invariant
-
 	invariant_clause: True -- Your invariant here
 
 end

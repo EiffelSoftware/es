@@ -12,7 +12,6 @@ inherit
 	I18N_LOCALE_FACTORY
 
 feature -- Locale
-
 	get_actual_locale: I18N_LOCALE is
 		require else
 		local
@@ -27,7 +26,6 @@ feature -- Locale
 		end
 
 feature {NONE} -- Implementation
-
 	language_id_code: NATURAL_32 is
 		external
 			"C inline use <windows.h>"
@@ -35,17 +33,19 @@ feature {NONE} -- Implementation
 			"return GetUserDefaultLCID();"
 		end
 
+	registry: AUT_REGISTRY
+
 	to_iso_format (lcid: STRING): STRING is
-			-- feature that converts hex LCID into ISO format
-		require
-			lcid /= Void
+			-- returns the ISO value of the LCID using windows registry
+		local
+			key: STRING
+			key_value: STRING
+			index_of_semicolon: INTEGER
 		do
-			-- Result := the data that can be found before the ";" in the registry key named "lcid"
-			if lcid.is_equal ("0810") then
-				Result := "it-ch"
-			else
-				Result := lcid
-			end
+			key := "HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Rfc1766\" + lcid
+			key_value := registry.string_value (key)
+			index_of_semicolon := key_value.index_of (';', 1)
+			Result := key_value.substring (1, index_of_semicolon - 1)
 		ensure
 		end
 

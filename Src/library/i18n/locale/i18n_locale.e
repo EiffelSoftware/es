@@ -9,13 +9,11 @@ class
 	I18N_LOCALE
 
 feature -- Access
-
 	language_id: STRING
 		-- Language id
 
 feature {I18N_LOCALE_FACTORY} -- Basic operations
-
-	set_language_id (a_id: STRING) is
+	set_language_id(a_id: STRING) is
 			-- Set language id.
 		require
 			a_id /= Void and then not a_id.is_empty
@@ -26,7 +24,6 @@ feature {I18N_LOCALE_FACTORY} -- Basic operations
 		end
 
 invariant
-
 	invariant_clause: True -- Your invariant here
 
 end
