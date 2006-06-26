@@ -16,7 +16,7 @@ feature -- Initialization
 	make is
 			-- Retrieve language
 		do
-			language_id := ({EXECUTION_ENVIRONMENT}).get("LANG"))
+			language_id := ({EXECUTION_ENVIRONMENT}).get("LANG")
 		end
 
 end

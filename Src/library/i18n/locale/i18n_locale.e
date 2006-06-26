@@ -7,15 +7,7 @@ indexing
 
 deferred class
 	I18N_LOCALE
-	
-creation
-	make
 
-feature -- Initialization
-
-	make is
-		deferred
-		end
 
 feature -- Access
 

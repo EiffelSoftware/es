@@ -1,19 +1,22 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Object to access windows' registry."
+	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class AUT_REGISTRY
-  inherit
-     WEL_REGISTRY_ACCESS_MODE
-       export
-           {NONE} all
-       end
+class
+	AUT_REGISTRY
+
+inherit
+	WEL_REGISTRY_ACCESS_MODE
+	export
+		{NONE} all
+	end
+
 feature -- Access
 
 	string_value (key_name: STRING): STRING is
-			-- given a keyname with path returns the value of the key
+			-- Given `a_keyname' with path returns the value of the key.
        local
            registry: WEL_REGISTRY
            key_value: WEL_REGISTRY_KEY_VALUE
