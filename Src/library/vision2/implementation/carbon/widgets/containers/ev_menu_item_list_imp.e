@@ -4,10 +4,10 @@ indexing
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 deferred class
 	EV_MENU_ITEM_LIST_IMP
-	
+
 inherit
 	EV_MENU_ITEM_LIST_I
 		redefine
@@ -33,7 +33,7 @@ inherit
 feature {EV_MENU_ITEM_IMP} -- implementation
 
 	list_widget: POINTER is
-			-- 
+			--
 		do
 		end
 
@@ -41,6 +41,8 @@ feature {NONE} -- Implementation
 
 	insert_i_th (v: like item; pos: INTEGER) is
 		do
+			-- Insert a menu item here!
+			
 		end
 
 	insert_menu_item (an_item_imp: EV_MENU_ITEM_IMP; pos: INTEGER) is
@@ -55,7 +57,7 @@ feature {NONE} -- Implementation
 				an_index > 0 and then an_index <= interface.count
 		do
 		end
-				
+
 	is_menu_separator_imp (an_item_imp: EV_ITEM_I): BOOLEAN is
 		do
 		end
@@ -84,7 +86,7 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	radio_group_ref_internal: POINTER_REF
-	
+
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_MENU_ITEM_LIST;
