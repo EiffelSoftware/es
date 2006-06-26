@@ -65,12 +65,10 @@ feature -- Status setting
 
 			--added by emu-project--
 			manager := eiffel_project.manager
-			if(manager.is_in_emu_mode) then
-				--if(manager.emu_client.is_class_unlocked(a_class.name)) then
-					create display_name.make_from_string (name)
-					display_name.prepend("**")
-					set_text (display_name)
-				--end
+			if(manager.is_in_emu_mode and then manager.emu_client.is_class_unlocked(a_class.name)) then
+				create display_name.make_from_string (name)
+				display_name.prepend("**")
+				set_text (display_name)
 			else
 				set_text (name)
 			end
