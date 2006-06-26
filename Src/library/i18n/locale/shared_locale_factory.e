@@ -13,7 +13,7 @@ feature -- Basic Operations
 	locale: I18N_LOCALE is
 			-- Create the `locale' for the current platform.
 		once
-			create {I18N_LOCALE_IMP} Result.make
+			create {I18N_LOCALE_IMP} Result
 		end
 
 end

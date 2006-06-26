@@ -116,8 +116,7 @@ feature -- Setting datasource
 			end
 			if source_error then
 				-- language fallback
---				sys_lang := (create {SHARED_LOCALE_FACTORY}).factory.get_actual_locale.language_id
-				sys_lang := "en" -- [FIXME]
+				sys_lang := (create {SHARED_LOCALE_FACTORY}).locale.language_id
 				if not resources_path.is_empty then
 					-- system language in asked path
 					use_mo_file_with_name (resources_path + dir_separator +	sys_lang + ".mo", sys_lang)

@@ -10,10 +10,16 @@ class
 
 inherit
 	I18N_LOCALE
+	redefine
+		default_create
+	end
+
+creation
+	default_create
 
 feature -- Initialization
 
-	make is
+	default_create is
 			-- Retrieve `language_id'.
 		local
 			id: STRING

@@ -18,22 +18,26 @@
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="True"/>
 		<cluster name="i18n" location="." recursive="true"/>
 		<cluster name="locale" location="./locale" recursive="true">
-			<condition>
-				<platform excluded_value="windows"/>
-				<platform excluded_value="macintosh"/>
-			</condition>
-			<exclude>/imp_mswin$</exclude>
-			<exclude>/imp_macos$</exclude>
+			<condition><platform excluded_value="windows"/></condition>
+			<condition><platform excluded_value="macintosh"/></condition>
+			<file_rule>
+				<exclude>/imp_mswin$</exclude>
+				<exclude>/imp_macos$</exclude>
+			</file_rule>
 		</cluster>
 		<cluster name="locale_mswin" location="./locale" recursive="true">
 			<condition><platform value="windows"/></condition>
-			<exclude>/imp_unix$</exclude>
-			<exclude>/imp_macos$</exclude>
+			<file_rule>
+				<exclude>/imp_unix$</exclude>
+				<exclude>/imp_macos$</exclude>
+			</file_rule>
 		</cluster>
 		<cluster name="locale_macos" location="./locale" recursive="true">
 			<condition><platform value="macintosh"/></condition>
-			<exclude>/imp_unix$</exclude>
-			<exclude>/imp_mswin$</exclude>
+			<file_rule>
+				<exclude>/imp_unix$</exclude>
+				<exclude>/imp_mswin$</exclude>
+			</file_rule>
 		</cluster>
 	</target>
 </system>
