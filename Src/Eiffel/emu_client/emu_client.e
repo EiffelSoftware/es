@@ -212,7 +212,7 @@ feature {NONE} -- Implementation
 							ok_message := void
 						end
 					end
-
+				
 					i:= i-1
 					--sleep(sleep_time_default)	
 					-- no sleep, so the system is blocked by this feature
@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 			end
 			rescue
 				--to be implemented <==
-
+			
 		end
 
 
