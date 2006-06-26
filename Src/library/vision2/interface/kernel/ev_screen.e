@@ -147,6 +147,32 @@ feature -- Measurement
 			positive: Result > 0
 		end
 
+feature -- Mutli Monitor
+
+	get_monitor_for_widget (a_widget: EV_WIDGET): EV_MONITOR is
+			-- get the monitor in which a_widget is most
+		require
+			widget_exists: a_widget /= void
+		do
+			result := implementation.get_monitor_for_widget(a_widget)
+		end
+
+	get_monitor_at_point (x, y: INTEGER): EV_MONITOR is
+			-- get the monitor that has the global coordinates x,y
+		do
+			result := implementation.get_monitor_at_point(x,y)
+		end
+
+	all_monitors: ARRAYED_LIST[EV_MONITOR]
+
+	default_monitor: EV_MONITOR is
+			-- default monitor of system
+		do
+			result := implementation.default_monitor
+		end
+
+
+
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	implementation: EV_SCREEN_I
@@ -157,6 +183,7 @@ feature {NONE} -- Implementation
 	create_implementation is
 			-- See `{EV_ANY}.create_implementation'.
 		do
+			create all_monitors.make (0)
 			create {EV_SCREEN_IMP} implementation.make (Current)
 		end
 
