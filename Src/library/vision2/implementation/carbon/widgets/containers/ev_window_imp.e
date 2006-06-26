@@ -42,7 +42,7 @@ inherit
 			on_focus_changed
 		end
 
-	EV_GTK_WINDOW_IMP
+	EV_CARBON_WINDOW_IMP
 		undefine
 			initialize,
 			destroy,
@@ -117,37 +117,14 @@ feature {NONE} -- Initialization
 		do
 			set_is_initialized (False)
 			l_c_object := c_object
-			create upper_bar
-			create lower_bar
 
-			maximum_width := interface.maximum_dimension
-			maximum_height := interface.maximum_dimension
-			app_imp := app_implementation
-			--l_gtk_marshal := app_imp.gtk_marshal
-
-			--signal_connect_true (app_imp.delete_event_string, agent (l_gtk_marshal).on_window_close_request (l_c_object))
 			initialize_client_area
 
 			default_height := -1
 			default_width := -1
 
-			--on_key_event_intermediary_agent := agent (l_gtk_marshal).on_key_event_intermediary (internal_id, ?, ?, ?)
-			--signal_connect (l_c_object, app_imp.key_press_event_string, on_key_event_intermediary_agent, key_event_translate_agent, False)
-			--signal_connect (l_c_object, app_imp.key_release_event_string, on_key_event_intermediary_agent, key_event_translate_agent, False)
-
-			--signal_connect (l_c_object, app_imp.set_focus_event_string, agent (l_gtk_marshal).on_set_focus_event_intermediary (internal_id, ?), set_focus_event_translate_agent, True)
-				-- Used to propagate focus events between internal gtk widgets.
-
-			--signal_connect (l_c_object, app_imp.focus_in_event_string, agent (l_gtk_marshal).window_focus_intermediary (internal_id, True), Void, True)
-			--signal_connect (l_c_object, app_imp.focus_out_event_string, agent (l_gtk_marshal).window_focus_intermediary (internal_id, False), Void, True)
-				--Used to handle explicit Window focus handling.
-
-			--signal_connect (l_c_object, app_imp.configure_event_string, agent (l_gtk_marshal).on_size_allocate_intermediate (internal_id, ?, ?, ?, ?), configure_translate_agent, False)
-
-			--{EV_GTK_EXTERNALS}.gtk_window_set_default_size (l_c_object, 1, 1)
 			Precursor {EV_CONTAINER_IMP}
-				-- Need to set decorations after window is realized.
-			--{EV_GTK_EXTERNALS}.gdk_window_set_decorations ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object), default_wm_decorations)
+
 			internal_is_border_enabled := True
 			user_can_resize := True
 			set_is_initialized (True)
@@ -181,16 +158,6 @@ feature  -- Access
 	item: EV_WIDGET
 			-- Current item.
 
-	width: INTEGER is
-			-- Horizontal size measured in pixels.
-		do
-		end
-
-	height: INTEGER is
-			-- Vertical size measured in pixels.
-		do
-		end
-
  	maximum_width: INTEGER
 			-- Maximum width that application wishes widget
 			-- instance to have.
@@ -217,11 +184,6 @@ feature -- Status setting
 
 	internal_enable_border is
 			-- Ensure a border is displayed around `Current'.
-		do
-		end
-
-	frozen gdk_window_get_decorations (a_window: POINTER; a_decorations: TYPED_POINTER [INTEGER]): BOOLEAN is
-			-- Retrieve set decorations for `a_window'.
 		do
 		end
 
@@ -314,31 +276,6 @@ feature -- Element change
 	set_maximum_height (max_height: INTEGER) is
 			-- Set `maximum_height' to `max_height'.
 		do
-		end
-
-	set_width (a_width: INTEGER) is
-			-- Set the horizontal size to `a_width'.
-		local
-			a_rect: RECT_STRUCT
-			ret: INTEGER
-		do
-			create a_rect.make_new_shared
-			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
-			a_rect.set_right(a_rect.left + a_width)
-			ret := set_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item) -- kWindowContentRgn
-		end
-
-	set_height (a_height: INTEGER) is
-			-- Set the vertical size to `a_height'.
-		local
-			a_rect: RECT_STRUCT
-			ret: INTEGER
-		do
-			create a_rect.make_new_shared
-			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
-
-			a_rect.set_bottom(a_rect.top + a_height)
-			ret := set_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item) -- kWindowContentRgn
 		end
 
 		set_size (a_width, a_height: INTEGER) is
@@ -464,6 +401,7 @@ feature {NONE} -- Implementation
 	initialize_client_area is
 			-- Initialize the client area of 'Current'.
 		do
+			app_implementation.window_oids.extend (internal_id)
 		end
 
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
