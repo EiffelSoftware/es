@@ -12,21 +12,16 @@ inherit
 
 create {I18N_DATASOURCE_FACTORY}
 
-	make
+	make_empty
 
-feature {NONE} -- Initialization
+feature -- Initialization
 
-	make is
-			-- Initialization procedure
+	make_empty is
+			-- Creation procedure.
 		do
-			-- See class invariants
-			string_count := 0
-			plural_forms := 2
-			plural_form_identifier := "n != 1;"
-			retrieval_method := retrieve_by_string -- Object-oriented
+			make
 			initialize
 		end
-
 
 feature -- Status setting
 

@@ -15,7 +15,7 @@ feature {NONE} -- Initialization
 	make is
 			-- Creation procedure.
 		do
-			create {I18N_EMPTY_DATASOURCE} last_datasource.make
+			create {I18N_EMPTY_DATASOURCE} last_datasource.make_empty
 		ensure
 			valid_datasource: last_datasource /= Void
 		end
@@ -48,7 +48,7 @@ feature -- Basic operations
 	use_empty_source is
 			-- Create an empty datasource.
 		do
-			create {I18N_EMPTY_DATASOURCE} last_datasource.make
+			create {I18N_EMPTY_DATASOURCE} last_datasource.make_empty
 		ensure
 			valid_datasource: last_datasource /= Void
 		end

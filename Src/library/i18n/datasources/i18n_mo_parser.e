@@ -27,14 +27,15 @@ feature {NONE} -- Initialization
 			valid_name: a_name /= Void
 			not_empty_path: not a_name.is_empty
 		do
+			make
+
 			create mo_file.make(a_name)
-
-			-- What method should use the datastructure to retrive data?
-			retrieval_method := retrieve_by_type -- Preserve spatial locality
-
 			if mo_file.exists then
 				initialize
 			end
+
+			-- What method should use the datastructure to retrive data?
+			retrieval_method := retrieve_by_type -- Preserve spatial locality
 		ensure
 			mo_file_set: mo_file /= Void
 		end
@@ -352,8 +353,8 @@ feature {NONE} -- Implementation (helpers)
 
 invariant
 
-	valid_mo_file: mo_file /= Void and then mo_file.exists
-	big_xor_little_endian: is_valid implies (is_little_endian_file xor is_big_endian_file)
+	valid_mo_file: mo_file /= Void
+	big_xor_little_endian: (mo_file.exists and is_valid) implies (is_little_endian_file xor is_big_endian_file)
 	never_open_if_not_valid: is_open implies (mo_file.is_open_read and then is_valid)
 	retrieval_method = retrieve_by_type
 

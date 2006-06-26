@@ -7,6 +7,18 @@ indexing
 deferred class
 	I18N_DATASOURCE
 
+feature {NONE} -- Initialization
+
+	make is
+			-- Initialization procedure
+		do
+			-- See class invariants
+			string_count := 0
+			plural_forms := 2
+			plural_form_identifier := "n != 1;"
+			retrieval_method := retrieve_by_string -- Object-oriented
+		end
+		
 feature -- Source information
 
 	string_count: INTEGER

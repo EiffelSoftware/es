@@ -51,7 +51,7 @@ feature -- Settings and update
 	load is
 			-- Load the localizator.
 		require
-			new_i18n_datasource /= Void
+			new_i18n_datasource /= Void and then new_i18n_datasource.is_ready
 		do
 			i18n_datasource := new_i18n_datasource
 			i18n_datastructure := new_i18n_datastructure
@@ -334,7 +334,8 @@ feature {NONE} -- Timing implementation
 
 invariant
 
-	valid_datasource: i18n_datasource /= Void and then i18n_datasource.is_ready
+	valid_datasource: i18n_datasource /= Void
+	ready_new_datasource_if_exists: new_i18n_datasource /= Void implies new_i18n_datasource.is_ready
 	valid_datastructure: i18n_datastructure /= Void
 	valid_template_formatter: i18n_template_formatter /= Void
 	valid_language: language /= Void

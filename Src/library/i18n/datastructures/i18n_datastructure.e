@@ -17,8 +17,9 @@ feature {I18N_DATASTRUCTURE_FACTORY} -- Initialization
 		do
 			create datasource_factory.make
 			i18n_datasource := datasource_factory.last_datasource
-			create base_array.make(1, (1 + i18n_datasource.string_count))
+			create base_array.make(1, i18n_datasource.string_count)
 			create i18n_plural_forms.make_with_identifier(i18n_datasource.plural_forms, i18n_datasource.plural_form_identifier)
+			initialize
 		ensure
 			base_array /= Void
 			i18n_datasource /= Void
