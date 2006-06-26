@@ -25,7 +25,7 @@ inherit
 		redefine
 			make
 		end
-		
+
 	ANY
 		undefine
 			default_create
@@ -42,6 +42,20 @@ feature -- Creation
 		do
 			Precursor(a_name, a_creator)
 			make_list	-- initializes the empty list (inherited).
+		end
+
+
+feature -- Modification
+
+	add_class (a_class: EMU_PROJECT_CLASS) is
+			-- add a class to the cluster.
+		require
+			a_class_not_void: a_class /= Void
+			class_not_existant: not has_class (a_class.name)
+		do
+			extend (a_class)
+		ensure
+			class_added: has_class (a_class.name)
 		end
 
 
@@ -67,7 +81,7 @@ feature -- Access
 			Result ?= i_th (index_of_class(a_class_name))
 		ensure
 			result_not_void: Result /= Void
-		end		
+		end
 
 
 feature -- Queries
@@ -79,7 +93,7 @@ feature -- Queries
 		do
 			Result := index_of_cluster(a_cluster_name) >= 0
 		end
-	
+
 	has_class (a_class_name: STRING): BOOLEAN is
 			-- has this cluster a class named 'a_class_name' ?
 		require
@@ -87,7 +101,7 @@ feature -- Queries
 		do
 			Result := index_of_class(a_class_name) >= 0
 		end
-	
+
 	index_of_cluster (a_cluster_name: STRING): INTEGER is
 			-- get the index of a named cluster. returns -1 if not found.
 		require
@@ -110,7 +124,7 @@ feature -- Queries
 				forth
 			end
 		end
-	
+
 	index_of_class (a_class_name: STRING): INTEGER is
 			-- get the index of a named class. returns -1 if not found.
 		require
@@ -133,6 +147,6 @@ feature -- Queries
 				forth
 			end
 		end
-		
+
 
 end

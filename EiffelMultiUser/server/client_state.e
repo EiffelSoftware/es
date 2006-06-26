@@ -59,7 +59,7 @@ feature -- Attributes
 	is_admin: BOOLEAN
 			-- is this client a server administrator?
 
-	--project_user: EMU_USER
+	project_user: EMU_USER
 			-- if not void then client is logged into a project (retrieve project through user).
 
 	system: EMU_SERVER
@@ -517,7 +517,8 @@ feature -- Process Messages
 						a_class.set_content (msg.content)
 					else
 						--class does not exist, create.
-
+						create a_class.make (msg.class_name, project_user)
+						a_cluster.add_class (a_class)
 					end
 
 				end

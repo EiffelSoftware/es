@@ -70,8 +70,8 @@ feature {CLIENT_STATE} -- Modification
 			user_removed: not has_user (username)
 		end
 
---	add_cluster (a_cluster_name, parent_cluster: STRING) is
---			-- create a cluster in a given parent cluster.
+--	add_cluster (a_cluster_name: STRING) is
+--			-- create a cluster in a given head cluster.
 --		require
 --			parent_cluster_exists:
 
