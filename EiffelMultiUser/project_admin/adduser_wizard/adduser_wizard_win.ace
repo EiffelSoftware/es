@@ -1,0 +1,84 @@
+system
+	"adduser_wizard"
+
+root
+	APPLICATION: make_and_launch
+
+default
+	assertion (require)
+	arguments (".")
+	disabled_debug (yes)
+	disabled_debug ("dlg_dispatcher")
+	disabled_debug ("refactor_fixme")
+	disabled_debug ("vision2_windows")
+	disabled_debug ("vision2_windows_gdi")
+	disabled_debug ("wel")
+	disabled_debug ("wel_gdi_count")
+	disabled_debug ("wel_gdi_references")
+	disabled_debug ("win_dispatcher")
+	debug (no)
+	line_generation (no)
+	profile (no)
+	trace (no)
+	check_vape (yes)
+	console_application (no)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (yes)
+	dynamic_runtime (no)
+	exception_trace (no)
+	inlining (no)
+	multithreaded (no)
+
+
+-- EiffelBase
+
+cluster
+	all base:		"$EIFFEL_SRC\library\base"
+		exclude
+			"table_eiffel3"; "desc"; "dotnet";
+		end
+
+	all wel:		"$EIFFEL_SRC_TRUNK\library\wel"
+        exclude
+            "dotnet";
+        end
+
+	all vision2:		"$EIFFEL_SRC_TRUNK\library\vision2"
+		exclude
+			"gtk"; "EIFGEN"; "tmp"; "temp"; "release"; "obsolete"; "CVS"; "dotnet";
+		end
+
+	all wizard:		"$EIFFEL_SRC\library\wizard"
+		exclude
+			"unix"; "dotnet";
+		end
+
+	all emu_protocol:		"..\..\protocol"
+
+	all net:		"$EIFFEL_SRC\library\net"
+
+	emu_adduser_wizard:		"."
+
+	all time:		"$EIFFEL_SRC\library\time"
+		exclude
+			"german"; "french"; "dotnet";
+		end
+
+external
+
+	include_path:
+		"$(EIFFEL_SRC_TRUNK)\library\wel\spec\windows\include",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\include",
+		"$(EIFFEL_SRC)\library\wizard\help\Clib"
+
+	object:
+		"$(EIFFEL_SRC_TRUNK)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
+		"$(EIFFEL_SRC_TRUNK)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib",
+		"$(EIFFEL_SRC)\library\wizard\help\Clib\htmlhelp.lib",
+		"$(EIFFEL_SRC)\library\net\spec\$(ISE_C_COMPILER)\lib\net.lib"
+
+end
