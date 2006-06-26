@@ -149,6 +149,7 @@ feature -- Commands
 			-- Command that generates a .po file for localisation
 		once
 			create Result
+			Result.disable_sensitive
 		end
 
 

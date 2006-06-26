@@ -1994,7 +1994,7 @@ feature {NONE} -- Menu Building
 
 
 			if has_metrics then
-					-- Metric tool
+--					-- Metric tool
 				create metric_menu.make_with_text (interface_names.metric_metrics)
 					create menu_item.make_with_text (interface_names.metric_calculate)
 					metric_menu.extend (menu_item)
@@ -2038,7 +2038,7 @@ feature {NONE} -- Menu Building
 
 			     --PO generation
 
-			 --command_menu_item := create_po_cmd.new_menu_item
+			 command_menu_item := create_po_cmd.new_menu_item
 			add_recyclable (command_menu_item)
 			tools_menu.extend (command_menu_item)
 

@@ -15,6 +15,8 @@ inherit
 	SHARED_EIFFEL_PROJECT
 	SHARED_SERVER
 	EB_SHARED_PREFERENCES
+	EB_FILE_OPENER_CALLBACK
+	IMPORTED_UTF8_READER_WRITER
 
 feature --Access
 	menu_name:STRING is
@@ -36,7 +38,6 @@ feature --Access
 					translator: CLASS_I
 					compiled_translator: CLASS_C
 					list: LIST[CLASS_I]
-					po_file: PO_FILE
 					classes_to_examine: ARRAYED_LIST[CLASS_C]
 					annoying_popup: EV_WARNING_DIALOG
 					file_dialog: EB_FILE_SAVE_DIALOG
@@ -57,7 +58,9 @@ feature --Access
 									create file_dialog.make_with_preference (preferences.dialog_data.last_saved_save_file_as_directory_preference)
 									--file_dialog.save_actions.extend (agent write_po (po,file_dialog ))
 									file_dialog.show_modal_to_window (window_manager.last_focused_development_window.window)
-									write_po (po_file, file_dialog.file_name)
+
+									write (file_dialog.file_name)
+									po_file := Void --garbage collector can do the rest
 								else
 									--error: translator class is not compiled (so has no ast)	
 									create annoying_popup.make_with_text ("The translator class does not seem to be compiled %N%
@@ -100,7 +103,6 @@ feature --Access
 				until
 					clients.after
 				loop
-
 					io.put_string ("client: "+clients.item.name+"%N")
 					if clients.item.has_ast then
 							list := match_list_server.item (clients.item.class_id)
@@ -112,32 +114,47 @@ feature --Access
 					else
 						io.put_string("No AST%N")
 					end
-
 					clients.forth
 				end
-
-
 			end
 
 
 
-		write_po(po:PO_FILE; location: STRING_GENERAL) is
-			--come on charlie!
+		write(location: STRING_GENERAL) is
+			-- Writes the po_file to location
 			require
-				source_not_void: po /= Void
+				source_not_void: po_file /= Void
 				location_not_void: location /= void
 			local
 				file_name: FILE_NAME
-				raw_file: RAW_FILE
+				location_32: STRING_32
+				file_opener: EB_FILE_OPENER
 			do
-						io.put_string ("you wanted to write this to: %N")
-						io.put_string (location.as_string_32+"%N")
-						io.put_string (po.to_string)
+						location_32 := location.as_string_32
+						--DEbugging
+--						io.put_string ("you wanted to write this to: %N")
+--						io.put_string (location_32+"%N")
+--						io.put_string (po_file.to_string)
+
+						create file_name.make_from_string (location_32)
+						if file_name.is_valid then
+							create file_opener.make_with_parent (Current, file_name.out, window_manager.last_focused_development_window.window)
+						end
 			end
 
 
 		translation_function: ID_SET
 		plural_form_translation_function: ID_SET
+		po_file: PO_FILE
+	feature --Callbacks
 
+	save_file(file:RAW_FILE) is
+			-- write to file
+		do
+			file.create_read_write
+			utf8_rw.file_write_string_32 (file, po_file.to_string)
+		--	file.put_string (po_file.to_string)
+			file.close
+		end
 
 end
