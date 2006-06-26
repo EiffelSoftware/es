@@ -23,6 +23,7 @@ feature --creation
 		do
 			Precursor(a_msgid)
 			create msgstr_n_lines.make (0, 2) --reasonable default values
+			msgstr_n_lines.force (break_line (""),0) --ensure at least one msgstr. Otherwise some .po editors get fussy.
 			create msgid_plural_lines.make
 		ensure then
 			msgstr_n_lines_created: msgstr_n_lines /= Void
@@ -87,6 +88,7 @@ feature --output
 		do
 			Result := Precursor
 			Result.append_string(prepare_string ("msgid_plural", msgid_plural_lines))
+
 			from
 				counter := msgstr_n_lines.lower
 			until

@@ -211,12 +211,6 @@ feature {NONE} -- Internal formatting
 		end
 
 
-	 print_head:STRING_32 is
-	 		-- prints the headers and msgstr of this entry
-	 		do
-
-	 		end
-
 	prepare_headers (headers:LINKED_LIST[STRING_32]):STRING_32 is
 		require
 			argument_not_void: headers /=Void
