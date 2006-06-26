@@ -8,7 +8,7 @@ class
 
 inherit
 	THREAD_CONTROL
-	
+
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -42,7 +42,7 @@ feature -- Initialization
 					socket.make_client_by_port (server_port, server_ip)
 				end
 				register_to_server()
-				
+
 				-- register default commands. we use agents to be able to replace the features by an admin.
 				idle_cmd := agent idle
 				process_server_cmd := agent process_server
@@ -55,7 +55,7 @@ feature -- Initialization
 				retry
 			end
 		end
-	
+
 	connect_to_server (ip,u_name,pwd,proj_name:STRING; port:INTEGER) is
 			-- main entry point of application.
 			-- takes four arguments: server_adress server_port user_name password project_name
@@ -88,7 +88,7 @@ feature -- Initialization
 		end
 
 feature -- Access	
-	
+
 	set_project_path (a_path:STRING) is
 			-- sets project path
 		require
@@ -98,7 +98,7 @@ feature -- Access
 		ensure
 			path_set: project_path.is_equal(a_path)
 		end
-		
+
 	is_class_unlocked (a_class_name:STRING): BOOLEAN is
 			-- returns true if class is unlocked
 		require
@@ -117,31 +117,34 @@ feature -- Access
 				unlocked_classes.forth
 			end
 		end
-	
+
 	server_port: INTEGER
 			-- the port to which the listen socket is bound. Lies between 0 and 65535.
-			
+
 	server_ip: STRING
 			-- ip of the server
-			
+
 	user_name: STRING
 			-- user name
-			
+
 	password: STRING
 			-- password
-	
+
 	project_name: STRING
 			-- the project to which the client connects
-			
+
 	project_path: STRING
 			-- path on the local machine to the project location
-			
-	unlocked_classes: LINKED_LIST [STRING]
+
+	unlocked_classes: LINKED_LIST [STRING] is
 			-- a list uf unlocked classes
-			
+			once
+				create Result.make
+			end
+
 	ok_message: CLIENT_OK
 			-- last recieved client_ok message
-			
+
 feature {NONE} -- Implementation
 
 	remove_from_unlocked_list (a_class_name:STRING) is
@@ -161,7 +164,7 @@ feature {NONE} -- Implementation
 				unlocked_classes.forth
 			end
 		end
-	
+
 	parse_class_name (a_path:STRING): STRING is
 			-- parse class name from a path and returns this name
 		require
@@ -180,12 +183,12 @@ feature {NONE} -- Implementation
 				ind:=a
 			elseif b /= 0 then
 				ind:=b
-			else	
+			else
 				ind:=1
 			end
 			result.set(a_path,ind,c)
 		end
-		
+
 	wait_for_ok (ok_code:INTEGER):BOOLEAN is
 			-- wait until an ok_message with ok_code arrives
 		require
@@ -208,7 +211,7 @@ feature {NONE} -- Implementation
 							ok_message := void
 						end
 					end
-				
+
 					i:= i-1
 					--sleep(sleep_time_default)	
 					-- no sleep, so the system is blocked by this feature
@@ -217,16 +220,16 @@ feature {NONE} -- Implementation
 			end
 			rescue
 				--to be implemented <==
-			
+
 		end
-		
-			
-			
-		
-		
-			
+
+
+
+
+
+
 feature -- Sockets  -- former {USER_CMD}
-		
+
 	socket: NETWORK_STREAM_SOCKET
 			-- the client socket that sends data to the server.
 
@@ -248,7 +251,7 @@ feature {NONE} -- Termination
 		ensure
 			system_is_shutdown: is_shutdown
 		end
-		
+
 
 feature -- Process
 
@@ -256,15 +259,13 @@ feature -- Process
     		-- register this client to the server
     	require
     		socket_not_void: socket /= void
-    		
+
     	do
     		socket.connect
     		socket.independent_store (create {USER_LOGIN}.make (user_name, password, project_name))
-            io.putstring ("connected as user" + user_name +"!%N")
-            io.readline
             socket.cleanup
     	end
-    	
+
 
 	idle is
 			-- the idle routine simply waits for something to happen
@@ -276,7 +277,7 @@ feature -- Process
 			loop
 				-- check for incoming data
 				if socket.readable then
-					process_server_cmd.apply	
+					process_server_cmd.apply
 				end
 				sleep (sleep_time_default)
 			end
@@ -292,8 +293,8 @@ feature -- Process
 				retry
 			end
 		end
-	
-	
+
+
 	--commands implementing 'client features', these are LOCK, UNLOCK, UPLOAD, DOWNLOAD
 	unlock (an_absolute_path: STRING): BOOLEAN is
 			-- unlocking a class, ie. send the unlock request
@@ -312,7 +313,7 @@ feature -- Process
             -- what happens, if unlock successful, but ok_message lost???? <==
             result := wait_for_ok(303)
     	end
-	
+
 	lock (an_absolute_path: STRING): BOOLEAN is
 			-- locking a class, ie. send the lock request
 			-- result== true means success
@@ -329,8 +330,8 @@ feature -- Process
             remove_from_unlocked_list (a_class_name)
             -- what happens when ok_message from server got lost??
             result := wait_for_ok(302)
-    	end	
-	
+    	end
+
 	upload (an_absolute_path:STRING): BOOLEAN is
 			-- uploading a class
 			-- result== true means success
@@ -343,8 +344,8 @@ feature -- Process
             socket.cleanup
       		-- no problem if ok_message got lost, just redo upload, no harm done
       		result := wait_for_ok(304)
-    	end	
-    	
+    	end
+
     download (): BOOLEAN is
 			-- downloading ALL classes
 			-- might be better to download unly modified classes
@@ -357,8 +358,8 @@ feature -- Process
             socket.cleanup
             -- what happens, if ok_message got lost?
             result := wait_for_ok(305)
-    	end	
-    	
+    	end
+
 	--#####################################################################
 	-- process_server (a_client:CLIENT_STATE [like socket]) is
 	--	client_state is only for testing purposes here!! don't forget to remove!!!
@@ -423,10 +424,10 @@ feature -- Commands
 
 	idle_cmd: PROCEDURE [ANY, TUPLE]
 			-- the idle command that will be executed by the server.
-			
+
 	process_server_cmd: PROCEDURE [ANY, TUPLE]
 			-- the process client command that will be executed to process clients.
-		
+
 
 feature -- Status
 -- not used yet?
@@ -450,9 +451,9 @@ feature {NONE} -- Defaults
 	sleep_time_default: INTEGER_64 is 200000000
 			-- the default sleep time is 0.2 seconds (= 200'000'000 nanoseconds)
 
-			
+
 invariant
 	server_port_valid: server_port >= 0 and server_port <= 65535
 	sleep_time_positive: sleep_time >= 0
-	
+
 end -- class ROOT_CLASS
