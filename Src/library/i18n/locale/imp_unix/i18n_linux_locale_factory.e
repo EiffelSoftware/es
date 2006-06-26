@@ -1,28 +1,22 @@
 indexing
-	description: "Objects to store the informations regarding the locale."
+	description: "Locale information retrieval on Linux."
 	status: "NOTE: This class is not stable yet, don't use it in production environments!"
 	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
+	I18N_LOCALE_IMP
+
+inherit
 	I18N_LOCALE
-	
-creation
-	make
 
 feature -- Initialization
 
 	make is
-		deferred
+			-- Retrieve language
+		do
+			language_id := ({EXECUTION_ENVIRONMENT}).get("LANG"))
 		end
-
-feature -- Access
-
-	language_id: STRING
-		-- Language id
-
-invariant
-	language_not_void: language_id /= Void
 
 end

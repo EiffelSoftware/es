@@ -1,31 +1,31 @@
 indexing
-	description: "Factory to create a I18N_LOCALE object under windows."
+	description: "Locale information retrieval on windows."
 	status: "NOTE: This class is not stable yet, don't use it in production environments!"
 	author: "i18n Team, ETH Zurich"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	I18N_WINDOWS_LOCALE_FACTORY
+	I18N_LOCALE_IMP
 
 inherit
-	I18N_LOCALE_FACTORY
+	I18N_LOCALE
 
-feature -- Locale
-	get_actual_locale: I18N_LOCALE is
-		require else
+feature -- Initialization
+
+	make is
+			-- Retrieve `language_id'.
 		local
 			id: STRING
 		do
-			create Result
 			id := language_id_code.to_hex_string
 			id.tail (4)
 			id := to_iso_format(id)
-			Result.set_language_id(id)
-		ensure then
+			language_id := id
 		end
 
 feature {NONE} -- Implementation
+
 	language_id_code: NATURAL_32 is
 		external
 			"C inline use <windows.h>"
