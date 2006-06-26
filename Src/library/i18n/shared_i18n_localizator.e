@@ -70,19 +70,18 @@ feature {NONE} -- Basic operations
 
 
 feature -- Settings and update
-
-	i18n_set_language (a_string : STRING) is
+	i18n_set_language (a_string: STRING) is
 			-- set the language
+		require
+			a_string /= Void
 		do
 			i18n_language := a_string
-			if i18n_language = Void or else i18n_language.is_empty then
-				i18n_language := ""
-			end
 		ensure
 			language_not_void: i18n_language /= Void
+			language_set: i18n_language.is_equal(a_string)
 		end
 
-	i18n_set_resources_path (a_path: STRING) is
+	i18n_set_resources_path(a_path: STRING) is
 			-- Set the path where to look for translation files
 		require
 			path_not_void: a_path /= Void
@@ -90,7 +89,7 @@ feature -- Settings and update
 			i18n_resources_path := a_path
 		ensure
 			path_not_void: i18n_resources_path /= Void
-			path_set: i18n_resources_path = a_path
+			path_set: i18n_resources_path.is_equal(a_path)
 		end
 
 	i18n_load is
@@ -100,7 +99,6 @@ feature -- Settings and update
 		end
 
 feature -- Setting datasource
-
 	i18n_use_mo_file is
 			-- Load translations from the MO file for current language.
 			-- See `i18n_set_language' to specify the language (fallback is system language,
@@ -191,7 +189,6 @@ feature -- Setting datasource
 
 
 feature -- Setting datastructure
-
 	i18n_use_heap is
 			-- Use hashing to retrieve translated strings.
 			-- Fallback to a dummy datastructure on error.
@@ -237,9 +234,7 @@ feature -- Setting datastructure
 			i18n_localizator.use_datastructure(a_datastructure)
 		end
 
-
 feature -- Status
-
 	i18n_source_error: BOOLEAN
 		-- True if the lats requested datasource could not be used.
 
@@ -252,9 +247,7 @@ feature -- Status
 	i18n_resources_path: STRING
 		-- Path where the translation files are located
 
-
 feature -- Time statistics
-
 	i18n_translation_time: STRING is
 			-- What is the actual translation time?
 		do
@@ -267,9 +260,7 @@ feature -- Time statistics
 			Result := i18n_localizator.loading_time.fine_seconds_count.out
 		end
 
-
 feature {NONE} -- Implementation
-
 	i18n_localizator: I18N_LOCALIZATOR is
 			-- Unique instance of the localizator
 		once
