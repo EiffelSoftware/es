@@ -10,7 +10,7 @@ class
 
 feature {NONE} -- Basic operations
 
-	i18n(a_string: STRING_GENERAL): STRING_32 is
+	i18n (a_string: STRING_GENERAL): STRING_32 is
 			-- What is the translation of `a_string'?
 		require
 			valid_string: a_string /= Void
@@ -20,7 +20,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_pl(a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
+	i18n_pl (a_singular, a_plural: STRING_GENERAL; a_num: INTEGER): STRING_32 is
 			-- What's the `a_num'-th plural of the string?
 		require
 			valid_singular: a_singular /= Void
@@ -31,7 +31,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_comp(a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
+	i18n_comp (a_string: STRING_GENERAL; a_args: TUPLE): STRING_32 is
 			-- Translate and do variables substitution on the template `a_string'
 			-- NOTE: Should change the name!
 		obsolete
@@ -49,7 +49,7 @@ feature {NONE} -- Basic operations
 			valid_result: Result /= Void
 		end
 
-	i18n_comp_pl(a_singular, a_plural: STRING_GENERAL; a_args: TUPLE; i_th: INTEGER): STRING_32 is
+	i18n_comp_pl (a_singular, a_plural: STRING_GENERAL; a_args: TUPLE; i_th: INTEGER): STRING_32 is
 			-- Return plural form of the template `a_string' for `i_th' items and do variables substitution
 			-- NOTE: Should change the name!
 		obsolete
@@ -81,7 +81,7 @@ feature -- Settings and update
 			language_set: i18n_language.is_equal(a_string)
 		end
 
-	i18n_set_resources_path(a_path: STRING) is
+	i18n_set_resources_path (a_path: STRING) is
 			-- Set the path where to look for translation files
 		require
 			path_not_void: a_path /= Void
@@ -98,7 +98,9 @@ feature -- Settings and update
 			i18n_localizator.load
 		end
 
+
 feature -- Setting datasource
+
 	i18n_use_mo_file is
 			-- Load translations from the MO file for current language.
 			-- See `i18n_set_language' to specify the language (fallback is system language,
@@ -113,6 +115,8 @@ feature -- Setting datasource
 			sys_lang, dir_separator: STRING
 		do
 			dir_separator := Operating_environment.directory_separator.out
+
+			i18n_source_error := True
 			if not i18n_language.is_empty then
 				-- give preference to language, and then to path
 				if not i18n_resources_path.is_empty then
@@ -127,7 +131,7 @@ feature -- Setting datasource
 						dir_separator + i18n_language + ".mo", i18n_language)
 				end
 			end
-			if i18n_source_error or i18n_language.is_empty then
+			if i18n_source_error then
 				-- language fallback
 --				sys_lang := (create {SHARED_LOCALE_FACTORY}).factory.get_actual_locale.language_id
 				sys_lang := "en" -- [FIXME]
@@ -155,7 +159,7 @@ feature -- Setting datasource
 			-- an empty source will be used.
 		require
 			name_not_void: a_name /= Void
-			name_not_empty: not a_name.is_empty -- use i18n_use_mo_file' instead
+			name_not_empty: not a_name.is_empty -- use `i18n_use_mo_file' instead
 			language_not_void: a_language /= Void
 		local
 			source_factory: I18N_DATASOURCE_FACTORY
@@ -186,6 +190,7 @@ feature -- Setting datasource
 
 
 feature -- Setting datastructure
+
 	i18n_use_heap is
 			-- Use hashing to retrieve translated strings.
 			-- Fallback to a dummy datastructure on error.
@@ -231,7 +236,9 @@ feature -- Setting datastructure
 			i18n_localizator.use_datastructure(a_datastructure)
 		end
 
+
 feature -- Status
+
 	i18n_source_error: BOOLEAN
 		-- True if the lats requested datasource could not be used.
 
@@ -244,7 +251,9 @@ feature -- Status
 	i18n_resources_path: STRING
 		-- Path where the translation files are located
 
+
 feature -- Time statistics
+
 	i18n_translation_time: STRING is
 			-- What is the actual translation time?
 		do
@@ -257,7 +266,9 @@ feature -- Time statistics
 			Result := i18n_localizator.loading_time.fine_seconds_count.out
 		end
 
+
 feature {NONE} -- Implementation
+
 	i18n_localizator: I18N_LOCALIZATOR is
 			-- Unique instance of the localizator
 		once
