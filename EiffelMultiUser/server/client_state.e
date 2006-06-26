@@ -59,7 +59,7 @@ feature -- Attributes
 	is_admin: BOOLEAN
 			-- is this client a server administrator?
 
-	project_user: EMU_USER
+	--project_user: EMU_USER
 			-- if not void then client is logged into a project (retrieve project through user).
 
 	system: EMU_SERVER
