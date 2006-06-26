@@ -64,6 +64,23 @@ feature -- Status setting
 		do
 		end
 
+feature -- Multi Monitor
+
+	get_monitor_for_widget (a_widget: EV_WIDGET): EV_MONITOR is
+			-- get the monitor in which a_widget is most
+		do
+		end
+
+	get_monitor_at_point (x, y: INTEGER): EV_MONITOR is
+			-- get the monitor that has the global coordinates x,y
+		do
+		end
+
+	default_monitor: EV_MONITOR is
+			-- default monitor of system
+		do
+		end
+
 feature -- Basic operation
 
 	redraw is
