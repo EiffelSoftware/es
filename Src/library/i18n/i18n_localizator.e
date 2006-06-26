@@ -30,6 +30,9 @@ feature {NONE} -- Initialization
 			use_datastructure(l_structure_factory.last_datastructure)
 
 			load
+
+			l_structure_factory.use_hash_table
+			use_datastructure(l_structure_factory.last_datastructure)
 		ensure
 			valid_datasource: i18n_datasource /= Void
 			valid_datastructure: i18n_datastructure /= Void
@@ -59,18 +62,23 @@ feature -- Loading
 
 	load is
 			-- Load the localizator.
+		require
+			new_i18n_datasource /= Void
 		do
-			if new_i18n_datasource /= Void and new_i18n_datastructure /= Void then
-				i18n_datasource := new_i18n_datasource
-				i18n_datastructure := new_i18n_datastructure
-				reset_times
-				start_loading_timer
-				i18n_datastructure.load(i18n_datasource)
-				stop_loading_timer
-				new_i18n_datasource := Void
-				new_i18n_datastructure := Void
-			end
+			i18n_datasource := new_i18n_datasource
+			i18n_datastructure := new_i18n_datastructure
+			reset_times
+			start_loading_timer
+			i18n_datastructure.load(i18n_datasource)
+			stop_loading_timer
+			new_i18n_datasource := Void
 		end
+
+	new_i18n_datasource: I18N_DATASOURCE
+		-- Reference to the new datasource
+
+	new_i18n_datastructure: I18N_DATASTRUCTURE
+		-- Reference to the new datastructure
 
 feature {SHARED_I18N_LOCALIZATOR} -- Basic operations
 	translate(a_string: STRING_GENERAL): STRING_32 is
@@ -117,12 +125,6 @@ feature {NONE} -- Implementation
 
 	i18n_datastructure: I18N_DATASTRUCTURE
 		-- Reference to the datastructure
-
-	new_i18n_datasource: I18N_DATASOURCE
-		-- Reference to the new datasource
-
-	new_i18n_datastructure: I18N_DATASTRUCTURE
-		-- Reference to the new datastructure
 
 	i18n_template_formatter: I18N_TEMPLATE_FORMATTER
 		-- Reference to the template formatter
