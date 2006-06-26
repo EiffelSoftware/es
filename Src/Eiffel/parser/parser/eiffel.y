@@ -101,7 +101,7 @@ create
 
 %type <PAIR[KEYWORD_AS, ID_AS]> Assigner_mark_opt
 %type <PAIR[KEYWORD_AS, STRING_AS]> External_name Obsolete
-%type <IDENTIFIER_LIST>		Identifier_list Identifier_list_impl Strip_identifier_list
+%type <IDENTIFIER_LIST>		Identifier_list Strip_identifier_list
 %type <PAIR [KEYWORD_AS, EIFFEL_LIST [TAGGED_AS]]> Invariant
 %type <AGENT_TARGET_TRIPLE> Agent_target
 
@@ -139,7 +139,7 @@ create
 %type <FEATURE_SET_AS>		Feature_set
 %type <FORMAL_AS>			Formal_parameter
 %type <FORMAL_DEC_AS>		Formal_generic
-%type <ID_AS>				Class_or_tuple_identifier Class_identifier Identifier_as_lower Identifier_as_lower_comma Free_operator Feature_name_for_call
+%type <ID_AS>				Class_or_tuple_identifier Class_identifier Identifier_as_lower Free_operator Feature_name_for_call
 %type <IF_AS>				Conditional
 %type <INDEX_AS>			Index_clause Index_clause_impl
 %type <INSPECT_AS>			Multi_branch
@@ -169,7 +169,7 @@ create
 %type <CLASS_TYPE_AS>		Parent_class_type
 %type <TYPE_DEC_AS>			Entity_declaration_group
 %type <VARIANT_AS>			Variant
-%type <FEATURE_NAME>		Infix Prefix Feature_name Extended_feature_name New_feature New_feature_comma
+%type <FEATURE_NAME>		Infix Prefix Feature_name Extended_feature_name New_feature
 
 %type <EIFFEL_LIST [ATOMIC_AS]>			Index_terms
 %type <EIFFEL_LIST [CASE_AS]>			When_part_list_opt When_part_list
@@ -182,7 +182,7 @@ create
 %type <PARAMETER_LIST_AS> 	Parameters
 %type <EIFFEL_LIST [FEATURE_AS]>		Feature_declaration_list
 %type <EIFFEL_LIST [FEATURE_CLAUSE_AS]>	Features Feature_clause_list
-%type <EIFFEL_LIST [FEATURE_NAME]>		Feature_list Feature_list_impl New_feature_list New_feature_list_impl
+%type <EIFFEL_LIST [FEATURE_NAME]>		Feature_list Feature_list_impl New_feature_list
 %type <CREATION_CONSTRAIN_TRIPLE>	Creation_constraint
 %type <UNDEFINE_CLAUSE_AS>	Undefine Undefine_opt
 %type <REDEFINE_CLAUSE_AS> Redefine Redefine_opt
@@ -240,42 +240,42 @@ Eiffel_parser:
 			}
 	|	TE_FEATURE Feature_declaration
 			{
-				if not feature_parser or not single_parser_type then
+				if not feature_parser or type_parser or expression_parser or indexing_parser or entity_declaration_parser or invariant_parser then
 					raise_error
 				end
 				feature_node := $2
 			}
 	|	TE_CHECK Expression
 			{
-				if not expression_parser or not single_parser_type then
+				if not expression_parser or type_parser or feature_parser or indexing_parser or entity_declaration_parser or invariant_parser then
 					raise_error
 				end
 				expression_node := $2
 			}
 	|	Indexing
 			{
-				if not indexing_parser or not single_parser_type then
+				if not indexing_parser or type_parser or expression_parser or feature_parser or entity_declaration_parser or invariant_parser then
 					raise_error
 				end
 				indexing_node := $1
 			}
 	|	TE_INVARIANT Class_invariant
 			{
-				if not invariant_parser or not single_parser_type then
+				if not invariant_parser or type_parser or expression_parser or feature_parser or indexing_parser or entity_declaration_parser then
 					raise_error
 				end
 				invariant_node := $2
 			}
 	|	TE_LOCAL
 			{
-				if not entity_declaration_parser or not single_parser_type then
+				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
 					raise_error
 				end
 				entity_declaration_node := Void
 			}
 	|	TE_LOCAL Add_counter Entity_declaration_list Remove_counter
 			{
-				if not entity_declaration_parser or not single_parser_type then
+				if not entity_declaration_parser or type_parser or expression_parser or feature_parser or indexing_parser or invariant_parser then
 					raise_error
 				end
 				entity_declaration_node := $3
@@ -684,43 +684,21 @@ Feature_declaration: Add_counter New_feature_list Remove_counter Declaration_bod
 			}
 	;
 
-New_feature_list:
-		New_feature_list_impl
-			{ $$ := $1}
-	|	New_feature_list_impl error
-			{ report_unexpected_error (text, Void, True) }
-	;
-
-New_feature_list_impl: 
-		New_feature
+New_feature_list: New_feature
 			{
 				$$ := ast_factory.new_eiffel_list_feature_name (counter_value + 1)
 				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
 				end
 			}
-	|	New_feature_comma New_feature_list
+	|	New_feature { increment_counter } TE_COMMA New_feature_list
 			{
-				$$ := $2
-				if $$ /= Void and $1 /= Void and counter_value > 0 then
+				$$ := $4
+				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
-					ast_factory.reverse_extend_separator ($$, last_symbol_as_value)
+					ast_factory.reverse_extend_separator ($$, $3)
 				end
 			}
-	|	New_feature_comma
-			error { report_expected_after_error (parser_errors.comma_symbol, last_symbol_as_value, parser_errors.a_feature_name, False) }
-	;
-
-New_feature_comma: New_feature New_feature_comma_comma_list
-			{
-				increment_counter
-				$$ := $1
-			}
-	;
-	
-New_feature_comma_comma_list: TE_COMMA
-	|	TE_COMMA New_feature_comma_comma_list
-			{ report_expected_after_error (parser_errors.comma_symbol, $1, parser_errors.a_feature_name, False) }
 	;
 
 New_feature: Extended_feature_name
@@ -817,8 +795,6 @@ Declaration_body: TE_COLON Type Assigner_mark_opt Dotnet_indexing
 				$$ := ast_factory.new_body_as (Void, Void, Void, $3, Void, $1, Void, $2)
 				feature_indexes := $2
 			}
-	|	TE_IS Indexing
-			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body_or_constant, True) }
 	|	TE_COLON Type Assigner_mark_opt TE_IS Indexing Routine
 			{
 					-- Function without arguments
@@ -830,23 +806,12 @@ Declaration_body: TE_COLON Type Assigner_mark_opt Dotnet_indexing
 				
 				feature_indexes := $5
 			}
-	|	TE_COLON Type Assigner_mark_opt TE_IS Indexing
-			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body_or_constant, True) }
-	|	TE_COLON TE_IS Indexing
-			error {
-				report_expected_after_error (parser_errors.colon_symbol, $1, parser_errors.a_class_name, False) 
-				report_expected_after_error (parser_errors.is_keyword, $2, parser_errors.a_routine_body_or_constant, True) 
-			}
-	|	TE_COLON Indexing
-			error { report_expected_after_error (parser_errors.colon_symbol, $1, parser_errors.a_class_name, True) }
 	|	Formal_arguments TE_IS Indexing Routine
 			{
 					-- procedure with arguments
 				$$ := ast_factory.new_body_as ($1, Void, Void, $4, Void, $2, Void, $3)
 				feature_indexes := $3
 			}
-	|	Formal_arguments TE_IS Indexing
-			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body, True) }
 	|	Formal_arguments TE_COLON Type Assigner_mark_opt TE_IS Indexing Routine
 			{
 					-- Function with arguments
@@ -857,21 +822,6 @@ Declaration_body: TE_COLON Type Assigner_mark_opt Dotnet_indexing
 				end				
 				feature_indexes := $6
 			}
-	|	Formal_arguments TE_COLON Type Assigner_mark_opt TE_IS Indexing
-			error { report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body, True) }
-	|	Formal_arguments TE_COLON TE_IS Indexing
-			error { 
-				report_expected_after_error (parser_errors.colon_symbol, $2, parser_errors.a_class_name, False) 
-				report_expected_after_error (parser_errors.is_keyword, Void, parser_errors.a_routine_body, True)
-			}
-	|	Formal_arguments TE_COLON Indexing
-			error { 
-				report_expected_after_error (parser_errors.colon_symbol, $2, parser_errors.a_class_name, False) 
-				report_expected_after_error (parser_errors.feature_declaration, $2, parser_errors.is_keyword, False)
-				report_expected_after_error (parser_errors.feature_declaration, Void, parser_errors.a_routine_body, True)
-			}
-	|	Formal_arguments Indexing
-			error { report_expected_after_error (parser_errors.feature_declaration, $1, parser_errors.is_keyword, True) }
 	;
 
 Assigner_mark_opt: -- Empty
@@ -882,8 +832,6 @@ Assigner_mark_opt: -- Empty
 			{
 				$$ := ast_factory.new_assigner_mark_as ($1, $2)
 			}
-	|	TE_ASSIGN 
-			error { report_expected_after_error (parser_errors.assign_keyword, $1, parser_errors.a_indentifier, False) }
 	;
 
 Constant_attribute: Manifest_constant
@@ -1179,31 +1127,13 @@ Entity_declaration_list: Entity_declaration_group
 					$$.reverse_extend ($1)
 				end
 			}
-	|	Entity_declaration_group error
-			{ report_unexpected_error (text, Void, True) }
 	;
 
-Entity_declaration_group:
-		Identifier_list TE_COLON Type ASemi
-			{ $$ := ast_factory.new_type_dec_as ($1, $3, $2) }
-	|	Identifier_list TE_COLON ASemi
-			error { report_expected_after_error (parser_errors.colon_symbol, $2, parser_errors.a_class_name, False) }
-	|	Identifier_list Type ASemi
-			error { report_expected_before_error (parser_errors.a_class_name, $2, parser_errors.colon_symbol, False)}
-	|	Identifier_list ASemi
-			error { report_expected_after_error (parser_errors.formal_argument_declaration, last_id_as_value, parser_errors.colon_symbol, True) }
+Entity_declaration_group: Add_counter Identifier_list Remove_counter TE_COLON Type ASemi
+			{ $$ := ast_factory.new_type_dec_as ($2, $5, $4) }
 	;
 
-Identifier_list: 
-		Add_counter Identifier_list_impl Remove_counter
-			{ $$ := $2 }
-	|	Add_counter Identifier_list_impl error Remove_counter
-			{ 
-				report_unexpected_error (text, Void, True) 
-			}
-	;
-
-Identifier_list_impl: Identifier_as_lower
+Identifier_list: Identifier_as_lower
 			{
 				$$ := ast_factory.new_identifier_list (counter_value + 1)
 				if $$ /= Void and $1 /= Void then
@@ -1212,30 +1142,16 @@ Identifier_list_impl: Identifier_as_lower
 					ast_factory.reverse_extend_identifier ($$.id_list, $1)
 				end
 			}
-	|	Identifier_as_lower_comma { increment_counter } Identifier_list
+	|	Identifier_as_lower { increment_counter } TE_COMMA Identifier_list
 			{
-				$$ := $2
-				if $$ /= Void and $1 /= Void and counter_value > 0 then
+				$$ := $4
+				if $$ /= Void and $1 /= Void then
 					Names_heap.put ($1)
 					$$.reverse_extend (Names_heap.found_item)
 					ast_factory.reverse_extend_identifier ($$.id_list, $1)
-					ast_factory.reverse_extend_separator ($$.id_list, last_symbol_as_value)
+					ast_factory.reverse_extend_separator ($$.id_list, $3)
 				end
 			}
-	|	Identifier_as_lower_comma
-			error { report_expected_after_error (parser_errors.comma_symbol, last_symbol_as_value, parser_errors.an_identifier, False) }
-	;
-	
-Identifier_as_lower_comma: Identifier_as_lower Identifier_as_lower_comma_list
-			{
-				increment_counter
-				$$ := $1
-			}
-	;
-
-Identifier_as_lower_comma_list: TE_COMMA
-	|	TE_COMMA Identifier_as_lower_comma_list
-			{ report_expected_after_error (parser_errors.comma_symbol, $1, parser_errors.an_identifier, False) }
 	;
 
 Strip_identifier_list: -- Empty
@@ -1461,12 +1377,10 @@ Assertion_list: Assertion_clause
 		Assertion_list
 			{
 				$$ := $3
-				if $$ /= Void and $1 /= Void and counter_value > 0 then
+				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
 				end
 			}
-	|	Assertion_clause error
-			{ report_unexpected_error (text, Void, True) }
 	;
 
 Assertion_clause: Expression ASemi
@@ -1829,12 +1743,8 @@ Creation_constraint: -- Empty
 
 -- Instructions
 
---
--- `if' construct
---
 
-Conditional: 
-		TE_IF Expression TE_THEN Compound TE_END
+Conditional: TE_IF Expression TE_THEN Compound TE_END
 			{ $$ := ast_factory.new_if_as ($2, $4, Void, Void, $5, $1, $3, Void) }
 	|	TE_IF Expression TE_THEN Compound Else_part TE_END
 			{
@@ -1857,16 +1767,11 @@ Conditional:
 			}
 	;
 
-
-Elseif_list: 
-		Add_counter Elseif_part_list Remove_counter
-			{ $$ := $2 }
-	|	Add_counter Elseif_part_list Remove_counter error
-			{ report_unexpected_error (text, Void, True) }
+Elseif_list: Add_counter Elseif_part_list Remove_counter
+		{ $$ := $2 }
 	;
 
-Elseif_part_list: 
-		Elseif_part
+Elseif_part_list: Elseif_part
 			{
 				$$ := ast_factory.new_eiffel_list_elseif_as (counter_value + 1)
 				if $$ /= Void and $1 /= Void then
@@ -1876,23 +1781,14 @@ Elseif_part_list:
 	|	Elseif_part { increment_counter } Elseif_part_list
 			{
 				$$ := $3
-				if $$ /= Void and $1 /= Void and counter_value > 0 then
+				if $$ /= Void and $1 /= Void then
 					$$.reverse_extend ($1)
 				end
 			}
-	|	Elseif_part error
-			{ report_unexpected_error (text, Void, True) }
 	;
 
-Elseif_part:
-		TE_ELSEIF Expression TE_THEN Compound
+Elseif_part: TE_ELSEIF Expression TE_THEN Compound
 			{ $$ := ast_factory.new_elseif_as ($2, $4, $1, $3) }
-	|	TE_ELSEIF Expression error
-			{ report_expected_match_error (parser_errors.elseif_keyword, $1, parser_errors.then_keyword, Void, True) }
-	|	TE_ELSEIF TE_THEN Compound error
-			{ report_expected_before_error (parser_errors.then_keyword, $2, parser_errors.an_expression, False) }
-	|	TE_ELSEIF error
-			{ report_expected_after_error (parser_errors.elseif_keyword, $1, parser_errors.an_expression, True) }
 	;
 
 Else_part: TE_ELSE Compound
@@ -1994,8 +1890,7 @@ Choice: Integer_constant
 
 	;
 
-Loop: 
-		TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound TE_END
+Loop: TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound TE_END
 			{
 				if $3 /= Void then
 					$$ := ast_factory.new_loop_as ($2, $3.second, $4, $6, $8, $9, $1, $3.first, $5, $7)
@@ -2003,40 +1898,6 @@ Loop:
 					$$ := ast_factory.new_loop_as ($2, Void, $4, $6, $8, $9, $1, Void, $5, $7)
 				end
 			}
-	|	TE_FROM Compound Invariant Variant TE_UNTIL TE_LOOP Compound TE_END
-			{ report_expected_after_error (parser_errors.until_keyword, $6, parser_errors.an_expression, False) }
-	|	TE_FROM Compound Invariant Variant TE_UNTIL TE_LOOP Compound error
-			{ 
-				report_expected_after_error (parser_errors.until_keyword, $6, parser_errors.an_expression, False) 
-				report_expected_match_error (parser_errors.from_keyword, $1, parser_errors.end_keyword, Void, True)
-			}
-	|	TE_FROM Compound Invariant Variant TE_UNTIL TE_END
-			{ report_expected_after_error (parser_errors.until_keyword, $5, parser_errors.an_expression, False) }
-	|	TE_FROM Compound Invariant Variant TE_LOOP Compound TE_END
-			{
-				report_expected_after_error (parser_errors.loop_keyword, $5, parser_errors.end_keyword, True)
-				report_expected_match_error (parser_errors.from_keyword, $1, parser_errors.end_keyword, Void, True)
-			}
-	|	TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound error
-			{ report_expected_match_error (parser_errors.from_keyword, $1, parser_errors.end_keyword, Void, True) }
-	|	TE_FROM Compound Invariant Variant TE_UNTIL Expression error
-			{ report_expected_after_error (parser_errors.until_expression, $6, parser_errors.loop_keyword, True) }
-	|	TE_FROM Compound Invariant Variant TE_UNTIL error
-			{ report_expected_after_error (parser_errors.until_keyword, $5, parser_errors.an_expression, True) }
-	|	TE_FROM Compound Invariant Variant error
-			{ 
-				if $4 /= Void then
-					report_expected_after_error (parser_errors.variant_block, $4, parser_errors.until_keyword, True) 
-				elseif $3 /= Void then
-					report_expected_after_error (parser_errors.invariant_block, $3.first, parser_errors.until_keyword, True) 
-				elseif $2 /= Void then
-					report_expected_after_error (parser_errors.from_block, $2, parser_errors.until_keyword, True) 
-				else
-					report_expected_after_error (parser_errors.from_keyword, $1, parser_errors.until_keyword, True) 
-				end
-			}
-	|	TE_FROM error 
-			{report_unexpected_error (text, Void, True)}
 	;
 
 Invariant: -- Empty
@@ -2061,12 +1922,8 @@ Variant: -- Empty
 			-- { $$ := Void }
 	|	TE_VARIANT Identifier_as_lower TE_COLON Expression
 			{ $$ := ast_factory.new_variant_as ($2, $4, $1, $3) }
-	|	TE_VARIANT Identifier_as_lower TE_COLON
-			error { report_expected_after_error (parser_errors.colon_symbol, $3, parser_errors.an_expression, False) }
 	|	TE_VARIANT Expression
 			{ $$ := ast_factory.new_variant_as (Void, $2, $1, Void) }
-	|	TE_VARIANT
-			error { report_expected_after_error (parser_errors.variant_keyword, $1, parser_errors.an_assertion, True) }			
 	;
 
 Debug: TE_DEBUG Debug_keys Compound TE_END
@@ -3173,6 +3030,4 @@ indexing
 		]"
 
 end -- class EIFFEL_PARSER
-
-
 
