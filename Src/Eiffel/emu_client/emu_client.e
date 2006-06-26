@@ -2,6 +2,7 @@ indexing
 	description	: "EMU CLIENT, connects to server, handles communication between user and server"
 	author		: "Andrea Zimmermann, Domenic Schroeder, Ramon Schwammberger"
 	date		: "$Date$"
+	revision	: "$Revision$"
 
 class
 	EMU_CLIENT
