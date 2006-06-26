@@ -4,19 +4,19 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AUT_REGISTRY
-
-inherit
-	WEL_REGISTRY_ACCESS_MODE
-	export
-		{NONE} all
-	end
+    class
+    	AUT_REGISTRY
+    
+    inherit
+    	WEL_REGISTRY_ACCESS_MODE
+    	export
+    		{NONE} all
+    	end
 
 feature -- Access
 
 	string_value (key_name: STRING): STRING is
-			-- Given `a_keyname' with path returns the value of the key.
+			-- Given a `key_name' with path returns the value of the key.
        local
            registry: WEL_REGISTRY
            key_value: WEL_REGISTRY_KEY_VALUE
