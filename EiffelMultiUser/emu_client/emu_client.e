@@ -191,8 +191,17 @@ feature -- Process
             io.readline
             socket.cleanup
     	end	
+
+    	
+	--#####################################################################
+	-- process_server (a_client:CLIENT_STATE [like socket]) is
+	--	client_state is only for testing purposes here!! don't forget to remove!!!
+	-- client_state: CLIENT_STATE[like socket]
+	--#####################################################################
+
 	
 	process_server (a_client: CLIENT_STATE[like socket]) is --##### not yet implemented!
+
 			-- process incoming messages from server
 		local
 			rescued: BOOLEAN

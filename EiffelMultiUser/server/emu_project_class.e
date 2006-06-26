@@ -25,6 +25,7 @@ feature -- Creation
 		do
 			Precursor (a_name, a_creator)
 			free := True
+			create current_user.make_empty
 			-- SET CONTENT
 			-- to be implemented...
 		ensure then
@@ -41,14 +42,18 @@ feature -- Procedures
 			free_set: is_free()
 		end
 
-	set_to_occupied() is
+	set_to_occupied( a_user: STRING ) is
 			-- set attribute 'free' to false
+		require
+			a_user_not_void: a_user /= Void
 		do
 			free:= False
+			current_user.make_from_string (a_user)
 		ensure
 			occupied_set: not is_free()
+			current_user_set: current_user.is_equal (a_user)
 		end
-
+		
 feature -- Queries
 
 	is_free():BOOLEAN is
@@ -74,5 +79,7 @@ feature -- Attributes
 
 	free: BOOLEAN
 			-- true <=> class may be unlocked by client
+			
+	current_user: STRING
 
 end

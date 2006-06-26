@@ -403,6 +403,8 @@ feature -- Process Messages
 			-- free again for other users!
 		local
 			project: EMU_PROJECT
+			found: BOOLEAN
+			locked_class: EMU_PROJECT_CLASS
 		do
 			-- try go get project from server
 			project := system.get_project(msg.project_name)
@@ -443,6 +445,8 @@ feature -- Process Messages
 			-- not editable for other users!
 		local
 			project: EMU_PROJECT
+			found: BOOLEAN
+			unlocked_class: EMU_PROJECT_CLASS
 		do
 			-- try go get project from server
 			project := system.get_project(msg.project_name)
