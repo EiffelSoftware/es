@@ -41,7 +41,7 @@ feature -- Status setting
 
 			if(not(emu_client.is_class_unlocked(class_name))) then
 				status_bar.display_message ("Unlocking class on emu_server...")
-				--unlock_done := emu_client.unlock (current_file_in_editor)
+				--unlock_done := emu_client.unlock (current_file_in_editor,class_name)
 				if (unlock_done) then
 					status_bar.display_message ("Unlock done")
 					window.managed_main_formatters.first.enable_sensitive

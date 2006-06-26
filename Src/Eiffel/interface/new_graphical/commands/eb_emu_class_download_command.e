@@ -35,9 +35,9 @@ feature -- Status setting
 			status_bar := window_manager.last_focused_development_window.status_bar
 			current_file_in_editor := Window_manager.last_focused_development_window.file_name
 			if(current_file_in_editor /= void) then
-				status_bar.display_message ("Downloading class to emu_server...")
+				status_bar.display_message ("Downloading class from emu_server...")
 
-				--download_done := emu_client.upload (current_file_in_editor)
+				--download_done := emu_client.download (window_manager.last_focused_development_window.class_name)
 
 				if (download_done) then
 					status_bar.display_message ("Download done")

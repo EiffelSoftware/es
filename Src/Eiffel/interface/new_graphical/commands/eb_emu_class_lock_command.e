@@ -32,19 +32,25 @@ feature -- Status setting
 			lock_done: BOOLEAN
 			status_bar: EB_DEVELOPMENT_WINDOW_STATUS_BAR
 			window:EB_DEVELOPMENT_WINDOW
+			class_name: STRING
 		do
 			window := Window_manager.last_focused_development_window
 			status_bar := window.status_bar
 			current_file_in_editor := window.file_name
+			class_name := window.class_name
 
-			status_bar.display_message ("Locking class on emu_server...")
-			--lock_done := emu_client.lock (current_file_in_editor)
-			if (lock_done) then
-				status_bar.display_message ("Locking done")
-				window.managed_main_formatters.first.disable_sensitive
-				window.editor_tool.text_area.set_read_only (true)
+			if (emu_client.is_class_unlocked (class_name)) then
+				status_bar.display_message ("Locking class on emu_server...")
+				--lock_done := emu_client.lock (current_file_in_editor,class_name)
+				if (lock_done) then
+					status_bar.display_message ("Locking done")
+					window.managed_main_formatters.first.disable_sensitive
+					window.editor_tool.text_area.set_read_only (true)
+				else
+					show_emu_error (emu_lock_error_text)
+				end
 			else
-				show_emu_error (emu_lock_error_text)
+				show_emu_error (emu_class_locked_text)
 			end
 		end
 
@@ -113,6 +119,9 @@ feature -- constants
 
 	emu_lock_error_text: STRING is "Locking crashed"
 			-- text if emu_client unlocking failed
+
+	emu_class_locked_text: STRING is "Class is not unlocked"
+			-- text if class in not unlocked warning
 
 feature {NONE} -- Implementation
 
