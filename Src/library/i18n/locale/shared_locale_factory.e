@@ -14,6 +14,7 @@ feature -- Basic Operations
 		local
 			platform: PLATFORM
 		once
+			create platform
 			if platform.is_windows then
 				create {I18N_WINDOWS_LOCALE_FACTORY} Result
 			elseif platform.is_unix then
