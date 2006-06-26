@@ -11,7 +11,7 @@ inherit
 	EMU_CLIENT_MESSAGE
 create
 	make
-	
+
 feature --Initialization
 
 	make(a_project_name, an_abs_path, a_location:STRING) is
@@ -26,24 +26,24 @@ feature --Initialization
 			project_name := a_project_name
 			content := file_to_string(an_abs_path)
 			parse_path (an_abs_path, a_location)
-			
+
 		ensure
 			project_name_set: a_project_name = project_name
 			content_not_void: content /= void
 			emu_class_name_not_void: emu_class_name /= void
 			cluster_path_not_void: cluster_path /= void
 		end
-		
+
 feature -- Attributes
 
 	emu_class_name: STRING
-	
-	content: STRING 
-	
+
+	content: STRING
+
 	cluster_path: STRING
-	
+
 feature {NONE} -- Implementation
-	
+
 	file_to_string (a_file_path: STRING): STRING is
 			-- retrieve the content of the source code file and store it in a string
 		require
@@ -64,11 +64,11 @@ feature {NONE} -- Implementation
 				file.close
 				source:=file.last_string
 				Result:=source
-			end	
+			end
 		end
-	
+
 	parse_path (a_file_path, a_location: STRING) is
-			-- parse absolute path a return cluster_path and emu_class_name
+			-- parse absolute path and return cluster_path and emu_class_name
 			-- a_location= path to project folder
 		require
 			a_file_path_not_void: a_file_path /= void
@@ -76,7 +76,7 @@ feature {NONE} -- Implementation
 		local
 			pos: INTEGER -- position start
 			c: INTEGER -- position upper bound
-			
+
 		do
 			c:=a_file_path.count
 			pos:= 1+ a_file_path.last_index_of('/',c)
@@ -85,8 +85,8 @@ feature {NONE} -- Implementation
 			pos := 1 + a_location.count
 			cluster_path.set(a_file_path,pos,c)
 		ensure
-			emu_class_name_set: emu_class_name /= void and then not emu_class_name.is_empty 
+			emu_class_name_set: emu_class_name /= void and then not emu_class_name.is_empty
 		end
-		
-	
+
+
 end
