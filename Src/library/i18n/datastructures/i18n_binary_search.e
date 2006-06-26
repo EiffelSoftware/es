@@ -24,7 +24,7 @@ feature {NONE} -- Basic operations
 		require else
 			string_exists: a_string /= Void
 		local
-			left, right, middle, i: INTEGER
+			left, right, middle: INTEGER
 			found: BOOLEAN
 			t_string: STRING_32
 		do
