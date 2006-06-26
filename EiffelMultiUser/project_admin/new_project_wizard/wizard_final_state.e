@@ -30,12 +30,12 @@ feature -- Redefinition
 			process_info
 			system.first_window.lock_update			-- lock window again
 		end
-	
+
 
 feature {NONE} -- Implementation
 
 
-	build_finish is 
+	build_finish is
 			-- Build user entries.
 			--
 			-- Note: You can remove this feature if you don't need
@@ -78,6 +78,7 @@ feature {NONE} -- Implementation
 				system ?= current_application
 				total := 3
 				iteration := 0
+				system.process_events
 				notify_user ("connecting to emu server...")
 				system.process_events
 				create sock.make_client_by_port (system.server_port, system.server_host)
@@ -160,7 +161,7 @@ feature {NONE} -- Implementation
 		once
 			create Result.make_from_string ("emu_icon_01.png")
 		end
-	
+
 --	can_go_next: BOOLEAN is
 --		-- can wizard finish?
 --	do
