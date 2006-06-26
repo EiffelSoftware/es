@@ -70,7 +70,7 @@ feature {CLIENT_STATE} -- Modification
 			user_removed: not has_user (username)
 		end
 
---	add_cluser (a_cluster_name, parent_cluster: STRING) is
+--	add_cluster (a_cluster_name, parent_cluster: STRING) is
 --			-- create a cluster in a given parent cluster.
 --		require
 --			parent_cluster_exists:
@@ -129,7 +129,6 @@ feature -- Queries
 		require
 			username_valid: username /= Void and then not username.is_empty
 		local
-			found: BOOLEAN
 			i: INTEGER
 		do
 			from
@@ -141,10 +140,9 @@ feature -- Queries
 			variant
 				users.count - i + 1
 			until
-				users.after or found
+				users.after or Result /= -1
 			loop
 				if users.item.name.is_equal(username) then
-					found := True
 					Result := i
 				end
 				i := i + 1
@@ -152,6 +150,81 @@ feature -- Queries
 			end
 		ensure
 			result_valid: Result >= -1 or Result < users.count
+		end
+
+	get_list_of_users: LINKED_LIST[EMU_USER] is
+			-- return a copy of the user list.
+		do
+			Result.copy (users)
+		end
+
+	get_user (a_username: STRING): EMU_USER is
+			-- search and return user with `a_username'. if not found return Void.
+		require
+			a_username_valid: a_username /= Void and then not a_username.is_empty
+		do
+			from
+				users.start
+			until
+				users.after or else Result /= Void
+			loop
+				if users.item.name.is_equal (a_username) then
+					Result := users.item
+				end
+				users.forth
+			end
+		ensure
+			result_correct: Result /= Void implies users.has(Result)
+		end
+
+	get_cluster (a_cluster_path: STRING): EMU_PROJECT_CLUSTER is
+			-- search cluster with the given path and retrieve it. Void if not exists.
+		require
+			a_cluster_path_valid: a_cluster_path /= Void and then not a_cluster_path.is_empty
+		local
+			cluster_names: LIST[STRING]
+			a_cluster: EMU_PROJECT_CLUSTER
+			head_cluster_found: BOOLEAN
+			not_existant: BOOLEAN
+		do
+			from
+				cluster_names := a_cluster_path.split ('/')
+				cluster_names.start
+			until
+				cluster_names.after or else not_existant
+			loop
+				if not cluster_names.item.is_empty then
+					if not head_cluster_found then
+						-- first find head cluster. inside loop because we want to skip empty names.
+						a_cluster := get_head_cluster (cluster_names.item)
+						head_cluster_found := True
+					else
+						-- search sub-clusters.
+						a_cluster := a_cluster.get_cluster (cluster_names.item)
+					end
+					not_existant := a_cluster = Void
+				end
+				cluster_names.forth
+			end
+		end
+
+	get_head_cluster (a_cluster_name: STRING): EMU_PROJECT_CLUSTER is
+			-- retrieve a head cluster (of the clusters list). return void if not found.
+		require
+			a_cluster_name_valid: a_cluster_name /= Void and then not a_cluster_name.is_empty
+		do
+			from
+				clusters.start
+			until
+				Result /= Void or else clusters.after
+			loop
+				if clusters.item.name.is_equal (a_cluster_name) then
+					Result := clusters.item
+				end
+				clusters.forth
+			end
+		ensure
+			cluster_is_in_list: Result /= Void implies clusters.has (Result)
 		end
 
 	is_password_correct (a_pass: STRING): BOOLEAN is
@@ -164,12 +237,6 @@ feature -- Queries
 			result_correct: a_pass.is_equal (password)
 		end
 
-	get_list_of_users: LINKED_LIST[EMU_USER] is
-			-- return a copy of the user list.
-		do
-			Result.copy (users)
-		end
-
 
 feature -- Attributes
 
@@ -177,14 +244,18 @@ feature -- Attributes
 			-- the project name, used for identification.
 
 
-feature {CLIENT_STATE} -- Private Attributes
+feature {CLIENT_STATE} -- Cluster list
 
-	users: LINKED_LIST [EMU_USER]
-			-- a list of users assigned to this project.
 
 	clusters: LINKED_LIST [EMU_PROJECT_CLUSTER]
 			-- a list of source clusters used in this project (excluding library clusters).
 			-- at the top level it is not allowed to have classes, thats why we don't use EMU_PROJECT_UNIT here.
+
+
+feature {NONE} -- Private Attributes
+
+	password: STRING
+			-- the project password, used for project administration.
 
 	creation_date: DATE
 			-- date of project creation
@@ -192,8 +263,8 @@ feature {CLIENT_STATE} -- Private Attributes
 	creation_time: TIME
 			-- time of project creation
 
-	password: STRING
-			-- the project password, used for project administration.
+	users: LINKED_LIST [EMU_USER]
+			-- a list of users assigned to this project.
 
 
 invariant

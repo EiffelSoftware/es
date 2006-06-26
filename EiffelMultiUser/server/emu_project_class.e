@@ -22,12 +22,10 @@ feature -- Creation
 
 	make (a_name: STRING; a_creator: EMU_USER) is
 			-- create a project unit by its name and the creator.
-		do
+		once
 			Precursor (a_name, a_creator)
 			free := True
-			create current_user.make_empty
-			-- SET CONTENT
-			-- to be implemented...
+			content.make_empty
 		ensure then
 			free_set: is_free()
 		end
@@ -38,22 +36,37 @@ feature -- Procedures
 			-- set attribute 'free' to true
 		do
 			free:=True
+			current_user := Void
 		ensure
 			free_set: is_free()
+			no_current_user: current_user = Void
 		end
 
-	set_to_occupied( a_user: STRING ) is
+	set_to_occupied (a_user: EMU_USER) is
 			-- set attribute 'free' to false
 		require
 			a_user_not_void: a_user /= Void
 		do
 			free:= False
-			current_user.make_from_string (a_user)
+			current_user := a_user
 		ensure
 			occupied_set: not is_free()
-			current_user_set: current_user.is_equal (a_user)
+			current_user_set: current_user = a_user
 		end
-		
+
+	set_content (new_content: STRING) is
+			-- change the class content to `new_content'.
+		require
+			new_content_not_void: new_content /= Void
+		do
+			content := new_content
+			modification_date.make_now
+			modification_user := current_user
+		ensure
+			content_set: content = new_content
+		end
+
+
 feature -- Queries
 
 	is_free():BOOLEAN is
@@ -79,7 +92,13 @@ feature -- Attributes
 
 	free: BOOLEAN
 			-- true <=> class may be unlocked by client
-			
-	current_user: STRING
 
+	current_user: EMU_USER
+			-- the user who currently has this class locked. Void if noone.
+
+
+invariant
+	content_not_void: content /= Void
+	occupied_implies_user: not is_free implies current_user /= Void
+	free_implies_nouser: is_free implies current_user = Void
 end

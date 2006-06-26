@@ -59,12 +59,15 @@ feature -- Attributes
 	is_admin: BOOLEAN
 			-- is this client a server administrator?
 
+	project_user: EMU_USER
+			-- if not void then client is logged into a project (retrieve project through user).
+
 	system: EMU_SERVER
 			-- the system that is having the project list.
 
 	received_msg: EMU_MESSAGE
 			-- the received emu message.
-			
+
 	class_list: LINKED_LIST[EMU_PROJECT_CLASS]
 			-- linked list of classes of a project
 
@@ -406,13 +409,13 @@ feature -- Process Messages
 			found: BOOLEAN
 			locked_class: EMU_PROJECT_CLASS
 		do
-			-- try go get project from server
+			-- try to get project from server
 			project := system.get_project(msg.project_name)
 			if project = Void then
 				-- project does not exist
 				-- send error message to client
 				send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
-			else	
+			else
 				-- search the right class
 				from
 					project.clusters.start
@@ -424,12 +427,12 @@ feature -- Process Messages
 						-- do lock of class
 						locked_class:= project.clusters.item.get_class (msg.emu_class_name)
 						found:= True
-						if locked_class.is_free and then locked_class.current_user.is_equal (username) then
+						if not locked_class.is_free and then locked_class.current_user.name.is_equal (username) then
 							locked_class.set_to_free
 						else
 							send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
 							-- error, class isn't used by this user
-						end		
+						end
 					end
 					project.clusters.forth
 				end
@@ -447,6 +450,7 @@ feature -- Process Messages
 			project: EMU_PROJECT
 			found: BOOLEAN
 			unlocked_class: EMU_PROJECT_CLASS
+			a_user: EMU_USER
 		do
 			-- try go get project from server
 			project := system.get_project(msg.project_name)
@@ -454,30 +458,35 @@ feature -- Process Messages
 				-- project does not exist
 				-- send error message to client
 				send_msg (create {CLIENT_ERROR}.make_unlock_not_successful (msg.project_name, msg.emu_class_name))
-			else	
+			else
+				if not project.has_user (username) then
+
+				else
+					a_user := project.get_user (username)
 					-- search the right class
-				from
-					project.clusters.start
-					found:= False
-				until
-					project.clusters.after or found=True
-				loop
-					if project.clusters.item.has_class (msg.emu_class_name) then
-						-- do unlock of class
-						unlocked_class:= project.clusters.item.get_class (msg.emu_class_name)
-						found:= True
-						if unlocked_class.is_free then
-							unlocked_class.set_to_occupied (username)
-						else
-							send_msg (create {CLIENT_ERROR}.make_class_already_unlocked (msg.project_name, msg.emu_class_name))
-							-- error, class is not free
-						end		
+					from
+						project.clusters.start
+						found:= False
+					until
+						project.clusters.after or found=True
+					loop
+						if project.clusters.item.has_class (msg.emu_class_name) then
+							-- do unlock of class
+							unlocked_class:= project.clusters.item.get_class (msg.emu_class_name)
+							found:= True
+							if unlocked_class.is_free then
+								unlocked_class.set_to_occupied (a_user)
+							else
+								send_msg (create {CLIENT_ERROR}.make_class_already_unlocked (msg.project_name, msg.emu_class_name))
+								-- error, class is not free
+							end
+						end
+						project.clusters.forth
 					end
-					project.clusters.forth
-				end
-				if found = False then
-					send_msg (create {CLIENT_ERROR}.make_class_not_found (msg.project_name, msg.emu_class_name))
-					-- error, class doesn't exist
+					if found = False then
+						send_msg (create {CLIENT_ERROR}.make_class_not_found (msg.project_name, msg.emu_class_name))
+						-- error, class doesn't exist
+					end
 				end
 			end
 		end
@@ -486,8 +495,10 @@ feature -- Process Messages
 			-- include uploaded class into class-/clusterlist
 		local
 			project: EMU_PROJECT
+			a_cluster: EMU_PROJECT_CLUSTER
+			a_class: EMU_PROJECT_CLASS
 		do
-			-- try go get project from server
+			-- try to get project from server
 			project := system.get_project(msg.project_name)
 			if project = Void then
 				-- project does not exist
@@ -496,7 +507,20 @@ feature -- Process Messages
 				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
 			else
 				-- do upload
-				-- TO BE IMPLEMENTED
+				a_cluster := project.get_cluster (msg.cluster_path)
+				if a_cluster = Void then
+					-- invalid cluster. create?
+				else
+					if a_cluster.has_class (msg.class_name) then
+						--class already exists, replace content.
+						a_class := a_cluster.get_class (msg.class_name)
+						a_class.set_content (msg.content)
+					else
+						--class does not exist, create.
+
+					end
+
+				end
 			end
 		end
 
@@ -521,7 +545,7 @@ feature -- Commands
 		do
 			Result ?= socket.retrieved
 		end
-		
+
 feature {NONE} -- Recursive Feature
 
 	find_classes_of_cluster (a_cluster: EMU_PROJECT_CLUSTER) is
@@ -547,7 +571,7 @@ feature {NONE} -- Recursive Feature
 				a_cluster.forth
 			end
 		end
-		
+
 
 
 invariant
