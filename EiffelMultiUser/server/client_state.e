@@ -405,7 +405,7 @@ feature -- Process Messages
 			project := system.get_project (msg.project_name)
 			if project = Void then
 				-- project does not exist.
-				io.put_string ("INVALID: client login: " + msg.username + ". user already exists!%N")
+				io.put_string ("INVALID: client login: " + msg.username + ". project does not exist!%N")
 				send_msg (create {CLIENT_ERROR}.make (msg.project_name, {CLIENT_ERROR}.general_error, "Project does not exist!%N"))
 			else
 				-- check if project has this user
