@@ -426,17 +426,16 @@ feature -- Process Messages
 			-- respond to download request.
 		local
 			project: EMU_PROJECT
+			a_class: EMU_PROJECT_CLASS
 		do
-			-- try go get project from server
-			project := system.get_project(msg.project_name)
-			if project = Void then
-				-- project does not exist
+			-- check if client is logged in as a user.
+			if project_user = Void then
+				-- client is not logged in as a user of a project.
 				-- send error message to client
-				-- adapt error message! :
-				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+				send_msg (create {CLIENT_ERROR}.make_general_error ("empty"))
 			else
 				-- start download
-				-- TO BE IMPLEMENTED
+				a_class := project_user.project.get_class (msg.class_name)
 			end
 		end
 
@@ -549,7 +548,8 @@ feature -- Process Messages
 				-- do upload
 				a_cluster := project.get_cluster (msg.cluster_path)
 				if a_cluster = Void then
-					-- invalid cluster. create?
+					-- invalid cluster, create.
+					project.add_cluster (msg.cluster_path, project_user)
 				else
 					if a_cluster.has_class (msg.class_name) then
 						--class already exists, replace content.
@@ -560,7 +560,6 @@ feature -- Process Messages
 						create a_class.make (msg.class_name, project_user)
 						a_cluster.add_class (a_class)
 					end
-
 				end
 			end
 		end

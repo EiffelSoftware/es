@@ -70,11 +70,45 @@ feature {CLIENT_STATE} -- Modification
 			user_removed: not has_user (username)
 		end
 
---	add_cluster (a_cluster_name: STRING) is
---			-- create a cluster in a given head cluster.
---		require
---			parent_cluster_exists:
-
+	add_cluster (a_cluster_path: STRING; a_creator: EMU_USER) is
+			-- create a cluster_path. does nothing if cluster exists.
+		require
+			a_cluster_path_valid: a_cluster_path /= Void and then not a_cluster_path.is_empty
+--			cluster_not_existant: get_cluster (a_cluster_path) = Void
+		local
+			not_existant, head_cluster_found: BOOLEAN
+			a_cluster, new_cluster: EMU_PROJECT_CLUSTER
+			cluster_names: LIST[STRING]
+		do
+			from
+				cluster_names := a_cluster_path.split ('/')
+				cluster_names.start
+			until
+				cluster_names.after or else not_existant
+			loop
+				if not cluster_names.item.is_empty then
+					if not head_cluster_found then
+						-- first find head cluster. inside loop because we want to skip empty names.
+						new_cluster := get_head_cluster (cluster_names.item)
+						if new_cluster = Void then
+							-- create head cluster.
+							create new_cluster.make (cluster_names.item, a_creator)
+							clusters.extend (new_cluster)
+						end
+						head_cluster_found := True
+					else
+						-- search sub-clusters.
+						new_cluster := a_cluster.get_cluster (cluster_names.item)
+						if new_cluster = Void then
+							create new_cluster.make (cluster_names.item, a_creator)
+							a_cluster.extend (new_cluster)
+						end
+					end
+					a_cluster := new_cluster
+				end
+				cluster_names.forth
+			end
+		end
 
 
 feature {NONE} -- Update
@@ -206,6 +240,9 @@ feature -- Queries
 				end
 				cluster_names.forth
 			end
+			if not not_existant then
+				Result := a_cluster
+			end
 		end
 
 	get_head_cluster (a_cluster_name: STRING): EMU_PROJECT_CLUSTER is
@@ -225,6 +262,24 @@ feature -- Queries
 			end
 		ensure
 			cluster_is_in_list: Result /= Void implies clusters.has (Result)
+		end
+
+	get_class (a_class_name: STRING): EMU_PROJECT_CLASS is
+			-- retrieve a class by its name. returns void if not exist.
+		require
+			a_class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+		local
+
+		do
+			-- search the right class
+			from
+				clusters.start
+			until
+				Result /= Void or else clusters.after
+			loop
+				Result := clusters.item.get_class_recursive (a_class_name)
+				clusters.forth
+			end
 		end
 
 	is_password_correct (a_pass: STRING): BOOLEAN is

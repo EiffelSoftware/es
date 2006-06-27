@@ -75,10 +75,10 @@ feature -- Initialization
 			 	create project_list.make
 			 	-- restore the project folder
 			 	create project_folder.make(project_folder_name)
-			 	project_folder.open_read
 			 	if not project_folder.exists then
 			 		project_folder.create_dir
 			 	end
+			 	project_folder.open_read
 				project_names := project_folder.linear_representation
 		 		project_folder.close
 				project_names.start

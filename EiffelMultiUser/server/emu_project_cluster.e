@@ -74,13 +74,34 @@ feature -- Access
 
 	get_class (a_class_name: STRING): EMU_PROJECT_CLASS is
 			-- return the class with name 'a_class_name'.
-			-- requires class to exist.
+			-- requires class to exist. (or at least unit with that name, then result is void, if not class unit, but cluster unit).
 		require
 			has_class: has_class (a_class_name)
 		do
 			Result ?= i_th (index_of_class(a_class_name))
 		ensure
 			result_not_void: Result /= Void
+		end
+
+	get_class_recursive (a_class_name: STRING): EMU_PROJECT_CLASS is
+			-- return the class by name going recursively through sub-clusters.
+		require
+			a_class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+		local
+			a_cluster: EMU_PROJECT_CLUSTER
+		do
+			if has_class (a_class_name) then
+				Result := get_class (a_class_name)
+			else
+				from
+					start
+				until
+					Result /= Void or else after
+				loop
+					a_cluster ?= item
+					forth
+				end
+			end
 		end
 
 
