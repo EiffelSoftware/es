@@ -124,6 +124,7 @@ create
 						accumulator.append_string (headers.key_for_iteration)
 						accumulator.append_string (": ")
 						accumulator.append_string (headers.item_for_iteration)
+						accumulator.append_string ("\n")
 						msgstr_lines.extend (accumulator.twin)
 						headers.forth
 					end

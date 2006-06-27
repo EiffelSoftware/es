@@ -1,110 +1,116 @@
-# translation of test application to Chinese
-# the chinese strigs have no sence!! 
-# Etienne Reichenbach
-#
+
+
 msgid ""
 msgstr ""
+"Language-Team: YOUR TEAM HERE\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;"
+"MIME-Version: 1.0\n"
+"Last-Translator: YOUR NAME HERE\n"
 
 
-#: str1
-msgid "Application"
-msgstr "您的"
 
-#: str2
+msgid "arabic"
+msgstr "阿拉伯语"
+
+
 msgid "File"
-msgstr "安装"
+msgstr "文件"
 
 
-#: str3
-msgid "Increase n"
-msgstr "建形的新"
+msgid "hebrew"
+msgstr "希伯莱 "
 
 
-#: str4
+msgid "english"
+msgstr "英文"
+
+
 msgid "Decrease n"
-msgstr "的法 n"
+msgstr "缩小 n"
 
 
-#: str5
-msgid "Save"
-msgstr "初始"
+msgid "Select language"
+msgstr "选择语言"
 
 
-#: str6
-msgid "n is now equal $1"
-msgstr "化用条形 $1"
-
-#: str7
-msgid "Simple label"
-msgstr "均衡"
-
-#: str8
 msgid "This is singular"
 msgid_plural "This is plural"
-msgstr[0] "器速行的使"
+msgstr[0] "这是单数"
+msgstr[1] "这是单数"
+msgstr[2] "这是复数"
 
-#: str9
+
+
+
+
+msgid "Increase n"
+msgstr "提高 n"
+
+
+msgid "About Dialog"
+msgstr "关于 Dialog"
+
+
+msgid "Application"
+msgstr "应用程序"
+
+
+msgid "japanese"
+msgstr "日语"
+
+
+msgid "n is now equal $1"
+msgstr "n等于$1"
+
+
+msgid "chinese"
+msgstr "中文"
+
+
+msgid "italian"
+msgstr "意大利语"
+
+
+msgid ""
+"Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas M"
+"urbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N "
+"  - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgstr ""
+"项目参与：Christian Conti%N   - Leo Fellmann%N   - Andreas M"
+"urbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N "
+"  - Martino Trosi%N   - Carlo Vanini%N   -张红（Hong Zhang)"
+
+
 msgid "There is 1 file"
 msgid_plural "There are $1 files"
-msgstr[0] "率是"
+msgstr[0] "这是$1个文件"
+	
 
-#: str10
-msgid "singular"
-msgid_plural "plural"
-msgstr[0] "否有在运正"
-msgstr[1] "plurale"
 
-#: str11
-msgid "Select language"
-msgstr "選擇語言"
-
-#: str12
-msgid "arabic"
-msgstr "阿拉伯 [ar]"
-
-#: str13
-msgid "italian"
-msgstr "義大利語 [it]"
-
-#: str14
-msgid "greek"
-msgstr "希臘語 [gr]"
-
-#: str15
-msgid "hebrew"
-msgstr "希伯來語 [he]"
-
-#: str16
-msgid "japanese"
-msgstr "日語 [ja]"
-
-#: str17
-msgid "russian"
-msgstr "俄語 [ru]"
-
-#: str18
-msgid "chinese"
-msgstr "漢語 [zh_CN]"
-
-#: str19
-msgid "english"
-msgstr "英語 [en]"
-
-#: str21
 msgid "OK"
+msgstr "OK"
+
+
+msgid ""
+"Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, pl"
+"ease write a mail to: es-i18n@origo.ethz.ch%N%N"
 msgstr ""
+"演示程序由诉历史工学院i18n组制作%N%N"
+"，如果有任何建议及不妥之处，请发信至 es-i18n@origo.ethz.ch"
 
-#: str22
-msgid "Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, please write a mail to: es-i18n@origo.ethz.ch%N%N"
-msgstr "演示申請由i18n 隊提出ETHZ%N%N為臭蟲, 建議或其他, 請寫郵件: es-i18n@origo.ethz.ch%N%N"
 
-#: str23
-msgid "Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
-msgstr "隊的成員:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgid "greek"
+msgstr "希腊语"
 
-#: str24
-msgid "About Dialog"
-msgstr "關於對話"
+
+msgid "About"
+msgstr "关于"
+
+
+msgid "Simple label"
+msgstr "简单标志"
+
+
+msgid "russian"
+msgstr "俄罗斯语"
