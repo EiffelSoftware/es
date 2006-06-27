@@ -179,6 +179,17 @@ feature -- Settings
 			has_old_verbatim_strings_warning_set: has_old_verbatim_strings_warning = b
 		end
 
+	set_filename (a_filename: STRING) is
+			-- set `filename' to `a_filename'
+		require
+			a_filename_not_void: a_filename /= void
+		do
+			filename := a_filename
+		ensure
+			filename_set: filename = a_filename
+		end
+
+
 feature {NONE} -- Error handling
 
 	fatal_error (a_message: STRING) is
