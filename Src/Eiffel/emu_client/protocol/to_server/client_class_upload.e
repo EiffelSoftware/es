@@ -36,7 +36,7 @@ feature --Initialization
 
 feature -- Attributes
 
-	emu_class_name: STRING
+	emu_class_name:STRING
 
 	content: STRING
 

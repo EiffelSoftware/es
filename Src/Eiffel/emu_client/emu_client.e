@@ -212,22 +212,14 @@ feature {NONE} -- Implementation
 		do
 			if not rescued then
 				ok := False
-				from
-					i:=200
-				until
-					(i < 0) or ok
-				loop
-					if ok_message /= void then
-						if ok_message.ok_code = ok_code then
-							ok := True
-							ok_message := void
-						end
+				if ok_message /= void then
+					if ok_message.ok_code = ok_code then
+						ok := True
+						ok_message := void
 					end
-
-					i:= i-1
+				end
 					--sleep(sleep_time_default)	
 					-- no sleep, so the system is blocked by this feature
-				end
 				result:=ok
 			end
 			rescue
@@ -287,11 +279,13 @@ feature -- Process
 			-- ie. receives data
 		local
 			is_end:BOOLEAN
+			i:INTEGER
 		do
 			from
 				is_end := false
+				i := 100
 			until
-				is_shutdown or is_end
+				is_shutdown or is_end or i<0
 			loop
 				-- check for incoming data
 				if socket.readable then
@@ -299,6 +293,7 @@ feature -- Process
 					process_server
 				end
 				sleep (sleep_time_default)
+				i := i - 1
 			end
 			--clean_up
 		rescue
@@ -326,7 +321,7 @@ feature -- Process
             unlocked_classes.extend (a_class_name)
             -- what happens, if unlock successful, but ok_message lost???? <==
             idle
-            result := wait_for_ok(303)
+            result := wait_for_ok({CLIENT_OK}.class_unlocked)
     	end
 
 	lock (an_absolute_path,a_class_name: STRING): BOOLEAN is
@@ -340,7 +335,7 @@ feature -- Process
             remove_from_unlocked_list (a_class_name)
             -- what happens when ok_message from server got lost??
             idle
-            result := wait_for_ok(302)
+            result := wait_for_ok({CLIENT_OK}.class_locked)
     	end
 
 	upload (an_absolute_path:STRING): BOOLEAN is
@@ -353,7 +348,7 @@ feature -- Process
     		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, an_absolute_path, project_path))
       		-- no problem if ok_message got lost, just redo upload, no harm done
       		idle
-      		result := wait_for_ok(304)
+      		result := wait_for_ok({CLIENT_OK}.class_uploaded)
     	end
 
     download (an_absolute_path,a_class_name:STRING): BOOLEAN is
@@ -364,10 +359,10 @@ feature -- Process
 			socket_not_void: socket /= void
 		do
 			downloaded_class := an_absolute_path
-    		socket.independent_store (create {CLIENT_CLASS_DOWNLOAD}.make (project_name))
+    		socket.independent_store (create {CLIENT_CLASS_DOWNLOAD}.make (project_name,a_class_name))
             -- what happens, if ok_message got lost?
-
-            result := wait_for_ok(305)
+			idle
+            result := true
     	end
 
 	--#####################################################################
