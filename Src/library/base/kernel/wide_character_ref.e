@@ -24,10 +24,20 @@ inherit
 			is_equal, out
 		end
 
+	WIDE_CHARACTER_LOWERCASE
+		redefine
+			is_equal, out
+		end
+
+	WIDE_CHARACTER_UPPERCASE
+		redefine
+			is_equal, out
+		end
+
 feature -- Access
 
 	item: WIDE_CHARACTER
-			-- Unicde character value
+			-- Unicode character value
 
 	hash_code, code: INTEGER is
 			-- Associated integer value and hash code value
@@ -44,6 +54,13 @@ feature -- Access
 	Min_value: NATURAL_32 is 0
 	Max_value: NATURAL_32 is 4294967295
 			-- Bounds for integer representation of CHARACTER_32
+
+	minimum_unicode_character_code: INTEGER is 0
+			-- Smallest code for unicode characters
+
+	maximum_unicode_character_code: INTEGER is 2147483647
+			-- Largest code for unicode characters
+			-- (2^31 - 1)
 
 feature -- Status report
 
@@ -63,6 +80,18 @@ feature -- Status report
 		do
 			Result := natural_32_code <= {CHARACTER}.max_value.to_natural_32
 		end
+
+	is_valid_code: BOOLEAN is
+			-- Is 'code' a valid unicode?
+		do
+			Result := (code >= minimum_unicode_character_code and
+				code <= maximum_unicode_character_code)
+		ensure
+			definition: Result = (code >= minimum_unicode_character_code and
+				code <= maximum_unicode_character_code)
+		end
+
+
 
 feature -- Comparison
 
@@ -110,6 +139,7 @@ feature {NONE} -- Initialization
 			item_set: item = v.item
 		end
 
+
 feature -- Conversion
 
 	to_reference: WIDE_CHARACTER_REF is
@@ -137,21 +167,38 @@ feature -- Conversion
 
 	as_upper, upper: WIDE_CHARACTER is
 			-- Uppercase value of `item'
-			-- Returns `item' if not `is_lower'
 		require
-			is_character_8_compatible: is_character_8
+			--is_character_8_compatible: is_character_8
+		local
+			old_code: INTEGER
+			new_code: INTEGER
 		do
-			Result := to_character_8.upper
+			old_code := item.code
+			new_code := uppercase.item ((old_code // 256 + 1)).item ((old_code \\ 256 + 1))
+			if new_code = -1 then
+				Result := old_code.to_character_32
+			else
+				Result := new_code.to_character_32
+			end
 		end
 
 	as_lower, lower: WIDE_CHARACTER is
 			-- Lowercase value of `item'
-			-- Returns `item' if not `is_upper'
 		require
-			is_character_8_compatible: is_character_8
+			--is_character_8_compatible: is_character_8
+		local
+			old_code: INTEGER
+			new_code: INTEGER
 		do
-			Result := to_character_8.lower
+			old_code := item.code
+			new_code := lowercase.item (old_code // 256 + 1).item (old_code \\ 256 + 1)
+			if new_code = -1 then
+				Result := old_code.to_character_32
+			else
+				Result := new_code.to_character_32
+			end
 		end
+
 
 indexing
 	library:	"EiffelBase: Library of reusable components for Eiffel."
@@ -172,5 +219,3 @@ indexing
 
 
 end -- class WIDE_CHARACTER_REF
-
-

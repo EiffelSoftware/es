@@ -104,6 +104,14 @@ feature -- Status report
 	last_string: STRING
 			-- Last string read
 
+	last_string_32 (c: UNICODE_CONVERTER): STRING_32 is
+			-- Last string_32 using converter `c'
+		require
+			converter_not_void: c /= Void
+		do
+			Result := c.encoded_to_string_32 (c.string_to_byte_array (last_string))
+		end
+
 	last_integer: INTEGER
 			-- Last integer read by `read_integer'
 
@@ -243,11 +251,30 @@ feature -- Output
 		deferred
 		end
 
+	put_string_32, putstring32 (s: STRING_32; c: UNICODE_CONVERTER) is
+			-- Write `s' to medium using converter `c'	
+		require
+			extendible: extendible
+			string_not_void: s /= Void
+			converter_not_void: c /= Void
+		do
+			put_string (c.byte_array_to_string (c.string_32_to_encoded (s)))
+		end
+
 	put_character, putchar (c: CHARACTER) is
 			-- Write `c' to medium.
 		require
 			extendible: extendible
 		deferred
+		end
+
+	put_wide_character, putwidechar (wc: WIDE_CHARACTER; c: UNICODE_CONVERTER) is
+			-- Write `wc' to medium using converter `c'
+		require
+			extendible: extendible
+			converter_not_void: c /= Void
+		do
+			put_string (c.byte_array_to_string (c.wide_character_to_encoded (wc)))
 		end
 
 	put_real, putreal (r: REAL) is

@@ -11,6 +11,7 @@ class
 
 inherit
 	DISPOSABLE
+	IMPORTED_UNICODE_ROUTINES
 
 create
 	set_with_eiffel_string, share_from_pointer, make_from_pointer
@@ -40,8 +41,7 @@ feature -- Access
 			-- Locale string representation of the UTF8 string
 		local
 			l_ptr: MANAGED_POINTER
-			l_nat8: NATURAL_8
-			l_code: NATURAL_32
+			l_byte_array: ARRAY[NATURAL_8]
 			i, nb: INTEGER
 		do
 			from
@@ -49,63 +49,17 @@ feature -- Access
 				nb := string_length
 				l_ptr := shared_pointer_helper
 				l_ptr.set_from_pointer (item, nb)
-				create Result.make (nb)
+				create l_byte_array.make (1, nb)
 			until
 				i = nb
 			loop
-				l_nat8 := l_ptr.read_natural_8 (i)
-				if l_nat8 <= 127 then
-						-- Form 0xxxxxxx.
-					Result.extend (l_nat8.to_character_8)
-
-				elseif (l_nat8 & 0xE0) = 0xC0 then
-						-- Form 110xxxxx 10xxxxxx.
-					l_code := (l_nat8 & 0x1F).to_natural_32 |<< 6
-					i := i + 1
-					l_nat8 := l_ptr.read_natural_8 (i)
-					l_code := l_code | (l_nat8 & 0x3F).to_natural_32
-					Result.extend (l_code.to_character_32)
-
-				elseif (l_nat8 & 0xF0) = 0xE0 then
-					-- Form 1110xxxx 10xxxxxx 10xxxxxx.
-					l_code := (l_nat8 & 0x0F).to_natural_32 |<< 12
-					l_nat8 := l_ptr.read_natural_8 (i+1)
-					l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 6)
-					l_nat8 := l_ptr.read_natural_8 (i+2)
-					l_code := l_code | (l_nat8 & 0x3F).to_natural_32
-					Result.extend (l_code.to_character_32)
-					i := i + 2
-
-				elseif (l_nat8 & 0xF8) = 0xF0 then
-					-- Form 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx.
-					l_code := (l_nat8 & 0x07).to_natural_32 |<< 18
-					l_nat8 := l_ptr.read_natural_8 (i+1)
-					l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 12)
-					l_nat8 := l_ptr.read_natural_8 (i+2)
-					l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 6)
-					l_nat8 := l_ptr.read_natural_8 (i+3)
-					l_code := l_code | (l_nat8 & 0x3F).to_natural_32
-					Result.extend (l_code.to_character_32)
-					i := i + 3
-
-				elseif (l_nat8 & 0xFC) = 0xF8 then
-					-- Starts with 111110xx
-					-- This seems to be a 5 bytes character,
-					-- but UTF-8 is restricted to 4, then substitute with a space
-					Result.extend (' ')
-					i := i + 4
-
-				else
-					-- Starts with 1111110x
-					-- This seems to be a 6 bytes character,
-					-- but UTF-8 is restricted to 4, then substitute with a space
-					Result.extend (' ')
-					i := i + 5
-
-				end
+				l_byte_array.put (l_ptr.read_natural_8 (i), i+1)
 				i := i + 1
 			end
-				-- Reset shared pointer.
+
+			Result := UTF8.unicode_to_string_32(l_byte_array)
+
+--			Reset shared pointer.
 			l_ptr.set_from_pointer (default_pointer, 0)
 		end
 
@@ -171,15 +125,10 @@ feature {NONE} -- Implementation
 			until
 				i = 0
 			loop
-				l_code := a_string.code (i)
-				if l_code <= 127 then
+				if a_string.code (i) <= 127 then
 					bytes_written := bytes_written + 1
-				elseif l_code <= 0x7FF then
+				else
 					bytes_written := bytes_written + 2
-				elseif l_code <= 0xFFFF then
-					bytes_written := bytes_written + 3
-				else -- l_code <= 0x10FFFF
-					bytes_written := bytes_written + 4
 				end
 				i := i - 1
 			end
@@ -206,28 +155,14 @@ feature {NONE} -- Implementation
 						-- Of the form 0xxxxxxx.
 					l_ptr.put_natural_8 (l_code.to_natural_8, bytes_written)
 					bytes_written := bytes_written + 1
-				elseif l_code <= 0x7FF then
+				else
+					check
+						ascii_only: l_code <= 255
+					end
 						-- Insert 110xxxxx 10xxxxxx.
 					l_ptr.put_natural_8 ((0xC0 | (l_code |>> 6)).to_natural_8, bytes_written)
 					l_ptr.put_natural_8 ((0x80 | (l_code & 0x3F)).to_natural_8, bytes_written + 1)
 					bytes_written := bytes_written + 2
-				elseif l_code <= 0xFFFF then
-						-- Start with 1110xxxx
-					l_ptr.put_natural_8 ((0xE0 | (l_code |>> 12)).to_natural_8, bytes_written)
-					l_ptr.put_natural_8 ((0x80 | ((l_code |>> 6) & 0x3F)).to_natural_8, bytes_written+1)
-					l_ptr.put_natural_8 ((0x80 | (l_code & 0x3F)).to_natural_8, bytes_written+2)
-					bytes_written := bytes_written + 3
-				else -- l_code <= 0x10FFFF then
-						-- Start with 11110xxx
-					check
-						max_4_bytes: l_code <= 0x10FFFF
-						-- UTF-8 has been restricted to 4 bytes characters
-					end
-					l_ptr.put_natural_8 ((0xF0 | (l_code |>> 18)).to_natural_8, bytes_written)
-					l_ptr.put_natural_8 ((0x80 | ((l_code |>> 12) & 0x3F)).to_natural_8, bytes_written+1)
-					l_ptr.put_natural_8 ((0x80 | ((l_code |>> 6) & 0x3F)).to_natural_8, bytes_written+2)
-					l_ptr.put_natural_8 ((0x80 | (l_code & 0x3F)).to_natural_8, bytes_written+3)
-					bytes_written := bytes_written + 4
 				end
 				i := i + 1
 			end
