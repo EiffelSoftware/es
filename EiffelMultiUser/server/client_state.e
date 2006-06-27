@@ -258,13 +258,13 @@ feature -- Process Messages
 			-- process the project create message.
 		do
 			-- check if a project with that name allready exists
-			io.put_string ("create project: " + msg.project_name + "%N")
 			if system.has_project (msg.project_name) then
 				-- if project already exists send an error message to the client
 				send_msg (create {PROJECT_ERROR}.make_project_already_exists(msg.project_name))
 			else
 				-- create project, add it to the project list and send ok message to the client
 				system.project_list.extend (create {EMU_PROJECT}.make(msg.project_name, msg.project_password))
+				io.put_string ("create project: " + msg.project_name + "%N")
 				send_msg (create {PROJECT_OK}.make_project_created(msg.project_name))
 			end
 
