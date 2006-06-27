@@ -10,7 +10,7 @@ indexing
 class
 	EMU_PROJECT
 
-upinherit
+inherit
 	STORABLE
 	EMU_SERVER_CONSTANTS
 	ANY
