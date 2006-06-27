@@ -22,7 +22,6 @@ inherit
 			initialize,
 			make,
 			set_foreground_color,
-			foreground_color_pointer,
 			on_focus_changed,
 			needs_event_box,
 			event_widget
@@ -75,10 +74,10 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_left(60)
-			rect.set_right(150)
-			rect.set_bottom(90)
-			rect.set_top (60)
+			rect.set_left(20)
+			rect.set_right(100)
+			rect.set_bottom(50)
+			rect.set_top (20)
 			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )
 			set_c_object ( struct_ptr )
 			id:=app_implementation.get_id (current)  --getting an id from the application
@@ -93,13 +92,6 @@ feature {NONE} -- Initialization
 			-- create button box to hold label and pixmap.
 		do
 			Precursor {EV_PRIMITIVE_IMP}
-		end
-
-	initialize_button_box is
-			-- Create and initialize button box.
-		do
-		ensure
-			button_box /= NULL
 		end
 
 	fontable_widget: POINTER is
@@ -138,18 +130,44 @@ feature -- Status Setting
 	enable_default_push_button is
 			-- Set the style of the button corresponding
 			-- to the default push button.
+		local
+			res : INTEGER
 		do
+			res := set_control_data_boolean( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
+			if res = 0 then
+				is_default_push_button := true
+			end
+		end
+
+	frozen set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+			-- C implementation of enable_default_push_button		
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp = $value;
+					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
+				}
+			]"
 		end
 
 	disable_default_push_button is
 			-- Remove the style of the button corresponding
 			-- to the default push button.
+		local
+			res : INTEGER
 		do
+			res := set_control_data_boolean( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
+			if res = 0 then
+				is_default_push_button := false
+			end
 		end
 
 	enable_can_default is
 			-- Allow the style of the button to be the default push button.
 		do
+			 -- doesn't seem to be necesarry in Carbon.
 		end
 
 	set_foreground_color (a_color: EV_COLOR) is
@@ -164,16 +182,6 @@ feature {NONE} -- implementation
 		do
 		end
 
-	foreground_color_pointer: POINTER is
-		do
-		end
-
-	button_box: POINTER is
-			-- GtkHBox in button.
-			-- Holds label and pixmap.
-		do
-		end
-
 feature {EV_ANY_I} -- implementation
 
 	interface: EV_BUTTON
@@ -181,7 +189,7 @@ feature {EV_ANY_I} -- implementation
 			-- functionality implemented by `Current'
 
 invariant
-	button_box_not_null: is_usable implies button_box /= NULL
+true
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
@@ -194,8 +202,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
 end -- class EV_BUTTON_IMP
-
