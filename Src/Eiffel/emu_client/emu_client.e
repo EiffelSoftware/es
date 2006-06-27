@@ -237,7 +237,6 @@ feature {NONE} -- Implementation
 
 
 
-
 feature -- Sockets  -- former {USER_CMD}
 
 	socket: NETWORK_STREAM_SOCKET
@@ -314,14 +313,12 @@ feature -- Process
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
 		do
-			--a_class_name := parse_class_name(an_absolute_path)
-			--socket.connect
-    		--socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
-            --socket.cleanup
+			socket.connect
+    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
+            socket.cleanup
             unlocked_classes.extend (a_class_name)
             -- what happens, if unlock successful, but ok_message lost???? <==
-            --result := wait_for_ok(303)
-    		result := true
+            result := wait_for_ok(303)
     	end
 
 	lock (an_absolute_path,a_class_name: STRING): BOOLEAN is
@@ -331,14 +328,12 @@ feature -- Process
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
 		do
-			--a_class_name := parse_class_name(an_absolute_path)
-			--socket.connect
-    		--socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
-            --socket.cleanup
+			socket.connect
+    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
+            socket.cleanup
             remove_from_unlocked_list (a_class_name)
             -- what happens when ok_message from server got lost??
-            --result := wait_for_ok(302)
-    		result := true
+            result := wait_for_ok(302)
     	end
 
 	upload (an_absolute_path:STRING): BOOLEAN is
@@ -355,7 +350,7 @@ feature -- Process
       		result := wait_for_ok(304)
     	end
 
-    download (a_class_name:STRING): BOOLEAN is
+    download (an_absolut_path,a_class_name:STRING): BOOLEAN is
 			-- downloading ALL classes
 			-- might be better to download unly modified classes
 			-- result== true means success
