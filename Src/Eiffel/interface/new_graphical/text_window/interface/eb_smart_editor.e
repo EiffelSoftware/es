@@ -716,7 +716,10 @@ feature {NONE} -- syntax checking implementation
 	syntax_parser: EIFFEL_PARSER is
 			-- parser used for syntax checking
 		once
-			Result := Eiffel_Validating_parser.deep_twin
+				-- FIXME:
+				-- AST_NULL_FACTORY has a bug (which is fixed in trunk) so I use AST_FACTORY here
+--			Result := Eiffel_Validating_parser.deep_twin
+			create Result.make_with_factory (create {AST_FACTORY})
 			Result.set_recoverable_parser (true)
 			Result.set_has_syntax_warning (true)
 		end
@@ -770,7 +773,7 @@ feature {NONE} -- syntax checking implementation
 				-- get error list
 				list := Error_handler.error_list
 
-				-- set last invaliated line to current line if errors found				
+				-- set last invalidated line to current line if errors found				
 				if list.count > 1 then
 					last_invalidated_line := text_displayed.cursor.y_in_lines
 				else
@@ -783,8 +786,10 @@ feature {NONE} -- syntax checking implementation
 				dev_window.context_tool.output_view.text_area.text_displayed.reset_text
 				dev_window.context_tool.output_view.text_area.text_displayed.add (list.count.out+" syntax errors found.")
 
-				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
-				dev_window.context_tool.error_output_view.process_errors (list)
+				if syntax_parser.error_count > 0 then
+					dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
+					dev_window.context_tool.error_output_view.process_errors (list)
+				end
 
 				-- iterate through error list
 				from
