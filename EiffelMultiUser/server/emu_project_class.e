@@ -16,17 +16,29 @@ inherit
 
 
 create
-	make
+	make,
+	make_with_content
 
 feature -- Creation
 
 	make (a_name: STRING; a_project: EMU_PROJECT; a_creator: EMU_USER) is
 			-- create a project unit by its name and the creator.
-		once
+		do
 			Precursor (a_name, a_project, a_creator)
 			free := True
 			create content.make_empty
 		ensure then
+			free_set: is_free
+		end
+
+
+	make_with_content (a_name, a_content: STRING; a_project: EMU_PROJECT; a_creator: EMU_USER) is
+			-- create a project unit by its name and the creator.
+		do
+			make (a_name, a_project, a_creator)
+			free := True
+			content := a_content
+		ensure
 			free_set: is_free
 		end
 
@@ -60,6 +72,7 @@ feature -- Procedures
 			-- change the class content to `new_content'.
 		require
 			new_content_not_void: new_content /= Void
+			class_is_unlocked: not is_free
 		do
 			content := new_content
 			create modification_date.make_now

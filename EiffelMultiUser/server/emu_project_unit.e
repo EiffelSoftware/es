@@ -15,7 +15,7 @@ feature -- Creation
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 			a_creator_valid: a_creator /= Void
-		once
+		do
 			name := a_name
 			create creation_date.make_now
 			creator := a_creator

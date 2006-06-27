@@ -571,9 +571,8 @@ feature -- Process Messages
 				else
 					-- class does not exist, create.
 					io.put_string ("client upload: " + msg.emu_class_name + ". create class in cluster: " +  msg.cluster_path + "%N")
-					create a_class.make (msg.emu_class_name, project_user.project, project_user)
+					create a_class.make_with_content (msg.emu_class_name, msg.content, project_user.project, project_user)
 					a_cluster.add_class (a_class)
-					a_class.set_content (msg.content)
 					send_msg (create {CLIENT_OK}.make_class_uploaded (msg.project_name, msg.emu_class_name))
 				end
 			end
