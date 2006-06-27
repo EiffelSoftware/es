@@ -330,6 +330,10 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 		do
 			if (text_displayed.click_tool_enabled and text_displayed.click_and_complete_is_active) and then syntax_is_correct and then text_displayed.click_tool.current_class_as /= Void and then text_displayed.click_tool.current_class_as.features /= Void then
 				the_feature_clauses := text_displayed.click_tool.current_class_as.features
+
+				if 	folding_areas = Void then
+					create folding_areas.make
+				end
 				a_area := folding_areas.first
 
 				from the_feature_clauses.start
