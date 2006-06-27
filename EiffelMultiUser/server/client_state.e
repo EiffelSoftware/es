@@ -574,7 +574,7 @@ feature -- Process Messages
 					system.output ("client upload: " + msg.emu_class_name + ". create class in cluster: " +  msg.cluster_path + "%N")
 					create a_class.make_with_content (msg.emu_class_name, msg.content, project_user.project, project_user)
 					a_cluster.add_class (a_class)
-					system.output (a_class.content)
+					system.output ("class content: %N" + a_class.content)
 					send_msg (create {CLIENT_OK}.make_class_uploaded (msg.project_name, msg.emu_class_name))
 				end
 			end
