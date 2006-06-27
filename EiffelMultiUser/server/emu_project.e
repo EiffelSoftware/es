@@ -53,6 +53,7 @@ feature {CLIENT_STATE} -- Modification
 			pass_valid: pass /= Void and then not pass.is_empty
 		do
 			users.extend (create {EMU_USER}.make (username, pass, Current))
+			update_persist_storage
 		ensure
 			new_user_added: users.count = old users.count + 1
 		end
@@ -66,6 +67,7 @@ feature {CLIENT_STATE} -- Modification
 			-- we require user to exist in the list.
 			users.go_i_th (index_of_user (username))
 			users.remove
+			update_persist_storage
 		ensure
 			user_removed: not has_user (username)
 		end
@@ -108,6 +110,7 @@ feature {CLIENT_STATE} -- Modification
 				end
 				cluster_names.forth
 			end
+			update_persist_storage
 		end
 
 
