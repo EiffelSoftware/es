@@ -30,6 +30,8 @@ inherit
 
 	EV_MENU_ITEM_LIST_ACTION_SEQUENCES_IMP
 
+	MENUS_FUNCTIONS_EXTERNAL
+
 feature {EV_MENU_ITEM_IMP} -- implementation
 
 	list_widget: POINTER is
@@ -40,9 +42,15 @@ feature {EV_MENU_ITEM_IMP} -- implementation
 feature {NONE} -- Implementation
 
 	insert_i_th (v: like item; pos: INTEGER) is
+		local
+			the_menu: OPAQUE_MENU_REF_STRUCT
+			ret: INTEGER
 		do
 			-- Insert a menu item here!
-			
+			print ("x")
+			ret := create_new_menu_external(1234, 0, $the_menu)
+
+			insert_menu_external(the_menu.item, 0)
 		end
 
 	insert_menu_item (an_item_imp: EV_MENU_ITEM_IMP; pos: INTEGER) is

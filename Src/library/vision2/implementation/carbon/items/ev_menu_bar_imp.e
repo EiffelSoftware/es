@@ -1,9 +1,9 @@
 indexing
 	description: "Eiffel Vision menu bar. GTK+ implementation."
-	
+
 class
 	EV_MENU_BAR_IMP
-	
+
 inherit
 	EV_MENU_BAR_I
 		redefine
@@ -18,7 +18,7 @@ inherit
 			interface,
 			insert_menu_item
 		end
-	
+
 create
 	make
 
@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 		do
 		end
-		
+
 feature {EV_WINDOW_IMP} -- Implementation
 
 	set_parent_window_imp (a_wind: EV_WINDOW_IMP) is
@@ -38,17 +38,17 @@ feature {EV_WINDOW_IMP} -- Implementation
 			a_wind_not_void: a_wind /= Void
 		do
 		end
-		
+
 	parent: EV_WINDOW is
 			-- Parent window of Current.
 		do
 		end
-	
+
 	remove_parent_window is
 			-- Set `parent_window' to Void.
 		do
 		end
-		
+
 	parent_imp: EV_WINDOW_IMP
 
 feature {NONE} -- Implementation
