@@ -704,12 +704,10 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 		end
 
 feature {NONE} -- syntax checking implementation
-	last_invalidated_line: INTEGER
 
 	initialize_syntax_checking is
 			-- initalize syntax checking state
 		do
-			last_invalidated_line := -1
 			create syntax_timer.make_with_interval (100)
 			syntax_timer.actions.extend (agent perform_syntax_checking)
 		end
@@ -725,9 +723,12 @@ feature {NONE} -- syntax checking implementation
 			Result.set_has_syntax_warning (true)
 		end
 
+	syntax_timer: EV_TIMEOUT
+		-- timer to peridocially execute syntax checking
 	text_changed: BOOLEAN
 		-- maintains wheter text was changed since last parsing
-	syntax_timer: EV_TIMEOUT
+	error_list: LINKED_LIST [ERROR]
+		-- list containging syntax errors
 
 	perform_syntax_checking is
 			-- performs syntax checking of class text using Eiffel_validating_parser
@@ -744,25 +745,27 @@ feature {NONE} -- syntax checking implementation
 				-- create cursor object for helping locate tokens
 				create cursor.make_from_integer (1, text_displayed)
 
-				-- set old error tokens on last edited line back to valid
-				from
-					i := 1
-				until
-					i = text_displayed.number_of_lines
-				loop
-					text_line := text_displayed.line(i)
+				-- set old error tokens back to valid
+				list := error_list
+				if list /= void then
 					from
-						text_line.start
+						list.start
 					until
-						text_line.after
+						list.after
 					loop
-						text_token ?= text_line.item
+						-- place cursor at position of error
+						cursor.set_y_in_lines (list.item.line)
+						cursor.set_x_in_characters (list.item.column)
+
+						-- error should be text-token (otherwise it doesnt make any sence to highlight it)
+						text_token ?= cursor.token
 						if text_token /= void then
 							text_token.set_correct
 						end
-						text_line.forth
+
+						-- go to next error
+						list.forth
 					end
-					i := i+1
 				end
 
 				-- prevent from raising exception
@@ -774,26 +777,21 @@ feature {NONE} -- syntax checking implementation
 				syntax_parser.set_filename (file_name.out)
 				syntax_parser.parse_from_string (text)
 
-				-- re-establish raising of exceptin
+				-- re-establish raising of exception
 				Error_handler.set_do_raise_error
 
 				-- get error list
 				list := Error_handler.error_list
 
-				-- set last invalidated line to current line if errors found				
-				if list.count > 1 then
-					last_invalidated_line := text_displayed.cursor.y_in_lines
-				else
-					last_invalidated_line := -1
-				end
-
 				dev_window.context_tool.output_view.text_area.text_displayed.reset_text
 				dev_window.context_tool.output_view.text_area.text_displayed.add (list.count.out+" syntax errors found.")
 
 				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
-				if not list.empty then
+				if not list.is_empty then
+					error_list := list.deep_twin
 					dev_window.context_tool.error_output_view.process_errors (list)
 				else
+					error_list := void
 					dev_window.context_tool.error_output_view.text_area.refresh
 				end
 
