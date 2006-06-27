@@ -35,8 +35,7 @@ inherit
 			make,
 			on_vertical_scroll,
 			on_line_inserted,
-			on_line_removed,
-			on_line_modified
+			on_line_removed
 		end
 
 	EB_TAB_CODE_COMPLETABLE
@@ -231,27 +230,6 @@ feature -- Autocomplete
 
 feature -- Handle text modifications
 
-	on_line_modified (line_number: INTEGER) is
-			-- Notify observers that a line has just been modified.
-		local
-			lines_changed: INTEGER
-		do
-			Precursor {EB_CLICKABLE_EDITOR} (line_number)
-
-			-- Code Folding: if folding_areas exist, update them
-			if folding_areas /= Void then
-				-- calculate how many lines were removed since last call
-				-- necessary because it seems that not every event is captured
-				lines_changed := number_of_lines - old_number_of_lines
-				old_number_of_lines := number_of_lines
-
-				-- adapt folding areas
-				if lines_changed /= 0 then
-					update_folding_areas_partially (line_number, lines_changed)
-				end
-			end
-		end
-
 	on_line_removed (line_number: INTEGER) is
 			-- Update `Current' when line number `line_number' has been removed.
 		local
@@ -261,13 +239,7 @@ feature -- Handle text modifications
 
 			-- Code Folding: if folding_areas exist, update them
 			if folding_areas /= Void then
-				-- calculate how many lines were removed since last call
-				-- necessary because it seems that not every event is captured
-				lines_removed := number_of_lines - old_number_of_lines
-				old_number_of_lines := number_of_lines
-
-				-- adapt folding areas
-				update_folding_areas_partially (line_number, lines_removed)
+				update_folding_areas_partially (line_number, -1)
 			end
 		end
 
@@ -280,17 +252,9 @@ feature -- Handle text modifications
 
 			-- Code Folding: if folding_areas exist, update them
 			if folding_areas /= Void then
-				-- calculate how many lines were added since last call
-				-- necessary because it seems that not every event is captured and the auto completion
-				lines_inserted := number_of_lines - old_number_of_lines
-				old_number_of_lines := number_of_lines
-
-				-- adapt folding areas
-				update_folding_areas_partially (line_number, lines_inserted)
+				update_folding_areas_partially (line_number, 1)
 			end
 		end
-
-	old_number_of_lines: like number_of_lines
 
 feature {EB_CLICKABLE_MARGIN} -- Text folding
 
@@ -310,9 +274,6 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 			if not update_folding_areas then
 				folding_areas := Void
 			end
-
-			-- intialize 'old_number_of_lines'
-			old_number_of_lines := number_of_lines
 
 			debug ("code_folding")
 				folding_areas.traverse_list_printout
@@ -454,27 +415,26 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 		do
 			-- correct area in which a line was inserted or deleted
 			an_area := folding_areas.first_item_after_line (changed_line)
-			if an_area /= Void then
+			if an_area /= Void and then an_area.previous /= Void then
 				an_area := an_area.previous
 			end
 			if an_area /= Void then
-				if changed_line >= an_area.start_line and changed_line <= an_area.end_line then
+				if not an_area.hidden and then changed_line >= an_area.start_line and changed_line <= an_area.end_line then
 					-- correct end_line if 'changed_line' is within the area
 					an_area.set_end_line (an_area.end_line + shift)
 				end
+				an_area := an_area.next
 			end
 
 			-- correct areas below 'changed_line'
 			from
-				-- goto first area that needs correction
-				an_area := folding_areas.first_item_after_line (changed_line)
-			until
-				an_area = Void
+			until an_area = Void
 			loop
 				-- correct positions by shift
 				an_area.set_start_line (an_area.start_line + shift)
 				an_area.set_end_line (an_area.end_line + shift)
 
+				--inc
 				an_area := an_area.next
 			end
 
