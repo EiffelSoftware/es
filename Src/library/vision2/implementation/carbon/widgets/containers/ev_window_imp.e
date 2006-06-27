@@ -68,6 +68,7 @@ inherit
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 	CONTROLS_FUNCTIONS_EXTERNAL
 	CFSTRING_FUNCTIONS_EXTERNAL
+	HIVIEW_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -252,12 +253,13 @@ feature -- Element change
 				check
 					item_has_implementation: w /= Void
 				end
-				dispose_control_external(w.c_object )
+				dispose_control_external (w.c_object )
 			end
 			if v /= Void then
 				w ?= v.implementation
 				err := get_root_control_external ( c_object, $root_control_ptr )
-				err := embed_control_external ( w.c_object, root_control_ptr )
+			--	err := embed_control_external ( w.c_object, root_control_ptr )
+				err := hiview_add_subview_external ( root_control_ptr, w.c_object)
 
 				on_new_item (w)
 				a_list?=v.implementation
