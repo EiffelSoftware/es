@@ -80,7 +80,7 @@ feature -- Initialization
 				-- register default commands. we use agents to be able to replace the features by an admin.
 				idle_cmd := agent idle
 				process_server_cmd := agent process_server
-				idle_cmd.apply	-- start client idle process
+				--idle_cmd.apply	-- start client idle process
 				result := is_logged_in
 		rescue
 			if not assertion_violation then
@@ -147,6 +147,8 @@ feature -- Access
 
 	ok_message: CLIENT_OK
 			-- last recieved client_ok message
+
+	error : CLIENT_ERROR
 
 feature {NONE} -- Implementation
 
@@ -275,26 +277,30 @@ feature -- Process
     	do
     		socket.connect
     		socket.independent_store (create {USER_LOGIN}.make (user_name, password, project_name))
-            socket.cleanup
-            is_logged_in := wait_for_ok (300)
+            idle	-- start client idle process
+            is_logged_in := wait_for_ok (306)
     	end
 
 
 	idle is
 			-- the idle routine simply waits for something to happen
 			-- ie. receives data
+		local
+			is_end:BOOLEAN
 		do
 			from
+				is_end := false
 			until
-				is_shutdown
+				is_shutdown or is_end
 			loop
 				-- check for incoming data
 				if socket.readable then
-					process_server_cmd.apply
+					is_end := true
+					process_server
 				end
 				sleep (sleep_time_default)
 			end
-			clean_up
+			--clean_up
 		rescue
 			if not assertion_violation then
 				-- 1. the socket has been closed due to an error.
@@ -316,11 +322,10 @@ feature -- Process
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
 		do
-			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
-            socket.cleanup
             unlocked_classes.extend (a_class_name)
             -- what happens, if unlock successful, but ok_message lost???? <==
+            idle
             result := wait_for_ok(303)
     	end
 
@@ -331,11 +336,10 @@ feature -- Process
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
 		do
-			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
-            socket.cleanup
             remove_from_unlocked_list (a_class_name)
             -- what happens when ok_message from server got lost??
+            idle
             result := wait_for_ok(302)
     	end
 
@@ -346,10 +350,9 @@ feature -- Process
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
 		do
-			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, an_absolute_path, project_path))
-            socket.cleanup
       		-- no problem if ok_message got lost, just redo upload, no harm done
+      		idle
       		result := wait_for_ok(304)
     	end
 
@@ -361,10 +364,9 @@ feature -- Process
 			socket_not_void: socket /= void
 		do
 			downloaded_class := an_absolute_path
-			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_DOWNLOAD}.make (project_name))
-            socket.cleanup
             -- what happens, if ok_message got lost?
+
             result := wait_for_ok(305)
     	end
 

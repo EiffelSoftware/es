@@ -57,6 +57,8 @@ feature -- Initialization
 			a_project_name_valid: a_project_name /= Void and then not a_project_name.is_empty
 		do
 			project_name := a_project_name
+			ok_code := login_granted
+			ok_message := login_granted_msg
 		ensure
 			project_name_set: a_project_name = project_name
 		end
@@ -137,12 +139,22 @@ feature -- Ok Codes
 	class_downloaded: INTEGER is 305
 			-- successfully unlocked a locked class
 
+	login_granted: INTEGER is 306
+			-- login has been granted by server.
+
+
 feature -- Ok Messages
 
 	general_ok_msg: STRING is
 		do
 			Result := "Modifying EMU Project " + project_name + " successful."
 		end
+
+	login_granted_msg: STRING is
+		do
+			Result := "Login into emu project " + project_name + " successful."
+		end
+
 
 	class_locked_msg: STRING is
 		do

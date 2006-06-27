@@ -80,9 +80,11 @@ feature {NONE} -- Implementation
 		do
 			c:=a_file_path.count
 			pos:= 1+ a_file_path.last_index_of('/',c)
+			create emu_class_name.make_empty
 			emu_class_name.set(a_file_path,pos,c)
 			c:=pos - 1
 			pos := 1 + a_location.count
+			create cluster_path.make_empty
 			cluster_path.set(a_file_path,pos,c)
 		ensure
 			emu_class_name_set: emu_class_name /= void and then not emu_class_name.is_empty
