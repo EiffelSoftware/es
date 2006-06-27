@@ -280,6 +280,10 @@ Eiffel_parser:
 				end
 				entity_declaration_node := $3
 			}
+	|	error
+			{
+				report_syntax_error_message("Parse error", Void, True)
+			}
 	;
 
 Class_declaration:

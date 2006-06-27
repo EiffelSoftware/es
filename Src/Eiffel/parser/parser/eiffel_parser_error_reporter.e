@@ -81,10 +81,10 @@ feature -- Reporting
 			-- A syntax error has been detected.
 			-- Print error message.
 		local
-			l_error: SYNTAX_ERROR
+--			l_error: SYNTAX_ERROR
 		do
-			create l_error.make (line, column, filename, a_message, False)
-			insert_error (l_error, true)
+--			create l_error.make (line, column, filename, a_message, False)
+--			insert_error (l_error, true)
 		end
 
 	report_warning (a_warning: STRING; a_target_as: AST_EIFFEL) is
@@ -276,6 +276,7 @@ feature {NONE} -- Implementation
 			end
 			if a_fatal or not recoverable_parser then
 				error_handler.raise_error
+				abort
 			end
 		end
 
