@@ -276,6 +276,18 @@ feature -- Commands
 			-- the process client command that will be executed to process clients.
 
 
+feature -- Output
+
+	output (a_text: STRING) is
+			-- output a text on the console. print a new_line.
+		require
+			a_text_valid: a_text /= Void and then not a_text.is_empty
+		do
+			io.put_string(a_text)
+			io.put_new_line
+		end
+
+
 feature {CLIENT_STATE} -- Modification
 
 	add_project (a_project_name, an_admin_password: STRING) is
