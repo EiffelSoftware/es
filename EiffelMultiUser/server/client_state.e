@@ -520,7 +520,7 @@ feature -- Process Messages
 					-- check if class is free
 					if not a_class.is_free then
 						-- class may not be unlocked
-						io.put_string ("INVALID: client unlock request: " + msg.emu_class_name + ". class already locked by user: " + a_class.current_user.name + "!%N")
+						io.put_string ("INVALID: client unlock request: " + msg.emu_class_name + ". class already unlocked by user: " + a_class.current_user.name + "!%N")
 						send_msg (create {CLIENT_ERROR}.make_class_already_unlocked (msg.project_name, msg.emu_class_name))
 					else
 						-- class may be unlocked for current user.
@@ -574,6 +574,7 @@ feature -- Process Messages
 					io.put_string ("client upload: " + msg.emu_class_name + ". create class in cluster: " +  msg.cluster_path + "%N")
 					create a_class.make_with_content (msg.emu_class_name, msg.content, project_user.project, project_user)
 					a_cluster.add_class (a_class)
+					io.put_string (a_class.content)
 					send_msg (create {CLIENT_OK}.make_class_uploaded (msg.project_name, msg.emu_class_name))
 				end
 			end
