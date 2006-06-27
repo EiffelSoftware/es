@@ -159,7 +159,7 @@ feature {NONE} -- Externals
 		external
 			"C inline use <io.h>"
 		alias
-			"(EIF_POINTER) _get_osfhandle($a_fd)"
+			"_get_osfhandle($a_fd)"
 		end
 
 	c_size_of_file_time: INTEGER is
