@@ -2085,24 +2085,9 @@ feature {NONE} -- Externals
 	cwin_alpha_blend (a_dc_dest: POINTER; a_x_dest, a_y_dest, a_width_dest, a_height_dest: INTEGER;
 						a_dc_src: POINTER; a_x_src, a_y_src, a_width_src, a_height_src: INTEGER; a_blend_function: POINTER; a_result: TYPED_POINTER [INTEGER]) is
 			-- Alpha blend function.
-		external
-			"C inline use <Windows.h>"
-		alias
-			"[
-				AlphaBlend(
-					(HDC) $a_dc_dest,
-					(int) $a_x_dest,
-					(int) $a_y_dest,
-					(int) $a_width_dest,
-					(int) $a_height_dest,
-					(HDC) $a_dc_src,
-					(int) $a_x_src,
-					(int) $a_y_src,
-					(int) $a_width_src,
-					(int) $a_height_src,
-					*(BLENDFUNCTION*) $a_blend_function)
-			]"
+		do
 		end
+
 
 	cwin_stretch_di_bits (hdc: POINTER; xdest, ydest, cxdest, cydest, xsrc,
 			ysrc, cxsrc, cysrc: INTEGER; lpvBits,

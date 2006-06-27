@@ -15,7 +15,7 @@ feature -- Conversion from Eiffel to Windows
 		external
 			"C inline use <windows.h>"
 		alias
-			"(LPARAM) $i"
+			"$i"
 		end
 
 	to_wparam (i: INTEGER): POINTER is
@@ -31,7 +31,7 @@ feature -- Conversion from Eiffel to Windows
 		external
 			"C inline use <windows.h>"
 		alias
-			"(LRESULT) $i"
+			"$i"
 		end
 		
 indexing

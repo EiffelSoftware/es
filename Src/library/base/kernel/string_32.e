@@ -1024,7 +1024,7 @@ feature -- Element change
 				end
 			end
 		ensure
-			no_original_anymore: substring_index (original, 1) = 0
+			no_original_anymore: new.substring_index (original, 1) = 0 implies substring_index (original, 1) = 0
 		end
 
 

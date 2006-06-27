@@ -11,6 +11,7 @@ class
 
 inherit
 	DISPOSABLE
+	IMPORTED_UNICODE_ROUTINES
 
 create
 	set_with_eiffel_string, share_from_pointer, make_from_pointer
@@ -40,8 +41,7 @@ feature -- Access
 			-- Locale string representation of the UTF8 string
 		local
 			l_ptr: MANAGED_POINTER
-			l_nat8: NATURAL_8
-			l_code: NATURAL_32
+			l_byte_array: ARRAY[NATURAL_8]
 			i, nb: INTEGER
 		do
 			from
@@ -49,63 +49,16 @@ feature -- Access
 				nb := string_length
 				l_ptr := shared_pointer_helper
 				l_ptr.set_from_pointer (item, nb)
-				create Result.make (nb)
+				create l_byte_array.make (1, nb)
 			until
 				i = nb
 			loop
-				l_nat8 := l_ptr.read_natural_8 (i)
-				if l_nat8 <= 127 then
-						-- Form 0xxxxxxx.
-					Result.extend (l_nat8.to_character_8)
-
-				elseif (l_nat8 & 0xE0) = 0xC0 then
-						-- Form 110xxxxx 10xxxxxx.
-					l_code := (l_nat8 & 0x1F).to_natural_32 |<< 6
-					i := i + 1
-					l_nat8 := l_ptr.read_natural_8 (i)
-					l_code := l_code | (l_nat8 & 0x3F).to_natural_32
-					Result.extend (l_code.to_character_32)
-
-				elseif (l_nat8 & 0xF0) = 0xE0 then
-					-- Form 1110xxxx 10xxxxxx 10xxxxxx.
-					l_code := (l_nat8 & 0x0F).to_natural_32 |<< 12
-					l_nat8 := l_ptr.read_natural_8 (i+1)
-					l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 6)
-					l_nat8 := l_ptr.read_natural_8 (i+2)
-					l_code := l_code | (l_nat8 & 0x3F).to_natural_32
-					Result.extend (l_code.to_character_32)
-					i := i + 2
-
-				elseif (l_nat8 & 0xF8) = 0xF0 then
-					-- Form 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx.
-					l_code := (l_nat8 & 0x07).to_natural_32 |<< 18
-					l_nat8 := l_ptr.read_natural_8 (i+1)
-					l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 12)
-					l_nat8 := l_ptr.read_natural_8 (i+2)
-					l_code := l_code | ((l_nat8 & 0x3F).to_natural_32 |<< 6)
-					l_nat8 := l_ptr.read_natural_8 (i+3)
-					l_code := l_code | (l_nat8 & 0x3F).to_natural_32
-					Result.extend (l_code.to_character_32)
-					i := i + 3
-
-				elseif (l_nat8 & 0xFC) = 0xF8 then
-					-- Starts with 111110xx
-					-- This seems to be a 5 bytes character,
-					-- but UTF-8 is restricted to 4, then substitute with a space
-					Result.extend (' ')
-					i := i + 4
-
-				else
-					-- Starts with 1111110x
-					-- This seems to be a 6 bytes character,
-					-- but UTF-8 is restricted to 4, then substitute with a space
-					Result.extend (' ')
-					i := i + 5
-
-				end
+				l_byte_array.put (l_ptr.read_natural_8 (i), i+1)
 				i := i + 1
 			end
-				-- Reset shared pointer.
+
+			Result := utf8.encoded_to_string_32 (l_byte_array)
+			-- Reset shared pointer.
 			l_ptr.set_from_pointer (default_pointer, 0)
 		end
 

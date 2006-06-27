@@ -1,8 +1,8 @@
 indexing
 	description: "Interface to all unicode string converters like UTF8_CONVERTER, UTF16LE_CONVERTER, UTF16BE_CONVERTER"
 	author: "Unicode Team"
-	date: "$Date:$"
-	revision: "$Revision:$"
+	date: "$Date$"
+	revision: "$Revision$"
 
 deferred class UNICODE_CONVERTER
 
@@ -23,7 +23,7 @@ feature -- Conversion
 		string_32_to_encoded (s: STRING_32) : ARRAY[NATURAL_8] is
 				-- convert string_32 `s' to an encoded byte array
 			require
-				array_not_void: s /= Void
+				string_not_void: s /= Void
 			deferred
 			end
 
@@ -98,8 +98,6 @@ feature -- check states
 
 	is_valid_char_to_encode (c: WIDE_CHARACTER): BOOLEAN is
 			-- is 's' a valid string to encode
-		require
-			string_not_void: c /= void
 		deferred
 		end
 
