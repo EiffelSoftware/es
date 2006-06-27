@@ -117,15 +117,16 @@ feature {NONE} -- Implementation
 
 					-- search for the next folding-area containing 'first'
 					next_folding_area := smart_text_panel.folding_areas.first_item_after_line (first)
+
 					if next_folding_area /= Void and then next_folding_area.previous /= Void then
 						next_folding_area := next_folding_area.previous
 					end
 
---					debug("code-folding:")
+					debug("code-folding:")
 						if next_folding_area /= Void then
 							io.put_string("first:%T" + first.out + "%Nlast:%T" + last.out + "%N%Tnext fp is on line " + next_folding_area.start_line.out + "%N%N")
 						end
---					end
+					end
 				end
 			end
 
@@ -148,9 +149,12 @@ feature {NONE} -- Implementation
 							debug ("code-folding:")
 								io.putstring("feature on line " + next_folding_area.start_line.out + "has height: " + next_folding_area.height.out + "%N")
 							end
-							if next_folding_area.end_line < curr_line then
-								next_folding_area := next_folding_area.next
+
+							from
+							until next_folding_area = Void or else next_folding_area.end_line >= curr_line
+							loop next_folding_area := next_folding_area.next
 							end
+
 							if next_folding_area /= Void and then (next_folding_area.hidden or (not next_folding_area.hidden and next_folding_area.height > 0)) and then (curr_line >= next_folding_area.start_line and curr_line <= next_folding_area.end_line) then
 								draw_next_folding_point := true
 							else
