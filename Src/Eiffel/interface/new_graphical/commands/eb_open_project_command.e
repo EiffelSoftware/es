@@ -131,13 +131,13 @@ feature -- Execution
 						emu_file.readline
 						if emu_file.last_string.is_equal ("EMU USER FILE") then
 							emu_file.readline
-							user_name := emu_file.last_string
+							create user_name.make_from_string (emu_file.last_string)
 							emu_file.readline
-							pass := emu_file.last_string
+							create pass.make_from_string(emu_file.last_string)
 							emu_file.readline
-							proj_name := emu_file.last_string
+							create proj_name.make_from_string(emu_file.last_string)
 							emu_file.readline
-							server_ip := emu_file.last_string
+							create server_ip.make_from_string (emu_file.last_string)
 							emu_file.readline
 							server_port := emu_file.last_string.to_integer
 							emu_login (user_name, pass, proj_name, server_ip, server_port)
