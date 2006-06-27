@@ -45,7 +45,6 @@ feature -- Basic Operations
 			create choice_box
 			choice_box.set_background_color (white_color)
 
-
 			display_state_text
 			create message_and_title_box
 			message_and_title_box.set_background_color (white_color)
@@ -59,7 +58,7 @@ feature -- Basic Operations
 			local_pixmap.set_minimum_size (
 				dialog_unit_to_pixels(165),
 				dialog_unit_to_pixels(312))
-			local_pixmap.draw_pixmap (122, 69, pixmap_icon)
+			--local_pixmap.draw_pixmap (122, 69, pixmap_icon) --changed by Bernhard S. Buss
 
 			create vertical_separator
 
