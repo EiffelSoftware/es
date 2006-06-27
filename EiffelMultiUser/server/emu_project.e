@@ -43,6 +43,10 @@ feature {EMU_SERVER} -- creation
 		end
 
 
+feature -- Commands
+
+
+
 feature {CLIENT_STATE} -- Modification
 
 	add_user (username, pass: STRING) is
