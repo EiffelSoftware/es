@@ -26,7 +26,7 @@ feature -- Initialization
 			if language_id = Void then
 				language_id := ""
 			end
-		ensure
+		ensure then
 			valid_language_id: language_id /= Void
 		end
 
