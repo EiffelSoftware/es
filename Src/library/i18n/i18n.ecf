@@ -16,10 +16,16 @@
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="True"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo.ecf" readonly="True"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="True"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="True">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
 		<cluster name="i18n" location="." recursive="true"/>
 		<cluster name="locale" location="./locale" recursive="true">
-			<condition><platform excluded_value="windows"/></condition>
-			<condition><platform excluded_value="macintosh"/></condition>
+			<condition>
+				<platform value="unix"/>
+			</condition>
 			<file_rule>
 				<exclude>/imp_mswin$</exclude>
 				<exclude>/imp_macos$</exclude>
