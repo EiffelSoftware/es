@@ -563,6 +563,7 @@ feature -- Process Messages
 						system.output ("client upload: " + msg.emu_class_name + ". cluster: " + msg.cluster_path + ". project: " + msg.project_name + "%N")
 						a_class := a_cluster.get_class (msg.emu_class_name)
 						a_class.set_content (msg.content)
+						system.output ("class content: %N" + a_class.content)
 						send_msg (create {CLIENT_OK}.make_class_uploaded (msg.project_name, msg.emu_class_name))
 					else
 						-- user may not update this class.
