@@ -1017,7 +1017,7 @@ feature -- Element change
 					l_string_pos := substring_index_in_bounds (original, l_start_pos, count)
 					if l_string_pos > 0 then
 						replace_substring (new, l_string_pos, l_string_pos+original.count-1)
-						l_start_pos := l_start_pos + new.count
+						l_start_pos := l_string_pos + new.count
 					else
 						l_start_pos := count + 1 -- jump out of loop
 					end
