@@ -57,7 +57,7 @@ feature -- Initialization
 			end
 		end
 
-	connect_to_server (ip,u_name,pwd,proj_name:STRING; port:INTEGER) is
+	connect_to_server (ip,u_name,pwd,proj_name:STRING; port:INTEGER):BOOLEAN is
 			-- main entry point of application.
 			-- takes four arguments: server_adress server_port user_name password project_name
 		local
@@ -74,12 +74,14 @@ feature -- Initialization
 			else
 					socket.make_client_by_port (server_port, server_ip)
 			end
+
 				register_to_server()
 
 				-- register default commands. we use agents to be able to replace the features by an admin.
 				idle_cmd := agent idle
 				process_server_cmd := agent process_server
 				idle_cmd.apply	-- start client idle process
+				result := is_logged_in
 		rescue
 			if not assertion_violation then
 				rescued := True
@@ -272,6 +274,7 @@ feature -- Process
     		socket.connect
     		socket.independent_store (create {USER_LOGIN}.make (user_name, password, project_name))
             socket.cleanup
+            is_logged_in := wait_for_ok (300)
     	end
 
 
@@ -312,12 +315,13 @@ feature -- Process
 			path_not_void: an_absolute_path /= Void
 		do
 			--a_class_name := parse_class_name(an_absolute_path)
-			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
-            socket.cleanup
+			--socket.connect
+    		--socket.independent_store (create {CLIENT_CLASS_UNLOCK_REQUEST}.make (project_name, a_class_name))
+            --socket.cleanup
             unlocked_classes.extend (a_class_name)
             -- what happens, if unlock successful, but ok_message lost???? <==
-            result := wait_for_ok(303)
+            --result := wait_for_ok(303)
+    		result := true
     	end
 
 	lock (an_absolute_path,a_class_name: STRING): BOOLEAN is
@@ -328,12 +332,13 @@ feature -- Process
 			path_not_void: an_absolute_path /= Void
 		do
 			--a_class_name := parse_class_name(an_absolute_path)
-			socket.connect
-    		socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
-            socket.cleanup
+			--socket.connect
+    		--socket.independent_store (create {CLIENT_CLASS_LOCK_REQUEST}.make (project_name, a_class_name))
+            --socket.cleanup
             remove_from_unlocked_list (a_class_name)
             -- what happens when ok_message from server got lost??
-            result := wait_for_ok(302)
+            --result := wait_for_ok(302)
+    		result := true
     	end
 
 	upload (an_absolute_path:STRING): BOOLEAN is
@@ -350,7 +355,7 @@ feature -- Process
       		result := wait_for_ok(304)
     	end
 
-    download (): BOOLEAN is
+    download (a_class_name:STRING): BOOLEAN is
 			-- downloading ALL classes
 			-- might be better to download unly modified classes
 			-- result== true means success
@@ -440,6 +445,10 @@ feature -- Status
 		do
 			Result := socket /= Void and then socket.exists and then socket.socket_ok and then socket.is_open_read
 		end
+
+	is_logged_in:BOOLEAN
+			-- is current user logged to server
+
 
 
 feature {NONE} -- Control Attributes
