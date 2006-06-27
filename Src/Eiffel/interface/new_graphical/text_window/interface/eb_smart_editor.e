@@ -761,7 +761,7 @@ feature {NONE} -- syntax checking implementation
 				-- make sure we dont accumulate error messages
 				Error_handler.error_list.wipe_out
 				-- execute parser
-				syntax_parser.set_file_name (file_name.out)
+				syntax_parser.set_filename (file_name.out)
 				syntax_parser.parse_from_string (text)
 
 				-- re-establish raising of exceptin
