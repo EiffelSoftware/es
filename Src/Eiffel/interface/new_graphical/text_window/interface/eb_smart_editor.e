@@ -106,6 +106,9 @@ feature -- Content change
 			file_name := f_n
 			date_of_file_when_loaded := f_d
 			date_when_checked := f_d_c
+--			if perform_syntax_checking then
+--				refresh_now
+--			end
 		end
 
 	reload is
@@ -113,6 +116,9 @@ feature -- Content change
 		do
 			load_without_save := True
 			Precursor {EB_CLICKABLE_EDITOR}
+--			if perform_syntax_checking then
+--				refresh_now
+--			end
 		end
 
 feature -- Status report
@@ -607,13 +613,12 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 			code := ev_key.code
 
 			-- execute parser on certain key events
-			if is_editable then
-			   --(code = Key_space or code = Key_period or code = Key_tab or code = Key_enter) then
-				if perform_syntax_checking = false then
-					-- refresh if errors found
-					refresh_now
-				end
-			end
+--			if is_editable then
+--				if perform_syntax_checking = false then
+--					-- refresh if errors found
+--					refresh_now
+--				end
+--			end
 
 			switch_auto_point := auto_point and then not (code = Key_shift or code = Key_left_meta or code = Key_right_meta)
 			if not is_completing and then code = Key_tab and then allow_tab_selecting and then not shifted_key then
@@ -704,6 +709,8 @@ feature {NONE} -- syntax checking implementation
 			-- initalize syntax checking state
 		do
 			last_invalidated_line := -1
+			create syntax_timer.make_with_interval (100)
+			syntax_timer.actions.extend (agent perform_syntax_checking)
 		end
 
 	syntax_parser: EIFFEL_PARSER is
@@ -714,7 +721,10 @@ feature {NONE} -- syntax checking implementation
 			Result.set_has_syntax_warning (true)
 		end
 
-	perform_syntax_checking: BOOLEAN is
+	syntax_timer: EV_TIMEOUT
+
+	perform_syntax_checking is
+--	perform_syntax_checking: BOOLEAN is
 			-- performs syntax checking of class text using Eiffel_validating_parser
 			-- returns false if errors were found
 		local
@@ -725,6 +735,7 @@ feature {NONE} -- syntax checking implementation
 			cursor: TEXT_CURSOR
 			text_token: EDITOR_TOKEN_TEXT
 		do
+			if is_initialized and then file_loaded and then is_editable then
 				-- create cursor object for helping locate tokens
 				create cursor.make_from_integer (1, text_displayed)
 
@@ -750,6 +761,7 @@ feature {NONE} -- syntax checking implementation
 				-- make sure we dont accumulate error messages
 				Error_handler.error_list.wipe_out
 				-- execute parser
+				syntax_parser.set_file_name (file_name.out)
 				syntax_parser.parse_from_string (text)
 
 				-- re-establish raising of exceptin
@@ -765,9 +777,16 @@ feature {NONE} -- syntax checking implementation
 					last_invalidated_line := -1
 				end
 
+--				io.put_string (list.count.out + " errors found%N")
+--				Result := list.is_empty
+
+				dev_window.context_tool.output_view.text_area.text_displayed.reset_text
+				dev_window.context_tool.output_view.text_area.text_displayed.add (list.count.out+" syntax errors found.")
+
+				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
+				dev_window.context_tool.error_output_view.process_errors (list)
+
 				-- iterate through error list
-				io.put_string (list.count.out + " errors found%N")
-				Result := list.count > 0
 				from
 					list.start
 				until
@@ -775,7 +794,6 @@ feature {NONE} -- syntax checking implementation
 				loop
 					error ?= list.item
 					if error /= void then
---						io.put_string ("error on line "+error.line.out+" %N")
 						-- place cursor at position of error
 						cursor.set_y_in_lines (error.line)
 						cursor.set_x_in_characters (error.column)
@@ -788,7 +806,6 @@ feature {NONE} -- syntax checking implementation
 					else
 						warning ?= list.item
 						if warning /= void then
---							io.put_string ("warning on line "+warning.line.out+" %N")
 							-- place cursor at position of error
 							cursor.set_y_in_lines (warning.line)
 							cursor.set_x_in_characters (warning.column)
@@ -804,6 +821,7 @@ feature {NONE} -- syntax checking implementation
 					-- go to next error
 					list.forth
 				end
+			end
 		end
 
 
@@ -1216,10 +1234,6 @@ feature -- Text Loading
 				dev_window.save_and (agent load_file (a_file_name))
 			else
 				Precursor {EB_CLICKABLE_EDITOR} (a_file_name)
-				if perform_syntax_checking = false  then
-					-- refresh if errors found
-					refresh_now
-				end
 			end
 			load_without_save := False
 		end
@@ -1232,10 +1246,6 @@ feature -- Text Loading
 				dev_window.save_and (agent load_text (s))
 			else
 				Precursor {EB_CLICKABLE_EDITOR} (s)
-				if perform_syntax_checking = false then
-					-- refresh if errors found
-					refresh_now
-				end
 				initialize_folding_areas
 			end
 			load_without_save := False
