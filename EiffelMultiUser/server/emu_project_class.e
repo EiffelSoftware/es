@@ -27,7 +27,7 @@ feature -- Creation
 			free := True
 			create content.make_empty
 		ensure then
-			free_set: is_free()
+			free_set: is_free
 		end
 
 feature -- Procedures

@@ -19,9 +19,11 @@ feature -- Creation
 			name := a_name
 			create creation_date.make_now
 			creator := a_creator
+			project := a_project
 		ensure
 			name_set: name = a_name
 			creator_set: creator = a_creator
+			project_set: a_project = project
 		end
 
 
@@ -58,4 +60,5 @@ invariant
 	name_set: name /= Void and then not name.is_empty
 	creation_date_set: creation_date /= Void
 	creator_set: creator /= Void
+	project_associated: project /= Void
 end

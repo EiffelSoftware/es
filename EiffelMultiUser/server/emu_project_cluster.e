@@ -40,8 +40,9 @@ feature -- Creation
 	make (a_name: STRING; a_project: EMU_PROJECT; a_creator: EMU_USER) is
 			-- create a project cluster by its name and the creator.
 		do
-			Precursor(a_name, a_project, a_creator)
-			make_list	-- initializes the empty list (inherited).
+			Precursor {EMU_PROJECT_UNIT}(a_name, a_project, a_creator)
+			--Precursor {LINKED_LIST}	-- initializes the empty list (inherited).
+			make_list
 		end
 
 
