@@ -15,7 +15,7 @@ create
 
 feature -- Initialization
 
-	make(a_project_name, a_cluster_name, an_emu_class_name, emu_class_content:STRING) is
+	make (a_project_name, a_cluster_name, an_emu_class_name, emu_class_content:STRING) is
 			-- initialize message and set attributes
 			-- emu_class is file of class as string
 		require
