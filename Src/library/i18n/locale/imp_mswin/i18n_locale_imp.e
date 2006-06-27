@@ -22,12 +22,18 @@ feature -- Initialization
 	default_create is
 			-- Retrieve `language_id'.
 		local
-			id: STRING
+			id, id2: STRING
 		do
 			id := locale_getUserDefaultLCID.to_hex_string
+			id := language_id_code.to_hex_string
 			id.tail (4)
 			id := to_iso_format(id)
 			language_id := id
+			if language_id /= Void then
+				language_id := ""
+			end
+		ensure
+			valid_language_id: language_id /= Void
 		end
 
 feature {NONE} -- Implementation
@@ -37,20 +43,34 @@ feature {NONE} -- Implementation
 			"C inline use %"eif_locale.h%""
 		end
 
-	registry: AUT_REGISTRY
+	language_id_code: NATURAL_32 is
+		external
+			"C inline use <windows.h>"
+		alias
+			"return GetUserDefaultLCID();"
+		end
 
-	to_iso_format (lcid: STRING): STRING is
+	to_iso_format (a_lcid: STRING): STRING is
 			-- returns the ISO value of the LCID using windows registry
+		require
+			valid_lcid: a_lcid /= Void and then not a_lcid.is_empty
 		local
 			key: STRING
 			key_value: STRING
 			index_of_semicolon: INTEGER
+			registry: AUT_REGISTRY
 		do
-			key := "HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Rfc1766\" + lcid
+			create registry
+			key := "HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Rfc1766\" + a_lcid
 			key_value := registry.string_value (key)
-			index_of_semicolon := key_value.index_of (';', 1)
-			Result := key_value.substring (1, index_of_semicolon - 1)
+			if key_value /= Void then
+				index_of_semicolon := key_value.index_of (';', 1)
+				Result := key_value.substring (1, index_of_semicolon - 1)
+			else
+				Result := ""
+			end
 		ensure
+			valid_result: Result /= Void
 		end
 
 end

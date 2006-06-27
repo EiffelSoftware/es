@@ -23,6 +23,11 @@ feature -- Initialization
 			-- Retrieve language
 		do
 			language_id := (create {EXECUTION_ENVIRONMENT}).get("LANG")
+			if language_id = Void then
+				language_id := ""
+			end
+		ensure
+			valid_language_id: language_id /= Void
 		end
 
 end
