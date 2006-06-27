@@ -109,9 +109,19 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	is_default_push_button: BOOLEAN
+	is_default_push_button: BOOLEAN is
 			-- Is this button currently a default push button
 			-- for a particular container?
+		local
+			res : INTEGER
+		do
+			res := get_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag )
+			if res > 0 then
+				Result := true
+			else
+				Result := false
+			end
+		end
 
 feature -- Status Setting
 
@@ -133,14 +143,31 @@ feature -- Status Setting
 		local
 			res : INTEGER
 		do
-			res := set_control_data_boolean( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
-			if res = 0 then
-				is_default_push_button := true
-			end
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
 		end
 
-	frozen set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
-			-- C implementation of enable_default_push_button		
+
+	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
+			-- get a boolean value with get_control_data
+			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp;
+				 	Size ActualSize;
+					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
+					if ( ActualSize == sizeof(temp) )
+						return temp;
+					else
+						return res;
+				}
+			]"
+		end
+
+		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+			-- set a boolean value with set_control_data
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -158,10 +185,7 @@ feature -- Status Setting
 		local
 			res : INTEGER
 		do
-			res := set_control_data_boolean( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
-			if res = 0 then
-				is_default_push_button := false
-			end
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
 		end
 
 	enable_can_default is
