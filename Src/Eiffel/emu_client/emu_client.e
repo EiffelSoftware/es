@@ -264,6 +264,9 @@ feature {NONE} -- Termination
 
 feature -- Process
 
+	downloaded_class: STRING
+			-- class downloaded from server
+
     register_to_server () is
     		-- register this client to the server
     	require
@@ -350,13 +353,14 @@ feature -- Process
       		result := wait_for_ok(304)
     	end
 
-    download (an_absolut_path,a_class_name:STRING): BOOLEAN is
+    download (an_absolute_path,a_class_name:STRING): BOOLEAN is
 			-- downloading ALL classes
 			-- might be better to download unly modified classes
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
 		do
+			downloaded_class := an_absolute_path
 			socket.connect
     		socket.independent_store (create {CLIENT_CLASS_DOWNLOAD}.make (project_name))
             socket.cleanup
@@ -386,7 +390,7 @@ feature -- Process
 					if user_cmd /= Void then
 						get_download?=user_cmd
 						if  get_download/= Void then
-							get_download.execute()
+							get_download.execute(downloaded_class)
 						end
 						server_closing ?= user_cmd
 						if server_closing /= Void then
