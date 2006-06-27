@@ -457,7 +457,6 @@ feature -- Process Messages
 			end
 		end
 
-
 	process_client_lock_request (msg: CLIENT_CLASS_LOCK_REQUEST) is
 			-- lock requested class for user, ie. the class is
 			-- free again for other users!
