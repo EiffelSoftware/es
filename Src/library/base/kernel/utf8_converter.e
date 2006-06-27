@@ -1,8 +1,8 @@
 indexing
 	description: "UTF8 implementation of UNICODE_CONVERTER"
 	author: "Unicode Team"
-	date: "$Date:$"
-	revision: "$Revision:$"
+	date: "$Date$"
+	revision: "$Revision$"
 
 
 class UTF8_CONVERTER
@@ -39,8 +39,8 @@ feature -- character converter
 				b1 := b.item (b.lower).to_natural_32.bit_and (0x3) -- take first 2 bits
 				b2 := b.item (b.lower + 1).to_natural_32.bit_and (0x3F) -- take first 6 bits
 				b3 := b.item (b.lower + 2).to_natural_32.bit_and (0x3F) -- take first 6 bits
-				b3 := b.item (b.lower + 3).to_natural_32.bit_and (0x3F) -- take first 6 bits
-				b4 := b.item (b.lower + 4).to_natural_32.bit_and (0x3F) -- take first 6 bits
+				b4 := b.item (b.lower + 3).to_natural_32.bit_and (0x3F) -- take first 6 bits
+				b5 := b.item (b.lower + 4).to_natural_32.bit_and (0x3F) -- take first 6 bits
 				new_code := b1.bit_shift_left(24) + b2.bit_shift_left (18) + b3.bit_shift_left (12) + b4.bit_shift_left (6) + b5
 			elseif b.count = 6 then
 				b1 := b.item (b.lower).to_natural_32.bit_and (0x1) -- take first 1 bit
