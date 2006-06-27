@@ -1218,6 +1218,51 @@ feature
 			"(void*) call_event_handler_proc_ptr"
 		end
 
+	get_menu_def_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_menu_def_proc_ptr_stub"
+		end
+
+	get_menu_def_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_menu_def_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_menu_def_proc_ptr_stub"
+		end
+
+	set_menu_def_proc_ptr_entry_external (a_class: MENU_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_menu_def_proc_ptr_entry"
+		end
+
+	set_menu_def_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_menu_def_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_menu_def_proc_ptr_entry"
+		end
+
+	call_menu_def_proc_ptr_external (a_function: POINTER; message: INTEGER; themenu: POINTER; menurect: POINTER; hitpt: POINTER; whichitem: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, short, MenuRef, Rect*, Point*, short*)"
+		alias
+			"ewg_function_macro_call_menu_def_proc_ptr"
+		end
+
+	call_menu_def_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_menu_def_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_menu_def_proc_ptr"
+		end
+
 	get_control_action_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
@@ -3466,6 +3511,321 @@ feature
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
 		alias
 			"(void*) call_get_next_event_filter_proc_ptr"
+		end
+
+	get_menu_bar_def_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_menu_bar_def_proc_ptr_stub"
+		end
+
+	get_menu_bar_def_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_menu_bar_def_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_menu_bar_def_proc_ptr_stub"
+		end
+
+	set_menu_bar_def_proc_ptr_entry_external (a_class: MENU_BAR_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_menu_bar_def_proc_ptr_entry"
+		end
+
+	set_menu_bar_def_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_menu_bar_def_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_menu_bar_def_proc_ptr_entry"
+		end
+
+	call_menu_bar_def_proc_ptr_external (a_function: POINTER; selector: INTEGER; message: INTEGER; parameter1: INTEGER; parameter2: INTEGER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, short, short, short, long):long"
+		alias
+			"ewg_function_macro_call_menu_bar_def_proc_ptr"
+		end
+
+	call_menu_bar_def_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_menu_bar_def_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_menu_bar_def_proc_ptr"
+		end
+
+	get_mbar_hook_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_mbar_hook_proc_ptr_stub"
+		end
+
+	get_mbar_hook_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_mbar_hook_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_mbar_hook_proc_ptr_stub"
+		end
+
+	set_mbar_hook_proc_ptr_entry_external (a_class: MBAR_HOOK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_mbar_hook_proc_ptr_entry"
+		end
+
+	set_mbar_hook_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_mbar_hook_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_mbar_hook_proc_ptr_entry"
+		end
+
+	call_mbar_hook_proc_ptr_external (a_function: POINTER; menurect: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, Rect*):short"
+		alias
+			"ewg_function_macro_call_mbar_hook_proc_ptr"
+		end
+
+	call_mbar_hook_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_mbar_hook_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_mbar_hook_proc_ptr"
+		end
+
+	get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub"
+		end
+
+	get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub_address_external: POINTER is
+			-- Address of C function `get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub"
+		end
+
+	set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_external (a_class: SINT32_VOIDP_CFUUIDBYTES_VOIDPP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry"
+		end
+
+	set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_address_external: POINTER is
+			-- Address of C function `set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry"
+		end
+
+	call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_external (a_function: POINTER; thispointer: POINTER; iid: POINTER; ppv: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, CFUUIDBytes*, void**):SInt32"
+		alias
+			"ewg_function_macro_call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback"
+		end
+
+	call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_address_external: POINTER is
+			-- Address of C function `call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback"
+		end
+
+	get_uint32_voidp_anonymous_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_uint32_voidp_anonymous_callback_stub"
+		end
+
+	get_uint32_voidp_anonymous_callback_stub_address_external: POINTER is
+			-- Address of C function `get_uint32_voidp_anonymous_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_uint32_voidp_anonymous_callback_stub"
+		end
+
+	set_uint32_voidp_anonymous_callback_entry_external (a_class: UINT32_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_uint32_voidp_anonymous_callback_entry"
+		end
+
+	set_uint32_voidp_anonymous_callback_entry_address_external: POINTER is
+			-- Address of C function `set_uint32_voidp_anonymous_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_uint32_voidp_anonymous_callback_entry"
+		end
+
+	call_uint32_voidp_anonymous_callback_external (a_function: POINTER; thispointer: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*):UInt32"
+		alias
+			"ewg_function_macro_call_uint32_voidp_anonymous_callback"
+		end
+
+	call_uint32_voidp_anonymous_callback_address_external: POINTER is
+			-- Address of C function `call_uint32_voidp_anonymous_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_uint32_voidp_anonymous_callback"
+		end
+
+	get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub"
+		end
+
+	get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub_address_external: POINTER is
+			-- Address of C function `get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub"
+		end
+
+	set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_external (a_class: OSSTATUS_VOIDP_AEDESCCONSTP_AEDESCLISTP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry"
+		end
+
+	set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_address_external: POINTER is
+			-- Address of C function `set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry"
+		end
+
+	call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; outcommandpairs: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, AEDesc const*, AEDescList*):OSStatus"
+		alias
+			"ewg_function_macro_call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback"
+		end
+
+	call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_address_external: POINTER is
+			-- Address of C function `call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback"
+		end
+
+	get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub"
+		end
+
+	get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub_address_external: POINTER is
+			-- Address of C function `get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub"
+		end
+
+	set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry_external (a_class: OSSTATUS_VOIDP_AEDESCP_SINT32_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry"
+		end
+
+	set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry_address_external: POINTER is
+			-- Address of C function `set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry"
+		end
+
+	call_osstatus_voidp_aedescp_sint32_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; incommandid: INTEGER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, AEDesc*, SInt32):OSStatus"
+		alias
+			"ewg_function_macro_call_osstatus_voidp_aedescp_sint32_anonymous_callback"
+		end
+
+	call_osstatus_voidp_aedescp_sint32_anonymous_callback_address_external: POINTER is
+			-- Address of C function `call_osstatus_voidp_aedescp_sint32_anonymous_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_osstatus_voidp_aedescp_sint32_anonymous_callback"
+		end
+
+	get_void_voidp_anonymous_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_void_voidp_anonymous_callback_stub"
+		end
+
+	get_void_voidp_anonymous_callback_stub_address_external: POINTER is
+			-- Address of C function `get_void_voidp_anonymous_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_void_voidp_anonymous_callback_stub"
+		end
+
+	set_void_voidp_anonymous_callback_entry_external (a_class: VOID_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_void_voidp_anonymous_callback_entry"
+		end
+
+	set_void_voidp_anonymous_callback_entry_address_external: POINTER is
+			-- Address of C function `set_void_voidp_anonymous_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_void_voidp_anonymous_callback_entry"
+		end
+
+	call_void_voidp_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_call_void_voidp_anonymous_callback"
+		end
+
+	call_void_voidp_anonymous_callback_address_external: POINTER is
+			-- Address of C function `call_void_voidp_anonymous_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_void_voidp_anonymous_callback"
 		end
 
 	get_desk_hook_proc_ptr_stub_external: POINTER is

@@ -462,6 +462,23 @@ OSStatus call_event_handler_proc_ptr (void *a_function, EventHandlerCallRef inHa
 
 #include <Carbon/Carbon.h>
 
+typedef void (*menu_def_proc_ptr_eiffel_feature) (void *a_class, short message, MenuRef theMenu, Rect *menuRect, Point hitPt, short *whichItem);
+
+void* get_menu_def_proc_ptr_stub ();
+
+struct menu_def_proc_ptr_entry_struct
+{
+	void* a_class;
+	menu_def_proc_ptr_eiffel_feature feature;
+};
+
+void set_menu_def_proc_ptr_entry (void* a_class, void* a_feature);
+
+void call_menu_def_proc_ptr (void *a_function, short message, MenuRef theMenu, Rect *menuRect, Point hitPt, short *whichItem);
+
+
+#include <Carbon/Carbon.h>
+
 typedef void (*control_action_proc_ptr_eiffel_feature) (void *a_class, ControlRef theControl, ControlPartCode partCode);
 
 void* get_control_action_proc_ptr_stub ();
@@ -1308,6 +1325,125 @@ struct get_next_event_filter_proc_ptr_entry_struct
 void set_get_next_event_filter_proc_ptr_entry (void* a_class, void* a_feature);
 
 void call_get_next_event_filter_proc_ptr (void *a_function, EventRecord *theEvent, Boolean *result);
+
+
+#include <Carbon/Carbon.h>
+
+typedef long (*menu_bar_def_proc_ptr_eiffel_feature) (void *a_class, short selector, short message, short parameter1, long parameter2);
+
+void* get_menu_bar_def_proc_ptr_stub ();
+
+struct menu_bar_def_proc_ptr_entry_struct
+{
+	void* a_class;
+	menu_bar_def_proc_ptr_eiffel_feature feature;
+};
+
+void set_menu_bar_def_proc_ptr_entry (void* a_class, void* a_feature);
+
+long call_menu_bar_def_proc_ptr (void *a_function, short selector, short message, short parameter1, long parameter2);
+
+
+#include <Carbon/Carbon.h>
+
+typedef short (*mbar_hook_proc_ptr_eiffel_feature) (void *a_class, Rect *menuRect);
+
+void* get_mbar_hook_proc_ptr_stub ();
+
+struct mbar_hook_proc_ptr_entry_struct
+{
+	void* a_class;
+	mbar_hook_proc_ptr_eiffel_feature feature;
+};
+
+void set_mbar_hook_proc_ptr_entry (void* a_class, void* a_feature);
+
+short call_mbar_hook_proc_ptr (void *a_function, Rect *menuRect);
+
+
+#include <Carbon/Carbon.h>
+
+typedef SInt32 (*sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_eiffel_feature) (void *a_class, void *thisPointer, CFUUIDBytes iid, void **ppv);
+
+void* get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub ();
+
+struct sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_struct
+{
+	void* a_class;
+	sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_eiffel_feature feature;
+};
+
+void set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry (void* a_class, void* a_feature);
+
+SInt32 call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback (void *a_function, void *thisPointer, CFUUIDBytes iid, void **ppv);
+
+
+#include <Carbon/Carbon.h>
+
+typedef UInt32 (*uint32_voidp_anonymous_callback_eiffel_feature) (void *a_class, void *thisPointer);
+
+void* get_uint32_voidp_anonymous_callback_stub ();
+
+struct uint32_voidp_anonymous_callback_entry_struct
+{
+	void* a_class;
+	uint32_voidp_anonymous_callback_eiffel_feature feature;
+};
+
+void set_uint32_voidp_anonymous_callback_entry (void* a_class, void* a_feature);
+
+UInt32 call_uint32_voidp_anonymous_callback (void *a_function, void *thisPointer);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSStatus (*osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_eiffel_feature) (void *a_class, void *thisInstance, AEDesc const *inContext, AEDescList *outCommandPairs);
+
+void* get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub ();
+
+struct osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_struct
+{
+	void* a_class;
+	osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_eiffel_feature feature;
+};
+
+void set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry (void* a_class, void* a_feature);
+
+OSStatus call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback (void *a_function, void *thisInstance, AEDesc const *inContext, AEDescList *outCommandPairs);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSStatus (*osstatus_voidp_aedescp_sint32_anonymous_callback_eiffel_feature) (void *a_class, void *thisInstance, AEDesc *inContext, SInt32 inCommandID);
+
+void* get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub ();
+
+struct osstatus_voidp_aedescp_sint32_anonymous_callback_entry_struct
+{
+	void* a_class;
+	osstatus_voidp_aedescp_sint32_anonymous_callback_eiffel_feature feature;
+};
+
+void set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry (void* a_class, void* a_feature);
+
+OSStatus call_osstatus_voidp_aedescp_sint32_anonymous_callback (void *a_function, void *thisInstance, AEDesc *inContext, SInt32 inCommandID);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*void_voidp_anonymous_callback_eiffel_feature) (void *a_class, void *thisInstance);
+
+void* get_void_voidp_anonymous_callback_stub ();
+
+struct void_voidp_anonymous_callback_entry_struct
+{
+	void* a_class;
+	void_voidp_anonymous_callback_eiffel_feature feature;
+};
+
+void set_void_voidp_anonymous_callback_entry (void* a_class, void* a_feature);
+
+void call_void_voidp_anonymous_callback (void *a_function, void *thisInstance);
 
 
 #include <Carbon/Carbon.h>

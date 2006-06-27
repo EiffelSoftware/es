@@ -4733,6 +4733,1008 @@ UInt8  ewg_function_LMGetKbdType (void);
 #define ewg_function_macro_LMSetKbdType(ewg_param_value) LMSetKbdType ((UInt8)ewg_param_value)
 
 void  ewg_function_LMSetKbdType (UInt8 value);
+// Wraps call to function 'NewMenuDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewMenuDefUPP(ewg_param_userRoutine) NewMenuDefUPP ((MenuDefProcPtr)ewg_param_userRoutine)
+
+MenuDefUPP  ewg_function_NewMenuDefUPP (MenuDefProcPtr userRoutine);
+// Wraps call to function 'DisposeMenuDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeMenuDefUPP(ewg_param_userUPP) DisposeMenuDefUPP ((MenuDefUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeMenuDefUPP (MenuDefUPP userUPP);
+// Wraps call to function 'InvokeMenuDefUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeMenuDefUPP(ewg_param_message, ewg_param_theMenu, ewg_param_menuRect, ewg_param_hitPt, ewg_param_whichItem, ewg_param_userUPP) InvokeMenuDefUPP ((short)ewg_param_message, (MenuRef)ewg_param_theMenu, (Rect*)ewg_param_menuRect, *(Point*)ewg_param_hitPt, (short*)ewg_param_whichItem, (MenuDefUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeMenuDefUPP (short message, MenuRef theMenu, Rect *menuRect, Point *hitPt, short *whichItem, MenuDefUPP userUPP);
+// Wraps call to function 'NewMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewMenu(ewg_param_menuID, ewg_param_menuTitle) NewMenu ((MenuID)ewg_param_menuID, (ConstStr255Param)ewg_param_menuTitle)
+
+MenuRef  ewg_function_NewMenu (MenuID menuID, ConstStr255Param menuTitle);
+// Wraps call to function 'GetMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenu(ewg_param_resourceID) GetMenu ((short)ewg_param_resourceID)
+
+MenuRef  ewg_function_GetMenu (short resourceID);
+// Wraps call to function 'DisposeMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeMenu(ewg_param_theMenu) DisposeMenu ((MenuRef)ewg_param_theMenu)
+
+void  ewg_function_DisposeMenu (MenuRef theMenu);
+// Wraps call to function 'CalcMenuSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CalcMenuSize(ewg_param_theMenu) CalcMenuSize ((MenuRef)ewg_param_theMenu)
+
+void  ewg_function_CalcMenuSize (MenuRef theMenu);
+// Wraps call to function 'CountMenuItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CountMenuItems(ewg_param_theMenu) CountMenuItems ((MenuRef)ewg_param_theMenu)
+
+UInt16  ewg_function_CountMenuItems (MenuRef theMenu);
+// Wraps call to function 'GetMenuFont' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuFont(ewg_param_menu, ewg_param_outFontID, ewg_param_outFontSize) GetMenuFont ((MenuRef)ewg_param_menu, (SInt16*)ewg_param_outFontID, (UInt16*)ewg_param_outFontSize)
+
+OSStatus  ewg_function_GetMenuFont (MenuRef menu, SInt16 *outFontID, UInt16 *outFontSize);
+// Wraps call to function 'SetMenuFont' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuFont(ewg_param_menu, ewg_param_inFontID, ewg_param_inFontSize) SetMenuFont ((MenuRef)ewg_param_menu, (SInt16)ewg_param_inFontID, (UInt16)ewg_param_inFontSize)
+
+OSStatus  ewg_function_SetMenuFont (MenuRef menu, SInt16 inFontID, UInt16 inFontSize);
+// Wraps call to function 'GetMenuExcludesMarkColumn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuExcludesMarkColumn(ewg_param_menu) GetMenuExcludesMarkColumn ((MenuRef)ewg_param_menu)
+
+Boolean  ewg_function_GetMenuExcludesMarkColumn (MenuRef menu);
+// Wraps call to function 'SetMenuExcludesMarkColumn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuExcludesMarkColumn(ewg_param_menu, ewg_param_excludesMark) SetMenuExcludesMarkColumn ((MenuRef)ewg_param_menu, (Boolean)ewg_param_excludesMark)
+
+OSStatus  ewg_function_SetMenuExcludesMarkColumn (MenuRef menu, Boolean excludesMark);
+// Wraps call to function 'RegisterMenuDefinition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RegisterMenuDefinition(ewg_param_inResID, ewg_param_inDefSpec) RegisterMenuDefinition ((SInt16)ewg_param_inResID, (MenuDefSpecPtr)ewg_param_inDefSpec)
+
+OSStatus  ewg_function_RegisterMenuDefinition (SInt16 inResID, MenuDefSpecPtr inDefSpec);
+// Wraps call to function 'CreateNewMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateNewMenu(ewg_param_inMenuID, ewg_param_inMenuAttributes, ewg_param_outMenuRef) CreateNewMenu ((MenuID)ewg_param_inMenuID, (MenuAttributes)ewg_param_inMenuAttributes, (MenuRef*)ewg_param_outMenuRef)
+
+OSStatus  ewg_function_CreateNewMenu (MenuID inMenuID, MenuAttributes inMenuAttributes, MenuRef *outMenuRef);
+// Wraps call to function 'CreateCustomMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateCustomMenu(ewg_param_inDefSpec, ewg_param_inMenuID, ewg_param_inMenuAttributes, ewg_param_outMenuRef) CreateCustomMenu ((MenuDefSpec const*)ewg_param_inDefSpec, (MenuID)ewg_param_inMenuID, (MenuAttributes)ewg_param_inMenuAttributes, (MenuRef*)ewg_param_outMenuRef)
+
+OSStatus  ewg_function_CreateCustomMenu (MenuDefSpec const *inDefSpec, MenuID inMenuID, MenuAttributes inMenuAttributes, MenuRef *outMenuRef);
+// Wraps call to function 'IsValidMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsValidMenu(ewg_param_inMenu) IsValidMenu ((MenuRef)ewg_param_inMenu)
+
+Boolean  ewg_function_IsValidMenu (MenuRef inMenu);
+// Wraps call to function 'GetMenuRetainCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuRetainCount(ewg_param_inMenu) GetMenuRetainCount ((MenuRef)ewg_param_inMenu)
+
+ItemCount  ewg_function_GetMenuRetainCount (MenuRef inMenu);
+// Wraps call to function 'RetainMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RetainMenu(ewg_param_inMenu) RetainMenu ((MenuRef)ewg_param_inMenu)
+
+OSStatus  ewg_function_RetainMenu (MenuRef inMenu);
+// Wraps call to function 'ReleaseMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ReleaseMenu(ewg_param_inMenu) ReleaseMenu ((MenuRef)ewg_param_inMenu)
+
+OSStatus  ewg_function_ReleaseMenu (MenuRef inMenu);
+// Wraps call to function 'DuplicateMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DuplicateMenu(ewg_param_inSourceMenu, ewg_param_outMenu) DuplicateMenu ((MenuRef)ewg_param_inSourceMenu, (MenuRef*)ewg_param_outMenu)
+
+OSStatus  ewg_function_DuplicateMenu (MenuRef inSourceMenu, MenuRef *outMenu);
+// Wraps call to function 'CopyMenuTitleAsCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyMenuTitleAsCFString(ewg_param_inMenu, ewg_param_outString) CopyMenuTitleAsCFString ((MenuRef)ewg_param_inMenu, (CFStringRef*)ewg_param_outString)
+
+OSStatus  ewg_function_CopyMenuTitleAsCFString (MenuRef inMenu, CFStringRef *outString);
+// Wraps call to function 'SetMenuTitleWithCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuTitleWithCFString(ewg_param_inMenu, ewg_param_inString) SetMenuTitleWithCFString ((MenuRef)ewg_param_inMenu, (CFStringRef)ewg_param_inString)
+
+OSStatus  ewg_function_SetMenuTitleWithCFString (MenuRef inMenu, CFStringRef inString);
+// Wraps call to function 'SetMenuTitleIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuTitleIcon(ewg_param_inMenu, ewg_param_inType, ewg_param_inIcon) SetMenuTitleIcon ((MenuRef)ewg_param_inMenu, (UInt32)ewg_param_inType, (void*)ewg_param_inIcon)
+
+OSStatus  ewg_function_SetMenuTitleIcon (MenuRef inMenu, UInt32 inType, void *inIcon);
+// Wraps call to function 'GetMenuTitleIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuTitleIcon(ewg_param_inMenu, ewg_param_outType, ewg_param_outIcon) GetMenuTitleIcon ((MenuRef)ewg_param_inMenu, (UInt32*)ewg_param_outType, (void**)ewg_param_outIcon)
+
+OSStatus  ewg_function_GetMenuTitleIcon (MenuRef inMenu, UInt32 *outType, void **outIcon);
+// Wraps call to function 'InvalidateMenuSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvalidateMenuSize(ewg_param_inMenu) InvalidateMenuSize ((MenuRef)ewg_param_inMenu)
+
+OSStatus  ewg_function_InvalidateMenuSize (MenuRef inMenu);
+// Wraps call to function 'IsMenuSizeInvalid' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuSizeInvalid(ewg_param_inMenu) IsMenuSizeInvalid ((MenuRef)ewg_param_inMenu)
+
+Boolean  ewg_function_IsMenuSizeInvalid (MenuRef inMenu);
+// Wraps call to function 'EraseMenuBackground' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EraseMenuBackground(ewg_param_inMenu, ewg_param_inEraseRect, ewg_param_inContext) EraseMenuBackground ((MenuRef)ewg_param_inMenu, (Rect const*)ewg_param_inEraseRect, (CGContextRef)ewg_param_inContext)
+
+OSStatus  ewg_function_EraseMenuBackground (MenuRef inMenu, Rect const *inEraseRect, CGContextRef inContext);
+// Wraps call to function 'ScrollMenuImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ScrollMenuImage(ewg_param_inMenu, ewg_param_inScrollRect, ewg_param_inHScroll, ewg_param_inVScroll, ewg_param_inContext) ScrollMenuImage ((MenuRef)ewg_param_inMenu, (Rect const*)ewg_param_inScrollRect, (int)ewg_param_inHScroll, (int)ewg_param_inVScroll, (CGContextRef)ewg_param_inContext)
+
+OSStatus  ewg_function_ScrollMenuImage (MenuRef inMenu, Rect const *inScrollRect, int inHScroll, int inVScroll, CGContextRef inContext);
+// Wraps call to function 'AppendMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AppendMenu(ewg_param_menu, ewg_param_data) AppendMenu ((MenuRef)ewg_param_menu, (ConstStr255Param)ewg_param_data)
+
+void  ewg_function_AppendMenu (MenuRef menu, ConstStr255Param data);
+// Wraps call to function 'InsertResMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsertResMenu(ewg_param_theMenu, ewg_param_theType, ewg_param_afterItem) InsertResMenu ((MenuRef)ewg_param_theMenu, (ResType)ewg_param_theType, (MenuItemIndex)ewg_param_afterItem)
+
+void  ewg_function_InsertResMenu (MenuRef theMenu, ResType theType, MenuItemIndex afterItem);
+// Wraps call to function 'AppendResMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AppendResMenu(ewg_param_theMenu, ewg_param_theType) AppendResMenu ((MenuRef)ewg_param_theMenu, (ResType)ewg_param_theType)
+
+void  ewg_function_AppendResMenu (MenuRef theMenu, ResType theType);
+// Wraps call to function 'InsertMenuItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsertMenuItem(ewg_param_theMenu, ewg_param_itemString, ewg_param_afterItem) InsertMenuItem ((MenuRef)ewg_param_theMenu, (ConstStr255Param)ewg_param_itemString, (MenuItemIndex)ewg_param_afterItem)
+
+void  ewg_function_InsertMenuItem (MenuRef theMenu, ConstStr255Param itemString, MenuItemIndex afterItem);
+// Wraps call to function 'DeleteMenuItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DeleteMenuItem(ewg_param_theMenu, ewg_param_item) DeleteMenuItem ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item)
+
+void  ewg_function_DeleteMenuItem (MenuRef theMenu, MenuItemIndex item);
+// Wraps call to function 'InsertFontResMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsertFontResMenu(ewg_param_theMenu, ewg_param_afterItem, ewg_param_scriptFilter) InsertFontResMenu ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_afterItem, (short)ewg_param_scriptFilter)
+
+void  ewg_function_InsertFontResMenu (MenuRef theMenu, MenuItemIndex afterItem, short scriptFilter);
+// Wraps call to function 'InsertIntlResMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsertIntlResMenu(ewg_param_theMenu, ewg_param_theType, ewg_param_afterItem, ewg_param_scriptFilter) InsertIntlResMenu ((MenuRef)ewg_param_theMenu, (ResType)ewg_param_theType, (MenuItemIndex)ewg_param_afterItem, (short)ewg_param_scriptFilter)
+
+void  ewg_function_InsertIntlResMenu (MenuRef theMenu, ResType theType, MenuItemIndex afterItem, short scriptFilter);
+// Wraps call to function 'AppendMenuItemText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AppendMenuItemText(ewg_param_menu, ewg_param_inString) AppendMenuItemText ((MenuRef)ewg_param_menu, (ConstStr255Param)ewg_param_inString)
+
+OSStatus  ewg_function_AppendMenuItemText (MenuRef menu, ConstStr255Param inString);
+// Wraps call to function 'InsertMenuItemText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsertMenuItemText(ewg_param_menu, ewg_param_inString, ewg_param_afterItem) InsertMenuItemText ((MenuRef)ewg_param_menu, (ConstStr255Param)ewg_param_inString, (MenuItemIndex)ewg_param_afterItem)
+
+OSStatus  ewg_function_InsertMenuItemText (MenuRef menu, ConstStr255Param inString, MenuItemIndex afterItem);
+// Wraps call to function 'CopyMenuItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyMenuItems(ewg_param_inSourceMenu, ewg_param_inFirstItem, ewg_param_inNumItems, ewg_param_inDestMenu, ewg_param_inInsertAfter) CopyMenuItems ((MenuRef)ewg_param_inSourceMenu, (MenuItemIndex)ewg_param_inFirstItem, (ItemCount)ewg_param_inNumItems, (MenuRef)ewg_param_inDestMenu, (MenuItemIndex)ewg_param_inInsertAfter)
+
+OSStatus  ewg_function_CopyMenuItems (MenuRef inSourceMenu, MenuItemIndex inFirstItem, ItemCount inNumItems, MenuRef inDestMenu, MenuItemIndex inInsertAfter);
+// Wraps call to function 'DeleteMenuItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DeleteMenuItems(ewg_param_inMenu, ewg_param_inFirstItem, ewg_param_inNumItems) DeleteMenuItems ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inFirstItem, (ItemCount)ewg_param_inNumItems)
+
+OSStatus  ewg_function_DeleteMenuItems (MenuRef inMenu, MenuItemIndex inFirstItem, ItemCount inNumItems);
+// Wraps call to function 'AppendMenuItemTextWithCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AppendMenuItemTextWithCFString(ewg_param_inMenu, ewg_param_inString, ewg_param_inAttributes, ewg_param_inCommandID, ewg_param_outNewItem) AppendMenuItemTextWithCFString ((MenuRef)ewg_param_inMenu, (CFStringRef)ewg_param_inString, (MenuItemAttributes)ewg_param_inAttributes, (MenuCommand)ewg_param_inCommandID, (MenuItemIndex*)ewg_param_outNewItem)
+
+OSStatus  ewg_function_AppendMenuItemTextWithCFString (MenuRef inMenu, CFStringRef inString, MenuItemAttributes inAttributes, MenuCommand inCommandID, MenuItemIndex *outNewItem);
+// Wraps call to function 'InsertMenuItemTextWithCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsertMenuItemTextWithCFString(ewg_param_inMenu, ewg_param_inString, ewg_param_inAfterItem, ewg_param_inAttributes, ewg_param_inCommandID) InsertMenuItemTextWithCFString ((MenuRef)ewg_param_inMenu, (CFStringRef)ewg_param_inString, (MenuItemIndex)ewg_param_inAfterItem, (MenuItemAttributes)ewg_param_inAttributes, (MenuCommand)ewg_param_inCommandID)
+
+OSStatus  ewg_function_InsertMenuItemTextWithCFString (MenuRef inMenu, CFStringRef inString, MenuItemIndex inAfterItem, MenuItemAttributes inAttributes, MenuCommand inCommandID);
+// Wraps call to function 'MenuKey' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MenuKey(ewg_param_ch) MenuKey ((CharParameter)ewg_param_ch)
+
+long  ewg_function_MenuKey (CharParameter ch);
+// Wraps call to function 'MenuSelect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MenuSelect(ewg_param_startPt) MenuSelect (*(Point*)ewg_param_startPt)
+
+long  ewg_function_MenuSelect (Point *startPt);
+// Wraps call to function 'PopUpMenuSelect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_PopUpMenuSelect(ewg_param_menu, ewg_param_top, ewg_param_left, ewg_param_popUpItem) PopUpMenuSelect ((MenuRef)ewg_param_menu, (short)ewg_param_top, (short)ewg_param_left, (MenuItemIndex)ewg_param_popUpItem)
+
+long  ewg_function_PopUpMenuSelect (MenuRef menu, short top, short left, MenuItemIndex popUpItem);
+// Wraps call to function 'MenuChoice' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MenuChoice MenuChoice ()
+
+long  ewg_function_MenuChoice (void);
+// Wraps call to function 'MenuEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MenuEvent(ewg_param_inEvent) MenuEvent ((EventRecord const*)ewg_param_inEvent)
+
+UInt32  ewg_function_MenuEvent (EventRecord const *inEvent);
+// Wraps call to function 'IsMenuKeyEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuKeyEvent(ewg_param_inStartMenu, ewg_param_inEvent, ewg_param_inOptions, ewg_param_outMenu, ewg_param_outMenuItem) IsMenuKeyEvent ((MenuRef)ewg_param_inStartMenu, (EventRef)ewg_param_inEvent, (MenuEventOptions)ewg_param_inOptions, (MenuRef*)ewg_param_outMenu, (MenuItemIndex*)ewg_param_outMenuItem)
+
+Boolean  ewg_function_IsMenuKeyEvent (MenuRef inStartMenu, EventRef inEvent, MenuEventOptions inOptions, MenuRef *outMenu, MenuItemIndex *outMenuItem);
+// Wraps call to function 'InvalidateMenuEnabling' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvalidateMenuEnabling(ewg_param_inMenu) InvalidateMenuEnabling ((MenuRef)ewg_param_inMenu)
+
+OSStatus  ewg_function_InvalidateMenuEnabling (MenuRef inMenu);
+// Wraps call to function 'CancelMenuTracking' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CancelMenuTracking(ewg_param_inRootMenu, ewg_param_inImmediate, ewg_param_inDismissalReason) CancelMenuTracking ((MenuRef)ewg_param_inRootMenu, (Boolean)ewg_param_inImmediate, (UInt32)ewg_param_inDismissalReason)
+
+OSStatus  ewg_function_CancelMenuTracking (MenuRef inRootMenu, Boolean inImmediate, UInt32 inDismissalReason);
+// Wraps call to function 'GetMBarHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMBarHeight GetMBarHeight ()
+
+short  ewg_function_GetMBarHeight (void);
+// Wraps call to function 'DrawMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DrawMenuBar DrawMenuBar ()
+
+void  ewg_function_DrawMenuBar (void);
+// Wraps call to function 'InvalMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvalMenuBar InvalMenuBar ()
+
+void  ewg_function_InvalMenuBar (void);
+// Wraps call to function 'IsMenuBarInvalid' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuBarInvalid(ewg_param_rootMenu) IsMenuBarInvalid ((MenuRef)ewg_param_rootMenu)
+
+Boolean  ewg_function_IsMenuBarInvalid (MenuRef rootMenu);
+// Wraps call to function 'HiliteMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HiliteMenu(ewg_param_menuID) HiliteMenu ((MenuID)ewg_param_menuID)
+
+void  ewg_function_HiliteMenu (MenuID menuID);
+// Wraps call to function 'GetNewMBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetNewMBar(ewg_param_menuBarID) GetNewMBar ((short)ewg_param_menuBarID)
+
+MenuBarHandle  ewg_function_GetNewMBar (short menuBarID);
+// Wraps call to function 'GetMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuBar GetMenuBar ()
+
+MenuBarHandle  ewg_function_GetMenuBar (void);
+// Wraps call to function 'SetMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuBar(ewg_param_mbar) SetMenuBar ((MenuBarHandle)ewg_param_mbar)
+
+void  ewg_function_SetMenuBar (MenuBarHandle mbar);
+// Wraps call to function 'DuplicateMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DuplicateMenuBar(ewg_param_inMbar, ewg_param_outMbar) DuplicateMenuBar ((MenuBarHandle)ewg_param_inMbar, (MenuBarHandle*)ewg_param_outMbar)
+
+OSStatus  ewg_function_DuplicateMenuBar (MenuBarHandle inMbar, MenuBarHandle *outMbar);
+// Wraps call to function 'DisposeMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeMenuBar(ewg_param_inMbar) DisposeMenuBar ((MenuBarHandle)ewg_param_inMbar)
+
+OSStatus  ewg_function_DisposeMenuBar (MenuBarHandle inMbar);
+// Wraps call to function 'GetMenuHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuHandle(ewg_param_menuID) GetMenuHandle ((MenuID)ewg_param_menuID)
+
+MenuRef  ewg_function_GetMenuHandle (MenuID menuID);
+// Wraps call to function 'InsertMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InsertMenu(ewg_param_theMenu, ewg_param_beforeID) InsertMenu ((MenuRef)ewg_param_theMenu, (MenuID)ewg_param_beforeID)
+
+void  ewg_function_InsertMenu (MenuRef theMenu, MenuID beforeID);
+// Wraps call to function 'DeleteMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DeleteMenu(ewg_param_menuID) DeleteMenu ((MenuID)ewg_param_menuID)
+
+void  ewg_function_DeleteMenu (MenuID menuID);
+// Wraps call to function 'ClearMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ClearMenuBar ClearMenuBar ()
+
+void  ewg_function_ClearMenuBar (void);
+// Wraps call to function 'SetMenuFlashCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuFlashCount(ewg_param_count) SetMenuFlashCount ((short)ewg_param_count)
+
+void  ewg_function_SetMenuFlashCount (short count);
+// Wraps call to function 'FlashMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_FlashMenuBar(ewg_param_menuID) FlashMenuBar ((MenuID)ewg_param_menuID)
+
+void  ewg_function_FlashMenuBar (MenuID menuID);
+// Wraps call to function 'IsMenuBarVisible' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuBarVisible IsMenuBarVisible ()
+
+Boolean  ewg_function_IsMenuBarVisible (void);
+// Wraps call to function 'ShowMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ShowMenuBar ShowMenuBar ()
+
+void  ewg_function_ShowMenuBar (void);
+// Wraps call to function 'HideMenuBar' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HideMenuBar HideMenuBar ()
+
+void  ewg_function_HideMenuBar (void);
+// Wraps call to function 'AcquireRootMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AcquireRootMenu AcquireRootMenu ()
+
+MenuRef  ewg_function_AcquireRootMenu (void);
+// Wraps call to function 'SetRootMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetRootMenu(ewg_param_inMenu) SetRootMenu ((MenuRef)ewg_param_inMenu)
+
+OSStatus  ewg_function_SetRootMenu (MenuRef inMenu);
+// Wraps call to function 'CheckMenuItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CheckMenuItem(ewg_param_theMenu, ewg_param_item, ewg_param_checked) CheckMenuItem ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (Boolean)ewg_param_checked)
+
+void  ewg_function_CheckMenuItem (MenuRef theMenu, MenuItemIndex item, Boolean checked);
+// Wraps call to function 'SetMenuItemText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemText(ewg_param_theMenu, ewg_param_item, ewg_param_itemString) SetMenuItemText ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (ConstStr255Param)ewg_param_itemString)
+
+void  ewg_function_SetMenuItemText (MenuRef theMenu, MenuItemIndex item, ConstStr255Param itemString);
+// Wraps call to function 'GetMenuItemText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemText(ewg_param_theMenu, ewg_param_item, ewg_param_itemString) GetMenuItemText ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, ewg_param_itemString)
+
+void  ewg_function_GetMenuItemText (MenuRef theMenu, MenuItemIndex item, void *itemString);
+// Wraps call to function 'SetItemMark' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetItemMark(ewg_param_theMenu, ewg_param_item, ewg_param_markChar) SetItemMark ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (CharParameter)ewg_param_markChar)
+
+void  ewg_function_SetItemMark (MenuRef theMenu, MenuItemIndex item, CharParameter markChar);
+// Wraps call to function 'GetItemMark' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetItemMark(ewg_param_theMenu, ewg_param_item, ewg_param_markChar) GetItemMark ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (CharParameter*)ewg_param_markChar)
+
+void  ewg_function_GetItemMark (MenuRef theMenu, MenuItemIndex item, CharParameter *markChar);
+// Wraps call to function 'SetItemCmd' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetItemCmd(ewg_param_theMenu, ewg_param_item, ewg_param_cmdChar) SetItemCmd ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (CharParameter)ewg_param_cmdChar)
+
+void  ewg_function_SetItemCmd (MenuRef theMenu, MenuItemIndex item, CharParameter cmdChar);
+// Wraps call to function 'GetItemCmd' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetItemCmd(ewg_param_theMenu, ewg_param_item, ewg_param_cmdChar) GetItemCmd ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (CharParameter*)ewg_param_cmdChar)
+
+void  ewg_function_GetItemCmd (MenuRef theMenu, MenuItemIndex item, CharParameter *cmdChar);
+// Wraps call to function 'SetItemIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetItemIcon(ewg_param_theMenu, ewg_param_item, ewg_param_iconIndex) SetItemIcon ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (short)ewg_param_iconIndex)
+
+void  ewg_function_SetItemIcon (MenuRef theMenu, MenuItemIndex item, short iconIndex);
+// Wraps call to function 'GetItemIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetItemIcon(ewg_param_theMenu, ewg_param_item, ewg_param_iconIndex) GetItemIcon ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (short*)ewg_param_iconIndex)
+
+void  ewg_function_GetItemIcon (MenuRef theMenu, MenuItemIndex item, short *iconIndex);
+// Wraps call to function 'SetItemStyle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetItemStyle(ewg_param_theMenu, ewg_param_item, ewg_param_chStyle) SetItemStyle ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (StyleParameter)ewg_param_chStyle)
+
+void  ewg_function_SetItemStyle (MenuRef theMenu, MenuItemIndex item, StyleParameter chStyle);
+// Wraps call to function 'GetItemStyle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetItemStyle(ewg_param_theMenu, ewg_param_item, ewg_param_chStyle) GetItemStyle ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item, (Style*)ewg_param_chStyle)
+
+void  ewg_function_GetItemStyle (MenuRef theMenu, MenuItemIndex item, Style *chStyle);
+// Wraps call to function 'SetMenuItemCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemCommandID(ewg_param_inMenu, ewg_param_inItem, ewg_param_inCommandID) SetMenuItemCommandID ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (MenuCommand)ewg_param_inCommandID)
+
+OSErr  ewg_function_SetMenuItemCommandID (MenuRef inMenu, MenuItemIndex inItem, MenuCommand inCommandID);
+// Wraps call to function 'GetMenuItemCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemCommandID(ewg_param_inMenu, ewg_param_inItem, ewg_param_outCommandID) GetMenuItemCommandID ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (MenuCommand*)ewg_param_outCommandID)
+
+OSErr  ewg_function_GetMenuItemCommandID (MenuRef inMenu, MenuItemIndex inItem, MenuCommand *outCommandID);
+// Wraps call to function 'SetMenuItemModifiers' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemModifiers(ewg_param_inMenu, ewg_param_inItem, ewg_param_inModifiers) SetMenuItemModifiers ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt8)ewg_param_inModifiers)
+
+OSErr  ewg_function_SetMenuItemModifiers (MenuRef inMenu, MenuItemIndex inItem, UInt8 inModifiers);
+// Wraps call to function 'GetMenuItemModifiers' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemModifiers(ewg_param_inMenu, ewg_param_inItem, ewg_param_outModifiers) GetMenuItemModifiers ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt8*)ewg_param_outModifiers)
+
+OSErr  ewg_function_GetMenuItemModifiers (MenuRef inMenu, MenuItemIndex inItem, UInt8 *outModifiers);
+// Wraps call to function 'SetMenuItemIconHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemIconHandle(ewg_param_inMenu, ewg_param_inItem, ewg_param_inIconType, ewg_param_inIconHandle) SetMenuItemIconHandle ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt8)ewg_param_inIconType, (Handle)ewg_param_inIconHandle)
+
+OSErr  ewg_function_SetMenuItemIconHandle (MenuRef inMenu, MenuItemIndex inItem, UInt8 inIconType, Handle inIconHandle);
+// Wraps call to function 'GetMenuItemIconHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemIconHandle(ewg_param_inMenu, ewg_param_inItem, ewg_param_outIconType, ewg_param_outIconHandle) GetMenuItemIconHandle ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt8*)ewg_param_outIconType, (Handle*)ewg_param_outIconHandle)
+
+OSErr  ewg_function_GetMenuItemIconHandle (MenuRef inMenu, MenuItemIndex inItem, UInt8 *outIconType, Handle *outIconHandle);
+// Wraps call to function 'SetMenuItemTextEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemTextEncoding(ewg_param_inMenu, ewg_param_inItem, ewg_param_inScriptID) SetMenuItemTextEncoding ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (TextEncoding)ewg_param_inScriptID)
+
+OSErr  ewg_function_SetMenuItemTextEncoding (MenuRef inMenu, MenuItemIndex inItem, TextEncoding inScriptID);
+// Wraps call to function 'GetMenuItemTextEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemTextEncoding(ewg_param_inMenu, ewg_param_inItem, ewg_param_outScriptID) GetMenuItemTextEncoding ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (TextEncoding*)ewg_param_outScriptID)
+
+OSErr  ewg_function_GetMenuItemTextEncoding (MenuRef inMenu, MenuItemIndex inItem, TextEncoding *outScriptID);
+// Wraps call to function 'SetMenuItemHierarchicalID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemHierarchicalID(ewg_param_inMenu, ewg_param_inItem, ewg_param_inHierID) SetMenuItemHierarchicalID ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (MenuID)ewg_param_inHierID)
+
+OSErr  ewg_function_SetMenuItemHierarchicalID (MenuRef inMenu, MenuItemIndex inItem, MenuID inHierID);
+// Wraps call to function 'GetMenuItemHierarchicalID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemHierarchicalID(ewg_param_inMenu, ewg_param_inItem, ewg_param_outHierID) GetMenuItemHierarchicalID ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (MenuID*)ewg_param_outHierID)
+
+OSErr  ewg_function_GetMenuItemHierarchicalID (MenuRef inMenu, MenuItemIndex inItem, MenuID *outHierID);
+// Wraps call to function 'SetMenuItemFontID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemFontID(ewg_param_inMenu, ewg_param_inItem, ewg_param_inFontID) SetMenuItemFontID ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (SInt16)ewg_param_inFontID)
+
+OSErr  ewg_function_SetMenuItemFontID (MenuRef inMenu, MenuItemIndex inItem, SInt16 inFontID);
+// Wraps call to function 'GetMenuItemFontID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemFontID(ewg_param_inMenu, ewg_param_inItem, ewg_param_outFontID) GetMenuItemFontID ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (SInt16*)ewg_param_outFontID)
+
+OSErr  ewg_function_GetMenuItemFontID (MenuRef inMenu, MenuItemIndex inItem, SInt16 *outFontID);
+// Wraps call to function 'SetMenuItemRefCon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemRefCon(ewg_param_inMenu, ewg_param_inItem, ewg_param_inRefCon) SetMenuItemRefCon ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt32)ewg_param_inRefCon)
+
+OSErr  ewg_function_SetMenuItemRefCon (MenuRef inMenu, MenuItemIndex inItem, UInt32 inRefCon);
+// Wraps call to function 'GetMenuItemRefCon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemRefCon(ewg_param_inMenu, ewg_param_inItem, ewg_param_outRefCon) GetMenuItemRefCon ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt32*)ewg_param_outRefCon)
+
+OSErr  ewg_function_GetMenuItemRefCon (MenuRef inMenu, MenuItemIndex inItem, UInt32 *outRefCon);
+// Wraps call to function 'SetMenuItemKeyGlyph' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemKeyGlyph(ewg_param_inMenu, ewg_param_inItem, ewg_param_inGlyph) SetMenuItemKeyGlyph ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (SInt16)ewg_param_inGlyph)
+
+OSErr  ewg_function_SetMenuItemKeyGlyph (MenuRef inMenu, MenuItemIndex inItem, SInt16 inGlyph);
+// Wraps call to function 'GetMenuItemKeyGlyph' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemKeyGlyph(ewg_param_inMenu, ewg_param_inItem, ewg_param_outGlyph) GetMenuItemKeyGlyph ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (SInt16*)ewg_param_outGlyph)
+
+OSErr  ewg_function_GetMenuItemKeyGlyph (MenuRef inMenu, MenuItemIndex inItem, SInt16 *outGlyph);
+// Wraps call to function 'EnableMenuItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableMenuItem(ewg_param_theMenu, ewg_param_item) EnableMenuItem ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item)
+
+void  ewg_function_EnableMenuItem (MenuRef theMenu, MenuItemIndex item);
+// Wraps call to function 'DisableMenuItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisableMenuItem(ewg_param_theMenu, ewg_param_item) DisableMenuItem ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item)
+
+void  ewg_function_DisableMenuItem (MenuRef theMenu, MenuItemIndex item);
+// Wraps call to function 'IsMenuItemEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuItemEnabled(ewg_param_menu, ewg_param_item) IsMenuItemEnabled ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item)
+
+Boolean  ewg_function_IsMenuItemEnabled (MenuRef menu, MenuItemIndex item);
+// Wraps call to function 'EnableMenuItemIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableMenuItemIcon(ewg_param_theMenu, ewg_param_item) EnableMenuItemIcon ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item)
+
+void  ewg_function_EnableMenuItemIcon (MenuRef theMenu, MenuItemIndex item);
+// Wraps call to function 'DisableMenuItemIcon' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisableMenuItemIcon(ewg_param_theMenu, ewg_param_item) DisableMenuItemIcon ((MenuRef)ewg_param_theMenu, (MenuItemIndex)ewg_param_item)
+
+void  ewg_function_DisableMenuItemIcon (MenuRef theMenu, MenuItemIndex item);
+// Wraps call to function 'IsMenuItemIconEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuItemIconEnabled(ewg_param_menu, ewg_param_item) IsMenuItemIconEnabled ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item)
+
+Boolean  ewg_function_IsMenuItemIconEnabled (MenuRef menu, MenuItemIndex item);
+// Wraps call to function 'SetMenuItemHierarchicalMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemHierarchicalMenu(ewg_param_inMenu, ewg_param_inItem, ewg_param_inHierMenu) SetMenuItemHierarchicalMenu ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (MenuRef)ewg_param_inHierMenu)
+
+OSStatus  ewg_function_SetMenuItemHierarchicalMenu (MenuRef inMenu, MenuItemIndex inItem, MenuRef inHierMenu);
+// Wraps call to function 'GetMenuItemHierarchicalMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemHierarchicalMenu(ewg_param_inMenu, ewg_param_inItem, ewg_param_outHierMenu) GetMenuItemHierarchicalMenu ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (MenuRef*)ewg_param_outHierMenu)
+
+OSStatus  ewg_function_GetMenuItemHierarchicalMenu (MenuRef inMenu, MenuItemIndex inItem, MenuRef *outHierMenu);
+// Wraps call to function 'CopyMenuItemTextAsCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyMenuItemTextAsCFString(ewg_param_inMenu, ewg_param_inItem, ewg_param_outString) CopyMenuItemTextAsCFString ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (CFStringRef*)ewg_param_outString)
+
+OSStatus  ewg_function_CopyMenuItemTextAsCFString (MenuRef inMenu, MenuItemIndex inItem, CFStringRef *outString);
+// Wraps call to function 'SetMenuItemTextWithCFString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemTextWithCFString(ewg_param_inMenu, ewg_param_inItem, ewg_param_inString) SetMenuItemTextWithCFString ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (CFStringRef)ewg_param_inString)
+
+OSStatus  ewg_function_SetMenuItemTextWithCFString (MenuRef inMenu, MenuItemIndex inItem, CFStringRef inString);
+// Wraps call to function 'GetMenuItemIndent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemIndent(ewg_param_inMenu, ewg_param_inItem, ewg_param_outIndent) GetMenuItemIndent ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt32*)ewg_param_outIndent)
+
+OSStatus  ewg_function_GetMenuItemIndent (MenuRef inMenu, MenuItemIndex inItem, UInt32 *outIndent);
+// Wraps call to function 'SetMenuItemIndent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemIndent(ewg_param_inMenu, ewg_param_inItem, ewg_param_inIndent) SetMenuItemIndent ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (UInt32)ewg_param_inIndent)
+
+OSStatus  ewg_function_SetMenuItemIndent (MenuRef inMenu, MenuItemIndex inItem, UInt32 inIndent);
+// Wraps call to function 'GetMenuItemCommandKey' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemCommandKey(ewg_param_inMenu, ewg_param_inItem, ewg_param_inGetVirtualKey, ewg_param_outKey) GetMenuItemCommandKey ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (Boolean)ewg_param_inGetVirtualKey, (UInt16*)ewg_param_outKey)
+
+OSStatus  ewg_function_GetMenuItemCommandKey (MenuRef inMenu, MenuItemIndex inItem, Boolean inGetVirtualKey, UInt16 *outKey);
+// Wraps call to function 'SetMenuItemCommandKey' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemCommandKey(ewg_param_inMenu, ewg_param_inItem, ewg_param_inSetVirtualKey, ewg_param_inKey) SetMenuItemCommandKey ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (Boolean)ewg_param_inSetVirtualKey, (UInt16)ewg_param_inKey)
+
+OSStatus  ewg_function_SetMenuItemCommandKey (MenuRef inMenu, MenuItemIndex inItem, Boolean inSetVirtualKey, UInt16 inKey);
+// Wraps call to function 'DeleteMCEntries' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DeleteMCEntries(ewg_param_menuID, ewg_param_menuItem) DeleteMCEntries ((MenuID)ewg_param_menuID, (short)ewg_param_menuItem)
+
+void  ewg_function_DeleteMCEntries (MenuID menuID, short menuItem);
+// Wraps call to function 'GetMCInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMCInfo GetMCInfo ()
+
+MCTableHandle  ewg_function_GetMCInfo (void);
+// Wraps call to function 'SetMCInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMCInfo(ewg_param_menuCTbl) SetMCInfo ((MCTableHandle)ewg_param_menuCTbl)
+
+void  ewg_function_SetMCInfo (MCTableHandle menuCTbl);
+// Wraps call to function 'DisposeMCInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeMCInfo(ewg_param_menuCTbl) DisposeMCInfo ((MCTableHandle)ewg_param_menuCTbl)
+
+void  ewg_function_DisposeMCInfo (MCTableHandle menuCTbl);
+// Wraps call to function 'GetMCEntry' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMCEntry(ewg_param_menuID, ewg_param_menuItem) GetMCEntry ((MenuID)ewg_param_menuID, (short)ewg_param_menuItem)
+
+MCEntryPtr  ewg_function_GetMCEntry (MenuID menuID, short menuItem);
+// Wraps call to function 'SetMCEntries' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMCEntries(ewg_param_numEntries, ewg_param_menuCEntries) SetMCEntries ((short)ewg_param_numEntries, (MCTablePtr)ewg_param_menuCEntries)
+
+void  ewg_function_SetMCEntries (short numEntries, MCTablePtr menuCEntries);
+// Wraps call to function 'GetMenuItemProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemProperty(ewg_param_menu, ewg_param_item, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_bufferSize, ewg_param_actualSize, ewg_param_propertyBuffer) GetMenuItemProperty ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32)ewg_param_bufferSize, (UInt32*)ewg_param_actualSize, (void*)ewg_param_propertyBuffer)
+
+OSStatus  ewg_function_GetMenuItemProperty (MenuRef menu, MenuItemIndex item, OSType propertyCreator, OSType propertyTag, UInt32 bufferSize, UInt32 *actualSize, void *propertyBuffer);
+// Wraps call to function 'GetMenuItemPropertySize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemPropertySize(ewg_param_menu, ewg_param_item, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_size) GetMenuItemPropertySize ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32*)ewg_param_size)
+
+OSStatus  ewg_function_GetMenuItemPropertySize (MenuRef menu, MenuItemIndex item, OSType propertyCreator, OSType propertyTag, UInt32 *size);
+// Wraps call to function 'SetMenuItemProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemProperty(ewg_param_menu, ewg_param_item, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_propertySize, ewg_param_propertyData) SetMenuItemProperty ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32)ewg_param_propertySize, (void const*)ewg_param_propertyData)
+
+OSStatus  ewg_function_SetMenuItemProperty (MenuRef menu, MenuItemIndex item, OSType propertyCreator, OSType propertyTag, UInt32 propertySize, void const *propertyData);
+// Wraps call to function 'RemoveMenuItemProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveMenuItemProperty(ewg_param_menu, ewg_param_item, ewg_param_propertyCreator, ewg_param_propertyTag) RemoveMenuItemProperty ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag)
+
+OSStatus  ewg_function_RemoveMenuItemProperty (MenuRef menu, MenuItemIndex item, OSType propertyCreator, OSType propertyTag);
+// Wraps call to function 'GetMenuItemPropertyAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemPropertyAttributes(ewg_param_menu, ewg_param_item, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_attributes) GetMenuItemPropertyAttributes ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32*)ewg_param_attributes)
+
+OSStatus  ewg_function_GetMenuItemPropertyAttributes (MenuRef menu, MenuItemIndex item, OSType propertyCreator, OSType propertyTag, UInt32 *attributes);
+// Wraps call to function 'ChangeMenuItemPropertyAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeMenuItemPropertyAttributes(ewg_param_menu, ewg_param_item, ewg_param_propertyCreator, ewg_param_propertyTag, ewg_param_attributesToSet, ewg_param_attributesToClear) ChangeMenuItemPropertyAttributes ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (OSType)ewg_param_propertyCreator, (OSType)ewg_param_propertyTag, (UInt32)ewg_param_attributesToSet, (UInt32)ewg_param_attributesToClear)
+
+OSStatus  ewg_function_ChangeMenuItemPropertyAttributes (MenuRef menu, MenuItemIndex item, OSType propertyCreator, OSType propertyTag, UInt32 attributesToSet, UInt32 attributesToClear);
+// Wraps call to function 'GetMenuAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuAttributes(ewg_param_menu, ewg_param_outAttributes) GetMenuAttributes ((MenuRef)ewg_param_menu, (MenuAttributes*)ewg_param_outAttributes)
+
+OSStatus  ewg_function_GetMenuAttributes (MenuRef menu, MenuAttributes *outAttributes);
+// Wraps call to function 'ChangeMenuAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeMenuAttributes(ewg_param_menu, ewg_param_setTheseAttributes, ewg_param_clearTheseAttributes) ChangeMenuAttributes ((MenuRef)ewg_param_menu, (MenuAttributes)ewg_param_setTheseAttributes, (MenuAttributes)ewg_param_clearTheseAttributes)
+
+OSStatus  ewg_function_ChangeMenuAttributes (MenuRef menu, MenuAttributes setTheseAttributes, MenuAttributes clearTheseAttributes);
+// Wraps call to function 'GetMenuItemAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuItemAttributes(ewg_param_menu, ewg_param_item, ewg_param_outAttributes) GetMenuItemAttributes ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (MenuItemAttributes*)ewg_param_outAttributes)
+
+OSStatus  ewg_function_GetMenuItemAttributes (MenuRef menu, MenuItemIndex item, MenuItemAttributes *outAttributes);
+// Wraps call to function 'ChangeMenuItemAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ChangeMenuItemAttributes(ewg_param_menu, ewg_param_item, ewg_param_setTheseAttributes, ewg_param_clearTheseAttributes) ChangeMenuItemAttributes ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (MenuItemAttributes)ewg_param_setTheseAttributes, (MenuItemAttributes)ewg_param_clearTheseAttributes)
+
+OSStatus  ewg_function_ChangeMenuItemAttributes (MenuRef menu, MenuItemIndex item, MenuItemAttributes setTheseAttributes, MenuItemAttributes clearTheseAttributes);
+// Wraps call to function 'DisableAllMenuItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisableAllMenuItems(ewg_param_theMenu) DisableAllMenuItems ((MenuRef)ewg_param_theMenu)
+
+void  ewg_function_DisableAllMenuItems (MenuRef theMenu);
+// Wraps call to function 'EnableAllMenuItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableAllMenuItems(ewg_param_theMenu) EnableAllMenuItems ((MenuRef)ewg_param_theMenu)
+
+void  ewg_function_EnableAllMenuItems (MenuRef theMenu);
+// Wraps call to function 'MenuHasEnabledItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_MenuHasEnabledItems(ewg_param_theMenu) MenuHasEnabledItems ((MenuRef)ewg_param_theMenu)
+
+Boolean  ewg_function_MenuHasEnabledItems (MenuRef theMenu);
+// Wraps call to function 'GetMenuTrackingData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuTrackingData(ewg_param_theMenu, ewg_param_outData) GetMenuTrackingData ((MenuRef)ewg_param_theMenu, (MenuTrackingData*)ewg_param_outData)
+
+OSStatus  ewg_function_GetMenuTrackingData (MenuRef theMenu, MenuTrackingData *outData);
+// Wraps call to function 'GetMenuType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuType(ewg_param_theMenu, ewg_param_outType) GetMenuType ((MenuRef)ewg_param_theMenu, (UInt16*)ewg_param_outType)
+
+OSStatus  ewg_function_GetMenuType (MenuRef theMenu, UInt16 *outType);
+// Wraps call to function 'CountMenuItemsWithCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CountMenuItemsWithCommandID(ewg_param_inMenu, ewg_param_inCommandID) CountMenuItemsWithCommandID ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID)
+
+ItemCount  ewg_function_CountMenuItemsWithCommandID (MenuRef inMenu, MenuCommand inCommandID);
+// Wraps call to function 'GetIndMenuItemWithCommandID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetIndMenuItemWithCommandID(ewg_param_inMenu, ewg_param_inCommandID, ewg_param_inItemIndex, ewg_param_outMenu, ewg_param_outIndex) GetIndMenuItemWithCommandID ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID, (UInt32)ewg_param_inItemIndex, (MenuRef*)ewg_param_outMenu, (MenuItemIndex*)ewg_param_outIndex)
+
+OSStatus  ewg_function_GetIndMenuItemWithCommandID (MenuRef inMenu, MenuCommand inCommandID, UInt32 inItemIndex, MenuRef *outMenu, MenuItemIndex *outIndex);
+// Wraps call to function 'EnableMenuCommand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_EnableMenuCommand(ewg_param_inMenu, ewg_param_inCommandID) EnableMenuCommand ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID)
+
+void  ewg_function_EnableMenuCommand (MenuRef inMenu, MenuCommand inCommandID);
+// Wraps call to function 'DisableMenuCommand' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisableMenuCommand(ewg_param_inMenu, ewg_param_inCommandID) DisableMenuCommand ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID)
+
+void  ewg_function_DisableMenuCommand (MenuRef inMenu, MenuCommand inCommandID);
+// Wraps call to function 'IsMenuCommandEnabled' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuCommandEnabled(ewg_param_inMenu, ewg_param_inCommandID) IsMenuCommandEnabled ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID)
+
+Boolean  ewg_function_IsMenuCommandEnabled (MenuRef inMenu, MenuCommand inCommandID);
+// Wraps call to function 'SetMenuCommandMark' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuCommandMark(ewg_param_inMenu, ewg_param_inCommandID, ewg_param_inMark) SetMenuCommandMark ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID, (UniChar)ewg_param_inMark)
+
+OSStatus  ewg_function_SetMenuCommandMark (MenuRef inMenu, MenuCommand inCommandID, UniChar inMark);
+// Wraps call to function 'GetMenuCommandMark' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuCommandMark(ewg_param_inMenu, ewg_param_inCommandID, ewg_param_outMark) GetMenuCommandMark ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID, (UniChar*)ewg_param_outMark)
+
+OSStatus  ewg_function_GetMenuCommandMark (MenuRef inMenu, MenuCommand inCommandID, UniChar *outMark);
+// Wraps call to function 'GetMenuCommandProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuCommandProperty(ewg_param_inMenu, ewg_param_inCommandID, ewg_param_inPropertyCreator, ewg_param_inPropertyTag, ewg_param_inBufferSize, ewg_param_outActualSize, ewg_param_inPropertyBuffer) GetMenuCommandProperty ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID, (OSType)ewg_param_inPropertyCreator, (OSType)ewg_param_inPropertyTag, (ByteCount)ewg_param_inBufferSize, (ByteCount*)ewg_param_outActualSize, (void*)ewg_param_inPropertyBuffer)
+
+OSStatus  ewg_function_GetMenuCommandProperty (MenuRef inMenu, MenuCommand inCommandID, OSType inPropertyCreator, OSType inPropertyTag, ByteCount inBufferSize, ByteCount *outActualSize, void *inPropertyBuffer);
+// Wraps call to function 'GetMenuCommandPropertySize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuCommandPropertySize(ewg_param_inMenu, ewg_param_inCommandID, ewg_param_inPropertyCreator, ewg_param_inPropertyTag, ewg_param_outSize) GetMenuCommandPropertySize ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID, (OSType)ewg_param_inPropertyCreator, (OSType)ewg_param_inPropertyTag, (ByteCount*)ewg_param_outSize)
+
+OSStatus  ewg_function_GetMenuCommandPropertySize (MenuRef inMenu, MenuCommand inCommandID, OSType inPropertyCreator, OSType inPropertyTag, ByteCount *outSize);
+// Wraps call to function 'SetMenuCommandProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuCommandProperty(ewg_param_inMenu, ewg_param_inCommandID, ewg_param_inPropertyCreator, ewg_param_inPropertyTag, ewg_param_inPropertySize, ewg_param_inPropertyData) SetMenuCommandProperty ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID, (OSType)ewg_param_inPropertyCreator, (OSType)ewg_param_inPropertyTag, (ByteCount)ewg_param_inPropertySize, (void const*)ewg_param_inPropertyData)
+
+OSStatus  ewg_function_SetMenuCommandProperty (MenuRef inMenu, MenuCommand inCommandID, OSType inPropertyCreator, OSType inPropertyTag, ByteCount inPropertySize, void const *inPropertyData);
+// Wraps call to function 'RemoveMenuCommandProperty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_RemoveMenuCommandProperty(ewg_param_inMenu, ewg_param_inCommandID, ewg_param_inPropertyCreator, ewg_param_inPropertyTag) RemoveMenuCommandProperty ((MenuRef)ewg_param_inMenu, (MenuCommand)ewg_param_inCommandID, (OSType)ewg_param_inPropertyCreator, (OSType)ewg_param_inPropertyTag)
+
+OSStatus  ewg_function_RemoveMenuCommandProperty (MenuRef inMenu, MenuCommand inCommandID, OSType inPropertyCreator, OSType inPropertyTag);
+// Wraps call to function 'CopyMenuItemData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CopyMenuItemData(ewg_param_inMenu, ewg_param_inItem, ewg_param_inIsCommandID, ewg_param_ioData) CopyMenuItemData ((MenuRef)ewg_param_inMenu, (MenuItemID)ewg_param_inItem, (Boolean)ewg_param_inIsCommandID, (MenuItemDataPtr)ewg_param_ioData)
+
+OSStatus  ewg_function_CopyMenuItemData (MenuRef inMenu, MenuItemID inItem, Boolean inIsCommandID, MenuItemDataPtr ioData);
+// Wraps call to function 'SetMenuItemData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuItemData(ewg_param_inMenu, ewg_param_inItem, ewg_param_inIsCommandID, ewg_param_inData) SetMenuItemData ((MenuRef)ewg_param_inMenu, (MenuItemID)ewg_param_inItem, (Boolean)ewg_param_inIsCommandID, (MenuItemDataRec const*)ewg_param_inData)
+
+OSStatus  ewg_function_SetMenuItemData (MenuRef inMenu, MenuItemID inItem, Boolean inIsCommandID, MenuItemDataRec const *inData);
+// Wraps call to function 'IsMenuItemInvalid' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsMenuItemInvalid(ewg_param_inMenu, ewg_param_inItem) IsMenuItemInvalid ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem)
+
+Boolean  ewg_function_IsMenuItemInvalid (MenuRef inMenu, MenuItemIndex inItem);
+// Wraps call to function 'InvalidateMenuItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvalidateMenuItems(ewg_param_inMenu, ewg_param_inFirstItem, ewg_param_inNumItems) InvalidateMenuItems ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inFirstItem, (ItemCount)ewg_param_inNumItems)
+
+OSStatus  ewg_function_InvalidateMenuItems (MenuRef inMenu, MenuItemIndex inFirstItem, ItemCount inNumItems);
+// Wraps call to function 'UpdateInvalidMenuItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UpdateInvalidMenuItems(ewg_param_inMenu) UpdateInvalidMenuItems ((MenuRef)ewg_param_inMenu)
+
+OSStatus  ewg_function_UpdateInvalidMenuItems (MenuRef inMenu);
+// Wraps call to function 'CreateStandardFontMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CreateStandardFontMenu(ewg_param_menu, ewg_param_afterItem, ewg_param_firstHierMenuID, ewg_param_options, ewg_param_outHierMenuCount) CreateStandardFontMenu ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_afterItem, (MenuID)ewg_param_firstHierMenuID, (OptionBits)ewg_param_options, (ItemCount*)ewg_param_outHierMenuCount)
+
+OSStatus  ewg_function_CreateStandardFontMenu (MenuRef menu, MenuItemIndex afterItem, MenuID firstHierMenuID, OptionBits options, ItemCount *outHierMenuCount);
+// Wraps call to function 'UpdateStandardFontMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_UpdateStandardFontMenu(ewg_param_menu, ewg_param_outHierMenuCount) UpdateStandardFontMenu ((MenuRef)ewg_param_menu, (ItemCount*)ewg_param_outHierMenuCount)
+
+OSStatus  ewg_function_UpdateStandardFontMenu (MenuRef menu, ItemCount *outHierMenuCount);
+// Wraps call to function 'GetFontFamilyFromMenuSelection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetFontFamilyFromMenuSelection(ewg_param_menu, ewg_param_item, ewg_param_outFontFamily, ewg_param_outStyle) GetFontFamilyFromMenuSelection ((MenuRef)ewg_param_menu, (MenuItemIndex)ewg_param_item, (FMFontFamily*)ewg_param_outFontFamily, (FMFontStyle*)ewg_param_outStyle)
+
+OSStatus  ewg_function_GetFontFamilyFromMenuSelection (MenuRef menu, MenuItemIndex item, FMFontFamily *outFontFamily, FMFontStyle *outStyle);
+// Wraps call to function 'InitContextualMenus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InitContextualMenus InitContextualMenus ()
+
+OSStatus  ewg_function_InitContextualMenus (void);
+// Wraps call to function 'IsShowContextualMenuClick' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsShowContextualMenuClick(ewg_param_inEvent) IsShowContextualMenuClick ((EventRecord const*)ewg_param_inEvent)
+
+Boolean  ewg_function_IsShowContextualMenuClick (EventRecord const *inEvent);
+// Wraps call to function 'IsShowContextualMenuEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_IsShowContextualMenuEvent(ewg_param_inEvent) IsShowContextualMenuEvent ((EventRef)ewg_param_inEvent)
+
+Boolean  ewg_function_IsShowContextualMenuEvent (EventRef inEvent);
+// Wraps call to function 'ContextualMenuSelect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ContextualMenuSelect(ewg_param_inMenu, ewg_param_inGlobalLocation, ewg_param_inReserved, ewg_param_inHelpType, ewg_param_inHelpItemString, ewg_param_inSelection, ewg_param_outUserSelectionType, ewg_param_outMenuID, ewg_param_outMenuItem) ContextualMenuSelect ((MenuRef)ewg_param_inMenu, *(Point*)ewg_param_inGlobalLocation, (Boolean)ewg_param_inReserved, (UInt32)ewg_param_inHelpType, (ConstStr255Param)ewg_param_inHelpItemString, (AEDesc const*)ewg_param_inSelection, (UInt32*)ewg_param_outUserSelectionType, (MenuID*)ewg_param_outMenuID, (MenuItemIndex*)ewg_param_outMenuItem)
+
+OSStatus  ewg_function_ContextualMenuSelect (MenuRef inMenu, Point *inGlobalLocation, Boolean inReserved, UInt32 inHelpType, ConstStr255Param inHelpItemString, AEDesc const *inSelection, UInt32 *outUserSelectionType, MenuID *outMenuID, MenuItemIndex *outMenuItem);
+// Wraps call to function 'ProcessIsContextualMenuClient' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_ProcessIsContextualMenuClient(ewg_param_inPSN) ProcessIsContextualMenuClient ((ProcessSerialNumber*)ewg_param_inPSN)
+
+Boolean  ewg_function_ProcessIsContextualMenuClient (ProcessSerialNumber *inPSN);
+// Wraps call to function 'LMGetTheMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_LMGetTheMenu LMGetTheMenu ()
+
+MenuID  ewg_function_LMGetTheMenu (void);
+// Wraps call to function 'GetMenuID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuID(ewg_param_menu) GetMenuID ((MenuRef)ewg_param_menu)
+
+MenuID  ewg_function_GetMenuID (MenuRef menu);
+// Wraps call to function 'GetMenuWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuWidth(ewg_param_menu) GetMenuWidth ((MenuRef)ewg_param_menu)
+
+SInt16  ewg_function_GetMenuWidth (MenuRef menu);
+// Wraps call to function 'GetMenuHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuHeight(ewg_param_menu) GetMenuHeight ((MenuRef)ewg_param_menu)
+
+SInt16  ewg_function_GetMenuHeight (MenuRef menu);
+// Wraps call to function 'GetMenuTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuTitle(ewg_param_menu, ewg_param_title) GetMenuTitle ((MenuRef)ewg_param_menu, ewg_param_title)
+
+StringPtr  ewg_function_GetMenuTitle (MenuRef menu, void *title);
+// Wraps call to function 'GetMenuDefinition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_GetMenuDefinition(ewg_param_menu, ewg_param_outDefSpec) GetMenuDefinition ((MenuRef)ewg_param_menu, (MenuDefSpecPtr)ewg_param_outDefSpec)
+
+OSStatus  ewg_function_GetMenuDefinition (MenuRef menu, MenuDefSpecPtr outDefSpec);
+// Wraps call to function 'SetMenuID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuID(ewg_param_menu, ewg_param_menuID) SetMenuID ((MenuRef)ewg_param_menu, (MenuID)ewg_param_menuID)
+
+void  ewg_function_SetMenuID (MenuRef menu, MenuID menuID);
+// Wraps call to function 'SetMenuWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuWidth(ewg_param_menu, ewg_param_width) SetMenuWidth ((MenuRef)ewg_param_menu, (SInt16)ewg_param_width)
+
+void  ewg_function_SetMenuWidth (MenuRef menu, SInt16 width);
+// Wraps call to function 'SetMenuHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuHeight(ewg_param_menu, ewg_param_height) SetMenuHeight ((MenuRef)ewg_param_menu, (SInt16)ewg_param_height)
+
+void  ewg_function_SetMenuHeight (MenuRef menu, SInt16 height);
+// Wraps call to function 'SetMenuTitle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuTitle(ewg_param_menu, ewg_param_title) SetMenuTitle ((MenuRef)ewg_param_menu, (ConstStr255Param)ewg_param_title)
+
+OSStatus  ewg_function_SetMenuTitle (MenuRef menu, ConstStr255Param title);
+// Wraps call to function 'SetMenuDefinition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_SetMenuDefinition(ewg_param_menu, ewg_param_defSpec) SetMenuDefinition ((MenuRef)ewg_param_menu, (MenuDefSpec const*)ewg_param_defSpec)
+
+OSStatus  ewg_function_SetMenuDefinition (MenuRef menu, MenuDefSpec const *defSpec);
 // Wraps call to function 'NewControlActionUPP' in a macro
 #include <Carbon/Carbon.h>
 
@@ -10151,6 +11153,24 @@ void  ewg_function_set_event_handler_proc_ptr_entry (void *a_class, void *a_feat
 #define ewg_function_macro_call_event_handler_proc_ptr(ewg_param_a_function, ewg_param_inHandlerCallRef, ewg_param_inEvent, ewg_param_inUserData) call_event_handler_proc_ptr ((void*)ewg_param_a_function, (EventHandlerCallRef)ewg_param_inHandlerCallRef, (EventRef)ewg_param_inEvent, (void*)ewg_param_inUserData)
 
 OSStatus  ewg_function_call_event_handler_proc_ptr (void *a_function, EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData);
+// Wraps call to function 'get_menu_def_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_menu_def_proc_ptr_stub get_menu_def_proc_ptr_stub ()
+
+void * ewg_function_get_menu_def_proc_ptr_stub (void);
+// Wraps call to function 'set_menu_def_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_menu_def_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_menu_def_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_menu_def_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_menu_def_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_menu_def_proc_ptr(ewg_param_a_function, ewg_param_message, ewg_param_theMenu, ewg_param_menuRect, ewg_param_hitPt, ewg_param_whichItem) call_menu_def_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_message, (MenuRef)ewg_param_theMenu, (Rect*)ewg_param_menuRect, *(Point*)ewg_param_hitPt, (short*)ewg_param_whichItem)
+
+void  ewg_function_call_menu_def_proc_ptr (void *a_function, short message, MenuRef theMenu, Rect *menuRect, Point *hitPt, short *whichItem);
 // Wraps call to function 'get_control_action_proc_ptr_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 
@@ -11051,6 +12071,132 @@ void  ewg_function_set_get_next_event_filter_proc_ptr_entry (void *a_class, void
 #define ewg_function_macro_call_get_next_event_filter_proc_ptr(ewg_param_a_function, ewg_param_theEvent, ewg_param_result) call_get_next_event_filter_proc_ptr ((void*)ewg_param_a_function, (EventRecord*)ewg_param_theEvent, (Boolean*)ewg_param_result)
 
 void  ewg_function_call_get_next_event_filter_proc_ptr (void *a_function, EventRecord *theEvent, Boolean *result);
+// Wraps call to function 'get_menu_bar_def_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_menu_bar_def_proc_ptr_stub get_menu_bar_def_proc_ptr_stub ()
+
+void * ewg_function_get_menu_bar_def_proc_ptr_stub (void);
+// Wraps call to function 'set_menu_bar_def_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_menu_bar_def_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_menu_bar_def_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_menu_bar_def_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_menu_bar_def_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_menu_bar_def_proc_ptr(ewg_param_a_function, ewg_param_selector, ewg_param_message, ewg_param_parameter1, ewg_param_parameter2) call_menu_bar_def_proc_ptr ((void*)ewg_param_a_function, (short)ewg_param_selector, (short)ewg_param_message, (short)ewg_param_parameter1, (long)ewg_param_parameter2)
+
+long  ewg_function_call_menu_bar_def_proc_ptr (void *a_function, short selector, short message, short parameter1, long parameter2);
+// Wraps call to function 'get_mbar_hook_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_mbar_hook_proc_ptr_stub get_mbar_hook_proc_ptr_stub ()
+
+void * ewg_function_get_mbar_hook_proc_ptr_stub (void);
+// Wraps call to function 'set_mbar_hook_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_mbar_hook_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_mbar_hook_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_mbar_hook_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_mbar_hook_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_mbar_hook_proc_ptr(ewg_param_a_function, ewg_param_menuRect) call_mbar_hook_proc_ptr ((void*)ewg_param_a_function, (Rect*)ewg_param_menuRect)
+
+short  ewg_function_call_mbar_hook_proc_ptr (void *a_function, Rect *menuRect);
+// Wraps call to function 'get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub ()
+
+void * ewg_function_get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub (void);
+// Wraps call to function 'set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback(ewg_param_a_function, ewg_param_thisPointer, ewg_param_iid, ewg_param_ppv) call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback ((void*)ewg_param_a_function, (void*)ewg_param_thisPointer, *(CFUUIDBytes*)ewg_param_iid, (void**)ewg_param_ppv)
+
+SInt32  ewg_function_call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback (void *a_function, void *thisPointer, CFUUIDBytes *iid, void **ppv);
+// Wraps call to function 'get_uint32_voidp_anonymous_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_uint32_voidp_anonymous_callback_stub get_uint32_voidp_anonymous_callback_stub ()
+
+void * ewg_function_get_uint32_voidp_anonymous_callback_stub (void);
+// Wraps call to function 'set_uint32_voidp_anonymous_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_uint32_voidp_anonymous_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_uint32_voidp_anonymous_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_uint32_voidp_anonymous_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_uint32_voidp_anonymous_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_uint32_voidp_anonymous_callback(ewg_param_a_function, ewg_param_thisPointer) call_uint32_voidp_anonymous_callback ((void*)ewg_param_a_function, (void*)ewg_param_thisPointer)
+
+UInt32  ewg_function_call_uint32_voidp_anonymous_callback (void *a_function, void *thisPointer);
+// Wraps call to function 'get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub ()
+
+void * ewg_function_get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub (void);
+// Wraps call to function 'set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback(ewg_param_a_function, ewg_param_thisInstance, ewg_param_inContext, ewg_param_outCommandPairs) call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback ((void*)ewg_param_a_function, (void*)ewg_param_thisInstance, (AEDesc const*)ewg_param_inContext, (AEDescList*)ewg_param_outCommandPairs)
+
+OSStatus  ewg_function_call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback (void *a_function, void *thisInstance, AEDesc const *inContext, AEDescList *outCommandPairs);
+// Wraps call to function 'get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub ()
+
+void * ewg_function_get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub (void);
+// Wraps call to function 'set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_osstatus_voidp_aedescp_sint32_anonymous_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_osstatus_voidp_aedescp_sint32_anonymous_callback(ewg_param_a_function, ewg_param_thisInstance, ewg_param_inContext, ewg_param_inCommandID) call_osstatus_voidp_aedescp_sint32_anonymous_callback ((void*)ewg_param_a_function, (void*)ewg_param_thisInstance, (AEDesc*)ewg_param_inContext, (SInt32)ewg_param_inCommandID)
+
+OSStatus  ewg_function_call_osstatus_voidp_aedescp_sint32_anonymous_callback (void *a_function, void *thisInstance, AEDesc *inContext, SInt32 inCommandID);
+// Wraps call to function 'get_void_voidp_anonymous_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_void_voidp_anonymous_callback_stub get_void_voidp_anonymous_callback_stub ()
+
+void * ewg_function_get_void_voidp_anonymous_callback_stub (void);
+// Wraps call to function 'set_void_voidp_anonymous_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_void_voidp_anonymous_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_void_voidp_anonymous_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_void_voidp_anonymous_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_void_voidp_anonymous_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_void_voidp_anonymous_callback(ewg_param_a_function, ewg_param_thisInstance) call_void_voidp_anonymous_callback ((void*)ewg_param_a_function, (void*)ewg_param_thisInstance)
+
+void  ewg_function_call_void_voidp_anonymous_callback (void *a_function, void *thisInstance);
 // Wraps call to function 'get_desk_hook_proc_ptr_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 

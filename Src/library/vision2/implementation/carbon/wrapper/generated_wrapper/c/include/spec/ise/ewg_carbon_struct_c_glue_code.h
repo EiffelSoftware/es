@@ -1206,17 +1206,6 @@
 #define ewg_struct_macro_sizeof_struct___AXUIElement 1
 
 
-// glue code macros for struct `struct BigEndianLong'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_BigEndianLong sizeof (struct BigEndianLong)
-
-#define ewg_struct_macro_struct_BigEndianLong_member_get_bigEndianValue(an_item) ((struct BigEndianLong*)an_item)->bigEndianValue
-
-#define ewg_struct_macro_struct_BigEndianLong_member_set_bigEndianValue(an_item, a_value) ((struct BigEndianLong*)an_item)->bigEndianValue =  (long)a_value
-
-
 // glue code macros for struct `struct EventRecord'
 
 #include<Carbon/Carbon.h>
@@ -1242,6 +1231,208 @@
 #define ewg_struct_macro_struct_EventRecord_member_get_modifiers(an_item) ((struct EventRecord*)an_item)->modifiers
 
 #define ewg_struct_macro_struct_EventRecord_member_set_modifiers(an_item, a_value) ((struct EventRecord*)an_item)->modifiers =  (EventModifiers)a_value
+
+
+// glue code macros for struct `struct OpaqueMenuRef'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueMenuRef 1
+
+
+// glue code macros for struct `struct MenuDefSpec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MenuDefSpec sizeof (struct MenuDefSpec)
+
+#define ewg_struct_macro_struct_MenuDefSpec_member_get_defType(an_item) ((struct MenuDefSpec*)an_item)->defType
+
+#define ewg_struct_macro_struct_MenuDefSpec_member_set_defType(an_item, a_value) ((struct MenuDefSpec*)an_item)->defType =  (MenuDefType)a_value
+
+
+// glue code macros for struct `struct MCEntry'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MCEntry sizeof (struct MCEntry)
+
+#define ewg_struct_macro_struct_MCEntry_member_get_mctID(an_item) ((struct MCEntry*)an_item)->mctID
+
+#define ewg_struct_macro_struct_MCEntry_member_set_mctID(an_item, a_value) ((struct MCEntry*)an_item)->mctID =  (MenuID)a_value
+
+#define ewg_struct_macro_struct_MCEntry_member_get_mctItem(an_item) ((struct MCEntry*)an_item)->mctItem
+
+#define ewg_struct_macro_struct_MCEntry_member_set_mctItem(an_item, a_value) ((struct MCEntry*)an_item)->mctItem =  (short)a_value
+
+#define ewg_struct_macro_struct_MCEntry_member_get_mctRGB1(an_item) &((struct MCEntry*)an_item)->mctRGB1
+
+#define ewg_struct_macro_struct_MCEntry_member_set_mctRGB1(an_item, a_value) ((struct MCEntry*)an_item)->mctRGB1 =  *(RGBColor*)a_value
+
+#define ewg_struct_macro_struct_MCEntry_member_get_mctRGB2(an_item) &((struct MCEntry*)an_item)->mctRGB2
+
+#define ewg_struct_macro_struct_MCEntry_member_set_mctRGB2(an_item, a_value) ((struct MCEntry*)an_item)->mctRGB2 =  *(RGBColor*)a_value
+
+#define ewg_struct_macro_struct_MCEntry_member_get_mctRGB3(an_item) &((struct MCEntry*)an_item)->mctRGB3
+
+#define ewg_struct_macro_struct_MCEntry_member_set_mctRGB3(an_item, a_value) ((struct MCEntry*)an_item)->mctRGB3 =  *(RGBColor*)a_value
+
+#define ewg_struct_macro_struct_MCEntry_member_get_mctRGB4(an_item) &((struct MCEntry*)an_item)->mctRGB4
+
+#define ewg_struct_macro_struct_MCEntry_member_set_mctRGB4(an_item, a_value) ((struct MCEntry*)an_item)->mctRGB4 =  *(RGBColor*)a_value
+
+#define ewg_struct_macro_struct_MCEntry_member_get_mctReserved(an_item) ((struct MCEntry*)an_item)->mctReserved
+
+#define ewg_struct_macro_struct_MCEntry_member_set_mctReserved(an_item, a_value) ((struct MCEntry*)an_item)->mctReserved =  (short)a_value
+
+
+// glue code macros for struct `struct MenuTrackingData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MenuTrackingData sizeof (struct MenuTrackingData)
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_get_menu(an_item) ((struct MenuTrackingData*)an_item)->menu
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_set_menu(an_item, a_value) ((struct MenuTrackingData*)an_item)->menu =  (MenuRef)a_value
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_get_itemSelected(an_item) ((struct MenuTrackingData*)an_item)->itemSelected
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_set_itemSelected(an_item, a_value) ((struct MenuTrackingData*)an_item)->itemSelected =  (MenuItemIndex)a_value
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_get_itemUnderMouse(an_item) ((struct MenuTrackingData*)an_item)->itemUnderMouse
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_set_itemUnderMouse(an_item, a_value) ((struct MenuTrackingData*)an_item)->itemUnderMouse =  (MenuItemIndex)a_value
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_get_itemRect(an_item) &((struct MenuTrackingData*)an_item)->itemRect
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_set_itemRect(an_item, a_value) ((struct MenuTrackingData*)an_item)->itemRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_get_virtualMenuTop(an_item) ((struct MenuTrackingData*)an_item)->virtualMenuTop
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_set_virtualMenuTop(an_item, a_value) ((struct MenuTrackingData*)an_item)->virtualMenuTop =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_get_virtualMenuBottom(an_item) ((struct MenuTrackingData*)an_item)->virtualMenuBottom
+
+#define ewg_struct_macro_struct_MenuTrackingData_member_set_virtualMenuBottom(an_item, a_value) ((struct MenuTrackingData*)an_item)->virtualMenuBottom =  (SInt32)a_value
+
+
+// glue code macros for struct `struct MenuItemDataRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MenuItemDataRec sizeof (struct MenuItemDataRec)
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_whichData(an_item) ((struct MenuItemDataRec*)an_item)->whichData
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_whichData(an_item, a_value) ((struct MenuItemDataRec*)an_item)->whichData =  (MenuItemDataFlags)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_text(an_item) ((struct MenuItemDataRec*)an_item)->text
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_text(an_item, a_value) ((struct MenuItemDataRec*)an_item)->text =  (StringPtr)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_mark(an_item) ((struct MenuItemDataRec*)an_item)->mark
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_mark(an_item, a_value) ((struct MenuItemDataRec*)an_item)->mark =  (UniChar)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_cmdKey(an_item) ((struct MenuItemDataRec*)an_item)->cmdKey
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_cmdKey(an_item, a_value) ((struct MenuItemDataRec*)an_item)->cmdKey =  (UniChar)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_cmdKeyGlyph(an_item) ((struct MenuItemDataRec*)an_item)->cmdKeyGlyph
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_cmdKeyGlyph(an_item, a_value) ((struct MenuItemDataRec*)an_item)->cmdKeyGlyph =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_cmdKeyModifiers(an_item) ((struct MenuItemDataRec*)an_item)->cmdKeyModifiers
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_cmdKeyModifiers(an_item, a_value) ((struct MenuItemDataRec*)an_item)->cmdKeyModifiers =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_style(an_item) ((struct MenuItemDataRec*)an_item)->style
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_style(an_item, a_value) ((struct MenuItemDataRec*)an_item)->style =  (Style)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_enabled(an_item) ((struct MenuItemDataRec*)an_item)->enabled
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_enabled(an_item, a_value) ((struct MenuItemDataRec*)an_item)->enabled =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_iconEnabled(an_item) ((struct MenuItemDataRec*)an_item)->iconEnabled
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_iconEnabled(an_item, a_value) ((struct MenuItemDataRec*)an_item)->iconEnabled =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_filler1(an_item) ((struct MenuItemDataRec*)an_item)->filler1
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_filler1(an_item, a_value) ((struct MenuItemDataRec*)an_item)->filler1 =  (UInt8)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_iconID(an_item) ((struct MenuItemDataRec*)an_item)->iconID
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_iconID(an_item, a_value) ((struct MenuItemDataRec*)an_item)->iconID =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_iconType(an_item) ((struct MenuItemDataRec*)an_item)->iconType
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_iconType(an_item, a_value) ((struct MenuItemDataRec*)an_item)->iconType =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_iconHandle(an_item) ((struct MenuItemDataRec*)an_item)->iconHandle
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_iconHandle(an_item, a_value) ((struct MenuItemDataRec*)an_item)->iconHandle =  (Handle)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_cmdID(an_item) ((struct MenuItemDataRec*)an_item)->cmdID
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_cmdID(an_item, a_value) ((struct MenuItemDataRec*)an_item)->cmdID =  (MenuCommand)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_encoding(an_item) ((struct MenuItemDataRec*)an_item)->encoding
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_encoding(an_item, a_value) ((struct MenuItemDataRec*)an_item)->encoding =  (TextEncoding)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_submenuID(an_item) ((struct MenuItemDataRec*)an_item)->submenuID
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_submenuID(an_item, a_value) ((struct MenuItemDataRec*)an_item)->submenuID =  (MenuID)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_submenuHandle(an_item) ((struct MenuItemDataRec*)an_item)->submenuHandle
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_submenuHandle(an_item, a_value) ((struct MenuItemDataRec*)an_item)->submenuHandle =  (MenuRef)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_fontID(an_item) ((struct MenuItemDataRec*)an_item)->fontID
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_fontID(an_item, a_value) ((struct MenuItemDataRec*)an_item)->fontID =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_refcon(an_item) ((struct MenuItemDataRec*)an_item)->refcon
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_refcon(an_item, a_value) ((struct MenuItemDataRec*)an_item)->refcon =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_attr(an_item) ((struct MenuItemDataRec*)an_item)->attr
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_attr(an_item, a_value) ((struct MenuItemDataRec*)an_item)->attr =  (OptionBits)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_cfText(an_item) ((struct MenuItemDataRec*)an_item)->cfText
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_cfText(an_item, a_value) ((struct MenuItemDataRec*)an_item)->cfText =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_properties(an_item) ((struct MenuItemDataRec*)an_item)->properties
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_properties(an_item, a_value) ((struct MenuItemDataRec*)an_item)->properties =  (Collection)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_indent(an_item) ((struct MenuItemDataRec*)an_item)->indent
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_indent(an_item, a_value) ((struct MenuItemDataRec*)an_item)->indent =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_get_cmdVirtualKey(an_item) ((struct MenuItemDataRec*)an_item)->cmdVirtualKey
+
+#define ewg_struct_macro_struct_MenuItemDataRec_member_set_cmdVirtualKey(an_item, a_value) ((struct MenuItemDataRec*)an_item)->cmdVirtualKey =  (UInt16)a_value
+
+
+// glue code macros for struct `struct AEDesc'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_AEDesc sizeof (struct AEDesc)
+
+#define ewg_struct_macro_struct_AEDesc_member_get_descriptorType(an_item) ((struct AEDesc*)an_item)->descriptorType
+
+#define ewg_struct_macro_struct_AEDesc_member_set_descriptorType(an_item, a_value) ((struct AEDesc*)an_item)->descriptorType =  (DescType)a_value
+
+#define ewg_struct_macro_struct_AEDesc_member_get_dataHandle(an_item) ((struct AEDesc*)an_item)->dataHandle
+
+#define ewg_struct_macro_struct_AEDesc_member_set_dataHandle(an_item, a_value) ((struct AEDesc*)an_item)->dataHandle =  (AEDataStorage)a_value
 
 
 // glue code macros for struct `struct OpaqueControlRef'
@@ -1369,13 +1560,6 @@
 #define ewg_struct_macro_sizeof_struct_OpaqueDragRef 1
 
 
-// glue code macros for struct `struct OpaqueMenuRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueMenuRef 1
-
-
 // glue code macros for struct `struct WindowDefSpec'
 
 #include<Carbon/Carbon.h>
@@ -1400,7 +1584,13 @@
 
 #define ewg_struct_macro_sizeof_struct_AliasRecord sizeof (struct AliasRecord)
 
-#define ewg_struct_macro_struct_AliasRecord_member_get_hidden(an_item) ((struct AliasRecord*)an_item)->hidden
+#define ewg_struct_macro_struct_AliasRecord_member_get_userType(an_item) ((struct AliasRecord*)an_item)->userType
+
+#define ewg_struct_macro_struct_AliasRecord_member_set_userType(an_item, a_value) ((struct AliasRecord*)an_item)->userType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_AliasRecord_member_get_aliasSize(an_item) ((struct AliasRecord*)an_item)->aliasSize
+
+#define ewg_struct_macro_struct_AliasRecord_member_set_aliasSize(an_item, a_value) ((struct AliasRecord*)an_item)->aliasSize =  (unsigned short)a_value
 
 
 // glue code macros for struct `struct OpaqueIconRef'
@@ -1635,21 +1825,6 @@
 #define ewg_struct_macro_struct_ListDefSpec_member_get_defType(an_item) ((struct ListDefSpec*)an_item)->defType
 
 #define ewg_struct_macro_struct_ListDefSpec_member_set_defType(an_item, a_value) ((struct ListDefSpec*)an_item)->defType =  (ListDefType)a_value
-
-
-// glue code macros for struct `struct AEDesc'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_AEDesc sizeof (struct AEDesc)
-
-#define ewg_struct_macro_struct_AEDesc_member_get_descriptorType(an_item) ((struct AEDesc*)an_item)->descriptorType
-
-#define ewg_struct_macro_struct_AEDesc_member_set_descriptorType(an_item, a_value) ((struct AEDesc*)an_item)->descriptorType =  (DescType)a_value
-
-#define ewg_struct_macro_struct_AEDesc_member_get_dataHandle(an_item) ((struct AEDesc*)an_item)->dataHandle
-
-#define ewg_struct_macro_struct_AEDesc_member_set_dataHandle(an_item, a_value) ((struct AEDesc*)an_item)->dataHandle =  (AEDataStorage)a_value
 
 
 // glue code macros for struct `struct HMHelpContentRec'
@@ -2204,6 +2379,190 @@
 #define ewg_struct_macro_struct_EvQEl_member_get_evtQModifiers(an_item) ((struct EvQEl*)an_item)->evtQModifiers
 
 #define ewg_struct_macro_struct_EvQEl_member_set_evtQModifiers(an_item, a_value) ((struct EvQEl*)an_item)->evtQModifiers =  (EventModifiers)a_value
+
+
+// glue code macros for struct `struct MenuBarHeader'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MenuBarHeader sizeof (struct MenuBarHeader)
+
+#define ewg_struct_macro_struct_MenuBarHeader_member_get_lastMenu(an_item) ((struct MenuBarHeader*)an_item)->lastMenu
+
+#define ewg_struct_macro_struct_MenuBarHeader_member_set_lastMenu(an_item, a_value) ((struct MenuBarHeader*)an_item)->lastMenu =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_MenuBarHeader_member_get_lastRight(an_item) ((struct MenuBarHeader*)an_item)->lastRight
+
+#define ewg_struct_macro_struct_MenuBarHeader_member_set_lastRight(an_item, a_value) ((struct MenuBarHeader*)an_item)->lastRight =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_MenuBarHeader_member_get_mbResID(an_item) ((struct MenuBarHeader*)an_item)->mbResID
+
+#define ewg_struct_macro_struct_MenuBarHeader_member_set_mbResID(an_item, a_value) ((struct MenuBarHeader*)an_item)->mbResID =  (SInt16)a_value
+
+
+// glue code macros for struct `struct HMenuBarHeader'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_HMenuBarHeader sizeof (struct HMenuBarHeader)
+
+#define ewg_struct_macro_struct_HMenuBarHeader_member_get_lastHMenu(an_item) ((struct HMenuBarHeader*)an_item)->lastHMenu
+
+#define ewg_struct_macro_struct_HMenuBarHeader_member_set_lastHMenu(an_item, a_value) ((struct HMenuBarHeader*)an_item)->lastHMenu =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_HMenuBarHeader_member_get_menuTitleBits(an_item) ((struct HMenuBarHeader*)an_item)->menuTitleBits
+
+#define ewg_struct_macro_struct_HMenuBarHeader_member_set_menuTitleBits(an_item, a_value) ((struct HMenuBarHeader*)an_item)->menuTitleBits =  (PixMapHandle)a_value
+
+
+// glue code macros for struct `struct MenuBarMenu'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MenuBarMenu sizeof (struct MenuBarMenu)
+
+#define ewg_struct_macro_struct_MenuBarMenu_member_get_menu(an_item) ((struct MenuBarMenu*)an_item)->menu
+
+#define ewg_struct_macro_struct_MenuBarMenu_member_set_menu(an_item, a_value) ((struct MenuBarMenu*)an_item)->menu =  (MenuRef)a_value
+
+#define ewg_struct_macro_struct_MenuBarMenu_member_get_menuLeft(an_item) ((struct MenuBarMenu*)an_item)->menuLeft
+
+#define ewg_struct_macro_struct_MenuBarMenu_member_set_menuLeft(an_item, a_value) ((struct MenuBarMenu*)an_item)->menuLeft =  (SInt16)a_value
+
+
+// glue code macros for struct `struct HMenuBarMenu'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_HMenuBarMenu sizeof (struct HMenuBarMenu)
+
+#define ewg_struct_macro_struct_HMenuBarMenu_member_get_menu(an_item) ((struct HMenuBarMenu*)an_item)->menu
+
+#define ewg_struct_macro_struct_HMenuBarMenu_member_set_menu(an_item, a_value) ((struct HMenuBarMenu*)an_item)->menu =  (MenuRef)a_value
+
+#define ewg_struct_macro_struct_HMenuBarMenu_member_get_reserved(an_item) ((struct HMenuBarMenu*)an_item)->reserved
+
+#define ewg_struct_macro_struct_HMenuBarMenu_member_set_reserved(an_item, a_value) ((struct HMenuBarMenu*)an_item)->reserved =  (SInt16)a_value
+
+
+// glue code macros for struct `struct MenuCRsrc'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MenuCRsrc sizeof (struct MenuCRsrc)
+
+#define ewg_struct_macro_struct_MenuCRsrc_member_get_numEntries(an_item) ((struct MenuCRsrc*)an_item)->numEntries
+
+#define ewg_struct_macro_struct_MenuCRsrc_member_set_numEntries(an_item, a_value) ((struct MenuCRsrc*)an_item)->numEntries =  (short)a_value
+
+#define ewg_struct_macro_struct_MenuCRsrc_member_get_mcEntryRecs(an_item) ((struct MenuCRsrc*)an_item)->mcEntryRecs
+
+
+// glue code macros for struct `struct MDEFHiliteItemData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MDEFHiliteItemData sizeof (struct MDEFHiliteItemData)
+
+#define ewg_struct_macro_struct_MDEFHiliteItemData_member_get_previousItem(an_item) ((struct MDEFHiliteItemData*)an_item)->previousItem
+
+#define ewg_struct_macro_struct_MDEFHiliteItemData_member_set_previousItem(an_item, a_value) ((struct MDEFHiliteItemData*)an_item)->previousItem =  (MenuItemIndex)a_value
+
+#define ewg_struct_macro_struct_MDEFHiliteItemData_member_get_newItem(an_item) ((struct MDEFHiliteItemData*)an_item)->newItem
+
+#define ewg_struct_macro_struct_MDEFHiliteItemData_member_set_newItem(an_item, a_value) ((struct MDEFHiliteItemData*)an_item)->newItem =  (MenuItemIndex)a_value
+
+#define ewg_struct_macro_struct_MDEFHiliteItemData_member_get_context(an_item) ((struct MDEFHiliteItemData*)an_item)->context
+
+#define ewg_struct_macro_struct_MDEFHiliteItemData_member_set_context(an_item, a_value) ((struct MDEFHiliteItemData*)an_item)->context =  (void*)a_value
+
+
+// glue code macros for struct `struct MDEFDrawData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MDEFDrawData sizeof (struct MDEFDrawData)
+
+#define ewg_struct_macro_struct_MDEFDrawData_member_get_trackingData(an_item) &((struct MDEFDrawData*)an_item)->trackingData
+
+#define ewg_struct_macro_struct_MDEFDrawData_member_set_trackingData(an_item, a_value) ((struct MDEFDrawData*)an_item)->trackingData =  *(MenuTrackingData*)a_value
+
+#define ewg_struct_macro_struct_MDEFDrawData_member_get_context(an_item) ((struct MDEFDrawData*)an_item)->context
+
+#define ewg_struct_macro_struct_MDEFDrawData_member_set_context(an_item, a_value) ((struct MDEFDrawData*)an_item)->context =  (void*)a_value
+
+
+// glue code macros for struct `struct MDEFFindItemData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MDEFFindItemData sizeof (struct MDEFFindItemData)
+
+#define ewg_struct_macro_struct_MDEFFindItemData_member_get_trackingData(an_item) &((struct MDEFFindItemData*)an_item)->trackingData
+
+#define ewg_struct_macro_struct_MDEFFindItemData_member_set_trackingData(an_item, a_value) ((struct MDEFFindItemData*)an_item)->trackingData =  *(MenuTrackingData*)a_value
+
+#define ewg_struct_macro_struct_MDEFFindItemData_member_get_context(an_item) ((struct MDEFFindItemData*)an_item)->context
+
+#define ewg_struct_macro_struct_MDEFFindItemData_member_set_context(an_item, a_value) ((struct MDEFFindItemData*)an_item)->context =  (void*)a_value
+
+
+// glue code macros for struct `struct MDEFDrawItemsData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_MDEFDrawItemsData sizeof (struct MDEFDrawItemsData)
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_get_firstItem(an_item) ((struct MDEFDrawItemsData*)an_item)->firstItem
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_set_firstItem(an_item, a_value) ((struct MDEFDrawItemsData*)an_item)->firstItem =  (MenuItemIndex)a_value
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_get_lastItem(an_item) ((struct MDEFDrawItemsData*)an_item)->lastItem
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_set_lastItem(an_item, a_value) ((struct MDEFDrawItemsData*)an_item)->lastItem =  (MenuItemIndex)a_value
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_get_trackingData(an_item) ((struct MDEFDrawItemsData*)an_item)->trackingData
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_set_trackingData(an_item, a_value) ((struct MDEFDrawItemsData*)an_item)->trackingData =  (MenuTrackingData*)a_value
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_get_context(an_item) ((struct MDEFDrawItemsData*)an_item)->context
+
+#define ewg_struct_macro_struct_MDEFDrawItemsData_member_set_context(an_item, a_value) ((struct MDEFDrawItemsData*)an_item)->context =  (void*)a_value
+
+
+// glue code macros for struct `struct ContextualMenuInterfaceStruct'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ContextualMenuInterfaceStruct sizeof (struct ContextualMenuInterfaceStruct)
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_get__reserved(an_item) ((struct ContextualMenuInterfaceStruct*)an_item)->_reserved
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_set__reserved(an_item, a_value) ((struct ContextualMenuInterfaceStruct*)an_item)->_reserved =  (void*)a_value
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_get_QueryInterface(an_item) ((struct ContextualMenuInterfaceStruct*)an_item)->QueryInterface
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_set_QueryInterface(an_item, a_value) ((struct ContextualMenuInterfaceStruct*)an_item)->QueryInterface =  (SInt32 (*) (void *thisPointer, CFUUIDBytes iid, void **ppv))a_value
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_get_AddRef(an_item) ((struct ContextualMenuInterfaceStruct*)an_item)->AddRef
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_set_AddRef(an_item, a_value) ((struct ContextualMenuInterfaceStruct*)an_item)->AddRef =  (UInt32 (*) (void *thisPointer))a_value
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_get_Release(an_item) ((struct ContextualMenuInterfaceStruct*)an_item)->Release
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_set_Release(an_item, a_value) ((struct ContextualMenuInterfaceStruct*)an_item)->Release =  (UInt32 (*) (void *thisPointer))a_value
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_get_ExamineContext(an_item) ((struct ContextualMenuInterfaceStruct*)an_item)->ExamineContext
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_set_ExamineContext(an_item, a_value) ((struct ContextualMenuInterfaceStruct*)an_item)->ExamineContext =  (OSStatus (*) (void *thisInstance, AEDesc const *inContext, AEDescList *outCommandPairs))a_value
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_get_HandleSelection(an_item) ((struct ContextualMenuInterfaceStruct*)an_item)->HandleSelection
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_set_HandleSelection(an_item, a_value) ((struct ContextualMenuInterfaceStruct*)an_item)->HandleSelection =  (OSStatus (*) (void *thisInstance, AEDesc *inContext, SInt32 inCommandID))a_value
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_get_PostMenuCleanup(an_item) ((struct ContextualMenuInterfaceStruct*)an_item)->PostMenuCleanup
+
+#define ewg_struct_macro_struct_ContextualMenuInterfaceStruct_member_set_PostMenuCleanup(an_item, a_value) ((struct ContextualMenuInterfaceStruct*)an_item)->PostMenuCleanup =  (void (*) (void *thisInstance))a_value
 
 
 // glue code macros for struct `struct ControlTemplate'
@@ -3023,5 +3382,76 @@
 #define ewg_struct_macro_struct_QElem_member_set_qType(an_item, a_value) ((struct QElem*)an_item)->qType =  (short)a_value
 
 #define ewg_struct_macro_struct_QElem_member_get_qData(an_item) ((struct QElem*)an_item)->qData
+
+
+// glue code macros for struct `CFUUIDBytes'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_CFUUIDBytes sizeof (CFUUIDBytes)
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte0(an_item) ((CFUUIDBytes*)an_item)->byte0
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte0(an_item, a_value) ((CFUUIDBytes*)an_item)->byte0 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte1(an_item) ((CFUUIDBytes*)an_item)->byte1
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte1(an_item, a_value) ((CFUUIDBytes*)an_item)->byte1 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte2(an_item) ((CFUUIDBytes*)an_item)->byte2
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte2(an_item, a_value) ((CFUUIDBytes*)an_item)->byte2 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte3(an_item) ((CFUUIDBytes*)an_item)->byte3
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte3(an_item, a_value) ((CFUUIDBytes*)an_item)->byte3 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte4(an_item) ((CFUUIDBytes*)an_item)->byte4
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte4(an_item, a_value) ((CFUUIDBytes*)an_item)->byte4 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte5(an_item) ((CFUUIDBytes*)an_item)->byte5
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte5(an_item, a_value) ((CFUUIDBytes*)an_item)->byte5 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte6(an_item) ((CFUUIDBytes*)an_item)->byte6
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte6(an_item, a_value) ((CFUUIDBytes*)an_item)->byte6 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte7(an_item) ((CFUUIDBytes*)an_item)->byte7
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte7(an_item, a_value) ((CFUUIDBytes*)an_item)->byte7 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte8(an_item) ((CFUUIDBytes*)an_item)->byte8
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte8(an_item, a_value) ((CFUUIDBytes*)an_item)->byte8 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte9(an_item) ((CFUUIDBytes*)an_item)->byte9
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte9(an_item, a_value) ((CFUUIDBytes*)an_item)->byte9 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte10(an_item) ((CFUUIDBytes*)an_item)->byte10
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte10(an_item, a_value) ((CFUUIDBytes*)an_item)->byte10 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte11(an_item) ((CFUUIDBytes*)an_item)->byte11
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte11(an_item, a_value) ((CFUUIDBytes*)an_item)->byte11 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte12(an_item) ((CFUUIDBytes*)an_item)->byte12
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte12(an_item, a_value) ((CFUUIDBytes*)an_item)->byte12 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte13(an_item) ((CFUUIDBytes*)an_item)->byte13
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte13(an_item, a_value) ((CFUUIDBytes*)an_item)->byte13 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte14(an_item) ((CFUUIDBytes*)an_item)->byte14
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte14(an_item, a_value) ((CFUUIDBytes*)an_item)->byte14 =  (UInt8)a_value
+
+#define ewg_struct_macro_CFUUIDBytes_member_get_byte15(an_item) ((CFUUIDBytes*)an_item)->byte15
+
+#define ewg_struct_macro_CFUUIDBytes_member_set_byte15(an_item, a_value) ((CFUUIDBytes*)an_item)->byte15 =  (UInt8)a_value
 
 

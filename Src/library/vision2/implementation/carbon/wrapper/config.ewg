@@ -48,29 +48,37 @@
   			<match>
    				<header name=".*Processes.h"/>
 			</match>
-			<wrapper type="default">
-   			</wrapper>
+			<wrapper type="default" />
 		</rule>
 		<rule>
   			<match>
    				<header name=".*Controls.h"/>
 			</match>
-			<wrapper type="default">
-   			</wrapper>
+			<wrapper type="default" />
 		</rule>
 		<rule>
   			<match>
    				<header name=".*HIObject.h"/>
 			</match>
-			<wrapper type="default">
-   			</wrapper>
+			<wrapper type="default" />
 		</rule>
 		<rule>
   			<match>
    				<header name=".*CFString.h"/>
 			</match>
-			<wrapper type="default">
-   			</wrapper>
+			<wrapper type="default" />
+		</rule>
+		<rule>
+			<match>
+				<identifier name="CMPlugin.*" />
+			</match>
+			<wrapper type="none" />
+		</rule>
+		<rule>
+  			<match>
+   				<header name=".*Menus.h"/>
+			</match>
+			<wrapper type="default" />
 		</rule>
 		<rule>
   			<match>
@@ -109,8 +117,7 @@
 		</rule>
     	<rule>
 			<match/>
-			<wrapper type="none">
-			</wrapper>
+			<wrapper type="none" />
 		</rule>
 	</rule_list>
 

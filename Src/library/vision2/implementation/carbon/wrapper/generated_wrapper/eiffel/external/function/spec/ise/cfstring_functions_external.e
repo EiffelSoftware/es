@@ -543,12 +543,12 @@ feature
 			"(void*) CFStringCreateArrayWithFindResults"
 		end
 
---	cfstring_find_external (thestring: POINTER; stringtofind: POINTER; compareoptions: INTEGER): POINTER is
---		external
---			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef, CFOptionFlags):CFRange*"
---		alias
---			"ewg_function_CFStringFind()"
---		end
+	cfstring_find_external (thestring: POINTER; stringtofind: POINTER; compareoptions: INTEGER): POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef, CFOptionFlags):CFRange*"
+		alias
+			"ewg_function_CFStringFind"
+		end
 
 	cfstring_find_address_external: POINTER is
 			-- Address of C function `CFStringFind'
@@ -588,12 +588,12 @@ feature
 			"(void*) CFStringHasSuffix"
 		end
 
---	cfstring_get_range_of_composed_characters_at_index_external (thestring: POINTER; theindex: INTEGER): POINTER is
---		external
---			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFIndex):CFRange*"
---		alias
---			"ewg_function_CFStringGetRangeOfComposedCharactersAtIndex()"
---		end
+	cfstring_get_range_of_composed_characters_at_index_external (thestring: POINTER; theindex: INTEGER): POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFIndex):CFRange*"
+		alias
+			"ewg_function_CFStringGetRangeOfComposedCharactersAtIndex"
+		end
 
 	cfstring_get_range_of_composed_characters_at_index_address_external: POINTER is
 			-- Address of C function `CFStringGetRangeOfComposedCharactersAtIndex'

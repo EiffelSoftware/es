@@ -706,6 +706,32 @@ OSStatus call_event_handler_proc_ptr (void *a_function, EventHandlerCallRef inHa
 	return ((OSStatus (*) (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData))a_function) (inHandlerCallRef, inEvent, inUserData);
 }
 
+struct menu_def_proc_ptr_entry_struct menu_def_proc_ptr_entry = {NULL, NULL};
+
+void menu_def_proc_ptr_stub (short message, MenuRef theMenu, Rect *menuRect, Point hitPt, short *whichItem)
+{
+	if (menu_def_proc_ptr_entry.a_class != NULL && menu_def_proc_ptr_entry.feature != NULL)
+	{
+		menu_def_proc_ptr_entry.feature (eif_access(menu_def_proc_ptr_entry.a_class), message, theMenu, menuRect, hitPt, whichItem);
+	}
+}
+
+void set_menu_def_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	menu_def_proc_ptr_entry.a_class = eif_adopt(a_class);
+	menu_def_proc_ptr_entry.feature = (menu_def_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_menu_def_proc_ptr_stub ()
+{
+	return (void*) menu_def_proc_ptr_stub;
+}
+
+void call_menu_def_proc_ptr (void *a_function, short message, MenuRef theMenu, Rect *menuRect, Point hitPt, short *whichItem)
+{
+	((void (*) (short message, MenuRef theMenu, Rect *menuRect, Point hitPt, short *whichItem))a_function) (message, theMenu, menuRect, hitPt, whichItem);
+}
+
 struct control_action_proc_ptr_entry_struct control_action_proc_ptr_entry = {NULL, NULL};
 
 void control_action_proc_ptr_stub (ControlRef theControl, ControlPartCode partCode)
@@ -2004,6 +2030,188 @@ void* get_get_next_event_filter_proc_ptr_stub ()
 void call_get_next_event_filter_proc_ptr (void *a_function, EventRecord *theEvent, Boolean *result)
 {
 	((void (*) (EventRecord *theEvent, Boolean *result))a_function) (theEvent, result);
+}
+
+struct menu_bar_def_proc_ptr_entry_struct menu_bar_def_proc_ptr_entry = {NULL, NULL};
+
+long menu_bar_def_proc_ptr_stub (short selector, short message, short parameter1, long parameter2)
+{
+	if (menu_bar_def_proc_ptr_entry.a_class != NULL && menu_bar_def_proc_ptr_entry.feature != NULL)
+	{
+		return menu_bar_def_proc_ptr_entry.feature (eif_access(menu_bar_def_proc_ptr_entry.a_class), selector, message, parameter1, parameter2);
+	}
+}
+
+void set_menu_bar_def_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	menu_bar_def_proc_ptr_entry.a_class = eif_adopt(a_class);
+	menu_bar_def_proc_ptr_entry.feature = (menu_bar_def_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_menu_bar_def_proc_ptr_stub ()
+{
+	return (void*) menu_bar_def_proc_ptr_stub;
+}
+
+long call_menu_bar_def_proc_ptr (void *a_function, short selector, short message, short parameter1, long parameter2)
+{
+	return ((long (*) (short selector, short message, short parameter1, long parameter2))a_function) (selector, message, parameter1, parameter2);
+}
+
+struct mbar_hook_proc_ptr_entry_struct mbar_hook_proc_ptr_entry = {NULL, NULL};
+
+short mbar_hook_proc_ptr_stub (Rect *menuRect)
+{
+	if (mbar_hook_proc_ptr_entry.a_class != NULL && mbar_hook_proc_ptr_entry.feature != NULL)
+	{
+		return mbar_hook_proc_ptr_entry.feature (eif_access(mbar_hook_proc_ptr_entry.a_class), menuRect);
+	}
+}
+
+void set_mbar_hook_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	mbar_hook_proc_ptr_entry.a_class = eif_adopt(a_class);
+	mbar_hook_proc_ptr_entry.feature = (mbar_hook_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_mbar_hook_proc_ptr_stub ()
+{
+	return (void*) mbar_hook_proc_ptr_stub;
+}
+
+short call_mbar_hook_proc_ptr (void *a_function, Rect *menuRect)
+{
+	return ((short (*) (Rect *menuRect))a_function) (menuRect);
+}
+
+struct sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_struct sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry = {NULL, NULL};
+
+SInt32 sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub (void *thisPointer, CFUUIDBytes iid, void **ppv)
+{
+	if (sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry.a_class != NULL && sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry.feature != NULL)
+	{
+		return sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry.feature (eif_access(sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry.a_class), thisPointer, iid, ppv);
+	}
+}
+
+void set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry (void* a_class, void* a_feature)
+{
+	sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry.a_class = eif_adopt(a_class);
+	sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry.feature = (sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_eiffel_feature) a_feature;
+}
+
+void* get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub ()
+{
+	return (void*) sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub;
+}
+
+SInt32 call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback (void *a_function, void *thisPointer, CFUUIDBytes iid, void **ppv)
+{
+	return ((SInt32 (*) (void *thisPointer, CFUUIDBytes iid, void **ppv))a_function) (thisPointer, iid, ppv);
+}
+
+struct uint32_voidp_anonymous_callback_entry_struct uint32_voidp_anonymous_callback_entry = {NULL, NULL};
+
+UInt32 uint32_voidp_anonymous_callback_stub (void *thisPointer)
+{
+	if (uint32_voidp_anonymous_callback_entry.a_class != NULL && uint32_voidp_anonymous_callback_entry.feature != NULL)
+	{
+		return uint32_voidp_anonymous_callback_entry.feature (eif_access(uint32_voidp_anonymous_callback_entry.a_class), thisPointer);
+	}
+}
+
+void set_uint32_voidp_anonymous_callback_entry (void* a_class, void* a_feature)
+{
+	uint32_voidp_anonymous_callback_entry.a_class = eif_adopt(a_class);
+	uint32_voidp_anonymous_callback_entry.feature = (uint32_voidp_anonymous_callback_eiffel_feature) a_feature;
+}
+
+void* get_uint32_voidp_anonymous_callback_stub ()
+{
+	return (void*) uint32_voidp_anonymous_callback_stub;
+}
+
+UInt32 call_uint32_voidp_anonymous_callback (void *a_function, void *thisPointer)
+{
+	return ((UInt32 (*) (void *thisPointer))a_function) (thisPointer);
+}
+
+struct osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_struct osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry = {NULL, NULL};
+
+OSStatus osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub (void *thisInstance, AEDesc const *inContext, AEDescList *outCommandPairs)
+{
+	if (osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry.a_class != NULL && osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry.feature != NULL)
+	{
+		return osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry.feature (eif_access(osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry.a_class), thisInstance, inContext, outCommandPairs);
+	}
+}
+
+void set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry (void* a_class, void* a_feature)
+{
+	osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry.a_class = eif_adopt(a_class);
+	osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry.feature = (osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_eiffel_feature) a_feature;
+}
+
+void* get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub ()
+{
+	return (void*) osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub;
+}
+
+OSStatus call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback (void *a_function, void *thisInstance, AEDesc const *inContext, AEDescList *outCommandPairs)
+{
+	return ((OSStatus (*) (void *thisInstance, AEDesc const *inContext, AEDescList *outCommandPairs))a_function) (thisInstance, inContext, outCommandPairs);
+}
+
+struct osstatus_voidp_aedescp_sint32_anonymous_callback_entry_struct osstatus_voidp_aedescp_sint32_anonymous_callback_entry = {NULL, NULL};
+
+OSStatus osstatus_voidp_aedescp_sint32_anonymous_callback_stub (void *thisInstance, AEDesc *inContext, SInt32 inCommandID)
+{
+	if (osstatus_voidp_aedescp_sint32_anonymous_callback_entry.a_class != NULL && osstatus_voidp_aedescp_sint32_anonymous_callback_entry.feature != NULL)
+	{
+		return osstatus_voidp_aedescp_sint32_anonymous_callback_entry.feature (eif_access(osstatus_voidp_aedescp_sint32_anonymous_callback_entry.a_class), thisInstance, inContext, inCommandID);
+	}
+}
+
+void set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry (void* a_class, void* a_feature)
+{
+	osstatus_voidp_aedescp_sint32_anonymous_callback_entry.a_class = eif_adopt(a_class);
+	osstatus_voidp_aedescp_sint32_anonymous_callback_entry.feature = (osstatus_voidp_aedescp_sint32_anonymous_callback_eiffel_feature) a_feature;
+}
+
+void* get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub ()
+{
+	return (void*) osstatus_voidp_aedescp_sint32_anonymous_callback_stub;
+}
+
+OSStatus call_osstatus_voidp_aedescp_sint32_anonymous_callback (void *a_function, void *thisInstance, AEDesc *inContext, SInt32 inCommandID)
+{
+	return ((OSStatus (*) (void *thisInstance, AEDesc *inContext, SInt32 inCommandID))a_function) (thisInstance, inContext, inCommandID);
+}
+
+struct void_voidp_anonymous_callback_entry_struct void_voidp_anonymous_callback_entry = {NULL, NULL};
+
+void void_voidp_anonymous_callback_stub (void *thisInstance)
+{
+	if (void_voidp_anonymous_callback_entry.a_class != NULL && void_voidp_anonymous_callback_entry.feature != NULL)
+	{
+		void_voidp_anonymous_callback_entry.feature (eif_access(void_voidp_anonymous_callback_entry.a_class), thisInstance);
+	}
+}
+
+void set_void_voidp_anonymous_callback_entry (void* a_class, void* a_feature)
+{
+	void_voidp_anonymous_callback_entry.a_class = eif_adopt(a_class);
+	void_voidp_anonymous_callback_entry.feature = (void_voidp_anonymous_callback_eiffel_feature) a_feature;
+}
+
+void* get_void_voidp_anonymous_callback_stub ()
+{
+	return (void*) void_voidp_anonymous_callback_stub;
+}
+
+void call_void_voidp_anonymous_callback (void *a_function, void *thisInstance)
+{
+	((void (*) (void *thisInstance))a_function) (thisInstance);
 }
 
 struct desk_hook_proc_ptr_entry_struct desk_hook_proc_ptr_entry = {NULL, NULL};

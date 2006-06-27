@@ -11843,6 +11843,2511 @@ void* ewg_get_function_address_LMSetKbdType (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'NewMenuDefUPP'
+// For ise
+MenuDefUPP  ewg_function_NewMenuDefUPP (MenuDefProcPtr ewg_userRoutine)
+{
+	return NewMenuDefUPP ((MenuDefProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewMenuDefUPP'
+void* ewg_get_function_address_NewMenuDefUPP (void)
+{
+	return (void*) NewMenuDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeMenuDefUPP'
+// For ise
+void  ewg_function_DisposeMenuDefUPP (MenuDefUPP ewg_userUPP)
+{
+	DisposeMenuDefUPP ((MenuDefUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeMenuDefUPP'
+void* ewg_get_function_address_DisposeMenuDefUPP (void)
+{
+	return (void*) DisposeMenuDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeMenuDefUPP'
+// For ise
+void  ewg_function_InvokeMenuDefUPP (short ewg_message, MenuRef ewg_theMenu, Rect *ewg_menuRect, Point *ewg_hitPt, short *ewg_whichItem, MenuDefUPP ewg_userUPP)
+{
+	InvokeMenuDefUPP ((short)ewg_message, (MenuRef)ewg_theMenu, (Rect*)ewg_menuRect, *(Point*)ewg_hitPt, (short*)ewg_whichItem, (MenuDefUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeMenuDefUPP'
+void* ewg_get_function_address_InvokeMenuDefUPP (void)
+{
+	return (void*) InvokeMenuDefUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewMenu'
+// For ise
+MenuRef  ewg_function_NewMenu (MenuID ewg_menuID, ConstStr255Param ewg_menuTitle)
+{
+	return NewMenu ((MenuID)ewg_menuID, (ConstStr255Param)ewg_menuTitle);
+}
+
+// Return address of function 'NewMenu'
+void* ewg_get_function_address_NewMenu (void)
+{
+	return (void*) NewMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenu'
+// For ise
+MenuRef  ewg_function_GetMenu (short ewg_resourceID)
+{
+	return GetMenu ((short)ewg_resourceID);
+}
+
+// Return address of function 'GetMenu'
+void* ewg_get_function_address_GetMenu (void)
+{
+	return (void*) GetMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeMenu'
+// For ise
+void  ewg_function_DisposeMenu (MenuRef ewg_theMenu)
+{
+	DisposeMenu ((MenuRef)ewg_theMenu);
+}
+
+// Return address of function 'DisposeMenu'
+void* ewg_get_function_address_DisposeMenu (void)
+{
+	return (void*) DisposeMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CalcMenuSize'
+// For ise
+void  ewg_function_CalcMenuSize (MenuRef ewg_theMenu)
+{
+	CalcMenuSize ((MenuRef)ewg_theMenu);
+}
+
+// Return address of function 'CalcMenuSize'
+void* ewg_get_function_address_CalcMenuSize (void)
+{
+	return (void*) CalcMenuSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CountMenuItems'
+// For ise
+UInt16  ewg_function_CountMenuItems (MenuRef ewg_theMenu)
+{
+	return CountMenuItems ((MenuRef)ewg_theMenu);
+}
+
+// Return address of function 'CountMenuItems'
+void* ewg_get_function_address_CountMenuItems (void)
+{
+	return (void*) CountMenuItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuFont'
+// For ise
+OSStatus  ewg_function_GetMenuFont (MenuRef ewg_menu, SInt16 *ewg_outFontID, UInt16 *ewg_outFontSize)
+{
+	return GetMenuFont ((MenuRef)ewg_menu, (SInt16*)ewg_outFontID, (UInt16*)ewg_outFontSize);
+}
+
+// Return address of function 'GetMenuFont'
+void* ewg_get_function_address_GetMenuFont (void)
+{
+	return (void*) GetMenuFont;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuFont'
+// For ise
+OSStatus  ewg_function_SetMenuFont (MenuRef ewg_menu, SInt16 ewg_inFontID, UInt16 ewg_inFontSize)
+{
+	return SetMenuFont ((MenuRef)ewg_menu, (SInt16)ewg_inFontID, (UInt16)ewg_inFontSize);
+}
+
+// Return address of function 'SetMenuFont'
+void* ewg_get_function_address_SetMenuFont (void)
+{
+	return (void*) SetMenuFont;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuExcludesMarkColumn'
+// For ise
+Boolean  ewg_function_GetMenuExcludesMarkColumn (MenuRef ewg_menu)
+{
+	return GetMenuExcludesMarkColumn ((MenuRef)ewg_menu);
+}
+
+// Return address of function 'GetMenuExcludesMarkColumn'
+void* ewg_get_function_address_GetMenuExcludesMarkColumn (void)
+{
+	return (void*) GetMenuExcludesMarkColumn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuExcludesMarkColumn'
+// For ise
+OSStatus  ewg_function_SetMenuExcludesMarkColumn (MenuRef ewg_menu, Boolean ewg_excludesMark)
+{
+	return SetMenuExcludesMarkColumn ((MenuRef)ewg_menu, (Boolean)ewg_excludesMark);
+}
+
+// Return address of function 'SetMenuExcludesMarkColumn'
+void* ewg_get_function_address_SetMenuExcludesMarkColumn (void)
+{
+	return (void*) SetMenuExcludesMarkColumn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RegisterMenuDefinition'
+// For ise
+OSStatus  ewg_function_RegisterMenuDefinition (SInt16 ewg_inResID, MenuDefSpecPtr ewg_inDefSpec)
+{
+	return RegisterMenuDefinition ((SInt16)ewg_inResID, (MenuDefSpecPtr)ewg_inDefSpec);
+}
+
+// Return address of function 'RegisterMenuDefinition'
+void* ewg_get_function_address_RegisterMenuDefinition (void)
+{
+	return (void*) RegisterMenuDefinition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateNewMenu'
+// For ise
+OSStatus  ewg_function_CreateNewMenu (MenuID ewg_inMenuID, MenuAttributes ewg_inMenuAttributes, MenuRef *ewg_outMenuRef)
+{
+	return CreateNewMenu ((MenuID)ewg_inMenuID, (MenuAttributes)ewg_inMenuAttributes, (MenuRef*)ewg_outMenuRef);
+}
+
+// Return address of function 'CreateNewMenu'
+void* ewg_get_function_address_CreateNewMenu (void)
+{
+	return (void*) CreateNewMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateCustomMenu'
+// For ise
+OSStatus  ewg_function_CreateCustomMenu (MenuDefSpec const *ewg_inDefSpec, MenuID ewg_inMenuID, MenuAttributes ewg_inMenuAttributes, MenuRef *ewg_outMenuRef)
+{
+	return CreateCustomMenu ((MenuDefSpec const*)ewg_inDefSpec, (MenuID)ewg_inMenuID, (MenuAttributes)ewg_inMenuAttributes, (MenuRef*)ewg_outMenuRef);
+}
+
+// Return address of function 'CreateCustomMenu'
+void* ewg_get_function_address_CreateCustomMenu (void)
+{
+	return (void*) CreateCustomMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsValidMenu'
+// For ise
+Boolean  ewg_function_IsValidMenu (MenuRef ewg_inMenu)
+{
+	return IsValidMenu ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'IsValidMenu'
+void* ewg_get_function_address_IsValidMenu (void)
+{
+	return (void*) IsValidMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuRetainCount'
+// For ise
+ItemCount  ewg_function_GetMenuRetainCount (MenuRef ewg_inMenu)
+{
+	return GetMenuRetainCount ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'GetMenuRetainCount'
+void* ewg_get_function_address_GetMenuRetainCount (void)
+{
+	return (void*) GetMenuRetainCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RetainMenu'
+// For ise
+OSStatus  ewg_function_RetainMenu (MenuRef ewg_inMenu)
+{
+	return RetainMenu ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'RetainMenu'
+void* ewg_get_function_address_RetainMenu (void)
+{
+	return (void*) RetainMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ReleaseMenu'
+// For ise
+OSStatus  ewg_function_ReleaseMenu (MenuRef ewg_inMenu)
+{
+	return ReleaseMenu ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'ReleaseMenu'
+void* ewg_get_function_address_ReleaseMenu (void)
+{
+	return (void*) ReleaseMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DuplicateMenu'
+// For ise
+OSStatus  ewg_function_DuplicateMenu (MenuRef ewg_inSourceMenu, MenuRef *ewg_outMenu)
+{
+	return DuplicateMenu ((MenuRef)ewg_inSourceMenu, (MenuRef*)ewg_outMenu);
+}
+
+// Return address of function 'DuplicateMenu'
+void* ewg_get_function_address_DuplicateMenu (void)
+{
+	return (void*) DuplicateMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyMenuTitleAsCFString'
+// For ise
+OSStatus  ewg_function_CopyMenuTitleAsCFString (MenuRef ewg_inMenu, CFStringRef *ewg_outString)
+{
+	return CopyMenuTitleAsCFString ((MenuRef)ewg_inMenu, (CFStringRef*)ewg_outString);
+}
+
+// Return address of function 'CopyMenuTitleAsCFString'
+void* ewg_get_function_address_CopyMenuTitleAsCFString (void)
+{
+	return (void*) CopyMenuTitleAsCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuTitleWithCFString'
+// For ise
+OSStatus  ewg_function_SetMenuTitleWithCFString (MenuRef ewg_inMenu, CFStringRef ewg_inString)
+{
+	return SetMenuTitleWithCFString ((MenuRef)ewg_inMenu, (CFStringRef)ewg_inString);
+}
+
+// Return address of function 'SetMenuTitleWithCFString'
+void* ewg_get_function_address_SetMenuTitleWithCFString (void)
+{
+	return (void*) SetMenuTitleWithCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuTitleIcon'
+// For ise
+OSStatus  ewg_function_SetMenuTitleIcon (MenuRef ewg_inMenu, UInt32 ewg_inType, void *ewg_inIcon)
+{
+	return SetMenuTitleIcon ((MenuRef)ewg_inMenu, (UInt32)ewg_inType, (void*)ewg_inIcon);
+}
+
+// Return address of function 'SetMenuTitleIcon'
+void* ewg_get_function_address_SetMenuTitleIcon (void)
+{
+	return (void*) SetMenuTitleIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuTitleIcon'
+// For ise
+OSStatus  ewg_function_GetMenuTitleIcon (MenuRef ewg_inMenu, UInt32 *ewg_outType, void **ewg_outIcon)
+{
+	return GetMenuTitleIcon ((MenuRef)ewg_inMenu, (UInt32*)ewg_outType, (void**)ewg_outIcon);
+}
+
+// Return address of function 'GetMenuTitleIcon'
+void* ewg_get_function_address_GetMenuTitleIcon (void)
+{
+	return (void*) GetMenuTitleIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvalidateMenuSize'
+// For ise
+OSStatus  ewg_function_InvalidateMenuSize (MenuRef ewg_inMenu)
+{
+	return InvalidateMenuSize ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'InvalidateMenuSize'
+void* ewg_get_function_address_InvalidateMenuSize (void)
+{
+	return (void*) InvalidateMenuSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuSizeInvalid'
+// For ise
+Boolean  ewg_function_IsMenuSizeInvalid (MenuRef ewg_inMenu)
+{
+	return IsMenuSizeInvalid ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'IsMenuSizeInvalid'
+void* ewg_get_function_address_IsMenuSizeInvalid (void)
+{
+	return (void*) IsMenuSizeInvalid;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EraseMenuBackground'
+// For ise
+OSStatus  ewg_function_EraseMenuBackground (MenuRef ewg_inMenu, Rect const *ewg_inEraseRect, CGContextRef ewg_inContext)
+{
+	return EraseMenuBackground ((MenuRef)ewg_inMenu, (Rect const*)ewg_inEraseRect, (CGContextRef)ewg_inContext);
+}
+
+// Return address of function 'EraseMenuBackground'
+void* ewg_get_function_address_EraseMenuBackground (void)
+{
+	return (void*) EraseMenuBackground;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ScrollMenuImage'
+// For ise
+OSStatus  ewg_function_ScrollMenuImage (MenuRef ewg_inMenu, Rect const *ewg_inScrollRect, int ewg_inHScroll, int ewg_inVScroll, CGContextRef ewg_inContext)
+{
+	return ScrollMenuImage ((MenuRef)ewg_inMenu, (Rect const*)ewg_inScrollRect, (int)ewg_inHScroll, (int)ewg_inVScroll, (CGContextRef)ewg_inContext);
+}
+
+// Return address of function 'ScrollMenuImage'
+void* ewg_get_function_address_ScrollMenuImage (void)
+{
+	return (void*) ScrollMenuImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AppendMenu'
+// For ise
+void  ewg_function_AppendMenu (MenuRef ewg_menu, ConstStr255Param ewg_data)
+{
+	AppendMenu ((MenuRef)ewg_menu, (ConstStr255Param)ewg_data);
+}
+
+// Return address of function 'AppendMenu'
+void* ewg_get_function_address_AppendMenu (void)
+{
+	return (void*) AppendMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsertResMenu'
+// For ise
+void  ewg_function_InsertResMenu (MenuRef ewg_theMenu, ResType ewg_theType, MenuItemIndex ewg_afterItem)
+{
+	InsertResMenu ((MenuRef)ewg_theMenu, (ResType)ewg_theType, (MenuItemIndex)ewg_afterItem);
+}
+
+// Return address of function 'InsertResMenu'
+void* ewg_get_function_address_InsertResMenu (void)
+{
+	return (void*) InsertResMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AppendResMenu'
+// For ise
+void  ewg_function_AppendResMenu (MenuRef ewg_theMenu, ResType ewg_theType)
+{
+	AppendResMenu ((MenuRef)ewg_theMenu, (ResType)ewg_theType);
+}
+
+// Return address of function 'AppendResMenu'
+void* ewg_get_function_address_AppendResMenu (void)
+{
+	return (void*) AppendResMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsertMenuItem'
+// For ise
+void  ewg_function_InsertMenuItem (MenuRef ewg_theMenu, ConstStr255Param ewg_itemString, MenuItemIndex ewg_afterItem)
+{
+	InsertMenuItem ((MenuRef)ewg_theMenu, (ConstStr255Param)ewg_itemString, (MenuItemIndex)ewg_afterItem);
+}
+
+// Return address of function 'InsertMenuItem'
+void* ewg_get_function_address_InsertMenuItem (void)
+{
+	return (void*) InsertMenuItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DeleteMenuItem'
+// For ise
+void  ewg_function_DeleteMenuItem (MenuRef ewg_theMenu, MenuItemIndex ewg_item)
+{
+	DeleteMenuItem ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item);
+}
+
+// Return address of function 'DeleteMenuItem'
+void* ewg_get_function_address_DeleteMenuItem (void)
+{
+	return (void*) DeleteMenuItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsertFontResMenu'
+// For ise
+void  ewg_function_InsertFontResMenu (MenuRef ewg_theMenu, MenuItemIndex ewg_afterItem, short ewg_scriptFilter)
+{
+	InsertFontResMenu ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_afterItem, (short)ewg_scriptFilter);
+}
+
+// Return address of function 'InsertFontResMenu'
+void* ewg_get_function_address_InsertFontResMenu (void)
+{
+	return (void*) InsertFontResMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsertIntlResMenu'
+// For ise
+void  ewg_function_InsertIntlResMenu (MenuRef ewg_theMenu, ResType ewg_theType, MenuItemIndex ewg_afterItem, short ewg_scriptFilter)
+{
+	InsertIntlResMenu ((MenuRef)ewg_theMenu, (ResType)ewg_theType, (MenuItemIndex)ewg_afterItem, (short)ewg_scriptFilter);
+}
+
+// Return address of function 'InsertIntlResMenu'
+void* ewg_get_function_address_InsertIntlResMenu (void)
+{
+	return (void*) InsertIntlResMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AppendMenuItemText'
+// For ise
+OSStatus  ewg_function_AppendMenuItemText (MenuRef ewg_menu, ConstStr255Param ewg_inString)
+{
+	return AppendMenuItemText ((MenuRef)ewg_menu, (ConstStr255Param)ewg_inString);
+}
+
+// Return address of function 'AppendMenuItemText'
+void* ewg_get_function_address_AppendMenuItemText (void)
+{
+	return (void*) AppendMenuItemText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsertMenuItemText'
+// For ise
+OSStatus  ewg_function_InsertMenuItemText (MenuRef ewg_menu, ConstStr255Param ewg_inString, MenuItemIndex ewg_afterItem)
+{
+	return InsertMenuItemText ((MenuRef)ewg_menu, (ConstStr255Param)ewg_inString, (MenuItemIndex)ewg_afterItem);
+}
+
+// Return address of function 'InsertMenuItemText'
+void* ewg_get_function_address_InsertMenuItemText (void)
+{
+	return (void*) InsertMenuItemText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyMenuItems'
+// For ise
+OSStatus  ewg_function_CopyMenuItems (MenuRef ewg_inSourceMenu, MenuItemIndex ewg_inFirstItem, ItemCount ewg_inNumItems, MenuRef ewg_inDestMenu, MenuItemIndex ewg_inInsertAfter)
+{
+	return CopyMenuItems ((MenuRef)ewg_inSourceMenu, (MenuItemIndex)ewg_inFirstItem, (ItemCount)ewg_inNumItems, (MenuRef)ewg_inDestMenu, (MenuItemIndex)ewg_inInsertAfter);
+}
+
+// Return address of function 'CopyMenuItems'
+void* ewg_get_function_address_CopyMenuItems (void)
+{
+	return (void*) CopyMenuItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DeleteMenuItems'
+// For ise
+OSStatus  ewg_function_DeleteMenuItems (MenuRef ewg_inMenu, MenuItemIndex ewg_inFirstItem, ItemCount ewg_inNumItems)
+{
+	return DeleteMenuItems ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inFirstItem, (ItemCount)ewg_inNumItems);
+}
+
+// Return address of function 'DeleteMenuItems'
+void* ewg_get_function_address_DeleteMenuItems (void)
+{
+	return (void*) DeleteMenuItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AppendMenuItemTextWithCFString'
+// For ise
+OSStatus  ewg_function_AppendMenuItemTextWithCFString (MenuRef ewg_inMenu, CFStringRef ewg_inString, MenuItemAttributes ewg_inAttributes, MenuCommand ewg_inCommandID, MenuItemIndex *ewg_outNewItem)
+{
+	return AppendMenuItemTextWithCFString ((MenuRef)ewg_inMenu, (CFStringRef)ewg_inString, (MenuItemAttributes)ewg_inAttributes, (MenuCommand)ewg_inCommandID, (MenuItemIndex*)ewg_outNewItem);
+}
+
+// Return address of function 'AppendMenuItemTextWithCFString'
+void* ewg_get_function_address_AppendMenuItemTextWithCFString (void)
+{
+	return (void*) AppendMenuItemTextWithCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsertMenuItemTextWithCFString'
+// For ise
+OSStatus  ewg_function_InsertMenuItemTextWithCFString (MenuRef ewg_inMenu, CFStringRef ewg_inString, MenuItemIndex ewg_inAfterItem, MenuItemAttributes ewg_inAttributes, MenuCommand ewg_inCommandID)
+{
+	return InsertMenuItemTextWithCFString ((MenuRef)ewg_inMenu, (CFStringRef)ewg_inString, (MenuItemIndex)ewg_inAfterItem, (MenuItemAttributes)ewg_inAttributes, (MenuCommand)ewg_inCommandID);
+}
+
+// Return address of function 'InsertMenuItemTextWithCFString'
+void* ewg_get_function_address_InsertMenuItemTextWithCFString (void)
+{
+	return (void*) InsertMenuItemTextWithCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MenuKey'
+// For ise
+long  ewg_function_MenuKey (CharParameter ewg_ch)
+{
+	return MenuKey ((CharParameter)ewg_ch);
+}
+
+// Return address of function 'MenuKey'
+void* ewg_get_function_address_MenuKey (void)
+{
+	return (void*) MenuKey;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MenuSelect'
+// For ise
+long  ewg_function_MenuSelect (Point *ewg_startPt)
+{
+	return MenuSelect (*(Point*)ewg_startPt);
+}
+
+// Return address of function 'MenuSelect'
+void* ewg_get_function_address_MenuSelect (void)
+{
+	return (void*) MenuSelect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PopUpMenuSelect'
+// For ise
+long  ewg_function_PopUpMenuSelect (MenuRef ewg_menu, short ewg_top, short ewg_left, MenuItemIndex ewg_popUpItem)
+{
+	return PopUpMenuSelect ((MenuRef)ewg_menu, (short)ewg_top, (short)ewg_left, (MenuItemIndex)ewg_popUpItem);
+}
+
+// Return address of function 'PopUpMenuSelect'
+void* ewg_get_function_address_PopUpMenuSelect (void)
+{
+	return (void*) PopUpMenuSelect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MenuChoice'
+// For ise
+long  ewg_function_MenuChoice (void)
+{
+	return MenuChoice ();
+}
+
+// Return address of function 'MenuChoice'
+void* ewg_get_function_address_MenuChoice (void)
+{
+	return (void*) MenuChoice;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MenuEvent'
+// For ise
+UInt32  ewg_function_MenuEvent (EventRecord const *ewg_inEvent)
+{
+	return MenuEvent ((EventRecord const*)ewg_inEvent);
+}
+
+// Return address of function 'MenuEvent'
+void* ewg_get_function_address_MenuEvent (void)
+{
+	return (void*) MenuEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuKeyEvent'
+// For ise
+Boolean  ewg_function_IsMenuKeyEvent (MenuRef ewg_inStartMenu, EventRef ewg_inEvent, MenuEventOptions ewg_inOptions, MenuRef *ewg_outMenu, MenuItemIndex *ewg_outMenuItem)
+{
+	return IsMenuKeyEvent ((MenuRef)ewg_inStartMenu, (EventRef)ewg_inEvent, (MenuEventOptions)ewg_inOptions, (MenuRef*)ewg_outMenu, (MenuItemIndex*)ewg_outMenuItem);
+}
+
+// Return address of function 'IsMenuKeyEvent'
+void* ewg_get_function_address_IsMenuKeyEvent (void)
+{
+	return (void*) IsMenuKeyEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvalidateMenuEnabling'
+// For ise
+OSStatus  ewg_function_InvalidateMenuEnabling (MenuRef ewg_inMenu)
+{
+	return InvalidateMenuEnabling ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'InvalidateMenuEnabling'
+void* ewg_get_function_address_InvalidateMenuEnabling (void)
+{
+	return (void*) InvalidateMenuEnabling;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CancelMenuTracking'
+// For ise
+OSStatus  ewg_function_CancelMenuTracking (MenuRef ewg_inRootMenu, Boolean ewg_inImmediate, UInt32 ewg_inDismissalReason)
+{
+	return CancelMenuTracking ((MenuRef)ewg_inRootMenu, (Boolean)ewg_inImmediate, (UInt32)ewg_inDismissalReason);
+}
+
+// Return address of function 'CancelMenuTracking'
+void* ewg_get_function_address_CancelMenuTracking (void)
+{
+	return (void*) CancelMenuTracking;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMBarHeight'
+// For ise
+short  ewg_function_GetMBarHeight (void)
+{
+	return GetMBarHeight ();
+}
+
+// Return address of function 'GetMBarHeight'
+void* ewg_get_function_address_GetMBarHeight (void)
+{
+	return (void*) GetMBarHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DrawMenuBar'
+// For ise
+void  ewg_function_DrawMenuBar (void)
+{
+	DrawMenuBar ();
+}
+
+// Return address of function 'DrawMenuBar'
+void* ewg_get_function_address_DrawMenuBar (void)
+{
+	return (void*) DrawMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvalMenuBar'
+// For ise
+void  ewg_function_InvalMenuBar (void)
+{
+	InvalMenuBar ();
+}
+
+// Return address of function 'InvalMenuBar'
+void* ewg_get_function_address_InvalMenuBar (void)
+{
+	return (void*) InvalMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuBarInvalid'
+// For ise
+Boolean  ewg_function_IsMenuBarInvalid (MenuRef ewg_rootMenu)
+{
+	return IsMenuBarInvalid ((MenuRef)ewg_rootMenu);
+}
+
+// Return address of function 'IsMenuBarInvalid'
+void* ewg_get_function_address_IsMenuBarInvalid (void)
+{
+	return (void*) IsMenuBarInvalid;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HiliteMenu'
+// For ise
+void  ewg_function_HiliteMenu (MenuID ewg_menuID)
+{
+	HiliteMenu ((MenuID)ewg_menuID);
+}
+
+// Return address of function 'HiliteMenu'
+void* ewg_get_function_address_HiliteMenu (void)
+{
+	return (void*) HiliteMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetNewMBar'
+// For ise
+MenuBarHandle  ewg_function_GetNewMBar (short ewg_menuBarID)
+{
+	return GetNewMBar ((short)ewg_menuBarID);
+}
+
+// Return address of function 'GetNewMBar'
+void* ewg_get_function_address_GetNewMBar (void)
+{
+	return (void*) GetNewMBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuBar'
+// For ise
+MenuBarHandle  ewg_function_GetMenuBar (void)
+{
+	return GetMenuBar ();
+}
+
+// Return address of function 'GetMenuBar'
+void* ewg_get_function_address_GetMenuBar (void)
+{
+	return (void*) GetMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuBar'
+// For ise
+void  ewg_function_SetMenuBar (MenuBarHandle ewg_mbar)
+{
+	SetMenuBar ((MenuBarHandle)ewg_mbar);
+}
+
+// Return address of function 'SetMenuBar'
+void* ewg_get_function_address_SetMenuBar (void)
+{
+	return (void*) SetMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DuplicateMenuBar'
+// For ise
+OSStatus  ewg_function_DuplicateMenuBar (MenuBarHandle ewg_inMbar, MenuBarHandle *ewg_outMbar)
+{
+	return DuplicateMenuBar ((MenuBarHandle)ewg_inMbar, (MenuBarHandle*)ewg_outMbar);
+}
+
+// Return address of function 'DuplicateMenuBar'
+void* ewg_get_function_address_DuplicateMenuBar (void)
+{
+	return (void*) DuplicateMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeMenuBar'
+// For ise
+OSStatus  ewg_function_DisposeMenuBar (MenuBarHandle ewg_inMbar)
+{
+	return DisposeMenuBar ((MenuBarHandle)ewg_inMbar);
+}
+
+// Return address of function 'DisposeMenuBar'
+void* ewg_get_function_address_DisposeMenuBar (void)
+{
+	return (void*) DisposeMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuHandle'
+// For ise
+MenuRef  ewg_function_GetMenuHandle (MenuID ewg_menuID)
+{
+	return GetMenuHandle ((MenuID)ewg_menuID);
+}
+
+// Return address of function 'GetMenuHandle'
+void* ewg_get_function_address_GetMenuHandle (void)
+{
+	return (void*) GetMenuHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InsertMenu'
+// For ise
+void  ewg_function_InsertMenu (MenuRef ewg_theMenu, MenuID ewg_beforeID)
+{
+	InsertMenu ((MenuRef)ewg_theMenu, (MenuID)ewg_beforeID);
+}
+
+// Return address of function 'InsertMenu'
+void* ewg_get_function_address_InsertMenu (void)
+{
+	return (void*) InsertMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DeleteMenu'
+// For ise
+void  ewg_function_DeleteMenu (MenuID ewg_menuID)
+{
+	DeleteMenu ((MenuID)ewg_menuID);
+}
+
+// Return address of function 'DeleteMenu'
+void* ewg_get_function_address_DeleteMenu (void)
+{
+	return (void*) DeleteMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ClearMenuBar'
+// For ise
+void  ewg_function_ClearMenuBar (void)
+{
+	ClearMenuBar ();
+}
+
+// Return address of function 'ClearMenuBar'
+void* ewg_get_function_address_ClearMenuBar (void)
+{
+	return (void*) ClearMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuFlashCount'
+// For ise
+void  ewg_function_SetMenuFlashCount (short ewg_count)
+{
+	SetMenuFlashCount ((short)ewg_count);
+}
+
+// Return address of function 'SetMenuFlashCount'
+void* ewg_get_function_address_SetMenuFlashCount (void)
+{
+	return (void*) SetMenuFlashCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'FlashMenuBar'
+// For ise
+void  ewg_function_FlashMenuBar (MenuID ewg_menuID)
+{
+	FlashMenuBar ((MenuID)ewg_menuID);
+}
+
+// Return address of function 'FlashMenuBar'
+void* ewg_get_function_address_FlashMenuBar (void)
+{
+	return (void*) FlashMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuBarVisible'
+// For ise
+Boolean  ewg_function_IsMenuBarVisible (void)
+{
+	return IsMenuBarVisible ();
+}
+
+// Return address of function 'IsMenuBarVisible'
+void* ewg_get_function_address_IsMenuBarVisible (void)
+{
+	return (void*) IsMenuBarVisible;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ShowMenuBar'
+// For ise
+void  ewg_function_ShowMenuBar (void)
+{
+	ShowMenuBar ();
+}
+
+// Return address of function 'ShowMenuBar'
+void* ewg_get_function_address_ShowMenuBar (void)
+{
+	return (void*) ShowMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HideMenuBar'
+// For ise
+void  ewg_function_HideMenuBar (void)
+{
+	HideMenuBar ();
+}
+
+// Return address of function 'HideMenuBar'
+void* ewg_get_function_address_HideMenuBar (void)
+{
+	return (void*) HideMenuBar;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AcquireRootMenu'
+// For ise
+MenuRef  ewg_function_AcquireRootMenu (void)
+{
+	return AcquireRootMenu ();
+}
+
+// Return address of function 'AcquireRootMenu'
+void* ewg_get_function_address_AcquireRootMenu (void)
+{
+	return (void*) AcquireRootMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetRootMenu'
+// For ise
+OSStatus  ewg_function_SetRootMenu (MenuRef ewg_inMenu)
+{
+	return SetRootMenu ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'SetRootMenu'
+void* ewg_get_function_address_SetRootMenu (void)
+{
+	return (void*) SetRootMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CheckMenuItem'
+// For ise
+void  ewg_function_CheckMenuItem (MenuRef ewg_theMenu, MenuItemIndex ewg_item, Boolean ewg_checked)
+{
+	CheckMenuItem ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (Boolean)ewg_checked);
+}
+
+// Return address of function 'CheckMenuItem'
+void* ewg_get_function_address_CheckMenuItem (void)
+{
+	return (void*) CheckMenuItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemText'
+// For ise
+void  ewg_function_SetMenuItemText (MenuRef ewg_theMenu, MenuItemIndex ewg_item, ConstStr255Param ewg_itemString)
+{
+	SetMenuItemText ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (ConstStr255Param)ewg_itemString);
+}
+
+// Return address of function 'SetMenuItemText'
+void* ewg_get_function_address_SetMenuItemText (void)
+{
+	return (void*) SetMenuItemText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemText'
+// For ise
+void  ewg_function_GetMenuItemText (MenuRef ewg_theMenu, MenuItemIndex ewg_item, void *ewg_itemString)
+{
+	GetMenuItemText ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, ewg_itemString);
+}
+
+// Return address of function 'GetMenuItemText'
+void* ewg_get_function_address_GetMenuItemText (void)
+{
+	return (void*) GetMenuItemText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetItemMark'
+// For ise
+void  ewg_function_SetItemMark (MenuRef ewg_theMenu, MenuItemIndex ewg_item, CharParameter ewg_markChar)
+{
+	SetItemMark ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (CharParameter)ewg_markChar);
+}
+
+// Return address of function 'SetItemMark'
+void* ewg_get_function_address_SetItemMark (void)
+{
+	return (void*) SetItemMark;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetItemMark'
+// For ise
+void  ewg_function_GetItemMark (MenuRef ewg_theMenu, MenuItemIndex ewg_item, CharParameter *ewg_markChar)
+{
+	GetItemMark ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (CharParameter*)ewg_markChar);
+}
+
+// Return address of function 'GetItemMark'
+void* ewg_get_function_address_GetItemMark (void)
+{
+	return (void*) GetItemMark;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetItemCmd'
+// For ise
+void  ewg_function_SetItemCmd (MenuRef ewg_theMenu, MenuItemIndex ewg_item, CharParameter ewg_cmdChar)
+{
+	SetItemCmd ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (CharParameter)ewg_cmdChar);
+}
+
+// Return address of function 'SetItemCmd'
+void* ewg_get_function_address_SetItemCmd (void)
+{
+	return (void*) SetItemCmd;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetItemCmd'
+// For ise
+void  ewg_function_GetItemCmd (MenuRef ewg_theMenu, MenuItemIndex ewg_item, CharParameter *ewg_cmdChar)
+{
+	GetItemCmd ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (CharParameter*)ewg_cmdChar);
+}
+
+// Return address of function 'GetItemCmd'
+void* ewg_get_function_address_GetItemCmd (void)
+{
+	return (void*) GetItemCmd;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetItemIcon'
+// For ise
+void  ewg_function_SetItemIcon (MenuRef ewg_theMenu, MenuItemIndex ewg_item, short ewg_iconIndex)
+{
+	SetItemIcon ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (short)ewg_iconIndex);
+}
+
+// Return address of function 'SetItemIcon'
+void* ewg_get_function_address_SetItemIcon (void)
+{
+	return (void*) SetItemIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetItemIcon'
+// For ise
+void  ewg_function_GetItemIcon (MenuRef ewg_theMenu, MenuItemIndex ewg_item, short *ewg_iconIndex)
+{
+	GetItemIcon ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (short*)ewg_iconIndex);
+}
+
+// Return address of function 'GetItemIcon'
+void* ewg_get_function_address_GetItemIcon (void)
+{
+	return (void*) GetItemIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetItemStyle'
+// For ise
+void  ewg_function_SetItemStyle (MenuRef ewg_theMenu, MenuItemIndex ewg_item, StyleParameter ewg_chStyle)
+{
+	SetItemStyle ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (StyleParameter)ewg_chStyle);
+}
+
+// Return address of function 'SetItemStyle'
+void* ewg_get_function_address_SetItemStyle (void)
+{
+	return (void*) SetItemStyle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetItemStyle'
+// For ise
+void  ewg_function_GetItemStyle (MenuRef ewg_theMenu, MenuItemIndex ewg_item, Style *ewg_chStyle)
+{
+	GetItemStyle ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item, (Style*)ewg_chStyle);
+}
+
+// Return address of function 'GetItemStyle'
+void* ewg_get_function_address_GetItemStyle (void)
+{
+	return (void*) GetItemStyle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemCommandID'
+// For ise
+OSErr  ewg_function_SetMenuItemCommandID (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, MenuCommand ewg_inCommandID)
+{
+	return SetMenuItemCommandID ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (MenuCommand)ewg_inCommandID);
+}
+
+// Return address of function 'SetMenuItemCommandID'
+void* ewg_get_function_address_SetMenuItemCommandID (void)
+{
+	return (void*) SetMenuItemCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemCommandID'
+// For ise
+OSErr  ewg_function_GetMenuItemCommandID (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, MenuCommand *ewg_outCommandID)
+{
+	return GetMenuItemCommandID ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (MenuCommand*)ewg_outCommandID);
+}
+
+// Return address of function 'GetMenuItemCommandID'
+void* ewg_get_function_address_GetMenuItemCommandID (void)
+{
+	return (void*) GetMenuItemCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemModifiers'
+// For ise
+OSErr  ewg_function_SetMenuItemModifiers (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt8 ewg_inModifiers)
+{
+	return SetMenuItemModifiers ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt8)ewg_inModifiers);
+}
+
+// Return address of function 'SetMenuItemModifiers'
+void* ewg_get_function_address_SetMenuItemModifiers (void)
+{
+	return (void*) SetMenuItemModifiers;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemModifiers'
+// For ise
+OSErr  ewg_function_GetMenuItemModifiers (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt8 *ewg_outModifiers)
+{
+	return GetMenuItemModifiers ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt8*)ewg_outModifiers);
+}
+
+// Return address of function 'GetMenuItemModifiers'
+void* ewg_get_function_address_GetMenuItemModifiers (void)
+{
+	return (void*) GetMenuItemModifiers;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemIconHandle'
+// For ise
+OSErr  ewg_function_SetMenuItemIconHandle (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt8 ewg_inIconType, Handle ewg_inIconHandle)
+{
+	return SetMenuItemIconHandle ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt8)ewg_inIconType, (Handle)ewg_inIconHandle);
+}
+
+// Return address of function 'SetMenuItemIconHandle'
+void* ewg_get_function_address_SetMenuItemIconHandle (void)
+{
+	return (void*) SetMenuItemIconHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemIconHandle'
+// For ise
+OSErr  ewg_function_GetMenuItemIconHandle (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt8 *ewg_outIconType, Handle *ewg_outIconHandle)
+{
+	return GetMenuItemIconHandle ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt8*)ewg_outIconType, (Handle*)ewg_outIconHandle);
+}
+
+// Return address of function 'GetMenuItemIconHandle'
+void* ewg_get_function_address_GetMenuItemIconHandle (void)
+{
+	return (void*) GetMenuItemIconHandle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemTextEncoding'
+// For ise
+OSErr  ewg_function_SetMenuItemTextEncoding (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, TextEncoding ewg_inScriptID)
+{
+	return SetMenuItemTextEncoding ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (TextEncoding)ewg_inScriptID);
+}
+
+// Return address of function 'SetMenuItemTextEncoding'
+void* ewg_get_function_address_SetMenuItemTextEncoding (void)
+{
+	return (void*) SetMenuItemTextEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemTextEncoding'
+// For ise
+OSErr  ewg_function_GetMenuItemTextEncoding (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, TextEncoding *ewg_outScriptID)
+{
+	return GetMenuItemTextEncoding ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (TextEncoding*)ewg_outScriptID);
+}
+
+// Return address of function 'GetMenuItemTextEncoding'
+void* ewg_get_function_address_GetMenuItemTextEncoding (void)
+{
+	return (void*) GetMenuItemTextEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemHierarchicalID'
+// For ise
+OSErr  ewg_function_SetMenuItemHierarchicalID (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, MenuID ewg_inHierID)
+{
+	return SetMenuItemHierarchicalID ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (MenuID)ewg_inHierID);
+}
+
+// Return address of function 'SetMenuItemHierarchicalID'
+void* ewg_get_function_address_SetMenuItemHierarchicalID (void)
+{
+	return (void*) SetMenuItemHierarchicalID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemHierarchicalID'
+// For ise
+OSErr  ewg_function_GetMenuItemHierarchicalID (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, MenuID *ewg_outHierID)
+{
+	return GetMenuItemHierarchicalID ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (MenuID*)ewg_outHierID);
+}
+
+// Return address of function 'GetMenuItemHierarchicalID'
+void* ewg_get_function_address_GetMenuItemHierarchicalID (void)
+{
+	return (void*) GetMenuItemHierarchicalID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemFontID'
+// For ise
+OSErr  ewg_function_SetMenuItemFontID (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, SInt16 ewg_inFontID)
+{
+	return SetMenuItemFontID ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (SInt16)ewg_inFontID);
+}
+
+// Return address of function 'SetMenuItemFontID'
+void* ewg_get_function_address_SetMenuItemFontID (void)
+{
+	return (void*) SetMenuItemFontID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemFontID'
+// For ise
+OSErr  ewg_function_GetMenuItemFontID (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, SInt16 *ewg_outFontID)
+{
+	return GetMenuItemFontID ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (SInt16*)ewg_outFontID);
+}
+
+// Return address of function 'GetMenuItemFontID'
+void* ewg_get_function_address_GetMenuItemFontID (void)
+{
+	return (void*) GetMenuItemFontID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemRefCon'
+// For ise
+OSErr  ewg_function_SetMenuItemRefCon (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt32 ewg_inRefCon)
+{
+	return SetMenuItemRefCon ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt32)ewg_inRefCon);
+}
+
+// Return address of function 'SetMenuItemRefCon'
+void* ewg_get_function_address_SetMenuItemRefCon (void)
+{
+	return (void*) SetMenuItemRefCon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemRefCon'
+// For ise
+OSErr  ewg_function_GetMenuItemRefCon (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt32 *ewg_outRefCon)
+{
+	return GetMenuItemRefCon ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt32*)ewg_outRefCon);
+}
+
+// Return address of function 'GetMenuItemRefCon'
+void* ewg_get_function_address_GetMenuItemRefCon (void)
+{
+	return (void*) GetMenuItemRefCon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemKeyGlyph'
+// For ise
+OSErr  ewg_function_SetMenuItemKeyGlyph (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, SInt16 ewg_inGlyph)
+{
+	return SetMenuItemKeyGlyph ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (SInt16)ewg_inGlyph);
+}
+
+// Return address of function 'SetMenuItemKeyGlyph'
+void* ewg_get_function_address_SetMenuItemKeyGlyph (void)
+{
+	return (void*) SetMenuItemKeyGlyph;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemKeyGlyph'
+// For ise
+OSErr  ewg_function_GetMenuItemKeyGlyph (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, SInt16 *ewg_outGlyph)
+{
+	return GetMenuItemKeyGlyph ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (SInt16*)ewg_outGlyph);
+}
+
+// Return address of function 'GetMenuItemKeyGlyph'
+void* ewg_get_function_address_GetMenuItemKeyGlyph (void)
+{
+	return (void*) GetMenuItemKeyGlyph;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableMenuItem'
+// For ise
+void  ewg_function_EnableMenuItem (MenuRef ewg_theMenu, MenuItemIndex ewg_item)
+{
+	EnableMenuItem ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item);
+}
+
+// Return address of function 'EnableMenuItem'
+void* ewg_get_function_address_EnableMenuItem (void)
+{
+	return (void*) EnableMenuItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisableMenuItem'
+// For ise
+void  ewg_function_DisableMenuItem (MenuRef ewg_theMenu, MenuItemIndex ewg_item)
+{
+	DisableMenuItem ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item);
+}
+
+// Return address of function 'DisableMenuItem'
+void* ewg_get_function_address_DisableMenuItem (void)
+{
+	return (void*) DisableMenuItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuItemEnabled'
+// For ise
+Boolean  ewg_function_IsMenuItemEnabled (MenuRef ewg_menu, MenuItemIndex ewg_item)
+{
+	return IsMenuItemEnabled ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item);
+}
+
+// Return address of function 'IsMenuItemEnabled'
+void* ewg_get_function_address_IsMenuItemEnabled (void)
+{
+	return (void*) IsMenuItemEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableMenuItemIcon'
+// For ise
+void  ewg_function_EnableMenuItemIcon (MenuRef ewg_theMenu, MenuItemIndex ewg_item)
+{
+	EnableMenuItemIcon ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item);
+}
+
+// Return address of function 'EnableMenuItemIcon'
+void* ewg_get_function_address_EnableMenuItemIcon (void)
+{
+	return (void*) EnableMenuItemIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisableMenuItemIcon'
+// For ise
+void  ewg_function_DisableMenuItemIcon (MenuRef ewg_theMenu, MenuItemIndex ewg_item)
+{
+	DisableMenuItemIcon ((MenuRef)ewg_theMenu, (MenuItemIndex)ewg_item);
+}
+
+// Return address of function 'DisableMenuItemIcon'
+void* ewg_get_function_address_DisableMenuItemIcon (void)
+{
+	return (void*) DisableMenuItemIcon;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuItemIconEnabled'
+// For ise
+Boolean  ewg_function_IsMenuItemIconEnabled (MenuRef ewg_menu, MenuItemIndex ewg_item)
+{
+	return IsMenuItemIconEnabled ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item);
+}
+
+// Return address of function 'IsMenuItemIconEnabled'
+void* ewg_get_function_address_IsMenuItemIconEnabled (void)
+{
+	return (void*) IsMenuItemIconEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemHierarchicalMenu'
+// For ise
+OSStatus  ewg_function_SetMenuItemHierarchicalMenu (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, MenuRef ewg_inHierMenu)
+{
+	return SetMenuItemHierarchicalMenu ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (MenuRef)ewg_inHierMenu);
+}
+
+// Return address of function 'SetMenuItemHierarchicalMenu'
+void* ewg_get_function_address_SetMenuItemHierarchicalMenu (void)
+{
+	return (void*) SetMenuItemHierarchicalMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemHierarchicalMenu'
+// For ise
+OSStatus  ewg_function_GetMenuItemHierarchicalMenu (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, MenuRef *ewg_outHierMenu)
+{
+	return GetMenuItemHierarchicalMenu ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (MenuRef*)ewg_outHierMenu);
+}
+
+// Return address of function 'GetMenuItemHierarchicalMenu'
+void* ewg_get_function_address_GetMenuItemHierarchicalMenu (void)
+{
+	return (void*) GetMenuItemHierarchicalMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyMenuItemTextAsCFString'
+// For ise
+OSStatus  ewg_function_CopyMenuItemTextAsCFString (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, CFStringRef *ewg_outString)
+{
+	return CopyMenuItemTextAsCFString ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (CFStringRef*)ewg_outString);
+}
+
+// Return address of function 'CopyMenuItemTextAsCFString'
+void* ewg_get_function_address_CopyMenuItemTextAsCFString (void)
+{
+	return (void*) CopyMenuItemTextAsCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemTextWithCFString'
+// For ise
+OSStatus  ewg_function_SetMenuItemTextWithCFString (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, CFStringRef ewg_inString)
+{
+	return SetMenuItemTextWithCFString ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (CFStringRef)ewg_inString);
+}
+
+// Return address of function 'SetMenuItemTextWithCFString'
+void* ewg_get_function_address_SetMenuItemTextWithCFString (void)
+{
+	return (void*) SetMenuItemTextWithCFString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemIndent'
+// For ise
+OSStatus  ewg_function_GetMenuItemIndent (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt32 *ewg_outIndent)
+{
+	return GetMenuItemIndent ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt32*)ewg_outIndent);
+}
+
+// Return address of function 'GetMenuItemIndent'
+void* ewg_get_function_address_GetMenuItemIndent (void)
+{
+	return (void*) GetMenuItemIndent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemIndent'
+// For ise
+OSStatus  ewg_function_SetMenuItemIndent (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, UInt32 ewg_inIndent)
+{
+	return SetMenuItemIndent ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (UInt32)ewg_inIndent);
+}
+
+// Return address of function 'SetMenuItemIndent'
+void* ewg_get_function_address_SetMenuItemIndent (void)
+{
+	return (void*) SetMenuItemIndent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemCommandKey'
+// For ise
+OSStatus  ewg_function_GetMenuItemCommandKey (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, Boolean ewg_inGetVirtualKey, UInt16 *ewg_outKey)
+{
+	return GetMenuItemCommandKey ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (Boolean)ewg_inGetVirtualKey, (UInt16*)ewg_outKey);
+}
+
+// Return address of function 'GetMenuItemCommandKey'
+void* ewg_get_function_address_GetMenuItemCommandKey (void)
+{
+	return (void*) GetMenuItemCommandKey;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemCommandKey'
+// For ise
+OSStatus  ewg_function_SetMenuItemCommandKey (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, Boolean ewg_inSetVirtualKey, UInt16 ewg_inKey)
+{
+	return SetMenuItemCommandKey ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (Boolean)ewg_inSetVirtualKey, (UInt16)ewg_inKey);
+}
+
+// Return address of function 'SetMenuItemCommandKey'
+void* ewg_get_function_address_SetMenuItemCommandKey (void)
+{
+	return (void*) SetMenuItemCommandKey;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DeleteMCEntries'
+// For ise
+void  ewg_function_DeleteMCEntries (MenuID ewg_menuID, short ewg_menuItem)
+{
+	DeleteMCEntries ((MenuID)ewg_menuID, (short)ewg_menuItem);
+}
+
+// Return address of function 'DeleteMCEntries'
+void* ewg_get_function_address_DeleteMCEntries (void)
+{
+	return (void*) DeleteMCEntries;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMCInfo'
+// For ise
+MCTableHandle  ewg_function_GetMCInfo (void)
+{
+	return GetMCInfo ();
+}
+
+// Return address of function 'GetMCInfo'
+void* ewg_get_function_address_GetMCInfo (void)
+{
+	return (void*) GetMCInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMCInfo'
+// For ise
+void  ewg_function_SetMCInfo (MCTableHandle ewg_menuCTbl)
+{
+	SetMCInfo ((MCTableHandle)ewg_menuCTbl);
+}
+
+// Return address of function 'SetMCInfo'
+void* ewg_get_function_address_SetMCInfo (void)
+{
+	return (void*) SetMCInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeMCInfo'
+// For ise
+void  ewg_function_DisposeMCInfo (MCTableHandle ewg_menuCTbl)
+{
+	DisposeMCInfo ((MCTableHandle)ewg_menuCTbl);
+}
+
+// Return address of function 'DisposeMCInfo'
+void* ewg_get_function_address_DisposeMCInfo (void)
+{
+	return (void*) DisposeMCInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMCEntry'
+// For ise
+MCEntryPtr  ewg_function_GetMCEntry (MenuID ewg_menuID, short ewg_menuItem)
+{
+	return GetMCEntry ((MenuID)ewg_menuID, (short)ewg_menuItem);
+}
+
+// Return address of function 'GetMCEntry'
+void* ewg_get_function_address_GetMCEntry (void)
+{
+	return (void*) GetMCEntry;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMCEntries'
+// For ise
+void  ewg_function_SetMCEntries (short ewg_numEntries, MCTablePtr ewg_menuCEntries)
+{
+	SetMCEntries ((short)ewg_numEntries, (MCTablePtr)ewg_menuCEntries);
+}
+
+// Return address of function 'SetMCEntries'
+void* ewg_get_function_address_SetMCEntries (void)
+{
+	return (void*) SetMCEntries;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemProperty'
+// For ise
+OSStatus  ewg_function_GetMenuItemProperty (MenuRef ewg_menu, MenuItemIndex ewg_item, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 ewg_bufferSize, UInt32 *ewg_actualSize, void *ewg_propertyBuffer)
+{
+	return GetMenuItemProperty ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32)ewg_bufferSize, (UInt32*)ewg_actualSize, (void*)ewg_propertyBuffer);
+}
+
+// Return address of function 'GetMenuItemProperty'
+void* ewg_get_function_address_GetMenuItemProperty (void)
+{
+	return (void*) GetMenuItemProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemPropertySize'
+// For ise
+OSStatus  ewg_function_GetMenuItemPropertySize (MenuRef ewg_menu, MenuItemIndex ewg_item, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 *ewg_size)
+{
+	return GetMenuItemPropertySize ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32*)ewg_size);
+}
+
+// Return address of function 'GetMenuItemPropertySize'
+void* ewg_get_function_address_GetMenuItemPropertySize (void)
+{
+	return (void*) GetMenuItemPropertySize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemProperty'
+// For ise
+OSStatus  ewg_function_SetMenuItemProperty (MenuRef ewg_menu, MenuItemIndex ewg_item, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 ewg_propertySize, void const *ewg_propertyData)
+{
+	return SetMenuItemProperty ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32)ewg_propertySize, (void const*)ewg_propertyData);
+}
+
+// Return address of function 'SetMenuItemProperty'
+void* ewg_get_function_address_SetMenuItemProperty (void)
+{
+	return (void*) SetMenuItemProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveMenuItemProperty'
+// For ise
+OSStatus  ewg_function_RemoveMenuItemProperty (MenuRef ewg_menu, MenuItemIndex ewg_item, OSType ewg_propertyCreator, OSType ewg_propertyTag)
+{
+	return RemoveMenuItemProperty ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag);
+}
+
+// Return address of function 'RemoveMenuItemProperty'
+void* ewg_get_function_address_RemoveMenuItemProperty (void)
+{
+	return (void*) RemoveMenuItemProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemPropertyAttributes'
+// For ise
+OSStatus  ewg_function_GetMenuItemPropertyAttributes (MenuRef ewg_menu, MenuItemIndex ewg_item, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 *ewg_attributes)
+{
+	return GetMenuItemPropertyAttributes ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32*)ewg_attributes);
+}
+
+// Return address of function 'GetMenuItemPropertyAttributes'
+void* ewg_get_function_address_GetMenuItemPropertyAttributes (void)
+{
+	return (void*) GetMenuItemPropertyAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeMenuItemPropertyAttributes'
+// For ise
+OSStatus  ewg_function_ChangeMenuItemPropertyAttributes (MenuRef ewg_menu, MenuItemIndex ewg_item, OSType ewg_propertyCreator, OSType ewg_propertyTag, UInt32 ewg_attributesToSet, UInt32 ewg_attributesToClear)
+{
+	return ChangeMenuItemPropertyAttributes ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (OSType)ewg_propertyCreator, (OSType)ewg_propertyTag, (UInt32)ewg_attributesToSet, (UInt32)ewg_attributesToClear);
+}
+
+// Return address of function 'ChangeMenuItemPropertyAttributes'
+void* ewg_get_function_address_ChangeMenuItemPropertyAttributes (void)
+{
+	return (void*) ChangeMenuItemPropertyAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuAttributes'
+// For ise
+OSStatus  ewg_function_GetMenuAttributes (MenuRef ewg_menu, MenuAttributes *ewg_outAttributes)
+{
+	return GetMenuAttributes ((MenuRef)ewg_menu, (MenuAttributes*)ewg_outAttributes);
+}
+
+// Return address of function 'GetMenuAttributes'
+void* ewg_get_function_address_GetMenuAttributes (void)
+{
+	return (void*) GetMenuAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeMenuAttributes'
+// For ise
+OSStatus  ewg_function_ChangeMenuAttributes (MenuRef ewg_menu, MenuAttributes ewg_setTheseAttributes, MenuAttributes ewg_clearTheseAttributes)
+{
+	return ChangeMenuAttributes ((MenuRef)ewg_menu, (MenuAttributes)ewg_setTheseAttributes, (MenuAttributes)ewg_clearTheseAttributes);
+}
+
+// Return address of function 'ChangeMenuAttributes'
+void* ewg_get_function_address_ChangeMenuAttributes (void)
+{
+	return (void*) ChangeMenuAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuItemAttributes'
+// For ise
+OSStatus  ewg_function_GetMenuItemAttributes (MenuRef ewg_menu, MenuItemIndex ewg_item, MenuItemAttributes *ewg_outAttributes)
+{
+	return GetMenuItemAttributes ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (MenuItemAttributes*)ewg_outAttributes);
+}
+
+// Return address of function 'GetMenuItemAttributes'
+void* ewg_get_function_address_GetMenuItemAttributes (void)
+{
+	return (void*) GetMenuItemAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ChangeMenuItemAttributes'
+// For ise
+OSStatus  ewg_function_ChangeMenuItemAttributes (MenuRef ewg_menu, MenuItemIndex ewg_item, MenuItemAttributes ewg_setTheseAttributes, MenuItemAttributes ewg_clearTheseAttributes)
+{
+	return ChangeMenuItemAttributes ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (MenuItemAttributes)ewg_setTheseAttributes, (MenuItemAttributes)ewg_clearTheseAttributes);
+}
+
+// Return address of function 'ChangeMenuItemAttributes'
+void* ewg_get_function_address_ChangeMenuItemAttributes (void)
+{
+	return (void*) ChangeMenuItemAttributes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisableAllMenuItems'
+// For ise
+void  ewg_function_DisableAllMenuItems (MenuRef ewg_theMenu)
+{
+	DisableAllMenuItems ((MenuRef)ewg_theMenu);
+}
+
+// Return address of function 'DisableAllMenuItems'
+void* ewg_get_function_address_DisableAllMenuItems (void)
+{
+	return (void*) DisableAllMenuItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableAllMenuItems'
+// For ise
+void  ewg_function_EnableAllMenuItems (MenuRef ewg_theMenu)
+{
+	EnableAllMenuItems ((MenuRef)ewg_theMenu);
+}
+
+// Return address of function 'EnableAllMenuItems'
+void* ewg_get_function_address_EnableAllMenuItems (void)
+{
+	return (void*) EnableAllMenuItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'MenuHasEnabledItems'
+// For ise
+Boolean  ewg_function_MenuHasEnabledItems (MenuRef ewg_theMenu)
+{
+	return MenuHasEnabledItems ((MenuRef)ewg_theMenu);
+}
+
+// Return address of function 'MenuHasEnabledItems'
+void* ewg_get_function_address_MenuHasEnabledItems (void)
+{
+	return (void*) MenuHasEnabledItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuTrackingData'
+// For ise
+OSStatus  ewg_function_GetMenuTrackingData (MenuRef ewg_theMenu, MenuTrackingData *ewg_outData)
+{
+	return GetMenuTrackingData ((MenuRef)ewg_theMenu, (MenuTrackingData*)ewg_outData);
+}
+
+// Return address of function 'GetMenuTrackingData'
+void* ewg_get_function_address_GetMenuTrackingData (void)
+{
+	return (void*) GetMenuTrackingData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuType'
+// For ise
+OSStatus  ewg_function_GetMenuType (MenuRef ewg_theMenu, UInt16 *ewg_outType)
+{
+	return GetMenuType ((MenuRef)ewg_theMenu, (UInt16*)ewg_outType);
+}
+
+// Return address of function 'GetMenuType'
+void* ewg_get_function_address_GetMenuType (void)
+{
+	return (void*) GetMenuType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CountMenuItemsWithCommandID'
+// For ise
+ItemCount  ewg_function_CountMenuItemsWithCommandID (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID)
+{
+	return CountMenuItemsWithCommandID ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID);
+}
+
+// Return address of function 'CountMenuItemsWithCommandID'
+void* ewg_get_function_address_CountMenuItemsWithCommandID (void)
+{
+	return (void*) CountMenuItemsWithCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetIndMenuItemWithCommandID'
+// For ise
+OSStatus  ewg_function_GetIndMenuItemWithCommandID (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID, UInt32 ewg_inItemIndex, MenuRef *ewg_outMenu, MenuItemIndex *ewg_outIndex)
+{
+	return GetIndMenuItemWithCommandID ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID, (UInt32)ewg_inItemIndex, (MenuRef*)ewg_outMenu, (MenuItemIndex*)ewg_outIndex);
+}
+
+// Return address of function 'GetIndMenuItemWithCommandID'
+void* ewg_get_function_address_GetIndMenuItemWithCommandID (void)
+{
+	return (void*) GetIndMenuItemWithCommandID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'EnableMenuCommand'
+// For ise
+void  ewg_function_EnableMenuCommand (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID)
+{
+	EnableMenuCommand ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID);
+}
+
+// Return address of function 'EnableMenuCommand'
+void* ewg_get_function_address_EnableMenuCommand (void)
+{
+	return (void*) EnableMenuCommand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisableMenuCommand'
+// For ise
+void  ewg_function_DisableMenuCommand (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID)
+{
+	DisableMenuCommand ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID);
+}
+
+// Return address of function 'DisableMenuCommand'
+void* ewg_get_function_address_DisableMenuCommand (void)
+{
+	return (void*) DisableMenuCommand;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuCommandEnabled'
+// For ise
+Boolean  ewg_function_IsMenuCommandEnabled (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID)
+{
+	return IsMenuCommandEnabled ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID);
+}
+
+// Return address of function 'IsMenuCommandEnabled'
+void* ewg_get_function_address_IsMenuCommandEnabled (void)
+{
+	return (void*) IsMenuCommandEnabled;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuCommandMark'
+// For ise
+OSStatus  ewg_function_SetMenuCommandMark (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID, UniChar ewg_inMark)
+{
+	return SetMenuCommandMark ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID, (UniChar)ewg_inMark);
+}
+
+// Return address of function 'SetMenuCommandMark'
+void* ewg_get_function_address_SetMenuCommandMark (void)
+{
+	return (void*) SetMenuCommandMark;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuCommandMark'
+// For ise
+OSStatus  ewg_function_GetMenuCommandMark (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID, UniChar *ewg_outMark)
+{
+	return GetMenuCommandMark ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID, (UniChar*)ewg_outMark);
+}
+
+// Return address of function 'GetMenuCommandMark'
+void* ewg_get_function_address_GetMenuCommandMark (void)
+{
+	return (void*) GetMenuCommandMark;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuCommandProperty'
+// For ise
+OSStatus  ewg_function_GetMenuCommandProperty (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID, OSType ewg_inPropertyCreator, OSType ewg_inPropertyTag, ByteCount ewg_inBufferSize, ByteCount *ewg_outActualSize, void *ewg_inPropertyBuffer)
+{
+	return GetMenuCommandProperty ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID, (OSType)ewg_inPropertyCreator, (OSType)ewg_inPropertyTag, (ByteCount)ewg_inBufferSize, (ByteCount*)ewg_outActualSize, (void*)ewg_inPropertyBuffer);
+}
+
+// Return address of function 'GetMenuCommandProperty'
+void* ewg_get_function_address_GetMenuCommandProperty (void)
+{
+	return (void*) GetMenuCommandProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuCommandPropertySize'
+// For ise
+OSStatus  ewg_function_GetMenuCommandPropertySize (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID, OSType ewg_inPropertyCreator, OSType ewg_inPropertyTag, ByteCount *ewg_outSize)
+{
+	return GetMenuCommandPropertySize ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID, (OSType)ewg_inPropertyCreator, (OSType)ewg_inPropertyTag, (ByteCount*)ewg_outSize);
+}
+
+// Return address of function 'GetMenuCommandPropertySize'
+void* ewg_get_function_address_GetMenuCommandPropertySize (void)
+{
+	return (void*) GetMenuCommandPropertySize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuCommandProperty'
+// For ise
+OSStatus  ewg_function_SetMenuCommandProperty (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID, OSType ewg_inPropertyCreator, OSType ewg_inPropertyTag, ByteCount ewg_inPropertySize, void const *ewg_inPropertyData)
+{
+	return SetMenuCommandProperty ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID, (OSType)ewg_inPropertyCreator, (OSType)ewg_inPropertyTag, (ByteCount)ewg_inPropertySize, (void const*)ewg_inPropertyData);
+}
+
+// Return address of function 'SetMenuCommandProperty'
+void* ewg_get_function_address_SetMenuCommandProperty (void)
+{
+	return (void*) SetMenuCommandProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RemoveMenuCommandProperty'
+// For ise
+OSStatus  ewg_function_RemoveMenuCommandProperty (MenuRef ewg_inMenu, MenuCommand ewg_inCommandID, OSType ewg_inPropertyCreator, OSType ewg_inPropertyTag)
+{
+	return RemoveMenuCommandProperty ((MenuRef)ewg_inMenu, (MenuCommand)ewg_inCommandID, (OSType)ewg_inPropertyCreator, (OSType)ewg_inPropertyTag);
+}
+
+// Return address of function 'RemoveMenuCommandProperty'
+void* ewg_get_function_address_RemoveMenuCommandProperty (void)
+{
+	return (void*) RemoveMenuCommandProperty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CopyMenuItemData'
+// For ise
+OSStatus  ewg_function_CopyMenuItemData (MenuRef ewg_inMenu, MenuItemID ewg_inItem, Boolean ewg_inIsCommandID, MenuItemDataPtr ewg_ioData)
+{
+	return CopyMenuItemData ((MenuRef)ewg_inMenu, (MenuItemID)ewg_inItem, (Boolean)ewg_inIsCommandID, (MenuItemDataPtr)ewg_ioData);
+}
+
+// Return address of function 'CopyMenuItemData'
+void* ewg_get_function_address_CopyMenuItemData (void)
+{
+	return (void*) CopyMenuItemData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuItemData'
+// For ise
+OSStatus  ewg_function_SetMenuItemData (MenuRef ewg_inMenu, MenuItemID ewg_inItem, Boolean ewg_inIsCommandID, MenuItemDataRec const *ewg_inData)
+{
+	return SetMenuItemData ((MenuRef)ewg_inMenu, (MenuItemID)ewg_inItem, (Boolean)ewg_inIsCommandID, (MenuItemDataRec const*)ewg_inData);
+}
+
+// Return address of function 'SetMenuItemData'
+void* ewg_get_function_address_SetMenuItemData (void)
+{
+	return (void*) SetMenuItemData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsMenuItemInvalid'
+// For ise
+Boolean  ewg_function_IsMenuItemInvalid (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem)
+{
+	return IsMenuItemInvalid ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem);
+}
+
+// Return address of function 'IsMenuItemInvalid'
+void* ewg_get_function_address_IsMenuItemInvalid (void)
+{
+	return (void*) IsMenuItemInvalid;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvalidateMenuItems'
+// For ise
+OSStatus  ewg_function_InvalidateMenuItems (MenuRef ewg_inMenu, MenuItemIndex ewg_inFirstItem, ItemCount ewg_inNumItems)
+{
+	return InvalidateMenuItems ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inFirstItem, (ItemCount)ewg_inNumItems);
+}
+
+// Return address of function 'InvalidateMenuItems'
+void* ewg_get_function_address_InvalidateMenuItems (void)
+{
+	return (void*) InvalidateMenuItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UpdateInvalidMenuItems'
+// For ise
+OSStatus  ewg_function_UpdateInvalidMenuItems (MenuRef ewg_inMenu)
+{
+	return UpdateInvalidMenuItems ((MenuRef)ewg_inMenu);
+}
+
+// Return address of function 'UpdateInvalidMenuItems'
+void* ewg_get_function_address_UpdateInvalidMenuItems (void)
+{
+	return (void*) UpdateInvalidMenuItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CreateStandardFontMenu'
+// For ise
+OSStatus  ewg_function_CreateStandardFontMenu (MenuRef ewg_menu, MenuItemIndex ewg_afterItem, MenuID ewg_firstHierMenuID, OptionBits ewg_options, ItemCount *ewg_outHierMenuCount)
+{
+	return CreateStandardFontMenu ((MenuRef)ewg_menu, (MenuItemIndex)ewg_afterItem, (MenuID)ewg_firstHierMenuID, (OptionBits)ewg_options, (ItemCount*)ewg_outHierMenuCount);
+}
+
+// Return address of function 'CreateStandardFontMenu'
+void* ewg_get_function_address_CreateStandardFontMenu (void)
+{
+	return (void*) CreateStandardFontMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'UpdateStandardFontMenu'
+// For ise
+OSStatus  ewg_function_UpdateStandardFontMenu (MenuRef ewg_menu, ItemCount *ewg_outHierMenuCount)
+{
+	return UpdateStandardFontMenu ((MenuRef)ewg_menu, (ItemCount*)ewg_outHierMenuCount);
+}
+
+// Return address of function 'UpdateStandardFontMenu'
+void* ewg_get_function_address_UpdateStandardFontMenu (void)
+{
+	return (void*) UpdateStandardFontMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetFontFamilyFromMenuSelection'
+// For ise
+OSStatus  ewg_function_GetFontFamilyFromMenuSelection (MenuRef ewg_menu, MenuItemIndex ewg_item, FMFontFamily *ewg_outFontFamily, FMFontStyle *ewg_outStyle)
+{
+	return GetFontFamilyFromMenuSelection ((MenuRef)ewg_menu, (MenuItemIndex)ewg_item, (FMFontFamily*)ewg_outFontFamily, (FMFontStyle*)ewg_outStyle);
+}
+
+// Return address of function 'GetFontFamilyFromMenuSelection'
+void* ewg_get_function_address_GetFontFamilyFromMenuSelection (void)
+{
+	return (void*) GetFontFamilyFromMenuSelection;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InitContextualMenus'
+// For ise
+OSStatus  ewg_function_InitContextualMenus (void)
+{
+	return InitContextualMenus ();
+}
+
+// Return address of function 'InitContextualMenus'
+void* ewg_get_function_address_InitContextualMenus (void)
+{
+	return (void*) InitContextualMenus;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsShowContextualMenuClick'
+// For ise
+Boolean  ewg_function_IsShowContextualMenuClick (EventRecord const *ewg_inEvent)
+{
+	return IsShowContextualMenuClick ((EventRecord const*)ewg_inEvent);
+}
+
+// Return address of function 'IsShowContextualMenuClick'
+void* ewg_get_function_address_IsShowContextualMenuClick (void)
+{
+	return (void*) IsShowContextualMenuClick;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'IsShowContextualMenuEvent'
+// For ise
+Boolean  ewg_function_IsShowContextualMenuEvent (EventRef ewg_inEvent)
+{
+	return IsShowContextualMenuEvent ((EventRef)ewg_inEvent);
+}
+
+// Return address of function 'IsShowContextualMenuEvent'
+void* ewg_get_function_address_IsShowContextualMenuEvent (void)
+{
+	return (void*) IsShowContextualMenuEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ContextualMenuSelect'
+// For ise
+OSStatus  ewg_function_ContextualMenuSelect (MenuRef ewg_inMenu, Point *ewg_inGlobalLocation, Boolean ewg_inReserved, UInt32 ewg_inHelpType, ConstStr255Param ewg_inHelpItemString, AEDesc const *ewg_inSelection, UInt32 *ewg_outUserSelectionType, MenuID *ewg_outMenuID, MenuItemIndex *ewg_outMenuItem)
+{
+	return ContextualMenuSelect ((MenuRef)ewg_inMenu, *(Point*)ewg_inGlobalLocation, (Boolean)ewg_inReserved, (UInt32)ewg_inHelpType, (ConstStr255Param)ewg_inHelpItemString, (AEDesc const*)ewg_inSelection, (UInt32*)ewg_outUserSelectionType, (MenuID*)ewg_outMenuID, (MenuItemIndex*)ewg_outMenuItem);
+}
+
+// Return address of function 'ContextualMenuSelect'
+void* ewg_get_function_address_ContextualMenuSelect (void)
+{
+	return (void*) ContextualMenuSelect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'ProcessIsContextualMenuClient'
+// For ise
+Boolean  ewg_function_ProcessIsContextualMenuClient (ProcessSerialNumber *ewg_inPSN)
+{
+	return ProcessIsContextualMenuClient ((ProcessSerialNumber*)ewg_inPSN);
+}
+
+// Return address of function 'ProcessIsContextualMenuClient'
+void* ewg_get_function_address_ProcessIsContextualMenuClient (void)
+{
+	return (void*) ProcessIsContextualMenuClient;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'LMGetTheMenu'
+// For ise
+MenuID  ewg_function_LMGetTheMenu (void)
+{
+	return LMGetTheMenu ();
+}
+
+// Return address of function 'LMGetTheMenu'
+void* ewg_get_function_address_LMGetTheMenu (void)
+{
+	return (void*) LMGetTheMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuID'
+// For ise
+MenuID  ewg_function_GetMenuID (MenuRef ewg_menu)
+{
+	return GetMenuID ((MenuRef)ewg_menu);
+}
+
+// Return address of function 'GetMenuID'
+void* ewg_get_function_address_GetMenuID (void)
+{
+	return (void*) GetMenuID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuWidth'
+// For ise
+SInt16  ewg_function_GetMenuWidth (MenuRef ewg_menu)
+{
+	return GetMenuWidth ((MenuRef)ewg_menu);
+}
+
+// Return address of function 'GetMenuWidth'
+void* ewg_get_function_address_GetMenuWidth (void)
+{
+	return (void*) GetMenuWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuHeight'
+// For ise
+SInt16  ewg_function_GetMenuHeight (MenuRef ewg_menu)
+{
+	return GetMenuHeight ((MenuRef)ewg_menu);
+}
+
+// Return address of function 'GetMenuHeight'
+void* ewg_get_function_address_GetMenuHeight (void)
+{
+	return (void*) GetMenuHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuTitle'
+// For ise
+StringPtr  ewg_function_GetMenuTitle (MenuRef ewg_menu, void *ewg_title)
+{
+	return GetMenuTitle ((MenuRef)ewg_menu, ewg_title);
+}
+
+// Return address of function 'GetMenuTitle'
+void* ewg_get_function_address_GetMenuTitle (void)
+{
+	return (void*) GetMenuTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetMenuDefinition'
+// For ise
+OSStatus  ewg_function_GetMenuDefinition (MenuRef ewg_menu, MenuDefSpecPtr ewg_outDefSpec)
+{
+	return GetMenuDefinition ((MenuRef)ewg_menu, (MenuDefSpecPtr)ewg_outDefSpec);
+}
+
+// Return address of function 'GetMenuDefinition'
+void* ewg_get_function_address_GetMenuDefinition (void)
+{
+	return (void*) GetMenuDefinition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuID'
+// For ise
+void  ewg_function_SetMenuID (MenuRef ewg_menu, MenuID ewg_menuID)
+{
+	SetMenuID ((MenuRef)ewg_menu, (MenuID)ewg_menuID);
+}
+
+// Return address of function 'SetMenuID'
+void* ewg_get_function_address_SetMenuID (void)
+{
+	return (void*) SetMenuID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuWidth'
+// For ise
+void  ewg_function_SetMenuWidth (MenuRef ewg_menu, SInt16 ewg_width)
+{
+	SetMenuWidth ((MenuRef)ewg_menu, (SInt16)ewg_width);
+}
+
+// Return address of function 'SetMenuWidth'
+void* ewg_get_function_address_SetMenuWidth (void)
+{
+	return (void*) SetMenuWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuHeight'
+// For ise
+void  ewg_function_SetMenuHeight (MenuRef ewg_menu, SInt16 ewg_height)
+{
+	SetMenuHeight ((MenuRef)ewg_menu, (SInt16)ewg_height);
+}
+
+// Return address of function 'SetMenuHeight'
+void* ewg_get_function_address_SetMenuHeight (void)
+{
+	return (void*) SetMenuHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuTitle'
+// For ise
+OSStatus  ewg_function_SetMenuTitle (MenuRef ewg_menu, ConstStr255Param ewg_title)
+{
+	return SetMenuTitle ((MenuRef)ewg_menu, (ConstStr255Param)ewg_title);
+}
+
+// Return address of function 'SetMenuTitle'
+void* ewg_get_function_address_SetMenuTitle (void)
+{
+	return (void*) SetMenuTitle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SetMenuDefinition'
+// For ise
+OSStatus  ewg_function_SetMenuDefinition (MenuRef ewg_menu, MenuDefSpec const *ewg_defSpec)
+{
+	return SetMenuDefinition ((MenuRef)ewg_menu, (MenuDefSpec const*)ewg_defSpec);
+}
+
+// Return address of function 'SetMenuDefinition'
+void* ewg_get_function_address_SetMenuDefinition (void)
+{
+	return (void*) SetMenuDefinition;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'NewControlActionUPP'
 // For ise
 ControlActionUPP  ewg_function_NewControlActionUPP (ControlActionProcPtr ewg_userRoutine)
@@ -25388,6 +27893,51 @@ void* ewg_get_function_address_call_event_handler_proc_ptr (void)
 
 #include <ewg_carbon_callback_c_glue_code.h>
 
+// Wraps call to function 'get_menu_def_proc_ptr_stub'
+// For ise
+void * ewg_function_get_menu_def_proc_ptr_stub (void)
+{
+	return get_menu_def_proc_ptr_stub ();
+}
+
+// Return address of function 'get_menu_def_proc_ptr_stub'
+void* ewg_get_function_address_get_menu_def_proc_ptr_stub (void)
+{
+	return (void*) get_menu_def_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_menu_def_proc_ptr_entry'
+// For ise
+void  ewg_function_set_menu_def_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_menu_def_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_menu_def_proc_ptr_entry'
+void* ewg_get_function_address_set_menu_def_proc_ptr_entry (void)
+{
+	return (void*) set_menu_def_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_menu_def_proc_ptr'
+// For ise
+void  ewg_function_call_menu_def_proc_ptr (void *ewg_a_function, short ewg_message, MenuRef ewg_theMenu, Rect *ewg_menuRect, Point *ewg_hitPt, short *ewg_whichItem)
+{
+	call_menu_def_proc_ptr ((void*)ewg_a_function, (short)ewg_message, (MenuRef)ewg_theMenu, (Rect*)ewg_menuRect, *(Point*)ewg_hitPt, (short*)ewg_whichItem);
+}
+
+// Return address of function 'call_menu_def_proc_ptr'
+void* ewg_get_function_address_call_menu_def_proc_ptr (void)
+{
+	return (void*) call_menu_def_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
 // Wraps call to function 'get_control_action_proc_ptr_stub'
 // For ise
 void * ewg_function_get_control_action_proc_ptr_stub (void)
@@ -27634,6 +30184,321 @@ void  ewg_function_call_get_next_event_filter_proc_ptr (void *ewg_a_function, Ev
 void* ewg_get_function_address_call_get_next_event_filter_proc_ptr (void)
 {
 	return (void*) call_get_next_event_filter_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_menu_bar_def_proc_ptr_stub'
+// For ise
+void * ewg_function_get_menu_bar_def_proc_ptr_stub (void)
+{
+	return get_menu_bar_def_proc_ptr_stub ();
+}
+
+// Return address of function 'get_menu_bar_def_proc_ptr_stub'
+void* ewg_get_function_address_get_menu_bar_def_proc_ptr_stub (void)
+{
+	return (void*) get_menu_bar_def_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_menu_bar_def_proc_ptr_entry'
+// For ise
+void  ewg_function_set_menu_bar_def_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_menu_bar_def_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_menu_bar_def_proc_ptr_entry'
+void* ewg_get_function_address_set_menu_bar_def_proc_ptr_entry (void)
+{
+	return (void*) set_menu_bar_def_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_menu_bar_def_proc_ptr'
+// For ise
+long  ewg_function_call_menu_bar_def_proc_ptr (void *ewg_a_function, short ewg_selector, short ewg_message, short ewg_parameter1, long ewg_parameter2)
+{
+	return call_menu_bar_def_proc_ptr ((void*)ewg_a_function, (short)ewg_selector, (short)ewg_message, (short)ewg_parameter1, (long)ewg_parameter2);
+}
+
+// Return address of function 'call_menu_bar_def_proc_ptr'
+void* ewg_get_function_address_call_menu_bar_def_proc_ptr (void)
+{
+	return (void*) call_menu_bar_def_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_mbar_hook_proc_ptr_stub'
+// For ise
+void * ewg_function_get_mbar_hook_proc_ptr_stub (void)
+{
+	return get_mbar_hook_proc_ptr_stub ();
+}
+
+// Return address of function 'get_mbar_hook_proc_ptr_stub'
+void* ewg_get_function_address_get_mbar_hook_proc_ptr_stub (void)
+{
+	return (void*) get_mbar_hook_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_mbar_hook_proc_ptr_entry'
+// For ise
+void  ewg_function_set_mbar_hook_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_mbar_hook_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_mbar_hook_proc_ptr_entry'
+void* ewg_get_function_address_set_mbar_hook_proc_ptr_entry (void)
+{
+	return (void*) set_mbar_hook_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_mbar_hook_proc_ptr'
+// For ise
+short  ewg_function_call_mbar_hook_proc_ptr (void *ewg_a_function, Rect *ewg_menuRect)
+{
+	return call_mbar_hook_proc_ptr ((void*)ewg_a_function, (Rect*)ewg_menuRect);
+}
+
+// Return address of function 'call_mbar_hook_proc_ptr'
+void* ewg_get_function_address_call_mbar_hook_proc_ptr (void)
+{
+	return (void*) call_mbar_hook_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub'
+// For ise
+void * ewg_function_get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub (void)
+{
+	return get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub ();
+}
+
+// Return address of function 'get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub'
+void* ewg_get_function_address_get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub (void)
+{
+	return (void*) get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry'
+// For ise
+void  ewg_function_set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry'
+void* ewg_get_function_address_set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry (void)
+{
+	return (void*) set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback'
+// For ise
+SInt32  ewg_function_call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback (void *ewg_a_function, void *ewg_thisPointer, CFUUIDBytes *ewg_iid, void **ewg_ppv)
+{
+	return call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback ((void*)ewg_a_function, (void*)ewg_thisPointer, *(CFUUIDBytes*)ewg_iid, (void**)ewg_ppv);
+}
+
+// Return address of function 'call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback'
+void* ewg_get_function_address_call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback (void)
+{
+	return (void*) call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_uint32_voidp_anonymous_callback_stub'
+// For ise
+void * ewg_function_get_uint32_voidp_anonymous_callback_stub (void)
+{
+	return get_uint32_voidp_anonymous_callback_stub ();
+}
+
+// Return address of function 'get_uint32_voidp_anonymous_callback_stub'
+void* ewg_get_function_address_get_uint32_voidp_anonymous_callback_stub (void)
+{
+	return (void*) get_uint32_voidp_anonymous_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_uint32_voidp_anonymous_callback_entry'
+// For ise
+void  ewg_function_set_uint32_voidp_anonymous_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_uint32_voidp_anonymous_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_uint32_voidp_anonymous_callback_entry'
+void* ewg_get_function_address_set_uint32_voidp_anonymous_callback_entry (void)
+{
+	return (void*) set_uint32_voidp_anonymous_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_uint32_voidp_anonymous_callback'
+// For ise
+UInt32  ewg_function_call_uint32_voidp_anonymous_callback (void *ewg_a_function, void *ewg_thisPointer)
+{
+	return call_uint32_voidp_anonymous_callback ((void*)ewg_a_function, (void*)ewg_thisPointer);
+}
+
+// Return address of function 'call_uint32_voidp_anonymous_callback'
+void* ewg_get_function_address_call_uint32_voidp_anonymous_callback (void)
+{
+	return (void*) call_uint32_voidp_anonymous_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub'
+// For ise
+void * ewg_function_get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub (void)
+{
+	return get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub ();
+}
+
+// Return address of function 'get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub'
+void* ewg_get_function_address_get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub (void)
+{
+	return (void*) get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry'
+// For ise
+void  ewg_function_set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry'
+void* ewg_get_function_address_set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry (void)
+{
+	return (void*) set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback'
+// For ise
+OSStatus  ewg_function_call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback (void *ewg_a_function, void *ewg_thisInstance, AEDesc const *ewg_inContext, AEDescList *ewg_outCommandPairs)
+{
+	return call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback ((void*)ewg_a_function, (void*)ewg_thisInstance, (AEDesc const*)ewg_inContext, (AEDescList*)ewg_outCommandPairs);
+}
+
+// Return address of function 'call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback'
+void* ewg_get_function_address_call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback (void)
+{
+	return (void*) call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub'
+// For ise
+void * ewg_function_get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub (void)
+{
+	return get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub ();
+}
+
+// Return address of function 'get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub'
+void* ewg_get_function_address_get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub (void)
+{
+	return (void*) get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry'
+// For ise
+void  ewg_function_set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry'
+void* ewg_get_function_address_set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry (void)
+{
+	return (void*) set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_osstatus_voidp_aedescp_sint32_anonymous_callback'
+// For ise
+OSStatus  ewg_function_call_osstatus_voidp_aedescp_sint32_anonymous_callback (void *ewg_a_function, void *ewg_thisInstance, AEDesc *ewg_inContext, SInt32 ewg_inCommandID)
+{
+	return call_osstatus_voidp_aedescp_sint32_anonymous_callback ((void*)ewg_a_function, (void*)ewg_thisInstance, (AEDesc*)ewg_inContext, (SInt32)ewg_inCommandID);
+}
+
+// Return address of function 'call_osstatus_voidp_aedescp_sint32_anonymous_callback'
+void* ewg_get_function_address_call_osstatus_voidp_aedescp_sint32_anonymous_callback (void)
+{
+	return (void*) call_osstatus_voidp_aedescp_sint32_anonymous_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_void_voidp_anonymous_callback_stub'
+// For ise
+void * ewg_function_get_void_voidp_anonymous_callback_stub (void)
+{
+	return get_void_voidp_anonymous_callback_stub ();
+}
+
+// Return address of function 'get_void_voidp_anonymous_callback_stub'
+void* ewg_get_function_address_get_void_voidp_anonymous_callback_stub (void)
+{
+	return (void*) get_void_voidp_anonymous_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_void_voidp_anonymous_callback_entry'
+// For ise
+void  ewg_function_set_void_voidp_anonymous_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_void_voidp_anonymous_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_void_voidp_anonymous_callback_entry'
+void* ewg_get_function_address_set_void_voidp_anonymous_callback_entry (void)
+{
+	return (void*) set_void_voidp_anonymous_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_void_voidp_anonymous_callback'
+// For ise
+void  ewg_function_call_void_voidp_anonymous_callback (void *ewg_a_function, void *ewg_thisInstance)
+{
+	call_void_voidp_anonymous_callback ((void*)ewg_a_function, (void*)ewg_thisInstance);
+}
+
+// Return address of function 'call_void_voidp_anonymous_callback'
+void* ewg_get_function_address_call_void_voidp_anonymous_callback (void)
+{
+	return (void*) call_void_voidp_anonymous_callback;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>

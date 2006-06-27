@@ -496,6 +496,24 @@ feature
 			Result := call_event_handler_proc_ptr_external (a_function, inhandlercallref, inevent, inuserdata)
 		end
 
+	get_menu_def_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_menu_def_proc_ptr_stub_external
+		end
+
+	set_menu_def_proc_ptr_entry (a_class: MENU_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_menu_def_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_menu_def_proc_ptr (a_function: POINTER; message: INTEGER; themenu: POINTER; menurect: POINTER; hitpt: POINTER; whichitem: POINTER) is
+		local
+		do
+			call_menu_def_proc_ptr_external (a_function, message, themenu, menurect, hitpt, whichitem)
+		end
+
 	get_control_action_proc_ptr_stub: POINTER is
 		local
 		do
@@ -1398,6 +1416,132 @@ feature
 		do
 			create a_result_c_string.make_shared_from_string (a_result)
 			call_get_next_event_filter_proc_ptr_external (a_function, theevent, a_result_c_string.item)
+		end
+
+	get_menu_bar_def_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_menu_bar_def_proc_ptr_stub_external
+		end
+
+	set_menu_bar_def_proc_ptr_entry (a_class: MENU_BAR_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_menu_bar_def_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_menu_bar_def_proc_ptr (a_function: POINTER; selector: INTEGER; message: INTEGER; parameter1: INTEGER; parameter2: INTEGER): INTEGER is
+		local
+		do
+			Result := call_menu_bar_def_proc_ptr_external (a_function, selector, message, parameter1, parameter2)
+		end
+
+	get_mbar_hook_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_mbar_hook_proc_ptr_stub_external
+		end
+
+	set_mbar_hook_proc_ptr_entry (a_class: MBAR_HOOK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_mbar_hook_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_mbar_hook_proc_ptr (a_function: POINTER; menurect: POINTER): INTEGER is
+		local
+		do
+			Result := call_mbar_hook_proc_ptr_external (a_function, menurect)
+		end
+
+	get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub: POINTER is
+		local
+		do
+			Result := get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub_external
+		end
+
+	set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry (a_class: SINT32_VOIDP_CFUUIDBYTES_VOIDPP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_external (a_class, a_feature)
+		end
+
+	call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback (a_function: POINTER; thispointer: POINTER; iid: POINTER; ppv: POINTER): INTEGER is
+		local
+		do
+			Result := call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_external (a_function, thispointer, iid, ppv)
+		end
+
+	get_uint32_voidp_anonymous_callback_stub: POINTER is
+		local
+		do
+			Result := get_uint32_voidp_anonymous_callback_stub_external
+		end
+
+	set_uint32_voidp_anonymous_callback_entry (a_class: UINT32_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_uint32_voidp_anonymous_callback_entry_external (a_class, a_feature)
+		end
+
+	call_uint32_voidp_anonymous_callback (a_function: POINTER; thispointer: POINTER): INTEGER is
+		local
+		do
+			Result := call_uint32_voidp_anonymous_callback_external (a_function, thispointer)
+		end
+
+	get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub: POINTER is
+		local
+		do
+			Result := get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub_external
+		end
+
+	set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry (a_class: OSSTATUS_VOIDP_AEDESCCONSTP_AEDESCLISTP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_external (a_class, a_feature)
+		end
+
+	call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; outcommandpairs: POINTER): INTEGER is
+		local
+		do
+			Result := call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_external (a_function, thisinstance, incontext, outcommandpairs)
+		end
+
+	get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub: POINTER is
+		local
+		do
+			Result := get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub_external
+		end
+
+	set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry (a_class: OSSTATUS_VOIDP_AEDESCP_SINT32_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry_external (a_class, a_feature)
+		end
+
+	call_osstatus_voidp_aedescp_sint32_anonymous_callback (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; incommandid: INTEGER): INTEGER is
+		local
+		do
+			Result := call_osstatus_voidp_aedescp_sint32_anonymous_callback_external (a_function, thisinstance, incontext, incommandid)
+		end
+
+	get_void_voidp_anonymous_callback_stub: POINTER is
+		local
+		do
+			Result := get_void_voidp_anonymous_callback_stub_external
+		end
+
+	set_void_voidp_anonymous_callback_entry (a_class: VOID_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_void_voidp_anonymous_callback_entry_external (a_class, a_feature)
+		end
+
+	call_void_voidp_anonymous_callback (a_function: POINTER; thisinstance: POINTER) is
+		local
+		do
+			call_void_voidp_anonymous_callback_external (a_function, thisinstance)
 		end
 
 	get_desk_hook_proc_ptr_stub: POINTER is

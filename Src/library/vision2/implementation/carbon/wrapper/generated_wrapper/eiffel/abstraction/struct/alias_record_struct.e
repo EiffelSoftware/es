@@ -11,7 +11,7 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 
 	make_new_unshared,
 	make_new_shared,
@@ -27,25 +27,66 @@ feature {NONE} -- Implementation
 
 feature {ANY} -- Member Access
 
-	get_hidden: POINTER is
-		obsolete "Use `hidden' instead."
-			-- Access member `hidden'
+	get_usertype: INTEGER is
+		obsolete "Use `usertype' instead."
+			-- Access member `userType'
 		require
 			exists: exists
 		do
-			Result := get_hidden_external (item)
+			Result := get_usertype_external (item)
 		ensure
-			result_correct: Result = get_hidden_external (item)
+			result_correct: Result = get_usertype_external (item)
 		end
 
-	hidden: POINTER is
-			-- Access member `hidden'
+	usertype: INTEGER is
+			-- Access member `userType'
 		require
 			exists: exists
 		do
-			Result := get_hidden_external (item)
+			Result := get_usertype_external (item)
 		ensure
-			result_correct: Result = get_hidden_external (item)
+			result_correct: Result = get_usertype_external (item)
+		end
+
+	set_usertype (a_value: INTEGER) is
+			-- Set member `userType'
+		require
+			exists: exists
+		do
+			set_usertype_external (item, a_value)
+		ensure
+			a_value_set: a_value = usertype
+		end
+
+	get_aliassize: INTEGER is
+		obsolete "Use `aliassize' instead."
+			-- Access member `aliasSize'
+		require
+			exists: exists
+		do
+			Result := get_aliassize_external (item)
+		ensure
+			result_correct: Result = get_aliassize_external (item)
+		end
+
+	aliassize: INTEGER is
+			-- Access member `aliasSize'
+		require
+			exists: exists
+		do
+			Result := get_aliassize_external (item)
+		ensure
+			result_correct: Result = get_aliassize_external (item)
+		end
+
+	set_aliassize (a_value: INTEGER) is
+			-- Set member `aliasSize'
+		require
+			exists: exists
+		do
+			set_aliassize_external (item, a_value)
+		ensure
+			a_value_set: a_value = aliassize
 		end
 
 end
