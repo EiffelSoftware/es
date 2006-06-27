@@ -54,6 +54,17 @@ feature {NONE} -- Initialization
 			create counters2.make (Initial_counters_capacity)
 		end
 
+feature
+
+	set_file_name (a_filename: STRING) is
+			-- set `filename' to `a_filename'
+		do
+			filename := a_filename
+		ensure
+			filename_set: filename = a_filename
+		end
+
+
 feature -- Parser type setting
 
 	set_il_parser is
