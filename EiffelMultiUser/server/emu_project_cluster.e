@@ -85,6 +85,7 @@ feature -- Access
 
 	get_class_recursive (a_class_name: STRING): EMU_PROJECT_CLASS is
 			-- return the class by name going recursively through sub-clusters.
+			-- returns Void if class not found.
 		require
 			a_class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
 		local
@@ -99,6 +100,9 @@ feature -- Access
 					Result /= Void or else after
 				loop
 					a_cluster ?= item
+					if a_cluster /= Void then
+						Result := a_cluster.get_class_recursive (a_class_name)
+					end
 					forth
 				end
 			end
