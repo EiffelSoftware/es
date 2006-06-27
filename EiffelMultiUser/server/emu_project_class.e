@@ -97,7 +97,7 @@ feature -- Queries
 			a_cluster: EMU_PROJECT_CLUSTER
 		do
 			from
-				Result.make_empty
+				create Result.make_empty
 				a_cluster := parent
 			until
 				a_cluster.parent = Void
