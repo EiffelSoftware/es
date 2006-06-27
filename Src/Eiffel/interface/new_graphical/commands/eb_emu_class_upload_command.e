@@ -40,7 +40,7 @@ feature -- Status setting
 				--show_upload_dialog --not used,otherwise would make it threaded?!
 				status_bar.display_message ("Uploading class to emu_server...")
 
-				--upload_done := emu_client.upload(current_file_in_editor)
+				upload_done := emu_client.upload(current_file_in_editor)
 
 				if(upload_done) then
 					status_bar.display_message ("Upload done")

@@ -41,11 +41,12 @@ feature -- Status setting
 
 			if(not(emu_client.is_class_unlocked(class_name))) then
 				status_bar.display_message ("Unlocking class on emu_server...")
-				--unlock_done := emu_client.unlock (current_file_in_editor,class_name)
+				unlock_done := emu_client.unlock (current_file_in_editor,class_name)
 				if (unlock_done) then
 					status_bar.display_message ("Unlock done")
 					window.managed_main_formatters.first.enable_sensitive
 					window.editor_tool.text_area.set_read_only (false)
+					window_manager.synchronize_all --that clusters refreshes class display
 				else
 					show_emu_error (emu_unlock_error_text)
 				end
