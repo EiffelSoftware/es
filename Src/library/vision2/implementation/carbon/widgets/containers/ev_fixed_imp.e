@@ -43,8 +43,8 @@ feature {NONE} -- Initialization
 			create rect.make_new_unshared
 			rect.set_top ( 50 )
 			rect.set_left ( 50 )
-			rect.set_right ( 240 )
-			rect.set_bottom ( 240 )
+			rect.set_right ( 2000)
+			rect.set_bottom (2000)
 			res := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
 
 			set_c_object ( control_ptr )

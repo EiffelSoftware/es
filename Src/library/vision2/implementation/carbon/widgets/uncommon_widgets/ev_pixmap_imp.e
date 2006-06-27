@@ -70,24 +70,22 @@ feature {NONE} -- Initialization
 			-- Connect interface and initialize `c_object'.
 		local
 			err : INTEGER
-			rect : RECT_STRUCT
 			struct_ptr : POINTER
 			target: POINTER
+			point : CGPOINT_STRUCT
+			size : CGSIZE_STRUCT
+			rect : CGRECT_STRUCT
 		do
-			base_make (an_interface)
-			create rect.make_new_unshared
-			rect.set_left(60)
-			rect.set_right(150)
-			rect.set_bottom(150)
-			rect.set_top (60)
-			--err := create_image_well_control_external (null, rect.item, null, $struct_ptr)
-			err := hiimage_view_create_external( null, $struct_ptr )
-			set_c_object ( struct_ptr )
-			id:=app_implementation.get_id (current)  --getting an id from the application
-			target:=get_control_event_target_external(struct_ptr)
 
-				--	app_implementation.install_event_handler(id,res ,1 ,2)
-		--	app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			base_make (an_interface)
+			err := hiimage_view_create_external( null, $struct_ptr )
+
+			set_c_object ( struct_ptr )
+			id := app_implementation.get_id (current)  --getting an id from the application
+			target := get_control_event_target_external(struct_ptr)
+
+
+			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 
 		end
 
@@ -136,52 +134,55 @@ feature -- Element change
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
 			image_ref, url, provider : POINTER
-			a_file_name : C_STRING
+			a_file_name, a_dir : C_STRING
 			ret : INTEGER
+			point : CGPOINT_STRUCT
+			size : CGSIZE_STRUCT
+			rect : CGRECT_STRUCT
+
+
 		do
 			create a_file_name.make (file_name)
+			create a_dir.make("./")
+			print("before")
 
 			url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, c_string_to_cfstring_ptr(a_file_name), null, null)
 				if url /= null then
+					print ("got url")
 					provider := cgdata_provider_create_with_url_external (url)
+
 					image_ref := cgimage_create_with_pngdata_provider_external (provider, null, 1, kCGRenderingIntentDefault)
 
-					cgdata_provider_release_external (provider)
-					cfrelease_external (url)
+				--	cgdata_provider_release_external (provider)
+				--	cfrelease_external (url)
 
 					ret := hiimage_view_set_image_external (c_object, image_ref)
-
-
 					ret := hiimage_view_set_opaque_external(c_object, 0 );
+						print ("%N" + "image set ret: " + ret.out + "%Nis valid?: " + hiview_is_valid_external(c_object).out)
         			ret := hiimage_view_set_alpha_external( c_object, 0.3 );
 
+        		--	ret := hiview_set_zorder_external( c_object, kHIViewZOrderBelow, null )
 
-        			ret := hiview_set_zorder_external( c_object, kHIViewZOrderBelow, null )
-        			ret := hiview_set_visible_external( c_object, 1 )
 
-        			-- HIRect bounds;
-        			 --HIViewAddSubview( content, imageView )
-       				 --HIViewGetBounds( content, &bounds );
-        			--HIViewSetFrame( imageView, &bounds );
+
+
+
+        			create rect.make_new_unshared
+					create point.make_new_unshared
+					create size.make_new_unshared
+					point.set_x (50)
+					point.set_y (50)
+					size.set_height(50)
+					size.set_width (50)
+					rect.set_origin (point.item)
+					rect.set_size (size.item)
+					ret := hiview_set_frame_external (c_object, rect.item)
+				--	ret := hiview_set_visible_external( c_object, 50 )
 
 				end
 
-			print ("image set ret: " + ret.out + "%N")
+
 		end
-
-	get_image_from_cfstring (a_cfstring: POINTER):POINTER is
-			local
-				url, provider : POINTER
-			do
-				url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, a_cfstring, null, null)
-				if url /= null then
-					provider := cgdata_provider_create_with_url_external (url)
-					Result := cgimage_create_with_pngdata_provider_external (provider, null, 0, kCGRenderingIntentDefault)
-					cgdata_provider_release_external (provider)
-					cfrelease_external (url)
-				end
-			end
-
 
 	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
 			local

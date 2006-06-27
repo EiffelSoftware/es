@@ -70,6 +70,12 @@ inherit
 	CFSTRING_FUNCTIONS_EXTERNAL
 	HIVIEW_FUNCTIONS_EXTERNAL
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+	CGIMAGE_FUNCTIONS_EXTERNAL
+	CGDATAPROVIDER_FUNCTIONS_EXTERNAL
+	CFBASE_FUNCTIONS_EXTERNAL
+	CFBUNDLE_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -84,6 +90,14 @@ feature {NONE} -- Initialization
 					ptr: POINTER
 					root_control_ptr : POINTER
 					target: POINTER
+
+
+			image_ref, url, provider, struct_ptr : POINTER
+			a_file_name, a_dir : C_STRING
+			ret : INTEGER
+			point : CGPOINT_STRUCT
+			size : CGSIZE_STRUCT
+			grect : CGRECT_STRUCT
 			do
 					base_make (an_interface)
 					create rect.make_new_shared
@@ -92,7 +106,7 @@ feature {NONE} -- Initialization
 					rect.set_left (45)
 					rect.set_right (46)
 					rect.set_top (45)
-					window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute)
+					window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowCompositingAttribute)
 					res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
 					res := create_root_control_external( ptr, $root_control_ptr )
 					set_c_object (ptr)
@@ -101,7 +115,6 @@ feature {NONE} -- Initialization
 					id:=app_implementation.get_id (current)  --getting an id from the application
 					target:=get_window_event_target_external(ptr)
 					app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
-
 			end
 
 	initialize is

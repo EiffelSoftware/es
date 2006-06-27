@@ -53,13 +53,15 @@ feature {NONE} -- Implementation
 			v_imp : EV_WIDGET_IMP
 			err : INTEGER
 			a_fixe: EV_FIXED_IMP
+			bounds: RECT_STRUCT
 		do
+			create bounds.make_new_shared
 			if v /= Void then
 				v_imp ?= v.implementation
 				check
 					v_imp_not_void : v_imp /= Void
 				end
-				err := embed_control_external (v_imp.c_object, c_object  )
+				err := hiview_add_subview_external( c_object, v_imp.c_object)
 				child_array.go_i_th (i)
 				child_array.put_left (v)
 			end
@@ -101,10 +103,9 @@ feature
 				loop
 					a_imp ?= child_array.i_th(i).implementation
 					if a_imp /= void then
-						--err := embed_control_external (a_imp.c_object, c_object)
+						--
 						err := hiview_add_subview_external( c_object, a_imp.c_object)
-						err := hiview_get_bounds_external( c_object, bounds.item )
-						err := hiview_set_frame_external ( c_object, bounds.item )
+						err := set_control_visibility_external (a_imp.c_object, 1, 1)
 						a_list ?= a_imp
 						if a_list /= void then
 							a_list.embed_all
