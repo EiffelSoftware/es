@@ -727,9 +727,7 @@ feature {NONE} -- syntax checking implementation
 	syntax_timer: EV_TIMEOUT
 
 	perform_syntax_checking is
---	perform_syntax_checking: BOOLEAN is
 			-- performs syntax checking of class text using Eiffel_validating_parser
-			-- returns false if errors were found
 		local
 			list: LINKED_LIST [ERROR]
 			error: SYNTAX_ERROR
@@ -787,14 +785,12 @@ feature {NONE} -- syntax checking implementation
 					last_invalidated_line := -1
 				end
 
---				io.put_string (list.count.out + " errors found%N")
---				Result := list.is_empty
-
 				dev_window.context_tool.output_view.text_area.text_displayed.reset_text
 				dev_window.context_tool.output_view.text_area.text_displayed.add (list.count.out+" syntax errors found.")
 
 				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
-				if syntax_parser.error_count > 0 then
+				dev_window.context_tool.error_output_view.text_area.refresh
+				if not list.empty then
 					dev_window.context_tool.error_output_view.process_errors (list)
 				end
 

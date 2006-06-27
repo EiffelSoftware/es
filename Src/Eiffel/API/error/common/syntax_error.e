@@ -35,12 +35,14 @@ feature {NONE} -- Initialization
 			set_position (s, e)
 			file_name := f
 			error_message := m
+			message := m
 			is_in_use_file := u
 		ensure
 			line_set: line = s
 			column_set: column = e
 			file_name_set: file_name = f
 			error_message_set: error_message = m
+			message_set: message = m
 			is_in_use_file_set: is_in_use_file = u
 		end
 
@@ -70,7 +72,7 @@ feature -- Properties
 			-- Specific syntax message.
 			-- (By default, it is empty)
 		do
-			Result := ""
+			Result := message
 		ensure
 			non_void_result: Result /= Void
 		end

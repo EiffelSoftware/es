@@ -273,6 +273,8 @@ feature {NONE} -- Implementation
 			if l_count < max_errors then
 				error_handler.insert_error (a_error)
 				error_counter := l_count + 1
+			else
+				abort
 			end
 			if a_fatal or not recoverable_parser then
 				error_handler.raise_error
