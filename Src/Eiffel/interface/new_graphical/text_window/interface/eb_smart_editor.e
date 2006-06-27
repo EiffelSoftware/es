@@ -737,14 +737,19 @@ feature {NONE} -- syntax checking implementation
 			text_line: EDITOR_LINE
 			cursor: TEXT_CURSOR
 			text_token: EDITOR_TOKEN_TEXT
+			i: INTEGER
 		do
 			if is_initialized and then file_loaded and then is_editable then
 				-- create cursor object for helping locate tokens
 				create cursor.make_from_integer (1, text_displayed)
 
 				-- set old error tokens on last edited line back to valid
-				if last_invalidated_line /= -1 then
-					text_line := text_displayed.line (last_invalidated_line)
+				from
+					i := 1
+				until
+					i = text_displayed.number_of_lines
+				loop
+					text_line := text_displayed.line(i)
 					from
 						text_line.start
 					until
@@ -756,7 +761,9 @@ feature {NONE} -- syntax checking implementation
 						end
 						text_line.forth
 					end
+					i := i+1
 				end
+
 
 				-- prevent from raising exception
 				Error_handler.unset_do_raise_error
@@ -786,8 +793,8 @@ feature {NONE} -- syntax checking implementation
 				dev_window.context_tool.output_view.text_area.text_displayed.reset_text
 				dev_window.context_tool.output_view.text_area.text_displayed.add (list.count.out+" syntax errors found.")
 
+				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
 				if syntax_parser.error_count > 0 then
-					dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
 					dev_window.context_tool.error_output_view.process_errors (list)
 				end
 
@@ -815,7 +822,7 @@ feature {NONE} -- syntax checking implementation
 							cursor.set_y_in_lines (warning.line)
 							cursor.set_x_in_characters (warning.column)
 
-							-- error should be text-token (otherwise it doesnt make any sence to highlight it)
+							-- error should be text-token (otherwise it doesnt make any sense to highlight it)
 							text_token ?= cursor.token
 							if text_token /= void then
 								text_token.set_incorrect (warning.warning_message)
