@@ -94,16 +94,16 @@ feature -- Queries
 	get_cluster_path: STRING is
 			-- compute complete cluster path of current class.
 		local
-			a_cluster: EMU_PROJECT_CLUSTER
+			a_unit: EMU_PROJECT_UNIT
 		do
 			from
 				create Result.make_empty
-				a_cluster := parent
+				a_unit := Current
 			until
-				a_cluster.parent = Void
+				a_unit.parent = Void
 			loop
-				Result := "/" + a_cluster.name + Result
-				a_cluster := a_cluster.parent
+				a_unit := a_unit.parent
+				Result := "/" + a_unit.name + Result
 			end
 		end
 
