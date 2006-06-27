@@ -44,10 +44,10 @@ feature -- Creation
 
 feature -- Procedures
 
-	set_to_free() is
+	set_to_free is
 			-- set attribute 'free' to true
 		do
-			free:=True
+			free := True
 			current_user := Void
 			project.update_persist_storage
 		ensure

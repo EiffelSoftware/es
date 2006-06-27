@@ -491,7 +491,7 @@ feature -- Process Messages
 						-- class may be locked for current user.
 						io.put_string ("client lock request: " + msg.emu_class_name + ". locked/freed by user: " + project_user.name + "!%N")
 						a_class.set_to_free
-						send_msg (create {CLIENT_OK}.make_class_unlocked (msg.project_name, msg.emu_class_name))
+						send_msg (create {CLIENT_OK}.make_class_locked (msg.project_name, msg.emu_class_name))
 					end
 				end
 			end
@@ -557,6 +557,7 @@ feature -- Process Messages
 				end
 				if a_cluster.has_class (msg.emu_class_name) then
 					-- class already exists, check lock status.
+					a_class := a_cluster.get_class (msg.emu_class_name)
 					if a_class.current_user = project_user then
 						-- user has unlocked class for him and may update it.
 						io.put_string ("client upload: " + msg.emu_class_name + ". cluster: " + msg.cluster_path + ". project: " + msg.project_name + "%N")
