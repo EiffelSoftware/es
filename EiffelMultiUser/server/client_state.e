@@ -466,6 +466,13 @@ feature -- Process Messages
 			found: BOOLEAN
 			locked_class: EMU_PROJECT_CLASS
 		do
+--			-- check if client is logged in as a user to a project.
+--			if project_user = Void then
+--				-- client is not logged in as a user of a project.
+--				-- send error message to client
+--				io.put_string ("INVALID: client unlock request: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
+--				send_msg (create {CLIENT_ERROR}.make_general_error ("empty"))
+
 			-- try to get project from server
 			project := system.get_project(msg.project_name)
 			if project = Void then
