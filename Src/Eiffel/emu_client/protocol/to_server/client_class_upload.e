@@ -14,7 +14,7 @@ create
 
 feature --Initialization
 
-	make(a_project_name, an_abs_path, a_location:STRING) is
+	make(a_project_name, an_abs_path, a_location,a_class_name:STRING) is
 			-- initialize message and set attributes
 			-- an_abs_path = absolute path on local machine
 			-- a_location = location of project folder on local machine
@@ -26,6 +26,8 @@ feature --Initialization
 			project_name := a_project_name
 			content := file_to_string(an_abs_path)
 			parse_path (an_abs_path, a_location)
+			create emu_class_name.make_from_string(a_class_name)
+
 
 		ensure
 			project_name_set: a_project_name = project_name
@@ -80,8 +82,8 @@ feature {NONE} -- Implementation
 		do
 			c:=a_file_path.count
 			pos:= 1+ a_file_path.last_index_of('/',c)
-			create emu_class_name.make_empty
-			emu_class_name.set(a_file_path,pos,c)
+
+			--emu_class_name.set(a_file_path,pos,c)
 			c:=pos - 1
 			pos := 1 + a_location.count
 			create cluster_path.make_empty
@@ -89,9 +91,6 @@ feature {NONE} -- Implementation
 			if(cluster_path.is_equal ("/")) then
 				cluster_path := "/root_cluster"
 			end
-
-		ensure
-			emu_class_name_set: emu_class_name /= void and then not emu_class_name.is_empty
 		end
 
 

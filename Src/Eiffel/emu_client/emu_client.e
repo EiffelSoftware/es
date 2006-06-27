@@ -339,14 +339,14 @@ feature -- Process
             result := wait_for_ok({CLIENT_OK}.class_locked)
     	end
 
-	upload (an_absolute_path:STRING): BOOLEAN is
+	upload (an_absolute_path,a_class_name:STRING): BOOLEAN is
 			-- uploading a class
 			-- result== true means success
 		require
 			socket_not_void: socket /= void
 			path_not_void: an_absolute_path /= Void
 		do
-    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, an_absolute_path, project_path))
+    		socket.independent_store (create {CLIENT_CLASS_UPLOAD}.make (project_name, an_absolute_path, project_path, a_class_name))
       		-- no problem if ok_message got lost, just redo upload, no harm done
       		idle
       		result := wait_for_ok({CLIENT_OK}.class_uploaded)
