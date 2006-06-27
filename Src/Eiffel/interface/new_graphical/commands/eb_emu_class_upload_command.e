@@ -33,22 +33,30 @@ feature -- Status setting
 		local
 			upload_done: BOOLEAN
 			status_bar: EB_DEVELOPMENT_WINDOW_STATUS_BAR
+			--cd: EV_CONFIRMATION_DIALOG
+			class_name:STRING
 		do
 			status_bar := Window_manager.last_focused_development_window.status_bar
 			current_file_in_editor := Window_manager.last_focused_development_window.file_name
+			class_name := window_manager.last_focused_development_window.class_name
+			--if(emu_client.is_class_unlocked (class_name)) then
+			--	create cd.make_with_text ("Do you really want to add a new class?")
+			--	cd.show_modal_to_window (window_manager.last_focused_development_window.window)
+			--else
+
+		--	end
+
 			if(current_file_in_editor /= void) then
 				--show_upload_dialog --not used,otherwise would make it threaded?!
 				status_bar.display_message ("Uploading class to emu_server...")
 
-				upload_done := emu_client.upload(current_file_in_editor)
+				upload_done := emu_client.upload(current_file_in_editor,class_name)
 
 				if(upload_done) then
 					status_bar.display_message ("Upload done")
 				else
 					show_emu_error(emu_upload_error_text)
 				end
-
-
 			else
 				show_emu_error(emu_no_class_warning_text)--shouldn't happen,button is disabled anyway
 			end
