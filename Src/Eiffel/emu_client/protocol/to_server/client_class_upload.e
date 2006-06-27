@@ -86,6 +86,10 @@ feature {NONE} -- Implementation
 			pos := 1 + a_location.count
 			create cluster_path.make_empty
 			cluster_path.set(a_file_path,pos,c)
+			if(cluster_path.is_equal ("/")) then
+				cluster_path := "/root_cluster"
+			end
+
 		ensure
 			emu_class_name_set: emu_class_name /= void and then not emu_class_name.is_empty
 		end

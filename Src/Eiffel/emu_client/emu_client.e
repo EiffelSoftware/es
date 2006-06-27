@@ -150,6 +150,7 @@ feature -- Access
 
 	error : CLIENT_ERROR
 
+
 feature {NONE} -- Implementation
 
 	remove_from_unlocked_list (a_class_name:STRING) is
@@ -362,7 +363,7 @@ feature -- Process
     		socket.independent_store (create {CLIENT_CLASS_DOWNLOAD}.make (project_name,a_class_name))
             -- what happens, if ok_message got lost?
 			idle
-            result := true
+            result := is_download
     	end
 
 	--#####################################################################
@@ -380,6 +381,7 @@ feature -- Process
 			server_closing: SERVER_CLOSING
 			ok_msg: CLIENT_OK
 		do
+			is_download := false
 			if not rescued then
 				a_message ?= socket.retrieved
 				if a_message/=void then
@@ -387,6 +389,7 @@ feature -- Process
 					if user_cmd /= Void then
 						get_download?=user_cmd
 						if  get_download/= Void then
+							is_download := true
 							get_download.execute(downloaded_class)
 						end
 						server_closing ?= user_cmd
@@ -445,6 +448,8 @@ feature -- Status
 	is_logged_in:BOOLEAN
 			-- is current user logged to server
 
+	is_download: BOOLEAN
+			-- is download
 
 
 feature {NONE} -- Control Attributes
