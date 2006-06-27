@@ -23,7 +23,18 @@ feature -- Creation
 			name_set: name = a_name
 			creator_set: creator = a_creator
 		end
-		
+
+
+feature -- Modification
+
+	set_parent (a_parent: EMU_PROJECT_CLUSTER) is
+			-- set a parent of this unit.
+		do
+			parent := a_parent
+		ensure
+			parent_set: parent = a_parent
+		end
+
 
 feature -- Attributes
 
@@ -32,9 +43,12 @@ feature -- Attributes
 
 	creation_date: DATE
 			-- date and time of creation.
-	
+
 	creator: EMU_USER
 			-- the creator of this unit.
+
+	parent: EMU_PROJECT_CLUSTER
+			-- parent cluster of this unit. if void then current is a head-cluster.
 
 
 invariant

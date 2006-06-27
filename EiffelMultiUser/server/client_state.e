@@ -441,7 +441,7 @@ feature -- Process Messages
 					send_msg (create {CLIENT_ERROR}.make_class_not_found (project_user.project.name, msg.class_name))
 				else
 					-- class found, send message with class content.
-					send_msg (create {GET_DOWNLOAD}.make (project_user.project.name, "clusterpath", msg.class_name, a_class.content))
+					send_msg (create {GET_DOWNLOAD}.make (project_user.project.name, a_class.get_cluster_path, msg.class_name, a_class.content))
 				end
 			end
 		end

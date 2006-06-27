@@ -69,11 +69,28 @@ feature -- Procedures
 
 feature -- Queries
 
-	is_free():BOOLEAN is
+	is_free: BOOLEAN is
 			-- may the client unlock this class?
 		do
-			result:= free
+			result := free
 		end
+
+	get_cluster_path: STRING is
+			-- compute complete cluster path of current class.
+		local
+			a_cluster: EMU_PROJECT_CLUSTER
+		do
+			from
+				Result.make_empty
+				a_cluster := parent
+			until
+				a_cluster.parent = Void
+			loop
+				Result := "/" + a_cluster.name + Result
+				a_cluster := a_cluster.parent
+			end
+		end
+
 
 
 feature -- Content
@@ -101,4 +118,5 @@ invariant
 	content_not_void: content /= Void
 	occupied_implies_user: not is_free implies current_user /= Void
 	free_implies_nouser: is_free implies current_user = Void
+	has_parent_cluster: parent /= Void
 end
