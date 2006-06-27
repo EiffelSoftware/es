@@ -419,6 +419,7 @@ feature -- Process Messages
 					if a_user.is_password_correct (msg.password) then
 						-- client successfully logged in.
 						project_user := a_user
+						username := msg.username
 						io.put_string ("client login: " + msg.username + ". user associated with project: " + msg.project_name + ".%N")
 						send_msg (create {CLIENT_OK}.make_login_granted (msg.project_name))
 					else
@@ -505,8 +506,6 @@ feature -- Process Messages
 			-- unlock requested class for user, ie. the class is
 			-- not editable for other users!
 		local
-			project: EMU_PROJECT
-			found: BOOLEAN
 			a_class: EMU_PROJECT_CLASS
 		do
 			-- check if client is logged in as a user to a project.
