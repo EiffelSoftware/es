@@ -35,7 +35,8 @@ inherit
 			make,
 			on_vertical_scroll,
 			on_line_inserted,
-			on_line_removed
+			on_line_removed,
+			on_line_modified
 		end
 
 	EB_TAB_CODE_COMPLETABLE
@@ -230,6 +231,24 @@ feature -- Autocomplete
 
 feature -- Handle text modifications
 
+	on_line_modified (line_number: INTEGER) is
+			-- Notify observers that a line has just been modified.
+		local
+			lines_changed: INTEGER
+		do
+			Precursor {EB_CLICKABLE_EDITOR} (line_number)
+
+			-- calculate how many lines were removed since last call
+			-- necessary because it seems that not every event is captured
+			lines_changed := number_of_lines - old_number_of_lines
+			old_number_of_lines := number_of_lines
+
+			-- adapt folding areas
+			if folding_areas /= Void and then lines_changed /= 0 then
+				update_folding_areas_partially (line_number, lines_changed)
+			end
+		end
+
 	on_line_removed (line_number: INTEGER) is
 			-- Update `Current' when line number `line_number' has been removed.
 		local
@@ -237,9 +256,14 @@ feature -- Handle text modifications
 		do
 			Precursor {EB_CLICKABLE_EDITOR} (line_number)
 
-			-- Code Folding: if folding_areas exist, update them
+			-- calculate how many lines were removed since last call
+			-- necessary because it seems that not every event is captured
+			lines_removed := number_of_lines - old_number_of_lines
+			old_number_of_lines := number_of_lines
+
+			-- adapt folding areas, if any exists
 			if folding_areas /= Void then
-				update_folding_areas_partially (line_number, -1)
+				update_folding_areas_partially (line_number, lines_removed)
 			end
 		end
 
@@ -250,11 +274,18 @@ feature -- Handle text modifications
 		do
 			Precursor {EB_CLICKABLE_EDITOR} (line_number)
 
-			-- Code Folding: if folding_areas exist, update them
+			-- calculate how many lines were added since last call
+			-- necessary because it seems that not every event is captured and the auto completion
+			lines_inserted := number_of_lines - old_number_of_lines
+			old_number_of_lines := number_of_lines
+
+			-- adapt folding areas
 			if folding_areas /= Void then
-				update_folding_areas_partially (line_number, 1)
+				update_folding_areas_partially (line_number, lines_inserted)
 			end
 		end
+
+	old_number_of_lines: like number_of_lines
 
 feature {EB_CLICKABLE_MARGIN} -- Text folding
 
@@ -274,6 +305,9 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 			if not update_folding_areas then
 				folding_areas := Void
 			end
+
+			-- intialize 'old_number_of_lines'
+			old_number_of_lines := text_displayed.number_of_lines
 
 			debug ("code_folding")
 				folding_areas.traverse_list_printout
@@ -295,6 +329,7 @@ feature {EB_CLICKABLE_MARGIN} -- Text folding
 				if 	folding_areas = Void then
 					create folding_areas.make
 				end
+
 				a_area := folding_areas.first
 
 				from the_feature_clauses.start

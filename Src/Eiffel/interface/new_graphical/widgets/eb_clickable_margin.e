@@ -323,7 +323,7 @@ feature {NONE} -- Events
 
 					end
 					text_panel.on_mouse_button_down (abs_x_pos, y_pos, 1, 0, 0, 0, a_screen_x, a_screen_y)
-					current.refresh
+					current.refresh_now
 				end
 			elseif button = 3 then
 				if not text_panel.text_displayed.is_empty then
