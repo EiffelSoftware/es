@@ -20,12 +20,12 @@ create
 
 feature -- Creation
 
-	make (a_name: STRING; a_creator: EMU_USER) is
+	make (a_name: STRING; a_project: EMU_PROJECT; a_creator: EMU_USER) is
 			-- create a project unit by its name and the creator.
 		once
-			Precursor (a_name, a_creator)
+			Precursor (a_name, a_project, a_creator)
 			free := True
-			content.make_empty
+			create content.make_empty
 		ensure then
 			free_set: is_free()
 		end

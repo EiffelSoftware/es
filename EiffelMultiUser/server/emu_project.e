@@ -98,7 +98,7 @@ feature {CLIENT_STATE} -- Modification
 						new_cluster := get_head_cluster (cluster_names.item)
 						if new_cluster = Void then
 							-- create head cluster.
-							create new_cluster.make (cluster_names.item, a_creator)
+							create new_cluster.make (cluster_names.item, Current, a_creator)
 							clusters.extend (new_cluster)
 						end
 						head_cluster_found := True
@@ -106,7 +106,7 @@ feature {CLIENT_STATE} -- Modification
 						-- search sub-clusters.
 						new_cluster := a_cluster.get_cluster (cluster_names.item)
 						if new_cluster = Void then
-							create new_cluster.make (cluster_names.item, a_creator)
+							create new_cluster.make (cluster_names.item, Current, a_creator)
 							a_cluster.extend (new_cluster)
 						end
 					end

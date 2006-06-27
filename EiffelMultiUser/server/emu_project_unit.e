@@ -10,12 +10,12 @@ deferred class
 
 feature -- Creation
 
-	make (a_name: STRING; a_creator: EMU_USER) is
+	make (a_name: STRING; a_project: EMU_PROJECT; a_creator: EMU_USER) is
 			-- create a project unit by its name and the creator.
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 			a_creator_valid: a_creator /= Void
-		do
+		once
 			name := a_name
 			create creation_date.make_now
 			creator := a_creator
@@ -49,6 +49,9 @@ feature -- Attributes
 
 	parent: EMU_PROJECT_CLUSTER
 			-- parent cluster of this unit. if void then current is a head-cluster.
+
+	project: EMU_PROJECT
+			-- the project which this unit belongs to.
 
 
 invariant
