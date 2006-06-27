@@ -57,7 +57,7 @@ feature -- Access
 				i := i + 1
 			end
 
-			Result := UTF8.unicode_to_string_32(l_byte_array)
+			Result := utf8.encoded_to_string_32(l_byte_array)
 
 --			Reset shared pointer.
 			l_ptr.set_from_pointer (default_pointer, 0)
