@@ -556,7 +556,7 @@ feature -- Process Messages
 					io.put_string ("client upload: " + msg.emu_class_name + ". cluster created: " + msg.cluster_path + "%N")
 				end
 				if a_cluster.has_class (msg.emu_class_name) then
-					--class already exists, check lock status.
+					-- class already exists, check lock status.
 					if a_class.current_user = project_user then
 						-- user has unlocked class for him and may update it.
 						io.put_string ("client upload: " + msg.emu_class_name + ". cluster: " + msg.cluster_path + ". project: " + msg.project_name + "%N")
@@ -569,7 +569,7 @@ feature -- Process Messages
 						send_msg (create {CLIENT_ERROR}.make_general_error (project.name))
 					end
 				else
-					--class does not exist, create.
+					-- class does not exist, create.
 					io.put_string ("client upload: " + msg.emu_class_name + ". create class in cluster: " +  msg.cluster_path + "%N")
 					create a_class.make (msg.emu_class_name, project_user.project, project_user)
 					a_cluster.add_class (a_class)
