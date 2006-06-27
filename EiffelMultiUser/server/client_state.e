@@ -452,7 +452,7 @@ feature -- Process Messages
 					send_msg (create {CLIENT_ERROR}.make_class_not_found (project_user.project.name, msg.emu_class_name))
 				else
 					-- class found, send message with class content.
-					io.put_string ("client download: " + msg.emu_class_name + " by user : " + username + "%N")
+					io.put_string ("client download: " + msg.emu_class_name + " by user: " + username + "%N")
 					send_msg (create {GET_DOWNLOAD}.make (project_user.project.name, a_class.get_cluster_path, msg.emu_class_name, a_class.content))
 				end
 			end
