@@ -30,12 +30,12 @@ feature -- Creation
 		do
 			Precursor(an_info)
 		end
-		
+
 
 feature -- Basic Operation
 
 
-	build is 
+	build is
 			-- Build entries.
 		local
 			label_text_vb: EV_VERTICAL_BOX
@@ -61,12 +61,12 @@ feature -- Basic Operation
 			create space
 			space.set_minimum_width (80)
 			system.add_without_expand (center_hb, space)
-			
+
 			-- fill label and text field box
 			create user_name_hb
 			system.add_label (user_name_hb, "user name: ", label_width)
 			create user_name_txt
-			user_name_txt.set_minimum_width_in_characters (9)
+			user_name_txt.set_minimum_width_in_characters (20)
 			if system.user_name /= Void then
 				user_name_txt.set_text (system.user_name)
 			end
@@ -75,10 +75,10 @@ feature -- Basic Operation
 			create user_pass_hb
 			system.add_label (user_pass_hb, "user password: ", label_width)
 			create user_pass_txt
-			if system.user_pass /= Void then 
+			if system.user_pass /= Void then
 				user_pass_txt.set_text (system.user_pass)
 			end
-			user_pass_txt.set_minimum_width_in_characters (9)
+			user_pass_txt.set_minimum_width_in_characters (20)
 			system.add_without_expand (user_pass_hb, user_pass_txt)
 			system.add_without_expand (label_text_vb, user_pass_hb)
 
@@ -102,7 +102,7 @@ feature -- Basic Operation
 			-- save entries
 			system ?= current_application
 			if system /= Void then
-				if not user_name_txt.text.is_empty then 
+				if not user_name_txt.text.is_empty then
 					system.set_user_name (user_name_txt.text)
 				end
 				if not user_pass_txt.text.is_empty then
@@ -119,7 +119,7 @@ feature -- Queries
 		do
 			Result := not (user_name_txt.text.is_empty or user_pass_txt.text.is_empty)
 		end
-		
+
 
 
 feature {NONE} -- Implementation
@@ -135,10 +135,10 @@ feature {NONE} -- Implementation
 
 
 feature -- Text fields
-	
+
 	user_name_txt: EV_TEXT_FIELD
 			-- the name of the user to create.
-		
+
 	user_pass_txt: EV_TEXT_FIELD
 			-- the password of the user to create.
 
