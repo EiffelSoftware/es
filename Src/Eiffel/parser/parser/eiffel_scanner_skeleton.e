@@ -105,7 +105,7 @@ feature -- Access
 	ast_factory: AST_FACTORY
 			-- Abstract Syntax Tree factory
 
-	filename: STRING
+	filename: STRING assign set_filename
 			-- Name of file being parsed
 
 	last_value: ANY
