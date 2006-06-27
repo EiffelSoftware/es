@@ -106,9 +106,9 @@ feature -- Content change
 			file_name := f_n
 			date_of_file_when_loaded := f_d
 			date_when_checked := f_d_c
---			if perform_syntax_checking then
---				refresh_now
---			end
+
+			-- set text_changed to true so syntax checkeing can be done after load
+			text_changed := true
 		end
 
 	reload is
@@ -116,9 +116,9 @@ feature -- Content change
 		do
 			load_without_save := True
 			Precursor {EB_CLICKABLE_EDITOR}
---			if perform_syntax_checking then
---				refresh_now
---			end
+
+			-- set text_changed to true so syntax checkeing can be done after load
+			text_changed := true
 		end
 
 feature -- Status report
@@ -253,6 +253,9 @@ feature -- Handle text modifications
 			if folding_areas /= Void and then lines_changed /= 0 then
 				update_folding_areas_partially (line_number, lines_changed)
 			end
+
+			-- set text_changed to true for parser
+			text_changed := true
 		end
 
 	on_line_removed (line_number: INTEGER) is
@@ -271,6 +274,9 @@ feature -- Handle text modifications
 			if folding_areas /= Void then
 				update_folding_areas_partially (line_number, lines_removed)
 			end
+
+			-- set text_changed to true for parser
+			text_changed := true
 		end
 
 	on_line_inserted (line_number: INTEGER) is
@@ -289,6 +295,9 @@ feature -- Handle text modifications
 			if folding_areas /= Void then
 				update_folding_areas_partially (line_number, lines_inserted)
 			end
+
+			-- set text_changed to true for parser
+			text_changed := true
 		end
 
 	old_number_of_lines: like number_of_lines
@@ -612,14 +621,6 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 		do
 			code := ev_key.code
 
-			-- execute parser on certain key events
---			if is_editable then
---				if perform_syntax_checking = false then
---					-- refresh if errors found
---					refresh_now
---				end
---			end
-
 			switch_auto_point := auto_point and then not (code = Key_shift or code = Key_left_meta or code = Key_right_meta)
 			if not is_completing and then code = Key_tab and then allow_tab_selecting and then not shifted_key then
 					-- Tab action
@@ -724,6 +725,8 @@ feature {NONE} -- syntax checking implementation
 			Result.set_has_syntax_warning (true)
 		end
 
+	text_changed: BOOLEAN
+		-- maintains wheter text was changed since last parsing
 	syntax_timer: EV_TIMEOUT
 
 	perform_syntax_checking is
@@ -737,7 +740,7 @@ feature {NONE} -- syntax checking implementation
 			text_token: EDITOR_TOKEN_TEXT
 			i: INTEGER
 		do
-			if is_initialized and then file_loaded and then is_editable then
+			if is_initialized and then file_loaded and then is_editable and then text_changed then
 				-- create cursor object for helping locate tokens
 				create cursor.make_from_integer (1, text_displayed)
 
@@ -761,7 +764,6 @@ feature {NONE} -- syntax checking implementation
 					end
 					i := i+1
 				end
-
 
 				-- prevent from raising exception
 				Error_handler.unset_do_raise_error
@@ -789,9 +791,10 @@ feature {NONE} -- syntax checking implementation
 				dev_window.context_tool.output_view.text_area.text_displayed.add (list.count.out+" syntax errors found.")
 
 				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
-				dev_window.context_tool.error_output_view.text_area.refresh
 				if not list.empty then
 					dev_window.context_tool.error_output_view.process_errors (list)
+				else
+					dev_window.context_tool.error_output_view.text_area.refresh
 				end
 
 				-- iterate through error list
@@ -829,6 +832,7 @@ feature {NONE} -- syntax checking implementation
 					-- go to next error
 					list.forth
 				end
+				text_changed := false
 			end
 		end
 
@@ -1221,7 +1225,7 @@ feature {NONE} -- Implementation
 	show_syntax_error is
 			--
 		do
-			-- we dont show the error dialog anymore, as we have error highlighting
+			-- we dont show the error dialog anymore, as we have syntax error highlighting
 
 --			if syntax_error_dialog = Void or else syntax_error_dialog.is_destroyed then
 --				create syntax_error_dialog.make_with_text (Warning_messages.w_Syntax_error)
@@ -1244,6 +1248,9 @@ feature -- Text Loading
 				Precursor {EB_CLICKABLE_EDITOR} (a_file_name)
 			end
 			load_without_save := False
+
+			-- set text_changed to true so syntax checkeing can be done after load
+			text_changed := true
 		end
 
 	load_text (s: STRING) is
@@ -1257,6 +1264,9 @@ feature -- Text Loading
 				initialize_folding_areas
 			end
 			load_without_save := False
+
+			-- set text_changed to true so syntax checkeing can be done after load
+			text_changed := true
 		end
 
 feature {NONE} -- Scroll bars management
