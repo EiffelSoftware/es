@@ -376,6 +376,7 @@ feature -- Process
 		local
 			rescued: BOOLEAN
 			a_message: EMU_MESSAGE
+			client_message: EMU_CLIENT_MESSAGE
 			user_cmd: USER_CMD
 			get_download: GET_DOWNLOAD
 			server_closing: SERVER_CLOSING
@@ -385,24 +386,48 @@ feature -- Process
 			if not rescued then
 				a_message ?= socket.retrieved
 				if a_message/=void then
-					user_cmd ?= a_message
-					if user_cmd /= Void then
-						get_download?=user_cmd
+					client_message ?= a_message
+					if client_message /= void then
+						get_download?=client_message
 						if  get_download/= Void then
 							is_download := true
 							get_download.execute(downloaded_class)
 						end
+					end
+					user_cmd ?= a_message
+					if user_cmd /= Void then
 						server_closing ?= user_cmd
 						if server_closing /= Void then
 							server_closing.execute()
 						end
 					end
+
 					ok_msg ?= a_message
 					if ok_msg /= void then
 						ok_message:= ok_msg
 					end
 				end
 			end
+--				a_message ?= socket.retrieved
+--				if a_message/=void then
+--					user_cmd ?= a_message
+--					if user_cmd /= Void then
+--						get_download?=user_cmd
+--						if  get_download/= Void then
+--							is_download := true
+--							get_download.execute(downloaded_class)
+--						end
+--						server_closing ?= user_cmd
+--						if server_closing /= Void then
+--							server_closing.execute()
+--						end
+--					end
+--					ok_msg ?= a_message
+--					if ok_msg /= void then
+--						ok_message:= ok_msg
+--					end
+--				end
+--			end
 		-- TO DO
 		-- rescue clause:
 --		rescue
