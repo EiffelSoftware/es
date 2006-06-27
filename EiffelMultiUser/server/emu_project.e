@@ -43,10 +43,6 @@ feature {EMU_SERVER} -- creation
 		end
 
 
-feature -- Commands
-
-
-
 feature {CLIENT_STATE} -- Modification
 
 	add_user (username, pass: STRING) is
@@ -118,7 +114,7 @@ feature {CLIENT_STATE} -- Modification
 		end
 
 
-feature {NONE} -- Update
+feature -- Update
 
 	update_persist_storage is
 			-- update project file if project has changed

@@ -37,6 +37,7 @@ feature -- Procedures
 		do
 			free:=True
 			current_user := Void
+			project.update_persist_storage
 		ensure
 			free_set: is_free()
 			no_current_user: current_user = Void
@@ -49,6 +50,7 @@ feature -- Procedures
 		do
 			free:= False
 			current_user := a_user
+			project.update_persist_storage
 		ensure
 			occupied_set: not is_free()
 			current_user_set: current_user = a_user
@@ -62,6 +64,7 @@ feature -- Procedures
 			content := new_content
 			modification_date.make_now
 			modification_user := current_user
+			project.update_persist_storage
 		ensure
 			content_set: content = new_content
 		end

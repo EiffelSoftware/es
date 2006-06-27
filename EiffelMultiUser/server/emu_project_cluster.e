@@ -54,6 +54,7 @@ feature -- Modification
 			class_not_existant: not has_class (a_class.name)
 		do
 			extend (a_class)
+			project.update_persist_storage
 		ensure
 			class_added: has_class (a_class.name)
 		end
