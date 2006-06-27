@@ -57,7 +57,6 @@ feature -- Formatting
 		local
 			class_file: RAW_FILE
 			f_name: STRING
-			ebw : EB_DEVELOPMENT_WINDOW
 			fs: FEATURE_STONE
 			teaching_mode : BOOLEAN
 		do
@@ -68,9 +67,8 @@ feature -- Formatting
 			then
 
 				teaching_mode := False
-				ebw ?= manager
 				fs ?= stone
-				if ebw /= Void AND fs /= Void then
+				if fs /= Void then
 					associated_feature := fs.e_feature
 					if associated_feature /= Void then
 						associated_feature_stone := fs
@@ -122,19 +120,19 @@ feature -- Formatting
 			end
 		end
 
-	full_text is
-			-- Create `formatted_text'.
-		local
-			feature_text : STRING
-			class_text: STRING
-		do
-			feature_text := editor.text
-			class_text := class_header_text + feature_text + class_footer_text
-			editor.set_stone (stone)
-			editor.load_text (class_text)
-		end
+--	full_text is
+--			-- Create `formatted_text'.
+--		local
+--			feature_text : STRING
+--			class_text: STRING
+--		do
+--			feature_text := editor.text
+--			class_text := class_header_text + feature_text + class_footer_text
+--			editor.set_stone (stone)
+--			editor.load_text (class_text)
+--		end
 
-	get_full_text:STRING is
+	full_text:STRING is
 			-- Create `formatted_text'.
 		local
 			feature_text : STRING

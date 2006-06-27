@@ -842,8 +842,18 @@ feature -- Window Properties
 
 	text: STRING is
 			-- Text representing Current
+		local
+			etf : EB_TEACHMODE_FORMATTER
 		do
 			Result := editor_tool.text_area.text
+
+			-- get entire class-text in teaching-mode
+			if pos_container /= Void then
+				etf ?= pos_container
+				if etf /= void then
+					Result := etf.full_text
+				end
+			end
 		end
 
 	pixmap: EV_PIXMAP is
@@ -2604,7 +2614,6 @@ feature -- Resource Update
 			else
 				status_bar.display_message (Interface_names.L_syntax_error)
 			end
-
 			text_edited := False
 		end
 
