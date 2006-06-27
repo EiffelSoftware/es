@@ -10,7 +10,7 @@ indexing
 class
 	EMU_PROJECT
 
-inherit
+upinherit
 	STORABLE
 	EMU_SERVER_CONSTANTS
 	ANY
@@ -120,13 +120,13 @@ feature {NONE} -- Update
 			folder: DIRECTORY
 		do
 			-- create folder for project
-			create folder.make (project_folder_name +"\\"+name)
+			create folder.make (project_folder_name +"/"+name)
 			if not folder.exists then
 				folder.create_dir
 			end
 			-- write this project object to a file
 			-- delete old file if nessecary
-			create file.make(project_folder_name +"\\"+name+"\\"+name+".emu")
+			create file.make(project_folder_name +"/"+name+"/"+name+".emu")
 			if file.exists then
 				file.delete
 			end
