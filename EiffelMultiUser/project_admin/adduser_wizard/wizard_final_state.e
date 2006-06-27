@@ -30,12 +30,12 @@ feature -- Redefinition
 			process_info
 			system.first_window.lock_update			-- lock window again
 		end
-	
+
 
 feature {NONE} -- Implementation
 
 
-	build_finish is 
+	build_finish is
 			-- Build user entries.
 			--
 			-- Note: You can remove this feature if you don't need
@@ -45,7 +45,7 @@ feature {NONE} -- Implementation
 		do
 			choice_box.wipe_out
 			choice_box.set_border_width (10)
-			create progress 
+			create progress
 			progress.set_minimum_height(20)
 			progress.set_minimum_width(100)
 			create progress_text
@@ -72,12 +72,14 @@ feature {NONE} -- Implementation
 			msg: EMU_MESSAGE
 			msg_ok: PROJECT_OK
 			msg_error: PROJECT_ERROR
+			user_file: PLAIN_TEXT_FILE
 		do
 			if not rescued then
 				successful := False
 				system ?= current_application
 				total := 3
 				iteration := 0
+				system.process_events
 				notify_user ("connecting to emu server...")
 				system.process_events
 				create sock.make_client_by_port (system.server_port, system.server_host)
@@ -103,6 +105,19 @@ feature {NONE} -- Implementation
 							if msg_ok /= Void then
 								notify_user (msg_ok.ok_message)
 								successful := True
+								-- create emu user file
+								create user_file.make (system.project_name + ".ecf.emu")
+								if user_file.exists then
+									user_file.delete
+								end
+								user_file.open_write
+								user_file.put_string ("EMU USER FILE%N")
+								user_file.put_string (system.user_name + "%N")
+								user_file.put_string (system.user_pass + "%N")
+								user_file.put_string (system.project_name + "%N")
+								user_file.put_string (system.server_host + "%N")
+								user_file.put_string (system.server_port.out + "%N")
+								user_file.close
 							else
 								msg_error ?= msg
 								if msg_error /= Void then
@@ -149,20 +164,20 @@ feature {NONE} -- Implementation
 	final_message: STRING is
 		do
 		end
-		
+
 	pixmap_location: FILE_NAME is
 		-- Pixmap location
 	once
 		create Result.make_from_string ("emu_wizard")
 		Result.add_extension (pixmap_extension)
 	end
-	
+
 	pixmap_icon_location: FILE_NAME is
 			-- Icon for the Eiffel Store Wizard
 		once
 			create Result.make_from_string ("emu_icon_01.png")
 		end
-		
+
 
 feature -- Attributes
 

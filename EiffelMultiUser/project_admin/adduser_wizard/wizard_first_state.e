@@ -21,7 +21,7 @@ create
 
 feature -- Basic Operation
 
-	build is 
+	build is
 			-- Build entries.
 		local
 			label_text_vb: EV_VERTICAL_BOX
@@ -47,12 +47,12 @@ feature -- Basic Operation
 			create space
 			space.set_minimum_width (80)
 			system.add_without_expand (center_hb, space)
-			
+
 			-- fill label and text field box
 			create hostname_hb
 			system.add_label (hostname_hb, "hostname: ", label_width)
 			create hostname_txt
-			hostname_txt.set_minimum_width_in_characters (9)
+			hostname_txt.set_minimum_width_in_characters (20)
 			if system.server_host /= Void then
 				hostname_txt.set_text (system.server_host)
 			end
@@ -61,17 +61,17 @@ feature -- Basic Operation
 			create port_hb
 			system.add_label (port_hb, "port: ", label_width)
 			create port_txt
-			if system.server_port = 0 then 
+			if system.server_port = 0 then
 				system.set_default_port
 			end
 			port_txt.set_text (system.server_port.out)
-			port_txt.set_minimum_width_in_characters (2)
+			port_txt.set_minimum_width_in_characters (5)
 			system.add_without_expand (port_hb, port_txt)
 			system.add_without_expand (label_text_vb, port_hb)
 			create proj_name_hb
 			system.add_label (proj_name_hb, "project name: ", label_width)
 			create project_name_txt
-			project_name_txt.set_minimum_width_in_characters (9)
+			project_name_txt.set_minimum_width_in_characters (20)
 			if system.project_name /= Void then
 				project_name_txt.set_text (system.project_name)
 			end
@@ -80,13 +80,13 @@ feature -- Basic Operation
 			create proj_pass_hb
 			system.add_label (proj_pass_hb, "project password: ", label_width)
 			create password_txt
-			if system.project_password /= Void then 
+			if system.project_password /= Void then
 				password_txt.set_text (system.project_password)
 			end
-			password_txt.set_minimum_width_in_characters (9)
+			password_txt.set_minimum_width_in_characters (20)
 			system.add_without_expand (proj_pass_hb, password_txt)
 			system.add_without_expand (label_text_vb, proj_pass_hb)
-				
+
 			set_updatable_entries(<<hostname_txt.change_actions, port_txt.change_actions, project_name_txt.change_actions, password_txt.change_actions>>)
 			check_wizard_status
 		end
@@ -107,7 +107,7 @@ feature -- Basic Operation
 			-- save entries
 			system ?= current_application
 			if system /= Void then
-				if not hostname_txt.text.is_empty then 
+				if not hostname_txt.text.is_empty then
 					system.set_server_host (hostname_txt.text)
 				end
 				if not port_txt.text.is_empty and then port_txt.text.is_integer and then port_txt.text.to_integer >= 0 and then
@@ -116,7 +116,7 @@ feature -- Basic Operation
 				else
 					system.set_default_port
 				end
-				if not project_name_txt.text.is_empty then 
+				if not project_name_txt.text.is_empty then
 					system.set_project_name (project_name_txt.text)
 				end
 				if not password_txt.text.is_empty then
@@ -132,7 +132,7 @@ feature -- Queries
 			-- returns true if entries are valid; not empty.
 		do
 			Result := not (hostname_txt.text.is_empty or port_txt.text.is_empty or project_name_txt.text.is_empty or
-						password_txt.text.is_empty) and then port_txt.text.is_integer and then 
+						password_txt.text.is_empty) and then port_txt.text.is_integer and then
 						port_txt.text.to_integer >= 0 and then port_txt.text.to_integer <= 65535
 		end
 
@@ -147,22 +147,22 @@ feature {NONE} -- Implementation
 			message.set_text ("Please enter the hostname and the port of the EMU server.%N"+
 							  "Also please specify the EMU project and the password.")
 		end
-		
+
 
 feature -- Text fields
-	
+
 	hostname_txt: EV_TEXT_FIELD
 			-- the text field for the hostname.
-			
+
 	port_txt: EV_TEXT_FIELD
 			-- the remote port.
 
 	project_name_txt: EV_TEXT_FIELD
 			-- the text field for the name of the project.
-			
+
 	password_txt: EV_TEXT_FIELD
 			-- project password.
-	
+
 
 feature -- Pixmap
 
