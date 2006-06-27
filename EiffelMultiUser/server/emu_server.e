@@ -48,6 +48,7 @@ feature -- Initialization
 				idle_cmd := agent idle
 				connect_client_cmd := agent connect_client
 				process_client_cmd := agent process_client
+				output ("server up and running on port: " + server_port.out)
 				idle_cmd.apply	-- start server idle process
 			end
 		rescue
@@ -169,12 +170,12 @@ feature -- Process
 					if not clients.item.socket.exists or else not clients.item.socket.socket_ok or else clients.item.socket.is_closed then
 						if clients.item.is_admin then
 							admin_online := False
-							io.putstring ("Admin '" + clients.item.username + "' disconnected.%N")
+							output ("Admin '" + clients.item.username + "' disconnected.%N")
 						else
 							if clients.item.username /= Void then
-								io.putstring ("User '" + clients.item.username + "' disconnected.%N")
+								output ("User '" + clients.item.username + "' disconnected.%N")
 							else
-								io.putstring ("Client disconnected.%N")
+								output ("client disconnected.%N")
 							end
 						end
 						clients.remove
@@ -257,7 +258,7 @@ feature -- Process
 					--end
 				end
 			end
-			io.error.putstring ("EXCEPTION in process_client! errorcode: " + exception.out + "%N")
+			output ("EXCEPTION in process_client! errorcode: " + exception.out + "%N")
 			a_client.clean_up
 			rescued := True
 			retry
@@ -282,8 +283,11 @@ feature -- Output
 			-- output a text on the console. print a new_line.
 		require
 			a_text_valid: a_text /= Void and then not a_text.is_empty
+		local
+			a_time: TIME
 		do
-			io.put_string(a_text)
+			create a_time.make_now
+			io.put_string(a_time.out + " | " + a_text)
 			io.put_new_line
 		end
 
