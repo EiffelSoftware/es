@@ -544,14 +544,13 @@ feature -- Process Messages
 			a_cluster: EMU_PROJECT_CLUSTER
 			a_class: EMU_PROJECT_CLASS
 		do
-			-- try to get project from server
-			project := system.get_project(msg.project_name)
-			if project = Void then
-				-- project does not exist
+			-- check if client is logged in as a user to a project.
+			if project_user = Void then
+				-- client is not logged in as a user of a project.
 				-- send error message to client
-				-- adapt error message! :
-				-- send_msg (create {PROJECT_ERROR}.make_project_not_found(msg.project_name))
+				send_msg (create {CLIENT_ERROR}.make_general_error ("empty"))
 			else
+				project := project_user.project
 				-- do upload
 				a_cluster := project.get_cluster (msg.cluster_path)
 				if a_cluster = Void then
@@ -559,9 +558,15 @@ feature -- Process Messages
 					project.add_cluster (msg.cluster_path, project_user)
 				else
 					if a_cluster.has_class (msg.class_name) then
-						--class already exists, replace content.
-						a_class := a_cluster.get_class (msg.class_name)
-						a_class.set_content (msg.content)
+						--class already exists, check lock status.
+						if a_class.current_user = project_user then
+							-- user has unlocked class for him and may update it.
+							a_class := a_cluster.get_class (msg.class_name)
+							a_class.set_content (msg.content)
+						else
+							-- user may not update this class.
+							send_msg (create {CLIENT_ERROR}.make_general_error (project.name))
+						end
 					else
 						--class does not exist, create.
 						create a_class.make (msg.class_name, project_user)
