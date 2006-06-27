@@ -440,19 +440,19 @@ feature -- Process Messages
 			if project_user = Void then
 				-- client is not logged in as a user of a project.
 				-- send error message to client
-				io.put_string ("INVALID: client download: " + msg.class_name + ". user not associated with project: " + msg.project_name + "!%N")
+				io.put_string ("INVALID: client download: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
 				send_msg (create {CLIENT_ERROR}.make_general_error ("empty"))
 			else
 				-- start download
-				a_class := project_user.project.get_class (msg.class_name)
+				a_class := project_user.project.get_class (msg.emu_class_name)
 				if a_class = Void then
 					-- class does not exist.
-					io.put_string ("INVALID: client download: " + msg.class_name + ". class does not exist!%N")
-					send_msg (create {CLIENT_ERROR}.make_class_not_found (project_user.project.name, msg.class_name))
+					io.put_string ("INVALID: client download: " + msg.emu_class_name + ". class does not exist!%N")
+					send_msg (create {CLIENT_ERROR}.make_class_not_found (project_user.project.name, msg.emu_class_name))
 				else
 					-- class found, send message with class content.
-					io.put_string ("client download: " + msg.class_name + "%N")
-					send_msg (create {GET_DOWNLOAD}.make (project_user.project.name, a_class.get_cluster_path, msg.class_name, a_class.content))
+					io.put_string ("client download: " + msg.emu_class_name + "%N")
+					send_msg (create {GET_DOWNLOAD}.make (project_user.project.name, a_class.get_cluster_path, msg.emu_class_name, a_class.content))
 				end
 			end
 		end
@@ -471,10 +471,10 @@ feature -- Process Messages
 			if project = Void then
 				-- project does not exist
 				-- send error message to client
-				io.put_string ("INVALID: client lock request: " + msg.class_name + ". user not associated with project: " + msg.project_name + "!%N")
+				io.put_string ("INVALID: client lock request: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
 				send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
 			else
-				io.put_string ("client lock request: " + msg.class_name + ". project: " + msg.project_name + "%N")
+				io.put_string ("client lock request: " + msg.emu_class_name + ". project: " + msg.project_name + "%N")
 				-- search the right class
 				from
 					project.clusters.start
@@ -516,10 +516,10 @@ feature -- Process Messages
 			if project = Void then
 				-- project does not exist
 				-- send error message to client
-				io.put_string ("INVALID: client unlock request: " + msg.class_name + ". user not associated with project: " + msg.project_name + "!%N")
+				io.put_string ("INVALID: client unlock request: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
 				send_msg (create {CLIENT_ERROR}.make_unlock_not_successful (msg.project_name, msg.emu_class_name))
 			else
-				io.put_string ("INVALID: client unlock request: " + msg.class_name + ". project: " + msg.project_name + "%N")
+				io.put_string ("INVALID: client unlock request: " + msg.emu_class_name + ". project: " + msg.project_name + "%N")
 				if not project.has_user (username) then
 
 				else
@@ -563,7 +563,7 @@ feature -- Process Messages
 			if project_user = Void then
 				-- client is not logged in as a user of a project.
 				-- send error message to client
-				io.put_string ("INVALID: client upload: " + msg.class_name + ". user not associated with project: " + msg.project_name + "!%N")
+				io.put_string ("INVALID: client upload: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
 				send_msg (create {CLIENT_ERROR}.make_general_error ("empty"))
 			else
 				project := project_user.project
@@ -572,24 +572,24 @@ feature -- Process Messages
 				if a_cluster = Void then
 					-- invalid cluster, create.
 					project.add_cluster (msg.cluster_path, project_user)
-					io.put_string ("client upload: " + msg.class_name + ". cluster created: " + msg.cluster_path + "%N")
+					io.put_string ("client upload: " + msg.emu_class_name + ". cluster created: " + msg.cluster_path + "%N")
 				end
-				if a_cluster.has_class (msg.class_name) then
+				if a_cluster.has_class (msg.emu_class_name) then
 					--class already exists, check lock status.
 					if a_class.current_user = project_user then
 						-- user has unlocked class for him and may update it.
-						io.put_string ("client upload: " + msg.class_name + ". project: " + msg.project_name + "%N")
-						a_class := a_cluster.get_class (msg.class_name)
+						io.put_string ("client upload: " + msg.emu_class_name + ". project: " + msg.project_name + "%N")
+						a_class := a_cluster.get_class (msg.emu_class_name)
 						a_class.set_content (msg.content)
 					else
 						-- user may not update this class.
-						io.put_string ("INVALID: client upload: " + msg.class_name + ". user " + username + " may not update this class!%N")
+						io.put_string ("INVALID: client upload: " + msg.emu_class_name + ". user " + username + " may not update this class!%N")
 						send_msg (create {CLIENT_ERROR}.make_general_error (project.name))
 					end
 				else
 					--class does not exist, create.
-					io.put_string ("INVALID: client unlock request: " + msg.class_name + ". user not associated with project: " + msg.project_name + "!%N")
-					create a_class.make (msg.class_name, project_user)
+					io.put_string ("INVALID: client unlock request: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
+					create a_class.make (msg.emu_class_name, project_user)
 					a_cluster.add_class (a_class)
 				end
 			end
