@@ -377,7 +377,11 @@ feature {NONE} -- Carbon callback handling for events
 			a_button: EV_BUTTON_IMP
 			a_window: EV_WINDOW_IMP
 			event_class, event_kind, a_id: INTEGER
+			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
+			a_event : TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
+
 		do
+				create a_event.default_create
 
 				if a_inuserdata /= null then
 					create user_data.make_shared (a_inuserdata) --just a hack, because i dont know how to get to integer from a pointer in eiffel.
@@ -389,10 +393,16 @@ feature {NONE} -- Carbon callback handling for events
 					-- fill in the event kinds and classes to all the events, for whiche Handlers are installed
 
 						if event_kind = {carbonevents_anon_enums}.kEventMouseDown and event_class = {carbonevents_anon_enums}.kEventClassControl then
+
 							a_button?=widget_list.item (a_id)
 							if a_button/=void then
-								a_button.select_actions.call (void)
+								a_button.select_actions.call(void)
 							end
+							a_seq ?= widget_list.item (a_id)
+							if a_seq /= void then
+								a_seq.pointer_button_press_actions.call(a_event)
+							end
+
 						elseif  event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
 							a_window?=widget_list.item (a_id)
 							if a_window/=void then

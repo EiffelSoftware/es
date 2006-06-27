@@ -30,6 +30,11 @@ inherit
 		end
 
 	MATH_CONST
+	HIVIEW_FUNCTIONS_EXTERNAL
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+	CONTROLS_FUNCTIONS_EXTERNAL
+
+
 
 feature {NONE} -- Initialization
 
@@ -256,7 +261,41 @@ feature -- Drawing operations
 
 	draw_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP) is
 			-- Draw `a_pixmap' with upper-left corner on (`x', `y').
+		local
+			image_ref, url, provider : POINTER
+			a_file_name, a_dir : C_STRING
+			ret : INTEGER
+			point : CGPOINT_STRUCT
+			size : CGSIZE_STRUCT
+			rect : CGRECT_STRUCT
+			a_imp : EV_WIDGET_IMP
+			c_imp: EV_WIDGET_IMP
+
 		do
+        			c_imp ?= current
+        			if c_imp /=void then
+
+						create rect.make_new_unshared
+						create point.make_new_unshared
+						create size.make_new_unshared
+						point.set_x (x)
+						point.set_y (y)
+						size.set_height(a_pixmap.height)
+						size.set_width (a_pixmap.width)
+						rect.set_origin (point.item)
+						rect.set_size (size.item)
+						a_imp ?= a_pixmap.implementation
+
+						if a_imp /= void then
+							ret := hiview_set_frame_external (a_imp.c_object, rect.item)
+							ret := hiview_add_subview_external(a_imp.c_object, c_imp.c_object)
+							ret := set_control_visibility_external (a_imp.c_object, 1, 1)
+
+						end
+
+        			end
+
+
 		end
 
 	draw_full_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP; x_src, y_src, src_width, src_height: INTEGER) is

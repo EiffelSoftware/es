@@ -69,7 +69,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.
 		local
-			err : INTEGER
+			err, ret : INTEGER
 			struct_ptr : POINTER
 			target: POINTER
 			point : CGPOINT_STRUCT
@@ -84,7 +84,16 @@ feature {NONE} -- Initialization
 			id := app_implementation.get_id (current)  --getting an id from the application
 			target := get_control_event_target_external(struct_ptr)
 
-
+					create rect.make_new_unshared
+					create point.make_new_unshared
+					create size.make_new_unshared
+					point.set_x (50)
+					point.set_y (50)
+					size.set_height(50)
+					size.set_width (50)
+					rect.set_origin (point.item)
+					rect.set_size (size.item)
+					ret := hiview_set_frame_external (c_object, rect.item)
 			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 
 		end
@@ -108,7 +117,10 @@ feature -- Drawing operations
 			-- Ensure that the appearance of `Current' is updated on screen
 			-- immediately. Any changes that have not yet been reflected will
 			-- become visible.
+		local
+			err : INTEGER
 		do
+			err := set_control_visibility_external (c_object, 1, 1)
 		end
 
 	update_if_needed is
@@ -129,6 +141,10 @@ feature -- Measurement
 		end
 
 feature -- Element change
+
+
+
+
 
 	read_from_named_file (file_name: STRING_GENERAL) is
 			-- Attempt to load pixmap data from a file specified by `file_name'.
@@ -162,21 +178,6 @@ feature -- Element change
         			ret := hiimage_view_set_alpha_external( c_object, 0.3 );
 
         		--	ret := hiview_set_zorder_external( c_object, kHIViewZOrderBelow, null )
-
-
-
-
-
-        			create rect.make_new_unshared
-					create point.make_new_unshared
-					create size.make_new_unshared
-					point.set_x (50)
-					point.set_y (50)
-					size.set_height(50)
-					size.set_width (50)
-					rect.set_origin (point.item)
-					rect.set_size (size.item)
-					ret := hiview_set_frame_external (c_object, rect.item)
 				--	ret := hiview_set_visible_external( c_object, 50 )
 
 				end
