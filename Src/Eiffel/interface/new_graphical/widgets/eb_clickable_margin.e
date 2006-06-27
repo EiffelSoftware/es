@@ -115,14 +115,17 @@ feature {NONE} -- Implementation
 				if smart_text_panel /= Void and then smart_text_panel.folding_areas /= Void then
 				-- we are inside the main code-editor and have to show folding-areas
 
-					-- search for the next folding-area after 'first'
+					-- search for the next folding-area containing 'first'
 					next_folding_area := smart_text_panel.folding_areas.first_item_after_line (first)
+					if next_folding_area /= Void and then next_folding_area.previous /= Void then
+						next_folding_area := next_folding_area.previous
+					end
 
-					debug("code-folding:")
+--					debug("code-folding:")
 						if next_folding_area /= Void then
 							io.put_string("first:%T" + first.out + "%Nlast:%T" + last.out + "%N%Tnext fp is on line " + next_folding_area.start_line.out + "%N%N")
 						end
-					end
+--					end
 				end
 			end
 
@@ -145,7 +148,10 @@ feature {NONE} -- Implementation
 							debug ("code-folding:")
 								io.putstring("feature on line " + next_folding_area.start_line.out + "has height: " + next_folding_area.height.out + "%N")
 							end
-							if (next_folding_area.hidden or (not next_folding_area.hidden and next_folding_area.height > 0)) and then (curr_line >= next_folding_area.start_line and curr_line <= next_folding_area.end_line) then
+							if next_folding_area.end_line < curr_line then
+								next_folding_area := next_folding_area.next
+							end
+							if next_folding_area /= Void and then (next_folding_area.hidden or (not next_folding_area.hidden and next_folding_area.height > 0)) and then (curr_line >= next_folding_area.start_line and curr_line <= next_folding_area.end_line) then
 								draw_next_folding_point := true
 							else
 								draw_next_folding_point := false
@@ -153,20 +159,20 @@ feature {NONE} -- Implementation
 
 							-- if hidden advance x lines where x = height of folding-area
 --							if next_folding_area.hidden and then curr_line = next_folding_area.start_line then
---								move_x_lines := next_folding_area.height + 1
+--								move_x_lines := next_folding_area.height
 --							end
+
 						end
 					end
 					draw_line_to_screen (0, y_offset, l_text_displayed.line (curr_line), curr_line)
 				end
 
 
--- 				curr_line := curr_line + 1
-				curr_line := curr_line + move_x_lines
+ 				curr_line := curr_line + 1
+--				curr_line := curr_line + move_x_lines
 
 				y_offset := y_offset + l_line_height
  				l_text_displayed.forth
-
  			end
  			updating_line := False
 		end
