@@ -31,6 +31,7 @@ inherit
 			interface,
 			initialize
 		end
+	HIVIEW_FUNCTIONS_EXTERNAL
 
 feature {NONE} -- Initialization
 
@@ -92,14 +93,18 @@ feature
 				a_imp: EV_WIDGET_IMP
 				err:INTEGER
 				a_list: EV_WIDGET_LIST_IMP
+				bounds : RECT_STRUCT
 			do
+				create bounds.make_new_shared
 				from i := 1
 				until i > child_array.count
 				loop
 					a_imp ?= child_array.i_th(i).implementation
 					if a_imp /= void then
-						err := embed_control_external (a_imp.c_object, c_object)
-
+						--err := embed_control_external (a_imp.c_object, c_object)
+						err := hiview_add_subview_external( c_object, a_imp.c_object)
+						err := hiview_get_bounds_external( c_object, bounds.item )
+						err := hiview_set_frame_external ( c_object, bounds.item )
 						a_list ?= a_imp
 						if a_list /= void then
 							a_list.embed_all
@@ -107,9 +112,12 @@ feature
 					end
 					i := i + 1
 				end
-
-
 			end
+
+					-- HIRect bounds;
+        			 --HIViewAddSubview( content, imageView )
+       				 --HIViewGetBounds( content, &bounds );
+        			--HIViewSetFrame( imageView, &bounds );
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

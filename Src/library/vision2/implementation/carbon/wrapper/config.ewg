@@ -72,6 +72,41 @@
 			<wrapper type="default">
    			</wrapper>
 		</rule>
+		<rule>
+  			<match>
+   				<header name=".*CFBase.h"/>
+			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
+		<rule>
+  			<match>
+   				<header name=".*CFBundle.h"/>
+			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
+		<rule>
+  			<match>
+   				<header name=".*CFURL.h"/>
+			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
+		<rule>
+  			<match>
+   				<header name=".*CGDataProvider.h"/>
+			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
+		<rule>
+  			<match>
+   				<header name=".*CGImage.h"/>
+			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
     	<rule>
 			<match/>
 			<wrapper type="none">

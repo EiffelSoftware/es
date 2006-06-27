@@ -1,4 +1,130 @@
 
+// Wraps call to function '__CFRangeMake' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro___CFRangeMake(ewg_param_loc, ewg_param_len) __CFRangeMake ((CFIndex)ewg_param_loc, (CFIndex)ewg_param_len)
+
+CFRange * ewg_function___CFRangeMake (CFIndex loc, CFIndex len);
+// Wraps call to function 'CFNullGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFNullGetTypeID CFNullGetTypeID ()
+
+CFTypeID  ewg_function_CFNullGetTypeID (void);
+// Wraps call to function 'CFAllocatorGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorGetTypeID CFAllocatorGetTypeID ()
+
+CFTypeID  ewg_function_CFAllocatorGetTypeID (void);
+// Wraps call to function 'CFAllocatorSetDefault' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorSetDefault(ewg_param_allocator) CFAllocatorSetDefault ((CFAllocatorRef)ewg_param_allocator)
+
+void  ewg_function_CFAllocatorSetDefault (CFAllocatorRef allocator);
+// Wraps call to function 'CFAllocatorGetDefault' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorGetDefault CFAllocatorGetDefault ()
+
+CFAllocatorRef  ewg_function_CFAllocatorGetDefault (void);
+// Wraps call to function 'CFAllocatorCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorCreate(ewg_param_allocator, ewg_param_context) CFAllocatorCreate ((CFAllocatorRef)ewg_param_allocator, (CFAllocatorContext*)ewg_param_context)
+
+CFAllocatorRef  ewg_function_CFAllocatorCreate (CFAllocatorRef allocator, CFAllocatorContext *context);
+// Wraps call to function 'CFAllocatorAllocate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorAllocate(ewg_param_allocator, ewg_param_size, ewg_param_hint) CFAllocatorAllocate ((CFAllocatorRef)ewg_param_allocator, (CFIndex)ewg_param_size, (CFOptionFlags)ewg_param_hint)
+
+void * ewg_function_CFAllocatorAllocate (CFAllocatorRef allocator, CFIndex size, CFOptionFlags hint);
+// Wraps call to function 'CFAllocatorReallocate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorReallocate(ewg_param_allocator, ewg_param_ptr, ewg_param_newsize, ewg_param_hint) CFAllocatorReallocate ((CFAllocatorRef)ewg_param_allocator, (void*)ewg_param_ptr, (CFIndex)ewg_param_newsize, (CFOptionFlags)ewg_param_hint)
+
+void * ewg_function_CFAllocatorReallocate (CFAllocatorRef allocator, void *ptr, CFIndex newsize, CFOptionFlags hint);
+// Wraps call to function 'CFAllocatorDeallocate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorDeallocate(ewg_param_allocator, ewg_param_ptr) CFAllocatorDeallocate ((CFAllocatorRef)ewg_param_allocator, (void*)ewg_param_ptr)
+
+void  ewg_function_CFAllocatorDeallocate (CFAllocatorRef allocator, void *ptr);
+// Wraps call to function 'CFAllocatorGetPreferredSizeForSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorGetPreferredSizeForSize(ewg_param_allocator, ewg_param_size, ewg_param_hint) CFAllocatorGetPreferredSizeForSize ((CFAllocatorRef)ewg_param_allocator, (CFIndex)ewg_param_size, (CFOptionFlags)ewg_param_hint)
+
+CFIndex  ewg_function_CFAllocatorGetPreferredSizeForSize (CFAllocatorRef allocator, CFIndex size, CFOptionFlags hint);
+// Wraps call to function 'CFAllocatorGetContext' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFAllocatorGetContext(ewg_param_allocator, ewg_param_context) CFAllocatorGetContext ((CFAllocatorRef)ewg_param_allocator, (CFAllocatorContext*)ewg_param_context)
+
+void  ewg_function_CFAllocatorGetContext (CFAllocatorRef allocator, CFAllocatorContext *context);
+// Wraps call to function 'CFGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFGetTypeID(ewg_param_cf) CFGetTypeID ((CFTypeRef)ewg_param_cf)
+
+CFTypeID  ewg_function_CFGetTypeID (CFTypeRef cf);
+// Wraps call to function 'CFCopyTypeIDDescription' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFCopyTypeIDDescription(ewg_param_type_id) CFCopyTypeIDDescription ((CFTypeID)ewg_param_type_id)
+
+CFStringRef  ewg_function_CFCopyTypeIDDescription (CFTypeID type_id);
+// Wraps call to function 'CFRetain' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFRetain(ewg_param_cf) CFRetain ((CFTypeRef)ewg_param_cf)
+
+CFTypeRef  ewg_function_CFRetain (CFTypeRef cf);
+// Wraps call to function 'CFRelease' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFRelease(ewg_param_cf) CFRelease ((CFTypeRef)ewg_param_cf)
+
+void  ewg_function_CFRelease (CFTypeRef cf);
+// Wraps call to function 'CFGetRetainCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFGetRetainCount(ewg_param_cf) CFGetRetainCount ((CFTypeRef)ewg_param_cf)
+
+CFIndex  ewg_function_CFGetRetainCount (CFTypeRef cf);
+// Wraps call to function 'CFMakeCollectable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFMakeCollectable(ewg_param_cf) CFMakeCollectable ((CFTypeRef)ewg_param_cf)
+
+CFTypeRef  ewg_function_CFMakeCollectable (CFTypeRef cf);
+// Wraps call to function 'CFEqual' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFEqual(ewg_param_cf1, ewg_param_cf2) CFEqual ((CFTypeRef)ewg_param_cf1, (CFTypeRef)ewg_param_cf2)
+
+Boolean  ewg_function_CFEqual (CFTypeRef cf1, CFTypeRef cf2);
+// Wraps call to function 'CFHash' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFHash(ewg_param_cf) CFHash ((CFTypeRef)ewg_param_cf)
+
+CFHashCode  ewg_function_CFHash (CFTypeRef cf);
+// Wraps call to function 'CFCopyDescription' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFCopyDescription(ewg_param_cf) CFCopyDescription ((CFTypeRef)ewg_param_cf)
+
+CFStringRef  ewg_function_CFCopyDescription (CFTypeRef cf);
+// Wraps call to function 'CFGetAllocator' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFGetAllocator(ewg_param_cf) CFGetAllocator ((CFTypeRef)ewg_param_cf)
+
+CFAllocatorRef  ewg_function_CFGetAllocator (CFTypeRef cf);
 // Wraps call to function 'CFStringGetTypeID' in a macro
 #include <Carbon/Carbon.h>
 
@@ -467,6 +593,738 @@ void  ewg_function_CFShowStr (CFStringRef str);
 #define ewg_function_macro___CFStringMakeConstantString(ewg_param_cStr) __CFStringMakeConstantString ((char const*)ewg_param_cStr)
 
 CFStringRef  ewg_function___CFStringMakeConstantString (char const *cStr);
+// Wraps call to function 'CFURLGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetTypeID CFURLGetTypeID ()
+
+CFTypeID  ewg_function_CFURLGetTypeID (void);
+// Wraps call to function 'CFURLCreateWithBytes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateWithBytes(ewg_param_allocator, ewg_param_URLBytes, ewg_param_length, ewg_param_encoding, ewg_param_baseURL) CFURLCreateWithBytes ((CFAllocatorRef)ewg_param_allocator, (UInt8 const*)ewg_param_URLBytes, (CFIndex)ewg_param_length, (CFStringEncoding)ewg_param_encoding, (CFURLRef)ewg_param_baseURL)
+
+CFURLRef  ewg_function_CFURLCreateWithBytes (CFAllocatorRef allocator, UInt8 const *URLBytes, CFIndex length, CFStringEncoding encoding, CFURLRef baseURL);
+// Wraps call to function 'CFURLCreateData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateData(ewg_param_allocator, ewg_param_url, ewg_param_encoding, ewg_param_escapeWhitespace) CFURLCreateData ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_url, (CFStringEncoding)ewg_param_encoding, (Boolean)ewg_param_escapeWhitespace)
+
+CFDataRef  ewg_function_CFURLCreateData (CFAllocatorRef allocator, CFURLRef url, CFStringEncoding encoding, Boolean escapeWhitespace);
+// Wraps call to function 'CFURLCreateWithString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateWithString(ewg_param_allocator, ewg_param_URLString, ewg_param_baseURL) CFURLCreateWithString ((CFAllocatorRef)ewg_param_allocator, (CFStringRef)ewg_param_URLString, (CFURLRef)ewg_param_baseURL)
+
+CFURLRef  ewg_function_CFURLCreateWithString (CFAllocatorRef allocator, CFStringRef URLString, CFURLRef baseURL);
+// Wraps call to function 'CFURLCreateAbsoluteURLWithBytes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateAbsoluteURLWithBytes(ewg_param_alloc, ewg_param_relativeURLBytes, ewg_param_length, ewg_param_encoding, ewg_param_baseURL, ewg_param_useCompatibilityMode) CFURLCreateAbsoluteURLWithBytes ((CFAllocatorRef)ewg_param_alloc, (UInt8 const*)ewg_param_relativeURLBytes, (CFIndex)ewg_param_length, (CFStringEncoding)ewg_param_encoding, (CFURLRef)ewg_param_baseURL, (Boolean)ewg_param_useCompatibilityMode)
+
+CFURLRef  ewg_function_CFURLCreateAbsoluteURLWithBytes (CFAllocatorRef alloc, UInt8 const *relativeURLBytes, CFIndex length, CFStringEncoding encoding, CFURLRef baseURL, Boolean useCompatibilityMode);
+// Wraps call to function 'CFURLCreateWithFileSystemPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateWithFileSystemPath(ewg_param_allocator, ewg_param_filePath, ewg_param_pathStyle, ewg_param_isDirectory) CFURLCreateWithFileSystemPath ((CFAllocatorRef)ewg_param_allocator, (CFStringRef)ewg_param_filePath, (CFURLPathStyle)ewg_param_pathStyle, (Boolean)ewg_param_isDirectory)
+
+CFURLRef  ewg_function_CFURLCreateWithFileSystemPath (CFAllocatorRef allocator, CFStringRef filePath, CFURLPathStyle pathStyle, Boolean isDirectory);
+// Wraps call to function 'CFURLCreateFromFileSystemRepresentation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateFromFileSystemRepresentation(ewg_param_allocator, ewg_param_buffer, ewg_param_bufLen, ewg_param_isDirectory) CFURLCreateFromFileSystemRepresentation ((CFAllocatorRef)ewg_param_allocator, (UInt8 const*)ewg_param_buffer, (CFIndex)ewg_param_bufLen, (Boolean)ewg_param_isDirectory)
+
+CFURLRef  ewg_function_CFURLCreateFromFileSystemRepresentation (CFAllocatorRef allocator, UInt8 const *buffer, CFIndex bufLen, Boolean isDirectory);
+// Wraps call to function 'CFURLCreateWithFileSystemPathRelativeToBase' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateWithFileSystemPathRelativeToBase(ewg_param_allocator, ewg_param_filePath, ewg_param_pathStyle, ewg_param_isDirectory, ewg_param_baseURL) CFURLCreateWithFileSystemPathRelativeToBase ((CFAllocatorRef)ewg_param_allocator, (CFStringRef)ewg_param_filePath, (CFURLPathStyle)ewg_param_pathStyle, (Boolean)ewg_param_isDirectory, (CFURLRef)ewg_param_baseURL)
+
+CFURLRef  ewg_function_CFURLCreateWithFileSystemPathRelativeToBase (CFAllocatorRef allocator, CFStringRef filePath, CFURLPathStyle pathStyle, Boolean isDirectory, CFURLRef baseURL);
+// Wraps call to function 'CFURLCreateFromFileSystemRepresentationRelativeToBase' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateFromFileSystemRepresentationRelativeToBase(ewg_param_allocator, ewg_param_buffer, ewg_param_bufLen, ewg_param_isDirectory, ewg_param_baseURL) CFURLCreateFromFileSystemRepresentationRelativeToBase ((CFAllocatorRef)ewg_param_allocator, (UInt8 const*)ewg_param_buffer, (CFIndex)ewg_param_bufLen, (Boolean)ewg_param_isDirectory, (CFURLRef)ewg_param_baseURL)
+
+CFURLRef  ewg_function_CFURLCreateFromFileSystemRepresentationRelativeToBase (CFAllocatorRef allocator, UInt8 const *buffer, CFIndex bufLen, Boolean isDirectory, CFURLRef baseURL);
+// Wraps call to function 'CFURLGetFileSystemRepresentation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetFileSystemRepresentation(ewg_param_url, ewg_param_resolveAgainstBase, ewg_param_buffer, ewg_param_maxBufLen) CFURLGetFileSystemRepresentation ((CFURLRef)ewg_param_url, (Boolean)ewg_param_resolveAgainstBase, (UInt8*)ewg_param_buffer, (CFIndex)ewg_param_maxBufLen)
+
+Boolean  ewg_function_CFURLGetFileSystemRepresentation (CFURLRef url, Boolean resolveAgainstBase, UInt8 *buffer, CFIndex maxBufLen);
+// Wraps call to function 'CFURLCopyAbsoluteURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyAbsoluteURL(ewg_param_relativeURL) CFURLCopyAbsoluteURL ((CFURLRef)ewg_param_relativeURL)
+
+CFURLRef  ewg_function_CFURLCopyAbsoluteURL (CFURLRef relativeURL);
+// Wraps call to function 'CFURLGetString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetString(ewg_param_anURL) CFURLGetString ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLGetString (CFURLRef anURL);
+// Wraps call to function 'CFURLGetBaseURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetBaseURL(ewg_param_anURL) CFURLGetBaseURL ((CFURLRef)ewg_param_anURL)
+
+CFURLRef  ewg_function_CFURLGetBaseURL (CFURLRef anURL);
+// Wraps call to function 'CFURLCanBeDecomposed' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCanBeDecomposed(ewg_param_anURL) CFURLCanBeDecomposed ((CFURLRef)ewg_param_anURL)
+
+Boolean  ewg_function_CFURLCanBeDecomposed (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyScheme' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyScheme(ewg_param_anURL) CFURLCopyScheme ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLCopyScheme (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyNetLocation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyNetLocation(ewg_param_anURL) CFURLCopyNetLocation ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLCopyNetLocation (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyPath(ewg_param_anURL) CFURLCopyPath ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLCopyPath (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyStrictPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyStrictPath(ewg_param_anURL, ewg_param_isAbsolute) CFURLCopyStrictPath ((CFURLRef)ewg_param_anURL, (Boolean*)ewg_param_isAbsolute)
+
+CFStringRef  ewg_function_CFURLCopyStrictPath (CFURLRef anURL, Boolean *isAbsolute);
+// Wraps call to function 'CFURLCopyFileSystemPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyFileSystemPath(ewg_param_anURL, ewg_param_pathStyle) CFURLCopyFileSystemPath ((CFURLRef)ewg_param_anURL, (CFURLPathStyle)ewg_param_pathStyle)
+
+CFStringRef  ewg_function_CFURLCopyFileSystemPath (CFURLRef anURL, CFURLPathStyle pathStyle);
+// Wraps call to function 'CFURLHasDirectoryPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLHasDirectoryPath(ewg_param_anURL) CFURLHasDirectoryPath ((CFURLRef)ewg_param_anURL)
+
+Boolean  ewg_function_CFURLHasDirectoryPath (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyResourceSpecifier' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyResourceSpecifier(ewg_param_anURL) CFURLCopyResourceSpecifier ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLCopyResourceSpecifier (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyHostName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyHostName(ewg_param_anURL) CFURLCopyHostName ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLCopyHostName (CFURLRef anURL);
+// Wraps call to function 'CFURLGetPortNumber' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetPortNumber(ewg_param_anURL) CFURLGetPortNumber ((CFURLRef)ewg_param_anURL)
+
+SInt32  ewg_function_CFURLGetPortNumber (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyUserName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyUserName(ewg_param_anURL) CFURLCopyUserName ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLCopyUserName (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyPassword' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyPassword(ewg_param_anURL) CFURLCopyPassword ((CFURLRef)ewg_param_anURL)
+
+CFStringRef  ewg_function_CFURLCopyPassword (CFURLRef anURL);
+// Wraps call to function 'CFURLCopyParameterString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyParameterString(ewg_param_anURL, ewg_param_charactersToLeaveEscaped) CFURLCopyParameterString ((CFURLRef)ewg_param_anURL, (CFStringRef)ewg_param_charactersToLeaveEscaped)
+
+CFStringRef  ewg_function_CFURLCopyParameterString (CFURLRef anURL, CFStringRef charactersToLeaveEscaped);
+// Wraps call to function 'CFURLCopyQueryString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyQueryString(ewg_param_anURL, ewg_param_charactersToLeaveEscaped) CFURLCopyQueryString ((CFURLRef)ewg_param_anURL, (CFStringRef)ewg_param_charactersToLeaveEscaped)
+
+CFStringRef  ewg_function_CFURLCopyQueryString (CFURLRef anURL, CFStringRef charactersToLeaveEscaped);
+// Wraps call to function 'CFURLCopyFragment' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyFragment(ewg_param_anURL, ewg_param_charactersToLeaveEscaped) CFURLCopyFragment ((CFURLRef)ewg_param_anURL, (CFStringRef)ewg_param_charactersToLeaveEscaped)
+
+CFStringRef  ewg_function_CFURLCopyFragment (CFURLRef anURL, CFStringRef charactersToLeaveEscaped);
+// Wraps call to function 'CFURLCopyLastPathComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyLastPathComponent(ewg_param_url) CFURLCopyLastPathComponent ((CFURLRef)ewg_param_url)
+
+CFStringRef  ewg_function_CFURLCopyLastPathComponent (CFURLRef url);
+// Wraps call to function 'CFURLCopyPathExtension' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCopyPathExtension(ewg_param_url) CFURLCopyPathExtension ((CFURLRef)ewg_param_url)
+
+CFStringRef  ewg_function_CFURLCopyPathExtension (CFURLRef url);
+// Wraps call to function 'CFURLCreateCopyAppendingPathComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateCopyAppendingPathComponent(ewg_param_allocator, ewg_param_url, ewg_param_pathComponent, ewg_param_isDirectory) CFURLCreateCopyAppendingPathComponent ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_url, (CFStringRef)ewg_param_pathComponent, (Boolean)ewg_param_isDirectory)
+
+CFURLRef  ewg_function_CFURLCreateCopyAppendingPathComponent (CFAllocatorRef allocator, CFURLRef url, CFStringRef pathComponent, Boolean isDirectory);
+// Wraps call to function 'CFURLCreateCopyDeletingLastPathComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateCopyDeletingLastPathComponent(ewg_param_allocator, ewg_param_url) CFURLCreateCopyDeletingLastPathComponent ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_url)
+
+CFURLRef  ewg_function_CFURLCreateCopyDeletingLastPathComponent (CFAllocatorRef allocator, CFURLRef url);
+// Wraps call to function 'CFURLCreateCopyAppendingPathExtension' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateCopyAppendingPathExtension(ewg_param_allocator, ewg_param_url, ewg_param_extension) CFURLCreateCopyAppendingPathExtension ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_url, (CFStringRef)ewg_param_extension)
+
+CFURLRef  ewg_function_CFURLCreateCopyAppendingPathExtension (CFAllocatorRef allocator, CFURLRef url, CFStringRef extension);
+// Wraps call to function 'CFURLCreateCopyDeletingPathExtension' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateCopyDeletingPathExtension(ewg_param_allocator, ewg_param_url) CFURLCreateCopyDeletingPathExtension ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_url)
+
+CFURLRef  ewg_function_CFURLCreateCopyDeletingPathExtension (CFAllocatorRef allocator, CFURLRef url);
+// Wraps call to function 'CFURLGetBytes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetBytes(ewg_param_url, ewg_param_buffer, ewg_param_bufferLength) CFURLGetBytes ((CFURLRef)ewg_param_url, (UInt8*)ewg_param_buffer, (CFIndex)ewg_param_bufferLength)
+
+CFIndex  ewg_function_CFURLGetBytes (CFURLRef url, UInt8 *buffer, CFIndex bufferLength);
+// Wraps call to function 'CFURLGetByteRangeForComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetByteRangeForComponent(ewg_param_url, ewg_param_component, ewg_param_rangeIncludingSeparators) CFURLGetByteRangeForComponent ((CFURLRef)ewg_param_url, (CFURLComponentType)ewg_param_component, (CFRange*)ewg_param_rangeIncludingSeparators)
+
+CFRange * ewg_function_CFURLGetByteRangeForComponent (CFURLRef url, CFURLComponentType component, CFRange *rangeIncludingSeparators);
+// Wraps call to function 'CFURLCreateStringByReplacingPercentEscapes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateStringByReplacingPercentEscapes(ewg_param_allocator, ewg_param_originalString, ewg_param_charactersToLeaveEscaped) CFURLCreateStringByReplacingPercentEscapes ((CFAllocatorRef)ewg_param_allocator, (CFStringRef)ewg_param_originalString, (CFStringRef)ewg_param_charactersToLeaveEscaped)
+
+CFStringRef  ewg_function_CFURLCreateStringByReplacingPercentEscapes (CFAllocatorRef allocator, CFStringRef originalString, CFStringRef charactersToLeaveEscaped);
+// Wraps call to function 'CFURLCreateStringByReplacingPercentEscapesUsingEncoding' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateStringByReplacingPercentEscapesUsingEncoding(ewg_param_allocator, ewg_param_origString, ewg_param_charsToLeaveEscaped, ewg_param_encoding) CFURLCreateStringByReplacingPercentEscapesUsingEncoding ((CFAllocatorRef)ewg_param_allocator, (CFStringRef)ewg_param_origString, (CFStringRef)ewg_param_charsToLeaveEscaped, (CFStringEncoding)ewg_param_encoding)
+
+CFStringRef  ewg_function_CFURLCreateStringByReplacingPercentEscapesUsingEncoding (CFAllocatorRef allocator, CFStringRef origString, CFStringRef charsToLeaveEscaped, CFStringEncoding encoding);
+// Wraps call to function 'CFURLCreateStringByAddingPercentEscapes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateStringByAddingPercentEscapes(ewg_param_allocator, ewg_param_originalString, ewg_param_charactersToLeaveUnescaped, ewg_param_legalURLCharactersToBeEscaped, ewg_param_encoding) CFURLCreateStringByAddingPercentEscapes ((CFAllocatorRef)ewg_param_allocator, (CFStringRef)ewg_param_originalString, (CFStringRef)ewg_param_charactersToLeaveUnescaped, (CFStringRef)ewg_param_legalURLCharactersToBeEscaped, (CFStringEncoding)ewg_param_encoding)
+
+CFStringRef  ewg_function_CFURLCreateStringByAddingPercentEscapes (CFAllocatorRef allocator, CFStringRef originalString, CFStringRef charactersToLeaveUnescaped, CFStringRef legalURLCharactersToBeEscaped, CFStringEncoding encoding);
+// Wraps call to function 'CFURLCreateFromFSRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLCreateFromFSRef(ewg_param_allocator, ewg_param_fsRef) CFURLCreateFromFSRef ((CFAllocatorRef)ewg_param_allocator, (struct FSRef const*)ewg_param_fsRef)
+
+CFURLRef  ewg_function_CFURLCreateFromFSRef (CFAllocatorRef allocator, struct FSRef const *fsRef);
+// Wraps call to function 'CFURLGetFSRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFURLGetFSRef(ewg_param_url, ewg_param_fsRef) CFURLGetFSRef ((CFURLRef)ewg_param_url, (struct FSRef*)ewg_param_fsRef)
+
+Boolean  ewg_function_CFURLGetFSRef (CFURLRef url, struct FSRef *fsRef);
+// Wraps call to function 'CFBundleGetMainBundle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetMainBundle CFBundleGetMainBundle ()
+
+CFBundleRef  ewg_function_CFBundleGetMainBundle (void);
+// Wraps call to function 'CFBundleGetBundleWithIdentifier' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetBundleWithIdentifier(ewg_param_bundleID) CFBundleGetBundleWithIdentifier ((CFStringRef)ewg_param_bundleID)
+
+CFBundleRef  ewg_function_CFBundleGetBundleWithIdentifier (CFStringRef bundleID);
+// Wraps call to function 'CFBundleGetAllBundles' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetAllBundles CFBundleGetAllBundles ()
+
+CFArrayRef  ewg_function_CFBundleGetAllBundles (void);
+// Wraps call to function 'CFBundleGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetTypeID CFBundleGetTypeID ()
+
+UInt32  ewg_function_CFBundleGetTypeID (void);
+// Wraps call to function 'CFBundleCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCreate(ewg_param_allocator, ewg_param_bundleURL) CFBundleCreate ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_bundleURL)
+
+CFBundleRef  ewg_function_CFBundleCreate (CFAllocatorRef allocator, CFURLRef bundleURL);
+// Wraps call to function 'CFBundleCreateBundlesFromDirectory' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCreateBundlesFromDirectory(ewg_param_allocator, ewg_param_directoryURL, ewg_param_bundleType) CFBundleCreateBundlesFromDirectory ((CFAllocatorRef)ewg_param_allocator, (CFURLRef)ewg_param_directoryURL, (CFStringRef)ewg_param_bundleType)
+
+CFArrayRef  ewg_function_CFBundleCreateBundlesFromDirectory (CFAllocatorRef allocator, CFURLRef directoryURL, CFStringRef bundleType);
+// Wraps call to function 'CFBundleCopyBundleURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyBundleURL(ewg_param_bundle) CFBundleCopyBundleURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopyBundleURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleGetValueForInfoDictionaryKey' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetValueForInfoDictionaryKey(ewg_param_bundle, ewg_param_key) CFBundleGetValueForInfoDictionaryKey ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_key)
+
+CFTypeRef  ewg_function_CFBundleGetValueForInfoDictionaryKey (CFBundleRef bundle, CFStringRef key);
+// Wraps call to function 'CFBundleGetInfoDictionary' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetInfoDictionary(ewg_param_bundle) CFBundleGetInfoDictionary ((CFBundleRef)ewg_param_bundle)
+
+CFDictionaryRef  ewg_function_CFBundleGetInfoDictionary (CFBundleRef bundle);
+// Wraps call to function 'CFBundleGetLocalInfoDictionary' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetLocalInfoDictionary(ewg_param_bundle) CFBundleGetLocalInfoDictionary ((CFBundleRef)ewg_param_bundle)
+
+CFDictionaryRef  ewg_function_CFBundleGetLocalInfoDictionary (CFBundleRef bundle);
+// Wraps call to function 'CFBundleGetPackageInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetPackageInfo(ewg_param_bundle, ewg_param_packageType, ewg_param_packageCreator) CFBundleGetPackageInfo ((CFBundleRef)ewg_param_bundle, (UInt32*)ewg_param_packageType, (UInt32*)ewg_param_packageCreator)
+
+void  ewg_function_CFBundleGetPackageInfo (CFBundleRef bundle, UInt32 *packageType, UInt32 *packageCreator);
+// Wraps call to function 'CFBundleGetIdentifier' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetIdentifier(ewg_param_bundle) CFBundleGetIdentifier ((CFBundleRef)ewg_param_bundle)
+
+CFStringRef  ewg_function_CFBundleGetIdentifier (CFBundleRef bundle);
+// Wraps call to function 'CFBundleGetVersionNumber' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetVersionNumber(ewg_param_bundle) CFBundleGetVersionNumber ((CFBundleRef)ewg_param_bundle)
+
+UInt32  ewg_function_CFBundleGetVersionNumber (CFBundleRef bundle);
+// Wraps call to function 'CFBundleGetDevelopmentRegion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetDevelopmentRegion(ewg_param_bundle) CFBundleGetDevelopmentRegion ((CFBundleRef)ewg_param_bundle)
+
+CFStringRef  ewg_function_CFBundleGetDevelopmentRegion (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopySupportFilesDirectoryURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopySupportFilesDirectoryURL(ewg_param_bundle) CFBundleCopySupportFilesDirectoryURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopySupportFilesDirectoryURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopyResourcesDirectoryURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyResourcesDirectoryURL(ewg_param_bundle) CFBundleCopyResourcesDirectoryURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopyResourcesDirectoryURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopyPrivateFrameworksURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyPrivateFrameworksURL(ewg_param_bundle) CFBundleCopyPrivateFrameworksURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopyPrivateFrameworksURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopySharedFrameworksURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopySharedFrameworksURL(ewg_param_bundle) CFBundleCopySharedFrameworksURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopySharedFrameworksURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopySharedSupportURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopySharedSupportURL(ewg_param_bundle) CFBundleCopySharedSupportURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopySharedSupportURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopyBuiltInPlugInsURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyBuiltInPlugInsURL(ewg_param_bundle) CFBundleCopyBuiltInPlugInsURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopyBuiltInPlugInsURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopyInfoDictionaryInDirectory' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyInfoDictionaryInDirectory(ewg_param_bundleURL) CFBundleCopyInfoDictionaryInDirectory ((CFURLRef)ewg_param_bundleURL)
+
+CFDictionaryRef  ewg_function_CFBundleCopyInfoDictionaryInDirectory (CFURLRef bundleURL);
+// Wraps call to function 'CFBundleGetPackageInfoInDirectory' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetPackageInfoInDirectory(ewg_param_url, ewg_param_packageType, ewg_param_packageCreator) CFBundleGetPackageInfoInDirectory ((CFURLRef)ewg_param_url, (UInt32*)ewg_param_packageType, (UInt32*)ewg_param_packageCreator)
+
+Boolean  ewg_function_CFBundleGetPackageInfoInDirectory (CFURLRef url, UInt32 *packageType, UInt32 *packageCreator);
+// Wraps call to function 'CFBundleCopyResourceURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyResourceURL(ewg_param_bundle, ewg_param_resourceName, ewg_param_resourceType, ewg_param_subDirName) CFBundleCopyResourceURL ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_resourceName, (CFStringRef)ewg_param_resourceType, (CFStringRef)ewg_param_subDirName)
+
+CFURLRef  ewg_function_CFBundleCopyResourceURL (CFBundleRef bundle, CFStringRef resourceName, CFStringRef resourceType, CFStringRef subDirName);
+// Wraps call to function 'CFBundleCopyResourceURLsOfType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyResourceURLsOfType(ewg_param_bundle, ewg_param_resourceType, ewg_param_subDirName) CFBundleCopyResourceURLsOfType ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_resourceType, (CFStringRef)ewg_param_subDirName)
+
+CFArrayRef  ewg_function_CFBundleCopyResourceURLsOfType (CFBundleRef bundle, CFStringRef resourceType, CFStringRef subDirName);
+// Wraps call to function 'CFBundleCopyLocalizedString' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyLocalizedString(ewg_param_bundle, ewg_param_key, ewg_param_value, ewg_param_tableName) CFBundleCopyLocalizedString ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_key, (CFStringRef)ewg_param_value, (CFStringRef)ewg_param_tableName)
+
+CFStringRef  ewg_function_CFBundleCopyLocalizedString (CFBundleRef bundle, CFStringRef key, CFStringRef value, CFStringRef tableName);
+// Wraps call to function 'CFBundleCopyResourceURLInDirectory' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyResourceURLInDirectory(ewg_param_bundleURL, ewg_param_resourceName, ewg_param_resourceType, ewg_param_subDirName) CFBundleCopyResourceURLInDirectory ((CFURLRef)ewg_param_bundleURL, (CFStringRef)ewg_param_resourceName, (CFStringRef)ewg_param_resourceType, (CFStringRef)ewg_param_subDirName)
+
+CFURLRef  ewg_function_CFBundleCopyResourceURLInDirectory (CFURLRef bundleURL, CFStringRef resourceName, CFStringRef resourceType, CFStringRef subDirName);
+// Wraps call to function 'CFBundleCopyResourceURLsOfTypeInDirectory' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyResourceURLsOfTypeInDirectory(ewg_param_bundleURL, ewg_param_resourceType, ewg_param_subDirName) CFBundleCopyResourceURLsOfTypeInDirectory ((CFURLRef)ewg_param_bundleURL, (CFStringRef)ewg_param_resourceType, (CFStringRef)ewg_param_subDirName)
+
+CFArrayRef  ewg_function_CFBundleCopyResourceURLsOfTypeInDirectory (CFURLRef bundleURL, CFStringRef resourceType, CFStringRef subDirName);
+// Wraps call to function 'CFBundleCopyBundleLocalizations' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyBundleLocalizations(ewg_param_bundle) CFBundleCopyBundleLocalizations ((CFBundleRef)ewg_param_bundle)
+
+CFArrayRef  ewg_function_CFBundleCopyBundleLocalizations (CFBundleRef bundle);
+// Wraps call to function 'CFBundleCopyPreferredLocalizationsFromArray' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyPreferredLocalizationsFromArray(ewg_param_locArray) CFBundleCopyPreferredLocalizationsFromArray ((CFArrayRef)ewg_param_locArray)
+
+CFArrayRef  ewg_function_CFBundleCopyPreferredLocalizationsFromArray (CFArrayRef locArray);
+// Wraps call to function 'CFBundleCopyLocalizationsForPreferences' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyLocalizationsForPreferences(ewg_param_locArray, ewg_param_prefArray) CFBundleCopyLocalizationsForPreferences ((CFArrayRef)ewg_param_locArray, (CFArrayRef)ewg_param_prefArray)
+
+CFArrayRef  ewg_function_CFBundleCopyLocalizationsForPreferences (CFArrayRef locArray, CFArrayRef prefArray);
+// Wraps call to function 'CFBundleCopyResourceURLForLocalization' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyResourceURLForLocalization(ewg_param_bundle, ewg_param_resourceName, ewg_param_resourceType, ewg_param_subDirName, ewg_param_localizationName) CFBundleCopyResourceURLForLocalization ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_resourceName, (CFStringRef)ewg_param_resourceType, (CFStringRef)ewg_param_subDirName, (CFStringRef)ewg_param_localizationName)
+
+CFURLRef  ewg_function_CFBundleCopyResourceURLForLocalization (CFBundleRef bundle, CFStringRef resourceName, CFStringRef resourceType, CFStringRef subDirName, CFStringRef localizationName);
+// Wraps call to function 'CFBundleCopyResourceURLsOfTypeForLocalization' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyResourceURLsOfTypeForLocalization(ewg_param_bundle, ewg_param_resourceType, ewg_param_subDirName, ewg_param_localizationName) CFBundleCopyResourceURLsOfTypeForLocalization ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_resourceType, (CFStringRef)ewg_param_subDirName, (CFStringRef)ewg_param_localizationName)
+
+CFArrayRef  ewg_function_CFBundleCopyResourceURLsOfTypeForLocalization (CFBundleRef bundle, CFStringRef resourceType, CFStringRef subDirName, CFStringRef localizationName);
+// Wraps call to function 'CFBundleCopyInfoDictionaryForURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyInfoDictionaryForURL(ewg_param_url) CFBundleCopyInfoDictionaryForURL ((CFURLRef)ewg_param_url)
+
+CFDictionaryRef  ewg_function_CFBundleCopyInfoDictionaryForURL (CFURLRef url);
+// Wraps call to function 'CFBundleCopyLocalizationsForURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyLocalizationsForURL(ewg_param_url) CFBundleCopyLocalizationsForURL ((CFURLRef)ewg_param_url)
+
+CFArrayRef  ewg_function_CFBundleCopyLocalizationsForURL (CFURLRef url);
+// Wraps call to function 'CFBundleCopyExecutableURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyExecutableURL(ewg_param_bundle) CFBundleCopyExecutableURL ((CFBundleRef)ewg_param_bundle)
+
+CFURLRef  ewg_function_CFBundleCopyExecutableURL (CFBundleRef bundle);
+// Wraps call to function 'CFBundleIsExecutableLoaded' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleIsExecutableLoaded(ewg_param_bundle) CFBundleIsExecutableLoaded ((CFBundleRef)ewg_param_bundle)
+
+Boolean  ewg_function_CFBundleIsExecutableLoaded (CFBundleRef bundle);
+// Wraps call to function 'CFBundleLoadExecutable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleLoadExecutable(ewg_param_bundle) CFBundleLoadExecutable ((CFBundleRef)ewg_param_bundle)
+
+Boolean  ewg_function_CFBundleLoadExecutable (CFBundleRef bundle);
+// Wraps call to function 'CFBundleUnloadExecutable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleUnloadExecutable(ewg_param_bundle) CFBundleUnloadExecutable ((CFBundleRef)ewg_param_bundle)
+
+void  ewg_function_CFBundleUnloadExecutable (CFBundleRef bundle);
+// Wraps call to function 'CFBundleGetFunctionPointerForName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetFunctionPointerForName(ewg_param_bundle, ewg_param_functionName) CFBundleGetFunctionPointerForName ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_functionName)
+
+void * ewg_function_CFBundleGetFunctionPointerForName (CFBundleRef bundle, CFStringRef functionName);
+// Wraps call to function 'CFBundleGetFunctionPointersForNames' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetFunctionPointersForNames(ewg_param_bundle, ewg_param_functionNames, ewg_param_ftbl) CFBundleGetFunctionPointersForNames ((CFBundleRef)ewg_param_bundle, (CFArrayRef)ewg_param_functionNames, ewg_param_ftbl)
+
+void  ewg_function_CFBundleGetFunctionPointersForNames (CFBundleRef bundle, CFArrayRef functionNames, void *ftbl);
+// Wraps call to function 'CFBundleGetDataPointerForName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetDataPointerForName(ewg_param_bundle, ewg_param_symbolName) CFBundleGetDataPointerForName ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_symbolName)
+
+void * ewg_function_CFBundleGetDataPointerForName (CFBundleRef bundle, CFStringRef symbolName);
+// Wraps call to function 'CFBundleGetDataPointersForNames' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetDataPointersForNames(ewg_param_bundle, ewg_param_symbolNames, ewg_param_stbl) CFBundleGetDataPointersForNames ((CFBundleRef)ewg_param_bundle, (CFArrayRef)ewg_param_symbolNames, ewg_param_stbl)
+
+void  ewg_function_CFBundleGetDataPointersForNames (CFBundleRef bundle, CFArrayRef symbolNames, void *stbl);
+// Wraps call to function 'CFBundleCopyAuxiliaryExecutableURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCopyAuxiliaryExecutableURL(ewg_param_bundle, ewg_param_executableName) CFBundleCopyAuxiliaryExecutableURL ((CFBundleRef)ewg_param_bundle, (CFStringRef)ewg_param_executableName)
+
+CFURLRef  ewg_function_CFBundleCopyAuxiliaryExecutableURL (CFBundleRef bundle, CFStringRef executableName);
+// Wraps call to function 'CFBundleGetPlugIn' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleGetPlugIn(ewg_param_bundle) CFBundleGetPlugIn ((CFBundleRef)ewg_param_bundle)
+
+CFPlugInRef  ewg_function_CFBundleGetPlugIn (CFBundleRef bundle);
+// Wraps call to function 'CFBundleOpenBundleResourceMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleOpenBundleResourceMap(ewg_param_bundle) CFBundleOpenBundleResourceMap ((CFBundleRef)ewg_param_bundle)
+
+short  ewg_function_CFBundleOpenBundleResourceMap (CFBundleRef bundle);
+// Wraps call to function 'CFBundleOpenBundleResourceFiles' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleOpenBundleResourceFiles(ewg_param_bundle, ewg_param_refNum, ewg_param_localizedRefNum) CFBundleOpenBundleResourceFiles ((CFBundleRef)ewg_param_bundle, (short*)ewg_param_refNum, (short*)ewg_param_localizedRefNum)
+
+SInt32  ewg_function_CFBundleOpenBundleResourceFiles (CFBundleRef bundle, short *refNum, short *localizedRefNum);
+// Wraps call to function 'CFBundleCloseBundleResourceMap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CFBundleCloseBundleResourceMap(ewg_param_bundle, ewg_param_refNum) CFBundleCloseBundleResourceMap ((CFBundleRef)ewg_param_bundle, (short)ewg_param_refNum)
+
+void  ewg_function_CFBundleCloseBundleResourceMap (CFBundleRef bundle, short refNum);
+// Wraps call to function 'CGDataProviderGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderGetTypeID CGDataProviderGetTypeID ()
+
+CFTypeID  ewg_function_CGDataProviderGetTypeID (void);
+// Wraps call to function 'CGDataProviderCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderCreate(ewg_param_info, ewg_param_callbacks) CGDataProviderCreate ((void*)ewg_param_info, (CGDataProviderCallbacks const*)ewg_param_callbacks)
+
+CGDataProviderRef  ewg_function_CGDataProviderCreate (void *info, CGDataProviderCallbacks const *callbacks);
+// Wraps call to function 'CGDataProviderCreateDirectAccess' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderCreateDirectAccess(ewg_param_info, ewg_param_size, ewg_param_callbacks) CGDataProviderCreateDirectAccess ((void*)ewg_param_info, (size_t)ewg_param_size, (CGDataProviderDirectAccessCallbacks const*)ewg_param_callbacks)
+
+CGDataProviderRef  ewg_function_CGDataProviderCreateDirectAccess (void *info, size_t size, CGDataProviderDirectAccessCallbacks const *callbacks);
+// Wraps call to function 'CGDataProviderCreateWithData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderCreateWithData(ewg_param_info, ewg_param_data, ewg_param_size, ewg_param_releaseData) CGDataProviderCreateWithData ((void*)ewg_param_info, (void const*)ewg_param_data, (size_t)ewg_param_size, (CGDataProviderReleaseDataCallback)ewg_param_releaseData)
+
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithData (void *info, void const *data, size_t size, CGDataProviderReleaseDataCallback releaseData);
+// Wraps call to function 'CGDataProviderCreateWithCFData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderCreateWithCFData(ewg_param_data) CGDataProviderCreateWithCFData ((CFDataRef)ewg_param_data)
+
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithCFData (CFDataRef data);
+// Wraps call to function 'CGDataProviderCreateWithURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderCreateWithURL(ewg_param_url) CGDataProviderCreateWithURL ((CFURLRef)ewg_param_url)
+
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithURL (CFURLRef url);
+// Wraps call to function 'CGDataProviderRetain' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderRetain(ewg_param_provider) CGDataProviderRetain ((CGDataProviderRef)ewg_param_provider)
+
+CGDataProviderRef  ewg_function_CGDataProviderRetain (CGDataProviderRef provider);
+// Wraps call to function 'CGDataProviderRelease' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderRelease(ewg_param_provider) CGDataProviderRelease ((CGDataProviderRef)ewg_param_provider)
+
+void  ewg_function_CGDataProviderRelease (CGDataProviderRef provider);
+// Wraps call to function 'CGDataProviderCreateWithFilename' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGDataProviderCreateWithFilename(ewg_param_filename) CGDataProviderCreateWithFilename ((char const*)ewg_param_filename)
+
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithFilename (char const *filename);
+// Wraps call to function 'CGImageGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetTypeID CGImageGetTypeID ()
+
+CFTypeID  ewg_function_CGImageGetTypeID (void);
+// Wraps call to function 'CGImageCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreate(ewg_param_width, ewg_param_height, ewg_param_bitsPerComponent, ewg_param_bitsPerPixel, ewg_param_bytesPerRow, ewg_param_colorspace, ewg_param_bitmapInfo, ewg_param_provider, ewg_param_decode, ewg_param_shouldInterpolate, ewg_param_intent) CGImageCreate ((size_t)ewg_param_width, (size_t)ewg_param_height, (size_t)ewg_param_bitsPerComponent, (size_t)ewg_param_bitsPerPixel, (size_t)ewg_param_bytesPerRow, (CGColorSpaceRef)ewg_param_colorspace, (CGBitmapInfo)ewg_param_bitmapInfo, (CGDataProviderRef)ewg_param_provider, ewg_param_decode, (_Bool)ewg_param_shouldInterpolate, (CGColorRenderingIntent)ewg_param_intent)
+
+CGImageRef  ewg_function_CGImageCreate (size_t width, size_t height, size_t bitsPerComponent, size_t bitsPerPixel, size_t bytesPerRow, CGColorSpaceRef colorspace, CGBitmapInfo bitmapInfo, CGDataProviderRef provider, void *decode, _Bool shouldInterpolate, CGColorRenderingIntent intent);
+// Wraps call to function 'CGImageMaskCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageMaskCreate(ewg_param_width, ewg_param_height, ewg_param_bitsPerComponent, ewg_param_bitsPerPixel, ewg_param_bytesPerRow, ewg_param_provider, ewg_param_decode, ewg_param_shouldInterpolate) CGImageMaskCreate ((size_t)ewg_param_width, (size_t)ewg_param_height, (size_t)ewg_param_bitsPerComponent, (size_t)ewg_param_bitsPerPixel, (size_t)ewg_param_bytesPerRow, (CGDataProviderRef)ewg_param_provider, ewg_param_decode, (_Bool)ewg_param_shouldInterpolate)
+
+CGImageRef  ewg_function_CGImageMaskCreate (size_t width, size_t height, size_t bitsPerComponent, size_t bitsPerPixel, size_t bytesPerRow, CGDataProviderRef provider, void *decode, _Bool shouldInterpolate);
+// Wraps call to function 'CGImageCreateCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreateCopy(ewg_param_image) CGImageCreateCopy ((CGImageRef)ewg_param_image)
+
+CGImageRef  ewg_function_CGImageCreateCopy (CGImageRef image);
+// Wraps call to function 'CGImageCreateWithJPEGDataProvider' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreateWithJPEGDataProvider(ewg_param_source, ewg_param_decode, ewg_param_shouldInterpolate, ewg_param_intent) CGImageCreateWithJPEGDataProvider ((CGDataProviderRef)ewg_param_source, ewg_param_decode, (_Bool)ewg_param_shouldInterpolate, (CGColorRenderingIntent)ewg_param_intent)
+
+CGImageRef  ewg_function_CGImageCreateWithJPEGDataProvider (CGDataProviderRef source, void *decode, _Bool shouldInterpolate, CGColorRenderingIntent intent);
+// Wraps call to function 'CGImageCreateWithPNGDataProvider' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreateWithPNGDataProvider(ewg_param_source, ewg_param_decode, ewg_param_shouldInterpolate, ewg_param_intent) CGImageCreateWithPNGDataProvider ((CGDataProviderRef)ewg_param_source, ewg_param_decode, (_Bool)ewg_param_shouldInterpolate, (CGColorRenderingIntent)ewg_param_intent)
+
+CGImageRef  ewg_function_CGImageCreateWithPNGDataProvider (CGDataProviderRef source, void *decode, _Bool shouldInterpolate, CGColorRenderingIntent intent);
+// Wraps call to function 'CGImageCreateWithImageInRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreateWithImageInRect(ewg_param_image, ewg_param_rect) CGImageCreateWithImageInRect ((CGImageRef)ewg_param_image, *(CGRect*)ewg_param_rect)
+
+CGImageRef  ewg_function_CGImageCreateWithImageInRect (CGImageRef image, CGRect *rect);
+// Wraps call to function 'CGImageCreateWithMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreateWithMask(ewg_param_image, ewg_param_mask) CGImageCreateWithMask ((CGImageRef)ewg_param_image, (CGImageRef)ewg_param_mask)
+
+CGImageRef  ewg_function_CGImageCreateWithMask (CGImageRef image, CGImageRef mask);
+// Wraps call to function 'CGImageCreateWithMaskingColors' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreateWithMaskingColors(ewg_param_image, ewg_param_components) CGImageCreateWithMaskingColors ((CGImageRef)ewg_param_image, ewg_param_components)
+
+CGImageRef  ewg_function_CGImageCreateWithMaskingColors (CGImageRef image, void *components);
+// Wraps call to function 'CGImageCreateCopyWithColorSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageCreateCopyWithColorSpace(ewg_param_image, ewg_param_colorspace) CGImageCreateCopyWithColorSpace ((CGImageRef)ewg_param_image, (CGColorSpaceRef)ewg_param_colorspace)
+
+CGImageRef  ewg_function_CGImageCreateCopyWithColorSpace (CGImageRef image, CGColorSpaceRef colorspace);
+// Wraps call to function 'CGImageRetain' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageRetain(ewg_param_image) CGImageRetain ((CGImageRef)ewg_param_image)
+
+CGImageRef  ewg_function_CGImageRetain (CGImageRef image);
+// Wraps call to function 'CGImageRelease' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageRelease(ewg_param_image) CGImageRelease ((CGImageRef)ewg_param_image)
+
+void  ewg_function_CGImageRelease (CGImageRef image);
+// Wraps call to function 'CGImageIsMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageIsMask(ewg_param_image) CGImageIsMask ((CGImageRef)ewg_param_image)
+
+_Bool  ewg_function_CGImageIsMask (CGImageRef image);
+// Wraps call to function 'CGImageGetWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetWidth(ewg_param_image) CGImageGetWidth ((CGImageRef)ewg_param_image)
+
+size_t  ewg_function_CGImageGetWidth (CGImageRef image);
+// Wraps call to function 'CGImageGetHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetHeight(ewg_param_image) CGImageGetHeight ((CGImageRef)ewg_param_image)
+
+size_t  ewg_function_CGImageGetHeight (CGImageRef image);
+// Wraps call to function 'CGImageGetBitsPerComponent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetBitsPerComponent(ewg_param_image) CGImageGetBitsPerComponent ((CGImageRef)ewg_param_image)
+
+size_t  ewg_function_CGImageGetBitsPerComponent (CGImageRef image);
+// Wraps call to function 'CGImageGetBitsPerPixel' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetBitsPerPixel(ewg_param_image) CGImageGetBitsPerPixel ((CGImageRef)ewg_param_image)
+
+size_t  ewg_function_CGImageGetBitsPerPixel (CGImageRef image);
+// Wraps call to function 'CGImageGetBytesPerRow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetBytesPerRow(ewg_param_image) CGImageGetBytesPerRow ((CGImageRef)ewg_param_image)
+
+size_t  ewg_function_CGImageGetBytesPerRow (CGImageRef image);
+// Wraps call to function 'CGImageGetColorSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetColorSpace(ewg_param_image) CGImageGetColorSpace ((CGImageRef)ewg_param_image)
+
+CGColorSpaceRef  ewg_function_CGImageGetColorSpace (CGImageRef image);
+// Wraps call to function 'CGImageGetAlphaInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetAlphaInfo(ewg_param_image) CGImageGetAlphaInfo ((CGImageRef)ewg_param_image)
+
+CGImageAlphaInfo  ewg_function_CGImageGetAlphaInfo (CGImageRef image);
+// Wraps call to function 'CGImageGetDataProvider' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetDataProvider(ewg_param_image) CGImageGetDataProvider ((CGImageRef)ewg_param_image)
+
+CGDataProviderRef  ewg_function_CGImageGetDataProvider (CGImageRef image);
+// Wraps call to function 'CGImageGetDecode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetDecode(ewg_param_image) CGImageGetDecode ((CGImageRef)ewg_param_image)
+
+float const * ewg_function_CGImageGetDecode (CGImageRef image);
+// Wraps call to function 'CGImageGetShouldInterpolate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetShouldInterpolate(ewg_param_image) CGImageGetShouldInterpolate ((CGImageRef)ewg_param_image)
+
+_Bool  ewg_function_CGImageGetShouldInterpolate (CGImageRef image);
+// Wraps call to function 'CGImageGetRenderingIntent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetRenderingIntent(ewg_param_image) CGImageGetRenderingIntent ((CGImageRef)ewg_param_image)
+
+CGColorRenderingIntent  ewg_function_CGImageGetRenderingIntent (CGImageRef image);
+// Wraps call to function 'CGImageGetBitmapInfo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGImageGetBitmapInfo(ewg_param_image) CGImageGetBitmapInfo ((CGImageRef)ewg_param_image)
+
+CGBitmapInfo  ewg_function_CGImageGetBitmapInfo (CGImageRef image);
 // Wraps call to function 'AEInstallEventHandler' in a macro
 #include <Carbon/Carbon.h>
 
@@ -8807,6 +9665,24 @@ Boolean  ewg_function_InvokeEditUnicodePostUpdateUPP (UniCharArrayHandle uniText
 #define ewg_function_macro_CreateEditUnicodeTextControl(ewg_param_window, ewg_param_boundsRect, ewg_param_text, ewg_param_isPassword, ewg_param_style, ewg_param_outControl) CreateEditUnicodeTextControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_text, (Boolean)ewg_param_isPassword, (ControlFontStyleRec const*)ewg_param_style, (ControlRef*)ewg_param_outControl)
 
 OSStatus  ewg_function_CreateEditUnicodeTextControl (WindowRef window, Rect const *boundsRect, CFStringRef text, Boolean isPassword, ControlFontStyleRec const *style, ControlRef *outControl);
+// Wraps call to function 'get_cgdata_provider_release_data_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cgdata_provider_release_data_callback_stub get_cgdata_provider_release_data_callback_stub ()
+
+void * ewg_function_get_cgdata_provider_release_data_callback_stub (void);
+// Wraps call to function 'set_cgdata_provider_release_data_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cgdata_provider_release_data_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_cgdata_provider_release_data_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cgdata_provider_release_data_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cgdata_provider_release_data_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cgdata_provider_release_data_callback(ewg_param_a_function, ewg_param_info, ewg_param_data, ewg_param_size) call_cgdata_provider_release_data_callback ((void*)ewg_param_a_function, (void*)ewg_param_info, (void const*)ewg_param_data, (size_t)ewg_param_size)
+
+void  ewg_function_call_cgdata_provider_release_data_callback (void *a_function, void *info, void const *data, size_t size);
 // Wraps call to function 'get_aeremote_process_resolver_callback_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 
@@ -9887,6 +10763,258 @@ void  ewg_function_set_edit_unicode_post_update_proc_ptr_entry (void *a_class, v
 #define ewg_function_macro_call_edit_unicode_post_update_proc_ptr(ewg_param_a_function, ewg_param_uniText, ewg_param_uniTextLength, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_refcon) call_edit_unicode_post_update_proc_ptr ((void*)ewg_param_a_function, (UniCharArrayHandle)ewg_param_uniText, (UniCharCount)ewg_param_uniTextLength, (UniCharArrayOffset)ewg_param_iStartOffset, (UniCharArrayOffset)ewg_param_iEndOffset, (void*)ewg_param_refcon)
 
 Boolean  ewg_function_call_edit_unicode_post_update_proc_ptr (void *a_function, UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon);
+// Wraps call to function 'get_cfcomparator_function_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfcomparator_function_stub get_cfcomparator_function_stub ()
+
+void * ewg_function_get_cfcomparator_function_stub (void);
+// Wraps call to function 'set_cfcomparator_function_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfcomparator_function_entry(ewg_param_a_class, ewg_param_a_feature) set_cfcomparator_function_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfcomparator_function_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfcomparator_function' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfcomparator_function(ewg_param_a_function, ewg_param_val1, ewg_param_val2, ewg_param_context) call_cfcomparator_function ((void*)ewg_param_a_function, (void const*)ewg_param_val1, (void const*)ewg_param_val2, (void*)ewg_param_context)
+
+CFComparisonResult  ewg_function_call_cfcomparator_function (void *a_function, void const *val1, void const *val2, void *context);
+// Wraps call to function 'get_cfallocator_retain_call_back_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfallocator_retain_call_back_stub get_cfallocator_retain_call_back_stub ()
+
+void * ewg_function_get_cfallocator_retain_call_back_stub (void);
+// Wraps call to function 'set_cfallocator_retain_call_back_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfallocator_retain_call_back_entry(ewg_param_a_class, ewg_param_a_feature) set_cfallocator_retain_call_back_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfallocator_retain_call_back_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfallocator_retain_call_back' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfallocator_retain_call_back(ewg_param_a_function, ewg_param_info) call_cfallocator_retain_call_back ((void*)ewg_param_a_function, (void const*)ewg_param_info)
+
+void const * ewg_function_call_cfallocator_retain_call_back (void *a_function, void const *info);
+// Wraps call to function 'get_cfallocator_release_call_back_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfallocator_release_call_back_stub get_cfallocator_release_call_back_stub ()
+
+void * ewg_function_get_cfallocator_release_call_back_stub (void);
+// Wraps call to function 'set_cfallocator_release_call_back_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfallocator_release_call_back_entry(ewg_param_a_class, ewg_param_a_feature) set_cfallocator_release_call_back_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfallocator_release_call_back_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfallocator_release_call_back' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfallocator_release_call_back(ewg_param_a_function, ewg_param_info) call_cfallocator_release_call_back ((void*)ewg_param_a_function, (void const*)ewg_param_info)
+
+void  ewg_function_call_cfallocator_release_call_back (void *a_function, void const *info);
+// Wraps call to function 'get_cfallocator_copy_description_call_back_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfallocator_copy_description_call_back_stub get_cfallocator_copy_description_call_back_stub ()
+
+void * ewg_function_get_cfallocator_copy_description_call_back_stub (void);
+// Wraps call to function 'set_cfallocator_copy_description_call_back_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfallocator_copy_description_call_back_entry(ewg_param_a_class, ewg_param_a_feature) set_cfallocator_copy_description_call_back_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfallocator_copy_description_call_back_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfallocator_copy_description_call_back' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfallocator_copy_description_call_back(ewg_param_a_function, ewg_param_info) call_cfallocator_copy_description_call_back ((void*)ewg_param_a_function, (void const*)ewg_param_info)
+
+CFStringRef  ewg_function_call_cfallocator_copy_description_call_back (void *a_function, void const *info);
+// Wraps call to function 'get_cfallocator_allocate_call_back_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfallocator_allocate_call_back_stub get_cfallocator_allocate_call_back_stub ()
+
+void * ewg_function_get_cfallocator_allocate_call_back_stub (void);
+// Wraps call to function 'set_cfallocator_allocate_call_back_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfallocator_allocate_call_back_entry(ewg_param_a_class, ewg_param_a_feature) set_cfallocator_allocate_call_back_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfallocator_allocate_call_back_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfallocator_allocate_call_back' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfallocator_allocate_call_back(ewg_param_a_function, ewg_param_allocSize, ewg_param_hint, ewg_param_info) call_cfallocator_allocate_call_back ((void*)ewg_param_a_function, (CFIndex)ewg_param_allocSize, (CFOptionFlags)ewg_param_hint, (void*)ewg_param_info)
+
+void * ewg_function_call_cfallocator_allocate_call_back (void *a_function, CFIndex allocSize, CFOptionFlags hint, void *info);
+// Wraps call to function 'get_cfallocator_reallocate_call_back_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfallocator_reallocate_call_back_stub get_cfallocator_reallocate_call_back_stub ()
+
+void * ewg_function_get_cfallocator_reallocate_call_back_stub (void);
+// Wraps call to function 'set_cfallocator_reallocate_call_back_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfallocator_reallocate_call_back_entry(ewg_param_a_class, ewg_param_a_feature) set_cfallocator_reallocate_call_back_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfallocator_reallocate_call_back_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfallocator_reallocate_call_back' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfallocator_reallocate_call_back(ewg_param_a_function, ewg_param_ptr, ewg_param_newsize, ewg_param_hint, ewg_param_info) call_cfallocator_reallocate_call_back ((void*)ewg_param_a_function, (void*)ewg_param_ptr, (CFIndex)ewg_param_newsize, (CFOptionFlags)ewg_param_hint, (void*)ewg_param_info)
+
+void * ewg_function_call_cfallocator_reallocate_call_back (void *a_function, void *ptr, CFIndex newsize, CFOptionFlags hint, void *info);
+// Wraps call to function 'get_cfallocator_deallocate_call_back_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfallocator_deallocate_call_back_stub get_cfallocator_deallocate_call_back_stub ()
+
+void * ewg_function_get_cfallocator_deallocate_call_back_stub (void);
+// Wraps call to function 'set_cfallocator_deallocate_call_back_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfallocator_deallocate_call_back_entry(ewg_param_a_class, ewg_param_a_feature) set_cfallocator_deallocate_call_back_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfallocator_deallocate_call_back_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfallocator_deallocate_call_back' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfallocator_deallocate_call_back(ewg_param_a_function, ewg_param_ptr, ewg_param_info) call_cfallocator_deallocate_call_back ((void*)ewg_param_a_function, (void*)ewg_param_ptr, (void*)ewg_param_info)
+
+void  ewg_function_call_cfallocator_deallocate_call_back (void *a_function, void *ptr, void *info);
+// Wraps call to function 'get_cfallocator_preferred_size_call_back_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cfallocator_preferred_size_call_back_stub get_cfallocator_preferred_size_call_back_stub ()
+
+void * ewg_function_get_cfallocator_preferred_size_call_back_stub (void);
+// Wraps call to function 'set_cfallocator_preferred_size_call_back_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cfallocator_preferred_size_call_back_entry(ewg_param_a_class, ewg_param_a_feature) set_cfallocator_preferred_size_call_back_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cfallocator_preferred_size_call_back_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cfallocator_preferred_size_call_back' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cfallocator_preferred_size_call_back(ewg_param_a_function, ewg_param_size, ewg_param_hint, ewg_param_info) call_cfallocator_preferred_size_call_back ((void*)ewg_param_a_function, (CFIndex)ewg_param_size, (CFOptionFlags)ewg_param_hint, (void*)ewg_param_info)
+
+CFIndex  ewg_function_call_cfallocator_preferred_size_call_back (void *a_function, CFIndex size, CFOptionFlags hint, void *info);
+// Wraps call to function 'get_cgdata_provider_get_bytes_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cgdata_provider_get_bytes_callback_stub get_cgdata_provider_get_bytes_callback_stub ()
+
+void * ewg_function_get_cgdata_provider_get_bytes_callback_stub (void);
+// Wraps call to function 'set_cgdata_provider_get_bytes_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cgdata_provider_get_bytes_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_cgdata_provider_get_bytes_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cgdata_provider_get_bytes_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cgdata_provider_get_bytes_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cgdata_provider_get_bytes_callback(ewg_param_a_function, ewg_param_info, ewg_param_buffer, ewg_param_count) call_cgdata_provider_get_bytes_callback ((void*)ewg_param_a_function, (void*)ewg_param_info, (void*)ewg_param_buffer, (size_t)ewg_param_count)
+
+size_t  ewg_function_call_cgdata_provider_get_bytes_callback (void *a_function, void *info, void *buffer, size_t count);
+// Wraps call to function 'get_cgdata_provider_skip_bytes_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cgdata_provider_skip_bytes_callback_stub get_cgdata_provider_skip_bytes_callback_stub ()
+
+void * ewg_function_get_cgdata_provider_skip_bytes_callback_stub (void);
+// Wraps call to function 'set_cgdata_provider_skip_bytes_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cgdata_provider_skip_bytes_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_cgdata_provider_skip_bytes_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cgdata_provider_skip_bytes_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cgdata_provider_skip_bytes_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cgdata_provider_skip_bytes_callback(ewg_param_a_function, ewg_param_info, ewg_param_count) call_cgdata_provider_skip_bytes_callback ((void*)ewg_param_a_function, (void*)ewg_param_info, (size_t)ewg_param_count)
+
+void  ewg_function_call_cgdata_provider_skip_bytes_callback (void *a_function, void *info, size_t count);
+// Wraps call to function 'get_wsclient_context_release_call_back_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_wsclient_context_release_call_back_proc_ptr_stub get_wsclient_context_release_call_back_proc_ptr_stub ()
+
+void * ewg_function_get_wsclient_context_release_call_back_proc_ptr_stub (void);
+// Wraps call to function 'set_wsclient_context_release_call_back_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_wsclient_context_release_call_back_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_wsclient_context_release_call_back_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_wsclient_context_release_call_back_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_wsclient_context_release_call_back_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_wsclient_context_release_call_back_proc_ptr(ewg_param_a_function, ewg_param_info) call_wsclient_context_release_call_back_proc_ptr ((void*)ewg_param_a_function, (void*)ewg_param_info)
+
+void  ewg_function_call_wsclient_context_release_call_back_proc_ptr (void *a_function, void *info);
+// Wraps call to function 'get_cgdata_provider_get_byte_pointer_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cgdata_provider_get_byte_pointer_callback_stub get_cgdata_provider_get_byte_pointer_callback_stub ()
+
+void * ewg_function_get_cgdata_provider_get_byte_pointer_callback_stub (void);
+// Wraps call to function 'set_cgdata_provider_get_byte_pointer_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cgdata_provider_get_byte_pointer_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_cgdata_provider_get_byte_pointer_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cgdata_provider_get_byte_pointer_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cgdata_provider_get_byte_pointer_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cgdata_provider_get_byte_pointer_callback(ewg_param_a_function, ewg_param_info) call_cgdata_provider_get_byte_pointer_callback ((void*)ewg_param_a_function, (void*)ewg_param_info)
+
+void const * ewg_function_call_cgdata_provider_get_byte_pointer_callback (void *a_function, void *info);
+// Wraps call to function 'get_cgdata_provider_release_byte_pointer_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cgdata_provider_release_byte_pointer_callback_stub get_cgdata_provider_release_byte_pointer_callback_stub ()
+
+void * ewg_function_get_cgdata_provider_release_byte_pointer_callback_stub (void);
+// Wraps call to function 'set_cgdata_provider_release_byte_pointer_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cgdata_provider_release_byte_pointer_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_cgdata_provider_release_byte_pointer_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cgdata_provider_release_byte_pointer_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cgdata_provider_release_byte_pointer_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cgdata_provider_release_byte_pointer_callback(ewg_param_a_function, ewg_param_info, ewg_param_pointer) call_cgdata_provider_release_byte_pointer_callback ((void*)ewg_param_a_function, (void*)ewg_param_info, (void const*)ewg_param_pointer)
+
+void  ewg_function_call_cgdata_provider_release_byte_pointer_callback (void *a_function, void *info, void const *pointer);
+// Wraps call to function 'get_cgdata_provider_get_bytes_at_offset_callback_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cgdata_provider_get_bytes_at_offset_callback_stub get_cgdata_provider_get_bytes_at_offset_callback_stub ()
+
+void * ewg_function_get_cgdata_provider_get_bytes_at_offset_callback_stub (void);
+// Wraps call to function 'set_cgdata_provider_get_bytes_at_offset_callback_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cgdata_provider_get_bytes_at_offset_callback_entry(ewg_param_a_class, ewg_param_a_feature) set_cgdata_provider_get_bytes_at_offset_callback_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cgdata_provider_get_bytes_at_offset_callback_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cgdata_provider_get_bytes_at_offset_callback' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cgdata_provider_get_bytes_at_offset_callback(ewg_param_a_function, ewg_param_info, ewg_param_buffer, ewg_param_offset, ewg_param_count) call_cgdata_provider_get_bytes_at_offset_callback ((void*)ewg_param_a_function, (void*)ewg_param_info, (void*)ewg_param_buffer, (size_t)ewg_param_offset, (size_t)ewg_param_count)
+
+size_t  ewg_function_call_cgdata_provider_get_bytes_at_offset_callback (void *a_function, void *info, void *buffer, size_t offset, size_t count);
 // Wraps call to function 'get_qdprinter_status_proc_ptr_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 

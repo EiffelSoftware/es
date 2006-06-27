@@ -1,5 +1,322 @@
 #include <Carbon/Carbon.h>
 
+// Wraps call to function '__CFRangeMake'
+// For ise
+CFRange * ewg_function___CFRangeMake (CFIndex ewg_loc, CFIndex ewg_len)
+{
+	CFRange *result = (CFRange*) malloc (sizeof(CFRange));
+	*result = __CFRangeMake ((CFIndex)ewg_loc, (CFIndex)ewg_len);
+	return result;
+}
+
+// Return address of function '__CFRangeMake'
+void* ewg_get_function_address___CFRangeMake (void)
+{
+	return (void*) __CFRangeMake;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFNullGetTypeID'
+// For ise
+CFTypeID  ewg_function_CFNullGetTypeID (void)
+{
+	return CFNullGetTypeID ();
+}
+
+// Return address of function 'CFNullGetTypeID'
+void* ewg_get_function_address_CFNullGetTypeID (void)
+{
+	return (void*) CFNullGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorGetTypeID'
+// For ise
+CFTypeID  ewg_function_CFAllocatorGetTypeID (void)
+{
+	return CFAllocatorGetTypeID ();
+}
+
+// Return address of function 'CFAllocatorGetTypeID'
+void* ewg_get_function_address_CFAllocatorGetTypeID (void)
+{
+	return (void*) CFAllocatorGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorSetDefault'
+// For ise
+void  ewg_function_CFAllocatorSetDefault (CFAllocatorRef ewg_allocator)
+{
+	CFAllocatorSetDefault ((CFAllocatorRef)ewg_allocator);
+}
+
+// Return address of function 'CFAllocatorSetDefault'
+void* ewg_get_function_address_CFAllocatorSetDefault (void)
+{
+	return (void*) CFAllocatorSetDefault;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorGetDefault'
+// For ise
+CFAllocatorRef  ewg_function_CFAllocatorGetDefault (void)
+{
+	return CFAllocatorGetDefault ();
+}
+
+// Return address of function 'CFAllocatorGetDefault'
+void* ewg_get_function_address_CFAllocatorGetDefault (void)
+{
+	return (void*) CFAllocatorGetDefault;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorCreate'
+// For ise
+CFAllocatorRef  ewg_function_CFAllocatorCreate (CFAllocatorRef ewg_allocator, CFAllocatorContext *ewg_context)
+{
+	return CFAllocatorCreate ((CFAllocatorRef)ewg_allocator, (CFAllocatorContext*)ewg_context);
+}
+
+// Return address of function 'CFAllocatorCreate'
+void* ewg_get_function_address_CFAllocatorCreate (void)
+{
+	return (void*) CFAllocatorCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorAllocate'
+// For ise
+void * ewg_function_CFAllocatorAllocate (CFAllocatorRef ewg_allocator, CFIndex ewg_size, CFOptionFlags ewg_hint)
+{
+	return CFAllocatorAllocate ((CFAllocatorRef)ewg_allocator, (CFIndex)ewg_size, (CFOptionFlags)ewg_hint);
+}
+
+// Return address of function 'CFAllocatorAllocate'
+void* ewg_get_function_address_CFAllocatorAllocate (void)
+{
+	return (void*) CFAllocatorAllocate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorReallocate'
+// For ise
+void * ewg_function_CFAllocatorReallocate (CFAllocatorRef ewg_allocator, void *ewg_ptr, CFIndex ewg_newsize, CFOptionFlags ewg_hint)
+{
+	return CFAllocatorReallocate ((CFAllocatorRef)ewg_allocator, (void*)ewg_ptr, (CFIndex)ewg_newsize, (CFOptionFlags)ewg_hint);
+}
+
+// Return address of function 'CFAllocatorReallocate'
+void* ewg_get_function_address_CFAllocatorReallocate (void)
+{
+	return (void*) CFAllocatorReallocate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorDeallocate'
+// For ise
+void  ewg_function_CFAllocatorDeallocate (CFAllocatorRef ewg_allocator, void *ewg_ptr)
+{
+	CFAllocatorDeallocate ((CFAllocatorRef)ewg_allocator, (void*)ewg_ptr);
+}
+
+// Return address of function 'CFAllocatorDeallocate'
+void* ewg_get_function_address_CFAllocatorDeallocate (void)
+{
+	return (void*) CFAllocatorDeallocate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorGetPreferredSizeForSize'
+// For ise
+CFIndex  ewg_function_CFAllocatorGetPreferredSizeForSize (CFAllocatorRef ewg_allocator, CFIndex ewg_size, CFOptionFlags ewg_hint)
+{
+	return CFAllocatorGetPreferredSizeForSize ((CFAllocatorRef)ewg_allocator, (CFIndex)ewg_size, (CFOptionFlags)ewg_hint);
+}
+
+// Return address of function 'CFAllocatorGetPreferredSizeForSize'
+void* ewg_get_function_address_CFAllocatorGetPreferredSizeForSize (void)
+{
+	return (void*) CFAllocatorGetPreferredSizeForSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFAllocatorGetContext'
+// For ise
+void  ewg_function_CFAllocatorGetContext (CFAllocatorRef ewg_allocator, CFAllocatorContext *ewg_context)
+{
+	CFAllocatorGetContext ((CFAllocatorRef)ewg_allocator, (CFAllocatorContext*)ewg_context);
+}
+
+// Return address of function 'CFAllocatorGetContext'
+void* ewg_get_function_address_CFAllocatorGetContext (void)
+{
+	return (void*) CFAllocatorGetContext;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFGetTypeID'
+// For ise
+CFTypeID  ewg_function_CFGetTypeID (CFTypeRef ewg_cf)
+{
+	return CFGetTypeID ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFGetTypeID'
+void* ewg_get_function_address_CFGetTypeID (void)
+{
+	return (void*) CFGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFCopyTypeIDDescription'
+// For ise
+CFStringRef  ewg_function_CFCopyTypeIDDescription (CFTypeID ewg_type_id)
+{
+	return CFCopyTypeIDDescription ((CFTypeID)ewg_type_id);
+}
+
+// Return address of function 'CFCopyTypeIDDescription'
+void* ewg_get_function_address_CFCopyTypeIDDescription (void)
+{
+	return (void*) CFCopyTypeIDDescription;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFRetain'
+// For ise
+CFTypeRef  ewg_function_CFRetain (CFTypeRef ewg_cf)
+{
+	return CFRetain ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFRetain'
+void* ewg_get_function_address_CFRetain (void)
+{
+	return (void*) CFRetain;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFRelease'
+// For ise
+void  ewg_function_CFRelease (CFTypeRef ewg_cf)
+{
+	CFRelease ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFRelease'
+void* ewg_get_function_address_CFRelease (void)
+{
+	return (void*) CFRelease;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFGetRetainCount'
+// For ise
+CFIndex  ewg_function_CFGetRetainCount (CFTypeRef ewg_cf)
+{
+	return CFGetRetainCount ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFGetRetainCount'
+void* ewg_get_function_address_CFGetRetainCount (void)
+{
+	return (void*) CFGetRetainCount;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFMakeCollectable'
+// For ise
+CFTypeRef  ewg_function_CFMakeCollectable (CFTypeRef ewg_cf)
+{
+	return CFMakeCollectable ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFMakeCollectable'
+void* ewg_get_function_address_CFMakeCollectable (void)
+{
+	return (void*) CFMakeCollectable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFEqual'
+// For ise
+Boolean  ewg_function_CFEqual (CFTypeRef ewg_cf1, CFTypeRef ewg_cf2)
+{
+	return CFEqual ((CFTypeRef)ewg_cf1, (CFTypeRef)ewg_cf2);
+}
+
+// Return address of function 'CFEqual'
+void* ewg_get_function_address_CFEqual (void)
+{
+	return (void*) CFEqual;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFHash'
+// For ise
+CFHashCode  ewg_function_CFHash (CFTypeRef ewg_cf)
+{
+	return CFHash ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFHash'
+void* ewg_get_function_address_CFHash (void)
+{
+	return (void*) CFHash;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFCopyDescription'
+// For ise
+CFStringRef  ewg_function_CFCopyDescription (CFTypeRef ewg_cf)
+{
+	return CFCopyDescription ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFCopyDescription'
+void* ewg_get_function_address_CFCopyDescription (void)
+{
+	return (void*) CFCopyDescription;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFGetAllocator'
+// For ise
+CFAllocatorRef  ewg_function_CFGetAllocator (CFTypeRef ewg_cf)
+{
+	return CFGetAllocator ((CFTypeRef)ewg_cf);
+}
+
+// Return address of function 'CFGetAllocator'
+void* ewg_get_function_address_CFGetAllocator (void)
+{
+	return (void*) CFGetAllocator;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'CFStringGetTypeID'
 // For ise
 CFTypeID  ewg_function_CFStringGetTypeID (void)
@@ -1170,6 +1487,1838 @@ CFStringRef  ewg_function___CFStringMakeConstantString (char const *ewg_cStr)
 void* ewg_get_function_address___CFStringMakeConstantString (void)
 {
 	return (void*) __CFStringMakeConstantString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetTypeID'
+// For ise
+CFTypeID  ewg_function_CFURLGetTypeID (void)
+{
+	return CFURLGetTypeID ();
+}
+
+// Return address of function 'CFURLGetTypeID'
+void* ewg_get_function_address_CFURLGetTypeID (void)
+{
+	return (void*) CFURLGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateWithBytes'
+// For ise
+CFURLRef  ewg_function_CFURLCreateWithBytes (CFAllocatorRef ewg_allocator, UInt8 const *ewg_URLBytes, CFIndex ewg_length, CFStringEncoding ewg_encoding, CFURLRef ewg_baseURL)
+{
+	return CFURLCreateWithBytes ((CFAllocatorRef)ewg_allocator, (UInt8 const*)ewg_URLBytes, (CFIndex)ewg_length, (CFStringEncoding)ewg_encoding, (CFURLRef)ewg_baseURL);
+}
+
+// Return address of function 'CFURLCreateWithBytes'
+void* ewg_get_function_address_CFURLCreateWithBytes (void)
+{
+	return (void*) CFURLCreateWithBytes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateData'
+// For ise
+CFDataRef  ewg_function_CFURLCreateData (CFAllocatorRef ewg_allocator, CFURLRef ewg_url, CFStringEncoding ewg_encoding, Boolean ewg_escapeWhitespace)
+{
+	return CFURLCreateData ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_url, (CFStringEncoding)ewg_encoding, (Boolean)ewg_escapeWhitespace);
+}
+
+// Return address of function 'CFURLCreateData'
+void* ewg_get_function_address_CFURLCreateData (void)
+{
+	return (void*) CFURLCreateData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateWithString'
+// For ise
+CFURLRef  ewg_function_CFURLCreateWithString (CFAllocatorRef ewg_allocator, CFStringRef ewg_URLString, CFURLRef ewg_baseURL)
+{
+	return CFURLCreateWithString ((CFAllocatorRef)ewg_allocator, (CFStringRef)ewg_URLString, (CFURLRef)ewg_baseURL);
+}
+
+// Return address of function 'CFURLCreateWithString'
+void* ewg_get_function_address_CFURLCreateWithString (void)
+{
+	return (void*) CFURLCreateWithString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateAbsoluteURLWithBytes'
+// For ise
+CFURLRef  ewg_function_CFURLCreateAbsoluteURLWithBytes (CFAllocatorRef ewg_alloc, UInt8 const *ewg_relativeURLBytes, CFIndex ewg_length, CFStringEncoding ewg_encoding, CFURLRef ewg_baseURL, Boolean ewg_useCompatibilityMode)
+{
+	return CFURLCreateAbsoluteURLWithBytes ((CFAllocatorRef)ewg_alloc, (UInt8 const*)ewg_relativeURLBytes, (CFIndex)ewg_length, (CFStringEncoding)ewg_encoding, (CFURLRef)ewg_baseURL, (Boolean)ewg_useCompatibilityMode);
+}
+
+// Return address of function 'CFURLCreateAbsoluteURLWithBytes'
+void* ewg_get_function_address_CFURLCreateAbsoluteURLWithBytes (void)
+{
+	return (void*) CFURLCreateAbsoluteURLWithBytes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateWithFileSystemPath'
+// For ise
+CFURLRef  ewg_function_CFURLCreateWithFileSystemPath (CFAllocatorRef ewg_allocator, CFStringRef ewg_filePath, CFURLPathStyle ewg_pathStyle, Boolean ewg_isDirectory)
+{
+	return CFURLCreateWithFileSystemPath ((CFAllocatorRef)ewg_allocator, (CFStringRef)ewg_filePath, (CFURLPathStyle)ewg_pathStyle, (Boolean)ewg_isDirectory);
+}
+
+// Return address of function 'CFURLCreateWithFileSystemPath'
+void* ewg_get_function_address_CFURLCreateWithFileSystemPath (void)
+{
+	return (void*) CFURLCreateWithFileSystemPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateFromFileSystemRepresentation'
+// For ise
+CFURLRef  ewg_function_CFURLCreateFromFileSystemRepresentation (CFAllocatorRef ewg_allocator, UInt8 const *ewg_buffer, CFIndex ewg_bufLen, Boolean ewg_isDirectory)
+{
+	return CFURLCreateFromFileSystemRepresentation ((CFAllocatorRef)ewg_allocator, (UInt8 const*)ewg_buffer, (CFIndex)ewg_bufLen, (Boolean)ewg_isDirectory);
+}
+
+// Return address of function 'CFURLCreateFromFileSystemRepresentation'
+void* ewg_get_function_address_CFURLCreateFromFileSystemRepresentation (void)
+{
+	return (void*) CFURLCreateFromFileSystemRepresentation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateWithFileSystemPathRelativeToBase'
+// For ise
+CFURLRef  ewg_function_CFURLCreateWithFileSystemPathRelativeToBase (CFAllocatorRef ewg_allocator, CFStringRef ewg_filePath, CFURLPathStyle ewg_pathStyle, Boolean ewg_isDirectory, CFURLRef ewg_baseURL)
+{
+	return CFURLCreateWithFileSystemPathRelativeToBase ((CFAllocatorRef)ewg_allocator, (CFStringRef)ewg_filePath, (CFURLPathStyle)ewg_pathStyle, (Boolean)ewg_isDirectory, (CFURLRef)ewg_baseURL);
+}
+
+// Return address of function 'CFURLCreateWithFileSystemPathRelativeToBase'
+void* ewg_get_function_address_CFURLCreateWithFileSystemPathRelativeToBase (void)
+{
+	return (void*) CFURLCreateWithFileSystemPathRelativeToBase;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateFromFileSystemRepresentationRelativeToBase'
+// For ise
+CFURLRef  ewg_function_CFURLCreateFromFileSystemRepresentationRelativeToBase (CFAllocatorRef ewg_allocator, UInt8 const *ewg_buffer, CFIndex ewg_bufLen, Boolean ewg_isDirectory, CFURLRef ewg_baseURL)
+{
+	return CFURLCreateFromFileSystemRepresentationRelativeToBase ((CFAllocatorRef)ewg_allocator, (UInt8 const*)ewg_buffer, (CFIndex)ewg_bufLen, (Boolean)ewg_isDirectory, (CFURLRef)ewg_baseURL);
+}
+
+// Return address of function 'CFURLCreateFromFileSystemRepresentationRelativeToBase'
+void* ewg_get_function_address_CFURLCreateFromFileSystemRepresentationRelativeToBase (void)
+{
+	return (void*) CFURLCreateFromFileSystemRepresentationRelativeToBase;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetFileSystemRepresentation'
+// For ise
+Boolean  ewg_function_CFURLGetFileSystemRepresentation (CFURLRef ewg_url, Boolean ewg_resolveAgainstBase, UInt8 *ewg_buffer, CFIndex ewg_maxBufLen)
+{
+	return CFURLGetFileSystemRepresentation ((CFURLRef)ewg_url, (Boolean)ewg_resolveAgainstBase, (UInt8*)ewg_buffer, (CFIndex)ewg_maxBufLen);
+}
+
+// Return address of function 'CFURLGetFileSystemRepresentation'
+void* ewg_get_function_address_CFURLGetFileSystemRepresentation (void)
+{
+	return (void*) CFURLGetFileSystemRepresentation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyAbsoluteURL'
+// For ise
+CFURLRef  ewg_function_CFURLCopyAbsoluteURL (CFURLRef ewg_relativeURL)
+{
+	return CFURLCopyAbsoluteURL ((CFURLRef)ewg_relativeURL);
+}
+
+// Return address of function 'CFURLCopyAbsoluteURL'
+void* ewg_get_function_address_CFURLCopyAbsoluteURL (void)
+{
+	return (void*) CFURLCopyAbsoluteURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetString'
+// For ise
+CFStringRef  ewg_function_CFURLGetString (CFURLRef ewg_anURL)
+{
+	return CFURLGetString ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLGetString'
+void* ewg_get_function_address_CFURLGetString (void)
+{
+	return (void*) CFURLGetString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetBaseURL'
+// For ise
+CFURLRef  ewg_function_CFURLGetBaseURL (CFURLRef ewg_anURL)
+{
+	return CFURLGetBaseURL ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLGetBaseURL'
+void* ewg_get_function_address_CFURLGetBaseURL (void)
+{
+	return (void*) CFURLGetBaseURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCanBeDecomposed'
+// For ise
+Boolean  ewg_function_CFURLCanBeDecomposed (CFURLRef ewg_anURL)
+{
+	return CFURLCanBeDecomposed ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCanBeDecomposed'
+void* ewg_get_function_address_CFURLCanBeDecomposed (void)
+{
+	return (void*) CFURLCanBeDecomposed;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyScheme'
+// For ise
+CFStringRef  ewg_function_CFURLCopyScheme (CFURLRef ewg_anURL)
+{
+	return CFURLCopyScheme ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCopyScheme'
+void* ewg_get_function_address_CFURLCopyScheme (void)
+{
+	return (void*) CFURLCopyScheme;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyNetLocation'
+// For ise
+CFStringRef  ewg_function_CFURLCopyNetLocation (CFURLRef ewg_anURL)
+{
+	return CFURLCopyNetLocation ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCopyNetLocation'
+void* ewg_get_function_address_CFURLCopyNetLocation (void)
+{
+	return (void*) CFURLCopyNetLocation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyPath'
+// For ise
+CFStringRef  ewg_function_CFURLCopyPath (CFURLRef ewg_anURL)
+{
+	return CFURLCopyPath ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCopyPath'
+void* ewg_get_function_address_CFURLCopyPath (void)
+{
+	return (void*) CFURLCopyPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyStrictPath'
+// For ise
+CFStringRef  ewg_function_CFURLCopyStrictPath (CFURLRef ewg_anURL, Boolean *ewg_isAbsolute)
+{
+	return CFURLCopyStrictPath ((CFURLRef)ewg_anURL, (Boolean*)ewg_isAbsolute);
+}
+
+// Return address of function 'CFURLCopyStrictPath'
+void* ewg_get_function_address_CFURLCopyStrictPath (void)
+{
+	return (void*) CFURLCopyStrictPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyFileSystemPath'
+// For ise
+CFStringRef  ewg_function_CFURLCopyFileSystemPath (CFURLRef ewg_anURL, CFURLPathStyle ewg_pathStyle)
+{
+	return CFURLCopyFileSystemPath ((CFURLRef)ewg_anURL, (CFURLPathStyle)ewg_pathStyle);
+}
+
+// Return address of function 'CFURLCopyFileSystemPath'
+void* ewg_get_function_address_CFURLCopyFileSystemPath (void)
+{
+	return (void*) CFURLCopyFileSystemPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLHasDirectoryPath'
+// For ise
+Boolean  ewg_function_CFURLHasDirectoryPath (CFURLRef ewg_anURL)
+{
+	return CFURLHasDirectoryPath ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLHasDirectoryPath'
+void* ewg_get_function_address_CFURLHasDirectoryPath (void)
+{
+	return (void*) CFURLHasDirectoryPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyResourceSpecifier'
+// For ise
+CFStringRef  ewg_function_CFURLCopyResourceSpecifier (CFURLRef ewg_anURL)
+{
+	return CFURLCopyResourceSpecifier ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCopyResourceSpecifier'
+void* ewg_get_function_address_CFURLCopyResourceSpecifier (void)
+{
+	return (void*) CFURLCopyResourceSpecifier;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyHostName'
+// For ise
+CFStringRef  ewg_function_CFURLCopyHostName (CFURLRef ewg_anURL)
+{
+	return CFURLCopyHostName ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCopyHostName'
+void* ewg_get_function_address_CFURLCopyHostName (void)
+{
+	return (void*) CFURLCopyHostName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetPortNumber'
+// For ise
+SInt32  ewg_function_CFURLGetPortNumber (CFURLRef ewg_anURL)
+{
+	return CFURLGetPortNumber ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLGetPortNumber'
+void* ewg_get_function_address_CFURLGetPortNumber (void)
+{
+	return (void*) CFURLGetPortNumber;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyUserName'
+// For ise
+CFStringRef  ewg_function_CFURLCopyUserName (CFURLRef ewg_anURL)
+{
+	return CFURLCopyUserName ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCopyUserName'
+void* ewg_get_function_address_CFURLCopyUserName (void)
+{
+	return (void*) CFURLCopyUserName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyPassword'
+// For ise
+CFStringRef  ewg_function_CFURLCopyPassword (CFURLRef ewg_anURL)
+{
+	return CFURLCopyPassword ((CFURLRef)ewg_anURL);
+}
+
+// Return address of function 'CFURLCopyPassword'
+void* ewg_get_function_address_CFURLCopyPassword (void)
+{
+	return (void*) CFURLCopyPassword;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyParameterString'
+// For ise
+CFStringRef  ewg_function_CFURLCopyParameterString (CFURLRef ewg_anURL, CFStringRef ewg_charactersToLeaveEscaped)
+{
+	return CFURLCopyParameterString ((CFURLRef)ewg_anURL, (CFStringRef)ewg_charactersToLeaveEscaped);
+}
+
+// Return address of function 'CFURLCopyParameterString'
+void* ewg_get_function_address_CFURLCopyParameterString (void)
+{
+	return (void*) CFURLCopyParameterString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyQueryString'
+// For ise
+CFStringRef  ewg_function_CFURLCopyQueryString (CFURLRef ewg_anURL, CFStringRef ewg_charactersToLeaveEscaped)
+{
+	return CFURLCopyQueryString ((CFURLRef)ewg_anURL, (CFStringRef)ewg_charactersToLeaveEscaped);
+}
+
+// Return address of function 'CFURLCopyQueryString'
+void* ewg_get_function_address_CFURLCopyQueryString (void)
+{
+	return (void*) CFURLCopyQueryString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyFragment'
+// For ise
+CFStringRef  ewg_function_CFURLCopyFragment (CFURLRef ewg_anURL, CFStringRef ewg_charactersToLeaveEscaped)
+{
+	return CFURLCopyFragment ((CFURLRef)ewg_anURL, (CFStringRef)ewg_charactersToLeaveEscaped);
+}
+
+// Return address of function 'CFURLCopyFragment'
+void* ewg_get_function_address_CFURLCopyFragment (void)
+{
+	return (void*) CFURLCopyFragment;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyLastPathComponent'
+// For ise
+CFStringRef  ewg_function_CFURLCopyLastPathComponent (CFURLRef ewg_url)
+{
+	return CFURLCopyLastPathComponent ((CFURLRef)ewg_url);
+}
+
+// Return address of function 'CFURLCopyLastPathComponent'
+void* ewg_get_function_address_CFURLCopyLastPathComponent (void)
+{
+	return (void*) CFURLCopyLastPathComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCopyPathExtension'
+// For ise
+CFStringRef  ewg_function_CFURLCopyPathExtension (CFURLRef ewg_url)
+{
+	return CFURLCopyPathExtension ((CFURLRef)ewg_url);
+}
+
+// Return address of function 'CFURLCopyPathExtension'
+void* ewg_get_function_address_CFURLCopyPathExtension (void)
+{
+	return (void*) CFURLCopyPathExtension;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateCopyAppendingPathComponent'
+// For ise
+CFURLRef  ewg_function_CFURLCreateCopyAppendingPathComponent (CFAllocatorRef ewg_allocator, CFURLRef ewg_url, CFStringRef ewg_pathComponent, Boolean ewg_isDirectory)
+{
+	return CFURLCreateCopyAppendingPathComponent ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_url, (CFStringRef)ewg_pathComponent, (Boolean)ewg_isDirectory);
+}
+
+// Return address of function 'CFURLCreateCopyAppendingPathComponent'
+void* ewg_get_function_address_CFURLCreateCopyAppendingPathComponent (void)
+{
+	return (void*) CFURLCreateCopyAppendingPathComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateCopyDeletingLastPathComponent'
+// For ise
+CFURLRef  ewg_function_CFURLCreateCopyDeletingLastPathComponent (CFAllocatorRef ewg_allocator, CFURLRef ewg_url)
+{
+	return CFURLCreateCopyDeletingLastPathComponent ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_url);
+}
+
+// Return address of function 'CFURLCreateCopyDeletingLastPathComponent'
+void* ewg_get_function_address_CFURLCreateCopyDeletingLastPathComponent (void)
+{
+	return (void*) CFURLCreateCopyDeletingLastPathComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateCopyAppendingPathExtension'
+// For ise
+CFURLRef  ewg_function_CFURLCreateCopyAppendingPathExtension (CFAllocatorRef ewg_allocator, CFURLRef ewg_url, CFStringRef ewg_extension)
+{
+	return CFURLCreateCopyAppendingPathExtension ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_url, (CFStringRef)ewg_extension);
+}
+
+// Return address of function 'CFURLCreateCopyAppendingPathExtension'
+void* ewg_get_function_address_CFURLCreateCopyAppendingPathExtension (void)
+{
+	return (void*) CFURLCreateCopyAppendingPathExtension;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateCopyDeletingPathExtension'
+// For ise
+CFURLRef  ewg_function_CFURLCreateCopyDeletingPathExtension (CFAllocatorRef ewg_allocator, CFURLRef ewg_url)
+{
+	return CFURLCreateCopyDeletingPathExtension ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_url);
+}
+
+// Return address of function 'CFURLCreateCopyDeletingPathExtension'
+void* ewg_get_function_address_CFURLCreateCopyDeletingPathExtension (void)
+{
+	return (void*) CFURLCreateCopyDeletingPathExtension;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetBytes'
+// For ise
+CFIndex  ewg_function_CFURLGetBytes (CFURLRef ewg_url, UInt8 *ewg_buffer, CFIndex ewg_bufferLength)
+{
+	return CFURLGetBytes ((CFURLRef)ewg_url, (UInt8*)ewg_buffer, (CFIndex)ewg_bufferLength);
+}
+
+// Return address of function 'CFURLGetBytes'
+void* ewg_get_function_address_CFURLGetBytes (void)
+{
+	return (void*) CFURLGetBytes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetByteRangeForComponent'
+// For ise
+CFRange * ewg_function_CFURLGetByteRangeForComponent (CFURLRef ewg_url, CFURLComponentType ewg_component, CFRange *ewg_rangeIncludingSeparators)
+{
+	CFRange *result = (CFRange*) malloc (sizeof(CFRange));
+	*result = CFURLGetByteRangeForComponent ((CFURLRef)ewg_url, (CFURLComponentType)ewg_component, (CFRange*)ewg_rangeIncludingSeparators);
+	return result;
+}
+
+// Return address of function 'CFURLGetByteRangeForComponent'
+void* ewg_get_function_address_CFURLGetByteRangeForComponent (void)
+{
+	return (void*) CFURLGetByteRangeForComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateStringByReplacingPercentEscapes'
+// For ise
+CFStringRef  ewg_function_CFURLCreateStringByReplacingPercentEscapes (CFAllocatorRef ewg_allocator, CFStringRef ewg_originalString, CFStringRef ewg_charactersToLeaveEscaped)
+{
+	return CFURLCreateStringByReplacingPercentEscapes ((CFAllocatorRef)ewg_allocator, (CFStringRef)ewg_originalString, (CFStringRef)ewg_charactersToLeaveEscaped);
+}
+
+// Return address of function 'CFURLCreateStringByReplacingPercentEscapes'
+void* ewg_get_function_address_CFURLCreateStringByReplacingPercentEscapes (void)
+{
+	return (void*) CFURLCreateStringByReplacingPercentEscapes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateStringByReplacingPercentEscapesUsingEncoding'
+// For ise
+CFStringRef  ewg_function_CFURLCreateStringByReplacingPercentEscapesUsingEncoding (CFAllocatorRef ewg_allocator, CFStringRef ewg_origString, CFStringRef ewg_charsToLeaveEscaped, CFStringEncoding ewg_encoding)
+{
+	return CFURLCreateStringByReplacingPercentEscapesUsingEncoding ((CFAllocatorRef)ewg_allocator, (CFStringRef)ewg_origString, (CFStringRef)ewg_charsToLeaveEscaped, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFURLCreateStringByReplacingPercentEscapesUsingEncoding'
+void* ewg_get_function_address_CFURLCreateStringByReplacingPercentEscapesUsingEncoding (void)
+{
+	return (void*) CFURLCreateStringByReplacingPercentEscapesUsingEncoding;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateStringByAddingPercentEscapes'
+// For ise
+CFStringRef  ewg_function_CFURLCreateStringByAddingPercentEscapes (CFAllocatorRef ewg_allocator, CFStringRef ewg_originalString, CFStringRef ewg_charactersToLeaveUnescaped, CFStringRef ewg_legalURLCharactersToBeEscaped, CFStringEncoding ewg_encoding)
+{
+	return CFURLCreateStringByAddingPercentEscapes ((CFAllocatorRef)ewg_allocator, (CFStringRef)ewg_originalString, (CFStringRef)ewg_charactersToLeaveUnescaped, (CFStringRef)ewg_legalURLCharactersToBeEscaped, (CFStringEncoding)ewg_encoding);
+}
+
+// Return address of function 'CFURLCreateStringByAddingPercentEscapes'
+void* ewg_get_function_address_CFURLCreateStringByAddingPercentEscapes (void)
+{
+	return (void*) CFURLCreateStringByAddingPercentEscapes;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLCreateFromFSRef'
+// For ise
+CFURLRef  ewg_function_CFURLCreateFromFSRef (CFAllocatorRef ewg_allocator, struct FSRef const *ewg_fsRef)
+{
+	return CFURLCreateFromFSRef ((CFAllocatorRef)ewg_allocator, (struct FSRef const*)ewg_fsRef);
+}
+
+// Return address of function 'CFURLCreateFromFSRef'
+void* ewg_get_function_address_CFURLCreateFromFSRef (void)
+{
+	return (void*) CFURLCreateFromFSRef;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFURLGetFSRef'
+// For ise
+Boolean  ewg_function_CFURLGetFSRef (CFURLRef ewg_url, struct FSRef *ewg_fsRef)
+{
+	return CFURLGetFSRef ((CFURLRef)ewg_url, (struct FSRef*)ewg_fsRef);
+}
+
+// Return address of function 'CFURLGetFSRef'
+void* ewg_get_function_address_CFURLGetFSRef (void)
+{
+	return (void*) CFURLGetFSRef;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetMainBundle'
+// For ise
+CFBundleRef  ewg_function_CFBundleGetMainBundle (void)
+{
+	return CFBundleGetMainBundle ();
+}
+
+// Return address of function 'CFBundleGetMainBundle'
+void* ewg_get_function_address_CFBundleGetMainBundle (void)
+{
+	return (void*) CFBundleGetMainBundle;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetBundleWithIdentifier'
+// For ise
+CFBundleRef  ewg_function_CFBundleGetBundleWithIdentifier (CFStringRef ewg_bundleID)
+{
+	return CFBundleGetBundleWithIdentifier ((CFStringRef)ewg_bundleID);
+}
+
+// Return address of function 'CFBundleGetBundleWithIdentifier'
+void* ewg_get_function_address_CFBundleGetBundleWithIdentifier (void)
+{
+	return (void*) CFBundleGetBundleWithIdentifier;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetAllBundles'
+// For ise
+CFArrayRef  ewg_function_CFBundleGetAllBundles (void)
+{
+	return CFBundleGetAllBundles ();
+}
+
+// Return address of function 'CFBundleGetAllBundles'
+void* ewg_get_function_address_CFBundleGetAllBundles (void)
+{
+	return (void*) CFBundleGetAllBundles;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetTypeID'
+// For ise
+UInt32  ewg_function_CFBundleGetTypeID (void)
+{
+	return CFBundleGetTypeID ();
+}
+
+// Return address of function 'CFBundleGetTypeID'
+void* ewg_get_function_address_CFBundleGetTypeID (void)
+{
+	return (void*) CFBundleGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCreate'
+// For ise
+CFBundleRef  ewg_function_CFBundleCreate (CFAllocatorRef ewg_allocator, CFURLRef ewg_bundleURL)
+{
+	return CFBundleCreate ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_bundleURL);
+}
+
+// Return address of function 'CFBundleCreate'
+void* ewg_get_function_address_CFBundleCreate (void)
+{
+	return (void*) CFBundleCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCreateBundlesFromDirectory'
+// For ise
+CFArrayRef  ewg_function_CFBundleCreateBundlesFromDirectory (CFAllocatorRef ewg_allocator, CFURLRef ewg_directoryURL, CFStringRef ewg_bundleType)
+{
+	return CFBundleCreateBundlesFromDirectory ((CFAllocatorRef)ewg_allocator, (CFURLRef)ewg_directoryURL, (CFStringRef)ewg_bundleType);
+}
+
+// Return address of function 'CFBundleCreateBundlesFromDirectory'
+void* ewg_get_function_address_CFBundleCreateBundlesFromDirectory (void)
+{
+	return (void*) CFBundleCreateBundlesFromDirectory;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyBundleURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyBundleURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopyBundleURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopyBundleURL'
+void* ewg_get_function_address_CFBundleCopyBundleURL (void)
+{
+	return (void*) CFBundleCopyBundleURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetValueForInfoDictionaryKey'
+// For ise
+CFTypeRef  ewg_function_CFBundleGetValueForInfoDictionaryKey (CFBundleRef ewg_bundle, CFStringRef ewg_key)
+{
+	return CFBundleGetValueForInfoDictionaryKey ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_key);
+}
+
+// Return address of function 'CFBundleGetValueForInfoDictionaryKey'
+void* ewg_get_function_address_CFBundleGetValueForInfoDictionaryKey (void)
+{
+	return (void*) CFBundleGetValueForInfoDictionaryKey;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetInfoDictionary'
+// For ise
+CFDictionaryRef  ewg_function_CFBundleGetInfoDictionary (CFBundleRef ewg_bundle)
+{
+	return CFBundleGetInfoDictionary ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleGetInfoDictionary'
+void* ewg_get_function_address_CFBundleGetInfoDictionary (void)
+{
+	return (void*) CFBundleGetInfoDictionary;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetLocalInfoDictionary'
+// For ise
+CFDictionaryRef  ewg_function_CFBundleGetLocalInfoDictionary (CFBundleRef ewg_bundle)
+{
+	return CFBundleGetLocalInfoDictionary ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleGetLocalInfoDictionary'
+void* ewg_get_function_address_CFBundleGetLocalInfoDictionary (void)
+{
+	return (void*) CFBundleGetLocalInfoDictionary;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetPackageInfo'
+// For ise
+void  ewg_function_CFBundleGetPackageInfo (CFBundleRef ewg_bundle, UInt32 *ewg_packageType, UInt32 *ewg_packageCreator)
+{
+	CFBundleGetPackageInfo ((CFBundleRef)ewg_bundle, (UInt32*)ewg_packageType, (UInt32*)ewg_packageCreator);
+}
+
+// Return address of function 'CFBundleGetPackageInfo'
+void* ewg_get_function_address_CFBundleGetPackageInfo (void)
+{
+	return (void*) CFBundleGetPackageInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetIdentifier'
+// For ise
+CFStringRef  ewg_function_CFBundleGetIdentifier (CFBundleRef ewg_bundle)
+{
+	return CFBundleGetIdentifier ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleGetIdentifier'
+void* ewg_get_function_address_CFBundleGetIdentifier (void)
+{
+	return (void*) CFBundleGetIdentifier;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetVersionNumber'
+// For ise
+UInt32  ewg_function_CFBundleGetVersionNumber (CFBundleRef ewg_bundle)
+{
+	return CFBundleGetVersionNumber ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleGetVersionNumber'
+void* ewg_get_function_address_CFBundleGetVersionNumber (void)
+{
+	return (void*) CFBundleGetVersionNumber;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetDevelopmentRegion'
+// For ise
+CFStringRef  ewg_function_CFBundleGetDevelopmentRegion (CFBundleRef ewg_bundle)
+{
+	return CFBundleGetDevelopmentRegion ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleGetDevelopmentRegion'
+void* ewg_get_function_address_CFBundleGetDevelopmentRegion (void)
+{
+	return (void*) CFBundleGetDevelopmentRegion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopySupportFilesDirectoryURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopySupportFilesDirectoryURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopySupportFilesDirectoryURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopySupportFilesDirectoryURL'
+void* ewg_get_function_address_CFBundleCopySupportFilesDirectoryURL (void)
+{
+	return (void*) CFBundleCopySupportFilesDirectoryURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyResourcesDirectoryURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyResourcesDirectoryURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopyResourcesDirectoryURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopyResourcesDirectoryURL'
+void* ewg_get_function_address_CFBundleCopyResourcesDirectoryURL (void)
+{
+	return (void*) CFBundleCopyResourcesDirectoryURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyPrivateFrameworksURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyPrivateFrameworksURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopyPrivateFrameworksURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopyPrivateFrameworksURL'
+void* ewg_get_function_address_CFBundleCopyPrivateFrameworksURL (void)
+{
+	return (void*) CFBundleCopyPrivateFrameworksURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopySharedFrameworksURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopySharedFrameworksURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopySharedFrameworksURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopySharedFrameworksURL'
+void* ewg_get_function_address_CFBundleCopySharedFrameworksURL (void)
+{
+	return (void*) CFBundleCopySharedFrameworksURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopySharedSupportURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopySharedSupportURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopySharedSupportURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopySharedSupportURL'
+void* ewg_get_function_address_CFBundleCopySharedSupportURL (void)
+{
+	return (void*) CFBundleCopySharedSupportURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyBuiltInPlugInsURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyBuiltInPlugInsURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopyBuiltInPlugInsURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopyBuiltInPlugInsURL'
+void* ewg_get_function_address_CFBundleCopyBuiltInPlugInsURL (void)
+{
+	return (void*) CFBundleCopyBuiltInPlugInsURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyInfoDictionaryInDirectory'
+// For ise
+CFDictionaryRef  ewg_function_CFBundleCopyInfoDictionaryInDirectory (CFURLRef ewg_bundleURL)
+{
+	return CFBundleCopyInfoDictionaryInDirectory ((CFURLRef)ewg_bundleURL);
+}
+
+// Return address of function 'CFBundleCopyInfoDictionaryInDirectory'
+void* ewg_get_function_address_CFBundleCopyInfoDictionaryInDirectory (void)
+{
+	return (void*) CFBundleCopyInfoDictionaryInDirectory;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetPackageInfoInDirectory'
+// For ise
+Boolean  ewg_function_CFBundleGetPackageInfoInDirectory (CFURLRef ewg_url, UInt32 *ewg_packageType, UInt32 *ewg_packageCreator)
+{
+	return CFBundleGetPackageInfoInDirectory ((CFURLRef)ewg_url, (UInt32*)ewg_packageType, (UInt32*)ewg_packageCreator);
+}
+
+// Return address of function 'CFBundleGetPackageInfoInDirectory'
+void* ewg_get_function_address_CFBundleGetPackageInfoInDirectory (void)
+{
+	return (void*) CFBundleGetPackageInfoInDirectory;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyResourceURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyResourceURL (CFBundleRef ewg_bundle, CFStringRef ewg_resourceName, CFStringRef ewg_resourceType, CFStringRef ewg_subDirName)
+{
+	return CFBundleCopyResourceURL ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_resourceName, (CFStringRef)ewg_resourceType, (CFStringRef)ewg_subDirName);
+}
+
+// Return address of function 'CFBundleCopyResourceURL'
+void* ewg_get_function_address_CFBundleCopyResourceURL (void)
+{
+	return (void*) CFBundleCopyResourceURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyResourceURLsOfType'
+// For ise
+CFArrayRef  ewg_function_CFBundleCopyResourceURLsOfType (CFBundleRef ewg_bundle, CFStringRef ewg_resourceType, CFStringRef ewg_subDirName)
+{
+	return CFBundleCopyResourceURLsOfType ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_resourceType, (CFStringRef)ewg_subDirName);
+}
+
+// Return address of function 'CFBundleCopyResourceURLsOfType'
+void* ewg_get_function_address_CFBundleCopyResourceURLsOfType (void)
+{
+	return (void*) CFBundleCopyResourceURLsOfType;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyLocalizedString'
+// For ise
+CFStringRef  ewg_function_CFBundleCopyLocalizedString (CFBundleRef ewg_bundle, CFStringRef ewg_key, CFStringRef ewg_value, CFStringRef ewg_tableName)
+{
+	return CFBundleCopyLocalizedString ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_key, (CFStringRef)ewg_value, (CFStringRef)ewg_tableName);
+}
+
+// Return address of function 'CFBundleCopyLocalizedString'
+void* ewg_get_function_address_CFBundleCopyLocalizedString (void)
+{
+	return (void*) CFBundleCopyLocalizedString;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyResourceURLInDirectory'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyResourceURLInDirectory (CFURLRef ewg_bundleURL, CFStringRef ewg_resourceName, CFStringRef ewg_resourceType, CFStringRef ewg_subDirName)
+{
+	return CFBundleCopyResourceURLInDirectory ((CFURLRef)ewg_bundleURL, (CFStringRef)ewg_resourceName, (CFStringRef)ewg_resourceType, (CFStringRef)ewg_subDirName);
+}
+
+// Return address of function 'CFBundleCopyResourceURLInDirectory'
+void* ewg_get_function_address_CFBundleCopyResourceURLInDirectory (void)
+{
+	return (void*) CFBundleCopyResourceURLInDirectory;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyResourceURLsOfTypeInDirectory'
+// For ise
+CFArrayRef  ewg_function_CFBundleCopyResourceURLsOfTypeInDirectory (CFURLRef ewg_bundleURL, CFStringRef ewg_resourceType, CFStringRef ewg_subDirName)
+{
+	return CFBundleCopyResourceURLsOfTypeInDirectory ((CFURLRef)ewg_bundleURL, (CFStringRef)ewg_resourceType, (CFStringRef)ewg_subDirName);
+}
+
+// Return address of function 'CFBundleCopyResourceURLsOfTypeInDirectory'
+void* ewg_get_function_address_CFBundleCopyResourceURLsOfTypeInDirectory (void)
+{
+	return (void*) CFBundleCopyResourceURLsOfTypeInDirectory;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyBundleLocalizations'
+// For ise
+CFArrayRef  ewg_function_CFBundleCopyBundleLocalizations (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopyBundleLocalizations ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopyBundleLocalizations'
+void* ewg_get_function_address_CFBundleCopyBundleLocalizations (void)
+{
+	return (void*) CFBundleCopyBundleLocalizations;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyPreferredLocalizationsFromArray'
+// For ise
+CFArrayRef  ewg_function_CFBundleCopyPreferredLocalizationsFromArray (CFArrayRef ewg_locArray)
+{
+	return CFBundleCopyPreferredLocalizationsFromArray ((CFArrayRef)ewg_locArray);
+}
+
+// Return address of function 'CFBundleCopyPreferredLocalizationsFromArray'
+void* ewg_get_function_address_CFBundleCopyPreferredLocalizationsFromArray (void)
+{
+	return (void*) CFBundleCopyPreferredLocalizationsFromArray;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyLocalizationsForPreferences'
+// For ise
+CFArrayRef  ewg_function_CFBundleCopyLocalizationsForPreferences (CFArrayRef ewg_locArray, CFArrayRef ewg_prefArray)
+{
+	return CFBundleCopyLocalizationsForPreferences ((CFArrayRef)ewg_locArray, (CFArrayRef)ewg_prefArray);
+}
+
+// Return address of function 'CFBundleCopyLocalizationsForPreferences'
+void* ewg_get_function_address_CFBundleCopyLocalizationsForPreferences (void)
+{
+	return (void*) CFBundleCopyLocalizationsForPreferences;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyResourceURLForLocalization'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyResourceURLForLocalization (CFBundleRef ewg_bundle, CFStringRef ewg_resourceName, CFStringRef ewg_resourceType, CFStringRef ewg_subDirName, CFStringRef ewg_localizationName)
+{
+	return CFBundleCopyResourceURLForLocalization ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_resourceName, (CFStringRef)ewg_resourceType, (CFStringRef)ewg_subDirName, (CFStringRef)ewg_localizationName);
+}
+
+// Return address of function 'CFBundleCopyResourceURLForLocalization'
+void* ewg_get_function_address_CFBundleCopyResourceURLForLocalization (void)
+{
+	return (void*) CFBundleCopyResourceURLForLocalization;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyResourceURLsOfTypeForLocalization'
+// For ise
+CFArrayRef  ewg_function_CFBundleCopyResourceURLsOfTypeForLocalization (CFBundleRef ewg_bundle, CFStringRef ewg_resourceType, CFStringRef ewg_subDirName, CFStringRef ewg_localizationName)
+{
+	return CFBundleCopyResourceURLsOfTypeForLocalization ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_resourceType, (CFStringRef)ewg_subDirName, (CFStringRef)ewg_localizationName);
+}
+
+// Return address of function 'CFBundleCopyResourceURLsOfTypeForLocalization'
+void* ewg_get_function_address_CFBundleCopyResourceURLsOfTypeForLocalization (void)
+{
+	return (void*) CFBundleCopyResourceURLsOfTypeForLocalization;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyInfoDictionaryForURL'
+// For ise
+CFDictionaryRef  ewg_function_CFBundleCopyInfoDictionaryForURL (CFURLRef ewg_url)
+{
+	return CFBundleCopyInfoDictionaryForURL ((CFURLRef)ewg_url);
+}
+
+// Return address of function 'CFBundleCopyInfoDictionaryForURL'
+void* ewg_get_function_address_CFBundleCopyInfoDictionaryForURL (void)
+{
+	return (void*) CFBundleCopyInfoDictionaryForURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyLocalizationsForURL'
+// For ise
+CFArrayRef  ewg_function_CFBundleCopyLocalizationsForURL (CFURLRef ewg_url)
+{
+	return CFBundleCopyLocalizationsForURL ((CFURLRef)ewg_url);
+}
+
+// Return address of function 'CFBundleCopyLocalizationsForURL'
+void* ewg_get_function_address_CFBundleCopyLocalizationsForURL (void)
+{
+	return (void*) CFBundleCopyLocalizationsForURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyExecutableURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyExecutableURL (CFBundleRef ewg_bundle)
+{
+	return CFBundleCopyExecutableURL ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleCopyExecutableURL'
+void* ewg_get_function_address_CFBundleCopyExecutableURL (void)
+{
+	return (void*) CFBundleCopyExecutableURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleIsExecutableLoaded'
+// For ise
+Boolean  ewg_function_CFBundleIsExecutableLoaded (CFBundleRef ewg_bundle)
+{
+	return CFBundleIsExecutableLoaded ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleIsExecutableLoaded'
+void* ewg_get_function_address_CFBundleIsExecutableLoaded (void)
+{
+	return (void*) CFBundleIsExecutableLoaded;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleLoadExecutable'
+// For ise
+Boolean  ewg_function_CFBundleLoadExecutable (CFBundleRef ewg_bundle)
+{
+	return CFBundleLoadExecutable ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleLoadExecutable'
+void* ewg_get_function_address_CFBundleLoadExecutable (void)
+{
+	return (void*) CFBundleLoadExecutable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleUnloadExecutable'
+// For ise
+void  ewg_function_CFBundleUnloadExecutable (CFBundleRef ewg_bundle)
+{
+	CFBundleUnloadExecutable ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleUnloadExecutable'
+void* ewg_get_function_address_CFBundleUnloadExecutable (void)
+{
+	return (void*) CFBundleUnloadExecutable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetFunctionPointerForName'
+// For ise
+void * ewg_function_CFBundleGetFunctionPointerForName (CFBundleRef ewg_bundle, CFStringRef ewg_functionName)
+{
+	return CFBundleGetFunctionPointerForName ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_functionName);
+}
+
+// Return address of function 'CFBundleGetFunctionPointerForName'
+void* ewg_get_function_address_CFBundleGetFunctionPointerForName (void)
+{
+	return (void*) CFBundleGetFunctionPointerForName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetFunctionPointersForNames'
+// For ise
+void  ewg_function_CFBundleGetFunctionPointersForNames (CFBundleRef ewg_bundle, CFArrayRef ewg_functionNames, void *ewg_ftbl)
+{
+	CFBundleGetFunctionPointersForNames ((CFBundleRef)ewg_bundle, (CFArrayRef)ewg_functionNames, ewg_ftbl);
+}
+
+// Return address of function 'CFBundleGetFunctionPointersForNames'
+void* ewg_get_function_address_CFBundleGetFunctionPointersForNames (void)
+{
+	return (void*) CFBundleGetFunctionPointersForNames;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetDataPointerForName'
+// For ise
+void * ewg_function_CFBundleGetDataPointerForName (CFBundleRef ewg_bundle, CFStringRef ewg_symbolName)
+{
+	return CFBundleGetDataPointerForName ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_symbolName);
+}
+
+// Return address of function 'CFBundleGetDataPointerForName'
+void* ewg_get_function_address_CFBundleGetDataPointerForName (void)
+{
+	return (void*) CFBundleGetDataPointerForName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetDataPointersForNames'
+// For ise
+void  ewg_function_CFBundleGetDataPointersForNames (CFBundleRef ewg_bundle, CFArrayRef ewg_symbolNames, void *ewg_stbl)
+{
+	CFBundleGetDataPointersForNames ((CFBundleRef)ewg_bundle, (CFArrayRef)ewg_symbolNames, ewg_stbl);
+}
+
+// Return address of function 'CFBundleGetDataPointersForNames'
+void* ewg_get_function_address_CFBundleGetDataPointersForNames (void)
+{
+	return (void*) CFBundleGetDataPointersForNames;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCopyAuxiliaryExecutableURL'
+// For ise
+CFURLRef  ewg_function_CFBundleCopyAuxiliaryExecutableURL (CFBundleRef ewg_bundle, CFStringRef ewg_executableName)
+{
+	return CFBundleCopyAuxiliaryExecutableURL ((CFBundleRef)ewg_bundle, (CFStringRef)ewg_executableName);
+}
+
+// Return address of function 'CFBundleCopyAuxiliaryExecutableURL'
+void* ewg_get_function_address_CFBundleCopyAuxiliaryExecutableURL (void)
+{
+	return (void*) CFBundleCopyAuxiliaryExecutableURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleGetPlugIn'
+// For ise
+CFPlugInRef  ewg_function_CFBundleGetPlugIn (CFBundleRef ewg_bundle)
+{
+	return CFBundleGetPlugIn ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleGetPlugIn'
+void* ewg_get_function_address_CFBundleGetPlugIn (void)
+{
+	return (void*) CFBundleGetPlugIn;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleOpenBundleResourceMap'
+// For ise
+short  ewg_function_CFBundleOpenBundleResourceMap (CFBundleRef ewg_bundle)
+{
+	return CFBundleOpenBundleResourceMap ((CFBundleRef)ewg_bundle);
+}
+
+// Return address of function 'CFBundleOpenBundleResourceMap'
+void* ewg_get_function_address_CFBundleOpenBundleResourceMap (void)
+{
+	return (void*) CFBundleOpenBundleResourceMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleOpenBundleResourceFiles'
+// For ise
+SInt32  ewg_function_CFBundleOpenBundleResourceFiles (CFBundleRef ewg_bundle, short *ewg_refNum, short *ewg_localizedRefNum)
+{
+	return CFBundleOpenBundleResourceFiles ((CFBundleRef)ewg_bundle, (short*)ewg_refNum, (short*)ewg_localizedRefNum);
+}
+
+// Return address of function 'CFBundleOpenBundleResourceFiles'
+void* ewg_get_function_address_CFBundleOpenBundleResourceFiles (void)
+{
+	return (void*) CFBundleOpenBundleResourceFiles;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CFBundleCloseBundleResourceMap'
+// For ise
+void  ewg_function_CFBundleCloseBundleResourceMap (CFBundleRef ewg_bundle, short ewg_refNum)
+{
+	CFBundleCloseBundleResourceMap ((CFBundleRef)ewg_bundle, (short)ewg_refNum);
+}
+
+// Return address of function 'CFBundleCloseBundleResourceMap'
+void* ewg_get_function_address_CFBundleCloseBundleResourceMap (void)
+{
+	return (void*) CFBundleCloseBundleResourceMap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderGetTypeID'
+// For ise
+CFTypeID  ewg_function_CGDataProviderGetTypeID (void)
+{
+	return CGDataProviderGetTypeID ();
+}
+
+// Return address of function 'CGDataProviderGetTypeID'
+void* ewg_get_function_address_CGDataProviderGetTypeID (void)
+{
+	return (void*) CGDataProviderGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderCreate'
+// For ise
+CGDataProviderRef  ewg_function_CGDataProviderCreate (void *ewg_info, CGDataProviderCallbacks const *ewg_callbacks)
+{
+	return CGDataProviderCreate ((void*)ewg_info, (CGDataProviderCallbacks const*)ewg_callbacks);
+}
+
+// Return address of function 'CGDataProviderCreate'
+void* ewg_get_function_address_CGDataProviderCreate (void)
+{
+	return (void*) CGDataProviderCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderCreateDirectAccess'
+// For ise
+CGDataProviderRef  ewg_function_CGDataProviderCreateDirectAccess (void *ewg_info, size_t ewg_size, CGDataProviderDirectAccessCallbacks const *ewg_callbacks)
+{
+	return CGDataProviderCreateDirectAccess ((void*)ewg_info, (size_t)ewg_size, (CGDataProviderDirectAccessCallbacks const*)ewg_callbacks);
+}
+
+// Return address of function 'CGDataProviderCreateDirectAccess'
+void* ewg_get_function_address_CGDataProviderCreateDirectAccess (void)
+{
+	return (void*) CGDataProviderCreateDirectAccess;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderCreateWithData'
+// For ise
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithData (void *ewg_info, void const *ewg_data, size_t ewg_size, CGDataProviderReleaseDataCallback ewg_releaseData)
+{
+	return CGDataProviderCreateWithData ((void*)ewg_info, (void const*)ewg_data, (size_t)ewg_size, (CGDataProviderReleaseDataCallback)ewg_releaseData);
+}
+
+// Return address of function 'CGDataProviderCreateWithData'
+void* ewg_get_function_address_CGDataProviderCreateWithData (void)
+{
+	return (void*) CGDataProviderCreateWithData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderCreateWithCFData'
+// For ise
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithCFData (CFDataRef ewg_data)
+{
+	return CGDataProviderCreateWithCFData ((CFDataRef)ewg_data);
+}
+
+// Return address of function 'CGDataProviderCreateWithCFData'
+void* ewg_get_function_address_CGDataProviderCreateWithCFData (void)
+{
+	return (void*) CGDataProviderCreateWithCFData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderCreateWithURL'
+// For ise
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithURL (CFURLRef ewg_url)
+{
+	return CGDataProviderCreateWithURL ((CFURLRef)ewg_url);
+}
+
+// Return address of function 'CGDataProviderCreateWithURL'
+void* ewg_get_function_address_CGDataProviderCreateWithURL (void)
+{
+	return (void*) CGDataProviderCreateWithURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderRetain'
+// For ise
+CGDataProviderRef  ewg_function_CGDataProviderRetain (CGDataProviderRef ewg_provider)
+{
+	return CGDataProviderRetain ((CGDataProviderRef)ewg_provider);
+}
+
+// Return address of function 'CGDataProviderRetain'
+void* ewg_get_function_address_CGDataProviderRetain (void)
+{
+	return (void*) CGDataProviderRetain;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderRelease'
+// For ise
+void  ewg_function_CGDataProviderRelease (CGDataProviderRef ewg_provider)
+{
+	CGDataProviderRelease ((CGDataProviderRef)ewg_provider);
+}
+
+// Return address of function 'CGDataProviderRelease'
+void* ewg_get_function_address_CGDataProviderRelease (void)
+{
+	return (void*) CGDataProviderRelease;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGDataProviderCreateWithFilename'
+// For ise
+CGDataProviderRef  ewg_function_CGDataProviderCreateWithFilename (char const *ewg_filename)
+{
+	return CGDataProviderCreateWithFilename ((char const*)ewg_filename);
+}
+
+// Return address of function 'CGDataProviderCreateWithFilename'
+void* ewg_get_function_address_CGDataProviderCreateWithFilename (void)
+{
+	return (void*) CGDataProviderCreateWithFilename;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetTypeID'
+// For ise
+CFTypeID  ewg_function_CGImageGetTypeID (void)
+{
+	return CGImageGetTypeID ();
+}
+
+// Return address of function 'CGImageGetTypeID'
+void* ewg_get_function_address_CGImageGetTypeID (void)
+{
+	return (void*) CGImageGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreate'
+// For ise
+CGImageRef  ewg_function_CGImageCreate (size_t ewg_width, size_t ewg_height, size_t ewg_bitsPerComponent, size_t ewg_bitsPerPixel, size_t ewg_bytesPerRow, CGColorSpaceRef ewg_colorspace, CGBitmapInfo ewg_bitmapInfo, CGDataProviderRef ewg_provider, void *ewg_decode, _Bool ewg_shouldInterpolate, CGColorRenderingIntent ewg_intent)
+{
+	return CGImageCreate ((size_t)ewg_width, (size_t)ewg_height, (size_t)ewg_bitsPerComponent, (size_t)ewg_bitsPerPixel, (size_t)ewg_bytesPerRow, (CGColorSpaceRef)ewg_colorspace, (CGBitmapInfo)ewg_bitmapInfo, (CGDataProviderRef)ewg_provider, ewg_decode, (_Bool)ewg_shouldInterpolate, (CGColorRenderingIntent)ewg_intent);
+}
+
+// Return address of function 'CGImageCreate'
+void* ewg_get_function_address_CGImageCreate (void)
+{
+	return (void*) CGImageCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageMaskCreate'
+// For ise
+CGImageRef  ewg_function_CGImageMaskCreate (size_t ewg_width, size_t ewg_height, size_t ewg_bitsPerComponent, size_t ewg_bitsPerPixel, size_t ewg_bytesPerRow, CGDataProviderRef ewg_provider, void *ewg_decode, _Bool ewg_shouldInterpolate)
+{
+	return CGImageMaskCreate ((size_t)ewg_width, (size_t)ewg_height, (size_t)ewg_bitsPerComponent, (size_t)ewg_bitsPerPixel, (size_t)ewg_bytesPerRow, (CGDataProviderRef)ewg_provider, ewg_decode, (_Bool)ewg_shouldInterpolate);
+}
+
+// Return address of function 'CGImageMaskCreate'
+void* ewg_get_function_address_CGImageMaskCreate (void)
+{
+	return (void*) CGImageMaskCreate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreateCopy'
+// For ise
+CGImageRef  ewg_function_CGImageCreateCopy (CGImageRef ewg_image)
+{
+	return CGImageCreateCopy ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageCreateCopy'
+void* ewg_get_function_address_CGImageCreateCopy (void)
+{
+	return (void*) CGImageCreateCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreateWithJPEGDataProvider'
+// For ise
+CGImageRef  ewg_function_CGImageCreateWithJPEGDataProvider (CGDataProviderRef ewg_source, void *ewg_decode, _Bool ewg_shouldInterpolate, CGColorRenderingIntent ewg_intent)
+{
+	return CGImageCreateWithJPEGDataProvider ((CGDataProviderRef)ewg_source, ewg_decode, (_Bool)ewg_shouldInterpolate, (CGColorRenderingIntent)ewg_intent);
+}
+
+// Return address of function 'CGImageCreateWithJPEGDataProvider'
+void* ewg_get_function_address_CGImageCreateWithJPEGDataProvider (void)
+{
+	return (void*) CGImageCreateWithJPEGDataProvider;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreateWithPNGDataProvider'
+// For ise
+CGImageRef  ewg_function_CGImageCreateWithPNGDataProvider (CGDataProviderRef ewg_source, void *ewg_decode, _Bool ewg_shouldInterpolate, CGColorRenderingIntent ewg_intent)
+{
+	return CGImageCreateWithPNGDataProvider ((CGDataProviderRef)ewg_source, ewg_decode, (_Bool)ewg_shouldInterpolate, (CGColorRenderingIntent)ewg_intent);
+}
+
+// Return address of function 'CGImageCreateWithPNGDataProvider'
+void* ewg_get_function_address_CGImageCreateWithPNGDataProvider (void)
+{
+	return (void*) CGImageCreateWithPNGDataProvider;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreateWithImageInRect'
+// For ise
+CGImageRef  ewg_function_CGImageCreateWithImageInRect (CGImageRef ewg_image, CGRect *ewg_rect)
+{
+	return CGImageCreateWithImageInRect ((CGImageRef)ewg_image, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGImageCreateWithImageInRect'
+void* ewg_get_function_address_CGImageCreateWithImageInRect (void)
+{
+	return (void*) CGImageCreateWithImageInRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreateWithMask'
+// For ise
+CGImageRef  ewg_function_CGImageCreateWithMask (CGImageRef ewg_image, CGImageRef ewg_mask)
+{
+	return CGImageCreateWithMask ((CGImageRef)ewg_image, (CGImageRef)ewg_mask);
+}
+
+// Return address of function 'CGImageCreateWithMask'
+void* ewg_get_function_address_CGImageCreateWithMask (void)
+{
+	return (void*) CGImageCreateWithMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreateWithMaskingColors'
+// For ise
+CGImageRef  ewg_function_CGImageCreateWithMaskingColors (CGImageRef ewg_image, void *ewg_components)
+{
+	return CGImageCreateWithMaskingColors ((CGImageRef)ewg_image, ewg_components);
+}
+
+// Return address of function 'CGImageCreateWithMaskingColors'
+void* ewg_get_function_address_CGImageCreateWithMaskingColors (void)
+{
+	return (void*) CGImageCreateWithMaskingColors;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageCreateCopyWithColorSpace'
+// For ise
+CGImageRef  ewg_function_CGImageCreateCopyWithColorSpace (CGImageRef ewg_image, CGColorSpaceRef ewg_colorspace)
+{
+	return CGImageCreateCopyWithColorSpace ((CGImageRef)ewg_image, (CGColorSpaceRef)ewg_colorspace);
+}
+
+// Return address of function 'CGImageCreateCopyWithColorSpace'
+void* ewg_get_function_address_CGImageCreateCopyWithColorSpace (void)
+{
+	return (void*) CGImageCreateCopyWithColorSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageRetain'
+// For ise
+CGImageRef  ewg_function_CGImageRetain (CGImageRef ewg_image)
+{
+	return CGImageRetain ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageRetain'
+void* ewg_get_function_address_CGImageRetain (void)
+{
+	return (void*) CGImageRetain;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageRelease'
+// For ise
+void  ewg_function_CGImageRelease (CGImageRef ewg_image)
+{
+	CGImageRelease ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageRelease'
+void* ewg_get_function_address_CGImageRelease (void)
+{
+	return (void*) CGImageRelease;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageIsMask'
+// For ise
+_Bool  ewg_function_CGImageIsMask (CGImageRef ewg_image)
+{
+	return CGImageIsMask ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageIsMask'
+void* ewg_get_function_address_CGImageIsMask (void)
+{
+	return (void*) CGImageIsMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetWidth'
+// For ise
+size_t  ewg_function_CGImageGetWidth (CGImageRef ewg_image)
+{
+	return CGImageGetWidth ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetWidth'
+void* ewg_get_function_address_CGImageGetWidth (void)
+{
+	return (void*) CGImageGetWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetHeight'
+// For ise
+size_t  ewg_function_CGImageGetHeight (CGImageRef ewg_image)
+{
+	return CGImageGetHeight ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetHeight'
+void* ewg_get_function_address_CGImageGetHeight (void)
+{
+	return (void*) CGImageGetHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetBitsPerComponent'
+// For ise
+size_t  ewg_function_CGImageGetBitsPerComponent (CGImageRef ewg_image)
+{
+	return CGImageGetBitsPerComponent ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetBitsPerComponent'
+void* ewg_get_function_address_CGImageGetBitsPerComponent (void)
+{
+	return (void*) CGImageGetBitsPerComponent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetBitsPerPixel'
+// For ise
+size_t  ewg_function_CGImageGetBitsPerPixel (CGImageRef ewg_image)
+{
+	return CGImageGetBitsPerPixel ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetBitsPerPixel'
+void* ewg_get_function_address_CGImageGetBitsPerPixel (void)
+{
+	return (void*) CGImageGetBitsPerPixel;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetBytesPerRow'
+// For ise
+size_t  ewg_function_CGImageGetBytesPerRow (CGImageRef ewg_image)
+{
+	return CGImageGetBytesPerRow ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetBytesPerRow'
+void* ewg_get_function_address_CGImageGetBytesPerRow (void)
+{
+	return (void*) CGImageGetBytesPerRow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetColorSpace'
+// For ise
+CGColorSpaceRef  ewg_function_CGImageGetColorSpace (CGImageRef ewg_image)
+{
+	return CGImageGetColorSpace ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetColorSpace'
+void* ewg_get_function_address_CGImageGetColorSpace (void)
+{
+	return (void*) CGImageGetColorSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetAlphaInfo'
+// For ise
+CGImageAlphaInfo  ewg_function_CGImageGetAlphaInfo (CGImageRef ewg_image)
+{
+	return CGImageGetAlphaInfo ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetAlphaInfo'
+void* ewg_get_function_address_CGImageGetAlphaInfo (void)
+{
+	return (void*) CGImageGetAlphaInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetDataProvider'
+// For ise
+CGDataProviderRef  ewg_function_CGImageGetDataProvider (CGImageRef ewg_image)
+{
+	return CGImageGetDataProvider ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetDataProvider'
+void* ewg_get_function_address_CGImageGetDataProvider (void)
+{
+	return (void*) CGImageGetDataProvider;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetDecode'
+// For ise
+float const * ewg_function_CGImageGetDecode (CGImageRef ewg_image)
+{
+	return CGImageGetDecode ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetDecode'
+void* ewg_get_function_address_CGImageGetDecode (void)
+{
+	return (void*) CGImageGetDecode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetShouldInterpolate'
+// For ise
+_Bool  ewg_function_CGImageGetShouldInterpolate (CGImageRef ewg_image)
+{
+	return CGImageGetShouldInterpolate ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetShouldInterpolate'
+void* ewg_get_function_address_CGImageGetShouldInterpolate (void)
+{
+	return (void*) CGImageGetShouldInterpolate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetRenderingIntent'
+// For ise
+CGColorRenderingIntent  ewg_function_CGImageGetRenderingIntent (CGImageRef ewg_image)
+{
+	return CGImageGetRenderingIntent ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetRenderingIntent'
+void* ewg_get_function_address_CGImageGetRenderingIntent (void)
+{
+	return (void*) CGImageGetRenderingIntent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGImageGetBitmapInfo'
+// For ise
+CGBitmapInfo  ewg_function_CGImageGetBitmapInfo (CGImageRef ewg_image)
+{
+	return CGImageGetBitmapInfo ((CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGImageGetBitmapInfo'
+void* ewg_get_function_address_CGImageGetBitmapInfo (void)
+{
+	return (void*) CGImageGetBitmapInfo;
 }
 
 #include <Carbon/Carbon.h>
@@ -22024,6 +24173,51 @@ void* ewg_get_function_address_CreateEditUnicodeTextControl (void)
 
 #include <ewg_carbon_callback_c_glue_code.h>
 
+// Wraps call to function 'get_cgdata_provider_release_data_callback_stub'
+// For ise
+void * ewg_function_get_cgdata_provider_release_data_callback_stub (void)
+{
+	return get_cgdata_provider_release_data_callback_stub ();
+}
+
+// Return address of function 'get_cgdata_provider_release_data_callback_stub'
+void* ewg_get_function_address_get_cgdata_provider_release_data_callback_stub (void)
+{
+	return (void*) get_cgdata_provider_release_data_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cgdata_provider_release_data_callback_entry'
+// For ise
+void  ewg_function_set_cgdata_provider_release_data_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cgdata_provider_release_data_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cgdata_provider_release_data_callback_entry'
+void* ewg_get_function_address_set_cgdata_provider_release_data_callback_entry (void)
+{
+	return (void*) set_cgdata_provider_release_data_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cgdata_provider_release_data_callback'
+// For ise
+void  ewg_function_call_cgdata_provider_release_data_callback (void *ewg_a_function, void *ewg_info, void const *ewg_data, size_t ewg_size)
+{
+	call_cgdata_provider_release_data_callback ((void*)ewg_a_function, (void*)ewg_info, (void const*)ewg_data, (size_t)ewg_size);
+}
+
+// Return address of function 'call_cgdata_provider_release_data_callback'
+void* ewg_get_function_address_call_cgdata_provider_release_data_callback (void)
+{
+	return (void*) call_cgdata_provider_release_data_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
 // Wraps call to function 'get_aeremote_process_resolver_callback_stub'
 // For ise
 void * ewg_function_get_aeremote_process_resolver_callback_stub (void)
@@ -24720,6 +26914,636 @@ Boolean  ewg_function_call_edit_unicode_post_update_proc_ptr (void *ewg_a_functi
 void* ewg_get_function_address_call_edit_unicode_post_update_proc_ptr (void)
 {
 	return (void*) call_edit_unicode_post_update_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfcomparator_function_stub'
+// For ise
+void * ewg_function_get_cfcomparator_function_stub (void)
+{
+	return get_cfcomparator_function_stub ();
+}
+
+// Return address of function 'get_cfcomparator_function_stub'
+void* ewg_get_function_address_get_cfcomparator_function_stub (void)
+{
+	return (void*) get_cfcomparator_function_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfcomparator_function_entry'
+// For ise
+void  ewg_function_set_cfcomparator_function_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfcomparator_function_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfcomparator_function_entry'
+void* ewg_get_function_address_set_cfcomparator_function_entry (void)
+{
+	return (void*) set_cfcomparator_function_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfcomparator_function'
+// For ise
+CFComparisonResult  ewg_function_call_cfcomparator_function (void *ewg_a_function, void const *ewg_val1, void const *ewg_val2, void *ewg_context)
+{
+	return call_cfcomparator_function ((void*)ewg_a_function, (void const*)ewg_val1, (void const*)ewg_val2, (void*)ewg_context);
+}
+
+// Return address of function 'call_cfcomparator_function'
+void* ewg_get_function_address_call_cfcomparator_function (void)
+{
+	return (void*) call_cfcomparator_function;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfallocator_retain_call_back_stub'
+// For ise
+void * ewg_function_get_cfallocator_retain_call_back_stub (void)
+{
+	return get_cfallocator_retain_call_back_stub ();
+}
+
+// Return address of function 'get_cfallocator_retain_call_back_stub'
+void* ewg_get_function_address_get_cfallocator_retain_call_back_stub (void)
+{
+	return (void*) get_cfallocator_retain_call_back_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfallocator_retain_call_back_entry'
+// For ise
+void  ewg_function_set_cfallocator_retain_call_back_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfallocator_retain_call_back_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfallocator_retain_call_back_entry'
+void* ewg_get_function_address_set_cfallocator_retain_call_back_entry (void)
+{
+	return (void*) set_cfallocator_retain_call_back_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfallocator_retain_call_back'
+// For ise
+void const * ewg_function_call_cfallocator_retain_call_back (void *ewg_a_function, void const *ewg_info)
+{
+	return call_cfallocator_retain_call_back ((void*)ewg_a_function, (void const*)ewg_info);
+}
+
+// Return address of function 'call_cfallocator_retain_call_back'
+void* ewg_get_function_address_call_cfallocator_retain_call_back (void)
+{
+	return (void*) call_cfallocator_retain_call_back;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfallocator_release_call_back_stub'
+// For ise
+void * ewg_function_get_cfallocator_release_call_back_stub (void)
+{
+	return get_cfallocator_release_call_back_stub ();
+}
+
+// Return address of function 'get_cfallocator_release_call_back_stub'
+void* ewg_get_function_address_get_cfallocator_release_call_back_stub (void)
+{
+	return (void*) get_cfallocator_release_call_back_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfallocator_release_call_back_entry'
+// For ise
+void  ewg_function_set_cfallocator_release_call_back_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfallocator_release_call_back_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfallocator_release_call_back_entry'
+void* ewg_get_function_address_set_cfallocator_release_call_back_entry (void)
+{
+	return (void*) set_cfallocator_release_call_back_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfallocator_release_call_back'
+// For ise
+void  ewg_function_call_cfallocator_release_call_back (void *ewg_a_function, void const *ewg_info)
+{
+	call_cfallocator_release_call_back ((void*)ewg_a_function, (void const*)ewg_info);
+}
+
+// Return address of function 'call_cfallocator_release_call_back'
+void* ewg_get_function_address_call_cfallocator_release_call_back (void)
+{
+	return (void*) call_cfallocator_release_call_back;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfallocator_copy_description_call_back_stub'
+// For ise
+void * ewg_function_get_cfallocator_copy_description_call_back_stub (void)
+{
+	return get_cfallocator_copy_description_call_back_stub ();
+}
+
+// Return address of function 'get_cfallocator_copy_description_call_back_stub'
+void* ewg_get_function_address_get_cfallocator_copy_description_call_back_stub (void)
+{
+	return (void*) get_cfallocator_copy_description_call_back_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfallocator_copy_description_call_back_entry'
+// For ise
+void  ewg_function_set_cfallocator_copy_description_call_back_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfallocator_copy_description_call_back_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfallocator_copy_description_call_back_entry'
+void* ewg_get_function_address_set_cfallocator_copy_description_call_back_entry (void)
+{
+	return (void*) set_cfallocator_copy_description_call_back_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfallocator_copy_description_call_back'
+// For ise
+CFStringRef  ewg_function_call_cfallocator_copy_description_call_back (void *ewg_a_function, void const *ewg_info)
+{
+	return call_cfallocator_copy_description_call_back ((void*)ewg_a_function, (void const*)ewg_info);
+}
+
+// Return address of function 'call_cfallocator_copy_description_call_back'
+void* ewg_get_function_address_call_cfallocator_copy_description_call_back (void)
+{
+	return (void*) call_cfallocator_copy_description_call_back;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfallocator_allocate_call_back_stub'
+// For ise
+void * ewg_function_get_cfallocator_allocate_call_back_stub (void)
+{
+	return get_cfallocator_allocate_call_back_stub ();
+}
+
+// Return address of function 'get_cfallocator_allocate_call_back_stub'
+void* ewg_get_function_address_get_cfallocator_allocate_call_back_stub (void)
+{
+	return (void*) get_cfallocator_allocate_call_back_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfallocator_allocate_call_back_entry'
+// For ise
+void  ewg_function_set_cfallocator_allocate_call_back_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfallocator_allocate_call_back_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfallocator_allocate_call_back_entry'
+void* ewg_get_function_address_set_cfallocator_allocate_call_back_entry (void)
+{
+	return (void*) set_cfallocator_allocate_call_back_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfallocator_allocate_call_back'
+// For ise
+void * ewg_function_call_cfallocator_allocate_call_back (void *ewg_a_function, CFIndex ewg_allocSize, CFOptionFlags ewg_hint, void *ewg_info)
+{
+	return call_cfallocator_allocate_call_back ((void*)ewg_a_function, (CFIndex)ewg_allocSize, (CFOptionFlags)ewg_hint, (void*)ewg_info);
+}
+
+// Return address of function 'call_cfallocator_allocate_call_back'
+void* ewg_get_function_address_call_cfallocator_allocate_call_back (void)
+{
+	return (void*) call_cfallocator_allocate_call_back;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfallocator_reallocate_call_back_stub'
+// For ise
+void * ewg_function_get_cfallocator_reallocate_call_back_stub (void)
+{
+	return get_cfallocator_reallocate_call_back_stub ();
+}
+
+// Return address of function 'get_cfallocator_reallocate_call_back_stub'
+void* ewg_get_function_address_get_cfallocator_reallocate_call_back_stub (void)
+{
+	return (void*) get_cfallocator_reallocate_call_back_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfallocator_reallocate_call_back_entry'
+// For ise
+void  ewg_function_set_cfallocator_reallocate_call_back_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfallocator_reallocate_call_back_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfallocator_reallocate_call_back_entry'
+void* ewg_get_function_address_set_cfallocator_reallocate_call_back_entry (void)
+{
+	return (void*) set_cfallocator_reallocate_call_back_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfallocator_reallocate_call_back'
+// For ise
+void * ewg_function_call_cfallocator_reallocate_call_back (void *ewg_a_function, void *ewg_ptr, CFIndex ewg_newsize, CFOptionFlags ewg_hint, void *ewg_info)
+{
+	return call_cfallocator_reallocate_call_back ((void*)ewg_a_function, (void*)ewg_ptr, (CFIndex)ewg_newsize, (CFOptionFlags)ewg_hint, (void*)ewg_info);
+}
+
+// Return address of function 'call_cfallocator_reallocate_call_back'
+void* ewg_get_function_address_call_cfallocator_reallocate_call_back (void)
+{
+	return (void*) call_cfallocator_reallocate_call_back;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfallocator_deallocate_call_back_stub'
+// For ise
+void * ewg_function_get_cfallocator_deallocate_call_back_stub (void)
+{
+	return get_cfallocator_deallocate_call_back_stub ();
+}
+
+// Return address of function 'get_cfallocator_deallocate_call_back_stub'
+void* ewg_get_function_address_get_cfallocator_deallocate_call_back_stub (void)
+{
+	return (void*) get_cfallocator_deallocate_call_back_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfallocator_deallocate_call_back_entry'
+// For ise
+void  ewg_function_set_cfallocator_deallocate_call_back_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfallocator_deallocate_call_back_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfallocator_deallocate_call_back_entry'
+void* ewg_get_function_address_set_cfallocator_deallocate_call_back_entry (void)
+{
+	return (void*) set_cfallocator_deallocate_call_back_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfallocator_deallocate_call_back'
+// For ise
+void  ewg_function_call_cfallocator_deallocate_call_back (void *ewg_a_function, void *ewg_ptr, void *ewg_info)
+{
+	call_cfallocator_deallocate_call_back ((void*)ewg_a_function, (void*)ewg_ptr, (void*)ewg_info);
+}
+
+// Return address of function 'call_cfallocator_deallocate_call_back'
+void* ewg_get_function_address_call_cfallocator_deallocate_call_back (void)
+{
+	return (void*) call_cfallocator_deallocate_call_back;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cfallocator_preferred_size_call_back_stub'
+// For ise
+void * ewg_function_get_cfallocator_preferred_size_call_back_stub (void)
+{
+	return get_cfallocator_preferred_size_call_back_stub ();
+}
+
+// Return address of function 'get_cfallocator_preferred_size_call_back_stub'
+void* ewg_get_function_address_get_cfallocator_preferred_size_call_back_stub (void)
+{
+	return (void*) get_cfallocator_preferred_size_call_back_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cfallocator_preferred_size_call_back_entry'
+// For ise
+void  ewg_function_set_cfallocator_preferred_size_call_back_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cfallocator_preferred_size_call_back_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cfallocator_preferred_size_call_back_entry'
+void* ewg_get_function_address_set_cfallocator_preferred_size_call_back_entry (void)
+{
+	return (void*) set_cfallocator_preferred_size_call_back_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cfallocator_preferred_size_call_back'
+// For ise
+CFIndex  ewg_function_call_cfallocator_preferred_size_call_back (void *ewg_a_function, CFIndex ewg_size, CFOptionFlags ewg_hint, void *ewg_info)
+{
+	return call_cfallocator_preferred_size_call_back ((void*)ewg_a_function, (CFIndex)ewg_size, (CFOptionFlags)ewg_hint, (void*)ewg_info);
+}
+
+// Return address of function 'call_cfallocator_preferred_size_call_back'
+void* ewg_get_function_address_call_cfallocator_preferred_size_call_back (void)
+{
+	return (void*) call_cfallocator_preferred_size_call_back;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cgdata_provider_get_bytes_callback_stub'
+// For ise
+void * ewg_function_get_cgdata_provider_get_bytes_callback_stub (void)
+{
+	return get_cgdata_provider_get_bytes_callback_stub ();
+}
+
+// Return address of function 'get_cgdata_provider_get_bytes_callback_stub'
+void* ewg_get_function_address_get_cgdata_provider_get_bytes_callback_stub (void)
+{
+	return (void*) get_cgdata_provider_get_bytes_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cgdata_provider_get_bytes_callback_entry'
+// For ise
+void  ewg_function_set_cgdata_provider_get_bytes_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cgdata_provider_get_bytes_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cgdata_provider_get_bytes_callback_entry'
+void* ewg_get_function_address_set_cgdata_provider_get_bytes_callback_entry (void)
+{
+	return (void*) set_cgdata_provider_get_bytes_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cgdata_provider_get_bytes_callback'
+// For ise
+size_t  ewg_function_call_cgdata_provider_get_bytes_callback (void *ewg_a_function, void *ewg_info, void *ewg_buffer, size_t ewg_count)
+{
+	return call_cgdata_provider_get_bytes_callback ((void*)ewg_a_function, (void*)ewg_info, (void*)ewg_buffer, (size_t)ewg_count);
+}
+
+// Return address of function 'call_cgdata_provider_get_bytes_callback'
+void* ewg_get_function_address_call_cgdata_provider_get_bytes_callback (void)
+{
+	return (void*) call_cgdata_provider_get_bytes_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cgdata_provider_skip_bytes_callback_stub'
+// For ise
+void * ewg_function_get_cgdata_provider_skip_bytes_callback_stub (void)
+{
+	return get_cgdata_provider_skip_bytes_callback_stub ();
+}
+
+// Return address of function 'get_cgdata_provider_skip_bytes_callback_stub'
+void* ewg_get_function_address_get_cgdata_provider_skip_bytes_callback_stub (void)
+{
+	return (void*) get_cgdata_provider_skip_bytes_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cgdata_provider_skip_bytes_callback_entry'
+// For ise
+void  ewg_function_set_cgdata_provider_skip_bytes_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cgdata_provider_skip_bytes_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cgdata_provider_skip_bytes_callback_entry'
+void* ewg_get_function_address_set_cgdata_provider_skip_bytes_callback_entry (void)
+{
+	return (void*) set_cgdata_provider_skip_bytes_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cgdata_provider_skip_bytes_callback'
+// For ise
+void  ewg_function_call_cgdata_provider_skip_bytes_callback (void *ewg_a_function, void *ewg_info, size_t ewg_count)
+{
+	call_cgdata_provider_skip_bytes_callback ((void*)ewg_a_function, (void*)ewg_info, (size_t)ewg_count);
+}
+
+// Return address of function 'call_cgdata_provider_skip_bytes_callback'
+void* ewg_get_function_address_call_cgdata_provider_skip_bytes_callback (void)
+{
+	return (void*) call_cgdata_provider_skip_bytes_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_wsclient_context_release_call_back_proc_ptr_stub'
+// For ise
+void * ewg_function_get_wsclient_context_release_call_back_proc_ptr_stub (void)
+{
+	return get_wsclient_context_release_call_back_proc_ptr_stub ();
+}
+
+// Return address of function 'get_wsclient_context_release_call_back_proc_ptr_stub'
+void* ewg_get_function_address_get_wsclient_context_release_call_back_proc_ptr_stub (void)
+{
+	return (void*) get_wsclient_context_release_call_back_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_wsclient_context_release_call_back_proc_ptr_entry'
+// For ise
+void  ewg_function_set_wsclient_context_release_call_back_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_wsclient_context_release_call_back_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_wsclient_context_release_call_back_proc_ptr_entry'
+void* ewg_get_function_address_set_wsclient_context_release_call_back_proc_ptr_entry (void)
+{
+	return (void*) set_wsclient_context_release_call_back_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_wsclient_context_release_call_back_proc_ptr'
+// For ise
+void  ewg_function_call_wsclient_context_release_call_back_proc_ptr (void *ewg_a_function, void *ewg_info)
+{
+	call_wsclient_context_release_call_back_proc_ptr ((void*)ewg_a_function, (void*)ewg_info);
+}
+
+// Return address of function 'call_wsclient_context_release_call_back_proc_ptr'
+void* ewg_get_function_address_call_wsclient_context_release_call_back_proc_ptr (void)
+{
+	return (void*) call_wsclient_context_release_call_back_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cgdata_provider_get_byte_pointer_callback_stub'
+// For ise
+void * ewg_function_get_cgdata_provider_get_byte_pointer_callback_stub (void)
+{
+	return get_cgdata_provider_get_byte_pointer_callback_stub ();
+}
+
+// Return address of function 'get_cgdata_provider_get_byte_pointer_callback_stub'
+void* ewg_get_function_address_get_cgdata_provider_get_byte_pointer_callback_stub (void)
+{
+	return (void*) get_cgdata_provider_get_byte_pointer_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cgdata_provider_get_byte_pointer_callback_entry'
+// For ise
+void  ewg_function_set_cgdata_provider_get_byte_pointer_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cgdata_provider_get_byte_pointer_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cgdata_provider_get_byte_pointer_callback_entry'
+void* ewg_get_function_address_set_cgdata_provider_get_byte_pointer_callback_entry (void)
+{
+	return (void*) set_cgdata_provider_get_byte_pointer_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cgdata_provider_get_byte_pointer_callback'
+// For ise
+void const * ewg_function_call_cgdata_provider_get_byte_pointer_callback (void *ewg_a_function, void *ewg_info)
+{
+	return call_cgdata_provider_get_byte_pointer_callback ((void*)ewg_a_function, (void*)ewg_info);
+}
+
+// Return address of function 'call_cgdata_provider_get_byte_pointer_callback'
+void* ewg_get_function_address_call_cgdata_provider_get_byte_pointer_callback (void)
+{
+	return (void*) call_cgdata_provider_get_byte_pointer_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cgdata_provider_release_byte_pointer_callback_stub'
+// For ise
+void * ewg_function_get_cgdata_provider_release_byte_pointer_callback_stub (void)
+{
+	return get_cgdata_provider_release_byte_pointer_callback_stub ();
+}
+
+// Return address of function 'get_cgdata_provider_release_byte_pointer_callback_stub'
+void* ewg_get_function_address_get_cgdata_provider_release_byte_pointer_callback_stub (void)
+{
+	return (void*) get_cgdata_provider_release_byte_pointer_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cgdata_provider_release_byte_pointer_callback_entry'
+// For ise
+void  ewg_function_set_cgdata_provider_release_byte_pointer_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cgdata_provider_release_byte_pointer_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cgdata_provider_release_byte_pointer_callback_entry'
+void* ewg_get_function_address_set_cgdata_provider_release_byte_pointer_callback_entry (void)
+{
+	return (void*) set_cgdata_provider_release_byte_pointer_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cgdata_provider_release_byte_pointer_callback'
+// For ise
+void  ewg_function_call_cgdata_provider_release_byte_pointer_callback (void *ewg_a_function, void *ewg_info, void const *ewg_pointer)
+{
+	call_cgdata_provider_release_byte_pointer_callback ((void*)ewg_a_function, (void*)ewg_info, (void const*)ewg_pointer);
+}
+
+// Return address of function 'call_cgdata_provider_release_byte_pointer_callback'
+void* ewg_get_function_address_call_cgdata_provider_release_byte_pointer_callback (void)
+{
+	return (void*) call_cgdata_provider_release_byte_pointer_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cgdata_provider_get_bytes_at_offset_callback_stub'
+// For ise
+void * ewg_function_get_cgdata_provider_get_bytes_at_offset_callback_stub (void)
+{
+	return get_cgdata_provider_get_bytes_at_offset_callback_stub ();
+}
+
+// Return address of function 'get_cgdata_provider_get_bytes_at_offset_callback_stub'
+void* ewg_get_function_address_get_cgdata_provider_get_bytes_at_offset_callback_stub (void)
+{
+	return (void*) get_cgdata_provider_get_bytes_at_offset_callback_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cgdata_provider_get_bytes_at_offset_callback_entry'
+// For ise
+void  ewg_function_set_cgdata_provider_get_bytes_at_offset_callback_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cgdata_provider_get_bytes_at_offset_callback_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cgdata_provider_get_bytes_at_offset_callback_entry'
+void* ewg_get_function_address_set_cgdata_provider_get_bytes_at_offset_callback_entry (void)
+{
+	return (void*) set_cgdata_provider_get_bytes_at_offset_callback_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cgdata_provider_get_bytes_at_offset_callback'
+// For ise
+size_t  ewg_function_call_cgdata_provider_get_bytes_at_offset_callback (void *ewg_a_function, void *ewg_info, void *ewg_buffer, size_t ewg_offset, size_t ewg_count)
+{
+	return call_cgdata_provider_get_bytes_at_offset_callback ((void*)ewg_a_function, (void*)ewg_info, (void*)ewg_buffer, (size_t)ewg_offset, (size_t)ewg_count);
+}
+
+// Return address of function 'call_cgdata_provider_get_bytes_at_offset_callback'
+void* ewg_get_function_address_call_cgdata_provider_get_bytes_at_offset_callback (void)
+{
+	return (void*) call_cgdata_provider_get_bytes_at_offset_callback;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>

@@ -3,6 +3,51 @@
 class EWG_CARBON_CALLBACK_C_GLUE_CODE_FUNCTIONS_EXTERNAL
 
 feature
+	get_cgdata_provider_release_data_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cgdata_provider_release_data_callback_stub"
+		end
+
+	get_cgdata_provider_release_data_callback_stub_address_external: POINTER is
+			-- Address of C function `get_cgdata_provider_release_data_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cgdata_provider_release_data_callback_stub"
+		end
+
+	set_cgdata_provider_release_data_callback_entry_external (a_class: CGDATA_PROVIDER_RELEASE_DATA_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cgdata_provider_release_data_callback_entry"
+		end
+
+	set_cgdata_provider_release_data_callback_entry_address_external: POINTER is
+			-- Address of C function `set_cgdata_provider_release_data_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cgdata_provider_release_data_callback_entry"
+		end
+
+	call_cgdata_provider_release_data_callback_external (a_function: POINTER; info: POINTER; data: POINTER; size: INTEGER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void const*, size_t)"
+		alias
+			"ewg_function_macro_call_cgdata_provider_release_data_callback"
+		end
+
+	call_cgdata_provider_release_data_callback_address_external: POINTER is
+			-- Address of C function `call_cgdata_provider_release_data_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cgdata_provider_release_data_callback"
+		end
+
 	get_aeremote_process_resolver_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
@@ -2701,6 +2746,636 @@ feature
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
 		alias
 			"(void*) call_edit_unicode_post_update_proc_ptr"
+		end
+
+	get_cfcomparator_function_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfcomparator_function_stub"
+		end
+
+	get_cfcomparator_function_stub_address_external: POINTER is
+			-- Address of C function `get_cfcomparator_function_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfcomparator_function_stub"
+		end
+
+	set_cfcomparator_function_entry_external (a_class: CFCOMPARATOR_FUNCTION_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfcomparator_function_entry"
+		end
+
+	set_cfcomparator_function_entry_address_external: POINTER is
+			-- Address of C function `set_cfcomparator_function_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfcomparator_function_entry"
+		end
+
+	call_cfcomparator_function_external (a_function: POINTER; val1: POINTER; val2: POINTER; context: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*, void const*, void*):CFComparisonResult"
+		alias
+			"ewg_function_macro_call_cfcomparator_function"
+		end
+
+	call_cfcomparator_function_address_external: POINTER is
+			-- Address of C function `call_cfcomparator_function'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfcomparator_function"
+		end
+
+	get_cfallocator_retain_call_back_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfallocator_retain_call_back_stub"
+		end
+
+	get_cfallocator_retain_call_back_stub_address_external: POINTER is
+			-- Address of C function `get_cfallocator_retain_call_back_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfallocator_retain_call_back_stub"
+		end
+
+	set_cfallocator_retain_call_back_entry_external (a_class: CFALLOCATOR_RETAIN_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfallocator_retain_call_back_entry"
+		end
+
+	set_cfallocator_retain_call_back_entry_address_external: POINTER is
+			-- Address of C function `set_cfallocator_retain_call_back_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfallocator_retain_call_back_entry"
+		end
+
+	call_cfallocator_retain_call_back_external (a_function: POINTER; info: POINTER): POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*):void const*"
+		alias
+			"ewg_function_macro_call_cfallocator_retain_call_back"
+		end
+
+	call_cfallocator_retain_call_back_address_external: POINTER is
+			-- Address of C function `call_cfallocator_retain_call_back'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfallocator_retain_call_back"
+		end
+
+	get_cfallocator_release_call_back_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfallocator_release_call_back_stub"
+		end
+
+	get_cfallocator_release_call_back_stub_address_external: POINTER is
+			-- Address of C function `get_cfallocator_release_call_back_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfallocator_release_call_back_stub"
+		end
+
+	set_cfallocator_release_call_back_entry_external (a_class: CFALLOCATOR_RELEASE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfallocator_release_call_back_entry"
+		end
+
+	set_cfallocator_release_call_back_entry_address_external: POINTER is
+			-- Address of C function `set_cfallocator_release_call_back_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfallocator_release_call_back_entry"
+		end
+
+	call_cfallocator_release_call_back_external (a_function: POINTER; info: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*)"
+		alias
+			"ewg_function_macro_call_cfallocator_release_call_back"
+		end
+
+	call_cfallocator_release_call_back_address_external: POINTER is
+			-- Address of C function `call_cfallocator_release_call_back'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfallocator_release_call_back"
+		end
+
+	get_cfallocator_copy_description_call_back_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfallocator_copy_description_call_back_stub"
+		end
+
+	get_cfallocator_copy_description_call_back_stub_address_external: POINTER is
+			-- Address of C function `get_cfallocator_copy_description_call_back_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfallocator_copy_description_call_back_stub"
+		end
+
+	set_cfallocator_copy_description_call_back_entry_external (a_class: CFALLOCATOR_COPY_DESCRIPTION_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfallocator_copy_description_call_back_entry"
+		end
+
+	set_cfallocator_copy_description_call_back_entry_address_external: POINTER is
+			-- Address of C function `set_cfallocator_copy_description_call_back_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfallocator_copy_description_call_back_entry"
+		end
+
+	call_cfallocator_copy_description_call_back_external (a_function: POINTER; info: POINTER): POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*):CFStringRef"
+		alias
+			"ewg_function_macro_call_cfallocator_copy_description_call_back"
+		end
+
+	call_cfallocator_copy_description_call_back_address_external: POINTER is
+			-- Address of C function `call_cfallocator_copy_description_call_back'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfallocator_copy_description_call_back"
+		end
+
+	get_cfallocator_allocate_call_back_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfallocator_allocate_call_back_stub"
+		end
+
+	get_cfallocator_allocate_call_back_stub_address_external: POINTER is
+			-- Address of C function `get_cfallocator_allocate_call_back_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfallocator_allocate_call_back_stub"
+		end
+
+	set_cfallocator_allocate_call_back_entry_external (a_class: CFALLOCATOR_ALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfallocator_allocate_call_back_entry"
+		end
+
+	set_cfallocator_allocate_call_back_entry_address_external: POINTER is
+			-- Address of C function `set_cfallocator_allocate_call_back_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfallocator_allocate_call_back_entry"
+		end
+
+	call_cfallocator_allocate_call_back_external (a_function: POINTER; allocsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, CFIndex, CFOptionFlags, void*):void*"
+		alias
+			"ewg_function_macro_call_cfallocator_allocate_call_back"
+		end
+
+	call_cfallocator_allocate_call_back_address_external: POINTER is
+			-- Address of C function `call_cfallocator_allocate_call_back'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfallocator_allocate_call_back"
+		end
+
+	get_cfallocator_reallocate_call_back_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfallocator_reallocate_call_back_stub"
+		end
+
+	get_cfallocator_reallocate_call_back_stub_address_external: POINTER is
+			-- Address of C function `get_cfallocator_reallocate_call_back_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfallocator_reallocate_call_back_stub"
+		end
+
+	set_cfallocator_reallocate_call_back_entry_external (a_class: CFALLOCATOR_REALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfallocator_reallocate_call_back_entry"
+		end
+
+	set_cfallocator_reallocate_call_back_entry_address_external: POINTER is
+			-- Address of C function `set_cfallocator_reallocate_call_back_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfallocator_reallocate_call_back_entry"
+		end
+
+	call_cfallocator_reallocate_call_back_external (a_function: POINTER; ptr: POINTER; newsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, CFIndex, CFOptionFlags, void*):void*"
+		alias
+			"ewg_function_macro_call_cfallocator_reallocate_call_back"
+		end
+
+	call_cfallocator_reallocate_call_back_address_external: POINTER is
+			-- Address of C function `call_cfallocator_reallocate_call_back'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfallocator_reallocate_call_back"
+		end
+
+	get_cfallocator_deallocate_call_back_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfallocator_deallocate_call_back_stub"
+		end
+
+	get_cfallocator_deallocate_call_back_stub_address_external: POINTER is
+			-- Address of C function `get_cfallocator_deallocate_call_back_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfallocator_deallocate_call_back_stub"
+		end
+
+	set_cfallocator_deallocate_call_back_entry_external (a_class: CFALLOCATOR_DEALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfallocator_deallocate_call_back_entry"
+		end
+
+	set_cfallocator_deallocate_call_back_entry_address_external: POINTER is
+			-- Address of C function `set_cfallocator_deallocate_call_back_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfallocator_deallocate_call_back_entry"
+		end
+
+	call_cfallocator_deallocate_call_back_external (a_function: POINTER; ptr: POINTER; info: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void*)"
+		alias
+			"ewg_function_macro_call_cfallocator_deallocate_call_back"
+		end
+
+	call_cfallocator_deallocate_call_back_address_external: POINTER is
+			-- Address of C function `call_cfallocator_deallocate_call_back'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfallocator_deallocate_call_back"
+		end
+
+	get_cfallocator_preferred_size_call_back_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cfallocator_preferred_size_call_back_stub"
+		end
+
+	get_cfallocator_preferred_size_call_back_stub_address_external: POINTER is
+			-- Address of C function `get_cfallocator_preferred_size_call_back_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cfallocator_preferred_size_call_back_stub"
+		end
+
+	set_cfallocator_preferred_size_call_back_entry_external (a_class: CFALLOCATOR_PREFERRED_SIZE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cfallocator_preferred_size_call_back_entry"
+		end
+
+	set_cfallocator_preferred_size_call_back_entry_address_external: POINTER is
+			-- Address of C function `set_cfallocator_preferred_size_call_back_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cfallocator_preferred_size_call_back_entry"
+		end
+
+	call_cfallocator_preferred_size_call_back_external (a_function: POINTER; size: INTEGER; hint: INTEGER; info: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, CFIndex, CFOptionFlags, void*):CFIndex"
+		alias
+			"ewg_function_macro_call_cfallocator_preferred_size_call_back"
+		end
+
+	call_cfallocator_preferred_size_call_back_address_external: POINTER is
+			-- Address of C function `call_cfallocator_preferred_size_call_back'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cfallocator_preferred_size_call_back"
+		end
+
+	get_cgdata_provider_get_bytes_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cgdata_provider_get_bytes_callback_stub"
+		end
+
+	get_cgdata_provider_get_bytes_callback_stub_address_external: POINTER is
+			-- Address of C function `get_cgdata_provider_get_bytes_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cgdata_provider_get_bytes_callback_stub"
+		end
+
+	set_cgdata_provider_get_bytes_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cgdata_provider_get_bytes_callback_entry"
+		end
+
+	set_cgdata_provider_get_bytes_callback_entry_address_external: POINTER is
+			-- Address of C function `set_cgdata_provider_get_bytes_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cgdata_provider_get_bytes_callback_entry"
+		end
+
+	call_cgdata_provider_get_bytes_callback_external (a_function: POINTER; info: POINTER; buffer: POINTER; count: INTEGER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void*, size_t):size_t"
+		alias
+			"ewg_function_macro_call_cgdata_provider_get_bytes_callback"
+		end
+
+	call_cgdata_provider_get_bytes_callback_address_external: POINTER is
+			-- Address of C function `call_cgdata_provider_get_bytes_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cgdata_provider_get_bytes_callback"
+		end
+
+	get_cgdata_provider_skip_bytes_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cgdata_provider_skip_bytes_callback_stub"
+		end
+
+	get_cgdata_provider_skip_bytes_callback_stub_address_external: POINTER is
+			-- Address of C function `get_cgdata_provider_skip_bytes_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cgdata_provider_skip_bytes_callback_stub"
+		end
+
+	set_cgdata_provider_skip_bytes_callback_entry_external (a_class: CGDATA_PROVIDER_SKIP_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cgdata_provider_skip_bytes_callback_entry"
+		end
+
+	set_cgdata_provider_skip_bytes_callback_entry_address_external: POINTER is
+			-- Address of C function `set_cgdata_provider_skip_bytes_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cgdata_provider_skip_bytes_callback_entry"
+		end
+
+	call_cgdata_provider_skip_bytes_callback_external (a_function: POINTER; info: POINTER; count: INTEGER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, size_t)"
+		alias
+			"ewg_function_macro_call_cgdata_provider_skip_bytes_callback"
+		end
+
+	call_cgdata_provider_skip_bytes_callback_address_external: POINTER is
+			-- Address of C function `call_cgdata_provider_skip_bytes_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cgdata_provider_skip_bytes_callback"
+		end
+
+	get_wsclient_context_release_call_back_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_wsclient_context_release_call_back_proc_ptr_stub"
+		end
+
+	get_wsclient_context_release_call_back_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_wsclient_context_release_call_back_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_wsclient_context_release_call_back_proc_ptr_stub"
+		end
+
+	set_wsclient_context_release_call_back_proc_ptr_entry_external (a_class: WSCLIENT_CONTEXT_RELEASE_CALL_BACK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_wsclient_context_release_call_back_proc_ptr_entry"
+		end
+
+	set_wsclient_context_release_call_back_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_wsclient_context_release_call_back_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_wsclient_context_release_call_back_proc_ptr_entry"
+		end
+
+	call_wsclient_context_release_call_back_proc_ptr_external (a_function: POINTER; info: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_call_wsclient_context_release_call_back_proc_ptr"
+		end
+
+	call_wsclient_context_release_call_back_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_wsclient_context_release_call_back_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_wsclient_context_release_call_back_proc_ptr"
+		end
+
+	get_cgdata_provider_get_byte_pointer_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cgdata_provider_get_byte_pointer_callback_stub"
+		end
+
+	get_cgdata_provider_get_byte_pointer_callback_stub_address_external: POINTER is
+			-- Address of C function `get_cgdata_provider_get_byte_pointer_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cgdata_provider_get_byte_pointer_callback_stub"
+		end
+
+	set_cgdata_provider_get_byte_pointer_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cgdata_provider_get_byte_pointer_callback_entry"
+		end
+
+	set_cgdata_provider_get_byte_pointer_callback_entry_address_external: POINTER is
+			-- Address of C function `set_cgdata_provider_get_byte_pointer_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cgdata_provider_get_byte_pointer_callback_entry"
+		end
+
+	call_cgdata_provider_get_byte_pointer_callback_external (a_function: POINTER; info: POINTER): POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*):void const*"
+		alias
+			"ewg_function_macro_call_cgdata_provider_get_byte_pointer_callback"
+		end
+
+	call_cgdata_provider_get_byte_pointer_callback_address_external: POINTER is
+			-- Address of C function `call_cgdata_provider_get_byte_pointer_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cgdata_provider_get_byte_pointer_callback"
+		end
+
+	get_cgdata_provider_release_byte_pointer_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cgdata_provider_release_byte_pointer_callback_stub"
+		end
+
+	get_cgdata_provider_release_byte_pointer_callback_stub_address_external: POINTER is
+			-- Address of C function `get_cgdata_provider_release_byte_pointer_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cgdata_provider_release_byte_pointer_callback_stub"
+		end
+
+	set_cgdata_provider_release_byte_pointer_callback_entry_external (a_class: CGDATA_PROVIDER_RELEASE_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cgdata_provider_release_byte_pointer_callback_entry"
+		end
+
+	set_cgdata_provider_release_byte_pointer_callback_entry_address_external: POINTER is
+			-- Address of C function `set_cgdata_provider_release_byte_pointer_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cgdata_provider_release_byte_pointer_callback_entry"
+		end
+
+	call_cgdata_provider_release_byte_pointer_callback_external (a_function: POINTER; info: POINTER; a_pointer: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void const*)"
+		alias
+			"ewg_function_macro_call_cgdata_provider_release_byte_pointer_callback"
+		end
+
+	call_cgdata_provider_release_byte_pointer_callback_address_external: POINTER is
+			-- Address of C function `call_cgdata_provider_release_byte_pointer_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cgdata_provider_release_byte_pointer_callback"
+		end
+
+	get_cgdata_provider_get_bytes_at_offset_callback_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cgdata_provider_get_bytes_at_offset_callback_stub"
+		end
+
+	get_cgdata_provider_get_bytes_at_offset_callback_stub_address_external: POINTER is
+			-- Address of C function `get_cgdata_provider_get_bytes_at_offset_callback_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cgdata_provider_get_bytes_at_offset_callback_stub"
+		end
+
+	set_cgdata_provider_get_bytes_at_offset_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTES_AT_OFFSET_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cgdata_provider_get_bytes_at_offset_callback_entry"
+		end
+
+	set_cgdata_provider_get_bytes_at_offset_callback_entry_address_external: POINTER is
+			-- Address of C function `set_cgdata_provider_get_bytes_at_offset_callback_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cgdata_provider_get_bytes_at_offset_callback_entry"
+		end
+
+	call_cgdata_provider_get_bytes_at_offset_callback_external (a_function: POINTER; info: POINTER; buffer: POINTER; offset: INTEGER; count: INTEGER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void*, size_t, size_t):size_t"
+		alias
+			"ewg_function_macro_call_cgdata_provider_get_bytes_at_offset_callback"
+		end
+
+	call_cgdata_provider_get_bytes_at_offset_callback_address_external: POINTER is
+			-- Address of C function `call_cgdata_provider_get_bytes_at_offset_callback'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cgdata_provider_get_bytes_at_offset_callback"
 		end
 
 	get_qdprinter_status_proc_ptr_stub_external: POINTER is

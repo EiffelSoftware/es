@@ -4,6 +4,32 @@
 #ifdef _MSC_VER
 #pragma warning (disable:4715) // Not all control paths return a value
 #endif
+struct cgdata_provider_release_data_callback_entry_struct cgdata_provider_release_data_callback_entry = {NULL, NULL};
+
+void cgdata_provider_release_data_callback_stub (void *info, void const *data, size_t size)
+{
+	if (cgdata_provider_release_data_callback_entry.a_class != NULL && cgdata_provider_release_data_callback_entry.feature != NULL)
+	{
+		cgdata_provider_release_data_callback_entry.feature (eif_access(cgdata_provider_release_data_callback_entry.a_class), info, data, size);
+	}
+}
+
+void set_cgdata_provider_release_data_callback_entry (void* a_class, void* a_feature)
+{
+	cgdata_provider_release_data_callback_entry.a_class = eif_adopt(a_class);
+	cgdata_provider_release_data_callback_entry.feature = (cgdata_provider_release_data_callback_eiffel_feature) a_feature;
+}
+
+void* get_cgdata_provider_release_data_callback_stub ()
+{
+	return (void*) cgdata_provider_release_data_callback_stub;
+}
+
+void call_cgdata_provider_release_data_callback (void *a_function, void *info, void const *data, size_t size)
+{
+	((void (*) (void *info, void const *data, size_t size))a_function) (info, data, size);
+}
+
 struct aeremote_process_resolver_callback_entry_struct aeremote_process_resolver_callback_entry = {NULL, NULL};
 
 void aeremote_process_resolver_callback_stub (AERemoteProcessResolverRef ref, void *info)
@@ -1562,6 +1588,370 @@ void* get_edit_unicode_post_update_proc_ptr_stub ()
 Boolean call_edit_unicode_post_update_proc_ptr (void *a_function, UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon)
 {
 	return ((Boolean (*) (UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon))a_function) (uniText, uniTextLength, iStartOffset, iEndOffset, refcon);
+}
+
+struct cfcomparator_function_entry_struct cfcomparator_function_entry = {NULL, NULL};
+
+CFComparisonResult cfcomparator_function_stub (void const *val1, void const *val2, void *context)
+{
+	if (cfcomparator_function_entry.a_class != NULL && cfcomparator_function_entry.feature != NULL)
+	{
+		return cfcomparator_function_entry.feature (eif_access(cfcomparator_function_entry.a_class), val1, val2, context);
+	}
+}
+
+void set_cfcomparator_function_entry (void* a_class, void* a_feature)
+{
+	cfcomparator_function_entry.a_class = eif_adopt(a_class);
+	cfcomparator_function_entry.feature = (cfcomparator_function_eiffel_feature) a_feature;
+}
+
+void* get_cfcomparator_function_stub ()
+{
+	return (void*) cfcomparator_function_stub;
+}
+
+CFComparisonResult call_cfcomparator_function (void *a_function, void const *val1, void const *val2, void *context)
+{
+	return ((CFComparisonResult (*) (void const *val1, void const *val2, void *context))a_function) (val1, val2, context);
+}
+
+struct cfallocator_retain_call_back_entry_struct cfallocator_retain_call_back_entry = {NULL, NULL};
+
+void const *cfallocator_retain_call_back_stub (void const *info)
+{
+	if (cfallocator_retain_call_back_entry.a_class != NULL && cfallocator_retain_call_back_entry.feature != NULL)
+	{
+		return cfallocator_retain_call_back_entry.feature (eif_access(cfallocator_retain_call_back_entry.a_class), info);
+	}
+}
+
+void set_cfallocator_retain_call_back_entry (void* a_class, void* a_feature)
+{
+	cfallocator_retain_call_back_entry.a_class = eif_adopt(a_class);
+	cfallocator_retain_call_back_entry.feature = (cfallocator_retain_call_back_eiffel_feature) a_feature;
+}
+
+void* get_cfallocator_retain_call_back_stub ()
+{
+	return (void*) cfallocator_retain_call_back_stub;
+}
+
+void const *call_cfallocator_retain_call_back (void *a_function, void const *info)
+{
+	return ((void const *(*) (void const *info))a_function) (info);
+}
+
+struct cfallocator_release_call_back_entry_struct cfallocator_release_call_back_entry = {NULL, NULL};
+
+void cfallocator_release_call_back_stub (void const *info)
+{
+	if (cfallocator_release_call_back_entry.a_class != NULL && cfallocator_release_call_back_entry.feature != NULL)
+	{
+		cfallocator_release_call_back_entry.feature (eif_access(cfallocator_release_call_back_entry.a_class), info);
+	}
+}
+
+void set_cfallocator_release_call_back_entry (void* a_class, void* a_feature)
+{
+	cfallocator_release_call_back_entry.a_class = eif_adopt(a_class);
+	cfallocator_release_call_back_entry.feature = (cfallocator_release_call_back_eiffel_feature) a_feature;
+}
+
+void* get_cfallocator_release_call_back_stub ()
+{
+	return (void*) cfallocator_release_call_back_stub;
+}
+
+void call_cfallocator_release_call_back (void *a_function, void const *info)
+{
+	((void (*) (void const *info))a_function) (info);
+}
+
+struct cfallocator_copy_description_call_back_entry_struct cfallocator_copy_description_call_back_entry = {NULL, NULL};
+
+CFStringRef cfallocator_copy_description_call_back_stub (void const *info)
+{
+	if (cfallocator_copy_description_call_back_entry.a_class != NULL && cfallocator_copy_description_call_back_entry.feature != NULL)
+	{
+		return cfallocator_copy_description_call_back_entry.feature (eif_access(cfallocator_copy_description_call_back_entry.a_class), info);
+	}
+}
+
+void set_cfallocator_copy_description_call_back_entry (void* a_class, void* a_feature)
+{
+	cfallocator_copy_description_call_back_entry.a_class = eif_adopt(a_class);
+	cfallocator_copy_description_call_back_entry.feature = (cfallocator_copy_description_call_back_eiffel_feature) a_feature;
+}
+
+void* get_cfallocator_copy_description_call_back_stub ()
+{
+	return (void*) cfallocator_copy_description_call_back_stub;
+}
+
+CFStringRef call_cfallocator_copy_description_call_back (void *a_function, void const *info)
+{
+	return ((CFStringRef (*) (void const *info))a_function) (info);
+}
+
+struct cfallocator_allocate_call_back_entry_struct cfallocator_allocate_call_back_entry = {NULL, NULL};
+
+void *cfallocator_allocate_call_back_stub (CFIndex allocSize, CFOptionFlags hint, void *info)
+{
+	if (cfallocator_allocate_call_back_entry.a_class != NULL && cfallocator_allocate_call_back_entry.feature != NULL)
+	{
+		return cfallocator_allocate_call_back_entry.feature (eif_access(cfallocator_allocate_call_back_entry.a_class), allocSize, hint, info);
+	}
+}
+
+void set_cfallocator_allocate_call_back_entry (void* a_class, void* a_feature)
+{
+	cfallocator_allocate_call_back_entry.a_class = eif_adopt(a_class);
+	cfallocator_allocate_call_back_entry.feature = (cfallocator_allocate_call_back_eiffel_feature) a_feature;
+}
+
+void* get_cfallocator_allocate_call_back_stub ()
+{
+	return (void*) cfallocator_allocate_call_back_stub;
+}
+
+void *call_cfallocator_allocate_call_back (void *a_function, CFIndex allocSize, CFOptionFlags hint, void *info)
+{
+	return ((void *(*) (CFIndex allocSize, CFOptionFlags hint, void *info))a_function) (allocSize, hint, info);
+}
+
+struct cfallocator_reallocate_call_back_entry_struct cfallocator_reallocate_call_back_entry = {NULL, NULL};
+
+void *cfallocator_reallocate_call_back_stub (void *ptr, CFIndex newsize, CFOptionFlags hint, void *info)
+{
+	if (cfallocator_reallocate_call_back_entry.a_class != NULL && cfallocator_reallocate_call_back_entry.feature != NULL)
+	{
+		return cfallocator_reallocate_call_back_entry.feature (eif_access(cfallocator_reallocate_call_back_entry.a_class), ptr, newsize, hint, info);
+	}
+}
+
+void set_cfallocator_reallocate_call_back_entry (void* a_class, void* a_feature)
+{
+	cfallocator_reallocate_call_back_entry.a_class = eif_adopt(a_class);
+	cfallocator_reallocate_call_back_entry.feature = (cfallocator_reallocate_call_back_eiffel_feature) a_feature;
+}
+
+void* get_cfallocator_reallocate_call_back_stub ()
+{
+	return (void*) cfallocator_reallocate_call_back_stub;
+}
+
+void *call_cfallocator_reallocate_call_back (void *a_function, void *ptr, CFIndex newsize, CFOptionFlags hint, void *info)
+{
+	return ((void *(*) (void *ptr, CFIndex newsize, CFOptionFlags hint, void *info))a_function) (ptr, newsize, hint, info);
+}
+
+struct cfallocator_deallocate_call_back_entry_struct cfallocator_deallocate_call_back_entry = {NULL, NULL};
+
+void cfallocator_deallocate_call_back_stub (void *ptr, void *info)
+{
+	if (cfallocator_deallocate_call_back_entry.a_class != NULL && cfallocator_deallocate_call_back_entry.feature != NULL)
+	{
+		cfallocator_deallocate_call_back_entry.feature (eif_access(cfallocator_deallocate_call_back_entry.a_class), ptr, info);
+	}
+}
+
+void set_cfallocator_deallocate_call_back_entry (void* a_class, void* a_feature)
+{
+	cfallocator_deallocate_call_back_entry.a_class = eif_adopt(a_class);
+	cfallocator_deallocate_call_back_entry.feature = (cfallocator_deallocate_call_back_eiffel_feature) a_feature;
+}
+
+void* get_cfallocator_deallocate_call_back_stub ()
+{
+	return (void*) cfallocator_deallocate_call_back_stub;
+}
+
+void call_cfallocator_deallocate_call_back (void *a_function, void *ptr, void *info)
+{
+	((void (*) (void *ptr, void *info))a_function) (ptr, info);
+}
+
+struct cfallocator_preferred_size_call_back_entry_struct cfallocator_preferred_size_call_back_entry = {NULL, NULL};
+
+CFIndex cfallocator_preferred_size_call_back_stub (CFIndex size, CFOptionFlags hint, void *info)
+{
+	if (cfallocator_preferred_size_call_back_entry.a_class != NULL && cfallocator_preferred_size_call_back_entry.feature != NULL)
+	{
+		return cfallocator_preferred_size_call_back_entry.feature (eif_access(cfallocator_preferred_size_call_back_entry.a_class), size, hint, info);
+	}
+}
+
+void set_cfallocator_preferred_size_call_back_entry (void* a_class, void* a_feature)
+{
+	cfallocator_preferred_size_call_back_entry.a_class = eif_adopt(a_class);
+	cfallocator_preferred_size_call_back_entry.feature = (cfallocator_preferred_size_call_back_eiffel_feature) a_feature;
+}
+
+void* get_cfallocator_preferred_size_call_back_stub ()
+{
+	return (void*) cfallocator_preferred_size_call_back_stub;
+}
+
+CFIndex call_cfallocator_preferred_size_call_back (void *a_function, CFIndex size, CFOptionFlags hint, void *info)
+{
+	return ((CFIndex (*) (CFIndex size, CFOptionFlags hint, void *info))a_function) (size, hint, info);
+}
+
+struct cgdata_provider_get_bytes_callback_entry_struct cgdata_provider_get_bytes_callback_entry = {NULL, NULL};
+
+size_t cgdata_provider_get_bytes_callback_stub (void *info, void *buffer, size_t count)
+{
+	if (cgdata_provider_get_bytes_callback_entry.a_class != NULL && cgdata_provider_get_bytes_callback_entry.feature != NULL)
+	{
+		return cgdata_provider_get_bytes_callback_entry.feature (eif_access(cgdata_provider_get_bytes_callback_entry.a_class), info, buffer, count);
+	}
+}
+
+void set_cgdata_provider_get_bytes_callback_entry (void* a_class, void* a_feature)
+{
+	cgdata_provider_get_bytes_callback_entry.a_class = eif_adopt(a_class);
+	cgdata_provider_get_bytes_callback_entry.feature = (cgdata_provider_get_bytes_callback_eiffel_feature) a_feature;
+}
+
+void* get_cgdata_provider_get_bytes_callback_stub ()
+{
+	return (void*) cgdata_provider_get_bytes_callback_stub;
+}
+
+size_t call_cgdata_provider_get_bytes_callback (void *a_function, void *info, void *buffer, size_t count)
+{
+	return ((size_t (*) (void *info, void *buffer, size_t count))a_function) (info, buffer, count);
+}
+
+struct cgdata_provider_skip_bytes_callback_entry_struct cgdata_provider_skip_bytes_callback_entry = {NULL, NULL};
+
+void cgdata_provider_skip_bytes_callback_stub (void *info, size_t count)
+{
+	if (cgdata_provider_skip_bytes_callback_entry.a_class != NULL && cgdata_provider_skip_bytes_callback_entry.feature != NULL)
+	{
+		cgdata_provider_skip_bytes_callback_entry.feature (eif_access(cgdata_provider_skip_bytes_callback_entry.a_class), info, count);
+	}
+}
+
+void set_cgdata_provider_skip_bytes_callback_entry (void* a_class, void* a_feature)
+{
+	cgdata_provider_skip_bytes_callback_entry.a_class = eif_adopt(a_class);
+	cgdata_provider_skip_bytes_callback_entry.feature = (cgdata_provider_skip_bytes_callback_eiffel_feature) a_feature;
+}
+
+void* get_cgdata_provider_skip_bytes_callback_stub ()
+{
+	return (void*) cgdata_provider_skip_bytes_callback_stub;
+}
+
+void call_cgdata_provider_skip_bytes_callback (void *a_function, void *info, size_t count)
+{
+	((void (*) (void *info, size_t count))a_function) (info, count);
+}
+
+struct wsclient_context_release_call_back_proc_ptr_entry_struct wsclient_context_release_call_back_proc_ptr_entry = {NULL, NULL};
+
+void wsclient_context_release_call_back_proc_ptr_stub (void *info)
+{
+	if (wsclient_context_release_call_back_proc_ptr_entry.a_class != NULL && wsclient_context_release_call_back_proc_ptr_entry.feature != NULL)
+	{
+		wsclient_context_release_call_back_proc_ptr_entry.feature (eif_access(wsclient_context_release_call_back_proc_ptr_entry.a_class), info);
+	}
+}
+
+void set_wsclient_context_release_call_back_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	wsclient_context_release_call_back_proc_ptr_entry.a_class = eif_adopt(a_class);
+	wsclient_context_release_call_back_proc_ptr_entry.feature = (wsclient_context_release_call_back_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_wsclient_context_release_call_back_proc_ptr_stub ()
+{
+	return (void*) wsclient_context_release_call_back_proc_ptr_stub;
+}
+
+void call_wsclient_context_release_call_back_proc_ptr (void *a_function, void *info)
+{
+	((void (*) (void *info))a_function) (info);
+}
+
+struct cgdata_provider_get_byte_pointer_callback_entry_struct cgdata_provider_get_byte_pointer_callback_entry = {NULL, NULL};
+
+void const *cgdata_provider_get_byte_pointer_callback_stub (void *info)
+{
+	if (cgdata_provider_get_byte_pointer_callback_entry.a_class != NULL && cgdata_provider_get_byte_pointer_callback_entry.feature != NULL)
+	{
+		return cgdata_provider_get_byte_pointer_callback_entry.feature (eif_access(cgdata_provider_get_byte_pointer_callback_entry.a_class), info);
+	}
+}
+
+void set_cgdata_provider_get_byte_pointer_callback_entry (void* a_class, void* a_feature)
+{
+	cgdata_provider_get_byte_pointer_callback_entry.a_class = eif_adopt(a_class);
+	cgdata_provider_get_byte_pointer_callback_entry.feature = (cgdata_provider_get_byte_pointer_callback_eiffel_feature) a_feature;
+}
+
+void* get_cgdata_provider_get_byte_pointer_callback_stub ()
+{
+	return (void*) cgdata_provider_get_byte_pointer_callback_stub;
+}
+
+void const *call_cgdata_provider_get_byte_pointer_callback (void *a_function, void *info)
+{
+	return ((void const *(*) (void *info))a_function) (info);
+}
+
+struct cgdata_provider_release_byte_pointer_callback_entry_struct cgdata_provider_release_byte_pointer_callback_entry = {NULL, NULL};
+
+void cgdata_provider_release_byte_pointer_callback_stub (void *info, void const *pointer)
+{
+	if (cgdata_provider_release_byte_pointer_callback_entry.a_class != NULL && cgdata_provider_release_byte_pointer_callback_entry.feature != NULL)
+	{
+		cgdata_provider_release_byte_pointer_callback_entry.feature (eif_access(cgdata_provider_release_byte_pointer_callback_entry.a_class), info, pointer);
+	}
+}
+
+void set_cgdata_provider_release_byte_pointer_callback_entry (void* a_class, void* a_feature)
+{
+	cgdata_provider_release_byte_pointer_callback_entry.a_class = eif_adopt(a_class);
+	cgdata_provider_release_byte_pointer_callback_entry.feature = (cgdata_provider_release_byte_pointer_callback_eiffel_feature) a_feature;
+}
+
+void* get_cgdata_provider_release_byte_pointer_callback_stub ()
+{
+	return (void*) cgdata_provider_release_byte_pointer_callback_stub;
+}
+
+void call_cgdata_provider_release_byte_pointer_callback (void *a_function, void *info, void const *pointer)
+{
+	((void (*) (void *info, void const *pointer))a_function) (info, pointer);
+}
+
+struct cgdata_provider_get_bytes_at_offset_callback_entry_struct cgdata_provider_get_bytes_at_offset_callback_entry = {NULL, NULL};
+
+size_t cgdata_provider_get_bytes_at_offset_callback_stub (void *info, void *buffer, size_t offset, size_t count)
+{
+	if (cgdata_provider_get_bytes_at_offset_callback_entry.a_class != NULL && cgdata_provider_get_bytes_at_offset_callback_entry.feature != NULL)
+	{
+		return cgdata_provider_get_bytes_at_offset_callback_entry.feature (eif_access(cgdata_provider_get_bytes_at_offset_callback_entry.a_class), info, buffer, offset, count);
+	}
+}
+
+void set_cgdata_provider_get_bytes_at_offset_callback_entry (void* a_class, void* a_feature)
+{
+	cgdata_provider_get_bytes_at_offset_callback_entry.a_class = eif_adopt(a_class);
+	cgdata_provider_get_bytes_at_offset_callback_entry.feature = (cgdata_provider_get_bytes_at_offset_callback_eiffel_feature) a_feature;
+}
+
+void* get_cgdata_provider_get_bytes_at_offset_callback_stub ()
+{
+	return (void*) cgdata_provider_get_bytes_at_offset_callback_stub;
+}
+
+size_t call_cgdata_provider_get_bytes_at_offset_callback (void *a_function, void *info, void *buffer, size_t offset, size_t count)
+{
+	return ((size_t (*) (void *info, void *buffer, size_t offset, size_t count))a_function) (info, buffer, offset, count);
 }
 
 struct qdprinter_status_proc_ptr_entry_struct qdprinter_status_proc_ptr_entry = {NULL, NULL};

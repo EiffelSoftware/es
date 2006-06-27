@@ -10,6 +10,24 @@ inherit
 	EWG_CARBON_CALLBACK_C_GLUE_CODE_FUNCTIONS_EXTERNAL
 
 feature
+	get_cgdata_provider_release_data_callback_stub: POINTER is
+		local
+		do
+			Result := get_cgdata_provider_release_data_callback_stub_external
+		end
+
+	set_cgdata_provider_release_data_callback_entry (a_class: CGDATA_PROVIDER_RELEASE_DATA_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cgdata_provider_release_data_callback_entry_external (a_class, a_feature)
+		end
+
+	call_cgdata_provider_release_data_callback (a_function: POINTER; info: POINTER; data: POINTER; size: INTEGER) is
+		local
+		do
+			call_cgdata_provider_release_data_callback_external (a_function, info, data, size)
+		end
+
 	get_aeremote_process_resolver_callback_stub: POINTER is
 		local
 		do
@@ -1090,6 +1108,258 @@ feature
 		local
 		do
 			Result := call_edit_unicode_post_update_proc_ptr_external (a_function, unitext, unitextlength, istartoffset, iendoffset, refcon)
+		end
+
+	get_cfcomparator_function_stub: POINTER is
+		local
+		do
+			Result := get_cfcomparator_function_stub_external
+		end
+
+	set_cfcomparator_function_entry (a_class: CFCOMPARATOR_FUNCTION_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfcomparator_function_entry_external (a_class, a_feature)
+		end
+
+	call_cfcomparator_function (a_function: POINTER; val1: POINTER; val2: POINTER; context: POINTER): INTEGER is
+		local
+		do
+			Result := call_cfcomparator_function_external (a_function, val1, val2, context)
+		end
+
+	get_cfallocator_retain_call_back_stub: POINTER is
+		local
+		do
+			Result := get_cfallocator_retain_call_back_stub_external
+		end
+
+	set_cfallocator_retain_call_back_entry (a_class: CFALLOCATOR_RETAIN_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfallocator_retain_call_back_entry_external (a_class, a_feature)
+		end
+
+	call_cfallocator_retain_call_back (a_function: POINTER; info: POINTER): POINTER is
+		local
+		do
+			Result := call_cfallocator_retain_call_back_external (a_function, info)
+		end
+
+	get_cfallocator_release_call_back_stub: POINTER is
+		local
+		do
+			Result := get_cfallocator_release_call_back_stub_external
+		end
+
+	set_cfallocator_release_call_back_entry (a_class: CFALLOCATOR_RELEASE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfallocator_release_call_back_entry_external (a_class, a_feature)
+		end
+
+	call_cfallocator_release_call_back (a_function: POINTER; info: POINTER) is
+		local
+		do
+			call_cfallocator_release_call_back_external (a_function, info)
+		end
+
+	get_cfallocator_copy_description_call_back_stub: POINTER is
+		local
+		do
+			Result := get_cfallocator_copy_description_call_back_stub_external
+		end
+
+	set_cfallocator_copy_description_call_back_entry (a_class: CFALLOCATOR_COPY_DESCRIPTION_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfallocator_copy_description_call_back_entry_external (a_class, a_feature)
+		end
+
+	call_cfallocator_copy_description_call_back (a_function: POINTER; info: POINTER): POINTER is
+		local
+		do
+			Result := call_cfallocator_copy_description_call_back_external (a_function, info)
+		end
+
+	get_cfallocator_allocate_call_back_stub: POINTER is
+		local
+		do
+			Result := get_cfallocator_allocate_call_back_stub_external
+		end
+
+	set_cfallocator_allocate_call_back_entry (a_class: CFALLOCATOR_ALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfallocator_allocate_call_back_entry_external (a_class, a_feature)
+		end
+
+	call_cfallocator_allocate_call_back (a_function: POINTER; allocsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
+		local
+		do
+			Result := call_cfallocator_allocate_call_back_external (a_function, allocsize, hint, info)
+		end
+
+	get_cfallocator_reallocate_call_back_stub: POINTER is
+		local
+		do
+			Result := get_cfallocator_reallocate_call_back_stub_external
+		end
+
+	set_cfallocator_reallocate_call_back_entry (a_class: CFALLOCATOR_REALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfallocator_reallocate_call_back_entry_external (a_class, a_feature)
+		end
+
+	call_cfallocator_reallocate_call_back (a_function: POINTER; ptr: POINTER; newsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
+		local
+		do
+			Result := call_cfallocator_reallocate_call_back_external (a_function, ptr, newsize, hint, info)
+		end
+
+	get_cfallocator_deallocate_call_back_stub: POINTER is
+		local
+		do
+			Result := get_cfallocator_deallocate_call_back_stub_external
+		end
+
+	set_cfallocator_deallocate_call_back_entry (a_class: CFALLOCATOR_DEALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfallocator_deallocate_call_back_entry_external (a_class, a_feature)
+		end
+
+	call_cfallocator_deallocate_call_back (a_function: POINTER; ptr: POINTER; info: POINTER) is
+		local
+		do
+			call_cfallocator_deallocate_call_back_external (a_function, ptr, info)
+		end
+
+	get_cfallocator_preferred_size_call_back_stub: POINTER is
+		local
+		do
+			Result := get_cfallocator_preferred_size_call_back_stub_external
+		end
+
+	set_cfallocator_preferred_size_call_back_entry (a_class: CFALLOCATOR_PREFERRED_SIZE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cfallocator_preferred_size_call_back_entry_external (a_class, a_feature)
+		end
+
+	call_cfallocator_preferred_size_call_back (a_function: POINTER; size: INTEGER; hint: INTEGER; info: POINTER): INTEGER is
+		local
+		do
+			Result := call_cfallocator_preferred_size_call_back_external (a_function, size, hint, info)
+		end
+
+	get_cgdata_provider_get_bytes_callback_stub: POINTER is
+		local
+		do
+			Result := get_cgdata_provider_get_bytes_callback_stub_external
+		end
+
+	set_cgdata_provider_get_bytes_callback_entry (a_class: CGDATA_PROVIDER_GET_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cgdata_provider_get_bytes_callback_entry_external (a_class, a_feature)
+		end
+
+	call_cgdata_provider_get_bytes_callback (a_function: POINTER; info: POINTER; buffer: POINTER; count: INTEGER): INTEGER is
+		local
+		do
+			Result := call_cgdata_provider_get_bytes_callback_external (a_function, info, buffer, count)
+		end
+
+	get_cgdata_provider_skip_bytes_callback_stub: POINTER is
+		local
+		do
+			Result := get_cgdata_provider_skip_bytes_callback_stub_external
+		end
+
+	set_cgdata_provider_skip_bytes_callback_entry (a_class: CGDATA_PROVIDER_SKIP_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cgdata_provider_skip_bytes_callback_entry_external (a_class, a_feature)
+		end
+
+	call_cgdata_provider_skip_bytes_callback (a_function: POINTER; info: POINTER; count: INTEGER) is
+		local
+		do
+			call_cgdata_provider_skip_bytes_callback_external (a_function, info, count)
+		end
+
+	get_wsclient_context_release_call_back_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_wsclient_context_release_call_back_proc_ptr_stub_external
+		end
+
+	set_wsclient_context_release_call_back_proc_ptr_entry (a_class: WSCLIENT_CONTEXT_RELEASE_CALL_BACK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_wsclient_context_release_call_back_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_wsclient_context_release_call_back_proc_ptr (a_function: POINTER; info: POINTER) is
+		local
+		do
+			call_wsclient_context_release_call_back_proc_ptr_external (a_function, info)
+		end
+
+	get_cgdata_provider_get_byte_pointer_callback_stub: POINTER is
+		local
+		do
+			Result := get_cgdata_provider_get_byte_pointer_callback_stub_external
+		end
+
+	set_cgdata_provider_get_byte_pointer_callback_entry (a_class: CGDATA_PROVIDER_GET_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cgdata_provider_get_byte_pointer_callback_entry_external (a_class, a_feature)
+		end
+
+	call_cgdata_provider_get_byte_pointer_callback (a_function: POINTER; info: POINTER): POINTER is
+		local
+		do
+			Result := call_cgdata_provider_get_byte_pointer_callback_external (a_function, info)
+		end
+
+	get_cgdata_provider_release_byte_pointer_callback_stub: POINTER is
+		local
+		do
+			Result := get_cgdata_provider_release_byte_pointer_callback_stub_external
+		end
+
+	set_cgdata_provider_release_byte_pointer_callback_entry (a_class: CGDATA_PROVIDER_RELEASE_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cgdata_provider_release_byte_pointer_callback_entry_external (a_class, a_feature)
+		end
+
+	call_cgdata_provider_release_byte_pointer_callback (a_function: POINTER; info: POINTER; a_pointer: POINTER) is
+		local
+		do
+			call_cgdata_provider_release_byte_pointer_callback_external (a_function, info, a_pointer)
+		end
+
+	get_cgdata_provider_get_bytes_at_offset_callback_stub: POINTER is
+		local
+		do
+			Result := get_cgdata_provider_get_bytes_at_offset_callback_stub_external
+		end
+
+	set_cgdata_provider_get_bytes_at_offset_callback_entry (a_class: CGDATA_PROVIDER_GET_BYTES_AT_OFFSET_CALLBACK_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cgdata_provider_get_bytes_at_offset_callback_entry_external (a_class, a_feature)
+		end
+
+	call_cgdata_provider_get_bytes_at_offset_callback (a_function: POINTER; info: POINTER; buffer: POINTER; offset: INTEGER; count: INTEGER): INTEGER is
+		local
+		do
+			Result := call_cgdata_provider_get_bytes_at_offset_callback_external (a_function, info, buffer, offset, count)
 		end
 
 	get_qdprinter_status_proc_ptr_stub: POINTER is

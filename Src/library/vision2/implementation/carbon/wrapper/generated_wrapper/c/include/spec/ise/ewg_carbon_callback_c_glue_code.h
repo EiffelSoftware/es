@@ -3,6 +3,23 @@
 
 #include <Carbon/Carbon.h>
 
+typedef void (*cgdata_provider_release_data_callback_eiffel_feature) (void *a_class, void *info, void const *data, size_t size);
+
+void* get_cgdata_provider_release_data_callback_stub ();
+
+struct cgdata_provider_release_data_callback_entry_struct
+{
+	void* a_class;
+	cgdata_provider_release_data_callback_eiffel_feature feature;
+};
+
+void set_cgdata_provider_release_data_callback_entry (void* a_class, void* a_feature);
+
+void call_cgdata_provider_release_data_callback (void *a_function, void *info, void const *data, size_t size);
+
+
+#include <Carbon/Carbon.h>
+
 typedef void (*aeremote_process_resolver_callback_eiffel_feature) (void *a_class, AERemoteProcessResolverRef ref, void *info);
 
 void* get_aeremote_process_resolver_callback_stub ();
@@ -1019,6 +1036,244 @@ struct edit_unicode_post_update_proc_ptr_entry_struct
 void set_edit_unicode_post_update_proc_ptr_entry (void* a_class, void* a_feature);
 
 Boolean call_edit_unicode_post_update_proc_ptr (void *a_function, UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon);
+
+
+#include <Carbon/Carbon.h>
+
+typedef CFComparisonResult (*cfcomparator_function_eiffel_feature) (void *a_class, void const *val1, void const *val2, void *context);
+
+void* get_cfcomparator_function_stub ();
+
+struct cfcomparator_function_entry_struct
+{
+	void* a_class;
+	cfcomparator_function_eiffel_feature feature;
+};
+
+void set_cfcomparator_function_entry (void* a_class, void* a_feature);
+
+CFComparisonResult call_cfcomparator_function (void *a_function, void const *val1, void const *val2, void *context);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void const *(*cfallocator_retain_call_back_eiffel_feature) (void *a_class, void const *info);
+
+void* get_cfallocator_retain_call_back_stub ();
+
+struct cfallocator_retain_call_back_entry_struct
+{
+	void* a_class;
+	cfallocator_retain_call_back_eiffel_feature feature;
+};
+
+void set_cfallocator_retain_call_back_entry (void* a_class, void* a_feature);
+
+void const *call_cfallocator_retain_call_back (void *a_function, void const *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*cfallocator_release_call_back_eiffel_feature) (void *a_class, void const *info);
+
+void* get_cfallocator_release_call_back_stub ();
+
+struct cfallocator_release_call_back_entry_struct
+{
+	void* a_class;
+	cfallocator_release_call_back_eiffel_feature feature;
+};
+
+void set_cfallocator_release_call_back_entry (void* a_class, void* a_feature);
+
+void call_cfallocator_release_call_back (void *a_function, void const *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef CFStringRef (*cfallocator_copy_description_call_back_eiffel_feature) (void *a_class, void const *info);
+
+void* get_cfallocator_copy_description_call_back_stub ();
+
+struct cfallocator_copy_description_call_back_entry_struct
+{
+	void* a_class;
+	cfallocator_copy_description_call_back_eiffel_feature feature;
+};
+
+void set_cfallocator_copy_description_call_back_entry (void* a_class, void* a_feature);
+
+CFStringRef call_cfallocator_copy_description_call_back (void *a_function, void const *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void *(*cfallocator_allocate_call_back_eiffel_feature) (void *a_class, CFIndex allocSize, CFOptionFlags hint, void *info);
+
+void* get_cfallocator_allocate_call_back_stub ();
+
+struct cfallocator_allocate_call_back_entry_struct
+{
+	void* a_class;
+	cfallocator_allocate_call_back_eiffel_feature feature;
+};
+
+void set_cfallocator_allocate_call_back_entry (void* a_class, void* a_feature);
+
+void *call_cfallocator_allocate_call_back (void *a_function, CFIndex allocSize, CFOptionFlags hint, void *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void *(*cfallocator_reallocate_call_back_eiffel_feature) (void *a_class, void *ptr, CFIndex newsize, CFOptionFlags hint, void *info);
+
+void* get_cfallocator_reallocate_call_back_stub ();
+
+struct cfallocator_reallocate_call_back_entry_struct
+{
+	void* a_class;
+	cfallocator_reallocate_call_back_eiffel_feature feature;
+};
+
+void set_cfallocator_reallocate_call_back_entry (void* a_class, void* a_feature);
+
+void *call_cfallocator_reallocate_call_back (void *a_function, void *ptr, CFIndex newsize, CFOptionFlags hint, void *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*cfallocator_deallocate_call_back_eiffel_feature) (void *a_class, void *ptr, void *info);
+
+void* get_cfallocator_deallocate_call_back_stub ();
+
+struct cfallocator_deallocate_call_back_entry_struct
+{
+	void* a_class;
+	cfallocator_deallocate_call_back_eiffel_feature feature;
+};
+
+void set_cfallocator_deallocate_call_back_entry (void* a_class, void* a_feature);
+
+void call_cfallocator_deallocate_call_back (void *a_function, void *ptr, void *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef CFIndex (*cfallocator_preferred_size_call_back_eiffel_feature) (void *a_class, CFIndex size, CFOptionFlags hint, void *info);
+
+void* get_cfallocator_preferred_size_call_back_stub ();
+
+struct cfallocator_preferred_size_call_back_entry_struct
+{
+	void* a_class;
+	cfallocator_preferred_size_call_back_eiffel_feature feature;
+};
+
+void set_cfallocator_preferred_size_call_back_entry (void* a_class, void* a_feature);
+
+CFIndex call_cfallocator_preferred_size_call_back (void *a_function, CFIndex size, CFOptionFlags hint, void *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef size_t (*cgdata_provider_get_bytes_callback_eiffel_feature) (void *a_class, void *info, void *buffer, size_t count);
+
+void* get_cgdata_provider_get_bytes_callback_stub ();
+
+struct cgdata_provider_get_bytes_callback_entry_struct
+{
+	void* a_class;
+	cgdata_provider_get_bytes_callback_eiffel_feature feature;
+};
+
+void set_cgdata_provider_get_bytes_callback_entry (void* a_class, void* a_feature);
+
+size_t call_cgdata_provider_get_bytes_callback (void *a_function, void *info, void *buffer, size_t count);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*cgdata_provider_skip_bytes_callback_eiffel_feature) (void *a_class, void *info, size_t count);
+
+void* get_cgdata_provider_skip_bytes_callback_stub ();
+
+struct cgdata_provider_skip_bytes_callback_entry_struct
+{
+	void* a_class;
+	cgdata_provider_skip_bytes_callback_eiffel_feature feature;
+};
+
+void set_cgdata_provider_skip_bytes_callback_entry (void* a_class, void* a_feature);
+
+void call_cgdata_provider_skip_bytes_callback (void *a_function, void *info, size_t count);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*wsclient_context_release_call_back_proc_ptr_eiffel_feature) (void *a_class, void *info);
+
+void* get_wsclient_context_release_call_back_proc_ptr_stub ();
+
+struct wsclient_context_release_call_back_proc_ptr_entry_struct
+{
+	void* a_class;
+	wsclient_context_release_call_back_proc_ptr_eiffel_feature feature;
+};
+
+void set_wsclient_context_release_call_back_proc_ptr_entry (void* a_class, void* a_feature);
+
+void call_wsclient_context_release_call_back_proc_ptr (void *a_function, void *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void const *(*cgdata_provider_get_byte_pointer_callback_eiffel_feature) (void *a_class, void *info);
+
+void* get_cgdata_provider_get_byte_pointer_callback_stub ();
+
+struct cgdata_provider_get_byte_pointer_callback_entry_struct
+{
+	void* a_class;
+	cgdata_provider_get_byte_pointer_callback_eiffel_feature feature;
+};
+
+void set_cgdata_provider_get_byte_pointer_callback_entry (void* a_class, void* a_feature);
+
+void const *call_cgdata_provider_get_byte_pointer_callback (void *a_function, void *info);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*cgdata_provider_release_byte_pointer_callback_eiffel_feature) (void *a_class, void *info, void const *pointer);
+
+void* get_cgdata_provider_release_byte_pointer_callback_stub ();
+
+struct cgdata_provider_release_byte_pointer_callback_entry_struct
+{
+	void* a_class;
+	cgdata_provider_release_byte_pointer_callback_eiffel_feature feature;
+};
+
+void set_cgdata_provider_release_byte_pointer_callback_entry (void* a_class, void* a_feature);
+
+void call_cgdata_provider_release_byte_pointer_callback (void *a_function, void *info, void const *pointer);
+
+
+#include <Carbon/Carbon.h>
+
+typedef size_t (*cgdata_provider_get_bytes_at_offset_callback_eiffel_feature) (void *a_class, void *info, void *buffer, size_t offset, size_t count);
+
+void* get_cgdata_provider_get_bytes_at_offset_callback_stub ();
+
+struct cgdata_provider_get_bytes_at_offset_callback_entry_struct
+{
+	void* a_class;
+	cgdata_provider_get_bytes_at_offset_callback_eiffel_feature feature;
+};
+
+void set_cgdata_provider_get_bytes_at_offset_callback_entry (void* a_class, void* a_feature);
+
+size_t call_cgdata_provider_get_bytes_at_offset_callback (void *a_function, void *info, void *buffer, size_t offset, size_t count);
 
 
 #include <Carbon/Carbon.h>
