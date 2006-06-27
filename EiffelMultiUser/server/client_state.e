@@ -466,20 +466,12 @@ feature -- Process Messages
 			found: BOOLEAN
 			locked_class: EMU_PROJECT_CLASS
 		do
---			-- check if client is logged in as a user to a project.
---			if project_user = Void then
---				-- client is not logged in as a user of a project.
---				-- send error message to client
---				io.put_string ("INVALID: client unlock request: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
---				send_msg (create {CLIENT_ERROR}.make_general_error ("empty"))
-
-			-- try to get project from server
-			project := system.get_project(msg.project_name)
-			if project = Void then
-				-- project does not exist
+			-- check if client is logged in as a user to a project.
+			if project_user = Void then
+				-- client is not logged in as a user of a project.
 				-- send error message to client
 				io.put_string ("INVALID: client lock request: " + msg.emu_class_name + ". user not associated with project: " + msg.project_name + "!%N")
-				send_msg (create {CLIENT_ERROR}.make_lock_not_successful (msg.project_name, msg.emu_class_name))
+				send_msg (create {CLIENT_ERROR}.make_general_error ("empty"))
 			else
 				io.put_string ("client lock request: " + msg.emu_class_name + ". project: " + msg.project_name + "%N")
 				-- search the right class
@@ -572,6 +564,7 @@ feature -- Process Messages
 						io.put_string ("client upload: " + msg.emu_class_name + ". project: " + msg.project_name + "%N")
 						a_class := a_cluster.get_class (msg.emu_class_name)
 						a_class.set_content (msg.content)
+						send_msg (create {CLIENT_OK}.make_class_uploaded (msg.project_name, msg.emu_class_name))
 					else
 						-- user may not update this class.
 						io.put_string ("INVALID: client upload: " + msg.emu_class_name + ". user " + username + " may not update this class!%N")
