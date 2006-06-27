@@ -62,7 +62,7 @@ feature -- Procedures
 			new_content_not_void: new_content /= Void
 		do
 			content := new_content
-			modification_date.make_now
+			create modification_date.make_now
 			modification_user := current_user
 			project.update_persist_storage
 		ensure
