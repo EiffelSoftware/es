@@ -15,18 +15,18 @@ create
 
 feature -- Initialization
 
-	make(a_project_name, a_cluster_name, an_emu_class_name, emu_class:STRING) is
+	make (a_project_name, a_cluster_name, an_emu_class_name, emu_class_content:STRING) is
 			-- initialize message and set attributes
 			-- emu_class is file of class as string
 		require
 			a_project_name_not_void : a_project_name /= void
 			a_cluster_name_not_void: a_cluster_name /= void
-			emu_class_not_void: emu_class /= Void
+			emu_class_not_void: emu_class_name /= Void
 			an_emu_class_name_not_void: an_emu_class_name /= Void
 		do
 			project_name := a_project_name
 			emu_class_name := an_emu_class_name
-			content := emu_class
+			content := emu_class_content
 			cluster_name := a_cluster_name
 		ensure
 			project_name_set: a_project_name = project_name
@@ -48,14 +48,13 @@ feature -- Execution
 			file_name: FILE_NAME
 		do
 			create file_name.make_from_string (a_file_path)
-			if file_name.is_valid() then
-				create file.make (file_name)
-			end
-			if file.exists then
-				file.open_write
+			if file_name.is_valid then
+				create file.make_open_write (file_name)
 				file.wipe_out
 				file.put_string (content)
 				file.close
+			else
+				io.put_string("errorparsename")
 			end
 		end
 
@@ -66,8 +65,6 @@ feature -- Access
 	content: STRING
 
 	cluster_name: STRING
-
-	file_path: STRING
 
 invariant
 	invariant_clause: True -- Your invariant here

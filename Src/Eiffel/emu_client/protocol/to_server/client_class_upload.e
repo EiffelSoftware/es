@@ -82,8 +82,6 @@ feature {NONE} -- Implementation
 		do
 			c:=a_file_path.count
 			pos:= 1+ a_file_path.last_index_of('/',c)
-
-			--emu_class_name.set(a_file_path,pos,c)
 			c:=pos - 1
 			pos := 1 + a_location.count
 			create cluster_path.make_empty
