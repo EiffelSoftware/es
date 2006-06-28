@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n==2 ? 1 : 2;"
 
 #: str1
 msgid "Application"
@@ -48,8 +48,9 @@ msgstr[1] ""
 #: str9
 msgid "There is 1 file"
 msgid_plural "There are $1 files"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "هناك طالب"
+msgstr[1] "هناك طالبان"
+msgstr[2] "هناك $1 طلاب"
 
 #: str10
 msgid "singular"
@@ -60,15 +61,15 @@ msgstr[1] ""
 
 #: str11
 msgid "Select language"
-msgstr ""
+msgstr "اللغة"
 
 #: str12
 msgid "arabic"
-msgstr ""
+msgstr "عربية"
 
 #: str13
 msgid "italian"
-msgstr ""
+msgstr "إيطالية"
 
 #: str14
 msgid "greek"
@@ -80,16 +81,16 @@ msgstr ""
 
 #: str16
 msgid "japanese"
-msgstr ""
+msgstr "يابانية"
 
 #: str17
 msgid "russian"
-msgstr ""
+msgstr "روسية"
 
 #: str18
 msgid "chinese"
-msgstr ""
+msgstr "صينية"
 
 #: str19
 msgid "english"
-msgstr ""
+msgstr "إنكليزية"
