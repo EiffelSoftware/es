@@ -65,11 +65,11 @@ msgstr "اللغة"
 
 #: str12
 msgid "arabic"
-msgstr "عربية"
+msgstr "العربية"
 
 #: str13
 msgid "italian"
-msgstr "إيطالية"
+msgstr "الإيطالية"
 
 #: str14
 msgid "greek"
@@ -81,16 +81,16 @@ msgstr ""
 
 #: str16
 msgid "japanese"
-msgstr "يابانية"
+msgstr "اليابانية"
 
 #: str17
 msgid "russian"
-msgstr "روسية"
+msgstr "الروسية"
 
 #: str18
 msgid "chinese"
-msgstr "صينية"
+msgstr "الصينية"
 
 #: str19
 msgid "english"
-msgstr "إنكليزية"
+msgstr "الإنكليزية"
