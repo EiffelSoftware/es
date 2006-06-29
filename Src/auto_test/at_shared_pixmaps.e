@@ -2,9 +2,9 @@ indexing
 	description: "Pixmaps used in AutoTest interface"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "$Author: sa-autotest $"
+	author: "$Author$"
 	date: "$Date$"
-	revision: "$Revision: 60820 $"
+	revision: "$Revision$"
 
 class
 	AT_SHARED_PIXMAPS

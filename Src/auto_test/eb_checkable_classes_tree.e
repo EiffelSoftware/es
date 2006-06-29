@@ -2,9 +2,9 @@ indexing
 	description: "Tree with checkboxes showing the classes present in the system."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "$Author: sa-autotest $"
+	author: "$Author$"
 	date: "$Date$"
-	revision: "$Revision: 60820 $"
+	revision: "$Revision$"
 
 class
 	EB_CHECKABLE_CLASSES_TREE

@@ -2,9 +2,9 @@ indexing
 	description: "Objects that modify the output parameters of the auto test execution instance."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "$Author: sa-autotest $"
+	author: "$Author$"
 	date: "$Date$"
-	revision: "$Revision: 60820 $"
+	revision: "$Revision$"
 
 class
 	AT_COMMAND_PARAMETERS
