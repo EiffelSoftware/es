@@ -2,9 +2,9 @@ indexing
 	description: "Command to display the AutoTest dialog."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "$Author$"
+	author: "$Author: sa-autotest $"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 60820 $"
 	info: "Modified copy of EB_ABOUT_COMMAND and EB_NEW_CLUSTER_COMMAND"
 
 class

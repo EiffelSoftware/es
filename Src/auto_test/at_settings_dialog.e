@@ -3,9 +3,9 @@ indexing
 		%Partially generated with EiffelBuild."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "$Author$"
+	author: "$Author: sa-autotest $"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 60820 $"
 
 class
 	AT_SETTINGS_DIALOG

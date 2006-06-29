@@ -2,9 +2,9 @@ indexing
 	description: "Objects that represent auto test project to be tested"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "$Author$"
+	author: "$Author: sa-autotest $"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 60820 $"
 
 class
 	AUTO_TEST_PROJECT

@@ -2,9 +2,9 @@ indexing
 	description: "Objects that give a reference to the auto test project"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author: "$Author$"
+	author: "$Author: sa-autotest $"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 60820 $"
 
 class
 	SHARED_AUTO_TEST_PROJECT
