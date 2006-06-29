@@ -368,6 +368,10 @@ feature {NONE} -- Initialization
 			create delete_class_cluster_cmd.make (Current)
 			toolbarable_commands.extend (delete_class_cluster_cmd)
 
+				-- added by sa-autotest
+			create auto_test_cmd.make (Current)
+			toolbarable_commands.extend (auto_test_cmd)
+
 			create new_feature_cmd.make (Current)
 			toolbarable_commands.extend (new_feature_cmd)
 
@@ -2004,7 +2008,7 @@ feature {NONE} -- Menu Building
 
 
 			if has_metrics then
---					-- Metric tool
+					-- Metric tool
 				create metric_menu.make_with_text (interface_names.metric_metrics)
 					create menu_item.make_with_text (interface_names.metric_calculate)
 					metric_menu.extend (menu_item)
@@ -2043,12 +2047,16 @@ feature {NONE} -- Menu Building
 				tools_menu.extend (command_menu_item)
 			end
 
+				-- AutoTest (sa-autotest)
+			command_menu_item := auto_test_cmd.new_menu_item
+			add_recyclable (command_menu_item)
+			tools_menu.extend (command_menu_item)
+
 				-- Separator -------------------------------------------------
 			tools_menu.extend (create {EV_MENU_SEPARATOR})
 
 			     --PO generation
-
-			 command_menu_item := create_po_cmd.new_menu_item
+			command_menu_item := create_po_cmd.new_menu_item
 			add_recyclable (command_menu_item)
 			tools_menu.extend (command_menu_item)
 
@@ -4417,6 +4425,9 @@ feature{EB_TOOL, EB_C_COMPILER_LAUNCHER}
 
 feature{EB_TOOL}
 
+	auto_test_cmd: AT_COMMAND
+			-- Command to run AutoTest
+
 	new_cluster_cmd: EB_NEW_CLUSTER_COMMAND
 			-- Command to create a new cluster.
 
@@ -4634,6 +4645,10 @@ feature {NONE} -- Execution
 			open_cmd.enable_sensitive
 			new_class_cmd.enable_sensitive
 			new_cluster_cmd.enable_sensitive
+				-- sa-autotest
+			auto_test_cmd.enable_sensitive
+			auto_test_cmd.accelerator.actions.resume
+				-- end sa-autotest
 			system_info_cmd.enable_sensitive
 			if unified_stone then
 				send_stone_to_context_cmd.disable_sensitive
@@ -4642,6 +4657,10 @@ feature {NONE} -- Execution
 			end
 			new_class_cmd.enable_sensitive
 			new_cluster_cmd.enable_sensitive
+				-- sa-autotest
+			auto_test_cmd.enable_sensitive
+			auto_test_cmd.accelerator.actions.resume
+				-- end sa-autotest
 			delete_class_cluster_cmd.enable_sensitive
 			c_workbench_compilation_cmd.enable_sensitive
 			c_finalized_compilation_cmd.enable_sensitive
@@ -4672,6 +4691,10 @@ feature {NONE} -- Execution
 			open_cmd.disable_sensitive
 			new_class_cmd.disable_sensitive
 			new_cluster_cmd.disable_sensitive
+				-- sa-autotest
+			auto_test_cmd.disable_sensitive
+			auto_test_cmd.accelerator.actions.block
+				-- end sa-autotest
 			if not project_manager.is_created then
 				system_info_cmd.disable_sensitive
 				send_stone_to_context_cmd.disable_sensitive
