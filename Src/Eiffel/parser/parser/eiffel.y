@@ -2039,7 +2039,7 @@ Creation_clause:
 	|	TE_CREATION
 			{
 				$$ := ast_factory.new_create_as (Void, Void, $1)
-					report_warning (parser_errors.creation_use_warning, $1)
+				report_warning (parser_errors.creation_use_warning, $1)
 			}
 	|	TE_CREATION Clients Feature_list
 			{

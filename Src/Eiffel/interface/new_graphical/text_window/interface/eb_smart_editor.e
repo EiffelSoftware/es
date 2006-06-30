@@ -710,6 +710,7 @@ feature {NONE} -- syntax checking implementation
 		do
 			create syntax_timer.make_with_interval (100)
 			syntax_timer.actions.extend (agent perform_syntax_checking)
+			create invalidated_tokens.make
 		end
 
 	syntax_parser: EIFFEL_PARSER is
@@ -726,110 +727,89 @@ feature {NONE} -- syntax checking implementation
 	syntax_timer: EV_TIMEOUT
 		-- timer to peridocially execute syntax checking
 	text_changed: BOOLEAN
-		-- maintains wheter text was changed since last parsing
-	error_list: LINKED_LIST [ERROR]
-		-- list containging syntax errors
+		-- maintains whether text was changed since last parsing
+	invalidated_tokens: LINKED_LIST [EDITOR_TOKEN_TEXT]
+		-- list of invalidated tokens
 
 	perform_syntax_checking is
 			-- performs syntax checking of class text using Eiffel_validating_parser
 		local
-			list: LINKED_LIST [ERROR]
+			error_list: LINKED_LIST [ERROR]
+			warning_list: LINKED_LIST [ERROR]
 			error: SYNTAX_ERROR
 			warning: SYNTAX_WARNING
-			text_line: EDITOR_LINE
 			cursor: TEXT_CURSOR
 			text_token: EDITOR_TOKEN_TEXT
-			i: INTEGER
 		do
 			if is_initialized and then file_loaded and then is_editable and then text_changed then
+				create error_list.make
+				create warning_list.make
+
 				-- create cursor object for helping locate tokens
 				create cursor.make_from_integer (1, text_displayed)
 
-				-- set old error tokens back to valid
-				list := error_list
-				if list /= void then
-					from
-						list.start
-					until
-						list.after
-					loop
-						-- place cursor at position of error
-						cursor.set_y_in_lines (list.item.line)
-						cursor.set_x_in_characters (list.item.column)
-
-						-- error should be text-token (otherwise it doesnt make any sence to highlight it)
-						text_token ?= cursor.token
-						if text_token /= void then
-							text_token.set_correct
-						end
-
-						-- go to next error
-						list.forth
-					end
+				-- set previously invalidated tokens back to valid
+				from invalidated_tokens.start
+				until invalidated_tokens.after
+				loop
+					invalidated_tokens.item.set_correct
+					invalidated_tokens.forth
 				end
 
-				-- prevent from raising exception
-				Error_handler.unset_do_raise_error
-
-				-- make sure we dont accumulate error messages
-				Error_handler.error_list.wipe_out
-				-- execute parser
+				-- parse class text
+				error_handler.set_do_raise_error (false)
+				error_handler.error_list.wipe_out
 				syntax_parser.set_filename (file_name.out)
 				syntax_parser.parse_from_string (text)
+				error_handler.set_do_raise_error (true)
 
-				-- re-establish raising of exception
-				Error_handler.set_do_raise_error
+				-- get error lists
+				error_list := error_handler.error_list
+				warning_list := error_handler.warning_list
 
-				-- get error list
-				list := Error_handler.error_list
 
-				dev_window.context_tool.output_view.text_area.text_displayed.reset_text
-				dev_window.context_tool.output_view.text_area.text_displayed.add (list.count.out+" syntax errors found.")
-
-				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
-				if not list.is_empty then
-					error_list := list.deep_twin
-					dev_window.context_tool.error_output_view.process_errors (list)
-				else
-					error_list := void
-					dev_window.context_tool.error_output_view.text_area.refresh
-				end
-
-				-- iterate through error list
+				-- iterate through error list and invalidate corresponding tokens
 				from
-					list.start
+					error_list.start
+					invalidated_tokens.wipe_out
 				until
-					list.after
+					error_list.after
 				loop
-					error ?= list.item
+					error ?= error_list.item
 					if error /= void then
-						-- place cursor at position of error
+						-- place cursor to position of error
 						cursor.set_y_in_lines (error.line)
 						cursor.set_x_in_characters (error.column)
 
-						-- error should be text-token (otherwise it doesnt make any sence to highlight it)
+						-- error should be text-token (otherwise it doesnt make any sense to highlight it)
 						text_token ?= cursor.token
 						if text_token /= void then
 								text_token.set_incorrect (error.error_message)
-						end
-					else
-						warning ?= list.item
-						if warning /= void then
-							-- place cursor at position of error
-							cursor.set_y_in_lines (warning.line)
-							cursor.set_x_in_characters (warning.column)
-
-							-- error should be text-token (otherwise it doesnt make any sense to highlight it)
-							text_token ?= cursor.token
-							if text_token /= void then
-								text_token.set_incorrect (warning.warning_message)
-							end
+								invalidated_tokens.extend (text_token)
 						end
 					end
 
 					-- go to next error
-					list.forth
+					error_list.forth
 				end
+
+					-- display warnings in context view
+				dev_window.context_tool.warning_output_view.text_area.text_displayed.reset_text
+				if not warning_list.is_empty then
+					dev_window.context_tool.warning_output_view.process_warnings (warning_list)
+				else
+					dev_window.context_tool.warning_output_view.text_area.refresh
+				end
+
+					-- display errors in context view
+				dev_window.context_tool.error_output_view.text_area.text_displayed.reset_text
+				if not error_list.is_empty then
+					dev_window.context_tool.error_output_view.process_errors (error_list)
+				else
+					dev_window.context_tool.error_output_view.text_area.refresh
+				end
+
+
 				text_changed := false
 			end
 		end

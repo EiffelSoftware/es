@@ -40,7 +40,6 @@ feature {NONE} -- Initialization
 			set_position (s, e)
 			warning_message := m
 			file_name := f
-			associated_class := System.current_class
 		ensure
 			line_set: line = s
 			column_set: column = e
@@ -59,9 +58,6 @@ feature -- Properties
 	code: STRING is "Syntax warning"
 			-- Error code
 
-	associated_class: CLASS_C
-			-- Class in which syntax warning occurred.
-
 feature -- Output
 
 	build_explain (a_text_formatter: TEXT_FORMATTER) is
@@ -76,9 +72,17 @@ feature -- Output
 			a_text_formatter.add_error (Current, "Obsolete")
 			a_text_formatter.add (" syntax used at line ")
 			a_text_formatter.add_int (line)
-				-- Error happened in a class
-			a_text_formatter.add (" in class ")
-			a_text_formatter.add_class_syntax (Current, associated_class, associated_class.class_signature)
+			
+			if System.current_class /= Void then
+				a_text_formatter.add (" in class ")
+				a_text_formatter.add_class_syntax (Current, System.current_class,
+						System.current_class.class_signature)
+			elseif file_name /= Void then
+				-- `current_class' May be void at degree 6 when parsing partial classes
+				a_text_formatter.add (" in file ")
+				a_text_formatter.add (file_name)
+			end
+
 			if warning_message /= Void then
 				a_text_formatter.add_new_line
 				a_text_formatter.add (warning_message)
@@ -92,7 +96,6 @@ feature -- Output
 		end
 
 invariant
-	associated_class_not_void: associated_class /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

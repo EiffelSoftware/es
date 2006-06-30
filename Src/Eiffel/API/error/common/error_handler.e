@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 		do
 			create error_list.make
 			create warning_list.make
-			set_do_raise_error
+			set_do_raise_error (true)
 		end
 
 feature -- Properties
@@ -51,17 +51,13 @@ feature -- Status
 		end
 
 feature -- raise_error settings
-	set_do_raise_error is
-			-- set error raising to true
+
+	set_do_raise_error (b: BOOLEAN) is
+			-- set error raising to `b'
 		do
-			do_raise_error := true
+			do_raise_error := b
 		end
 
-	unset_do_raise_error is
-			-- set error raising to true
-		do
-			do_raise_error := false
-		end
 
 feature {E_PROJECT, COMPILER_EXPORTER, SHARED_ERROR_HANDLER} -- Element change
 

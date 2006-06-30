@@ -92,9 +92,21 @@ feature -- Reporting
 		require
 			a_warning_attached: a_warning /= Void
 			not_a_warning_is_empty: not a_warning.is_empty
+		local
+			l_loc: LOCATION_AS
+			l_line: INTEGER
+			l_column: INTEGER
 		do
 			if has_syntax_warning then
-				error_handler.insert_warning (create {SYNTAX_WARNING}.make (line, column, filename, a_warning))
+				if a_target_as /= Void then
+					l_loc := a_target_as.complete_start_location (leaf_list_as)
+					l_line := l_loc.line
+					l_column := l_loc.column
+				else
+					l_line := line
+					l_column := column
+				end
+				error_handler.insert_warning (create {SYNTAX_WARNING}.make (l_line, l_column, filename, a_warning))
 			end
 		end
 
