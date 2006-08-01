@@ -12,7 +12,8 @@ deferred class
 inherit
 	EB_FEATURE_INFO_FORMATTER
 		redefine
-			is_editor_formatter
+			is_editor_formatter,
+			on_feature_drop
 		end
 
 	SHARED_EIFFEL_PROJECT
@@ -100,7 +101,7 @@ feature -- Status setting
 				end
 				display_header
 			end
-		ensure
+		ensure then
 			feature_set: a_feature = associated_feature
 			cmd_created_if_possible: (a_feature = Void) = (feature_cmd = Void)
 		end
@@ -181,6 +182,17 @@ feature {NONE} -- Implementation
 			-- Clear all graphical output.
 		do
 			editor.clear_window
+		end
+
+	on_feature_drop (fs: FEATURE_STONE) is
+			-- Notify `develop_window' of the dropping of `fs'.
+		do
+			if not selected then
+				execute
+			end
+			if fs.e_feature /= associated_feature then
+				manager.set_stone (fs)
+			end
 		end
 
 	editable: BOOLEAN is

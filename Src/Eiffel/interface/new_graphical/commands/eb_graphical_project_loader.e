@@ -401,7 +401,7 @@ feature {NONE} -- Error reporting
 				-- We print text in the project_tool text concerning the system
 				-- because we were successful retrieving the project without
 				-- errors or conversion.
-			output_manager.display_system_info
+--			output_manager.display_system_info
 		end
 
 feature {NONE} -- User interaction

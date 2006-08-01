@@ -17,6 +17,7 @@ inherit
 			mini_pixmap,
 			new_toolbar_item,
 			new_mini_toolbar_item,
+			new_sd_toolbar_item,
 			tooltext
 		end
 
@@ -67,6 +68,14 @@ feature -- Access
 			Result.drop_actions.extend (agent drop_cluster)
 		end
 
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+			-- Create tool bar button for docking.
+		do
+			Result := Precursor (display_text)
+			Result.drop_actions.extend (agent drop_class)
+			Result.drop_actions.extend (agent drop_cluster)
+		end
+
 feature -- Properties
 
 	description: STRING is
@@ -86,8 +95,14 @@ feature -- Properties
 
 	pixmap: EV_PIXMAP is
 			-- Pixmap representing `Current' in toolbars.
-		once
+		do
 			Result := pixmaps.icon_pixmaps.general_delete_icon
+		end
+
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.general_delete_icon_buffer
 		end
 
 	mini_pixmap: EV_PIXMAP is

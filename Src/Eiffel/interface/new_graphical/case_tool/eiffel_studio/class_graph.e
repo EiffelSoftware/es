@@ -206,7 +206,7 @@ feature {EB_CONTEXT_DIAGRAM_COMMAND} -- Implementation
 						   number_of_clients (center_class.class_i, client_depth) +
 						   number_of_suppliers (center_class.class_i, supplier_depth)
 
-			l_status_bar := context_editor.development_window.status_bar
+			l_status_bar := context_editor.develop_window.status_bar
 			l_status_bar.reset_progress_bar_with_range (0 |..| nb_of_items)
 
 			l_status_bar.display_message ("Exploring ancestors of " + center_class.name)
@@ -260,7 +260,7 @@ feature {EB_CONTEXT_DIAGRAM_COMMAND} -- Implementation
 				if l /= Void then
 					from
 						if progress_bar then
-							l_status_bar := context_editor.development_window.status_bar
+							l_status_bar := context_editor.develop_window.status_bar
 						end
 						l.start
 					until
@@ -318,7 +318,7 @@ feature {EB_CONTEXT_DIAGRAM_COMMAND} -- Implementation
 					i := 1
 					nb := l.count
 					if progress_bar then
-						l_status_bar := context_editor.development_window.status_bar
+						l_status_bar := context_editor.develop_window.status_bar
 					end
 				until
 					i > nb
@@ -378,7 +378,7 @@ feature {EB_CONTEXT_DIAGRAM_COMMAND} -- Implementation
 					i := 1
 					nb := l.count
 					if progress_bar then
-						l_status_bar := context_editor.development_window.status_bar
+						l_status_bar := context_editor.develop_window.status_bar
 					end
 				until
 					i > nb
@@ -463,7 +463,7 @@ feature {EB_CONTEXT_DIAGRAM_COMMAND} -- Implementation
 					i := 1
 					nb := l.count
 					if progress_bar then
-						l_status_bar := context_editor.development_window.status_bar
+						l_status_bar := context_editor.develop_window.status_bar
 					end
 				until
 					i > nb

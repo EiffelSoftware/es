@@ -385,6 +385,7 @@ feature {NONE} -- Implementation
 			base_name: STRING
 			wd: EV_WARNING_DIALOG
 			retried: BOOLEAN
+			dev_win: EB_DEVELOPMENT_WINDOW
 		do
 			if not retried then
 				aok := False
@@ -403,6 +404,7 @@ feature {NONE} -- Implementation
 					f_name.set_file_name (file_name)
 					base_name := file_name
 					create file.make (f_name)
+
 					if file.exists then
 						create wd.make_with_text (Warning_messages.w_class_already_in_cluster (base_name))
 						wd.show_modal_to_window (Current)

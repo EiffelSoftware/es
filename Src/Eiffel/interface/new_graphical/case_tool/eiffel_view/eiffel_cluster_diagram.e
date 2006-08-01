@@ -428,7 +428,7 @@ feature {NONE} -- Implementation
 			drop_y := context_editor.pointer_position.y
 			is_dropped_on_diagram := True
 			clf := top_cluster_at (Current, drop_x, drop_y)
-			create dial.make_default (context_editor.development_window)
+			create dial.make_default (context_editor.develop_window)
 			if clf /= Void then
 				l_cluster ?= clf.model.group
 				if l_cluster /= Void then
@@ -559,7 +559,7 @@ feature {NONE} -- Implementation
 	window_status_bar: EB_DEVELOPMENT_WINDOW_STATUS_BAR is
 			-- Status bar of window
 		do
-			Result := context_editor.development_window.status_bar
+			Result := context_editor.develop_window.status_bar
 		ensure
 			Result_not_void: Result /= Void
 		end
@@ -665,7 +665,7 @@ feature {NONE} -- Implementation
 					l_array_undo.extend (agent parent.disable_needed_on_diagram)
 
 					create new_class.make (a_class)
-					es_cluster.extend (new_class)
+					new_cluster.extend (new_class)
 					model.add_node_relations (new_class)
 					update_cluster_legend
 					fig ?= figure_from_model (new_class)

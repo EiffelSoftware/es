@@ -146,6 +146,16 @@ feature -- Access: environment variable
 	short_studio_name: STRING is "studio"
 			-- Short version of EiffelStudio name.
 
+	docking_data_name: STRING is
+			-- Docking config data folder name
+		once
+			if not is_workbench then
+				Result := "docking"
+			else
+				Result := "docking_wb"
+			end
+		end
+
 feature -- Access: file name
 
 	Eiffel_preferences: STRING is
@@ -379,6 +389,25 @@ feature -- Access: file name
 			Result.append ("lib")
 			Result.append_character (l_separator)
 			Result.append ("EiffelSoftware.Runtime.dll")
+		end
+
+	docking_standard_layout_path: FILE_NAME is
+			-- Path of standard docking layout.
+		local
+			l_dir: DIRECTORY
+		do
+			create Result.make_from_string (eiffel_home)
+			Result.extend_from_array (<<docking_data_name>>)
+
+			create l_dir.make (Result)
+			if not l_dir.exists then
+				l_dir.create_dir
+				if not l_dir.is_closed then
+					l_dir.close
+				end
+			end
+		ensure
+			folder_exist: (create {DIRECTORY}.make (Result)).exists
 		end
 
 feature -- Access: command name

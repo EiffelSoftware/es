@@ -7,7 +7,7 @@ indexing
 
 class
 	EB_POSITIONABLE
-	
+
 feature -- Access
 
 	position: like position_internal is
@@ -16,26 +16,39 @@ feature -- Access
 		do
 			Result := position_internal
 		end
-	
-	pos_container: like pos_container_internal is		
+
+	pos_container: like pos_container_internal is
 			-- Where current object is shown. i.e an editor
 		do
 			Result := pos_container_internal
 		end
-		
+
 	previous_position: like position_internal is
 			-- Possible previous position
 		do
 			Result := previous_position_internal
 		end
-			
+
 	previous_pos_container: like pos_container_internal is
 			-- Possible previous container
 		do
 			Result := previous_pos_container_internal
 		end
 
+	pos_editor: EB_EDITOR
+			-- Possible editor in which `position' is valid
+
 feature -- Element Change
+
+	set_pos_editor (a_editor: like pos_editor) is
+			-- Set `pos_editor' with `a_editor'.
+		require
+			a_editor_attached: a_editor /= Void
+		do
+			pos_editor := a_editor
+		ensure
+			pos_editor_attached: pos_editor = a_editor
+		end
 
 	set_position (p: like position_internal) is
 			-- Set `previous_position' with `p'.
@@ -46,7 +59,7 @@ feature -- Element Change
 		ensure
 			position_set: position_internal = p
 		end
-		
+
 	set_pos_container (a_container: like pos_container_internal) is
 			-- Set `container' with `a_container'.
 		do
@@ -54,7 +67,7 @@ feature -- Element Change
 		ensure
 			container_set: pos_container_internal = a_container
 		end
-		
+
 	set_previous_position (p: like previous_position_internal) is
 			-- Set `previous_position' with `p'.
 		require
@@ -64,7 +77,7 @@ feature -- Element Change
 		ensure
 			position_set: previous_position_internal = p
 		end
-		
+
 	set_previous_pos_container (a_container: like previous_pos_container_internal) is
 			-- Set `container' with `a_container'.
 		do
@@ -72,17 +85,17 @@ feature -- Element Change
 		ensure
 			container_set: previous_pos_container_internal = a_container
 		end
-		
+
 feature {NONE}
 
 	position_internal : INTEGER
-	
+
 	pos_container_internal : ANY
-	
+
 	previous_position_internal : like position_internal
-	
+
 	previous_pos_container_internal : like pos_container_internal;
-	
+
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

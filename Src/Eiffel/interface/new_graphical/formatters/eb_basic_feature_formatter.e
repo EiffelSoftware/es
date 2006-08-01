@@ -44,6 +44,12 @@ feature -- Properties
 			Result.put (pixmaps.icon_pixmaps.view_editor_feature_icon, 2)
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			--
+		once
+			Result := pixmaps.icon_pixmaps.view_editor_feature_icon_buffer
+		end
+
 	menu_name: STRING is
 			-- Identifier of `Current' in menus.
 		do

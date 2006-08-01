@@ -8,9 +8,21 @@ indexing
 	revision: "$Revision$"
 
 class
-	EB_CONTEXT_EDITOR
+	EB_DIAGRAM_TOOL
 
 inherit
+	EB_TOOL
+		export
+			{EB_CONTEXT_DIAGRAM_COMMAND, ES_GRAPH, EIFFEL_WORLD, EIFFEL_FACTORY, CLASS_TEXT_MODIFIER, EIFFEL_CLASS_FIGURE}
+				develop_window
+		redefine
+			attach_to_docking_manager,
+			pixmap,
+			mini_toolbar,
+			build_mini_toolbar,
+			build_docking_content
+		end
+
 	SHARED_EIFFEL_PROJECT
 
 	EB_WINDOW_MANAGER_OBSERVER
@@ -19,6 +31,8 @@ inherit
 		end
 
 	TEXT_OBSERVER
+		rename
+			set_manager as set_manager_text_observer
 		redefine
 			on_text_edited
 		end
@@ -48,20 +62,27 @@ inherit
 
 	EB_SHARED_ID_SOLUTION
 
+	EB_HISTORY_OWNER
+		rename
+			set_stone as launch_stone
+		redefine
+			recycle
+		end
+
 create
-	make_with_tool
+	make
 
 feature {NONE} -- Initialization
 
-	make_with_tool (a_tool: like tool) is
+	make_with_tool is
 			-- Set default values.
 		local
 			empty_world: BON_CLASS_DIAGRAM
 			border_frame: EV_FRAME
 			a_class_graph: ES_CLASS_GRAPH
 		do
-			tool := a_tool
 			create widget
+			widget.set_minimum_size (0, 0)
 
 				-- Initialize undoable command history.
 			create history
@@ -71,7 +92,7 @@ feature {NONE} -- Initialization
 			history.redo_exhausted_actions.extend (agent on_history_redo_exhausted)
 			project_close_agent := agent store
 			Eiffel_project.manager.close_agents.extend (project_close_agent)
-			development_window.window_manager.add_observer (Current)
+			develop_window.window_manager.add_observer (Current)
 
 
 			create a_class_graph.make (Current)
@@ -102,7 +123,7 @@ feature {NONE} -- Initialization
 
 			retrieve_depth_preferences
 
-			development_window.editor_tool.text_area.add_edition_observer (Current)
+			develop_window.editors_manager.add_edition_observer (Current)
 			area.key_press_actions.extend (agent on_key_pressed)
 		end
 
@@ -129,7 +150,7 @@ feature {NONE} -- Initialization
 
 			create create_class_cmd.make (Current)
 			create_class_cmd.enable_displayed
-			create delete_cmd.make (Current, development_window)
+			create delete_cmd.make (Current, develop_window)
 			delete_cmd.enable_displayed
 			create create_new_links_cmd.make (Current)
 			create_new_links_cmd.enable_displayed
@@ -233,7 +254,6 @@ feature {NONE} -- Initialization
 			create draw_commands.make
 			create view_commands.make
 
--- TODO: Remove and make create class in standart toolbar pick and dropable
 			draw_commands.extend (create_class_cmd)
 			draw_commands.extend (create_new_links_cmd)
 			draw_commands.extend (delete_cmd)
@@ -252,7 +272,6 @@ feature {NONE} -- Initialization
 
 
 			custom_toolbar := preferences.diagram_tool_data.retrieve_diagram_toolbar (draw_commands)
-
 
 				-- Extending `Void' to list will generate a toolbar separator in its place.
 
@@ -316,6 +335,7 @@ feature {NONE} -- Initialization
 			end
 
 			custom_toolbar.update_toolbar
+
 			drawing_bar.extend (custom_toolbar.widget)
 			drawing_bar.disable_item_expand (custom_toolbar.widget)
 
@@ -327,18 +347,16 @@ feature {NONE} -- Initialization
 			h_box.extend (label)
 			h_box.disable_item_expand (label)
 
-			create zoom_selector.make_default
-			zoom_selector.select_actions.extend (agent on_zoom_level_select)
+				create zoom_selector.make_default
+				zoom_selector.select_actions.extend (agent on_zoom_level_select)
 
 			h_box.extend (zoom_selector)
 			h_box.disable_item_expand (zoom_selector)
 
 			zoom_cell.extend (h_box)
 
---			view_bar.extend (zoom_cell)
---			view_bar.disable_item_expand (zoom_cell)
-
 			create customize_area
+
 			drawing_bar.extend (customize_area)
 
 			drawing_bar.extend (zoom_cell)
@@ -356,13 +374,12 @@ feature {NONE} -- Initialization
 			widget.extend (v_box)
 			widget.disable_item_expand (v_box)
 
-
-
 			create view_menu
 
 			create view_label.make_with_text ("View ")
 			view_menu.extend (view_label)
 			view_menu.disable_item_expand (view_label)
+
 
 			create view_selector.make_with_text (world.default_view_name)
 			view_selector.return_actions.extend (agent on_view_changed)
@@ -430,6 +447,67 @@ feature {NONE} -- Initialization
 			view_selector.set_focus
 		end
 
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Build dockable content.
+		do
+			Precursor {EB_TOOL}(a_docking_manager)
+			content.drop_actions.extend (agent center_diagram_cmd.execute_with_class_stone)
+			content.drop_actions.extend (agent center_diagram_cmd.execute_with_cluster_stone)
+		end
+
+feature -- EB_TOOL features
+
+	title: STRING is
+			-- Title
+		local
+			l_constatns: EB_CONSTANTS
+		do
+			create l_constatns
+			Result := l_constatns.interface_names.l_Tab_diagram
+		end
+
+	pixmap: EV_PIXMAP is
+			-- Pixmap
+		local
+			l_constants: EB_CONSTANTS
+		do
+			create l_constants
+			Result := l_constants.pixmaps.icon_pixmaps.tool_diagram_icon
+		end
+
+	build_interface is
+			-- Build interface
+		do
+			check has_case: develop_window.has_case end
+			make_with_tool
+
+			create history_manager.make (Current)
+			create address_manager.make (Current, True)
+		end
+
+	build_mini_toolbar is
+			--
+		do
+			create history_toolbar
+			history_toolbar.extend (history_manager.back_command.new_mini_toolbar_item)
+			history_toolbar.extend (history_manager.forth_command.new_mini_toolbar_item)
+
+			create mini_toolbar
+			mini_toolbar.extend (history_toolbar)
+			mini_toolbar.extend (address_manager.header_info)
+		end
+
+feature
+
+	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Attach to docking manager
+		do
+				build_docking_content (a_docking_manager)
+				check output_tool_created: develop_window.tools.output_tool /= Void end
+				check not_already_has: not a_docking_manager.has_content (content) end
+				a_docking_manager.contents.extend (content)
+		end
+
 feature -- Status report
 
 	is_rebuild_world_needed: BOOLEAN
@@ -452,12 +530,6 @@ feature -- Access
 	default_pixmaps: EV_STOCK_PIXMAPS is
 		do
 			create Result
-		end
-
-	development_window: EB_DEVELOPMENT_WINDOW is
-			-- Application main window.
-		do
-			Result ?= tool.manager
 		end
 
 	graph: ES_GRAPH
@@ -745,8 +817,8 @@ feature -- Element change
 			disable_toolbar
 
 			if not cancelled then
-				development_window.status_bar.reset
-				development_window.status_bar.display_message ("Constructing Diagram for " + a_class.name_in_upper + " Class")
+				develop_window.status_bar.reset
+				develop_window.status_bar.display_message ("Constructing Diagram for " + a_class.name_in_upper + " Class")
 
 				graph.wipe_out
 
@@ -838,7 +910,7 @@ feature -- Element change
 				projector.enable_painting
 				world_cell.enable_resize
 				projector.full_project
-				development_window.status_bar.reset
+				develop_window.status_bar.reset
 				crop_diagram
 				if world.is_uml then
 					reset_tool_bar_for_uml_class_view
@@ -889,8 +961,8 @@ feature -- Element change
 			disable_toolbar
 
 			if not cancelled then
-				development_window.status_bar.reset
-				development_window.status_bar.display_message ("Constructing Diagram for " + a_group.name)
+				develop_window.status_bar.reset
+				develop_window.status_bar.display_message ("Constructing Diagram for " + a_group.name)
 
 				graph.wipe_out
 
@@ -973,7 +1045,7 @@ feature -- Element change
 				world.show
 				world_cell.enable_resize
 
-				development_window.status_bar.reset
+				develop_window.status_bar.reset
 				projector.full_project
 				crop_diagram
 				if world.is_uml then
@@ -1013,7 +1085,7 @@ feature -- Element change
 			-- Contexts need to be updated because of recompilation
 			-- or similar action that needs resynchonization.
 		do
-			if tool.is_diagram_selected then
+			if widget.is_displayed then
 				graph.synchronize
 				reset_history
 				projector.full_project
@@ -1142,19 +1214,29 @@ feature -- Memory management
 	recycle is
 			-- Frees `Current's memory, and leave `Current' in an unstable state
 			-- so that we know whether we're still referenced or not.
+		local
+			l_editors: ARRAYED_LIST [EB_SMART_EDITOR]
 		do
 			Eiffel_project.manager.close_agents.start
 			Eiffel_project.manager.close_agents.prune_all (project_close_agent)
-			development_window.window_manager.remove_observer (Current)
+			develop_window.window_manager.remove_observer (Current)
 
 				--| 'if' necessary because the editor may be recycled before the diagram.
-			if development_window.editor_tool.text_area /= Void then
-				development_window.editor_tool.text_area.remove_observer (Current)
+			l_editors := develop_window.editors_manager.editors
+			if l_editors /= Void then
+				from
+					l_editors.start
+				until
+					l_editors.after
+				loop
+					l_editors.item.remove_observer (Current)
+					l_editors.forth
+				end
 			end
+
 			recycle_commands
 			world_cell.recycle
 			world_cell := Void
-			tool := Void
 		end
 
 	recycle_commands is
@@ -1163,7 +1245,13 @@ feature -- Memory management
 			delete_cmd.recycle
 		end
 
-feature {EB_CONTEXT_EDITOR, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- Toolbar actions
+feature {EB_DIAGRAM_TOOL, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- Toolbar actions
+
+	launch_stone (a_stone: STONE) is
+			-- Launch stone.
+		do
+			set_stone (a_stone)
+		end
 
 	is_link_client, is_link_inheritance, is_link_aggregate: BOOLEAN
 
@@ -1191,7 +1279,7 @@ feature {EB_CONTEXT_EDITOR, EB_CONTEXT_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- 
 			is_link_aggregate := False
 		end
 
-feature {EB_CONTEXT_TOOL} -- Context tool
+feature {EB_CONTEXT_TOOL, EB_DEVELOPMENT_WINDOW_TOOLS} -- Context tool
 
 	on_select is
 			-- Current became selected in notebook.
@@ -1224,9 +1312,12 @@ feature {EB_CONTEXT_TOOL} -- Context tool
 			-- Assign `a_stone' as new stone.
 		do
 			if a_stone /= Void then
+				history_manager.extend (a_stone)
+				stone := a_stone
+
 				class_stone ?= a_stone
 				cluster_stone ?= a_stone
-				if tool.is_diagram_selected then
+				if widget.is_displayed then
 					if class_stone /= Void then
 						-- create a new class view
 						if
@@ -1270,9 +1361,6 @@ feature {EB_CENTER_DIAGRAM_COMMAND, EIFFEL_CLASS_FIGURE} -- Center diagram comma
 	cluster_stone: CLUSTER_STONE
 			-- Stone representing center cluster.
 
-	tool: EB_CONTEXT_TOOL
-			-- Container of `Current'.
-
 feature {EB_CLASS_HEADER_COMMAND} -- Class head command
 
 	area_as_widget: EV_WIDGET is
@@ -1283,7 +1371,7 @@ feature {EB_CLASS_HEADER_COMMAND} -- Class head command
 			Result_not_void: Result /= Void
 		end
 
-feature {EB_DEVELOPMENT_WINDOW} -- Commands with global accelerators
+feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Commands with global accelerators
 
 	undo_cmd: EB_UNDO_DIAGRAM_COMMAND
 			-- Command to undo last action
@@ -1535,8 +1623,8 @@ feature {NONE} -- Events
 			if not cancelled then--and not view_selector.is_empty then
 				reset_history
 
-				development_window.status_bar.display_message ("Loading diagram for " + view_selector.text)
-				development_window.status_bar.reset_progress_bar_with_range (0 |..| 0)
+				develop_window.status_bar.display_message ("Loading diagram for " + view_selector.text)
+				develop_window.status_bar.reset_progress_bar_with_range (0 |..| 0)
 
 				if is_force_directed_used then
 					disable_force_directed
@@ -1551,7 +1639,7 @@ feature {NONE} -- Events
 				projector.enable_painting
 				world_cell.enable_resize
 				projector.full_project
-				development_window.status_bar.reset
+				develop_window.status_bar.reset
 				crop_diagram
 
 				if world.is_uml then
@@ -1582,7 +1670,7 @@ feature {NONE} -- Events
 		rescue
 			cancelled := True
 			error_handler.error_list.wipe_out
-			development_window.status_bar.reset
+			develop_window.status_bar.reset
 			projector.enable_painting
 			world_cell.enable_resize
 			clear_area
@@ -1611,7 +1699,7 @@ feature {NONE} -- Events
 			-- `a_item' has been removed.
 			-- If it is parent development window, store diagram.
 		 do
-			if a_item = development_window then
+			if a_item = develop_window then
 				store
 			end
 		end
@@ -1694,13 +1782,13 @@ feature {EB_SHOW_LEGEND_COMMAND} -- Implementation
 			cluster_legend_y := world.cluster_legend.point_y - projector.area_y
 		end
 
+
 feature -- Implementation
 
 	default_bon_horizontal_spacing: INTEGER is 25
 	default_bon_vertical_spacing: INTEGER is 25
 	default_uml_horizontal_spacing: INTEGER is 150
 	default_uml_vertical_spacing: INTEGER is 150
-		-- Default spacings used to layout generated figures.
 
 feature {NONE} -- Implementation
 
@@ -1805,21 +1893,21 @@ feature {NONE} -- Implementation
 	toolbar_menu: EV_MENU
 			-- Popped up when user clicks left to the right of the toolbar.
 
-	on_class_drop (stone: CLASSI_STONE) is
+	on_class_drop (a_stone: CLASSI_STONE) is
 			-- `stone' was dropped on an empty world.
 		do
-			if stone.is_valid then
+			if a_stone.is_valid then
 				is_rebuild_world_needed := True
-				tool.launch_stone (stone)
+				launch_stone (a_stone)
 			end
 		end
 
-	on_cluster_drop (stone: CLUSTER_STONE) is
+	on_cluster_drop (a_stone: CLUSTER_STONE) is
 			-- `stone' was dropped on an empty world
 		do
-			if stone.is_valid then
+			if a_stone.is_valid then
 				is_rebuild_world_needed := True
-				tool.launch_stone (stone)
+				launch_stone (stone)
 			end
 		end
 
@@ -1905,11 +1993,6 @@ feature {NONE} -- Implementation
 	project_close_agent: PROCEDURE [ANY, TUPLE]
 			-- The agent that is called when the project is closed.
 
-	pixmaps: EB_SHARED_PIXMAPS is
-		once
-			create Result
-		end
-
 	excluded_class_figures: HASH_TABLE [STRING, STRING]
 			-- Classes never present on the diagram (unless `ignore_excluded_figures' is False).
 
@@ -1922,7 +2005,7 @@ feature {NONE} -- Implementation
 				>>
 		end
 
-feature {EB_CONTEXT_TOOL, EIFFEL_WORLD} -- XML Output
+feature {EIFFEL_WORLD} -- XML Output
 
 	store is
 			-- Freeze state of `Current'.
@@ -2100,6 +2183,39 @@ feature {NONE} -- Implementation keyboard shortcuts
 			end
 		end
 
+feature {NONE} -- Implementation for mini tool bar
+
+	mini_toolbar: EV_HORIZONTAL_BOX
+			-- Mini tool bar.
+
+	history_toolbar: EV_TOOL_BAR;
+			-- Toolbar containing the history commands.
+
+
+	window: EV_WINDOW is
+			-- Window dialogs can refer to.
+		local
+			conv_dev: EB_DEVELOPMENT_WINDOW
+		do
+			conv_dev ?= develop_window
+			if conv_dev /= Void then
+				Result := conv_dev.window
+			else
+				create Result
+			end
+		end
+
+	stone: STONE
+			-- Current stone
+
+	refresh is
+			--
+		do
+
+		end
+
+	address_manager: EB_ADDRESS_MANAGER
+			-- Manager for the header info.
 invariant
 	world_cell_not_void: world_cell /= Void
 	area_not_void: area /= Void
@@ -2113,19 +2229,19 @@ indexing
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-			
+
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-			
+
 			Eiffel Software's Eiffel Development Environment is
 			distributed in the hope that it will be useful,	but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 			See the	GNU General Public License for more details.
-			
+
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,

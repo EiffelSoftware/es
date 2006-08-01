@@ -153,7 +153,7 @@ feature -- change properties
 			elseif expression.error_occurred then
 				a_item.set_foreground_color (parent_grid.error_row_fg_color)
 			else
-				a_item.set_foreground_color (parent_grid.parent.foreground_color)
+				a_item.set_foreground_color ((create {EV_STOCK_COLORS}).default_foreground_color)
 			end
 		end
 

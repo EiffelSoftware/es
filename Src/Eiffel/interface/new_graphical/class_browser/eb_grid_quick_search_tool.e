@@ -56,7 +56,7 @@ feature{NONE} -- Initialization
 		require
 			a_dev_window_attached: a_dev_window /= Void
 		do
-			make_search_bar (a_dev_window.search_tool)
+			make_search_bar (a_dev_window.tools.search_tool)
 		end
 
 	user_initialization is

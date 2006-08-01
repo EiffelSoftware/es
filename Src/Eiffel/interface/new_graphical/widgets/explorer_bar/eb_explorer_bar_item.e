@@ -1,5 +1,9 @@
 indexing
-	description	: "Item for an EB_EXPLORER_BAR"
+	description	: "[
+						Item for an EB_EXPLORER_BAR								
+						This class should not be used on docking Eiffel Studio.
+						It'll be removed finally.
+																				]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords	: "split, area, box, header, item"
@@ -24,60 +28,59 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET; a_title: STRING; closeable: BOOLEAN) is
+	make (a_docking_manager: SD_DOCKING_MANAGER; a_widget: EV_WIDGET; a_title: STRING; closeable: BOOLEAN) is
 			-- Initialization
 		require
-			parent_not_void: a_parent /= Void
+			not_void: a_docking_manager /= Void
 			widget_not_void: a_widget /= Void
 			title_not_void: a_title /= Void
 		do
+			docking_manager := a_docking_manager
 			is_closeable := closeable
 			is_maximizable := True
 			is_minimizable := True
-			generic_make (a_parent, a_widget, a_title)
+			generic_make (a_docking_manager, a_widget, a_title)
 		end
 
 	make_with_mini_toolbar (
-		a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET;
+		a_docking_manager: SD_DOCKING_MANAGER;
+		a_widget: EV_WIDGET;
 		a_title: STRING; closeable: BOOLEAN;
 		a_mini_toolbar: EV_TOOL_BAR) is
 			-- Initialization
 		require
-			parent_not_void: a_parent /= Void
 			widget_not_void: a_widget /= Void
 			title_not_void: a_title /= Void
 			mini_toolbar_not_void: a_mini_toolbar /= Void
 		do
 			mini_toolbar := a_mini_toolbar
-			make (a_parent, a_widget, a_title, closeable)
+			make (a_docking_manager, a_widget, a_title, closeable)
 		end
 
 	make_with_info (
-			a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET;
+			a_docking_manager: SD_DOCKING_MANAGER;
+			a_widget: EV_WIDGET;
 			a_title: STRING; closeable: BOOLEAN;
 			info: EV_HORIZONTAL_BOX; a_mini_toolbar: EV_TOOL_BAR)
 		is
 				-- Initialization
 		require
-			parent_not_void: a_parent /= Void
 			widget_not_void: a_widget /= Void
 			title_not_void: a_title /= Void
 			info_not_void: info /= Void
 		do
 			mini_toolbar := a_mini_toolbar
 			header_addon := info
-			make (a_parent, a_widget, a_title, closeable)
+			make (a_docking_manager, a_widget, a_title, closeable)
 		end
 
-	generic_make (a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET; a_title: STRING) is
+	generic_make (a_docking_manager: SD_DOCKING_MANAGER; a_widget: EV_WIDGET; a_title: STRING) is
 			-- Generic Initialization
 		require
-			a_parent_not_void: a_parent /= Void
 			a_widget_not_void: a_widget /= Void
 			a_title_not_void: a_title /= Void
 		do
 				-- Set the attributes
-			parent := a_parent
 			widget := a_widget
 			is_visible := False
 			menu_name := "Explorer bar item"
@@ -88,19 +91,12 @@ feature {NONE} -- Initialization
 				mini_toolbar_holder.extend (mini_toolbar)
 			end
 
-				-- Connect actions required to update `Current' which its state
-				-- has been changed in `parent'.
-			parent.minimize_actions.extend (agent internal_set_minimized_wrapper)
-			parent.maximize_actions.extend (agent internal_set_maximized_wrapper)
-			parent.restore_actions.extend (agent internal_set_restored_wrapper)
-			parent.close_actions.extend (agent close_wrapper)
 		end
 
 feature -- Access
 
 	widget: EV_WIDGET
 			-- Widget.
-
 
 	associated_command: EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 				-- Command associated with Current.
@@ -125,6 +121,12 @@ feature -- Access
 
 	show_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Actions called when the item becomes visible.
+
+	docking_manager: SD_DOCKING_MANAGER
+			-- Docking manager assiociate with.
+
+	content: SD_CONTENT
+			-- Docking content assiociate with.
 
 feature -- Status Report
 
@@ -197,7 +199,6 @@ feature -- Status Setting
 			if mini_toolbar_holder /= Void and then mini_toolbar_holder.parent /= Void then
 				mini_toolbar_holder.parent.prune_all (mini_toolbar_holder)
 			end
-			parent.on_item_hidden (Current)
 		end
 
 	show_external (an_x, a_y, a_width, a_height: INTEGER) is
@@ -237,108 +238,23 @@ feature -- Status Setting
 			end
 		end
 
-
 	show is
 			-- Show current
 		local
-			selectable_command: EB_SELECTABLE
-			position_within_tools: INTEGER
-			insert_pos: INTEGER
-			current_item: EB_EXPLORER_BAR_ITEM
-			item_list: ARRAYED_LIST [EB_EXPLORER_BAR_ITEM]
-			must_add_as_external: BOOLEAN
-			external_window: EV_WINDOW
-			a_widget: EV_WIDGET
+			l_attachable: EB_DOCKING_MANAGER_ATTACHABLE
 		do
-			parent.explorer_bar_manager.lock_update
-			is_maximized := False
-			is_minimized := False
-			if not is_visible then
-				is_visible := True
-				show_actions.call (Void)
-
-					-- Now calculate the insert position for `widget'.
-					-- This is non trivial, as it must match the order within `item_list' of
-					-- `parent', and some items in this list may not be displayed.
-					-- We iterate `item_list' to determine the last item displayed in `parent'
-					-- that should be displayed before `widget' and insert based on this.
-				position_within_tools := parent.item_list.index_of (Current, 1)
-				item_list := parent.item_list
-				insert_pos := 1
-				from
-					item_list.start
-				until
-					item_list.off
-				loop
-					current_item ?= item_list.item
-					check
-						current_item_not_void: current_item /= Void
-					end
-					if current_item.is_visible and item_list.index < position_within_tools then
-						insert_pos := insert_pos + 1
-					end
-					item_list.forth
-				end
-				if parent.explorer_style then
-					from
-						parent.item_list.start
-					until
-						parent.item_list.off
-					loop
-						if
-							parent.external_representation.has (parent.item_list.item.widget) and
-							parent.item_list.item.is_closeable and is_closeable
-						then
-							must_add_as_external := True
-							from
-								a_widget := parent.item_list.item.widget
-							until
-								external_window /= Void
-							loop
-								external_window ?= a_widget.parent
-								a_widget := a_widget.parent
-							end
-						end
-						if parent.linear_representation.has (parent.item_list.item.widget) and parent.item_list.item.is_closeable then
-								-- Determine the position of the previous item contained in the bar which `Current'
-								-- must replace. We use this index to insert `Current' at the correct index when in explorer style mode.
-							insert_pos := parent.linear_representation.index_of (parent.item_list.item.widget, 1)
-						end
-						parent.item_list.forth
-					end
-				end
-
-				if must_add_as_external then
-					parent.add_external (widget, parent.explorer_bar_manager.window, title, insert_pos.min (parent.count + 1), external_window.x_position, external_window.y_position, external_window.width, external_window.height)
-				else
-					parent.insert_widget (widget, title, insert_pos.min (parent.count + 1), widget.minimum_height.max (150))
-				end
-				if is_closeable then
-					parent.enable_close_button (widget)
-				else
-					parent.enable_close_button_as_grayed (widget)
-				end
-						-- As the tools are added and removed from the toolbar frequently,
-						-- `mini_toolbar' may be parented, so must be unparented.
-				if mini_toolbar_holder.parent /= Void then
-					mini_toolbar_holder.parent.prune_all (mini_toolbar_holder)
-				end
-				parent.customizeable_area_of_widget (widget).extend (mini_toolbar_holder)
-				parent.customizeable_area_of_widget (widget).disable_item_expand (mini_toolbar_holder)
-				if header_addon /= Void then
-					if header_addon.parent /= Void then
-						header_addon.parent.prune_all (header_addon)
-					end
-					parent.customizeable_area_of_widget (widget).extend (header_addon)
-				end
+			l_attachable ?= Current
+			if l_attachable /= Void then
+				content := l_attachable.content
+				docking_manager.contents.prune_all (content)
 			end
 
-			selectable_command ?= associated_command
-			if selectable_command /= Void then
-				selectable_command.enable_selected
-			end
-			parent.on_item_shown (Current)
-			parent.explorer_bar_manager.unlock_update
+			create content.make_with_widget (widget, generating_type)
+			content.set_long_title (generating_type)
+			content.set_short_title (generating_type)
+			content.set_type ({SD_ENUMERATION}.tool)
+			docking_manager.contents.extend (content)
+			content.set_top ({SD_ENUMERATION}.top)
 		end
 
 	minimize is
@@ -433,7 +349,7 @@ feature -- Status Setting
 			is_maximizable := True
 		end
 
-feature {EB_EXPLORER_BAR_ATTACHABLE} -- Status setting
+feature {EB_DOCKING_MANAGER_ATTACHABLE} -- Status setting
 
 	set_parent (new_parent: EB_EXPLORER_BAR) is
 			-- Define a new explorer bar as the parent.
@@ -459,8 +375,10 @@ feature {EB_EXPLORER_BAR_ATTACHABLE} -- Status setting
 feature {EB_EXPLORER_BAR} -- Controls
 
 	mini_toolbar_holder: EV_CONTAINER
+			-- Mini toolbar holder
 
 	mini_toolbar: EV_TOOL_BAR
+			-- Mini toolbar
 
 	header_addon: EV_HORIZONTAL_BOX
 			-- Horizontal bar displayed in the header.

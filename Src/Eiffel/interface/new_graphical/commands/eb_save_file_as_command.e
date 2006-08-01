@@ -146,6 +146,9 @@ feature {NONE} -- Implementation
 			Result := Interface_names.m_Export_to
 		end
 
+	pixmap: EV_PIXMAP
+			-- Pixmap
+
 feature -- Obsolete
 
 	save_it (fn: STRING) is

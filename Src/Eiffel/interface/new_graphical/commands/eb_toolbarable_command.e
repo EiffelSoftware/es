@@ -23,6 +23,11 @@ feature -- Access
 		deferred
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer which representing the command.
+		deferred
+		end
+
 	mini_pixmap: EV_PIXMAP is
 			-- Pixmap representing the command for mini toolbars.
 		do
@@ -129,6 +134,14 @@ feature -- Basic operations
 			Result.select_actions.extend (agent execute)
 		end
 
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+			--
+		do
+			create Result.make (Current)
+			initialize_sd_toolbar_item (Result, display_text)
+			Result.select_actions.extend (agent execute)
+		end
+
 	new_mini_toolbar_item: EB_COMMAND_TOOL_BAR_BUTTON is
 			-- Create a new mini toolbar button for this command.
 		require
@@ -150,7 +163,7 @@ feature {NONE} -- Implementation
 	initialize_toolbar_item (a_item: EB_COMMAND_TOOL_BAR_BUTTON; display_text: BOOLEAN) is
 			-- Initialize `a_item'
 		local
-			tt: STRING
+			l_tt: STRING
 		do
 			if display_text and then has_text then
 				a_item.set_text (tooltext)
@@ -161,18 +174,48 @@ feature {NONE} -- Implementation
 			else
 				a_item.disable_sensitive
 			end
-			tt := tooltip.twin
+			l_tt := tooltip.twin
 			if accelerator /= Void then
-				tt.append (opening_parenthesis)
-				tt.append (accelerator.out)
-				tt.append (closing_parenthesis)
+				l_tt.append (opening_parenthesis)
+				l_tt.append (accelerator.out)
+				l_tt.append (closing_parenthesis)
 			end
-			a_item.set_tooltip (tt)
+			a_item.set_tooltip (l_tt)
 		end
 
-feature {EB_COMMAND_TOOL_BAR_BUTTON} -- Implementation
+	initialize_sd_toolbar_item (a_item: EB_SD_COMMAND_TOOL_BAR_BUTTON; display_text: BOOLEAN) is
+			-- Initialize `a_item'
+		local
+			l_tt: STRING
+		do
+			if display_text and then has_text then
+				a_item.set_text (tooltext)
+			end
+			a_item.set_pixmap (pixmap)
+			if pixel_buffer /= Void then
+				a_item.set_pixel_buffer (pixel_buffer)
+			end
+			a_item.set_tooltip (tooltip)
+			a_item.set_description (description)
+			if is_sensitive then
+				a_item.enable_sensitive
+			else
+				a_item.disable_sensitive
+			end
+			l_tt := tooltip.twin
+			if accelerator /= Void then
+				l_tt.append (opening_parenthesis)
+				l_tt.append (accelerator.out)
+				l_tt.append (closing_parenthesis)
+			end
+			a_item.set_tooltip (l_tt)
+		end
+
+feature {EB_COMMAND_TOOL_BAR_BUTTON, EB_SD_COMMAND_TOOL_BAR_BUTTON} -- Implementation
 
 	internal_managed_toolbar_items: ARRAYED_LIST [like new_toolbar_item]
+
+	internal_managed_sd_toolbar_items: ARRAYED_LIST [like new_sd_toolbar_item]
 
 	managed_toolbar_items: ARRAYED_LIST [like new_toolbar_item] is
 			-- Toolbar items associated with this command.
@@ -181,6 +224,15 @@ feature {EB_COMMAND_TOOL_BAR_BUTTON} -- Implementation
 				create internal_managed_toolbar_items.make (1)
 			end
 			Result := internal_managed_toolbar_items
+		end
+
+	managed_sd_toolbar_items: ARRAYED_LIST [like new_sd_toolbar_item] is
+			--
+		do
+			if internal_managed_sd_toolbar_items = Void then
+				create internal_managed_sd_toolbar_items.make (1)
+			end
+			Result := internal_managed_sd_toolbar_items
 		end
 
 	Opening_parenthesis: STRING is " ("

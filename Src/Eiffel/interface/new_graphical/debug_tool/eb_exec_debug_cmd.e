@@ -1,5 +1,4 @@
 indexing
-
 	description:
 		"Set execution format so that breakable point %
 			%will be taken into account."
@@ -70,6 +69,12 @@ feature {NONE} -- Attributes
 			-- Pixmap for the button.
 		do
 			Result := pixmaps.icon_pixmaps.debug_run_icon
+		end
+
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.debug_run_icon_buffer
 		end
 
 	name: STRING is "Exec_debug"

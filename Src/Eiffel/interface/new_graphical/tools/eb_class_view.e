@@ -7,9 +7,21 @@ indexing
 	revision: "$Revision$"
 
 class
-	EB_CLASS_VIEW
+	EB_CLASS_TOOL
 
 inherit
+	EB_TOOL
+		redefine
+			attach_to_docking_manager,
+			pixmap,
+			mini_toolbar,
+			build_mini_toolbar,
+			build_docking_content,
+			show
+		end
+
+	EB_CONSTANTS
+
 	WIDGET_OWNER
 
 	SHARED_WORKBENCH
@@ -18,12 +30,19 @@ inherit
 
 	EB_VIEWPOINT_AREA
 
+	EB_HISTORY_OWNER
+		rename
+			set_stone as drop_stone
+		redefine
+			recycle
+		end
+
 create
-	make_with_tool
+	make
 
 feature {NONE} -- Initialization
 
-	make_with_tool (a_tool: EB_DEVELOPMENT_WINDOW; a_context: EB_CONTEXT_TOOL) is
+	make_with_tool (a_tool: EB_DEVELOPMENT_WINDOW) is
 			-- Set default values.
 		require
 			formatters_initialized: a_tool.managed_class_formatters /= Void
@@ -35,7 +54,7 @@ feature {NONE} -- Initialization
 			l_class_formatter: EB_CLASS_CONTENT_FORMATTER
 			l_drop_actions: EV_PND_ACTION_SEQUENCE
 		do
-			context := a_context
+			develop_window := a_tool
 			formatters := a_tool.managed_class_formatters
 			create managed_formatters.make (10)
 			create shared_editor.make (a_tool)
@@ -69,10 +88,85 @@ feature {NONE} -- Initialization
 				formatters.forth
 			end
 			fill_in
+			set_widget (shared_editor.widget)
+
+			on_select
 		end
 
-	saved_formatters: like managed_formatters
-			-- Formmatters needed by tool by not in Current stome context.
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Build dockable content.
+		do
+			Precursor {EB_TOOL}(a_docking_manager)
+			content.drop_actions.extend (agent drop_stone)
+		end
+
+feature
+
+	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Attach to docking manager
+		do
+			build_docking_content (a_docking_manager)
+			check friend_tool_created: develop_window.tools.diagram_tool /= Void end
+			check not_already_has: not a_docking_manager.has_content (content) end
+			a_docking_manager.contents.extend (content)
+		end
+
+feature -- EB_TOOL issues
+
+	title: STRING is
+			-- Title
+		local
+			l_constatns: EB_CONSTANTS
+		do
+			create l_constatns
+			Result := l_constatns.interface_names.l_Tab_class_info
+		end
+
+	pixmap: EV_PIXMAP is
+			-- Pixmap
+		local
+			l_constants: EB_CONSTANTS
+		do
+			create l_constants
+			Result := l_constants.pixmaps.icon_pixmaps.tool_class_icon
+		end
+
+	build_mini_toolbar is
+			--
+		do
+			create history_toolbar
+			history_toolbar.extend (history_manager.back_command.new_mini_toolbar_item)
+			history_toolbar.extend (history_manager.forth_command.new_mini_toolbar_item)
+
+			create mini_toolbar
+			mini_toolbar.extend (history_toolbar)
+			mini_toolbar.extend (address_manager.header_info)
+		end
+
+	build_interface is
+			-- Build interface
+		do
+			make_with_tool (develop_window)
+
+			create history_manager.make (Current)
+			create address_manager.make (Current, True)
+		end
+
+	show is
+			-- Show tool.
+		do
+			Precursor {EB_TOOL}
+			from
+				managed_formatters.start
+			until
+				managed_formatters.after
+			loop
+				if managed_formatters.item.selected then
+					managed_formatters.item.set_focus
+				end
+				managed_formatters.forth
+			end
+		end
 
 feature -- Access
 
@@ -86,15 +180,8 @@ feature -- Access
 			-- Needed to pop up when corresponding menus are selected.
 			--| Not in implementation because it is used in a precondition.
 
-	stone: STONE is
-			-- Currently managed stone.
-		do
-			if internal_stone = Void then
-				Result := context.stone
-			else
-				Result := internal_stone
-			end
-		end
+	address_manager: EB_ADDRESS_MANAGER
+			-- Manager for the header info.
 
 	is_stone_external: BOOLEAN
 			-- Does current stone repreasent a .NET class?
@@ -108,12 +195,6 @@ feature -- Access
 		end
 
 feature -- Status setting
-
-	set_parent (explorer: EB_EXPLORER_BAR_ITEM) is
-			-- Set `explorer_parent' to `explorer'.
-		do
-			explorer_parent := explorer
-		end
 
 	set_stone (new_stone: STONE) is
 			-- Send a stone to class formatters.
@@ -154,7 +235,7 @@ feature -- Status setting
 			if cst /= Void then
 				update_viewpoints (cst.e_class)
 			end
-			if cst = Void or else internal_stone = Void or else not internal_stone.same_as (cst) then
+			if cst = Void or else stone = Void or else not stone.same_as (cst) then
 					-- Set the stones.
 				from
 					managed_formatters.start
@@ -165,13 +246,20 @@ feature -- Status setting
 					managed_formatters.forth
 				end
 			end
-			internal_stone := cst
+			stone := cst
+
+			history_manager.extend (stone)
 		end
 
 	launch_stone (st: CLASSI_STONE) is
 			-- Notify the development window of a new stone.
 		do
-			context.launch_stone (st)
+			if develop_window.unified_stone then
+				develop_window.set_stone (st)
+			else
+				set_stone (st)
+			end
+			set_focus
 		end
 
 	on_select is
@@ -230,7 +318,7 @@ feature -- Status setting
 				managed_formatters.item.invalidate
 				managed_formatters.forth
 			end
-			internal_stone := Void
+			stone := Void
 		end
 
 	quick_refresh_editor is
@@ -310,19 +398,6 @@ feature -- Status setting
 			then
 				parent_notebook.select_item (widget)
 			end
-			if
-				explorer_parent /= Void and then
-				not is_parent_visible
-			then
-				explorer_parent.associated_command.execute
-			end
-			if
-					-- Another tool is maximized.
-				 not explorer_parent.is_maximized and
-				 explorer_parent.parent.is_maximized
-			then
-				explorer_parent.parent.unmaximize
-			end
 		end
 
 	pop_default_formatter is
@@ -346,7 +421,7 @@ feature -- Status setting
 		require
 			focusable: widget.is_displayed and widget.is_sensitive
 		do
-			shared_editor.set_focus
+			shared_editor.editor_drawing_area.set_focus
 		end
 
 	on_context_change is
@@ -363,10 +438,12 @@ feature -- Memory management
 		do
 			shared_editor.recycle
 			shared_editor := Void
-			context := Void
 		end
 
 feature {NONE} -- Implementation
+
+	saved_formatters: like managed_formatters
+			-- Formmatters needed by tool by not in Current stone context.
 
 	used: BOOLEAN
 			-- Has the class view been used yet to perform any formatting?
@@ -382,9 +459,6 @@ feature {NONE} -- Implementation
 
 	output_line: EV_LABEL
 			-- Line to display status of current formatter.
-
-	internal_stone: CLASSC_STONE
-			-- Currently managed stone.
 
 	fill_in is
 			-- Display all controls of the window.
@@ -502,9 +576,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	context: EB_CONTEXT_TOOL
-			-- Container of `Current'. Stone manager.
-
 	shared_editor: EB_CLICKABLE_EDITOR
 			-- The editor used by all formatters.
 
@@ -514,30 +585,44 @@ feature {NONE} -- Implementation
 	visible: BOOLEAN
 			-- Are we displayed by `parent_notebook'.
 
-	is_parent_visible: BOOLEAN is
-			-- Is `explorer_parent' displayed?
-		do
-			if explorer_parent /= Void then
-				Result := explorer_parent.is_visible
-			end
-		end
-
 	drop_stone (st: CLASSI_STONE) is
 			-- Set `st' in the stone manager and pop up the feature view if it is a feature stone.
-		require
-			valid_stone: st /= Void
 		local
 			fst: FEATURE_STONE
 		do
 			fst ?= st
 			if fst /= Void then
-				context.feature_view.pop_default_formatter
+				develop_window.tools.features_relation_tool.set_stone (st)
+				develop_window.tools.features_relation_tool.content.show
+				develop_window.tools.features_relation_tool.content.set_focus
+				develop_window.tools.features_relation_tool.set_focus
+			else
+				launch_stone (st)
+				content.set_focus
 			end
-			launch_stone (st)
 		end
 
-	explorer_parent: EB_EXPLORER_BAR_ITEM
-			-- Explorer bar item that contains `Current'.
+	stone: CLASSC_STONE
+			-- Currently managed stone.
+
+	window: EV_WINDOW is
+			-- Window dialogs can refer to.
+		local
+			conv_dev: EB_DEVELOPMENT_WINDOW
+		do
+			conv_dev ?= develop_window
+			if conv_dev /= Void then
+				Result := conv_dev.window
+			else
+				create Result
+			end
+		end
+
+	mini_toolbar: EV_HORIZONTAL_BOX
+			-- Mini tool bar.
+
+	history_toolbar: EV_TOOL_BAR;
+			-- Toolbar containing the history commands.
 
 	outer_container: EV_CELL
 			-- Container to hold `formatter_container' and `editor_frame' (if current formatter is an editor formatter)

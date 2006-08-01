@@ -86,6 +86,12 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_show_legend_icon
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			-- Currently there is no pixel buffer for this command.
+		end
+		
 	description: STRING is
 			-- Description for this command.
 		do

@@ -85,7 +85,7 @@ feature -- Status report
 			create Result
 		end
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
 	Refactoring_manager: ERF_MANAGER is
 			-- The refactoring manager.

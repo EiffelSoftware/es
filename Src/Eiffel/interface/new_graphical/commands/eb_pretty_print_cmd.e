@@ -63,6 +63,12 @@ feature -- Access
 		do
 
 		end
+		
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			-- Currently there is no pixel buffer for this command.
+		end
 
 	menu_name: STRING is
 			-- Menu name for `Current'.

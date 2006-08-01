@@ -28,14 +28,19 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_target: like target; a_menu_name: STRING) is
+	make (a_target: SD_TOOL_BAR_CONTENT; a_menu_name: STRING) is
 			-- Initialize Current with target `a_target' and `menu_name' set to `a_menu_name'.
+		require
+			not_void: a_target /= Void
 		do
-			command_make (a_target)
 			menu_name := a_menu_name
 			name := a_menu_name
+			content := a_target
+		ensure
+			set: content = a_target
 		end
 
+	content: SD_TOOL_BAR_CONTENT
 feature -- Status setting
 
 	enable_visible is
@@ -46,7 +51,8 @@ feature -- Status setting
 		do
 			if not is_visible then
 				is_visible := True
-				target.show
+				content.show
+
 				menu_items := managed_menu_items
 				if menu_items /= Void then
 					from
@@ -72,6 +78,7 @@ feature -- Status setting
 			menu_items: like managed_menu_items
 			citem: EB_COMMAND_CHECK_MENU_ITEM
 		do
+
 			if is_visible then
 				menu_items := managed_menu_items
 				if menu_items /= Void then
@@ -90,7 +97,7 @@ feature -- Status setting
 					end
 				end
 				is_visible := False
-				target.hide
+				content.hide
 			end
 		end
 
@@ -109,6 +116,9 @@ feature -- Basic operations
 				Result.disable_select
 			end
 			Result.select_actions.extend (agent execute)
+			if pixmap /= Void then
+				Result.set_pixmap (pixmap)
+			end
 		end
 
 feature -- Access
@@ -116,8 +126,11 @@ feature -- Access
 	menu_name: STRING
 			-- Name as it appears in the menu.
 
-	name: STRING;
+	name: STRING
 			-- Name for the command.
+
+	pixmap: EV_PIXMAP;
+			-- Pixmap	
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

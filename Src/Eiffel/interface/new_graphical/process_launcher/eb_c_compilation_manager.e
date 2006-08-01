@@ -137,13 +137,13 @@ feature{NONE}  -- Actions
 	start_pixmap_animation_timer (a_dev_window: EB_DEVELOPMENT_WINDOW) is
 			-- Start pixmap animation on `a_dev_window'.
 		do
-			a_dev_window.start_c_output_pixmap_timer
+			a_dev_window.tools.c_output_tool.start_c_output_pixmap_timer
 		end
 
 	stop_pixmap_animation_timer (a_dev_window: EB_DEVELOPMENT_WINDOW) is
 			-- Stop pixmap animation on `a_dev_window'.
 		do
-			a_dev_window.stop_c_output_pixmap_timer
+			a_dev_window.tools.c_output_tool.stop_c_output_pixmap_timer
 		end
 
 	on_start is

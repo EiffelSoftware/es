@@ -17,13 +17,15 @@ inherit
 			objects_grid_item as get_object_display_item
 		end
 
-	ES_NOTEBOOK_ATTACHABLE
-
 	EB_TOOL
 		redefine
 			menu_name,
 			pixmap,
-			make
+			make,
+			mini_toolbar,
+			build_mini_toolbar,
+			build_docking_content,
+			show
 		end
 
 	EB_RECYCLABLE
@@ -72,7 +74,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_manager: EB_TOOL_MANAGER) is
+	make (a_manager: EB_DEVELOPMENT_WINDOW) is
 			-- Initialize `Current'.
 		do
 			min_slice_ref.set_item (preferences.debug_tool_data.min_slice)
@@ -228,12 +230,17 @@ feature {NONE} -- Interface
 			g.set_mouse_wheel_scroll_size (preferences.editor_data.mouse_wheel_scroll_size)
 			g.set_mouse_wheel_scroll_full_page (preferences.editor_data.mouse_wheel_scroll_full_page)
 			g.set_scrolling_common_line_count (preferences.editor_data.scrolling_common_line_count)
+
+			set_mouse_wheel_scroll_size_agent := agent g.set_mouse_wheel_scroll_size
+			set_mouse_wheel_scroll_full_page_agent := agent g.set_mouse_wheel_scroll_full_page
+			set_scrolling_common_line_count_agent := agent g.set_scrolling_common_line_count
+
 			preferences.editor_data.mouse_wheel_scroll_size_preference.typed_change_actions.extend (
-				agent g.set_mouse_wheel_scroll_size)
+				set_mouse_wheel_scroll_size_agent)
 			preferences.editor_data.mouse_wheel_scroll_full_page_preference.typed_change_actions.extend (
-				agent g.set_mouse_wheel_scroll_full_page)
+				set_mouse_wheel_scroll_full_page_agent)
 			preferences.editor_data.scrolling_common_line_count_preference.typed_change_actions.extend (
-				agent g.set_scrolling_common_line_count)
+				set_scrolling_common_line_count_agent)
 
 				-- Key actions
 			g.key_press_actions.extend (agent debug_value_key_action (g, ?))
@@ -295,40 +302,18 @@ feature {NONE} -- Interface
 				objects_grids.item_for_iteration.set_slices_cmd (slices_cmd)
 				objects_grids.forth
 			end
-		ensure
+
+			build_header_box
+		ensure then
 			mini_toolbar_exists: mini_toolbar /= Void
 		end
 
-	build_explorer_bar_item (explorer_bar: EB_EXPLORER_BAR) is
-			-- Build the associated explorer bar item and
-			-- Add it to `explorer_bar'
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Build docking content
 		do
-			if mini_toolbar = Void then
-				build_mini_toolbar
-			end
-			if header_box = Void then
-				build_header_box
-			end
-			create {EB_EXPLORER_BAR_ITEM} explorer_bar_item.make_with_info (explorer_bar, widget, title, False, header_box, mini_toolbar)
-			explorer_bar_item.set_menu_name (menu_name)
-			if pixmap /= Void then
-				explorer_bar_item.set_pixmap (pixmap)
-			end
-			explorer_bar.add (explorer_bar_item)
-		end
-
-	build_notebook_item (nb: ES_NOTEBOOK) is
-		do
-			if mini_toolbar = Void then
-				build_mini_toolbar
-			end
-			if header_box = Void then
-				build_header_box
-			end
-			create notebook_item.make_with_info (nb, widget, title, header_box, mini_toolbar)
-			nb.extend (notebook_item)
-			notebook_item.drop_actions.extend (agent add_debugged_object)
-			notebook_item.drop_actions.extend (agent drop_stack_element)
+			Precursor {EB_TOOL} (a_docking_manager)
+			content.drop_actions.extend (agent add_debugged_object)
+			content.drop_actions.extend (agent drop_stack_element)
 		end
 
 	open_objects_menu (w: EV_WIDGET; ax, ay: INTEGER) is
@@ -493,6 +478,7 @@ feature -- Access
 	pixmap: EV_PIXMAP is
 			-- Pixmap as it may appear in toolbars and menus.
 		do
+			Result := pixmaps.icon_pixmaps.tool_objects_icon
 		end
 
 	debugger_manager: EB_DEBUGGER_MANAGER
@@ -703,18 +689,26 @@ feature -- Change
 			debugger_manager := a_manager
 		end
 
-	change_manager_and_explorer_bar (a_manager: EB_TOOL_MANAGER; an_explorer_bar: EB_EXPLORER_BAR) is
+	change_manager_and_explorer_bar (a_manager: EB_DEVELOPMENT_WINDOW; an_explorer_bar: EB_EXPLORER_BAR) is
 			-- Change the window and explorer bar `Current' is in.
 		require
 			a_manager_exists: a_manager /= Void
 			an_explorer_bar_exists: an_explorer_bar /= Void
 		do
-			if explorer_bar_item.is_visible then
-				explorer_bar_item.close
-			end
-			explorer_bar_item.recycle
-			manager := a_manager
+			develop_window := a_manager
 			set_explorer_bar (an_explorer_bar)
+		end
+
+	show is
+			-- Show tool.
+		local
+			l_grid: like objects_grid
+		do
+			Precursor {EB_TOOL}
+			l_grid := objects_grid (first_grid_id)
+			if not l_grid.is_destroyed and then l_grid.is_displayed and then l_grid.is_sensitive then
+				l_grid.set_focus
+			end
 		end
 
 feature -- Status report
@@ -733,11 +727,16 @@ feature -- Memory management
 			reset_update_on_idle
 			preferences.debug_tool_data.min_slice_preference.set_value (min_slice_ref.item)
 			preferences.debug_tool_data.max_slice_preference.set_value (max_slice_ref.item)
+
+			preferences.editor_data.mouse_wheel_scroll_size_preference.typed_change_actions.prune_all (
+				set_mouse_wheel_scroll_size_agent)
+			preferences.editor_data.mouse_wheel_scroll_full_page_preference.typed_change_actions.prune_all (
+				set_mouse_wheel_scroll_full_page_agent)
+			preferences.editor_data.scrolling_common_line_count_preference.typed_change_actions.prune_all (
+				set_scrolling_common_line_count_agent)
+
 			displayed_objects.wipe_out
 			pretty_print_cmd.end_debug
-			if explorer_bar_item /= Void then
-				explorer_bar_item.recycle
-			end
 			if current_object /= Void then
 				display_first := current_object.display
 				display_first_attributes := current_object.display_attributes
@@ -757,6 +756,11 @@ feature -- Memory management
 			end
 			clean_header_box
 		end
+
+	set_mouse_wheel_scroll_size_agent : PROCEDURE [ANY, TUPLE [INTEGER_32]]
+	set_mouse_wheel_scroll_full_page_agent: PROCEDURE [ES_OBJECTS_GRID, TUPLE [BOOLEAN]]
+	set_scrolling_common_line_count_agent: PROCEDURE [ANY, TUPLE [INTEGER_32]]
+			-- Agents for recycling
 
 feature {EB_DEBUGGER_MANAGER} -- Cleaning timer change
 
@@ -1644,19 +1648,19 @@ indexing
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-			
+
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-			
+
 			Eiffel Software's Eiffel Development Environment is
 			distributed in the hope that it will be useful,	but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 			See the	GNU General Public License for more details.
-			
+
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,

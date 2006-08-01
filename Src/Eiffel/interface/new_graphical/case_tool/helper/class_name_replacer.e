@@ -112,7 +112,7 @@ feature {NONE} -- Implementation
 				-- and that `a_class' is in the two window, then the undo/redo might not work properly
 				-- since we would have 2 CLASS_TEXT_MODIFIER instance.
 			if window_manager.a_development_window /= Void then
-				l_classes := window_manager.a_development_window.context_tool.editor.world.model.class_from_interface (a_class)
+				l_classes := window_manager.a_development_window.tools.diagram_tool.world.model.class_from_interface (a_class)
 				if not l_classes.is_empty then
 				 	l_es_class := l_classes.first
 				end

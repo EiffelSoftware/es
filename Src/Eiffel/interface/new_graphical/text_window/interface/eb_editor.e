@@ -20,7 +20,6 @@ inherit
 			handle_extended_ctrled_key,
 			display_not_editable_warning_message,
 			load_file,
-			load_text,
 			initialize_editor_context,
 			reference_window,
 			recycle
@@ -128,6 +127,24 @@ feature -- Access
 	dev_window: EB_DEVELOPMENT_WINDOW
 			-- Associated development window
 
+	docking_content: SD_CONTENT
+			-- Docking content.
+
+feature -- Status report
+
+	is_recycled: BOOLEAN
+			-- Has current been recycled?
+
+feature -- Docking
+
+	set_docking_content (a_content: SD_CONTENT) is
+			-- Set `docking_content' with `a_content' and associate `widget' to `a_content'.
+		require
+			a_content_attached: a_content /= Void
+		do
+			docking_content := a_content
+		end
+
 feature -- Text Loading
 
 	load_file (a_filename: STRING) is
@@ -160,25 +177,6 @@ feature -- Text Loading
 			end
   	  	end
 
-	load_text (s: STRING) is
-			-- Load text
-		local
-			l_d_class : DOCUMENT_CLASS
-			l_scanner: EDITOR_EIFFEL_SCANNER
-			l_stone: CLASSI_STONE
-		do
-			l_d_class := get_class_from_type (once "e")
-			set_current_document_class (l_d_class)
-			l_scanner ?= l_d_class.scanner
-			if l_scanner /= Void then
-				l_stone ?= stone
-				if l_stone /= Void then
-					l_scanner.set_current_class (l_stone.class_i.config_class)
-				end
-			end
-			Precursor {EDITABLE_TEXT_PANEL} (s)
-		end
-
 feature -- Stonable
 
 	stone : STONE
@@ -210,6 +208,7 @@ feature {NONE} -- Memory Management
 		do
 			Precursor {EDITABLE_TEXT_PANEL}
 			dev_window := Void
+			is_recycled := True
 		end
 
 feature {NONE} -- Handle keystokes
@@ -237,7 +236,7 @@ feature {NONE} -- Handle keystokes
 			end
 		end
 
-feature {EB_COMMAND, EB_SEARCH_PERFORMER, EB_DEVELOPMENT_WINDOW} -- Edition Operations on text
+feature {EB_COMMAND, EB_SEARCH_PERFORMER, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Edition Operations on text
 
 	comment_selection is
 			-- Comment selected lines if possible.

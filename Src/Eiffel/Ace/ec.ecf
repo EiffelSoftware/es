@@ -79,28 +79,26 @@
 				<platform value="windows"/>
 			</condition>
 		</external_object>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false"/>
-		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf" readonly="false"/>
-		<library name="consumer" location="$EIFFEL_SRC\dotnet\consumer\consumer.ecf" readonly="false"/>
-		<library name="dotnet_helper" location="$EIFFEL_SRC\dotnet\helpers\support\dotnet_helper.ecf" readonly="false"/>
-		<library name="framework" location="$EIFFEL_SRC\framework\framework.ecf" readonly="false"/>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf" readonly="false"/>
-		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf" readonly="false"/>
-		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf" readonly="false"/>
-		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
-		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf" readonly="false"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
+		<library name="consumer" location="$EIFFEL_SRC\dotnet\consumer\consumer.ecf"/>
+		<library name="dotnet_helper" location="$EIFFEL_SRC\dotnet\helpers\support\dotnet_helper.ecf"/>
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
 	</target>
 	<target name="batch" extends="common">
 		<root class="ES" feature="make"/>
 		<variable name="batch_preferences" value="true"/>
-		<variable name="batch_framework" value="true"/>
-		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf" readonly="false">
+		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf">
 			<condition>
 				<platform value="windows"/>
 			</condition>
 		</library>
-		<library name="preferences_xml" location="$ISE_LIBRARY\library\preferences\preferences_xml.ecf" readonly="false">
+		<library name="preferences_xml" location="$ISE_LIBRARY\library\preferences\preferences_xml.ecf">
 			<condition>
 				<platform excluded_value="windows"/>
 			</condition>
@@ -113,7 +111,6 @@
 			<file_rule>
 				<exclude>/md_strong_name.e$</exclude>
 				<exclude>/md_public_key.e$</exclude>
-				<exclude>/system_assembly_list_builder.e$</exclude>
 			</file_rule>
 		</cluster>
 		<cluster name="cli_writer_windows" location="$EIFFEL_SRC\Eiffel\library\cli_writer\" recursive="true">
@@ -181,7 +178,7 @@
 			</file_rule>
 		</cluster>
 		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
-		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\">
+		<cluster name="interface" location="$TABBED_EIFFEL_SRC\Eiffel\interface\">
 			<cluster name="interface_shared" location="$|shared\"/>
 			<cluster name="preference_tool" location="$|graphical\preference_tool\"/>
 			<cluster name="profile_tool" location="$|graphical\profile_tool\"/>
@@ -198,7 +195,7 @@
 				<exclude>/error$</exclude>
 			</file_rule>
 		</cluster>
-		<cluster name="switch" location="$EIFFEL_SRC\Eiffel\switch\">
+		<cluster name="switch" location="$TABBED_EIFFEL_SRC\Eiffel\switch\">
 			<cluster name="communications" location="$|no_communication\">
 				<cluster name="debuging_class" location="$|debug\"/>
 				<cluster name="status" location="$|status\"/>
@@ -214,6 +211,9 @@
 	<target name="bench" extends="common">
 		<description>Eiffel Studio</description>
 		<root class="EB_KERNEL" feature="make"/>
+		<option debug="false">
+			<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+		</option>
 		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
 			<condition>
 				<platform excluded_value="windows"/>
@@ -261,34 +261,49 @@
 			</condition>
 		</external_object>
 		<variable name="batch_framework" value="false"/>
-		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf" readonly="false"/>
-		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf" readonly="false"/>
-		<library name="graph" location="$ISE_LIBRARY\library\graph\graph.ecf" readonly="false"/>
-		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf" readonly="false"/>
-		<library name="memory_analyzer" location="$ISE_LIBRARY\library\memory_analyzer\memory_analyzer.ecf" readonly="false"/>
-		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf" readonly="false"/>
-		<library name="patterns" location="$ISE_LIBRARY\library\patterns\patterns.ecf" readonly="false"/>
-		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf" readonly="false">
-			<condition>
-				<platform value="windows"/>
-			</condition>
+		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf"/>
+		<library name="docking" location="$ISE_LIBRARY\library\docking\docking.ecf" readonly="false">
+			<option>
+				<assertions precondition="false" postcondition="false" check="false" invariant="false" loop="false"/>
+			</option>
 		</library>
-		<library name="preferences_xml" location="$ISE_LIBRARY\library\preferences\preferences_xml.ecf" readonly="false">
+		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf" readonly="false">
+			<option>
+				<assertions precondition="false" postcondition="false" check="false" invariant="false" loop="false"/>
+			</option>
+		</library>
+		<library name="event" location="$ISE_LIBRARY\library\event\event.ecf">
 			<condition>
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
-		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf" readonly="false"/>
-		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
-		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false"/>
+		<library name="framework" location="$EIFFEL_SRC\framework\framework.ecf" readonly="false"/>
+		<library name="graph" location="$ISE_LIBRARY\library\graph\graph.ecf"/>
+		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf"/>
+		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
+		<library name="patterns" location="$ISE_LIBRARY\library\patterns\patterns.ecf"/>
+		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
+		<library name="preferences_xml" location="$ISE_LIBRARY\library\preferences\preferences_xml.ecf">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</library>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+			</option>
+		</library>
+		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf"/>
 		<cluster name="beurk" location="$EIFFEL_SRC\Eiffel\beurk\" recursive="true"/>
 		<cluster name="cli_debugger" location="$EIFFEL_SRC\Eiffel\library\cli_debugger\" recursive="true">
 			<condition>
 				<platform value="windows"/>
 			</condition>
-			<file_rule>
-				<exclude>/unix$</exclude>
-			</file_rule>
 		</cluster>
 		<cluster name="cli_writer_unix" location="$EIFFEL_SRC\Eiffel\library\cli_writer\" recursive="true">
 			<condition>
@@ -297,7 +312,6 @@
 			<file_rule>
 				<exclude>/md_strong_name\.e$</exclude>
 				<exclude>/md_public_key\.e$</exclude>
-				<exclude>/system_assembly_list_builder\.e$</exclude>
 			</file_rule>
 		</cluster>
 		<cluster name="cli_writer_windows" location="$EIFFEL_SRC\Eiffel\library\cli_writer\" recursive="true">
@@ -309,7 +323,13 @@
 				<exclude>/spec$</exclude>
 			</file_rule>
 		</cluster>
-		<cluster name="compiler_api" location="$EIFFEL_SRC\Eiffel\API\" recursive="true"/>
+		<cluster name="compiler_api" location="$TABBED_EIFFEL_SRC\Eiffel\API\" recursive="true">
+			<class_option class="CLASS_TEXT_FORMATTER" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+		</cluster>
 		<cluster name="compiler_unix" location="$EIFFEL_SRC\Eiffel\eiffel\" recursive="true">
 			<condition>
 				<platform excluded_value="windows"/>
@@ -340,8 +360,39 @@
 		</cluster>
 		<cluster name="documentation" location="$EIFFEL_SRC\Eiffel\case\" recursive="true"/>
 		<cluster name="eac_documentation" location="$EIFFEL_SRC\dotnet\eac_browser\src\deserialization\assembly_informations\"/>
-		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
-		<cluster name="interface_unix" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
+		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\">
+			<class_option class="FEATURE_CLAUSE_EXPORT" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+			<class_option class="FORMAT_REGISTRATION" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+			<class_option class="CATEGORY" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+			<class_option class="AST_REGISTRATION" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+			<class_option class="TEXT_FORMATTER_DECORATOR" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+			<class_option class="FEATURE_ADAPTER" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+		</cluster>
+		<cluster name="interface_unix" location="$TABBED_EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<condition>
 				<platform excluded_value="windows"/>
 			</condition>
@@ -356,10 +407,20 @@
 				<exclude>/ewb_case_storage\.e$</exclude>
 			</file_rule>
 		</cluster>
-		<cluster name="interface_windows" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
+		<cluster name="interface_windows" location="$TABBED_EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<condition>
 				<platform value="windows"/>
 			</condition>
+			<class_option class="EB_FLAT_FORMATTER" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
+			<class_option class="EB_SHARED_FORMAT_TABLES" trace="false" profile="false" debug="false" warning="true">
+				<debug name="docking" enabled="true"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<warning name="old_verbatim_strings" enabled="false"/>
+			</class_option>
 			<file_rule>
 				<exclude>/graphical$</exclude>
 				<exclude>/gtk$</exclude>
@@ -371,6 +432,7 @@
 				<exclude>/ewb_case_storage.e$</exclude>
 			</file_rule>
 		</cluster>
+		<cluster name="memory_analyser" location="$EIFFEL_SRC\library\memory_analyzer\" recursive="true"/>
 		<cluster name="merger" location="$EIFFEL_SRC\tools\partial_classes_merger\src\" recursive="true">
 			<file_rule>
 				<exclude>/EIFGEN$</exclude>
@@ -383,7 +445,7 @@
 			</file_rule>
 		</cluster>
 		<cluster name="process_gui" location="$ISE_LIBRARY\library\process\gui\" recursive="true"/>
-		<cluster name="switch" location="$EIFFEL_SRC\Eiffel\switch\">
+		<cluster name="switch" location="$TABBED_EIFFEL_SRC\Eiffel\switch\">
 			<cluster name="communications" location="$|communication\">
 				<cluster name="debuging_class" location="$|debug\"/>
 				<cluster name="debuging_formatters" location="$|formatters\"/>
@@ -418,7 +480,7 @@
 			<cluster name="interface_switch" location="$|interface\new_graphical\"/>
 			<cluster name="time_lock" location="$|license\time_lock\"/>
 		</cluster>
-		<cluster name="tty" location="$EIFFEL_SRC\Eiffel\interface\tty\" recursive="true">
+		<cluster name="tty" location="$TABBED_EIFFEL_SRC\Eiffel\interface\tty\" recursive="true">
 			<file_rule>
 				<exclude>/eb_diagram_html_generator\.e$</exclude>
 				<exclude>/eb_gui_preferences\.e$</exclude>
@@ -426,14 +488,5 @@
 			</file_rule>
 		</cluster>
 		<override name="table_eiffel3" location="$ISE_LIBRARY\library\obsolete\base\table_eiffel3\"/>
-	</target>
-	<target name="bench_unix" extends="bench">
-		<description>Compiling UNIX bench compiler on other platforms than Windows</description>
-		<setting name="platform" value="unix"/>
-	</target>
-	<target name="batch_unix" extends="batch">
-		<description>Compiling UNIX batch compiler on other platforms than Windows</description>
-		<root class="ES" feature="make"/>
-		<setting name="platform" value="unix"/>
 	</target>
 </system>

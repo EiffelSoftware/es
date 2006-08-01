@@ -166,7 +166,7 @@ feature -- "Save command" related features
 				save_cmd.enable_sensitive
 			else
 				save_cmd.disable_sensitive
-			end
+			end 
 		end
 
 	save_text is
@@ -181,6 +181,12 @@ feature -- "Save command" related features
 				cst.class_i.set_date
 				Eiffel_project.Workbench.set_changed
 			end
+		end
+
+	save_all is
+			-- Save all text.
+		do
+			save_all_cmd.execute
 		end
 
 	perform_check_before_save is
@@ -201,6 +207,35 @@ feature -- Commands
 	save_cmd: EB_SAVE_FILE_COMMAND
 		-- Command to save current text in the associated file.
 		-- If no file is associated, `save_as_cmd' is executed.
+
+	save_all_cmd: EB_SAVE_ALL_FILE_COMMAND
+		-- Command to save all text in current window.
+
+feature -- Commands settings
+
+	set_open_cmd (a_cmd: like open_cmd) is
+			-- Set `open_cmd'
+		do
+			open_cmd := a_cmd
+		ensure
+			set: open_cmd = a_cmd
+		end
+
+	set_save_cmd (a_cmd: like save_cmd) is
+			-- Set `save_cmd'
+		do
+			save_cmd := a_cmd
+		ensure
+			set: save_cmd = a_cmd
+		end
+
+	set_save_all_cmd (a_cmd: like save_all_cmd) is
+			-- Set `save_all_cmd'
+		do
+			save_all_cmd := a_cmd
+		ensure
+			set: save_all_cmd = a_cmd
+		end
 
 feature {NONE} -- Execution
 

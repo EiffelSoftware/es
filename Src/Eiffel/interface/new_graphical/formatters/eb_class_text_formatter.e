@@ -12,12 +12,21 @@ deferred class
 inherit
 	EB_CLASS_INFO_FORMATTER
 		redefine
+			new_sd_button,
+			refresh,
 			is_editor_formatter
 		end
 
 	SHARED_EIFFEL_PROJECT
 
 feature -- Access
+
+	new_sd_button: SD_TOOL_BAR_RADIO_BUTTON is
+			-- Create a new toolbar button and associate it with `Current'.
+		do
+			Result := Precursor {EB_CLASS_INFO_FORMATTER}
+			Result.drop_actions.extend (agent on_class_drop)
+		end
 
 	widget: EV_WIDGET is
 			-- Graphical representation of the information provided.
@@ -79,8 +88,56 @@ feature -- Formatting
 					end
 					display_header
 				end
+				if stone /= Void then
+					stone.set_pos_container (Current)
+				end
 			end
 		end
+
+feature -- Stonable
+
+	refresh is
+			--
+		local
+			a_stone: CLASSC_STONE
+			a_class: CLASS_C
+		do
+			a_stone ?= stone
+			if a_stone /= Void then
+				if (not a_stone.class_i.is_external_class) or is_dotnet_formatter then
+					associated_class ?= a_stone.e_class
+					a_class ?= a_stone.e_class
+					if a_class = Void or else not a_class.has_feature_table then
+						class_cmd := Void
+						associated_class := Void
+					else
+						create_class_cmd
+					end
+					if selected and then displayed then
+						display_header
+					end
+					if selected then
+						if widget_owner /= Void then
+							widget_owner.set_widget (widget)
+						end
+						display_header
+					end
+				end
+			else
+				associated_class := Void
+				class_cmd := Void
+				if
+					selected and then
+					not widget.is_displayed
+				then
+					if widget_owner /= Void then
+						widget_owner.set_widget (widget)
+					end
+					display_header
+				end
+			end
+		end
+
 
 feature {NONE} -- Implementation
 
@@ -178,7 +235,7 @@ feature -- Status setting
 				end
 				display_header
 			end
-		ensure
+		ensure then
 			class_set: (a_class /= Void and then a_class.has_feature_table) implies (a_class = associated_class)
 			cmd_created_if_possible: (a_class = Void or else not a_class.has_feature_table) = (class_cmd = Void)
 		end

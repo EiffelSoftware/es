@@ -159,24 +159,6 @@ feature -- Access
 			item_maximized (an_item.widget)
 		end
 
-	on_item_hidden (an_item: EB_EXPLORER_BAR_ITEM) is
-			-- `an_item' has been hidden in `Current'.
-		require
-			an_item_not_void: an_item /= Void
-		local
-			development_window: EB_DEVELOPMENT_WINDOW
-		do
-			development_window ?= explorer_bar_manager
-			if development_window /= Void then
-				development_window.remove_tool_window (an_item.widget)
-			end
-			if count = 0 then
-					-- If `an_item' is hidden, and was the last tool,
-					-- `Current' must be closed, as it is now empty.
-				explorer_bar_manager.close_bar (Current)
-			end
-		end
-
 	item_maximized (a_widget: EV_WIDGET) is
 			-- `a_widget' has been maximized in `Current'.
 		require
@@ -200,11 +182,6 @@ feature -- Access
 				item_list.forth
 			end
 
---Where is this preference??
---See above			
---			if full_maximize and boolean_resource_value ("editor_maximized", True) then
-				explorer_bar_manager.close_all_bars_except (Current)
---			end
 			item_list.go_to (cursor)
 		ensure
 			item_list_index_not_changed: item_list.index = old item_list.index
@@ -610,7 +587,6 @@ feature {NONE} -- Implementation
 				-- Stop tracking of widget by parent, if it was external.
 				-- If `a_widget' was not, then `remove_tool_window' does nothing.
 			development_window ?= explorer_bar_manager
-			development_window.remove_tool_window (a_widget)
 
 			clone_item_list := item_list.twin
 			create new_order.make (item_list.count)

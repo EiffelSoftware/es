@@ -55,7 +55,10 @@ feature -- Access
 			if not is_empty then
 				Result := history.i_th (index_active)
 				if Result /= Void and then not Result.is_valid then
-					Result := Void
+					Result := Result.synchronized_stone
+					if not Result.is_valid then
+						Result := Void
+					end
 				end
 			end
 		ensure
@@ -193,13 +196,9 @@ feature -- Element change
 			end
 			index_active := index_active + 1
 			notify_observers (notify_move, Void, index_active)
+			target.set_history_moving (true)
 			target.advanced_set_stone (active)
-			if not target.stone.is_equal (active) then
-					-- The user cancelled the set_stone.
-					-- We must go back to our previous position.
-				index_active := initial
-				notify_observers (notify_move, Void, index_active)
-			end
+			target.set_history_moving (false)
 		end
 
 	forth is
@@ -227,7 +226,9 @@ feature -- Element change
 
 			index_active := index_active - 1
 			notify_observers (notify_move, Void, index_active)
+			target.set_history_moving (true)
 			target.advanced_set_stone (active)
+			target.set_history_moving (false)
 			if not target.stone.is_equal (active) then
 					-- The user cancelled the set_stone.
 					-- We must go back to our previous position.
@@ -250,7 +251,9 @@ feature -- Element change
 			fresh_active_position
 			index_active := i
 			notify_observers (notify_move, Void, index_active)
+			target.set_history_moving (true)
 			target.advanced_set_stone (active)
+			target.set_history_moving (false)
 			if not target.stone.is_equal (active) then
 					-- The user cancelled the set_stone.
 					-- We must go back to our previous position.
@@ -311,8 +314,7 @@ feature -- Element change
 				fst := Void
 				fst2 ?= a_stone
 				if fst2 /= Void  then
-					create fst.make (fst2.e_feature)
-					history.extend (fst)
+					history.extend (fst2)
 				else
 					history.extend (a_stone)
 				end

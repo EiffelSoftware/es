@@ -13,7 +13,10 @@ inherit
 		redefine
 			menu_name,
 			pixmap,
-			widget
+			pixel_buffer,
+			widget,
+			attach_to_docking_manager,
+			show
 		end
 
 	EB_SHARED_WINDOW_MANAGER
@@ -29,16 +32,16 @@ feature {NONE} -- Initialization
 			widget := window_manager.new_widget
 		end
 
-	build_explorer_bar_item (explorer_bar: EB_EXPLORER_BAR) is
-			-- Build the associated explorer bar item and
-			-- Add it to `explorer_bar'
+feature {EB_DEVELOPMENT_WINDOW_BUILDER} -- Initialization
+
+	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Attach to docking manager
 		do
-			create explorer_bar_item.make (explorer_bar, widget, title, True)
-			explorer_bar_item.set_menu_name (menu_name)
-			if pixmap /= Void then
-				explorer_bar_item.set_pixmap (pixmap)
-			end
-			explorer_bar.add (explorer_bar_item)
+			build_docking_content (a_docking_manager)
+
+			check not_already_has: not a_docking_manager.has_content (content) end
+			a_docking_manager.contents.extend (content)
+			check friend_created: develop_window.tools.favorites_tool  /= Void end
 		end
 
 feature -- Access
@@ -64,18 +67,28 @@ feature -- Access
 			Result := pixmaps.icon_pixmaps.windows_windows_icon
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer
+		do
+			Result := pixmaps.icon_pixmaps.windows_windows_icon_buffer
+		end
+
+	show is
+			-- Show tool.
+		do
+			Precursor {EB_TOOL}
+			widget.set_focus
+		end
+
 feature -- Memory management
 
 	recycle is
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
-			if explorer_bar_item /= Void then
-				explorer_bar_item.recycle
-			end
 			widget.recycle
 			widget := Void
-			manager := Void
+			develop_window := Void
 		end
 
 indexing

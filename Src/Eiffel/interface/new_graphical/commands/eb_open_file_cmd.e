@@ -92,6 +92,12 @@ feature -- Properties
 			Result := pixmaps.icon_pixmaps.general_open_icon
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.general_open_icon_buffer
+		end
+
 	name: STRING is "Open_file"
 
 	description: STRING is

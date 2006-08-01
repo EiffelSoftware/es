@@ -151,16 +151,22 @@ feature {NONE} -- Implementation
 			l_retried, l_user_ask_for_retry: BOOLEAN
 			l_ed: EV_ERROR_DIALOG
 			l_win: EV_WINDOW
+			l_editor: EB_SMART_EDITOR
 		do
 			if l_retried then
+				l_editor := window_manager.last_focused_development_window.editors_manager.current_editor
 				create l_ed.make_with_text (warning_messages.w_Not_rename_swp (a_file.name, a_new_name))
 				l_ed.set_buttons (<<ev_retry, ev_ignore>>)
 				l_win := window_manager.last_focused_development_window.window
 				l_win.focus_in_actions.block
-				window_manager.last_focused_development_window.editor_tool.text_area.editor_drawing_area.focus_in_actions.block
+				if l_editor /= Void then
+					l_editor.editor_drawing_area.focus_in_actions.block
+				end
 				l_ed.show_modal_to_window (l_win)
 				l_win.focus_in_actions.resume
-				window_manager.last_focused_development_window.editor_tool.text_area.editor_drawing_area.focus_in_actions.resume
+				if l_editor /= Void then
+					l_editor.editor_drawing_area.focus_in_actions.resume
+				end
 				l_user_ask_for_retry := l_ed.selected_button.is_equal (ev_retry)
 				l_retried := False
 			else

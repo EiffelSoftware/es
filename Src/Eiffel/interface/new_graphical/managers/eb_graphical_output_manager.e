@@ -82,9 +82,12 @@ feature -- Basic Operations / Generic purpose
 			until
 				managed_output_tools.after
 			loop
-				managed_output_tools.item.force_display
+				if managed_output_tools.item.is_general then
+					managed_output_tools.item.force_display
+				end
 				managed_output_tools.forth
 			end
+
 		end
 
 	scroll_to_end is

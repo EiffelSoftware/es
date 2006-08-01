@@ -100,9 +100,10 @@ feature {NONE} -- Callbacks
 			if Workbench.Eiffel_project.initialized then
 				Workbench.Eiffel_project.manager.on_project_close;
 			end
-
 				-- We will save all the preferences for next time we are opened
 			preferences.preferences.save_preferences
+
+			window_manager.a_development_window.save_tools_docking_layout
 
 				-- Destroy all development windows.
 			window_manager.close_all
@@ -174,6 +175,9 @@ feature {NONE} -- Attributes
 		do
 			Result := Interface_names.m_Exit_project
 		end
+
+	pixmap: EV_PIXMAP
+			-- Pixmap
 
 	already_confirmed: BOOLEAN;
 			-- Has the user already said he DID want to exit?

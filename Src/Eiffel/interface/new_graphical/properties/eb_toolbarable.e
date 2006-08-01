@@ -24,7 +24,12 @@ feature -- Basic operations
 		deferred
 		end
 
-feature {EB_CUSTOMIZABLE_LIST_ITEM, EB_CUSTOM_TOOLBAR_LIST} -- Implementation
+	new_sd_toolbar_item (a_display_text: BOOLEAN): SD_TOOL_BAR_ITEM is
+			--
+		deferred
+		end
+		
+feature {EB_CUSTOMIZABLE_LIST_ITEM, EB_CUSTOM_TOOLBAR_LIST, ES_TOOLBAR_PREFERENCE} -- Implementation
 
 	pixmap: EV_PIXMAP is
 			-- Pixmaps representing the item.

@@ -165,7 +165,10 @@ feature {NONE} -- Compilation implementation
 			else
 				window_manager.display_message (Interface_names.E_compilation_failed)
 			end
-			output_manager.scroll_to_end
+				-- This is commented because if the tools are never displayed,
+				-- the viewport of the editor never get correct width and height value.
+				-- Precondition in the editor will fail.
+--			output_manager.scroll_to_end
 			Eb_debugger_manager.on_compile_stop
 
 			if dynamic_lib_window_is_valid and then dynamic_lib_window.is_visible then
@@ -244,6 +247,7 @@ feature -- Execution
 				if process_manager.is_c_compilation_running then
 					process_manager.confirm_process_termination (agent go_on_compile, Void, window_manager.last_focused_development_window.window)
 				else
+					window_manager.last_focused_development_window.tools.output_tool.content.set_focus
 					go_on_compile
 				end
 			end
@@ -266,6 +270,7 @@ feature -- Execution
 		do
 			output_manager.clear
 			execute_with_c_compilation_flag (True)
+			window_manager.last_focused_development_window.tools.output_tool.update_pixmap
 		end
 
 	give_up_comiple	is
@@ -396,6 +401,12 @@ feature {NONE} -- Implementation
 			-- Pixmap representing the command.
 		do
 			Result := pixmaps.icon_pixmaps.project_melt_icon
+		end
+
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.project_melt_icon_buffer
 		end
 
 	tooltip: STRING is

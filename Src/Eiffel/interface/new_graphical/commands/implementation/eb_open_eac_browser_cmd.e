@@ -51,6 +51,12 @@ feature -- Access
 			Result := Pixmaps.Icon_dotnet_import
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			-- Currently there is no pixel buffer for this command.
+		end
+
 feature -- Basic operations
 
 	execute is

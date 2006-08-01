@@ -61,7 +61,7 @@ feature -- Status setting
 		require
 			valid_editor: ed /= Void
 		do
-			if current_editor /= Void then
+			if current_editor /= Void and then not current_editor.is_recycled then
 				current_editor.remove_observer (Current)
 			end
 			current_editor := ed

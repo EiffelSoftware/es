@@ -14,13 +14,15 @@ inherit
 
 	ES_OBJECTS_GRID_MANAGER
 
-	ES_NOTEBOOK_ATTACHABLE
-
 	EB_TOOL
 		redefine
 			menu_name,
 			pixmap,
-			close
+			show,
+			close,
+			mini_toolbar,
+			build_mini_toolbar,
+			build_docking_content
 		end
 
 	EB_CONSTANTS
@@ -63,7 +65,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_title (a_manager: like manager; a_title: like title) is
+	make_with_title (a_manager: like develop_window; a_title: like title) is
 		do
 			if a_title = Void or else a_title.is_empty then
 				set_title (interface_names.t_Watch_tool)
@@ -98,12 +100,17 @@ feature {NONE} -- Initialization
 			esgrid.set_mouse_wheel_scroll_size (preferences.editor_data.mouse_wheel_scroll_size)
 			esgrid.set_mouse_wheel_scroll_full_page (preferences.editor_data.mouse_wheel_scroll_full_page)
 			esgrid.set_scrolling_common_line_count (preferences.editor_data.scrolling_common_line_count)
+
+			set_mouse_wheel_scroll_size_agent := agent esgrid.set_mouse_wheel_scroll_size
+			set_mouse_wheel_scroll_full_page_agent := agent esgrid.set_mouse_wheel_scroll_full_page
+			set_scrolling_common_line_count_agent := agent esgrid.set_scrolling_common_line_count
+
 			preferences.editor_data.mouse_wheel_scroll_size_preference.typed_change_actions.extend (
-				agent esgrid.set_mouse_wheel_scroll_size)
+				set_mouse_wheel_scroll_size_agent)
 			preferences.editor_data.mouse_wheel_scroll_full_page_preference.typed_change_actions.extend (
-				agent esgrid.set_mouse_wheel_scroll_full_page)
+				set_mouse_wheel_scroll_full_page_agent)
 			preferences.editor_data.scrolling_common_line_count_preference.typed_change_actions.extend (
-				agent esgrid.set_scrolling_common_line_count)
+				set_scrolling_common_line_count_agent)
 
 			esgrid.row_select_actions.extend (agent on_row_selected)
 			esgrid.row_deselect_actions.extend (agent on_row_deselected)
@@ -127,8 +134,8 @@ feature {NONE} -- Initialization
 
 			create scmd.make
 			scmd.set_mini_pixmap (pixmaps.mini_pixmaps.toolbar_dropdown_icon)
-			scmd.set_tooltip ("Open Watch tool menu")
-			scmd.add_agent (agent open_watch_menu (mini_toolbar, 0, 0))
+			scmd.set_tooltip ("Create new watch")
+			scmd.add_agent (agent open_new_created_watch_tool)
 			scmd.enable_sensitive
 			mini_toolbar.extend (scmd.new_mini_toolbar_item)
 
@@ -190,43 +197,28 @@ feature {NONE} -- Initialization
 
 				--| Attach the slices_cmd to the objects grid
 			watches_grid.set_slices_cmd (slices_cmd)
-		ensure
+		ensure then
 			mini_toolbar_exists: mini_toolbar /= Void
 		end
 
-	build_explorer_bar_item (explorer_bar: EB_EXPLORER_BAR) is
-			-- Build the associated explorer bar item and
-			-- Add it to `explorer_bar'
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Build content for docking.
 		do
-			if mini_toolbar = Void then
-				build_mini_toolbar
-			end
-			create explorer_bar_item.make_with_mini_toolbar (explorer_bar, widget, title, False, mini_toolbar)
-			explorer_bar_item.set_menu_name (menu_name)
-			if pixmap /= Void then
-				explorer_bar_item.set_pixmap (pixmap)
-			end
-			explorer_bar.add (explorer_bar_item)
-		end
-
-	build_notebook_item (nb: ES_NOTEBOOK) is
-		do
-			if mini_toolbar = Void then
-				build_mini_toolbar
-			end
-			create notebook_item.make_with_mini_toolbar (nb, widget, title, mini_toolbar)
-			notebook_item.drop_actions.extend (agent on_element_drop)
-			notebook_item.pointer_button_pressed_actions.extend (agent on_notebook_item_pointer_button_pressed)
-			nb.extend (notebook_item)
+			Precursor {EB_TOOL} (a_docking_manager)
+			content.drop_actions.extend (agent on_element_drop)
 		end
 
 feature {EB_DEBUGGER_MANAGER} -- Closing
 
 	close is
 		do
-			Precursor
-			if notebook_item /= Void then
-				unattach_from_notebook
+				-- We keep at least one watch tool.
+			if eb_debugger_manager.watch_tool_list.count > 1 then
+				Precursor
+				recycle
+				eb_debugger_manager.watch_tool_list.prune_all (Current)
+				eb_debugger_manager.assgin_watch_tool_unique_titles
+				content.close
 			end
 		end
 
@@ -253,6 +245,7 @@ feature -- Access
 	pixmap: EV_PIXMAP is
 			-- Pixmap as it may appear in toolbars and menus.
 		do
+			Result := pixmaps.icon_pixmaps.tool_watch_icon
 		end
 
 	can_refresh: BOOLEAN
@@ -267,6 +260,13 @@ feature -- Change
 			title := a_title
 		ensure
 			title_set: title.is_equal (a_title)
+		end
+
+	show is
+			-- Show tool
+		do
+			Precursor {EB_TOOL}
+			watches_grid.set_focus
 		end
 
 feature -- Properties setting
@@ -369,17 +369,13 @@ feature -- Status setting
 			update
 		end
 
-	change_manager_and_explorer_bar (a_manager: EB_TOOL_MANAGER; an_explorer_bar: EB_EXPLORER_BAR) is
+	change_manager_and_explorer_bar (a_manager: EB_DEVELOPMENT_WINDOW; an_explorer_bar: EB_EXPLORER_BAR) is
 			-- Change the window and explorer bar `Current' is in.
 		require
 			a_manager_exists: a_manager /= Void
 			an_explorer_bar_exists: an_explorer_bar /= Void
 		do
-			if explorer_bar_item.is_visible then
-				explorer_bar_item.close
-			end
-			explorer_bar_item.recycle
-			manager := a_manager
+			develop_window := a_manager
 			set_explorer_bar (an_explorer_bar)
 		end
 
@@ -391,10 +387,15 @@ feature -- Memory management
 		do
 			reset_update_on_idle
 			pretty_print_cmd.end_debug
-			if explorer_bar_item /= Void then
-				explorer_bar_item.recycle
-			end
 			recycle_expressions
+
+			preferences.editor_data.mouse_wheel_scroll_size_preference.typed_change_actions.prune_all (
+				set_mouse_wheel_scroll_size_agent)
+			preferences.editor_data.mouse_wheel_scroll_full_page_preference.typed_change_actions.prune_all (
+				set_mouse_wheel_scroll_full_page_agent)
+			preferences.editor_data.scrolling_common_line_count_preference.typed_change_actions.prune_all (
+				set_scrolling_common_line_count_agent)
+
 			watches_grid.reset_layout_manager
 			clean_watched_grid
 		end
@@ -419,6 +420,11 @@ feature -- Memory management
 				end
 			end
 		end
+
+	set_mouse_wheel_scroll_size_agent : PROCEDURE [ANY, TUPLE [INTEGER_32]]
+	set_mouse_wheel_scroll_full_page_agent: PROCEDURE [ES_OBJECTS_GRID, TUPLE [BOOLEAN]]
+	set_scrolling_common_line_count_agent: PROCEDURE [ANY, TUPLE [INTEGER_32]]
+			-- Agents for recycling
 
 feature {NONE} -- add new expression from the grid
 
@@ -469,41 +475,13 @@ feature {NONE} -- add new expression from the grid
 
 feature {NONE} -- Event handling
 
-	open_watch_menu (w: EV_WIDGET; ax, ay: INTEGER) is
-		local
-			m: EV_MENU
-			mi: EV_MENU_ITEM
-		do
-			if notebook_item /= Void then
-				create m
-				create mi.make_with_text_and_action ("Create new watch", agent open_new_created_watch_tool)
-				m.extend (mi)
-				if Eb_debugger_manager.watch_tool_list.count > 1 then
-					create mi.make_with_text_and_action ("Close " + title, agent Eb_debugger_manager.close_watch_tool (Current))
-					m.extend (mi)
-				end
-
-				m.show_at (w, ax, ay)
-			end
-		end
-
 	open_new_created_watch_tool is
 		local
 			wt: like Current
 		do
-			if notebook_item /= Void then
-				Eb_debugger_manager.create_new_watch_tool_inside_notebook (manager, notebook_item.parent)
-				wt := Eb_debugger_manager.watch_tool_list.last
-				if wt /= Void then
-					if
-						wt.notebook_item /= Void
-						and then wt.notebook_item.tab /= Void
-					then
-						wt.notebook_item.tab.enable_select
-					end
-				end
-				wt.update
-			end
+			Eb_debugger_manager.create_new_watch_tool_inside_notebook (develop_window, Current)
+			wt := Eb_debugger_manager.watch_tool_list.last
+			wt.update
 		end
 
 	define_new_expression is
@@ -513,7 +491,7 @@ feature {NONE} -- Event handling
 			ce: EB_EDITOR
 			l_text: STRING
 		do
-			ce := Eb_debugger_manager.debugging_window.current_editor
+			ce := Eb_debugger_manager.debugging_window.uis.current_editor
 			if ce /= Void and then ce.has_selection then
 				l_text := ce.string_selection
 				if l_text.has ('%N') then
@@ -706,6 +684,7 @@ feature {NONE} -- Event handling
 			dlg: EB_EXPRESSION_DEFINITION_DIALOG
 			oname: STRING
 		do
+			show
 			fost ?= s
 			if fost /= Void then
 				oname := fost.feature_name
@@ -964,22 +943,6 @@ feature {NONE} -- Event handling
 				watches_grid.remove_selection
 				expr_item.row.ensure_visible
 				expr_item.row.enable_select
-			end
-		end
-
-feature {NONE} -- Event handling on notebook item
-
-	on_notebook_item_pointer_button_pressed (ax, ay, ab: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is
-		require
-			notebook_item /= Void
-		do
-			if
-				ab = 3
-				and then not Ev_application.ctrl_pressed
-				and then not Ev_application.shift_pressed
-				and then not Ev_application.alt_pressed
-			then
-				open_watch_menu (notebook_item.parent.widget, ax, ay)
 			end
 		end
 

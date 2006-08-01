@@ -115,15 +115,18 @@ feature -- Observer pattern
 			list_item: EV_LIST_ITEM
 			window_pixmap: EV_PIXMAP
 		do
-				-- Create a new entry for `an_item' in the list.
-			create list_item
-			list_item.set_text (an_item.title)
-			window_pixmap := an_item.pixmap
-			if window_pixmap /= Void then
-				list_item.set_pixmap (window_pixmap)
+			list_item ?= retrieve_item_by_data (an_item, True)
+			if list_item = Void then
+					-- Create a new entry for `an_item' in the list.
+				create list_item
+				list_item.set_text (an_item.title)
+				window_pixmap := an_item.pixmap
+				if window_pixmap /= Void then
+					list_item.set_pixmap (window_pixmap)
+				end
+				list_item.set_data (an_item)
+				extend (list_item)
 			end
-			list_item.set_data (an_item)
-			extend (list_item)
 		end
 
 	on_item_removed (an_item: EB_WINDOW) is

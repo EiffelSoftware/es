@@ -63,7 +63,7 @@ feature{NONE} -- Implementation
 		require
 			a_msg_attached: a_msg /= Void
 		do
-			metric_tool.development_window.status_bar.display_message (a_msg)
+			metric_tool.develop_window.status_bar.display_message (a_msg)
 		end
 
 	display_error_message is

@@ -48,6 +48,18 @@ feature -- Status setting
 			set_stone (a_stone)
 		end
 
+feature -- Status report
+
+	is_history_moving: BOOLEAN
+
+feature -- Change Status
+
+	set_history_moving (a_moving: BOOLEAN) is
+			-- Set `is_history_moving'
+		do
+			is_history_moving := a_moving
+		end
+
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

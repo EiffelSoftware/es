@@ -120,6 +120,12 @@ feature -- Properties
 			Result := pixmaps.icon_pixmaps.debug_run_finalized_icon
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.debug_run_finalized_icon_buffer
+		end
+
 	description: STRING is
 			-- Text describing `Current' in the customize tool bar dialog.
 		do

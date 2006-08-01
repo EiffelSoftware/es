@@ -207,7 +207,7 @@ feature -- Actions
 		do
 			open_file_dialog.open_actions.wipe_out
 			open_file_dialog.open_actions.extend (a_selection_agent)
-			open_file_dialog.show_modal_to_window (metric_tool.development_window.window)
+			open_file_dialog.show_modal_to_window (metric_tool.develop_window.window)
 		end
 
 	on_new_archive_file_name_selected is
@@ -286,7 +286,7 @@ feature -- Actions
 				if l_msg /= Void then
 					create l_error_dialog.make_with_text (l_msg)
 					l_error_dialog.set_buttons (<<metric_names.t_ok>>)
-					l_error_dialog.show_modal_to_window (metric_tool.development_window.window)
+					l_error_dialog.show_modal_to_window (metric_tool.develop_window.window)
 				else
 					l_file_name := new_archive_file_name_text.text
 					create {ARRAYED_LIST [EB_METRIC_ARCHIVE_NODE]} l_archive.make (l_selected_metrics.count)
@@ -762,7 +762,7 @@ feature {NONE} -- Implementation
 			if file.exists then
 				create confirm_dialog.make_with_text_and_actions ("Remote file will be loaded in:%N" + file_name +
 								"%NThis file already exists. Overwrite?", actions_array)
-				confirm_dialog.show_modal_to_window (metric_tool.development_window.window)
+				confirm_dialog.show_modal_to_window (metric_tool.develop_window.window)
 			end
 			if not file.exists or overwrite then
 				target_file := "file://" + file_name
@@ -771,22 +771,22 @@ feature {NONE} -- Implementation
 				transfer_manager_builder.add_transaction (a_url_address, target_file)
 				if not transfer_manager_builder.last_added_source_correct then
 					create error_dialog.make_with_text ("Unable to read remote file.%NPlease check URL:%N" + a_url_address)
-					error_dialog.show_modal_to_window (metric_tool.development_window.window)
+					error_dialog.show_modal_to_window (metric_tool.develop_window.window)
 				elseif not transfer_manager_builder.last_added_target_correct then
 					create error_dialog.make_with_text ("Unable to load remote file in:%N" + file_name +
 											"Please make sure file does not exist or is writable.")
-					error_dialog.show_modal_to_window (metric_tool.development_window.window)
+					error_dialog.show_modal_to_window (metric_tool.develop_window.window)
 				else
 					transfer_manager_builder.build_manager
-					metric_tool.development_window.window.set_pointer_style (metric_tool.development_window.Wait_cursor)
+					metric_tool.develop_window.window.set_pointer_style (metric_tool.develop_window.Wait_cursor)
 					transfer_manager_builder.transfer
-					metric_tool.development_window.window.set_pointer_style (metric_tool.development_window.Standard_cursor)
+					metric_tool.develop_window.window.set_pointer_style (metric_tool.develop_window.Standard_cursor)
 					if transfer_manager_builder.transfer_succeeded then
 						Result := file_name
 					else
 						create error_dialog.make_with_text ("Unable to transfer remote file.%NReason: "
 																+ transfer_manager_builder.error_reason)
-						error_dialog.show_modal_to_window (metric_tool.development_window.window)
+						error_dialog.show_modal_to_window (metric_tool.develop_window.window)
 					end
 				end
 			end
@@ -831,7 +831,7 @@ feature -- Overwritting
 		do
 			create l_dlg.make_with_text (a_msg)
 			l_dlg.set_buttons_and_actions (<<metric_names.t_ok>>, <<agent do_nothing>>)
-			l_dlg.show_relative_to_window (metric_tool.development_window.window)
+			l_dlg.show_relative_to_window (metric_tool.develop_window.window)
 		end
 
 	load_archive (a_file_name: STRING): LIST [EB_METRIC_ARCHIVE_NODE] is

@@ -23,6 +23,9 @@ feature -- Access
 			Result := Interface_names.m_Profile_tool
 		end
 
+	pixmap: EV_PIXMAP
+			-- Pixmap
+
 feature -- Execution
 
 	execute is

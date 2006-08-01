@@ -98,7 +98,7 @@ feature -- Basic operations
 					link_tool_dialog.set_maximum_size (link_tool_dialog.width, link_tool_dialog.height)
 				end
 
-				link_tool_dialog.show_relative_to_window (tool.development_window.window)
+				link_tool_dialog.show_relative_to_window (tool.develop_window.window)
 			end
 		end
 
@@ -211,6 +211,12 @@ feature {NONE} -- Implementation
 			-- Pixmap representing the command.
 		do
 			Result := pixmaps.icon_pixmaps.diagram_force_right_angles_icon
+		end
+
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.context_link_icon_buffer
 		end
 
 	menu_name: STRING is

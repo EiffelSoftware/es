@@ -13,6 +13,7 @@ inherit
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
 			new_toolbar_item,
+			new_sd_toolbar_item,
 			new_menu_item
 		end
 
@@ -70,6 +71,15 @@ feature -- Access
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
 			Result.select_actions.put_front (agent execute_from (Result))
+			Result.pointer_button_press_actions.put_front (agent button_right_click_action)
+		end
+
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+		do
+			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
+			-- Execute from use a EV_CONTAINABLE to find the development window.
+			-- But now, a tool bar may be not contained in a development window..
+			Result.select_actions.put_front (agent execute_from (Void))
 			Result.pointer_button_press_actions.put_front (agent button_right_click_action)
 		end
 
@@ -133,42 +143,49 @@ feature {NONE} -- Implementation
 			executed_from_widget := False
 			if not debugger_manager.raised then
 					-- We try to find from which window we were launched.
-				from
-					trigger := widget
-					cont := trigger.parent
-				until
-					cont = Void
-				loop
-					trigger ?= cont
-					if trigger /= Void then
+				if widget /= Void then
+					from
+						trigger := widget
 						cont := trigger.parent
-					else
-						cont := Void
+					until
+						cont = Void
+					loop
+						trigger ?= cont
+						if trigger /= Void then
+							cont := trigger.parent
+						else
+							cont := Void
+						end
 					end
-				end
-				window ?= trigger
-				if window /= Void then
-					debugger_manager.set_debugging_window (
-						window_manager.development_window_from_window (window)
-					)
-					executed_from_widget := True
-				else
-					debug ("DEBUGGER_INTERFACE")
-						io.put_string ("Could not find the top window (dixit EB_EXEC_FORMAT_CMD)%N")
-					end
-					dev ?= Window_manager.last_focused_window
-					if dev /= Void then
-						debugger_manager.set_debugging_window (dev)
+					window ?= trigger
+					if window /= Void then
+						debugger_manager.set_debugging_window (
+							window_manager.development_window_from_window (window)
+						)
 						executed_from_widget := True
 					else
 						debug ("DEBUGGER_INTERFACE")
-							io.put_string ("Could not find the last focused window (dixit EB_EXEC_FORMAT_CMD)%N")
+							io.put_string ("Could not find the top window (dixit EB_EXEC_FORMAT_CMD)%N")
 						end
-						debugger_manager.set_debugging_window (Window_manager.a_development_window)
-						if Window_manager.a_development_window /= Void then
+						dev ?= Window_manager.last_focused_window
+						if dev /= Void then
+							debugger_manager.set_debugging_window (dev)
 							executed_from_widget := True
+						else
+							debug ("DEBUGGER_INTERFACE")
+								io.put_string ("Could not find the last focused window (dixit EB_EXEC_FORMAT_CMD)%N")
+							end
+							debugger_manager.set_debugging_window (Window_manager.a_development_window)
+							if Window_manager.a_development_window /= Void then
+								executed_from_widget := True
+							end
 						end
 					end
+				else
+					-- FIXIT: Adapte for new docking mechnisim?
+					-- Why we can't directly query a window from window manager's last_focused_development_window?					
+					debugger_manager.set_debugging_window (window_manager.last_focused_development_window)
+					executed_from_widget := True
 				end
 			end
 		end

@@ -10,6 +10,11 @@ class
 	EB_METRIC_TOOL
 
 inherit
+	EB_TOOL
+		redefine
+			make
+		end
+
 	SHARED_WORKBENCH
 
 	EB_RECYCLABLE
@@ -32,21 +37,32 @@ create
 
 feature -- Initialization
 
-	make (dw: EB_DEVELOPMENT_WINDOW; ctxt_tl: EB_CONTEXT_TOOL) is
+	make (dw: EB_DEVELOPMENT_WINDOW) is
 			-- Initialize `Current'.
 		do
-			development_window := dw
-			context_tool := ctxt_tl
+			develop_window := dw
 			create widget
-			create metric_tool_interface.make (development_window, Current)
+			create metric_tool_interface.make (develop_window, Current)
 			widget.extend (metric_tool_interface)
 			add_observer (metric_tool_interface.metric_evaluation_panel)
 			add_observer (metric_tool_interface.new_metric_panel)
 			add_observer (metric_tool_interface.metric_archive_panel)
 			on_compile_start_agent := agent on_compile_start
-			development_window.window_manager.compile_start_actions.extend (on_compile_start_agent)
+			develop_window.window_manager.compile_start_actions.extend (on_compile_start_agent)
 			set_tool_sensitive (False)
 			manager.add_observer (Current)
+		end
+
+	build_interface is
+	   		-- Redefine
+		do
+			widget := metric_tool_interface
+		end
+
+	title: STRING is
+			-- Redefine
+		do
+			Result := interface_names.t_metric_tool
 		end
 
 feature -- Actions
@@ -167,7 +183,7 @@ feature -- Basic operations
 			if metric_manager.has_error then
 				create l_dlg.make_with_text (metric_manager.last_error.out)
 				l_dlg.set_buttons_and_actions (<<metric_names.t_ok>>, <<agent do_nothing>>)
-				l_dlg.show_relative_to_window (development_window.window)
+				l_dlg.show_relative_to_window (develop_window.window)
 				metric_manager.clear_last_error
 			end
 		end
@@ -178,7 +194,7 @@ feature -- Basic operations
 			is_recompiled := bool
 			is_up_to_date := False
 			is_compiling := False
-			if context_tool.notebook.selected_item = widget and is_recompiled then
+			if widget.is_displayed and is_recompiled then
 				synchronize_after_compilation
 			end
 		end
@@ -223,12 +239,6 @@ feature -- Basic operations
 
 feature -- Access
 
-	development_window: EB_DEVELOPMENT_WINDOW
-			-- Application main window.
-
-	context_tool: EB_CONTEXT_TOOL
-			-- Container of `Current'.
-
 	widget: EV_VERTICAL_BOX
 			-- Graphical object of `Current'
 
@@ -243,10 +253,9 @@ feature -- Memory management
 		do
 			manager.remove_observer (Current)
 			if on_compile_start_agent /= Void then
-				development_window.window_manager.compile_start_actions.prune_all (on_compile_start_agent)
+				develop_window.window_manager.compile_start_actions.prune_all (on_compile_start_agent)
 			end
-			development_window := Void
-			context_tool := Void
+			develop_window := Void
 		end
 
 feature -- Status report

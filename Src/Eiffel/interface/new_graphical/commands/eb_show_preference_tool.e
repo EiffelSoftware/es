@@ -64,6 +64,9 @@ feature -- Properties
 			Result := Interface_names.m_Preferences
 		end
 
+	pixmap: EV_PIXMAP
+			-- Pixmap
+
 feature {NONE} -- Implementation
 
 	preference_window: EB_PREFERENCES_WINDOW;

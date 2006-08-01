@@ -131,7 +131,7 @@ feature -- Setting
 				end
 				display_header
 			end
-		ensure
+		ensure then
 			class_set: (a_class /= Void and then a_class.has_feature_table) implies (a_class = associated_class)
 		end
 

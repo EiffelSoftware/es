@@ -108,15 +108,10 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 
 feature -- Toolbar Convenience
 
-	retrieve_project_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): EB_TOOLBAR is
+	retrieve_project_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): ARRAYED_SET [SD_TOOL_BAR_ITEM] is
 			-- Retreive the project toolbar using the available commands in `command_pool'
 		do
-			Result := retrieve_toolbar (command_pool, project_toolbar_layout_preference.value)
-			if show_text_in_project_toolbar then
-				Result.enable_important_text
-			elseif show_all_text_in_project_toolbar then
-				Result.enable_text_displayed
-			end
+			Result := retrieve_toolbar_items (command_pool, project_toolbar_layout_preference.value)
 		end
 
 	save_project_toolbar (project_toolbar: EB_TOOLBAR) is

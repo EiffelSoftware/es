@@ -230,7 +230,7 @@ feature {NONE} -- Implementation
 			is_new_dropped := True
 			drop_x := context_editor.pointer_position.x
 			drop_y := context_editor.pointer_position.y
-			create dial.make_default (context_editor.development_window)
+			create dial.make_default (context_editor.develop_window)
 			l_cluster ?= model.center_class.class_i.group
 			check
 				l_cluster_not_void: l_cluster /= Void

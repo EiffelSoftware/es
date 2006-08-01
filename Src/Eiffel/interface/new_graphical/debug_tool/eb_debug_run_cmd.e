@@ -535,6 +535,18 @@ feature {NONE} -- Implementation / Attributes
 			Result := pixmaps.icon_pixmaps.debug_run_icon
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.debug_run_icon_buffer
+		end
+
+	run_request: RUN_REQUEST
+			-- Request for the run.
+
+	cont_request: EWB_REQUEST
+			-- Request for continuation.
+
 	launch_program: BOOLEAN
 			-- Are we currently trying to launch the program.
 

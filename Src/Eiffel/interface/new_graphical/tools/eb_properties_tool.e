@@ -1,5 +1,5 @@
 indexing
-	description	: "Tool to view the favorites"
+	description	: "Tool to view the properties."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date		: "$Date$"
@@ -14,7 +14,10 @@ inherit
 			make as tool_make
 		redefine
 			menu_name,
-			pixmap
+			pixmap,
+			pixel_buffer,
+			build_docking_content,
+			show
 		end
 
 	EB_CLUSTER_MANAGER_OBSERVER
@@ -50,7 +53,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_manager: EB_TOOL_MANAGER) is
+	make (a_manager: EB_DEVELOPMENT_WINDOW) is
 			-- Make a new properties tool.
 		require
 			a_manager_exists: a_manager /= Void
@@ -59,6 +62,14 @@ feature {NONE} -- Initialization
 			cluster_manager.extend (Current)
 			create {CONF_COMP_FACTORY}conf_factory
 			window := a_manager.window
+		end
+
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Build docking content
+		do
+			Precursor {EB_TOOL}(a_docking_manager)
+			content.drop_actions.extend (agent add_stone)
+			content.drop_actions.set_veto_pebble_function (agent dropable)
 		end
 
 	build_interface is
@@ -71,18 +82,6 @@ feature {NONE} -- Initialization
 
 			properties.drop_actions.extend (agent add_stone)
 			properties.drop_actions.set_veto_pebble_function (agent dropable)
-		end
-
-	build_explorer_bar_item (explorer_bar: EB_EXPLORER_BAR) is
-			-- Build the associated explorer bar item and
-			-- Add it to `explorer_bar'
-		do
-			create explorer_bar_item.make (explorer_bar, widget, title, True)
-			explorer_bar_item.set_menu_name (menu_name)
-			if pixmap /= Void then
-				explorer_bar_item.set_pixmap (pixmap)
-			end
-			explorer_bar.add (explorer_bar_item)
 		end
 
 feature -- Access
@@ -108,17 +107,28 @@ feature -- Access
 			Result := pixmaps.icon_pixmaps.tool_properties_icon
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer
+		do
+			Result := pixmaps.icon_pixmaps.project_settings_system_icon_buffer
+		end
+
+feature -- Command
+
+	show is
+			-- Show tool.
+		do
+			Precursor {EB_TOOL}
+			properties.set_focus
+		end
+
 feature -- Memory management
 
 	recycle is
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
-			if explorer_bar_item /= Void then
-				explorer_bar_item.recycle
-				explorer_bar_item := Void
-			end
-			manager := Void
+			develop_window := Void
 		end
 
 feature {NONE} -- External changes to classes/clusters
@@ -135,7 +145,7 @@ feature {NONE} -- External changes to classes/clusters
 			refresh
 		end
 
-feature {EB_DEVELOPMENT_WINDOW} -- Actions
+feature {EB_STONE_CHECKER} -- Actions
 
 	add_stone (a_stone: STONE) is
 			-- Add `a_stone'.
@@ -149,7 +159,7 @@ feature {EB_DEVELOPMENT_WINDOW} -- Actions
 			l_lib_use: ARRAYED_LIST [CONF_LIBRARY]
 			l_writable: BOOLEAN
 			l_app_sys: CONF_SYSTEM
-			l_class_options, l_group_options: CONF_OPTION
+			l_class_options, l_inh_options: CONF_OPTION
 			l_name_prop: STRING_PROPERTY [STRING]
 			l_extends: BOOLEAN
 			l_debugs: SEARCH_TABLE [STRING]
@@ -195,8 +205,10 @@ feature {EB_DEVELOPMENT_WINDOW} -- Actions
 					l_group := l_cs.class_i.group
 					current_system := l_group.target.system
 					is_il_generation := l_group.target.setting_msil_generation
-					l_group_options := l_group.options
 					l_class_options := l_group.changeable_class_options (l_cs.class_name)
+					create l_inh_options
+					l_inh_options.merge (l_class_options)
+					l_inh_options.merge (l_group.options)
 					properties.reset
 					properties.add_section (conf_interface_names.section_general)
 					create l_name_prop.make (conf_interface_names.group_type_name)
@@ -211,10 +223,10 @@ feature {EB_DEVELOPMENT_WINDOW} -- Actions
 					l_name_prop.set_value (l_cs.file_name)
 					l_name_prop.enable_readonly
 					properties.add_property (l_name_prop)
-					add_misc_option_properties (l_class_options, l_group_options, True)
-					add_assertion_option_properties (l_class_options, l_group_options, True)
-					add_warning_option_properties (l_class_options, l_group_options, True)
-					add_debug_option_properties (l_class_options, l_group_options, True)
+					add_misc_option_properties (l_class_options, l_inh_options, True)
+					add_assertion_option_properties (l_class_options, l_inh_options, True)
+					add_warning_option_properties (l_class_options, l_inh_options, True)
+					add_debug_option_properties (l_class_options, l_inh_options, True)
 					properties.set_expanded_section_store (class_section_expanded_status)
 				else
 					check should_not_reach: False end
@@ -325,7 +337,7 @@ feature {NONE} -- Implementation
 				end
 				is_storing := True
 				current_system.store
-				manager.cluster_manager.refresh
+				develop_window.cluster_manager.refresh
 				is_storing := False
 			end
 		end

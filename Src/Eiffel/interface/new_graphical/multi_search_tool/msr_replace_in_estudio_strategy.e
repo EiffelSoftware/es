@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 			a_multi_search_tool_not_void: a_multi_search_tool /= Void
 		do
 			search_tool := a_multi_search_tool
-			editor := a_multi_search_tool.editor
+			editor := search_tool.editor
 		ensure
 			search_tool_not_void: search_tool = a_multi_search_tool
 		end
@@ -69,18 +69,6 @@ feature -- Status report
 			end
 		end
 
-feature -- Element change
-
-	set_editor (a_editor: like editor) is
-			-- Set `editor'
-		require
-			a_editor_not_void: a_editor /= Void
-		do
-			editor := a_editor
-		ensure
-			editor_not_void: editor /= Void
-		end
-
 feature -- Basic operation
 
 	replace is
@@ -91,9 +79,12 @@ feature -- Basic operation
 			replace_item_not_off: not replace_items.off
 			is_editor_set: is_editor_set
 			editor_is_editable: is_editor_editable
+
 		local
 			l_item : MSR_TEXT_ITEM
 			class_i: CLASS_I
+			editors_manager: EB_EDITORS_MANAGER
+			l_editors: ARRAYED_LIST [EB_SMART_EDITOR]
 			l_string: STRING
 			l_text: SMART_TEXT
 		do
@@ -101,10 +92,12 @@ feature -- Basic operation
 			if l_item /= Void then
 				class_i ?= l_item.data
 				if class_i /= Void then
-					if is_class_i_editing (class_i) and
-							search_tool.check_class_succeed and not
-							search_tool.is_item_source_changed (l_item)
-					then
+					editors_manager := search_tool.develop_window.editors_manager
+					l_editors := editors_manager.editor_editing (class_i)
+					if not l_editors.is_empty then
+						editor := l_editors @ 1
+					end
+					if not l_editors.is_empty and search_tool.check_class_succeed and not search_tool.is_item_source_changed (l_item) then
 						l_text ?= editor.text_displayed
 						check
 							l_text_is_smart_text: l_text /= Void
@@ -183,56 +176,12 @@ feature {NONE} -- Implementation
 		do
 			class_i ?= a_item.data
 			if class_i /= Void then
-				Result := not (is_class_i_editing (class_i))
-			end
-		end
-
-	is_class_i_editing (a_class : CLASS_I): BOOLEAN is
-			-- If class_i is being editing in the editor.
-		require
-			a_class_not_void: a_class /= Void
-		local
-			l: LIST [EB_DEVELOPMENT_WINDOW]
-			unchanged_editor, changed_editor: EB_DEVELOPMENT_WINDOW
-			l_editor: EB_SMART_EDITOR
-		do
-			l := window_manager.development_windows_with_class (a_class.name)
-			if not l.is_empty then
-				from
-					l.start
-				until
-					l.after
-				loop
-					l_editor := l.item.editor_tool.text_area
-					from
-						process_events_and_idle
-					until
-						editor.text_is_fully_loaded
-					loop
-						ev_application.idle_actions.call ([])
-					end
-					if l_editor.is_editable then
-						if l.item.changed then
-							changed_editor := l.item
-						else
-							unchanged_editor := l.item
-						end
-					end
-					l.forth
-				end
-				if changed_editor /= Void then
-					Result := true
-				elseif unchanged_editor /= Void then
-					Result := true
-				else
-					Result := false
-				end
-			else
-				Result := false
+				Result := not (search_tool.develop_window.editors_manager.is_class_editing (class_i.file_name))
 			end
 		end
 
 	editor : EB_EDITOR
+			-- Current editor
 
 	smart_text: SMART_TEXT is
 			-- Smart text in editor.
@@ -244,6 +193,7 @@ feature {NONE} -- Implementation
 		end
 
 	search_tool: EB_MULTI_SEARCH_TOOL;
+			-- Search tool
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

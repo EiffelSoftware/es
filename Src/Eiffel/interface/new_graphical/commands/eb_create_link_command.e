@@ -114,6 +114,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			-- Currently there is no pixel buffer for this command.
+		end
+		
 	tooltip: STRING is
 			-- Tooltip for the toolbar button.
 		do

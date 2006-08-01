@@ -143,7 +143,7 @@ feature -- Status setting
 				end
 				display_header
 			end
-		ensure
+		ensure then
 			feature_set: a_feature = associated_feature
 		end
 

@@ -12,6 +12,7 @@ deferred class
 inherit
 	EB_FORMATTER
 		redefine
+			refresh,
 			new_button
 		end
 
@@ -33,6 +34,13 @@ feature -- Properties
 			-- Is Current able to format .NET class texts?
 		deferred
 		end
+
+feature -- Stonable
+
+	refresh is
+		do
+		end
+
 
 feature -- Formatting
 
@@ -116,7 +124,7 @@ feature {NONE} -- Properties
 			-- Initialize a default empty_widget.
 		local
 			def: EV_STOCK_COLORS
-			manag: EB_FEATURES_VIEW
+			manag: EB_FEATURES_RELATION_TOOL
 		do
 			create def
 			create {EV_CELL} internal_empty_widget

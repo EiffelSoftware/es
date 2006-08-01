@@ -10,7 +10,7 @@ class
 	EB_FAVORITES_CLASS
 
 inherit
-	
+
 	EB_FAVORITES_FOLDER
 		redefine
 			is_class,
@@ -18,7 +18,7 @@ inherit
 			string_representation,
 			mouse_cursor, Xmouse_cursor
 		end
-		
+
 	EB_CONSTANTS
 		undefine
 			is_equal
@@ -33,7 +33,7 @@ inherit
 
 create {EB_FAVORITES_ITEM_LIST}
 	make_from_string
-	
+
 create
 	make, make_from_class_stone
 
@@ -59,7 +59,7 @@ feature {NONE} -- Access
 					add_feature (l_split.item)
 					l_split.forth
 				end
-			end			
+			end
 		end
 
 	make (a_name: STRING; a_parent: EB_FAVORITES_ITEM_LIST) is
@@ -67,8 +67,8 @@ feature {NONE} -- Access
 		do
 			Precursor {EB_FAVORITES_FOLDER} (a_name, a_parent)
 			get_class_i
-			
-			item_list_make (5)		
+
+			item_list_make (5)
 		end
 
 	make_from_class_stone (a_stone: CLASSI_STONE; a_parent: EB_FAVORITES_ITEM_LIST) is
@@ -78,6 +78,7 @@ feature {NONE} -- Access
 			valid_stone: a_stone /= Void
 		do
 			make (a_stone.class_name, a_parent)
+			associated_class_i := a_stone.class_i
 		end
 
 feature -- Status
@@ -123,7 +124,7 @@ feature -- Convert
 				Result := class_i.file_name
 			end
 		end
-	
+
 	associated_class_stone: CLASSI_STONE is
 			-- CLASSI_STONE associated with favorite class, Void if none.
 		local
@@ -149,7 +150,7 @@ feature {NONE} -- Implementation
 			loc_list: LIST [CLASS_I]
 		do
 			loc_list := Eiffel_universe.classes_with_name (name)
-		
+
 				-- Return the first element of the list.
 			if loc_list /= Void and then not loc_list.is_empty then
 				associated_class_i := loc_list.first
@@ -172,7 +173,7 @@ feature {EB_FAVORITES_ITEM_LIST, EB_FAVORITES_ITEM} -- Load/Save
 				loop
 					Result := Result + ":" + item.string_representation
 					forth
-				end				
+				end
 			end
 		end
 

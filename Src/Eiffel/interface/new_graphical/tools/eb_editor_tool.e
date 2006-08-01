@@ -10,12 +10,21 @@ class
 
 inherit
 	EB_TEXTABLE_TOOL
+		rename
+			text_area as textable_tool_text_area
+		export
+			{NONE} textable_tool_text_area
 		redefine
-			text_area,
+			make,
 			menu_name,
 			refresh,
 			build_text_area,
-			pixmap
+			pixmap,
+			widget,
+			changed,
+			set_stone,
+			stone,
+			build_docking_content
 		end
 
 	EXEC_MODES
@@ -27,14 +36,30 @@ create
 
 feature {NONE} -- Initialization
 
-	build_explorer_bar_item (explorer_bar: EB_EXPLORER_BAR) is
+	make (a_manager: EB_DEVELOPMENT_WINDOW) is
+			--
+		do
+			create editors_manager.make (a_manager)
+			develop_window := a_manager
+			widget_internal := a_manager.uis.editors_widget
+			build_interface
+			editors_manager.editor_switched_actions.extend (agent editor_switched)
+		end
+
+	build_docking_content (a_docking_manager:SD_DOCKING_MANAGER) is
+--	build_explorer_bar_item (explorer_bar: EB_EXPLORER_BAR) is
 			-- Build the associated explorer bar item and
 			-- Add it to `explorer_bar'
 		do
-			create explorer_bar_item.make (explorer_bar, widget, title, true)
-			explorer_bar_item.set_menu_name (menu_name)
-			explorer_bar_item.set_pixmap (pixmap)
-			explorer_bar.add (explorer_bar_item)
+			create content.make_with_widget (widget, title)
+			content.set_type ({SD_ENUMERATION}.editor)
+			content.set_long_title (title)
+			content.set_short_title (title)
+
+--			create docking_content_that_wiil_be_removed_by_larry.make (a_docking_manager, widget, title, true)
+--			docking_content_that_wiil_be_removed_by_larry.set_menu_name (menu_name)
+--			docking_content_that_wiil_be_removed_by_larry.set_pixmap (pixmap)
+--			explorer_bar.add (explorer_bar_item)
 		end
 
 feature -- Access
@@ -51,13 +76,31 @@ feature -- Access
 			Result := Interface_names.m_Editor
 		end
 
-	text_area: EB_SMART_EDITOR
-			-- Text Editor.
+	text_area: EB_SMART_EDITOR is
+			-- Current editor
+		do
+			Result := editors_manager.current_editor
+		end
+
+	widget: EV_WIDGET is
+			-- Widget representing Current
+		do
+			Result := widget_internal
+		end
+
+	editors_manager: EB_EDITORS_MANAGER
+			-- Editors manager
 
 	pixmap: EV_PIXMAP is
 			-- Pixmap as it may appear in toolbars and menus.
 		do
 			Result := pixmaps.icon_pixmaps.view_editor_icon
+		end
+
+	stone: STONE is
+			-- Stone for Current
+		do
+			Result := text_area.stone
 		end
 
 feature -- Status Report
@@ -66,6 +109,13 @@ feature -- Status Report
 			-- is the edited file up to date ?
 		do
 			Result := text_area.file_is_up_to_date
+		end
+
+	changed: BOOLEAN is
+			-- Any text changed since last save?
+			-- False by default.
+		do
+			Result := editors_manager.changed
 		end
 
 feature -- Status setting
@@ -81,6 +131,13 @@ feature -- Status setting
 			-- Set the focus
 		do
 			text_area.set_focus
+		end
+
+	set_stone (a_stone: STONE) is
+			--
+		do
+--			Precursor {EB_TEXTABLE_TOOL} (a_stone)
+			text_area.set_stone (a_stone)
 		end
 
 feature -- Basic operation
@@ -121,12 +178,11 @@ feature -- Memory management
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
-			if explorer_bar_item /= Void then
-				explorer_bar_item.recycle
+			if docking_content_that_wiil_be_removed_by_larry /= Void then
+				docking_content_that_wiil_be_removed_by_larry.recycle
 			end
-			text_area.recycle
-			text_area := Void
-			manager := Void
+			editors_manager.recycle
+			develop_window := Void
 		end
 
 feature {NONE} -- Implementation
@@ -134,18 +190,22 @@ feature {NONE} -- Implementation
 	development_window: EB_DEVELOPMENT_WINDOW is
 			-- Development window where the editor tool is located.
 		do
-			Result ?= manager
+			Result ?= develop_window
 		end
+
+	widget_internal: EV_WIDGET
 
 	build_text_area is
 			-- Create the text component where the information will be displayed.
-		local
-			an_editor: EB_SMART_EDITOR
 		do
-			create an_editor.make (development_window)
-			text_area := an_editor
 		end
 
+	editor_switched (a_editor: like text_area) is
+			-- Editor is switched.
+		do
+			development_window.set_stone (a_editor.stone)
+			development_window.refresh
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

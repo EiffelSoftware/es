@@ -11,7 +11,7 @@ class
 inherit
 	CONF_REFACTORING
 
-feature {NONE} -- Resources
+feature -- Resources
 
 	Pixmaps: EB_SHARED_PIXMAPS is
 		once

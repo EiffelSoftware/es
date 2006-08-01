@@ -6,11 +6,11 @@ indexing
 	revision	: "$Revision$"
 
 deferred class
-	EB_MENUABLE_COMMAND 
+	EB_MENUABLE_COMMAND
 
 inherit
 	EB_GRAPHICAL_COMMAND
-	
+
 	EB_SHARED_WINDOW_MANAGER
 		export
 			{NONE} all
@@ -23,6 +23,11 @@ feature -- Access
 		deferred
 		ensure
 			valid_result: Result /= Void
+		end
+
+	pixmap: EV_PIXMAP is
+			-- Pixmap
+		deferred
 		end
 
 feature -- Status setting
@@ -72,10 +77,13 @@ feature -- Status setting
 feature -- Basic operations
 
 	new_menu_item: EB_COMMAND_MENU_ITEM is
-			-- 
+			--
 		do
 			create Result.make (Current)
 			initialize_menu_item (Result)
+			if pixmap /= Void then
+				Result.set_pixmap (pixmap)
+			end
 			Result.select_actions.extend (agent execute)
 		end
 
@@ -107,10 +115,10 @@ feature --{EB_COMMAND_MENU_ITEM} -- Implementation
 			end
 			Result := internal_managed_menu_items
 		end
-	
+
 	internal_managed_menu_items: ARRAYED_LIST [like new_menu_item]
 		-- Menu items associated with this command.
-	
+
 	Tabulation: STRING is "%T";
 
 indexing

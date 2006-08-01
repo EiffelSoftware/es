@@ -1,79 +1,77 @@
 indexing
-	description : "Objects that ..."
+	description : "Ancestor which can attach to docking manager."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author      : "$Author$"
 	date        : "$Date$"
 	revision    : "$Revision$"
 
-deferred 
-class
-	EB_EXPLORER_BAR_ATTACHABLE
+deferred class
+	EB_DOCKING_MANAGER_ATTACHABLE
+
+inherit
+	HASHABLE
 
 feature -- Attachement
 
-	attach_to_explorer_bar (a_bar: EB_EXPLORER_BAR) is
-			-- Set `explorer_bar' to `a_bar'.
+	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Attach to `a_docking_manager'.
 		require
-			a_bar_exists: a_bar /= Void
-			not_attached: explorer_bar_item = Void
+			not_void: a_docking_manager /= Void
 		do
-			if explorer_bar_item = Void then
-				build_explorer_bar_item (a_bar)
-			else
-				set_explorer_bar (a_bar)
-			end
+			build_docking_content (a_docking_manager)
+
+			check not_already_has: not a_docking_manager.has_content (content) end
+			a_docking_manager.contents.extend (content)
 		ensure
-			explorer_bar_item_exists: explorer_bar_item /= Void
+			added: a_docking_manager.has_content (content)
 		end
-		
-	unattach_from_explorer_bar is
+
+	attach_to_docking_manager_with (a_docking_manager: SD_DOCKING_MANAGER; a_attachable: EB_DOCKING_MANAGER_ATTACHABLE) is
+			-- Attach to `a_docking_manager' with `a_attachable'.
 		require
-			attached: explorer_bar_item /= Void
+			a_docking_manager_not_void: a_docking_manager /= Void
+			a_attachable_not_void: a_attachable /= Void
 		do
-			if explorer_bar_item.is_closeable then
-				explorer_bar_item.close
-			end
-			explorer_bar_item.recycle
-			explorer_bar_item := Void
-		ensure
-			explorer_bar_item = Void
-		end
-		
-	change_attach_explorer (a_bar: EB_EXPLORER_BAR) is
-		require
-			a_bar_exists: a_bar /= Void
-			attached: explorer_bar_item /= Void
-		do
-			if a_bar /= explorer_bar_item.parent then
-				unattach_from_explorer_bar
-				attach_to_explorer_bar (a_bar)
+			attach_to_docking_manager (a_docking_manager)
+			if content /= a_attachable.content then
+				content.set_tab_with (a_attachable.content, False)
 			end
 		end
 
 	set_explorer_bar (a_bar: EB_EXPLORER_BAR) is
 			-- Set `explorer_bar' to `a_bar'.
-		require
-			explorer_bar_item /= Void
 		do
-			explorer_bar_item.set_parent (a_bar)
+			-- We will finally delete this feature for docking Eiffel Studio.
 		end
 
 feature -- Access
 
-	explorer_bar_item: EB_EXPLORER_BAR_ITEM
-			-- Associated explorer bar item.
+	content: SD_CONTENT
+			-- Content assiociate with Current.
+
+	hash_code: INTEGER is
+			-- Hash code
+		do
+			Result := title.hash_code
+		end
+
+	title: STRING is
+			-- Title of the tool
+		deferred
+		ensure
+			valid_title: title /= Void and then not title.is_empty
+		end
 
 feature {NONE} -- Build implementation
 
-	build_explorer_bar_item (an_explorer_bar: EB_EXPLORER_BAR) is
-			-- Build the associated explorer bar item and
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Build the associated widget and
 			-- Add it to `explorer_bar'
 		require
-			an_explorer_bar_exists: an_explorer_bar /= Void
+			not_void: a_docking_manager /= Void
 		deferred
 		ensure
-			explorer_bar_item_created: explorer_bar_item /= Void
+			created: content /= Void
 		end
 
 indexing

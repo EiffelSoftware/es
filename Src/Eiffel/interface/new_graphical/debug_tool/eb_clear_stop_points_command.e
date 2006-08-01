@@ -76,6 +76,12 @@ feature -- Access
 			Result := pixmaps.icon_pixmaps.breakpoints_delete_icon
 		end
 
+	pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.breakpoints_delete_icon_buffer
+		end
+
 	mini_pixmap: EV_PIXMAP is
 			-- Icon for `Current'.
 		do

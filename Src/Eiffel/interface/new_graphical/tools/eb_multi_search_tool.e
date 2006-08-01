@@ -11,11 +11,14 @@ class
 inherit
 
 	EB_MULTI_SEARCH_TOOL_IMP
+		export
+			{MSR_REPLACE_IN_ESTUDIO_STRATEGY, EB_SEARCH_REPORT_TOOL} develop_window
 		redefine
 			make,
-			manager,
 			reverse,
-			recycle
+			recycle,
+			build_docking_content,
+			attach_to_docking_manager
 		end
 
 	EB_SHARED_MANAGERS
@@ -180,6 +183,17 @@ feature {NONE} -- Initialization
 			search_report_grid := report_tool.search_report_grid
 		end
 
+feature -- Docking management
+
+	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Attach to docking manager
+		do
+			build_docking_content (a_docking_manager)
+
+			check not_already_has: not a_docking_manager.has_content (content) end
+			a_docking_manager.contents.extend (content)
+		end
+
 feature -- Access
 
 	surrounding_text_number: INTEGER is 	20
@@ -197,7 +211,7 @@ feature -- Access
 	editor: EB_EDITOR is
 			-- current_editor
 		do
-			Result := manager.current_editor
+			Result := develop_window.uis.current_editor
 		end
 
 	bottom_reached_actions: EV_NOTIFY_ACTION_SEQUENCE
@@ -207,15 +221,12 @@ feature -- Access
 			-- Get called when result reaches the one started.
 
 	currently_searched: STRING
-			-- string to be search
+			-- String to be search
 
 feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Access
 
-	manager: EB_DEVELOPMENT_WINDOW
-			-- Development window
-
 	currently_replacing: STRING
-			-- string to be search
+			-- String to be search
 
 feature -- Status report
 
@@ -261,7 +272,7 @@ feature -- Status report
 feature -- Status setting
 
 	set_current_searched (word: STRING) is
-			-- assign `word' to `currently_searched'
+			-- Assign `word' to `currently_searched'
 		do
 			currently_searched := word
 			if keyword_field /= Void then
@@ -289,7 +300,7 @@ feature -- Status setting
 		end
 
 	disable_incremental_search is
-			-- Disable increamental search	
+			-- Disable increamental search
 		do
 			incremental_search_button.disable_select
 		end
@@ -306,7 +317,7 @@ feature -- Status setting
 	show_and_set_focus_replace is
 			-- Give the focus to replace field.
 		do
-			explorer_bar_item.show
+			show
 			if notebook.selected_item_index /= 1 then
 				notebook.select_item (notebook.i_th (1))
 			end
@@ -489,7 +500,7 @@ feature {MSR_REPLACE_IN_ESTUDIO_STRATEGY, EB_CUSTOM_WIDGETTED_EDITOR, EB_SEARCH_
 			-- `check_class_file' makes file changed if needed?
 
 	set_check_class_succeed (a_succeed: BOOLEAN) is
-			--
+			-- Set check class succeed with `a_succeed'.
 		do
 			check_class_succeed := a_succeed
 		ensure
@@ -536,6 +547,51 @@ feature {MSR_REPLACE_IN_ESTUDIO_STRATEGY, EB_CUSTOM_WIDGETTED_EDITOR, EB_SEARCH_
 		end
 
 feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Build interface
+
+
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Build the associated explorer bar item and
+			-- Add it to `explorer_bar'
+		do
+			-- Search tool have to delay building mini tool bar.
+			-- So we can't call precursor here.
+			create content.make_with_widget (widget, title)
+			content.set_long_title (title)
+			content.set_short_title (title)
+			if pixmap /= Void then
+				content.set_pixmap (pixmap)
+			end
+			if pixel_buffer /= Void then
+				content.set_pixel_buffer (pixel_buffer)
+			end
+			content.close_request_actions.extend (agent close)
+			content.drop_actions.extend (agent on_drop_notebook)
+			content.focus_in_actions.extend (agent show)
+		end
+
+	report : EV_FRAME
+			-- Report container
+
+	report_button : EV_TOOL_BAR_BUTTON
+			-- Button to hide or show report.
+
+	summary_label : EV_LABEL
+			-- Label to show search summary.
+
+	shortcut_tool_bar: EV_TOOL_BAR
+			-- Tool bar contains expand all button etc.
+
+	new_search_tool_bar: EV_TOOL_BAR
+			-- Tool bar contains new search button.
+
+	new_search_button: EV_TOOL_BAR_BUTTON
+			-- Button to force a new search.
+
+	expand_all_button: EV_TOOL_BAR_BUTTON
+			-- Button to expand all.
+
+	collapse_all_button: EV_TOOL_BAR_BUTTON
+			-- Button to collapse all.
 
 	prepare_interface is
 			-- Initialize options' status.
@@ -599,7 +655,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Build interface
 feature {NONE} -- Shortcut button actions
 
 	new_search is
-			--
+			-- New search
 		do
 			force_new_search
 			changed_by_replace := false
@@ -607,7 +663,7 @@ feature {NONE} -- Shortcut button actions
 		end
 
 	expand_all is
-			--
+			-- Expand all
 		local
 			i: INTEGER
 			l_row: EV_GRID_ROW
@@ -626,7 +682,7 @@ feature {NONE} -- Shortcut button actions
 		end
 
 	collapse_all is
-			--
+			-- Collapse all
 		local
 			i: INTEGER
 			l_row: EV_GRID_ROW
@@ -689,8 +745,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Actions handler
 						end
 					end
 				elseif k.code = Key_escape then
-					close
-					ev_application.do_once_on_idle (agent editor.set_focus)
+					develop_window.set_focus_to_main_editor
 				else
 					if search_forward_shortcut.matches (k, l_alt, l_ctrl, l_shift) then
 						if not keyword_field.text.is_empty and then search_only then
@@ -778,7 +833,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Actions handler
 				choose_dialog.set_class_add_action (agent add_class_item)
 				choose_dialog.set_cluster_add_action (agent add_cluster_item)
 				choose_dialog.set_folder_add_action (agent add_folder_item)
-				choose_dialog.show_relative_to_window (manager.window)
+				choose_dialog.show_relative_to_window (develop_window.window)
 				choose_dialog.default_push_button.select_actions.extend (agent force_new_search)
 			end
 			choose_dialog.set_focus
@@ -858,7 +913,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Actions handler
 			force_new_search
 			is_text_changed_in_editor := true
 			if is_text_new_loaded and then multi_search_performer.is_search_launched and then not multi_search_performer.is_empty then
-				l_class_stone ?= manager.stone
+				l_class_stone ?= develop_window.stone
 				if l_class_stone /= Void and not changed_by_replace then
 					class_changed (l_class_stone.class_i)
 				end
@@ -875,7 +930,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Actions handler
 		end
 
 	enable_disable_search_button is
-			-- disable the search buton if the search field is empty, incremental search if it is possible.
+			-- Disable the search buton if the search field is empty, incremental search if it is possible.
 		local
 			l_editor: like old_editor
 		do
@@ -929,10 +984,10 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Actions handler
 				if l_filed_stone /= Void then
 					display_stone_signature (keyword_field, l_filed_stone)
 				end
-			when 2 then
+			else
 				notebook.select_item (notebook.i_th (2))
 				on_drop_custom_button (a_stone)
-			else
+				content.set_focus
 			end
 		end
 
@@ -1039,10 +1094,10 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 			class_stone: CLASSI_STONE
 			l_text: STRING
 		do
-			manager.window.set_pointer_style (default_pixmaps.wait_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.wait_cursor)
 			if not editor.is_empty then
 				currently_searched := a_word
-				class_stone ?= manager.stone
+				class_stone ?= develop_window.uis.current_editor.stone
 				if class_stone /= Void then
 					class_i := class_stone.class_i
 					file_name:= class_i.file_name
@@ -1070,8 +1125,8 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 						incremental_search_strategy.set_data (class_i)
 						incremental_search_strategy.set_date (class_i.date)
 					end
-					if manager.class_name /= Void then
-						incremental_search_strategy.set_class_name (manager.class_name)
+					if develop_window.class_name /= Void then
+						incremental_search_strategy.set_class_name (develop_window.class_name)
 					end
 					multi_search_performer.set_search_strategy (incremental_search_strategy)
 					multi_search_performer.do_search
@@ -1080,7 +1135,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 					saved_cursor := 0
 				end
 			end
-			manager.window.set_pointer_style (default_pixmaps.standard_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.standard_cursor)
 		end
 
 	incremental_search_start_pos: INTEGER
@@ -1103,9 +1158,9 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 			class_name: STRING
 			class_stone: CLASSI_STONE
 		do
-			manager.window.set_pointer_style (default_pixmaps.wait_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.wait_cursor)
 			currently_searched := keyword_field.text
-			class_stone ?= manager.stone
+			class_stone ?= develop_window.uis.current_editor.stone
 			if class_stone /= Void then
 				class_i := class_stone.class_i
 				file_name := class_i.file_name
@@ -1139,7 +1194,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 				extend_and_run_loaded_action (agent go_to_next_found_perform (reverse))
 				update_combo_box_specific (keyword_field, currently_searched)
 			end
-			manager.window.set_pointer_style (default_pixmaps.standard_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.standard_cursor)
 		end
 
 	default_search is
@@ -1151,12 +1206,12 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 			class_name: STRING
 			class_stone: CLASSI_STONE
 		do
-			manager.window.set_pointer_style (default_pixmaps.wait_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.wait_cursor)
 			if currently_searched /= Void and then not currently_searched.is_empty then
 					-- search is possible but the search box is not shown
 					-- default options
 				currently_searched := keyword_field.text
-				class_stone ?= manager.stone
+				class_stone ?= develop_window.uis.current_editor.stone
 				if class_stone /= Void then
 					class_i := class_stone.class_i
 					file_name := class_i.file_name
@@ -1164,6 +1219,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 				else
 					class_name := "Not a class"
 					create file_name.make
+					create class_name.make_empty
 				end
 				if not editor.is_empty then
 					create text_strategy.make (currently_searched, surrounding_text_number, class_name, file_name, editor.text_displayed.text)
@@ -1187,7 +1243,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 					extend_and_run_loaded_action (agent go_to_next_found_perform (reverse))
 				end
 			end
-			manager.window.set_pointer_style (default_pixmaps.standard_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.standard_cursor)
 		end
 
 	search_whole_project is
@@ -1195,7 +1251,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 		local
 			l_project_strategy: MSR_SEARCH_WHOLE_PROJECT_STRATEGY
 		do
-			manager.window.set_pointer_style (default_pixmaps.wait_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.wait_cursor)
 			currently_searched := keyword_field.text
 			create l_project_strategy.make (currently_searched, surrounding_text_number, clusters_in_the_project, only_compiled_class_searched)
 			if is_case_sensitive then
@@ -1213,7 +1269,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 			after_search
 			old_editor := Void
 			extend_and_run_loaded_action (agent go_to_next_found_perform (reverse))
-			manager.window.set_pointer_style (default_pixmaps.standard_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.standard_cursor)
 		end
 
 	search_in_scope is
@@ -1221,7 +1277,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 		local
 			l_scope_strategy: MSR_SEARCH_IN_SCOPE_STRATEGY
 		do
-			manager.window.set_pointer_style (default_pixmaps.wait_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.wait_cursor)
 			currently_searched := keyword_field.text
 			create l_scope_strategy.make (currently_searched, surrounding_text_number, scope_list, only_compiled_class_searched)
 			if is_case_sensitive then
@@ -1239,7 +1295,7 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Search perform
 			update_combo_box_specific (keyword_field, currently_searched)
 			after_search
 			old_editor := Void
-			manager.window.set_pointer_style (default_pixmaps.standard_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.standard_cursor)
 		end
 
 	after_search is
@@ -1369,7 +1425,7 @@ feature {NONE} -- Replacement Implementation
 			editor_replace_strategy: MSR_REPLACE_IN_ESTUDIO_STRATEGY
 		do
 			check_class_succeed := true
-			manager.window.set_pointer_style (default_pixmaps.wait_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.wait_cursor)
 			currently_replacing := replace_combo_box.text
 			if is_current_editor_searched then
 				new_search_or_go_next
@@ -1392,7 +1448,7 @@ feature {NONE} -- Replacement Implementation
 			else
 				put_replace_report (True)
 			end
-			manager.window.set_pointer_style (default_pixmaps.standard_cursor)
+			develop_window.window.set_pointer_style (default_pixmaps.standard_cursor)
 
 		end
 
@@ -1564,23 +1620,6 @@ feature -- Custom search scope
 			end
 		end
 
-	stone_from_class_i (a_class_i: CLASS_I): STONE is
-			-- Make a stone from a_class_i.
-			-- If a_class_i compiled returns CLASSC_STONE , or a CLASSI_STONE.
-		require
-			a_class_i_not_void: a_class_i /= Void
-		local
-			l_class_c: CLASS_C
-		do
-			l_class_c := a_class_i.compiled_representation
-			if l_class_c /= Void then
-				create {CLASSC_STONE}Result.make (l_class_c )
-			else
-				create {CLASSI_STONE}Result.make (a_class_i)
-			end
-			Result.set_pos_container (manager.managed_main_formatters.first)
-		end
-
 feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 
 	recycle is
@@ -1605,7 +1644,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 			l_class_stone: CLASSI_STONE
 		do
 			if multi_search_performer.is_search_launched and then not multi_search_performer.item_matched.is_empty then
-				l_class_stone ?= manager.stone
+				l_class_stone ?= develop_window.stone
 				if l_class_stone /= Void then
 					l_class_i := l_class_stone.class_i
 				end
@@ -1628,7 +1667,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 					end
 				end
 				if not l_selected then
-					multi_search_performer.go_to_closest_item (l_pos, b, l_class_i, (is_main_editor and manager.class_name /= Void) or not is_current_editor_searched)
+					multi_search_performer.go_to_closest_item (l_pos, b, l_class_i, (is_main_editor and develop_window.class_name /= Void) or not is_current_editor_searched)
 					go_to_next_need_select_and_show := true
 					if (not multi_search_performer.off) and then is_item_source_changed (multi_search_performer.item) then
 						multi_search_performer.start
@@ -1644,7 +1683,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 		end
 
 	go_to_next_found_select_and_show is
-			--
+			-- Go to next found.
 		do
 			if go_to_next_need_select_and_show then
 				select_and_show
@@ -1653,6 +1692,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 		end
 
 	go_to_next_need_select_and_show : BOOLEAN
+			-- Flag for need select and show for next select.
 
 	check_class_file is
 			-- Check if class of current selected item is loaded. If not, load it.
@@ -1664,14 +1704,14 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 		do
 			check_class_succeed := true
 			if not multi_search_performer.off then
-				l_stone := manager.stone
+				l_stone := develop_window.stone
 				l_item := multi_search_performer.item
 				l_class_i ?= l_item.data
 				l_new_stone := stone_from_class_i (l_class_i)
-				if manager.class_name /= Void and then not manager.class_name.is_equal (l_item.class_name) then
+				if develop_window.class_name /= Void and then not develop_window.class_name.is_equal (l_item.class_name) then
 					if l_class_i /= Void then
-						manager.set_stone (l_new_stone)
-						if l_stone /= manager.stone then
+						develop_window.set_stone (l_new_stone)
+						if l_stone /= develop_window.stone then
 							is_text_changed_in_editor := false
 						else
 							loaded_actions.wipe_out
@@ -1679,20 +1719,23 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 						end
 					end
 				elseif not is_current_editor_searched then
-					manager.set_stone (l_new_stone)
-					if l_stone = manager.stone then
+					develop_window.set_stone (l_new_stone)
+					if l_stone = develop_window.stone then
 						loaded_actions.wipe_out
 						check_class_succeed := false
 					end
 				end
-				if not is_current_editor_searched and l_stone /= manager.stone then
-					manager.editor_tool.text_area.set_focus
+				if not is_current_editor_searched and then
+					l_stone /= develop_window.stone and then
+					develop_window.editors_manager.current_editor /= Void
+				then
+					develop_window.editors_manager.current_editor.set_focus
 				end
 			end
 		end
 
 	update_combo_box (word: STRING) is
-			-- add word to combo box list
+			-- Add word to combo box list
 		local
 			l: LIST[STRING]
 		do
@@ -1754,6 +1797,23 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 	loaded_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Actions that are invoked sequently when text is fully loaded
 
+	stone_from_class_i (a_class_i: CLASS_I): STONE is
+			-- Make a stone from a_class_i.
+			-- If a_class_i compiled returns CLASSC_STONE , or a CLASSI_STONE.
+		require
+			a_class_i_not_void: a_class_i /= Void
+		local
+			l_class_c: CLASS_C
+		do
+			l_class_c := a_class_i.compiled_representation
+			if l_class_c /= Void then
+				create {CLASSC_STONE}Result.make (l_class_c)
+			else
+				create {CLASSI_STONE}Result.make (a_class_i)
+			end
+			Result.set_pos_container (develop_window.managed_main_formatters.first)
+		end
+
 	is_text_changed_in_editor: BOOLEAN
 			-- Text changed in the editor?
 
@@ -1763,7 +1823,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 	clusters_in_the_project: EB_CLUSTERS is
 			-- Clusters in the project
 		do
-			Result:= manager.cluster_manager.manager
+			Result:= develop_window.cluster_manager.manager
 		end
 
 	remove_scope is
@@ -1869,7 +1929,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 			-- Will a new search be launched? (Incremental search excluded)
 
 	set_new_search_set (a_new: BOOLEAN) is
-			--
+			-- Set `new_search_set'.
 		do
 			new_search_set := a_new
 		ensure
@@ -1899,15 +1959,15 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 			l: LIST [EB_DEVELOPMENT_WINDOW]
 			l_editor: EB_SMART_EDITOR
 		do
-			l := window_manager.development_windows_with_class (a_class.name)
+			l := window_manager.development_windows_with_class (a_class.file_name)
 			if not l.is_empty then
 				from
 					l.start
 				until
 					l.after
 				loop
-					l_editor := l.item.editor_tool.text_area
-					if l_editor.is_editable and l.item /= Void then
+					l_editor := l.item.editors_manager.current_editor
+					if l_editor /= Void and then l_editor.is_editable and l.item /= Void then
 						Result := true
 					end
 					l.forth
@@ -1939,7 +1999,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 	is_main_editor: BOOLEAN is
 			-- Is `editor' main editor?
 		do
-			Result := (manager.editor_tool.text_area = editor)
+			Result := (develop_window.editors_manager.current_editor = editor)
 		end
 
 	display_stone_signature (textable: EV_TEXTABLE; a_stone: FILED_STONE) is
@@ -2040,6 +2100,7 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 		end
 
 	report_cursor_recorded: BOOLEAN
+			-- If report cursor recorded?
 
 	saved_cursor: INTEGER
 			-- Saved cursor in report

@@ -13,7 +13,9 @@ inherit
 	EB_TOOL
 		redefine
 			menu_name,
-			pixmap
+			pixmap,
+			pixel_buffer,
+			show
 		end
 
 	EB_RECYCLABLE
@@ -79,39 +81,11 @@ feature {NONE} -- Initialization
 			widget := box
 		end
 
---	build_mini_toolbar is
---			-- Build the associated tool bar
---		do
---			create mini_toolbar
---		ensure
---			mini_toolbar_exists: mini_toolbar /= Void
---		end
-
-	build_explorer_bar_item (explorer_bar: EB_EXPLORER_BAR) is
-			-- Build the associated explorer bar item and
-			-- Add it to `explorer_bar'
-		do
---			if mini_toolbar = Void then
---				build_mini_toolbar
---			end
---			create {EB_EXPLORER_BAR_ITEM} explorer_bar_item.make_with_mini_toolbar (explorer_bar, widget, title, False, mini_toolbar)
-
-			create {EB_EXPLORER_BAR_ITEM} explorer_bar_item.make (explorer_bar, widget, title, True)
-			explorer_bar_item.set_menu_name (menu_name)
-			if pixmap /= Void then
-				explorer_bar_item.set_pixmap (pixmap)
-			end
-			explorer_bar.add (explorer_bar_item)
-		end
-
 feature -- Properties
 
 	grid: ES_GRID
 
 feature -- Access
-
-	mini_toolbar: EV_TOOL_BAR
-			-- Associated mini toolbar.
 
 	widget: EV_WIDGET
 			-- Widget representing Current.
@@ -131,8 +105,13 @@ feature -- Access
 	pixmap: EV_PIXMAP is
 			-- Pixmap as it may appear in toolbars and menus.
 		do
---| To be done.
---			Result := Pixmaps.Icon_call_stack
+			Result := pixmaps.icon_pixmaps.tool_threads_icon
+		end
+
+	pixel_buffer: EV_PIXEL_BUFFER is
+			--
+		do
+			Result := pixmaps.icon_pixmaps.tool_threads_icon_buffer
 		end
 
 feature -- Status setting
@@ -201,19 +180,22 @@ feature -- Status setting
 			end
 		end
 
-	change_manager_and_explorer_bar (a_manager: EB_TOOL_MANAGER; an_explorer_bar: EB_EXPLORER_BAR) is
+	change_manager_and_explorer_bar (a_manager: EB_DEVELOPMENT_WINDOW; an_explorer_bar: EB_EXPLORER_BAR) is
 			-- Change the window and explorer bar `Current' is in.
 		require
 			a_manager_exists: a_manager /= Void
 			an_explorer_bar_exists: an_explorer_bar /= Void
 		do
-			if explorer_bar_item.is_visible then
-				explorer_bar_item.close
-			end
-			explorer_bar_item.recycle
 				-- Link with the manager and the explorer.
-			manager := a_manager
+			develop_window := a_manager
 			set_explorer_bar (an_explorer_bar)
+		end
+
+	show is
+			-- Show tool.
+		do
+			Precursor {EB_TOOL}
+			grid.set_focus
 		end
 
 feature -- Memory management
@@ -223,9 +205,7 @@ feature -- Memory management
 			-- so that we know whether we're still referenced or not.
 		do
 			reset_update_on_idle
-			if explorer_bar_item /= Void then
-				explorer_bar_item.recycle
-			end
+
 			Preferences.debug_tool_data.row_highlight_background_color_preference.change_actions.prune_all (set_row_highlight_bg_color_agent)
 			notes_on_threads.wipe_out
 		end
