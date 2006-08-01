@@ -243,7 +243,7 @@ feature -- Actions
 			else
 				create l_dlg.make_with_text (l_message + "%N" + metric_names.t_metric_not_saved)
 				l_dlg.set_buttons (<<metric_names.t_ok>>)
-				l_dlg.show_modal_to_window (metric_tool.development_window.window)
+				l_dlg.show_modal_to_window (metric_tool.develop_window.window)
 			end
 		end
 
@@ -279,7 +279,7 @@ feature -- Actions
 				preferences.preferences
 			)
 			l_dlg.set_ok_action (agent remove_metric)
-			l_dlg.show_modal_to_window (metric_tool.development_window.window)
+			l_dlg.show_modal_to_window (metric_tool.develop_window.window)
 		end
 
 	remove_metric is
