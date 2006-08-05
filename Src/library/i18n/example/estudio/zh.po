@@ -1,0 +1,1430 @@
+# translation of short_interface_names.po to
+# INTERFACE_NAMES.E
+# Hong Zhang <hozhang@student.ethz.ch>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: short_interface_names\n"
+"Report-Msgid-Bugs-To: leof@student.ethz.ch\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2006-06-25 20:53+0000\n"
+"Last-Translator: Hong Zhang <hozhang@student.ethz.ch>\n"
+"X-Generator: KBabel 1.10.2\n"
+"MIME-Version: 1.0\n"
+
+#. Name: f_diagram_show_clusters
+msgid "Show clusters"
+msgstr "显示 簇 "
+
+#. Name: e_Exec_step
+msgid "Execute the application one line at a time"
+msgstr "每次一行执行应用程序"
+
+#. Name: e_Show_class_cluster
+msgid "Locate currently edited class or cluster"
+msgstr "确认当前编辑的类或簇 "
+
+#. Name: m_Edit_external_commands
+msgid "&External Commands..."
+msgstr "外部命令 "
+
+#. Name: l_Alias_name
+msgid "Alias:"
+msgstr "别名"
+
+#. Name: m_Customize_general
+msgid "&Customize Standard Toolbar..."
+msgstr "制定标准的工具栏"
+
+#. Name: l_Tab_class_info, t_Class, metric_this_class, metric_class_unit
+msgid "Class"
+msgstr "类"
+
+#. Name: e_Display_error_help
+msgid "Give help on compilation errors"
+msgstr "编译错误指南"
+
+#. Name: m_Close
+msgid "&Close Window\tAlt+F4"
+msgstr "关闭窗口\tAlt+F4 "
+
+#. Name: t_Organize_favorites
+msgid "Organize Favorites"
+msgstr "组织收藏列表"
+
+#. Name: m_Run_finalized
+msgid "&Run Finalized System"
+msgstr "运行最终系统"
+
+#. Name: m_Explorer_bar, m_Tools
+msgid "&Tools"
+msgstr "工具"
+
+#. Name: l_Tab_diagram
+msgid "Diagram"
+msgstr "图"
+
+#. Name: m_To_upper
+msgid "Set to U&ppercase\tCtrl+U"
+msgstr "设置成大&写形式\tCtrl+U"
+
+#. Name: m_Showancestors
+msgid "&Ancestors"
+msgstr "&父"
+
+#. Name: l_Tab_feature_info, t_Exported_feature, metric_this_feature, metric_feature_unit
+msgid "Feature"
+msgstr "Feature"
+
+#. Name: e_Shell
+msgid "Send to external editor"
+msgstr "发给外部编辑器"
+
+#. Name: b_Cut
+msgid "Cut"
+msgstr "剪掉"
+
+#. Name: e_Project_settings
+msgid "Change project settings"
+msgstr "改变项目设制"
+
+#. Name: m_Disable_stop_points
+msgid "&Disable All Breakpoints"
+msgstr "停用所有断点"
+
+#. Name: b_Exec_out
+msgid "Step Out"
+msgstr "步出"
+
+#. Name: l_Name
+msgid "Name:"
+msgstr "名称"
+
+#. Name: m_Display_error_help
+msgid "Compilation Error &Wizard..."
+msgstr "编译错误及向导"
+
+#. Name: f_Paste
+msgid "Paste (Ctrl+V)"
+msgstr "粘貼(Ctrl+V)"
+
+#. Name: l_Class_name
+msgid "Class name:"
+msgstr "类名称"
+
+#. Name: m_History_back
+msgid "&Back"
+msgstr "返回"
+
+#. Name: m_New
+msgid "&New"
+msgstr "新"
+
+#. Name: m_Showcallers
+msgid "&Callers"
+msgstr "呼叫者"
+
+#. Name: metric_suppliers
+msgid "Suppliers"
+msgstr "供应商"
+
+#. Name: m_Showattributes
+msgid "A&ttributes"
+msgstr "属性"
+
+#. Name: metric_commands
+msgid "Commands"
+msgstr "命令"
+
+#. Name: l_Clickable
+msgid "clickable view"
+msgstr "可点击界面"
+
+#. Name: m_Debug_run_new
+msgid "St&art"
+msgstr "开始"
+
+#. Name: m_Exec_step
+msgid "&Step-by-Step"
+msgstr "按步来"
+
+#. Name: m_Windows_tool
+msgid "&Windows"
+msgstr "窗口"
+
+#. Name: l_invariants
+msgid "invariants"
+msgstr "不变量"
+
+#. Name: f_Uncomment
+msgid "Uncomment selected lines"
+msgstr "使所选行变为非评论行"
+
+#. Name: m_Debug_run
+msgid "&Run\tCtrl+R"
+msgstr "运行\tCtrl+R"
+
+#. Name: b_Quickmelt
+msgid "Quick Compile"
+msgstr "快速编译"
+
+#. Name: t_external_commands
+msgid "External Commands"
+msgstr "外部命令"
+
+#. Name: b_Run_finalized
+msgid "Run Finalized"
+msgstr "运行终使化文本"
+
+#. Name: l_Descendants
+msgid "descendants"
+msgstr "子"
+
+#. Name: m_show_assigners
+msgid "A&ssigners"
+msgstr "赋值器"
+
+#. Name: m_Showdeferreds
+msgid "&Deferred"
+msgstr "迟后"
+
+#. Name: m_Editor
+msgid "&Editor"
+msgstr "编辑器"
+
+#. Name: b_Create_new_cluster, t_New_cluster
+msgid "New Cluster"
+msgstr "新簇"
+
+#. Name: l_Of_class
+msgid " of class "
+msgstr "所属类"
+
+#. Name: b_Project_settings, t_System
+msgid "Project Settings"
+msgstr "项目设置"
+
+#. Name: b_Bkpt_info
+msgid "Breakpoint Info"
+msgstr "断点信息"
+
+#. Name: m_Set_critical_stack_depth
+msgid "Overflow &Prevention..."
+msgstr "溢出及防护"
+
+#. Name: b_Paste, e_Paste
+msgid "Paste"
+msgstr "粘貼"
+
+#. Name: b_Delete_command, f_diagram_delete
+msgid "Delete"
+msgstr "删除"
+
+#. Name: m_Precompile_new
+msgid "&Precompile"
+msgstr "预编译"
+
+#. Name: m_Paste
+msgid "&Paste\tCtrl+V"
+msgstr "粘貼\tCtrl+V"
+
+#. Name: m_Refactoring_toolbar
+msgid "Re&factoring Bar"
+msgstr "重新设置框"
+
+#. Name: m_Exec_into
+msgid "Step In&to"
+msgstr "步入"
+
+#. Name: b_Precompile
+msgid "Precompile"
+msgstr "预编译"
+
+#. Name: m_Favorites_tool
+msgid "F&avorites"
+msgstr "收藏列表"
+
+#. Name: m_Project_toolbar
+msgid "&Project Bar"
+msgstr "项目框 "
+
+#. Name: f_Finalize
+msgid "Finalize..."
+msgstr "终使化"
+
+#. Name: l_Ancestors
+msgid "ancestors"
+msgstr "父"
+
+#. Name: m_Raise_all
+msgid "&Raise All"
+msgstr "展示所有窗口"
+
+#. Name: m_File
+msgid "&File"
+msgstr "文件"
+
+#. Name: l_Current_editor
+msgid "Current editor"
+msgstr "当前编辑器"
+
+#. Name: l_Routines
+msgid "routines"
+msgstr "例程"
+
+#. Name: metric_ignore
+msgid "Ignore"
+msgstr "忽略"
+
+#. Name: m_Show_formatting_marks
+msgid "&Show Formatting Marks"
+msgstr "显示格式标记"
+
+#. Name: l_Tab_output
+msgid "Output"
+msgstr "输出"
+
+#. Name: l_Search_for
+msgid "Search for:"
+msgstr "寻找"
+
+#. Name: f_Melt
+msgid "Compile current project"
+msgstr "编译当前项目"
+
+#. Name: metric_this_cluster, metric_cluster_unit
+msgid "Cluster"
+msgstr "簇"
+
+#. Name: f_Debug_run
+msgid "Run"
+msgstr "运行"
+
+#. Name: m_Find_previous
+msgid "Find &Previous"
+msgstr "跳回前一个"
+
+#. Name: t_Favorites_tool
+msgid "Favorites"
+msgstr "收藏列表"
+
+#. Name: m_Complete_class_name
+msgid "Complete Class &Name"
+msgstr "所有类及名称"
+
+#. Name: l_Address
+msgid "Address:"
+msgstr "地址"
+
+#. Name: m_Create_new_feature
+msgid "New Fea&ture..."
+msgstr "新方法"
+
+#. Name: m_Show_favorites
+msgid "&Show Favorites"
+msgstr "显示方法"
+
+#. Name: b_New_window
+msgid "New Window"
+msgstr "新窗口"
+
+#. Name: metric_routines
+msgid "Routines"
+msgstr "例程 "
+
+#. Name: b_Continue
+msgid "Continue"
+msgstr "继续"
+
+#. Name: m_Find_selection
+msgid "Find &Selection"
+msgstr "寻找选项"
+
+#. Name: b_Remove_all
+msgid "Remove all"
+msgstr "移去所有"
+
+#. Name: e_Quick_compile
+msgid "Recompile classes that were edited in EiffelStudio"
+msgstr "重新编辑在EiffelStudio里编辑的类"
+
+#. Name: m_Find, m_Search_tool
+msgid "&Search"
+msgstr "寻找"
+
+#. Name: m_Export_XMI
+msgid "E&xport XMI..."
+msgstr "输出XMI..."
+
+#. Name: m_History_forth
+msgid "&Forward"
+msgstr "转寄"
+
+#. Name: m_Send_to
+msgid "Sen&d to"
+msgstr "发到"
+
+#. Name: m_Showclients
+msgid "Cli&ents"
+msgstr "用户"
+
+#. Name: b_Cancel
+msgid "Cancel"
+msgstr "删除"
+
+#. Name: m_To_lower
+msgid "Set to &Lowercase\tCtrl+Shift+U"
+msgstr "设置成小写形式\tCtrl+Shift+U"
+
+#. Name: m_Breakpoints_tool, t_Breakpoints_tool
+msgid "Breakpoints"
+msgstr "断点"
+
+#. Name: t_Extended_explanation
+msgid "Compilation Error Wizard"
+msgstr "编译错误指南"
+
+#. Name: m_Maximize
+msgid "Ma&ximize"
+msgstr "最大化"
+
+#. Name: m_Ok
+msgid "&OK"
+msgstr "OK"
+
+#. Name: m_Redo
+msgid "Re&do\tCtrl+Y"
+msgstr "重试\tCtrl+Y"
+
+#. Name: m_Create_new_class
+msgid "&New Class..."
+msgstr "新 类"
+
+#. Name: t_Windows_tool
+msgid "Windows"
+msgstr "窗口"
+
+#. Name: t_Dynamic_lib_window
+msgid "Dynamic Library Builder"
+msgstr "动态图书馆生成器"
+
+#. Name: b_Save_as
+msgid "Save As"
+msgstr "储存为"
+
+#. Name: d_Compilation_class, l_Class
+msgid "Class:"
+msgstr "类"
+
+#. Name: f_History_forth
+msgid "Go forth"
+msgstr "向前"
+
+#. Name: m_Edit
+msgid "&Edit"
+msgstr "编辑"
+
+#. Name: m_Debug_interrupt_new
+msgid "I&nterrupt Application"
+msgstr "中断处理程序"
+
+#. Name: metric_compilation_unit
+msgid "Compilation"
+msgstr "编译"
+
+#. Name: f_show_assigner
+msgid "Show Assigner Command Name"
+msgstr "显示赋值命令名称"
+
+#. Name: m_Exit_project
+msgid "E&xit"
+msgstr "退出"
+
+#. Name: b_Remove, l_Remove_object
+msgid "Remove"
+msgstr "移去 "
+
+#. Name: l_Match_case
+msgid "Match case"
+msgstr "吻合情况"
+
+#. Name: e_History_forth
+msgid "Forward"
+msgstr "转寄"
+
+#. Name: l_Open_project
+msgid "Open a project"
+msgstr "打开项目"
+
+#. Name: m_Line_numbers
+msgid "Toggle &Line numbers"
+msgstr "切换及行数标记"
+
+#. Name: m_Open_new
+msgid "Op&en..."
+msgstr "打开"
+
+#. Name: m_Showtext_new
+msgid "Te&xt"
+msgstr "文本"
+
+#. Name: t_Set_critical_stack_depth
+msgid "Overflow Prevention"
+msgstr "防止溢出"
+
+#. Name: m_Compilation_C_Workbench
+msgid "Compile W&orkbench C Code"
+msgstr "编辑 W&orkbench C Code"
+
+#. Name: t_New_project
+msgid "New Project"
+msgstr "新项目"
+
+#. Name: b_Exec_step
+msgid "Step"
+msgstr "步"
+
+#. Name: t_Find
+msgid "Find"
+msgstr "发现"
+
+#. Name: e_Dbg_exception_handler
+msgid "Exceptions handling"
+msgstr "异常处理"
+
+#. Name: b_Expand_all
+msgid "Expand All"
+msgstr "扩展所有"
+
+#. Name: m_Preferences
+msgid "&Preferences..."
+msgstr "首选项"
+
+#. Name: m_Organize_favorites
+msgid "&Organize Favorites..."
+msgstr "组织收藏列表"
+
+#. Name: m_Minimize
+msgid "Mi&nimize"
+msgstr "最小化"
+
+#. Name: l_Search_options_hide
+msgid "Scope <<"
+msgstr "作用域"
+
+#. Name: l_Routine_ancestors
+msgid "ancestor versions"
+msgstr "父版本"
+
+#. Name: m_Close_short
+msgid "&Close"
+msgstr "关闭"
+
+#. Name: metric_all
+msgid "All"
+msgstr "所有"
+
+#. Name: m_Showpast
+msgid "&Ancestor Versions"
+msgstr "父版本"
+
+#. Name: m_External_editor
+msgid "&External Editor"
+msgstr "外部编辑器"
+
+#. Name: m_Help
+msgid "&Help"
+msgstr "帮助"
+
+#. Name: m_Raise_all_unsaved
+msgid "Raise &Unsaved Windows"
+msgstr "打开并且没有储存的窗口"
+
+#. Name: m_Dbg_assertion_checking_disable
+msgid "Disable Assertion Checking"
+msgstr "停用"
+
+#. Name: l_Homonyms
+msgid "homonyms"
+msgstr "同音异义"
+
+#. Name: m_Uncomment
+msgid "U&ncomment\tCtrl+Shift+K"
+msgstr "转为非评论\tCtrl+Shift+K"
+
+#. Name: l_Suppliers
+msgid "suppliers"
+msgstr "供应商"
+
+#. Name: m_show_creators
+msgid "C&reators"
+msgstr "C&reators"
+
+#. Name: e_Exec_out
+msgid "Step out of a routine"
+msgstr "步出一个例程"
+
+#. Name: b_Create_new_class, t_New_class
+msgid "New Class"
+msgstr "新类"
+
+#. Name: m_Clear_breakpoints
+msgid "Re&move All Breakpoints"
+msgstr "移去所有断点"
+
+#. Name: m_Exec_last
+msgid "&Out of Routine"
+msgstr "例程之外"
+
+#. Name: m_Enable_stop_points
+msgid "&Enable All breakpoints"
+msgstr "启用所有断点"
+
+#. Name: f_Create_new_feature
+msgid "Create a new feature"
+msgstr " 建立新方法"
+
+#. Name: m_Debug_kill
+msgid "&Stop Application"
+msgstr "停止应用程序"
+
+#. Name: t_Customize_toolbar_text
+msgid "Customize Toolbar"
+msgstr "定制工具栏"
+
+#. Name: t_Alias
+msgid "Alias"
+msgstr "别名"
+
+#. Name: f_Clear_breakpoints
+msgid "Remove all breakpoints"
+msgstr "移去所有断点"
+
+#. Name: m_Search
+msgid "&Find..."
+msgstr "发现"
+
+#. Name: m_Advanced
+msgid "Ad&vanced"
+msgstr "先进的"
+
+#. Name: t_external_command
+msgid "External Command"
+msgstr "外部命令"
+
+#. Name: b_Exec_kill
+msgid "Stop Application"
+msgstr "停止应用程序 "
+
+#. Name: m_Bkpt_info
+msgid "Brea&kpoint Information"
+msgstr "断点信息"
+
+#. Name: s_Cluster_stone
+msgid "Cluster "
+msgstr "簇"
+
+#. Name: b_Ok
+msgid "OK"
+msgstr "OK "
+
+#. Name: m_Recent_project
+msgid "&Recent Projects"
+msgstr "近期项目"
+
+#. Name: m_Customize_project
+msgid "Customize P&roject Toolbar..."
+msgstr "定制项目工具栏"
+
+#. Name: m_Contents
+msgid "&Contents"
+msgstr "&内容"
+
+#. Name: m_Complete_word
+msgid "Complete &Word"
+msgstr "整个词"
+
+#. Name: f_History_back
+msgid "Go back"
+msgstr "退回"
+
+#. Name: m_Customize_refactoring
+msgid "Customize Re&factoring Toolbar..."
+msgstr "定制及重新设置栏 "
+
+#. Name: m_Open_project
+msgid "&Open Project..."
+msgstr "打开项目"
+
+#. Name: b_System_info
+msgid "System Info"
+msgstr "系统信息"
+
+#. Name: d_Compilation_cluster, l_Cluster
+msgid "Cluster:"
+msgstr "簇"
+
+#. Name: b_Minimize_all
+msgid "Minimize All"
+msgstr "所有最小化"
+
+#. Name: l_Routine_descendants
+msgid "descendant versions"
+msgstr "子版本"
+
+#. Name: l_creators
+msgid "creators"
+msgstr "creators"
+
+#. Name: m_Debug
+msgid "&Debug"
+msgstr "调试"
+
+#. Name: m_Showhomonyms
+msgid "&Homonyms"
+msgstr "同音异义词"
+
+#. Name: e_Dbg_assertion_checking
+msgid "Disable or restore Assertion checking handling during debugging"
+msgstr "调试期间停用或重新启用断言检查处理"
+
+#. Name: b_Bkpt_disable
+msgid "Disable Breakpoints"
+msgstr "停用断点"
+
+#. Name: m_Class_info
+msgid "Cla&ss Views"
+msgstr "类界面 "
+
+#. Name: e_Bkpt_info
+msgid "Show/Hide information about breakpoints"
+msgstr "显示／隐藏断点信息"
+
+#. Name: f_Undo
+msgid "Undo (Ctrl+Z)"
+msgstr "废除先前操作"
+
+#. Name: f_Freeze
+msgid "Freeze..."
+msgstr "冻结"
+
+#. Name: m_View
+msgid "&View"
+msgstr "视图"
+
+#. Name: m_New_context_tool
+msgid "New Con&text Window"
+msgstr "新上下文窗口"
+
+#. Name: l_Clients
+msgid "clients"
+msgstr "用户"
+
+#. Name: l_Whole_word
+msgid "Whole word"
+msgstr "整个词"
+
+#. Name: l_Short
+msgid "contract view"
+msgstr "合同界面"
+
+#. Name: m_Save_As
+msgid "S&ave As..."
+msgstr "储存于"
+
+#. Name: l_Replace_with
+msgid "Replace with:"
+msgstr "被取代"
+
+#. Name: m_Replace
+msgid "&Replace..."
+msgstr "取代"
+
+#. Name: m_Open
+msgid "&Open...\tCtrl+O"
+msgstr "打开...\tCtrl+O"
+
+#. Name: metric_exported
+msgid "Exported"
+msgstr "输出"
+
+#. Name: m_Copy
+msgid "&Copy\tCtrl+C"
+msgstr "拷贝\tCtrl+C"
+
+#. Name: l_Tab_C_output
+msgid "C Output"
+msgstr "C 输出"
+
+#. Name: l_Use_wizard
+msgid "Create a new project"
+msgstr "建立一个新项目"
+
+#. Name: m_Cluster_tool
+msgid "&Clusters"
+msgstr "簇"
+
+#. Name: m_Showshort
+msgid "C&ontract"
+msgstr "合同"
+
+#. Name: f_Copy
+msgid "Copy (Ctrl+C)"
+msgstr "拷贝 (Ctrl+C)"
+
+#. Name: b_Copy
+msgid "Copy"
+msgstr "拷贝"
+
+#. Name: b_Create
+msgid "Create"
+msgstr "建立"
+
+#. Name: f_Enable_stop_points
+msgid "Enable all breakpoints"
+msgstr "启用所有断点"
+
+#. Name: metric_classes
+msgid "Classes"
+msgstr "类"
+
+#. Name: m_Save_new
+msgid "&Save"
+msgstr "储存于"
+
+#. Name: b_Dbg_assertion_checking_disable
+msgid "Disable assertion checking"
+msgstr "停用断言检查"
+
+#. Name: m_Showfuture
+msgid "&Descendant Versions"
+msgstr "子版本"
+
+#. Name: metric_this_system
+msgid "System"
+msgstr "系统"
+
+#. Name: m_Address_toolbar
+msgid "&Address Bar"
+msgstr "地址栏"
+
+#. Name: t_Editor
+msgid "Editor"
+msgstr "编辑器"
+
+#. Name: l_Tab_warning_output
+msgid "Warnings"
+msgstr "警告"
+
+#. Name: l_Deferred
+msgid "deferred"
+msgstr "迟后"
+
+#. Name: e_Raise_all
+msgid "Raise all windows"
+msgstr "打开所有窗口"
+
+#. Name: m_Features_tool
+msgid "&Features"
+msgstr "方法"
+
+#. Name: b_Open
+msgid "Open"
+msgstr "打开 "
+
+#. Name: e_Send_stone_to_context
+msgid "Synchronize context"
+msgstr "同步上下文"
+
+#. Name: m_Toolbars
+msgid "Tool&bars"
+msgstr "工具栏"
+
+#. Name: m_Compilation_C_Final
+msgid "Compile F&inalized C Code"
+msgstr "编译终使化的C代码"
+
+#. Name: m_Wizard_precompile
+msgid "Precompilation &Wizard..."
+msgstr "预编译及向导"
+
+#. Name: b_refactoring_undo
+msgid "Undo refactoring"
+msgstr "废除重设"
+
+#. Name: e_Exec_into
+msgid "Step into a routine"
+msgstr "步入一个 routine"
+
+#. Name: m_Comment
+msgid "&Comment\tCtrl+K"
+msgstr "评论\tCtrl+K"
+
+#. Name: b_Close
+msgid "Close"
+msgstr "关闭"
+
+#. Name: t_Profiler_wizard
+msgid "Profiler Wizard"
+msgstr "评价导向"
+
+#. Name: b_Finalize
+msgid "Finalize"
+msgstr "终使化"
+
+#. Name: b_Launch
+msgid "Start"
+msgstr "开始"
+
+#. Name: m_Edit_exported_feature
+msgid "&Edit..."
+msgstr "编辑"
+
+#. Name: m_Showflat
+msgid "&Flat"
+msgstr "平"
+
+#. Name: f_show_alias
+msgid "Show Alias Name"
+msgstr "显示别名"
+
+#. Name: b_Remove_text
+msgid "<- Remove"
+msgstr "<-移除"
+
+#. Name: metric_metrics
+msgid "&Metrics"
+msgstr "量度"
+
+#. Name: m_How_to_s
+msgid "&How to's"
+msgstr "指南"
+
+#. Name: l_Search_options_show
+msgid "Scope >>"
+msgstr "作用域"
+
+#. Name: e_Exec_kill
+msgid "Stop application"
+msgstr "停止应用程序"
+
+#. Name: m_Freeze_new
+msgid "&Freeze..."
+msgstr "冻结"
+
+#. Name: m_Unindent
+msgid "&Unindent Selection\tShift+Tab"
+msgstr "非标志选择\tShift+Tab"
+
+#. Name: f_Run_finalized
+msgid "Run finalized system"
+msgstr "运行终使化系统"
+
+#. Name: m_Window
+msgid "&Window"
+msgstr "窗口"
+
+#. Name: b_Undo, e_Undo
+msgid "Undo"
+msgstr "废除先前操作"
+
+#. Name: m_New_editor
+msgid "New Ed&itor Window"
+msgstr "新编译窗口"
+
+#. Name: f_hide_alias
+msgid "Hide Alias Name"
+msgstr "隐㶓别名"
+
+#. Name: m_New_project
+msgid "&New Project..."
+msgstr "新项目"
+
+#. Name: m_Unify_stone
+msgid "Lin&k Context Tool"
+msgstr "链接上下文工具"
+
+#. Name: l_Search_report_show
+msgid "Report >>"
+msgstr "报道"
+
+#. Name: f_Create_new_cluster
+msgid "Create a new cluster"
+msgstr "建立新簇"
+
+#. Name: m_History
+msgid "&Go to"
+msgstr "到"
+
+#. Name: metric_clients
+msgid "Clients"
+msgstr "用户"
+
+#. Name: metric_add
+msgid "&Add"
+msgstr "加"
+
+#. Name: f_New_window
+msgid "Create a new window"
+msgstr "建立新窗口"
+
+#. Name: l_Options
+msgid "Options"
+msgstr "选项"
+
+#. Name: metric_deferred_class
+msgid "Deferred classes"
+msgstr "迟后类"
+
+#. Name: m_Showexternals
+msgid "E&xternals"
+msgstr "外置程序"
+
+#. Name: s_Class_stone
+msgid "Class "
+msgstr "类"
+
+#. Name: m_Showroutines
+msgid "&Routines"
+msgstr "方法"
+
+#. Name: f_Redo
+msgid "Redo (Ctrl+Y)"
+msgstr "重做(Ctrl+Y)"
+
+#. Name: m_Separate_stone
+msgid "Unlin&k Context Tool"
+msgstr "断接上下文工具"
+
+#. Name: b_refactoring_pull
+msgid "Pull up"
+msgstr "拉"
+
+#. Name: b_Redo, e_Redo
+msgid "Redo"
+msgstr "重做"
+
+#. Name: l_Object_attributes, metric_attributes
+msgid "Attributes"
+msgstr "属性"
+
+#. Name: m_Cut
+msgid "Cu&t\tCtrl+X"
+msgstr "剪掉\tCtrl+X"
+
+#. Name: l_Scope
+msgid "Scope"
+msgstr "作用域"
+
+#. Name: b_Search, t_Search_tool
+msgid "Search"
+msgstr "寻找"
+
+#. Name: t_Empty_development_window
+msgid "Empty Development Tool"
+msgstr "空白开发工具界面"
+
+#. Name: metric_compilations
+msgid "Compilations"
+msgstr "编译"
+
+#. Name: m_Remove_class_cluster
+msgid "&Remove Current Item"
+msgstr "移除当前项"
+
+#. Name: d_Documentation
+msgid "Documentation"
+msgstr "文献"
+
+#. Name: l_Flatshort
+msgid "interface view"
+msgstr "界面视图"
+
+#. Name: m_Profile_tool
+msgid "Pro&filer..."
+msgstr "评价"
+
+#. Name: e_Exec_no_stop
+msgid "Start application without stopping at breakpoints"
+msgstr "运行程序中忽略断点"
+
+#. Name: t_Features_tool, metric_features
+msgid "Features"
+msgstr "方法"
+
+#. Name: e_Display_system_info
+msgid "Display information concerning current system"
+msgstr "显示当前系统信息"
+
+#. Name: b_Bkpt_remove
+msgid "Remove Breakpoints"
+msgstr "移除断点"
+
+#. Name: b_Bkpt_enable
+msgid "Enable Breakpoints"
+msgstr "启用断点"
+
+#. Name: m_showcreators
+msgid "&Creators"
+msgstr "&Creators"
+
+#. Name: m_Showfs
+msgid "&Interface"
+msgstr "&"
+
+#. Name: m_Generate_documentation
+msgid "Generate &Documentation..."
+msgstr "文献生成"
+
+#. Name: b_Replace
+msgid "Replace"
+msgstr "替换"
+
+#. Name: m_Find_next
+msgid "Find &Next"
+msgstr "寻找下一个"
+
+#. Name: l_Tab_external_output
+msgid "External Output"
+msgstr "外部输出"
+
+#. Name: f_show_signature
+msgid "Show Signature"
+msgstr "显示标记行"
+
+#. Name: m_Showsuppliers
+msgid "S&uppliers"
+msgstr "供应商"
+
+#. Name: e_Exec_debug
+msgid "Start application and stop at breakpoints"
+msgstr "运行应用程序并在断点处停"
+
+#. Name: l_Implementers
+msgid "implementers"
+msgstr "工程技术人员"
+
+#. Name: b_Print, f_Print
+msgid "Print"
+msgstr "打印"
+
+#. Name: m_Context_tool
+msgid "Conte&xt"
+msgstr "上下文"
+
+#. Name: m_Showexported
+msgid "Ex&ported"
+msgstr "输出的"
+
+#. Name: b_Shell
+msgid "External Editor"
+msgstr "外部编辑器"
+
+#. Name: f_Create_new_class, f_diagram_new_class
+msgid "Create a new class"
+msgstr " 建立新类"
+
+#. Name: l_Tab_error_output
+msgid "Errors"
+msgstr "错误"
+
+#. Name: m_Output
+msgid "&Output"
+msgstr "输出"
+
+#. Name: l_Search_backward
+msgid "Search backwards"
+msgstr "倒退收寻"
+
+#. Name: m_Melt_new
+msgid "&Compile"
+msgstr "编译"
+
+#. Name: b_Next
+msgid "Next"
+msgstr "下一个"
+
+#. Name: m_Add_to_favorites
+msgid "&Add to Favorites"
+msgstr "加入收藏列表"
+
+#. Name: m_Finalize_new
+msgid "Finali&ze..."
+msgstr "终使化"
+
+#. Name: e_Minimize_all
+msgid "Minimize all windows"
+msgstr "最小化所用窗口"
+
+#. Name: l_Callers
+msgid "callers"
+msgstr "呼叫者"
+
+#. Name: b_Bkpt_stop_in_hole, b_Exec_stop
+msgid "Pause"
+msgstr "中止"
+
+#. Name: m_Quick_compile
+msgid "&Quick Compile"
+msgstr "快速编译"
+
+#. Name: b_New_context
+msgid "New Context"
+msgstr "新上下文"
+
+#. Name: l_Replace_with_ellipsis
+msgid "Replace with..."
+msgstr "替换为"
+
+#. Name: b_Edit_ace
+msgid "Edit"
+msgstr "编译"
+
+#. Name: f_Disable_stop_points
+msgid "Disable all breakpoints"
+msgstr "停用所有断点"
+
+#. Name: b_Edit_command
+msgid "Edit..."
+msgstr "编译..."
+
+#. Name: b_Save, f_Save
+msgid "Save"
+msgstr "储存"
+
+#. Name: m_New_dynamic_lib
+msgid "&Dynamic Library Builder..."
+msgstr "动态图书馆生成器"
+
+#. Name: m_Send_stone_to_context
+msgid "S&ynchronize Context Tool"
+msgstr "同步上下文工具"
+
+#. Name: m_Showhistory
+msgid "&Implementers"
+msgstr "&Implementers"
+
+#. Name: m_Exec_nostop
+msgid "&Ignore Breakpoints"
+msgstr "忽略断点"
+
+#. Name: l_Three_dots
+msgid "..."
+msgstr "..."
+
+#. Name: e_History_back
+msgid "Back"
+msgstr "回到从前"
+
+#. Name: m_General_toolbar
+msgid "&Standard Buttons"
+msgstr "标准按鍵"
+
+#. Name: m_show_invariants
+msgid "In&variants"
+msgstr "不变量"
+
+#. Name: l_Displayed_buttons_text
+msgid "Displayed buttons"
+msgstr "显示按键"
+
+#. Name: m_Undo
+msgid "&Undo\tCtrl+Z"
+msgstr "&重做\tCtrl+Z"
+
+#. Name: m_Guided_tour
+msgid "&Guided Tour"
+msgstr "指南"
+
+#. Name: b_Create_new_feature
+msgid "New Feature"
+msgstr "新方法"
+
+#. Name: m_Eiffel_introduction
+msgid "&Introduction to Eiffel"
+msgstr "&Eiffel入门"
+
+#. Name: m_Export_to
+msgid "Save Cop&y As..."
+msgstr "储存拷贝为"
+
+#. Name: b_Abort
+msgid "Abort"
+msgstr "异常终止"
+
+#. Name: b_Replace_all, l_Replace_all
+msgid "Replace all"
+msgstr "代替所有"
+
+#. Name: m_Minimize_all
+msgid "&Minimize All"
+msgstr "最小化所有"
+
+#. Name: m_New_window
+msgid "New &Window"
+msgstr "新窗口"
+
+#. Name: b_refactoring_redo
+msgid "Redo refactoring"
+msgstr "重做重新设置"
+
+#. Name: m_Add_exported_feature
+msgid "&Add..."
+msgstr "加 "
+
+#. Name: l_assigners
+msgid "assigners"
+msgstr "assigners"
+
+#. Name: m_Dbg_assertion_checking_restore
+msgid "Restore Assertion Checking"
+msgstr "重新启用断言检查"
+
+#. Name: l_Attributes
+msgid "attributes"
+msgstr "属性"
+
+#. Name: m_Create_new_cluster
+msgid "New C&luster..."
+msgstr "新簇 "
+
+#. Name: l_Basic_text
+msgid "basic text view"
+msgstr "基本文本界面"
+
+#. Name: l_Search_report_hide
+msgid "Report <<"
+msgstr "报导<<"
+
+#. Name: s_Feature_stone
+msgid "Feature "
+msgstr "方法"
+
+#. Name: l_class_tree_clusters, t_Cluster_tool, metric_clusters
+msgid "Clusters"
+msgstr "簇"
+
+#. Name: m_Indent
+msgid "&Indent selection\tTab"
+msgstr "标志选择"
+
+#. Name: m_Select_all
+msgid "Select &All\tCtrl+A"
+msgstr "选择所有"
+
+#. Name: m_Favorites
+msgid "Fav&orites"
+msgstr "收藏列表"
+
+#. Name: m_Print
+msgid "&Print"
+msgstr "打印"
+
+#. Name: m_Dbg_exception_handler
+msgid "Exceptions Handling"
+msgstr "异常处理"
+
+#. Name: m_If_block
+msgid "&Embed in %\"if...%\"\tCtrl+I"
+msgstr "嵌入%\"if...%\"\tCtrl+I"
+
+#. Name: l_Context, t_Context_tool
+msgid "Context"
+msgstr "上下文"
+
+#. Name: m_Feature_info
+msgid "Feat&ure Views"
+msgstr "方法界面"
+
+#. Name: b_Add_text
+msgid "Add ->"
+msgstr "加->"
+
+#. Name: m_System_new
+msgid "Project &Settings..."
+msgstr "项目及设置"
+
+#. Name: metric_contract_unit
+msgid "Contract"
+msgstr "合同"
+
+#. Name: m_Showonces
+msgid "O&nce/Constants"
+msgstr "一旦／常数"
+
+#. Name: l_Feature
+msgid "Feature:"
+msgstr "方法"
+
+#. Name: m_Go_to
+msgid "&Go to..."
+msgstr "到"
+
+#. Name: m_Showclick
+msgid "C&lickable"
+msgstr "可点击"
+
+#. Name: b_Add
+msgid "Add"
+msgstr "加"
+
+#. Name: b_Toggle_stone_management
+msgid "Link Context"
+msgstr "链接上下文"
+
+#. Name: b_Compile
+msgid "Compile"
+msgstr "编译"
+
+#. Name: f_Cut
+msgid "Cut (Ctrl+X)"
+msgstr "剪掉(Ctrl+X)"
+
+#. Name: b_New_editor
+msgid "New Editor"
+msgstr "新编辑器"
+
+#. Name: b_refactoring_rename
+msgid "Rename"
+msgstr "更名"
+
+#. Name: m_Project
+msgid "&Project"
+msgstr "项目"
+
+#. Name: b_Freeze
+msgid "Freeze"
+msgstr "冻结"
+
+#. Name: b_Exec_into
+msgid "Step Into"
+msgstr "步入 "
+
+#. Name: l_Tab_metrics
+msgid "Metrics"
+msgstr "量度"
+
+#. Name: m_Display_system_info
+msgid "S&ystem Info"
+msgstr "系统信息"
+
+#. Name: f_preferences, t_Preference_window
+msgid "Preferences"
+msgstr "首选项"
+
+#. Name: l_Use_regular_expression
+msgid "Use regular expression"
+msgstr "使用标准表达"
+
+#. Name: t_Diagram_link_tool
+msgid "Link Tool"
+msgstr "链接工具"
+
+#. Name: m_Showdescendants
+msgid "De&scendants"
+msgstr "子"
+
+#. Name: l_Flat, l_Routine_flat
+msgid "flat view"
+msgstr "非阶梯界面"
+

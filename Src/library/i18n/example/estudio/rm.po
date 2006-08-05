@@ -1,0 +1,3514 @@
+# INTERFACE_NAMES.E
+msgid ""
+msgstr ""
+"Project-Id-Version: interface_names\n"
+"Report-Msgid-Bugs-To: leof@student.ethz.ch\n"
+"Last-Translator: Andreas Murbach <murbacha@student.ethz.ch>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Name: l_Identification
+msgid "Identification"
+msgstr "Identificaziun"
+
+#. Name: f_diagram_show_clusters
+msgid "Show clusters"
+msgstr "Mussa cluster"
+
+#. Name: l_toggle_signature
+msgid "Toggle visibility of feature signature"
+msgstr "Mida visibiltad da las feature signature"
+
+#. Name: e_Separate_stone
+msgid "Unlink the context tool from the other components"
+msgstr "Fa ora il link tranter l'utensil da context e las autras cumponentas"
+
+#. Name: l_Condition
+msgid "Condition"
+msgstr "Cundiziun"
+
+#. Name: metric_delete
+msgid "&Delete"
+msgstr "&Eliminescha"
+
+#. Name: e_Exec_step
+msgid "Execute the application one line at a time"
+msgstr "Exequescha l'applicaziun lingia per lingia"
+
+#. Name: e_Show_class_cluster
+msgid "Locate currently edited class or cluster"
+msgstr "Chatta class u cluster actualmain editads"
+
+#. Name: b_Display_error_help
+msgid "Help Tool"
+msgstr "Utensil d'agid"
+
+#. Name: l_Dont_ask_me_again
+msgid "Do not ask me again"
+msgstr "Betg dumandar danovamain"
+
+#. Name: l_Slice_taken_into_account1
+msgid "Warning: Modifications will be taken into account"
+msgstr "Avertiment: Las modificaziuns vegnan a esser prendidas en consideraziun"
+
+#. Name: l_Remove_object_desc
+msgid "Remove an object from the tree"
+msgstr "Eliminescha in object da la planta"
+
+#. Name: m_Edit_external_commands
+msgid "&External Commands..."
+msgstr "Cumonds &extern"
+
+#. Name: f_diagram_show_inheritance
+msgid "Show inheritance links"
+msgstr "Mussa il link d'inheritance"
+
+#. Name: metric_deferred_feature
+msgid "Deferred features"
+msgstr "Deferred feature"
+
+#. Name: e_freezing_launch_failed
+msgid "Background workbench C compilation launch failed"
+msgstr "Il lantschar da la cumpilaziun dal workbench C es fallà"
+
+#. Name: t_Watch_tool
+msgid "Watch"
+msgstr "Guarda"
+
+#. Name: l_Value
+msgid "Value"
+msgstr "Valur"
+
+#. Name: metric_imm_routines
+msgid "Imm. routines"
+msgstr "Imm. routines"
+
+#. Name: l_Exported
+msgid "exported features"
+msgstr "Feature exportadas"
+
+#. Name: l_Alias_name
+msgid "Alias:"
+msgstr "Alias:"
+
+#. Name: d_Clusters_to_go
+msgid "Clusters to Go:"
+msgstr "Clusters dad ir:"
+
+#. Name: l_Homonym_confirmation
+msgid "Extracting the homonyms\nmay take a long time."
+msgstr "I pudess ir ina pezza\nper prender ora ils omonims"
+
+#. Name: f_diagram_change_header
+msgid "Change class name and generics"
+msgstr "Mida il num da la class e ils generics"
+
+#. Name: m_Customize_general
+msgid "&Customize Standard Toolbar..."
+msgstr "&Individualisescha la glista standard d'ils utensils..."
+
+#. Name: l_Tab_class_info, t_Class, metric_this_class, metric_class_unit
+msgid "Class"
+msgstr "Class"
+
+#. Name: e_Display_error_help
+msgid "Give help on compilation errors"
+msgstr "Dà agid pro errurs da cumpilaziun"
+
+#. Name: l_Possible_overflow
+msgid "Possible stack overflow"
+msgstr "Pussaivel stack overflow"
+
+#. Name: e_New_context_tool
+msgid "Open a new context window"
+msgstr "Avra ina nova fanestra da context"
+
+#. Name: m_Close
+msgid "&Close Window\tAlt+F4"
+msgstr "&Serra la fanestra\tAlt+F4"
+
+#. Name: t_Organize_favorites
+msgid "Organize Favorites"
+msgstr "Organisescha ils preferids"
+
+#. Name: metric_queries
+msgid "Queries"
+msgstr "Queries"
+
+#. Name: l_Discard_terminate_finalizing
+msgid "Do not ask again, and always terminate finalizing when needed."
+msgstr "Betg dumandar danovamain, e terminescha il finalizing adina sch'i es necessari."
+
+#. Name: l_Cluster_options
+msgid "Cluster options "
+msgstr "Opziuns dal cluster "
+
+#. Name: m_Run_finalized
+msgid "&Run Finalized System"
+msgstr "&Exequescha il sistem finalized"
+
+#. Name: m_Explorer_bar, m_Tools
+msgid "&Tools"
+msgstr "&Utensils"
+
+#. Name: l_Tab_diagram
+msgid "Diagram"
+msgstr "Diagram"
+
+#. Name: m_To_upper
+msgid "Set to U&ppercase\tCtrl+U"
+msgstr "Metta sin m&aiusclas\tCtrl+U"
+
+#. Name: e_freezing_launched
+msgid "Background workbench C compilation launched"
+msgstr "Cumpilaziun dal workbench C lantschada en il fund"
+
+#. Name: m_Showancestors
+msgid "&Ancestors"
+msgstr "&Ancestors"
+
+#. Name: l_Explicit_exception_pending
+msgid "Explicit exception pending"
+msgstr "Exception explicita pendenta"
+
+#. Name: l_Tab_feature_info, t_Exported_feature, metric_this_feature, metric_feature_unit
+msgid "Feature"
+msgstr "Feature"
+
+#. Name: e_Shell
+msgid "Send to external editor"
+msgstr "Trametta ad in editur extern"
+
+#. Name: b_Cut
+msgid "Cut"
+msgstr "Taglia ora"
+
+#. Name: metric_postcondition_equipped
+msgid "Postcondition equipped"
+msgstr "Postcontition equipada"
+
+#. Name: l_System_running
+msgid "System running"
+msgstr "Sistem in execuziun"
+
+#. Name: b_Move_to_folder
+msgid "Move to Folder..."
+msgstr "Mova en l'ordinatur..."
+
+#. Name: e_Project_settings
+msgid "Change project settings"
+msgstr "Mida ils parameters d'il project"
+
+#. Name: l_diagram_clusters_visibility
+msgid "Toggle visibility of clusters"
+msgstr "Mida visibiltad d'ils cluster"
+
+#. Name: l_Not_yet_called
+msgid "Not yet called"
+msgstr "Betg anc clamà"
+
+#. Name: ws_Execution_Profile
+msgid "Reuse or Generate an Execution Profile."
+msgstr "Dovra danovamain u generescha in profil d'execuziun"
+
+#. Name: f_diagram_force_directed_on
+msgid "Turn on physics"
+msgstr "Metta en il physics"
+
+#. Name: metric_parents
+msgid "Parents"
+msgstr "Parents"
+
+#. Name: m_Disable_stop_points
+msgid "&Disable All Breakpoints"
+msgstr "&Deactivescha tut ils Breakpoint"
+
+#. Name: b_Exec_out
+msgid "Step Out"
+msgstr "Fa in pass ora"
+
+#. Name: t_Diagram_put_one_handle_left_cmd
+msgid "Put Handle Left"
+msgstr "Metta manader a sanestra"
+
+#. Name: l_Name
+msgid "Name:"
+msgstr "Num:"
+
+#. Name: l_Discard_finalize_assertions
+msgid "Do not ask again, and always discard assertions when finalizing"
+msgstr "Betg dumandar danovamain, e refusa adina affirmaziuns durant la finalisaziun"
+
+#. Name: l_No_feature
+msgid "Select a fully compiled feature to have information about it."
+msgstr "Selecziunescha ina feature cumplettamain cumpilada per avair infurmaziun sin ella."
+
+#. Name: m_Display_error_help
+msgid "Compilation Error &Wizard..."
+msgstr "&Wizard per errur da cumpilaziun..."
+
+#. Name: m_Debug_edit_object
+msgid "Edit Object Content"
+msgstr "Editescha il cuntegh dal Object"
+
+#. Name: t_Expression_evaluation
+msgid "Evaluation"
+msgstr "Evaluaziun"
+
+#. Name: f_Paste
+msgid "Paste (Ctrl+V)"
+msgstr "Inserescha (Ctrl+V)"
+
+#. Name: t_Slice_limits
+msgid "Choose New Slice Limits for Special Objects"
+msgstr "Selecziunescha novs slice limit per objects spezials"
+
+#. Name: l_Class_name
+msgid "Class name:"
+msgstr "Num da la Class:"
+
+#. Name: b_Or
+msgid "Or"
+msgstr "U"
+
+#. Name: l_Set_slice_limits
+msgid "Slice limits"
+msgstr "Slice limits"
+
+#. Name: m_History_back
+msgid "&Back"
+msgstr "&Enavos"
+
+#. Name: m_New
+msgid "&New"
+msgstr "&Nov"
+
+#. Name: l_diagram_add_descendents
+msgid "Add class descendents to diagram"
+msgstr "Agiunscha class deschendents al diagram"
+
+#. Name: e_no_text_is_selected
+msgid "No file name is selected."
+msgstr "Nagin num da datoteca es selecziunà."
+
+#. Name: l_As_object
+msgid "As object"
+msgstr "Sco object"
+
+#. Name: m_Showcallers
+msgid "&Callers"
+msgstr "&Callers"
+
+#. Name: default_stack_file_name
+msgid "stack"
+msgstr "stack"
+
+#. Name: metric_suppliers
+msgid "Suppliers"
+msgstr "Suppliers"
+
+#. Name: m_Showattributes
+msgid "A&ttributes"
+msgstr "A&ttributs"
+
+#. Name: l_Unknown_class_name
+msgid "Unknown class name"
+msgstr "Num da class betg enconuschì"
+
+#. Name: metric_commands
+msgid "Commands"
+msgstr "Cumonds"
+
+#. Name: l_diagram_supplier_visibility
+msgid "Toggle visibility of supplier links"
+msgstr "Mida visibiltad dals supplier links"
+
+#. Name: l_Clickable
+msgid "clickable view"
+msgstr "vista cliccavla"
+
+#. Name: metric_imm_exported
+msgid "Imm. exported"
+msgstr "Imm. exported"
+
+#. Name: f_Wizard_precompile
+msgid "Wizard to precompile libraries"
+msgstr "Wizard per precumpilar librarias"
+
+#. Name: f_diagram_hide_legend
+msgid "Hide cluster legend"
+msgstr "Zuppa l'etichetta dal cluster"
+
+#. Name: e_finalizing_launched
+msgid "Background finalized C compilation launched"
+msgstr "Cumpilaziun dal finalized C lantschada en il fund"
+
+#. Name: m_Debug_run_new
+msgid "St&art"
+msgstr "L&antscha"
+
+#. Name: l_Executing_command
+msgid "Command is currently executing.\nPress OK to ignore the output."
+msgstr "Cumond es actualmain in execuziun.\nSmatga OK per ignorar l'output."
+
+#. Name: metric_invariant_clauses
+msgid "Invariant clauses"
+msgstr "Clausula invarianta"
+
+#. Name: wt_Compilation_mode
+msgid "Compilation mode"
+msgstr "Modus da cumpilaziun"
+
+#. Name: m_Exec_step
+msgid "&Step-by-Step"
+msgstr "Pa&ss-per-pass"
+
+#. Name: m_Windows_tool
+msgid "&Windows"
+msgstr "&Fanestras"
+
+#. Name: l_invariants
+msgid "invariants"
+msgstr "invariants"
+
+#. Name: f_Uncomment
+msgid "Uncomment selected lines"
+msgstr "Commentescha ora las lingias selecziunadas"
+
+#. Name: m_Debug_run
+msgid "&Run\tCtrl+R"
+msgstr "&Exequescha\tCtrl+R"
+
+#. Name: b_Exec_no_stop
+msgid "Launch Without Stopping"
+msgstr "Lantscha senza fermar"
+
+#. Name: metric_all_attributes
+msgid "All attributes"
+msgstr "Tut ils attributs"
+
+#. Name: b_Quickmelt
+msgid "Quick Compile"
+msgstr "Quick Compile"
+
+#. Name: metric_lines
+msgid "Lines"
+msgstr "Lingias"
+
+#. Name: t_Diagram_change_color_cmd
+msgid "Change Class Color"
+msgstr "Mida culur da la Class"
+
+#. Name: t_external_commands
+msgid "External Commands"
+msgstr "Cumonds extern"
+
+#. Name: d_Compilation_progress
+msgid "Compilation Progress for "
+msgstr "Progress da cumpilaziun per "
+
+#. Name: b_Run_finalized
+msgid "Run Finalized"
+msgstr "Exequescha finalized"
+
+#. Name: h_No_help_available
+msgid "No help available for this element"
+msgstr "Nagin agid a disposiziun per quest element"
+
+#. Name: l_Descendants
+msgid "descendants"
+msgstr "descendents"
+
+#. Name: m_Debugging_tool
+msgid "&Debugging Tools"
+msgstr "Utensils per &debugging"
+
+#. Name: e_Open_file
+msgid "Open a file"
+msgstr "Avra ina datoteca"
+
+#. Name: d_Classes_to_go
+msgid "Classes to Go:"
+msgstr "Classes dad ir:"
+
+#. Name: l_Whole_project
+msgid "Whole project"
+msgstr "Entir project"
+
+#. Name: metric_new_metrics
+msgid "&New metrics"
+msgstr "&Nova metrica"
+
+#. Name: l_Working_formatter
+msgid "Extracting "
+msgstr "Extrajend "
+
+#. Name: metric_all_features
+msgid "Features: all"
+msgstr "Features: tuttas"
+
+#. Name: l_Windows_only
+msgid "(Windows only)"
+msgstr "(be Windows)"
+
+#. Name: l_Of_feature
+msgid " of feature "
+msgstr " da feature "
+
+#. Name: m_show_assigners
+msgid "A&ssigners"
+msgstr "A&ssegnadurs"
+
+#. Name: l_toggle_assigner
+msgid "Toggle visibility of assigner command name"
+msgstr "Mida visibiltad dal assigner command name"
+
+#. Name: m_Showdeferreds
+msgid "&Deferred"
+msgstr "&Deferred"
+
+#. Name: m_Editor
+msgid "&Editor"
+msgstr "&Editur"
+
+#. Name: l_Active_query
+msgid "Active query"
+msgstr "Query activa"
+
+#. Name: f_diagram_create_inheritance_links
+msgid "Create new inheritance links"
+msgstr "Creescha novs inheritance links"
+
+#. Name: b_Create_new_cluster, t_New_cluster
+msgid "New Cluster"
+msgstr "Nov Cluster"
+
+#. Name: metric_formal_generics
+msgid "Formal generics"
+msgstr "Formal generics"
+
+#. Name: l_Of_class
+msgid " of class "
+msgstr " da class "
+
+#. Name: b_Project_settings, t_System
+msgid "Project Settings"
+msgstr "Parameters·dal·project"
+
+#. Name: e_Diagram_remove_anchor
+msgid "Please drop a class or a cluster with an\nanchor on this button.\nUse right click for both\n pick and drop actions."
+msgstr "Lascha ina class o in cluster cun ina\nancra sin quest buttun.\nDovra il clic dretg per tuts dus\n acziun da prender e laschar"
+
+#. Name: b_Bkpt_info
+msgid "Breakpoint Info"
+msgstr "Infurmaziun dal breakpoint"
+
+#. Name: l_Implicit_exception_pending
+msgid "Implicit exception pending"
+msgstr "Exception implicita pendenta"
+
+#. Name: m_Check_exports
+msgid "Chec&k Export Clauses"
+msgstr "Contro&lla las clausulas d'export"
+
+#. Name: m_Set_critical_stack_depth
+msgid "Overflow &Prevention..."
+msgstr "&Prevenziun d'Overflow..."
+
+#. Name: b_Paste, e_Paste
+msgid "Paste"
+msgstr "Inserescha"
+
+#. Name: b_Delete_command, f_diagram_delete
+msgid "Delete"
+msgstr "Eliminescha"
+
+#. Name: f_diagram_history
+msgid "History tool"
+msgstr "Utensil d'istorgia"
+
+#. Name: m_Precompile_new
+msgid "&Precompile"
+msgstr "&Precumpila"
+
+#. Name: m_Paste
+msgid "&Paste\tCtrl+V"
+msgstr "&Inserescha\tCtrl+V"
+
+#. Name: t_Diagram_delete_client_link
+msgid "Choose Feature(s) to Delete"
+msgstr "Selecziunescha Feature(s) da eliminar"
+
+#. Name: t_Choose_ace_file
+msgid "Choose an Ace File"
+msgstr "Selecziunescha ina datoteca Ace"
+
+#. Name: m_Refactoring_toolbar
+msgid "Re&factoring Bar"
+msgstr "Barra da re&factoring"
+
+#. Name: m_Exec_into
+msgid "Step In&to"
+msgstr "Far in pass en"
+
+#. Name: m_Expression_evaluation
+msgid "Expression Evaluation"
+msgstr "Evaluaziun da l'expressiun"
+
+#. Name: l_System_not_running
+msgid "System not running"
+msgstr "Sistem betg in exequziun"
+
+#. Name: b_Function_time
+msgid "Function Time"
+msgstr "Function Time"
+
+#. Name: l_Cluster_name
+msgid "Cluster name "
+msgstr "Num d'il cluster "
+
+#. Name: m_Remove_exported_feature
+msgid "&Remove"
+msgstr "&Eliminescha"
+
+#. Name: b_Precompile
+msgid "Precompile"
+msgstr "Precumpilescha"
+
+#. Name: m_Favorites_tool
+msgid "F&avorites"
+msgstr "P&referids"
+
+#. Name: e_Project_name
+msgid "Name of the current project"
+msgstr "Num d'il project actual"
+
+#. Name: e_freezing_failed
+msgid "Background workbench C compilation failed"
+msgstr "Cumpilaziun dal workbench C fallada"
+
+#. Name: l_Use_existing_profile
+msgid "Use existing profile: "
+msgstr "Dovra il profil existent: "
+
+#. Name: m_Project_toolbar
+msgid "&Project Bar"
+msgstr "Barra dal &project"
+
+#. Name: metric_imm_formals
+msgid "Imm. formals"
+msgstr "Imm. formals"
+
+#. Name: f_Finalize
+msgid "Finalize..."
+msgstr "Finalize..."
+
+#. Name: m_Debug_dynamic_eval
+msgid "Dynamic Feature Evaluation"
+msgstr "Evaluaziun dinamica da la Feature"
+
+#. Name: l_Show_all_call_stack
+msgid "Show all stack elements"
+msgstr "Mussa tut ils elements dal stack"
+
+#. Name: b_Open_original
+msgid "Open Original File"
+msgstr "Avra la datoteca originala"
+
+#. Name: t_Diagram_zoom_in_cmd
+msgid "Zoom In"
+msgstr "Engrondir"
+
+#. Name: l_Project_location
+msgid "The project location is the place where compilation\nfiles will be generated by the compiler"
+msgstr "Il post dal project es il lieu nua las datotecas\nda la cumpilaziun sun producidas dal cumpiladur"
+
+#. Name: l_Ancestors
+msgid "ancestors"
+msgstr "ancestors"
+
+#. Name: m_Raise_all
+msgid "&Raise All"
+msgstr "&Porta tut davantvart"
+
+#. Name: m_Set_slice_size
+msgid "&Alter size"
+msgstr "&Mida dimensiun"
+
+#. Name: e_Not_running
+msgid "Application is not running"
+msgstr "L'applicaziun es betg in execuziun"
+
+#. Name: l_Compile_generated_project
+msgid "Compile the generated project"
+msgstr "Cumpila il project generà"
+
+#. Name: wt_Profiler_welcome
+msgid "Welcome to the Profiler Wizard"
+msgstr "Bainvegnì da l'installatur d'il profil"
+
+#. Name: m_File
+msgid "&File"
+msgstr "&Datoteca"
+
+#. Name: e_finalizing_failed
+msgid "Background finalized C compilation failed"
+msgstr "Cumpilaziun dal finalized C fallada·"
+
+#. Name: m_Watch_tool
+msgid "Watch Tool"
+msgstr "Utensil per guardar"
+
+#. Name: l_Text_loaded
+msgid "Text finished loading"
+msgstr "Il text es chargià"
+
+#. Name: l_Command_line
+msgid "Command line:"
+msgstr "Lingia da cumond:"
+
+#. Name: b_New_ace
+msgid "Reset"
+msgstr "Metter enavos"
+
+#. Name: t_Select_cluster
+msgid "Select Cluster"
+msgstr "Selecziunescha cluster"
+
+#. Name: t_Choose_directory
+msgid "Choose Your Directory"
+msgstr "Selecziunar agen ordinatur"
+
+#. Name: l_Root_feature_name
+msgid "Root feature: "
+msgstr "Root feature: "
+
+#. Name: l_Current_editor
+msgid "Current editor"
+msgstr "Editur actual"
+
+#. Name: l_Choose_folder
+msgid "Select the destination folder "
+msgstr "Selecziunescha l'ordinatur da destinaziun "
+
+#. Name: l_Routines
+msgid "routines"
+msgstr "routines"
+
+#. Name: metric_imm_features
+msgid "Features: immediate"
+msgstr "Feature: immediate"
+
+#. Name: metric_ignore
+msgid "Ignore"
+msgstr "Ignorar"
+
+#. Name: l_Slice_taken_into_account2
+msgid "for the next objects you will add in the object tree."
+msgstr "per ils proxims objects che vegnan agiunt a la planta dal object."
+
+#. Name: m_Show_formatting_marks
+msgid "&Show Formatting Marks"
+msgstr "&Mussa marcaziuns da formataziun"
+
+#. Name: e_New_editor
+msgid "Open a new editor window"
+msgstr "Avra ina nova fanestra da editur"
+
+#. Name: l_Tab_output
+msgid "Output"
+msgstr "Output"
+
+#. Name: l_Search_for
+msgid "Search for:"
+msgstr "tschertga per:"
+
+#. Name: f_Melt
+msgid "Compile current project"
+msgstr "Cumpila il poject actual"
+
+#. Name: m_Show_class_cluster
+msgid "Find in Cluster Tree"
+msgstr "Chatta en la planta dal cluster"
+
+#. Name: metric_this_cluster, metric_cluster_unit
+msgid "Cluster"
+msgstr "Cluster"
+
+#. Name: f_Debug_run
+msgid "Run"
+msgstr "Exequescha"
+
+#. Name: m_Find_previous
+msgid "Find &Previous"
+msgstr "Chatta &precedent"
+
+#. Name: l_Feature_properties
+msgid "Feature properties"
+msgstr "Caracteristicas da la feature"
+
+#. Name: l_Discard_terminate_external_command
+msgid "Do not ask again, and always terminate running external command."
+msgstr "Betg dumandar danovamain, e refusa adina il cumond extern in execuziun."
+
+#. Name: l_Discard_terminate_freezing
+msgid "Do not ask again, and always terminate freezing when needed."
+msgstr "Betg dumandar danovamain, e refusa adina il freezing sch'igl è necessari"
+
+#. Name: l_Use_wildcards
+msgid "Use wildcards"
+msgstr "Dovra wildcard"
+
+#. Name: l_New_breakpoint
+msgid "New breakpoint(s) to commit"
+msgstr "Nov(s) breakpoint da transmetter"
+
+#. Name: t_Favorites_tool
+msgid "Favorites"
+msgstr "Preferids"
+
+#. Name: wt_Execution_Profile
+msgid "Execution Profile"
+msgstr "Profil da execuziun"
+
+#. Name: e_Running_no_stop_points
+msgid "Application is running (ignoring breakpoints)"
+msgstr "L'applicaziun es en execuziun (ignorond ils breakpoint)"
+
+#. Name: e_Diagram_hole
+msgid "Please drop a class or a cluster on this button \n to view its diagram.\n Use right click for both pick and drop actions."
+msgstr "Lascha ina class o in cluster sin quest buttun.\n per vesair ses diagram.\n Dovra il clic dretg per tuts dus, acziun da prender e laschar."
+
+#. Name: b_Keep_assertions
+msgid "Keep Assertions"
+msgstr "Tegna Assertion"
+
+#. Name: e_Open_dynamic_lib_definition
+msgid "Open a dynamic library definition"
+msgstr "Avra ina definiziun da libraria dinamica"
+
+#. Name: l_Query
+msgid "Query"
+msgstr "Query"
+
+#. Name: m_Complete_class_name
+msgid "Complete Class &Name"
+msgstr "Concluda num da la Class"
+
+#. Name: l_Address
+msgid "Address:"
+msgstr "Adressa:"
+
+#. Name: m_Create_new_feature
+msgid "New Fea&ture..."
+msgstr "Nova Fea&ture..."
+
+#. Name: m_Show_favorites
+msgid "&Show Favorites"
+msgstr "&Mussa preferids"
+
+#. Name: b_New_window
+msgid "New Window"
+msgstr "Nova fanestra"
+
+#. Name: metric_all_exported
+msgid "All exported"
+msgstr "Tut exportà"
+
+#. Name: metric_routines
+msgid "Routines"
+msgstr "Routines"
+
+#. Name: e_Terminate_c_compilation
+msgid "Terminate current C compilation in progress"
+msgstr "Terminescha la cumpilaziun C actualmain in progress"
+
+#. Name: e_Add_exported_feature
+msgid "Add a new feature to this dynamic library definition"
+msgstr "Agiunscha ina nova feature a quista definiziun da libreria dinamica"
+
+#. Name: wb_Execution_Profile
+msgid "You can generate the Execution Profile from a Run-time Information Record\n created by a profiler, or you can reuse an existing Execution Profile if you\n have already generated one for this system."
+msgstr "I es pussaivel da generar il profil d'execuziun da in Run-time information Record\n creà da in profiler, u duvrar in profil d'execuziun existent sche in\n es gia vegnì generà per quest sistem."
+
+#. Name: metric_all_precondition_clauses
+msgid "All pre. clauses"
+msgstr "Tuttas las clausulas precedentas"
+
+#. Name: b_Collapse_all
+msgid "Collapse All"
+msgstr "Collapsar tuts"
+
+#. Name: b_Continue
+msgid "Continue"
+msgstr "Cuntinuescha"
+
+#. Name: m_Find_selection
+msgid "Find &Selection"
+msgstr "Chatta &selecziun"
+
+#. Name: l_Sub_clusters
+msgid "Recusive"
+msgstr "Recursiv"
+
+#. Name: m_Enable_this_bkpt
+msgid "&Enable This Breakpoint"
+msgstr "&Permetta quest breakpoint"
+
+#. Name: b_Discard_assertions
+msgid "Discard Assertions"
+msgstr "Sbitta Assertion"
+
+#. Name: b_Remove_all
+msgid "Remove all"
+msgstr "Eliminescha tut"
+
+#. Name: f_diagram_hide_labels
+msgid "Hide labels"
+msgstr "Zuppa ils labels"
+
+#. Name: b_Total_time
+msgid "Total Time"
+msgstr "Temp total"
+
+#. Name: l_Do_not_detect_stack_overflows
+msgid "Do not detect stack overflows"
+msgstr "betg chattar stack overflow"
+
+#. Name: l_Inactive_subqueries
+msgid "Inactive subqueries"
+msgstr "Inactiv subquerie"
+
+#. Name: e_Quick_compile
+msgid "Recompile classes that were edited in EiffelStudio"
+msgstr "Recumpila las class che sun vegnidas editadas en EiffelStudio"
+
+#. Name: e_freezing_terminated
+msgid "Background workbench C compilation terminated"
+msgstr "Cumpilaziun dal workbench C en il fund terminada"
+
+#. Name: m_Find, m_Search_tool
+msgid "&Search"
+msgstr "T&schertgar"
+
+#. Name: e_selected_text_is_not_file
+msgid "Selected text is not a correct file name."
+msgstr "Il text selecziunà es betg en correct num da datoteca"
+
+#. Name: m_Export_XMI
+msgid "E&xport XMI..."
+msgstr "E&xporta XML..."
+
+#. Name: m_History_forth
+msgid "&Forward"
+msgstr "&Enavant"
+
+#. Name: t_Diagram_put_two_handles_right_cmd
+msgid "Put Two Handles Right"
+msgstr "Metta dus manaders a dretga"
+
+#. Name: m_Send_to
+msgid "Sen&d to"
+msgstr "Trame&tta a"
+
+#. Name: t_External_edition
+msgid "External Edition"
+msgstr "Ediziun externa"
+
+#. Name: m_Showclients
+msgid "Cli&ents"
+msgstr "Cli&ents"
+
+#. Name: l_Specify_arguments
+msgid "Specify arguments"
+msgstr "Specifitgescha arguments"
+
+#. Name: b_Cancel
+msgid "Cancel"
+msgstr "Stida"
+
+#. Name: ws_Switches_and_query
+msgid "Select the information you need and formulate your query."
+msgstr "Selecziunescha las infurmaziuns che sun da basegn e formulescha ina query."
+
+#. Name: m_To_lower
+msgid "Set to &Lowercase\tCtrl+Shift+U"
+msgstr "Metta sin m&inuscla\tCtrl+Shift+U"
+
+#. Name: metric_no_invariant
+msgid "No invariant"
+msgstr "Betg invariant"
+
+#. Name: wt_Execution_Profile_Generation
+msgid "Execution Profile Generation"
+msgstr "Generaziun del profil d'execuziun"
+
+#. Name: m_Object_tools
+msgid "&Object Tools"
+msgstr "Utensil d'&Object"
+
+#. Name: metric_imm_deferred_feature
+msgid "Imm. deferred features"
+msgstr "Imm. deferred features"
+
+#. Name: m_Breakpoints_tool, t_Breakpoints_tool
+msgid "Breakpoints"
+msgstr "Breakpoints"
+
+#. Name: t_Diagram_move_midpoint_cmd
+msgid "Move Midpoint"
+msgstr "Mova il midpoint"
+
+#. Name: t_Extended_explanation
+msgid "Compilation Error Wizard"
+msgstr "Agid per errurs da cumpilaziun"
+
+#. Name: m_Maximize
+msgid "Ma&ximize"
+msgstr "Ma&ximar"
+
+#. Name: m_Ok
+msgid "&OK"
+msgstr "&OK"
+
+#. Name: f_diagram_force_directed_off
+msgid "Turn off physics"
+msgstr "Fa ora ils physics"
+
+#. Name: m_Redo
+msgid "Re&do\tCtrl+Y"
+msgstr "Fa &danovamain\tCtrl+Y"
+
+#. Name: f_diagram_hide_supplier
+msgid "Hide supplier links"
+msgstr "Zuppa supplier link"
+
+#. Name: m_Formats
+msgid "F&ormat"
+msgstr "F&ormat"
+
+#. Name: m_diagram_delete_view
+msgid "&Delete Current View"
+msgstr "&Eliminescha la vista actuala"
+
+#. Name: e_Raise_all_unsaved
+msgid "Raise all unsaved windows"
+msgstr "Porta tuttas las fanestras betg memorisadas davantvart"
+
+#. Name: l_File_name
+msgid "File name:"
+msgstr "Num da la datoteca"
+
+#. Name: b_Recursive_functions
+msgid "Recursive Functions"
+msgstr "Funcziun recursiva"
+
+#. Name: m_Create_new_class
+msgid "&New Class..."
+msgstr "&Nova class..."
+
+#. Name: l_Compiled_class
+msgid "Only compiled classes"
+msgstr "Be class cumpiladas"
+
+#. Name: b_Raise_all
+msgid "Raise Windows"
+msgstr "Auzar las fanestras"
+
+#. Name: b_New_command
+msgid "Add..."
+msgstr "Agiunscha..."
+
+#. Name: t_Windows_tool
+msgid "Windows"
+msgstr "Fanestras"
+
+#. Name: l_Not_empty
+msgid "Generate default feature clauses"
+msgstr "Generescha default feature clauses"
+
+#. Name: t_Dynamic_lib_window
+msgid "Dynamic Library Builder"
+msgstr "Generatur da librarias dinamicas"
+
+#. Name: b_Save_as
+msgid "Save As"
+msgstr "Memorisar sco"
+
+#. Name: f_diagram_low_quality
+msgid "Switch to low quality"
+msgstr "Mida en qualitad bassa"
+
+#. Name: d_Compilation_class, l_Class
+msgid "Class:"
+msgstr "Class:"
+
+#. Name: t_Enter_condition
+msgid "Enter Condition"
+msgstr "Inoltrescha condition"
+
+#. Name: b_Dbg_exception_handler
+msgid "Exceptions"
+msgstr "Exceptions"
+
+#. Name: l_All
+msgid "recursive"
+msgstr "recursiv"
+
+#. Name: f_History_forth
+msgid "Go forth"
+msgstr "Cuntinua"
+
+#. Name: metric_inherited
+msgid "Inherited"
+msgstr "Inherited"
+
+#. Name: m_Edit
+msgid "&Edit"
+msgstr "&Editar"
+
+#. Name: m_Debug_interrupt_new
+msgid "I&nterrupt Application"
+msgstr "I&nterrumpa applicaziun"
+
+#. Name: f_diagram_change_color
+msgid "Change color"
+msgstr "Mida culur"
+
+#. Name: l_toggle_alias
+msgid "Toggle visibility of feature alias name"
+msgstr "Mida visibiltad dal feature alias name"
+
+#. Name: metric_compilation_unit
+msgid "Compilation"
+msgstr "Cumpilaziun"
+
+#. Name: f_show_assigner
+msgid "Show Assigner Command Name"
+msgstr "Mussa assigner command name"
+
+#. Name: t_Set_stack_depth
+msgid "Maximum Call Stack Depth"
+msgstr "Maxima profunditad dal  call stack"
+
+#. Name: b_Open_backup
+msgid "Open Backup File"
+msgstr "Avra la datoteca da backup"
+
+#. Name: t_Diagram_class_header
+msgid "Class Header"
+msgstr "Class header"
+
+#. Name: l_Put_text_right_text
+msgid "Show selective text on the right of buttons"
+msgstr "Mussa il text selectiv a dretga dals buttuns"
+
+#. Name: m_Exit_project
+msgid "E&xit"
+msgstr "&Sortir"
+
+#. Name: ws_Compilation_mode
+msgid "Select the Compilation mode."
+msgstr "Selecziunescha il modus da cumpilaziun."
+
+#. Name: f_diagram_delete_view
+msgid "Delete current view"
+msgstr "Eliminescha la vista actuala"
+
+#. Name: l_Root_class
+msgid "Root class name: "
+msgstr "Num da la Root class"
+
+#. Name: f_refactoring_rename
+msgid "Rename feature/class"
+msgstr "Renumar feature/class"
+
+#. Name: b_Remove, l_Remove_object
+msgid "Remove"
+msgstr "Eliminescha"
+
+#. Name: metric_formal_generics_constrained
+msgid "Constrained"
+msgstr "Constrained"
+
+#. Name: l_Match_case
+msgid "Match case"
+msgstr "Cas concordant"
+
+#. Name: metric_invariant_equipped
+msgid "Invariant equipped"
+msgstr "Invariant equipada"
+
+#. Name: e_History_forth
+msgid "Forward"
+msgstr "Enavant"
+
+#. Name: l_Open_project
+msgid "Open a project"
+msgstr "Avra in project"
+
+#. Name: m_Line_numbers
+msgid "Toggle &Line numbers"
+msgstr "Mida ils numers da &lingia"
+
+#. Name: t_Creation_routine
+msgid "Creation Procedure"
+msgstr "Creation procedure"
+
+#. Name: m_Open_new
+msgid "Op&en..."
+msgstr "&Avra..."
+
+#. Name: m_Showtext_new
+msgid "Te&xt"
+msgstr "Te&xt"
+
+#. Name: f_diagram_create_aggregate_supplier_links
+msgid "Create new aggregate client-supplier links"
+msgstr "Creescha novs aggregate client supplier link"
+
+#. Name: t_Diagram_context_depth
+msgid "Select Depths"
+msgstr "Selecziunescha profunditads"
+
+#. Name: l_diagram_add_ancestors
+msgid "Add class ancestors to diagram"
+msgstr "Agiunscha class ancestor al diagram"
+
+#. Name: metric_imm_precondition_equipped
+msgid "Imm. pre equipped"
+msgstr "Imm. pre equipped"
+
+#. Name: b_Feature_name
+msgid "Feature Name"
+msgstr "Num da la feature"
+
+#. Name: f_diagram_remove_right_angles
+msgid "Remove right angles"
+msgstr "Eliminescha ils anguls a dretga"
+
+#. Name: e_Unify_stone
+msgid "Link the context tool to the other components"
+msgstr "Fa in link tranter il utensil da context e las autras cumponentas"
+
+#. Name: t_Set_critical_stack_depth
+msgid "Overflow Prevention"
+msgstr "Prevenziun dal overflow"
+
+#. Name: e_Compilation_succeeded
+msgid "Eiffel compilation succeeded"
+msgstr "Cumpilaziun da Eiffel succedida"
+
+#. Name: m_Compilation_C_Workbench
+msgid "Compile W&orkbench C Code"
+msgstr "Cumpilescha il code C dal w&orkbench"
+
+#. Name: e_Save_dynamic_lib_definition
+msgid "Save this dynamic library definition"
+msgstr "Memorisescha questa definiziun da la libraria dinamica"
+
+#. Name: t_New_project
+msgid "New Project"
+msgstr "Nov project"
+
+#. Name: t_Debugging_tool
+msgid "Debugging"
+msgstr "Debugging"
+
+#. Name: t_Call_stack_tool
+msgid "Call Stack"
+msgstr "Call stack"
+
+#. Name: b_Exec_step
+msgid "Step"
+msgstr "Pass"
+
+#. Name: l_diagram_add_clients
+msgid "Add class clients to diagram"
+msgstr "Agiunscha ils class client al diagram"
+
+#. Name: t_Find
+msgid "Find"
+msgstr "Chatta"
+
+#. Name: t_Dynamic_type
+msgid "In Class"
+msgstr "En Class"
+
+#. Name: l_Language_type
+msgid "Language type"
+msgstr "Tip da lingua"
+
+#. Name: e_Dbg_exception_handler
+msgid "Exceptions handling"
+msgstr "Exceptions handling"
+
+#. Name: f_diagram_show_labels
+msgid "Show labels"
+msgstr "Mussa label"
+
+#. Name: e_Set_stack_depth
+msgid "Set maximum call stack depth"
+msgstr "Metta la maxima profunditad dal call stack"
+
+#. Name: d_Finished_removing_dead_code
+msgid "Dead Code Removal Completed"
+msgstr "Il prender davent dal code mort es finì"
+
+#. Name: e_Check_exports
+msgid "Check the validity of the library definition"
+msgstr "Controlla la validitad da la definiziun da la libraria"
+
+#. Name: b_Expand_all
+msgid "Expand All"
+msgstr "Expandescha tut"
+
+#. Name: f_hide_assigner
+msgid "Hide Assigner Command Name"
+msgstr "Zuppa il num dal assigner command"
+
+#. Name: m_Preferences
+msgid "&Preferences..."
+msgstr "&Preferenzas..."
+
+#. Name: m_Organize_favorites
+msgid "&Organize Favorites..."
+msgstr "&Organisescha preferids..."
+
+#. Name: m_Minimize
+msgid "Mi&nimize"
+msgstr "Mi&nimar"
+
+#. Name: l_Search_options_hide
+msgid "Scope <<"
+msgstr "Scope <<"
+
+#. Name: b_New_search
+msgid "New Search?"
+msgstr "Nova tschertga?"
+
+#. Name: l_Profiler_used
+msgid "Profiler used to produce the above record: "
+msgstr "Profiler duvrà per producir l'annotaziun sura: "
+
+#. Name: metric_all_routines
+msgid "All routines"
+msgstr "Tuttas las routine"
+
+#. Name: e_Compiling
+msgid "System is being compiled"
+msgstr "Sistem es vegnì cumpilà"
+
+#. Name: l_Routine_ancestors
+msgid "ancestor versions"
+msgstr "versiuns da ancestor"
+
+#. Name: m_Close_short
+msgid "&Close"
+msgstr "&Serrar"
+
+#. Name: metric_all
+msgid "All"
+msgstr "Tut"
+
+#. Name: e_Switch_num_format_to_dec
+msgid "Switch to decimal format"
+msgstr "Mida en il format decimal"
+
+#. Name: m_Showpast
+msgid "&Ancestor Versions"
+msgstr "Versiuns da &ancestor"
+
+#. Name: l_Open_an_existing_project
+msgid "Open compiled project"
+msgstr "Avra project compilà"
+
+#. Name: m_External_editor
+msgid "&External Editor"
+msgstr "Editur &extern"
+
+#. Name: l_Once_functions
+msgid "Once routines"
+msgstr "Once routines"
+
+#. Name: m_Help
+msgid "&Help"
+msgstr "&Agid"
+
+#. Name: wt_Generation_error
+msgid "Generation Error"
+msgstr "Errur da generaziun"
+
+#. Name: f_Debug_dynamic_eval
+msgid "Dynamic feature evaluation"
+msgstr "Evaluaziun da la dynamic feature"
+
+#. Name: m_Call_stack_tool
+msgid "Call stack"
+msgstr "Call stack"
+
+#. Name: m_Raise_all_unsaved
+msgid "Raise &Unsaved Windows"
+msgstr "Auza las fanestras &betg memorisadas"
+
+#. Name: m_Dbg_assertion_checking_disable
+msgid "Disable Assertion Checking"
+msgstr "&Deactivescha l'examinar da las Assertion"
+
+#. Name: metric_indirect_suppliers
+msgid "Indirect suppliers"
+msgstr "Suppliers indirect"
+
+#. Name: l_Command_normal_output
+msgid "Command output:\n"
+msgstr "Output dal cumond:\n"
+
+#. Name: f_diagram_fit_to_screen
+msgid "Fit to screen"
+msgstr "Adatta al monitur"
+
+#. Name: 
+msgid "The file you have supplied as Runtime Information Record\n does not exist or is not valid.\n Do not forget that the Runtime Information Record has to\n be located in the project directory:\n"
+msgstr "La datotecha che es stada furnida sco runtime information record\n exista betg u es betg valaivla. \n Betg emblidar che il runtime information record sto esser en il agen register dal project:\n"
+
+#. Name: l_Homonyms
+msgid "homonyms"
+msgstr "omonims"
+
+#. Name: l_Custom
+msgid "Custom"
+msgstr "Persunalisà"
+
+#. Name: m_Uncomment
+msgid "U&ncomment\tCtrl+Shift+K"
+msgstr "Commentescha &ora\tCtrl+Shift+K"
+
+#. Name: metric_no_obsolete
+msgid "Not obsolete"
+msgstr "Betg obsolet"
+
+#. Name: t_Diagram_disable_high_quality
+msgid "Disable High Quality"
+msgstr "Deactivescha auta qualitad"
+
+#. Name: l_Suppliers
+msgid "suppliers"
+msgstr "suppliers"
+
+#. Name: m_show_creators
+msgid "C&reators"
+msgstr "C&reaturs"
+
+#. Name: e_w_code
+msgid "W_code"
+msgstr "W_code"
+
+#. Name: b_Load_ace
+msgid "Load From..."
+msgstr "Chargia da..."
+
+#. Name: metric_all_effective_feature
+msgid "All effective features"
+msgstr "Tuttas las feature effectivas"
+
+#. Name: e_Exec_out
+msgid "Step out of a routine"
+msgstr "Far in pass ora da ina routine"
+
+#. Name: e_Running
+msgid "Application is running"
+msgstr "Applicaziun in execuziun"
+
+#. Name: b_Create_new_class, t_New_class
+msgid "New Class"
+msgstr "Nova Class"
+
+#. Name: m_Clear_breakpoints
+msgid "Re&move All Breakpoints"
+msgstr "Eli&minescha tut ils breakpoints"
+
+#. Name: b_New_favorite_class
+msgid "New Favorite Class..."
+msgstr "Nova class da preferids..."
+
+#. Name: l_Not_in_system_no_info
+msgid "Select a class which is fully compiled to have information about it."
+msgstr "Selecziunescha ina class che es totalmain cumpilada per avair infurmaziun sin ella."
+
+#. Name: l_Result
+msgid "Result"
+msgstr "Result"
+
+#. Name: t_Open_backup
+msgid "Backup Found"
+msgstr "Chattà ina copia da segirezza"
+
+#. Name: b_Browse
+msgid "Browse..."
+msgstr "Tschertgar..."
+
+#. Name: metric_imm_invariant_clauses
+msgid "Imm. invariant clauses"
+msgstr "Imm. invariant clauses"
+
+#. Name: metric_all_commands
+msgid "All commands"
+msgstr "Tuts ils cumonds"
+
+#. Name: b_Finish
+msgid "Finish"
+msgstr "Finir"
+
+#. Name: l_class_tree_overrides
+msgid "Overrides"
+msgstr "Overrides"
+
+#. Name: m_Exec_last
+msgid "&Out of Routine"
+msgstr "&Ora da la routine"
+
+#. Name: m_Enable_stop_points
+msgid "&Enable All breakpoints"
+msgstr "&Render abel tuts ils breakpoints"
+
+#. Name: f_Create_new_feature
+msgid "Create a new feature"
+msgstr "Creescha ina nova feature"
+
+#. Name: m_Debug_kill
+msgid "&Stop Application"
+msgstr "&Ferma applicaziun"
+
+#. Name: f_diagram_hide_inheritance
+msgid "Hide inheritance links"
+msgstr "Zuppa links d'inheritance"
+
+#. Name: t_Customize_toolbar_text
+msgid "Customize Toolbar"
+msgstr "Persunalisar la barra dals utensils"
+
+#. Name: t_Alias
+msgid "Alias"
+msgstr "Alias"
+
+#. Name: f_Clear_breakpoints
+msgid "Remove all breakpoints"
+msgstr "Eliminescha tut ils breakpoints"
+
+#. Name: m_Search
+msgid "&Find..."
+msgstr "&Chattar..."
+
+#. Name: m_Advanced
+msgid "Ad&vanced"
+msgstr "E&xtendì"
+
+#. Name: t_external_command
+msgid "External Command"
+msgstr "Cumond extern"
+
+#. Name: b_Exec_kill
+msgid "Stop Application"
+msgstr "Stop applicaziun"
+
+#. Name: f_diagram_show_supplier
+msgid "Show supplier links"
+msgstr "Mussa links dal supplier"
+
+#. Name: metric_precondition_equipped
+msgid "Precondition equipped"
+msgstr "Precondition equipada"
+
+#. Name: m_Bkpt_info
+msgid "Brea&kpoint Information"
+msgstr "Infurmaziun dal breakpoint"
+
+#. Name: e_Cursor_position
+msgid "Cursor position (line:column)"
+msgstr "Pusiziun dal cursur (lingia:colonna)"
+
+#. Name: t_Dummy
+msgid "Dummy"
+msgstr "Dummy"
+
+#. Name: s_Cluster_stone
+msgid "Cluster "
+msgstr "Cluster "
+
+#. Name: b_Ok
+msgid "OK"
+msgstr "OK"
+
+#. Name: e_Drop_an_error_stone
+msgid "Pick the code of a compilation error (such as VEEN, VTCT,...)\n and drop it here to have extended information about it."
+msgstr "Prenda il code da in errur da cumpilaziun (sco VEEN, TVCT,...)\n e laschel ir qua per avair infurmaziuns extendidas sur dad el."
+
+#. Name: e_C_compilation_succeeded
+msgid "Background C compilation succeeded"
+msgstr "Cumpilaziun C en il fund terminada"
+
+#. Name: t_Deleting_files
+msgid "Deleting Files"
+msgstr "Eliminaziun da las datotecas"
+
+#. Name: l_Discard_finalize_precompile_dialog
+msgid "Dont ask me again and always finalize."
+msgstr "Betg dumandar danovamain, e fa adina finalize."
+
+#. Name: t_Calling_convention
+msgid "Calling Convention"
+msgstr "Calling convention"
+
+#. Name: l_Type
+msgid "Type"
+msgstr "Gener"
+
+#. Name: m_Recent_project
+msgid "&Recent Projects"
+msgstr "P&rojects actuals"
+
+#. Name: l_Sub_cluster
+msgid "Subcluster"
+msgstr "Subcluster"
+
+#. Name: m_Open_eac_browser
+msgid "EAC Browser"
+msgstr "EAC browser"
+
+#. Name: m_Customize_project
+msgid "Customize P&roject Toolbar..."
+msgstr "Individualisescha la glista dals utensils dal project"
+
+#. Name: m_Contents
+msgid "&Contents"
+msgstr "&Cuntegns"
+
+#. Name: m_diagram_context_depth
+msgid "&Select Depth of Relations"
+msgstr "&Selecziunescha la profunditad da las relaziuns"
+
+#. Name: m_Complete_word
+msgid "Complete &Word"
+msgstr "Cumplettescha &pled"
+
+#. Name: f_History_back
+msgid "Go back"
+msgstr "Va enavos"
+
+#. Name: m_Customize_refactoring
+msgid "Customize Re&factoring Toolbar..."
+msgstr "Individualisescha la glista d'ils utensils per il refactor"
+
+#. Name: d_Features_processed
+msgid "Completed: "
+msgstr "Cumplettà: "
+
+#. Name: f_diagram_show_bon
+msgid "Show BON"
+msgstr "Mussa BON"
+
+#. Name: l_Path
+msgid "Path"
+msgstr "Trutg"
+
+#. Name: m_Open_project
+msgid "&Open Project..."
+msgstr "&Avra project..."
+
+#. Name: e_Diagram_delete_item
+msgid "Please drop a class, a cluster or a link\n on this button. Use right click for both\npick and drop actions."
+msgstr "Lascha ina class, in cluster u in link\n sin quest buttun. Dovra il clic dretg per tus\n acziun da prender e laschar."
+
+#. Name: b_System_info
+msgid "System Info"
+msgstr "Infurmaziun dal sistem"
+
+#. Name: d_Degree
+msgid "Degree:"
+msgstr "Grad:"
+
+#. Name: d_Compilation_cluster, l_Cluster
+msgid "Cluster:"
+msgstr "Cluster:"
+
+#. Name: b_Minimize_all
+msgid "Minimize All"
+msgstr "Minimar tuts"
+
+#. Name: l_Routine_descendants
+msgid "descendant versions"
+msgstr "Versiuns dals descendent"
+
+#. Name: m_diagram_link_tool
+msgid "&Put Right Angles"
+msgstr "&Metta anguls dretg"
+
+#. Name: l_Showallcallers
+msgid "Show all callers"
+msgstr "Mussa tut ils caller"
+
+#. Name: l_creators
+msgid "creators"
+msgstr "creaturs"
+
+#. Name: m_Debug
+msgid "&Debug"
+msgstr "&Debug"
+
+#. Name: m_Showhomonyms
+msgid "&Homonyms"
+msgstr "&Omonims"
+
+#. Name: d_Resynchronizing_tools
+msgid "Resynchronizing Tools"
+msgstr "Resincronisar ils utensils"
+
+#. Name: b_Send_stone_to_context
+msgid "Synchronize"
+msgstr "Sincronisescha"
+
+#. Name: f_diagram_show_uml
+msgid "Show UML"
+msgstr "Mussa UML"
+
+#. Name: b_Update
+msgid "Update"
+msgstr "Actualisar"
+
+#. Name: e_Dbg_assertion_checking
+msgid "Disable or restore Assertion checking handling during debugging"
+msgstr "&Deactivescha u metta enavos la controlla da las assertion durant il debug"
+
+#. Name: t_Diagram_put_one_handle_right_cmd
+msgid "Put Handle Right"
+msgstr "Metta manader a dretga"
+
+#. Name: b_Bkpt_disable
+msgid "Disable Breakpoints"
+msgstr "Deactivescha tuts ils breakpoints"
+
+#. Name: m_Class_info
+msgid "Cla&ss Views"
+msgstr "Vistas da la cla&ss"
+
+#. Name: t_Select_class
+msgid "Select Class"
+msgstr "Selecziunescha class"
+
+#. Name: l_Set_as_default
+msgid "Set as default"
+msgstr "Metta sco predefinì"
+
+#. Name: b_And
+msgid "And"
+msgstr "Ed"
+
+#. Name: e_Bkpt_info
+msgid "Show/Hide information about breakpoints"
+msgstr "Mussa/zuppa infurmaziuns concernentas ils breakpoint"
+
+#. Name: metric_imm_postcondition_clauses
+msgid "Imm. post. clauses"
+msgstr "Imm. post. clauses"
+
+#. Name: t_File_selection
+msgid "File Selection"
+msgstr "Selecziun da datoteca"
+
+#. Name: f_Undo
+msgid "Undo (Ctrl+Z)"
+msgstr "Revocar (Ctrl+Z)"
+
+#. Name: f_Freeze
+msgid "Freeze..."
+msgstr "Freeze..."
+
+#. Name: l_No_feature_group_clause
+msgid "[Unnamed feature clause]"
+msgstr "[Feature clause senza num]"
+
+#. Name: m_View
+msgid "&View"
+msgstr "&Vista"
+
+#. Name: m_New_context_tool
+msgid "New Con&text Window"
+msgstr "Nova fanestra da con&text"
+
+#. Name: l_Clients
+msgid "clients"
+msgstr "clients"
+
+#. Name: b_Up_text
+msgid "Up"
+msgstr "Ensi"
+
+#. Name: f_diagram_remove
+msgid "Remove figure"
+msgstr "Eliminescha figura"
+
+#. Name: m_Hide_formatting_marks
+msgid "&Hide Formatting Marks"
+msgstr "&Zuppa las marcaziuns per formatar"
+
+#. Name: l_Whole_word
+msgid "Whole word"
+msgstr "Tut il pled"
+
+#. Name: l_Execution_interrupted
+msgid "Execution interrupted"
+msgstr "Execuziun interrutta"
+
+#. Name: e_C_compilation_running
+msgid "Background C compilation in progress"
+msgstr "Cumpilaziun C en il fund in progress"
+
+#. Name: metric_imm_precondition_clauses
+msgid "Imm pre. clauses"
+msgstr "Imm pre. clauses"
+
+#. Name: m_Set_conditional_breakpoint
+msgid "Set &Conditional Breakpoint"
+msgstr "Metta il breakpoint cundiziunal"
+
+#. Name: l_Short
+msgid "contract view"
+msgstr "Visuala contract"
+
+#. Name: f_refactoring_undo
+msgid "Undo last refactoring (only works as long as no file that was refactored has been changed by hand)"
+msgstr "Revochescha l'ultim refactor (i funcziuna be uschè ditg fin tge nagina datoteca che es vegnida refactored es stada midada a maun)"
+
+#. Name: m_Save_As
+msgid "S&ave As..."
+msgstr "&Memorisar sco"
+
+#. Name: e_Toggle_stone_management
+msgid "Link or not the context tool to other components"
+msgstr "Fa in link o betg tranter l'utensil da context e autras cumponentas"
+
+#. Name: e_C_compilation_launch_failed
+msgid "Background C compilation launch failed"
+msgstr "Cumpilaziun C lantschada en il fund fallada"
+
+#. Name: l_Replace_with
+msgid "Replace with:"
+msgstr "Remplazzar cun:"
+
+#. Name: f_diagram_context_depth
+msgid "Select depth of relations"
+msgstr "Selecziunescha la profunditad da las relaziuns"
+
+#. Name: m_Replace
+msgid "&Replace..."
+msgstr "&Remplazzar..."
+
+#. Name: l_Current_object
+msgid "Current object"
+msgstr "Current object"
+
+#. Name: m_Open
+msgid "&Open...\tCtrl+O"
+msgstr "&Avra...\tCtrl+O"
+
+#. Name: e_New_expression
+msgid "Create a new expression"
+msgstr "Creescha ina nove expressiun"
+
+#. Name: d_Reverse_engineering
+msgid "Reverse Engineering Project"
+msgstr "Project da inschigneria cuntraria"
+
+#. Name: metric_exported
+msgid "Exported"
+msgstr "Exportà"
+
+#. Name: m_Copy
+msgid "&Copy\tCtrl+C"
+msgstr "&Copia\tCtrl+C"
+
+#. Name: l_Tab_C_output
+msgid "C Output"
+msgstr "Output C"
+
+#. Name: metric_imm_commands
+msgid "Imm. commands"
+msgstr "Imm. commands"
+
+#. Name: l_Top_level
+msgid "Top-level"
+msgstr "Top-livel"
+
+#. Name: l_Discard_replace_all_warning_dialog
+msgid "Dont ask me again and always replace all"
+msgstr "Betg dumandar danovamain e remplazza adina tuts"
+
+#. Name: l_Use_wizard
+msgid "Create a new project"
+msgstr "Creescha in nov project"
+
+#. Name: b_refactoring_push
+msgid "Push down"
+msgstr "Smatga giu"
+
+#. Name: m_Cluster_tool
+msgid "&Clusters"
+msgstr "&Clusters"
+
+#. Name: t_Diagram_enable_high_quality
+msgid "Enable High Quality"
+msgstr "Permetta auta qualitad"
+
+#. Name: m_Showshort
+msgid "C&ontract"
+msgstr "C&ontract"
+
+#. Name: l_Min_index
+msgid "Minimum index displayed"
+msgstr "Visualisà l'index minimal"
+
+#. Name: metric_imm_feature_assertions
+msgid "Feature assertions: immediate"
+msgstr "Feature assertions: immediate"
+
+#. Name: l_Stepped
+msgid "Step completed"
+msgstr "Pass cumplettà"
+
+#. Name: l_Short_name
+msgid "Short Name"
+msgstr "Num curt"
+
+#. Name: f_Copy
+msgid "Copy (Ctrl+C)"
+msgstr "Copiescha (Ctrl+C)"
+
+#. Name: b_Display_Exception_Trace
+msgid "Display Exception Trace"
+msgstr "Visualisescha l'exeption trace"
+
+#. Name: e_open_selection_in_editor
+msgid "Open selected file name in specified external editor"
+msgstr "Avra la datoteca selecziunada en in editur extern specifitgà"
+
+#. Name: l_class_tree_libraries
+msgid "Libraries"
+msgstr "Librarias"
+
+#. Name: b_Copy
+msgid "Copy"
+msgstr "Copiescha"
+
+#. Name: e_Edit_expression
+msgid "Edit an expression"
+msgstr "Editescha ina expressiun"
+
+#. Name: e_Edit_exported_feature
+msgid "Edit the properties of the selected feature"
+msgstr "Editescha las proprietads da la feature selecziunada"
+
+#. Name: b_Create
+msgid "Create"
+msgstr "Creescha"
+
+#. Name: t_Object_tool
+msgid "Objects"
+msgstr "Objects"
+
+#. Name: m_Apply
+msgid "&Apply"
+msgstr "&Applitgescha"
+
+#. Name: f_Enable_stop_points
+msgid "Enable all breakpoints"
+msgstr "Permetta tut ils breakpoint"
+
+#. Name: metric_classes
+msgid "Classes"
+msgstr "Classes"
+
+#. Name: m_Save_new
+msgid "&Save"
+msgstr "&Memorisescha"
+
+#. Name: b_Dbg_assertion_checking_disable
+msgid "Disable assertion checking"
+msgstr "Deactivescha l'examinar da las assertion"
+
+#. Name: m_Showfuture
+msgid "&Descendant Versions"
+msgstr "Versiuns &descendentas"
+
+#. Name: e_Diagram_create_class
+msgid "Please drop this button on the diagram.\n Use right click for both\npick and drop actions."
+msgstr "Laschar quest buttun sin il diagram.\n Dovrar il clic dretg per tut dus\nacziun da prender e laschar."
+
+#. Name: l_Command_error_output
+msgid "Command error output:\n"
+msgstr "Output dal cumond da errur:\n"
+
+#. Name: t_Diagram_remove_handles_cmd
+msgid "Remove Handles"
+msgstr "Eliminescha manader"
+
+#. Name: b_Number_of_calls
+msgid "Number of Calls"
+msgstr "Numer da call"
+
+#. Name: e_freezing_succeeded
+msgid "Background workbench C compilation succeeded"
+msgstr "Cumpilaziun dal workbench C en il fund reussida"
+
+#. Name: f_Debug_edit_object
+msgid "Edit Object content"
+msgstr "Editescha cuntegn dal object"
+
+#. Name: e_C_compilication_launched
+msgid "Background C compilation launched"
+msgstr "Cumpilaziun C en il fund lantschada"
+
+#. Name: metric_this_system
+msgid "System"
+msgstr "Sistem"
+
+#. Name: l_Current_context
+msgid "Current feature"
+msgstr "Feature actuala"
+
+#. Name: l_diagram_force_directed
+msgid "Turn on/off physics"
+msgstr "Fa en/ora physics"
+
+#. Name: f_diagram_high_quality
+msgid "Switch to high quality"
+msgstr "Mida en qualitad auta"
+
+#. Name: l_general
+msgid "General"
+msgstr "General"
+
+#. Name: l_Toolbar_select_has_gray_icons
+msgid "Icon option: "
+msgstr "Opziun d'icona"
+
+#. Name: l_Calling_convention
+msgid "Calling convention:"
+msgstr "Convenziun da calling"
+
+#. Name: metric_contract_clause_unit
+msgid "Contract clause"
+msgstr "Contract clause"
+
+#. Name: m_Address_toolbar
+msgid "&Address Bar"
+msgstr "Barra da la &adressa"
+
+#. Name: l_diagram_create_links
+msgid "Select type of new links"
+msgstr "Selecziunescha tip dals novs links"
+
+#. Name: t_Editor
+msgid "Editor"
+msgstr "Editur"
+
+#. Name: m_Hide_favorites
+msgid "&Hide Favorites"
+msgstr "&Zuppa preferids"
+
+#. Name: metric_all_deferred_feature
+msgid "All deferred features"
+msgstr "Tut las deferred feature"
+
+#. Name: l_Tab_warning_output
+msgid "Warnings"
+msgstr "Avertiments"
+
+#. Name: l_Deferred
+msgid "deferred"
+msgstr "deferred"
+
+#. Name: m_Disable_this_bkpt
+msgid "&Disable This Breakpoint"
+msgstr "Deactivescha quest breakpoint"
+
+#. Name: e_Raise_all
+msgid "Raise all windows"
+msgstr "Porta tuttas las fanestras davantvart"
+
+#. Name: wb_Click_back_and_correct_error
+msgid "Click Back if you can correct the problem or Click Abort."
+msgstr "Clicca enavos sche il problem es curregiabel u clicca interrumpa"
+
+#. Name: e_Toggle_state_of_expressions
+msgid "Enable/Disable expressions"
+msgstr "Renda abel/inabel las expressiuns"
+
+#. Name: m_Features_tool
+msgid "&Features"
+msgstr "&Features"
+
+#. Name: b_Open
+msgid "Open"
+msgstr "Avra"
+
+#. Name: e_Print
+msgid "Print the currently edited text"
+msgstr "Stampa il text actualmain edità"
+
+#. Name: e_Send_stone_to_context
+msgid "Synchronize context"
+msgstr "Sincronisescha context"
+
+#. Name: l_Enter_folder_name
+msgid "Enter the name of the new folder: "
+msgstr "Inserescha il num dal nov ordinatur: "
+
+#. Name: m_Toolbars
+msgid "Tool&bars"
+msgstr "Barras d'utensils"
+
+#. Name: m_Compilation_C_Final
+msgid "Compile F&inalized C Code"
+msgstr "Cumpila il code C f&inalized"
+
+#. Name: m_Wizard_precompile
+msgid "Precompilation &Wizard..."
+msgstr "Installatur per precu&mpilar"
+
+#. Name: l_Switch_num_format_desc
+msgid "Display numerical value as Hexadecimal or Decimal formating"
+msgstr "Visualisescha il valur numeric sco hexadecimal o scho decimal"
+
+#. Name: b_refactoring_undo
+msgid "Undo refactoring"
+msgstr "Revocar refactor"
+
+#. Name: l_Showcallers
+msgid "Show static callers"
+msgstr "Mussa static caller"
+
+#. Name: metric_imm_attributes
+msgid "Imm. attributes"
+msgstr "Imm. attributes"
+
+#. Name: t_Diagram_erase_classes_cmd
+msgid "Erase Classes"
+msgstr "Eliminescha classes"
+
+#. Name: e_Exec_into
+msgid "Step into a routine"
+msgstr "Far in pass en ina routine"
+
+#. Name: metric_functions
+msgid "Functions"
+msgstr "Funcziuns"
+
+#. Name: m_Comment
+msgid "&Comment\tCtrl+K"
+msgstr "&Commentescha\tCtrl+K"
+
+#. Name: t_Select_a_directory
+msgid "Select a Directory"
+msgstr "Selecziunescha in ordinatur"
+
+#. Name: b_Close
+msgid "Close"
+msgstr "Serra"
+
+#. Name: e_Switch_num_formating
+msgid "Hexadecimal/Decimal formating"
+msgstr "Formataziun hexadecimala/decimala"
+
+#. Name: d_Resynchronizing_breakpoints
+msgid "Resynchronizing Breakpoints"
+msgstr "Resincronisescha ils breakpoint"
+
+#. Name: t_Profiler_wizard
+msgid "Profiler Wizard"
+msgstr "Installatur del profil"
+
+#. Name: l_diagram_add_suppliers
+msgid "Add class suppliers to diagram"
+msgstr "Agiunscha class supplier al diagram"
+
+#. Name: l_Use_existing_ace
+msgid "Open existing Ace (control file)"
+msgstr "Avra in Ace (datoteca da controlla) existent"
+
+#. Name: l_fresh_compilation
+msgid "Compile from scratch if already compiled."
+msgstr "Cumpilescha dal cumenzament sche gia cumpilà."
+
+#. Name: b_Finalize
+msgid "Finalize"
+msgstr "Finalize"
+
+#. Name: b_Launch
+msgid "Start"
+msgstr "Aviescha"
+
+#. Name: t_Diagram_put_right_angles_cmd
+msgid "Put Right Angles"
+msgstr "Metta anguls dretg"
+
+#. Name: m_Edit_exported_feature
+msgid "&Edit..."
+msgstr "&Editescha..."
+
+#. Name: l_Root_class_name
+msgid "Root class: "
+msgstr "Root class: "
+
+#. Name: metric_indirect_clients
+msgid "Indirect clients"
+msgstr "Indirect clients"
+
+#. Name: b_Reload
+msgid "Reload"
+msgstr "Rechargiar"
+
+#. Name: m_Showflat
+msgid "&Flat"
+msgstr "&Flat"
+
+#. Name: metric_effective_class
+msgid "Effective"
+msgstr "Effectiv"
+
+#. Name: e_f_code
+msgid "F_code"
+msgstr "F_code"
+
+#. Name: l_System_launched
+msgid "System launched"
+msgstr "Sistem lantschà"
+
+#. Name: f_show_alias
+msgid "Show Alias Name"
+msgstr "Mussa il num alias"
+
+#. Name: l_Deleting_dialog_default
+msgid "Creating new project, please wait..."
+msgstr "Nov project en creaziun, spetga..."
+
+#. Name: l_Exit_warning
+msgid "Some files have not been saved.\nDo you want to save them before exiting?"
+msgstr "In pèr datotecas sun betg stadas memorisadas.\nMemorisar avant che abandunar?"
+
+#. Name: f_diagram_to_png
+msgid "Export diagram to PNG"
+msgstr "Exporta diagram sco PNG"
+
+#. Name: m_Debug_block
+msgid "E&mbed in %\"Debug...%\"\tCtrl+D"
+msgstr "E&mbed in %\"Debug...%\"\tCtrl+D"
+
+#. Name: b_Remove_text
+msgid "<- Remove"
+msgstr "<- Eliminescha"
+
+#. Name: t_Choose_project_and_directory
+msgid "Choose Your Project Name and Directory"
+msgstr "Tscherner il num dal projet a l'ordinatur"
+
+#. Name: d_Generating
+msgid "Generating: "
+msgstr "Generod: "
+
+#. Name: b_Remove_class_cluster
+msgid "Remove Class/CLuster"
+msgstr "Eliminescha class/cluster"
+
+#. Name: metric_metrics
+msgid "&Metrics"
+msgstr "&Metrica"
+
+#. Name: e_Remove_object
+msgid "Remove currently selected object"
+msgstr "Eliminescha object actualmain selecziunà"
+
+#. Name: t_Choose_ace_and_directory
+msgid "Choose Your Ace File and Directory"
+msgstr "Tscherna datoteca Ace e ordinatur"
+
+#. Name: l_System_properties
+msgid "System properties"
+msgstr "Proprietad da sistem"
+
+#. Name: m_How_to_s
+msgid "&How to's"
+msgstr "&Manuals"
+
+#. Name: l_Locals, metric_locals
+msgid "Locals"
+msgstr "Locals"
+
+#. Name: l_Search_options_show
+msgid "Scope >>"
+msgstr "Scope >>"
+
+#. Name: e_Exec_kill
+msgid "Stop application"
+msgstr "Ferma applicaziun"
+
+#. Name: m_Freeze_new
+msgid "&Freeze..."
+msgstr "&Freeze..."
+
+#. Name: m_Unindent
+msgid "&Unindent Selection\tShift+Tab"
+msgstr "&Deindentescha selecziun\tShift+Tab"
+
+#. Name: f_Run_finalized
+msgid "Run finalized system"
+msgstr "Exequescha sistem finalized"
+
+#. Name: l_Generate_creation
+msgid "Generate creation procedure"
+msgstr "Generescha creation procedure"
+
+#. Name: m_Window
+msgid "&Window"
+msgstr "&Fanestra"
+
+#. Name: 
+msgid "\n\n Please provide a valid file or execute your profiler again to\n generate a valid Runtime Information Record.\n \n Click Back and select a valid file or Click Abort."
+msgstr "\n\n Furnescha ina datoteca valaivla u exequescha il profiler danovamain per\n generar ina infurmaziun da unitad da datas runtime.\n \n Clicca enavos e selecziunescha ina datoteca valaivla u clicca interrumpa."
+
+#. Name: l_Unknown_status
+msgid "Unknown application status"
+msgstr "Status da la applicaziun nunenconuschent"
+
+#. Name: l_Ace_file_for_frame
+msgid "Ace file"
+msgstr "Datoteca Ace"
+
+#. Name: b_Undo, e_Undo
+msgid "Undo"
+msgstr "Revochescha"
+
+#. Name: metric_dependents
+msgid "Dependents"
+msgstr "Dependents"
+
+#. Name: m_New_editor
+msgid "New Ed&itor Window"
+msgstr "Nova fanestra da ed&itur"
+
+#. Name: t_Profile_query_window
+msgid "Profile Query Window"
+msgstr "Fanestra profile query"
+
+#. Name: f_hide_alias
+msgid "Hide Alias Name"
+msgstr "Zuppa il num alias"
+
+#. Name: m_New_project
+msgid "&New Project..."
+msgstr "&Nov project..."
+
+#. Name: metric_all_precondition_equipped
+msgid "All pre equipped"
+msgstr "Tutd pre equipà"
+
+#. Name: m_Unify_stone
+msgid "Lin&k Context Tool"
+msgstr "Co&llia l'utensil da context"
+
+#. Name: metric_indirect_heirs
+msgid "Indirect heirs"
+msgstr "Ertavels indirect"
+
+#. Name: l_Search_report_show
+msgid "Report >>"
+msgstr "Rapport >>"
+
+#. Name: f_Create_new_cluster
+msgid "Create a new cluster"
+msgstr "Creescha in nov cluster"
+
+#. Name: e_Switch_num_format_to_hex
+msgid "Switch to hexadecimal format"
+msgstr "Mida al format hexadecimal"
+
+#. Name: metric_all_queries
+msgid "All queries"
+msgstr "Tut las querie"
+
+#. Name: metric_all_postcondition_equipped
+msgid "All post equipped"
+msgstr "Tut equipped davos"
+
+#. Name: f_diagram_remove_anchor, l_diagram_remove_anchor
+msgid "Remove anchor"
+msgstr "Eliminescha ancra"
+
+#. Name: m_History
+msgid "&Go to"
+msgstr "&Va a"
+
+#. Name: l_External
+msgid "external features"
+msgstr "Feature externas"
+
+#. Name: t_Diagram_delete_midpoint_cmd
+msgid "Erase Midpoint"
+msgstr "Eliminescha Midpoint"
+
+#. Name: metric_heirs
+msgid "Heirs"
+msgstr "Ertavels"
+
+#. Name: metric_clients
+msgid "Clients"
+msgstr "Clients"
+
+#. Name: metric_add
+msgid "&Add"
+msgstr "&Agiunscha"
+
+#. Name: e_finalizing_terminated
+msgid "Background finalized C compilation terminated"
+msgstr "Cumpilaziun dal finalized C terminada"
+
+#. Name: f_New_window
+msgid "Create a new window"
+msgstr "Creescha ina nova fanestra"
+
+#. Name: l_Set_slice_limits_desc
+msgid "Set which values are shown in special objects"
+msgstr "Metta tge valurs che sun mussà in objects spezials"
+
+#. Name: l_Options
+msgid "Options"
+msgstr "Opziuns"
+
+#. Name: l_Onces
+msgid "once routines and constants"
+msgstr "once routines e cunstantas"
+
+#. Name: f_diagram_show_legend
+msgid "Show cluster legend"
+msgstr "Mussa etichettaziun dal cluster"
+
+#. Name: metric_deferred_class
+msgid "Deferred classes"
+msgstr "Las deferred class"
+
+#. Name: wt_Runtime_information_record_error
+msgid "Runtime Information Record Error"
+msgstr "Errur dal runtime information record"
+
+#. Name: m_Showexternals
+msgid "E&xternals"
+msgstr "E&xteriurs"
+
+#. Name: s_Class_stone
+msgid "Class "
+msgstr "Class "
+
+#. Name: metric_imm_functions
+msgid "Imm. functions"
+msgstr "Imm. functions"
+
+#. Name: metric_obsolete
+msgid "Obsolete"
+msgstr "Obsolete"
+
+#. Name: e_Remove_exported_feature
+msgid "Remove the selected feature from this dynamic library definition"
+msgstr "Eliminescha la feature selecziunada da questa definiziun da libraria dinamica"
+
+#. Name: m_Showroutines
+msgid "&Routines"
+msgstr "&Routines"
+
+#. Name: f_Redo
+msgid "Redo (Ctrl+Y)"
+msgstr "Far danovamain (Ctrl+Y)"
+
+#. Name: l_Confirm_kill
+msgid "Stop the application?"
+msgstr "Fermar l'applicaziun?"
+
+#. Name: l_Creation
+msgid "Creation procedure:"
+msgstr "Creation procedure:"
+
+#. Name: m_Separate_stone
+msgid "Unlin&k Context Tool"
+msgstr "Scoll&ia l'utensil da context"
+
+#. Name: wt_Switches_and_query
+msgid "Switches and Query"
+msgstr "Switches and query"
+
+#. Name: b_refactoring_pull
+msgid "Pull up"
+msgstr "Tira si"
+
+#. Name: f_refactoring_redo
+msgid "Redo last refactoring (only works as long as no file that was refactored has been changed by hand)"
+msgstr "Fa danovamain l'ultim refactor (i funcziuna be uschè ditg fin tge nagina datoteca che es vegnida refactored es stada midada a maun)"
+
+#. Name: l_Compile_first
+msgid "Compile to have information"
+msgstr "Cumpilescha per avair infurmaziuns"
+
+#. Name: b_Redo, e_Redo
+msgid "Redo"
+msgstr "Fa danovamain"
+
+#. Name: l_Output_switches
+msgid "Output switches"
+msgstr "Selectur d'output"
+
+#. Name: l_Object_attributes, metric_attributes
+msgid "Attributes"
+msgstr "Attributer"
+
+#. Name: l_Same_class_name
+msgid "---"
+msgstr "---"
+
+#. Name: m_Cut
+msgid "Cu&t\tCtrl+X"
+msgstr "&Taglia ora \tCtrl+X"
+
+#. Name: ws_Execution_Profile_Generation
+msgid "Select a Run-time information record to generate the Execution profile"
+msgstr "Selecziunescha in Rum-time information record per generar il profil d'execuziun"
+
+#. Name: b_Down_text
+msgid "Down"
+msgstr "Engiu"
+
+#. Name: b_Retry
+msgid "Retry"
+msgstr "Tentar danovamain"
+
+#. Name: l_Library
+msgid "library"
+msgstr "Libraria"
+
+#. Name: l_Scope
+msgid "Scope"
+msgstr "Scope"
+
+#. Name: l_class_tree_assemblies
+msgid "Assemblies"
+msgstr "Assemblies"
+
+#. Name: wb_Execution_Profile_Generation
+msgid "Once an execution of an instrumented system has generated the proper file,\n you must process it through a profile converter to produce the Execution\n Profile. The need for the converter comes from the various formats that\n profilers use to record run-time information during an execution.\n \n Provide the Run-time information record produced by the profiler and\n select the profiler used to create this record. \n The Execution Profile will be generated under the file %\"profinfo.pfi%\"."
+msgstr "Cur che ina execuziun dad in sistem cun utensils ha generà la gista datoteca,\n i sa sto elavurar el tras in convertider dal profile per producir il profil d'execuziun.\nIl basegn per in convertider vegn dals differents formats che ils profiler dovran per registrar infurmaziun run-time durant ina execuziun.\n \n Furnescha il run-time information record producì dal profiler e\n selecziunescha il profiler duvrà per crear quest record. \n Il profil d'execuziun vegn a esser generà sut la datoteca %\"profinfo.pfi%\"."
+
+#. Name: b_Search, t_Search_tool
+msgid "Search"
+msgstr "Tschertga"
+
+#. Name: t_Empty_development_window
+msgid "Empty Development Tool"
+msgstr "Utensil da svilup vid"
+
+#. Name: l_Expanded
+msgid "expanded"
+msgstr "expandì"
+
+#. Name: metric_compilations
+msgid "Compilations"
+msgstr "Cumpilaziuns"
+
+#. Name: m_Remove_class_cluster
+msgid "&Remove Current Item"
+msgstr "&Eliminescha l'element actual"
+
+#. Name: t_Index
+msgid "Index"
+msgstr "Index"
+
+#. Name: d_Documentation
+msgid "Documentation"
+msgstr "Documentaziun"
+
+#. Name: l_Flatshort
+msgid "interface view"
+msgstr "Visuala interfatscha"
+
+#. Name: l_Diagram_reset_view_cmd
+msgid "Do you really want to reset current view?"
+msgstr "Metter enavos la vista actuala?"
+
+#. Name: l_diagram_remove
+msgid "Delete graphical items"
+msgstr "Eliminescha elements grafics"
+
+#. Name: b_Terminate_c_compilation
+msgid "Terminate C compilation"
+msgstr "Terminescha cumpilaziun C"
+
+#. Name: m_Profile_tool
+msgid "Pro&filer..."
+msgstr "Pro&filer..."
+
+#. Name: m_Remove_condition
+msgid "Remove Condition"
+msgstr "Eliminescha Condition"
+
+#. Name: e_Exec_no_stop
+msgid "Start application without stopping at breakpoints"
+msgstr "Exequescha applicaziun senza fermar vi dals breakpoint"
+
+#. Name: m_Remove_this_bkpt
+msgid "&Remove This Breakpoint"
+msgstr "%Eliminescha quest breakpoint"
+
+#. Name: t_Features_tool, metric_features
+msgid "Features"
+msgstr "Features"
+
+#. Name: e_Display_system_info
+msgid "Display information concerning current system"
+msgstr "Visualisescha infurmaziuns concernent il sistem actual"
+
+#. Name: b_Bkpt_remove
+msgid "Remove Breakpoints"
+msgstr "Eliminescha ils breakpoint"
+
+#. Name: l_Subquery
+msgid "Define new subquery"
+msgstr "Definescha nova subquery"
+
+#. Name: b_Bkpt_enable
+msgid "Enable Breakpoints"
+msgstr "Renda abel ils breakpoint"
+
+#. Name: m_showcreators
+msgid "&Creators"
+msgstr "&Creaturs"
+
+#. Name: m_Showfs
+msgid "&Interface"
+msgstr "&Interfatscha"
+
+#. Name: m_Generate_documentation
+msgid "Generate &Documentation..."
+msgstr "Generescha &documentaziun..."
+
+#. Name: b_C_functions
+msgid "C Functions"
+msgstr "Funcziuns C"
+
+#. Name: t_Diagram_remove_right_angles_cmd
+msgid "Remove Right Angles"
+msgstr "Eliminescha angul dretg"
+
+#. Name: b_Replace
+msgid "Replace"
+msgstr "Remplazzar"
+
+#. Name: e_Up_to_date
+msgid "Executable is up-to-date"
+msgstr "Executur es actual"
+
+#. Name: m_Find_next
+msgid "Find &Next"
+msgstr "Chatta &proxim"
+
+#. Name: metric_formals
+msgid "Formals"
+msgstr "Formals"
+
+#. Name: l_Tab_external_output
+msgid "External Output"
+msgstr "Output extern"
+
+#. Name: 
+msgid "a_: Accelerator key combination;  b_: Button text;  d_: Degree outputter;  f_: Focus label text (tooltips);  h_: Help text;  i_: Icon ids for windows (ignored for motif);  m_: Mnemonic (menu entry);  l_: Label texts;  n_: widget Names;  s_: Stone names;  t_: Title (part);  e_: Short description, explanation;  wt_: Title for wizards step;  wb_: Body for wizards step;  ws_: Subtitle for wizards step"
+msgstr "a_: Accelerator key combination;  b_: Button text;  d_: Degree outputter;  f_: Focus label text (tooltips);  h_: Help text;  i_: Icon ids for windows (ignored for motif);  m_: Mnemonic (menu entry);  l_: Label texts;  n_: widget Names;  s_: Stone names;  t_: Title (part);  e_: Short description, explanation;  wt_: Title for wizards step;  wb_: Body for wizards step;  ws_: Subtitle for wizards step"
+
+#. Name: l_Arguments
+msgid "Arguments"
+msgstr "Arguments"
+
+#. Name: f_show_signature
+msgid "Show Signature"
+msgstr "Mussa Signature"
+
+#. Name: e_Save_call_stack
+msgid "Save call stack to a text file"
+msgstr "Memorisescha call stack en ina datoteca text"
+
+#. Name: m_Showsuppliers
+msgid "S&uppliers"
+msgstr "S&uppliers"
+
+#. Name: l_Max_displayed_string_size
+msgid "Maximum displayed string size"
+msgstr "Visualisà maximala grondezza dal string"
+
+#. Name: m_Edit_condition
+msgid "E&dit Condition"
+msgstr "E&ditescha condition"
+
+#. Name: l_Loaded_project
+msgid "Loaded project: "
+msgstr "Project chargià: "
+
+#. Name: e_Exec_debug
+msgid "Start application and stop at breakpoints"
+msgstr "Exequescha l'applicaziun e ferma als breakpoint"
+
+#. Name: t_Select_feature
+msgid "Select Feature"
+msgstr "Selecziunescha feature"
+
+#. Name: metric_self
+msgid "Self"
+msgstr "Sulet"
+
+#. Name: l_Implementers
+msgid "implementers"
+msgstr "ils implementadur"
+
+#. Name: l_Located_in
+msgid " located in "
+msgstr " resident en "
+
+#. Name: metric_calculate
+msgid "&Calculate"
+msgstr "&Calcular"
+
+#. Name: b_Print, f_Print
+msgid "Print"
+msgstr "Stampa"
+
+#. Name: m_Context_tool
+msgid "Conte&xt"
+msgstr "Conte&xt"
+
+#. Name: m_Showexported
+msgid "Ex&ported"
+msgstr "Ex&portada"
+
+#. Name: e_go_to_f_code_dir
+msgid "Go to F_code directory of this system"
+msgstr "Va a l'ordinatur F_code da quest sistem"
+
+#. Name: b_Shell
+msgid "External Editor"
+msgstr "Editur extern"
+
+#. Name: t_Diagram_history_tool
+msgid "History Tool"
+msgstr "Utensil d'istorgia"
+
+#. Name: l_Syntax_error
+msgid "Class text has syntax error"
+msgstr "Text da class ha errur da sintaxa"
+
+#. Name: f_Create_new_class, f_diagram_new_class
+msgid "Create a new class"
+msgstr "Creescha in nova class"
+
+#. Name: f_hide_signature
+msgid "Hide Signature"
+msgstr "Zuppa signature"
+
+#. Name: l_Tab_error_output
+msgid "Errors"
+msgstr "Errurs"
+
+#. Name: m_Output
+msgid "&Output"
+msgstr "&Output"
+
+#. Name: e_Diagram_class_header
+msgid "Please drop a class on this button.\nUse right click for both\n pick and drop actions."
+msgstr "Lascha ina class sin quest buttun.\n Dovra il clic dretg per tut dus\n acziun da prender e laschar."
+
+#. Name: l_Location
+msgid "Location"
+msgstr "Residenza"
+
+#. Name: l_Search_backward
+msgid "Search backwards"
+msgstr "Tschertga enavos"
+
+#. Name: l_Literal_value
+msgid "Literal Value"
+msgstr "Valur dal literal"
+
+#. Name: e_external_editor_not_defined
+msgid "External editor not defined"
+msgstr "Editur extern betg definì"
+
+#. Name: t_Feature_properties
+msgid "Feature Properties"
+msgstr "Caracteristicas da la Feature"
+
+#. Name: m_Melt_new
+msgid "&Compile"
+msgstr "&Cumpilescha"
+
+#. Name: metric_imm_queries
+msgid "Imm. queries"
+msgstr "Imm. queries"
+
+#. Name: b_Percentage
+msgid "Percentage"
+msgstr "Procentuala"
+
+#. Name: b_Next
+msgid "Next"
+msgstr "Proxim"
+
+#. Name: l_On_object
+msgid "On object"
+msgstr "In object"
+
+#. Name: l_Text_saved
+msgid "Text was saved"
+msgstr "Text es stat memorisà"
+
+#. Name: m_Add_to_favorites
+msgid "&Add to Favorites"
+msgstr "&Agiunscha als preferids"
+
+#. Name: b_Continue_anyway
+msgid "Continue Anyway"
+msgstr "Cuntinua en mintga cas"
+
+#. Name: m_diagram_reset_view
+msgid "&Reset Current View"
+msgstr "&Metta enavos vista actuala"
+
+#. Name: t_Static_type
+msgid "From Class"
+msgstr "Da la class"
+
+#. Name: metric_imm_effective_feature
+msgid "Imm. effective features"
+msgstr "Imm. effective features"
+
+#. Name: m_diagram_crop
+msgid "&Crop Diagram"
+msgstr "Tagia ora diagram"
+
+#. Name: m_Finalize_new
+msgid "Finali&ze..."
+msgstr "Finali&ze..."
+
+#. Name: l_Finalized_mode
+msgid "Finalized mode"
+msgstr "Modus finalized"
+
+#. Name: e_Minimize_all
+msgid "Minimize all windows"
+msgstr "Minimar tuttas las fanestras"
+
+#. Name: l_Workbench_mode
+msgid "Workbench mode"
+msgstr "Modus workbench"
+
+#. Name: l_Do_not_show_again
+msgid "Do not show again"
+msgstr "Betg mussar danovamain"
+
+#. Name: f_diagram_undo
+msgid "Undo last action"
+msgstr "Revochescha l'ultima acziun"
+
+#. Name: l_Basic_application
+msgid "Basic application (no graphics library included)"
+msgstr "Applicaziun da basa (betg inclusas librarias graficas)"
+
+#. Name: l_Callers
+msgid "callers"
+msgstr "callers"
+
+#. Name: l_Elements
+msgid "elements."
+msgstr "elements."
+
+#. Name: b_Bkpt_stop_in_hole, b_Exec_stop
+msgid "Pause"
+msgstr "Pausa"
+
+#. Name: m_Quick_compile
+msgid "&Quick Compile"
+msgstr "Cumpilaziun rapida"
+
+#. Name: wb_Profiler_welcome
+msgid "Using this wizard you can analyze the result of a profiling.\n \n Profiling a system is used to analyze its run-time properties\n and in particular the cost of each routine: number of calls,\n time spent, etc. The profiler is a precious tool to understand\n and optimize a system.\n \n To continue you need to have already executed your system\n with the profiler activated. If this is not the case, please\n refer to the documentation on how to profile a system.\n \n \n To continue, click Next."
+msgstr "Cun duvrar quest wizard i sa po analisar il resultat da in profiling.\n \n Far in profiling a in sistem es duvrà per analisar las proprietads run-time\n e in particular ils custs da mintgina routine: numer da calls,\n temp duvrà, etc. Il profiler es in utensil prezius per chapir\n e optimar in sistem.\n \n Per cuntinuar i sa sto gia avair exequì il sistem\n cun il profiler activà. Sche i es betg il cas, referescha a la documentaziun sin co i sa sto far il profile dal sistem.\n \n \n Per contiunar, clicca enavant."
+
+#. Name: b_New_context
+msgid "New Context"
+msgstr "Nov context"
+
+#. Name: l_Stop_point_reached
+msgid "Breakpoint reached"
+msgstr "breakpoint cuntanschì"
+
+#. Name: l_Parent_cluster
+msgid "Parent cluster"
+msgstr "Parent cluster"
+
+#. Name: b_Create_folder
+msgid "Create Folder..."
+msgstr "Creescha ordinatur..."
+
+#. Name: l_Show_only_n_elements
+msgid "Show only:"
+msgstr "Mussa be:"
+
+#. Name: m_Showindexing
+msgid "&Indexing clauses"
+msgstr "&Indexing clauses"
+
+#. Name: l_Replace_with_ellipsis
+msgid "Replace with..."
+msgstr "Remplazza cun..."
+
+#. Name: b_Edit_ace
+msgid "Edit"
+msgstr "Editescha"
+
+#. Name: f_Disable_stop_points
+msgid "Disable all breakpoints"
+msgstr "Deactivescha tut ils breakpoint"
+
+#. Name: b_Edit_command
+msgid "Edit..."
+msgstr "Editescha..."
+
+#. Name: metric_all_feature_assertions
+msgid "Feature assertions: all"
+msgstr "Feature assertions: all"
+
+#. Name: metric_local_unit
+msgid "Local"
+msgstr "Local"
+
+#. Name: b_Save, f_Save
+msgid "Save"
+msgstr "Memorisescha"
+
+#. Name: m_New_dynamic_lib
+msgid "&Dynamic Library Builder..."
+msgstr "&Creatur da librarias dinamicas..."
+
+#. Name: l_parents
+msgid "Parents:"
+msgstr "Parents:"
+
+#. Name: m_Send_stone_to_context
+msgid "S&ynchronize Context Tool"
+msgstr "Sincronisescha l'utensil da context"
+
+#. Name: e_save_c_compilation_output
+msgid "Save c compilation output to file"
+msgstr "Memorisescha l'output da la cumpilaziun C en ina datoteca"
+
+#. Name: l_diagram_legend_visibility
+msgid "Toggle visibility of cluster legend"
+msgstr "Mida visibiltad da la legenda dal cluster"
+
+#. Name: metric_this_archive
+msgid "Archive..."
+msgstr "Archivescha..."
+
+#. Name: m_Showhistory
+msgid "&Implementers"
+msgstr "&Implementadurs"
+
+#. Name: l_Discard_convert_project_dialog
+msgid "Do not ask again, and always convert old projects"
+msgstr "Betg dumandar danovamain, e convertescha adina projects vegls"
+
+#. Name: t_Feature
+msgid "In Feature"
+msgstr "En feature"
+
+#. Name: m_diagram_to_png
+msgid "&Export Diagram to PNG"
+msgstr "&Exportescha diagram sco PNG"
+
+#. Name: m_Exec_nostop
+msgid "&Ignore Breakpoints"
+msgstr "&Ignorescha ils breakpoint"
+
+#. Name: l_Generate_profile_from_rtir
+msgid "Generate profile from Run-time information record"
+msgstr "Generescha profil dal run-time imformation record"
+
+#. Name: l_Three_dots
+msgid "..."
+msgstr "..."
+
+#. Name: m_Special
+msgid "&Special"
+msgstr "&Spezial"
+
+#. Name: f_refactoring_pull
+msgid "Pull up feature"
+msgstr "Tira si feature"
+
+#. Name: metric_imm_locals
+msgid "Imm. locals"
+msgstr "Imm. locals"
+
+#. Name: e_History_back
+msgid "Back"
+msgstr "Enavos"
+
+#. Name: l_Index
+msgid "Index:"
+msgstr "Index:"
+
+#. Name: l_Toolbar_select_text_position
+msgid "Text option: "
+msgstr "Opziouns dal text: "
+
+#. Name: m_General_toolbar
+msgid "&Standard Buttons"
+msgstr "Buttuns &standard"
+
+#. Name: m_show_invariants
+msgid "In&variants"
+msgstr "In&variants"
+
+#. Name: t_Diagram_put_two_handles_left_cmd
+msgid "Put Two Handles Left"
+msgstr "Metta dus manaders che mancan"
+
+#. Name: l_Displayed_buttons_text
+msgid "Displayed buttons"
+msgstr "Mussa buttuns"
+
+#. Name: wb_Execution_profile_error
+msgid "The file you have supplied as existring Execution Provide does\n not exist or is not valid. Please provide a valid file or generate\n a new one.\n Click Back and select a valid file or choose the generate option."
+msgstr "La datoteca furnida sco exitstring Execution Provide na exista betg\n u es betg valaivla. Furnescha ina datoteca valaivla u generescha\n ina nova.\n Clicca enavos e selecziunescha ina datoteca valaivla u tscherna l'opziun generescha."
+
+#. Name: metric_management
+msgid "&Metric management"
+msgstr "&Managenent da la metrica"
+
+#. Name: e_Remove_class_cluster
+msgid "Remove a class or a cluster from the system"
+msgstr "Eliminescha ina class o in cluster dal sistem"
+
+#. Name: l_Expression
+msgid "Expression"
+msgstr "Expressiun"
+
+#. Name: metric_details
+msgid "&Show/hide details"
+msgstr "&Mussa/zuppa detagls"
+
+#. Name: t_Diagram_zoom_out_cmd
+msgid "Zoom Out"
+msgstr "Empitschnir"
+
+#. Name: e_go_to_w_code_dir
+msgid "Go to W_code directory of this system"
+msgstr "Va a l'ordinatur W_code da quest sistem"
+
+#. Name: l_Display_call_stack_warning
+msgid "Display a warning when the call stack depth reaches:"
+msgstr "Visualisescha in avertiment cura che la profunditad dal call stack es cuntanschida:"
+
+#. Name: l_Discard_freeze_dialog
+msgid "Do not ask again, and always compile C code"
+msgstr "Betg dumandar danovamain, e cumpilescha adina il code C"
+
+#. Name: m_Undo
+msgid "&Undo\tCtrl+Z"
+msgstr "&Revochescha\tCtrl+Z"
+
+#. Name: metric_ratio_unit
+msgid "Ratio"
+msgstr "Ratio"
+
+#. Name: l_Runtime_information_record
+msgid "Run-time information record"
+msgstr "Run-time information record"
+
+#. Name: m_Guided_tour
+msgid "&Guided Tour"
+msgstr "Visita &guidada"
+
+#. Name: b_Create_new_feature
+msgid "New Feature"
+msgstr "Nova feature"
+
+#. Name: m_Eiffel_introduction
+msgid "&Introduction to Eiffel"
+msgstr "&Introducziun a Eiffel"
+
+#. Name: l_More_items
+msgid "Display limit reached"
+msgstr "Limit da visualisaziun cuntanschì"
+
+#. Name: f_diagram_redo
+msgid "Redo last action"
+msgstr "Fa danovamain l'ultima acziun"
+
+#. Name: m_Export_to
+msgid "Save Cop&y As..."
+msgstr "Memorisar cop&ia sco..."
+
+#. Name: l_Dummy
+msgid "Should not be read"
+msgstr "Na duess betg vegnir legì"
+
+#. Name: f_diagram_zoom_out
+msgid "Zoom out"
+msgstr "Empitschnir"
+
+#. Name: b_Abort
+msgid "Abort"
+msgstr "Interrumpa"
+
+#. Name: e_Diagram_delete_figure
+msgid "Please drop a class, a cluster or a midpoint\n on this button. Use right click for both\npick and drop actions."
+msgstr "Lascha ina class, in cluster u in midpoint sin quest buttun.\n Dovra il clic dretg per tut dus\nacziun da prender e laschar."
+
+#. Name: l_Root_cluster_name
+msgid "Root cluster: "
+msgstr "Root cluster: "
+
+#. Name: metric_all_postcondition_clauses
+msgid "All post. clauses"
+msgstr "All post. clauses"
+
+#. Name: l_No_text_text
+msgid "No text labels"
+msgstr "Nagina etichetta da text"
+
+#. Name: t_Diagram_set_center_class
+msgid "Set Center Class"
+msgstr "Metta center class"
+
+#. Name: b_Replace_all, l_Replace_all
+msgid "Replace all"
+msgstr "Remplazza tut"
+
+#. Name: f_Retarget_diagram
+msgid "Target to cluster or class"
+msgstr "Destinaziun per cluster u class"
+
+#. Name: m_Pretty_print
+msgid "Expand an Object"
+msgstr "Expandescha in object"
+
+#. Name: m_Minimize_all
+msgid "&Minimize All"
+msgstr "&Minimescha tut"
+
+#. Name: m_New_window
+msgid "New &Window"
+msgstr "Nova &fanestra"
+
+#. Name: metric_imm_postcondition_equipped
+msgid "Imm. post equipped"
+msgstr "Imm. post equipped"
+
+#. Name: b_refactoring_redo
+msgid "Redo refactoring"
+msgstr "Fa danovamain il refactor"
+
+#. Name: e_Pretty_print
+msgid "Display an expanded view of objects"
+msgstr "Visualisescha ina visuala expandida dals objects"
+
+#. Name: m_Object
+msgid "&Object"
+msgstr "&Object"
+
+#. Name: f_diagram_hide_clusters
+msgid "Hide clusters"
+msgstr "Zuppa cluster"
+
+#. Name: m_Add_exported_feature
+msgid "&Add..."
+msgstr "&Agiunscha..."
+
+#. Name: l_assigners
+msgid "assigners"
+msgstr "assigners"
+
+#. Name: e_finalizing_launch_failed
+msgid "Background finalized C compilation launch failed"
+msgstr "Cumpilaziun dal finalized C lantschada en il fund fallada"
+
+#. Name: t_Choose_class
+msgid "Choose a Class"
+msgstr "tscherna ina class"
+
+#. Name: m_Dbg_assertion_checking_restore
+msgid "Restore Assertion Checking"
+msgstr "Repara il check da assetion"
+
+#. Name: metric_line_unit
+msgid "Line"
+msgstr "Lingia"
+
+#. Name: t_Choose_folder_name
+msgid "Choose a Folder Name"
+msgstr "Selecziunescha il num per il ordinatur"
+
+#. Name: m_Raise
+msgid "&Raise"
+msgstr "&Auza"
+
+#. Name: l_Attributes
+msgid "attributes"
+msgstr "attributs"
+
+#. Name: e_New_dynamic_lib_definition
+msgid "Create a new dynamic library definition"
+msgstr "Creescha ina nova definiziun da libraria dinamica"
+
+#. Name: m_Create_new_cluster
+msgid "New C&luster..."
+msgstr "Nov c&luster..."
+
+#. Name: l_Basic_text
+msgid "basic text view"
+msgstr "visuala simpla dal text"
+
+#. Name: l_Search_report_hide
+msgid "Report <<"
+msgstr "Report <<"
+
+#. Name: t_New_expression
+msgid "New Expression"
+msgstr "Nova expresiun"
+
+#. Name: t_Select_a_file
+msgid "Select a File"
+msgstr "Selecziunescha ina datoteca"
+
+#. Name: f_diagram_crop
+msgid "Crop diagram"
+msgstr "Taglia ora diagram"
+
+#. Name: t_Diagram_insert_midpoint_cmd
+msgid "Insert Midpoint"
+msgstr "Inserescha midpoint"
+
+#. Name: e_C_compilation_failed
+msgid "Background C compilation failed"
+msgstr "Cumpilaziun C en il fund fallada"
+
+#. Name: s_Feature_stone
+msgid "Feature "
+msgstr "Feature"
+
+#. Name: d_Features_to_go
+msgid "Remaining: "
+msgstr "Restant: "
+
+#. Name: l_class_tree_clusters, t_Cluster_tool, metric_clusters
+msgid "Clusters"
+msgstr "Clusters"
+
+#. Name: m_Indent
+msgid "&Indent selection\tTab"
+msgstr "&Indentescha selecziun\tTab"
+
+#. Name: m_Select_all
+msgid "Select &All\tCtrl+A"
+msgstr "Selecziunescha &tut\tCtrl+A"
+
+#. Name: m_Favorites
+msgid "Fav&orites"
+msgstr "Pre&ferids"
+
+#. Name: m_Print
+msgid "&Print"
+msgstr "&Stampa"
+
+#. Name: l_Diagram_delete_view_cmd
+msgid "Do you really want to delete current view?"
+msgstr "Eliminar la visuala actuala?"
+
+#. Name: e_Open_eac_browser
+msgid "Open the Eiffel Assembly Cache browser tool"
+msgstr "Avra l'utensil da navigaziun Eiffel assembly cache"
+
+#. Name: f_diagram_create_supplier_links
+msgid "Create new client-supplier links"
+msgstr "Creescha novs client supplier link"
+
+#. Name: l_diagram_uml_visibility
+msgid "Toggle between UML and BON view"
+msgstr "Midar tranter vista UML e BON"
+
+#. Name: m_Dbg_exception_handler
+msgid "Exceptions Handling"
+msgstr "Tractament da las exception"
+
+#. Name: metric_indirect_parents
+msgid "Indirect parents"
+msgstr "Indirect parents"
+
+#. Name: l_diagram_labels_visibility
+msgid "Toggle visibility of client link labels"
+msgstr "Mida visibilitad dals client link label"
+
+#. Name: m_If_block
+msgid "&Embed in %\"if...%\"\tCtrl+I"
+msgstr "&Embed·in·%\"if...%\"\tCtrl+I"
+
+#. Name: l_Context, t_Context_tool
+msgid "Context"
+msgstr "Context"
+
+#. Name: l_Max_index
+msgid "Maximum index displayed"
+msgstr "Index maximal visualisà"
+
+#. Name: f_diagram_zoom_in
+msgid "Zoom in"
+msgstr "Engrondir"
+
+#. Name: m_Feature_info
+msgid "Feat&ure Views"
+msgstr "Visualas feat&ure"
+
+#. Name: b_Add_text
+msgid "Add ->"
+msgstr "Agiunscha ->"
+
+#. Name: l_Available_buttons_text
+msgid "Available buttons"
+msgstr "Buttun a disposiziun"
+
+#. Name: m_System_new
+msgid "Project &Settings..."
+msgstr "Parameter&s dal project..."
+
+#. Name: l_diagram_inheritance_visibility
+msgid "Toggle visibility of inheritance links"
+msgstr "Mida visibilitad dals inheritance link"
+
+#. Name: l_diagram_delete
+msgid "Delete graphical items, remove code from system"
+msgstr "Eliminescha elements grafics, eliminescha code dal sistem"
+
+#. Name: metric_contract_unit
+msgid "Contract"
+msgstr "Contract"
+
+#. Name: m_Showonces
+msgid "O&nce/Constants"
+msgstr "O&nce/Constants"
+
+#. Name: t_Clients_of
+msgid "Clients of Class "
+msgstr "Clients da la class"
+
+#. Name: f_diagram_reset_view
+msgid "Reset current view"
+msgstr "Metta enavos la vista actuala"
+
+#. Name: l_Feature
+msgid "Feature:"
+msgstr "Feature:"
+
+#. Name: m_Go_to
+msgid "&Go to..."
+msgstr "&Va a..."
+
+#. Name: m_Showclick
+msgid "C&lickable"
+msgstr "C&liccabel"
+
+#. Name: e_Edited
+msgid "Some classes were edited since last compilation"
+msgstr "In pèr classes sun stadas editadas dapi l'ultima cumpilaziun"
+
+#. Name: t_Diagram_zoom_cmd
+msgid "Zoom"
+msgstr "Zoom"
+
+#. Name: b_Dbg_assertion_checking_restore
+msgid "Restore assertion checking"
+msgstr "Metta enavos l'assertion checking"
+
+#. Name: b_Add
+msgid "Add"
+msgstr "Agiunscha"
+
+#. Name: b_Toggle_stone_management
+msgid "Link Context"
+msgstr "Collia context"
+
+#. Name: b_Compile
+msgid "Compile"
+msgstr "Cumpilescha"
+
+#. Name: l_Showstops
+msgid "Show stop points"
+msgstr "Mussa ils puncts da stop"
+
+#. Name: f_Cut
+msgid "Cut (Ctrl+X)"
+msgstr "Taglia ora (Ctrl+X)"
+
+#. Name: b_New_editor
+msgid "New Editor"
+msgstr "Nov editur"
+
+#. Name: e_Exec_stop
+msgid "Pause application at current point"
+msgstr "Ferma l'applicaziun a quist punct"
+
+#. Name: b_refactoring_rename
+msgid "Rename"
+msgstr "Renumna"
+
+#. Name: l_diagram_toggle_quality
+msgid "Toggle quality level"
+msgstr "Mida livel da qualitad"
+
+#. Name: l_Discard_starting_dialog
+msgid "Don't show this dialog at startup"
+msgstr "betg mussar quest dialog a la partenza"
+
+#. Name: m_Project
+msgid "&Project"
+msgstr "&Project"
+
+#. Name: wt_Execution_profile_error
+msgid "Execution Profile Error"
+msgstr "Errur da execution profile"
+
+#. Name: l_Text_loading
+msgid "Current text is being loaded. It is therefore\nnot editable nor pickable."
+msgstr "Il text actual es stat chargià. Per quai el es\nbetg editabel e prendabel."
+
+#. Name: f_diagram_force_settings
+msgid "Show physics settings dialog"
+msgstr "Mussa il dialog da las preferenzas physics"
+
+#. Name: b_Freeze
+msgid "Freeze"
+msgstr "Freeze"
+
+#. Name: b_Eiffel_features
+msgid "Eiffel Features"
+msgstr "Features da Eiffel"
+
+#. Name: b_Exec_into
+msgid "Step Into"
+msgstr "Fa in pass en"
+
+#. Name: l_Discard_save_before_compile_dialog
+msgid "Do not ask again, and always save files before compiling"
+msgstr "Betg dumandar danovamain, e memorisescha adina las datotecas avant che compilar"
+
+#. Name: e_Compilation_failed
+msgid "Eiffel compilation failed"
+msgstr "Cumpilaziun da Eiffel fallada"
+
+#. Name: b_Descendant_time
+msgid "Descendant Time"
+msgstr "Deschendant time"
+
+#. Name: f_diagram_put_right_angles
+msgid "Force right angles"
+msgstr "Sforza anguls dretg"
+
+#. Name: l_Tab_metrics
+msgid "Metrics"
+msgstr "Metricas"
+
+#. Name: m_Display_system_info
+msgid "S&ystem Info"
+msgstr "Infurmaziun da sistem"
+
+#. Name: f_diagram_fill_cluster
+msgid "Include all classes of cluster"
+msgstr "Cuntegna tut las class dal cluster"
+
+#. Name: m_Run_to_this_point
+msgid "&Run to This Point"
+msgstr "&Exequescha fin a quest punct"
+
+#. Name: e_C_compilation_terminated
+msgid "Background C compilation terminated"
+msgstr "Cumpilaziun C en il fund terminada"
+
+#. Name: metric_all_functions
+msgid "All functions"
+msgstr "Tut las funcziuns"
+
+#. Name: e_Remove_expressions
+msgid "Remove selected expressions"
+msgstr "Eliminescha la expressiun selecziunada"
+
+#. Name: e_Paused
+msgid "Application is paused"
+msgstr "Applicaziun in pausa"
+
+#. Name: l_Deferreds
+msgid "deferred features"
+msgstr "defeffed features"
+
+#. Name: e_Diagram_add_class_figure_relations
+msgid "A class figure(s) must either be selected\n or dropped on this button via right clicking."
+msgstr "Ina figura da ina class sto esser selecziunada u laschada sin quest buttun cun il cliccar dretg."
+
+#. Name: l_Switch_num_format
+msgid "Switch numerical formating"
+msgstr "Mida formataziun numerica"
+
+#. Name: f_preferences, t_Preference_window
+msgid "Preferences"
+msgstr "Preferenzas"
+
+#. Name: b_Apply
+msgid "Apply"
+msgstr "Applitgescha"
+
+#. Name: l_Use_regular_expression
+msgid "Use regular expression"
+msgstr "Dovra expressiuns regularas"
+
+#. Name: l_Show_all_text
+msgid "Show text labels"
+msgstr "Mussa l'etichetta da text"
+
+#. Name: t_Add_search_scope
+msgid "Add Search Scope"
+msgstr "Agiunscha search scope"
+
+#. Name: t_Diagram_link_tool
+msgid "Link Tool"
+msgstr "Utensil da colliaments"
+
+#. Name: l_System_name
+msgid "System name: "
+msgstr "Num da sistem: "
+
+#. Name: m_Showdescendants
+msgid "De&scendants"
+msgstr "De&scendants"
+
+#. Name: t_Autocomplete_window
+msgid "Auto-Complete"
+msgstr "Auto-cumplettaziun"
+
+#. Name: e_finalizing_succeeded
+msgid "Background finalized C compilation succeeded"
+msgstr "Cumpilaziun dal finalized C succedida"
+
+#. Name: l_Flat, l_Routine_flat
+msgid "flat view"
+msgstr "Visuala flat"
+

@@ -2040,8 +2040,12 @@ Src/library/gobo_extension/gobo_extension.ecf -text
 Src/library/i18n/documents/ClassDiagram.png -text
 Src/library/i18n/example/README -text
 Src/library/i18n/example/a.pot -text
+Src/library/i18n/example/estudio/es.po -text
 Src/library/i18n/example/estudio/interface_names.pot -text
+Src/library/i18n/example/estudio/it.po -text
+Src/library/i18n/example/estudio/rm.po -text
 Src/library/i18n/example/estudio/warning_messages.pot -text
+Src/library/i18n/example/estudio/zh.po -text
 Src/library/i18n/example/logo.png -text
 Src/library/i18n/example/mo_files/ar.mo -text
 Src/library/i18n/example/mo_files/gr.mo -text
