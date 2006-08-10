@@ -44,11 +44,6 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	window_position_enum: INTEGER is
-			-- GtkWindow positioning enum.
-		do
-		end
-
 	internal_blocking_window: EV_WINDOW
 			-- Window that `Current' is relative to.
 			-- Implementation
@@ -57,17 +52,30 @@ feature {NONE} -- Implementation
 			-- Set the horizontal size to `a_width'.
 			-- Set the vertical size to `a_height'.
 		do
+			set_width ( a_width )
+			set_height ( a_height )
 		end
-
 
 	width: INTEGER is
 			-- Horizontal size measured in pixels.
+		local
+			a_rect: RECT_STRUCT
+			ret: INTEGER
 		do
+			create a_rect.make_new_unshared
+			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
+			Result := ( a_rect.right - a_rect.left ).abs
 		end
 
 	height: INTEGER is
 			-- Vertical size measured in pixels.
+		local
+			a_rect: RECT_STRUCT
+			ret: INTEGER
 		do
+			create a_rect.make_new_unshared
+			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
+			Result := ( a_rect.bottom - a_rect.top ).abs
 		end
 
 	set_width (a_width: INTEGER) is
@@ -76,7 +84,7 @@ feature {NONE} -- Implementation
 			a_rect: RECT_STRUCT
 			ret: INTEGER
 		do
-			create a_rect.make_new_shared
+			create a_rect.make_new_unshared
 			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
 			a_rect.set_right(a_rect.left + a_width)
 			ret := set_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item) -- kWindowContentRgn
@@ -88,7 +96,7 @@ feature {NONE} -- Implementation
 			a_rect: RECT_STRUCT
 			ret: INTEGER
 		do
-			create a_rect.make_new_shared
+			create a_rect.make_new_unshared
 			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
 
 			a_rect.set_bottom(a_rect.top + a_height)
@@ -101,12 +109,24 @@ feature {NONE} -- Implementation
 
 	x_position: INTEGER is
 			-- X coordinate of `Current'
+		local
+			a_rect: RECT_STRUCT
+			ret: INTEGER
 		do
+			create a_rect.make_new_unshared
+			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
+			Result := a_rect.left
 		end
 
 	y_position: INTEGER is
 			-- Y coordinate of `Current'
+		local
+			a_rect: RECT_STRUCT
+			ret: INTEGER
 		do
+			create a_rect.make_new_unshared
+			ret := get_window_bounds_external(c_object, {MACWINDOWS_ANON_ENUMS}.kwindowcontentrgn, a_rect.item)
+			Result := a_rect.top
 		end
 
 	set_x_position (a_x: INTEGER) is
@@ -181,7 +201,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
-end -- class EV_GTK_WINDOW_IMP
+end

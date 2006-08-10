@@ -1,6 +1,6 @@
 indexing
 	description:
-		"EiffelVision vertical box. GTK+ implementation."
+		"EiffelVision vertical box. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "container, box, vertical"
@@ -32,7 +32,7 @@ create
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Create a GTK vertical box.
+			-- Create a vertical box.
 		local
 			control_ptr : POINTER
 			rect : RECT_STRUCT

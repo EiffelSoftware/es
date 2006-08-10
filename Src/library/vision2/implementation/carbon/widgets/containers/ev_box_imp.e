@@ -27,20 +27,14 @@ inherit
 
 feature -- Access
 
-	is_homogeneous: BOOLEAN is
+	is_homogeneous: BOOLEAN
 			-- Are all children restricted to be the same size?
-		do
-		end
 
-	border_width: INTEGER is
+	border_width: INTEGER
 			-- Width of border around container in pixels.
-		do
-		end
 
-	padding: INTEGER is
+	padding: INTEGER
 			-- Space between children in pixels.		
-		do
-		end
 
 feature {EV_ANY, EV_ANY_I} -- Status report
 
@@ -74,11 +68,6 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 feature {EV_ANY_I} -- Implementation
 
 	needs_event_box: BOOLEAN is True
-
-	gtk_reorder_child (a_container, a_child: POINTER; a_position: INTEGER) is
-			-- Move `a_child' to `a_position' in `a_container'.
-		do
-		end
 
 feature {EV_ANY_I, EV_ANY} -- Implementation
 

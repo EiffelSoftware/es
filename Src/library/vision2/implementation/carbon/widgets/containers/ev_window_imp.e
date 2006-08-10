@@ -39,7 +39,8 @@ inherit
 			on_widget_mapped,
 			destroy,
 			has_focus,
-			on_focus_changed
+			on_focus_changed,
+			on_new_item
 		end
 
 	EV_CARBON_WINDOW_IMP
@@ -368,6 +369,14 @@ feature {NONE} -- Implementation
 			end
 			call_show_actions := False
 		end
+
+	on_new_item( an_item_imp : EV_WIDGET_IMP ) is
+			-- called after  `an_item'  is added
+		do
+			Precursor ( an_item_imp )
+			--size_control_external ( an_item_imp.c_object, , h: INTEGER_32)
+		end
+
 
 	internal_set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is
 			-- Set the minimum horizontal size to `a_minimum_width'.
