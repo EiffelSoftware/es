@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision widget. GTK implementation.%N%
+		"Eiffel Vision widget. Carbon implementation.%N%
 		%See ev_widget.e"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -125,6 +125,7 @@ feature {EV_APPLICATION_IMP} -- Implementation
 feature -- Access
 
 	id: INTEGER  -- id is a unique integer to identifie the widgets
+
 	parent: EV_CONTAINER is
 			-- Container widget that contains `Current'.
 			-- (Void if `Current' is not in a container)
@@ -258,9 +259,9 @@ feature {EV_CONTAINER_IMP} -- Implementation
 feature {EV_ANY_IMP, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
 
 	destroy is
-			-- Destroy `Current'
-		do
-		end
+			do
+				app_implementation.give_free (id)
+			end
 
 	parent_imp: EV_CONTAINER_IMP
 			-- Container widget that contains `Current'.
