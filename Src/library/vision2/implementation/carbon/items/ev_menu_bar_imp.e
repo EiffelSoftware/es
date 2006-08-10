@@ -19,6 +19,10 @@ inherit
 			insert_menu_item
 		end
 
+	CFSTRING_FUNCTIONS_EXTERNAL
+	MENUS_FUNCTIONS_EXTERNAL
+
+
 create
 	make
 
@@ -55,7 +59,12 @@ feature {NONE} -- Implementation
 
 	insert_menu_item (an_item_imp: EV_MENU_ITEM_IMP; pos: INTEGER) is
 			-- Generic menu item insertion.
+		local
+			ptr: POINTER
+			ret: INTEGER
 		do
+			ptr := an_item_imp.c_object
+			insert_menu_external (ptr, 0)
 		end
 
 feature {EV_ANY_I} -- Implementation

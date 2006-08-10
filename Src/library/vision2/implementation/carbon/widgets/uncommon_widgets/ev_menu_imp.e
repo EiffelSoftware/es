@@ -1,7 +1,5 @@
 indexing
-	description: "Eiffel Vision menu. GTK+ implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Eiffel Vision menu. Carbon implementation."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -40,6 +38,7 @@ feature {NONE} -- Initialization
 
 	initialize is
 		do
+
 		end
 
 feature -- Basic operations
@@ -56,10 +55,6 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Externals
-
-	frozen c_gtk_menu_popup (a_menu: POINTER; a_x, a_y: INTEGER) is
-		do
-		end
 
 feature {EV_ANY_I} -- Implementation
 
@@ -79,18 +74,7 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
+	copyright:	"Copyright (c) 2006, Eiffel.Mac Team"
 
 end -- class EV_MENU_IMP
 

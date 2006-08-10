@@ -35,6 +35,8 @@ inherit
 
 	EV_MENU_ITEM_ACTION_SEQUENCES_IMP
 
+	MENUS_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -46,7 +48,12 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create a menu.
+		local
+			ptr: POINTER
+			ret: INTEGER
 		do
+			ret := create_new_menu_external (object_id, 0, $ptr) -- We use the unique object_id (-> IDENTIFIED) as menu id
+			set_c_object(ptr)
 		end
 
 	initialize is
@@ -56,9 +63,31 @@ feature {NONE} -- Initialization
 
 feature -- Element change
 
+	string_to_cfstring (a_string: STRING_GENERAL): POINTER is
+			--
+		local
+			c_str: C_STRING
+			null_ptr: POINTER
+		do
+			create c_str.make (a_string)
+			Result:= cfstring_create_with_cstring_external(null_ptr, c_str.item,  kCFStringEncodingASCII2)
+		end
+
+	frozen kCFStringEncodingASCII2: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kCFStringEncodingASCII"
+	end
+
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
+		local
+			ptr: POINTER
+			ret: INTEGER
 		do
+			ptr := c_object
+			ret := set_menu_title_with_cfstring_external (ptr, string_to_cfstring(a_text))
 		end
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation

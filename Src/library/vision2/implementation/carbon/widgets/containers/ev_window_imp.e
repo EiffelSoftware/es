@@ -153,9 +153,9 @@ feature {NONE} -- Initialization
 					ret: INTEGER
 				do
 					create psn.make_new_unshared
-					ret:= get_current_process_external(psn.item)
-					ret:=transform_process_type_external(psn.item,1)
-					ret:=set_front_process_external(psn.item)
+					ret := get_current_process_external(psn.item)
+					ret := transform_process_type_external(psn.item,1)
+					ret := set_front_process_external(psn.item)
 				end
 
 feature  -- Access
