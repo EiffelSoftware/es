@@ -57,7 +57,8 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Set up the callback marshalL
 		do
-			id_count:=1
+			id_count := 1
+			create free_ids.make
 			base_make (an_interface)
 			create window_oids.make
 			create widget_list.make (1, 200)
@@ -69,7 +70,6 @@ feature {NONE} -- Event loop
 			-- Display the first window, set up the post_launch_actions,
 			-- and start the event loop.
 		do
-
 			enable_foreground_operation
 			run_application_event_loop_external
 		end
@@ -90,8 +90,9 @@ feature {NONE} -- Event loop
 
 feature {EV_ANY_IMP} -- Implementation
 
-	install_event_handler(a_id:INTEGER ; a_target:POINTER; a_event_class: INTEGER; a_event_kind:INTEGER) is
-			--
+	install_event_handler (a_id: INTEGER ; a_target: POINTER; a_event_class: INTEGER; a_event_kind: INTEGER) is
+			-- install a carbon event handler
+			-- this hack with RECT_STRUCT is just a workearound, because i dont know how to get an Integer  from a pointer in eiffel
 		local
 			null: POINTER
 			ret: INTEGER
@@ -99,7 +100,6 @@ feature {EV_ANY_IMP} -- Implementation
 			event_type: EVENT_TYPE_SPEC_STRUCT
 			user_data: RECT_STRUCT
 		do
-			-- this hack with RECT_STRUCT is just a worke around, because i dont know how to get the integer object given a pinter in eiffel
 			create user_data.make_new_shared
 			user_data.set_top (a_id)
 
@@ -107,16 +107,17 @@ feature {EV_ANY_IMP} -- Implementation
 			event_target := a_target
 
 			create event_type.make_new_shared
-			event_type.set_eventclass(a_event_class)
+			event_type.set_eventclass (a_event_class)
 			event_type.set_eventkind (a_event_kind)
-			ret := install_event_handler_external(event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, null)
-		--	print("event Handler for: " + a_id.out + " installed with class: " + user_data.left.out + " ret: " + ret.out + "%N")
+			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, null)
 		end
 
 
 feature -- Access
 
 	id_count: INTEGER  --the next id.
+
+	free_ids: LINKED_LIST[INTEGER]
 
 	widget_list: ARRAY[EV_WIDGET_IMP]
 
@@ -143,22 +144,49 @@ feature -- Access
 		do
 		end
 
+feature -- creation and destruction
+
+	get_id (a_widget : EV_WIDGET_IMP) : INTEGER is
+		do
+			if free_ids.is_empty then
+				widget_list.force (a_widget, id_count)
+				Result := id_count
+				id_count := id_count + 1
+			else
+				widget_list.force (a_widget, free_ids.first)
+				Result :=  free_ids.first
+				free_ids.remove_left
+			end
+			io.put_string ("Get ID: " + Result.out + "/n")
+		end
+
+	give_free (a_id: INTEGER) is
+			do
+				widget_list.force (void, a_id)
+				free_ids.put_right (a_id)
+				io.put_string ("Freed " + a_id.out + "/n")
+			end
+
+
 feature -- Basic operation
 
 	process_events_until_stopped is
 			-- Process all events until one event is received
 			-- by `widget'.
 		do
+			run_application_event_loop_external
 		end
 
 	process_events is
 			-- Process all pending events and redraws.
 		do
+			run_application_event_loop_external
 		end
 
 	stop_processing is
 			-- Exit `process_events_until_stopped'.
 		do
+			quit_application_event_loop_external
 		end
 
 	motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER] is
@@ -207,12 +235,6 @@ feature -- Status setting
 		do
 		end
 
-		get_id(a_widget: EV_WIDGET_IMP): INTEGER is
-		do
-			widget_list.force (a_widget,id_count)
-			Result:=id_count
-			id_count:=id_count+1
-		end
 
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
 
@@ -379,12 +401,12 @@ feature {NONE} -- Carbon callback handling for events
 			event_class, event_kind, a_id: INTEGER
 			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
 			a_event : TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
-
 		do
 				create a_event.default_create
 
 				if a_inuserdata /= null then
 					create user_data.make_shared (a_inuserdata) --just a hack, because i dont know how to get to integer from a pointer in eiffel.
+
 					event_class := get_event_class_external (a_inevent)
 					event_kind := get_event_kind_external (a_inevent)
 					a_id := user_data.top
@@ -394,20 +416,22 @@ feature {NONE} -- Carbon callback handling for events
 
 						if event_kind = {carbonevents_anon_enums}.kEventMouseDown and event_class = {carbonevents_anon_enums}.kEventClassControl then
 
-							a_button?=widget_list.item (a_id)
-							if a_button/=void then
-								a_button.select_actions.call(void)
+							a_button ?= widget_list.item (a_id)
+							if a_button /= void then
+								a_button.select_actions.call (void)
 							end
 							a_seq ?= widget_list.item (a_id)
 							if a_seq /= void then
-								a_seq.pointer_button_press_actions.call(a_event)
+								a_seq.pointer_button_press_actions.call (a_event)
 							end
 
 						elseif  event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
-							a_window?=widget_list.item (a_id)
-							if a_window/=void then
+
+							a_window ?= widget_list.item (a_id)
+							if a_window /= void then
 								a_window.close_request_actions.call (void)
 							end
+
 						end
 				end
 		end
