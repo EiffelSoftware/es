@@ -37,6 +37,7 @@ feature -- Access
 	text: STRING_32 is
 			-- Text of the label.
 		do
+			--hiview_copy_text_external() ?
 		end
 
 	text_alignment: INTEGER is

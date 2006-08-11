@@ -1,9 +1,5 @@
 indexing
-	description: "Eiffel Vision window. GTK+ implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Eiffel Vision window. Carbon implementation."
 
 class
 	EV_WINDOW_IMP
@@ -138,24 +134,12 @@ feature {NONE} -- Initialization
 
 		end
 
-
-		carbon_foreground is
-				local
-					psn: PROCESS_SERIAL_NUMBER_STRUCT
-					ret: INTEGER
-				do
-					create psn.make_new_unshared
-					ret := get_current_process_external(psn.item)
-					ret := transform_process_type_external(psn.item,1)
-					ret := set_front_process_external(psn.item)
-				end
-
 feature  -- Access
 
 	has_focus: BOOLEAN is
 			-- Does `Current' have the keyboard focus?
 		local
-			the_window:OPAQUE_WINDOW_PTR_STRUCT
+			the_window: OPAQUE_WINDOW_PTR_STRUCT
 		do
 			create the_window.make_shared(c_object)
 			Result := (is_window_active_external (the_window.item)/=0)
@@ -221,8 +205,6 @@ feature -- Status setting
 				set_blocking_window (Void)
 			end
 			show_window_external(c_object)
-
-			carbon_foreground
 		end
 
 	is_positioned: BOOLEAN
@@ -466,18 +448,6 @@ feature {EV_ANY_I} -- Implementation
 		-- Interface object of `Current'
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_WINDOW_IMP
 
