@@ -16,7 +16,8 @@ inherit
 	EV_DRAWABLE_IMP
 		redefine
 			interface,
-			clear_rectangle
+			clear_rectangle,
+			initialize
 		end
 
 create

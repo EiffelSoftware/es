@@ -124,7 +124,7 @@ feature {EV_APPLICATION_IMP} -- Implementation
 
 feature -- Access
 
-	id: INTEGER  -- id is a unique integer to identifie the widgets
+
 
 	parent: EV_CONTAINER is
 			-- Container widget that contains `Current'.

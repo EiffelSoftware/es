@@ -119,7 +119,7 @@ feature -- Access
 
 	free_ids: LINKED_LIST[INTEGER]
 
-	widget_list: ARRAY[EV_WIDGET_IMP]
+	widget_list: ARRAY[EV_ANY_IMP]
 
 	ctrl_pressed: BOOLEAN is
 			-- Is ctrl key currently pressed?
@@ -146,7 +146,7 @@ feature -- Access
 
 feature -- creation and destruction
 
-	get_id (a_widget : EV_WIDGET_IMP) : INTEGER is
+	get_id (a_widget : EV_ANY_IMP) : INTEGER is
 		do
 			if free_ids.is_empty then
 				widget_list.force (a_widget, id_count)
@@ -157,7 +157,7 @@ feature -- creation and destruction
 				Result :=  free_ids.first
 				free_ids.remove_left
 			end
-			io.put_string ("Get ID: " + Result.out + "/n")
+			io.put_string ("Get ID: " + Result.out + "%N")
 		end
 
 	give_free (a_id: INTEGER) is
@@ -397,6 +397,7 @@ feature {NONE} -- Carbon callback handling for events
 			user_data: RECT_STRUCT
 			null: POINTER
 			a_button: EV_BUTTON_IMP
+			a_drawer: EV_DRAWABLE_IMP
 			a_window: EV_WINDOW_IMP
 			event_class, event_kind, a_id: INTEGER
 			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
@@ -425,12 +426,20 @@ feature {NONE} -- Carbon callback handling for events
 								a_seq.pointer_button_press_actions.call (a_event)
 							end
 
+						elseif event_kind = {carbonevents_anon_enums}.kEventControlDraw and event_class = {carbonevents_anon_enums}.kEventClassControl then
+
+							a_drawer ?= widget_list.item (a_id)
+							if a_drawer /= void then
+								a_drawer.draw (a_inevent)
+							end
+
 						elseif  event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
 
 							a_window ?= widget_list.item (a_id)
 							if a_window /= void then
 								a_window.close_request_actions.call (void)
 							end
+
 
 						end
 				end

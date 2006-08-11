@@ -29,8 +29,9 @@ inherit
 
 feature {EV_ANY_I} -- Access
 
-	c_object: POINTER
-			-- C pointer to corresponding carbon struct
+	c_object: POINTER -- C pointer to corresponding carbon struct
+	id: INTEGER  -- id is a unique integer to identifie the widgets
+
 
 feature {EV_ANY_I} -- Access
 
@@ -66,13 +67,7 @@ feature {EV_ANY, EV_ANY_IMP} -- Implementation
 
 feature {EV_ANY_I, EV_APPLICATION_IMP} -- Event handling
 
-feature {NONE} -- Implementation
-
-	needs_event_box: BOOLEAN is
-			-- Does `event_widget' need an event box to receive events?
-		do
---			Result := False
-		end
+feature --dispose
 
 	dispose is
 			-- Called by the Eiffel GC when `Current' is destroyed.
@@ -85,6 +80,15 @@ feature {NONE} -- Implementation
 			if  a_widget /= void then
 				a_widget.destroy
 			end
+		end
+
+
+feature {NONE} -- Implementation
+
+	needs_event_box: BOOLEAN is
+			-- Does `event_widget' need an event box to receive events?
+		do
+--			Result := False
 		end
 
 	c_object_dispose is

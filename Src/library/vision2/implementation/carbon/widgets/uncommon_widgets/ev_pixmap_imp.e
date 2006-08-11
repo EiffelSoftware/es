@@ -24,7 +24,8 @@ inherit
 			width,
 			height,
 			destroy,
-			drawable
+			drawable,
+			initialize
 		end
 
 	EV_PRIMITIVE_IMP
@@ -72,22 +73,14 @@ feature {NONE} -- Initialization
 			err, ret : INTEGER
 			struct_ptr : POINTER
 			target: POINTER
-			point : CGPOINT_STRUCT
-			size : CGSIZE_STRUCT
-			rect : CGRECT_STRUCT
 		do
 
 			base_make (an_interface)
 
-			ret := hiimage_view_create_external( null, $struct_ptr )
-			set_c_object ( struct_ptr )
+			ret := hiimage_view_create_external (null, $struct_ptr)
+			set_c_object (struct_ptr)
 
-			ret := hiview_set_drawing_enabled_external (c_object, 1)
-
-			id := app_implementation.get_id (current)  --getting an id from the application
-			target := get_control_event_target_external(struct_ptr)
-			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
-
+			initialize
 		end
 
 
@@ -95,7 +88,17 @@ feature {NONE} -- Initialization
 
 	initialize is
 			-- Initialize `Current'
+		local
+			ret: INTEGER
+			target: POINTER
 		do
+			ret := hiview_set_drawing_enabled_external (c_object, 1)
+			id := app_implementation.get_id (current)  --getting an id from the application
+			target := get_control_event_target_external(c_object)
+			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+
+			precursor{EV_DRAWABLE_IMP}
+
 		end
 
 feature -- Drawing operations
@@ -281,7 +284,16 @@ feature -- Duplication
 	copy_pixmap (other: EV_PIXMAP) is
 			-- Update `Current' to have same appearance as `other'.
 			-- (So as to satisfy `is_equal'.)
+		local
+			other_imp: EV_PIXMAP_IMP
+			ret: INTEGER
 		do
+			other_imp ?= other.implementation
+			drawable := other_imp.drawable
+			mask := other_imp.mask
+			internal_xpm_data := other_imp.internal_xpm_data
+
+			ret := hiimage_view_set_image_external (c_object, drawable)
 		end
 
 feature {EV_ANY_I, EV_GTK_DEPENDENT_APPLICATION_IMP} -- Implementation

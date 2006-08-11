@@ -90,14 +90,6 @@ feature {NONE} -- Initialization
 					ptr: POINTER
 					root_control_ptr : POINTER
 					target: POINTER
-
-
-			image_ref, url, provider, struct_ptr : POINTER
-			a_file_name, a_dir : C_STRING
-			ret : INTEGER
-			point : CGPOINT_STRUCT
-			size : CGSIZE_STRUCT
-			grect : CGRECT_STRUCT
 			do
 					base_make (an_interface)
 					create rect.make_new_shared
@@ -337,13 +329,9 @@ feature -- Element change
 			ptr: POINTER
 			res: INTEGER
 		do
-
 			create c_str.make (new_title)
 			ptr:=c_string_to_cfstring_ptr(c_str)
 			res:=set_window_title_with_cfstring_external (c_object, ptr)
-		--	res:=set_control_title_with_cfstring_external (c_object, ptr)
-
-
 		end
 
 	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
