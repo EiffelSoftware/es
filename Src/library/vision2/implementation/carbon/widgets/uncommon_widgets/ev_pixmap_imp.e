@@ -78,22 +78,14 @@ feature {NONE} -- Initialization
 		do
 
 			base_make (an_interface)
-			err := hiimage_view_create_external( null, $struct_ptr )
 
+			ret := hiimage_view_create_external( null, $struct_ptr )
 			set_c_object ( struct_ptr )
+
+			ret := hiview_set_drawing_enabled_external (c_object, 1)
+
 			id := app_implementation.get_id (current)  --getting an id from the application
 			target := get_control_event_target_external(struct_ptr)
-
-					create rect.make_new_unshared
-					create point.make_new_unshared
-					create size.make_new_unshared
-					point.set_x (50)
-					point.set_y (50)
-					size.set_height(50)
-					size.set_width (50)
-					rect.set_origin (point.item)
-					rect.set_size (size.item)
-					ret := hiview_set_frame_external (c_object, rect.item)
 			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 
 		end
@@ -110,7 +102,10 @@ feature -- Drawing operations
 
 	redraw is
 			-- Force `Current' to redraw itself.
+		local
+			ret: INTEGER
 		do
+			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
 	flush is
@@ -118,9 +113,9 @@ feature -- Drawing operations
 			-- immediately. Any changes that have not yet been reflected will
 			-- become visible.
 		local
-			err : INTEGER
+			ret : INTEGER
 		do
-			err := set_control_visibility_external (c_object, 1, 1)
+			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
 	update_if_needed is
@@ -132,58 +127,60 @@ feature -- Measurement
 
 	width: INTEGER is
 			-- Width of the pixmap in pixels.
+		local
+			ret : INTEGER
+			size : CGSIZE_STRUCT
+			rect : CGRECT_STRUCT
+			rect_ptr : POINTER
 		do
+			create rect.make_new_unshared
+			ret := hiview_get_frame_external (c_object, rect.item)
+			create size.make_shared (rect.size.item)
+			Result := size.width.rounded
 		end
 
 	height: INTEGER is
 			-- height of the pixmap.
+		local
+			ret : INTEGER
+			size : CGSIZE_STRUCT
+			rect : CGRECT_STRUCT
+			rect_ptr : POINTER
 		do
+			create rect.make_new_unshared
+			ret := hiview_get_frame_external (c_object, rect.item)
+			create size.make_shared (rect.size.item)
+			Result := size.height.rounded
 		end
 
 feature -- Element change
 
-
-
-
-
 	read_from_named_file (file_name: STRING_GENERAL) is
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
-			image_ref, url, provider : POINTER
+			url, provider : POINTER
 			a_file_name, a_dir : C_STRING
 			ret : INTEGER
 			point : CGPOINT_STRUCT
 			size : CGSIZE_STRUCT
 			rect : CGRECT_STRUCT
-
-
 		do
 			create a_file_name.make (file_name)
 			create a_dir.make("./")
-			print("before")
 
 			url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, c_string_to_cfstring_ptr(a_file_name), null, null)
-				if url /= null then
-					print ("got url")
-					provider := cgdata_provider_create_with_url_external (url)
+			if url /= null then
+				provider := cgdata_provider_create_with_url_external (url)
+				drawable := cgimage_create_with_pngdata_provider_external (provider, null, 1, kCGRenderingIntentDefault)
 
-					image_ref := cgimage_create_with_pngdata_provider_external (provider, null, 1, kCGRenderingIntentDefault)
+				cgdata_provider_release_external (provider)
+				cfrelease_external (url)
 
-				--	cgdata_provider_release_external (provider)
-				--	cfrelease_external (url)
-
-					ret := hiimage_view_set_image_external (c_object, image_ref)
-					ret := hiimage_view_set_opaque_external(c_object, 0 );
-						print ("%N" + "image set ret: " + ret.out + "%Nis valid?: " + hiview_is_valid_external(c_object).out)
-        			ret := hiimage_view_set_alpha_external( c_object, 0.3 );
-
-        		--	ret := hiview_set_zorder_external( c_object, kHIViewZOrderBelow, null )
-				--	ret := hiview_set_visible_external( c_object, 50 )
-
-				end
-
+				ret := hiimage_view_set_image_external (c_object, drawable)
+			end
 
 		end
+
 
 	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
 			local
@@ -213,6 +210,7 @@ feature -- Element change
 		"kHIViewZOrderBelow"
 	end
 
+
 	set_with_default is
 			-- Initialize the pixmap with the default
 			-- pixmap (Vision2 logo)
@@ -221,25 +219,58 @@ feature -- Element change
 
 	stretch (a_x, a_y: INTEGER) is
 			-- Stretch the image to fit in size `a_x' by `a_y'.
+		local
+			ret: INTEGER
 		do
+			ret := hiimage_view_set_scale_to_fit_external (c_object, 1)
+			set_size (a_x, a_y)
 		end
 
 	set_size (a_width, a_height: INTEGER) is
 			-- Set the size of the pixmap to `a_width' by `a_height'.
+		local
+			ret : INTEGER
+			old_point : CGPOINT_STRUCT
+			size : CGSIZE_STRUCT
+			old_rect, rect : CGRECT_STRUCT
 		do
+			create old_rect.make_new_unshared
+			ret := hiview_get_frame_external (c_object, old_rect.item)
+			create old_point.make_shared (old_rect.origin.item)
+
+			create rect.make_new_unshared
+			create size.make_new_unshared
+			size.set_height(a_height)
+			size.set_width (a_width)
+			rect.set_origin (old_point.item)
+			rect.set_size (size.item)
+			ret := hiview_set_frame_external (c_object, rect.item)
 		end
 
 	reset_for_buffering (a_width, a_height: INTEGER) is
 			-- Resets the size of the pixmap without keeping original image or clearing background.
+		local
+
 		do
+			if a_width /= width or else a_height /= height then
+				-- so what?
+			end
 		end
 
-	set_mask (a_mask: EV_BITMAP) is
-			-- Set the GdkBitmap used for masking `Current'.
+		set_mask (a_mask: EV_BITMAP) is
+			-- Set the Bitmap used for masking `Current'.
+		local
+			a_mask_imp: EV_BITMAP_IMP
+			ret: INTEGER
 		do
+			a_mask_imp ?= a_mask.implementation
+			drawable := cgimage_create_with_mask_external (drawable, a_mask_imp.drawable)
+			ret := hiimage_view_set_image_external (c_object, drawable)
 		end
 
 feature -- Access
+
+	image_ptr: POINTER
 
 	raw_image_data: EV_RAW_IMAGE_DATA is
 		do
