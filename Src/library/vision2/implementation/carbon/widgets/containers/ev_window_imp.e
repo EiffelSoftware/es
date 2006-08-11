@@ -39,8 +39,7 @@ inherit
 			on_widget_mapped,
 			destroy,
 			has_focus,
-			on_focus_changed,
-			on_new_item
+			on_focus_changed
 		end
 
 	EV_CARBON_WINDOW_IMP
@@ -210,11 +209,9 @@ feature -- Status setting
 	allow_resize is
 			-- Allow the resize of the window.
 		local
-			the_window: OPAQUE_WINDOW_PTR_STRUCT
 			res: INTEGER
 		do
-			create the_window.make_shared(c_object)
-			res:=change_window_attributes_external(the_window.item, {MACWINDOWS_ANON_ENUMS}.kwindowresizableattribute, {MACWINDOWS_ANON_ENUMS}.kwindownoattributes)
+			res := change_window_attributes_external (c_object, {MACWINDOWS_ANON_ENUMS}.kwindowresizableattribute, {MACWINDOWS_ANON_ENUMS}.kwindownoattributes)
 			internal_enable_border
 		end
 
@@ -273,15 +270,45 @@ feature -- Element change
 				w ?= v.implementation
 				err := get_root_control_external ( c_object, $root_control_ptr )
 			--	err := embed_control_external ( w.c_object, root_control_ptr )
-				err := hiview_add_subview_external ( root_control_ptr, w.c_object)
+				err := hiview_add_subview_external ( root_control_ptr, w.c_object )
+
+				setup_window_binding( root_control_ptr, w.c_object )
+
 
 				on_new_item (w)
-				a_list?=v.implementation
-				if a_list/=void then
+				a_list ?= v.implementation
+				if a_list /= void then
 					a_list.embed_all
 				end
 			end
 			item := v
+		end
+
+	setup_window_binding (root_control: POINTER; a_control : POINTER) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+					LayoutInfo.scale.x.toView = NULL;
+					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.x.ratio = 1.0;
+					LayoutInfo.scale.y.toView = NULL;
+					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.y.ratio = 1.0;
+					LayoutInfo.position.x.toView = NULL;
+					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
+					LayoutInfo.position.x.offset = 0.0;
+					LayoutInfo.position.y.toView = NULL;
+					LayoutInfo.position.y.kind = kHILayoutPositionTop;
+					LayoutInfo.position.y.offset = 0.0;
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
+				}
+			]"
 		end
 
 	set_maximum_width (max_width: INTEGER) is
@@ -369,14 +396,6 @@ feature {NONE} -- Implementation
 			end
 			call_show_actions := False
 		end
-
-	on_new_item( an_item_imp : EV_WIDGET_IMP ) is
-			-- called after  `an_item'  is added
-		do
-			Precursor ( an_item_imp )
-			--size_control_external ( an_item_imp.c_object, , h: INTEGER_32)
-		end
-
 
 	internal_set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is
 			-- Set the minimum horizontal size to `a_minimum_width'.

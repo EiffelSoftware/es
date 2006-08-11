@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision widget list. GTK+ implementation."
+	description: "Eiffel Vision widget list. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "widget list, container"

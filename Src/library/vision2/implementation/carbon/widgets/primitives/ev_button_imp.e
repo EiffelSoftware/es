@@ -191,7 +191,7 @@ feature -- Status Setting
 	enable_can_default is
 			-- Allow the style of the button to be the default push button.
 		do
-			 -- doesn't seem to be necesarry in Carbon.
+			 -- doesn't seem to be necessary in Carbon.
 		end
 
 	set_foreground_color (a_color: EV_COLOR) is
