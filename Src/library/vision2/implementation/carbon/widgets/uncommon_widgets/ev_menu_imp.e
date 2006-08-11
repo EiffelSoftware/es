@@ -38,7 +38,8 @@ feature {NONE} -- Initialization
 
 	initialize is
 		do
-
+			Precursor {EV_MENU_ITEM_LIST_IMP}
+			Precursor {EV_MENU_ITEM_IMP}
 		end
 
 feature -- Basic operations

@@ -30,7 +30,6 @@ inherit
 
 	EV_MENU_ITEM_LIST_ACTION_SEQUENCES_IMP
 
-	CFSTRING_FUNCTIONS_EXTERNAL
 	MENUS_FUNCTIONS_EXTERNAL
 
 
@@ -44,11 +43,10 @@ feature {EV_MENU_ITEM_IMP} -- implementation
 feature {NONE} -- Implementation
 
 	insert_i_th (v: like item; pos: INTEGER) is
+			-- Insert the item v in the current menu
 		local
 			menu_item: EV_MENU_ITEM_IMP
 		do
-			-- Insert a menu item here!
-			--ret := create_new_menu_external (1234, 0, $ptr)
 			menu_item ?= v.implementation
 			insert_menu_item(menu_item, pos)
 		end
@@ -58,9 +56,25 @@ feature {NONE} -- Implementation
 		local
 			ptr: POINTER
 			ret: INTEGER
+			parent_item: EV_MENU_ITEM_IMP
+			seq_imp: EV_MENU_SEPARATOR_IMP
 		do
 			ptr := an_item_imp.c_object
-			insert_menu_external (ptr, 0)
+			parent_item ?= current
+
+			seq_imp ?= an_item_imp
+			if seq_imp /= Void then
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(""), pos + 1, 64, an_item_imp.object_id)
+				--    kMenuItemAttrSeparator = (1 << 6)
+			else
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(an_item_imp.text), pos + 1, 0, an_item_imp.object_id)
+				-- Note: Menu indices start at 1 in Carbon
+				ret := set_menu_item_command_id_external (parent_item.c_object, pos + 1, an_item_imp.object_id)
+			end
+			child_array.go_i_th (pos)
+			child_array.put_left (an_item_imp.interface)
+
+			--set_menu_item_hierarchical_menu (parent_item.item, ) ??
 		end
 
 	separator_imp_by_index (an_index: INTEGER): EV_MENU_SEPARATOR_IMP is
@@ -72,7 +86,11 @@ feature {NONE} -- Implementation
 		end
 
 	is_menu_separator_imp (an_item_imp: EV_ITEM_I): BOOLEAN is
+		local
+			sep_imp: EV_MENU_SEPARATOR_IMP
 		do
+			sep_imp ?= an_item_imp
+			Result := sep_imp /= Void
 		end
 
 	remove_i_th (a_position: INTEGER) is
