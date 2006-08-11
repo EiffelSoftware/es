@@ -18,7 +18,7 @@ inherit
 			show_modal_to_window
 		end
 
-	NAVIGATION_FUNCTIONS_EXTERNAL
+	--NAVIGATION_FUNCTIONS_EXTERNAL
 
 feature {NONE} -- Initialization
 
