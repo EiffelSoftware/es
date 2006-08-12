@@ -7,7 +7,7 @@ indexing
 
 class
 	EV_DIALOG_IMP
-	
+
 inherit
 	EV_DIALOG_I
 		undefine
@@ -30,22 +30,23 @@ inherit
 		end
 
 	EV_GTK_DEPENDENT_ROUTINES
-		
+
 create
 	make
 
 feature {NONE} -- Initialization
-	
+
 	make (an_interface: like interface) is
 			-- Create empty dialog box.
 		do
+			base_make (an_interface)
 		end
-		
+
 	initialize is
 			-- Initialize 'Current'
 		do
 		end
-		
+
 feature -- Status Report
 
 	is_closeable: BOOLEAN is
@@ -57,9 +58,9 @@ feature -- Status Report
 			-- Is `Current' shown relative to another window?
 		do
 		end
-		
+
 feature -- Status Setting
-	
+
 	enable_closeable is
 			-- Set the window to be closeable by the user
 		do
@@ -85,7 +86,7 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 	client_area: POINTER is
-			-- Pointer to the widget that is treated as the main holder of the client area within the window. 
+			-- Pointer to the widget that is treated as the main holder of the client area within the window.
 		do
 		end
 

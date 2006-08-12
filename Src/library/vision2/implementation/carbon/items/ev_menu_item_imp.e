@@ -48,7 +48,6 @@ feature {NONE} -- Initialization
 		local
 			ptr: POINTER
 			ret: INTEGER
-			id: INTEGER
 			target: POINTER
 		do
 			ret := create_new_menu_external (object_id, 0, $ptr) -- We use the unique object_id (-> IDENTIFIED) as menu id

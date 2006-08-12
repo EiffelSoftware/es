@@ -157,14 +157,14 @@ feature -- creation and destruction
 				Result :=  free_ids.first
 				free_ids.remove_left
 			end
-			io.put_string ("Get ID: " + Result.out + "%N")
+			--io.put_string ("Get ID: " + Result.out + "%N")
 		end
 
 	give_free (a_id: INTEGER) is
 			do
 				widget_list.force (void, a_id)
 				free_ids.put_right (a_id)
-				io.put_string ("Freed " + a_id.out + "/n")
+				--io.put_string ("Freed " + a_id.out + "/n")
 			end
 
 

@@ -29,6 +29,7 @@ feature -- Access
 	Question_pixmap: EV_PIXMAP is
 			-- Pixmap symbolizing a question.
 		do
+			create Result.default_create
 		end
 
 	Collate_pixmap: EV_PIXMAP is
