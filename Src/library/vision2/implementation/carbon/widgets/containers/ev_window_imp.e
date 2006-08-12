@@ -86,6 +86,7 @@ feature {NONE} -- Initialization
 					ptr: POINTER
 					root_control_ptr : POINTER
 					target: POINTER
+					h_ret: POINTER
 			do
 					base_make (an_interface)
 					create rect.make_new_shared
@@ -102,7 +103,7 @@ feature {NONE} -- Initialization
 
 					id:=app_implementation.get_id (current)  --getting an id from the application
 					target:=get_window_event_target_external(ptr)
-					app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
+					h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
 			end
 
 	initialize is

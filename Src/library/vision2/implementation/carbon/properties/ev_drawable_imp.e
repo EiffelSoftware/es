@@ -44,8 +44,6 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'
 		do
 
-
-
 		end
 
 	init_default_values is
@@ -54,6 +52,8 @@ feature {NONE} -- Initialization
 		end
 
 feature {EV_DRAWABLE_IMP} -- Implementation
+
+	event_handler: POINTER
 
 	pix_to_draw: POINTER
 
@@ -274,52 +274,31 @@ feature -- Drawing operations
 	draw_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP) is
 			-- Draw `a_pixmap' with upper-left corner on (`x', `y').
 		local
-			image_ref, url, provider : POINTER
-			a_file_name, a_dir : C_STRING
+			a_imp: EV_PIXMAP_IMP
+		do
+			a_imp ?= a_pixmap.implementation
+			if a_imp /= void then
+				pix_to_draw := a_imp.drawable
+			end
+			prepare_drawing
+		end
+
+	prepare_drawing is
+		local
 			ret : INTEGER
-			c_point, a_point : CGPOINT_STRUCT
-			c_size, a_size : CGSIZE_STRUCT
-			c_rect, a_rect : CGRECT_STRUCT
-			a_imp : EV_PIXMAP_IMP
 			c_imp: EV_WIDGET_IMP
-			target,  event_ptr, null: POINTER
+			target, null: POINTER
 			event: OPAQUE_EVENT_REF_STRUCT
 		do
 
         			c_imp ?= current
         			if c_imp /=void then
+        				target := get_control_event_target_external(c_imp.c_object)
+        				event_handler := c_imp.app_implementation.install_event_handler (c_imp.id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventControlDraw)
 						ret := hiview_set_drawing_enabled_external (c_imp.c_object, 1)
-						create c_rect.make_new_unshared
-						ret := hiview_get_frame_external (c_imp.c_object, c_rect.item)
-
-						create c_size.make_shared (c_rect.size.item)
-						create c_point.make_shared(c_rect.origin.item)
-
-						create a_rect.make_new_unshared
-						create a_point.make_new_unshared
-						create a_size.make_new_unshared
-						a_point.set_x (c_point.x + x)
-						a_point.set_y (c_point.y + y)
-						a_size.set_height(a_pixmap.height)
-						a_size.set_width (a_pixmap.width)
-						a_rect.set_origin (a_point.item)
-						a_rect.set_size (a_size.item)
-
-						a_imp ?= a_pixmap.implementation
-						if a_imp /= void then
-							pix_to_draw := a_imp.drawable
-							target := get_control_event_target_external(c_imp.c_object)
-							create event.make_new_unshared
-							event_ptr := event.item
-							ret := create_event_external (null, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventControlDraw, 0, kEventAttributeUserEvent, $event_ptr)
-							--kEventAttributeUserEvent
-							ret :=  send_event_to_event_target_external (event.item, target)
-							io.put_string("%N send  Event and ret: " + ret.out)
-						--	ret := hiview_draw_cgimage_external (c_imp.c_object, a_rect.item ,a_imp.image_ptr)
-						end
-
+						ret := hiview_set_needs_display_external (c_imp.c_object, 1)
         			end
-        		end
+        end
 
        frozen kEventAttributeUserEvent: INTEGER is
 	external
@@ -333,11 +312,22 @@ feature -- Drawing operations
         local
         	ret: INTEGER
         	context: CGCONTEXT_STRUCT
+        	context_ptr: POINTER
         	null: POINTER
+        	c_point, a_point : CGPOINT_STRUCT
+			c_size, a_size : CGSIZE_STRUCT
+			c_rect, a_rect : CGRECT_STRUCT
         do
+        	ret := remove_event_handler_external (event_handler)
+        	io.put_string("%N remove event and ret: " + ret.out)
         	create context.make_new_unshared
-        	ret := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamCGContextRef,  {carbonevents_anon_enums}.typeCGContextRef, null, 4, null, context.item)
-        	io.put_string("%N callback and ret: " + ret.out)
+        	context_ptr := context.item
+        	ret := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamCGContextRef,  {carbonevents_anon_enums}.typeCGContextRef, null, 4, null, $context_ptr)
+        	io.put_string("%N get_para and ret: " + ret.out)
+        	--	ret := hiview_draw_cgimage_external (c_imp.c_object, a_rect.item ,a_imp.image_ptr)
+
+        	event_handler := null
+        	pix_to_draw := null
         end
 
 

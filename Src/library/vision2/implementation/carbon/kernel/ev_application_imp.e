@@ -88,9 +88,9 @@ feature {NONE} -- Event loop
 
 
 
-feature {EV_ANY_IMP} -- Implementation
+feature  -- Implementation
 
-	install_event_handler (a_id: INTEGER ; a_target: POINTER; a_event_class: INTEGER; a_event_kind: INTEGER) is
+	install_event_handler (a_id: INTEGER ; a_target: POINTER; a_event_class: INTEGER; a_event_kind: INTEGER): POINTER is
 			-- install a carbon event handler
 			-- this hack with RECT_STRUCT is just a workearound, because i dont know how to get an Integer  from a pointer in eiffel
 		local
@@ -99,6 +99,7 @@ feature {EV_ANY_IMP} -- Implementation
 			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
 			user_data: RECT_STRUCT
+			handler: OPAQUE_EVENT_HANDLER_REF_STRUCT
 		do
 			create user_data.make_new_shared
 			user_data.set_top (a_id)
@@ -109,7 +110,10 @@ feature {EV_ANY_IMP} -- Implementation
 			create event_type.make_new_shared
 			event_type.set_eventclass (a_event_class)
 			event_type.set_eventkind (a_event_kind)
-			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, null)
+			create handler.make_new_unshared
+			Result := handler.item
+			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, $Result)
+
 		end
 
 
@@ -402,6 +406,7 @@ feature {NONE} -- Carbon callback handling for events
 			event_class, event_kind, a_id: INTEGER
 			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
 			a_event : TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
+			ret: INTEGER
 		do
 				create a_event.default_create
 
@@ -427,7 +432,7 @@ feature {NONE} -- Carbon callback handling for events
 							end
 
 						elseif event_kind = {carbonevents_anon_enums}.kEventControlDraw and event_class = {carbonevents_anon_enums}.kEventClassControl then
-
+							ret := call_next_event_handler_external (a_inhandlercallref, a_inevent);
 							a_drawer ?= widget_list.item (a_id)
 							if a_drawer /= void then
 								a_drawer.draw (a_inevent)
