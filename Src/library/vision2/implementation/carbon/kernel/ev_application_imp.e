@@ -101,7 +101,7 @@ feature  -- Implementation
 			user_data: RECT_STRUCT
 			handler: OPAQUE_EVENT_HANDLER_REF_STRUCT
 		do
-			create user_data.make_new_shared
+			create user_data.make_new_unshared
 			user_data.set_top (a_id)
 
 			create dispatcher.make (Current)
