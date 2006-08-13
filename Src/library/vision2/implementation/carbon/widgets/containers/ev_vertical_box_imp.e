@@ -22,9 +22,9 @@ inherit
 	EV_BOX_IMP
 		redefine
 			interface,
-			make,
-			insert_i_th
+			make
 		end
+
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
 
 create
@@ -37,8 +37,7 @@ feature {NONE} -- Initialization
 		local
 			control_ptr : POINTER
 			rect : RECT_STRUCT
-			res : INTEGER
-			a_null:POINTER
+			err : INTEGER
 		do
 			base_make( an_interface )
 			create rect.make_new_unshared
@@ -46,14 +45,18 @@ feature {NONE} -- Initialization
 			rect.set_left ( 0 )
 			rect.set_right ( 0 )
 			rect.set_bottom ( 0 )
-			res := create_user_pane_control_external ( a_null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
-
+			err := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
 			set_c_object ( control_ptr )
 			id:=app_implementation.get_id (current)  --getting an id from the application
+
+			err := create_user_pane_control_external ( null, rect.item, 0, $dummy_control )
+			err := hiview_add_subview_external ( c_object, dummy_control )
 		end
 
-	insert_i_th (v: like item; i: INTEGER) is
-			-- Insert `v' at position `i'.
+	dummy_control : POINTER
+
+	carbon_arrange_children is
+			-- Setup positioning constraints for all children
 		local
 			w1, w2 : EV_WIDGET_IMP
 			j : INTEGER
@@ -62,61 +65,71 @@ feature {NONE} -- Initialization
 			a_size : CGSIZE_STRUCT
 			a_point : CGPOINT_STRUCT
 			control_height : REAL_32
+			old_height : INTEGER
+			initial_control_height : INTEGER
 		do
-			Precursor (v, i)
-
 			-- Get initial positions right
 			create a_rect.make_new_unshared
 			create a_size.make_new_unshared
 			create a_point.make_new_unshared
+			-- Set height of userpane so that it can accomodate all widgets + padding
+			old_height := height -- save old height
+			initial_control_height := 20
+			size_control_external ( c_object, width, count * initial_control_height + (count-1)*padding )
+			err := hiview_place_in_superview_at_external ( dummy_control, 0, (count-1)*padding )
+			size_control_external ( dummy_control, width, count * initial_control_height )
+			setup_dummy_control ( dummy_control )
+
 			control_height := ( height - (count-1)*padding ) / count
 			from
 				j := 1
 			until
 				j > count
 			loop
+					w1 := Void
 					w1 ?= i_th ( j ).implementation
 					check
 						w1_not_void : w1 /= Void
 					end
 					a_point.set_x ( 0 )
-					a_point.set_y ( (j-1) * height / count )
+					a_point.set_y ( (control_height + padding) * (j-1) )
 					a_size.set_width ( width )
 					a_size.set_height ( control_height )
 					a_rect.set_origin ( a_point.item )
 					a_rect.set_size ( a_size.item )
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
-
 					j := j + 1
 			end
 
 			-- Bind control positions
+			w2 ?= i_th ( 1 ).implementation
+			check
+				w2_not_void : w2 /= Void
+			end
+			setup_binding( null, w2.c_object, dummy_control, count )
+
 			from
-				j := 1
+				j := 2
 			until
 				j > count
 			loop
-				if j = 1 then
-					--w1 := Void
-					w2 ?= i_th ( j ).implementation
-					check
-						w2_not_void : w2 /= Void
-					end
-					--setup_binding( null, w2.c_object, count, padding )
-				else
-					w1 ?= i_th ( j - 1 ).implementation
-					w2 ?= i_th ( j ).implementation
-					check
-						w1_not_void : w1 /= Void
-						w2_not_void : w2 /= Void
-					end
-					--setup_binding( w1.c_object, w2.c_object, count, padding )
+				w1 ?= i_th ( j - 1 ).implementation
+				w2 ?= i_th ( j ).implementation
+				check
+					w1_not_void : w1 /= Void
+					w2_not_void : w2 /= Void
 				end
+				setup_binding( w1.c_object, w2.c_object, dummy_control, count )
+
 				j := j + 1
 			end
+			--bind_bottom_control( w2.c_object )
+
+			size_control_external ( c_object, width, old_height )
 		end
 
-		setup_binding ( upper_control, lower_control : POINTER; a_count, a_padding : INTEGER ) is
+
+		setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER ) is
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -131,29 +144,60 @@ feature {NONE} -- Initialization
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
 					LayoutInfo.scale.x.ratio = 1.0;
 					
-					LayoutInfo.scale.y.toView = NULL;
-					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.y.ratio = 1.0 / $a_count;
-					
 					// always allign to the box in x-direction
 					LayoutInfo.position.x.toView = NULL;
 					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
 					LayoutInfo.position.x.offset = 0.0;
+
+					// Scale to dummy box which is the window size - all padding					
+					LayoutInfo.scale.y.toView = $a_dummy_control;
+					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.y.ratio = 1.0 / $a_count;					
 					
 					if ( $upper_control != NULL )
 					{
-						LayoutInfo.position.y.toView = $upper_control;
-						LayoutInfo.position.y.kind = kHILayoutPositionBottom;
-						LayoutInfo.position.y.offset = 100;
+						// Bind to right control (maintain padding)
+						LayoutInfo.binding.top.toView = $upper_control;
+						LayoutInfo.binding.top.kind = kHILayoutBindBottom;
+						LayoutInfo.binding.top.offset = 0;
 					}
 					else
 					{
+						// For topmost control
 						LayoutInfo.position.y.toView = NULL;
 						LayoutInfo.position.y.kind = kHILayoutPositionTop;
 						LayoutInfo.position.y.offset = 0.0;
 					}
 					HIViewSetLayoutInfo( $lower_control, &LayoutInfo );
 					HIViewApplyLayout( $lower_control );
+				}
+			]"
+		end
+
+setup_dummy_control ( a_control: POINTER ) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+					
+					LayoutInfo.scale.x.toView = NULL;
+					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.x.ratio = 1.0;
+					
+					LayoutInfo.binding.top.toView = NULL;
+					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+					LayoutInfo.binding.top.offset = 0;
+					
+					LayoutInfo.binding.bottom.toView = NULL;
+					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+					LayoutInfo.binding.bottom.offset = 0;
+					
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
 				}
 			]"
 		end

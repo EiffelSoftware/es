@@ -62,6 +62,7 @@ feature {NONE} -- Implementation
 				child_array.go_i_th (i)
 				child_array.put_left (v)
 			end
+			carbon_arrange_children
 			on_new_item (v_imp)
 		end
 
@@ -72,9 +73,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	list_widget: POINTER is
-			-- Pointer to the actual widget list container.
-		do
+	carbon_arrange_children is
+			-- Setup positioning constraints for all children
+		require
+			at_least_one_child : count > 0
+		deferred
 		end
 
 	interface: EV_WIDGET_LIST;

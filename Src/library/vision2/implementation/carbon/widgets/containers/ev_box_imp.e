@@ -58,6 +58,10 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 	set_padding (value: INTEGER) is
 			-- Assign `value' to `padding'.
 		do
+			padding := value
+			if count > 0 then
+				carbon_arrange_children
+			end
 		end
 
 	set_child_expandable (child: EV_WIDGET; flag: BOOLEAN) is
@@ -68,6 +72,17 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 feature {EV_ANY_I} -- Implementation
 
 	needs_event_box: BOOLEAN is True
+
+feature {NONE} -- Carbon implementation
+	setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER ) is
+			-- Setup Carbon Layout API
+		deferred
+		end
+
+	setup_dummy_control ( a_control: POINTER ) is
+			-- Setup dummy control for size constraints
+		deferred
+		end
 
 feature {EV_ANY_I, EV_ANY} -- Implementation
 
