@@ -14,7 +14,7 @@ inherit
 			interface
 		end
 
-	EV_GTK_WIDGET_IMP
+	EV_CARBON_WIDGET_IMP
 		redefine
 			interface,
 			destroy

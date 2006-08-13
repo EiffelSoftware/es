@@ -7,10 +7,11 @@ indexing
 	revision: "$Revision$"
 
 deferred class
-	EV_GTK_WIDGET_IMP
+	EV_CARBON_WIDGET_IMP
 
 inherit
 	EV_ANY_IMP
+	HIVIEW_FUNCTIONS_EXTERNAL
 
 feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
 
@@ -106,12 +107,28 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	width: INTEGER is
 			-- Horizontal size measured in pixels.
+		local
+			a_rect : CGRECT_STRUCT
+			a_size : CGSIZE_STRUCT
+			err : INTEGER
 		do
+			create a_rect.make_new_unshared
+			err := hiview_get_frame_external ( c_object, a_rect.item )
+			create a_size.make_unshared ( a_rect.size )
+			Result := a_size.width.rounded
 		end
 
 	height: INTEGER is
 			-- Vertical size measured in pixels.
+		local
+			a_rect : CGRECT_STRUCT
+			a_size : CGSIZE_STRUCT
+			err : INTEGER
 		do
+			create a_rect.make_new_unshared
+			err := hiview_get_frame_external ( c_object, a_rect.item )
+			create a_size.make_unshared ( a_rect.size )
+			Result := a_size.height.rounded
 		end
 
 	aux_info_struct: POINTER is

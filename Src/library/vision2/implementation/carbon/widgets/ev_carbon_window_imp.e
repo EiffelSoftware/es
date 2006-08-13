@@ -5,7 +5,7 @@ deferred class
 	EV_CARBON_WINDOW_IMP
 
 inherit
-	EV_GTK_WIDGET_IMP
+	EV_CARBON_WIDGET_IMP
 		undefine
 			width,
 			height

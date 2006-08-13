@@ -139,11 +139,8 @@ feature  -- Access
 
 	has_focus: BOOLEAN is
 			-- Does `Current' have the keyboard focus?
-		local
-			the_window: OPAQUE_WINDOW_PTR_STRUCT
 		do
-			create the_window.make_shared(c_object)
-			Result := (is_window_active_external (the_window.item)/=0)
+			Result := is_window_active_external (c_object) /= 0
 		end
 
 	item: EV_WIDGET
@@ -253,10 +250,9 @@ feature -- Element change
 			if v /= Void then
 				w ?= v.implementation
 				err := get_root_control_external ( c_object, $root_control_ptr )
-			--	err := embed_control_external ( w.c_object, root_control_ptr )
 				err := hiview_add_subview_external ( root_control_ptr, w.c_object )
 
-				setup_window_binding( root_control_ptr, w.c_object )
+				setup_window_binding( w.c_object )
 
 
 				on_new_item (w)
@@ -268,7 +264,7 @@ feature -- Element change
 			item := v
 		end
 
-	setup_window_binding (root_control: POINTER; a_control : POINTER) is
+	setup_window_binding (a_control : POINTER) is
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias

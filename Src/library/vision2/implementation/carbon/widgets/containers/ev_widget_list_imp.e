@@ -45,17 +45,14 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-
-
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
 		local
 			v_imp : EV_WIDGET_IMP
 			err : INTEGER
-			a_fixe: EV_FIXED_IMP
 			bounds: RECT_STRUCT
 		do
-			create bounds.make_new_shared
+			--create bounds.make_new_shared
 			if v /= Void then
 				v_imp ?= v.implementation
 				check
@@ -65,10 +62,6 @@ feature {NONE} -- Implementation
 				child_array.go_i_th (i)
 				child_array.put_left (v)
 			end
-			a_fixe?=v.implementation
-				if a_fixe/=void then
-					a_fixe.embed_all
-				end
 			on_new_item (v_imp)
 		end
 
@@ -90,6 +83,7 @@ feature {NONE} -- Implementation
 feature
 	--set
 		embed_all is
+				-- Embed all widgets from the child array in the carbon control
 			local
 				i:INTEGER
 				a_imp: EV_WIDGET_IMP
@@ -97,7 +91,7 @@ feature
 				a_list: EV_WIDGET_LIST_IMP
 				bounds : RECT_STRUCT
 			do
-				create bounds.make_new_shared
+				--create bounds.make_new_unshared
 				from i := 1
 				until i > child_array.count
 				loop

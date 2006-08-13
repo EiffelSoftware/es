@@ -11,7 +11,7 @@ deferred class
 	EV_PICK_AND_DROPABLE_IMP
 
 inherit
-	EV_GTK_WIDGET_IMP
+	EV_CARBON_WIDGET_IMP
 		redefine
 			interface
 		end
