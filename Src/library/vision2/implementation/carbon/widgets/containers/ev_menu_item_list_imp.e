@@ -1,9 +1,5 @@
 indexing
-	description: "Eiffel Vision menu item list. GTK+ implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Eiffel Vision menu item list. Carbon implementation."
 
 deferred class
 	EV_MENU_ITEM_LIST_IMP
@@ -64,12 +60,13 @@ feature {NONE} -- Implementation
 
 			seq_imp ?= an_item_imp
 			if seq_imp /= Void then
-				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(""), pos + 1, 64, an_item_imp.object_id)
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(""), pos + 1, 64, an_item_imp.id)
 				--    kMenuItemAttrSeparator = (1 << 6)
 			else
-				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(an_item_imp.text), pos + 1, 0, an_item_imp.object_id)
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(an_item_imp.text), pos + 1, 0, an_item_imp.id)
 				-- Note: Menu indices start at 1 in Carbon
-				ret := set_menu_item_command_id_external (parent_item.c_object, pos + 1, an_item_imp.object_id)
+				ret := set_menu_item_command_id_external (parent_item.c_object, pos + 1, an_item_imp.id)
+				--print ("insert " + an_item_imp.id.out + " under " + id.out + " with text: " + an_item_imp.text + "%N")
 			end
 			child_array.go_i_th (pos)
 			child_array.put_left (an_item_imp.interface)
@@ -123,18 +120,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_MENU_ITEM_LIST;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_MENU_ITEM_LIST_IMP
 

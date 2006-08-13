@@ -6,6 +6,13 @@ class
 
 feature -- Carbon constants
 
+	frozen kEventParamDirectObject: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kEventParamDirectObject"
+	end
+	
 	frozen kEventParamPostTarget: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"

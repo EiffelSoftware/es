@@ -14,8 +14,7 @@ inherit
 	EV_MENU_ITEM_IMP
 		redefine
 			on_activate,
-			interface,
-			make
+			interface
 		end
 
 	EV_RADIO_PEER_IMP
@@ -28,10 +27,6 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface) is
-			-- Create a menu item.
-		do
-		end
 
 feature -- Status report
 

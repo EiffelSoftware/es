@@ -33,6 +33,7 @@ inherit
 	EV_MENU_ITEM_ACTION_SEQUENCES_IMP
 
 	MENUS_FUNCTIONS_EXTERNAL
+	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -48,14 +49,14 @@ feature {NONE} -- Initialization
 		local
 			ptr: POINTER
 			ret: INTEGER
-			target: POINTER
+			target, h_ret: POINTER
 		do
 			ret := create_new_menu_external (object_id, 0, $ptr) -- We use the unique object_id (-> IDENTIFIED) as menu id
 			set_c_object(ptr)
 
---			id := app_implementation.get_id (current)  -- getting an id from the application
---			target := get_application_event_target_external
---			app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassCommand, {carbonevents_anon_enums}.kEventCommandProcess)
+			id := app_implementation.get_id (current)  -- getting an id from the application
+			target := get_menu_event_target_external (c_object)
+			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassCommand, {carbonevents_anon_enums}.kEventCommandProcess)
 		end
 
 	initialize is

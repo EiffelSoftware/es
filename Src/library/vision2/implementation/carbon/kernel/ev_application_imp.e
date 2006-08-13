@@ -406,10 +406,12 @@ feature {NONE} -- Carbon callback handling for events
 			a_button: EV_BUTTON_IMP
 			a_drawer: EV_DRAWABLE_IMP
 			a_window: EV_WINDOW_IMP
+			a_menu: EV_MENU_IMP
 			event_class, event_kind, a_id: INTEGER
 			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
 			a_event : TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
 			ret: INTEGER
+			command_struct: HICOMMAND_STRUCT
 		do
 				create a_event.default_create
 
@@ -419,12 +421,11 @@ feature {NONE} -- Carbon callback handling for events
 					event_class := get_event_class_external (a_inevent)
 					event_kind := get_event_kind_external (a_inevent)
 					a_id := user_data.top
-				--	print ("on_callback has been called by id:" + a_id.out + "%N")
+					--print ("on_callback has been called by id:" + a_id.out + "%N")
 
 					-- fill in the event kinds and classes to all the events, for whiche Handlers are installed
 
 						if event_kind = {carbonevents_anon_enums}.kEventMouseDown and event_class = {carbonevents_anon_enums}.kEventClassControl then
-
 							a_button ?= widget_list.item (a_id)
 							if a_button /= void then
 								a_button.select_actions.call (void)
@@ -441,14 +442,21 @@ feature {NONE} -- Carbon callback handling for events
 								a_drawer.draw (a_inevent)
 							end
 
-						elseif  event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
-
+						elseif event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
 							a_window ?= widget_list.item (a_id)
 							if a_window /= void then
 								a_window.close_request_actions.call (void)
 							end
 
-
+						elseif event_class = {carbonevents_anon_enums}.kEventClassCommand and event_kind = {carbonevents_anon_enums}.kEventCommandProcess then
+							create command_struct.make_new_unshared
+							ret := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamDirectObject, {carbonevents_anon_enums}.typeHICommand, NULL, 30, NULL, command_struct.item)
+							-- Due to the strange implementation of menus in carbon we don't get the ID of the element that was selected
+							-- but the id of the parent with, so get the real ID here.
+							a_menu ?= widget_list.item (command_struct.commandid)
+							if a_menu /= Void then
+								a_menu.select_actions.call (void)
+							end
 						end
 				end
 		end
