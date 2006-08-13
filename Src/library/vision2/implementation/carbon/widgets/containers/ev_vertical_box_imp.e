@@ -64,7 +64,7 @@ feature {NONE} -- Initialization
 			a_rect : CGRECT_STRUCT
 			a_size : CGSIZE_STRUCT
 			a_point : CGPOINT_STRUCT
-			control_height : REAL_32
+			control_height : REAL
 			old_height : INTEGER
 			initial_control_height : INTEGER
 		do
