@@ -80,7 +80,7 @@ feature {NONE} -- Initialization
 			rect.set_top (20)
 			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )
 			set_c_object ( struct_ptr )
-			id:=app_implementation.get_id (current)  --getting an id from the application
+			id := app_implementation.get_id (current)  --getting an id from the application
 			target:=get_control_event_target_external(struct_ptr)
 				--	app_implementation.install_event_handler(id,res ,1 ,2)
 			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
@@ -109,19 +109,9 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	is_default_push_button: BOOLEAN is
+	is_default_push_button: BOOLEAN --is
 			-- Is this button currently a default push button
 			-- for a particular container?
-		local
-			res : INTEGER
-		do
-		--	res := get_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag )
-			if res > 0 then
-				Result := true
-			else
-				Result := false
-			end
-		end
 
 feature -- Status Setting
 
@@ -143,41 +133,42 @@ feature -- Status Setting
 		local
 			res : INTEGER
 		do
-		--	res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
+			is_default_push_button := True
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
 		end
 
 
---	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
---			-- get a boolean value with get_control_data
---			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp;
---				 	Size ActualSize;
---					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
---					if ( ActualSize == sizeof(temp) )
---						return temp;
---					else
---						return res;
---				}
---			]"
---		end
---
---		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
---			-- set a boolean value with set_control_data
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp = $value;
---					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
---				}
---			]"
---		end
+	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
+			-- get a boolean value with get_control_data
+			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp;
+				 	Size ActualSize;
+					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
+					if ( ActualSize == sizeof(temp) )
+						return temp;
+					else
+						return res;
+				}
+			]"
+		end
+
+		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp = $value;
+					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
+				}
+			]"
+		end
 
 	disable_default_push_button is
 			-- Remove the style of the button corresponding
@@ -185,7 +176,8 @@ feature -- Status Setting
 		local
 			res : INTEGER
 		do
-		--	res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
+			is_default_push_button := False
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
 		end
 
 	enable_can_default is

@@ -37,6 +37,7 @@ feature {NONE} -- Implementation
 	set_blocking_window (a_window: EV_WINDOW) is
 			-- Set as transient for `a_window'.
 		do
+			
 		end
 
 	blocking_window: EV_WINDOW is

@@ -180,7 +180,16 @@ feature -- Status setting
 
 	block is
 			-- Wait until window is closed by the user.
+		local
+			app: EV_APPLICATION_IMP
 		do
+			from
+				app := app_implementation
+			until
+				is_destroyed or else not is_displayed
+			loop
+				app.process_events
+			end
 		end
 
 	allow_resize is

@@ -1,9 +1,5 @@
 indexing
-	description: "Eiffel Vision dialog. GTK+ implementation."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Eiffel Vision dialog. Carbon implementation."
 
 class
 	EV_DIALOG_IMP
@@ -29,8 +25,6 @@ inherit
 			client_area
 		end
 
-	EV_GTK_DEPENDENT_ROUTINES
-
 create
 	make
 
@@ -45,6 +39,7 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize 'Current'
 		do
+			Precursor {EV_TITLED_WINDOW_IMP}
 		end
 
 feature -- Status Report
@@ -76,11 +71,16 @@ feature -- Basic operations
 	show_modal_to_window (a_window: EV_WINDOW) is
 			-- Show `Current' modal with respect to `a_window'.
 		do
+			show_relative_to_window (a_window)
+			block
 		end
 
 	show_relative_to_window (a_window: EV_WINDOW) is
 			-- Show `Current' with respect to `a_window'.
 		do
+			set_blocking_window(a_window)
+			show
+			set_blocking_window(a_window)
 		end
 
 feature {NONE} -- Implementation
@@ -115,18 +115,6 @@ feature {NONE} -- Implementation
 			--| FIXME implement cited function, then remove me.
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_DIALOG_IMP
 

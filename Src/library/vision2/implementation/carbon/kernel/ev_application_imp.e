@@ -183,8 +183,11 @@ feature -- Basic operation
 
 	process_events is
 			-- Process all pending events and redraws.
+		local
+			ret: INTEGER
 		do
-			run_application_event_loop_external
+			--run_application_event_loop_external
+			ret := run_current_event_loop_external (100)
 		end
 
 	stop_processing is

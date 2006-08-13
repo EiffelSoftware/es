@@ -3,11 +3,7 @@ indexing
 		"Base class for Carbon implementation (_IMP) classes. %N%
 		%Handles interaction between Eiffel objects and Carbon objects %N%
 		%See important notes on memory management at end of class"
-	legal: "See notice at end of class."
-	keywords: "implementation, carbon, any, base"
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
+
 
 deferred class
 	EV_ANY_IMP
@@ -15,7 +11,7 @@ deferred class
 inherit
 	EV_ANY_I
 		export
-			{EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES, EV_ANY_IMP}
+			{EV_ANY_IMP}
 				is_destroyed
 		end
 
@@ -77,7 +73,7 @@ feature --dispose
 		local
 			a_widget: EV_WIDGET_IMP
 		do
-			io.put_string ("%N GC")
+			--io.put_string ("%N GC")
 			a_widget ?= current
 			if  a_widget /= void then
 				a_widget.destroy
@@ -152,18 +148,6 @@ feature -- Measurement
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_ANY_IMP
 
