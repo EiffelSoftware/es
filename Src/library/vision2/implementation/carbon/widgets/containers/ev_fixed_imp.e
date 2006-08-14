@@ -61,9 +61,6 @@ feature {NONE} -- Initialization
 
 feature -- Status setting
 
-
-
-
 	set_item_position (a_widget: EV_WIDGET; an_x, a_y: INTEGER) is
 			-- Set `a_widget.x_position' to `an_x'.
 			-- Set `a_widget.y_position' to `a_y'.
