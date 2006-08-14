@@ -62,6 +62,11 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+		carbon_arrange_children is
+			do
+
+			end
+
 	pointed_tab_index: INTEGER is
 			-- index of tab currently under mouse pointer, or 0 if none.
 		local

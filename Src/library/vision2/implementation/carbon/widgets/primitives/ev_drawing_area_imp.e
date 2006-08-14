@@ -42,8 +42,7 @@ inherit
 
 	EV_DRAWING_AREA_ACTION_SEQUENCES_IMP
 		redefine
-			interface,
-			process_gdk_event
+			interface
 		end
 
 create

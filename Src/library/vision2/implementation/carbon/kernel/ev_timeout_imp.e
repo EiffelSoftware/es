@@ -31,7 +31,7 @@ feature -- Initialization
 			-- Call base make only.
 		do
 			base_make (an_interface)
-			set_c_object ({EV_GTK_EXTERNALS}.gtk_label_new (NULL))
+
 		end
 
 	initialize is
@@ -53,7 +53,7 @@ feature -- Access
 		do
 			interval := an_interval
 			if timeout_connection_id > 0 then
-				{EV_GTK_EXTERNALS}.gtk_timeout_remove (timeout_connection_id)
+
 				timeout_connection_id := 0
 			end
 
@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 			-- Clean up
 		do
 			if timeout_connection_id > 0 then
-				{EV_GTK_EXTERNALS}.gtk_timeout_remove (timeout_connection_id)
+
 			end
 			Precursor {EV_ANY_IMP}
 		end

@@ -21,20 +21,23 @@ inherit
 
 	EV_TEXTABLE_IMP
 		redefine
-			interface,
-			process_gdk_event
+			interface
 		end
 
 	EV_PIXMAPABLE_IMP
 		redefine
-			interface,
-			process_gdk_event
+			interface
 		end
 
 create
 	make
 
 feature -- Initialization
+	carbon_arrange_children is
+			do
+				
+			end
+
 
 	needs_event_box: BOOLEAN is False
 

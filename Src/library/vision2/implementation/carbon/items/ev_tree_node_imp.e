@@ -78,9 +78,7 @@ feature -- Status report
 			par_tree: EV_TREE_IMP
 		do
 			par_tree := parent_tree_imp
-			a_tree_path := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_model_get_path (par_tree.tree_store, list_iter.item)
-			Result := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_row_expanded (par_tree.tree_view, a_tree_path)
-			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_path_free (a_tree_path)
+
 		end
 
 feature -- Status setting
@@ -93,8 +91,7 @@ feature -- Status setting
 		do
 			par_tree := parent_tree_imp
 			if par_tree /= Void then
-				a_selection := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_selection (par_tree.tree_view)
-				{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_selection_select_iter (a_selection, list_iter.item)
+
 				par_tree.ensure_item_visible (interface)
 			end
 		end
@@ -107,26 +104,14 @@ feature -- Status setting
 		do
 			par_tree := parent_tree_imp
 			if par_tree /= Void then
-				a_selection := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_selection (par_tree.tree_view)
-				{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_selection_unselect_iter (a_selection, list_iter.item)
+
 			end
 		end
 
 	set_expand (a_flag: BOOLEAN) is
 			-- Expand the item if `flag', collapse it otherwise.
-		local
-			a_tree_path: POINTER
-			par_tree: EV_TREE_IMP
-			a_success: BOOLEAN
 		do
-			par_tree := parent_tree_imp
-			a_tree_path := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_model_get_path (par_tree.tree_store, list_iter.item)
-			if a_flag then
-				{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_expand_to_path (par_tree.tree_view, a_tree_path)
-			else
-				a_success := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_collapse_row (par_tree.tree_view, a_tree_path)
-			end
-			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_path_free (a_tree_path)
+
 		end
 
 	set_text (a_text: STRING_GENERAL) is
@@ -300,7 +285,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			end
 			create a_tree_iter.make
 			set_list_iter (a_tree_iter)
-			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_store_insert (a_parent_tree.tree_store, a_tree_iter.item, a_parent_iter, a_index - 1)
+
 			a_parent_tree.set_text_on_position (Current, text)
 			a_parent_tree.update_row_pixmap (Current)
 			from
@@ -420,7 +405,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			par_tree: EV_TREE_IMP
 		do
 			if gdk_pixbuf /= default_pointer then
-				{EV_GTK_EXTERNALS}.object_unref (gdk_pixbuf)
+
 				gdk_pixbuf := default_pointer
 			end
 			par_tree := parent_tree_imp
@@ -495,7 +480,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			par_tree_imp := parent_tree_imp
 			if par_tree_imp /= Void then
 				item_imp.set_internal_text (par_tree_imp.get_text_from_position (item_imp))
-				{EV_GTK_EXTERNALS}.gtk_tree_store_remove (par_tree_imp.tree_store, item_imp.list_iter.item)
+
 			end
 			item_imp.set_parent_imp (Void)
 			child_array.go_i_th (a_position)
@@ -521,10 +506,6 @@ feature {NONE} -- Implementation
 	dispose is
 			-- Clean up
 		do
-			if not is_in_final_collect and then gdk_pixbuf /= default_pointer then
-					{EV_GTK_EXTERNALS}.object_unref (gdk_pixbuf)
-					gdk_pixbuf := default_pointer
-			end
 		end
 
 feature {EV_ANY_I} -- Implementation
