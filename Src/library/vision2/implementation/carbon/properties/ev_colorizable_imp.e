@@ -1,17 +1,17 @@
 indexing
-	description: 
+	description:
 		"Eiffel Vision colorizable. GTK+ implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "colorizible"
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 deferred class
 	EV_COLORIZABLE_IMP
-	
+
 inherit
-	
+
 	EV_COLORIZABLE_I
 		redefine
 			interface,
@@ -29,16 +29,14 @@ feature -- Access
 
 	background_color: EV_COLOR is
 			-- Color of face.
-		local
-			color: POINTER
 		do
+			create Result
 		end
 
 	foreground_color: EV_COLOR is
 			-- Color of foreground features like text.
-		local
-			color: POINTER
 		do
+			create Result
 		end
 
 feature -- Status setting
@@ -73,13 +71,13 @@ feature -- Status setting
 	set_default_colors is
 			-- Set foreground and background color to their default values.
 		do
-		end	
+		end
 
 feature {NONE} -- Implementation
 
 	background_color_imp: EV_COLOR_IMP
 		-- Color used for the background of `Current'
-	
+
 	foreground_color_imp: EV_COLOR_IMP
 		-- Color used for the foreground of `Current'
 

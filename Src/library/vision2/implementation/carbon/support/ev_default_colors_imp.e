@@ -1,5 +1,5 @@
 indexing
-	description: "List of default colors used by the system. Gtk implementation."
+	description: "List of default colors used by the system. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -13,60 +13,54 @@ create
 
 feature
 	color_dialog: EV_COLOR is
-			-- Access
-			-- Color usely used for the background of dialogs
-			-- Was declared in EV_STOCK_COLORS_IMP as synonym of color_dialog.
-			-- Was declared in EV_STOCK_COLORS_IMP as synonym of color_3d_face.
 		do
+			-- see get_theme_brush_as_color
+			create Result
 		end
 
 	color_3d_face: EV_COLOR is
 			-- Color usely used for the background of dialogs
-			-- Was declared in EV_STOCK_COLORS_IMP as synonym of color_dialog.
-			-- Was declared in EV_STOCK_COLORS_IMP as synonym of color_dialog.
 		do
+			create Result
 		end
 
 	color_dialog_fg: EV_COLOR is
 		do
+			create Result
 		end
 
 	color_3d_highlight: EV_COLOR is
 		do
+			create Result
 		end
 
 	color_3d_shadow: EV_COLOR is
 		do
+			create Result
 		end
 
 	color_read_only: EV_COLOR is
 			-- Status report
 		do
+			create Result
 		end
 
 	color_read_write: EV_COLOR is
 		do
+			create Result
 		end
 
 	default_background_color: EV_COLOR is
-			-- from ANY
 		do
+			create Result
 		end
 
 	default_foreground_color: EV_COLOR is
 		do
+			create Result
 		end
 
 indexing
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
-	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-		Eiffel Software
-		356 Storke Road, Goleta, CA 93117 USA
-		Telephone 805-685-1006, Fax 805-685-6869
-		Website http://www.eiffel.com
-		Customer support http://support.eiffel.com
-	]"
-
+	copyright: "Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_STOCK_COLORS_IMP
 
