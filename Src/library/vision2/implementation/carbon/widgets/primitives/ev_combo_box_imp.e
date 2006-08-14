@@ -170,16 +170,16 @@ feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Event handling
 
 feature {NONE} -- Externals
 
-	frozen return_combo_toggle (a_combo: POINTER; a_toggle_button: TYPED_POINTER [POINTER]) is
-		external
-			"C inline use %"ev_c_util.h%""
-		alias
-			"[
-				{
-				gtk_container_forall (GTK_CONTAINER ($a_combo), (GtkCallback) c_gtk_return_combo_toggle, (GtkWidget**) $a_toggle_button);
-				}
-			]"
-		end
+--	frozen return_combo_toggle (a_combo: POINTER; a_toggle_button: TYPED_POINTER [POINTER]) is
+--		external
+--			"C inline use %"ev_c_util.h%""
+--		alias
+--			"[
+--				{
+--				gtk_container_forall (GTK_CONTAINER ($a_combo), (GtkCallback) c_gtk_return_combo_toggle, (GtkWidget**) $a_toggle_button);
+--				}
+--			]"
+--		end
 
 feature {EV_LIST_ITEM_IMP, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
