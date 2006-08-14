@@ -37,6 +37,7 @@ feature -- initialization
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.
 		do
+			base_make (an_interface)
 		end
 
 feature -- Access
@@ -49,6 +50,8 @@ feature -- Element change
 	replace (v: like item) is
 			-- Replace `item' with `v'.
 		do
+			Precursor {EV_CONTAINER_IMP} (v)
+			item := v
 		end
 
 feature {EV_ANY_I} -- Implementation

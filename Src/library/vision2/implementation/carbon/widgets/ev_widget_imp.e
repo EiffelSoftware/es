@@ -253,6 +253,7 @@ feature {EV_CONTAINER_IMP} -- Implementation
 	set_parent_imp (a_container_imp: EV_CONTAINER_IMP) is
 			-- Set `parent_imp' to `a_container_imp'.
 		do
+			parent_imp := a_container_imp
 		end
 
 feature {EV_ANY_IMP, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation

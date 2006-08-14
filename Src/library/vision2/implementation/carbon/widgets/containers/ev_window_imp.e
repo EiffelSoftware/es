@@ -119,6 +119,8 @@ feature {NONE} -- Initialization
 		do
 			set_is_initialized (False)
 			l_c_object := c_object
+			create upper_bar
+			create lower_bar
 
 			maximum_width := interface.maximum_dimension
 			maximum_height := interface.maximum_dimension
@@ -375,12 +377,26 @@ feature -- Element change
 
 	set_menu_bar (a_menu_bar: EV_MENU_BAR) is
 			-- Set `menu_bar' to `a_menu_bar'.
+		local
+			mb_imp: EV_MENU_BAR_IMP
 		do
+			menu_bar := a_menu_bar
+			mb_imp ?= menu_bar.implementation
+			mb_imp.set_parent_window_imp (Current)
+			-- TODO attach the menubar to the current window / application in carbon
 		end
 
 	remove_menu_bar is
 			-- Set `menu_bar' to `Void'.
+		local
+			mb_imp: EV_MENU_BAR_IMP
 		do
+			if menu_bar /= Void then
+				mb_imp ?= menu_bar.implementation
+				mb_imp.remove_parent_window
+				-- TODO: remove the menubar in carbon
+			end
+			menu_bar := Void
 		end
 
 feature {EV_ANY_IMP} -- Implementation
