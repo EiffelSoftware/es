@@ -107,7 +107,7 @@ feature {NONE} -- Initialization
 	initialize_model is
 			-- Initialize data model
 		do
-			tree_store := new_tree_store
+
 		end
 
 	initialize is

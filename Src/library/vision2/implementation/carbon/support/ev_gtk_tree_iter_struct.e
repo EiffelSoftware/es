@@ -1,5 +1,5 @@
 indexing
-	description: 
+	description:
 		"GtkTreeIter Struct helper class"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -12,18 +12,21 @@ class
 
 inherit
 	MEMORY_STRUCTURE
-	
+
 create
 	make
 
 feature -- Externals
 
 	frozen structure_size: INTEGER is
-		external
-			"C [macro <gtk/gtk.h>]"
-		alias
-			"sizeof(GtkTreeIter)"
+		do
 		end
+		
+--		external
+--			"C [macro <gtk/gtk.h>]"
+--		alias
+--			"sizeof(GtkTreeIter)"
+--		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
