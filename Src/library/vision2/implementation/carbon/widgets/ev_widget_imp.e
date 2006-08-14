@@ -178,17 +178,21 @@ feature -- Element change
 	set_minimum_width (a_minimum_width: INTEGER) is
 			-- Set the minimum horizontal size to `a_minimum_width'.
 		do
+			minimum_width := a_minimum_width
 		end
 
 	set_minimum_height (a_minimum_height: INTEGER) is
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
+			minimum_height := a_minimum_height
 		end
 
 	set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is
 			-- Set the minimum horizontal size to `a_minimum_width'.
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
+			set_minimum_width (a_minimum_width)
+			set_minimum_height (a_minimum_height)
 		end
 
 feature -- Measurement
@@ -205,15 +209,11 @@ feature -- Measurement
 		do
 		end
 
-	minimum_width: INTEGER is
+	minimum_width: INTEGER
 			-- Minimum width that the widget may occupy.
-		do
-		end
 
-	minimum_height: INTEGER is
+	minimum_height: INTEGER
 			-- Minimum width that the widget may occupy.
-		do
-		end
 
 feature {EV_ANY_I} -- Implementation
 

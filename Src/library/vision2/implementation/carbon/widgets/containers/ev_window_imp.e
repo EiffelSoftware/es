@@ -293,11 +293,13 @@ feature -- Element change
 	set_maximum_width (max_width: INTEGER) is
 			-- Set `maximum_width' to `max_width'.
 		do
+			maximum_width := max_width
 		end
 
 	set_maximum_height (max_height: INTEGER) is
 			-- Set `maximum_height' to `max_height'.
 		do
+			maximum_height := max_height
 		end
 
 		set_size (a_width, a_height: INTEGER) is
