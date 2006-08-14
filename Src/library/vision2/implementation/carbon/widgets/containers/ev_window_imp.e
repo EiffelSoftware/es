@@ -35,7 +35,9 @@ inherit
 			on_widget_mapped,
 			destroy,
 			has_focus,
-			on_focus_changed
+			on_focus_changed,
+			set_minimum_width,
+			set_minimum_height
 		end
 
 	EV_CARBON_WINDOW_IMP
@@ -113,9 +115,6 @@ feature {NONE} -- Initialization
 			-- and the status bar.
 			-- The `hbox' will contain the child of the window.
 		local
-
-			app_imp: like app_implementation
-
 			l_c_object: POINTER
 		do
 			set_is_initialized (False)
@@ -288,6 +287,38 @@ feature -- Element change
 					HIViewApplyLayout( $a_control );
 				}
 			]"
+		end
+
+	set_minimum_width (min_width: INTEGER) is
+			--
+		local
+			hisize: CGSIZE_STRUCT
+			ret: INTEGER
+		do
+			Precursor {EV_CONTAINER_IMP} (min_width)
+			create hisize.make_new_unshared
+			hisize.set_width (min_width.to_real)
+			hisize.set_height (minimum_height)
+			ret := set_window_resize_limits_external (c_object, hisize.item, null)
+			if width < min_width then
+				set_width (min_width)
+			end
+		end
+
+	set_minimum_height (min_height: INTEGER) is
+			--
+		local
+			hisize: CGSIZE_STRUCT
+			ret: INTEGER
+		do
+			Precursor {EV_CONTAINER_IMP} (min_height)
+			create hisize.make_new_unshared
+			hisize.set_width (minimum_width)
+			hisize.set_height (min_height)
+			ret := set_window_resize_limits_external (c_object, hisize.item, null)
+			if height < min_height then
+				set_height (min_height)
+			end
 		end
 
 	set_maximum_width (max_width: INTEGER) is
