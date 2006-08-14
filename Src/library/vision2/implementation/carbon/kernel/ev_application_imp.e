@@ -55,9 +55,10 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Set up the callback marshalL
 		do
+			base_make (an_interface)
+
 			id_count := 1
 			create free_ids.make
-			base_make (an_interface)
 			create window_oids.make
 			create widget_list.make (1, 200)
 		end
@@ -96,7 +97,7 @@ feature  -- Implementation
 			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
 			user_data: RECT_STRUCT
-			handler: OPAQUE_EVENT_HANDLER_REF_STRUCT
+			handler: POINTER
 		do
 			create user_data.make_new_unshared
 			user_data.set_top (a_id)
@@ -104,12 +105,11 @@ feature  -- Implementation
 			create dispatcher.make (Current)
 			event_target := a_target
 
-			create event_type.make_new_shared
+			create event_type.make_new_unshared
 			event_type.set_eventclass (a_event_class)
 			event_type.set_eventkind (a_event_kind)
-			create handler.make_new_unshared
-			Result := handler.item
-			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, $Result)
+			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, $handler)
+			Result := handler
 		end
 
 
@@ -141,7 +141,11 @@ feature -- Access
 
 	windows: LINEAR [EV_WINDOW] is
 			-- Global list of windows.
+		local
+			list: LINKED_LIST [EV_WINDOW]
 		do
+			create list.make
+			Result := list
 		end
 
 feature -- creation and destruction
@@ -236,6 +240,7 @@ feature -- Status setting
 	set_tooltip_delay (a_delay: INTEGER) is
 			-- Set `tooltip_delay' to `a_delay'.
 		do
+			tooltip_delay := a_delay
 		end
 
 
