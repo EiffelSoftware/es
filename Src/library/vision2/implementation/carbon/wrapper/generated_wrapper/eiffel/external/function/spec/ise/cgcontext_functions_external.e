@@ -112,7 +112,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGAffineTransform*"
 		alias
-			"ewg_function_CGContextGetCTM()"
+			"ewg_function_CGContextGetCTM"
 		end
 
 	cgcontext_get_ctm_address_external: POINTER is
@@ -472,7 +472,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGPoint*"
 		alias
-			"ewg_function_CGContextGetPathCurrentPoint()"
+			"ewg_function_CGContextGetPathCurrentPoint"
 		end
 
 	cgcontext_get_path_current_point_address_external: POINTER is
@@ -487,7 +487,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGRect*"
 		alias
-			"ewg_function_CGContextGetPathBoundingBox()"
+			"ewg_function_CGContextGetPathBoundingBox"
 		end
 
 	cgcontext_get_path_bounding_box_address_external: POINTER is
@@ -742,7 +742,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGRect*"
 		alias
-			"ewg_function_CGContextGetClipBoundingBox()"
+			"ewg_function_CGContextGetClipBoundingBox"
 		end
 
 	cgcontext_get_clip_bounding_box_address_external: POINTER is
@@ -1147,7 +1147,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGPoint*"
 		alias
-			"ewg_function_CGContextGetTextPosition()"
+			"ewg_function_CGContextGetTextPosition"
 		end
 
 	cgcontext_get_text_position_address_external: POINTER is
@@ -1177,7 +1177,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGAffineTransform*"
 		alias
-			"ewg_function_CGContextGetTextMatrix()"
+			"ewg_function_CGContextGetTextMatrix"
 		end
 
 	cgcontext_get_text_matrix_address_external: POINTER is
@@ -1522,7 +1522,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGAffineTransform*"
 		alias
-			"ewg_function_CGContextGetUserSpaceToDeviceSpaceTransform()"
+			"ewg_function_CGContextGetUserSpaceToDeviceSpaceTransform"
 		end
 
 	cgcontext_get_user_space_to_device_space_transform_address_external: POINTER is
@@ -1537,7 +1537,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPoint*):CGPoint*"
 		alias
-			"ewg_function_CGContextConvertPointToDeviceSpace()"
+			"ewg_function_CGContextConvertPointToDeviceSpace"
 		end
 
 	cgcontext_convert_point_to_device_space_address_external: POINTER is
@@ -1552,7 +1552,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPoint*):CGPoint*"
 		alias
-			"ewg_function_CGContextConvertPointToUserSpace()"
+			"ewg_function_CGContextConvertPointToUserSpace"
 		end
 
 	cgcontext_convert_point_to_user_space_address_external: POINTER is
@@ -1567,7 +1567,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGSize*):CGSize*"
 		alias
-			"ewg_function_CGContextConvertSizeToDeviceSpace()"
+			"ewg_function_CGContextConvertSizeToDeviceSpace"
 		end
 
 	cgcontext_convert_size_to_device_space_address_external: POINTER is
@@ -1582,7 +1582,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGSize*):CGSize*"
 		alias
-			"ewg_function_CGContextConvertSizeToUserSpace()"
+			"ewg_function_CGContextConvertSizeToUserSpace"
 		end
 
 	cgcontext_convert_size_to_user_space_address_external: POINTER is
@@ -1597,7 +1597,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*):CGRect*"
 		alias
-			"ewg_function_CGContextConvertRectToDeviceSpace()"
+			"ewg_function_CGContextConvertRectToDeviceSpace"
 		end
 
 	cgcontext_convert_rect_to_device_space_address_external: POINTER is
@@ -1612,7 +1612,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*):CGRect*"
 		alias
-			"ewg_function_CGContextConvertRectToUserSpace()"
+			"ewg_function_CGContextConvertRectToUserSpace"
 		end
 
 	cgcontext_convert_rect_to_user_space_address_external: POINTER is
