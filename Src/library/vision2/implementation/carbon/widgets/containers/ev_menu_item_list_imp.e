@@ -58,6 +58,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 			text: STRING
 		do
+			an_item_imp.set_item_parent_imp (Current)
 			ptr := an_item_imp.c_object
 			parent_item ?= current
 
@@ -85,8 +86,6 @@ feature {NONE} -- Implementation
 			end
 			child_array.go_i_th (pos)
 			child_array.put_left (an_item_imp.interface)
-
-			--set_menu_item_hierarchical_menu (parent_item.item, ) ??
 		end
 
 	separator_imp_by_index (an_index: INTEGER): EV_MENU_SEPARATOR_IMP is

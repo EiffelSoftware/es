@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision textable. GTK+ implementation."
+		"Eiffel Vision textable. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -28,17 +28,14 @@ inherit
 feature {NONE} -- Initialization
 
 	textable_imp_initialize is
-			-- Create a GtkLabel to display the text.
 		do
+			text := ""
 		end
 
 feature -- Access
 
-	text: STRING_32 is
+	text: STRING_32
 			-- Text of the label.
-		do
-			--hiview_copy_text_external() ?
-		end
 
 	text_alignment: INTEGER is
 			-- Alignment of the text in the label.
@@ -71,10 +68,10 @@ feature -- Element change
 			ptr: POINTER
 			res: INTEGER
 		do
-
+			text := a_text
 			create c_str.make (a_text)
-			ptr:=c_string_to_cfstring_ptr(c_str)
-			res:=set_control_title_with_cfstring_external (c_object, ptr)
+			ptr := c_string_to_cfstring_ptr(c_str)
+			res := set_control_title_with_cfstring_external (c_object, ptr)
 		end
 
 	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
@@ -95,16 +92,10 @@ feature -- Element change
 
 feature {EV_ANY_IMP} -- Implementation
 
-	text_label: POINTER
-			-- GtkLabel containing `text'.
-
 	accelerators_enabled: BOOLEAN is
 			-- Does `Current' have keyboard accelerators enabled?
 		do
 		end
-
-	real_text: EV_GTK_C_STRING
-			-- Internal `text'. (with ampersands)
 
 	filter_ampersand (s: STRING_32; char: CHARACTER) is
 			-- Replace occurrences of '&' from `s'  by `char' and
@@ -125,24 +116,8 @@ feature {EV_ANY_IMP} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	interface: EV_TEXTABLE
-
-invariant
-	text_label_not_void: is_usable implies text_label /= NULL
+	interface: EV_TEXTABLE;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_TEXTABLE_IMP
-

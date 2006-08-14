@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 		do
+			base_make (an_interface)
 		end
 
 feature {EV_WINDOW_IMP} -- Implementation
@@ -41,16 +42,21 @@ feature {EV_WINDOW_IMP} -- Implementation
 		require
 			a_wind_not_void: a_wind /= Void
 		do
+			parent_imp := a_wind
 		end
 
 	parent: EV_WINDOW is
 			-- Parent window of Current.
 		do
+			if parent_imp /= Void then
+				Result := parent_imp.interface
+			end
 		end
 
 	remove_parent_window is
 			-- Set `parent_window' to Void.
 		do
+			parent_imp := Void
 		end
 
 	parent_imp: EV_WINDOW_IMP
@@ -63,8 +69,13 @@ feature {NONE} -- Implementation
 			ptr: POINTER
 			ret: INTEGER
 		do
+			an_item_imp.set_item_parent_imp (Current)
+
 			ptr := an_item_imp.c_object
 			insert_menu_external (ptr, 0)
+
+			child_array.go_i_th (pos)
+			child_array.put_left (an_item_imp.interface)
 		end
 
 feature {EV_ANY_I} -- Implementation

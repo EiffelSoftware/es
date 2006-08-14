@@ -1,12 +1,12 @@
 indexing
 	description:
-		"Eiffel Vision dynamic list. GTK+ implementation."
+		"Eiffel Vision dynamic list. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
-	
-deferred class 
+
+deferred class
 	EV_DYNAMIC_LIST_IMP [reference G -> EV_CONTAINABLE]
 
 inherit
@@ -14,7 +14,7 @@ inherit
 		redefine
 			interface
 		end
-		
+
 feature -- Initialization
 
 	initialize is
@@ -31,7 +31,7 @@ feature -- Access
 		do
 			if child_array /= Void then
 				Result := child_array.i_th (i)
-			end	
+			end
 		end
 
 feature -- Measurement
@@ -41,7 +41,7 @@ feature -- Measurement
 		do
 			if child_array /= Void then
 				Result := child_array.count
-			end	
+			end
 		end
 
 feature {NONE} -- Implementation

@@ -51,6 +51,7 @@ feature {NONE} -- Initialization
 			ret: INTEGER
 			target, h_ret: POINTER
 		do
+			base_make (an_interface)
 			ret := create_new_menu_external (object_id, 0, $ptr) -- We use the unique object_id (-> IDENTIFIED) as menu id
 			set_c_object(ptr)
 
@@ -63,6 +64,7 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'
 		do
 			Precursor {EV_ITEM_IMP}
+			textable_imp_initialize
 		end
 
 feature -- Element change
