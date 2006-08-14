@@ -1,4 +1,4 @@
-indexing 
+indexing
 	description: "Eiffel Vision range. GTK+ implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -25,9 +25,7 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'
 		do
-			Precursor {EV_GAUGE_IMP}
-			{EV_GTK_EXTERNALS}.gtk_scale_set_digits (c_object, 0)
-			{EV_GTK_EXTERNALS}.gtk_scale_set_draw_value (c_object, False)
+
 		end
 
 feature {EV_ANY_I} -- Implementation

@@ -1,4 +1,4 @@
-indexing 
+indexing
 	description: "Eiffel Vision vertical range. GTK+ implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -28,8 +28,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create the vertical range.
 		do
-			Precursor {EV_RANGE_IMP} (an_interface)
-			set_c_object ({EV_GTK_EXTERNALS}.gtk_vscale_new (adjustment))
+		
 		end
 
 feature {EV_ANY_I} -- Implementation

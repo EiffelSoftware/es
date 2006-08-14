@@ -33,10 +33,7 @@ feature {NONE} -- Initialization
 	initialize is
 		do
 			Precursor {EV_CONTAINER_IMP}
-			{EV_GTK_EXTERNALS}.gtk_widget_show (container_widget)
-			second_expandable := True
-			{EV_GTK_EXTERNALS}.gtk_container_set_border_width (container_widget, 0)
-			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_widget_set_redraw_on_allocate (container_widget, False)
+
 		end
 
 feature -- Access
@@ -44,7 +41,7 @@ feature -- Access
 	split_position: INTEGER is
 			-- Position from the left/top of the splitter from `Current'.
 		do
-			Result := gtk_paned_struct_child1_size (container_widget)
+
 		end
 
 	set_first (an_item: like item) is
@@ -54,7 +51,7 @@ feature -- Access
 		do
 			item_imp ?= an_item.implementation
 			item_imp.set_parent_imp (Current)
-			{EV_GTK_EXTERNALS}.gtk_paned_pack1 (container_widget, item_imp.c_object, False, False)
+
 			first := an_item
 			set_item_resize (first, False)
 		end
@@ -66,7 +63,7 @@ feature -- Access
 		do
 			item_imp ?= an_item.implementation
 			item_imp.set_parent_imp (Current)
-			{EV_GTK_EXTERNALS}.gtk_paned_pack2 (container_widget, item_imp.c_object, True, False)
+
 			second := an_item
 			set_item_resize (second, True)
 		end
@@ -80,7 +77,7 @@ feature -- Access
 				item_imp ?= an_item.implementation
 				item_imp.set_parent_imp (Void)
 				check item_imp_not_void: item_imp /= Void end
-				{EV_GTK_EXTERNALS}.gtk_container_remove ({EV_GTK_EXTERNALS}.gtk_widget_struct_parent (item_imp.c_object), item_imp.c_object)
+
 				if an_item = first then
 					first_expandable := False
 					first := Void
@@ -113,7 +110,7 @@ feature -- Access
 	set_split_position (a_split_position: INTEGER) is
 			-- Set the position of the splitter.
 		do
-			{EV_GTK_EXTERNALS}.gtk_paned_set_position (container_widget, a_split_position)
+
 		end
 
 feature {NONE} -- Implementation

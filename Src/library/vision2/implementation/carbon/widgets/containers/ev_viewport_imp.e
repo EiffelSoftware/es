@@ -4,10 +4,10 @@ indexing
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 class
 	EV_VIEWPORT_IMP
-	
+
 inherit
 	EV_VIEWPORT_I
 		undefine
@@ -18,7 +18,7 @@ inherit
 			set_item_width,
 			set_item_height
 		end
-		
+
 	EV_CELL_IMP
 		redefine
 			interface,
@@ -30,7 +30,7 @@ inherit
 			minimum_height,
 			needs_event_box
 		end
-	
+
 create
 	make
 
@@ -39,17 +39,17 @@ feature {NONE} -- Initialization
 	needs_event_box: BOOLEAN is False
 
 	make (an_interface: like interface) is
-			-- Initialize. 
+			-- Initialize.
 		do
 		end
-		
+
 feature -- Access
 
 	minimum_width: INTEGER is
 			-- Minimum width of widget.
 		do
 		end
-		
+
 	minimum_height: INTEGER is
 			-- Minimum_height of widget.
 		do
@@ -71,7 +71,7 @@ feature -- Element change
 			-- Block any resize actions that may occur.
 		do
 		end
-			
+
 	unblock_resize_actions is
 			-- Unblock all resize actions.
 		do
@@ -86,18 +86,18 @@ feature -- Element change
 			-- Set `y_offset' to `a_y'.
 		do
 		end
-		
+
 	set_item_size (a_width, a_height: INTEGER) is
 			-- Set `a_widget.width' to `a_width'.
 			-- Set `a_widget.height' to `a_height'.
 		do
 		end
-		
+
 	set_item_width (a_width: INTEGER) is
 			-- Set `a_widget.width' to `a_width'.
 		do
 		end
-		
+
 	set_item_height (a_height: INTEGER) is
 			-- Set `a_widget.height' to `a_height'.
 		do
@@ -139,8 +139,7 @@ feature {NONE} -- Implementation
 		require
 			l_adj_not_null: l_adj /= default_pointer
 		do
-		ensure
-			value_set: {EV_GTK_EXTERNALS}.gtk_adjustment_struct_value (l_adj) = a_value
+	
   		end
 
 	viewport: POINTER

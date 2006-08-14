@@ -13,7 +13,7 @@ inherit
 		redefine
 			interface
 		end
-	
+
 	EV_SCROLL_BAR_IMP
 		redefine
 			interface,
@@ -28,9 +28,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create the horizontal scroll bar.
 		do
-			base_make (an_interface)
-			adjustment := {EV_GTK_EXTERNALS}.gtk_adjustment_new (0, 0, 100 + 10, 1, 10, 10)
-			set_c_object ({EV_GTK_EXTERNALS}.gtk_hscrollbar_new (adjustment))		
+		
 		end
 
 feature {EV_ANY_I} -- Implementation
