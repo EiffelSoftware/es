@@ -121,6 +121,9 @@ feature {NONE} -- Initialization
 			set_is_initialized (False)
 			l_c_object := c_object
 
+			maximum_width := interface.maximum_dimension
+			maximum_height := interface.maximum_dimension
+
 			initialize_client_area
 
 			default_height := -1
@@ -131,8 +134,6 @@ feature {NONE} -- Initialization
 			internal_is_border_enabled := True
 			user_can_resize := True
 			set_is_initialized (True)
-
-
 		end
 
 feature  -- Access

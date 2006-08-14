@@ -159,6 +159,7 @@ feature -- Element change
 	set_icon_pixmap (an_icon: EV_PIXMAP) is
 			-- Assign `an_icon' to `icon'.
 		do
+			icon_pixmap := an_icon
 		end
 
 feature {NONE} -- Implementation

@@ -402,7 +402,7 @@ feature {NONE} -- Carbon callback handling for events
 			a_button: EV_BUTTON_IMP
 			a_drawer: EV_DRAWABLE_IMP
 			a_window: EV_WINDOW_IMP
-			a_menu: EV_MENU_IMP
+			a_menu: EV_MENU_ITEM_IMP
 			event_class, event_kind, a_id: INTEGER
 			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
 			a_event : TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
@@ -417,7 +417,7 @@ feature {NONE} -- Carbon callback handling for events
 					event_class := get_event_class_external (a_inevent)
 					event_kind := get_event_kind_external (a_inevent)
 					a_id := user_data.top
-					--print ("on_callback has been called by id:" + a_id.out + "%N")
+					-- print ("on_callback has been called by id:" + a_id.out + "%N")
 
 					-- fill in the event kinds and classes to all the events, for whiche Handlers are installed
 
