@@ -114,7 +114,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 			create a_rect.make_new_unshared
 			err := hiview_get_frame_external ( c_object, a_rect.item )
-			create a_size.make_unshared ( a_rect.size )
+			create a_size.make_shared ( a_rect.size )
 			Result := a_size.width.rounded
 		end
 
@@ -127,7 +127,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 			create a_rect.make_new_unshared
 			err := hiview_get_frame_external ( c_object, a_rect.item )
-			create a_size.make_unshared ( a_rect.size )
+			create a_size.make_shared ( a_rect.size )
 			Result := a_size.height.rounded
 		end
 

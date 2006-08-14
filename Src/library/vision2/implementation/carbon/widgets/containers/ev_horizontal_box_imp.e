@@ -67,7 +67,7 @@ feature {NONE} -- Initialization
 			create a_rect.make_new_unshared
 			create a_size.make_new_unshared
 			create a_point.make_new_unshared
-			-- Set height of userpane so that it can accomodate all widgets + padding
+			-- Set width of userpane so that it can accomodate all widgets + padding
 			old_width := width -- save old width
 			initial_control_width := 20
 			size_control_external ( c_object, count * initial_control_width + (count-1)*padding, height )
