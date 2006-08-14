@@ -72,9 +72,18 @@ feature -- Element change
 		local
 			ptr: POINTER
 			ret: INTEGER
+			t: STRING
+			i: INTEGER
 		do
+			-- Get rid of the & sign which denotes a shortcut key
+			t := a_text.as_string_8
+			i := t.substring_index ("&", 1)
+			if i /= 0 then
+				t := t.substring (1, i - 1) + t.substring (i + 1, t.count)
+			end
+
 			ptr := c_object
-			ret := set_menu_title_with_cfstring_external (ptr, string_to_cfstring(a_text))
+			ret := set_menu_title_with_cfstring_external (ptr, string_to_cfstring(t))
 			text := a_text
 		end
 

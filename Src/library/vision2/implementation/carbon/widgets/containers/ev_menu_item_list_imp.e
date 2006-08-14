@@ -54,19 +54,34 @@ feature {NONE} -- Implementation
 			ret: INTEGER
 			parent_item: EV_MENU_ITEM_IMP
 			seq_imp: EV_MENU_SEPARATOR_IMP
+			shortcut_key: INTEGER
+			i: INTEGER
+			text: STRING
 		do
 			ptr := an_item_imp.c_object
 			parent_item ?= current
 
 			seq_imp ?= an_item_imp
 			if seq_imp /= Void then
+				-- EV_MENU_SEPARATOR_ITEM
 				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(""), pos + 1, 64, an_item_imp.id)
 				--    kMenuItemAttrSeparator = (1 << 6)
 			else
-				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(an_item_imp.text), pos + 1, 0, an_item_imp.id)
+				-- EV_MENU_ITEM
+				text := an_item_imp.text
+				i := text.substring_index ("&", 1)
+				if i /= 0 then
+					text := text.substring (1, i - 1) + text.substring (i + 1, text.count)
+					shortcut_key := an_item_imp.text.code (i + 1).as_integer_32
+				end
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, string_to_cfstring(text), pos + 1, 0, an_item_imp.id)
 				-- Note: Menu indices start at 1 in Carbon
 				ret := set_menu_item_command_id_external (parent_item.c_object, pos + 1, an_item_imp.id)
 				--print ("insert " + an_item_imp.id.out + " under " + id.out + " with text: " + an_item_imp.text + "%N")
+				if i /= 0 then
+					ret := set_menu_item_command_key_external (parent_item.c_object, pos, 0, shortcut_key)
+					print ("err: " + ret.out + ", pos: " + pos.out + "%N")
+				end
 			end
 			child_array.go_i_th (pos)
 			child_array.put_left (an_item_imp.interface)
