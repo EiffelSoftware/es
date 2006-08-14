@@ -33,7 +33,6 @@ inherit
 
 	PLATFORM
 
-
 	EXCEPTIONS
 
 	PROCESSES_FUNCTIONS_EXTERNAL
@@ -46,7 +45,6 @@ inherit
 --		export {NONE} all end
 
 	EVENT_HANDLER_PROC_PTR_CALLBACK
-
 
 
 create
@@ -94,7 +92,6 @@ feature  -- Implementation
 			-- install a carbon event handler
 			-- this hack with RECT_STRUCT is just a workearound, because i dont know how to get an Integer  from a pointer in eiffel
 		local
-			null: POINTER
 			ret: INTEGER
 			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
@@ -113,7 +110,6 @@ feature  -- Implementation
 			create handler.make_new_unshared
 			Result := handler.item
 			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, $Result)
-
 		end
 
 
@@ -464,6 +460,5 @@ invariant
 
 indexing
 	copyright:	"Copyright (c) 2006, The ETH Eiffel.Mac Team"
-
 end -- class EV_APPLICATION_IMP
 
