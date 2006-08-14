@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision notebook. GTK implementation."
+		"Eiffel Vision notebook. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -34,6 +34,7 @@ inherit
 		end
 
 	EV_NOTEBOOK_ACTION_SEQUENCES_IMP
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -44,8 +45,22 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create a fixed widget.
+		local
+			err : INTEGER
+			rect : RECT_STRUCT
+			struct_ptr : POINTER
 		do
 			base_make (an_interface)
+			create rect.make_new_unshared
+			rect.set_left(0)
+			rect.set_right(0)
+			rect.set_bottom(0)
+			rect.set_top (0)
+			err := create_tabs_control_external ( null, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionNorth, 0, null, $struct_ptr )
+			set_c_object ( struct_ptr )
+
+			id := app_implementation.get_id (current)  --getting an id from the application
+			initialize
 		end
 
 	initialize is
