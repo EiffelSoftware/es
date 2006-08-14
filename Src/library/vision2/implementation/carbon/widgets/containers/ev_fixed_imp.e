@@ -1,3 +1,4 @@
+
 indexing
 	description:
 		"Eiffel Vision fixed. Carbon implementation."
@@ -60,6 +61,12 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Status setting
+
+	carbon_arrange_children is
+			do
+				
+			end
+
 
 	set_item_position (a_widget: EV_WIDGET; an_x, a_y: INTEGER) is
 			-- Set `a_widget.x_position' to `an_x'.
