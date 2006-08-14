@@ -255,11 +255,6 @@ feature {EV_PICK_AND_DROPABLE_IMP} -- Pick and drop
 		do
 		end
 
-feature {EV_ANY_IMP} -- Implementation
-
-	tooltips: POINTER
-			-- Reference to GtkTooltips object.
-
 feature -- Implementation
 
 	is_in_transport: BOOLEAN
@@ -466,7 +461,6 @@ feature {NONE} -- Carbon callback handling for events
 
 invariant
 	window_oids_not_void: is_usable implies window_oids /= void
-	tooltips_not_void: tooltips /= default_pointer
 
 indexing
 	copyright:	"Copyright (c) 2006, The ETH Eiffel.Mac Team"
