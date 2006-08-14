@@ -537,13 +537,13 @@ feature {NONE} -- Implementation
 			--| For now, do nothing.
 		end
 
-	new_tree_store: POINTER is
-			-- New instance of a tree store.
-		external
-			"C inline use <gtk/gtk.h>"
-		alias
-			"gtk_tree_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING)"
-		end
+--	new_tree_store: POINTER is
+--			-- New instance of a tree store.
+--		external
+--			"C inline use <gtk/gtk.h>"
+--		alias
+--			"gtk_tree_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING)"
+--		end
 
 feature {EV_ANY_I} -- Implementation
 

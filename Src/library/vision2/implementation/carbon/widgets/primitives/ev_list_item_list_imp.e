@@ -163,13 +163,13 @@ feature {NONE} -- Implementation
 
 		end
 
-	new_list_store: POINTER is
-			-- New instance of a list store.
-		external
-			"C inline use <gtk/gtk.h>"
-		alias
-			"gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING)"
-		end
+--	new_list_store: POINTER is
+--			-- New instance of a list store.
+--		external
+--			"C inline use <gtk/gtk.h>"
+--		alias
+--			"gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING)"
+--		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

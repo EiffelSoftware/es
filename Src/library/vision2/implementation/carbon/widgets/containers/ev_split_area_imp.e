@@ -46,65 +46,31 @@ feature -- Access
 
 	set_first (an_item: like item) is
 			-- Make `an_item' `first'.
-		local
-			item_imp: EV_WIDGET_IMP
 		do
-			item_imp ?= an_item.implementation
-			item_imp.set_parent_imp (Current)
-
-			first := an_item
-			set_item_resize (first, False)
 		end
 
 	set_second (an_item: like item) is
 			-- Make `an_item' `second'.
-		local
-			item_imp: EV_WIDGET_IMP
 		do
-			item_imp ?= an_item.implementation
-			item_imp.set_parent_imp (Current)
 
-			second := an_item
-			set_item_resize (second, True)
 		end
 
 	prune (an_item: like item) is
 			-- Remove `an_item' if present from `Current'.
-		local
-			item_imp: EV_WIDGET_IMP
 		do
-			if has (an_item) and then an_item /= Void then
-				item_imp ?= an_item.implementation
-				item_imp.set_parent_imp (Void)
-				check item_imp_not_void: item_imp /= Void end
 
-				if an_item = first then
-					first_expandable := False
-					first := Void
-					set_split_position (0)
-					if second /= Void then
-						set_item_resize (second, True)
-					end
-				else
-					second := Void
-					second_expandable := True
-					if first /= Void then
-						set_item_resize (first, True)
-					end
-				end
-			end
 		end
 
 	enable_item_expand (an_item: like item) is
 			-- Let `an_item' expand when `Current' is resized.
 		do
-			set_item_resize (an_item, True)
+
 		end
 
 	disable_item_expand (an_item: like item) is
 			-- Make `an_item' non-expandable on `Current' resize.
 		do
-			set_item_resize (an_item, False)
+
 		end
 
 	set_split_position (a_split_position: INTEGER) is
@@ -123,37 +89,31 @@ feature {NONE} -- Implementation
 	set_item_resize (an_item: like item; a_resizable: BOOLEAN) is
 			-- Set whether `an_item' is `a_resizable' when `Current' resizes.
 		do
-			if an_item = first then
-				first_expandable := a_resizable
-			else
-				second_expandable := a_resizable
-			end
-			set_gtk_paned_struct_child1_resize (container_widget, first_expandable)
-			set_gtk_paned_struct_child2_resize (container_widget, second_expandable)
+
 		end
 
 feature {NONE} -- Externals.
 
-	gtk_paned_struct_child1_size (a_c_struct: POINTER): INTEGER is
-		external
-			"C [struct <gtk/gtk.h>] (GtkPaned): EIF_INTEGER"
-		alias
-			"child1_size"
-		end
-
-	set_gtk_paned_struct_child1_resize (a_c_struct: POINTER; a_resize: BOOLEAN) is
-		external
-			"C [struct <gtk/gtk.h>] (GtkPaned, EIF_BOOLEAN)"
-		alias
-			"child1_resize"
-		end
-
-	set_gtk_paned_struct_child2_resize (a_c_struct: POINTER; a_resize: BOOLEAN) is
-		external
-			"C [struct <gtk/gtk.h>] (GtkPaned, EIF_BOOLEAN)"
-		alias
-			"child2_resize"
-		end
+--	gtk_paned_struct_child1_size (a_c_struct: POINTER): INTEGER is
+--		external
+--			"C [struct <gtk/gtk.h>] (GtkPaned): EIF_INTEGER"
+--		alias
+--			"child1_size"
+--		end
+--
+--	set_gtk_paned_struct_child1_resize (a_c_struct: POINTER; a_resize: BOOLEAN) is
+--		external
+--			"C [struct <gtk/gtk.h>] (GtkPaned, EIF_BOOLEAN)"
+--		alias
+--			"child1_resize"
+--		end
+--
+--	set_gtk_paned_struct_child2_resize (a_c_struct: POINTER; a_resize: BOOLEAN) is
+--		external
+--			"C [struct <gtk/gtk.h>] (GtkPaned, EIF_BOOLEAN)"
+--		alias
+--			"child2_resize"
+--		end
 
 feature {EV_ANY_I} -- Implementation
 
