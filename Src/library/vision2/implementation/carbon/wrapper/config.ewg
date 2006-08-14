@@ -115,6 +115,13 @@
 			<wrapper type="default">
    			</wrapper>
 		</rule>
+		<rule>
+  			<match>
+   				<header name=".*CGContext.h"/>
+			</match>
+			<wrapper type="default">
+   			</wrapper>
+		</rule>
     	<rule>
 			<match/>
 			<wrapper type="none" />
