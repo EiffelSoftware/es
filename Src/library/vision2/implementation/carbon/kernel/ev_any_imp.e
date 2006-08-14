@@ -73,7 +73,6 @@ feature --dispose
 		local
 			a_widget: EV_WIDGET_IMP
 		do
-			--io.put_string ("%N GC")
 			a_widget ?= current
 			if  a_widget /= void then
 				a_widget.destroy

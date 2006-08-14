@@ -69,31 +69,37 @@ feature -- Element change
 	set_family (a_family: INTEGER) is
 			-- Set `a_family' as preferred font category.
 		do
+
 		end
 
 	set_face_name (a_face: STRING_GENERAL) is
 			-- Set the face name for current.
 		do
+
 		end
 
 	set_weight (a_weight: INTEGER) is
 			-- Set `a_weight' as preferred font thickness.
 		do
+			weight := a_weight
 		end
 
 	set_shape (a_shape: INTEGER) is
 			-- Set `a_shape' as preferred font slant.
 		do
+			shape := a_shape
 		end
 
 	set_height (a_height: INTEGER) is
 			-- Set `a_height' as preferred font size in screen pixels
 		do
+			height := a_height
 		end
 
 	set_height_in_points (a_height: INTEGER) is
 			-- Set `a_height' as preferred font size in screen pixels
 		do
+
 		end
 
 	set_values (a_family, a_weight, a_shape, a_height: INTEGER;
