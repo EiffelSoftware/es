@@ -41,14 +41,14 @@ feature {EV_ANY_I} -- Access
 			a_c_object_not_null: a_c_object /= NULL
 		do
 			c_object := a_c_object
-		ensure
-			c_object_coupled: eif_object_from_c (c_object) = Current
+--		ensure
+--			c_object_coupled: eif_object_from_c (c_object) = Current
 		end
 
-	frozen eif_object_from_c (a_c_object: POINTER): EV_ANY_IMP is
-			-- Retrieve the EV_ANY_IMP stored in `a_c_object'.
-		do
-		end
+--	frozen eif_object_from_c (a_c_object: POINTER): EV_ANY_IMP is
+--			-- Retrieve the EV_ANY_IMP stored in `a_c_object'.
+--		do
+--		end
 
 	frozen gtk_is_object (a_c_object: POINTER): BOOLEAN is
 		do

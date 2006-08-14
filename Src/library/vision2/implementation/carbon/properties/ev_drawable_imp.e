@@ -40,12 +40,6 @@ inherit
 
 feature {NONE} -- Initialization
 
-	initialize is
-			-- Initialize `Current'
-		do
-
-		end
-
 	init_default_values is
 			-- Set default values. Call during initialization.
 		do

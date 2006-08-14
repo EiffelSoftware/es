@@ -63,11 +63,9 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Show non window widgets.
 			-- Initialize default options, colors and sizes.
-			-- Connect action sequences to GTK signals.
 		do
-
-
-
+			Precursor {EV_PICK_AND_DROPABLE_IMP}
+			set_is_initialized (True)
 		end
 
 	initialize_file_drop (a_widget: POINTER) is
@@ -137,6 +135,7 @@ feature -- Access
 	pointer_position: EV_COORDINATE is
 			-- Position of the screen pointer relative to `Current'.
 		do
+			create Result.set (1, 1)
 		end
 
 feature {EV_ANY_I, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Position retrieval

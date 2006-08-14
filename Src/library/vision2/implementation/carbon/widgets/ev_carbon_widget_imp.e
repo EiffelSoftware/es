@@ -37,6 +37,7 @@ feature {NONE} -- Implementation
 	initialize is
 			-- Initialize `c_object'
 		do
+			set_is_initialized (True)
 		end
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
