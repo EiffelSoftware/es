@@ -1,15 +1,14 @@
 indexing
-	description: 
-		"Eiffel Vision sensitive. GTK+ implementation."
+	description: "Eiffel Vision sensitive. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "sensitive"
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 deferred class
 	EV_SENSITIVE_IMP
-	
+
 inherit
 	EV_SENSITIVE_I
 		redefine
@@ -26,21 +25,21 @@ inherit
 
 feature -- Status report
 
-	is_sensitive: BOOLEAN is
+	is_sensitive: BOOLEAN
 			-- Is the object sensitive to user input.
-		do
-		end
 
 feature -- Status setting
 
 	enable_sensitive is
 			-- Allow the object to be sensitive to user input.
 		do
+			is_sensitive := True
 		end
 
 	disable_sensitive is
 			-- Set the object to ignore all user input.
 		do
+			is_sensitive := False
 		end
 
 feature {EV_ANY_I} -- Implementation

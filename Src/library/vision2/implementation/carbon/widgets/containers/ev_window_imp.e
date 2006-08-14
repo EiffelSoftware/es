@@ -155,11 +155,9 @@ feature  -- Access
 			-- Maximum height that application wishes widget
 			-- instance to have.
 
-	title: STRING_32 is
+	title: STRING_32
 			-- Application name to be displayed by
 			-- the window manager.
-		do
-		end
 
 	menu_bar: EV_MENU_BAR
 			-- Horizontal bar at top of client area that contains menu's.
@@ -319,8 +317,9 @@ feature -- Element change
 			res: INTEGER
 		do
 			create c_str.make (new_title)
-			ptr:=c_string_to_cfstring_ptr(c_str)
-			res:=set_window_title_with_cfstring_external (c_object, ptr)
+			ptr := c_string_to_cfstring_ptr(c_str)
+			res := set_window_title_with_cfstring_external (c_object, ptr)
+			title := new_title
 		end
 
 	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
