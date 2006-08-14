@@ -224,7 +224,6 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 			a_event_box, a_hbox, a_image, a_label: POINTER
 		do
 
-			end
 		end
 
 	default_tab_label_spacing: INTEGER is 3
@@ -234,10 +233,8 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 			-- Assign `a_text' to the label for `an_item'.
 		local
 			item_imp: EV_WIDGET_IMP
-			a_event_box, a_hbox, a_list, a_label: POINTER
 		do
 			item_imp ?= an_item.implementation
-			a_cs := a_text
 
 		end
 
