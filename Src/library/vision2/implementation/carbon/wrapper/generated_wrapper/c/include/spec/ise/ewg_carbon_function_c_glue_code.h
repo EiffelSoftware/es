@@ -1325,6 +1325,654 @@ CGColorRenderingIntent  ewg_function_CGImageGetRenderingIntent (CGImageRef image
 #define ewg_function_macro_CGImageGetBitmapInfo(ewg_param_image) CGImageGetBitmapInfo ((CGImageRef)ewg_param_image)
 
 CGBitmapInfo  ewg_function_CGImageGetBitmapInfo (CGImageRef image);
+// Wraps call to function 'CGContextGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetTypeID CGContextGetTypeID ()
+
+CFTypeID  ewg_function_CGContextGetTypeID (void);
+// Wraps call to function 'CGContextSaveGState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSaveGState(ewg_param_c) CGContextSaveGState ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextSaveGState (CGContextRef c);
+// Wraps call to function 'CGContextRestoreGState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextRestoreGState(ewg_param_c) CGContextRestoreGState ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextRestoreGState (CGContextRef c);
+// Wraps call to function 'CGContextScaleCTM' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextScaleCTM(ewg_param_c, ewg_param_sx, ewg_param_sy) CGContextScaleCTM ((CGContextRef)ewg_param_c, (float)ewg_param_sx, (float)ewg_param_sy)
+
+void  ewg_function_CGContextScaleCTM (CGContextRef c, float sx, float sy);
+// Wraps call to function 'CGContextTranslateCTM' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextTranslateCTM(ewg_param_c, ewg_param_tx, ewg_param_ty) CGContextTranslateCTM ((CGContextRef)ewg_param_c, (float)ewg_param_tx, (float)ewg_param_ty)
+
+void  ewg_function_CGContextTranslateCTM (CGContextRef c, float tx, float ty);
+// Wraps call to function 'CGContextRotateCTM' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextRotateCTM(ewg_param_c, ewg_param_angle) CGContextRotateCTM ((CGContextRef)ewg_param_c, (float)ewg_param_angle)
+
+void  ewg_function_CGContextRotateCTM (CGContextRef c, float angle);
+// Wraps call to function 'CGContextConcatCTM' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextConcatCTM(ewg_param_c, ewg_param_transform) CGContextConcatCTM ((CGContextRef)ewg_param_c, *(CGAffineTransform*)ewg_param_transform)
+
+void  ewg_function_CGContextConcatCTM (CGContextRef c, CGAffineTransform *transform);
+// Wraps call to function 'CGContextGetCTM' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetCTM(ewg_param_c) CGContextGetCTM ((CGContextRef)ewg_param_c)
+
+CGAffineTransform * ewg_function_CGContextGetCTM (CGContextRef c);
+// Wraps call to function 'CGContextSetLineWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetLineWidth(ewg_param_c, ewg_param_width) CGContextSetLineWidth ((CGContextRef)ewg_param_c, (float)ewg_param_width)
+
+void  ewg_function_CGContextSetLineWidth (CGContextRef c, float width);
+// Wraps call to function 'CGContextSetLineCap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetLineCap(ewg_param_c, ewg_param_cap) CGContextSetLineCap ((CGContextRef)ewg_param_c, (CGLineCap)ewg_param_cap)
+
+void  ewg_function_CGContextSetLineCap (CGContextRef c, CGLineCap cap);
+// Wraps call to function 'CGContextSetLineJoin' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetLineJoin(ewg_param_c, ewg_param_join) CGContextSetLineJoin ((CGContextRef)ewg_param_c, (CGLineJoin)ewg_param_join)
+
+void  ewg_function_CGContextSetLineJoin (CGContextRef c, CGLineJoin join);
+// Wraps call to function 'CGContextSetMiterLimit' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetMiterLimit(ewg_param_c, ewg_param_limit) CGContextSetMiterLimit ((CGContextRef)ewg_param_c, (float)ewg_param_limit)
+
+void  ewg_function_CGContextSetMiterLimit (CGContextRef c, float limit);
+// Wraps call to function 'CGContextSetLineDash' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetLineDash(ewg_param_c, ewg_param_phase, ewg_param_lengths, ewg_param_count) CGContextSetLineDash ((CGContextRef)ewg_param_c, (float)ewg_param_phase, ewg_param_lengths, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextSetLineDash (CGContextRef c, float phase, void *lengths, size_t count);
+// Wraps call to function 'CGContextSetFlatness' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetFlatness(ewg_param_c, ewg_param_flatness) CGContextSetFlatness ((CGContextRef)ewg_param_c, (float)ewg_param_flatness)
+
+void  ewg_function_CGContextSetFlatness (CGContextRef c, float flatness);
+// Wraps call to function 'CGContextSetAlpha' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetAlpha(ewg_param_c, ewg_param_alpha) CGContextSetAlpha ((CGContextRef)ewg_param_c, (float)ewg_param_alpha)
+
+void  ewg_function_CGContextSetAlpha (CGContextRef c, float alpha);
+// Wraps call to function 'CGContextSetBlendMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetBlendMode(ewg_param_context, ewg_param_mode) CGContextSetBlendMode ((CGContextRef)ewg_param_context, (CGBlendMode)ewg_param_mode)
+
+void  ewg_function_CGContextSetBlendMode (CGContextRef context, CGBlendMode mode);
+// Wraps call to function 'CGContextBeginPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextBeginPath(ewg_param_c) CGContextBeginPath ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextBeginPath (CGContextRef c);
+// Wraps call to function 'CGContextMoveToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextMoveToPoint(ewg_param_c, ewg_param_x, ewg_param_y) CGContextMoveToPoint ((CGContextRef)ewg_param_c, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGContextMoveToPoint (CGContextRef c, float x, float y);
+// Wraps call to function 'CGContextAddLineToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddLineToPoint(ewg_param_c, ewg_param_x, ewg_param_y) CGContextAddLineToPoint ((CGContextRef)ewg_param_c, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGContextAddLineToPoint (CGContextRef c, float x, float y);
+// Wraps call to function 'CGContextAddCurveToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddCurveToPoint(ewg_param_c, ewg_param_cp1x, ewg_param_cp1y, ewg_param_cp2x, ewg_param_cp2y, ewg_param_x, ewg_param_y) CGContextAddCurveToPoint ((CGContextRef)ewg_param_c, (float)ewg_param_cp1x, (float)ewg_param_cp1y, (float)ewg_param_cp2x, (float)ewg_param_cp2y, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGContextAddCurveToPoint (CGContextRef c, float cp1x, float cp1y, float cp2x, float cp2y, float x, float y);
+// Wraps call to function 'CGContextAddQuadCurveToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddQuadCurveToPoint(ewg_param_c, ewg_param_cpx, ewg_param_cpy, ewg_param_x, ewg_param_y) CGContextAddQuadCurveToPoint ((CGContextRef)ewg_param_c, (float)ewg_param_cpx, (float)ewg_param_cpy, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGContextAddQuadCurveToPoint (CGContextRef c, float cpx, float cpy, float x, float y);
+// Wraps call to function 'CGContextClosePath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextClosePath(ewg_param_c) CGContextClosePath ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextClosePath (CGContextRef c);
+// Wraps call to function 'CGContextAddRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddRect(ewg_param_c, ewg_param_rect) CGContextAddRect ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextAddRect (CGContextRef c, CGRect *rect);
+// Wraps call to function 'CGContextAddRects' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddRects(ewg_param_c, ewg_param_rects, ewg_param_count) CGContextAddRects ((CGContextRef)ewg_param_c, ewg_param_rects, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextAddRects (CGContextRef c, void *rects, size_t count);
+// Wraps call to function 'CGContextAddLines' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddLines(ewg_param_c, ewg_param_points, ewg_param_count) CGContextAddLines ((CGContextRef)ewg_param_c, ewg_param_points, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextAddLines (CGContextRef c, void *points, size_t count);
+// Wraps call to function 'CGContextAddEllipseInRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddEllipseInRect(ewg_param_context, ewg_param_rect) CGContextAddEllipseInRect ((CGContextRef)ewg_param_context, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextAddEllipseInRect (CGContextRef context, CGRect *rect);
+// Wraps call to function 'CGContextAddArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddArc(ewg_param_c, ewg_param_x, ewg_param_y, ewg_param_radius, ewg_param_startAngle, ewg_param_endAngle, ewg_param_clockwise) CGContextAddArc ((CGContextRef)ewg_param_c, (float)ewg_param_x, (float)ewg_param_y, (float)ewg_param_radius, (float)ewg_param_startAngle, (float)ewg_param_endAngle, (int)ewg_param_clockwise)
+
+void  ewg_function_CGContextAddArc (CGContextRef c, float x, float y, float radius, float startAngle, float endAngle, int clockwise);
+// Wraps call to function 'CGContextAddArcToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddArcToPoint(ewg_param_c, ewg_param_x1, ewg_param_y1, ewg_param_x2, ewg_param_y2, ewg_param_radius) CGContextAddArcToPoint ((CGContextRef)ewg_param_c, (float)ewg_param_x1, (float)ewg_param_y1, (float)ewg_param_x2, (float)ewg_param_y2, (float)ewg_param_radius)
+
+void  ewg_function_CGContextAddArcToPoint (CGContextRef c, float x1, float y1, float x2, float y2, float radius);
+// Wraps call to function 'CGContextAddPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextAddPath(ewg_param_context, ewg_param_path) CGContextAddPath ((CGContextRef)ewg_param_context, (CGPathRef)ewg_param_path)
+
+void  ewg_function_CGContextAddPath (CGContextRef context, CGPathRef path);
+// Wraps call to function 'CGContextReplacePathWithStrokedPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextReplacePathWithStrokedPath(ewg_param_c) CGContextReplacePathWithStrokedPath ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextReplacePathWithStrokedPath (CGContextRef c);
+// Wraps call to function 'CGContextIsPathEmpty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextIsPathEmpty(ewg_param_c) CGContextIsPathEmpty ((CGContextRef)ewg_param_c)
+
+_Bool  ewg_function_CGContextIsPathEmpty (CGContextRef c);
+// Wraps call to function 'CGContextGetPathCurrentPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetPathCurrentPoint(ewg_param_c) CGContextGetPathCurrentPoint ((CGContextRef)ewg_param_c)
+
+CGPoint * ewg_function_CGContextGetPathCurrentPoint (CGContextRef c);
+// Wraps call to function 'CGContextGetPathBoundingBox' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetPathBoundingBox(ewg_param_c) CGContextGetPathBoundingBox ((CGContextRef)ewg_param_c)
+
+CGRect * ewg_function_CGContextGetPathBoundingBox (CGContextRef c);
+// Wraps call to function 'CGContextPathContainsPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextPathContainsPoint(ewg_param_context, ewg_param_point, ewg_param_mode) CGContextPathContainsPoint ((CGContextRef)ewg_param_context, *(CGPoint*)ewg_param_point, (CGPathDrawingMode)ewg_param_mode)
+
+_Bool  ewg_function_CGContextPathContainsPoint (CGContextRef context, CGPoint *point, CGPathDrawingMode mode);
+// Wraps call to function 'CGContextDrawPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextDrawPath(ewg_param_c, ewg_param_mode) CGContextDrawPath ((CGContextRef)ewg_param_c, (CGPathDrawingMode)ewg_param_mode)
+
+void  ewg_function_CGContextDrawPath (CGContextRef c, CGPathDrawingMode mode);
+// Wraps call to function 'CGContextFillPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextFillPath(ewg_param_c) CGContextFillPath ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextFillPath (CGContextRef c);
+// Wraps call to function 'CGContextEOFillPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextEOFillPath(ewg_param_c) CGContextEOFillPath ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextEOFillPath (CGContextRef c);
+// Wraps call to function 'CGContextStrokePath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextStrokePath(ewg_param_c) CGContextStrokePath ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextStrokePath (CGContextRef c);
+// Wraps call to function 'CGContextFillRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextFillRect(ewg_param_c, ewg_param_rect) CGContextFillRect ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextFillRect (CGContextRef c, CGRect *rect);
+// Wraps call to function 'CGContextFillRects' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextFillRects(ewg_param_c, ewg_param_rects, ewg_param_count) CGContextFillRects ((CGContextRef)ewg_param_c, ewg_param_rects, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextFillRects (CGContextRef c, void *rects, size_t count);
+// Wraps call to function 'CGContextStrokeRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextStrokeRect(ewg_param_c, ewg_param_rect) CGContextStrokeRect ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextStrokeRect (CGContextRef c, CGRect *rect);
+// Wraps call to function 'CGContextStrokeRectWithWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextStrokeRectWithWidth(ewg_param_c, ewg_param_rect, ewg_param_width) CGContextStrokeRectWithWidth ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect, (float)ewg_param_width)
+
+void  ewg_function_CGContextStrokeRectWithWidth (CGContextRef c, CGRect *rect, float width);
+// Wraps call to function 'CGContextClearRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextClearRect(ewg_param_c, ewg_param_rect) CGContextClearRect ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextClearRect (CGContextRef c, CGRect *rect);
+// Wraps call to function 'CGContextFillEllipseInRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextFillEllipseInRect(ewg_param_context, ewg_param_rect) CGContextFillEllipseInRect ((CGContextRef)ewg_param_context, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextFillEllipseInRect (CGContextRef context, CGRect *rect);
+// Wraps call to function 'CGContextStrokeEllipseInRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextStrokeEllipseInRect(ewg_param_context, ewg_param_rect) CGContextStrokeEllipseInRect ((CGContextRef)ewg_param_context, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextStrokeEllipseInRect (CGContextRef context, CGRect *rect);
+// Wraps call to function 'CGContextStrokeLineSegments' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextStrokeLineSegments(ewg_param_c, ewg_param_points, ewg_param_count) CGContextStrokeLineSegments ((CGContextRef)ewg_param_c, ewg_param_points, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextStrokeLineSegments (CGContextRef c, void *points, size_t count);
+// Wraps call to function 'CGContextClip' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextClip(ewg_param_c) CGContextClip ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextClip (CGContextRef c);
+// Wraps call to function 'CGContextEOClip' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextEOClip(ewg_param_c) CGContextEOClip ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextEOClip (CGContextRef c);
+// Wraps call to function 'CGContextClipToMask' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextClipToMask(ewg_param_c, ewg_param_rect, ewg_param_mask) CGContextClipToMask ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect, (CGImageRef)ewg_param_mask)
+
+void  ewg_function_CGContextClipToMask (CGContextRef c, CGRect *rect, CGImageRef mask);
+// Wraps call to function 'CGContextGetClipBoundingBox' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetClipBoundingBox(ewg_param_c) CGContextGetClipBoundingBox ((CGContextRef)ewg_param_c)
+
+CGRect * ewg_function_CGContextGetClipBoundingBox (CGContextRef c);
+// Wraps call to function 'CGContextClipToRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextClipToRect(ewg_param_c, ewg_param_rect) CGContextClipToRect ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGContextClipToRect (CGContextRef c, CGRect *rect);
+// Wraps call to function 'CGContextClipToRects' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextClipToRects(ewg_param_c, ewg_param_rects, ewg_param_count) CGContextClipToRects ((CGContextRef)ewg_param_c, ewg_param_rects, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextClipToRects (CGContextRef c, void *rects, size_t count);
+// Wraps call to function 'CGContextSetFillColorWithColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetFillColorWithColor(ewg_param_c, ewg_param_color) CGContextSetFillColorWithColor ((CGContextRef)ewg_param_c, (CGColorRef)ewg_param_color)
+
+void  ewg_function_CGContextSetFillColorWithColor (CGContextRef c, CGColorRef color);
+// Wraps call to function 'CGContextSetStrokeColorWithColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetStrokeColorWithColor(ewg_param_c, ewg_param_color) CGContextSetStrokeColorWithColor ((CGContextRef)ewg_param_c, (CGColorRef)ewg_param_color)
+
+void  ewg_function_CGContextSetStrokeColorWithColor (CGContextRef c, CGColorRef color);
+// Wraps call to function 'CGContextSetFillColorSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetFillColorSpace(ewg_param_c, ewg_param_colorspace) CGContextSetFillColorSpace ((CGContextRef)ewg_param_c, (CGColorSpaceRef)ewg_param_colorspace)
+
+void  ewg_function_CGContextSetFillColorSpace (CGContextRef c, CGColorSpaceRef colorspace);
+// Wraps call to function 'CGContextSetStrokeColorSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetStrokeColorSpace(ewg_param_c, ewg_param_colorspace) CGContextSetStrokeColorSpace ((CGContextRef)ewg_param_c, (CGColorSpaceRef)ewg_param_colorspace)
+
+void  ewg_function_CGContextSetStrokeColorSpace (CGContextRef c, CGColorSpaceRef colorspace);
+// Wraps call to function 'CGContextSetFillColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetFillColor(ewg_param_c, ewg_param_components) CGContextSetFillColor ((CGContextRef)ewg_param_c, ewg_param_components)
+
+void  ewg_function_CGContextSetFillColor (CGContextRef c, void *components);
+// Wraps call to function 'CGContextSetStrokeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetStrokeColor(ewg_param_c, ewg_param_components) CGContextSetStrokeColor ((CGContextRef)ewg_param_c, ewg_param_components)
+
+void  ewg_function_CGContextSetStrokeColor (CGContextRef c, void *components);
+// Wraps call to function 'CGContextSetFillPattern' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetFillPattern(ewg_param_c, ewg_param_pattern, ewg_param_components) CGContextSetFillPattern ((CGContextRef)ewg_param_c, (CGPatternRef)ewg_param_pattern, ewg_param_components)
+
+void  ewg_function_CGContextSetFillPattern (CGContextRef c, CGPatternRef pattern, void *components);
+// Wraps call to function 'CGContextSetStrokePattern' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetStrokePattern(ewg_param_c, ewg_param_pattern, ewg_param_components) CGContextSetStrokePattern ((CGContextRef)ewg_param_c, (CGPatternRef)ewg_param_pattern, ewg_param_components)
+
+void  ewg_function_CGContextSetStrokePattern (CGContextRef c, CGPatternRef pattern, void *components);
+// Wraps call to function 'CGContextSetPatternPhase' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetPatternPhase(ewg_param_c, ewg_param_phase) CGContextSetPatternPhase ((CGContextRef)ewg_param_c, *(CGSize*)ewg_param_phase)
+
+void  ewg_function_CGContextSetPatternPhase (CGContextRef c, CGSize *phase);
+// Wraps call to function 'CGContextSetGrayFillColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetGrayFillColor(ewg_param_c, ewg_param_gray, ewg_param_alpha) CGContextSetGrayFillColor ((CGContextRef)ewg_param_c, (float)ewg_param_gray, (float)ewg_param_alpha)
+
+void  ewg_function_CGContextSetGrayFillColor (CGContextRef c, float gray, float alpha);
+// Wraps call to function 'CGContextSetGrayStrokeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetGrayStrokeColor(ewg_param_c, ewg_param_gray, ewg_param_alpha) CGContextSetGrayStrokeColor ((CGContextRef)ewg_param_c, (float)ewg_param_gray, (float)ewg_param_alpha)
+
+void  ewg_function_CGContextSetGrayStrokeColor (CGContextRef c, float gray, float alpha);
+// Wraps call to function 'CGContextSetRGBFillColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetRGBFillColor(ewg_param_c, ewg_param_red, ewg_param_green, ewg_param_blue, ewg_param_alpha) CGContextSetRGBFillColor ((CGContextRef)ewg_param_c, (float)ewg_param_red, (float)ewg_param_green, (float)ewg_param_blue, (float)ewg_param_alpha)
+
+void  ewg_function_CGContextSetRGBFillColor (CGContextRef c, float red, float green, float blue, float alpha);
+// Wraps call to function 'CGContextSetRGBStrokeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetRGBStrokeColor(ewg_param_c, ewg_param_red, ewg_param_green, ewg_param_blue, ewg_param_alpha) CGContextSetRGBStrokeColor ((CGContextRef)ewg_param_c, (float)ewg_param_red, (float)ewg_param_green, (float)ewg_param_blue, (float)ewg_param_alpha)
+
+void  ewg_function_CGContextSetRGBStrokeColor (CGContextRef c, float red, float green, float blue, float alpha);
+// Wraps call to function 'CGContextSetCMYKFillColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetCMYKFillColor(ewg_param_c, ewg_param_cyan, ewg_param_magenta, ewg_param_yellow, ewg_param_black, ewg_param_alpha) CGContextSetCMYKFillColor ((CGContextRef)ewg_param_c, (float)ewg_param_cyan, (float)ewg_param_magenta, (float)ewg_param_yellow, (float)ewg_param_black, (float)ewg_param_alpha)
+
+void  ewg_function_CGContextSetCMYKFillColor (CGContextRef c, float cyan, float magenta, float yellow, float black, float alpha);
+// Wraps call to function 'CGContextSetCMYKStrokeColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetCMYKStrokeColor(ewg_param_c, ewg_param_cyan, ewg_param_magenta, ewg_param_yellow, ewg_param_black, ewg_param_alpha) CGContextSetCMYKStrokeColor ((CGContextRef)ewg_param_c, (float)ewg_param_cyan, (float)ewg_param_magenta, (float)ewg_param_yellow, (float)ewg_param_black, (float)ewg_param_alpha)
+
+void  ewg_function_CGContextSetCMYKStrokeColor (CGContextRef c, float cyan, float magenta, float yellow, float black, float alpha);
+// Wraps call to function 'CGContextSetRenderingIntent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetRenderingIntent(ewg_param_c, ewg_param_intent) CGContextSetRenderingIntent ((CGContextRef)ewg_param_c, (CGColorRenderingIntent)ewg_param_intent)
+
+void  ewg_function_CGContextSetRenderingIntent (CGContextRef c, CGColorRenderingIntent intent);
+// Wraps call to function 'CGContextDrawImage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextDrawImage(ewg_param_c, ewg_param_rect, ewg_param_image) CGContextDrawImage ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect, (CGImageRef)ewg_param_image)
+
+void  ewg_function_CGContextDrawImage (CGContextRef c, CGRect *rect, CGImageRef image);
+// Wraps call to function 'CGContextGetInterpolationQuality' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetInterpolationQuality(ewg_param_c) CGContextGetInterpolationQuality ((CGContextRef)ewg_param_c)
+
+CGInterpolationQuality  ewg_function_CGContextGetInterpolationQuality (CGContextRef c);
+// Wraps call to function 'CGContextSetInterpolationQuality' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetInterpolationQuality(ewg_param_c, ewg_param_quality) CGContextSetInterpolationQuality ((CGContextRef)ewg_param_c, (CGInterpolationQuality)ewg_param_quality)
+
+void  ewg_function_CGContextSetInterpolationQuality (CGContextRef c, CGInterpolationQuality quality);
+// Wraps call to function 'CGContextSetShadowWithColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetShadowWithColor(ewg_param_context, ewg_param_offset, ewg_param_blur, ewg_param_color) CGContextSetShadowWithColor ((CGContextRef)ewg_param_context, *(CGSize*)ewg_param_offset, (float)ewg_param_blur, (CGColorRef)ewg_param_color)
+
+void  ewg_function_CGContextSetShadowWithColor (CGContextRef context, CGSize *offset, float blur, CGColorRef color);
+// Wraps call to function 'CGContextSetShadow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetShadow(ewg_param_context, ewg_param_offset, ewg_param_blur) CGContextSetShadow ((CGContextRef)ewg_param_context, *(CGSize*)ewg_param_offset, (float)ewg_param_blur)
+
+void  ewg_function_CGContextSetShadow (CGContextRef context, CGSize *offset, float blur);
+// Wraps call to function 'CGContextDrawShading' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextDrawShading(ewg_param_c, ewg_param_shading) CGContextDrawShading ((CGContextRef)ewg_param_c, (CGShadingRef)ewg_param_shading)
+
+void  ewg_function_CGContextDrawShading (CGContextRef c, CGShadingRef shading);
+// Wraps call to function 'CGContextSetCharacterSpacing' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetCharacterSpacing(ewg_param_c, ewg_param_spacing) CGContextSetCharacterSpacing ((CGContextRef)ewg_param_c, (float)ewg_param_spacing)
+
+void  ewg_function_CGContextSetCharacterSpacing (CGContextRef c, float spacing);
+// Wraps call to function 'CGContextSetTextPosition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetTextPosition(ewg_param_c, ewg_param_x, ewg_param_y) CGContextSetTextPosition ((CGContextRef)ewg_param_c, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGContextSetTextPosition (CGContextRef c, float x, float y);
+// Wraps call to function 'CGContextGetTextPosition' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetTextPosition(ewg_param_c) CGContextGetTextPosition ((CGContextRef)ewg_param_c)
+
+CGPoint * ewg_function_CGContextGetTextPosition (CGContextRef c);
+// Wraps call to function 'CGContextSetTextMatrix' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetTextMatrix(ewg_param_c, ewg_param_t) CGContextSetTextMatrix ((CGContextRef)ewg_param_c, *(CGAffineTransform*)ewg_param_t)
+
+void  ewg_function_CGContextSetTextMatrix (CGContextRef c, CGAffineTransform *t);
+// Wraps call to function 'CGContextGetTextMatrix' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetTextMatrix(ewg_param_c) CGContextGetTextMatrix ((CGContextRef)ewg_param_c)
+
+CGAffineTransform * ewg_function_CGContextGetTextMatrix (CGContextRef c);
+// Wraps call to function 'CGContextSetTextDrawingMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetTextDrawingMode(ewg_param_c, ewg_param_mode) CGContextSetTextDrawingMode ((CGContextRef)ewg_param_c, (CGTextDrawingMode)ewg_param_mode)
+
+void  ewg_function_CGContextSetTextDrawingMode (CGContextRef c, CGTextDrawingMode mode);
+// Wraps call to function 'CGContextSetFont' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetFont(ewg_param_c, ewg_param_font) CGContextSetFont ((CGContextRef)ewg_param_c, (CGFontRef)ewg_param_font)
+
+void  ewg_function_CGContextSetFont (CGContextRef c, CGFontRef font);
+// Wraps call to function 'CGContextSetFontSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetFontSize(ewg_param_c, ewg_param_size) CGContextSetFontSize ((CGContextRef)ewg_param_c, (float)ewg_param_size)
+
+void  ewg_function_CGContextSetFontSize (CGContextRef c, float size);
+// Wraps call to function 'CGContextSelectFont' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSelectFont(ewg_param_c, ewg_param_name, ewg_param_size, ewg_param_textEncoding) CGContextSelectFont ((CGContextRef)ewg_param_c, (char const*)ewg_param_name, (float)ewg_param_size, (CGTextEncoding)ewg_param_textEncoding)
+
+void  ewg_function_CGContextSelectFont (CGContextRef c, char const *name, float size, CGTextEncoding textEncoding);
+// Wraps call to function 'CGContextShowText' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextShowText(ewg_param_c, ewg_param_string, ewg_param_length) CGContextShowText ((CGContextRef)ewg_param_c, (char const*)ewg_param_string, (size_t)ewg_param_length)
+
+void  ewg_function_CGContextShowText (CGContextRef c, char const *string, size_t length);
+// Wraps call to function 'CGContextShowGlyphs' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextShowGlyphs(ewg_param_c, ewg_param_g, ewg_param_count) CGContextShowGlyphs ((CGContextRef)ewg_param_c, ewg_param_g, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextShowGlyphs (CGContextRef c, void *g, size_t count);
+// Wraps call to function 'CGContextShowGlyphsWithAdvances' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextShowGlyphsWithAdvances(ewg_param_c, ewg_param_glyphs, ewg_param_advances, ewg_param_count) CGContextShowGlyphsWithAdvances ((CGContextRef)ewg_param_c, ewg_param_glyphs, ewg_param_advances, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextShowGlyphsWithAdvances (CGContextRef c, void *glyphs, void *advances, size_t count);
+// Wraps call to function 'CGContextShowTextAtPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextShowTextAtPoint(ewg_param_c, ewg_param_x, ewg_param_y, ewg_param_string, ewg_param_length) CGContextShowTextAtPoint ((CGContextRef)ewg_param_c, (float)ewg_param_x, (float)ewg_param_y, (char const*)ewg_param_string, (size_t)ewg_param_length)
+
+void  ewg_function_CGContextShowTextAtPoint (CGContextRef c, float x, float y, char const *string, size_t length);
+// Wraps call to function 'CGContextShowGlyphsAtPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextShowGlyphsAtPoint(ewg_param_c, ewg_param_x, ewg_param_y, ewg_param_glyphs, ewg_param_count) CGContextShowGlyphsAtPoint ((CGContextRef)ewg_param_c, (float)ewg_param_x, (float)ewg_param_y, ewg_param_glyphs, (size_t)ewg_param_count)
+
+void  ewg_function_CGContextShowGlyphsAtPoint (CGContextRef c, float x, float y, void *glyphs, size_t count);
+// Wraps call to function 'CGContextDrawPDFPage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextDrawPDFPage(ewg_param_c, ewg_param_page) CGContextDrawPDFPage ((CGContextRef)ewg_param_c, (CGPDFPageRef)ewg_param_page)
+
+void  ewg_function_CGContextDrawPDFPage (CGContextRef c, CGPDFPageRef page);
+// Wraps call to function 'CGContextDrawPDFDocument' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextDrawPDFDocument(ewg_param_c, ewg_param_rect, ewg_param_document, ewg_param_page) CGContextDrawPDFDocument ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect, (CGPDFDocumentRef)ewg_param_document, (int)ewg_param_page)
+
+void  ewg_function_CGContextDrawPDFDocument (CGContextRef c, CGRect *rect, CGPDFDocumentRef document, int page);
+// Wraps call to function 'CGContextBeginPage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextBeginPage(ewg_param_c, ewg_param_mediaBox) CGContextBeginPage ((CGContextRef)ewg_param_c, (CGRect const*)ewg_param_mediaBox)
+
+void  ewg_function_CGContextBeginPage (CGContextRef c, CGRect const *mediaBox);
+// Wraps call to function 'CGContextEndPage' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextEndPage(ewg_param_c) CGContextEndPage ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextEndPage (CGContextRef c);
+// Wraps call to function 'CGContextRetain' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextRetain(ewg_param_c) CGContextRetain ((CGContextRef)ewg_param_c)
+
+CGContextRef  ewg_function_CGContextRetain (CGContextRef c);
+// Wraps call to function 'CGContextRelease' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextRelease(ewg_param_c) CGContextRelease ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextRelease (CGContextRef c);
+// Wraps call to function 'CGContextFlush' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextFlush(ewg_param_c) CGContextFlush ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextFlush (CGContextRef c);
+// Wraps call to function 'CGContextSynchronize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSynchronize(ewg_param_c) CGContextSynchronize ((CGContextRef)ewg_param_c)
+
+void  ewg_function_CGContextSynchronize (CGContextRef c);
+// Wraps call to function 'CGContextSetShouldAntialias' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetShouldAntialias(ewg_param_c, ewg_param_shouldAntialias) CGContextSetShouldAntialias ((CGContextRef)ewg_param_c, (_Bool)ewg_param_shouldAntialias)
+
+void  ewg_function_CGContextSetShouldAntialias (CGContextRef c, _Bool shouldAntialias);
+// Wraps call to function 'CGContextSetAllowsAntialiasing' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetAllowsAntialiasing(ewg_param_context, ewg_param_allowsAntialiasing) CGContextSetAllowsAntialiasing ((CGContextRef)ewg_param_context, (_Bool)ewg_param_allowsAntialiasing)
+
+void  ewg_function_CGContextSetAllowsAntialiasing (CGContextRef context, _Bool allowsAntialiasing);
+// Wraps call to function 'CGContextSetShouldSmoothFonts' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextSetShouldSmoothFonts(ewg_param_c, ewg_param_shouldSmoothFonts) CGContextSetShouldSmoothFonts ((CGContextRef)ewg_param_c, (_Bool)ewg_param_shouldSmoothFonts)
+
+void  ewg_function_CGContextSetShouldSmoothFonts (CGContextRef c, _Bool shouldSmoothFonts);
+// Wraps call to function 'CGContextBeginTransparencyLayer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextBeginTransparencyLayer(ewg_param_context, ewg_param_auxiliaryInfo) CGContextBeginTransparencyLayer ((CGContextRef)ewg_param_context, (CFDictionaryRef)ewg_param_auxiliaryInfo)
+
+void  ewg_function_CGContextBeginTransparencyLayer (CGContextRef context, CFDictionaryRef auxiliaryInfo);
+// Wraps call to function 'CGContextEndTransparencyLayer' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextEndTransparencyLayer(ewg_param_context) CGContextEndTransparencyLayer ((CGContextRef)ewg_param_context)
+
+void  ewg_function_CGContextEndTransparencyLayer (CGContextRef context);
+// Wraps call to function 'CGContextGetUserSpaceToDeviceSpaceTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextGetUserSpaceToDeviceSpaceTransform(ewg_param_c) CGContextGetUserSpaceToDeviceSpaceTransform ((CGContextRef)ewg_param_c)
+
+CGAffineTransform * ewg_function_CGContextGetUserSpaceToDeviceSpaceTransform (CGContextRef c);
+// Wraps call to function 'CGContextConvertPointToDeviceSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextConvertPointToDeviceSpace(ewg_param_c, ewg_param_point) CGContextConvertPointToDeviceSpace ((CGContextRef)ewg_param_c, *(CGPoint*)ewg_param_point)
+
+CGPoint * ewg_function_CGContextConvertPointToDeviceSpace (CGContextRef c, CGPoint *point);
+// Wraps call to function 'CGContextConvertPointToUserSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextConvertPointToUserSpace(ewg_param_c, ewg_param_point) CGContextConvertPointToUserSpace ((CGContextRef)ewg_param_c, *(CGPoint*)ewg_param_point)
+
+CGPoint * ewg_function_CGContextConvertPointToUserSpace (CGContextRef c, CGPoint *point);
+// Wraps call to function 'CGContextConvertSizeToDeviceSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextConvertSizeToDeviceSpace(ewg_param_c, ewg_param_size) CGContextConvertSizeToDeviceSpace ((CGContextRef)ewg_param_c, *(CGSize*)ewg_param_size)
+
+CGSize * ewg_function_CGContextConvertSizeToDeviceSpace (CGContextRef c, CGSize *size);
+// Wraps call to function 'CGContextConvertSizeToUserSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextConvertSizeToUserSpace(ewg_param_c, ewg_param_size) CGContextConvertSizeToUserSpace ((CGContextRef)ewg_param_c, *(CGSize*)ewg_param_size)
+
+CGSize * ewg_function_CGContextConvertSizeToUserSpace (CGContextRef c, CGSize *size);
+// Wraps call to function 'CGContextConvertRectToDeviceSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextConvertRectToDeviceSpace(ewg_param_c, ewg_param_rect) CGContextConvertRectToDeviceSpace ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
+
+CGRect * ewg_function_CGContextConvertRectToDeviceSpace (CGContextRef c, CGRect *rect);
+// Wraps call to function 'CGContextConvertRectToUserSpace' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGContextConvertRectToUserSpace(ewg_param_c, ewg_param_rect) CGContextConvertRectToUserSpace ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
+
+CGRect * ewg_function_CGContextConvertRectToUserSpace (CGContextRef c, CGRect *rect);
 // Wraps call to function 'AEInstallEventHandler' in a macro
 #include <Carbon/Carbon.h>
 
@@ -3989,6 +4637,48 @@ Boolean  ewg_function_LMGetCursorNew (void);
 #define ewg_function_macro_LMSetCursorNew(ewg_param_value) LMSetCursorNew ((Boolean)ewg_param_value)
 
 void  ewg_function_LMSetCursorNew (Boolean value);
+// Wraps call to function 'QDPictCreateWithProvider' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDPictCreateWithProvider(ewg_param_provider) QDPictCreateWithProvider ((CGDataProviderRef)ewg_param_provider)
+
+QDPictRef  ewg_function_QDPictCreateWithProvider (CGDataProviderRef provider);
+// Wraps call to function 'QDPictCreateWithURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDPictCreateWithURL(ewg_param_url) QDPictCreateWithURL ((CFURLRef)ewg_param_url)
+
+QDPictRef  ewg_function_QDPictCreateWithURL (CFURLRef url);
+// Wraps call to function 'QDPictRetain' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDPictRetain(ewg_param_pictRef) QDPictRetain ((QDPictRef)ewg_param_pictRef)
+
+QDPictRef  ewg_function_QDPictRetain (QDPictRef pictRef);
+// Wraps call to function 'QDPictRelease' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDPictRelease(ewg_param_pictRef) QDPictRelease ((QDPictRef)ewg_param_pictRef)
+
+void  ewg_function_QDPictRelease (QDPictRef pictRef);
+// Wraps call to function 'QDPictGetBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDPictGetBounds(ewg_param_pictRef) QDPictGetBounds ((QDPictRef)ewg_param_pictRef)
+
+CGRect * ewg_function_QDPictGetBounds (QDPictRef pictRef);
+// Wraps call to function 'QDPictGetResolution' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDPictGetResolution(ewg_param_pictRef, ewg_param_xRes, ewg_param_yRes) QDPictGetResolution ((QDPictRef)ewg_param_pictRef, (float*)ewg_param_xRes, (float*)ewg_param_yRes)
+
+void  ewg_function_QDPictGetResolution (QDPictRef pictRef, float *xRes, float *yRes);
+// Wraps call to function 'QDPictDrawToCGContext' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_QDPictDrawToCGContext(ewg_param_ctx, ewg_param_rect, ewg_param_pictRef) QDPictDrawToCGContext ((CGContextRef)ewg_param_ctx, *(CGRect*)ewg_param_rect, (QDPictRef)ewg_param_pictRef)
+
+OSStatus  ewg_function_QDPictDrawToCGContext (CGContextRef ctx, CGRect *rect, QDPictRef pictRef);
 // Wraps call to function 'LaunchApplication' in a macro
 #include <Carbon/Carbon.h>
 

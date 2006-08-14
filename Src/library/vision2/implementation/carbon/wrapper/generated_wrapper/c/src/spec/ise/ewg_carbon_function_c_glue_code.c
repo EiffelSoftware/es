@@ -3323,6 +3323,1652 @@ void* ewg_get_function_address_CGImageGetBitmapInfo (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'CGContextGetTypeID'
+// For ise
+CFTypeID  ewg_function_CGContextGetTypeID (void)
+{
+	return CGContextGetTypeID ();
+}
+
+// Return address of function 'CGContextGetTypeID'
+void* ewg_get_function_address_CGContextGetTypeID (void)
+{
+	return (void*) CGContextGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSaveGState'
+// For ise
+void  ewg_function_CGContextSaveGState (CGContextRef ewg_c)
+{
+	CGContextSaveGState ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextSaveGState'
+void* ewg_get_function_address_CGContextSaveGState (void)
+{
+	return (void*) CGContextSaveGState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextRestoreGState'
+// For ise
+void  ewg_function_CGContextRestoreGState (CGContextRef ewg_c)
+{
+	CGContextRestoreGState ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextRestoreGState'
+void* ewg_get_function_address_CGContextRestoreGState (void)
+{
+	return (void*) CGContextRestoreGState;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextScaleCTM'
+// For ise
+void  ewg_function_CGContextScaleCTM (CGContextRef ewg_c, float ewg_sx, float ewg_sy)
+{
+	CGContextScaleCTM ((CGContextRef)ewg_c, (float)ewg_sx, (float)ewg_sy);
+}
+
+// Return address of function 'CGContextScaleCTM'
+void* ewg_get_function_address_CGContextScaleCTM (void)
+{
+	return (void*) CGContextScaleCTM;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextTranslateCTM'
+// For ise
+void  ewg_function_CGContextTranslateCTM (CGContextRef ewg_c, float ewg_tx, float ewg_ty)
+{
+	CGContextTranslateCTM ((CGContextRef)ewg_c, (float)ewg_tx, (float)ewg_ty);
+}
+
+// Return address of function 'CGContextTranslateCTM'
+void* ewg_get_function_address_CGContextTranslateCTM (void)
+{
+	return (void*) CGContextTranslateCTM;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextRotateCTM'
+// For ise
+void  ewg_function_CGContextRotateCTM (CGContextRef ewg_c, float ewg_angle)
+{
+	CGContextRotateCTM ((CGContextRef)ewg_c, (float)ewg_angle);
+}
+
+// Return address of function 'CGContextRotateCTM'
+void* ewg_get_function_address_CGContextRotateCTM (void)
+{
+	return (void*) CGContextRotateCTM;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextConcatCTM'
+// For ise
+void  ewg_function_CGContextConcatCTM (CGContextRef ewg_c, CGAffineTransform *ewg_transform)
+{
+	CGContextConcatCTM ((CGContextRef)ewg_c, *(CGAffineTransform*)ewg_transform);
+}
+
+// Return address of function 'CGContextConcatCTM'
+void* ewg_get_function_address_CGContextConcatCTM (void)
+{
+	return (void*) CGContextConcatCTM;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetCTM'
+// For ise
+CGAffineTransform * ewg_function_CGContextGetCTM (CGContextRef ewg_c)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGContextGetCTM ((CGContextRef)ewg_c);
+	return result;
+}
+
+// Return address of function 'CGContextGetCTM'
+void* ewg_get_function_address_CGContextGetCTM (void)
+{
+	return (void*) CGContextGetCTM;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetLineWidth'
+// For ise
+void  ewg_function_CGContextSetLineWidth (CGContextRef ewg_c, float ewg_width)
+{
+	CGContextSetLineWidth ((CGContextRef)ewg_c, (float)ewg_width);
+}
+
+// Return address of function 'CGContextSetLineWidth'
+void* ewg_get_function_address_CGContextSetLineWidth (void)
+{
+	return (void*) CGContextSetLineWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetLineCap'
+// For ise
+void  ewg_function_CGContextSetLineCap (CGContextRef ewg_c, CGLineCap ewg_cap)
+{
+	CGContextSetLineCap ((CGContextRef)ewg_c, (CGLineCap)ewg_cap);
+}
+
+// Return address of function 'CGContextSetLineCap'
+void* ewg_get_function_address_CGContextSetLineCap (void)
+{
+	return (void*) CGContextSetLineCap;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetLineJoin'
+// For ise
+void  ewg_function_CGContextSetLineJoin (CGContextRef ewg_c, CGLineJoin ewg_join)
+{
+	CGContextSetLineJoin ((CGContextRef)ewg_c, (CGLineJoin)ewg_join);
+}
+
+// Return address of function 'CGContextSetLineJoin'
+void* ewg_get_function_address_CGContextSetLineJoin (void)
+{
+	return (void*) CGContextSetLineJoin;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetMiterLimit'
+// For ise
+void  ewg_function_CGContextSetMiterLimit (CGContextRef ewg_c, float ewg_limit)
+{
+	CGContextSetMiterLimit ((CGContextRef)ewg_c, (float)ewg_limit);
+}
+
+// Return address of function 'CGContextSetMiterLimit'
+void* ewg_get_function_address_CGContextSetMiterLimit (void)
+{
+	return (void*) CGContextSetMiterLimit;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetLineDash'
+// For ise
+void  ewg_function_CGContextSetLineDash (CGContextRef ewg_c, float ewg_phase, void *ewg_lengths, size_t ewg_count)
+{
+	CGContextSetLineDash ((CGContextRef)ewg_c, (float)ewg_phase, ewg_lengths, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextSetLineDash'
+void* ewg_get_function_address_CGContextSetLineDash (void)
+{
+	return (void*) CGContextSetLineDash;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetFlatness'
+// For ise
+void  ewg_function_CGContextSetFlatness (CGContextRef ewg_c, float ewg_flatness)
+{
+	CGContextSetFlatness ((CGContextRef)ewg_c, (float)ewg_flatness);
+}
+
+// Return address of function 'CGContextSetFlatness'
+void* ewg_get_function_address_CGContextSetFlatness (void)
+{
+	return (void*) CGContextSetFlatness;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetAlpha'
+// For ise
+void  ewg_function_CGContextSetAlpha (CGContextRef ewg_c, float ewg_alpha)
+{
+	CGContextSetAlpha ((CGContextRef)ewg_c, (float)ewg_alpha);
+}
+
+// Return address of function 'CGContextSetAlpha'
+void* ewg_get_function_address_CGContextSetAlpha (void)
+{
+	return (void*) CGContextSetAlpha;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetBlendMode'
+// For ise
+void  ewg_function_CGContextSetBlendMode (CGContextRef ewg_context, CGBlendMode ewg_mode)
+{
+	CGContextSetBlendMode ((CGContextRef)ewg_context, (CGBlendMode)ewg_mode);
+}
+
+// Return address of function 'CGContextSetBlendMode'
+void* ewg_get_function_address_CGContextSetBlendMode (void)
+{
+	return (void*) CGContextSetBlendMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextBeginPath'
+// For ise
+void  ewg_function_CGContextBeginPath (CGContextRef ewg_c)
+{
+	CGContextBeginPath ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextBeginPath'
+void* ewg_get_function_address_CGContextBeginPath (void)
+{
+	return (void*) CGContextBeginPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextMoveToPoint'
+// For ise
+void  ewg_function_CGContextMoveToPoint (CGContextRef ewg_c, float ewg_x, float ewg_y)
+{
+	CGContextMoveToPoint ((CGContextRef)ewg_c, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGContextMoveToPoint'
+void* ewg_get_function_address_CGContextMoveToPoint (void)
+{
+	return (void*) CGContextMoveToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddLineToPoint'
+// For ise
+void  ewg_function_CGContextAddLineToPoint (CGContextRef ewg_c, float ewg_x, float ewg_y)
+{
+	CGContextAddLineToPoint ((CGContextRef)ewg_c, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGContextAddLineToPoint'
+void* ewg_get_function_address_CGContextAddLineToPoint (void)
+{
+	return (void*) CGContextAddLineToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddCurveToPoint'
+// For ise
+void  ewg_function_CGContextAddCurveToPoint (CGContextRef ewg_c, float ewg_cp1x, float ewg_cp1y, float ewg_cp2x, float ewg_cp2y, float ewg_x, float ewg_y)
+{
+	CGContextAddCurveToPoint ((CGContextRef)ewg_c, (float)ewg_cp1x, (float)ewg_cp1y, (float)ewg_cp2x, (float)ewg_cp2y, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGContextAddCurveToPoint'
+void* ewg_get_function_address_CGContextAddCurveToPoint (void)
+{
+	return (void*) CGContextAddCurveToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddQuadCurveToPoint'
+// For ise
+void  ewg_function_CGContextAddQuadCurveToPoint (CGContextRef ewg_c, float ewg_cpx, float ewg_cpy, float ewg_x, float ewg_y)
+{
+	CGContextAddQuadCurveToPoint ((CGContextRef)ewg_c, (float)ewg_cpx, (float)ewg_cpy, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGContextAddQuadCurveToPoint'
+void* ewg_get_function_address_CGContextAddQuadCurveToPoint (void)
+{
+	return (void*) CGContextAddQuadCurveToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextClosePath'
+// For ise
+void  ewg_function_CGContextClosePath (CGContextRef ewg_c)
+{
+	CGContextClosePath ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextClosePath'
+void* ewg_get_function_address_CGContextClosePath (void)
+{
+	return (void*) CGContextClosePath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddRect'
+// For ise
+void  ewg_function_CGContextAddRect (CGContextRef ewg_c, CGRect *ewg_rect)
+{
+	CGContextAddRect ((CGContextRef)ewg_c, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextAddRect'
+void* ewg_get_function_address_CGContextAddRect (void)
+{
+	return (void*) CGContextAddRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddRects'
+// For ise
+void  ewg_function_CGContextAddRects (CGContextRef ewg_c, void *ewg_rects, size_t ewg_count)
+{
+	CGContextAddRects ((CGContextRef)ewg_c, ewg_rects, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextAddRects'
+void* ewg_get_function_address_CGContextAddRects (void)
+{
+	return (void*) CGContextAddRects;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddLines'
+// For ise
+void  ewg_function_CGContextAddLines (CGContextRef ewg_c, void *ewg_points, size_t ewg_count)
+{
+	CGContextAddLines ((CGContextRef)ewg_c, ewg_points, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextAddLines'
+void* ewg_get_function_address_CGContextAddLines (void)
+{
+	return (void*) CGContextAddLines;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddEllipseInRect'
+// For ise
+void  ewg_function_CGContextAddEllipseInRect (CGContextRef ewg_context, CGRect *ewg_rect)
+{
+	CGContextAddEllipseInRect ((CGContextRef)ewg_context, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextAddEllipseInRect'
+void* ewg_get_function_address_CGContextAddEllipseInRect (void)
+{
+	return (void*) CGContextAddEllipseInRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddArc'
+// For ise
+void  ewg_function_CGContextAddArc (CGContextRef ewg_c, float ewg_x, float ewg_y, float ewg_radius, float ewg_startAngle, float ewg_endAngle, int ewg_clockwise)
+{
+	CGContextAddArc ((CGContextRef)ewg_c, (float)ewg_x, (float)ewg_y, (float)ewg_radius, (float)ewg_startAngle, (float)ewg_endAngle, (int)ewg_clockwise);
+}
+
+// Return address of function 'CGContextAddArc'
+void* ewg_get_function_address_CGContextAddArc (void)
+{
+	return (void*) CGContextAddArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddArcToPoint'
+// For ise
+void  ewg_function_CGContextAddArcToPoint (CGContextRef ewg_c, float ewg_x1, float ewg_y1, float ewg_x2, float ewg_y2, float ewg_radius)
+{
+	CGContextAddArcToPoint ((CGContextRef)ewg_c, (float)ewg_x1, (float)ewg_y1, (float)ewg_x2, (float)ewg_y2, (float)ewg_radius);
+}
+
+// Return address of function 'CGContextAddArcToPoint'
+void* ewg_get_function_address_CGContextAddArcToPoint (void)
+{
+	return (void*) CGContextAddArcToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextAddPath'
+// For ise
+void  ewg_function_CGContextAddPath (CGContextRef ewg_context, CGPathRef ewg_path)
+{
+	CGContextAddPath ((CGContextRef)ewg_context, (CGPathRef)ewg_path);
+}
+
+// Return address of function 'CGContextAddPath'
+void* ewg_get_function_address_CGContextAddPath (void)
+{
+	return (void*) CGContextAddPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextReplacePathWithStrokedPath'
+// For ise
+void  ewg_function_CGContextReplacePathWithStrokedPath (CGContextRef ewg_c)
+{
+	CGContextReplacePathWithStrokedPath ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextReplacePathWithStrokedPath'
+void* ewg_get_function_address_CGContextReplacePathWithStrokedPath (void)
+{
+	return (void*) CGContextReplacePathWithStrokedPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextIsPathEmpty'
+// For ise
+_Bool  ewg_function_CGContextIsPathEmpty (CGContextRef ewg_c)
+{
+	return CGContextIsPathEmpty ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextIsPathEmpty'
+void* ewg_get_function_address_CGContextIsPathEmpty (void)
+{
+	return (void*) CGContextIsPathEmpty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetPathCurrentPoint'
+// For ise
+CGPoint * ewg_function_CGContextGetPathCurrentPoint (CGContextRef ewg_c)
+{
+	CGPoint *result = (CGPoint*) malloc (sizeof(CGPoint));
+	*result = CGContextGetPathCurrentPoint ((CGContextRef)ewg_c);
+	return result;
+}
+
+// Return address of function 'CGContextGetPathCurrentPoint'
+void* ewg_get_function_address_CGContextGetPathCurrentPoint (void)
+{
+	return (void*) CGContextGetPathCurrentPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetPathBoundingBox'
+// For ise
+CGRect * ewg_function_CGContextGetPathBoundingBox (CGContextRef ewg_c)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGContextGetPathBoundingBox ((CGContextRef)ewg_c);
+	return result;
+}
+
+// Return address of function 'CGContextGetPathBoundingBox'
+void* ewg_get_function_address_CGContextGetPathBoundingBox (void)
+{
+	return (void*) CGContextGetPathBoundingBox;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextPathContainsPoint'
+// For ise
+_Bool  ewg_function_CGContextPathContainsPoint (CGContextRef ewg_context, CGPoint *ewg_point, CGPathDrawingMode ewg_mode)
+{
+	return CGContextPathContainsPoint ((CGContextRef)ewg_context, *(CGPoint*)ewg_point, (CGPathDrawingMode)ewg_mode);
+}
+
+// Return address of function 'CGContextPathContainsPoint'
+void* ewg_get_function_address_CGContextPathContainsPoint (void)
+{
+	return (void*) CGContextPathContainsPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextDrawPath'
+// For ise
+void  ewg_function_CGContextDrawPath (CGContextRef ewg_c, CGPathDrawingMode ewg_mode)
+{
+	CGContextDrawPath ((CGContextRef)ewg_c, (CGPathDrawingMode)ewg_mode);
+}
+
+// Return address of function 'CGContextDrawPath'
+void* ewg_get_function_address_CGContextDrawPath (void)
+{
+	return (void*) CGContextDrawPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextFillPath'
+// For ise
+void  ewg_function_CGContextFillPath (CGContextRef ewg_c)
+{
+	CGContextFillPath ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextFillPath'
+void* ewg_get_function_address_CGContextFillPath (void)
+{
+	return (void*) CGContextFillPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextEOFillPath'
+// For ise
+void  ewg_function_CGContextEOFillPath (CGContextRef ewg_c)
+{
+	CGContextEOFillPath ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextEOFillPath'
+void* ewg_get_function_address_CGContextEOFillPath (void)
+{
+	return (void*) CGContextEOFillPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextStrokePath'
+// For ise
+void  ewg_function_CGContextStrokePath (CGContextRef ewg_c)
+{
+	CGContextStrokePath ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextStrokePath'
+void* ewg_get_function_address_CGContextStrokePath (void)
+{
+	return (void*) CGContextStrokePath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextFillRect'
+// For ise
+void  ewg_function_CGContextFillRect (CGContextRef ewg_c, CGRect *ewg_rect)
+{
+	CGContextFillRect ((CGContextRef)ewg_c, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextFillRect'
+void* ewg_get_function_address_CGContextFillRect (void)
+{
+	return (void*) CGContextFillRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextFillRects'
+// For ise
+void  ewg_function_CGContextFillRects (CGContextRef ewg_c, void *ewg_rects, size_t ewg_count)
+{
+	CGContextFillRects ((CGContextRef)ewg_c, ewg_rects, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextFillRects'
+void* ewg_get_function_address_CGContextFillRects (void)
+{
+	return (void*) CGContextFillRects;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextStrokeRect'
+// For ise
+void  ewg_function_CGContextStrokeRect (CGContextRef ewg_c, CGRect *ewg_rect)
+{
+	CGContextStrokeRect ((CGContextRef)ewg_c, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextStrokeRect'
+void* ewg_get_function_address_CGContextStrokeRect (void)
+{
+	return (void*) CGContextStrokeRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextStrokeRectWithWidth'
+// For ise
+void  ewg_function_CGContextStrokeRectWithWidth (CGContextRef ewg_c, CGRect *ewg_rect, float ewg_width)
+{
+	CGContextStrokeRectWithWidth ((CGContextRef)ewg_c, *(CGRect*)ewg_rect, (float)ewg_width);
+}
+
+// Return address of function 'CGContextStrokeRectWithWidth'
+void* ewg_get_function_address_CGContextStrokeRectWithWidth (void)
+{
+	return (void*) CGContextStrokeRectWithWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextClearRect'
+// For ise
+void  ewg_function_CGContextClearRect (CGContextRef ewg_c, CGRect *ewg_rect)
+{
+	CGContextClearRect ((CGContextRef)ewg_c, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextClearRect'
+void* ewg_get_function_address_CGContextClearRect (void)
+{
+	return (void*) CGContextClearRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextFillEllipseInRect'
+// For ise
+void  ewg_function_CGContextFillEllipseInRect (CGContextRef ewg_context, CGRect *ewg_rect)
+{
+	CGContextFillEllipseInRect ((CGContextRef)ewg_context, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextFillEllipseInRect'
+void* ewg_get_function_address_CGContextFillEllipseInRect (void)
+{
+	return (void*) CGContextFillEllipseInRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextStrokeEllipseInRect'
+// For ise
+void  ewg_function_CGContextStrokeEllipseInRect (CGContextRef ewg_context, CGRect *ewg_rect)
+{
+	CGContextStrokeEllipseInRect ((CGContextRef)ewg_context, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextStrokeEllipseInRect'
+void* ewg_get_function_address_CGContextStrokeEllipseInRect (void)
+{
+	return (void*) CGContextStrokeEllipseInRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextStrokeLineSegments'
+// For ise
+void  ewg_function_CGContextStrokeLineSegments (CGContextRef ewg_c, void *ewg_points, size_t ewg_count)
+{
+	CGContextStrokeLineSegments ((CGContextRef)ewg_c, ewg_points, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextStrokeLineSegments'
+void* ewg_get_function_address_CGContextStrokeLineSegments (void)
+{
+	return (void*) CGContextStrokeLineSegments;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextClip'
+// For ise
+void  ewg_function_CGContextClip (CGContextRef ewg_c)
+{
+	CGContextClip ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextClip'
+void* ewg_get_function_address_CGContextClip (void)
+{
+	return (void*) CGContextClip;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextEOClip'
+// For ise
+void  ewg_function_CGContextEOClip (CGContextRef ewg_c)
+{
+	CGContextEOClip ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextEOClip'
+void* ewg_get_function_address_CGContextEOClip (void)
+{
+	return (void*) CGContextEOClip;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextClipToMask'
+// For ise
+void  ewg_function_CGContextClipToMask (CGContextRef ewg_c, CGRect *ewg_rect, CGImageRef ewg_mask)
+{
+	CGContextClipToMask ((CGContextRef)ewg_c, *(CGRect*)ewg_rect, (CGImageRef)ewg_mask);
+}
+
+// Return address of function 'CGContextClipToMask'
+void* ewg_get_function_address_CGContextClipToMask (void)
+{
+	return (void*) CGContextClipToMask;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetClipBoundingBox'
+// For ise
+CGRect * ewg_function_CGContextGetClipBoundingBox (CGContextRef ewg_c)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGContextGetClipBoundingBox ((CGContextRef)ewg_c);
+	return result;
+}
+
+// Return address of function 'CGContextGetClipBoundingBox'
+void* ewg_get_function_address_CGContextGetClipBoundingBox (void)
+{
+	return (void*) CGContextGetClipBoundingBox;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextClipToRect'
+// For ise
+void  ewg_function_CGContextClipToRect (CGContextRef ewg_c, CGRect *ewg_rect)
+{
+	CGContextClipToRect ((CGContextRef)ewg_c, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGContextClipToRect'
+void* ewg_get_function_address_CGContextClipToRect (void)
+{
+	return (void*) CGContextClipToRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextClipToRects'
+// For ise
+void  ewg_function_CGContextClipToRects (CGContextRef ewg_c, void *ewg_rects, size_t ewg_count)
+{
+	CGContextClipToRects ((CGContextRef)ewg_c, ewg_rects, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextClipToRects'
+void* ewg_get_function_address_CGContextClipToRects (void)
+{
+	return (void*) CGContextClipToRects;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetFillColorWithColor'
+// For ise
+void  ewg_function_CGContextSetFillColorWithColor (CGContextRef ewg_c, CGColorRef ewg_color)
+{
+	CGContextSetFillColorWithColor ((CGContextRef)ewg_c, (CGColorRef)ewg_color);
+}
+
+// Return address of function 'CGContextSetFillColorWithColor'
+void* ewg_get_function_address_CGContextSetFillColorWithColor (void)
+{
+	return (void*) CGContextSetFillColorWithColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetStrokeColorWithColor'
+// For ise
+void  ewg_function_CGContextSetStrokeColorWithColor (CGContextRef ewg_c, CGColorRef ewg_color)
+{
+	CGContextSetStrokeColorWithColor ((CGContextRef)ewg_c, (CGColorRef)ewg_color);
+}
+
+// Return address of function 'CGContextSetStrokeColorWithColor'
+void* ewg_get_function_address_CGContextSetStrokeColorWithColor (void)
+{
+	return (void*) CGContextSetStrokeColorWithColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetFillColorSpace'
+// For ise
+void  ewg_function_CGContextSetFillColorSpace (CGContextRef ewg_c, CGColorSpaceRef ewg_colorspace)
+{
+	CGContextSetFillColorSpace ((CGContextRef)ewg_c, (CGColorSpaceRef)ewg_colorspace);
+}
+
+// Return address of function 'CGContextSetFillColorSpace'
+void* ewg_get_function_address_CGContextSetFillColorSpace (void)
+{
+	return (void*) CGContextSetFillColorSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetStrokeColorSpace'
+// For ise
+void  ewg_function_CGContextSetStrokeColorSpace (CGContextRef ewg_c, CGColorSpaceRef ewg_colorspace)
+{
+	CGContextSetStrokeColorSpace ((CGContextRef)ewg_c, (CGColorSpaceRef)ewg_colorspace);
+}
+
+// Return address of function 'CGContextSetStrokeColorSpace'
+void* ewg_get_function_address_CGContextSetStrokeColorSpace (void)
+{
+	return (void*) CGContextSetStrokeColorSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetFillColor'
+// For ise
+void  ewg_function_CGContextSetFillColor (CGContextRef ewg_c, void *ewg_components)
+{
+	CGContextSetFillColor ((CGContextRef)ewg_c, ewg_components);
+}
+
+// Return address of function 'CGContextSetFillColor'
+void* ewg_get_function_address_CGContextSetFillColor (void)
+{
+	return (void*) CGContextSetFillColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetStrokeColor'
+// For ise
+void  ewg_function_CGContextSetStrokeColor (CGContextRef ewg_c, void *ewg_components)
+{
+	CGContextSetStrokeColor ((CGContextRef)ewg_c, ewg_components);
+}
+
+// Return address of function 'CGContextSetStrokeColor'
+void* ewg_get_function_address_CGContextSetStrokeColor (void)
+{
+	return (void*) CGContextSetStrokeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetFillPattern'
+// For ise
+void  ewg_function_CGContextSetFillPattern (CGContextRef ewg_c, CGPatternRef ewg_pattern, void *ewg_components)
+{
+	CGContextSetFillPattern ((CGContextRef)ewg_c, (CGPatternRef)ewg_pattern, ewg_components);
+}
+
+// Return address of function 'CGContextSetFillPattern'
+void* ewg_get_function_address_CGContextSetFillPattern (void)
+{
+	return (void*) CGContextSetFillPattern;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetStrokePattern'
+// For ise
+void  ewg_function_CGContextSetStrokePattern (CGContextRef ewg_c, CGPatternRef ewg_pattern, void *ewg_components)
+{
+	CGContextSetStrokePattern ((CGContextRef)ewg_c, (CGPatternRef)ewg_pattern, ewg_components);
+}
+
+// Return address of function 'CGContextSetStrokePattern'
+void* ewg_get_function_address_CGContextSetStrokePattern (void)
+{
+	return (void*) CGContextSetStrokePattern;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetPatternPhase'
+// For ise
+void  ewg_function_CGContextSetPatternPhase (CGContextRef ewg_c, CGSize *ewg_phase)
+{
+	CGContextSetPatternPhase ((CGContextRef)ewg_c, *(CGSize*)ewg_phase);
+}
+
+// Return address of function 'CGContextSetPatternPhase'
+void* ewg_get_function_address_CGContextSetPatternPhase (void)
+{
+	return (void*) CGContextSetPatternPhase;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetGrayFillColor'
+// For ise
+void  ewg_function_CGContextSetGrayFillColor (CGContextRef ewg_c, float ewg_gray, float ewg_alpha)
+{
+	CGContextSetGrayFillColor ((CGContextRef)ewg_c, (float)ewg_gray, (float)ewg_alpha);
+}
+
+// Return address of function 'CGContextSetGrayFillColor'
+void* ewg_get_function_address_CGContextSetGrayFillColor (void)
+{
+	return (void*) CGContextSetGrayFillColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetGrayStrokeColor'
+// For ise
+void  ewg_function_CGContextSetGrayStrokeColor (CGContextRef ewg_c, float ewg_gray, float ewg_alpha)
+{
+	CGContextSetGrayStrokeColor ((CGContextRef)ewg_c, (float)ewg_gray, (float)ewg_alpha);
+}
+
+// Return address of function 'CGContextSetGrayStrokeColor'
+void* ewg_get_function_address_CGContextSetGrayStrokeColor (void)
+{
+	return (void*) CGContextSetGrayStrokeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetRGBFillColor'
+// For ise
+void  ewg_function_CGContextSetRGBFillColor (CGContextRef ewg_c, float ewg_red, float ewg_green, float ewg_blue, float ewg_alpha)
+{
+	CGContextSetRGBFillColor ((CGContextRef)ewg_c, (float)ewg_red, (float)ewg_green, (float)ewg_blue, (float)ewg_alpha);
+}
+
+// Return address of function 'CGContextSetRGBFillColor'
+void* ewg_get_function_address_CGContextSetRGBFillColor (void)
+{
+	return (void*) CGContextSetRGBFillColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetRGBStrokeColor'
+// For ise
+void  ewg_function_CGContextSetRGBStrokeColor (CGContextRef ewg_c, float ewg_red, float ewg_green, float ewg_blue, float ewg_alpha)
+{
+	CGContextSetRGBStrokeColor ((CGContextRef)ewg_c, (float)ewg_red, (float)ewg_green, (float)ewg_blue, (float)ewg_alpha);
+}
+
+// Return address of function 'CGContextSetRGBStrokeColor'
+void* ewg_get_function_address_CGContextSetRGBStrokeColor (void)
+{
+	return (void*) CGContextSetRGBStrokeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetCMYKFillColor'
+// For ise
+void  ewg_function_CGContextSetCMYKFillColor (CGContextRef ewg_c, float ewg_cyan, float ewg_magenta, float ewg_yellow, float ewg_black, float ewg_alpha)
+{
+	CGContextSetCMYKFillColor ((CGContextRef)ewg_c, (float)ewg_cyan, (float)ewg_magenta, (float)ewg_yellow, (float)ewg_black, (float)ewg_alpha);
+}
+
+// Return address of function 'CGContextSetCMYKFillColor'
+void* ewg_get_function_address_CGContextSetCMYKFillColor (void)
+{
+	return (void*) CGContextSetCMYKFillColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetCMYKStrokeColor'
+// For ise
+void  ewg_function_CGContextSetCMYKStrokeColor (CGContextRef ewg_c, float ewg_cyan, float ewg_magenta, float ewg_yellow, float ewg_black, float ewg_alpha)
+{
+	CGContextSetCMYKStrokeColor ((CGContextRef)ewg_c, (float)ewg_cyan, (float)ewg_magenta, (float)ewg_yellow, (float)ewg_black, (float)ewg_alpha);
+}
+
+// Return address of function 'CGContextSetCMYKStrokeColor'
+void* ewg_get_function_address_CGContextSetCMYKStrokeColor (void)
+{
+	return (void*) CGContextSetCMYKStrokeColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetRenderingIntent'
+// For ise
+void  ewg_function_CGContextSetRenderingIntent (CGContextRef ewg_c, CGColorRenderingIntent ewg_intent)
+{
+	CGContextSetRenderingIntent ((CGContextRef)ewg_c, (CGColorRenderingIntent)ewg_intent);
+}
+
+// Return address of function 'CGContextSetRenderingIntent'
+void* ewg_get_function_address_CGContextSetRenderingIntent (void)
+{
+	return (void*) CGContextSetRenderingIntent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextDrawImage'
+// For ise
+void  ewg_function_CGContextDrawImage (CGContextRef ewg_c, CGRect *ewg_rect, CGImageRef ewg_image)
+{
+	CGContextDrawImage ((CGContextRef)ewg_c, *(CGRect*)ewg_rect, (CGImageRef)ewg_image);
+}
+
+// Return address of function 'CGContextDrawImage'
+void* ewg_get_function_address_CGContextDrawImage (void)
+{
+	return (void*) CGContextDrawImage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetInterpolationQuality'
+// For ise
+CGInterpolationQuality  ewg_function_CGContextGetInterpolationQuality (CGContextRef ewg_c)
+{
+	return CGContextGetInterpolationQuality ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextGetInterpolationQuality'
+void* ewg_get_function_address_CGContextGetInterpolationQuality (void)
+{
+	return (void*) CGContextGetInterpolationQuality;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetInterpolationQuality'
+// For ise
+void  ewg_function_CGContextSetInterpolationQuality (CGContextRef ewg_c, CGInterpolationQuality ewg_quality)
+{
+	CGContextSetInterpolationQuality ((CGContextRef)ewg_c, (CGInterpolationQuality)ewg_quality);
+}
+
+// Return address of function 'CGContextSetInterpolationQuality'
+void* ewg_get_function_address_CGContextSetInterpolationQuality (void)
+{
+	return (void*) CGContextSetInterpolationQuality;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetShadowWithColor'
+// For ise
+void  ewg_function_CGContextSetShadowWithColor (CGContextRef ewg_context, CGSize *ewg_offset, float ewg_blur, CGColorRef ewg_color)
+{
+	CGContextSetShadowWithColor ((CGContextRef)ewg_context, *(CGSize*)ewg_offset, (float)ewg_blur, (CGColorRef)ewg_color);
+}
+
+// Return address of function 'CGContextSetShadowWithColor'
+void* ewg_get_function_address_CGContextSetShadowWithColor (void)
+{
+	return (void*) CGContextSetShadowWithColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetShadow'
+// For ise
+void  ewg_function_CGContextSetShadow (CGContextRef ewg_context, CGSize *ewg_offset, float ewg_blur)
+{
+	CGContextSetShadow ((CGContextRef)ewg_context, *(CGSize*)ewg_offset, (float)ewg_blur);
+}
+
+// Return address of function 'CGContextSetShadow'
+void* ewg_get_function_address_CGContextSetShadow (void)
+{
+	return (void*) CGContextSetShadow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextDrawShading'
+// For ise
+void  ewg_function_CGContextDrawShading (CGContextRef ewg_c, CGShadingRef ewg_shading)
+{
+	CGContextDrawShading ((CGContextRef)ewg_c, (CGShadingRef)ewg_shading);
+}
+
+// Return address of function 'CGContextDrawShading'
+void* ewg_get_function_address_CGContextDrawShading (void)
+{
+	return (void*) CGContextDrawShading;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetCharacterSpacing'
+// For ise
+void  ewg_function_CGContextSetCharacterSpacing (CGContextRef ewg_c, float ewg_spacing)
+{
+	CGContextSetCharacterSpacing ((CGContextRef)ewg_c, (float)ewg_spacing);
+}
+
+// Return address of function 'CGContextSetCharacterSpacing'
+void* ewg_get_function_address_CGContextSetCharacterSpacing (void)
+{
+	return (void*) CGContextSetCharacterSpacing;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetTextPosition'
+// For ise
+void  ewg_function_CGContextSetTextPosition (CGContextRef ewg_c, float ewg_x, float ewg_y)
+{
+	CGContextSetTextPosition ((CGContextRef)ewg_c, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGContextSetTextPosition'
+void* ewg_get_function_address_CGContextSetTextPosition (void)
+{
+	return (void*) CGContextSetTextPosition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetTextPosition'
+// For ise
+CGPoint * ewg_function_CGContextGetTextPosition (CGContextRef ewg_c)
+{
+	CGPoint *result = (CGPoint*) malloc (sizeof(CGPoint));
+	*result = CGContextGetTextPosition ((CGContextRef)ewg_c);
+	return result;
+}
+
+// Return address of function 'CGContextGetTextPosition'
+void* ewg_get_function_address_CGContextGetTextPosition (void)
+{
+	return (void*) CGContextGetTextPosition;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetTextMatrix'
+// For ise
+void  ewg_function_CGContextSetTextMatrix (CGContextRef ewg_c, CGAffineTransform *ewg_t)
+{
+	CGContextSetTextMatrix ((CGContextRef)ewg_c, *(CGAffineTransform*)ewg_t);
+}
+
+// Return address of function 'CGContextSetTextMatrix'
+void* ewg_get_function_address_CGContextSetTextMatrix (void)
+{
+	return (void*) CGContextSetTextMatrix;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetTextMatrix'
+// For ise
+CGAffineTransform * ewg_function_CGContextGetTextMatrix (CGContextRef ewg_c)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGContextGetTextMatrix ((CGContextRef)ewg_c);
+	return result;
+}
+
+// Return address of function 'CGContextGetTextMatrix'
+void* ewg_get_function_address_CGContextGetTextMatrix (void)
+{
+	return (void*) CGContextGetTextMatrix;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetTextDrawingMode'
+// For ise
+void  ewg_function_CGContextSetTextDrawingMode (CGContextRef ewg_c, CGTextDrawingMode ewg_mode)
+{
+	CGContextSetTextDrawingMode ((CGContextRef)ewg_c, (CGTextDrawingMode)ewg_mode);
+}
+
+// Return address of function 'CGContextSetTextDrawingMode'
+void* ewg_get_function_address_CGContextSetTextDrawingMode (void)
+{
+	return (void*) CGContextSetTextDrawingMode;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetFont'
+// For ise
+void  ewg_function_CGContextSetFont (CGContextRef ewg_c, CGFontRef ewg_font)
+{
+	CGContextSetFont ((CGContextRef)ewg_c, (CGFontRef)ewg_font);
+}
+
+// Return address of function 'CGContextSetFont'
+void* ewg_get_function_address_CGContextSetFont (void)
+{
+	return (void*) CGContextSetFont;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetFontSize'
+// For ise
+void  ewg_function_CGContextSetFontSize (CGContextRef ewg_c, float ewg_size)
+{
+	CGContextSetFontSize ((CGContextRef)ewg_c, (float)ewg_size);
+}
+
+// Return address of function 'CGContextSetFontSize'
+void* ewg_get_function_address_CGContextSetFontSize (void)
+{
+	return (void*) CGContextSetFontSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSelectFont'
+// For ise
+void  ewg_function_CGContextSelectFont (CGContextRef ewg_c, char const *ewg_name, float ewg_size, CGTextEncoding ewg_textEncoding)
+{
+	CGContextSelectFont ((CGContextRef)ewg_c, (char const*)ewg_name, (float)ewg_size, (CGTextEncoding)ewg_textEncoding);
+}
+
+// Return address of function 'CGContextSelectFont'
+void* ewg_get_function_address_CGContextSelectFont (void)
+{
+	return (void*) CGContextSelectFont;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextShowText'
+// For ise
+void  ewg_function_CGContextShowText (CGContextRef ewg_c, char const *ewg_string, size_t ewg_length)
+{
+	CGContextShowText ((CGContextRef)ewg_c, (char const*)ewg_string, (size_t)ewg_length);
+}
+
+// Return address of function 'CGContextShowText'
+void* ewg_get_function_address_CGContextShowText (void)
+{
+	return (void*) CGContextShowText;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextShowGlyphs'
+// For ise
+void  ewg_function_CGContextShowGlyphs (CGContextRef ewg_c, void *ewg_g, size_t ewg_count)
+{
+	CGContextShowGlyphs ((CGContextRef)ewg_c, ewg_g, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextShowGlyphs'
+void* ewg_get_function_address_CGContextShowGlyphs (void)
+{
+	return (void*) CGContextShowGlyphs;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextShowGlyphsWithAdvances'
+// For ise
+void  ewg_function_CGContextShowGlyphsWithAdvances (CGContextRef ewg_c, void *ewg_glyphs, void *ewg_advances, size_t ewg_count)
+{
+	CGContextShowGlyphsWithAdvances ((CGContextRef)ewg_c, ewg_glyphs, ewg_advances, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextShowGlyphsWithAdvances'
+void* ewg_get_function_address_CGContextShowGlyphsWithAdvances (void)
+{
+	return (void*) CGContextShowGlyphsWithAdvances;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextShowTextAtPoint'
+// For ise
+void  ewg_function_CGContextShowTextAtPoint (CGContextRef ewg_c, float ewg_x, float ewg_y, char const *ewg_string, size_t ewg_length)
+{
+	CGContextShowTextAtPoint ((CGContextRef)ewg_c, (float)ewg_x, (float)ewg_y, (char const*)ewg_string, (size_t)ewg_length);
+}
+
+// Return address of function 'CGContextShowTextAtPoint'
+void* ewg_get_function_address_CGContextShowTextAtPoint (void)
+{
+	return (void*) CGContextShowTextAtPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextShowGlyphsAtPoint'
+// For ise
+void  ewg_function_CGContextShowGlyphsAtPoint (CGContextRef ewg_c, float ewg_x, float ewg_y, void *ewg_glyphs, size_t ewg_count)
+{
+	CGContextShowGlyphsAtPoint ((CGContextRef)ewg_c, (float)ewg_x, (float)ewg_y, ewg_glyphs, (size_t)ewg_count);
+}
+
+// Return address of function 'CGContextShowGlyphsAtPoint'
+void* ewg_get_function_address_CGContextShowGlyphsAtPoint (void)
+{
+	return (void*) CGContextShowGlyphsAtPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextDrawPDFPage'
+// For ise
+void  ewg_function_CGContextDrawPDFPage (CGContextRef ewg_c, CGPDFPageRef ewg_page)
+{
+	CGContextDrawPDFPage ((CGContextRef)ewg_c, (CGPDFPageRef)ewg_page);
+}
+
+// Return address of function 'CGContextDrawPDFPage'
+void* ewg_get_function_address_CGContextDrawPDFPage (void)
+{
+	return (void*) CGContextDrawPDFPage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextDrawPDFDocument'
+// For ise
+void  ewg_function_CGContextDrawPDFDocument (CGContextRef ewg_c, CGRect *ewg_rect, CGPDFDocumentRef ewg_document, int ewg_page)
+{
+	CGContextDrawPDFDocument ((CGContextRef)ewg_c, *(CGRect*)ewg_rect, (CGPDFDocumentRef)ewg_document, (int)ewg_page);
+}
+
+// Return address of function 'CGContextDrawPDFDocument'
+void* ewg_get_function_address_CGContextDrawPDFDocument (void)
+{
+	return (void*) CGContextDrawPDFDocument;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextBeginPage'
+// For ise
+void  ewg_function_CGContextBeginPage (CGContextRef ewg_c, CGRect const *ewg_mediaBox)
+{
+	CGContextBeginPage ((CGContextRef)ewg_c, (CGRect const*)ewg_mediaBox);
+}
+
+// Return address of function 'CGContextBeginPage'
+void* ewg_get_function_address_CGContextBeginPage (void)
+{
+	return (void*) CGContextBeginPage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextEndPage'
+// For ise
+void  ewg_function_CGContextEndPage (CGContextRef ewg_c)
+{
+	CGContextEndPage ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextEndPage'
+void* ewg_get_function_address_CGContextEndPage (void)
+{
+	return (void*) CGContextEndPage;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextRetain'
+// For ise
+CGContextRef  ewg_function_CGContextRetain (CGContextRef ewg_c)
+{
+	return CGContextRetain ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextRetain'
+void* ewg_get_function_address_CGContextRetain (void)
+{
+	return (void*) CGContextRetain;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextRelease'
+// For ise
+void  ewg_function_CGContextRelease (CGContextRef ewg_c)
+{
+	CGContextRelease ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextRelease'
+void* ewg_get_function_address_CGContextRelease (void)
+{
+	return (void*) CGContextRelease;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextFlush'
+// For ise
+void  ewg_function_CGContextFlush (CGContextRef ewg_c)
+{
+	CGContextFlush ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextFlush'
+void* ewg_get_function_address_CGContextFlush (void)
+{
+	return (void*) CGContextFlush;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSynchronize'
+// For ise
+void  ewg_function_CGContextSynchronize (CGContextRef ewg_c)
+{
+	CGContextSynchronize ((CGContextRef)ewg_c);
+}
+
+// Return address of function 'CGContextSynchronize'
+void* ewg_get_function_address_CGContextSynchronize (void)
+{
+	return (void*) CGContextSynchronize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetShouldAntialias'
+// For ise
+void  ewg_function_CGContextSetShouldAntialias (CGContextRef ewg_c, _Bool ewg_shouldAntialias)
+{
+	CGContextSetShouldAntialias ((CGContextRef)ewg_c, (_Bool)ewg_shouldAntialias);
+}
+
+// Return address of function 'CGContextSetShouldAntialias'
+void* ewg_get_function_address_CGContextSetShouldAntialias (void)
+{
+	return (void*) CGContextSetShouldAntialias;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetAllowsAntialiasing'
+// For ise
+void  ewg_function_CGContextSetAllowsAntialiasing (CGContextRef ewg_context, _Bool ewg_allowsAntialiasing)
+{
+	CGContextSetAllowsAntialiasing ((CGContextRef)ewg_context, (_Bool)ewg_allowsAntialiasing);
+}
+
+// Return address of function 'CGContextSetAllowsAntialiasing'
+void* ewg_get_function_address_CGContextSetAllowsAntialiasing (void)
+{
+	return (void*) CGContextSetAllowsAntialiasing;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextSetShouldSmoothFonts'
+// For ise
+void  ewg_function_CGContextSetShouldSmoothFonts (CGContextRef ewg_c, _Bool ewg_shouldSmoothFonts)
+{
+	CGContextSetShouldSmoothFonts ((CGContextRef)ewg_c, (_Bool)ewg_shouldSmoothFonts);
+}
+
+// Return address of function 'CGContextSetShouldSmoothFonts'
+void* ewg_get_function_address_CGContextSetShouldSmoothFonts (void)
+{
+	return (void*) CGContextSetShouldSmoothFonts;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextBeginTransparencyLayer'
+// For ise
+void  ewg_function_CGContextBeginTransparencyLayer (CGContextRef ewg_context, CFDictionaryRef ewg_auxiliaryInfo)
+{
+	CGContextBeginTransparencyLayer ((CGContextRef)ewg_context, (CFDictionaryRef)ewg_auxiliaryInfo);
+}
+
+// Return address of function 'CGContextBeginTransparencyLayer'
+void* ewg_get_function_address_CGContextBeginTransparencyLayer (void)
+{
+	return (void*) CGContextBeginTransparencyLayer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextEndTransparencyLayer'
+// For ise
+void  ewg_function_CGContextEndTransparencyLayer (CGContextRef ewg_context)
+{
+	CGContextEndTransparencyLayer ((CGContextRef)ewg_context);
+}
+
+// Return address of function 'CGContextEndTransparencyLayer'
+void* ewg_get_function_address_CGContextEndTransparencyLayer (void)
+{
+	return (void*) CGContextEndTransparencyLayer;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextGetUserSpaceToDeviceSpaceTransform'
+// For ise
+CGAffineTransform * ewg_function_CGContextGetUserSpaceToDeviceSpaceTransform (CGContextRef ewg_c)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGContextGetUserSpaceToDeviceSpaceTransform ((CGContextRef)ewg_c);
+	return result;
+}
+
+// Return address of function 'CGContextGetUserSpaceToDeviceSpaceTransform'
+void* ewg_get_function_address_CGContextGetUserSpaceToDeviceSpaceTransform (void)
+{
+	return (void*) CGContextGetUserSpaceToDeviceSpaceTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextConvertPointToDeviceSpace'
+// For ise
+CGPoint * ewg_function_CGContextConvertPointToDeviceSpace (CGContextRef ewg_c, CGPoint *ewg_point)
+{
+	CGPoint *result = (CGPoint*) malloc (sizeof(CGPoint));
+	*result = CGContextConvertPointToDeviceSpace ((CGContextRef)ewg_c, *(CGPoint*)ewg_point);
+	return result;
+}
+
+// Return address of function 'CGContextConvertPointToDeviceSpace'
+void* ewg_get_function_address_CGContextConvertPointToDeviceSpace (void)
+{
+	return (void*) CGContextConvertPointToDeviceSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextConvertPointToUserSpace'
+// For ise
+CGPoint * ewg_function_CGContextConvertPointToUserSpace (CGContextRef ewg_c, CGPoint *ewg_point)
+{
+	CGPoint *result = (CGPoint*) malloc (sizeof(CGPoint));
+	*result = CGContextConvertPointToUserSpace ((CGContextRef)ewg_c, *(CGPoint*)ewg_point);
+	return result;
+}
+
+// Return address of function 'CGContextConvertPointToUserSpace'
+void* ewg_get_function_address_CGContextConvertPointToUserSpace (void)
+{
+	return (void*) CGContextConvertPointToUserSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextConvertSizeToDeviceSpace'
+// For ise
+CGSize * ewg_function_CGContextConvertSizeToDeviceSpace (CGContextRef ewg_c, CGSize *ewg_size)
+{
+	CGSize *result = (CGSize*) malloc (sizeof(CGSize));
+	*result = CGContextConvertSizeToDeviceSpace ((CGContextRef)ewg_c, *(CGSize*)ewg_size);
+	return result;
+}
+
+// Return address of function 'CGContextConvertSizeToDeviceSpace'
+void* ewg_get_function_address_CGContextConvertSizeToDeviceSpace (void)
+{
+	return (void*) CGContextConvertSizeToDeviceSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextConvertSizeToUserSpace'
+// For ise
+CGSize * ewg_function_CGContextConvertSizeToUserSpace (CGContextRef ewg_c, CGSize *ewg_size)
+{
+	CGSize *result = (CGSize*) malloc (sizeof(CGSize));
+	*result = CGContextConvertSizeToUserSpace ((CGContextRef)ewg_c, *(CGSize*)ewg_size);
+	return result;
+}
+
+// Return address of function 'CGContextConvertSizeToUserSpace'
+void* ewg_get_function_address_CGContextConvertSizeToUserSpace (void)
+{
+	return (void*) CGContextConvertSizeToUserSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextConvertRectToDeviceSpace'
+// For ise
+CGRect * ewg_function_CGContextConvertRectToDeviceSpace (CGContextRef ewg_c, CGRect *ewg_rect)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGContextConvertRectToDeviceSpace ((CGContextRef)ewg_c, *(CGRect*)ewg_rect);
+	return result;
+}
+
+// Return address of function 'CGContextConvertRectToDeviceSpace'
+void* ewg_get_function_address_CGContextConvertRectToDeviceSpace (void)
+{
+	return (void*) CGContextConvertRectToDeviceSpace;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGContextConvertRectToUserSpace'
+// For ise
+CGRect * ewg_function_CGContextConvertRectToUserSpace (CGContextRef ewg_c, CGRect *ewg_rect)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGContextConvertRectToUserSpace ((CGContextRef)ewg_c, *(CGRect*)ewg_rect);
+	return result;
+}
+
+// Return address of function 'CGContextConvertRectToUserSpace'
+void* ewg_get_function_address_CGContextConvertRectToUserSpace (void)
+{
+	return (void*) CGContextConvertRectToUserSpace;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'AEInstallEventHandler'
 // For ise
 OSErr  ewg_function_AEInstallEventHandler (AEEventClass ewg_theAEEventClass, AEEventID ewg_theAEEventID, AEEventHandlerUPP ewg_handler, long ewg_handlerRefcon, Boolean ewg_isSysHandler)
@@ -9979,6 +11625,113 @@ void  ewg_function_LMSetCursorNew (Boolean ewg_value)
 void* ewg_get_function_address_LMSetCursorNew (void)
 {
 	return (void*) LMSetCursorNew;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDPictCreateWithProvider'
+// For ise
+QDPictRef  ewg_function_QDPictCreateWithProvider (CGDataProviderRef ewg_provider)
+{
+	return QDPictCreateWithProvider ((CGDataProviderRef)ewg_provider);
+}
+
+// Return address of function 'QDPictCreateWithProvider'
+void* ewg_get_function_address_QDPictCreateWithProvider (void)
+{
+	return (void*) QDPictCreateWithProvider;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDPictCreateWithURL'
+// For ise
+QDPictRef  ewg_function_QDPictCreateWithURL (CFURLRef ewg_url)
+{
+	return QDPictCreateWithURL ((CFURLRef)ewg_url);
+}
+
+// Return address of function 'QDPictCreateWithURL'
+void* ewg_get_function_address_QDPictCreateWithURL (void)
+{
+	return (void*) QDPictCreateWithURL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDPictRetain'
+// For ise
+QDPictRef  ewg_function_QDPictRetain (QDPictRef ewg_pictRef)
+{
+	return QDPictRetain ((QDPictRef)ewg_pictRef);
+}
+
+// Return address of function 'QDPictRetain'
+void* ewg_get_function_address_QDPictRetain (void)
+{
+	return (void*) QDPictRetain;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDPictRelease'
+// For ise
+void  ewg_function_QDPictRelease (QDPictRef ewg_pictRef)
+{
+	QDPictRelease ((QDPictRef)ewg_pictRef);
+}
+
+// Return address of function 'QDPictRelease'
+void* ewg_get_function_address_QDPictRelease (void)
+{
+	return (void*) QDPictRelease;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDPictGetBounds'
+// For ise
+CGRect * ewg_function_QDPictGetBounds (QDPictRef ewg_pictRef)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = QDPictGetBounds ((QDPictRef)ewg_pictRef);
+	return result;
+}
+
+// Return address of function 'QDPictGetBounds'
+void* ewg_get_function_address_QDPictGetBounds (void)
+{
+	return (void*) QDPictGetBounds;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDPictGetResolution'
+// For ise
+void  ewg_function_QDPictGetResolution (QDPictRef ewg_pictRef, float *ewg_xRes, float *ewg_yRes)
+{
+	QDPictGetResolution ((QDPictRef)ewg_pictRef, (float*)ewg_xRes, (float*)ewg_yRes);
+}
+
+// Return address of function 'QDPictGetResolution'
+void* ewg_get_function_address_QDPictGetResolution (void)
+{
+	return (void*) QDPictGetResolution;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'QDPictDrawToCGContext'
+// For ise
+OSStatus  ewg_function_QDPictDrawToCGContext (CGContextRef ewg_ctx, CGRect *ewg_rect, QDPictRef ewg_pictRef)
+{
+	return QDPictDrawToCGContext ((CGContextRef)ewg_ctx, *(CGRect*)ewg_rect, (QDPictRef)ewg_pictRef);
+}
+
+// Return address of function 'QDPictDrawToCGContext'
+void* ewg_get_function_address_QDPictDrawToCGContext (void)
+{
+	return (void*) QDPictDrawToCGContext;
 }
 
 #include <Carbon/Carbon.h>
