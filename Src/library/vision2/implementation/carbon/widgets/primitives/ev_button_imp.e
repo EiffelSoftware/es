@@ -81,6 +81,7 @@ feature {NONE} -- Initialization
 			set_c_object ( struct_ptr )
 
 			id := app_implementation.get_id (current)  --getting an id from the application
+			initialize
 		end
 
 	initialize is
@@ -90,7 +91,7 @@ feature {NONE} -- Initialization
 			target, h_ret: POINTER
 		do
 			Precursor {EV_PRIMITIVE_IMP}
-			target := get_control_event_target_external(struct_ptr)
+			target := get_control_event_target_external( c_object )
 			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 		end
 
