@@ -77,8 +77,6 @@ feature {NONE} -- Initialization
 
 			ret := hiimage_view_create_external (null, $struct_ptr)
 			set_c_object (struct_ptr)
-
-			initialize
 		end
 
 	initialize is
