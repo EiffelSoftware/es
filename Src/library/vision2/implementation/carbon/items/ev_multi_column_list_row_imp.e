@@ -230,14 +230,11 @@ feature {EV_MULTI_COLUMN_LIST_IMP} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	set_list_iter (a_iter: EV_GTK_TREE_ITER_STRUCT) is
+	set_list_iter (a_iter: ANY) is
 			-- Set `list_iter' to `a_iter'
 		do
-			list_iter := a_iter
 		end
 
-	list_iter: EV_GTK_TREE_ITER_STRUCT
-		-- Object representing position of `Current' in parent tree model
 
 
 	set_parent_imp (par_imp: EV_MULTI_COLUMN_LIST_IMP) is

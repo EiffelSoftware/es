@@ -11,9 +11,6 @@ class
 
 inherit
 	EV_MULTI_COLUMN_LIST_I
-		export
-			{EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES}
-				column_widths, update_column_width
 		redefine
 			interface,
 			initialize,
@@ -225,10 +222,6 @@ feature {NONE} -- Implementation
 
 	resize_model_if_needed (a_columns: INTEGER) is
 			--
-		local
-			a_type_array: MANAGED_POINTER
-			a_tree_iter: EV_GTK_TREE_ITER_STRUCT
-			i: INTEGER
 		do
 
 		end
@@ -689,15 +682,12 @@ feature {EV_MULTI_COLUMN_LIST_ROW_IMP}
 		do
 			pixmap_imp ?= a_pixmap.implementation
 			a_pixbuf := pixmap_imp.pixbuf_from_drawable_with_size (pixmaps_width, pixmaps_height)
-			a_list_iter := ev_children.i_th (a_row).list_iter.item
+--			a_list_iter := ev_children.i_th (a_row).list_iter.item
 		end
 
 	remove_row_pixmap (a_row: INTEGER) is
 			-- Remove pixmap from `a_row'
-		local
-			a_list_iter: POINTER
 		do
-			a_list_iter := ev_children.i_th (a_row).list_iter.item
 		end
 
 feature {NONE} -- Implementation
@@ -758,31 +748,30 @@ feature {NONE} -- Implementation
 			-- Insert `v' at position `i'.
 		local
 			item_imp: EV_MULTI_COLUMN_LIST_ROW_IMP
-			a_tree_iter: EV_GTK_TREE_ITER_STRUCT
 		do
-			item_imp ?= v.implementation
-			item_imp.set_parent_imp (Current)
-
-				-- Make sure list is large enough to fit `item_imp'
-			if v.count > column_count then
-				create_list (v.count)
-			end
-
-				-- update the list of rows of the column list:			
-			ev_children.go_i_th (i)
-			ev_children.put_left (item_imp)
-
-				-- Add row to model
-			create a_tree_iter.make
-			item_imp.set_list_iter (a_tree_iter)
-			update_child (item_imp, ev_children.count)
-
-			if item_imp.is_transport_enabled then
-				update_pnd_connection (True)
-			end
-
-			child_array.go_i_th (i)
-			child_array.put_left (v)
+--			item_imp ?= v.implementation
+--			item_imp.set_parent_imp (Current)
+--
+--				-- Make sure list is large enough to fit `item_imp'
+--			if v.count > column_count then
+--				create_list (v.count)
+--			end
+--
+--				-- update the list of rows of the column list:			
+--			ev_children.go_i_th (i)
+--			ev_children.put_left (item_imp)
+--
+--				-- Add row to model
+--			create a_tree_iter.make
+--			item_imp.set_list_iter (a_tree_iter)
+--			update_child (item_imp, ev_children.count)
+--
+--			if item_imp.is_transport_enabled then
+--				update_pnd_connection (True)
+--			end
+--
+--			child_array.go_i_th (i)
+--			child_array.put_left (v)
 		end
 
 	remove_i_th (a_position: INTEGER) is
