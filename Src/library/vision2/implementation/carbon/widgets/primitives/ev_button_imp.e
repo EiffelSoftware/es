@@ -81,7 +81,6 @@ feature {NONE} -- Initialization
 			set_c_object ( struct_ptr )
 
 			id := app_implementation.get_id (current)  --getting an id from the application
-			initialize
 		end
 
 	initialize is

@@ -35,6 +35,7 @@ inherit
 
 	EV_NOTEBOOK_ACTION_SEQUENCES_IMP
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -65,10 +66,15 @@ feature {NONE} -- Initialization
 
 	initialize is
 			-- Initialize the notebook.
+		local
+			target, h_ret: POINTER
 		do
 			Precursor {EV_WIDGET_LIST_IMP}
 			selected_item_index_internal := 0
 			initialize_pixmaps
+
+			target := get_control_event_target_external( c_object )
+			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 		end
 
 feature -- Access
