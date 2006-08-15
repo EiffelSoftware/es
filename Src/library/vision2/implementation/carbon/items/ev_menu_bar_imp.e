@@ -33,6 +33,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 		do
 			base_make (an_interface)
+			set_c_object ($current)
 		end
 
 feature {EV_WINDOW_IMP} -- Implementation

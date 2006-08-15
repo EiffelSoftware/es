@@ -48,11 +48,13 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 	set_homogeneous (flag: BOOLEAN) is
 			-- Set whether every child is the same size.
 		do
+			is_homogeneous := flag
 		end
 
 	set_border_width (value: INTEGER) is
 			 -- Assign `value' to `border_width'.
 		do
+				border_width := value
 		end
 
 	set_padding (value: INTEGER) is
@@ -67,6 +69,7 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 	set_child_expandable (child: EV_WIDGET; flag: BOOLEAN) is
 			-- Set whether `child' expands to fill available spare space.
 		do
+
 		end
 
 feature {EV_ANY_I} -- Implementation

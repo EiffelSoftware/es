@@ -66,7 +66,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_PICK_AND_DROPABLE_IMP}
 			set_is_initialized (True)
-			
+
 		end
 
 	initialize_file_drop (a_widget: POINTER) is
@@ -128,9 +128,13 @@ feature -- Access
 	parent: EV_CONTAINER is
 			-- Container widget that contains `Current'.
 			-- (Void if `Current' is not in a container)
-			--| Search back up through GtkWidget->parent to find a GtkWidget
-			--| with an EV_ANY_IMP attached.
+		local
+			a_par_imp: EV_CONTAINER_IMP
 		do
+			a_par_imp := parent_imp
+			if a_par_imp /= Void then
+				Result := a_par_imp.interface
+			end
 		end
 
 	pointer_position: EV_COORDINATE is

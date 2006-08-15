@@ -66,7 +66,7 @@ feature {NONE} -- Initialization
 			set_c_object ( struct_ptr )
 			id:=app_implementation.get_id (current)  --getting an id from the application
 
-
+			textable_imp_initialize
 		end
 
 		set_text (a_text: STRING_GENERAL) is
@@ -76,10 +76,9 @@ feature {NONE} -- Initialization
 			ptr: POINTER
 			res: INTEGER
 		do
-
+			Precursor {EV_TEXTABLE_IMP} (a_text)
 			create c_str.make (a_text)
-
-			res:=set_control_data_external(c_object,{controls_anon_enums}.kControlEntireControl ,{CONTROLDEFINITIONS_ANON_ENUMS}.kControlStaticTextTextTag, c_str.bytes_count ,c_str.item)
+			res := set_control_data_external(c_object, {controls_anon_enums}.kControlEntireControl , {CONTROLDEFINITIONS_ANON_ENUMS}.kControlStaticTextTextTag, c_str.bytes_count ,c_str.item)
 			show
 		end
 
@@ -91,6 +90,7 @@ feature -- Access
 	set_angle (a_angle: REAL) is
 			--
 		do
+			angle := a_angle
 		end
 
 feature {EV_ANY_I} -- Implementation

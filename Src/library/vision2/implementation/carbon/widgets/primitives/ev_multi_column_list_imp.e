@@ -70,6 +70,7 @@ feature {NONE} -- Initialization
 			-- By default, a list allow only one selection.
 		do
 			base_make (an_interface)
+			set_c_object ($current)
 			create ev_children.make (0)
 		end
 
@@ -325,7 +326,7 @@ feature -- Status report
 			-- True if the title row is shown.
 			-- False if the title row is not shown.
 		do
-
+			Result := True
 		end
 
 feature -- Status setting
@@ -340,7 +341,6 @@ feature -- Status setting
 	show_title_row is
 			-- Show the row of the titles.
 		do
-
 		end
 
 	hide_title_row is
@@ -354,8 +354,6 @@ feature -- Status setting
 			-- Allow the user to do a multiple selection simply
 			-- by clicking on several choices.
 			-- For constants, see EV_GTK_CONSTANTS.
-		local
-			a_selection: POINTER
 		do
 		end
 
@@ -363,10 +361,7 @@ feature -- Status setting
 			-- Allow the user to do only one selection. It is the
 			-- default status of the list.
 			-- For constants, see EV_GTK_CONSTANTS.
-		local
-			a_selection: POINTER
 		do
-
 		end
 
 	select_item (an_index: INTEGER) is
@@ -382,8 +377,6 @@ feature -- Status setting
 
 	clear_selection is
 			-- Clear the selection of the list.
-		local
-			a_selection: POINTER
 		do
 		end
 
@@ -739,7 +732,6 @@ feature {NONE} -- Implementation
 			-- Ensure `a_item' is visible on the screen.
 		local
 			list_item_imp: EV_MULTI_COLUMN_LIST_ROW_IMP
-			a_path: POINTER
 		do
 			list_item_imp ?= a_item.implementation
 		end
