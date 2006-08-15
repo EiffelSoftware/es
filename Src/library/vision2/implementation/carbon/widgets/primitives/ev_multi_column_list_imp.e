@@ -741,29 +741,29 @@ feature {NONE} -- Implementation
 		local
 			item_imp: EV_MULTI_COLUMN_LIST_ROW_IMP
 		do
---			item_imp ?= v.implementation
---			item_imp.set_parent_imp (Current)
---
---				-- Make sure list is large enough to fit `item_imp'
---			if v.count > column_count then
---				create_list (v.count)
---			end
---
---				-- update the list of rows of the column list:			
---			ev_children.go_i_th (i)
---			ev_children.put_left (item_imp)
---
---				-- Add row to model
+			item_imp ?= v.implementation
+			item_imp.set_parent_imp (Current)
+
+				-- Make sure list is large enough to fit `item_imp'
+			if v.count > column_count then
+				create_list (v.count)
+			end
+
+				-- update the list of rows of the column list:			
+			ev_children.go_i_th (i)
+			ev_children.put_left (item_imp)
+
+				-- Add row to model
 --			create a_tree_iter.make
 --			item_imp.set_list_iter (a_tree_iter)
 --			update_child (item_imp, ev_children.count)
---
---			if item_imp.is_transport_enabled then
---				update_pnd_connection (True)
---			end
---
---			child_array.go_i_th (i)
---			child_array.put_left (v)
+
+			if item_imp.is_transport_enabled then
+				update_pnd_connection (True)
+			end
+
+			child_array.go_i_th (i)
+			child_array.put_left (v)
 		end
 
 	remove_i_th (a_position: INTEGER) is
