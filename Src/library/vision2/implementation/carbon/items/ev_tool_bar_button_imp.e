@@ -52,16 +52,22 @@ create
 
 feature {NONE} -- Initialization
 
+	cg_string: EV_GTK_C_STRING
+
 	needs_event_box: BOOLEAN is do Result := False end
 
 	make (an_interface: like interface) is
 			-- Create the tool bar button.
 		do
+			base_make (an_interface)
 		end
 
 	initialize is
 			-- Initialization of button box and events.
 		do
+			Precursor {EV_ITEM_IMP}
+			pixmapable_imp_initialize
+			set_is_initialized (True)
 		end
 
 	event_widget: POINTER is
@@ -74,6 +80,11 @@ feature -- Access
 	text: STRING_32 is
 			-- Text of the label.
 		do
+			if cg_string /= void then
+					Result := cg_string.string
+				else
+					create Result.make_empty
+				end
 		end
 
 	gray_pixmap: EV_PIXMAP
@@ -82,6 +93,7 @@ feature -- Access
 	tooltip: STRING_32 is
 			-- Tooltip use for describing `Current'.
 		do
+			create Result.make_empty
 		end
 
 	internal_tooltip: STRING_32
@@ -91,9 +103,12 @@ feature -- Element change
 
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
+			local
+			res: INTEGER
 		do
+			cg_string.set_with_eiffel_string (a_text)
+		--	res:=set_control_title_with_cfstring_external (c_object, cg_string.item)
 		end
-
 	set_pixmap (a_pixmap: EV_PIXMAP) is
 			-- Assign `a_pixmap' to `pixmap'.
 		do

@@ -247,13 +247,13 @@ feature {EV_TREE_IMP} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	set_list_iter (a_iter: EV_GTK_TREE_ITER_STRUCT) is
+	set_list_iter (a_iter: POINTER) is
 			-- Set `list_iter' to `a_iter'
 		do
 			list_iter := a_iter
 		end
 
-	list_iter: EV_GTK_TREE_ITER_STRUCT
+	list_iter: POINTER
 		-- Object representing position of `Current' in parent tree model
 
 	set_parent_imp (par_imp: like parent_imp) is
@@ -275,7 +275,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 	add_item_and_children_to_parent_tree (a_parent_tree: EV_TREE_IMP; a_parent_node: EV_TREE_NODE_IMP; a_index: INTEGER)  is
 			-- Used for setting items within parent tree
 		local
-			a_tree_iter: EV_GTK_TREE_ITER_STRUCT
+			a_tree_iter: POINTER
 			i: INTEGER
 			item_imp: EV_TREE_NODE_IMP
 			a_parent_iter: POINTER
@@ -283,7 +283,6 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			if a_parent_node /= Void then
 				a_parent_iter := a_parent_node.list_iter.item
 			end
-			create a_tree_iter.make
 			set_list_iter (a_tree_iter)
 
 			a_parent_tree.set_text_on_position (Current, text)

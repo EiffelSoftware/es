@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 				-- Create a horizontal gtk separator.
 		do
-	
+			base_make (an_interface)
 		end
 
 feature {EV_ANY_I} -- Implementation

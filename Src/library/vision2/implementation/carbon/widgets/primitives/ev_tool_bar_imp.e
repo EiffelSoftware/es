@@ -46,11 +46,15 @@ feature {NONE} -- Implementation
 	make (an_interface: like interface) is
 			-- Create the tool-bar.
 		do
+			base_make (an_interface)
 		end
 
 	initialize is
 			-- Initialize `Current'.
 		do
+			Precursor {EV_ITEM_LIST_IMP}
+			Precursor {EV_PRIMITIVE_IMP}
+			has_vertical_button_style := True
 		end
 
 	list_widget: POINTER is

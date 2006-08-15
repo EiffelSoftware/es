@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create a GTK vertical seperator in an event box.
 		do
+			base_make (an_interface)
 		end
 
 feature {EV_ANY_I} -- Implementation

@@ -224,13 +224,13 @@ feature {EV_LIST_ITEM_LIST_IMP} -- Implementation
 	internal_tooltip: STRING_32
 		-- Tooltip used for `Current'.
 
-	set_list_iter (a_iter: EV_GTK_TREE_ITER_STRUCT) is
+	set_list_iter (a_iter: POINTER) is
 			-- Set `list_iter' to `a_iter'
 		do
 			list_iter := a_iter
 		end
 
-	list_iter: EV_GTK_TREE_ITER_STRUCT
+	list_iter: POINTER
 		-- Object representing position of `Current' in parent tree model
 
 	parent_imp: EV_LIST_ITEM_LIST_IMP

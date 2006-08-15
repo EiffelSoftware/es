@@ -11,6 +11,7 @@ class
 
 inherit
 	DISPOSABLE
+	CFSTRING_FUNCTIONS_EXTERNAL
 
 create
 	set_with_eiffel_string, share_from_pointer, make_from_pointer
@@ -25,6 +26,7 @@ feature {NONE} -- Initialization
 		require
 			a_utf8_ptr_not_null: a_utf8_ptr /= default_pointer
 		do
+			item := a_utf8_ptr
 		end
 
 feature -- Access
@@ -38,6 +40,9 @@ feature -- Access
 	string: STRING_32 is
 			-- Locale string representation of the UTF8 string
 		do
+			Result := c_str.string.as_string_32
+		ensure
+			not_void: Result /= void
 		end
 
 	string_length: INTEGER
@@ -47,7 +52,11 @@ feature -- Access
 			-- Create `item' and retain ownership.
 		require
 			a_string_not_void: a_string /= Void
+		local
+			res: INTEGER
 		do
+			create c_str.make (a_string)
+			item := c_string_to_cfstring_ptr (c_str)
 		ensure
 			string_set: string.is_equal (a_string)
 		end
@@ -71,6 +80,22 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
+	c_str: C_STRING
+
+	c_string_to_cfstring_ptr(a_str: C_STRING):POINTER is
+			local
+				null_ptr:POINTER
+			do
+				Result:= cfstring_create_with_cstring_external(null_ptr, a_str.item,  kCFStringEncodingASCII)
+			end
+
+	frozen kCFStringEncodingASCII: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kCFStringEncodingASCII"
+	end
+
 	shared_pointer_helper: MANAGED_POINTER is
 			-- Reusable Managed Pointer for UTF8 pointer manipulations.
 		once
@@ -89,6 +114,9 @@ feature {NONE} -- Implementation
 			a_ptr_not_null: a_ptr /= default_pointer
 			size_valid: a_size > 0
 		do
+			item := a_ptr
+			string_length := a_size
+			is_shared := a_shared
 		end
 
 	dispose is

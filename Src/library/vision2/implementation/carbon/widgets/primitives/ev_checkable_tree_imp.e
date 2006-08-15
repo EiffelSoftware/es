@@ -69,7 +69,7 @@ feature {NONE} -- Initialization
 			--
 		local
 			a_tree_path, a_int_ptr: POINTER
-			a_tree_iter: EV_GTK_TREE_ITER_STRUCT
+			a_tree_iter: POINTER
 			a_success: BOOLEAN
 			mp: MANAGED_POINTER
 			a_tree_item: EV_TREE_NODE

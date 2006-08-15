@@ -29,13 +29,19 @@ feature {NONE} -- Initialization
 
 	textable_imp_initialize is
 		do
-			text := ""
 		end
 
 feature -- Access
 
-	text: STRING_32
+	text: STRING_32 is
 			-- Text of the label.
+		do
+			if cg_string /= void then
+				Result := cg_string.string
+			else
+				create Result.make_empty
+			end
+		end
 
 	text_alignment: INTEGER is
 			-- Alignment of the text in the label.
@@ -64,33 +70,16 @@ feature -- Element change
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
 		local
-			c_str: C_STRING
-			ptr: POINTER
 			res: INTEGER
 		do
-			text := a_text
-			create c_str.make (a_text)
-			ptr := c_string_to_cfstring_ptr(c_str)
-			res := set_control_title_with_cfstring_external (c_object, ptr)
+			cg_string.set_with_eiffel_string (a_text)
+			res:=set_control_title_with_cfstring_external (c_object, cg_string.item)
 		end
-
-	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
-			local
-				null_ptr:POINTER
-			do
-				Result:= cfstring_create_with_cstring_external(null_ptr, c_str.item,  kCFStringEncodingASCII)
-			end
-
-	frozen kCFStringEncodingASCII: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-		"kCFStringEncodingASCII"
-	end
-
 
 
 feature {EV_ANY_IMP} -- Implementation
+
+	 cg_string: EV_GTK_C_STRING
 
 	accelerators_enabled: BOOLEAN is
 			-- Does `Current' have keyboard accelerators enabled?

@@ -34,12 +34,17 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Do nothing because an empty GtkMenuItem is a separator.
 		do
+			pixmapable_imp_initialize
+			textable_imp_initialize
+			is_sensitive := True
+			set_is_initialized (True)
 		end
 
 	initialize_menu_sep_box is
 			-- Create and initialize menu item box.
 			--| This is just to satisfy pixmapable and textable contracts.
 		do
+
 		end
 
 feature {NONE} -- Implementation

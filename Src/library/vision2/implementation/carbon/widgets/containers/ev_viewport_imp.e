@@ -26,8 +26,6 @@ inherit
 			container_widget,
 			visual_widget,
 			on_removed_item,
-			minimum_width,
-			minimum_height,
 			needs_event_box
 		end
 
@@ -45,15 +43,15 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	minimum_width: INTEGER is
-			-- Minimum width of widget.
-		do
-		end
-
-	minimum_height: INTEGER is
-			-- Minimum_height of widget.
-		do
-		end
+--	minimum_width: INTEGER is
+--			-- Minimum width of widget.
+--		do
+--		end
+--
+--	minimum_height: INTEGER is
+--			-- Minimum_height of widget.
+--		do
+--		end
 
 	x_offset: INTEGER is
 			-- Horizontal position of viewport relative to `item'.
@@ -139,7 +137,7 @@ feature {NONE} -- Implementation
 		require
 			l_adj_not_null: l_adj /= default_pointer
 		do
-	
+
   		end
 
 	viewport: POINTER

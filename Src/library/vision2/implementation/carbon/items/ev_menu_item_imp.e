@@ -58,6 +58,7 @@ feature {NONE} -- Initialization
 			id := app_implementation.get_id (current)  -- getting an id from the application
 			target := get_menu_event_target_external (c_object)
 			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassCommand, {carbonevents_anon_enums}.kEventCommandProcess)
+			create text.make_empty
 		end
 
 	initialize is
