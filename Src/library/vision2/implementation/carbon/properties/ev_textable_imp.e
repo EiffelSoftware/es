@@ -46,6 +46,8 @@ feature -- Access
 	text_alignment: INTEGER is
 			-- Alignment of the text in the label.
 		do
+			--default is center
+			Result := {EV_TEXT_ALIGNMENT_CONSTANTS}.Ev_text_alignment_center
 		end
 
 feature -- Status setting

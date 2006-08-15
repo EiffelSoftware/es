@@ -66,6 +66,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_PICK_AND_DROPABLE_IMP}
 			set_is_initialized (True)
+			
 		end
 
 	initialize_file_drop (a_widget: POINTER) is

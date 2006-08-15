@@ -67,9 +67,6 @@ feature {NONE} -- Initialization
 			id:=app_implementation.get_id (current)  --getting an id from the application
 
 
-			--target:=get_control_event_target_external(struct_ptr)
-			--app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
-
 		end
 
 		set_text (a_text: STRING_GENERAL) is
