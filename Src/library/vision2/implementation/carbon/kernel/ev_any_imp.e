@@ -146,6 +146,9 @@ feature -- Measurement
 			"NULL"
 		end
 
+invariant
+	c_object_not_void : c_object /= Void
+	
 indexing
 	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_ANY_IMP

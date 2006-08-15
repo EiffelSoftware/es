@@ -38,7 +38,6 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'
 		do
-
 			Precursor {EV_CONTAINER_IMP}
 			Precursor {EV_DYNAMIC_LIST_IMP}
 		end

@@ -24,8 +24,7 @@ inherit
 			interface,
 			replace,
 			initialize,
-			remove_i_th,
-			needs_event_box
+			remove_i_th
 		end
 
 	EV_FONTABLE_IMP
@@ -35,14 +34,13 @@ inherit
 
 	EV_NOTEBOOK_ACTION_SEQUENCES_IMP
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+	CONTROLS_FUNCTIONS_EXTERNAL
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is True
 
 	make (an_interface: like interface) is
 			-- Create a fixed widget.
@@ -61,7 +59,6 @@ feature {NONE} -- Initialization
 			set_c_object ( struct_ptr )
 
 			id := app_implementation.get_id (current)  --getting an id from the application
-			initialize
 		end
 
 	initialize is
@@ -70,27 +67,52 @@ feature {NONE} -- Initialization
 			target, h_ret: POINTER
 		do
 			Precursor {EV_WIDGET_LIST_IMP}
-			selected_item_index_internal := 0
 			initialize_pixmaps
 
 			target := get_control_event_target_external( c_object )
 			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			tab_position := interface.tab_top
 		end
 
 feature -- Access
 
-		carbon_arrange_children is
-			do
+	carbon_arrange_children is
+			-- Recreate the tab control with changed settings
+		local
+			a_parent : POINTER
+			orientation : INTEGER
+			err : INTEGER
+		do
+				a_parent := hiview_get_superview_external ( c_object )
+				dispose_control_external ( c_object )
 
-			end
+	 			if tab_position = interface.Tab_top  then
+	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionNorth
+	 			elseif tab_position =  interface.Tab_left  then
+	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionWest
+	 			elseif tab_position =  interface.Tab_bottom  then
+	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionSouth
+	 			elseif tab_position =  interface.Tab_right  then
+	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionEast
+	 			else
+	 				check
+	 					must_not_be_reached : false
+	 				end
+				end
+
+				--err := create_tabs_control_external ( a_parent, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, orientation, count, null, $struct_ptr )
+				--set_c_object ( struct_ptr )
+		end
 
 	pointed_tab_index: INTEGER is
 			-- index of tab currently under mouse pointer, or 0 if none.
 		local
-			i: INTEGER
-			gdkwin, mouse_ptr_wid, tab_label: POINTER
-			a_wid: EV_WIDGET_IMP
+			err: INTEGER
+			a_point : CGPOINT_STRUCT
 		do
+			create a_point.make_new_unshared
+
+			--err := hiview_get_subview_hit_external ( c_object,
 
 		end
 
@@ -113,7 +135,6 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Access
 			-- Label of `an_item'.
 		local
 			item_imp: EV_WIDGET_IMP
-			a_event_box, a_hbox, a_list, a_label: POINTER
 
 		do
 
@@ -144,45 +165,19 @@ feature -- Status report
 	selected_item_index: INTEGER is
 			-- Page index of selected item
 		do
-			if count > 0 then
-				Result := selected_item_index_internal
-			end
+
 		end
 
-	tab_position: INTEGER is
+	tab_position: INTEGER
 			-- Position of tabs.
- 		local
- 			gtk_pos: INTEGER
- 		do
- 			inspect
- 				gtk_pos
- 			when 0 then
- 				Result := interface.Tab_left
- 			when 1 then
- 				Result := interface.Tab_right
- 			when 2 then
- 				Result := interface.Tab_top
- 			when 3 then
- 				Result := interface.Tab_bottom
-			end
-		end
+
 
 feature {EV_NOTEBOOK} -- Status setting
 
 	set_tab_position (a_tab_position: INTEGER) is
 			-- Display tabs at `a_position'.
-		local
-			gtk_pos: INTEGER
 		do
-			if a_tab_position = interface.Tab_left then
-				gtk_pos := 0
-			elseif a_tab_position = interface.Tab_right then
-				gtk_pos := 1
-			elseif a_tab_position = interface.Tab_top then
-				gtk_pos := 2
-			elseif a_tab_position = interface.Tab_bottom then
-				gtk_pos := 3
-			end
+
 
 		end
 
@@ -204,11 +199,7 @@ feature -- Element change
 			-- Remove item at `i'-th position.
 		do
 			Precursor {EV_WIDGET_LIST_IMP} (i)
-			if count > 0 then
-				selected_item_index_internal :=  1
-			else
-				selected_item_index_internal := 0
-			end
+
 		end
 
 	replace (v: like item) is
@@ -261,24 +252,9 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 	page_switch (a_page: INTEGER) is
 			-- Called when the page is switched.
 		do
-			if not is_destroyed then
-				selected_item_index_internal := a_page + 1
-				if selection_actions_internal /= Void and count > 0 then
-					selection_actions_internal.call (Void)
-				end
-			end
+	
 		end
 
-feature {EV_ANY_I} -- Implementation
-
-	selected_item_index_internal: INTEGER
-			-- Index `selected_item'
-
-	gtk_reorder_child (a_container, a_child: POINTER; a_position: INTEGER) is
-			-- Move `a_child' to `a_position' in `a_container'.
-		do
-
-		end
 
 feature {EV_ANY_I, EV_ANY} -- Implementation
 
