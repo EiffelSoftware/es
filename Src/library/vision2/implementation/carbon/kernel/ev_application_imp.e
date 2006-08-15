@@ -228,6 +228,7 @@ feature -- Basic operation
 			-- End the application.
 		do
 			quit_application_event_loop_external
+			set_is_destroyed (True)
 		end
 
 feature -- Status report
