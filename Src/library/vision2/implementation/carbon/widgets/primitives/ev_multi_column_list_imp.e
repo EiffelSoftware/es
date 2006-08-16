@@ -33,7 +33,6 @@ inherit
 			able_to_transport,
 			ready_for_pnd_menu,
 			set_to_drag_and_drop,
-			call_button_event_actions,
 			create_pointer_motion_actions,
 			visual_widget,
 			on_pointer_motion
@@ -52,10 +51,6 @@ inherit
 		end
 
 	EV_MULTI_COLUMN_LIST_ACTION_SEQUENCES_IMP
-		export
-				{EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES}
-					all
-		end
 
 	EV_PND_DEFERRED_ITEM_PARENT
 
@@ -92,29 +87,7 @@ feature {NONE} -- Initialization
 
 				-- Needed so that we can query if the mouse button is down for column resize actions
 			l_release_actions := pointer_button_release_actions
-			connect_selection_actions
 		end
-
-feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
-
-	connect_selection_actions is
-			-- Connect the selection signal
-		do
-
-		end
-
-	disconnect_selection_actions is
-			-- Disconnect the selection signal
-		local
-			a_selection: POINTER
-		do
-			if selection_signal_id /= 0 then
-				selection_signal_id := 0
-			end
-		end
-
-	selection_signal_id: INTEGER
-		-- Signal id used for the selection changed event
 
 feature {NONE} -- Implementation
 
@@ -125,43 +98,6 @@ feature {NONE} -- Implementation
 			newly_selected_items: ARRAYED_LIST [EV_MULTI_COLUMN_LIST_ROW_IMP]
 			an_item: EV_MULTI_COLUMN_LIST_ROW_IMP
 		do
-			disconnect_selection_actions
-			if not mouse_button_pressed then
-				new_selection := selected_items
-				create newly_selected_items.make (0)
-				from
-					new_selection.start
-				until
-					new_selection.off
-				loop
-					if not previous_selection.has (new_selection.item) then
-						an_item ?= new_selection.item.implementation
-						newly_selected_items.extend (an_item)
-					end
-					previous_selection.prune_all (new_selection.item)
-					new_selection.forth
-				end
-				from
-					previous_selection.start
-				until
-					previous_selection.off
-				loop
-					an_item ?= previous_selection.item.implementation
-					call_deselect_actions (an_item)
-					previous_selection.forth
-				end
-
-				from
-					newly_selected_items.start
-				until
-					newly_selected_items.off
-				loop
-					call_selection_actions (newly_selected_items.item)
-					newly_selected_items.forth
-				end
-				previous_selection := new_selection
-			end
-			connect_selection_actions
 		end
 
 	previous_selection: ARRAYED_LIST [EV_MULTI_COLUMN_LIST_ROW]
@@ -172,28 +108,6 @@ feature {NONE} -- Implementation
 		do
 			create Result
 		end
-
-feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Event handling
-
-	call_button_event_actions (
-			a_type: INTEGER;
-			a_x, a_y, a_button: INTEGER;
-			a_x_tilt, a_y_tilt, a_pressure: DOUBLE;
-			a_screen_x, a_screen_y: INTEGER)
-		is
-		local
-			t : TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE,
-				INTEGER, INTEGER]
-			a_row_number: INTEGER
-			clicked_row: EV_MULTI_COLUMN_LIST_ROW_IMP
-			a_gdkwin, a_gtkwid: POINTER
-			l_x, l_y: INTEGER
-		do
-
-		end
-
-	mouse_button_pressed: BOOLEAN
-		-- Is the mouse button pressed
 
 feature {NONE} -- Implementation
 
@@ -649,15 +563,7 @@ feature {EV_MULTI_COLUMN_LIST_ROW_IMP}
 
 	set_text_on_position (a_column, a_row: INTEGER; a_text: STRING_GENERAL) is
 			-- Set cell text at (a_column, a_row) to `a_text'.
-		local
-			a_cs: EV_GTK_C_STRING
-			str_value: POINTER
-			a_list_iter: POINTER
 		do
-			--create a_cs.make (a_text)
-			a_cs := a_text
-				-- Replace when we have UTF16 support
-			str_value := g_value_string_struct
 		end
 
 	g_value_string_struct: POINTER is

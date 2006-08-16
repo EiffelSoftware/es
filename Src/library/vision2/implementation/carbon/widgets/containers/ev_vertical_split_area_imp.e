@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision Split Area, GTK+ implementation."
+		"Eiffel Vision Split Area, Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -33,7 +33,7 @@ feature -- initialization
 		do
 			base_make (an_interface)
 
-			set_c_object (container_widget)
+			set_c_object ($current)
 		end
 
 feature {EV_ANY_I} -- Implementation

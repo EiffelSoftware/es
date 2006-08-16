@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision container, GTK+ implementation."
+		"Eiffel Vision container, Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "container"

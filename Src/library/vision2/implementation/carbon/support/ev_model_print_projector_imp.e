@@ -38,7 +38,7 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 			--| Hack to prevent invariant violation
-			set_c_object ({EV_GTK_EXTERNALS}.gtk_label_new (NULL))
+			set_c_object ($current)
 
 			if interface.context.output_to_file then
 				create filename.make_from_string (interface.context.file_name.as_string_8)

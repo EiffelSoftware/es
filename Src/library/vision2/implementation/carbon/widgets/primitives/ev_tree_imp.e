@@ -1,6 +1,6 @@
 indexing
 	description:
-		"EiffelVision Tree, gtk implementation"
+		"EiffelVision Tree, Carbon implementation"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
 	date: "$Date$";
@@ -63,7 +63,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create an empty Tree.
 		do
-
+			base_make (an_interface)
 		end
 
 	call_selection_action_sequences is
@@ -112,10 +112,6 @@ feature {NONE} -- Initialization
 
 	initialize is
 			-- Connect action sequences to signals.
-		local
-			a_column, a_cell_renderer: POINTER
-			a_gtk_c_str: EV_GTK_C_STRING
-			a_selection: POINTER
 
 		do
 
@@ -444,10 +440,6 @@ feature {EV_TREE_NODE_IMP} -- Implementation
 
 	get_text_from_position (a_tree_node_imp: EV_TREE_NODE_IMP): STRING_32 is
 			-- Retrieve cell text from `a_tree_node_imp`
-		local
-			a_g_value_string_struct: POINTER
-			a_string: POINTER
-			a_cs: EV_GTK_C_STRING
 		do
 --			a_g_value_string_struct := g_value_string_struct
 --			{EV_GTK_DEPENDENT_EXTERNALS}.g_value_unset (a_g_value_string_struct)
@@ -465,7 +457,6 @@ feature {EV_TREE_NODE_IMP} -- Implementation
 	set_text_on_position (a_tree_node_imp: EV_TREE_NODE_IMP; a_text: STRING_GENERAL) is
 			-- Set cell text at to `a_text'.
 		local
-			a_cs: EV_GTK_C_STRING
 			str_value: POINTER
 		do
 --			a_cs := App_implementation.reusable_gtk_c_string
@@ -498,7 +489,6 @@ feature {EV_TREE_NODE_IMP} -- Implementation
 			-- Make `value' the new height of all the rows.
 		local
 			a_column_ptr, a_cell_rend_list, a_cell_rend: POINTER
-			a_gtk_c_str: EV_GTK_C_STRING
 			a_vert_sep: INTEGER
 		do
 --			a_column_ptr := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_column (tree_view, 0)

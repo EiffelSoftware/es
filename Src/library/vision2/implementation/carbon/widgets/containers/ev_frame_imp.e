@@ -43,11 +43,16 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create frame.
 		do
+			base_make (an_interface)
+			set_c_object ($current)
 		end
 
 	initialize is
 			-- Initialize `Current'.
 		do
+			set_style (Ev_frame_etched_in)
+			align_text_left
+			Precursor {EV_CELL_IMP}
 		end
 
 feature -- Access

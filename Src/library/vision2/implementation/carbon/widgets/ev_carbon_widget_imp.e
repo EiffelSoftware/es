@@ -27,11 +27,6 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
-	Gdk_events_mask: INTEGER is
-			-- Mask of all the gdk events the gdkwindow shall receive.
-		once
-		end
-
 feature {NONE} -- Implementation
 
 	initialize is
@@ -60,6 +55,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	minimum_width, real_minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
 		do
+			Result := 20
 		end
 
 	reusable_requisition_struct: MANAGED_POINTER is
@@ -70,6 +66,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	minimum_height, real_minimum_height: INTEGER is
 			-- Minimum width that the widget may occupy.
 		do
+			Result := 20
 		end
 
 	event_widget: POINTER is

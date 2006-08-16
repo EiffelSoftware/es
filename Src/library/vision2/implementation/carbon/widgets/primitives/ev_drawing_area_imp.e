@@ -53,11 +53,14 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create an empty drawing area.
 		do
+			base_make (an_interface)
+			set_c_object ($current)
 		end
 
 	initialize is
 			-- Initialize `Current'.
 		do
+			Precursor {EV_PRIMITIVE_IMP}
 		end
 
 feature -- Status report

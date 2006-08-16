@@ -183,21 +183,20 @@ feature -- Element change
 	set_minimum_width (a_minimum_width: INTEGER) is
 			-- Set the minimum horizontal size to `a_minimum_width'.
 		do
-			minimum_width := a_minimum_width
+			internal_set_minimum_size (a_minimum_width, internal_minimum_height)
 		end
 
 	set_minimum_height (a_minimum_height: INTEGER) is
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
-			minimum_height := a_minimum_height
+			internal_set_minimum_size (internal_minimum_width, a_minimum_height)
 		end
 
 	set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is
 			-- Set the minimum horizontal size to `a_minimum_width'.
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
-			set_minimum_width (a_minimum_width)
-			set_minimum_height (a_minimum_height)
+			internal_set_minimum_size (a_minimum_width, a_minimum_height)
 		end
 
 feature -- Measurement
@@ -214,11 +213,25 @@ feature -- Measurement
 		do
 		end
 
-	minimum_width: INTEGER
+	minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
+	do
+		if internal_minimum_height /= -1 then
+			Result := internal_minimum_height
+		else
+			Result := Precursor {EV_PICK_AND_DROPABLE_IMP}
+		end
+	end
 
-	minimum_height: INTEGER
+	minimum_height: INTEGER is
 			-- Minimum width that the widget may occupy.
+	do
+		if internal_minimum_height /= -1 then
+			Result := internal_minimum_height
+		else
+			Result := Precursor {EV_PICK_AND_DROPABLE_IMP}
+		end
+	end
 
 feature {EV_ANY_I} -- Implementation
 
@@ -296,6 +309,12 @@ feature {NONE} -- Implementation
 	internal_set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is
 			-- Abstracted implementation for minimum size setting.
 		do
+			if a_minimum_width /= -1 then
+				internal_minimum_width := a_minimum_width
+			end
+			if a_minimum_height /= -1 then
+				internal_minimum_height := a_minimum_height
+			end
 		end
 
 	propagate_foreground_color_internal (a_color: EV_COLOR; a_c_object: POINTER) is
@@ -319,18 +338,6 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	interface: EV_WIDGET;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_WIDGET_IMP
 
