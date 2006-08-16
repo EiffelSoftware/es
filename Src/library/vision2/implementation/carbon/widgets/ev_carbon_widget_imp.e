@@ -47,12 +47,12 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
-	width_request_string: EV_GTK_C_STRING is
+	width_request_string: EV_CARBON_CF_STRING is
 			-- Once string to pass to gtk.
 		do
 		end
 
-	height_request_string: EV_GTK_C_STRING is
+	height_request_string: EV_CARBON_CF_STRING is
 			-- Once string to pass to gtk.
 		do
 		end
@@ -151,7 +151,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	aux_info_string: EV_GTK_C_STRING is
+	aux_info_string: EV_CARBON_CF_STRING is
 			-- String optimization for  "gtk-aux-info"
 		once
 		end

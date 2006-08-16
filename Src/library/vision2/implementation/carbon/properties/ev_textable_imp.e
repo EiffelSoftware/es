@@ -74,14 +74,14 @@ feature -- Element change
 		local
 			res: INTEGER
 		do
-			create cg_string.set_with_eiffel_string (a_text)
+			create cg_string.make_unshared_with_eiffel_string ( a_text )
 			res := set_control_title_with_cfstring_external (c_object, cg_string.item)
 		end
 
 
 feature {EV_ANY_IMP} -- Implementation
 
-	cg_string: EV_GTK_C_STRING
+	cg_string: EV_CARBON_CF_STRING
 
 	accelerators_enabled: BOOLEAN is
 			-- Does `Current' have keyboard accelerators enabled?

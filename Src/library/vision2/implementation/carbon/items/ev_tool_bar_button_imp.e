@@ -52,7 +52,7 @@ create
 
 feature {NONE} -- Initialization
 
-	cg_string: EV_GTK_C_STRING
+	cg_string: EV_CARBON_CF_STRING
 
 	needs_event_box: BOOLEAN is do Result := False end
 
@@ -106,7 +106,7 @@ feature -- Element change
 			local
 			res: INTEGER
 		do
-			cg_string.set_with_eiffel_string (a_text)
+			create cg_string.make_unshared_with_eiffel_string (a_text)
 		--	res:=set_control_title_with_cfstring_external (c_object, cg_string.item)
 		end
 	set_pixmap (a_pixmap: EV_PIXMAP) is

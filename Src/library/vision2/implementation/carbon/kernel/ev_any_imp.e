@@ -120,7 +120,7 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_ANY_I, EV_STOCK_PIXMAPS_IMP} -- Implementa
 		end
 
 	frozen string_to_cfstring (a_string: STRING_GENERAL): POINTER is
-			--
+			-- Turns an Eiffel string into a carbon cf_string
 		local
 			c_str: C_STRING
 		do

@@ -80,11 +80,24 @@ feature -- Access
 			-- Recreate the tab control with changed settings
 		local
 			a_parent : POINTER
+			a_rect : RECT_STRUCT
+			dummy_ptr : POINTER
+			new_view : POINTER
+			a_layout_info : HILAYOUT_INFO_STRUCT
 			orientation : INTEGER
 			err : INTEGER
+			i : INTEGER
+			tab_array : EWG_POINTER_ARRAY
+			tab_entry : CONTROL_TAB_ENTRY_STRUCT
+			help_array : ARRAY[CONTROL_TAB_ENTRY_STRUCT]
+			w_imp : EV_WIDGET_IMP
 		do
 				a_parent := hiview_get_superview_external ( c_object )
-				dispose_control_external ( c_object )
+				create a_rect.make_new_unshared
+				dummy_ptr := get_control_bounds_external ( c_object, a_rect.item )
+				create a_layout_info.make_new_unshared
+				a_layout_info.set_version ( {HIVIEW_ANON_ENUMS}.kHILayoutInfoVersionZero )
+				err := hiview_get_layout_info_external ( c_object, a_layout_info.item )
 
 	 			if tab_position = interface.Tab_top  then
 	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionNorth
@@ -100,8 +113,33 @@ feature -- Access
 	 				end
 				end
 
-				--err := create_tabs_control_external ( a_parent, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, orientation, count, null, $struct_ptr )
-				--set_c_object ( struct_ptr )
+				create tab_array.make_new_unshared ( count )
+				create help_array.make ( 1, count ) -- Array to put in STRUCT wrappers so that they don't get collected
+				from
+					i := 1
+				until
+					i > count
+				loop
+					create tab_entry.make_new_unshared
+					w_imp ?= i_th ( i ).implementation
+					check
+						w_imp_not_void : w_imp /= Void
+					end
+					err := hiview_remove_from_superview_external ( w_imp.c_object )
+
+
+					help_array.put ( tab_entry, i )
+					tab_array.put ( tab_entry.item, i )
+				end
+
+				err := create_tabs_control_external ( a_parent, a_rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, orientation, count, tab_array.array_address, $new_view )
+
+				set_control_bounds_external ( new_view, a_rect.item )
+				err := hiview_set_layout_info_external ( new_view, a_layout_info.item )
+				err := hiview_apply_layout_external ( new_view )
+
+				dispose_control_external ( c_object )
+				set_c_object ( new_view )
 		end
 
 	pointed_tab_index: INTEGER is
@@ -252,7 +290,7 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 	page_switch (a_page: INTEGER) is
 			-- Called when the page is switched.
 		do
-	
+
 		end
 
 
