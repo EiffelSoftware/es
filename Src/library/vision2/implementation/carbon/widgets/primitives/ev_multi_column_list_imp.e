@@ -93,10 +93,6 @@ feature {NONE} -- Implementation
 
 	call_selection_action_sequences is
 			-- Call appropriate selection and deselection action sequences
-		local
-			new_selection: ARRAYED_LIST [EV_MULTI_COLUMN_LIST_ROW]
-			newly_selected_items: ARRAYED_LIST [EV_MULTI_COLUMN_LIST_ROW_IMP]
-			an_item: EV_MULTI_COLUMN_LIST_ROW_IMP
 		do
 		end
 

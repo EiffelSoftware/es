@@ -1,6 +1,6 @@
 indexing
 	description:
-		"EiffelVision box. GTK+ implementation."
+		"EiffelVision box. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	id: "$Id$"
@@ -22,7 +22,9 @@ inherit
 	EV_WIDGET_LIST_IMP
 		redefine
 			interface,
-			needs_event_box
+			needs_event_box,
+			minimum_height,
+			minimum_width
 		end
 
 feature -- Access
@@ -72,6 +74,44 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 
 		end
 
+feature -- Measturement
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+	local
+		a, b: INTEGER
+	do
+		a := internal_minimum_width
+		from
+			b := 0
+			start
+		until
+			index > count
+		loop
+			b := b + item.minimum_width
+			forth
+		end
+		Result := a.max (b)
+	end
+
+	minimum_height: INTEGER is
+			-- Minimum width that the widget may occupy.
+	local
+		a, b: INTEGER
+	do
+		a := internal_minimum_height
+		from
+			b := 0
+			start
+		until
+			index > count
+		loop
+			b := b + item.minimum_height
+			forth
+		end
+		Result := a.max (b)
+	end
+
 feature {EV_ANY_I} -- Implementation
 
 	needs_event_box: BOOLEAN is True
@@ -94,18 +134,6 @@ feature {EV_ANY_I, EV_ANY} -- Implementation
 			-- functionality implemented by `Current'
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_BOX_IMP
 

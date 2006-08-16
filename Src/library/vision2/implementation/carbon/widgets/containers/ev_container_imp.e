@@ -23,7 +23,9 @@ inherit
 			interface,
 			initialize,
 			destroy,
-			set_parent_imp
+			set_parent_imp,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_CONTAINER_ACTION_SEQUENCES_IMP
@@ -230,6 +232,32 @@ feature {EV_WIDGET_IMP} -- Implementation
 			end
 		end
 
+
+feature -- Measurement
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+	local
+		a, b: INTEGER
+	do
+		a := Precursor {EV_WIDGET_IMP}
+		if item /= Void then
+			b := item.minimum_width
+		end
+		Result := a.max (b)
+	end
+
+	minimum_height: INTEGER is
+			-- Minimum width that the widget may occupy.
+	local
+		a, b: INTEGER
+	do
+		a := Precursor {EV_WIDGET_IMP}
+		if item /= Void then
+			b := item.minimum_height
+		end
+		Result := a.max (b)
+	end
 
 feature {NONE} -- Externals
 

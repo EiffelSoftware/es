@@ -216,8 +216,8 @@ feature -- Measurement
 	minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
 	do
-		if internal_minimum_height /= -1 then
-			Result := internal_minimum_height
+		if internal_minimum_width /= -1 then
+			Result := internal_minimum_width
 		else
 			Result := Precursor {EV_PICK_AND_DROPABLE_IMP}
 		end

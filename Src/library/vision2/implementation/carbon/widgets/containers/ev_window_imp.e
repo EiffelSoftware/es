@@ -35,9 +35,7 @@ inherit
 			on_widget_mapped,
 			destroy,
 			has_focus,
-			on_focus_changed,
-			set_minimum_width,
-			set_minimum_height
+			on_focus_changed
 		end
 
 	EV_CARBON_WINDOW_IMP
@@ -103,8 +101,8 @@ feature {NONE} -- Initialization
 					set_c_object (ptr)
 					allow_resize
 
-					id:=app_implementation.get_id (current)  --getting an id from the application
-					target:=get_window_event_target_external(ptr)
+					id := app_implementation.get_id (current)  --getting an id from the application
+					target := get_window_event_target_external(ptr)
 					h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
 			end
 
@@ -204,14 +202,13 @@ feature -- Status setting
 			if not is_show_requested then
 				call_show_actions := True
 				--Precursor {EV_GTK_WINDOW_IMP}
-
-
 				is_positioned := True
 			end
 			if blocking_window /= Void then
 				set_blocking_window (Void)
 			end
-			show_window_external(c_object)
+			internal_set_minimum_size (minimum_width, minimum_height) -- Make sure the window is at least as big as the minimum of all controls in it requires
+			show_window_external (c_object)
 		end
 
 	is_positioned: BOOLEAN
@@ -289,38 +286,6 @@ feature -- Element change
 					HIViewApplyLayout( $a_control );
 				}
 			]"
-		end
-
-	set_minimum_width (min_width: INTEGER) is
-			--
-		local
-			hisize: CGSIZE_STRUCT
-			ret: INTEGER
-		do
-			Precursor {EV_CONTAINER_IMP} (min_width)
-			create hisize.make_new_unshared
-			hisize.set_width (min_width.to_real)
-			hisize.set_height (minimum_height)
-			ret := set_window_resize_limits_external (c_object, hisize.item, null)
-			if width < min_width then
-				set_width (min_width)
-			end
-		end
-
-	set_minimum_height (min_height: INTEGER) is
-			--
-		local
-			hisize: CGSIZE_STRUCT
-			ret: INTEGER
-		do
-			Precursor {EV_CONTAINER_IMP} (min_height)
-			create hisize.make_new_unshared
-			hisize.set_width (minimum_width)
-			hisize.set_height (min_height)
-			ret := set_window_resize_limits_external (c_object, hisize.item, null)
-			if height < min_height then
-				set_height (min_height)
-			end
 		end
 
 	set_maximum_width (max_width: INTEGER) is
@@ -425,7 +390,22 @@ feature {NONE} -- Implementation
 	internal_set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is
 			-- Set the minimum horizontal size to `a_minimum_width'.
 			-- Set the minimum vertical size to `a_minimum_height'.
+		local
+			hisize: CGSIZE_STRUCT
+			ret: INTEGER
 		do
+			Precursor {EV_CONTAINER_IMP} (a_minimum_width, a_minimum_height)
+			create hisize.make_new_unshared
+			hisize.set_width (a_minimum_width.to_real)
+			hisize.set_height (a_minimum_height.to_real)
+			ret := set_window_resize_limits_external (c_object, hisize.item, null)
+			if width < a_minimum_width then
+				set_width (a_minimum_width)
+			end
+			if height < a_minimum_height then
+				set_height (a_minimum_height)
+			end
+			print ("internal_set:minimum_size called%N")
 		end
 
 	on_size_allocate (a_x, a_y, a_width, a_height: INTEGER) is
