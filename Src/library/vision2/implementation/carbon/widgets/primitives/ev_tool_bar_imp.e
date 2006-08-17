@@ -123,7 +123,18 @@ feature -- Implementation
 
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
+		local
+			v_imp: EV_ITEM_IMP
 		do
+			v_imp ?= v.implementation
+			v_imp.set_item_parent_imp (Current)
+			--{EV_GTK_EXTERNALS}.gtk_toolbar_insert (visual_widget, v_imp.c_object, i - 1)
+			add_radio_button (v)
+			child_array.go_i_th (i)
+			child_array.put_left (v)
+			if parent_imp /= Void then
+				update_toolbar_style
+			end
 		end
 
 	add_radio_button (w: like item) is
