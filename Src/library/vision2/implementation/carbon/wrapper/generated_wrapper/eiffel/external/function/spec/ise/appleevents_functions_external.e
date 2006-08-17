@@ -3,14 +3,14 @@
 class APPLEEVENTS_FUNCTIONS_EXTERNAL
 
 feature
-	aeinstall_event_handler_external (theaeeventclass: INTEGER; theaeeventid: INTEGER; handler: POINTER; handlerrefcon: INTEGER; issyshandler: INTEGER): INTEGER is
+	frozen aeinstall_event_handler_external (theaeeventclass: INTEGER; theaeeventid: INTEGER; handler: POINTER; handlerrefcon: INTEGER; issyshandler: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AEEventClass, AEEventID, AEEventHandlerUPP, long, Boolean):OSErr"
 		alias
 			"ewg_function_macro_AEInstallEventHandler"
 		end
 
-	aeinstall_event_handler_address_external: POINTER is
+	frozenaeinstall_event_handler_address_external: POINTER is
 			-- Address of C function `AEInstallEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) AEInstallEventHandler"
 		end
 
-	aeremove_event_handler_external (theaeeventclass: INTEGER; theaeeventid: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
+	frozen aeremove_event_handler_external (theaeeventclass: INTEGER; theaeeventid: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AEEventClass, AEEventID, AEEventHandlerUPP, Boolean):OSErr"
 		alias
 			"ewg_function_macro_AERemoveEventHandler"
 		end
 
-	aeremove_event_handler_address_external: POINTER is
+	frozenaeremove_event_handler_address_external: POINTER is
 			-- Address of C function `AERemoveEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) AERemoveEventHandler"
 		end
 
-	aeget_event_handler_external (theaeeventclass: INTEGER; theaeeventid: INTEGER; handler: POINTER; handlerrefcon: POINTER; issyshandler: INTEGER): INTEGER is
+	frozen aeget_event_handler_external (theaeeventclass: INTEGER; theaeeventid: INTEGER; handler: POINTER; handlerrefcon: POINTER; issyshandler: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AEEventClass, AEEventID, AEEventHandlerUPP*, long*, Boolean):OSErr"
 		alias
 			"ewg_function_macro_AEGetEventHandler"
 		end
 
-	aeget_event_handler_address_external: POINTER is
+	frozenaeget_event_handler_address_external: POINTER is
 			-- Address of C function `AEGetEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) AEGetEventHandler"
 		end
 
-	aeinstall_special_handler_external (functionclass: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
+	frozen aeinstall_special_handler_external (functionclass: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AEKeyword, AEEventHandlerUPP, Boolean):OSErr"
 		alias
 			"ewg_function_macro_AEInstallSpecialHandler"
 		end
 
-	aeinstall_special_handler_address_external: POINTER is
+	frozenaeinstall_special_handler_address_external: POINTER is
 			-- Address of C function `AEInstallSpecialHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) AEInstallSpecialHandler"
 		end
 
-	aeremove_special_handler_external (functionclass: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
+	frozen aeremove_special_handler_external (functionclass: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AEKeyword, AEEventHandlerUPP, Boolean):OSErr"
 		alias
 			"ewg_function_macro_AERemoveSpecialHandler"
 		end
 
-	aeremove_special_handler_address_external: POINTER is
+	frozenaeremove_special_handler_address_external: POINTER is
 			-- Address of C function `AERemoveSpecialHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) AERemoveSpecialHandler"
 		end
 
-	aeget_special_handler_external (functionclass: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
+	frozen aeget_special_handler_external (functionclass: INTEGER; handler: POINTER; issyshandler: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AEKeyword, AEEventHandlerUPP*, Boolean):OSErr"
 		alias
 			"ewg_function_macro_AEGetSpecialHandler"
 		end
 
-	aeget_special_handler_address_external: POINTER is
+	frozenaeget_special_handler_address_external: POINTER is
 			-- Address of C function `AEGetSpecialHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) AEGetSpecialHandler"
 		end
 
-	aemanager_info_external (keyword: INTEGER; a_result: POINTER): INTEGER is
+	frozen aemanager_info_external (keyword: INTEGER; a_result: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AEKeyword, long*):OSErr"
 		alias
 			"ewg_function_macro_AEManagerInfo"
 		end
 
-	aemanager_info_address_external: POINTER is
+	frozenaemanager_info_address_external: POINTER is
 			-- Address of C function `AEManagerInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) AEManagerInfo"
 		end
 
-	aecreate_remote_process_resolver_external (allocator: POINTER; url: POINTER): POINTER is
+	frozen aecreate_remote_process_resolver_external (allocator: POINTER; url: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFURLRef):AERemoteProcessResolverRef"
 		alias
 			"ewg_function_macro_AECreateRemoteProcessResolver"
 		end
 
-	aecreate_remote_process_resolver_address_external: POINTER is
+	frozenaecreate_remote_process_resolver_address_external: POINTER is
 			-- Address of C function `AECreateRemoteProcessResolver'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) AECreateRemoteProcessResolver"
 		end
 
-	aedispose_remote_process_resolver_external (ref: POINTER) is
+	frozen aedispose_remote_process_resolver_external (ref: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AERemoteProcessResolverRef)"
 		alias
 			"ewg_function_macro_AEDisposeRemoteProcessResolver"
 		end
 
-	aedispose_remote_process_resolver_address_external: POINTER is
+	frozenaedispose_remote_process_resolver_address_external: POINTER is
 			-- Address of C function `AEDisposeRemoteProcessResolver'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) AEDisposeRemoteProcessResolver"
 		end
 
-	aeremote_process_resolver_get_processes_external (ref: POINTER; outerror: POINTER): POINTER is
+	frozen aeremote_process_resolver_get_processes_external (ref: POINTER; outerror: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AERemoteProcessResolverRef, CFStreamError*):CFArrayRef"
 		alias
 			"ewg_function_macro_AERemoteProcessResolverGetProcesses"
 		end
 
-	aeremote_process_resolver_get_processes_address_external: POINTER is
+	frozenaeremote_process_resolver_get_processes_address_external: POINTER is
 			-- Address of C function `AERemoteProcessResolverGetProcesses'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) AERemoteProcessResolverGetProcesses"
 		end
 
-	aeremote_process_resolver_schedule_with_run_loop_external (ref: POINTER; runloop: POINTER; runloopmode: POINTER; callback: POINTER; ctx: POINTER) is
+	frozen aeremote_process_resolver_schedule_with_run_loop_external (ref: POINTER; runloop: POINTER; runloopmode: POINTER; callback: POINTER; ctx: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AERemoteProcessResolverRef, CFRunLoopRef, CFStringRef, AERemoteProcessResolverCallback, AERemoteProcessResolverContext const*)"
 		alias
 			"ewg_function_macro_AERemoteProcessResolverScheduleWithRunLoop"
 		end
 
-	aeremote_process_resolver_schedule_with_run_loop_address_external: POINTER is
+	frozenaeremote_process_resolver_schedule_with_run_loop_address_external: POINTER is
 			-- Address of C function `AERemoteProcessResolverScheduleWithRunLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

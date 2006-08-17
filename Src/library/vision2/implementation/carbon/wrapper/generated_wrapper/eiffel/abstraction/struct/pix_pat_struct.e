@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_pattype: INTEGER is
-		obsolete "Use `pattype' instead."
-			-- Access member `patType'
-		require
-			exists: exists
-		do
-			Result := get_pattype_external (item)
-		ensure
-			result_correct: Result = get_pattype_external (item)
-		end
 
 	pattype: INTEGER is
 			-- Access member `patType'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_pattype_external (item, a_value)
 		ensure
 			a_value_set: a_value = pattype
-		end
-
-	get_patmap: POINTER is
-		obsolete "Use `patmap' instead."
-			-- Access member `patMap'
-		require
-			exists: exists
-		do
-			Result := get_patmap_external (item)
-		ensure
-			result_correct: Result = get_patmap_external (item)
 		end
 
 	patmap: POINTER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = patmap
 		end
 
-	get_patdata: POINTER is
-		obsolete "Use `patdata' instead."
-			-- Access member `patData'
-		require
-			exists: exists
-		do
-			Result := get_patdata_external (item)
-		ensure
-			result_correct: Result = get_patdata_external (item)
-		end
-
 	patdata: POINTER is
 			-- Access member `patData'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_patdata_external (item, a_value)
 		ensure
 			a_value_set: a_value = patdata
-		end
-
-	get_patxdata: POINTER is
-		obsolete "Use `patxdata' instead."
-			-- Access member `patXData'
-		require
-			exists: exists
-		do
-			Result := get_patxdata_external (item)
-		ensure
-			result_correct: Result = get_patxdata_external (item)
 		end
 
 	patxdata: POINTER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = patxdata
 		end
 
-	get_patxvalid: INTEGER is
-		obsolete "Use `patxvalid' instead."
-			-- Access member `patXValid'
-		require
-			exists: exists
-		do
-			Result := get_patxvalid_external (item)
-		ensure
-			result_correct: Result = get_patxvalid_external (item)
-		end
-
 	patxvalid: INTEGER is
 			-- Access member `patXValid'
 		require
@@ -182,17 +127,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = patxvalid
 		end
 
-	get_patxmap: POINTER is
-		obsolete "Use `patxmap' instead."
-			-- Access member `patXMap'
-		require
-			exists: exists
-		do
-			Result := get_patxmap_external (item)
-		ensure
-			result_correct: Result = get_patxmap_external (item)
-		end
-
 	patxmap: POINTER is
 			-- Access member `patXMap'
 		require
@@ -211,17 +145,6 @@ feature {ANY} -- Member Access
 			set_patxmap_external (item, a_value)
 		ensure
 			a_value_set: a_value = patxmap
-		end
-
-	get_pat1data: POINTER is
-		obsolete "Use `pat1data' instead."
-			-- Access member `pat1Data'
-		require
-			exists: exists
-		do
-			Result := get_pat1data_external (item)
-		ensure
-			result_correct: Result = get_pat1data_external (item)
 		end
 
 	pat1data: POINTER is

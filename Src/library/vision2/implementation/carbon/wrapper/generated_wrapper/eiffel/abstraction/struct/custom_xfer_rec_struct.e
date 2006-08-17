@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_version: INTEGER is
-		obsolete "Use `version' instead."
-			-- Access member `version'
-		require
-			exists: exists
-		do
-			Result := get_version_external (item)
-		ensure
-			result_correct: Result = get_version_external (item)
-		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_version_external (item, a_value)
 		ensure
 			a_value_set: a_value = version
-		end
-
-	get_srcpixels: POINTER is
-		obsolete "Use `srcpixels' instead."
-			-- Access member `srcPixels'
-		require
-			exists: exists
-		do
-			Result := get_srcpixels_external (item)
-		ensure
-			result_correct: Result = get_srcpixels_external (item)
 		end
 
 	srcpixels: POINTER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = srcpixels
 		end
 
-	get_destpixels: POINTER is
-		obsolete "Use `destpixels' instead."
-			-- Access member `destPixels'
-		require
-			exists: exists
-		do
-			Result := get_destpixels_external (item)
-		ensure
-			result_correct: Result = get_destpixels_external (item)
-		end
-
 	destpixels: POINTER is
 			-- Access member `destPixels'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_destpixels_external (item, a_value)
 		ensure
 			a_value_set: a_value = destpixels
-		end
-
-	get_resultpixels: POINTER is
-		obsolete "Use `resultpixels' instead."
-			-- Access member `resultPixels'
-		require
-			exists: exists
-		do
-			Result := get_resultpixels_external (item)
-		ensure
-			result_correct: Result = get_resultpixels_external (item)
 		end
 
 	resultpixels: POINTER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = resultpixels
 		end
 
-	get_refcon: INTEGER is
-		obsolete "Use `refcon' instead."
-			-- Access member `refCon'
-		require
-			exists: exists
-		do
-			Result := get_refcon_external (item)
-		ensure
-			result_correct: Result = get_refcon_external (item)
-		end
-
 	refcon: INTEGER is
 			-- Access member `refCon'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_refcon_external (item, a_value)
 		ensure
 			a_value_set: a_value = refcon
-		end
-
-	get_pixelsize: INTEGER is
-		obsolete "Use `pixelsize' instead."
-			-- Access member `pixelSize'
-		require
-			exists: exists
-		do
-			Result := get_pixelsize_external (item)
-		ensure
-			result_correct: Result = get_pixelsize_external (item)
 		end
 
 	pixelsize: INTEGER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pixelsize
 		end
 
-	get_pixelcount: INTEGER is
-		obsolete "Use `pixelcount' instead."
-			-- Access member `pixelCount'
-		require
-			exists: exists
-		do
-			Result := get_pixelcount_external (item)
-		ensure
-			result_correct: Result = get_pixelcount_external (item)
-		end
-
 	pixelcount: INTEGER is
 			-- Access member `pixelCount'
 		require
@@ -244,17 +167,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pixelcount
 		end
 
-	get_firstpixelhv: POINTER is
-		obsolete "Use `firstpixelhv' instead."
-			-- Access member `firstPixelHV'
-		require
-			exists: exists
-		do
-			Result := get_firstpixelhv_external (item)
-		ensure
-			result_correct: Result = get_firstpixelhv_external (item)
-		end
-
 	firstpixelhv: POINTER is
 			-- Access member `firstPixelHV'
 		require
@@ -271,17 +183,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_firstpixelhv_external (item, a_value)
-		end
-
-	get_destbounds: POINTER is
-		obsolete "Use `destbounds' instead."
-			-- Access member `destBounds'
-		require
-			exists: exists
-		do
-			Result := get_destbounds_external (item)
-		ensure
-			result_correct: Result = get_destbounds_external (item)
 		end
 
 	destbounds: POINTER is

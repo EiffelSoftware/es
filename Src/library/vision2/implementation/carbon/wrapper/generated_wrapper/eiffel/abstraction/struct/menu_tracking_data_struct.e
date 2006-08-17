@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -49,17 +49,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = menu
 		end
 
-	get_menu: POINTER is
-		obsolete "Use `menu' instead."
-			-- Access member `menu'
-		require
-			exists: exists
-		do
-			Result := get_menu_external (item)
-		ensure
-			result_correct: Result = get_menu_external (item)
-		end
-
 	menu: POINTER is
 			-- Access member `menu'
 		require
@@ -78,17 +67,6 @@ feature {ANY} -- Member Access
 			set_menu_external (item, a_value)
 		ensure
 			a_value_set: a_value = menu
-		end
-
-	get_itemselected: INTEGER is
-		obsolete "Use `itemselected' instead."
-			-- Access member `itemSelected'
-		require
-			exists: exists
-		do
-			Result := get_itemselected_external (item)
-		ensure
-			result_correct: Result = get_itemselected_external (item)
 		end
 
 	itemselected: INTEGER is
@@ -111,17 +89,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = itemselected
 		end
 
-	get_itemundermouse: INTEGER is
-		obsolete "Use `itemundermouse' instead."
-			-- Access member `itemUnderMouse'
-		require
-			exists: exists
-		do
-			Result := get_itemundermouse_external (item)
-		ensure
-			result_correct: Result = get_itemundermouse_external (item)
-		end
-
 	itemundermouse: INTEGER is
 			-- Access member `itemUnderMouse'
 		require
@@ -142,17 +109,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = itemundermouse
 		end
 
-	get_itemrect: POINTER is
-		obsolete "Use `itemrect' instead."
-			-- Access member `itemRect'
-		require
-			exists: exists
-		do
-			Result := get_itemrect_external (item)
-		ensure
-			result_correct: Result = get_itemrect_external (item)
-		end
-
 	itemrect: POINTER is
 			-- Access member `itemRect'
 		require
@@ -169,17 +125,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_itemrect_external (item, a_value)
-		end
-
-	get_virtualmenutop: INTEGER is
-		obsolete "Use `virtualmenutop' instead."
-			-- Access member `virtualMenuTop'
-		require
-			exists: exists
-		do
-			Result := get_virtualmenutop_external (item)
-		ensure
-			result_correct: Result = get_virtualmenutop_external (item)
 		end
 
 	virtualmenutop: INTEGER is
@@ -200,17 +145,6 @@ feature {ANY} -- Member Access
 			set_virtualmenutop_external (item, a_value)
 		ensure
 			a_value_set: a_value = virtualmenutop
-		end
-
-	get_virtualmenubottom: INTEGER is
-		obsolete "Use `virtualmenubottom' instead."
-			-- Access member `virtualMenuBottom'
-		require
-			exists: exists
-		do
-			Result := get_virtualmenubottom_external (item)
-		ensure
-			result_correct: Result = get_virtualmenubottom_external (item)
 		end
 
 	virtualmenubottom: INTEGER is

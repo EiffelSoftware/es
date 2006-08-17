@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_domain: INTEGER is
-		obsolete "Use `domain' instead."
-			-- Access member `domain'
-		require
-			exists: exists
-		do
-			Result := get_domain_external (item)
-		ensure
-			result_correct: Result = get_domain_external (item)
-		end
 
 	domain: INTEGER is
 			-- Access member `domain'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_domain_external (item, a_value)
 		ensure
 			a_value_set: a_value = domain
-		end
-
-	get_error: INTEGER is
-		obsolete "Use `error' instead."
-			-- Access member `error'
-		require
-			exists: exists
-		do
-			Result := get_error_external (item)
-		ensure
-			result_correct: Result = get_error_external (item)
 		end
 
 	error: INTEGER is

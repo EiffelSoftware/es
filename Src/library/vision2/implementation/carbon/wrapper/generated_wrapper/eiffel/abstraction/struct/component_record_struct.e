@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_data: POINTER is
-		obsolete "Use `data' instead."
-			-- Access member `data'
-		require
-			exists: exists
-		do
-			Result := get_data_external (item)
-		ensure
-			result_correct: Result = get_data_external (item)
-		end
 
 	data: POINTER is
 			-- Access member `data'

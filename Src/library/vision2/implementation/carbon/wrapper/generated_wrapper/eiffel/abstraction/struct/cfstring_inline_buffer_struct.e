@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_buffer: POINTER is
-		obsolete "Use `buffer' instead."
-			-- Access member `buffer'
-		require
-			exists: exists
-		do
-			Result := get_buffer_external (item)
-		ensure
-			result_correct: Result = get_buffer_external (item)
-		end
 
 	buffer: POINTER is
 			-- Access member `buffer'
@@ -70,17 +59,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = thestring
 		end
 
-	get_thestring: POINTER is
-		obsolete "Use `thestring' instead."
-			-- Access member `theString'
-		require
-			exists: exists
-		do
-			Result := get_thestring_external (item)
-		ensure
-			result_correct: Result = get_thestring_external (item)
-		end
-
 	thestring: POINTER is
 			-- Access member `theString'
 		require
@@ -99,17 +77,6 @@ feature {ANY} -- Member Access
 			set_thestring_external (item, a_value)
 		ensure
 			a_value_set: a_value = thestring
-		end
-
-	get_directbuffer: POINTER is
-		obsolete "Use `directbuffer' instead."
-			-- Access member `directBuffer'
-		require
-			exists: exists
-		do
-			Result := get_directbuffer_external (item)
-		ensure
-			result_correct: Result = get_directbuffer_external (item)
 		end
 
 	directbuffer: POINTER is
@@ -132,17 +99,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = directbuffer
 		end
 
-	get_rangetobuffer: POINTER is
-		obsolete "Use `rangetobuffer' instead."
-			-- Access member `rangeToBuffer'
-		require
-			exists: exists
-		do
-			Result := get_rangetobuffer_external (item)
-		ensure
-			result_correct: Result = get_rangetobuffer_external (item)
-		end
-
 	rangetobuffer: POINTER is
 			-- Access member `rangeToBuffer'
 		require
@@ -159,17 +115,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_rangetobuffer_external (item, a_value)
-		end
-
-	get_bufferedrangestart: INTEGER is
-		obsolete "Use `bufferedrangestart' instead."
-			-- Access member `bufferedRangeStart'
-		require
-			exists: exists
-		do
-			Result := get_bufferedrangestart_external (item)
-		ensure
-			result_correct: Result = get_bufferedrangestart_external (item)
 		end
 
 	bufferedrangestart: INTEGER is
@@ -190,17 +135,6 @@ feature {ANY} -- Member Access
 			set_bufferedrangestart_external (item, a_value)
 		ensure
 			a_value_set: a_value = bufferedrangestart
-		end
-
-	get_bufferedrangeend: INTEGER is
-		obsolete "Use `bufferedrangeend' instead."
-			-- Access member `bufferedRangeEnd'
-		require
-			exists: exists
-		do
-			Result := get_bufferedrangeend_external (item)
-		ensure
-			result_correct: Result = get_bufferedrangeend_external (item)
 		end
 
 	bufferedrangeend: INTEGER is

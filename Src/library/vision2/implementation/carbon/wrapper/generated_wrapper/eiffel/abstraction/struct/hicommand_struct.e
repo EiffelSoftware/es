@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_attributes: INTEGER is
-		obsolete "Use `attributes' instead."
-			-- Access member `attributes'
-		require
-			exists: exists
-		do
-			Result := get_attributes_external (item)
-		ensure
-			result_correct: Result = get_attributes_external (item)
-		end
 
 	attributes: INTEGER is
 			-- Access member `attributes'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_attributes_external (item, a_value)
 		ensure
 			a_value_set: a_value = attributes
-		end
-
-	get_commandid: INTEGER is
-		obsolete "Use `commandid' instead."
-			-- Access member `commandID'
-		require
-			exists: exists
-		do
-			Result := get_commandid_external (item)
-		ensure
-			result_correct: Result = get_commandid_external (item)
 		end
 
 	commandid: INTEGER is

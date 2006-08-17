@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_gversion: INTEGER is
-		obsolete "Use `gversion' instead."
-			-- Access member `gVersion'
-		require
-			exists: exists
-		do
-			Result := get_gversion_external (item)
-		ensure
-			result_correct: Result = get_gversion_external (item)
-		end
 
 	gversion: INTEGER is
 			-- Access member `gVersion'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_gversion_external (item, a_value)
 		ensure
 			a_value_set: a_value = gversion
-		end
-
-	get_gtype: INTEGER is
-		obsolete "Use `gtype' instead."
-			-- Access member `gType'
-		require
-			exists: exists
-		do
-			Result := get_gtype_external (item)
-		ensure
-			result_correct: Result = get_gtype_external (item)
 		end
 
 	gtype: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gtype
 		end
 
-	get_gformulasize: INTEGER is
-		obsolete "Use `gformulasize' instead."
-			-- Access member `gFormulaSize'
-		require
-			exists: exists
-		do
-			Result := get_gformulasize_external (item)
-		ensure
-			result_correct: Result = get_gformulasize_external (item)
-		end
-
 	gformulasize: INTEGER is
 			-- Access member `gFormulaSize'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_gformulasize_external (item, a_value)
 		ensure
 			a_value_set: a_value = gformulasize
-		end
-
-	get_gchancnt: INTEGER is
-		obsolete "Use `gchancnt' instead."
-			-- Access member `gChanCnt'
-		require
-			exists: exists
-		do
-			Result := get_gchancnt_external (item)
-		ensure
-			result_correct: Result = get_gchancnt_external (item)
 		end
 
 	gchancnt: INTEGER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gchancnt
 		end
 
-	get_gdatacnt: INTEGER is
-		obsolete "Use `gdatacnt' instead."
-			-- Access member `gDataCnt'
-		require
-			exists: exists
-		do
-			Result := get_gdatacnt_external (item)
-		ensure
-			result_correct: Result = get_gdatacnt_external (item)
-		end
-
 	gdatacnt: INTEGER is
 			-- Access member `gDataCnt'
 		require
@@ -182,17 +127,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdatacnt
 		end
 
-	get_gdatawidth: INTEGER is
-		obsolete "Use `gdatawidth' instead."
-			-- Access member `gDataWidth'
-		require
-			exists: exists
-		do
-			Result := get_gdatawidth_external (item)
-		ensure
-			result_correct: Result = get_gdatawidth_external (item)
-		end
-
 	gdatawidth: INTEGER is
 			-- Access member `gDataWidth'
 		require
@@ -211,17 +145,6 @@ feature {ANY} -- Member Access
 			set_gdatawidth_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdatawidth
-		end
-
-	get_gformuladata: POINTER is
-		obsolete "Use `gformuladata' instead."
-			-- Access member `gFormulaData'
-		require
-			exists: exists
-		do
-			Result := get_gformuladata_external (item)
-		ensure
-			result_correct: Result = get_gformuladata_external (item)
 		end
 
 	gformuladata: POINTER is

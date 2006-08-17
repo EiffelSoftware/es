@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_numentries: INTEGER is
-		obsolete "Use `numentries' instead."
-			-- Access member `numEntries'
-		require
-			exists: exists
-		do
-			Result := get_numentries_external (item)
-		ensure
-			result_correct: Result = get_numentries_external (item)
-		end
 
 	numentries: INTEGER is
 			-- Access member `numEntries'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_numentries_external (item, a_value)
 		ensure
 			a_value_set: a_value = numentries
-		end
-
-	get_mcentryrecs: POINTER is
-		obsolete "Use `mcentryrecs' instead."
-			-- Access member `mcEntryRecs'
-		require
-			exists: exists
-		do
-			Result := get_mcentryrecs_external (item)
-		ensure
-			result_correct: Result = get_mcentryrecs_external (item)
 		end
 
 	mcentryrecs: POINTER is

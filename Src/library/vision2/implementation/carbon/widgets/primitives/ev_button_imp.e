@@ -23,8 +23,7 @@ inherit
 			make,
 			set_foreground_color,
 			on_focus_changed,
-			needs_event_box,
-			event_widget
+			needs_event_box
 		end
 
 	EV_PIXMAPABLE_IMP
@@ -45,8 +44,7 @@ inherit
 	EV_FONTABLE_IMP
 		redefine
 			interface,
-			initialize,
-			fontable_widget
+			initialize
 		end
 
 	EV_BUTTON_ACTION_SEQUENCES_IMP
@@ -94,16 +92,6 @@ feature {NONE} -- Initialization
 			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 		end
 
-	fontable_widget: POINTER is
-			-- Pointer to the widget that may have fonts set.
-		do
-		end
-
-	event_widget: POINTER is
-			-- Widget that handles the events.
-		do
-		end
-
 	needs_event_box: BOOLEAN is True
 		-- Make sure `Current' is placed within a GtkEventBox.
 
@@ -134,41 +122,41 @@ feature -- Status Setting
 			res : INTEGER
 		do
 			is_default_push_button := True
---			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
 		end
 
 
---	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
---			-- get a boolean value with get_control_data
---			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp;
---				 	Size ActualSize;
---					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
---					if ( ActualSize == sizeof(temp) )
---						return temp;
---					else
---						return res;
---				}
---			]"
---		end
---
---		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
---			-- set a boolean value with set_control_data
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp = $value;
---					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
---				}
---			]"
---		end
+	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
+			-- get a boolean value with get_control_data
+			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp;
+				 	Size ActualSize;
+					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
+					if ( ActualSize == sizeof(temp) )
+						return temp;
+					else
+						return res;
+				}
+			]"
+		end
+
+		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp = $value;
+					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
+				}
+			]"
+		end
 
 	disable_default_push_button is
 			-- Remove the style of the button corresponding
@@ -177,7 +165,7 @@ feature -- Status Setting
 			res : INTEGER
 		do
 			is_default_push_button := False
---			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
 		end
 
 	enable_can_default is

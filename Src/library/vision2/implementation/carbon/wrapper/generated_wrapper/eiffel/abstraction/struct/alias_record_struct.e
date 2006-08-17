@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_usertype: INTEGER is
-		obsolete "Use `usertype' instead."
-			-- Access member `userType'
-		require
-			exists: exists
-		do
-			Result := get_usertype_external (item)
-		ensure
-			result_correct: Result = get_usertype_external (item)
-		end
 
 	usertype: INTEGER is
 			-- Access member `userType'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_usertype_external (item, a_value)
 		ensure
 			a_value_set: a_value = usertype
-		end
-
-	get_aliassize: INTEGER is
-		obsolete "Use `aliassize' instead."
-			-- Access member `aliasSize'
-		require
-			exists: exists
-		do
-			Result := get_aliassize_external (item)
-		ensure
-			result_correct: Result = get_aliassize_external (item)
 		end
 
 	aliassize: INTEGER is

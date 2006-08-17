@@ -3,14 +3,14 @@
 class CGCONTEXT_FUNCTIONS_EXTERNAL
 
 feature
-	cgcontext_get_type_id_external: INTEGER is
+	frozen cgcontext_get_type_id_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :CFTypeID"
 		alias
 			"ewg_function_macro_CGContextGetTypeID"
 		end
 
-	cgcontext_get_type_id_address_external: POINTER is
+	frozencgcontext_get_type_id_address_external: POINTER is
 			-- Address of C function `CGContextGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) CGContextGetTypeID"
 		end
 
-	cgcontext_save_gstate_external (c: POINTER) is
+	frozen cgcontext_save_gstate_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextSaveGState"
 		end
 
-	cgcontext_save_gstate_address_external: POINTER is
+	frozencgcontext_save_gstate_address_external: POINTER is
 			-- Address of C function `CGContextSaveGState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) CGContextSaveGState"
 		end
 
-	cgcontext_restore_gstate_external (c: POINTER) is
+	frozen cgcontext_restore_gstate_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextRestoreGState"
 		end
 
-	cgcontext_restore_gstate_address_external: POINTER is
+	frozencgcontext_restore_gstate_address_external: POINTER is
 			-- Address of C function `CGContextRestoreGState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) CGContextRestoreGState"
 		end
 
-	cgcontext_scale_ctm_external (c: POINTER; sx: REAL; sy: REAL) is
+	frozen cgcontext_scale_ctm_external (c: POINTER; sx: REAL; sy: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float)"
 		alias
 			"ewg_function_macro_CGContextScaleCTM"
 		end
 
-	cgcontext_scale_ctm_address_external: POINTER is
+	frozencgcontext_scale_ctm_address_external: POINTER is
 			-- Address of C function `CGContextScaleCTM'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) CGContextScaleCTM"
 		end
 
-	cgcontext_translate_ctm_external (c: POINTER; tx: REAL; ty: REAL) is
+	frozen cgcontext_translate_ctm_external (c: POINTER; tx: REAL; ty: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float)"
 		alias
 			"ewg_function_macro_CGContextTranslateCTM"
 		end
 
-	cgcontext_translate_ctm_address_external: POINTER is
+	frozencgcontext_translate_ctm_address_external: POINTER is
 			-- Address of C function `CGContextTranslateCTM'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) CGContextTranslateCTM"
 		end
 
-	cgcontext_rotate_ctm_external (c: POINTER; angle: REAL) is
+	frozen cgcontext_rotate_ctm_external (c: POINTER; angle: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float)"
 		alias
 			"ewg_function_macro_CGContextRotateCTM"
 		end
 
-	cgcontext_rotate_ctm_address_external: POINTER is
+	frozencgcontext_rotate_ctm_address_external: POINTER is
 			-- Address of C function `CGContextRotateCTM'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) CGContextRotateCTM"
 		end
 
-	cgcontext_concat_ctm_external (c: POINTER; transform: POINTER) is
+	frozen cgcontext_concat_ctm_external (c: POINTER; transform: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGAffineTransform*)"
 		alias
 			"ewg_function_macro_CGContextConcatCTM"
 		end
 
-	cgcontext_concat_ctm_address_external: POINTER is
+	frozencgcontext_concat_ctm_address_external: POINTER is
 			-- Address of C function `CGContextConcatCTM'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) CGContextConcatCTM"
 		end
 
-	cgcontext_get_ctm_external (c: POINTER): POINTER is
+	frozen cgcontext_get_ctm_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGAffineTransform*"
 		alias
 			"ewg_function_CGContextGetCTM"
 		end
 
-	cgcontext_get_ctm_address_external: POINTER is
+	frozencgcontext_get_ctm_address_external: POINTER is
 			-- Address of C function `CGContextGetCTM'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) CGContextGetCTM"
 		end
 
-	cgcontext_set_line_width_external (c: POINTER; width: REAL) is
+	frozen cgcontext_set_line_width_external (c: POINTER; width: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float)"
 		alias
 			"ewg_function_macro_CGContextSetLineWidth"
 		end
 
-	cgcontext_set_line_width_address_external: POINTER is
+	frozencgcontext_set_line_width_address_external: POINTER is
 			-- Address of C function `CGContextSetLineWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) CGContextSetLineWidth"
 		end
 
-	cgcontext_set_line_cap_external (c: POINTER; cap: INTEGER) is
+	frozen cgcontext_set_line_cap_external (c: POINTER; cap: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGLineCap)"
 		alias
 			"ewg_function_macro_CGContextSetLineCap"
 		end
 
-	cgcontext_set_line_cap_address_external: POINTER is
+	frozencgcontext_set_line_cap_address_external: POINTER is
 			-- Address of C function `CGContextSetLineCap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) CGContextSetLineCap"
 		end
 
-	cgcontext_set_line_join_external (c: POINTER; join: INTEGER) is
+	frozen cgcontext_set_line_join_external (c: POINTER; join: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGLineJoin)"
 		alias
 			"ewg_function_macro_CGContextSetLineJoin"
 		end
 
-	cgcontext_set_line_join_address_external: POINTER is
+	frozencgcontext_set_line_join_address_external: POINTER is
 			-- Address of C function `CGContextSetLineJoin'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CGContextSetLineJoin"
 		end
 
-	cgcontext_set_miter_limit_external (c: POINTER; limit: REAL) is
+	frozen cgcontext_set_miter_limit_external (c: POINTER; limit: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float)"
 		alias
 			"ewg_function_macro_CGContextSetMiterLimit"
 		end
 
-	cgcontext_set_miter_limit_address_external: POINTER is
+	frozencgcontext_set_miter_limit_address_external: POINTER is
 			-- Address of C function `CGContextSetMiterLimit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CGContextSetMiterLimit"
 		end
 
-	cgcontext_set_line_dash_external (c: POINTER; phase: REAL; lengths: POINTER; count: INTEGER) is
+	frozen cgcontext_set_line_dash_external (c: POINTER; phase: REAL; lengths: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextSetLineDash"
 		end
 
-	cgcontext_set_line_dash_address_external: POINTER is
+	frozencgcontext_set_line_dash_address_external: POINTER is
 			-- Address of C function `CGContextSetLineDash'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) CGContextSetLineDash"
 		end
 
-	cgcontext_set_flatness_external (c: POINTER; flatness: REAL) is
+	frozen cgcontext_set_flatness_external (c: POINTER; flatness: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float)"
 		alias
 			"ewg_function_macro_CGContextSetFlatness"
 		end
 
-	cgcontext_set_flatness_address_external: POINTER is
+	frozencgcontext_set_flatness_address_external: POINTER is
 			-- Address of C function `CGContextSetFlatness'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) CGContextSetFlatness"
 		end
 
-	cgcontext_set_alpha_external (c: POINTER; alpha: REAL) is
+	frozen cgcontext_set_alpha_external (c: POINTER; alpha: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float)"
 		alias
 			"ewg_function_macro_CGContextSetAlpha"
 		end
 
-	cgcontext_set_alpha_address_external: POINTER is
+	frozencgcontext_set_alpha_address_external: POINTER is
 			-- Address of C function `CGContextSetAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CGContextSetAlpha"
 		end
 
-	cgcontext_set_blend_mode_external (context: POINTER; mode: INTEGER) is
+	frozen cgcontext_set_blend_mode_external (context: POINTER; mode: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGBlendMode)"
 		alias
 			"ewg_function_macro_CGContextSetBlendMode"
 		end
 
-	cgcontext_set_blend_mode_address_external: POINTER is
+	frozencgcontext_set_blend_mode_address_external: POINTER is
 			-- Address of C function `CGContextSetBlendMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) CGContextSetBlendMode"
 		end
 
-	cgcontext_begin_path_external (c: POINTER) is
+	frozen cgcontext_begin_path_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextBeginPath"
 		end
 
-	cgcontext_begin_path_address_external: POINTER is
+	frozencgcontext_begin_path_address_external: POINTER is
 			-- Address of C function `CGContextBeginPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CGContextBeginPath"
 		end
 
-	cgcontext_move_to_point_external (c: POINTER; x: REAL; y: REAL) is
+	frozen cgcontext_move_to_point_external (c: POINTER; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float)"
 		alias
 			"ewg_function_macro_CGContextMoveToPoint"
 		end
 
-	cgcontext_move_to_point_address_external: POINTER is
+	frozencgcontext_move_to_point_address_external: POINTER is
 			-- Address of C function `CGContextMoveToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) CGContextMoveToPoint"
 		end
 
-	cgcontext_add_line_to_point_external (c: POINTER; x: REAL; y: REAL) is
+	frozen cgcontext_add_line_to_point_external (c: POINTER; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float)"
 		alias
 			"ewg_function_macro_CGContextAddLineToPoint"
 		end
 
-	cgcontext_add_line_to_point_address_external: POINTER is
+	frozencgcontext_add_line_to_point_address_external: POINTER is
 			-- Address of C function `CGContextAddLineToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) CGContextAddLineToPoint"
 		end
 
-	cgcontext_add_curve_to_point_external (c: POINTER; cp1x: REAL; cp1y: REAL; cp2x: REAL; cp2y: REAL; x: REAL; y: REAL) is
+	frozen cgcontext_add_curve_to_point_external (c: POINTER; cp1x: REAL; cp1y: REAL; cp2x: REAL; cp2y: REAL; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGContextAddCurveToPoint"
 		end
 
-	cgcontext_add_curve_to_point_address_external: POINTER is
+	frozencgcontext_add_curve_to_point_address_external: POINTER is
 			-- Address of C function `CGContextAddCurveToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) CGContextAddCurveToPoint"
 		end
 
-	cgcontext_add_quad_curve_to_point_external (c: POINTER; cpx: REAL; cpy: REAL; x: REAL; y: REAL) is
+	frozen cgcontext_add_quad_curve_to_point_external (c: POINTER; cpx: REAL; cpy: REAL; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGContextAddQuadCurveToPoint"
 		end
 
-	cgcontext_add_quad_curve_to_point_address_external: POINTER is
+	frozencgcontext_add_quad_curve_to_point_address_external: POINTER is
 			-- Address of C function `CGContextAddQuadCurveToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CGContextAddQuadCurveToPoint"
 		end
 
-	cgcontext_close_path_external (c: POINTER) is
+	frozen cgcontext_close_path_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextClosePath"
 		end
 
-	cgcontext_close_path_address_external: POINTER is
+	frozencgcontext_close_path_address_external: POINTER is
 			-- Address of C function `CGContextClosePath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) CGContextClosePath"
 		end
 
-	cgcontext_add_rect_external (c: POINTER; rect: POINTER) is
+	frozen cgcontext_add_rect_external (c: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextAddRect"
 		end
 
-	cgcontext_add_rect_address_external: POINTER is
+	frozencgcontext_add_rect_address_external: POINTER is
 			-- Address of C function `CGContextAddRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) CGContextAddRect"
 		end
 
-	cgcontext_add_rects_external (c: POINTER; rects: POINTER; count: INTEGER) is
+	frozen cgcontext_add_rects_external (c: POINTER; rects: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextAddRects"
 		end
 
-	cgcontext_add_rects_address_external: POINTER is
+	frozencgcontext_add_rects_address_external: POINTER is
 			-- Address of C function `CGContextAddRects'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) CGContextAddRects"
 		end
 
-	cgcontext_add_lines_external (c: POINTER; points: POINTER; count: INTEGER) is
+	frozen cgcontext_add_lines_external (c: POINTER; points: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextAddLines"
 		end
 
-	cgcontext_add_lines_address_external: POINTER is
+	frozencgcontext_add_lines_address_external: POINTER is
 			-- Address of C function `CGContextAddLines'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) CGContextAddLines"
 		end
 
-	cgcontext_add_ellipse_in_rect_external (context: POINTER; rect: POINTER) is
+	frozen cgcontext_add_ellipse_in_rect_external (context: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextAddEllipseInRect"
 		end
 
-	cgcontext_add_ellipse_in_rect_address_external: POINTER is
+	frozencgcontext_add_ellipse_in_rect_address_external: POINTER is
 			-- Address of C function `CGContextAddEllipseInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) CGContextAddEllipseInRect"
 		end
 
-	cgcontext_add_arc_external (c: POINTER; x: REAL; y: REAL; radius: REAL; startangle: REAL; endangle: REAL; clockwise: INTEGER) is
+	frozen cgcontext_add_arc_external (c: POINTER; x: REAL; y: REAL; radius: REAL; startangle: REAL; endangle: REAL; clockwise: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float, float, int)"
 		alias
 			"ewg_function_macro_CGContextAddArc"
 		end
 
-	cgcontext_add_arc_address_external: POINTER is
+	frozencgcontext_add_arc_address_external: POINTER is
 			-- Address of C function `CGContextAddArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) CGContextAddArc"
 		end
 
-	cgcontext_add_arc_to_point_external (c: POINTER; x1: REAL; y1: REAL; x2: REAL; y2: REAL; radius: REAL) is
+	frozen cgcontext_add_arc_to_point_external (c: POINTER; x1: REAL; y1: REAL; x2: REAL; y2: REAL; radius: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGContextAddArcToPoint"
 		end
 
-	cgcontext_add_arc_to_point_address_external: POINTER is
+	frozencgcontext_add_arc_to_point_address_external: POINTER is
 			-- Address of C function `CGContextAddArcToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) CGContextAddArcToPoint"
 		end
 
-	cgcontext_add_path_external (context: POINTER; path: POINTER) is
+	frozen cgcontext_add_path_external (context: POINTER; path: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPathRef)"
 		alias
 			"ewg_function_macro_CGContextAddPath"
 		end
 
-	cgcontext_add_path_address_external: POINTER is
+	frozencgcontext_add_path_address_external: POINTER is
 			-- Address of C function `CGContextAddPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) CGContextAddPath"
 		end
 
-	cgcontext_replace_path_with_stroked_path_external (c: POINTER) is
+	frozen cgcontext_replace_path_with_stroked_path_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextReplacePathWithStrokedPath"
 		end
 
-	cgcontext_replace_path_with_stroked_path_address_external: POINTER is
+	frozencgcontext_replace_path_with_stroked_path_address_external: POINTER is
 			-- Address of C function `CGContextReplacePathWithStrokedPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) CGContextReplacePathWithStrokedPath"
 		end
 
-	cgcontext_is_path_empty_external (c: POINTER): INTEGER is
+	frozen cgcontext_is_path_empty_external (c: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):_Bool"
 		alias
 			"ewg_function_macro_CGContextIsPathEmpty"
 		end
 
-	cgcontext_is_path_empty_address_external: POINTER is
+	frozencgcontext_is_path_empty_address_external: POINTER is
 			-- Address of C function `CGContextIsPathEmpty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) CGContextIsPathEmpty"
 		end
 
-	cgcontext_get_path_current_point_external (c: POINTER): POINTER is
+	frozen cgcontext_get_path_current_point_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGPoint*"
 		alias
 			"ewg_function_CGContextGetPathCurrentPoint"
 		end
 
-	cgcontext_get_path_current_point_address_external: POINTER is
+	frozencgcontext_get_path_current_point_address_external: POINTER is
 			-- Address of C function `CGContextGetPathCurrentPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) CGContextGetPathCurrentPoint"
 		end
 
-	cgcontext_get_path_bounding_box_external (c: POINTER): POINTER is
+	frozen cgcontext_get_path_bounding_box_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGRect*"
 		alias
 			"ewg_function_CGContextGetPathBoundingBox"
 		end
 
-	cgcontext_get_path_bounding_box_address_external: POINTER is
+	frozencgcontext_get_path_bounding_box_address_external: POINTER is
 			-- Address of C function `CGContextGetPathBoundingBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) CGContextGetPathBoundingBox"
 		end
 
-	cgcontext_path_contains_point_external (context: POINTER; point: POINTER; mode: INTEGER): INTEGER is
+	frozen cgcontext_path_contains_point_external (context: POINTER; point: POINTER; mode: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPoint*, CGPathDrawingMode):_Bool"
 		alias
 			"ewg_function_macro_CGContextPathContainsPoint"
 		end
 
-	cgcontext_path_contains_point_address_external: POINTER is
+	frozencgcontext_path_contains_point_address_external: POINTER is
 			-- Address of C function `CGContextPathContainsPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) CGContextPathContainsPoint"
 		end
 
-	cgcontext_draw_path_external (c: POINTER; mode: INTEGER) is
+	frozen cgcontext_draw_path_external (c: POINTER; mode: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPathDrawingMode)"
 		alias
 			"ewg_function_macro_CGContextDrawPath"
 		end
 
-	cgcontext_draw_path_address_external: POINTER is
+	frozencgcontext_draw_path_address_external: POINTER is
 			-- Address of C function `CGContextDrawPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) CGContextDrawPath"
 		end
 
-	cgcontext_fill_path_external (c: POINTER) is
+	frozen cgcontext_fill_path_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextFillPath"
 		end
 
-	cgcontext_fill_path_address_external: POINTER is
+	frozencgcontext_fill_path_address_external: POINTER is
 			-- Address of C function `CGContextFillPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) CGContextFillPath"
 		end
 
-	cgcontext_eofill_path_external (c: POINTER) is
+	frozen cgcontext_eofill_path_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextEOFillPath"
 		end
 
-	cgcontext_eofill_path_address_external: POINTER is
+	frozencgcontext_eofill_path_address_external: POINTER is
 			-- Address of C function `CGContextEOFillPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) CGContextEOFillPath"
 		end
 
-	cgcontext_stroke_path_external (c: POINTER) is
+	frozen cgcontext_stroke_path_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextStrokePath"
 		end
 
-	cgcontext_stroke_path_address_external: POINTER is
+	frozencgcontext_stroke_path_address_external: POINTER is
 			-- Address of C function `CGContextStrokePath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) CGContextStrokePath"
 		end
 
-	cgcontext_fill_rect_external (c: POINTER; rect: POINTER) is
+	frozen cgcontext_fill_rect_external (c: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextFillRect"
 		end
 
-	cgcontext_fill_rect_address_external: POINTER is
+	frozencgcontext_fill_rect_address_external: POINTER is
 			-- Address of C function `CGContextFillRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) CGContextFillRect"
 		end
 
-	cgcontext_fill_rects_external (c: POINTER; rects: POINTER; count: INTEGER) is
+	frozen cgcontext_fill_rects_external (c: POINTER; rects: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextFillRects"
 		end
 
-	cgcontext_fill_rects_address_external: POINTER is
+	frozencgcontext_fill_rects_address_external: POINTER is
 			-- Address of C function `CGContextFillRects'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) CGContextFillRects"
 		end
 
-	cgcontext_stroke_rect_external (c: POINTER; rect: POINTER) is
+	frozen cgcontext_stroke_rect_external (c: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextStrokeRect"
 		end
 
-	cgcontext_stroke_rect_address_external: POINTER is
+	frozencgcontext_stroke_rect_address_external: POINTER is
 			-- Address of C function `CGContextStrokeRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) CGContextStrokeRect"
 		end
 
-	cgcontext_stroke_rect_with_width_external (c: POINTER; rect: POINTER; width: REAL) is
+	frozen cgcontext_stroke_rect_with_width_external (c: POINTER; rect: POINTER; width: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*, float)"
 		alias
 			"ewg_function_macro_CGContextStrokeRectWithWidth"
 		end
 
-	cgcontext_stroke_rect_with_width_address_external: POINTER is
+	frozencgcontext_stroke_rect_with_width_address_external: POINTER is
 			-- Address of C function `CGContextStrokeRectWithWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) CGContextStrokeRectWithWidth"
 		end
 
-	cgcontext_clear_rect_external (c: POINTER; rect: POINTER) is
+	frozen cgcontext_clear_rect_external (c: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextClearRect"
 		end
 
-	cgcontext_clear_rect_address_external: POINTER is
+	frozencgcontext_clear_rect_address_external: POINTER is
 			-- Address of C function `CGContextClearRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) CGContextClearRect"
 		end
 
-	cgcontext_fill_ellipse_in_rect_external (context: POINTER; rect: POINTER) is
+	frozen cgcontext_fill_ellipse_in_rect_external (context: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextFillEllipseInRect"
 		end
 
-	cgcontext_fill_ellipse_in_rect_address_external: POINTER is
+	frozencgcontext_fill_ellipse_in_rect_address_external: POINTER is
 			-- Address of C function `CGContextFillEllipseInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) CGContextFillEllipseInRect"
 		end
 
-	cgcontext_stroke_ellipse_in_rect_external (context: POINTER; rect: POINTER) is
+	frozen cgcontext_stroke_ellipse_in_rect_external (context: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextStrokeEllipseInRect"
 		end
 
-	cgcontext_stroke_ellipse_in_rect_address_external: POINTER is
+	frozencgcontext_stroke_ellipse_in_rect_address_external: POINTER is
 			-- Address of C function `CGContextStrokeEllipseInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) CGContextStrokeEllipseInRect"
 		end
 
-	cgcontext_stroke_line_segments_external (c: POINTER; points: POINTER; count: INTEGER) is
+	frozen cgcontext_stroke_line_segments_external (c: POINTER; points: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextStrokeLineSegments"
 		end
 
-	cgcontext_stroke_line_segments_address_external: POINTER is
+	frozencgcontext_stroke_line_segments_address_external: POINTER is
 			-- Address of C function `CGContextStrokeLineSegments'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) CGContextStrokeLineSegments"
 		end
 
-	cgcontext_clip_external (c: POINTER) is
+	frozen cgcontext_clip_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextClip"
 		end
 
-	cgcontext_clip_address_external: POINTER is
+	frozencgcontext_clip_address_external: POINTER is
 			-- Address of C function `CGContextClip'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) CGContextClip"
 		end
 
-	cgcontext_eoclip_external (c: POINTER) is
+	frozen cgcontext_eoclip_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextEOClip"
 		end
 
-	cgcontext_eoclip_address_external: POINTER is
+	frozencgcontext_eoclip_address_external: POINTER is
 			-- Address of C function `CGContextEOClip'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) CGContextEOClip"
 		end
 
-	cgcontext_clip_to_mask_external (c: POINTER; rect: POINTER; mask: POINTER) is
+	frozen cgcontext_clip_to_mask_external (c: POINTER; rect: POINTER; mask: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*, CGImageRef)"
 		alias
 			"ewg_function_macro_CGContextClipToMask"
 		end
 
-	cgcontext_clip_to_mask_address_external: POINTER is
+	frozencgcontext_clip_to_mask_address_external: POINTER is
 			-- Address of C function `CGContextClipToMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) CGContextClipToMask"
 		end
 
-	cgcontext_get_clip_bounding_box_external (c: POINTER): POINTER is
+	frozen cgcontext_get_clip_bounding_box_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGRect*"
 		alias
 			"ewg_function_CGContextGetClipBoundingBox"
 		end
 
-	cgcontext_get_clip_bounding_box_address_external: POINTER is
+	frozencgcontext_get_clip_bounding_box_address_external: POINTER is
 			-- Address of C function `CGContextGetClipBoundingBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) CGContextGetClipBoundingBox"
 		end
 
-	cgcontext_clip_to_rect_external (c: POINTER; rect: POINTER) is
+	frozen cgcontext_clip_to_rect_external (c: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*)"
 		alias
 			"ewg_function_macro_CGContextClipToRect"
 		end
 
-	cgcontext_clip_to_rect_address_external: POINTER is
+	frozencgcontext_clip_to_rect_address_external: POINTER is
 			-- Address of C function `CGContextClipToRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) CGContextClipToRect"
 		end
 
-	cgcontext_clip_to_rects_external (c: POINTER; rects: POINTER; count: INTEGER) is
+	frozen cgcontext_clip_to_rects_external (c: POINTER; rects: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextClipToRects"
 		end
 
-	cgcontext_clip_to_rects_address_external: POINTER is
+	frozencgcontext_clip_to_rects_address_external: POINTER is
 			-- Address of C function `CGContextClipToRects'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) CGContextClipToRects"
 		end
 
-	cgcontext_set_fill_color_with_color_external (c: POINTER; color: POINTER) is
+	frozen cgcontext_set_fill_color_with_color_external (c: POINTER; color: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGColorRef)"
 		alias
 			"ewg_function_macro_CGContextSetFillColorWithColor"
 		end
 
-	cgcontext_set_fill_color_with_color_address_external: POINTER is
+	frozencgcontext_set_fill_color_with_color_address_external: POINTER is
 			-- Address of C function `CGContextSetFillColorWithColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) CGContextSetFillColorWithColor"
 		end
 
-	cgcontext_set_stroke_color_with_color_external (c: POINTER; color: POINTER) is
+	frozen cgcontext_set_stroke_color_with_color_external (c: POINTER; color: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGColorRef)"
 		alias
 			"ewg_function_macro_CGContextSetStrokeColorWithColor"
 		end
 
-	cgcontext_set_stroke_color_with_color_address_external: POINTER is
+	frozencgcontext_set_stroke_color_with_color_address_external: POINTER is
 			-- Address of C function `CGContextSetStrokeColorWithColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) CGContextSetStrokeColorWithColor"
 		end
 
-	cgcontext_set_fill_color_space_external (c: POINTER; colorspace: POINTER) is
+	frozen cgcontext_set_fill_color_space_external (c: POINTER; colorspace: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGColorSpaceRef)"
 		alias
 			"ewg_function_macro_CGContextSetFillColorSpace"
 		end
 
-	cgcontext_set_fill_color_space_address_external: POINTER is
+	frozencgcontext_set_fill_color_space_address_external: POINTER is
 			-- Address of C function `CGContextSetFillColorSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) CGContextSetFillColorSpace"
 		end
 
-	cgcontext_set_stroke_color_space_external (c: POINTER; colorspace: POINTER) is
+	frozen cgcontext_set_stroke_color_space_external (c: POINTER; colorspace: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGColorSpaceRef)"
 		alias
 			"ewg_function_macro_CGContextSetStrokeColorSpace"
 		end
 
-	cgcontext_set_stroke_color_space_address_external: POINTER is
+	frozencgcontext_set_stroke_color_space_address_external: POINTER is
 			-- Address of C function `CGContextSetStrokeColorSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) CGContextSetStrokeColorSpace"
 		end
 
-	cgcontext_set_fill_color_external (c: POINTER; components: POINTER) is
+	frozen cgcontext_set_fill_color_external (c: POINTER; components: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*)"
 		alias
 			"ewg_function_macro_CGContextSetFillColor"
 		end
 
-	cgcontext_set_fill_color_address_external: POINTER is
+	frozencgcontext_set_fill_color_address_external: POINTER is
 			-- Address of C function `CGContextSetFillColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) CGContextSetFillColor"
 		end
 
-	cgcontext_set_stroke_color_external (c: POINTER; components: POINTER) is
+	frozen cgcontext_set_stroke_color_external (c: POINTER; components: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*)"
 		alias
 			"ewg_function_macro_CGContextSetStrokeColor"
 		end
 
-	cgcontext_set_stroke_color_address_external: POINTER is
+	frozencgcontext_set_stroke_color_address_external: POINTER is
 			-- Address of C function `CGContextSetStrokeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) CGContextSetStrokeColor"
 		end
 
-	cgcontext_set_fill_pattern_external (c: POINTER; pattern: POINTER; components: POINTER) is
+	frozen cgcontext_set_fill_pattern_external (c: POINTER; pattern: POINTER; components: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPatternRef, void*)"
 		alias
 			"ewg_function_macro_CGContextSetFillPattern"
 		end
 
-	cgcontext_set_fill_pattern_address_external: POINTER is
+	frozencgcontext_set_fill_pattern_address_external: POINTER is
 			-- Address of C function `CGContextSetFillPattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) CGContextSetFillPattern"
 		end
 
-	cgcontext_set_stroke_pattern_external (c: POINTER; pattern: POINTER; components: POINTER) is
+	frozen cgcontext_set_stroke_pattern_external (c: POINTER; pattern: POINTER; components: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPatternRef, void*)"
 		alias
 			"ewg_function_macro_CGContextSetStrokePattern"
 		end
 
-	cgcontext_set_stroke_pattern_address_external: POINTER is
+	frozencgcontext_set_stroke_pattern_address_external: POINTER is
 			-- Address of C function `CGContextSetStrokePattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) CGContextSetStrokePattern"
 		end
 
-	cgcontext_set_pattern_phase_external (c: POINTER; phase: POINTER) is
+	frozen cgcontext_set_pattern_phase_external (c: POINTER; phase: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGSize*)"
 		alias
 			"ewg_function_macro_CGContextSetPatternPhase"
 		end
 
-	cgcontext_set_pattern_phase_address_external: POINTER is
+	frozencgcontext_set_pattern_phase_address_external: POINTER is
 			-- Address of C function `CGContextSetPatternPhase'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) CGContextSetPatternPhase"
 		end
 
-	cgcontext_set_gray_fill_color_external (c: POINTER; gray: REAL; alpha: REAL) is
+	frozen cgcontext_set_gray_fill_color_external (c: POINTER; gray: REAL; alpha: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float)"
 		alias
 			"ewg_function_macro_CGContextSetGrayFillColor"
 		end
 
-	cgcontext_set_gray_fill_color_address_external: POINTER is
+	frozencgcontext_set_gray_fill_color_address_external: POINTER is
 			-- Address of C function `CGContextSetGrayFillColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) CGContextSetGrayFillColor"
 		end
 
-	cgcontext_set_gray_stroke_color_external (c: POINTER; gray: REAL; alpha: REAL) is
+	frozen cgcontext_set_gray_stroke_color_external (c: POINTER; gray: REAL; alpha: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float)"
 		alias
 			"ewg_function_macro_CGContextSetGrayStrokeColor"
 		end
 
-	cgcontext_set_gray_stroke_color_address_external: POINTER is
+	frozencgcontext_set_gray_stroke_color_address_external: POINTER is
 			-- Address of C function `CGContextSetGrayStrokeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) CGContextSetGrayStrokeColor"
 		end
 
-	cgcontext_set_rgbfill_color_external (c: POINTER; red: REAL; green: REAL; blue: REAL; alpha: REAL) is
+	frozen cgcontext_set_rgbfill_color_external (c: POINTER; red: REAL; green: REAL; blue: REAL; alpha: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGContextSetRGBFillColor"
 		end
 
-	cgcontext_set_rgbfill_color_address_external: POINTER is
+	frozencgcontext_set_rgbfill_color_address_external: POINTER is
 			-- Address of C function `CGContextSetRGBFillColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) CGContextSetRGBFillColor"
 		end
 
-	cgcontext_set_rgbstroke_color_external (c: POINTER; red: REAL; green: REAL; blue: REAL; alpha: REAL) is
+	frozen cgcontext_set_rgbstroke_color_external (c: POINTER; red: REAL; green: REAL; blue: REAL; alpha: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGContextSetRGBStrokeColor"
 		end
 
-	cgcontext_set_rgbstroke_color_address_external: POINTER is
+	frozencgcontext_set_rgbstroke_color_address_external: POINTER is
 			-- Address of C function `CGContextSetRGBStrokeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) CGContextSetRGBStrokeColor"
 		end
 
-	cgcontext_set_cmykfill_color_external (c: POINTER; cyan: REAL; magenta: REAL; yellow: REAL; black: REAL; alpha: REAL) is
+	frozen cgcontext_set_cmykfill_color_external (c: POINTER; cyan: REAL; magenta: REAL; yellow: REAL; black: REAL; alpha: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGContextSetCMYKFillColor"
 		end
 
-	cgcontext_set_cmykfill_color_address_external: POINTER is
+	frozencgcontext_set_cmykfill_color_address_external: POINTER is
 			-- Address of C function `CGContextSetCMYKFillColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) CGContextSetCMYKFillColor"
 		end
 
-	cgcontext_set_cmykstroke_color_external (c: POINTER; cyan: REAL; magenta: REAL; yellow: REAL; black: REAL; alpha: REAL) is
+	frozen cgcontext_set_cmykstroke_color_external (c: POINTER; cyan: REAL; magenta: REAL; yellow: REAL; black: REAL; alpha: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGContextSetCMYKStrokeColor"
 		end
 
-	cgcontext_set_cmykstroke_color_address_external: POINTER is
+	frozencgcontext_set_cmykstroke_color_address_external: POINTER is
 			-- Address of C function `CGContextSetCMYKStrokeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) CGContextSetCMYKStrokeColor"
 		end
 
-	cgcontext_set_rendering_intent_external (c: POINTER; intent: INTEGER) is
+	frozen cgcontext_set_rendering_intent_external (c: POINTER; intent: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGColorRenderingIntent)"
 		alias
 			"ewg_function_macro_CGContextSetRenderingIntent"
 		end
 
-	cgcontext_set_rendering_intent_address_external: POINTER is
+	frozencgcontext_set_rendering_intent_address_external: POINTER is
 			-- Address of C function `CGContextSetRenderingIntent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) CGContextSetRenderingIntent"
 		end
 
-	cgcontext_draw_image_external (c: POINTER; rect: POINTER; image: POINTER) is
+	frozen cgcontext_draw_image_external (c: POINTER; rect: POINTER; image: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*, CGImageRef)"
 		alias
 			"ewg_function_macro_CGContextDrawImage"
 		end
 
-	cgcontext_draw_image_address_external: POINTER is
+	frozencgcontext_draw_image_address_external: POINTER is
 			-- Address of C function `CGContextDrawImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) CGContextDrawImage"
 		end
 
-	cgcontext_get_interpolation_quality_external (c: POINTER): INTEGER is
+	frozen cgcontext_get_interpolation_quality_external (c: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGInterpolationQuality"
 		alias
 			"ewg_function_macro_CGContextGetInterpolationQuality"
 		end
 
-	cgcontext_get_interpolation_quality_address_external: POINTER is
+	frozencgcontext_get_interpolation_quality_address_external: POINTER is
 			-- Address of C function `CGContextGetInterpolationQuality'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) CGContextGetInterpolationQuality"
 		end
 
-	cgcontext_set_interpolation_quality_external (c: POINTER; quality: INTEGER) is
+	frozen cgcontext_set_interpolation_quality_external (c: POINTER; quality: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGInterpolationQuality)"
 		alias
 			"ewg_function_macro_CGContextSetInterpolationQuality"
 		end
 
-	cgcontext_set_interpolation_quality_address_external: POINTER is
+	frozencgcontext_set_interpolation_quality_address_external: POINTER is
 			-- Address of C function `CGContextSetInterpolationQuality'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) CGContextSetInterpolationQuality"
 		end
 
-	cgcontext_set_shadow_with_color_external (context: POINTER; offset: POINTER; blur: REAL; color: POINTER) is
+	frozen cgcontext_set_shadow_with_color_external (context: POINTER; offset: POINTER; blur: REAL; color: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGSize*, float, CGColorRef)"
 		alias
 			"ewg_function_macro_CGContextSetShadowWithColor"
 		end
 
-	cgcontext_set_shadow_with_color_address_external: POINTER is
+	frozencgcontext_set_shadow_with_color_address_external: POINTER is
 			-- Address of C function `CGContextSetShadowWithColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) CGContextSetShadowWithColor"
 		end
 
-	cgcontext_set_shadow_external (context: POINTER; offset: POINTER; blur: REAL) is
+	frozen cgcontext_set_shadow_external (context: POINTER; offset: POINTER; blur: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGSize*, float)"
 		alias
 			"ewg_function_macro_CGContextSetShadow"
 		end
 
-	cgcontext_set_shadow_address_external: POINTER is
+	frozencgcontext_set_shadow_address_external: POINTER is
 			-- Address of C function `CGContextSetShadow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) CGContextSetShadow"
 		end
 
-	cgcontext_draw_shading_external (c: POINTER; shading: POINTER) is
+	frozen cgcontext_draw_shading_external (c: POINTER; shading: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGShadingRef)"
 		alias
 			"ewg_function_macro_CGContextDrawShading"
 		end
 
-	cgcontext_draw_shading_address_external: POINTER is
+	frozencgcontext_draw_shading_address_external: POINTER is
 			-- Address of C function `CGContextDrawShading'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) CGContextDrawShading"
 		end
 
-	cgcontext_set_character_spacing_external (c: POINTER; spacing: REAL) is
+	frozen cgcontext_set_character_spacing_external (c: POINTER; spacing: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float)"
 		alias
 			"ewg_function_macro_CGContextSetCharacterSpacing"
 		end
 
-	cgcontext_set_character_spacing_address_external: POINTER is
+	frozencgcontext_set_character_spacing_address_external: POINTER is
 			-- Address of C function `CGContextSetCharacterSpacing'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) CGContextSetCharacterSpacing"
 		end
 
-	cgcontext_set_text_position_external (c: POINTER; x: REAL; y: REAL) is
+	frozen cgcontext_set_text_position_external (c: POINTER; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float)"
 		alias
 			"ewg_function_macro_CGContextSetTextPosition"
 		end
 
-	cgcontext_set_text_position_address_external: POINTER is
+	frozencgcontext_set_text_position_address_external: POINTER is
 			-- Address of C function `CGContextSetTextPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) CGContextSetTextPosition"
 		end
 
-	cgcontext_get_text_position_external (c: POINTER): POINTER is
+	frozen cgcontext_get_text_position_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGPoint*"
 		alias
 			"ewg_function_CGContextGetTextPosition"
 		end
 
-	cgcontext_get_text_position_address_external: POINTER is
+	frozencgcontext_get_text_position_address_external: POINTER is
 			-- Address of C function `CGContextGetTextPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) CGContextGetTextPosition"
 		end
 
-	cgcontext_set_text_matrix_external (c: POINTER; t: POINTER) is
+	frozen cgcontext_set_text_matrix_external (c: POINTER; t: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGAffineTransform*)"
 		alias
 			"ewg_function_macro_CGContextSetTextMatrix"
 		end
 
-	cgcontext_set_text_matrix_address_external: POINTER is
+	frozencgcontext_set_text_matrix_address_external: POINTER is
 			-- Address of C function `CGContextSetTextMatrix'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1173,14 +1173,14 @@ feature
 			"(void*) CGContextSetTextMatrix"
 		end
 
-	cgcontext_get_text_matrix_external (c: POINTER): POINTER is
+	frozen cgcontext_get_text_matrix_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGAffineTransform*"
 		alias
 			"ewg_function_CGContextGetTextMatrix"
 		end
 
-	cgcontext_get_text_matrix_address_external: POINTER is
+	frozencgcontext_get_text_matrix_address_external: POINTER is
 			-- Address of C function `CGContextGetTextMatrix'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1188,14 +1188,14 @@ feature
 			"(void*) CGContextGetTextMatrix"
 		end
 
-	cgcontext_set_text_drawing_mode_external (c: POINTER; mode: INTEGER) is
+	frozen cgcontext_set_text_drawing_mode_external (c: POINTER; mode: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGTextDrawingMode)"
 		alias
 			"ewg_function_macro_CGContextSetTextDrawingMode"
 		end
 
-	cgcontext_set_text_drawing_mode_address_external: POINTER is
+	frozencgcontext_set_text_drawing_mode_address_external: POINTER is
 			-- Address of C function `CGContextSetTextDrawingMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1203,14 +1203,14 @@ feature
 			"(void*) CGContextSetTextDrawingMode"
 		end
 
-	cgcontext_set_font_external (c: POINTER; font: POINTER) is
+	frozen cgcontext_set_font_external (c: POINTER; font: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGFontRef)"
 		alias
 			"ewg_function_macro_CGContextSetFont"
 		end
 
-	cgcontext_set_font_address_external: POINTER is
+	frozencgcontext_set_font_address_external: POINTER is
 			-- Address of C function `CGContextSetFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1218,14 +1218,14 @@ feature
 			"(void*) CGContextSetFont"
 		end
 
-	cgcontext_set_font_size_external (c: POINTER; size: REAL) is
+	frozen cgcontext_set_font_size_external (c: POINTER; size: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float)"
 		alias
 			"ewg_function_macro_CGContextSetFontSize"
 		end
 
-	cgcontext_set_font_size_address_external: POINTER is
+	frozencgcontext_set_font_size_address_external: POINTER is
 			-- Address of C function `CGContextSetFontSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1233,14 +1233,14 @@ feature
 			"(void*) CGContextSetFontSize"
 		end
 
-	cgcontext_select_font_external (c: POINTER; name: POINTER; size: REAL; textencoding: INTEGER) is
+	frozen cgcontext_select_font_external (c: POINTER; name: POINTER; size: REAL; textencoding: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, char const*, float, CGTextEncoding)"
 		alias
 			"ewg_function_macro_CGContextSelectFont"
 		end
 
-	cgcontext_select_font_address_external: POINTER is
+	frozencgcontext_select_font_address_external: POINTER is
 			-- Address of C function `CGContextSelectFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1248,14 +1248,14 @@ feature
 			"(void*) CGContextSelectFont"
 		end
 
-	cgcontext_show_text_external (c: POINTER; a_string: POINTER; length: INTEGER) is
+	frozen cgcontext_show_text_external (c: POINTER; a_string: POINTER; length: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, char const*, size_t)"
 		alias
 			"ewg_function_macro_CGContextShowText"
 		end
 
-	cgcontext_show_text_address_external: POINTER is
+	frozencgcontext_show_text_address_external: POINTER is
 			-- Address of C function `CGContextShowText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1263,14 +1263,14 @@ feature
 			"(void*) CGContextShowText"
 		end
 
-	cgcontext_show_glyphs_external (c: POINTER; g: POINTER; count: INTEGER) is
+	frozen cgcontext_show_glyphs_external (c: POINTER; g: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextShowGlyphs"
 		end
 
-	cgcontext_show_glyphs_address_external: POINTER is
+	frozencgcontext_show_glyphs_address_external: POINTER is
 			-- Address of C function `CGContextShowGlyphs'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1278,14 +1278,14 @@ feature
 			"(void*) CGContextShowGlyphs"
 		end
 
-	cgcontext_show_glyphs_with_advances_external (c: POINTER; glyphs: POINTER; advances: POINTER; count: INTEGER) is
+	frozen cgcontext_show_glyphs_with_advances_external (c: POINTER; glyphs: POINTER; advances: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, void*, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextShowGlyphsWithAdvances"
 		end
 
-	cgcontext_show_glyphs_with_advances_address_external: POINTER is
+	frozencgcontext_show_glyphs_with_advances_address_external: POINTER is
 			-- Address of C function `CGContextShowGlyphsWithAdvances'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1293,14 +1293,14 @@ feature
 			"(void*) CGContextShowGlyphsWithAdvances"
 		end
 
-	cgcontext_show_text_at_point_external (c: POINTER; x: REAL; y: REAL; a_string: POINTER; length: INTEGER) is
+	frozen cgcontext_show_text_at_point_external (c: POINTER; x: REAL; y: REAL; a_string: POINTER; length: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, char const*, size_t)"
 		alias
 			"ewg_function_macro_CGContextShowTextAtPoint"
 		end
 
-	cgcontext_show_text_at_point_address_external: POINTER is
+	frozencgcontext_show_text_at_point_address_external: POINTER is
 			-- Address of C function `CGContextShowTextAtPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1308,14 +1308,14 @@ feature
 			"(void*) CGContextShowTextAtPoint"
 		end
 
-	cgcontext_show_glyphs_at_point_external (c: POINTER; x: REAL; y: REAL; glyphs: POINTER; count: INTEGER) is
+	frozen cgcontext_show_glyphs_at_point_external (c: POINTER; x: REAL; y: REAL; glyphs: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, float, float, void*, size_t)"
 		alias
 			"ewg_function_macro_CGContextShowGlyphsAtPoint"
 		end
 
-	cgcontext_show_glyphs_at_point_address_external: POINTER is
+	frozencgcontext_show_glyphs_at_point_address_external: POINTER is
 			-- Address of C function `CGContextShowGlyphsAtPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1323,14 +1323,14 @@ feature
 			"(void*) CGContextShowGlyphsAtPoint"
 		end
 
-	cgcontext_draw_pdfpage_external (c: POINTER; page: POINTER) is
+	frozen cgcontext_draw_pdfpage_external (c: POINTER; page: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPDFPageRef)"
 		alias
 			"ewg_function_macro_CGContextDrawPDFPage"
 		end
 
-	cgcontext_draw_pdfpage_address_external: POINTER is
+	frozencgcontext_draw_pdfpage_address_external: POINTER is
 			-- Address of C function `CGContextDrawPDFPage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1338,14 +1338,14 @@ feature
 			"(void*) CGContextDrawPDFPage"
 		end
 
-	cgcontext_draw_pdfdocument_external (c: POINTER; rect: POINTER; document: POINTER; page: INTEGER) is
+	frozen cgcontext_draw_pdfdocument_external (c: POINTER; rect: POINTER; document: POINTER; page: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*, CGPDFDocumentRef, int)"
 		alias
 			"ewg_function_macro_CGContextDrawPDFDocument"
 		end
 
-	cgcontext_draw_pdfdocument_address_external: POINTER is
+	frozencgcontext_draw_pdfdocument_address_external: POINTER is
 			-- Address of C function `CGContextDrawPDFDocument'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1353,14 +1353,14 @@ feature
 			"(void*) CGContextDrawPDFDocument"
 		end
 
-	cgcontext_begin_page_external (c: POINTER; mediabox: POINTER) is
+	frozen cgcontext_begin_page_external (c: POINTER; mediabox: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect const*)"
 		alias
 			"ewg_function_macro_CGContextBeginPage"
 		end
 
-	cgcontext_begin_page_address_external: POINTER is
+	frozencgcontext_begin_page_address_external: POINTER is
 			-- Address of C function `CGContextBeginPage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1368,14 +1368,14 @@ feature
 			"(void*) CGContextBeginPage"
 		end
 
-	cgcontext_end_page_external (c: POINTER) is
+	frozen cgcontext_end_page_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextEndPage"
 		end
 
-	cgcontext_end_page_address_external: POINTER is
+	frozencgcontext_end_page_address_external: POINTER is
 			-- Address of C function `CGContextEndPage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1383,14 +1383,14 @@ feature
 			"(void*) CGContextEndPage"
 		end
 
-	cgcontext_retain_external (c: POINTER): POINTER is
+	frozen cgcontext_retain_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGContextRef"
 		alias
 			"ewg_function_macro_CGContextRetain"
 		end
 
-	cgcontext_retain_address_external: POINTER is
+	frozencgcontext_retain_address_external: POINTER is
 			-- Address of C function `CGContextRetain'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1398,14 +1398,14 @@ feature
 			"(void*) CGContextRetain"
 		end
 
-	cgcontext_release_external (c: POINTER) is
+	frozen cgcontext_release_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextRelease"
 		end
 
-	cgcontext_release_address_external: POINTER is
+	frozencgcontext_release_address_external: POINTER is
 			-- Address of C function `CGContextRelease'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1413,14 +1413,14 @@ feature
 			"(void*) CGContextRelease"
 		end
 
-	cgcontext_flush_external (c: POINTER) is
+	frozen cgcontext_flush_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextFlush"
 		end
 
-	cgcontext_flush_address_external: POINTER is
+	frozencgcontext_flush_address_external: POINTER is
 			-- Address of C function `CGContextFlush'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1428,14 +1428,14 @@ feature
 			"(void*) CGContextFlush"
 		end
 
-	cgcontext_synchronize_external (c: POINTER) is
+	frozen cgcontext_synchronize_external (c: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextSynchronize"
 		end
 
-	cgcontext_synchronize_address_external: POINTER is
+	frozencgcontext_synchronize_address_external: POINTER is
 			-- Address of C function `CGContextSynchronize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1443,14 +1443,14 @@ feature
 			"(void*) CGContextSynchronize"
 		end
 
-	cgcontext_set_should_antialias_external (c: POINTER; shouldantialias: INTEGER) is
+	frozen cgcontext_set_should_antialias_external (c: POINTER; shouldantialias: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, _Bool)"
 		alias
 			"ewg_function_macro_CGContextSetShouldAntialias"
 		end
 
-	cgcontext_set_should_antialias_address_external: POINTER is
+	frozencgcontext_set_should_antialias_address_external: POINTER is
 			-- Address of C function `CGContextSetShouldAntialias'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1458,14 +1458,14 @@ feature
 			"(void*) CGContextSetShouldAntialias"
 		end
 
-	cgcontext_set_allows_antialiasing_external (context: POINTER; allowsantialiasing: INTEGER) is
+	frozen cgcontext_set_allows_antialiasing_external (context: POINTER; allowsantialiasing: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, _Bool)"
 		alias
 			"ewg_function_macro_CGContextSetAllowsAntialiasing"
 		end
 
-	cgcontext_set_allows_antialiasing_address_external: POINTER is
+	frozencgcontext_set_allows_antialiasing_address_external: POINTER is
 			-- Address of C function `CGContextSetAllowsAntialiasing'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1473,14 +1473,14 @@ feature
 			"(void*) CGContextSetAllowsAntialiasing"
 		end
 
-	cgcontext_set_should_smooth_fonts_external (c: POINTER; shouldsmoothfonts: INTEGER) is
+	frozen cgcontext_set_should_smooth_fonts_external (c: POINTER; shouldsmoothfonts: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, _Bool)"
 		alias
 			"ewg_function_macro_CGContextSetShouldSmoothFonts"
 		end
 
-	cgcontext_set_should_smooth_fonts_address_external: POINTER is
+	frozencgcontext_set_should_smooth_fonts_address_external: POINTER is
 			-- Address of C function `CGContextSetShouldSmoothFonts'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1488,14 +1488,14 @@ feature
 			"(void*) CGContextSetShouldSmoothFonts"
 		end
 
-	cgcontext_begin_transparency_layer_external (context: POINTER; auxiliaryinfo: POINTER) is
+	frozen cgcontext_begin_transparency_layer_external (context: POINTER; auxiliaryinfo: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CFDictionaryRef)"
 		alias
 			"ewg_function_macro_CGContextBeginTransparencyLayer"
 		end
 
-	cgcontext_begin_transparency_layer_address_external: POINTER is
+	frozencgcontext_begin_transparency_layer_address_external: POINTER is
 			-- Address of C function `CGContextBeginTransparencyLayer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1503,14 +1503,14 @@ feature
 			"(void*) CGContextBeginTransparencyLayer"
 		end
 
-	cgcontext_end_transparency_layer_external (context: POINTER) is
+	frozen cgcontext_end_transparency_layer_external (context: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef)"
 		alias
 			"ewg_function_macro_CGContextEndTransparencyLayer"
 		end
 
-	cgcontext_end_transparency_layer_address_external: POINTER is
+	frozencgcontext_end_transparency_layer_address_external: POINTER is
 			-- Address of C function `CGContextEndTransparencyLayer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1518,14 +1518,14 @@ feature
 			"(void*) CGContextEndTransparencyLayer"
 		end
 
-	cgcontext_get_user_space_to_device_space_transform_external (c: POINTER): POINTER is
+	frozen cgcontext_get_user_space_to_device_space_transform_external (c: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef):CGAffineTransform*"
 		alias
 			"ewg_function_CGContextGetUserSpaceToDeviceSpaceTransform"
 		end
 
-	cgcontext_get_user_space_to_device_space_transform_address_external: POINTER is
+	frozencgcontext_get_user_space_to_device_space_transform_address_external: POINTER is
 			-- Address of C function `CGContextGetUserSpaceToDeviceSpaceTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1533,14 +1533,14 @@ feature
 			"(void*) CGContextGetUserSpaceToDeviceSpaceTransform"
 		end
 
-	cgcontext_convert_point_to_device_space_external (c: POINTER; point: POINTER): POINTER is
+	frozen cgcontext_convert_point_to_device_space_external (c: POINTER; point: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPoint*):CGPoint*"
 		alias
 			"ewg_function_CGContextConvertPointToDeviceSpace"
 		end
 
-	cgcontext_convert_point_to_device_space_address_external: POINTER is
+	frozencgcontext_convert_point_to_device_space_address_external: POINTER is
 			-- Address of C function `CGContextConvertPointToDeviceSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1548,14 +1548,14 @@ feature
 			"(void*) CGContextConvertPointToDeviceSpace"
 		end
 
-	cgcontext_convert_point_to_user_space_external (c: POINTER; point: POINTER): POINTER is
+	frozen cgcontext_convert_point_to_user_space_external (c: POINTER; point: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGPoint*):CGPoint*"
 		alias
 			"ewg_function_CGContextConvertPointToUserSpace"
 		end
 
-	cgcontext_convert_point_to_user_space_address_external: POINTER is
+	frozencgcontext_convert_point_to_user_space_address_external: POINTER is
 			-- Address of C function `CGContextConvertPointToUserSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1563,14 +1563,14 @@ feature
 			"(void*) CGContextConvertPointToUserSpace"
 		end
 
-	cgcontext_convert_size_to_device_space_external (c: POINTER; size: POINTER): POINTER is
+	frozen cgcontext_convert_size_to_device_space_external (c: POINTER; size: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGSize*):CGSize*"
 		alias
 			"ewg_function_CGContextConvertSizeToDeviceSpace"
 		end
 
-	cgcontext_convert_size_to_device_space_address_external: POINTER is
+	frozencgcontext_convert_size_to_device_space_address_external: POINTER is
 			-- Address of C function `CGContextConvertSizeToDeviceSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1578,14 +1578,14 @@ feature
 			"(void*) CGContextConvertSizeToDeviceSpace"
 		end
 
-	cgcontext_convert_size_to_user_space_external (c: POINTER; size: POINTER): POINTER is
+	frozen cgcontext_convert_size_to_user_space_external (c: POINTER; size: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGSize*):CGSize*"
 		alias
 			"ewg_function_CGContextConvertSizeToUserSpace"
 		end
 
-	cgcontext_convert_size_to_user_space_address_external: POINTER is
+	frozencgcontext_convert_size_to_user_space_address_external: POINTER is
 			-- Address of C function `CGContextConvertSizeToUserSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1593,14 +1593,14 @@ feature
 			"(void*) CGContextConvertSizeToUserSpace"
 		end
 
-	cgcontext_convert_rect_to_device_space_external (c: POINTER; rect: POINTER): POINTER is
+	frozen cgcontext_convert_rect_to_device_space_external (c: POINTER; rect: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*):CGRect*"
 		alias
 			"ewg_function_CGContextConvertRectToDeviceSpace"
 		end
 
-	cgcontext_convert_rect_to_device_space_address_external: POINTER is
+	frozencgcontext_convert_rect_to_device_space_address_external: POINTER is
 			-- Address of C function `CGContextConvertRectToDeviceSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1608,14 +1608,14 @@ feature
 			"(void*) CGContextConvertRectToDeviceSpace"
 		end
 
-	cgcontext_convert_rect_to_user_space_external (c: POINTER; rect: POINTER): POINTER is
+	frozen cgcontext_convert_rect_to_user_space_external (c: POINTER; rect: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, CGRect*):CGRect*"
 		alias
 			"ewg_function_CGContextConvertRectToUserSpace"
 		end
 
-	cgcontext_convert_rect_to_user_space_address_external: POINTER is
+	frozencgcontext_convert_rect_to_user_space_address_external: POINTER is
 			-- Address of C function `CGContextConvertRectToUserSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

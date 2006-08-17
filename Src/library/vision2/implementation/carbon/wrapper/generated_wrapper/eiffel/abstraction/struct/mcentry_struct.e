@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_mctid: INTEGER is
-		obsolete "Use `mctid' instead."
-			-- Access member `mctID'
-		require
-			exists: exists
-		do
-			Result := get_mctid_external (item)
-		ensure
-			result_correct: Result = get_mctid_external (item)
-		end
 
 	mctid: INTEGER is
 			-- Access member `mctID'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_mctid_external (item, a_value)
 		ensure
 			a_value_set: a_value = mctid
-		end
-
-	get_mctitem: INTEGER is
-		obsolete "Use `mctitem' instead."
-			-- Access member `mctItem'
-		require
-			exists: exists
-		do
-			Result := get_mctitem_external (item)
-		ensure
-			result_correct: Result = get_mctitem_external (item)
 		end
 
 	mctitem: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = mctitem
 		end
 
-	get_mctrgb1: POINTER is
-		obsolete "Use `mctrgb1' instead."
-			-- Access member `mctRGB1'
-		require
-			exists: exists
-		do
-			Result := get_mctrgb1_external (item)
-		ensure
-			result_correct: Result = get_mctrgb1_external (item)
-		end
-
 	mctrgb1: POINTER is
 			-- Access member `mctRGB1'
 		require
@@ -116,17 +83,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_mctrgb1_external (item, a_value)
-		end
-
-	get_mctrgb2: POINTER is
-		obsolete "Use `mctrgb2' instead."
-			-- Access member `mctRGB2'
-		require
-			exists: exists
-		do
-			Result := get_mctrgb2_external (item)
-		ensure
-			result_correct: Result = get_mctrgb2_external (item)
 		end
 
 	mctrgb2: POINTER is
@@ -147,17 +103,6 @@ feature {ANY} -- Member Access
 			set_mctrgb2_external (item, a_value)
 		end
 
-	get_mctrgb3: POINTER is
-		obsolete "Use `mctrgb3' instead."
-			-- Access member `mctRGB3'
-		require
-			exists: exists
-		do
-			Result := get_mctrgb3_external (item)
-		ensure
-			result_correct: Result = get_mctrgb3_external (item)
-		end
-
 	mctrgb3: POINTER is
 			-- Access member `mctRGB3'
 		require
@@ -176,17 +121,6 @@ feature {ANY} -- Member Access
 			set_mctrgb3_external (item, a_value)
 		end
 
-	get_mctrgb4: POINTER is
-		obsolete "Use `mctrgb4' instead."
-			-- Access member `mctRGB4'
-		require
-			exists: exists
-		do
-			Result := get_mctrgb4_external (item)
-		ensure
-			result_correct: Result = get_mctrgb4_external (item)
-		end
-
 	mctrgb4: POINTER is
 			-- Access member `mctRGB4'
 		require
@@ -203,17 +137,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_mctrgb4_external (item, a_value)
-		end
-
-	get_mctreserved: INTEGER is
-		obsolete "Use `mctreserved' instead."
-			-- Access member `mctReserved'
-		require
-			exists: exists
-		do
-			Result := get_mctreserved_external (item)
-		ensure
-			result_correct: Result = get_mctreserved_external (item)
 		end
 
 	mctreserved: INTEGER is

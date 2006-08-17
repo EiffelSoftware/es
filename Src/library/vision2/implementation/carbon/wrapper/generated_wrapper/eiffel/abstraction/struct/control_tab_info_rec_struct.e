@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_version: INTEGER is
-		obsolete "Use `version' instead."
-			-- Access member `version'
-		require
-			exists: exists
-		do
-			Result := get_version_external (item)
-		ensure
-			result_correct: Result = get_version_external (item)
-		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = version
 		end
 
-	get_iconsuiteid: INTEGER is
-		obsolete "Use `iconsuiteid' instead."
-			-- Access member `iconSuiteID'
-		require
-			exists: exists
-		do
-			Result := get_iconsuiteid_external (item)
-		ensure
-			result_correct: Result = get_iconsuiteid_external (item)
-		end
-
 	iconsuiteid: INTEGER is
 			-- Access member `iconSuiteID'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_iconsuiteid_external (item, a_value)
 		ensure
 			a_value_set: a_value = iconsuiteid
-		end
-
-	get_name: POINTER is
-		obsolete "Use `name' instead."
-			-- Access member `name'
-		require
-			exists: exists
-		do
-			Result := get_name_external (item)
-		ensure
-			result_correct: Result = get_name_external (item)
 		end
 
 	name: POINTER is

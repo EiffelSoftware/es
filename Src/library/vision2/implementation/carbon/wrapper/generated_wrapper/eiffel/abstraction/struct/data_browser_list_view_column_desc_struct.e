@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_propertydesc: POINTER is
-		obsolete "Use `propertydesc' instead."
-			-- Access member `propertyDesc'
-		require
-			exists: exists
-		do
-			Result := get_propertydesc_external (item)
-		ensure
-			result_correct: Result = get_propertydesc_external (item)
-		end
 
 	propertydesc: POINTER is
 			-- Access member `propertyDesc'
@@ -54,17 +43,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_propertydesc_external (item, a_value)
-		end
-
-	get_headerbtndesc: POINTER is
-		obsolete "Use `headerbtndesc' instead."
-			-- Access member `headerBtnDesc'
-		require
-			exists: exists
-		do
-			Result := get_headerbtndesc_external (item)
-		ensure
-			result_correct: Result = get_headerbtndesc_external (item)
 		end
 
 	headerbtndesc: POINTER is

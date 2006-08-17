@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_deftype: INTEGER is
-		obsolete "Use `deftype' instead."
-			-- Access member `defType'
-		require
-			exists: exists
-		do
-			Result := get_deftype_external (item)
-		ensure
-			result_correct: Result = get_deftype_external (item)
-		end
 
 	deftype: INTEGER is
 			-- Access member `defType'

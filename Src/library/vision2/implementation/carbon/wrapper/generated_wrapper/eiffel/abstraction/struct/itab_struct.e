@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_itabseed: INTEGER is
-		obsolete "Use `itabseed' instead."
-			-- Access member `iTabSeed'
-		require
-			exists: exists
-		do
-			Result := get_itabseed_external (item)
-		ensure
-			result_correct: Result = get_itabseed_external (item)
-		end
 
 	itabseed: INTEGER is
 			-- Access member `iTabSeed'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = itabseed
 		end
 
-	get_itabres: INTEGER is
-		obsolete "Use `itabres' instead."
-			-- Access member `iTabRes'
-		require
-			exists: exists
-		do
-			Result := get_itabres_external (item)
-		ensure
-			result_correct: Result = get_itabres_external (item)
-		end
-
 	itabres: INTEGER is
 			-- Access member `iTabRes'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_itabres_external (item, a_value)
 		ensure
 			a_value_set: a_value = itabres
-		end
-
-	get_ittable: POINTER is
-		obsolete "Use `ittable' instead."
-			-- Access member `iTTable'
-		require
-			exists: exists
-		do
-			Result := get_ittable_external (item)
-		ensure
-			result_correct: Result = get_ittable_external (item)
 		end
 
 	ittable: POINTER is

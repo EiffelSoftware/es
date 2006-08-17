@@ -3,14 +3,14 @@
 class CGIMAGE_FUNCTIONS_EXTERNAL
 
 feature
-	cgimage_get_type_id_external: INTEGER is
+	frozen cgimage_get_type_id_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :CFTypeID"
 		alias
 			"ewg_function_macro_CGImageGetTypeID"
 		end
 
-	cgimage_get_type_id_address_external: POINTER is
+	frozencgimage_get_type_id_address_external: POINTER is
 			-- Address of C function `CGImageGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) CGImageGetTypeID"
 		end
 
-	cgimage_create_external (width: INTEGER; height: INTEGER; bitspercomponent: INTEGER; bitsperpixel: INTEGER; bytesperrow: INTEGER; colorspace: POINTER; bitmapinfo: INTEGER; provider: POINTER; decode: POINTER; shouldinterpolate: INTEGER; intent: INTEGER): POINTER is
+	frozen cgimage_create_external (width: INTEGER; height: INTEGER; bitspercomponent: INTEGER; bitsperpixel: INTEGER; bytesperrow: INTEGER; colorspace: POINTER; bitmapinfo: INTEGER; provider: POINTER; decode: POINTER; shouldinterpolate: INTEGER; intent: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (size_t, size_t, size_t, size_t, size_t, CGColorSpaceRef, CGBitmapInfo, CGDataProviderRef, void*, _Bool, CGColorRenderingIntent):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreate"
 		end
 
-	cgimage_create_address_external: POINTER is
+	frozencgimage_create_address_external: POINTER is
 			-- Address of C function `CGImageCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) CGImageCreate"
 		end
 
-	cgimage_mask_create_external (width: INTEGER; height: INTEGER; bitspercomponent: INTEGER; bitsperpixel: INTEGER; bytesperrow: INTEGER; provider: POINTER; decode: POINTER; shouldinterpolate: INTEGER): POINTER is
+	frozen cgimage_mask_create_external (width: INTEGER; height: INTEGER; bitspercomponent: INTEGER; bitsperpixel: INTEGER; bytesperrow: INTEGER; provider: POINTER; decode: POINTER; shouldinterpolate: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (size_t, size_t, size_t, size_t, size_t, CGDataProviderRef, void*, _Bool):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageMaskCreate"
 		end
 
-	cgimage_mask_create_address_external: POINTER is
+	frozencgimage_mask_create_address_external: POINTER is
 			-- Address of C function `CGImageMaskCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) CGImageMaskCreate"
 		end
 
-	cgimage_create_copy_external (image: POINTER): POINTER is
+	frozen cgimage_create_copy_external (image: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreateCopy"
 		end
 
-	cgimage_create_copy_address_external: POINTER is
+	frozencgimage_create_copy_address_external: POINTER is
 			-- Address of C function `CGImageCreateCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) CGImageCreateCopy"
 		end
 
-	cgimage_create_with_jpegdata_provider_external (source: POINTER; decode: POINTER; shouldinterpolate: INTEGER; intent: INTEGER): POINTER is
+	frozen cgimage_create_with_jpegdata_provider_external (source: POINTER; decode: POINTER; shouldinterpolate: INTEGER; intent: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGDataProviderRef, void*, _Bool, CGColorRenderingIntent):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreateWithJPEGDataProvider"
 		end
 
-	cgimage_create_with_jpegdata_provider_address_external: POINTER is
+	frozencgimage_create_with_jpegdata_provider_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithJPEGDataProvider'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) CGImageCreateWithJPEGDataProvider"
 		end
 
-	cgimage_create_with_pngdata_provider_external (source: POINTER; decode: POINTER; shouldinterpolate: INTEGER; intent: INTEGER): POINTER is
+	frozen cgimage_create_with_pngdata_provider_external (source: POINTER; decode: POINTER; shouldinterpolate: INTEGER; intent: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGDataProviderRef, void*, _Bool, CGColorRenderingIntent):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreateWithPNGDataProvider"
 		end
 
-	cgimage_create_with_pngdata_provider_address_external: POINTER is
+	frozencgimage_create_with_pngdata_provider_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithPNGDataProvider'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) CGImageCreateWithPNGDataProvider"
 		end
 
-	cgimage_create_with_image_in_rect_external (image: POINTER; rect: POINTER): POINTER is
+	frozen cgimage_create_with_image_in_rect_external (image: POINTER; rect: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef, CGRect*):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreateWithImageInRect"
 		end
 
-	cgimage_create_with_image_in_rect_address_external: POINTER is
+	frozencgimage_create_with_image_in_rect_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithImageInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) CGImageCreateWithImageInRect"
 		end
 
-	cgimage_create_with_mask_external (image: POINTER; mask: POINTER): POINTER is
+	frozen cgimage_create_with_mask_external (image: POINTER; mask: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef, CGImageRef):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreateWithMask"
 		end
 
-	cgimage_create_with_mask_address_external: POINTER is
+	frozencgimage_create_with_mask_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) CGImageCreateWithMask"
 		end
 
-	cgimage_create_with_masking_colors_external (image: POINTER; components: POINTER): POINTER is
+	frozen cgimage_create_with_masking_colors_external (image: POINTER; components: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef, void*):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreateWithMaskingColors"
 		end
 
-	cgimage_create_with_masking_colors_address_external: POINTER is
+	frozencgimage_create_with_masking_colors_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithMaskingColors'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) CGImageCreateWithMaskingColors"
 		end
 
-	cgimage_create_copy_with_color_space_external (image: POINTER; colorspace: POINTER): POINTER is
+	frozen cgimage_create_copy_with_color_space_external (image: POINTER; colorspace: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef, CGColorSpaceRef):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageCreateCopyWithColorSpace"
 		end
 
-	cgimage_create_copy_with_color_space_address_external: POINTER is
+	frozencgimage_create_copy_with_color_space_address_external: POINTER is
 			-- Address of C function `CGImageCreateCopyWithColorSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) CGImageCreateCopyWithColorSpace"
 		end
 
-	cgimage_retain_external (image: POINTER): POINTER is
+	frozen cgimage_retain_external (image: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):CGImageRef"
 		alias
 			"ewg_function_macro_CGImageRetain"
 		end
 
-	cgimage_retain_address_external: POINTER is
+	frozencgimage_retain_address_external: POINTER is
 			-- Address of C function `CGImageRetain'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CGImageRetain"
 		end
 
-	cgimage_release_external (image: POINTER) is
+	frozen cgimage_release_external (image: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef)"
 		alias
 			"ewg_function_macro_CGImageRelease"
 		end
 
-	cgimage_release_address_external: POINTER is
+	frozencgimage_release_address_external: POINTER is
 			-- Address of C function `CGImageRelease'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CGImageRelease"
 		end
 
-	cgimage_is_mask_external (image: POINTER): INTEGER is
+	frozen cgimage_is_mask_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):_Bool"
 		alias
 			"ewg_function_macro_CGImageIsMask"
 		end
 
-	cgimage_is_mask_address_external: POINTER is
+	frozencgimage_is_mask_address_external: POINTER is
 			-- Address of C function `CGImageIsMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) CGImageIsMask"
 		end
 
-	cgimage_get_width_external (image: POINTER): INTEGER is
+	frozen cgimage_get_width_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):size_t"
 		alias
 			"ewg_function_macro_CGImageGetWidth"
 		end
 
-	cgimage_get_width_address_external: POINTER is
+	frozencgimage_get_width_address_external: POINTER is
 			-- Address of C function `CGImageGetWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) CGImageGetWidth"
 		end
 
-	cgimage_get_height_external (image: POINTER): INTEGER is
+	frozen cgimage_get_height_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):size_t"
 		alias
 			"ewg_function_macro_CGImageGetHeight"
 		end
 
-	cgimage_get_height_address_external: POINTER is
+	frozencgimage_get_height_address_external: POINTER is
 			-- Address of C function `CGImageGetHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CGImageGetHeight"
 		end
 
-	cgimage_get_bits_per_component_external (image: POINTER): INTEGER is
+	frozen cgimage_get_bits_per_component_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):size_t"
 		alias
 			"ewg_function_macro_CGImageGetBitsPerComponent"
 		end
 
-	cgimage_get_bits_per_component_address_external: POINTER is
+	frozencgimage_get_bits_per_component_address_external: POINTER is
 			-- Address of C function `CGImageGetBitsPerComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) CGImageGetBitsPerComponent"
 		end
 
-	cgimage_get_bits_per_pixel_external (image: POINTER): INTEGER is
+	frozen cgimage_get_bits_per_pixel_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):size_t"
 		alias
 			"ewg_function_macro_CGImageGetBitsPerPixel"
 		end
 
-	cgimage_get_bits_per_pixel_address_external: POINTER is
+	frozencgimage_get_bits_per_pixel_address_external: POINTER is
 			-- Address of C function `CGImageGetBitsPerPixel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CGImageGetBitsPerPixel"
 		end
 
-	cgimage_get_bytes_per_row_external (image: POINTER): INTEGER is
+	frozen cgimage_get_bytes_per_row_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):size_t"
 		alias
 			"ewg_function_macro_CGImageGetBytesPerRow"
 		end
 
-	cgimage_get_bytes_per_row_address_external: POINTER is
+	frozencgimage_get_bytes_per_row_address_external: POINTER is
 			-- Address of C function `CGImageGetBytesPerRow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) CGImageGetBytesPerRow"
 		end
 
-	cgimage_get_color_space_external (image: POINTER): POINTER is
+	frozen cgimage_get_color_space_external (image: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):CGColorSpaceRef"
 		alias
 			"ewg_function_macro_CGImageGetColorSpace"
 		end
 
-	cgimage_get_color_space_address_external: POINTER is
+	frozencgimage_get_color_space_address_external: POINTER is
 			-- Address of C function `CGImageGetColorSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) CGImageGetColorSpace"
 		end
 
-	cgimage_get_alpha_info_external (image: POINTER): INTEGER is
+	frozen cgimage_get_alpha_info_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):CGImageAlphaInfo"
 		alias
 			"ewg_function_macro_CGImageGetAlphaInfo"
 		end
 
-	cgimage_get_alpha_info_address_external: POINTER is
+	frozencgimage_get_alpha_info_address_external: POINTER is
 			-- Address of C function `CGImageGetAlphaInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) CGImageGetAlphaInfo"
 		end
 
-	cgimage_get_data_provider_external (image: POINTER): POINTER is
+	frozen cgimage_get_data_provider_external (image: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):CGDataProviderRef"
 		alias
 			"ewg_function_macro_CGImageGetDataProvider"
 		end
 
-	cgimage_get_data_provider_address_external: POINTER is
+	frozencgimage_get_data_provider_address_external: POINTER is
 			-- Address of C function `CGImageGetDataProvider'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CGImageGetDataProvider"
 		end
 
-	cgimage_get_decode_external (image: POINTER): POINTER is
+	frozen cgimage_get_decode_external (image: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):float const*"
 		alias
 			"ewg_function_macro_CGImageGetDecode"
 		end
 
-	cgimage_get_decode_address_external: POINTER is
+	frozencgimage_get_decode_address_external: POINTER is
 			-- Address of C function `CGImageGetDecode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) CGImageGetDecode"
 		end
 
-	cgimage_get_should_interpolate_external (image: POINTER): INTEGER is
+	frozen cgimage_get_should_interpolate_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):_Bool"
 		alias
 			"ewg_function_macro_CGImageGetShouldInterpolate"
 		end
 
-	cgimage_get_should_interpolate_address_external: POINTER is
+	frozencgimage_get_should_interpolate_address_external: POINTER is
 			-- Address of C function `CGImageGetShouldInterpolate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) CGImageGetShouldInterpolate"
 		end
 
-	cgimage_get_rendering_intent_external (image: POINTER): INTEGER is
+	frozen cgimage_get_rendering_intent_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):CGColorRenderingIntent"
 		alias
 			"ewg_function_macro_CGImageGetRenderingIntent"
 		end
 
-	cgimage_get_rendering_intent_address_external: POINTER is
+	frozencgimage_get_rendering_intent_address_external: POINTER is
 			-- Address of C function `CGImageGetRenderingIntent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) CGImageGetRenderingIntent"
 		end
 
-	cgimage_get_bitmap_info_external (image: POINTER): INTEGER is
+	frozen cgimage_get_bitmap_info_external (image: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef):CGBitmapInfo"
 		alias
 			"ewg_function_macro_CGImageGetBitmapInfo"
 		end
 
-	cgimage_get_bitmap_info_address_external: POINTER is
+	frozencgimage_get_bitmap_info_address_external: POINTER is
 			-- Address of C function `CGImageGetBitmapInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

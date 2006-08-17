@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_x: POINTER is
-		obsolete "Use `x' instead."
-			-- Access member `x'
-		require
-			exists: exists
-		do
-			Result := get_x_external (item)
-		ensure
-			result_correct: Result = get_x_external (item)
-		end
 
 	x: POINTER is
 			-- Access member `x'
@@ -54,17 +43,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_x_external (item, a_value)
-		end
-
-	get_y: POINTER is
-		obsolete "Use `y' instead."
-			-- Access member `y'
-		require
-			exists: exists
-		do
-			Result := get_y_external (item)
-		ensure
-			result_correct: Result = get_y_external (item)
 		end
 
 	y: POINTER is

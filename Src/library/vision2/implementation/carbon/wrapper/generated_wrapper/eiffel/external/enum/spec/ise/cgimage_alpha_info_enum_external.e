@@ -9,56 +9,56 @@ feature {ANY}
 			Result := a_value = kcgimagealphanone or a_value = kcgimagealphapremultipliedlast or a_value = kcgimagealphapremultipliedfirst or a_value = kcgimagealphalast or a_value = kcgimagealphafirst or a_value = kcgimagealphanoneskiplast or a_value = kcgimagealphanoneskipfirst or a_value = kcgimagealphaonly
 		end
 
-	kcgimagealphanone: INTEGER is
+	 frozen kcgimagealphanone: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGImageAlphaNone"
 		end
 
-	kcgimagealphapremultipliedlast: INTEGER is
+	 frozen kcgimagealphapremultipliedlast: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGImageAlphaPremultipliedLast"
 		end
 
-	kcgimagealphapremultipliedfirst: INTEGER is
+	 frozen kcgimagealphapremultipliedfirst: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGImageAlphaPremultipliedFirst"
 		end
 
-	kcgimagealphalast: INTEGER is
+	 frozen kcgimagealphalast: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGImageAlphaLast"
 		end
 
-	kcgimagealphafirst: INTEGER is
+	 frozen kcgimagealphafirst: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGImageAlphaFirst"
 		end
 
-	kcgimagealphanoneskiplast: INTEGER is
+	 frozen kcgimagealphanoneskiplast: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGImageAlphaNoneSkipLast"
 		end
 
-	kcgimagealphanoneskipfirst: INTEGER is
+	 frozen kcgimagealphanoneskipfirst: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGImageAlphaNoneSkipFirst"
 		end
 
-	kcgimagealphaonly: INTEGER is
+	 frozen kcgimagealphaonly: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

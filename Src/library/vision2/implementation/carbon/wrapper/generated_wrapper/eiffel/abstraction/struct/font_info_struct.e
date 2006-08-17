@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_ascent: INTEGER is
-		obsolete "Use `ascent' instead."
-			-- Access member `ascent'
-		require
-			exists: exists
-		do
-			Result := get_ascent_external (item)
-		ensure
-			result_correct: Result = get_ascent_external (item)
-		end
 
 	ascent: INTEGER is
 			-- Access member `ascent'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_ascent_external (item, a_value)
 		ensure
 			a_value_set: a_value = ascent
-		end
-
-	get_descent: INTEGER is
-		obsolete "Use `descent' instead."
-			-- Access member `descent'
-		require
-			exists: exists
-		do
-			Result := get_descent_external (item)
-		ensure
-			result_correct: Result = get_descent_external (item)
 		end
 
 	descent: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = descent
 		end
 
-	get_widmax: INTEGER is
-		obsolete "Use `widmax' instead."
-			-- Access member `widMax'
-		require
-			exists: exists
-		do
-			Result := get_widmax_external (item)
-		ensure
-			result_correct: Result = get_widmax_external (item)
-		end
-
 	widmax: INTEGER is
 			-- Access member `widMax'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_widmax_external (item, a_value)
 		ensure
 			a_value_set: a_value = widmax
-		end
-
-	get_leading: INTEGER is
-		obsolete "Use `leading' instead."
-			-- Access member `leading'
-		require
-			exists: exists
-		do
-			Result := get_leading_external (item)
-		ensure
-			result_correct: Result = get_leading_external (item)
 		end
 
 	leading: INTEGER is

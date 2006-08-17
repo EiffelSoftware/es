@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_lasthmenu: INTEGER is
-		obsolete "Use `lasthmenu' instead."
-			-- Access member `lastHMenu'
-		require
-			exists: exists
-		do
-			Result := get_lasthmenu_external (item)
-		ensure
-			result_correct: Result = get_lasthmenu_external (item)
-		end
 
 	lasthmenu: INTEGER is
 			-- Access member `lastHMenu'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_lasthmenu_external (item, a_value)
 		ensure
 			a_value_set: a_value = lasthmenu
-		end
-
-	get_menutitlebits: POINTER is
-		obsolete "Use `menutitlebits' instead."
-			-- Access member `menuTitleBits'
-		require
-			exists: exists
-		do
-			Result := get_menutitlebits_external (item)
-		ensure
-			result_correct: Result = get_menutitlebits_external (item)
 		end
 
 	menutitlebits: POINTER is

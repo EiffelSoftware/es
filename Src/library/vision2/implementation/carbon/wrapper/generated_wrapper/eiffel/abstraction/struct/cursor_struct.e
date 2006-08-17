@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_data: POINTER is
-		obsolete "Use `data' instead."
-			-- Access member `data'
-		require
-			exists: exists
-		do
-			Result := get_data_external (item)
-		ensure
-			result_correct: Result = get_data_external (item)
-		end
 
 	data: POINTER is
 			-- Access member `data'
@@ -48,17 +37,6 @@ feature {ANY} -- Member Access
 			result_correct: Result = get_data_external (item)
 		end
 
-	get_mask: POINTER is
-		obsolete "Use `mask' instead."
-			-- Access member `mask'
-		require
-			exists: exists
-		do
-			Result := get_mask_external (item)
-		ensure
-			result_correct: Result = get_mask_external (item)
-		end
-
 	mask: POINTER is
 			-- Access member `mask'
 		require
@@ -67,17 +45,6 @@ feature {ANY} -- Member Access
 			Result := get_mask_external (item)
 		ensure
 			result_correct: Result = get_mask_external (item)
-		end
-
-	get_hotspot: POINTER is
-		obsolete "Use `hotspot' instead."
-			-- Access member `hotSpot'
-		require
-			exists: exists
-		do
-			Result := get_hotspot_external (item)
-		ensure
-			result_correct: Result = get_hotspot_external (item)
 		end
 
 	hotspot: POINTER is

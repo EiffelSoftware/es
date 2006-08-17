@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_hidden: POINTER is
-		obsolete "Use `hidden' instead."
-			-- Access member `hidden'
-		require
-			exists: exists
-		do
-			Result := get_hidden_external (item)
-		ensure
-			result_correct: Result = get_hidden_external (item)
-		end
 
 	hidden: POINTER is
 			-- Access member `hidden'

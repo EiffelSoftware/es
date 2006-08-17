@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_descriptortype: INTEGER is
-		obsolete "Use `descriptortype' instead."
-			-- Access member `descriptorType'
-		require
-			exists: exists
-		do
-			Result := get_descriptortype_external (item)
-		ensure
-			result_correct: Result = get_descriptortype_external (item)
-		end
 
 	descriptortype: INTEGER is
 			-- Access member `descriptorType'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_descriptortype_external (item, a_value)
 		ensure
 			a_value_set: a_value = descriptortype
-		end
-
-	get_datahandle: POINTER is
-		obsolete "Use `datahandle' instead."
-			-- Access member `dataHandle'
-		require
-			exists: exists
-		do
-			Result := get_datahandle_external (item)
-		ensure
-			result_correct: Result = get_datahandle_external (item)
 		end
 
 	datahandle: POINTER is

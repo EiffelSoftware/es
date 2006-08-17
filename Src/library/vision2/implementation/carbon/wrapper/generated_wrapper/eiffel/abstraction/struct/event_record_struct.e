@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_what: INTEGER is
-		obsolete "Use `what' instead."
-			-- Access member `what'
-		require
-			exists: exists
-		do
-			Result := get_what_external (item)
-		ensure
-			result_correct: Result = get_what_external (item)
-		end
 
 	what: INTEGER is
 			-- Access member `what'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_what_external (item, a_value)
 		ensure
 			a_value_set: a_value = what
-		end
-
-	get_message: INTEGER is
-		obsolete "Use `message' instead."
-			-- Access member `message'
-		require
-			exists: exists
-		do
-			Result := get_message_external (item)
-		ensure
-			result_correct: Result = get_message_external (item)
 		end
 
 	message: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = message
 		end
 
-	get_a_when: INTEGER is
-		obsolete "Use `a_when' instead."
-			-- Access member `when'
-		require
-			exists: exists
-		do
-			Result := get_a_when_external (item)
-		ensure
-			result_correct: Result = get_a_when_external (item)
-		end
-
 	a_when: INTEGER is
 			-- Access member `when'
 		require
@@ -120,17 +87,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = a_when
 		end
 
-	get_where: POINTER is
-		obsolete "Use `where' instead."
-			-- Access member `where'
-		require
-			exists: exists
-		do
-			Result := get_where_external (item)
-		ensure
-			result_correct: Result = get_where_external (item)
-		end
-
 	where: POINTER is
 			-- Access member `where'
 		require
@@ -147,17 +103,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_where_external (item, a_value)
-		end
-
-	get_modifiers: INTEGER is
-		obsolete "Use `modifiers' instead."
-			-- Access member `modifiers'
-		require
-			exists: exists
-		do
-			Result := get_modifiers_external (item)
-		ensure
-			result_correct: Result = get_modifiers_external (item)
 		end
 
 	modifiers: INTEGER is

@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_vendorid: INTEGER is
-		obsolete "Use `vendorid' instead."
-			-- Access member `vendorID'
-		require
-			exists: exists
-		do
-			Result := get_vendorid_external (item)
-		ensure
-			result_correct: Result = get_vendorid_external (item)
-		end
 
 	vendorid: INTEGER is
 			-- Access member `vendorID'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_vendorid_external (item, a_value)
 		ensure
 			a_value_set: a_value = vendorid
-		end
-
-	get_tabletid: INTEGER is
-		obsolete "Use `tabletid' instead."
-			-- Access member `tabletID'
-		require
-			exists: exists
-		do
-			Result := get_tabletid_external (item)
-		ensure
-			result_correct: Result = get_tabletid_external (item)
 		end
 
 	tabletid: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = tabletid
 		end
 
-	get_pointerid: INTEGER is
-		obsolete "Use `pointerid' instead."
-			-- Access member `pointerID'
-		require
-			exists: exists
-		do
-			Result := get_pointerid_external (item)
-		ensure
-			result_correct: Result = get_pointerid_external (item)
-		end
-
 	pointerid: INTEGER is
 			-- Access member `pointerID'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_pointerid_external (item, a_value)
 		ensure
 			a_value_set: a_value = pointerid
-		end
-
-	get_deviceid: INTEGER is
-		obsolete "Use `deviceid' instead."
-			-- Access member `deviceID'
-		require
-			exists: exists
-		do
-			Result := get_deviceid_external (item)
-		ensure
-			result_correct: Result = get_deviceid_external (item)
 		end
 
 	deviceid: INTEGER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = deviceid
 		end
 
-	get_systemtabletid: INTEGER is
-		obsolete "Use `systemtabletid' instead."
-			-- Access member `systemTabletID'
-		require
-			exists: exists
-		do
-			Result := get_systemtabletid_external (item)
-		ensure
-			result_correct: Result = get_systemtabletid_external (item)
-		end
-
 	systemtabletid: INTEGER is
 			-- Access member `systemTabletID'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_systemtabletid_external (item, a_value)
 		ensure
 			a_value_set: a_value = systemtabletid
-		end
-
-	get_vendorpointertype: INTEGER is
-		obsolete "Use `vendorpointertype' instead."
-			-- Access member `vendorPointerType'
-		require
-			exists: exists
-		do
-			Result := get_vendorpointertype_external (item)
-		ensure
-			result_correct: Result = get_vendorpointertype_external (item)
 		end
 
 	vendorpointertype: INTEGER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = vendorpointertype
 		end
 
-	get_pointerserialnumber: INTEGER is
-		obsolete "Use `pointerserialnumber' instead."
-			-- Access member `pointerSerialNumber'
-		require
-			exists: exists
-		do
-			Result := get_pointerserialnumber_external (item)
-		ensure
-			result_correct: Result = get_pointerserialnumber_external (item)
-		end
-
 	pointerserialnumber: INTEGER is
 			-- Access member `pointerSerialNumber'
 		require
@@ -242,17 +165,6 @@ feature {ANY} -- Member Access
 			set_pointerserialnumber_external (item, a_value)
 		ensure
 			a_value_set: a_value = pointerserialnumber
-		end
-
-	get_uniqueid: INTEGER is
-		obsolete "Use `uniqueid' instead."
-			-- Access member `uniqueID'
-		require
-			exists: exists
-		do
-			Result := get_uniqueid_external (item)
-		ensure
-			result_correct: Result = get_uniqueid_external (item)
 		end
 
 	uniqueid: INTEGER is
@@ -275,17 +187,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = uniqueid
 		end
 
-	get_capabilitymask: INTEGER is
-		obsolete "Use `capabilitymask' instead."
-			-- Access member `capabilityMask'
-		require
-			exists: exists
-		do
-			Result := get_capabilitymask_external (item)
-		ensure
-			result_correct: Result = get_capabilitymask_external (item)
-		end
-
 	capabilitymask: INTEGER is
 			-- Access member `capabilityMask'
 		require
@@ -306,17 +207,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = capabilitymask
 		end
 
-	get_pointertype: INTEGER is
-		obsolete "Use `pointertype' instead."
-			-- Access member `pointerType'
-		require
-			exists: exists
-		do
-			Result := get_pointertype_external (item)
-		ensure
-			result_correct: Result = get_pointertype_external (item)
-		end
-
 	pointertype: INTEGER is
 			-- Access member `pointerType'
 		require
@@ -335,17 +225,6 @@ feature {ANY} -- Member Access
 			set_pointertype_external (item, a_value)
 		ensure
 			a_value_set: a_value = pointertype
-		end
-
-	get_enterproximity: INTEGER is
-		obsolete "Use `enterproximity' instead."
-			-- Access member `enterProximity'
-		require
-			exists: exists
-		do
-			Result := get_enterproximity_external (item)
-		ensure
-			result_correct: Result = get_enterproximity_external (item)
 		end
 
 	enterproximity: INTEGER is

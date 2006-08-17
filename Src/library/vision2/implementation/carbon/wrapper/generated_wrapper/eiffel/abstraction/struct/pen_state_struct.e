@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_pnloc: POINTER is
-		obsolete "Use `pnloc' instead."
-			-- Access member `pnLoc'
-		require
-			exists: exists
-		do
-			Result := get_pnloc_external (item)
-		ensure
-			result_correct: Result = get_pnloc_external (item)
-		end
 
 	pnloc: POINTER is
 			-- Access member `pnLoc'
@@ -54,17 +43,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_pnloc_external (item, a_value)
-		end
-
-	get_pnsize: POINTER is
-		obsolete "Use `pnsize' instead."
-			-- Access member `pnSize'
-		require
-			exists: exists
-		do
-			Result := get_pnsize_external (item)
-		ensure
-			result_correct: Result = get_pnsize_external (item)
 		end
 
 	pnsize: POINTER is
@@ -85,17 +63,6 @@ feature {ANY} -- Member Access
 			set_pnsize_external (item, a_value)
 		end
 
-	get_pnmode: INTEGER is
-		obsolete "Use `pnmode' instead."
-			-- Access member `pnMode'
-		require
-			exists: exists
-		do
-			Result := get_pnmode_external (item)
-		ensure
-			result_correct: Result = get_pnmode_external (item)
-		end
-
 	pnmode: INTEGER is
 			-- Access member `pnMode'
 		require
@@ -114,17 +81,6 @@ feature {ANY} -- Member Access
 			set_pnmode_external (item, a_value)
 		ensure
 			a_value_set: a_value = pnmode
-		end
-
-	get_pnpat: POINTER is
-		obsolete "Use `pnpat' instead."
-			-- Access member `pnPat'
-		require
-			exists: exists
-		do
-			Result := get_pnpat_external (item)
-		ensure
-			result_correct: Result = get_pnpat_external (item)
 		end
 
 	pnpat: POINTER is

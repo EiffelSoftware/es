@@ -5261,6 +5261,30 @@ OSStatus  ewg_function_HIObjectCopyCustomArchiveData (HIObjectRef inObject, CFDi
 #define ewg_function_macro_HIObjectSetCustomArchiveData(ewg_param_inObject, ewg_param_inCustomData) HIObjectSetCustomArchiveData ((HIObjectRef)ewg_param_inObject, (CFDictionaryRef)ewg_param_inCustomData)
 
 OSStatus  ewg_function_HIObjectSetCustomArchiveData (HIObjectRef inObject, CFDictionaryRef inCustomData);
+// Wraps call to function 'HIGetScaleFactor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIGetScaleFactor HIGetScaleFactor ()
+
+float  ewg_function_HIGetScaleFactor (void);
+// Wraps call to function 'HIPointConvert' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIPointConvert(ewg_param_ioPoint, ewg_param_inSourceSpace, ewg_param_inSourceObject, ewg_param_inDestinationSpace, ewg_param_inDestinationObject) HIPointConvert ((HIPoint*)ewg_param_ioPoint, (HICoordinateSpace)ewg_param_inSourceSpace, (void*)ewg_param_inSourceObject, (HICoordinateSpace)ewg_param_inDestinationSpace, (void*)ewg_param_inDestinationObject)
+
+void  ewg_function_HIPointConvert (HIPoint *ioPoint, HICoordinateSpace inSourceSpace, void *inSourceObject, HICoordinateSpace inDestinationSpace, void *inDestinationObject);
+// Wraps call to function 'HIRectConvert' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HIRectConvert(ewg_param_ioRect, ewg_param_inSourceSpace, ewg_param_inSourceObject, ewg_param_inDestinationSpace, ewg_param_inDestinationObject) HIRectConvert ((HIRect*)ewg_param_ioRect, (HICoordinateSpace)ewg_param_inSourceSpace, (void*)ewg_param_inSourceObject, (HICoordinateSpace)ewg_param_inDestinationSpace, (void*)ewg_param_inDestinationObject)
+
+void  ewg_function_HIRectConvert (HIRect *ioRect, HICoordinateSpace inSourceSpace, void *inSourceObject, HICoordinateSpace inDestinationSpace, void *inDestinationObject);
+// Wraps call to function 'HISizeConvert' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HISizeConvert(ewg_param_ioSize, ewg_param_inSourceSpace, ewg_param_inSourceObject, ewg_param_inDestinationSpace, ewg_param_inDestinationObject) HISizeConvert ((HISize*)ewg_param_ioSize, (HICoordinateSpace)ewg_param_inSourceSpace, (void*)ewg_param_inSourceObject, (HICoordinateSpace)ewg_param_inDestinationSpace, (void*)ewg_param_inDestinationObject)
+
+void  ewg_function_HISizeConvert (HISize *ioSize, HICoordinateSpace inSourceSpace, void *inSourceObject, HICoordinateSpace inDestinationSpace, void *inDestinationObject);
 // Wraps call to function 'GetMouse' in a macro
 #include <Carbon/Carbon.h>
 

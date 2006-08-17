@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_v: INTEGER is
-		obsolete "Use `v' instead."
-			-- Access member `v'
-		require
-			exists: exists
-		do
-			Result := get_v_external (item)
-		ensure
-			result_correct: Result = get_v_external (item)
-		end
 
 	v: INTEGER is
 			-- Access member `v'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_v_external (item, a_value)
 		ensure
 			a_value_set: a_value = v
-		end
-
-	get_h: INTEGER is
-		obsolete "Use `h' instead."
-			-- Access member `h'
-		require
-			exists: exists
-		do
-			Result := get_h_external (item)
-		ensure
-			result_correct: Result = get_h_external (item)
 		end
 
 	h: INTEGER is

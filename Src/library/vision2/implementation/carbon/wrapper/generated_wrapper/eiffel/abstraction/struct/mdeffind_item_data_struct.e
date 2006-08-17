@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_trackingdata: POINTER is
-		obsolete "Use `trackingdata' instead."
-			-- Access member `trackingData'
-		require
-			exists: exists
-		do
-			Result := get_trackingdata_external (item)
-		ensure
-			result_correct: Result = get_trackingdata_external (item)
-		end
 
 	trackingdata: POINTER is
 			-- Access member `trackingData'
@@ -54,17 +43,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_trackingdata_external (item, a_value)
-		end
-
-	get_context: POINTER is
-		obsolete "Use `context' instead."
-			-- Access member `context'
-		require
-			exists: exists
-		do
-			Result := get_context_external (item)
-		ensure
-			result_correct: Result = get_context_external (item)
 		end
 
 	context: POINTER is

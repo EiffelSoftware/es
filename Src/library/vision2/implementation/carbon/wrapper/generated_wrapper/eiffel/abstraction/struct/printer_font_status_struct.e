@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_oresult: INTEGER is
-		obsolete "Use `oresult' instead."
-			-- Access member `oResult'
-		require
-			exists: exists
-		do
-			Result := get_oresult_external (item)
-		ensure
-			result_correct: Result = get_oresult_external (item)
-		end
 
 	oresult: INTEGER is
 			-- Access member `oResult'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = oresult
 		end
 
-	get_ifondid: INTEGER is
-		obsolete "Use `ifondid' instead."
-			-- Access member `iFondID'
-		require
-			exists: exists
-		do
-			Result := get_ifondid_external (item)
-		ensure
-			result_correct: Result = get_ifondid_external (item)
-		end
-
 	ifondid: INTEGER is
 			-- Access member `iFondID'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_ifondid_external (item, a_value)
 		ensure
 			a_value_set: a_value = ifondid
-		end
-
-	get_istyle: INTEGER is
-		obsolete "Use `istyle' instead."
-			-- Access member `iStyle'
-		require
-			exists: exists
-		do
-			Result := get_istyle_external (item)
-		ensure
-			result_correct: Result = get_istyle_external (item)
 		end
 
 	istyle: INTEGER is

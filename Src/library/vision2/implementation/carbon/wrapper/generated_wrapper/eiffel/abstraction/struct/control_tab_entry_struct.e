@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -47,17 +47,6 @@ feature {ANY} -- Member Access
 			set_icon_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = icon
-		end
-
-	get_icon: POINTER is
-		obsolete "Use `icon' instead."
-			-- Access member `icon'
-		require
-			exists: exists
-		do
-			Result := get_icon_external (item)
-		ensure
-			result_correct: Result = get_icon_external (item)
 		end
 
 	icon: POINTER is
@@ -102,17 +91,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = name
 		end
 
-	get_name: POINTER is
-		obsolete "Use `name' instead."
-			-- Access member `name'
-		require
-			exists: exists
-		do
-			Result := get_name_external (item)
-		ensure
-			result_correct: Result = get_name_external (item)
-		end
-
 	name: POINTER is
 			-- Access member `name'
 		require
@@ -131,17 +109,6 @@ feature {ANY} -- Member Access
 			set_name_external (item, a_value)
 		ensure
 			a_value_set: a_value = name
-		end
-
-	get_enabled: INTEGER is
-		obsolete "Use `enabled' instead."
-			-- Access member `enabled'
-		require
-			exists: exists
-		do
-			Result := get_enabled_external (item)
-		ensure
-			result_correct: Result = get_enabled_external (item)
 		end
 
 	enabled: INTEGER is

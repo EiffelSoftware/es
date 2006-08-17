@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_container: INTEGER is
-		obsolete "Use `container' instead."
-			-- Access member `container'
-		require
-			exists: exists
-		do
-			Result := get_container_external (item)
-		ensure
-			result_correct: Result = get_container_external (item)
-		end
 
 	container: INTEGER is
 			-- Access member `container'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_container_external (item, a_value)
 		ensure
 			a_value_set: a_value = container
-		end
-
-	get_item: INTEGER is
-		obsolete "Use `item_' instead."
-			-- Access member `item'
-		require
-			exists: exists
-		do
-			Result := get_item_external (item)
-		ensure
-			result_correct: Result = get_item_external (item)
 		end
 
 	item_: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = item_
 		end
 
-	get_columnproperty: INTEGER is
-		obsolete "Use `columnproperty' instead."
-			-- Access member `columnProperty'
-		require
-			exists: exists
-		do
-			Result := get_columnproperty_external (item)
-		ensure
-			result_correct: Result = get_columnproperty_external (item)
-		end
-
 	columnproperty: INTEGER is
 			-- Access member `columnProperty'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_columnproperty_external (item, a_value)
 		ensure
 			a_value_set: a_value = columnproperty
-		end
-
-	get_propertypart: INTEGER is
-		obsolete "Use `propertypart' instead."
-			-- Access member `propertyPart'
-		require
-			exists: exists
-		do
-			Result := get_propertypart_external (item)
-		ensure
-			result_correct: Result = get_propertypart_external (item)
 		end
 
 	propertypart: INTEGER is

@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_flags: INTEGER is
-		obsolete "Use `flags' instead."
-			-- Access member `flags'
-		require
-			exists: exists
-		do
-			Result := get_flags_external (item)
-		ensure
-			result_correct: Result = get_flags_external (item)
-		end
 
 	flags: INTEGER is
 			-- Access member `flags'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_flags_external (item, a_value)
 		ensure
 			a_value_set: a_value = flags
-		end
-
-	get_font: INTEGER is
-		obsolete "Use `font' instead."
-			-- Access member `font'
-		require
-			exists: exists
-		do
-			Result := get_font_external (item)
-		ensure
-			result_correct: Result = get_font_external (item)
 		end
 
 	font: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = font
 		end
 
-	get_size: INTEGER is
-		obsolete "Use `size' instead."
-			-- Access member `size'
-		require
-			exists: exists
-		do
-			Result := get_size_external (item)
-		ensure
-			result_correct: Result = get_size_external (item)
-		end
-
 	size: INTEGER is
 			-- Access member `size'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_size_external (item, a_value)
 		ensure
 			a_value_set: a_value = size
-		end
-
-	get_style: INTEGER is
-		obsolete "Use `style' instead."
-			-- Access member `style'
-		require
-			exists: exists
-		do
-			Result := get_style_external (item)
-		ensure
-			result_correct: Result = get_style_external (item)
 		end
 
 	style: INTEGER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = style
 		end
 
-	get_mode: INTEGER is
-		obsolete "Use `mode' instead."
-			-- Access member `mode'
-		require
-			exists: exists
-		do
-			Result := get_mode_external (item)
-		ensure
-			result_correct: Result = get_mode_external (item)
-		end
-
 	mode: INTEGER is
 			-- Access member `mode'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_mode_external (item, a_value)
 		ensure
 			a_value_set: a_value = mode
-		end
-
-	get_just: INTEGER is
-		obsolete "Use `just' instead."
-			-- Access member `just'
-		require
-			exists: exists
-		do
-			Result := get_just_external (item)
-		ensure
-			result_correct: Result = get_just_external (item)
 		end
 
 	just: INTEGER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = just
 		end
 
-	get_forecolor: POINTER is
-		obsolete "Use `forecolor' instead."
-			-- Access member `foreColor'
-		require
-			exists: exists
-		do
-			Result := get_forecolor_external (item)
-		ensure
-			result_correct: Result = get_forecolor_external (item)
-		end
-
 	forecolor: POINTER is
 			-- Access member `foreColor'
 		require
@@ -240,17 +163,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_forecolor_external (item, a_value)
-		end
-
-	get_backcolor: POINTER is
-		obsolete "Use `backcolor' instead."
-			-- Access member `backColor'
-		require
-			exists: exists
-		do
-			Result := get_backcolor_external (item)
-		ensure
-			result_correct: Result = get_backcolor_external (item)
 		end
 
 	backcolor: POINTER is

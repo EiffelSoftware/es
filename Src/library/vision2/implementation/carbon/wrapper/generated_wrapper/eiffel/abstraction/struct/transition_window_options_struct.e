@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_version: INTEGER is
-		obsolete "Use `version' instead."
-			-- Access member `version'
-		require
-			exists: exists
-		do
-			Result := get_version_external (item)
-		ensure
-			result_correct: Result = get_version_external (item)
-		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_version_external (item, a_value)
 		ensure
 			a_value_set: a_value = version
-		end
-
-	get_duration: DOUBLE is
-		obsolete "Use `duration' instead."
-			-- Access member `duration'
-		require
-			exists: exists
-		do
-			Result := get_duration_external (item)
-		ensure
-			result_correct: Result = get_duration_external (item)
 		end
 
 	duration: DOUBLE is
@@ -111,17 +89,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = window
 		end
 
-	get_window: POINTER is
-		obsolete "Use `window' instead."
-			-- Access member `window'
-		require
-			exists: exists
-		do
-			Result := get_window_external (item)
-		ensure
-			result_correct: Result = get_window_external (item)
-		end
-
 	window: POINTER is
 			-- Access member `window'
 		require
@@ -140,17 +107,6 @@ feature {ANY} -- Member Access
 			set_window_external (item, a_value)
 		ensure
 			a_value_set: a_value = window
-		end
-
-	get_userdata: POINTER is
-		obsolete "Use `userdata' instead."
-			-- Access member `userData'
-		require
-			exists: exists
-		do
-			Result := get_userdata_external (item)
-		ensure
-			result_correct: Result = get_userdata_external (item)
 		end
 
 	userdata: POINTER is

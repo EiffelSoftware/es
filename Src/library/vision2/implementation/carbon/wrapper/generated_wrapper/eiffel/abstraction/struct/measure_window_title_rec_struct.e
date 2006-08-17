@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_fulltitlewidth: INTEGER is
-		obsolete "Use `fulltitlewidth' instead."
-			-- Access member `fullTitleWidth'
-		require
-			exists: exists
-		do
-			Result := get_fulltitlewidth_external (item)
-		ensure
-			result_correct: Result = get_fulltitlewidth_external (item)
-		end
 
 	fulltitlewidth: INTEGER is
 			-- Access member `fullTitleWidth'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_fulltitlewidth_external (item, a_value)
 		ensure
 			a_value_set: a_value = fulltitlewidth
-		end
-
-	get_titletextwidth: INTEGER is
-		obsolete "Use `titletextwidth' instead."
-			-- Access member `titleTextWidth'
-		require
-			exists: exists
-		do
-			Result := get_titletextwidth_external (item)
-		ensure
-			result_correct: Result = get_titletextwidth_external (item)
 		end
 
 	titletextwidth: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = titletextwidth
 		end
 
-	get_isunicodetitle: INTEGER is
-		obsolete "Use `isunicodetitle' instead."
-			-- Access member `isUnicodeTitle'
-		require
-			exists: exists
-		do
-			Result := get_isunicodetitle_external (item)
-		ensure
-			result_correct: Result = get_isunicodetitle_external (item)
-		end
-
 	isunicodetitle: INTEGER is
 			-- Access member `isUnicodeTitle'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_isunicodetitle_external (item, a_value)
 		ensure
 			a_value_set: a_value = isunicodetitle
-		end
-
-	get_unused: INTEGER is
-		obsolete "Use `unused' instead."
-			-- Access member `unused'
-		require
-			exists: exists
-		do
-			Result := get_unused_external (item)
-		ensure
-			result_correct: Result = get_unused_external (item)
 		end
 
 	unused: INTEGER is

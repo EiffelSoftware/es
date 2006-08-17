@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -49,17 +49,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = winrgn
 		end
 
-	get_winrgn: POINTER is
-		obsolete "Use `winrgn' instead."
-			-- Access member `winRgn'
-		require
-			exists: exists
-		do
-			Result := get_winrgn_external (item)
-		ensure
-			result_correct: Result = get_winrgn_external (item)
-		end
-
 	winrgn: POINTER is
 			-- Access member `winRgn'
 		require
@@ -78,17 +67,6 @@ feature {ANY} -- Member Access
 			set_winrgn_external (item, a_value)
 		ensure
 			a_value_set: a_value = winrgn
-		end
-
-	get_regioncode: INTEGER is
-		obsolete "Use `regioncode' instead."
-			-- Access member `regionCode'
-		require
-			exists: exists
-		do
-			Result := get_regioncode_external (item)
-		ensure
-			result_correct: Result = get_regioncode_external (item)
 		end
 
 	regioncode: INTEGER is

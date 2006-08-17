@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_absx: INTEGER is
-		obsolete "Use `absx' instead."
-			-- Access member `absX'
-		require
-			exists: exists
-		do
-			Result := get_absx_external (item)
-		ensure
-			result_correct: Result = get_absx_external (item)
-		end
 
 	absx: INTEGER is
 			-- Access member `absX'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_absx_external (item, a_value)
 		ensure
 			a_value_set: a_value = absx
-		end
-
-	get_absy: INTEGER is
-		obsolete "Use `absy' instead."
-			-- Access member `absY'
-		require
-			exists: exists
-		do
-			Result := get_absy_external (item)
-		ensure
-			result_correct: Result = get_absy_external (item)
 		end
 
 	absy: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = absy
 		end
 
-	get_absz: INTEGER is
-		obsolete "Use `absz' instead."
-			-- Access member `absZ'
-		require
-			exists: exists
-		do
-			Result := get_absz_external (item)
-		ensure
-			result_correct: Result = get_absz_external (item)
-		end
-
 	absz: INTEGER is
 			-- Access member `absZ'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_absz_external (item, a_value)
 		ensure
 			a_value_set: a_value = absz
-		end
-
-	get_buttons: INTEGER is
-		obsolete "Use `buttons' instead."
-			-- Access member `buttons'
-		require
-			exists: exists
-		do
-			Result := get_buttons_external (item)
-		ensure
-			result_correct: Result = get_buttons_external (item)
 		end
 
 	buttons: INTEGER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = buttons
 		end
 
-	get_pressure: INTEGER is
-		obsolete "Use `pressure' instead."
-			-- Access member `pressure'
-		require
-			exists: exists
-		do
-			Result := get_pressure_external (item)
-		ensure
-			result_correct: Result = get_pressure_external (item)
-		end
-
 	pressure: INTEGER is
 			-- Access member `pressure'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_pressure_external (item, a_value)
 		ensure
 			a_value_set: a_value = pressure
-		end
-
-	get_tiltx: INTEGER is
-		obsolete "Use `tiltx' instead."
-			-- Access member `tiltX'
-		require
-			exists: exists
-		do
-			Result := get_tiltx_external (item)
-		ensure
-			result_correct: Result = get_tiltx_external (item)
 		end
 
 	tiltx: INTEGER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = tiltx
 		end
 
-	get_tilty: INTEGER is
-		obsolete "Use `tilty' instead."
-			-- Access member `tiltY'
-		require
-			exists: exists
-		do
-			Result := get_tilty_external (item)
-		ensure
-			result_correct: Result = get_tilty_external (item)
-		end
-
 	tilty: INTEGER is
 			-- Access member `tiltY'
 		require
@@ -242,17 +165,6 @@ feature {ANY} -- Member Access
 			set_tilty_external (item, a_value)
 		ensure
 			a_value_set: a_value = tilty
-		end
-
-	get_rotation: INTEGER is
-		obsolete "Use `rotation' instead."
-			-- Access member `rotation'
-		require
-			exists: exists
-		do
-			Result := get_rotation_external (item)
-		ensure
-			result_correct: Result = get_rotation_external (item)
 		end
 
 	rotation: INTEGER is
@@ -275,17 +187,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = rotation
 		end
 
-	get_tangentialpressure: INTEGER is
-		obsolete "Use `tangentialpressure' instead."
-			-- Access member `tangentialPressure'
-		require
-			exists: exists
-		do
-			Result := get_tangentialpressure_external (item)
-		ensure
-			result_correct: Result = get_tangentialpressure_external (item)
-		end
-
 	tangentialpressure: INTEGER is
 			-- Access member `tangentialPressure'
 		require
@@ -304,17 +205,6 @@ feature {ANY} -- Member Access
 			set_tangentialpressure_external (item, a_value)
 		ensure
 			a_value_set: a_value = tangentialpressure
-		end
-
-	get_deviceid: INTEGER is
-		obsolete "Use `deviceid' instead."
-			-- Access member `deviceID'
-		require
-			exists: exists
-		do
-			Result := get_deviceid_external (item)
-		ensure
-			result_correct: Result = get_deviceid_external (item)
 		end
 
 	deviceid: INTEGER is
@@ -337,17 +227,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = deviceid
 		end
 
-	get_vendor1: INTEGER is
-		obsolete "Use `vendor1' instead."
-			-- Access member `vendor1'
-		require
-			exists: exists
-		do
-			Result := get_vendor1_external (item)
-		ensure
-			result_correct: Result = get_vendor1_external (item)
-		end
-
 	vendor1: INTEGER is
 			-- Access member `vendor1'
 		require
@@ -368,17 +247,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = vendor1
 		end
 
-	get_vendor2: INTEGER is
-		obsolete "Use `vendor2' instead."
-			-- Access member `vendor2'
-		require
-			exists: exists
-		do
-			Result := get_vendor2_external (item)
-		ensure
-			result_correct: Result = get_vendor2_external (item)
-		end
-
 	vendor2: INTEGER is
 			-- Access member `vendor2'
 		require
@@ -397,17 +265,6 @@ feature {ANY} -- Member Access
 			set_vendor2_external (item, a_value)
 		ensure
 			a_value_set: a_value = vendor2
-		end
-
-	get_vendor3: INTEGER is
-		obsolete "Use `vendor3' instead."
-			-- Access member `vendor3'
-		require
-			exists: exists
-		do
-			Result := get_vendor3_external (item)
-		ensure
-			result_correct: Result = get_vendor3_external (item)
 		end
 
 	vendor3: INTEGER is

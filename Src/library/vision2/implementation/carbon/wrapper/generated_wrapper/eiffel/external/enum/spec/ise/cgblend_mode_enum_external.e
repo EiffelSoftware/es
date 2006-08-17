@@ -9,112 +9,112 @@ feature {ANY}
 			Result := a_value = kcgblendmodenormal or a_value = kcgblendmodemultiply or a_value = kcgblendmodescreen or a_value = kcgblendmodeoverlay or a_value = kcgblendmodedarken or a_value = kcgblendmodelighten or a_value = kcgblendmodecolordodge or a_value = kcgblendmodecolorburn or a_value = kcgblendmodesoftlight or a_value = kcgblendmodehardlight or a_value = kcgblendmodedifference or a_value = kcgblendmodeexclusion or a_value = kcgblendmodehue or a_value = kcgblendmodesaturation or a_value = kcgblendmodecolor or a_value = kcgblendmodeluminosity
 		end
 
-	kcgblendmodenormal: INTEGER is
+	 frozen kcgblendmodenormal: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeNormal"
 		end
 
-	kcgblendmodemultiply: INTEGER is
+	 frozen kcgblendmodemultiply: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeMultiply"
 		end
 
-	kcgblendmodescreen: INTEGER is
+	 frozen kcgblendmodescreen: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeScreen"
 		end
 
-	kcgblendmodeoverlay: INTEGER is
+	 frozen kcgblendmodeoverlay: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeOverlay"
 		end
 
-	kcgblendmodedarken: INTEGER is
+	 frozen kcgblendmodedarken: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeDarken"
 		end
 
-	kcgblendmodelighten: INTEGER is
+	 frozen kcgblendmodelighten: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeLighten"
 		end
 
-	kcgblendmodecolordodge: INTEGER is
+	 frozen kcgblendmodecolordodge: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeColorDodge"
 		end
 
-	kcgblendmodecolorburn: INTEGER is
+	 frozen kcgblendmodecolorburn: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeColorBurn"
 		end
 
-	kcgblendmodesoftlight: INTEGER is
+	 frozen kcgblendmodesoftlight: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeSoftLight"
 		end
 
-	kcgblendmodehardlight: INTEGER is
+	 frozen kcgblendmodehardlight: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeHardLight"
 		end
 
-	kcgblendmodedifference: INTEGER is
+	 frozen kcgblendmodedifference: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeDifference"
 		end
 
-	kcgblendmodeexclusion: INTEGER is
+	 frozen kcgblendmodeexclusion: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeExclusion"
 		end
 
-	kcgblendmodehue: INTEGER is
+	 frozen kcgblendmodehue: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeHue"
 		end
 
-	kcgblendmodesaturation: INTEGER is
+	 frozen kcgblendmodesaturation: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeSaturation"
 		end
 
-	kcgblendmodecolor: INTEGER is
+	 frozen kcgblendmodecolor: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGBlendModeColor"
 		end
 
-	kcgblendmodeluminosity: INTEGER is
+	 frozen kcgblendmodeluminosity: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

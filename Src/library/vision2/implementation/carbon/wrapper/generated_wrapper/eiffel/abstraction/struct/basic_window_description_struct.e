@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_descriptionsize: INTEGER is
-		obsolete "Use `descriptionsize' instead."
-			-- Access member `descriptionSize'
-		require
-			exists: exists
-		do
-			Result := get_descriptionsize_external (item)
-		ensure
-			result_correct: Result = get_descriptionsize_external (item)
-		end
 
 	descriptionsize: INTEGER is
 			-- Access member `descriptionSize'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = descriptionsize
 		end
 
-	get_windowcontentrect: POINTER is
-		obsolete "Use `windowcontentrect' instead."
-			-- Access member `windowContentRect'
-		require
-			exists: exists
-		do
-			Result := get_windowcontentrect_external (item)
-		ensure
-			result_correct: Result = get_windowcontentrect_external (item)
-		end
-
 	windowcontentrect: POINTER is
 			-- Access member `windowContentRect'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_windowcontentrect_external (item, a_value)
 		end
 
-	get_windowzoomrect: POINTER is
-		obsolete "Use `windowzoomrect' instead."
-			-- Access member `windowZoomRect'
-		require
-			exists: exists
-		do
-			Result := get_windowzoomrect_external (item)
-		ensure
-			result_correct: Result = get_windowzoomrect_external (item)
-		end
-
 	windowzoomrect: POINTER is
 			-- Access member `windowZoomRect'
 		require
@@ -114,17 +81,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_windowzoomrect_external (item, a_value)
-		end
-
-	get_windowrefcon: INTEGER is
-		obsolete "Use `windowrefcon' instead."
-			-- Access member `windowRefCon'
-		require
-			exists: exists
-		do
-			Result := get_windowrefcon_external (item)
-		ensure
-			result_correct: Result = get_windowrefcon_external (item)
 		end
 
 	windowrefcon: INTEGER is
@@ -147,17 +103,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = windowrefcon
 		end
 
-	get_windowstateflags: INTEGER is
-		obsolete "Use `windowstateflags' instead."
-			-- Access member `windowStateFlags'
-		require
-			exists: exists
-		do
-			Result := get_windowstateflags_external (item)
-		ensure
-			result_correct: Result = get_windowstateflags_external (item)
-		end
-
 	windowstateflags: INTEGER is
 			-- Access member `windowStateFlags'
 		require
@@ -178,17 +123,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = windowstateflags
 		end
 
-	get_windowpositionmethod: INTEGER is
-		obsolete "Use `windowpositionmethod' instead."
-			-- Access member `windowPositionMethod'
-		require
-			exists: exists
-		do
-			Result := get_windowpositionmethod_external (item)
-		ensure
-			result_correct: Result = get_windowpositionmethod_external (item)
-		end
-
 	windowpositionmethod: INTEGER is
 			-- Access member `windowPositionMethod'
 		require
@@ -207,17 +141,6 @@ feature {ANY} -- Member Access
 			set_windowpositionmethod_external (item, a_value)
 		ensure
 			a_value_set: a_value = windowpositionmethod
-		end
-
-	get_windowdefinitionversion: INTEGER is
-		obsolete "Use `windowdefinitionversion' instead."
-			-- Access member `windowDefinitionVersion'
-		require
-			exists: exists
-		do
-			Result := get_windowdefinitionversion_external (item)
-		ensure
-			result_correct: Result = get_windowdefinitionversion_external (item)
 		end
 
 	windowdefinitionversion: INTEGER is

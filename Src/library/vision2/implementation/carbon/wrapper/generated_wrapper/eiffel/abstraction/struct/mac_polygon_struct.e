@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_polysize: INTEGER is
-		obsolete "Use `polysize' instead."
-			-- Access member `polySize'
-		require
-			exists: exists
-		do
-			Result := get_polysize_external (item)
-		ensure
-			result_correct: Result = get_polysize_external (item)
-		end
 
 	polysize: INTEGER is
 			-- Access member `polySize'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = polysize
 		end
 
-	get_polybbox: POINTER is
-		obsolete "Use `polybbox' instead."
-			-- Access member `polyBBox'
-		require
-			exists: exists
-		do
-			Result := get_polybbox_external (item)
-		ensure
-			result_correct: Result = get_polybbox_external (item)
-		end
-
 	polybbox: POINTER is
 			-- Access member `polyBBox'
 		require
@@ -85,17 +63,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_polybbox_external (item, a_value)
-		end
-
-	get_polypoints: POINTER is
-		obsolete "Use `polypoints' instead."
-			-- Access member `polyPoints'
-		require
-			exists: exists
-		do
-			Result := get_polypoints_external (item)
-		ensure
-			result_correct: Result = get_polypoints_external (item)
 		end
 
 	polypoints: POINTER is

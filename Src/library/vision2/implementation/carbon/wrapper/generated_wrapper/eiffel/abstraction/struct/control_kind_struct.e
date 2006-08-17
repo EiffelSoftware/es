@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_signature: INTEGER is
-		obsolete "Use `signature' instead."
-			-- Access member `signature'
-		require
-			exists: exists
-		do
-			Result := get_signature_external (item)
-		ensure
-			result_correct: Result = get_signature_external (item)
-		end
 
 	signature: INTEGER is
 			-- Access member `signature'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_signature_external (item, a_value)
 		ensure
 			a_value_set: a_value = signature
-		end
-
-	get_kind: INTEGER is
-		obsolete "Use `kind' instead."
-			-- Access member `kind'
-		require
-			exists: exists
-		do
-			Result := get_kind_external (item)
-		ensure
-			result_correct: Result = get_kind_external (item)
 		end
 
 	kind: INTEGER is

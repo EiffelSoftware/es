@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_depth: INTEGER is
-		obsolete "Use `depth' instead."
-			-- Access member `depth'
-		require
-			exists: exists
-		do
-			Result := get_depth_external (item)
-		ensure
-			result_correct: Result = get_depth_external (item)
-		end
 
 	depth: INTEGER is
 			-- Access member `depth'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = depth
 		end
 
-	get_colordevice: INTEGER is
-		obsolete "Use `colordevice' instead."
-			-- Access member `colorDevice'
-		require
-			exists: exists
-		do
-			Result := get_colordevice_external (item)
-		ensure
-			result_correct: Result = get_colordevice_external (item)
-		end
-
 	colordevice: INTEGER is
 			-- Access member `colorDevice'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_colordevice_external (item, a_value)
 		ensure
 			a_value_set: a_value = colordevice
-		end
-
-	get_active: INTEGER is
-		obsolete "Use `active' instead."
-			-- Access member `active'
-		require
-			exists: exists
-		do
-			Result := get_active_external (item)
-		ensure
-			result_correct: Result = get_active_external (item)
 		end
 
 	active: INTEGER is

@@ -77,6 +77,12 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	carbon_arrange_children is
+			--
+		do
+
+		end
+
+	blub is
 			-- Recreate the tab control with changed settings
 		local
 			a_parent : POINTER
@@ -87,6 +93,7 @@ feature -- Access
 			orientation : INTEGER
 			err : INTEGER
 			i : INTEGER
+			actual_size : INTEGER
 			tab_array : EWG_POINTER_ARRAY
 			tab_entry : CONTROL_TAB_ENTRY_STRUCT
 			help_array : ARRAY[CONTROL_TAB_ENTRY_STRUCT]
@@ -121,25 +128,79 @@ feature -- Access
 					i > count
 				loop
 					create tab_entry.make_new_unshared
-					w_imp ?= i_th ( i ).implementation
+					err := get_control_data_external ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_entry.sizeof, tab_entry.item, $actual_size )
 					check
-						w_imp_not_void : w_imp /= Void
+						no_overflow : actual_size = tab_entry.sizeof
 					end
-					err := hiview_remove_from_superview_external ( w_imp.c_object )
-
 
 					help_array.put ( tab_entry, i )
 					tab_array.put ( tab_entry.item, i-1 )
+					i := i + 1
 				end
 
+				-- Create new tab control
 				err := create_tabs_control_external ( a_parent, a_rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, orientation, count, tab_array.array_address, $new_view )
 
 				set_control_bounds_external ( new_view, a_rect.item )
 				err := hiview_set_layout_info_external ( new_view, a_layout_info.item )
 				err := hiview_apply_layout_external ( new_view )
 
+				-- Bind content to new tab_control
+				from
+					i := 1
+				until
+					i > count
+				loop
+					w_imp ?= i_th ( i ).implementation
+					check
+						w_imp_not_void : w_imp /= Void
+					end
+					err := hiview_remove_from_superview_external ( w_imp.c_object )
+					err := hiview_add_subview_external ( new_view, w_imp.c_object )
+					err := get_control_data_external ( new_view, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item, $actual_size )
+					check
+						no_overflow : actual_size = a_rect.sizeof
+					end
+					set_control_bounds_external ( w_imp.c_object, a_rect.item )
+					bind_to_tabcontrol ( w_imp.c_object, new_view )
+					i := i + 1
+				end
+
 				dispose_control_external ( c_object )
 				set_c_object ( new_view )
+				initialize
+		end
+
+	bind_to_tabcontrol ( a_control, a_tabcontrol: POINTER ) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+					
+					LayoutInfo.binding.top.toView = $a_tabcontrol;
+					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+					LayoutInfo.binding.top.offset = 0;
+					
+					LayoutInfo.binding.bottom.toView = $a_tabcontrol;
+					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+					LayoutInfo.binding.bottom.offset = 0;
+					
+					LayoutInfo.binding.left.toView = $a_tabcontrol;
+					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+					LayoutInfo.binding.left.offset = 0;
+					
+					LayoutInfo.binding.right.toView = $a_tabcontrol;
+					LayoutInfo.binding.right.kind = kHILayoutBindRight;
+					LayoutInfo.binding.right.offset = 0;
+					
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
+				}
+			]"
 		end
 
 	pointed_tab_index: INTEGER is

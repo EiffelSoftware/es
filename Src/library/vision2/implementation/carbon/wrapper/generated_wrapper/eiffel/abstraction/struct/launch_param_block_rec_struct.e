@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_reserved1: INTEGER is
-		obsolete "Use `reserved1' instead."
-			-- Access member `reserved1'
-		require
-			exists: exists
-		do
-			Result := get_reserved1_external (item)
-		ensure
-			result_correct: Result = get_reserved1_external (item)
-		end
 
 	reserved1: INTEGER is
 			-- Access member `reserved1'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_reserved1_external (item, a_value)
 		ensure
 			a_value_set: a_value = reserved1
-		end
-
-	get_reserved2: INTEGER is
-		obsolete "Use `reserved2' instead."
-			-- Access member `reserved2'
-		require
-			exists: exists
-		do
-			Result := get_reserved2_external (item)
-		ensure
-			result_correct: Result = get_reserved2_external (item)
 		end
 
 	reserved2: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = reserved2
 		end
 
-	get_launchblockid: INTEGER is
-		obsolete "Use `launchblockid' instead."
-			-- Access member `launchBlockID'
-		require
-			exists: exists
-		do
-			Result := get_launchblockid_external (item)
-		ensure
-			result_correct: Result = get_launchblockid_external (item)
-		end
-
 	launchblockid: INTEGER is
 			-- Access member `launchBlockID'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_launchblockid_external (item, a_value)
 		ensure
 			a_value_set: a_value = launchblockid
-		end
-
-	get_launchepblength: INTEGER is
-		obsolete "Use `launchepblength' instead."
-			-- Access member `launchEPBLength'
-		require
-			exists: exists
-		do
-			Result := get_launchepblength_external (item)
-		ensure
-			result_correct: Result = get_launchepblength_external (item)
 		end
 
 	launchepblength: INTEGER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = launchepblength
 		end
 
-	get_launchfileflags: INTEGER is
-		obsolete "Use `launchfileflags' instead."
-			-- Access member `launchFileFlags'
-		require
-			exists: exists
-		do
-			Result := get_launchfileflags_external (item)
-		ensure
-			result_correct: Result = get_launchfileflags_external (item)
-		end
-
 	launchfileflags: INTEGER is
 			-- Access member `launchFileFlags'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_launchfileflags_external (item, a_value)
 		ensure
 			a_value_set: a_value = launchfileflags
-		end
-
-	get_launchcontrolflags: INTEGER is
-		obsolete "Use `launchcontrolflags' instead."
-			-- Access member `launchControlFlags'
-		require
-			exists: exists
-		do
-			Result := get_launchcontrolflags_external (item)
-		ensure
-			result_correct: Result = get_launchcontrolflags_external (item)
 		end
 
 	launchcontrolflags: INTEGER is
@@ -235,17 +169,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = launchappspec
 		end
 
-	get_launchappspec: POINTER is
-		obsolete "Use `launchappspec' instead."
-			-- Access member `launchAppSpec'
-		require
-			exists: exists
-		do
-			Result := get_launchappspec_external (item)
-		ensure
-			result_correct: Result = get_launchappspec_external (item)
-		end
-
 	launchappspec: POINTER is
 			-- Access member `launchAppSpec'
 		require
@@ -266,17 +189,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = launchappspec
 		end
 
-	get_launchprocesssn: POINTER is
-		obsolete "Use `launchprocesssn' instead."
-			-- Access member `launchProcessSN'
-		require
-			exists: exists
-		do
-			Result := get_launchprocesssn_external (item)
-		ensure
-			result_correct: Result = get_launchprocesssn_external (item)
-		end
-
 	launchprocesssn: POINTER is
 			-- Access member `launchProcessSN'
 		require
@@ -293,17 +205,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_launchprocesssn_external (item, a_value)
-		end
-
-	get_launchpreferredsize: INTEGER is
-		obsolete "Use `launchpreferredsize' instead."
-			-- Access member `launchPreferredSize'
-		require
-			exists: exists
-		do
-			Result := get_launchpreferredsize_external (item)
-		ensure
-			result_correct: Result = get_launchpreferredsize_external (item)
 		end
 
 	launchpreferredsize: INTEGER is
@@ -326,17 +227,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = launchpreferredsize
 		end
 
-	get_launchminimumsize: INTEGER is
-		obsolete "Use `launchminimumsize' instead."
-			-- Access member `launchMinimumSize'
-		require
-			exists: exists
-		do
-			Result := get_launchminimumsize_external (item)
-		ensure
-			result_correct: Result = get_launchminimumsize_external (item)
-		end
-
 	launchminimumsize: INTEGER is
 			-- Access member `launchMinimumSize'
 		require
@@ -355,17 +245,6 @@ feature {ANY} -- Member Access
 			set_launchminimumsize_external (item, a_value)
 		ensure
 			a_value_set: a_value = launchminimumsize
-		end
-
-	get_launchavailablesize: INTEGER is
-		obsolete "Use `launchavailablesize' instead."
-			-- Access member `launchAvailableSize'
-		require
-			exists: exists
-		do
-			Result := get_launchavailablesize_external (item)
-		ensure
-			result_correct: Result = get_launchavailablesize_external (item)
 		end
 
 	launchavailablesize: INTEGER is
@@ -408,17 +287,6 @@ feature {ANY} -- Member Access
 			set_launchappparameters_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = launchappparameters
-		end
-
-	get_launchappparameters: POINTER is
-		obsolete "Use `launchappparameters' instead."
-			-- Access member `launchAppParameters'
-		require
-			exists: exists
-		do
-			Result := get_launchappparameters_external (item)
-		ensure
-			result_correct: Result = get_launchappparameters_external (item)
 		end
 
 	launchappparameters: POINTER is

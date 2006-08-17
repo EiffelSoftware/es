@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_srcrect: POINTER is
-		obsolete "Use `srcrect' instead."
-			-- Access member `srcRect'
-		require
-			exists: exists
-		do
-			Result := get_srcrect_external (item)
-		ensure
-			result_correct: Result = get_srcrect_external (item)
-		end
 
 	srcrect: POINTER is
 			-- Access member `srcRect'
@@ -54,17 +43,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_srcrect_external (item, a_value)
-		end
-
-	get_hres: INTEGER is
-		obsolete "Use `hres' instead."
-			-- Access member `hRes'
-		require
-			exists: exists
-		do
-			Result := get_hres_external (item)
-		ensure
-			result_correct: Result = get_hres_external (item)
 		end
 
 	hres: INTEGER is
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = hres
 		end
 
-	get_vres: INTEGER is
-		obsolete "Use `vres' instead."
-			-- Access member `vRes'
-		require
-			exists: exists
-		do
-			Result := get_vres_external (item)
-		ensure
-			result_correct: Result = get_vres_external (item)
-		end
-
 	vres: INTEGER is
 			-- Access member `vRes'
 		require
@@ -116,17 +83,6 @@ feature {ANY} -- Member Access
 			set_vres_external (item, a_value)
 		ensure
 			a_value_set: a_value = vres
-		end
-
-	get_version: INTEGER is
-		obsolete "Use `version' instead."
-			-- Access member `version'
-		require
-			exists: exists
-		do
-			Result := get_version_external (item)
-		ensure
-			result_correct: Result = get_version_external (item)
 		end
 
 	version: INTEGER is
@@ -149,17 +105,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = version
 		end
 
-	get_reserved1: INTEGER is
-		obsolete "Use `reserved1' instead."
-			-- Access member `reserved1'
-		require
-			exists: exists
-		do
-			Result := get_reserved1_external (item)
-		ensure
-			result_correct: Result = get_reserved1_external (item)
-		end
-
 	reserved1: INTEGER is
 			-- Access member `reserved1'
 		require
@@ -178,17 +123,6 @@ feature {ANY} -- Member Access
 			set_reserved1_external (item, a_value)
 		ensure
 			a_value_set: a_value = reserved1
-		end
-
-	get_reserved2: INTEGER is
-		obsolete "Use `reserved2' instead."
-			-- Access member `reserved2'
-		require
-			exists: exists
-		do
-			Result := get_reserved2_external (item)
-		ensure
-			result_correct: Result = get_reserved2_external (item)
 		end
 
 	reserved2: INTEGER is

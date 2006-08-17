@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_reserved: POINTER is
-		obsolete "Use `reserved' instead."
-			-- Access member `_reserved'
-		require
-			exists: exists
-		do
-			Result := get_reserved_external (item)
-		ensure
-			result_correct: Result = get_reserved_external (item)
-		end
 
 	reserved: POINTER is
 			-- Access member `_reserved'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_reserved_external (item, a_value)
 		ensure
 			a_value_set: a_value = reserved
-		end
-
-	get_queryinterface: POINTER is
-		obsolete "Use `queryinterface' instead."
-			-- Access member `QueryInterface'
-		require
-			exists: exists
-		do
-			Result := get_queryinterface_external (item)
-		ensure
-			result_correct: Result = get_queryinterface_external (item)
 		end
 
 	queryinterface: POINTER is
@@ -91,17 +69,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_addref: POINTER is
-		obsolete "Use `addref' instead."
-			-- Access member `AddRef'
-		require
-			exists: exists
-		do
-			Result := get_addref_external (item)
-		ensure
-			result_correct: Result = get_addref_external (item)
-		end
-
 	addref: POINTER is
 			-- Access member `AddRef'
 		require
@@ -124,17 +91,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_release: POINTER is
-		obsolete "Use `release' instead."
-			-- Access member `Release'
-		require
-			exists: exists
-		do
-			Result := get_release_external (item)
-		ensure
-			result_correct: Result = get_release_external (item)
-		end
-
 	release: POINTER is
 			-- Access member `Release'
 		require
@@ -157,17 +113,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_examinecontext: POINTER is
-		obsolete "Use `examinecontext' instead."
-			-- Access member `ExamineContext'
-		require
-			exists: exists
-		do
-			Result := get_examinecontext_external (item)
-		ensure
-			result_correct: Result = get_examinecontext_external (item)
-		end
-
 	examinecontext: POINTER is
 			-- Access member `ExamineContext'
 		require
@@ -190,17 +135,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_handleselection: POINTER is
-		obsolete "Use `handleselection' instead."
-			-- Access member `HandleSelection'
-		require
-			exists: exists
-		do
-			Result := get_handleselection_external (item)
-		ensure
-			result_correct: Result = get_handleselection_external (item)
-		end
-
 	handleselection: POINTER is
 			-- Access member `HandleSelection'
 		require
@@ -223,17 +157,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_postmenucleanup: POINTER is
-		obsolete "Use `postmenucleanup' instead."
-			-- Access member `PostMenuCleanup'
-		require
-			exists: exists
-		do
-			Result := get_postmenucleanup_external (item)
-		ensure
-			result_correct: Result = get_postmenucleanup_external (item)
-		end
-
 	postmenucleanup: POINTER is
 			-- Access member `PostMenuCleanup'
 		require

@@ -3,14 +3,14 @@
 class CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
 
 feature
-	create_bevel_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; thickness: INTEGER; behavior: INTEGER; info: POINTER; menuid: INTEGER; menubehavior: INTEGER; menuplacement: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_bevel_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; thickness: INTEGER; behavior: INTEGER; info: POINTER; menuid: INTEGER; menubehavior: INTEGER; menuplacement: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, ControlBevelThickness, ControlBevelButtonBehavior, ControlButtonContentInfoPtr, SInt16, ControlBevelButtonMenuBehavior, ControlBevelButtonMenuPlacement, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateBevelButtonControl"
 		end
 
-	create_bevel_button_control_address_external: POINTER is
+	frozencreate_bevel_button_control_address_external: POINTER is
 			-- Address of C function `CreateBevelButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) CreateBevelButtonControl"
 		end
 
-	get_bevel_button_menu_value_external (inbutton: POINTER; outvalue: POINTER): INTEGER is
+	frozen get_bevel_button_menu_value_external (inbutton: POINTER; outvalue: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16*):OSErr"
 		alias
 			"ewg_function_macro_GetBevelButtonMenuValue"
 		end
 
-	get_bevel_button_menu_value_address_external: POINTER is
+	frozenget_bevel_button_menu_value_address_external: POINTER is
 			-- Address of C function `GetBevelButtonMenuValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) GetBevelButtonMenuValue"
 		end
 
-	set_bevel_button_menu_value_external (inbutton: POINTER; invalue: INTEGER): INTEGER is
+	frozen set_bevel_button_menu_value_external (inbutton: POINTER; invalue: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16):OSErr"
 		alias
 			"ewg_function_macro_SetBevelButtonMenuValue"
 		end
 
-	set_bevel_button_menu_value_address_external: POINTER is
+	frozenset_bevel_button_menu_value_address_external: POINTER is
 			-- Address of C function `SetBevelButtonMenuValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) SetBevelButtonMenuValue"
 		end
 
-	get_bevel_button_menu_handle_external (inbutton: POINTER; outhandle: POINTER): INTEGER is
+	frozen get_bevel_button_menu_handle_external (inbutton: POINTER; outhandle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, MenuHandle*):OSErr"
 		alias
 			"ewg_function_macro_GetBevelButtonMenuHandle"
 		end
 
-	get_bevel_button_menu_handle_address_external: POINTER is
+	frozenget_bevel_button_menu_handle_address_external: POINTER is
 			-- Address of C function `GetBevelButtonMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) GetBevelButtonMenuHandle"
 		end
 
-	get_bevel_button_content_info_external (inbutton: POINTER; outcontent: POINTER): INTEGER is
+	frozen get_bevel_button_content_info_external (inbutton: POINTER; outcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlButtonContentInfoPtr):OSErr"
 		alias
 			"ewg_function_macro_GetBevelButtonContentInfo"
 		end
 
-	get_bevel_button_content_info_address_external: POINTER is
+	frozenget_bevel_button_content_info_address_external: POINTER is
 			-- Address of C function `GetBevelButtonContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) GetBevelButtonContentInfo"
 		end
 
-	set_bevel_button_content_info_external (inbutton: POINTER; incontent: POINTER): INTEGER is
+	frozen set_bevel_button_content_info_external (inbutton: POINTER; incontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlButtonContentInfoPtr):OSErr"
 		alias
 			"ewg_function_macro_SetBevelButtonContentInfo"
 		end
 
-	set_bevel_button_content_info_address_external: POINTER is
+	frozenset_bevel_button_content_info_address_external: POINTER is
 			-- Address of C function `SetBevelButtonContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) SetBevelButtonContentInfo"
 		end
 
-	set_bevel_button_transform_external (inbutton: POINTER; transform: INTEGER): INTEGER is
+	frozen set_bevel_button_transform_external (inbutton: POINTER; transform: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, IconTransformType):OSErr"
 		alias
 			"ewg_function_macro_SetBevelButtonTransform"
 		end
 
-	set_bevel_button_transform_address_external: POINTER is
+	frozenset_bevel_button_transform_address_external: POINTER is
 			-- Address of C function `SetBevelButtonTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) SetBevelButtonTransform"
 		end
 
-	set_bevel_button_graphic_alignment_external (inbutton: POINTER; inalign: INTEGER; inhoffset: INTEGER; invoffset: INTEGER): INTEGER is
+	frozen set_bevel_button_graphic_alignment_external (inbutton: POINTER; inalign: INTEGER; inhoffset: INTEGER; invoffset: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlButtonGraphicAlignment, SInt16, SInt16):OSErr"
 		alias
 			"ewg_function_macro_SetBevelButtonGraphicAlignment"
 		end
 
-	set_bevel_button_graphic_alignment_address_external: POINTER is
+	frozenset_bevel_button_graphic_alignment_address_external: POINTER is
 			-- Address of C function `SetBevelButtonGraphicAlignment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) SetBevelButtonGraphicAlignment"
 		end
 
-	set_bevel_button_text_alignment_external (inbutton: POINTER; inalign: INTEGER; inhoffset: INTEGER): INTEGER is
+	frozen set_bevel_button_text_alignment_external (inbutton: POINTER; inalign: INTEGER; inhoffset: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlButtonTextAlignment, SInt16):OSErr"
 		alias
 			"ewg_function_macro_SetBevelButtonTextAlignment"
 		end
 
-	set_bevel_button_text_alignment_address_external: POINTER is
+	frozenset_bevel_button_text_alignment_address_external: POINTER is
 			-- Address of C function `SetBevelButtonTextAlignment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) SetBevelButtonTextAlignment"
 		end
 
-	set_bevel_button_text_placement_external (inbutton: POINTER; inwhere: INTEGER): INTEGER is
+	frozen set_bevel_button_text_placement_external (inbutton: POINTER; inwhere: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlButtonTextPlacement):OSErr"
 		alias
 			"ewg_function_macro_SetBevelButtonTextPlacement"
 		end
 
-	set_bevel_button_text_placement_address_external: POINTER is
+	frozenset_bevel_button_text_placement_address_external: POINTER is
 			-- Address of C function `SetBevelButtonTextPlacement'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) SetBevelButtonTextPlacement"
 		end
 
-	create_slider_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; orientation: INTEGER; numtickmarks: INTEGER; livetracking: INTEGER; livetrackingproc: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_slider_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; orientation: INTEGER; numtickmarks: INTEGER; livetracking: INTEGER; livetrackingproc: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt32, SInt32, SInt32, ControlSliderOrientation, UInt16, Boolean, ControlActionUPP, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateSliderControl"
 		end
 
-	create_slider_control_address_external: POINTER is
+	frozencreate_slider_control_address_external: POINTER is
 			-- Address of C function `CreateSliderControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CreateSliderControl"
 		end
 
-	create_disclosure_triangle_control_external (inwindow: POINTER; inboundsrect: POINTER; inorientation: INTEGER; intitle: POINTER; ininitialvalue: INTEGER; indrawtitle: INTEGER; inautotoggles: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_disclosure_triangle_control_external (inwindow: POINTER; inboundsrect: POINTER; inorientation: INTEGER; intitle: POINTER; ininitialvalue: INTEGER; indrawtitle: INTEGER; inautotoggles: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlDisclosureTriangleOrientation, CFStringRef, SInt32, Boolean, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateDisclosureTriangleControl"
 		end
 
-	create_disclosure_triangle_control_address_external: POINTER is
+	frozencreate_disclosure_triangle_control_address_external: POINTER is
 			-- Address of C function `CreateDisclosureTriangleControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CreateDisclosureTriangleControl"
 		end
 
-	set_disclosure_triangle_last_value_external (intabcontrol: POINTER; invalue: INTEGER): INTEGER is
+	frozen set_disclosure_triangle_last_value_external (intabcontrol: POINTER; invalue: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16):OSErr"
 		alias
 			"ewg_function_macro_SetDisclosureTriangleLastValue"
 		end
 
-	set_disclosure_triangle_last_value_address_external: POINTER is
+	frozenset_disclosure_triangle_last_value_address_external: POINTER is
 			-- Address of C function `SetDisclosureTriangleLastValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) SetDisclosureTriangleLastValue"
 		end
 
-	create_progress_bar_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; indeterminate: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_progress_bar_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; indeterminate: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt32, SInt32, SInt32, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateProgressBarControl"
 		end
 
-	create_progress_bar_control_address_external: POINTER is
+	frozencreate_progress_bar_control_address_external: POINTER is
 			-- Address of C function `CreateProgressBarControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) CreateProgressBarControl"
 		end
 
-	create_relevance_bar_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_relevance_bar_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt32, SInt32, SInt32, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateRelevanceBarControl"
 		end
 
-	create_relevance_bar_control_address_external: POINTER is
+	frozencreate_relevance_bar_control_address_external: POINTER is
 			-- Address of C function `CreateRelevanceBarControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CreateRelevanceBarControl"
 		end
 
-	create_little_arrows_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; increment: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_little_arrows_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; increment: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt32, SInt32, SInt32, SInt32, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateLittleArrowsControl"
 		end
 
-	create_little_arrows_control_address_external: POINTER is
+	frozencreate_little_arrows_control_address_external: POINTER is
 			-- Address of C function `CreateLittleArrowsControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) CreateLittleArrowsControl"
 		end
 
-	create_chasing_arrows_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_chasing_arrows_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateChasingArrowsControl"
 		end
 
-	create_chasing_arrows_control_address_external: POINTER is
+	frozencreate_chasing_arrows_control_address_external: POINTER is
 			-- Address of C function `CreateChasingArrowsControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CreateChasingArrowsControl"
 		end
 
-	create_tabs_control_external (window: POINTER; boundsrect: POINTER; size: INTEGER; direction: INTEGER; numtabs: INTEGER; tabarray: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_tabs_control_external (window: POINTER; boundsrect: POINTER; size: INTEGER; direction: INTEGER; numtabs: INTEGER; tabarray: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlTabSize, ControlTabDirection, UInt16, ControlTabEntry const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateTabsControl"
 		end
 
-	create_tabs_control_address_external: POINTER is
+	frozencreate_tabs_control_address_external: POINTER is
 			-- Address of C function `CreateTabsControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) CreateTabsControl"
 		end
 
-	get_tab_content_rect_external (intabcontrol: POINTER; outcontentrect: POINTER): INTEGER is
+	frozen get_tab_content_rect_external (intabcontrol: POINTER; outcontentrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Rect*):OSErr"
 		alias
 			"ewg_function_macro_GetTabContentRect"
 		end
 
-	get_tab_content_rect_address_external: POINTER is
+	frozenget_tab_content_rect_address_external: POINTER is
 			-- Address of C function `GetTabContentRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) GetTabContentRect"
 		end
 
-	set_tab_enabled_external (intabcontrol: POINTER; intabtohilite: INTEGER; inenabled: INTEGER): INTEGER is
+	frozen set_tab_enabled_external (intabcontrol: POINTER; intabtohilite: INTEGER; inenabled: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, Boolean):OSErr"
 		alias
 			"ewg_function_macro_SetTabEnabled"
 		end
 
-	set_tab_enabled_address_external: POINTER is
+	frozenset_tab_enabled_address_external: POINTER is
 			-- Address of C function `SetTabEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) SetTabEnabled"
 		end
 
-	create_separator_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_separator_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateSeparatorControl"
 		end
 
-	create_separator_control_address_external: POINTER is
+	frozencreate_separator_control_address_external: POINTER is
 			-- Address of C function `CreateSeparatorControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CreateSeparatorControl"
 		end
 
-	create_group_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; primary: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_group_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; primary: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateGroupBoxControl"
 		end
 
-	create_group_box_control_address_external: POINTER is
+	frozencreate_group_box_control_address_external: POINTER is
 			-- Address of C function `CreateGroupBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) CreateGroupBoxControl"
 		end
 
-	create_check_group_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; initialvalue: INTEGER; primary: INTEGER; autotoggle: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_check_group_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; initialvalue: INTEGER; primary: INTEGER; autotoggle: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, SInt32, Boolean, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateCheckGroupBoxControl"
 		end
 
-	create_check_group_box_control_address_external: POINTER is
+	frozencreate_check_group_box_control_address_external: POINTER is
 			-- Address of C function `CreateCheckGroupBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) CreateCheckGroupBoxControl"
 		end
 
-	create_popup_group_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; primary: INTEGER; menuid: INTEGER; variablewidth: INTEGER; titlewidth: INTEGER; titlejustification: INTEGER; titlestyle: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_popup_group_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; primary: INTEGER; menuid: INTEGER; variablewidth: INTEGER; titlewidth: INTEGER; titlejustification: INTEGER; titlestyle: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, Boolean, SInt16, Boolean, SInt16, SInt16, Style, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreatePopupGroupBoxControl"
 		end
 
-	create_popup_group_box_control_address_external: POINTER is
+	frozencreate_popup_group_box_control_address_external: POINTER is
 			-- Address of C function `CreatePopupGroupBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) CreatePopupGroupBoxControl"
 		end
 
-	create_image_well_control_external (window: POINTER; boundsrect: POINTER; info: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_image_well_control_external (window: POINTER; boundsrect: POINTER; info: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlButtonContentInfo const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateImageWellControl"
 		end
 
-	create_image_well_control_address_external: POINTER is
+	frozencreate_image_well_control_address_external: POINTER is
 			-- Address of C function `CreateImageWellControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) CreateImageWellControl"
 		end
 
-	get_image_well_content_info_external (inbutton: POINTER; outcontent: POINTER): INTEGER is
+	frozen get_image_well_content_info_external (inbutton: POINTER; outcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlButtonContentInfoPtr):OSErr"
 		alias
 			"ewg_function_macro_GetImageWellContentInfo"
 		end
 
-	get_image_well_content_info_address_external: POINTER is
+	frozenget_image_well_content_info_address_external: POINTER is
 			-- Address of C function `GetImageWellContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) GetImageWellContentInfo"
 		end
 
-	set_image_well_content_info_external (inbutton: POINTER; incontent: POINTER): INTEGER is
+	frozen set_image_well_content_info_external (inbutton: POINTER; incontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlButtonContentInfoPtr):OSErr"
 		alias
 			"ewg_function_macro_SetImageWellContentInfo"
 		end
 
-	set_image_well_content_info_address_external: POINTER is
+	frozenset_image_well_content_info_address_external: POINTER is
 			-- Address of C function `SetImageWellContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) SetImageWellContentInfo"
 		end
 
-	set_image_well_transform_external (inbutton: POINTER; intransform: INTEGER): INTEGER is
+	frozen set_image_well_transform_external (inbutton: POINTER; intransform: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, IconTransformType):OSErr"
 		alias
 			"ewg_function_macro_SetImageWellTransform"
 		end
 
-	set_image_well_transform_address_external: POINTER is
+	frozenset_image_well_transform_address_external: POINTER is
 			-- Address of C function `SetImageWellTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) SetImageWellTransform"
 		end
 
-	create_popup_arrow_control_external (window: POINTER; boundsrect: POINTER; orientation: INTEGER; size: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_popup_arrow_control_external (window: POINTER; boundsrect: POINTER; orientation: INTEGER; size: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlPopupArrowOrientation, ControlPopupArrowSize, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreatePopupArrowControl"
 		end
 
-	create_popup_arrow_control_address_external: POINTER is
+	frozencreate_popup_arrow_control_address_external: POINTER is
 			-- Address of C function `CreatePopupArrowControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) CreatePopupArrowControl"
 		end
 
-	create_placard_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_placard_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreatePlacardControl"
 		end
 
-	create_placard_control_address_external: POINTER is
+	frozencreate_placard_control_address_external: POINTER is
 			-- Address of C function `CreatePlacardControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) CreatePlacardControl"
 		end
 
-	create_clock_control_external (window: POINTER; boundsrect: POINTER; clocktype: INTEGER; clockflags: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_clock_control_external (window: POINTER; boundsrect: POINTER; clocktype: INTEGER; clockflags: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlClockType, ControlClockFlags, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateClockControl"
 		end
 
-	create_clock_control_address_external: POINTER is
+	frozencreate_clock_control_address_external: POINTER is
 			-- Address of C function `CreateClockControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) CreateClockControl"
 		end
 
-	create_user_pane_control_external (window: POINTER; boundsrect: POINTER; features: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_user_pane_control_external (window: POINTER; boundsrect: POINTER; features: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, UInt32, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateUserPaneControl"
 		end
 
-	create_user_pane_control_address_external: POINTER is
+	frozencreate_user_pane_control_address_external: POINTER is
 			-- Address of C function `CreateUserPaneControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) CreateUserPaneControl"
 		end
 
-	new_control_user_pane_draw_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_draw_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneDrawProcPtr):ControlUserPaneDrawUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneDrawUPP"
 		end
 
-	new_control_user_pane_draw_upp_address_external: POINTER is
+	frozennew_control_user_pane_draw_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneDrawUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) NewControlUserPaneDrawUPP"
 		end
 
-	new_control_user_pane_hit_test_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_hit_test_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneHitTestProcPtr):ControlUserPaneHitTestUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneHitTestUPP"
 		end
 
-	new_control_user_pane_hit_test_upp_address_external: POINTER is
+	frozennew_control_user_pane_hit_test_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) NewControlUserPaneHitTestUPP"
 		end
 
-	new_control_user_pane_tracking_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_tracking_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneTrackingProcPtr):ControlUserPaneTrackingUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneTrackingUPP"
 		end
 
-	new_control_user_pane_tracking_upp_address_external: POINTER is
+	frozennew_control_user_pane_tracking_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) NewControlUserPaneTrackingUPP"
 		end
 
-	new_control_user_pane_idle_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_idle_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneIdleProcPtr):ControlUserPaneIdleUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneIdleUPP"
 		end
 
-	new_control_user_pane_idle_upp_address_external: POINTER is
+	frozennew_control_user_pane_idle_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneIdleUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) NewControlUserPaneIdleUPP"
 		end
 
-	new_control_user_pane_key_down_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_key_down_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneKeyDownProcPtr):ControlUserPaneKeyDownUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneKeyDownUPP"
 		end
 
-	new_control_user_pane_key_down_upp_address_external: POINTER is
+	frozennew_control_user_pane_key_down_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneKeyDownUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) NewControlUserPaneKeyDownUPP"
 		end
 
-	new_control_user_pane_activate_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_activate_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneActivateProcPtr):ControlUserPaneActivateUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneActivateUPP"
 		end
 
-	new_control_user_pane_activate_upp_address_external: POINTER is
+	frozennew_control_user_pane_activate_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneActivateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) NewControlUserPaneActivateUPP"
 		end
 
-	new_control_user_pane_focus_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_focus_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneFocusProcPtr):ControlUserPaneFocusUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneFocusUPP"
 		end
 
-	new_control_user_pane_focus_upp_address_external: POINTER is
+	frozennew_control_user_pane_focus_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneFocusUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) NewControlUserPaneFocusUPP"
 		end
 
-	new_control_user_pane_background_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_user_pane_background_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneBackgroundProcPtr):ControlUserPaneBackgroundUPP"
 		alias
 			"ewg_function_macro_NewControlUserPaneBackgroundUPP"
 		end
 
-	new_control_user_pane_background_upp_address_external: POINTER is
+	frozennew_control_user_pane_background_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneBackgroundUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) NewControlUserPaneBackgroundUPP"
 		end
 
-	dispose_control_user_pane_draw_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_draw_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneDrawUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneDrawUPP"
 		end
 
-	dispose_control_user_pane_draw_upp_address_external: POINTER is
+	frozendispose_control_user_pane_draw_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneDrawUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) DisposeControlUserPaneDrawUPP"
 		end
 
-	dispose_control_user_pane_hit_test_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_hit_test_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneHitTestUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneHitTestUPP"
 		end
 
-	dispose_control_user_pane_hit_test_upp_address_external: POINTER is
+	frozendispose_control_user_pane_hit_test_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) DisposeControlUserPaneHitTestUPP"
 		end
 
-	dispose_control_user_pane_tracking_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_tracking_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneTrackingUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneTrackingUPP"
 		end
 
-	dispose_control_user_pane_tracking_upp_address_external: POINTER is
+	frozendispose_control_user_pane_tracking_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) DisposeControlUserPaneTrackingUPP"
 		end
 
-	dispose_control_user_pane_idle_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_idle_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneIdleUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneIdleUPP"
 		end
 
-	dispose_control_user_pane_idle_upp_address_external: POINTER is
+	frozendispose_control_user_pane_idle_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneIdleUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) DisposeControlUserPaneIdleUPP"
 		end
 
-	dispose_control_user_pane_key_down_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_key_down_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneKeyDownUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneKeyDownUPP"
 		end
 
-	dispose_control_user_pane_key_down_upp_address_external: POINTER is
+	frozendispose_control_user_pane_key_down_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneKeyDownUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) DisposeControlUserPaneKeyDownUPP"
 		end
 
-	dispose_control_user_pane_activate_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_activate_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneActivateUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneActivateUPP"
 		end
 
-	dispose_control_user_pane_activate_upp_address_external: POINTER is
+	frozendispose_control_user_pane_activate_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneActivateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) DisposeControlUserPaneActivateUPP"
 		end
 
-	dispose_control_user_pane_focus_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_focus_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneFocusUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneFocusUPP"
 		end
 
-	dispose_control_user_pane_focus_upp_address_external: POINTER is
+	frozendispose_control_user_pane_focus_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneFocusUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) DisposeControlUserPaneFocusUPP"
 		end
 
-	dispose_control_user_pane_background_upp_external (userupp: POINTER) is
+	frozen dispose_control_user_pane_background_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlUserPaneBackgroundUPP)"
 		alias
 			"ewg_function_macro_DisposeControlUserPaneBackgroundUPP"
 		end
 
-	dispose_control_user_pane_background_upp_address_external: POINTER is
+	frozendispose_control_user_pane_background_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneBackgroundUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) DisposeControlUserPaneBackgroundUPP"
 		end
 
-	invoke_control_user_pane_draw_upp_external (control: POINTER; part: INTEGER; userupp: POINTER) is
+	frozen invoke_control_user_pane_draw_upp_external (control: POINTER; part: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, ControlUserPaneDrawUPP)"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneDrawUPP"
 		end
 
-	invoke_control_user_pane_draw_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_draw_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneDrawUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) InvokeControlUserPaneDrawUPP"
 		end
 
-	invoke_control_user_pane_hit_test_upp_external (control: POINTER; where: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_control_user_pane_hit_test_upp_external (control: POINTER; where: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, ControlUserPaneHitTestUPP):ControlPartCode"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneHitTestUPP"
 		end
 
-	invoke_control_user_pane_hit_test_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_hit_test_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) InvokeControlUserPaneHitTestUPP"
 		end
 
-	invoke_control_user_pane_tracking_upp_external (control: POINTER; startpt: POINTER; actionproc: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_control_user_pane_tracking_upp_external (control: POINTER; startpt: POINTER; actionproc: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, ControlActionUPP, ControlUserPaneTrackingUPP):ControlPartCode"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneTrackingUPP"
 		end
 
-	invoke_control_user_pane_tracking_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_tracking_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) InvokeControlUserPaneTrackingUPP"
 		end
 
-	invoke_control_user_pane_idle_upp_external (control: POINTER; userupp: POINTER) is
+	frozen invoke_control_user_pane_idle_upp_external (control: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlUserPaneIdleUPP)"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneIdleUPP"
 		end
 
-	invoke_control_user_pane_idle_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_idle_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneIdleUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) InvokeControlUserPaneIdleUPP"
 		end
 
-	invoke_control_user_pane_key_down_upp_external (control: POINTER; keycode: INTEGER; charcode: INTEGER; modifiers: INTEGER; userupp: POINTER): INTEGER is
+	frozen invoke_control_user_pane_key_down_upp_external (control: POINTER; keycode: INTEGER; charcode: INTEGER; modifiers: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, SInt16, SInt16, ControlUserPaneKeyDownUPP):ControlPartCode"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneKeyDownUPP"
 		end
 
-	invoke_control_user_pane_key_down_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_key_down_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneKeyDownUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) InvokeControlUserPaneKeyDownUPP"
 		end
 
-	invoke_control_user_pane_activate_upp_external (control: POINTER; activating: INTEGER; userupp: POINTER) is
+	frozen invoke_control_user_pane_activate_upp_external (control: POINTER; activating: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean, ControlUserPaneActivateUPP)"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneActivateUPP"
 		end
 
-	invoke_control_user_pane_activate_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_activate_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneActivateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) InvokeControlUserPaneActivateUPP"
 		end
 
-	invoke_control_user_pane_focus_upp_external (control: POINTER; action: INTEGER; userupp: POINTER): INTEGER is
+	frozen invoke_control_user_pane_focus_upp_external (control: POINTER; action: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlFocusPart, ControlUserPaneFocusUPP):ControlPartCode"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneFocusUPP"
 		end
 
-	invoke_control_user_pane_focus_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_focus_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneFocusUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) InvokeControlUserPaneFocusUPP"
 		end
 
-	invoke_control_user_pane_background_upp_external (control: POINTER; info: POINTER; userupp: POINTER) is
+	frozen invoke_control_user_pane_background_upp_external (control: POINTER; info: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlBackgroundPtr, ControlUserPaneBackgroundUPP)"
 		alias
 			"ewg_function_macro_InvokeControlUserPaneBackgroundUPP"
 		end
 
-	invoke_control_user_pane_background_upp_address_external: POINTER is
+	frozeninvoke_control_user_pane_background_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneBackgroundUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) InvokeControlUserPaneBackgroundUPP"
 		end
 
-	create_edit_text_control_external (window: POINTER; boundsrect: POINTER; text: POINTER; ispassword: INTEGER; useinlineinput: INTEGER; style: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_edit_text_control_external (window: POINTER; boundsrect: POINTER; text: POINTER; ispassword: INTEGER; useinlineinput: INTEGER; style: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, Boolean, Boolean, ControlFontStyleRec const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateEditTextControl"
 		end
 
-	create_edit_text_control_address_external: POINTER is
+	frozencreate_edit_text_control_address_external: POINTER is
 			-- Address of C function `CreateEditTextControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) CreateEditTextControl"
 		end
 
-	new_control_edit_text_validation_upp_external (userroutine: POINTER): POINTER is
+	frozen new_control_edit_text_validation_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlEditTextValidationProcPtr):ControlEditTextValidationUPP"
 		alias
 			"ewg_function_macro_NewControlEditTextValidationUPP"
 		end
 
-	new_control_edit_text_validation_upp_address_external: POINTER is
+	frozennew_control_edit_text_validation_upp_address_external: POINTER is
 			-- Address of C function `NewControlEditTextValidationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) NewControlEditTextValidationUPP"
 		end
 
-	dispose_control_edit_text_validation_upp_external (userupp: POINTER) is
+	frozen dispose_control_edit_text_validation_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlEditTextValidationUPP)"
 		alias
 			"ewg_function_macro_DisposeControlEditTextValidationUPP"
 		end
 
-	dispose_control_edit_text_validation_upp_address_external: POINTER is
+	frozendispose_control_edit_text_validation_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlEditTextValidationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) DisposeControlEditTextValidationUPP"
 		end
 
-	invoke_control_edit_text_validation_upp_external (control: POINTER; userupp: POINTER) is
+	frozen invoke_control_edit_text_validation_upp_external (control: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlEditTextValidationUPP)"
 		alias
 			"ewg_function_macro_InvokeControlEditTextValidationUPP"
 		end
 
-	invoke_control_edit_text_validation_upp_address_external: POINTER is
+	frozeninvoke_control_edit_text_validation_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlEditTextValidationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) InvokeControlEditTextValidationUPP"
 		end
 
-	create_static_text_control_external (window: POINTER; boundsrect: POINTER; text: POINTER; style: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_static_text_control_external (window: POINTER; boundsrect: POINTER; text: POINTER; style: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, ControlFontStyleRec const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateStaticTextControl"
 		end
 
-	create_static_text_control_address_external: POINTER is
+	frozencreate_static_text_control_address_external: POINTER is
 			-- Address of C function `CreateStaticTextControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) CreateStaticTextControl"
 		end
 
-	create_picture_control_external (window: POINTER; boundsrect: POINTER; content: POINTER; donttrack: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_picture_control_external (window: POINTER; boundsrect: POINTER; content: POINTER; donttrack: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlButtonContentInfo const*, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreatePictureControl"
 		end
 
-	create_picture_control_address_external: POINTER is
+	frozencreate_picture_control_address_external: POINTER is
 			-- Address of C function `CreatePictureControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) CreatePictureControl"
 		end
 
-	create_icon_control_external (inwindow: POINTER; inboundsrect: POINTER; iniconcontent: POINTER; indonttrack: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_icon_control_external (inwindow: POINTER; inboundsrect: POINTER; iniconcontent: POINTER; indonttrack: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlButtonContentInfo const*, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateIconControl"
 		end
 
-	create_icon_control_address_external: POINTER is
+	frozencreate_icon_control_address_external: POINTER is
 			-- Address of C function `CreateIconControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) CreateIconControl"
 		end
 
-	create_window_header_control_external (window: POINTER; boundsrect: POINTER; islistheader: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_window_header_control_external (window: POINTER; boundsrect: POINTER; islistheader: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateWindowHeaderControl"
 		end
 
-	create_window_header_control_address_external: POINTER is
+	frozencreate_window_header_control_address_external: POINTER is
 			-- Address of C function `CreateWindowHeaderControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) CreateWindowHeaderControl"
 		end
 
-	create_list_box_control_external (window: POINTER; boundsrect: POINTER; autosize: INTEGER; numrows: INTEGER; numcolumns: INTEGER; horizscroll: INTEGER; vertscroll: INTEGER; cellheight: INTEGER; cellwidth: INTEGER; hasgrowspace: INTEGER; listdef: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_list_box_control_external (window: POINTER; boundsrect: POINTER; autosize: INTEGER; numrows: INTEGER; numcolumns: INTEGER; horizscroll: INTEGER; vertscroll: INTEGER; cellheight: INTEGER; cellwidth: INTEGER; hasgrowspace: INTEGER; listdef: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, Boolean, SInt16, SInt16, Boolean, Boolean, SInt16, SInt16, Boolean, ListDefSpec const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateListBoxControl"
 		end
 
-	create_list_box_control_address_external: POINTER is
+	frozencreate_list_box_control_address_external: POINTER is
 			-- Address of C function `CreateListBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) CreateListBoxControl"
 		end
 
-	create_push_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_push_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreatePushButtonControl"
 		end
 
-	create_push_button_control_address_external: POINTER is
+	frozencreate_push_button_control_address_external: POINTER is
 			-- Address of C function `CreatePushButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) CreatePushButtonControl"
 		end
 
-	create_push_button_with_icon_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; icon: POINTER; iconalignment: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_push_button_with_icon_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; icon: POINTER; iconalignment: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, ControlButtonContentInfo*, ControlPushButtonIconAlignment, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreatePushButtonWithIconControl"
 		end
 
-	create_push_button_with_icon_control_address_external: POINTER is
+	frozencreate_push_button_with_icon_control_address_external: POINTER is
 			-- Address of C function `CreatePushButtonWithIconControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) CreatePushButtonWithIconControl"
 		end
 
-	create_radio_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; initialvalue: INTEGER; autotoggle: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_radio_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; initialvalue: INTEGER; autotoggle: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, SInt32, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateRadioButtonControl"
 		end
 
-	create_radio_button_control_address_external: POINTER is
+	frozencreate_radio_button_control_address_external: POINTER is
 			-- Address of C function `CreateRadioButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) CreateRadioButtonControl"
 		end
 
-	create_check_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; initialvalue: INTEGER; autotoggle: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_check_box_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; initialvalue: INTEGER; autotoggle: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, SInt32, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateCheckBoxControl"
 		end
 
-	create_check_box_control_address_external: POINTER is
+	frozencreate_check_box_control_address_external: POINTER is
 			-- Address of C function `CreateCheckBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) CreateCheckBoxControl"
 		end
 
-	create_scroll_bar_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; viewsize: INTEGER; livetracking: INTEGER; livetrackingproc: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_scroll_bar_control_external (window: POINTER; boundsrect: POINTER; value: INTEGER; minimum: INTEGER; maximum: INTEGER; viewsize: INTEGER; livetracking: INTEGER; livetrackingproc: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt32, SInt32, SInt32, SInt32, Boolean, ControlActionUPP, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateScrollBarControl"
 		end
 
-	create_scroll_bar_control_address_external: POINTER is
+	frozencreate_scroll_bar_control_address_external: POINTER is
 			-- Address of C function `CreateScrollBarControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) CreateScrollBarControl"
 		end
 
-	create_popup_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; menuid: INTEGER; variablewidth: INTEGER; titlewidth: INTEGER; titlejustification: INTEGER; titlestyle: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_popup_button_control_external (window: POINTER; boundsrect: POINTER; title: POINTER; menuid: INTEGER; variablewidth: INTEGER; titlewidth: INTEGER; titlejustification: INTEGER; titlestyle: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, SInt16, Boolean, SInt16, SInt16, Style, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreatePopupButtonControl"
 		end
 
-	create_popup_button_control_address_external: POINTER is
+	frozencreate_popup_button_control_address_external: POINTER is
 			-- Address of C function `CreatePopupButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) CreatePopupButtonControl"
 		end
 
-	create_radio_group_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_radio_group_control_external (window: POINTER; boundsrect: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateRadioGroupControl"
 		end
 
-	create_radio_group_control_address_external: POINTER is
+	frozencreate_radio_group_control_address_external: POINTER is
 			-- Address of C function `CreateRadioGroupControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) CreateRadioGroupControl"
 		end
 
-	create_scrolling_text_box_control_external (window: POINTER; boundsrect: POINTER; contentresid: INTEGER; autoscroll: INTEGER; delaybeforeautoscroll: INTEGER; delaybetweenautoscroll: INTEGER; autoscrollamount: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_scrolling_text_box_control_external (window: POINTER; boundsrect: POINTER; contentresid: INTEGER; autoscroll: INTEGER; delaybeforeautoscroll: INTEGER; delaybetweenautoscroll: INTEGER; autoscrollamount: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt16, Boolean, UInt32, UInt32, UInt16, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateScrollingTextBoxControl"
 		end
 
-	create_scrolling_text_box_control_address_external: POINTER is
+	frozencreate_scrolling_text_box_control_address_external: POINTER is
 			-- Address of C function `CreateScrollingTextBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) CreateScrollingTextBoxControl"
 		end
 
-	create_disclosure_button_control_external (inwindow: POINTER; inboundsrect: POINTER; invalue: INTEGER; inautotoggles: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_disclosure_button_control_external (inwindow: POINTER; inboundsrect: POINTER; invalue: INTEGER; inautotoggles: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt32, Boolean, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateDisclosureButtonControl"
 		end
 
-	create_disclosure_button_control_address_external: POINTER is
+	frozencreate_disclosure_button_control_address_external: POINTER is
 			-- Address of C function `CreateDisclosureButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) CreateDisclosureButtonControl"
 		end
 
-	create_round_button_control_external (inwindow: POINTER; inboundsrect: POINTER; insize: INTEGER; incontent: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_round_button_control_external (inwindow: POINTER; inboundsrect: POINTER; insize: INTEGER; incontent: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlRoundButtonSize, ControlButtonContentInfo*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateRoundButtonControl"
 		end
 
-	create_round_button_control_address_external: POINTER is
+	frozencreate_round_button_control_address_external: POINTER is
 			-- Address of C function `CreateRoundButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) CreateRoundButtonControl"
 		end
 
-	new_data_browser_item_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemProcPtr):DataBrowserItemUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemUPP"
 		end
 
-	new_data_browser_item_upp_address_external: POINTER is
+	frozennew_data_browser_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) NewDataBrowserItemUPP"
 		end
 
-	dispose_data_browser_item_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemUPP"
 		end
 
-	dispose_data_browser_item_upp_address_external: POINTER is
+	frozendispose_data_browser_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) DisposeDataBrowserItemUPP"
 		end
 
-	invoke_data_browser_item_upp_external (item: INTEGER; state: INTEGER; clientdata: POINTER; userupp: POINTER) is
+	frozen invoke_data_browser_item_upp_external (item: INTEGER; state: INTEGER; clientdata: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemID, DataBrowserItemState, void*, DataBrowserItemUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemUPP"
 		end
 
-	invoke_data_browser_item_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1173,14 +1173,14 @@ feature
 			"(void*) InvokeDataBrowserItemUPP"
 		end
 
-	create_data_browser_control_external (window: POINTER; boundsrect: POINTER; style: INTEGER; outcontrol: POINTER): INTEGER is
+	frozen create_data_browser_control_external (window: POINTER; boundsrect: POINTER; style: INTEGER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, DataBrowserViewStyle, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateDataBrowserControl"
 		end
 
-	create_data_browser_control_address_external: POINTER is
+	frozencreate_data_browser_control_address_external: POINTER is
 			-- Address of C function `CreateDataBrowserControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1188,14 +1188,14 @@ feature
 			"(void*) CreateDataBrowserControl"
 		end
 
-	get_data_browser_view_style_external (browser: POINTER; style: POINTER): INTEGER is
+	frozen get_data_browser_view_style_external (browser: POINTER; style: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserViewStyle*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserViewStyle"
 		end
 
-	get_data_browser_view_style_address_external: POINTER is
+	frozenget_data_browser_view_style_address_external: POINTER is
 			-- Address of C function `GetDataBrowserViewStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1203,14 +1203,14 @@ feature
 			"(void*) GetDataBrowserViewStyle"
 		end
 
-	set_data_browser_view_style_external (browser: POINTER; style: INTEGER): INTEGER is
+	frozen set_data_browser_view_style_external (browser: POINTER; style: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserViewStyle):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserViewStyle"
 		end
 
-	set_data_browser_view_style_address_external: POINTER is
+	frozenset_data_browser_view_style_address_external: POINTER is
 			-- Address of C function `SetDataBrowserViewStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1218,14 +1218,14 @@ feature
 			"(void*) SetDataBrowserViewStyle"
 		end
 
-	data_browser_change_attributes_external (indatabrowser: POINTER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
+	frozen data_browser_change_attributes_external (indatabrowser: POINTER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OptionBits, OptionBits):OSStatus"
 		alias
 			"ewg_function_macro_DataBrowserChangeAttributes"
 		end
 
-	data_browser_change_attributes_address_external: POINTER is
+	frozendata_browser_change_attributes_address_external: POINTER is
 			-- Address of C function `DataBrowserChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1233,14 +1233,14 @@ feature
 			"(void*) DataBrowserChangeAttributes"
 		end
 
-	data_browser_get_attributes_external (indatabrowser: POINTER; outattributes: POINTER): INTEGER is
+	frozen data_browser_get_attributes_external (indatabrowser: POINTER; outattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OptionBits*):OSStatus"
 		alias
 			"ewg_function_macro_DataBrowserGetAttributes"
 		end
 
-	data_browser_get_attributes_address_external: POINTER is
+	frozendata_browser_get_attributes_address_external: POINTER is
 			-- Address of C function `DataBrowserGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1248,14 +1248,14 @@ feature
 			"(void*) DataBrowserGetAttributes"
 		end
 
-	data_browser_set_metric_external (indatabrowser: POINTER; inmetric: INTEGER; inusedefaultvalue: INTEGER; invalue: REAL): INTEGER is
+	frozen data_browser_set_metric_external (indatabrowser: POINTER; inmetric: INTEGER; inusedefaultvalue: INTEGER; invalue: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserMetric, Boolean, float):OSStatus"
 		alias
 			"ewg_function_macro_DataBrowserSetMetric"
 		end
 
-	data_browser_set_metric_address_external: POINTER is
+	frozendata_browser_set_metric_address_external: POINTER is
 			-- Address of C function `DataBrowserSetMetric'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1263,14 +1263,14 @@ feature
 			"(void*) DataBrowserSetMetric"
 		end
 
-	data_browser_get_metric_external (indatabrowser: POINTER; inmetric: INTEGER; outusingdefaultvalue: POINTER; outvalue: POINTER): INTEGER is
+	frozen data_browser_get_metric_external (indatabrowser: POINTER; inmetric: INTEGER; outusingdefaultvalue: POINTER; outvalue: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserMetric, Boolean*, float*):OSStatus"
 		alias
 			"ewg_function_macro_DataBrowserGetMetric"
 		end
 
-	data_browser_get_metric_address_external: POINTER is
+	frozendata_browser_get_metric_address_external: POINTER is
 			-- Address of C function `DataBrowserGetMetric'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1278,14 +1278,14 @@ feature
 			"(void*) DataBrowserGetMetric"
 		end
 
-	add_data_browser_items_external (browser: POINTER; container: INTEGER; numitems: INTEGER; items: POINTER; presortproperty: INTEGER): INTEGER is
+	frozen add_data_browser_items_external (browser: POINTER; container: INTEGER; numitems: INTEGER; items: POINTER; presortproperty: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, UInt32, DataBrowserItemID const*, DataBrowserPropertyID):OSStatus"
 		alias
 			"ewg_function_macro_AddDataBrowserItems"
 		end
 
-	add_data_browser_items_address_external: POINTER is
+	frozenadd_data_browser_items_address_external: POINTER is
 			-- Address of C function `AddDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1293,14 +1293,14 @@ feature
 			"(void*) AddDataBrowserItems"
 		end
 
-	remove_data_browser_items_external (browser: POINTER; container: INTEGER; numitems: INTEGER; items: POINTER; presortproperty: INTEGER): INTEGER is
+	frozen remove_data_browser_items_external (browser: POINTER; container: INTEGER; numitems: INTEGER; items: POINTER; presortproperty: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, UInt32, DataBrowserItemID const*, DataBrowserPropertyID):OSStatus"
 		alias
 			"ewg_function_macro_RemoveDataBrowserItems"
 		end
 
-	remove_data_browser_items_address_external: POINTER is
+	frozenremove_data_browser_items_address_external: POINTER is
 			-- Address of C function `RemoveDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1308,14 +1308,14 @@ feature
 			"(void*) RemoveDataBrowserItems"
 		end
 
-	update_data_browser_items_external (browser: POINTER; container: INTEGER; numitems: INTEGER; items: POINTER; presortproperty: INTEGER; propertyid: INTEGER): INTEGER is
+	frozen update_data_browser_items_external (browser: POINTER; container: INTEGER; numitems: INTEGER; items: POINTER; presortproperty: INTEGER; propertyid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, UInt32, DataBrowserItemID const*, DataBrowserPropertyID, DataBrowserPropertyID):OSStatus"
 		alias
 			"ewg_function_macro_UpdateDataBrowserItems"
 		end
 
-	update_data_browser_items_address_external: POINTER is
+	frozenupdate_data_browser_items_address_external: POINTER is
 			-- Address of C function `UpdateDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1323,14 +1323,14 @@ feature
 			"(void*) UpdateDataBrowserItems"
 		end
 
-	enable_data_browser_edit_command_external (browser: POINTER; command: INTEGER): INTEGER is
+	frozen enable_data_browser_edit_command_external (browser: POINTER; command: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserEditCommand):Boolean"
 		alias
 			"ewg_function_macro_EnableDataBrowserEditCommand"
 		end
 
-	enable_data_browser_edit_command_address_external: POINTER is
+	frozenenable_data_browser_edit_command_address_external: POINTER is
 			-- Address of C function `EnableDataBrowserEditCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1338,14 +1338,14 @@ feature
 			"(void*) EnableDataBrowserEditCommand"
 		end
 
-	execute_data_browser_edit_command_external (browser: POINTER; command: INTEGER): INTEGER is
+	frozen execute_data_browser_edit_command_external (browser: POINTER; command: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserEditCommand):OSStatus"
 		alias
 			"ewg_function_macro_ExecuteDataBrowserEditCommand"
 		end
 
-	execute_data_browser_edit_command_address_external: POINTER is
+	frozenexecute_data_browser_edit_command_address_external: POINTER is
 			-- Address of C function `ExecuteDataBrowserEditCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1353,14 +1353,14 @@ feature
 			"(void*) ExecuteDataBrowserEditCommand"
 		end
 
-	get_data_browser_selection_anchor_external (browser: POINTER; first: POINTER; last: POINTER): INTEGER is
+	frozen get_data_browser_selection_anchor_external (browser: POINTER; first: POINTER; last: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID*, DataBrowserItemID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserSelectionAnchor"
 		end
 
-	get_data_browser_selection_anchor_address_external: POINTER is
+	frozenget_data_browser_selection_anchor_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSelectionAnchor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1368,14 +1368,14 @@ feature
 			"(void*) GetDataBrowserSelectionAnchor"
 		end
 
-	move_data_browser_selection_anchor_external (browser: POINTER; direction: INTEGER; extendselection: INTEGER): INTEGER is
+	frozen move_data_browser_selection_anchor_external (browser: POINTER; direction: INTEGER; extendselection: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserSelectionAnchorDirection, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_MoveDataBrowserSelectionAnchor"
 		end
 
-	move_data_browser_selection_anchor_address_external: POINTER is
+	frozenmove_data_browser_selection_anchor_address_external: POINTER is
 			-- Address of C function `MoveDataBrowserSelectionAnchor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1383,14 +1383,14 @@ feature
 			"(void*) MoveDataBrowserSelectionAnchor"
 		end
 
-	open_data_browser_container_external (browser: POINTER; container: INTEGER): INTEGER is
+	frozen open_data_browser_container_external (browser: POINTER; container: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID):OSStatus"
 		alias
 			"ewg_function_macro_OpenDataBrowserContainer"
 		end
 
-	open_data_browser_container_address_external: POINTER is
+	frozenopen_data_browser_container_address_external: POINTER is
 			-- Address of C function `OpenDataBrowserContainer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1398,14 +1398,14 @@ feature
 			"(void*) OpenDataBrowserContainer"
 		end
 
-	close_data_browser_container_external (browser: POINTER; container: INTEGER): INTEGER is
+	frozen close_data_browser_container_external (browser: POINTER; container: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID):OSStatus"
 		alias
 			"ewg_function_macro_CloseDataBrowserContainer"
 		end
 
-	close_data_browser_container_address_external: POINTER is
+	frozenclose_data_browser_container_address_external: POINTER is
 			-- Address of C function `CloseDataBrowserContainer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1413,14 +1413,14 @@ feature
 			"(void*) CloseDataBrowserContainer"
 		end
 
-	sort_data_browser_container_external (browser: POINTER; container: INTEGER; sortchildren: INTEGER): INTEGER is
+	frozen sort_data_browser_container_external (browser: POINTER; container: INTEGER; sortchildren: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SortDataBrowserContainer"
 		end
 
-	sort_data_browser_container_address_external: POINTER is
+	frozensort_data_browser_container_address_external: POINTER is
 			-- Address of C function `SortDataBrowserContainer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1428,14 +1428,14 @@ feature
 			"(void*) SortDataBrowserContainer"
 		end
 
-	get_data_browser_items_external (browser: POINTER; container: INTEGER; recurse: INTEGER; state: INTEGER; items: POINTER): INTEGER is
+	frozen get_data_browser_items_external (browser: POINTER; container: INTEGER; recurse: INTEGER; state: INTEGER; items: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, Boolean, DataBrowserItemState, Handle):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItems"
 		end
 
-	get_data_browser_items_address_external: POINTER is
+	frozenget_data_browser_items_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1443,14 +1443,14 @@ feature
 			"(void*) GetDataBrowserItems"
 		end
 
-	get_data_browser_item_count_external (browser: POINTER; container: INTEGER; recurse: INTEGER; state: INTEGER; numitems: POINTER): INTEGER is
+	frozen get_data_browser_item_count_external (browser: POINTER; container: INTEGER; recurse: INTEGER; state: INTEGER; numitems: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, Boolean, DataBrowserItemState, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemCount"
 		end
 
-	get_data_browser_item_count_address_external: POINTER is
+	frozenget_data_browser_item_count_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1458,14 +1458,14 @@ feature
 			"(void*) GetDataBrowserItemCount"
 		end
 
-	for_each_data_browser_item_external (browser: POINTER; container: INTEGER; recurse: INTEGER; state: INTEGER; callback: POINTER; clientdata: POINTER): INTEGER is
+	frozen for_each_data_browser_item_external (browser: POINTER; container: INTEGER; recurse: INTEGER; state: INTEGER; callback: POINTER; clientdata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, Boolean, DataBrowserItemState, DataBrowserItemUPP, void*):OSStatus"
 		alias
 			"ewg_function_macro_ForEachDataBrowserItem"
 		end
 
-	for_each_data_browser_item_address_external: POINTER is
+	frozenfor_each_data_browser_item_address_external: POINTER is
 			-- Address of C function `ForEachDataBrowserItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1473,14 +1473,14 @@ feature
 			"(void*) ForEachDataBrowserItem"
 		end
 
-	is_data_browser_item_selected_external (browser: POINTER; item: INTEGER): INTEGER is
+	frozen is_data_browser_item_selected_external (browser: POINTER; item: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID):Boolean"
 		alias
 			"ewg_function_macro_IsDataBrowserItemSelected"
 		end
 
-	is_data_browser_item_selected_address_external: POINTER is
+	frozenis_data_browser_item_selected_address_external: POINTER is
 			-- Address of C function `IsDataBrowserItemSelected'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1488,14 +1488,14 @@ feature
 			"(void*) IsDataBrowserItemSelected"
 		end
 
-	get_data_browser_item_state_external (browser: POINTER; item: INTEGER; state: POINTER): INTEGER is
+	frozen get_data_browser_item_state_external (browser: POINTER; item: INTEGER; state: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserItemState*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemState"
 		end
 
-	get_data_browser_item_state_address_external: POINTER is
+	frozenget_data_browser_item_state_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1503,14 +1503,14 @@ feature
 			"(void*) GetDataBrowserItemState"
 		end
 
-	reveal_data_browser_item_external (browser: POINTER; item: INTEGER; propertyid: INTEGER; options: INTEGER): INTEGER is
+	frozen reveal_data_browser_item_external (browser: POINTER; item: INTEGER; propertyid: INTEGER; options: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserRevealOptions):OSStatus"
 		alias
 			"ewg_function_macro_RevealDataBrowserItem"
 		end
 
-	reveal_data_browser_item_address_external: POINTER is
+	frozenreveal_data_browser_item_address_external: POINTER is
 			-- Address of C function `RevealDataBrowserItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1518,14 +1518,14 @@ feature
 			"(void*) RevealDataBrowserItem"
 		end
 
-	set_data_browser_selected_items_external (browser: POINTER; numitems: INTEGER; items: POINTER; operation: INTEGER): INTEGER is
+	frozen set_data_browser_selected_items_external (browser: POINTER; numitems: INTEGER; items: POINTER; operation: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32, DataBrowserItemID const*, DataBrowserSetOption):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserSelectedItems"
 		end
 
-	set_data_browser_selected_items_address_external: POINTER is
+	frozenset_data_browser_selected_items_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSelectedItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1533,14 +1533,14 @@ feature
 			"(void*) SetDataBrowserSelectedItems"
 		end
 
-	set_data_browser_user_state_external (browser: POINTER; stateinfo: POINTER): INTEGER is
+	frozen set_data_browser_user_state_external (browser: POINTER; stateinfo: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, CFDictionaryRef):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserUserState"
 		end
 
-	set_data_browser_user_state_address_external: POINTER is
+	frozenset_data_browser_user_state_address_external: POINTER is
 			-- Address of C function `SetDataBrowserUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1548,14 +1548,14 @@ feature
 			"(void*) SetDataBrowserUserState"
 		end
 
-	get_data_browser_user_state_external (browser: POINTER; stateinfo: POINTER): INTEGER is
+	frozen get_data_browser_user_state_external (browser: POINTER; stateinfo: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, CFDictionaryRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserUserState"
 		end
 
-	get_data_browser_user_state_address_external: POINTER is
+	frozenget_data_browser_user_state_address_external: POINTER is
 			-- Address of C function `GetDataBrowserUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1563,14 +1563,14 @@ feature
 			"(void*) GetDataBrowserUserState"
 		end
 
-	set_data_browser_active_items_external (browser: POINTER; active: INTEGER): INTEGER is
+	frozen set_data_browser_active_items_external (browser: POINTER; active: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserActiveItems"
 		end
 
-	set_data_browser_active_items_address_external: POINTER is
+	frozenset_data_browser_active_items_address_external: POINTER is
 			-- Address of C function `SetDataBrowserActiveItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1578,14 +1578,14 @@ feature
 			"(void*) SetDataBrowserActiveItems"
 		end
 
-	get_data_browser_active_items_external (browser: POINTER; active: POINTER): INTEGER is
+	frozen get_data_browser_active_items_external (browser: POINTER; active: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserActiveItems"
 		end
 
-	get_data_browser_active_items_address_external: POINTER is
+	frozenget_data_browser_active_items_address_external: POINTER is
 			-- Address of C function `GetDataBrowserActiveItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1593,14 +1593,14 @@ feature
 			"(void*) GetDataBrowserActiveItems"
 		end
 
-	set_data_browser_scroll_bar_inset_external (browser: POINTER; insetrect: POINTER): INTEGER is
+	frozen set_data_browser_scroll_bar_inset_external (browser: POINTER; insetrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserScrollBarInset"
 		end
 
-	set_data_browser_scroll_bar_inset_address_external: POINTER is
+	frozenset_data_browser_scroll_bar_inset_address_external: POINTER is
 			-- Address of C function `SetDataBrowserScrollBarInset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1608,14 +1608,14 @@ feature
 			"(void*) SetDataBrowserScrollBarInset"
 		end
 
-	get_data_browser_scroll_bar_inset_external (browser: POINTER; insetrect: POINTER): INTEGER is
+	frozen get_data_browser_scroll_bar_inset_external (browser: POINTER; insetrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserScrollBarInset"
 		end
 
-	get_data_browser_scroll_bar_inset_address_external: POINTER is
+	frozenget_data_browser_scroll_bar_inset_address_external: POINTER is
 			-- Address of C function `GetDataBrowserScrollBarInset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1623,14 +1623,14 @@ feature
 			"(void*) GetDataBrowserScrollBarInset"
 		end
 
-	set_data_browser_target_external (browser: POINTER; target: INTEGER): INTEGER is
+	frozen set_data_browser_target_external (browser: POINTER; target: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTarget"
 		end
 
-	set_data_browser_target_address_external: POINTER is
+	frozenset_data_browser_target_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1638,14 +1638,14 @@ feature
 			"(void*) SetDataBrowserTarget"
 		end
 
-	get_data_browser_target_external (browser: POINTER; target: POINTER): INTEGER is
+	frozen get_data_browser_target_external (browser: POINTER; target: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTarget"
 		end
 
-	get_data_browser_target_address_external: POINTER is
+	frozenget_data_browser_target_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1653,14 +1653,14 @@ feature
 			"(void*) GetDataBrowserTarget"
 		end
 
-	set_data_browser_sort_order_external (browser: POINTER; order: INTEGER): INTEGER is
+	frozen set_data_browser_sort_order_external (browser: POINTER; order: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserSortOrder):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserSortOrder"
 		end
 
-	set_data_browser_sort_order_address_external: POINTER is
+	frozenset_data_browser_sort_order_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSortOrder'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1668,14 +1668,14 @@ feature
 			"(void*) SetDataBrowserSortOrder"
 		end
 
-	get_data_browser_sort_order_external (browser: POINTER; order: POINTER): INTEGER is
+	frozen get_data_browser_sort_order_external (browser: POINTER; order: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserSortOrder*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserSortOrder"
 		end
 
-	get_data_browser_sort_order_address_external: POINTER is
+	frozenget_data_browser_sort_order_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSortOrder'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1683,14 +1683,14 @@ feature
 			"(void*) GetDataBrowserSortOrder"
 		end
 
-	set_data_browser_scroll_position_external (browser: POINTER; top: INTEGER; left: INTEGER): INTEGER is
+	frozen set_data_browser_scroll_position_external (browser: POINTER; top: INTEGER; left: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserScrollPosition"
 		end
 
-	set_data_browser_scroll_position_address_external: POINTER is
+	frozenset_data_browser_scroll_position_address_external: POINTER is
 			-- Address of C function `SetDataBrowserScrollPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1698,14 +1698,14 @@ feature
 			"(void*) SetDataBrowserScrollPosition"
 		end
 
-	get_data_browser_scroll_position_external (browser: POINTER; top: POINTER; left: POINTER): INTEGER is
+	frozen get_data_browser_scroll_position_external (browser: POINTER; top: POINTER; left: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32*, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserScrollPosition"
 		end
 
-	get_data_browser_scroll_position_address_external: POINTER is
+	frozenget_data_browser_scroll_position_address_external: POINTER is
 			-- Address of C function `GetDataBrowserScrollPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1713,14 +1713,14 @@ feature
 			"(void*) GetDataBrowserScrollPosition"
 		end
 
-	set_data_browser_has_scroll_bars_external (browser: POINTER; horiz: INTEGER; vert: INTEGER): INTEGER is
+	frozen set_data_browser_has_scroll_bars_external (browser: POINTER; horiz: INTEGER; vert: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserHasScrollBars"
 		end
 
-	set_data_browser_has_scroll_bars_address_external: POINTER is
+	frozenset_data_browser_has_scroll_bars_address_external: POINTER is
 			-- Address of C function `SetDataBrowserHasScrollBars'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1728,14 +1728,14 @@ feature
 			"(void*) SetDataBrowserHasScrollBars"
 		end
 
-	get_data_browser_has_scroll_bars_external (browser: POINTER; horiz: POINTER; vert: POINTER): INTEGER is
+	frozen get_data_browser_has_scroll_bars_external (browser: POINTER; horiz: POINTER; vert: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean*, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserHasScrollBars"
 		end
 
-	get_data_browser_has_scroll_bars_address_external: POINTER is
+	frozenget_data_browser_has_scroll_bars_address_external: POINTER is
 			-- Address of C function `GetDataBrowserHasScrollBars'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1743,14 +1743,14 @@ feature
 			"(void*) GetDataBrowserHasScrollBars"
 		end
 
-	set_data_browser_sort_property_external (browser: POINTER; property: INTEGER): INTEGER is
+	frozen set_data_browser_sort_property_external (browser: POINTER; property: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserPropertyID):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserSortProperty"
 		end
 
-	set_data_browser_sort_property_address_external: POINTER is
+	frozenset_data_browser_sort_property_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSortProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1758,14 +1758,14 @@ feature
 			"(void*) SetDataBrowserSortProperty"
 		end
 
-	get_data_browser_sort_property_external (browser: POINTER; property: POINTER): INTEGER is
+	frozen get_data_browser_sort_property_external (browser: POINTER; property: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserPropertyID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserSortProperty"
 		end
 
-	get_data_browser_sort_property_address_external: POINTER is
+	frozenget_data_browser_sort_property_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSortProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1773,14 +1773,14 @@ feature
 			"(void*) GetDataBrowserSortProperty"
 		end
 
-	set_data_browser_selection_flags_external (browser: POINTER; selectionflags: INTEGER): INTEGER is
+	frozen set_data_browser_selection_flags_external (browser: POINTER; selectionflags: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserSelectionFlags):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserSelectionFlags"
 		end
 
-	set_data_browser_selection_flags_address_external: POINTER is
+	frozenset_data_browser_selection_flags_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSelectionFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1788,14 +1788,14 @@ feature
 			"(void*) SetDataBrowserSelectionFlags"
 		end
 
-	get_data_browser_selection_flags_external (browser: POINTER; selectionflags: POINTER): INTEGER is
+	frozen get_data_browser_selection_flags_external (browser: POINTER; selectionflags: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserSelectionFlags*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserSelectionFlags"
 		end
 
-	get_data_browser_selection_flags_address_external: POINTER is
+	frozenget_data_browser_selection_flags_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSelectionFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1803,14 +1803,14 @@ feature
 			"(void*) GetDataBrowserSelectionFlags"
 		end
 
-	set_data_browser_property_flags_external (browser: POINTER; property: INTEGER; flags: INTEGER): INTEGER is
+	frozen set_data_browser_property_flags_external (browser: POINTER; property: INTEGER; flags: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserPropertyID, DataBrowserPropertyFlags):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserPropertyFlags"
 		end
 
-	set_data_browser_property_flags_address_external: POINTER is
+	frozenset_data_browser_property_flags_address_external: POINTER is
 			-- Address of C function `SetDataBrowserPropertyFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1818,14 +1818,14 @@ feature
 			"(void*) SetDataBrowserPropertyFlags"
 		end
 
-	get_data_browser_property_flags_external (browser: POINTER; property: INTEGER; flags: POINTER): INTEGER is
+	frozen get_data_browser_property_flags_external (browser: POINTER; property: INTEGER; flags: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserPropertyID, DataBrowserPropertyFlags*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserPropertyFlags"
 		end
 
-	get_data_browser_property_flags_address_external: POINTER is
+	frozenget_data_browser_property_flags_address_external: POINTER is
 			-- Address of C function `GetDataBrowserPropertyFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1833,14 +1833,14 @@ feature
 			"(void*) GetDataBrowserPropertyFlags"
 		end
 
-	set_data_browser_edit_text_external (browser: POINTER; text: POINTER): INTEGER is
+	frozen set_data_browser_edit_text_external (browser: POINTER; text: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserEditText"
 		end
 
-	set_data_browser_edit_text_address_external: POINTER is
+	frozenset_data_browser_edit_text_address_external: POINTER is
 			-- Address of C function `SetDataBrowserEditText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1848,14 +1848,14 @@ feature
 			"(void*) SetDataBrowserEditText"
 		end
 
-	copy_data_browser_edit_text_external (browser: POINTER; text: POINTER): INTEGER is
+	frozen copy_data_browser_edit_text_external (browser: POINTER; text: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyDataBrowserEditText"
 		end
 
-	copy_data_browser_edit_text_address_external: POINTER is
+	frozencopy_data_browser_edit_text_address_external: POINTER is
 			-- Address of C function `CopyDataBrowserEditText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1863,14 +1863,14 @@ feature
 			"(void*) CopyDataBrowserEditText"
 		end
 
-	get_data_browser_edit_text_external (browser: POINTER; text: POINTER): INTEGER is
+	frozen get_data_browser_edit_text_external (browser: POINTER; text: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, CFMutableStringRef):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserEditText"
 		end
 
-	get_data_browser_edit_text_address_external: POINTER is
+	frozenget_data_browser_edit_text_address_external: POINTER is
 			-- Address of C function `GetDataBrowserEditText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1878,14 +1878,14 @@ feature
 			"(void*) GetDataBrowserEditText"
 		end
 
-	set_data_browser_edit_item_external (browser: POINTER; item: INTEGER; property: INTEGER): INTEGER is
+	frozen set_data_browser_edit_item_external (browser: POINTER; item: INTEGER; property: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserEditItem"
 		end
 
-	set_data_browser_edit_item_address_external: POINTER is
+	frozenset_data_browser_edit_item_address_external: POINTER is
 			-- Address of C function `SetDataBrowserEditItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1893,14 +1893,14 @@ feature
 			"(void*) SetDataBrowserEditItem"
 		end
 
-	get_data_browser_edit_item_external (browser: POINTER; item: POINTER; property: POINTER): INTEGER is
+	frozen get_data_browser_edit_item_external (browser: POINTER; item: POINTER; property: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID*, DataBrowserPropertyID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserEditItem"
 		end
 
-	get_data_browser_edit_item_address_external: POINTER is
+	frozenget_data_browser_edit_item_address_external: POINTER is
 			-- Address of C function `GetDataBrowserEditItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1908,14 +1908,14 @@ feature
 			"(void*) GetDataBrowserEditItem"
 		end
 
-	get_data_browser_item_part_bounds_external (browser: POINTER; item: INTEGER; property: INTEGER; part: INTEGER; bounds: POINTER): INTEGER is
+	frozen get_data_browser_item_part_bounds_external (browser: POINTER; item: INTEGER; property: INTEGER; part: INTEGER; bounds: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserPropertyPart, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemPartBounds"
 		end
 
-	get_data_browser_item_part_bounds_address_external: POINTER is
+	frozenget_data_browser_item_part_bounds_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemPartBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1923,14 +1923,14 @@ feature
 			"(void*) GetDataBrowserItemPartBounds"
 		end
 
-	set_data_browser_item_data_icon_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen set_data_browser_item_data_icon_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, IconRef):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataIcon"
 		end
 
-	set_data_browser_item_data_icon_address_external: POINTER is
+	frozenset_data_browser_item_data_icon_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1938,14 +1938,14 @@ feature
 			"(void*) SetDataBrowserItemDataIcon"
 		end
 
-	get_data_browser_item_data_icon_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_icon_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, IconRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataIcon"
 		end
 
-	get_data_browser_item_data_icon_address_external: POINTER is
+	frozenget_data_browser_item_data_icon_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1953,14 +1953,14 @@ feature
 			"(void*) GetDataBrowserItemDataIcon"
 		end
 
-	set_data_browser_item_data_text_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen set_data_browser_item_data_text_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataText"
 		end
 
-	set_data_browser_item_data_text_address_external: POINTER is
+	frozenset_data_browser_item_data_text_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1968,14 +1968,14 @@ feature
 			"(void*) SetDataBrowserItemDataText"
 		end
 
-	get_data_browser_item_data_text_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_text_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataText"
 		end
 
-	get_data_browser_item_data_text_address_external: POINTER is
+	frozenget_data_browser_item_data_text_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1983,14 +1983,14 @@ feature
 			"(void*) GetDataBrowserItemDataText"
 		end
 
-	set_data_browser_item_data_value_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_value_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataValue"
 		end
 
-	set_data_browser_item_data_value_address_external: POINTER is
+	frozenset_data_browser_item_data_value_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1998,14 +1998,14 @@ feature
 			"(void*) SetDataBrowserItemDataValue"
 		end
 
-	get_data_browser_item_data_value_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_value_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, SInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataValue"
 		end
 
-	get_data_browser_item_data_value_address_external: POINTER is
+	frozenget_data_browser_item_data_value_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2013,14 +2013,14 @@ feature
 			"(void*) GetDataBrowserItemDataValue"
 		end
 
-	set_data_browser_item_data_minimum_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_minimum_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataMinimum"
 		end
 
-	set_data_browser_item_data_minimum_address_external: POINTER is
+	frozenset_data_browser_item_data_minimum_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2028,14 +2028,14 @@ feature
 			"(void*) SetDataBrowserItemDataMinimum"
 		end
 
-	get_data_browser_item_data_minimum_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_minimum_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, SInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataMinimum"
 		end
 
-	get_data_browser_item_data_minimum_address_external: POINTER is
+	frozenget_data_browser_item_data_minimum_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2043,14 +2043,14 @@ feature
 			"(void*) GetDataBrowserItemDataMinimum"
 		end
 
-	set_data_browser_item_data_maximum_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_maximum_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataMaximum"
 		end
 
-	set_data_browser_item_data_maximum_address_external: POINTER is
+	frozenset_data_browser_item_data_maximum_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2058,14 +2058,14 @@ feature
 			"(void*) SetDataBrowserItemDataMaximum"
 		end
 
-	get_data_browser_item_data_maximum_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_maximum_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, SInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataMaximum"
 		end
 
-	get_data_browser_item_data_maximum_address_external: POINTER is
+	frozenget_data_browser_item_data_maximum_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2073,14 +2073,14 @@ feature
 			"(void*) GetDataBrowserItemDataMaximum"
 		end
 
-	set_data_browser_item_data_boolean_value_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_boolean_value_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataBooleanValue"
 		end
 
-	set_data_browser_item_data_boolean_value_address_external: POINTER is
+	frozenset_data_browser_item_data_boolean_value_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataBooleanValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2088,14 +2088,14 @@ feature
 			"(void*) SetDataBrowserItemDataBooleanValue"
 		end
 
-	get_data_browser_item_data_boolean_value_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_boolean_value_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataBooleanValue"
 		end
 
-	get_data_browser_item_data_boolean_value_address_external: POINTER is
+	frozenget_data_browser_item_data_boolean_value_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataBooleanValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2103,14 +2103,14 @@ feature
 			"(void*) GetDataBrowserItemDataBooleanValue"
 		end
 
-	set_data_browser_item_data_menu_ref_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen set_data_browser_item_data_menu_ref_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataMenuRef"
 		end
 
-	set_data_browser_item_data_menu_ref_address_external: POINTER is
+	frozenset_data_browser_item_data_menu_ref_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataMenuRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2118,14 +2118,14 @@ feature
 			"(void*) SetDataBrowserItemDataMenuRef"
 		end
 
-	get_data_browser_item_data_menu_ref_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_menu_ref_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataMenuRef"
 		end
 
-	get_data_browser_item_data_menu_ref_address_external: POINTER is
+	frozenget_data_browser_item_data_menu_ref_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataMenuRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2133,14 +2133,14 @@ feature
 			"(void*) GetDataBrowserItemDataMenuRef"
 		end
 
-	set_data_browser_item_data_rgbcolor_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen set_data_browser_item_data_rgbcolor_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, RGBColor const*):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataRGBColor"
 		end
 
-	set_data_browser_item_data_rgbcolor_address_external: POINTER is
+	frozenset_data_browser_item_data_rgbcolor_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataRGBColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2148,14 +2148,14 @@ feature
 			"(void*) SetDataBrowserItemDataRGBColor"
 		end
 
-	get_data_browser_item_data_rgbcolor_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_rgbcolor_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, RGBColor*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataRGBColor"
 		end
 
-	get_data_browser_item_data_rgbcolor_address_external: POINTER is
+	frozenget_data_browser_item_data_rgbcolor_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataRGBColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2163,14 +2163,14 @@ feature
 			"(void*) GetDataBrowserItemDataRGBColor"
 		end
 
-	set_data_browser_item_data_draw_state_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_draw_state_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, ThemeDrawState):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataDrawState"
 		end
 
-	set_data_browser_item_data_draw_state_address_external: POINTER is
+	frozenset_data_browser_item_data_draw_state_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataDrawState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2178,14 +2178,14 @@ feature
 			"(void*) SetDataBrowserItemDataDrawState"
 		end
 
-	get_data_browser_item_data_draw_state_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_draw_state_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, ThemeDrawState*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataDrawState"
 		end
 
-	get_data_browser_item_data_draw_state_address_external: POINTER is
+	frozenget_data_browser_item_data_draw_state_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataDrawState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2193,14 +2193,14 @@ feature
 			"(void*) GetDataBrowserItemDataDrawState"
 		end
 
-	set_data_browser_item_data_button_value_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_button_value_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, ThemeButtonValue):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataButtonValue"
 		end
 
-	set_data_browser_item_data_button_value_address_external: POINTER is
+	frozenset_data_browser_item_data_button_value_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataButtonValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2208,14 +2208,14 @@ feature
 			"(void*) SetDataBrowserItemDataButtonValue"
 		end
 
-	get_data_browser_item_data_button_value_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_button_value_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, ThemeButtonValue*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataButtonValue"
 		end
 
-	get_data_browser_item_data_button_value_address_external: POINTER is
+	frozenget_data_browser_item_data_button_value_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataButtonValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2223,14 +2223,14 @@ feature
 			"(void*) GetDataBrowserItemDataButtonValue"
 		end
 
-	set_data_browser_item_data_icon_transform_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_icon_transform_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, IconTransformType):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataIconTransform"
 		end
 
-	set_data_browser_item_data_icon_transform_address_external: POINTER is
+	frozenset_data_browser_item_data_icon_transform_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataIconTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2238,14 +2238,14 @@ feature
 			"(void*) SetDataBrowserItemDataIconTransform"
 		end
 
-	get_data_browser_item_data_icon_transform_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_icon_transform_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, IconTransformType*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataIconTransform"
 		end
 
-	get_data_browser_item_data_icon_transform_address_external: POINTER is
+	frozenget_data_browser_item_data_icon_transform_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataIconTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2253,14 +2253,14 @@ feature
 			"(void*) GetDataBrowserItemDataIconTransform"
 		end
 
-	set_data_browser_item_data_date_time_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_date_time_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, long):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataDateTime"
 		end
 
-	set_data_browser_item_data_date_time_address_external: POINTER is
+	frozenset_data_browser_item_data_date_time_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2268,14 +2268,14 @@ feature
 			"(void*) SetDataBrowserItemDataDateTime"
 		end
 
-	get_data_browser_item_data_date_time_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_date_time_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, long*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataDateTime"
 		end
 
-	get_data_browser_item_data_date_time_address_external: POINTER is
+	frozenget_data_browser_item_data_date_time_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2283,14 +2283,14 @@ feature
 			"(void*) GetDataBrowserItemDataDateTime"
 		end
 
-	set_data_browser_item_data_long_date_time_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen set_data_browser_item_data_long_date_time_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, LongDateTime const*):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataLongDateTime"
 		end
 
-	set_data_browser_item_data_long_date_time_address_external: POINTER is
+	frozenset_data_browser_item_data_long_date_time_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataLongDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2298,14 +2298,14 @@ feature
 			"(void*) SetDataBrowserItemDataLongDateTime"
 		end
 
-	get_data_browser_item_data_long_date_time_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_long_date_time_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, LongDateTime*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataLongDateTime"
 		end
 
-	get_data_browser_item_data_long_date_time_address_external: POINTER is
+	frozenget_data_browser_item_data_long_date_time_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataLongDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2313,14 +2313,14 @@ feature
 			"(void*) GetDataBrowserItemDataLongDateTime"
 		end
 
-	set_data_browser_item_data_item_id_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
+	frozen set_data_browser_item_data_item_id_external (itemdata: POINTER; thedata: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, DataBrowserItemID):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserItemDataItemID"
 		end
 
-	set_data_browser_item_data_item_id_address_external: POINTER is
+	frozenset_data_browser_item_data_item_id_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataItemID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2328,14 +2328,14 @@ feature
 			"(void*) SetDataBrowserItemDataItemID"
 		end
 
-	get_data_browser_item_data_item_id_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_item_id_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, DataBrowserItemID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataItemID"
 		end
 
-	get_data_browser_item_data_item_id_address_external: POINTER is
+	frozenget_data_browser_item_data_item_id_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataItemID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2343,14 +2343,14 @@ feature
 			"(void*) GetDataBrowserItemDataItemID"
 		end
 
-	get_data_browser_item_data_property_external (itemdata: POINTER; thedata: POINTER): INTEGER is
+	frozen get_data_browser_item_data_property_external (itemdata: POINTER; thedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataRef, DataBrowserPropertyID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserItemDataProperty"
 		end
 
-	get_data_browser_item_data_property_address_external: POINTER is
+	frozenget_data_browser_item_data_property_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2358,14 +2358,14 @@ feature
 			"(void*) GetDataBrowserItemDataProperty"
 		end
 
-	new_data_browser_item_data_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_data_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataProcPtr):DataBrowserItemDataUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemDataUPP"
 		end
 
-	new_data_browser_item_data_upp_address_external: POINTER is
+	frozennew_data_browser_item_data_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemDataUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2373,14 +2373,14 @@ feature
 			"(void*) NewDataBrowserItemDataUPP"
 		end
 
-	new_data_browser_item_compare_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_compare_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemCompareProcPtr):DataBrowserItemCompareUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemCompareUPP"
 		end
 
-	new_data_browser_item_compare_upp_address_external: POINTER is
+	frozennew_data_browser_item_compare_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemCompareUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2388,14 +2388,14 @@ feature
 			"(void*) NewDataBrowserItemCompareUPP"
 		end
 
-	new_data_browser_item_notification_with_item_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_notification_with_item_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemNotificationWithItemProcPtr):DataBrowserItemNotificationWithItemUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemNotificationWithItemUPP"
 		end
 
-	new_data_browser_item_notification_with_item_upp_address_external: POINTER is
+	frozennew_data_browser_item_notification_with_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemNotificationWithItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2403,14 +2403,14 @@ feature
 			"(void*) NewDataBrowserItemNotificationWithItemUPP"
 		end
 
-	new_data_browser_item_notification_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_notification_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemNotificationProcPtr):DataBrowserItemNotificationUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemNotificationUPP"
 		end
 
-	new_data_browser_item_notification_upp_address_external: POINTER is
+	frozennew_data_browser_item_notification_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemNotificationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2418,14 +2418,14 @@ feature
 			"(void*) NewDataBrowserItemNotificationUPP"
 		end
 
-	new_data_browser_add_drag_item_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_add_drag_item_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserAddDragItemProcPtr):DataBrowserAddDragItemUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserAddDragItemUPP"
 		end
 
-	new_data_browser_add_drag_item_upp_address_external: POINTER is
+	frozennew_data_browser_add_drag_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserAddDragItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2433,14 +2433,14 @@ feature
 			"(void*) NewDataBrowserAddDragItemUPP"
 		end
 
-	new_data_browser_accept_drag_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_accept_drag_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserAcceptDragProcPtr):DataBrowserAcceptDragUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserAcceptDragUPP"
 		end
 
-	new_data_browser_accept_drag_upp_address_external: POINTER is
+	frozennew_data_browser_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2448,14 +2448,14 @@ feature
 			"(void*) NewDataBrowserAcceptDragUPP"
 		end
 
-	new_data_browser_receive_drag_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_receive_drag_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserReceiveDragProcPtr):DataBrowserReceiveDragUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserReceiveDragUPP"
 		end
 
-	new_data_browser_receive_drag_upp_address_external: POINTER is
+	frozennew_data_browser_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2463,14 +2463,14 @@ feature
 			"(void*) NewDataBrowserReceiveDragUPP"
 		end
 
-	new_data_browser_post_process_drag_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_post_process_drag_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserPostProcessDragProcPtr):DataBrowserPostProcessDragUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserPostProcessDragUPP"
 		end
 
-	new_data_browser_post_process_drag_upp_address_external: POINTER is
+	frozennew_data_browser_post_process_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserPostProcessDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2478,14 +2478,14 @@ feature
 			"(void*) NewDataBrowserPostProcessDragUPP"
 		end
 
-	new_data_browser_get_contextual_menu_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_get_contextual_menu_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserGetContextualMenuProcPtr):DataBrowserGetContextualMenuUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserGetContextualMenuUPP"
 		end
 
-	new_data_browser_get_contextual_menu_upp_address_external: POINTER is
+	frozennew_data_browser_get_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserGetContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2493,14 +2493,14 @@ feature
 			"(void*) NewDataBrowserGetContextualMenuUPP"
 		end
 
-	new_data_browser_select_contextual_menu_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_select_contextual_menu_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserSelectContextualMenuProcPtr):DataBrowserSelectContextualMenuUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserSelectContextualMenuUPP"
 		end
 
-	new_data_browser_select_contextual_menu_upp_address_external: POINTER is
+	frozennew_data_browser_select_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserSelectContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2508,14 +2508,14 @@ feature
 			"(void*) NewDataBrowserSelectContextualMenuUPP"
 		end
 
-	new_data_browser_item_help_content_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_help_content_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemHelpContentProcPtr):DataBrowserItemHelpContentUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemHelpContentUPP"
 		end
 
-	new_data_browser_item_help_content_upp_address_external: POINTER is
+	frozennew_data_browser_item_help_content_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemHelpContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2523,14 +2523,14 @@ feature
 			"(void*) NewDataBrowserItemHelpContentUPP"
 		end
 
-	dispose_data_browser_item_data_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_data_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDataUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemDataUPP"
 		end
 
-	dispose_data_browser_item_data_upp_address_external: POINTER is
+	frozendispose_data_browser_item_data_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemDataUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2538,14 +2538,14 @@ feature
 			"(void*) DisposeDataBrowserItemDataUPP"
 		end
 
-	dispose_data_browser_item_compare_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_compare_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemCompareUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemCompareUPP"
 		end
 
-	dispose_data_browser_item_compare_upp_address_external: POINTER is
+	frozendispose_data_browser_item_compare_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemCompareUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2553,14 +2553,14 @@ feature
 			"(void*) DisposeDataBrowserItemCompareUPP"
 		end
 
-	dispose_data_browser_item_notification_with_item_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_notification_with_item_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemNotificationWithItemUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemNotificationWithItemUPP"
 		end
 
-	dispose_data_browser_item_notification_with_item_upp_address_external: POINTER is
+	frozendispose_data_browser_item_notification_with_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemNotificationWithItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2568,14 +2568,14 @@ feature
 			"(void*) DisposeDataBrowserItemNotificationWithItemUPP"
 		end
 
-	dispose_data_browser_item_notification_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_notification_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemNotificationUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemNotificationUPP"
 		end
 
-	dispose_data_browser_item_notification_upp_address_external: POINTER is
+	frozendispose_data_browser_item_notification_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemNotificationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2583,14 +2583,14 @@ feature
 			"(void*) DisposeDataBrowserItemNotificationUPP"
 		end
 
-	dispose_data_browser_add_drag_item_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_add_drag_item_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserAddDragItemUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserAddDragItemUPP"
 		end
 
-	dispose_data_browser_add_drag_item_upp_address_external: POINTER is
+	frozendispose_data_browser_add_drag_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserAddDragItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2598,14 +2598,14 @@ feature
 			"(void*) DisposeDataBrowserAddDragItemUPP"
 		end
 
-	dispose_data_browser_accept_drag_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_accept_drag_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserAcceptDragUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserAcceptDragUPP"
 		end
 
-	dispose_data_browser_accept_drag_upp_address_external: POINTER is
+	frozendispose_data_browser_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2613,14 +2613,14 @@ feature
 			"(void*) DisposeDataBrowserAcceptDragUPP"
 		end
 
-	dispose_data_browser_receive_drag_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_receive_drag_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserReceiveDragUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserReceiveDragUPP"
 		end
 
-	dispose_data_browser_receive_drag_upp_address_external: POINTER is
+	frozendispose_data_browser_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2628,14 +2628,14 @@ feature
 			"(void*) DisposeDataBrowserReceiveDragUPP"
 		end
 
-	dispose_data_browser_post_process_drag_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_post_process_drag_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserPostProcessDragUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserPostProcessDragUPP"
 		end
 
-	dispose_data_browser_post_process_drag_upp_address_external: POINTER is
+	frozendispose_data_browser_post_process_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserPostProcessDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2643,14 +2643,14 @@ feature
 			"(void*) DisposeDataBrowserPostProcessDragUPP"
 		end
 
-	dispose_data_browser_get_contextual_menu_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_get_contextual_menu_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserGetContextualMenuUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserGetContextualMenuUPP"
 		end
 
-	dispose_data_browser_get_contextual_menu_upp_address_external: POINTER is
+	frozendispose_data_browser_get_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserGetContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2658,14 +2658,14 @@ feature
 			"(void*) DisposeDataBrowserGetContextualMenuUPP"
 		end
 
-	dispose_data_browser_select_contextual_menu_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_select_contextual_menu_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserSelectContextualMenuUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserSelectContextualMenuUPP"
 		end
 
-	dispose_data_browser_select_contextual_menu_upp_address_external: POINTER is
+	frozendispose_data_browser_select_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserSelectContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2673,14 +2673,14 @@ feature
 			"(void*) DisposeDataBrowserSelectContextualMenuUPP"
 		end
 
-	dispose_data_browser_item_help_content_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_help_content_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemHelpContentUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemHelpContentUPP"
 		end
 
-	dispose_data_browser_item_help_content_upp_address_external: POINTER is
+	frozendispose_data_browser_item_help_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemHelpContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2688,14 +2688,14 @@ feature
 			"(void*) DisposeDataBrowserItemHelpContentUPP"
 		end
 
-	invoke_data_browser_item_data_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; itemdata: POINTER; setvalue: INTEGER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_item_data_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; itemdata: POINTER; setvalue: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserItemDataRef, Boolean, DataBrowserItemDataUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemDataUPP"
 		end
 
-	invoke_data_browser_item_data_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_data_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemDataUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2703,14 +2703,14 @@ feature
 			"(void*) InvokeDataBrowserItemDataUPP"
 		end
 
-	invoke_data_browser_item_compare_upp_external (browser: POINTER; itemone: INTEGER; itemtwo: INTEGER; sortproperty: INTEGER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_item_compare_upp_external (browser: POINTER; itemone: INTEGER; itemtwo: INTEGER; sortproperty: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserItemID, DataBrowserPropertyID, DataBrowserItemCompareUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemCompareUPP"
 		end
 
-	invoke_data_browser_item_compare_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_compare_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemCompareUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2718,14 +2718,14 @@ feature
 			"(void*) InvokeDataBrowserItemCompareUPP"
 		end
 
-	invoke_data_browser_item_notification_with_item_upp_external (browser: POINTER; item: INTEGER; message: INTEGER; itemdata: POINTER; userupp: POINTER) is
+	frozen invoke_data_browser_item_notification_with_item_upp_external (browser: POINTER; item: INTEGER; message: INTEGER; itemdata: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserItemNotification, DataBrowserItemDataRef, DataBrowserItemNotificationWithItemUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemNotificationWithItemUPP"
 		end
 
-	invoke_data_browser_item_notification_with_item_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_notification_with_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemNotificationWithItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2733,14 +2733,14 @@ feature
 			"(void*) InvokeDataBrowserItemNotificationWithItemUPP"
 		end
 
-	invoke_data_browser_item_notification_upp_external (browser: POINTER; item: INTEGER; message: INTEGER; userupp: POINTER) is
+	frozen invoke_data_browser_item_notification_upp_external (browser: POINTER; item: INTEGER; message: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserItemNotification, DataBrowserItemNotificationUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemNotificationUPP"
 		end
 
-	invoke_data_browser_item_notification_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_notification_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemNotificationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2748,14 +2748,14 @@ feature
 			"(void*) InvokeDataBrowserItemNotificationUPP"
 		end
 
-	invoke_data_browser_add_drag_item_upp_external (browser: POINTER; thedrag: POINTER; item: INTEGER; itemref: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_add_drag_item_upp_external (browser: POINTER; thedrag: POINTER; item: INTEGER; itemref: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DragReference, DataBrowserItemID, ItemReference*, DataBrowserAddDragItemUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeDataBrowserAddDragItemUPP"
 		end
 
-	invoke_data_browser_add_drag_item_upp_address_external: POINTER is
+	frozeninvoke_data_browser_add_drag_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserAddDragItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2763,14 +2763,14 @@ feature
 			"(void*) InvokeDataBrowserAddDragItemUPP"
 		end
 
-	invoke_data_browser_accept_drag_upp_external (browser: POINTER; thedrag: POINTER; item: INTEGER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_accept_drag_upp_external (browser: POINTER; thedrag: POINTER; item: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DragReference, DataBrowserItemID, DataBrowserAcceptDragUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeDataBrowserAcceptDragUPP"
 		end
 
-	invoke_data_browser_accept_drag_upp_address_external: POINTER is
+	frozeninvoke_data_browser_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2778,14 +2778,14 @@ feature
 			"(void*) InvokeDataBrowserAcceptDragUPP"
 		end
 
-	invoke_data_browser_receive_drag_upp_external (browser: POINTER; thedrag: POINTER; item: INTEGER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_receive_drag_upp_external (browser: POINTER; thedrag: POINTER; item: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DragReference, DataBrowserItemID, DataBrowserReceiveDragUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeDataBrowserReceiveDragUPP"
 		end
 
-	invoke_data_browser_receive_drag_upp_address_external: POINTER is
+	frozeninvoke_data_browser_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2793,14 +2793,14 @@ feature
 			"(void*) InvokeDataBrowserReceiveDragUPP"
 		end
 
-	invoke_data_browser_post_process_drag_upp_external (browser: POINTER; thedrag: POINTER; trackdragresult: INTEGER; userupp: POINTER) is
+	frozen invoke_data_browser_post_process_drag_upp_external (browser: POINTER; thedrag: POINTER; trackdragresult: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DragReference, OSStatus, DataBrowserPostProcessDragUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserPostProcessDragUPP"
 		end
 
-	invoke_data_browser_post_process_drag_upp_address_external: POINTER is
+	frozeninvoke_data_browser_post_process_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserPostProcessDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2808,14 +2808,14 @@ feature
 			"(void*) InvokeDataBrowserPostProcessDragUPP"
 		end
 
-	invoke_data_browser_get_contextual_menu_upp_external (browser: POINTER; menu: POINTER; helptype: POINTER; helpitemstring: POINTER; selection: POINTER; userupp: POINTER) is
+	frozen invoke_data_browser_get_contextual_menu_upp_external (browser: POINTER; menu: POINTER; helptype: POINTER; helpitemstring: POINTER; selection: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, MenuRef*, UInt32*, CFStringRef*, AEDesc*, DataBrowserGetContextualMenuUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserGetContextualMenuUPP"
 		end
 
-	invoke_data_browser_get_contextual_menu_upp_address_external: POINTER is
+	frozeninvoke_data_browser_get_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserGetContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2823,14 +2823,14 @@ feature
 			"(void*) InvokeDataBrowserGetContextualMenuUPP"
 		end
 
-	invoke_data_browser_select_contextual_menu_upp_external (browser: POINTER; menu: POINTER; selectiontype: INTEGER; menuid: INTEGER; menuitem: INTEGER; userupp: POINTER) is
+	frozen invoke_data_browser_select_contextual_menu_upp_external (browser: POINTER; menu: POINTER; selectiontype: INTEGER; menuid: INTEGER; menuitem: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, MenuRef, UInt32, SInt16, MenuItemIndex, DataBrowserSelectContextualMenuUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserSelectContextualMenuUPP"
 		end
 
-	invoke_data_browser_select_contextual_menu_upp_address_external: POINTER is
+	frozeninvoke_data_browser_select_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserSelectContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2838,14 +2838,14 @@ feature
 			"(void*) InvokeDataBrowserSelectContextualMenuUPP"
 		end
 
-	invoke_data_browser_item_help_content_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER) is
+	frozen invoke_data_browser_item_help_content_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr, DataBrowserItemHelpContentUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemHelpContentUPP"
 		end
 
-	invoke_data_browser_item_help_content_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_help_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemHelpContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2853,14 +2853,14 @@ feature
 			"(void*) InvokeDataBrowserItemHelpContentUPP"
 		end
 
-	init_data_browser_callbacks_external (callbacks: POINTER): INTEGER is
+	frozen init_data_browser_callbacks_external (callbacks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserCallbacks*):OSStatus"
 		alias
 			"ewg_function_macro_InitDataBrowserCallbacks"
 		end
 
-	init_data_browser_callbacks_address_external: POINTER is
+	frozeninit_data_browser_callbacks_address_external: POINTER is
 			-- Address of C function `InitDataBrowserCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2868,14 +2868,14 @@ feature
 			"(void*) InitDataBrowserCallbacks"
 		end
 
-	get_data_browser_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
+	frozen get_data_browser_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserCallbacks*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserCallbacks"
 		end
 
-	get_data_browser_callbacks_address_external: POINTER is
+	frozenget_data_browser_callbacks_address_external: POINTER is
 			-- Address of C function `GetDataBrowserCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2883,14 +2883,14 @@ feature
 			"(void*) GetDataBrowserCallbacks"
 		end
 
-	set_data_browser_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
+	frozen set_data_browser_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserCallbacks const*):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserCallbacks"
 		end
 
-	set_data_browser_callbacks_address_external: POINTER is
+	frozenset_data_browser_callbacks_address_external: POINTER is
 			-- Address of C function `SetDataBrowserCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2898,14 +2898,14 @@ feature
 			"(void*) SetDataBrowserCallbacks"
 		end
 
-	new_data_browser_draw_item_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_draw_item_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserDrawItemProcPtr):DataBrowserDrawItemUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserDrawItemUPP"
 		end
 
-	new_data_browser_draw_item_upp_address_external: POINTER is
+	frozennew_data_browser_draw_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserDrawItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2913,14 +2913,14 @@ feature
 			"(void*) NewDataBrowserDrawItemUPP"
 		end
 
-	new_data_browser_edit_item_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_edit_item_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserEditItemProcPtr):DataBrowserEditItemUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserEditItemUPP"
 		end
 
-	new_data_browser_edit_item_upp_address_external: POINTER is
+	frozennew_data_browser_edit_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserEditItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2928,14 +2928,14 @@ feature
 			"(void*) NewDataBrowserEditItemUPP"
 		end
 
-	new_data_browser_hit_test_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_hit_test_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserHitTestProcPtr):DataBrowserHitTestUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserHitTestUPP"
 		end
 
-	new_data_browser_hit_test_upp_address_external: POINTER is
+	frozennew_data_browser_hit_test_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2943,14 +2943,14 @@ feature
 			"(void*) NewDataBrowserHitTestUPP"
 		end
 
-	new_data_browser_tracking_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_tracking_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserTrackingProcPtr):DataBrowserTrackingUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserTrackingUPP"
 		end
 
-	new_data_browser_tracking_upp_address_external: POINTER is
+	frozennew_data_browser_tracking_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2958,14 +2958,14 @@ feature
 			"(void*) NewDataBrowserTrackingUPP"
 		end
 
-	new_data_browser_item_drag_rgn_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_drag_rgn_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDragRgnProcPtr):DataBrowserItemDragRgnUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemDragRgnUPP"
 		end
 
-	new_data_browser_item_drag_rgn_upp_address_external: POINTER is
+	frozennew_data_browser_item_drag_rgn_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemDragRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2973,14 +2973,14 @@ feature
 			"(void*) NewDataBrowserItemDragRgnUPP"
 		end
 
-	new_data_browser_item_accept_drag_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_accept_drag_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemAcceptDragProcPtr):DataBrowserItemAcceptDragUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemAcceptDragUPP"
 		end
 
-	new_data_browser_item_accept_drag_upp_address_external: POINTER is
+	frozennew_data_browser_item_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2988,14 +2988,14 @@ feature
 			"(void*) NewDataBrowserItemAcceptDragUPP"
 		end
 
-	new_data_browser_item_receive_drag_upp_external (userroutine: POINTER): POINTER is
+	frozen new_data_browser_item_receive_drag_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemReceiveDragProcPtr):DataBrowserItemReceiveDragUPP"
 		alias
 			"ewg_function_macro_NewDataBrowserItemReceiveDragUPP"
 		end
 
-	new_data_browser_item_receive_drag_upp_address_external: POINTER is
+	frozennew_data_browser_item_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3003,14 +3003,14 @@ feature
 			"(void*) NewDataBrowserItemReceiveDragUPP"
 		end
 
-	dispose_data_browser_draw_item_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_draw_item_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserDrawItemUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserDrawItemUPP"
 		end
 
-	dispose_data_browser_draw_item_upp_address_external: POINTER is
+	frozendispose_data_browser_draw_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserDrawItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3018,14 +3018,14 @@ feature
 			"(void*) DisposeDataBrowserDrawItemUPP"
 		end
 
-	dispose_data_browser_edit_item_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_edit_item_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserEditItemUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserEditItemUPP"
 		end
 
-	dispose_data_browser_edit_item_upp_address_external: POINTER is
+	frozendispose_data_browser_edit_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserEditItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3033,14 +3033,14 @@ feature
 			"(void*) DisposeDataBrowserEditItemUPP"
 		end
 
-	dispose_data_browser_hit_test_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_hit_test_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserHitTestUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserHitTestUPP"
 		end
 
-	dispose_data_browser_hit_test_upp_address_external: POINTER is
+	frozendispose_data_browser_hit_test_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3048,14 +3048,14 @@ feature
 			"(void*) DisposeDataBrowserHitTestUPP"
 		end
 
-	dispose_data_browser_tracking_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_tracking_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserTrackingUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserTrackingUPP"
 		end
 
-	dispose_data_browser_tracking_upp_address_external: POINTER is
+	frozendispose_data_browser_tracking_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3063,14 +3063,14 @@ feature
 			"(void*) DisposeDataBrowserTrackingUPP"
 		end
 
-	dispose_data_browser_item_drag_rgn_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_drag_rgn_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemDragRgnUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemDragRgnUPP"
 		end
 
-	dispose_data_browser_item_drag_rgn_upp_address_external: POINTER is
+	frozendispose_data_browser_item_drag_rgn_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemDragRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3078,14 +3078,14 @@ feature
 			"(void*) DisposeDataBrowserItemDragRgnUPP"
 		end
 
-	dispose_data_browser_item_accept_drag_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_accept_drag_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemAcceptDragUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemAcceptDragUPP"
 		end
 
-	dispose_data_browser_item_accept_drag_upp_address_external: POINTER is
+	frozendispose_data_browser_item_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3093,14 +3093,14 @@ feature
 			"(void*) DisposeDataBrowserItemAcceptDragUPP"
 		end
 
-	dispose_data_browser_item_receive_drag_upp_external (userupp: POINTER) is
+	frozen dispose_data_browser_item_receive_drag_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserItemReceiveDragUPP)"
 		alias
 			"ewg_function_macro_DisposeDataBrowserItemReceiveDragUPP"
 		end
 
-	dispose_data_browser_item_receive_drag_upp_address_external: POINTER is
+	frozendispose_data_browser_item_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3108,14 +3108,14 @@ feature
 			"(void*) DisposeDataBrowserItemReceiveDragUPP"
 		end
 
-	invoke_data_browser_draw_item_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; itemstate: INTEGER; therect: POINTER; gddepth: INTEGER; colordevice: INTEGER; userupp: POINTER) is
+	frozen invoke_data_browser_draw_item_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; itemstate: INTEGER; therect: POINTER; gddepth: INTEGER; colordevice: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserItemState, Rect const*, SInt16, Boolean, DataBrowserDrawItemUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserDrawItemUPP"
 		end
 
-	invoke_data_browser_draw_item_upp_address_external: POINTER is
+	frozeninvoke_data_browser_draw_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserDrawItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3123,14 +3123,14 @@ feature
 			"(void*) InvokeDataBrowserDrawItemUPP"
 		end
 
-	invoke_data_browser_edit_item_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; thestring: POINTER; maxedittextrect: POINTER; shrinktofit: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_edit_item_upp_external (browser: POINTER; item: INTEGER; property: INTEGER; thestring: POINTER; maxedittextrect: POINTER; shrinktofit: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, CFStringRef, Rect*, Boolean*, DataBrowserEditItemUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeDataBrowserEditItemUPP"
 		end
 
-	invoke_data_browser_edit_item_upp_address_external: POINTER is
+	frozeninvoke_data_browser_edit_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserEditItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3138,14 +3138,14 @@ feature
 			"(void*) InvokeDataBrowserEditItemUPP"
 		end
 
-	invoke_data_browser_hit_test_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; mouserect: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_hit_test_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; mouserect: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, Rect const*, DataBrowserHitTestUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeDataBrowserHitTestUPP"
 		end
 
-	invoke_data_browser_hit_test_upp_address_external: POINTER is
+	frozeninvoke_data_browser_hit_test_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3153,14 +3153,14 @@ feature
 			"(void*) InvokeDataBrowserHitTestUPP"
 		end
 
-	invoke_data_browser_tracking_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; startpt: POINTER; modifiers: INTEGER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_tracking_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; startpt: POINTER; modifiers: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, Point*, EventModifiers, DataBrowserTrackingUPP):DataBrowserTrackingResult"
 		alias
 			"ewg_function_macro_InvokeDataBrowserTrackingUPP"
 		end
 
-	invoke_data_browser_tracking_upp_address_external: POINTER is
+	frozeninvoke_data_browser_tracking_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3168,14 +3168,14 @@ feature
 			"(void*) InvokeDataBrowserTrackingUPP"
 		end
 
-	invoke_data_browser_item_drag_rgn_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; dragrgn: POINTER; userupp: POINTER) is
+	frozen invoke_data_browser_item_drag_rgn_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; dragrgn: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, RgnHandle, DataBrowserItemDragRgnUPP)"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemDragRgnUPP"
 		end
 
-	invoke_data_browser_item_drag_rgn_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_drag_rgn_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemDragRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3183,14 +3183,14 @@ feature
 			"(void*) InvokeDataBrowserItemDragRgnUPP"
 		end
 
-	invoke_data_browser_item_accept_drag_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; thedrag: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_item_accept_drag_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; thedrag: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, DragReference, DataBrowserItemAcceptDragUPP):DataBrowserDragFlags"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemAcceptDragUPP"
 		end
 
-	invoke_data_browser_item_accept_drag_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3198,14 +3198,14 @@ feature
 			"(void*) InvokeDataBrowserItemAcceptDragUPP"
 		end
 
-	invoke_data_browser_item_receive_drag_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; dragflags: INTEGER; thedrag: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_data_browser_item_receive_drag_upp_external (browser: POINTER; itemid: INTEGER; property: INTEGER; dragflags: INTEGER; thedrag: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserDragFlags, DragReference, DataBrowserItemReceiveDragUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeDataBrowserItemReceiveDragUPP"
 		end
 
-	invoke_data_browser_item_receive_drag_upp_address_external: POINTER is
+	frozeninvoke_data_browser_item_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3213,14 +3213,14 @@ feature
 			"(void*) InvokeDataBrowserItemReceiveDragUPP"
 		end
 
-	init_data_browser_custom_callbacks_external (callbacks: POINTER): INTEGER is
+	frozen init_data_browser_custom_callbacks_external (callbacks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DataBrowserCustomCallbacks*):OSStatus"
 		alias
 			"ewg_function_macro_InitDataBrowserCustomCallbacks"
 		end
 
-	init_data_browser_custom_callbacks_address_external: POINTER is
+	frozeninit_data_browser_custom_callbacks_address_external: POINTER is
 			-- Address of C function `InitDataBrowserCustomCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3228,14 +3228,14 @@ feature
 			"(void*) InitDataBrowserCustomCallbacks"
 		end
 
-	get_data_browser_custom_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
+	frozen get_data_browser_custom_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserCustomCallbacks*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserCustomCallbacks"
 		end
 
-	get_data_browser_custom_callbacks_address_external: POINTER is
+	frozenget_data_browser_custom_callbacks_address_external: POINTER is
 			-- Address of C function `GetDataBrowserCustomCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3243,14 +3243,14 @@ feature
 			"(void*) GetDataBrowserCustomCallbacks"
 		end
 
-	set_data_browser_custom_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
+	frozen set_data_browser_custom_callbacks_external (browser: POINTER; callbacks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserCustomCallbacks const*):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserCustomCallbacks"
 		end
 
-	set_data_browser_custom_callbacks_address_external: POINTER is
+	frozenset_data_browser_custom_callbacks_address_external: POINTER is
 			-- Address of C function `SetDataBrowserCustomCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3258,14 +3258,14 @@ feature
 			"(void*) SetDataBrowserCustomCallbacks"
 		end
 
-	remove_data_browser_table_view_column_external (browser: POINTER; column: INTEGER): INTEGER is
+	frozen remove_data_browser_table_view_column_external (browser: POINTER; column: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID):OSStatus"
 		alias
 			"ewg_function_macro_RemoveDataBrowserTableViewColumn"
 		end
 
-	remove_data_browser_table_view_column_address_external: POINTER is
+	frozenremove_data_browser_table_view_column_address_external: POINTER is
 			-- Address of C function `RemoveDataBrowserTableViewColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3273,14 +3273,14 @@ feature
 			"(void*) RemoveDataBrowserTableViewColumn"
 		end
 
-	get_data_browser_table_view_column_count_external (browser: POINTER; numcolumns: POINTER): INTEGER is
+	frozen get_data_browser_table_view_column_count_external (browser: POINTER; numcolumns: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewColumnCount"
 		end
 
-	get_data_browser_table_view_column_count_address_external: POINTER is
+	frozenget_data_browser_table_view_column_count_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3288,14 +3288,14 @@ feature
 			"(void*) GetDataBrowserTableViewColumnCount"
 		end
 
-	set_data_browser_table_view_hilite_style_external (browser: POINTER; hilitestyle: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_hilite_style_external (browser: POINTER; hilitestyle: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewHiliteStyle):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewHiliteStyle"
 		end
 
-	set_data_browser_table_view_hilite_style_address_external: POINTER is
+	frozenset_data_browser_table_view_hilite_style_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewHiliteStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3303,14 +3303,14 @@ feature
 			"(void*) SetDataBrowserTableViewHiliteStyle"
 		end
 
-	get_data_browser_table_view_hilite_style_external (browser: POINTER; hilitestyle: POINTER): INTEGER is
+	frozen get_data_browser_table_view_hilite_style_external (browser: POINTER; hilitestyle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewHiliteStyle*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewHiliteStyle"
 		end
 
-	get_data_browser_table_view_hilite_style_address_external: POINTER is
+	frozenget_data_browser_table_view_hilite_style_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewHiliteStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3318,14 +3318,14 @@ feature
 			"(void*) GetDataBrowserTableViewHiliteStyle"
 		end
 
-	set_data_browser_table_view_row_height_external (browser: POINTER; height: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_row_height_external (browser: POINTER; height: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewRowHeight"
 		end
 
-	set_data_browser_table_view_row_height_address_external: POINTER is
+	frozenset_data_browser_table_view_row_height_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3333,14 +3333,14 @@ feature
 			"(void*) SetDataBrowserTableViewRowHeight"
 		end
 
-	get_data_browser_table_view_row_height_external (browser: POINTER; height: POINTER): INTEGER is
+	frozen get_data_browser_table_view_row_height_external (browser: POINTER; height: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewRowHeight"
 		end
 
-	get_data_browser_table_view_row_height_address_external: POINTER is
+	frozenget_data_browser_table_view_row_height_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3348,14 +3348,14 @@ feature
 			"(void*) GetDataBrowserTableViewRowHeight"
 		end
 
-	set_data_browser_table_view_column_width_external (browser: POINTER; width: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_column_width_external (browser: POINTER; width: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewColumnWidth"
 		end
 
-	set_data_browser_table_view_column_width_address_external: POINTER is
+	frozenset_data_browser_table_view_column_width_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3363,14 +3363,14 @@ feature
 			"(void*) SetDataBrowserTableViewColumnWidth"
 		end
 
-	get_data_browser_table_view_column_width_external (browser: POINTER; width: POINTER): INTEGER is
+	frozen get_data_browser_table_view_column_width_external (browser: POINTER; width: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewColumnWidth"
 		end
 
-	get_data_browser_table_view_column_width_address_external: POINTER is
+	frozenget_data_browser_table_view_column_width_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3378,14 +3378,14 @@ feature
 			"(void*) GetDataBrowserTableViewColumnWidth"
 		end
 
-	set_data_browser_table_view_item_row_height_external (browser: POINTER; item: INTEGER; height: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_item_row_height_external (browser: POINTER; item: INTEGER; height: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, UInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewItemRowHeight"
 		end
 
-	set_data_browser_table_view_item_row_height_address_external: POINTER is
+	frozenset_data_browser_table_view_item_row_height_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewItemRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3393,14 +3393,14 @@ feature
 			"(void*) SetDataBrowserTableViewItemRowHeight"
 		end
 
-	get_data_browser_table_view_item_row_height_external (browser: POINTER; item: INTEGER; height: POINTER): INTEGER is
+	frozen get_data_browser_table_view_item_row_height_external (browser: POINTER; item: INTEGER; height: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewItemRowHeight"
 		end
 
-	get_data_browser_table_view_item_row_height_address_external: POINTER is
+	frozenget_data_browser_table_view_item_row_height_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewItemRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3408,14 +3408,14 @@ feature
 			"(void*) GetDataBrowserTableViewItemRowHeight"
 		end
 
-	set_data_browser_table_view_named_column_width_external (browser: POINTER; column: INTEGER; width: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_named_column_width_external (browser: POINTER; column: INTEGER; width: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID, UInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewNamedColumnWidth"
 		end
 
-	set_data_browser_table_view_named_column_width_address_external: POINTER is
+	frozenset_data_browser_table_view_named_column_width_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewNamedColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3423,14 +3423,14 @@ feature
 			"(void*) SetDataBrowserTableViewNamedColumnWidth"
 		end
 
-	get_data_browser_table_view_named_column_width_external (browser: POINTER; column: INTEGER; width: POINTER): INTEGER is
+	frozen get_data_browser_table_view_named_column_width_external (browser: POINTER; column: INTEGER; width: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewNamedColumnWidth"
 		end
 
-	get_data_browser_table_view_named_column_width_address_external: POINTER is
+	frozenget_data_browser_table_view_named_column_width_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewNamedColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3438,14 +3438,14 @@ feature
 			"(void*) GetDataBrowserTableViewNamedColumnWidth"
 		end
 
-	set_data_browser_table_view_geometry_external (browser: POINTER; variablewidthcolumns: INTEGER; variableheightrows: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_geometry_external (browser: POINTER; variablewidthcolumns: INTEGER; variableheightrows: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewGeometry"
 		end
 
-	set_data_browser_table_view_geometry_address_external: POINTER is
+	frozenset_data_browser_table_view_geometry_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewGeometry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3453,14 +3453,14 @@ feature
 			"(void*) SetDataBrowserTableViewGeometry"
 		end
 
-	get_data_browser_table_view_geometry_external (browser: POINTER; variablewidthcolumns: POINTER; variableheightrows: POINTER): INTEGER is
+	frozen get_data_browser_table_view_geometry_external (browser: POINTER; variablewidthcolumns: POINTER; variableheightrows: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean*, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewGeometry"
 		end
 
-	get_data_browser_table_view_geometry_address_external: POINTER is
+	frozenget_data_browser_table_view_geometry_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewGeometry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3468,14 +3468,14 @@ feature
 			"(void*) GetDataBrowserTableViewGeometry"
 		end
 
-	get_data_browser_table_view_item_id_external (browser: POINTER; row: INTEGER; item: POINTER): INTEGER is
+	frozen get_data_browser_table_view_item_id_external (browser: POINTER; row: INTEGER; item: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewRowIndex, DataBrowserItemID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewItemID"
 		end
 
-	get_data_browser_table_view_item_id_address_external: POINTER is
+	frozenget_data_browser_table_view_item_id_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewItemID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3483,14 +3483,14 @@ feature
 			"(void*) GetDataBrowserTableViewItemID"
 		end
 
-	set_data_browser_table_view_item_row_external (browser: POINTER; item: INTEGER; row: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_item_row_external (browser: POINTER; item: INTEGER; row: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserTableViewRowIndex):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewItemRow"
 		end
 
-	set_data_browser_table_view_item_row_address_external: POINTER is
+	frozenset_data_browser_table_view_item_row_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewItemRow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3498,14 +3498,14 @@ feature
 			"(void*) SetDataBrowserTableViewItemRow"
 		end
 
-	get_data_browser_table_view_item_row_external (browser: POINTER; item: INTEGER; row: POINTER): INTEGER is
+	frozen get_data_browser_table_view_item_row_external (browser: POINTER; item: INTEGER; row: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserItemID, DataBrowserTableViewRowIndex*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewItemRow"
 		end
 
-	get_data_browser_table_view_item_row_address_external: POINTER is
+	frozenget_data_browser_table_view_item_row_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewItemRow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3513,14 +3513,14 @@ feature
 			"(void*) GetDataBrowserTableViewItemRow"
 		end
 
-	set_data_browser_table_view_column_position_external (browser: POINTER; column: INTEGER; position: INTEGER): INTEGER is
+	frozen set_data_browser_table_view_column_position_external (browser: POINTER; column: INTEGER; position: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID, DataBrowserTableViewColumnIndex):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserTableViewColumnPosition"
 		end
 
-	set_data_browser_table_view_column_position_address_external: POINTER is
+	frozenset_data_browser_table_view_column_position_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewColumnPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3528,14 +3528,14 @@ feature
 			"(void*) SetDataBrowserTableViewColumnPosition"
 		end
 
-	get_data_browser_table_view_column_position_external (browser: POINTER; column: INTEGER; position: POINTER): INTEGER is
+	frozen get_data_browser_table_view_column_position_external (browser: POINTER; column: INTEGER; position: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID, DataBrowserTableViewColumnIndex*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewColumnPosition"
 		end
 
-	get_data_browser_table_view_column_position_address_external: POINTER is
+	frozenget_data_browser_table_view_column_position_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3543,14 +3543,14 @@ feature
 			"(void*) GetDataBrowserTableViewColumnPosition"
 		end
 
-	get_data_browser_table_view_column_property_external (browser: POINTER; column: INTEGER; property: POINTER): INTEGER is
+	frozen get_data_browser_table_view_column_property_external (browser: POINTER; column: INTEGER; property: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnIndex, DataBrowserTableViewColumnID*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserTableViewColumnProperty"
 		end
 
-	get_data_browser_table_view_column_property_address_external: POINTER is
+	frozenget_data_browser_table_view_column_property_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3558,14 +3558,14 @@ feature
 			"(void*) GetDataBrowserTableViewColumnProperty"
 		end
 
-	auto_size_data_browser_list_view_columns_external (browser: POINTER): INTEGER is
+	frozen auto_size_data_browser_list_view_columns_external (browser: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):OSStatus"
 		alias
 			"ewg_function_macro_AutoSizeDataBrowserListViewColumns"
 		end
 
-	auto_size_data_browser_list_view_columns_address_external: POINTER is
+	frozenauto_size_data_browser_list_view_columns_address_external: POINTER is
 			-- Address of C function `AutoSizeDataBrowserListViewColumns'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3573,14 +3573,14 @@ feature
 			"(void*) AutoSizeDataBrowserListViewColumns"
 		end
 
-	add_data_browser_list_view_column_external (browser: POINTER; columndesc: POINTER; position: INTEGER): INTEGER is
+	frozen add_data_browser_list_view_column_external (browser: POINTER; columndesc: POINTER; position: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserListViewColumnDesc*, DataBrowserTableViewColumnIndex):OSStatus"
 		alias
 			"ewg_function_macro_AddDataBrowserListViewColumn"
 		end
 
-	add_data_browser_list_view_column_address_external: POINTER is
+	frozenadd_data_browser_list_view_column_address_external: POINTER is
 			-- Address of C function `AddDataBrowserListViewColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3588,14 +3588,14 @@ feature
 			"(void*) AddDataBrowserListViewColumn"
 		end
 
-	get_data_browser_list_view_header_desc_external (browser: POINTER; column: INTEGER; desc: POINTER): INTEGER is
+	frozen get_data_browser_list_view_header_desc_external (browser: POINTER; column: INTEGER; desc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID, DataBrowserListViewHeaderDesc*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserListViewHeaderDesc"
 		end
 
-	get_data_browser_list_view_header_desc_address_external: POINTER is
+	frozenget_data_browser_list_view_header_desc_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewHeaderDesc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3603,14 +3603,14 @@ feature
 			"(void*) GetDataBrowserListViewHeaderDesc"
 		end
 
-	set_data_browser_list_view_header_desc_external (browser: POINTER; column: INTEGER; desc: POINTER): INTEGER is
+	frozen set_data_browser_list_view_header_desc_external (browser: POINTER; column: INTEGER; desc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID, DataBrowserListViewHeaderDesc*):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserListViewHeaderDesc"
 		end
 
-	set_data_browser_list_view_header_desc_address_external: POINTER is
+	frozenset_data_browser_list_view_header_desc_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewHeaderDesc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3618,14 +3618,14 @@ feature
 			"(void*) SetDataBrowserListViewHeaderDesc"
 		end
 
-	set_data_browser_list_view_header_btn_height_external (browser: POINTER; height: INTEGER): INTEGER is
+	frozen set_data_browser_list_view_header_btn_height_external (browser: POINTER; height: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserListViewHeaderBtnHeight"
 		end
 
-	set_data_browser_list_view_header_btn_height_address_external: POINTER is
+	frozenset_data_browser_list_view_header_btn_height_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewHeaderBtnHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3633,14 +3633,14 @@ feature
 			"(void*) SetDataBrowserListViewHeaderBtnHeight"
 		end
 
-	get_data_browser_list_view_header_btn_height_external (browser: POINTER; height: POINTER): INTEGER is
+	frozen get_data_browser_list_view_header_btn_height_external (browser: POINTER; height: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserListViewHeaderBtnHeight"
 		end
 
-	get_data_browser_list_view_header_btn_height_address_external: POINTER is
+	frozenget_data_browser_list_view_header_btn_height_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewHeaderBtnHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3648,14 +3648,14 @@ feature
 			"(void*) GetDataBrowserListViewHeaderBtnHeight"
 		end
 
-	set_data_browser_list_view_use_plain_background_external (browser: POINTER; useplainbackground: INTEGER): INTEGER is
+	frozen set_data_browser_list_view_use_plain_background_external (browser: POINTER; useplainbackground: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserListViewUsePlainBackground"
 		end
 
-	set_data_browser_list_view_use_plain_background_address_external: POINTER is
+	frozenset_data_browser_list_view_use_plain_background_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewUsePlainBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3663,14 +3663,14 @@ feature
 			"(void*) SetDataBrowserListViewUsePlainBackground"
 		end
 
-	get_data_browser_list_view_use_plain_background_external (browser: POINTER; useplainbackground: POINTER): INTEGER is
+	frozen get_data_browser_list_view_use_plain_background_external (browser: POINTER; useplainbackground: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserListViewUsePlainBackground"
 		end
 
-	get_data_browser_list_view_use_plain_background_address_external: POINTER is
+	frozenget_data_browser_list_view_use_plain_background_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewUsePlainBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3678,14 +3678,14 @@ feature
 			"(void*) GetDataBrowserListViewUsePlainBackground"
 		end
 
-	set_data_browser_list_view_disclosure_column_external (browser: POINTER; column: INTEGER; expandablerows: INTEGER): INTEGER is
+	frozen set_data_browser_list_view_disclosure_column_external (browser: POINTER; column: INTEGER; expandablerows: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserListViewDisclosureColumn"
 		end
 
-	set_data_browser_list_view_disclosure_column_address_external: POINTER is
+	frozenset_data_browser_list_view_disclosure_column_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewDisclosureColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3693,14 +3693,14 @@ feature
 			"(void*) SetDataBrowserListViewDisclosureColumn"
 		end
 
-	get_data_browser_list_view_disclosure_column_external (browser: POINTER; column: POINTER; expandablerows: POINTER): INTEGER is
+	frozen get_data_browser_list_view_disclosure_column_external (browser: POINTER; column: POINTER; expandablerows: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserTableViewColumnID*, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserListViewDisclosureColumn"
 		end
 
-	get_data_browser_list_view_disclosure_column_address_external: POINTER is
+	frozenget_data_browser_list_view_disclosure_column_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewDisclosureColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3708,14 +3708,14 @@ feature
 			"(void*) GetDataBrowserListViewDisclosureColumn"
 		end
 
-	get_data_browser_column_view_path_external (browser: POINTER; path: POINTER): INTEGER is
+	frozen get_data_browser_column_view_path_external (browser: POINTER; path: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Handle):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserColumnViewPath"
 		end
 
-	get_data_browser_column_view_path_address_external: POINTER is
+	frozenget_data_browser_column_view_path_address_external: POINTER is
 			-- Address of C function `GetDataBrowserColumnViewPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3723,14 +3723,14 @@ feature
 			"(void*) GetDataBrowserColumnViewPath"
 		end
 
-	get_data_browser_column_view_path_length_external (browser: POINTER; pathlength: POINTER): INTEGER is
+	frozen get_data_browser_column_view_path_length_external (browser: POINTER; pathlength: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserColumnViewPathLength"
 		end
 
-	get_data_browser_column_view_path_length_address_external: POINTER is
+	frozenget_data_browser_column_view_path_length_address_external: POINTER is
 			-- Address of C function `GetDataBrowserColumnViewPathLength'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3738,14 +3738,14 @@ feature
 			"(void*) GetDataBrowserColumnViewPathLength"
 		end
 
-	set_data_browser_column_view_path_external (browser: POINTER; length: INTEGER; path: POINTER): INTEGER is
+	frozen set_data_browser_column_view_path_external (browser: POINTER; length: INTEGER; path: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32, DataBrowserItemID const*):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserColumnViewPath"
 		end
 
-	set_data_browser_column_view_path_address_external: POINTER is
+	frozenset_data_browser_column_view_path_address_external: POINTER is
 			-- Address of C function `SetDataBrowserColumnViewPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3753,14 +3753,14 @@ feature
 			"(void*) SetDataBrowserColumnViewPath"
 		end
 
-	set_data_browser_column_view_display_type_external (browser: POINTER; propertytype: INTEGER): INTEGER is
+	frozen set_data_browser_column_view_display_type_external (browser: POINTER; propertytype: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserPropertyType):OSStatus"
 		alias
 			"ewg_function_macro_SetDataBrowserColumnViewDisplayType"
 		end
 
-	set_data_browser_column_view_display_type_address_external: POINTER is
+	frozenset_data_browser_column_view_display_type_address_external: POINTER is
 			-- Address of C function `SetDataBrowserColumnViewDisplayType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3768,14 +3768,14 @@ feature
 			"(void*) SetDataBrowserColumnViewDisplayType"
 		end
 
-	get_data_browser_column_view_display_type_external (browser: POINTER; propertytype: POINTER): INTEGER is
+	frozen get_data_browser_column_view_display_type_external (browser: POINTER; propertytype: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserPropertyType*):OSStatus"
 		alias
 			"ewg_function_macro_GetDataBrowserColumnViewDisplayType"
 		end
 
-	get_data_browser_column_view_display_type_address_external: POINTER is
+	frozenget_data_browser_column_view_display_type_address_external: POINTER is
 			-- Address of C function `GetDataBrowserColumnViewDisplayType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3783,14 +3783,14 @@ feature
 			"(void*) GetDataBrowserColumnViewDisplayType"
 		end
 
-	axuielement_get_data_browser_item_info_external (inelement: POINTER; indatabrowser: POINTER; indesiredinfoversion: INTEGER; outinfo: POINTER): INTEGER is
+	frozen axuielement_get_data_browser_item_info_external (inelement: POINTER; indatabrowser: POINTER; indesiredinfoversion: INTEGER; outinfo: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AXUIElementRef, ControlRef, UInt32, DataBrowserAccessibilityItemInfo*):OSStatus"
 		alias
 			"ewg_function_macro_AXUIElementGetDataBrowserItemInfo"
 		end
 
-	axuielement_get_data_browser_item_info_address_external: POINTER is
+	frozenaxuielement_get_data_browser_item_info_address_external: POINTER is
 			-- Address of C function `AXUIElementGetDataBrowserItemInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3798,14 +3798,14 @@ feature
 			"(void*) AXUIElementGetDataBrowserItemInfo"
 		end
 
-	axuielement_create_with_data_browser_and_item_info_external (indatabrowser: POINTER; ininfo: POINTER): POINTER is
+	frozen axuielement_create_with_data_browser_and_item_info_external (indatabrowser: POINTER; ininfo: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DataBrowserAccessibilityItemInfo const*):AXUIElementRef"
 		alias
 			"ewg_function_macro_AXUIElementCreateWithDataBrowserAndItemInfo"
 		end
 
-	axuielement_create_with_data_browser_and_item_info_address_external: POINTER is
+	frozenaxuielement_create_with_data_browser_and_item_info_address_external: POINTER is
 			-- Address of C function `AXUIElementCreateWithDataBrowserAndItemInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3813,14 +3813,14 @@ feature
 			"(void*) AXUIElementCreateWithDataBrowserAndItemInfo"
 		end
 
-	new_edit_unicode_post_update_upp_external (userroutine: POINTER): POINTER is
+	frozen new_edit_unicode_post_update_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EditUnicodePostUpdateProcPtr):EditUnicodePostUpdateUPP"
 		alias
 			"ewg_function_macro_NewEditUnicodePostUpdateUPP"
 		end
 
-	new_edit_unicode_post_update_upp_address_external: POINTER is
+	frozennew_edit_unicode_post_update_upp_address_external: POINTER is
 			-- Address of C function `NewEditUnicodePostUpdateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3828,14 +3828,14 @@ feature
 			"(void*) NewEditUnicodePostUpdateUPP"
 		end
 
-	dispose_edit_unicode_post_update_upp_external (userupp: POINTER) is
+	frozen dispose_edit_unicode_post_update_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EditUnicodePostUpdateUPP)"
 		alias
 			"ewg_function_macro_DisposeEditUnicodePostUpdateUPP"
 		end
 
-	dispose_edit_unicode_post_update_upp_address_external: POINTER is
+	frozendispose_edit_unicode_post_update_upp_address_external: POINTER is
 			-- Address of C function `DisposeEditUnicodePostUpdateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3843,14 +3843,14 @@ feature
 			"(void*) DisposeEditUnicodePostUpdateUPP"
 		end
 
-	invoke_edit_unicode_post_update_upp_external (unitext: POINTER; unitextlength: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER; refcon: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_edit_unicode_post_update_upp_external (unitext: POINTER; unitextlength: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER; refcon: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (UniCharArrayHandle, UniCharCount, UniCharArrayOffset, UniCharArrayOffset, void*, EditUnicodePostUpdateUPP):Boolean"
 		alias
 			"ewg_function_macro_InvokeEditUnicodePostUpdateUPP"
 		end
 
-	invoke_edit_unicode_post_update_upp_address_external: POINTER is
+	frozeninvoke_edit_unicode_post_update_upp_address_external: POINTER is
 			-- Address of C function `InvokeEditUnicodePostUpdateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3858,14 +3858,14 @@ feature
 			"(void*) InvokeEditUnicodePostUpdateUPP"
 		end
 
-	create_edit_unicode_text_control_external (window: POINTER; boundsrect: POINTER; text: POINTER; ispassword: INTEGER; style: POINTER; outcontrol: POINTER): INTEGER is
+	frozen create_edit_unicode_text_control_external (window: POINTER; boundsrect: POINTER; text: POINTER; ispassword: INTEGER; style: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, CFStringRef, Boolean, ControlFontStyleRec const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateEditUnicodeTextControl"
 		end
 
-	create_edit_unicode_text_control_address_external: POINTER is
+	frozencreate_edit_unicode_text_control_address_external: POINTER is
 			-- Address of C function `CreateEditUnicodeTextControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

@@ -3,14 +3,14 @@
 class MENUS_FUNCTIONS_EXTERNAL
 
 feature
-	new_menu_def_upp_external (userroutine: POINTER): POINTER is
+	frozen new_menu_def_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuDefProcPtr):MenuDefUPP"
 		alias
 			"ewg_function_macro_NewMenuDefUPP"
 		end
 
-	new_menu_def_upp_address_external: POINTER is
+	frozennew_menu_def_upp_address_external: POINTER is
 			-- Address of C function `NewMenuDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) NewMenuDefUPP"
 		end
 
-	dispose_menu_def_upp_external (userupp: POINTER) is
+	frozen dispose_menu_def_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuDefUPP)"
 		alias
 			"ewg_function_macro_DisposeMenuDefUPP"
 		end
 
-	dispose_menu_def_upp_address_external: POINTER is
+	frozendispose_menu_def_upp_address_external: POINTER is
 			-- Address of C function `DisposeMenuDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) DisposeMenuDefUPP"
 		end
 
-	invoke_menu_def_upp_external (message: INTEGER; themenu: POINTER; menurect: POINTER; hitpt: POINTER; whichitem: POINTER; userupp: POINTER) is
+	frozen invoke_menu_def_upp_external (message: INTEGER; themenu: POINTER; menurect: POINTER; hitpt: POINTER; whichitem: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short, MenuRef, Rect*, Point*, short*, MenuDefUPP)"
 		alias
 			"ewg_function_macro_InvokeMenuDefUPP"
 		end
 
-	invoke_menu_def_upp_address_external: POINTER is
+	frozeninvoke_menu_def_upp_address_external: POINTER is
 			-- Address of C function `InvokeMenuDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) InvokeMenuDefUPP"
 		end
 
-	new_menu_external (menuid: INTEGER; menutitle: POINTER): POINTER is
+	frozen new_menu_external (menuid: INTEGER; menutitle: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID, ConstStr255Param):MenuRef"
 		alias
 			"ewg_function_macro_NewMenu"
 		end
 
-	new_menu_address_external: POINTER is
+	frozennew_menu_address_external: POINTER is
 			-- Address of C function `NewMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) NewMenu"
 		end
 
-	get_menu_external (resourceid: INTEGER): POINTER is
+	frozen get_menu_external (resourceid: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short):MenuRef"
 		alias
 			"ewg_function_macro_GetMenu"
 		end
 
-	get_menu_address_external: POINTER is
+	frozenget_menu_address_external: POINTER is
 			-- Address of C function `GetMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) GetMenu"
 		end
 
-	dispose_menu_external (themenu: POINTER) is
+	frozen dispose_menu_external (themenu: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef)"
 		alias
 			"ewg_function_macro_DisposeMenu"
 		end
 
-	dispose_menu_address_external: POINTER is
+	frozendispose_menu_address_external: POINTER is
 			-- Address of C function `DisposeMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) DisposeMenu"
 		end
 
-	calc_menu_size_external (themenu: POINTER) is
+	frozen calc_menu_size_external (themenu: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef)"
 		alias
 			"ewg_function_macro_CalcMenuSize"
 		end
 
-	calc_menu_size_address_external: POINTER is
+	frozencalc_menu_size_address_external: POINTER is
 			-- Address of C function `CalcMenuSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) CalcMenuSize"
 		end
 
-	count_menu_items_external (themenu: POINTER): INTEGER is
+	frozen count_menu_items_external (themenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):UInt16"
 		alias
 			"ewg_function_macro_CountMenuItems"
 		end
 
-	count_menu_items_address_external: POINTER is
+	frozencount_menu_items_address_external: POINTER is
 			-- Address of C function `CountMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) CountMenuItems"
 		end
 
-	get_menu_font_external (menu: POINTER; outfontid: POINTER; outfontsize: POINTER): INTEGER is
+	frozen get_menu_font_external (menu: POINTER; outfontid: POINTER; outfontsize: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, SInt16*, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuFont"
 		end
 
-	get_menu_font_address_external: POINTER is
+	frozenget_menu_font_address_external: POINTER is
 			-- Address of C function `GetMenuFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) GetMenuFont"
 		end
 
-	set_menu_font_external (menu: POINTER; infontid: INTEGER; infontsize: INTEGER): INTEGER is
+	frozen set_menu_font_external (menu: POINTER; infontid: INTEGER; infontsize: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, SInt16, UInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuFont"
 		end
 
-	set_menu_font_address_external: POINTER is
+	frozenset_menu_font_address_external: POINTER is
 			-- Address of C function `SetMenuFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) SetMenuFont"
 		end
 
-	get_menu_excludes_mark_column_external (menu: POINTER): INTEGER is
+	frozen get_menu_excludes_mark_column_external (menu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):Boolean"
 		alias
 			"ewg_function_macro_GetMenuExcludesMarkColumn"
 		end
 
-	get_menu_excludes_mark_column_address_external: POINTER is
+	frozenget_menu_excludes_mark_column_address_external: POINTER is
 			-- Address of C function `GetMenuExcludesMarkColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) GetMenuExcludesMarkColumn"
 		end
 
-	set_menu_excludes_mark_column_external (menu: POINTER; excludesmark: INTEGER): INTEGER is
+	frozen set_menu_excludes_mark_column_external (menu: POINTER; excludesmark: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuExcludesMarkColumn"
 		end
 
-	set_menu_excludes_mark_column_address_external: POINTER is
+	frozenset_menu_excludes_mark_column_address_external: POINTER is
 			-- Address of C function `SetMenuExcludesMarkColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) SetMenuExcludesMarkColumn"
 		end
 
-	register_menu_definition_external (inresid: INTEGER; indefspec: POINTER): INTEGER is
+	frozen register_menu_definition_external (inresid: INTEGER; indefspec: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16, MenuDefSpecPtr):OSStatus"
 		alias
 			"ewg_function_macro_RegisterMenuDefinition"
 		end
 
-	register_menu_definition_address_external: POINTER is
+	frozenregister_menu_definition_address_external: POINTER is
 			-- Address of C function `RegisterMenuDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) RegisterMenuDefinition"
 		end
 
-	create_new_menu_external (inmenuid: INTEGER; inmenuattributes: INTEGER; outmenuref: POINTER): INTEGER is
+	frozen create_new_menu_external (inmenuid: INTEGER; inmenuattributes: INTEGER; outmenuref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID, MenuAttributes, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateNewMenu"
 		end
 
-	create_new_menu_address_external: POINTER is
+	frozencreate_new_menu_address_external: POINTER is
 			-- Address of C function `CreateNewMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) CreateNewMenu"
 		end
 
-	create_custom_menu_external (indefspec: POINTER; inmenuid: INTEGER; inmenuattributes: INTEGER; outmenuref: POINTER): INTEGER is
+	frozen create_custom_menu_external (indefspec: POINTER; inmenuid: INTEGER; inmenuattributes: INTEGER; outmenuref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuDefSpec const*, MenuID, MenuAttributes, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateCustomMenu"
 		end
 
-	create_custom_menu_address_external: POINTER is
+	frozencreate_custom_menu_address_external: POINTER is
 			-- Address of C function `CreateCustomMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CreateCustomMenu"
 		end
 
-	is_valid_menu_external (inmenu: POINTER): INTEGER is
+	frozen is_valid_menu_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):Boolean"
 		alias
 			"ewg_function_macro_IsValidMenu"
 		end
 
-	is_valid_menu_address_external: POINTER is
+	frozenis_valid_menu_address_external: POINTER is
 			-- Address of C function `IsValidMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) IsValidMenu"
 		end
 
-	get_menu_retain_count_external (inmenu: POINTER): INTEGER is
+	frozen get_menu_retain_count_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):ItemCount"
 		alias
 			"ewg_function_macro_GetMenuRetainCount"
 		end
 
-	get_menu_retain_count_address_external: POINTER is
+	frozenget_menu_retain_count_address_external: POINTER is
 			-- Address of C function `GetMenuRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) GetMenuRetainCount"
 		end
 
-	retain_menu_external (inmenu: POINTER): INTEGER is
+	frozen retain_menu_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_RetainMenu"
 		end
 
-	retain_menu_address_external: POINTER is
+	frozenretain_menu_address_external: POINTER is
 			-- Address of C function `RetainMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) RetainMenu"
 		end
 
-	release_menu_external (inmenu: POINTER): INTEGER is
+	frozen release_menu_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_ReleaseMenu"
 		end
 
-	release_menu_address_external: POINTER is
+	frozenrelease_menu_address_external: POINTER is
 			-- Address of C function `ReleaseMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) ReleaseMenu"
 		end
 
-	duplicate_menu_external (insourcemenu: POINTER; outmenu: POINTER): INTEGER is
+	frozen duplicate_menu_external (insourcemenu: POINTER; outmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_DuplicateMenu"
 		end
 
-	duplicate_menu_address_external: POINTER is
+	frozenduplicate_menu_address_external: POINTER is
 			-- Address of C function `DuplicateMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) DuplicateMenu"
 		end
 
-	copy_menu_title_as_cfstring_external (inmenu: POINTER; outstring: POINTER): INTEGER is
+	frozen copy_menu_title_as_cfstring_external (inmenu: POINTER; outstring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyMenuTitleAsCFString"
 		end
 
-	copy_menu_title_as_cfstring_address_external: POINTER is
+	frozencopy_menu_title_as_cfstring_address_external: POINTER is
 			-- Address of C function `CopyMenuTitleAsCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CopyMenuTitleAsCFString"
 		end
 
-	set_menu_title_with_cfstring_external (inmenu: POINTER; instring: POINTER): INTEGER is
+	frozen set_menu_title_with_cfstring_external (inmenu: POINTER; instring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuTitleWithCFString"
 		end
 
-	set_menu_title_with_cfstring_address_external: POINTER is
+	frozenset_menu_title_with_cfstring_address_external: POINTER is
 			-- Address of C function `SetMenuTitleWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) SetMenuTitleWithCFString"
 		end
 
-	set_menu_title_icon_external (inmenu: POINTER; intype: INTEGER; inicon: POINTER): INTEGER is
+	frozen set_menu_title_icon_external (inmenu: POINTER; intype: INTEGER; inicon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, UInt32, void*):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuTitleIcon"
 		end
 
-	set_menu_title_icon_address_external: POINTER is
+	frozenset_menu_title_icon_address_external: POINTER is
 			-- Address of C function `SetMenuTitleIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) SetMenuTitleIcon"
 		end
 
-	get_menu_title_icon_external (inmenu: POINTER; outtype: POINTER; outicon: POINTER): INTEGER is
+	frozen get_menu_title_icon_external (inmenu: POINTER; outtype: POINTER; outicon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, UInt32*, void**):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuTitleIcon"
 		end
 
-	get_menu_title_icon_address_external: POINTER is
+	frozenget_menu_title_icon_address_external: POINTER is
 			-- Address of C function `GetMenuTitleIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) GetMenuTitleIcon"
 		end
 
-	invalidate_menu_size_external (inmenu: POINTER): INTEGER is
+	frozen invalidate_menu_size_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_InvalidateMenuSize"
 		end
 
-	invalidate_menu_size_address_external: POINTER is
+	frozeninvalidate_menu_size_address_external: POINTER is
 			-- Address of C function `InvalidateMenuSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) InvalidateMenuSize"
 		end
 
-	is_menu_size_invalid_external (inmenu: POINTER): INTEGER is
+	frozen is_menu_size_invalid_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):Boolean"
 		alias
 			"ewg_function_macro_IsMenuSizeInvalid"
 		end
 
-	is_menu_size_invalid_address_external: POINTER is
+	frozenis_menu_size_invalid_address_external: POINTER is
 			-- Address of C function `IsMenuSizeInvalid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) IsMenuSizeInvalid"
 		end
 
-	erase_menu_background_external (inmenu: POINTER; ineraserect: POINTER; incontext: POINTER): INTEGER is
+	frozen erase_menu_background_external (inmenu: POINTER; ineraserect: POINTER; incontext: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, Rect const*, CGContextRef):OSStatus"
 		alias
 			"ewg_function_macro_EraseMenuBackground"
 		end
 
-	erase_menu_background_address_external: POINTER is
+	frozenerase_menu_background_address_external: POINTER is
 			-- Address of C function `EraseMenuBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) EraseMenuBackground"
 		end
 
-	scroll_menu_image_external (inmenu: POINTER; inscrollrect: POINTER; inhscroll: INTEGER; invscroll: INTEGER; incontext: POINTER): INTEGER is
+	frozen scroll_menu_image_external (inmenu: POINTER; inscrollrect: POINTER; inhscroll: INTEGER; invscroll: INTEGER; incontext: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, Rect const*, int, int, CGContextRef):OSStatus"
 		alias
 			"ewg_function_macro_ScrollMenuImage"
 		end
 
-	scroll_menu_image_address_external: POINTER is
+	frozenscroll_menu_image_address_external: POINTER is
 			-- Address of C function `ScrollMenuImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) ScrollMenuImage"
 		end
 
-	append_menu_external (menu: POINTER; data: POINTER) is
+	frozen append_menu_external (menu: POINTER; data: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ConstStr255Param)"
 		alias
 			"ewg_function_macro_AppendMenu"
 		end
 
-	append_menu_address_external: POINTER is
+	frozenappend_menu_address_external: POINTER is
 			-- Address of C function `AppendMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) AppendMenu"
 		end
 
-	insert_res_menu_external (themenu: POINTER; thetype: INTEGER; afteritem: INTEGER) is
+	frozen insert_res_menu_external (themenu: POINTER; thetype: INTEGER; afteritem: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ResType, MenuItemIndex)"
 		alias
 			"ewg_function_macro_InsertResMenu"
 		end
 
-	insert_res_menu_address_external: POINTER is
+	frozeninsert_res_menu_address_external: POINTER is
 			-- Address of C function `InsertResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) InsertResMenu"
 		end
 
-	append_res_menu_external (themenu: POINTER; thetype: INTEGER) is
+	frozen append_res_menu_external (themenu: POINTER; thetype: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ResType)"
 		alias
 			"ewg_function_macro_AppendResMenu"
 		end
 
-	append_res_menu_address_external: POINTER is
+	frozenappend_res_menu_address_external: POINTER is
 			-- Address of C function `AppendResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) AppendResMenu"
 		end
 
-	insert_menu_item_external (themenu: POINTER; itemstring: POINTER; afteritem: INTEGER) is
+	frozen insert_menu_item_external (themenu: POINTER; itemstring: POINTER; afteritem: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ConstStr255Param, MenuItemIndex)"
 		alias
 			"ewg_function_macro_InsertMenuItem"
 		end
 
-	insert_menu_item_address_external: POINTER is
+	frozeninsert_menu_item_address_external: POINTER is
 			-- Address of C function `InsertMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) InsertMenuItem"
 		end
 
-	delete_menu_item_external (themenu: POINTER; item: INTEGER) is
+	frozen delete_menu_item_external (themenu: POINTER; item: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex)"
 		alias
 			"ewg_function_macro_DeleteMenuItem"
 		end
 
-	delete_menu_item_address_external: POINTER is
+	frozendelete_menu_item_address_external: POINTER is
 			-- Address of C function `DeleteMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) DeleteMenuItem"
 		end
 
-	insert_font_res_menu_external (themenu: POINTER; afteritem: INTEGER; scriptfilter: INTEGER) is
+	frozen insert_font_res_menu_external (themenu: POINTER; afteritem: INTEGER; scriptfilter: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, short)"
 		alias
 			"ewg_function_macro_InsertFontResMenu"
 		end
 
-	insert_font_res_menu_address_external: POINTER is
+	frozeninsert_font_res_menu_address_external: POINTER is
 			-- Address of C function `InsertFontResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) InsertFontResMenu"
 		end
 
-	insert_intl_res_menu_external (themenu: POINTER; thetype: INTEGER; afteritem: INTEGER; scriptfilter: INTEGER) is
+	frozen insert_intl_res_menu_external (themenu: POINTER; thetype: INTEGER; afteritem: INTEGER; scriptfilter: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ResType, MenuItemIndex, short)"
 		alias
 			"ewg_function_macro_InsertIntlResMenu"
 		end
 
-	insert_intl_res_menu_address_external: POINTER is
+	frozeninsert_intl_res_menu_address_external: POINTER is
 			-- Address of C function `InsertIntlResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) InsertIntlResMenu"
 		end
 
-	append_menu_item_text_external (menu: POINTER; instring: POINTER): INTEGER is
+	frozen append_menu_item_text_external (menu: POINTER; instring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ConstStr255Param):OSStatus"
 		alias
 			"ewg_function_macro_AppendMenuItemText"
 		end
 
-	append_menu_item_text_address_external: POINTER is
+	frozenappend_menu_item_text_address_external: POINTER is
 			-- Address of C function `AppendMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) AppendMenuItemText"
 		end
 
-	insert_menu_item_text_external (menu: POINTER; instring: POINTER; afteritem: INTEGER): INTEGER is
+	frozen insert_menu_item_text_external (menu: POINTER; instring: POINTER; afteritem: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ConstStr255Param, MenuItemIndex):OSStatus"
 		alias
 			"ewg_function_macro_InsertMenuItemText"
 		end
 
-	insert_menu_item_text_address_external: POINTER is
+	frozeninsert_menu_item_text_address_external: POINTER is
 			-- Address of C function `InsertMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) InsertMenuItemText"
 		end
 
-	copy_menu_items_external (insourcemenu: POINTER; infirstitem: INTEGER; innumitems: INTEGER; indestmenu: POINTER; ininsertafter: INTEGER): INTEGER is
+	frozen copy_menu_items_external (insourcemenu: POINTER; infirstitem: INTEGER; innumitems: INTEGER; indestmenu: POINTER; ininsertafter: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, ItemCount, MenuRef, MenuItemIndex):OSStatus"
 		alias
 			"ewg_function_macro_CopyMenuItems"
 		end
 
-	copy_menu_items_address_external: POINTER is
+	frozencopy_menu_items_address_external: POINTER is
 			-- Address of C function `CopyMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) CopyMenuItems"
 		end
 
-	delete_menu_items_external (inmenu: POINTER; infirstitem: INTEGER; innumitems: INTEGER): INTEGER is
+	frozen delete_menu_items_external (inmenu: POINTER; infirstitem: INTEGER; innumitems: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, ItemCount):OSStatus"
 		alias
 			"ewg_function_macro_DeleteMenuItems"
 		end
 
-	delete_menu_items_address_external: POINTER is
+	frozendelete_menu_items_address_external: POINTER is
 			-- Address of C function `DeleteMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) DeleteMenuItems"
 		end
 
-	append_menu_item_text_with_cfstring_external (inmenu: POINTER; instring: POINTER; inattributes: INTEGER; incommandid: INTEGER; outnewitem: POINTER): INTEGER is
+	frozen append_menu_item_text_with_cfstring_external (inmenu: POINTER; instring: POINTER; inattributes: INTEGER; incommandid: INTEGER; outnewitem: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, CFStringRef, MenuItemAttributes, MenuCommand, MenuItemIndex*):OSStatus"
 		alias
 			"ewg_function_macro_AppendMenuItemTextWithCFString"
 		end
 
-	append_menu_item_text_with_cfstring_address_external: POINTER is
+	frozenappend_menu_item_text_with_cfstring_address_external: POINTER is
 			-- Address of C function `AppendMenuItemTextWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) AppendMenuItemTextWithCFString"
 		end
 
-	insert_menu_item_text_with_cfstring_external (inmenu: POINTER; instring: POINTER; inafteritem: INTEGER; inattributes: INTEGER; incommandid: INTEGER): INTEGER is
+	frozen insert_menu_item_text_with_cfstring_external (inmenu: POINTER; instring: POINTER; inafteritem: INTEGER; inattributes: INTEGER; incommandid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, CFStringRef, MenuItemIndex, MenuItemAttributes, MenuCommand):OSStatus"
 		alias
 			"ewg_function_macro_InsertMenuItemTextWithCFString"
 		end
 
-	insert_menu_item_text_with_cfstring_address_external: POINTER is
+	frozeninsert_menu_item_text_with_cfstring_address_external: POINTER is
 			-- Address of C function `InsertMenuItemTextWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) InsertMenuItemTextWithCFString"
 		end
 
-	menu_key_external (ch: INTEGER): INTEGER is
+	frozen menu_key_external (ch: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CharParameter):long"
 		alias
 			"ewg_function_macro_MenuKey"
 		end
 
-	menu_key_address_external: POINTER is
+	frozenmenu_key_address_external: POINTER is
 			-- Address of C function `MenuKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) MenuKey"
 		end
 
-	menu_select_external (startpt: POINTER): INTEGER is
+	frozen menu_select_external (startpt: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Point*):long"
 		alias
 			"ewg_function_macro_MenuSelect"
 		end
 
-	menu_select_address_external: POINTER is
+	frozenmenu_select_address_external: POINTER is
 			-- Address of C function `MenuSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) MenuSelect"
 		end
 
-	pop_up_menu_select_external (menu: POINTER; top: INTEGER; left: INTEGER; popupitem: INTEGER): INTEGER is
+	frozen pop_up_menu_select_external (menu: POINTER; top: INTEGER; left: INTEGER; popupitem: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, short, short, MenuItemIndex):long"
 		alias
 			"ewg_function_macro_PopUpMenuSelect"
 		end
 
-	pop_up_menu_select_address_external: POINTER is
+	frozenpop_up_menu_select_address_external: POINTER is
 			-- Address of C function `PopUpMenuSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) PopUpMenuSelect"
 		end
 
-	menu_choice_external: INTEGER is
+	frozen menu_choice_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :long"
 		alias
 			"ewg_function_macro_MenuChoice"
 		end
 
-	menu_choice_address_external: POINTER is
+	frozenmenu_choice_address_external: POINTER is
 			-- Address of C function `MenuChoice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) MenuChoice"
 		end
 
-	menu_event_external (inevent: POINTER): INTEGER is
+	frozen menu_event_external (inevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRecord const*):UInt32"
 		alias
 			"ewg_function_macro_MenuEvent"
 		end
 
-	menu_event_address_external: POINTER is
+	frozenmenu_event_address_external: POINTER is
 			-- Address of C function `MenuEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) MenuEvent"
 		end
 
-	is_menu_key_event_external (instartmenu: POINTER; inevent: POINTER; inoptions: INTEGER; outmenu: POINTER; outmenuitem: POINTER): INTEGER is
+	frozen is_menu_key_event_external (instartmenu: POINTER; inevent: POINTER; inoptions: INTEGER; outmenu: POINTER; outmenuitem: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, EventRef, MenuEventOptions, MenuRef*, MenuItemIndex*):Boolean"
 		alias
 			"ewg_function_macro_IsMenuKeyEvent"
 		end
 
-	is_menu_key_event_address_external: POINTER is
+	frozenis_menu_key_event_address_external: POINTER is
 			-- Address of C function `IsMenuKeyEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) IsMenuKeyEvent"
 		end
 
-	invalidate_menu_enabling_external (inmenu: POINTER): INTEGER is
+	frozen invalidate_menu_enabling_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_InvalidateMenuEnabling"
 		end
 
-	invalidate_menu_enabling_address_external: POINTER is
+	frozeninvalidate_menu_enabling_address_external: POINTER is
 			-- Address of C function `InvalidateMenuEnabling'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) InvalidateMenuEnabling"
 		end
 
-	cancel_menu_tracking_external (inrootmenu: POINTER; inimmediate: INTEGER; indismissalreason: INTEGER): INTEGER is
+	frozen cancel_menu_tracking_external (inrootmenu: POINTER; inimmediate: INTEGER; indismissalreason: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, Boolean, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_CancelMenuTracking"
 		end
 
-	cancel_menu_tracking_address_external: POINTER is
+	frozencancel_menu_tracking_address_external: POINTER is
 			-- Address of C function `CancelMenuTracking'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) CancelMenuTracking"
 		end
 
-	get_mbar_height_external: INTEGER is
+	frozen get_mbar_height_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :short"
 		alias
 			"ewg_function_macro_GetMBarHeight"
 		end
 
-	get_mbar_height_address_external: POINTER is
+	frozenget_mbar_height_address_external: POINTER is
 			-- Address of C function `GetMBarHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) GetMBarHeight"
 		end
 
-	draw_menu_bar_external is
+	frozen draw_menu_bar_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_DrawMenuBar"
 		end
 
-	draw_menu_bar_address_external: POINTER is
+	frozendraw_menu_bar_address_external: POINTER is
 			-- Address of C function `DrawMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) DrawMenuBar"
 		end
 
-	inval_menu_bar_external is
+	frozen inval_menu_bar_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_InvalMenuBar"
 		end
 
-	inval_menu_bar_address_external: POINTER is
+	frozeninval_menu_bar_address_external: POINTER is
 			-- Address of C function `InvalMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) InvalMenuBar"
 		end
 
-	is_menu_bar_invalid_external (rootmenu: POINTER): INTEGER is
+	frozen is_menu_bar_invalid_external (rootmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):Boolean"
 		alias
 			"ewg_function_macro_IsMenuBarInvalid"
 		end
 
-	is_menu_bar_invalid_address_external: POINTER is
+	frozenis_menu_bar_invalid_address_external: POINTER is
 			-- Address of C function `IsMenuBarInvalid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) IsMenuBarInvalid"
 		end
 
-	hilite_menu_external (menuid: INTEGER) is
+	frozen hilite_menu_external (menuid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID)"
 		alias
 			"ewg_function_macro_HiliteMenu"
 		end
 
-	hilite_menu_address_external: POINTER is
+	frozenhilite_menu_address_external: POINTER is
 			-- Address of C function `HiliteMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) HiliteMenu"
 		end
 
-	get_new_mbar_external (menubarid: INTEGER): POINTER is
+	frozen get_new_mbar_external (menubarid: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short):MenuBarHandle"
 		alias
 			"ewg_function_macro_GetNewMBar"
 		end
 
-	get_new_mbar_address_external: POINTER is
+	frozenget_new_mbar_address_external: POINTER is
 			-- Address of C function `GetNewMBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) GetNewMBar"
 		end
 
-	get_menu_bar_external: POINTER is
+	frozen get_menu_bar_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :MenuBarHandle"
 		alias
 			"ewg_function_macro_GetMenuBar"
 		end
 
-	get_menu_bar_address_external: POINTER is
+	frozenget_menu_bar_address_external: POINTER is
 			-- Address of C function `GetMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) GetMenuBar"
 		end
 
-	set_menu_bar_external (mbar: POINTER) is
+	frozen set_menu_bar_external (mbar: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuBarHandle)"
 		alias
 			"ewg_function_macro_SetMenuBar"
 		end
 
-	set_menu_bar_address_external: POINTER is
+	frozenset_menu_bar_address_external: POINTER is
 			-- Address of C function `SetMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) SetMenuBar"
 		end
 
-	duplicate_menu_bar_external (inmbar: POINTER; outmbar: POINTER): INTEGER is
+	frozen duplicate_menu_bar_external (inmbar: POINTER; outmbar: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuBarHandle, MenuBarHandle*):OSStatus"
 		alias
 			"ewg_function_macro_DuplicateMenuBar"
 		end
 
-	duplicate_menu_bar_address_external: POINTER is
+	frozenduplicate_menu_bar_address_external: POINTER is
 			-- Address of C function `DuplicateMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) DuplicateMenuBar"
 		end
 
-	dispose_menu_bar_external (inmbar: POINTER): INTEGER is
+	frozen dispose_menu_bar_external (inmbar: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuBarHandle):OSStatus"
 		alias
 			"ewg_function_macro_DisposeMenuBar"
 		end
 
-	dispose_menu_bar_address_external: POINTER is
+	frozendispose_menu_bar_address_external: POINTER is
 			-- Address of C function `DisposeMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) DisposeMenuBar"
 		end
 
-	get_menu_handle_external (menuid: INTEGER): POINTER is
+	frozen get_menu_handle_external (menuid: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID):MenuRef"
 		alias
 			"ewg_function_macro_GetMenuHandle"
 		end
 
-	get_menu_handle_address_external: POINTER is
+	frozenget_menu_handle_address_external: POINTER is
 			-- Address of C function `GetMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) GetMenuHandle"
 		end
 
-	insert_menu_external (themenu: POINTER; beforeid: INTEGER) is
+	frozen insert_menu_external (themenu: POINTER; beforeid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuID)"
 		alias
 			"ewg_function_macro_InsertMenu"
 		end
 
-	insert_menu_address_external: POINTER is
+	frozeninsert_menu_address_external: POINTER is
 			-- Address of C function `InsertMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) InsertMenu"
 		end
 
-	delete_menu_external (menuid: INTEGER) is
+	frozen delete_menu_external (menuid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID)"
 		alias
 			"ewg_function_macro_DeleteMenu"
 		end
 
-	delete_menu_address_external: POINTER is
+	frozendelete_menu_address_external: POINTER is
 			-- Address of C function `DeleteMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) DeleteMenu"
 		end
 
-	clear_menu_bar_external is
+	frozen clear_menu_bar_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_ClearMenuBar"
 		end
 
-	clear_menu_bar_address_external: POINTER is
+	frozenclear_menu_bar_address_external: POINTER is
 			-- Address of C function `ClearMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) ClearMenuBar"
 		end
 
-	set_menu_flash_count_external (count: INTEGER) is
+	frozen set_menu_flash_count_external (count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short)"
 		alias
 			"ewg_function_macro_SetMenuFlashCount"
 		end
 
-	set_menu_flash_count_address_external: POINTER is
+	frozenset_menu_flash_count_address_external: POINTER is
 			-- Address of C function `SetMenuFlashCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) SetMenuFlashCount"
 		end
 
-	flash_menu_bar_external (menuid: INTEGER) is
+	frozen flash_menu_bar_external (menuid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID)"
 		alias
 			"ewg_function_macro_FlashMenuBar"
 		end
 
-	flash_menu_bar_address_external: POINTER is
+	frozenflash_menu_bar_address_external: POINTER is
 			-- Address of C function `FlashMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) FlashMenuBar"
 		end
 
-	is_menu_bar_visible_external: INTEGER is
+	frozen is_menu_bar_visible_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_IsMenuBarVisible"
 		end
 
-	is_menu_bar_visible_address_external: POINTER is
+	frozenis_menu_bar_visible_address_external: POINTER is
 			-- Address of C function `IsMenuBarVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) IsMenuBarVisible"
 		end
 
-	show_menu_bar_external is
+	frozen show_menu_bar_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_ShowMenuBar"
 		end
 
-	show_menu_bar_address_external: POINTER is
+	frozenshow_menu_bar_address_external: POINTER is
 			-- Address of C function `ShowMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) ShowMenuBar"
 		end
 
-	hide_menu_bar_external is
+	frozen hide_menu_bar_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_HideMenuBar"
 		end
 
-	hide_menu_bar_address_external: POINTER is
+	frozenhide_menu_bar_address_external: POINTER is
 			-- Address of C function `HideMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) HideMenuBar"
 		end
 
-	acquire_root_menu_external: POINTER is
+	frozen acquire_root_menu_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :MenuRef"
 		alias
 			"ewg_function_macro_AcquireRootMenu"
 		end
 
-	acquire_root_menu_address_external: POINTER is
+	frozenacquire_root_menu_address_external: POINTER is
 			-- Address of C function `AcquireRootMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) AcquireRootMenu"
 		end
 
-	set_root_menu_external (inmenu: POINTER): INTEGER is
+	frozen set_root_menu_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_SetRootMenu"
 		end
 
-	set_root_menu_address_external: POINTER is
+	frozenset_root_menu_address_external: POINTER is
 			-- Address of C function `SetRootMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) SetRootMenu"
 		end
 
-	check_menu_item_external (themenu: POINTER; item: INTEGER; checked: INTEGER) is
+	frozen check_menu_item_external (themenu: POINTER; item: INTEGER; checked: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, Boolean)"
 		alias
 			"ewg_function_macro_CheckMenuItem"
 		end
 
-	check_menu_item_address_external: POINTER is
+	frozencheck_menu_item_address_external: POINTER is
 			-- Address of C function `CheckMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) CheckMenuItem"
 		end
 
-	set_menu_item_text_external (themenu: POINTER; item: INTEGER; itemstring: POINTER) is
+	frozen set_menu_item_text_external (themenu: POINTER; item: INTEGER; itemstring: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, ConstStr255Param)"
 		alias
 			"ewg_function_macro_SetMenuItemText"
 		end
 
-	set_menu_item_text_address_external: POINTER is
+	frozenset_menu_item_text_address_external: POINTER is
 			-- Address of C function `SetMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) SetMenuItemText"
 		end
 
-	get_menu_item_text_external (themenu: POINTER; item: INTEGER; itemstring: POINTER) is
+	frozen get_menu_item_text_external (themenu: POINTER; item: INTEGER; itemstring: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, void*)"
 		alias
 			"ewg_function_macro_GetMenuItemText"
 		end
 
-	get_menu_item_text_address_external: POINTER is
+	frozenget_menu_item_text_address_external: POINTER is
 			-- Address of C function `GetMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) GetMenuItemText"
 		end
 
-	set_item_mark_external (themenu: POINTER; item: INTEGER; markchar: INTEGER) is
+	frozen set_item_mark_external (themenu: POINTER; item: INTEGER; markchar: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, CharParameter)"
 		alias
 			"ewg_function_macro_SetItemMark"
 		end
 
-	set_item_mark_address_external: POINTER is
+	frozenset_item_mark_address_external: POINTER is
 			-- Address of C function `SetItemMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) SetItemMark"
 		end
 
-	get_item_mark_external (themenu: POINTER; item: INTEGER; markchar: POINTER) is
+	frozen get_item_mark_external (themenu: POINTER; item: INTEGER; markchar: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, CharParameter*)"
 		alias
 			"ewg_function_macro_GetItemMark"
 		end
 
-	get_item_mark_address_external: POINTER is
+	frozenget_item_mark_address_external: POINTER is
 			-- Address of C function `GetItemMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) GetItemMark"
 		end
 
-	set_item_cmd_external (themenu: POINTER; item: INTEGER; cmdchar: INTEGER) is
+	frozen set_item_cmd_external (themenu: POINTER; item: INTEGER; cmdchar: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, CharParameter)"
 		alias
 			"ewg_function_macro_SetItemCmd"
 		end
 
-	set_item_cmd_address_external: POINTER is
+	frozenset_item_cmd_address_external: POINTER is
 			-- Address of C function `SetItemCmd'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) SetItemCmd"
 		end
 
-	get_item_cmd_external (themenu: POINTER; item: INTEGER; cmdchar: POINTER) is
+	frozen get_item_cmd_external (themenu: POINTER; item: INTEGER; cmdchar: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, CharParameter*)"
 		alias
 			"ewg_function_macro_GetItemCmd"
 		end
 
-	get_item_cmd_address_external: POINTER is
+	frozenget_item_cmd_address_external: POINTER is
 			-- Address of C function `GetItemCmd'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) GetItemCmd"
 		end
 
-	set_item_icon_external (themenu: POINTER; item: INTEGER; iconindex: INTEGER) is
+	frozen set_item_icon_external (themenu: POINTER; item: INTEGER; iconindex: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, short)"
 		alias
 			"ewg_function_macro_SetItemIcon"
 		end
 
-	set_item_icon_address_external: POINTER is
+	frozenset_item_icon_address_external: POINTER is
 			-- Address of C function `SetItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1173,14 +1173,14 @@ feature
 			"(void*) SetItemIcon"
 		end
 
-	get_item_icon_external (themenu: POINTER; item: INTEGER; iconindex: POINTER) is
+	frozen get_item_icon_external (themenu: POINTER; item: INTEGER; iconindex: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, short*)"
 		alias
 			"ewg_function_macro_GetItemIcon"
 		end
 
-	get_item_icon_address_external: POINTER is
+	frozenget_item_icon_address_external: POINTER is
 			-- Address of C function `GetItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1188,14 +1188,14 @@ feature
 			"(void*) GetItemIcon"
 		end
 
-	set_item_style_external (themenu: POINTER; item: INTEGER; chstyle: INTEGER) is
+	frozen set_item_style_external (themenu: POINTER; item: INTEGER; chstyle: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, StyleParameter)"
 		alias
 			"ewg_function_macro_SetItemStyle"
 		end
 
-	set_item_style_address_external: POINTER is
+	frozenset_item_style_address_external: POINTER is
 			-- Address of C function `SetItemStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1203,14 +1203,14 @@ feature
 			"(void*) SetItemStyle"
 		end
 
-	get_item_style_external (themenu: POINTER; item: INTEGER; chstyle: POINTER) is
+	frozen get_item_style_external (themenu: POINTER; item: INTEGER; chstyle: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, Style*)"
 		alias
 			"ewg_function_macro_GetItemStyle"
 		end
 
-	get_item_style_address_external: POINTER is
+	frozenget_item_style_address_external: POINTER is
 			-- Address of C function `GetItemStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1218,14 +1218,14 @@ feature
 			"(void*) GetItemStyle"
 		end
 
-	set_menu_item_command_id_external (inmenu: POINTER; initem: INTEGER; incommandid: INTEGER): INTEGER is
+	frozen set_menu_item_command_id_external (inmenu: POINTER; initem: INTEGER; incommandid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuCommand):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemCommandID"
 		end
 
-	set_menu_item_command_id_address_external: POINTER is
+	frozenset_menu_item_command_id_address_external: POINTER is
 			-- Address of C function `SetMenuItemCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1233,14 +1233,14 @@ feature
 			"(void*) SetMenuItemCommandID"
 		end
 
-	get_menu_item_command_id_external (inmenu: POINTER; initem: INTEGER; outcommandid: POINTER): INTEGER is
+	frozen get_menu_item_command_id_external (inmenu: POINTER; initem: INTEGER; outcommandid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuCommand*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemCommandID"
 		end
 
-	get_menu_item_command_id_address_external: POINTER is
+	frozenget_menu_item_command_id_address_external: POINTER is
 			-- Address of C function `GetMenuItemCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1248,14 +1248,14 @@ feature
 			"(void*) GetMenuItemCommandID"
 		end
 
-	set_menu_item_modifiers_external (inmenu: POINTER; initem: INTEGER; inmodifiers: INTEGER): INTEGER is
+	frozen set_menu_item_modifiers_external (inmenu: POINTER; initem: INTEGER; inmodifiers: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt8):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemModifiers"
 		end
 
-	set_menu_item_modifiers_address_external: POINTER is
+	frozenset_menu_item_modifiers_address_external: POINTER is
 			-- Address of C function `SetMenuItemModifiers'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1263,14 +1263,14 @@ feature
 			"(void*) SetMenuItemModifiers"
 		end
 
-	get_menu_item_modifiers_external (inmenu: POINTER; initem: INTEGER; outmodifiers: POINTER): INTEGER is
+	frozen get_menu_item_modifiers_external (inmenu: POINTER; initem: INTEGER; outmodifiers: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt8*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemModifiers"
 		end
 
-	get_menu_item_modifiers_address_external: POINTER is
+	frozenget_menu_item_modifiers_address_external: POINTER is
 			-- Address of C function `GetMenuItemModifiers'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1278,14 +1278,14 @@ feature
 			"(void*) GetMenuItemModifiers"
 		end
 
-	set_menu_item_icon_handle_external (inmenu: POINTER; initem: INTEGER; inicontype: INTEGER; iniconhandle: POINTER): INTEGER is
+	frozen set_menu_item_icon_handle_external (inmenu: POINTER; initem: INTEGER; inicontype: INTEGER; iniconhandle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt8, Handle):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemIconHandle"
 		end
 
-	set_menu_item_icon_handle_address_external: POINTER is
+	frozenset_menu_item_icon_handle_address_external: POINTER is
 			-- Address of C function `SetMenuItemIconHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1293,14 +1293,14 @@ feature
 			"(void*) SetMenuItemIconHandle"
 		end
 
-	get_menu_item_icon_handle_external (inmenu: POINTER; initem: INTEGER; outicontype: POINTER; outiconhandle: POINTER): INTEGER is
+	frozen get_menu_item_icon_handle_external (inmenu: POINTER; initem: INTEGER; outicontype: POINTER; outiconhandle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt8*, Handle*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemIconHandle"
 		end
 
-	get_menu_item_icon_handle_address_external: POINTER is
+	frozenget_menu_item_icon_handle_address_external: POINTER is
 			-- Address of C function `GetMenuItemIconHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1308,14 +1308,14 @@ feature
 			"(void*) GetMenuItemIconHandle"
 		end
 
-	set_menu_item_text_encoding_external (inmenu: POINTER; initem: INTEGER; inscriptid: INTEGER): INTEGER is
+	frozen set_menu_item_text_encoding_external (inmenu: POINTER; initem: INTEGER; inscriptid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, TextEncoding):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemTextEncoding"
 		end
 
-	set_menu_item_text_encoding_address_external: POINTER is
+	frozenset_menu_item_text_encoding_address_external: POINTER is
 			-- Address of C function `SetMenuItemTextEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1323,14 +1323,14 @@ feature
 			"(void*) SetMenuItemTextEncoding"
 		end
 
-	get_menu_item_text_encoding_external (inmenu: POINTER; initem: INTEGER; outscriptid: POINTER): INTEGER is
+	frozen get_menu_item_text_encoding_external (inmenu: POINTER; initem: INTEGER; outscriptid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, TextEncoding*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemTextEncoding"
 		end
 
-	get_menu_item_text_encoding_address_external: POINTER is
+	frozenget_menu_item_text_encoding_address_external: POINTER is
 			-- Address of C function `GetMenuItemTextEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1338,14 +1338,14 @@ feature
 			"(void*) GetMenuItemTextEncoding"
 		end
 
-	set_menu_item_hierarchical_id_external (inmenu: POINTER; initem: INTEGER; inhierid: INTEGER): INTEGER is
+	frozen set_menu_item_hierarchical_id_external (inmenu: POINTER; initem: INTEGER; inhierid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuID):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemHierarchicalID"
 		end
 
-	set_menu_item_hierarchical_id_address_external: POINTER is
+	frozenset_menu_item_hierarchical_id_address_external: POINTER is
 			-- Address of C function `SetMenuItemHierarchicalID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1353,14 +1353,14 @@ feature
 			"(void*) SetMenuItemHierarchicalID"
 		end
 
-	get_menu_item_hierarchical_id_external (inmenu: POINTER; initem: INTEGER; outhierid: POINTER): INTEGER is
+	frozen get_menu_item_hierarchical_id_external (inmenu: POINTER; initem: INTEGER; outhierid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuID*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemHierarchicalID"
 		end
 
-	get_menu_item_hierarchical_id_address_external: POINTER is
+	frozenget_menu_item_hierarchical_id_address_external: POINTER is
 			-- Address of C function `GetMenuItemHierarchicalID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1368,14 +1368,14 @@ feature
 			"(void*) GetMenuItemHierarchicalID"
 		end
 
-	set_menu_item_font_id_external (inmenu: POINTER; initem: INTEGER; infontid: INTEGER): INTEGER is
+	frozen set_menu_item_font_id_external (inmenu: POINTER; initem: INTEGER; infontid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, SInt16):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemFontID"
 		end
 
-	set_menu_item_font_id_address_external: POINTER is
+	frozenset_menu_item_font_id_address_external: POINTER is
 			-- Address of C function `SetMenuItemFontID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1383,14 +1383,14 @@ feature
 			"(void*) SetMenuItemFontID"
 		end
 
-	get_menu_item_font_id_external (inmenu: POINTER; initem: INTEGER; outfontid: POINTER): INTEGER is
+	frozen get_menu_item_font_id_external (inmenu: POINTER; initem: INTEGER; outfontid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, SInt16*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemFontID"
 		end
 
-	get_menu_item_font_id_address_external: POINTER is
+	frozenget_menu_item_font_id_address_external: POINTER is
 			-- Address of C function `GetMenuItemFontID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1398,14 +1398,14 @@ feature
 			"(void*) GetMenuItemFontID"
 		end
 
-	set_menu_item_ref_con_external (inmenu: POINTER; initem: INTEGER; inrefcon: INTEGER): INTEGER is
+	frozen set_menu_item_ref_con_external (inmenu: POINTER; initem: INTEGER; inrefcon: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt32):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemRefCon"
 		end
 
-	set_menu_item_ref_con_address_external: POINTER is
+	frozenset_menu_item_ref_con_address_external: POINTER is
 			-- Address of C function `SetMenuItemRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1413,14 +1413,14 @@ feature
 			"(void*) SetMenuItemRefCon"
 		end
 
-	get_menu_item_ref_con_external (inmenu: POINTER; initem: INTEGER; outrefcon: POINTER): INTEGER is
+	frozen get_menu_item_ref_con_external (inmenu: POINTER; initem: INTEGER; outrefcon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt32*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemRefCon"
 		end
 
-	get_menu_item_ref_con_address_external: POINTER is
+	frozenget_menu_item_ref_con_address_external: POINTER is
 			-- Address of C function `GetMenuItemRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1428,14 +1428,14 @@ feature
 			"(void*) GetMenuItemRefCon"
 		end
 
-	set_menu_item_key_glyph_external (inmenu: POINTER; initem: INTEGER; inglyph: INTEGER): INTEGER is
+	frozen set_menu_item_key_glyph_external (inmenu: POINTER; initem: INTEGER; inglyph: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, SInt16):OSErr"
 		alias
 			"ewg_function_macro_SetMenuItemKeyGlyph"
 		end
 
-	set_menu_item_key_glyph_address_external: POINTER is
+	frozenset_menu_item_key_glyph_address_external: POINTER is
 			-- Address of C function `SetMenuItemKeyGlyph'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1443,14 +1443,14 @@ feature
 			"(void*) SetMenuItemKeyGlyph"
 		end
 
-	get_menu_item_key_glyph_external (inmenu: POINTER; initem: INTEGER; outglyph: POINTER): INTEGER is
+	frozen get_menu_item_key_glyph_external (inmenu: POINTER; initem: INTEGER; outglyph: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, SInt16*):OSErr"
 		alias
 			"ewg_function_macro_GetMenuItemKeyGlyph"
 		end
 
-	get_menu_item_key_glyph_address_external: POINTER is
+	frozenget_menu_item_key_glyph_address_external: POINTER is
 			-- Address of C function `GetMenuItemKeyGlyph'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1458,14 +1458,14 @@ feature
 			"(void*) GetMenuItemKeyGlyph"
 		end
 
-	enable_menu_item_external (themenu: POINTER; item: INTEGER) is
+	frozen enable_menu_item_external (themenu: POINTER; item: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex)"
 		alias
 			"ewg_function_macro_EnableMenuItem"
 		end
 
-	enable_menu_item_address_external: POINTER is
+	frozenenable_menu_item_address_external: POINTER is
 			-- Address of C function `EnableMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1473,14 +1473,14 @@ feature
 			"(void*) EnableMenuItem"
 		end
 
-	disable_menu_item_external (themenu: POINTER; item: INTEGER) is
+	frozen disable_menu_item_external (themenu: POINTER; item: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex)"
 		alias
 			"ewg_function_macro_DisableMenuItem"
 		end
 
-	disable_menu_item_address_external: POINTER is
+	frozendisable_menu_item_address_external: POINTER is
 			-- Address of C function `DisableMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1488,14 +1488,14 @@ feature
 			"(void*) DisableMenuItem"
 		end
 
-	is_menu_item_enabled_external (menu: POINTER; item: INTEGER): INTEGER is
+	frozen is_menu_item_enabled_external (menu: POINTER; item: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex):Boolean"
 		alias
 			"ewg_function_macro_IsMenuItemEnabled"
 		end
 
-	is_menu_item_enabled_address_external: POINTER is
+	frozenis_menu_item_enabled_address_external: POINTER is
 			-- Address of C function `IsMenuItemEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1503,14 +1503,14 @@ feature
 			"(void*) IsMenuItemEnabled"
 		end
 
-	enable_menu_item_icon_external (themenu: POINTER; item: INTEGER) is
+	frozen enable_menu_item_icon_external (themenu: POINTER; item: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex)"
 		alias
 			"ewg_function_macro_EnableMenuItemIcon"
 		end
 
-	enable_menu_item_icon_address_external: POINTER is
+	frozenenable_menu_item_icon_address_external: POINTER is
 			-- Address of C function `EnableMenuItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1518,14 +1518,14 @@ feature
 			"(void*) EnableMenuItemIcon"
 		end
 
-	disable_menu_item_icon_external (themenu: POINTER; item: INTEGER) is
+	frozen disable_menu_item_icon_external (themenu: POINTER; item: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex)"
 		alias
 			"ewg_function_macro_DisableMenuItemIcon"
 		end
 
-	disable_menu_item_icon_address_external: POINTER is
+	frozendisable_menu_item_icon_address_external: POINTER is
 			-- Address of C function `DisableMenuItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1533,14 +1533,14 @@ feature
 			"(void*) DisableMenuItemIcon"
 		end
 
-	is_menu_item_icon_enabled_external (menu: POINTER; item: INTEGER): INTEGER is
+	frozen is_menu_item_icon_enabled_external (menu: POINTER; item: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex):Boolean"
 		alias
 			"ewg_function_macro_IsMenuItemIconEnabled"
 		end
 
-	is_menu_item_icon_enabled_address_external: POINTER is
+	frozenis_menu_item_icon_enabled_address_external: POINTER is
 			-- Address of C function `IsMenuItemIconEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1548,14 +1548,14 @@ feature
 			"(void*) IsMenuItemIconEnabled"
 		end
 
-	set_menu_item_hierarchical_menu_external (inmenu: POINTER; initem: INTEGER; inhiermenu: POINTER): INTEGER is
+	frozen set_menu_item_hierarchical_menu_external (inmenu: POINTER; initem: INTEGER; inhiermenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuItemHierarchicalMenu"
 		end
 
-	set_menu_item_hierarchical_menu_address_external: POINTER is
+	frozenset_menu_item_hierarchical_menu_address_external: POINTER is
 			-- Address of C function `SetMenuItemHierarchicalMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1563,14 +1563,14 @@ feature
 			"(void*) SetMenuItemHierarchicalMenu"
 		end
 
-	get_menu_item_hierarchical_menu_external (inmenu: POINTER; initem: INTEGER; outhiermenu: POINTER): INTEGER is
+	frozen get_menu_item_hierarchical_menu_external (inmenu: POINTER; initem: INTEGER; outhiermenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuItemHierarchicalMenu"
 		end
 
-	get_menu_item_hierarchical_menu_address_external: POINTER is
+	frozenget_menu_item_hierarchical_menu_address_external: POINTER is
 			-- Address of C function `GetMenuItemHierarchicalMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1578,14 +1578,14 @@ feature
 			"(void*) GetMenuItemHierarchicalMenu"
 		end
 
-	copy_menu_item_text_as_cfstring_external (inmenu: POINTER; initem: INTEGER; outstring: POINTER): INTEGER is
+	frozen copy_menu_item_text_as_cfstring_external (inmenu: POINTER; initem: INTEGER; outstring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyMenuItemTextAsCFString"
 		end
 
-	copy_menu_item_text_as_cfstring_address_external: POINTER is
+	frozencopy_menu_item_text_as_cfstring_address_external: POINTER is
 			-- Address of C function `CopyMenuItemTextAsCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1593,14 +1593,14 @@ feature
 			"(void*) CopyMenuItemTextAsCFString"
 		end
 
-	set_menu_item_text_with_cfstring_external (inmenu: POINTER; initem: INTEGER; instring: POINTER): INTEGER is
+	frozen set_menu_item_text_with_cfstring_external (inmenu: POINTER; initem: INTEGER; instring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuItemTextWithCFString"
 		end
 
-	set_menu_item_text_with_cfstring_address_external: POINTER is
+	frozenset_menu_item_text_with_cfstring_address_external: POINTER is
 			-- Address of C function `SetMenuItemTextWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1608,14 +1608,14 @@ feature
 			"(void*) SetMenuItemTextWithCFString"
 		end
 
-	get_menu_item_indent_external (inmenu: POINTER; initem: INTEGER; outindent: POINTER): INTEGER is
+	frozen get_menu_item_indent_external (inmenu: POINTER; initem: INTEGER; outindent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuItemIndent"
 		end
 
-	get_menu_item_indent_address_external: POINTER is
+	frozenget_menu_item_indent_address_external: POINTER is
 			-- Address of C function `GetMenuItemIndent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1623,14 +1623,14 @@ feature
 			"(void*) GetMenuItemIndent"
 		end
 
-	set_menu_item_indent_external (inmenu: POINTER; initem: INTEGER; inindent: INTEGER): INTEGER is
+	frozen set_menu_item_indent_external (inmenu: POINTER; initem: INTEGER; inindent: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuItemIndent"
 		end
 
-	set_menu_item_indent_address_external: POINTER is
+	frozenset_menu_item_indent_address_external: POINTER is
 			-- Address of C function `SetMenuItemIndent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1638,14 +1638,14 @@ feature
 			"(void*) SetMenuItemIndent"
 		end
 
-	get_menu_item_command_key_external (inmenu: POINTER; initem: INTEGER; ingetvirtualkey: INTEGER; outkey: POINTER): INTEGER is
+	frozen get_menu_item_command_key_external (inmenu: POINTER; initem: INTEGER; ingetvirtualkey: INTEGER; outkey: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, Boolean, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuItemCommandKey"
 		end
 
-	get_menu_item_command_key_address_external: POINTER is
+	frozenget_menu_item_command_key_address_external: POINTER is
 			-- Address of C function `GetMenuItemCommandKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1653,14 +1653,14 @@ feature
 			"(void*) GetMenuItemCommandKey"
 		end
 
-	set_menu_item_command_key_external (inmenu: POINTER; initem: INTEGER; insetvirtualkey: INTEGER; inkey: INTEGER): INTEGER is
+	frozen set_menu_item_command_key_external (inmenu: POINTER; initem: INTEGER; insetvirtualkey: INTEGER; inkey: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, Boolean, UInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuItemCommandKey"
 		end
 
-	set_menu_item_command_key_address_external: POINTER is
+	frozenset_menu_item_command_key_address_external: POINTER is
 			-- Address of C function `SetMenuItemCommandKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1668,14 +1668,14 @@ feature
 			"(void*) SetMenuItemCommandKey"
 		end
 
-	delete_mcentries_external (menuid: INTEGER; menuitem: INTEGER) is
+	frozen delete_mcentries_external (menuid: INTEGER; menuitem: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID, short)"
 		alias
 			"ewg_function_macro_DeleteMCEntries"
 		end
 
-	delete_mcentries_address_external: POINTER is
+	frozendelete_mcentries_address_external: POINTER is
 			-- Address of C function `DeleteMCEntries'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1683,14 +1683,14 @@ feature
 			"(void*) DeleteMCEntries"
 		end
 
-	get_mcinfo_external: POINTER is
+	frozen get_mcinfo_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :MCTableHandle"
 		alias
 			"ewg_function_macro_GetMCInfo"
 		end
 
-	get_mcinfo_address_external: POINTER is
+	frozenget_mcinfo_address_external: POINTER is
 			-- Address of C function `GetMCInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1698,14 +1698,14 @@ feature
 			"(void*) GetMCInfo"
 		end
 
-	set_mcinfo_external (menuctbl: POINTER) is
+	frozen set_mcinfo_external (menuctbl: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MCTableHandle)"
 		alias
 			"ewg_function_macro_SetMCInfo"
 		end
 
-	set_mcinfo_address_external: POINTER is
+	frozenset_mcinfo_address_external: POINTER is
 			-- Address of C function `SetMCInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1713,14 +1713,14 @@ feature
 			"(void*) SetMCInfo"
 		end
 
-	dispose_mcinfo_external (menuctbl: POINTER) is
+	frozen dispose_mcinfo_external (menuctbl: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MCTableHandle)"
 		alias
 			"ewg_function_macro_DisposeMCInfo"
 		end
 
-	dispose_mcinfo_address_external: POINTER is
+	frozendispose_mcinfo_address_external: POINTER is
 			-- Address of C function `DisposeMCInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1728,14 +1728,14 @@ feature
 			"(void*) DisposeMCInfo"
 		end
 
-	get_mcentry_external (menuid: INTEGER; menuitem: INTEGER): POINTER is
+	frozen get_mcentry_external (menuid: INTEGER; menuitem: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuID, short):MCEntryPtr"
 		alias
 			"ewg_function_macro_GetMCEntry"
 		end
 
-	get_mcentry_address_external: POINTER is
+	frozenget_mcentry_address_external: POINTER is
 			-- Address of C function `GetMCEntry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1743,14 +1743,14 @@ feature
 			"(void*) GetMCEntry"
 		end
 
-	set_mcentries_external (numentries: INTEGER; menucentries: POINTER) is
+	frozen set_mcentries_external (numentries: INTEGER; menucentries: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short, MCTablePtr)"
 		alias
 			"ewg_function_macro_SetMCEntries"
 		end
 
-	set_mcentries_address_external: POINTER is
+	frozenset_mcentries_address_external: POINTER is
 			-- Address of C function `SetMCEntries'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1758,14 +1758,14 @@ feature
 			"(void*) SetMCEntries"
 		end
 
-	get_menu_item_property_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; buffersize: INTEGER; actualsize: POINTER; propertybuffer: POINTER): INTEGER is
+	frozen get_menu_item_property_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; buffersize: INTEGER; actualsize: POINTER; propertybuffer: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, OSType, OSType, UInt32, UInt32*, void*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuItemProperty"
 		end
 
-	get_menu_item_property_address_external: POINTER is
+	frozenget_menu_item_property_address_external: POINTER is
 			-- Address of C function `GetMenuItemProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1773,14 +1773,14 @@ feature
 			"(void*) GetMenuItemProperty"
 		end
 
-	get_menu_item_property_size_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; size: POINTER): INTEGER is
+	frozen get_menu_item_property_size_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; size: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, OSType, OSType, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuItemPropertySize"
 		end
 
-	get_menu_item_property_size_address_external: POINTER is
+	frozenget_menu_item_property_size_address_external: POINTER is
 			-- Address of C function `GetMenuItemPropertySize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1788,14 +1788,14 @@ feature
 			"(void*) GetMenuItemPropertySize"
 		end
 
-	set_menu_item_property_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; propertysize: INTEGER; propertydata: POINTER): INTEGER is
+	frozen set_menu_item_property_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; propertysize: INTEGER; propertydata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, OSType, OSType, UInt32, void const*):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuItemProperty"
 		end
 
-	set_menu_item_property_address_external: POINTER is
+	frozenset_menu_item_property_address_external: POINTER is
 			-- Address of C function `SetMenuItemProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1803,14 +1803,14 @@ feature
 			"(void*) SetMenuItemProperty"
 		end
 
-	remove_menu_item_property_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER): INTEGER is
+	frozen remove_menu_item_property_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, OSType, OSType):OSStatus"
 		alias
 			"ewg_function_macro_RemoveMenuItemProperty"
 		end
 
-	remove_menu_item_property_address_external: POINTER is
+	frozenremove_menu_item_property_address_external: POINTER is
 			-- Address of C function `RemoveMenuItemProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1818,14 +1818,14 @@ feature
 			"(void*) RemoveMenuItemProperty"
 		end
 
-	get_menu_item_property_attributes_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; attributes: POINTER): INTEGER is
+	frozen get_menu_item_property_attributes_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; attributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, OSType, OSType, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuItemPropertyAttributes"
 		end
 
-	get_menu_item_property_attributes_address_external: POINTER is
+	frozenget_menu_item_property_attributes_address_external: POINTER is
 			-- Address of C function `GetMenuItemPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1833,14 +1833,14 @@ feature
 			"(void*) GetMenuItemPropertyAttributes"
 		end
 
-	change_menu_item_property_attributes_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; attributestoset: INTEGER; attributestoclear: INTEGER): INTEGER is
+	frozen change_menu_item_property_attributes_external (menu: POINTER; item: INTEGER; propertycreator: INTEGER; propertytag: INTEGER; attributestoset: INTEGER; attributestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, OSType, OSType, UInt32, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_ChangeMenuItemPropertyAttributes"
 		end
 
-	change_menu_item_property_attributes_address_external: POINTER is
+	frozenchange_menu_item_property_attributes_address_external: POINTER is
 			-- Address of C function `ChangeMenuItemPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1848,14 +1848,14 @@ feature
 			"(void*) ChangeMenuItemPropertyAttributes"
 		end
 
-	get_menu_attributes_external (menu: POINTER; outattributes: POINTER): INTEGER is
+	frozen get_menu_attributes_external (menu: POINTER; outattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuAttributes*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuAttributes"
 		end
 
-	get_menu_attributes_address_external: POINTER is
+	frozenget_menu_attributes_address_external: POINTER is
 			-- Address of C function `GetMenuAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1863,14 +1863,14 @@ feature
 			"(void*) GetMenuAttributes"
 		end
 
-	change_menu_attributes_external (menu: POINTER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
+	frozen change_menu_attributes_external (menu: POINTER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuAttributes, MenuAttributes):OSStatus"
 		alias
 			"ewg_function_macro_ChangeMenuAttributes"
 		end
 
-	change_menu_attributes_address_external: POINTER is
+	frozenchange_menu_attributes_address_external: POINTER is
 			-- Address of C function `ChangeMenuAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1878,14 +1878,14 @@ feature
 			"(void*) ChangeMenuAttributes"
 		end
 
-	get_menu_item_attributes_external (menu: POINTER; item: INTEGER; outattributes: POINTER): INTEGER is
+	frozen get_menu_item_attributes_external (menu: POINTER; item: INTEGER; outattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuItemAttributes*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuItemAttributes"
 		end
 
-	get_menu_item_attributes_address_external: POINTER is
+	frozenget_menu_item_attributes_address_external: POINTER is
 			-- Address of C function `GetMenuItemAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1893,14 +1893,14 @@ feature
 			"(void*) GetMenuItemAttributes"
 		end
 
-	change_menu_item_attributes_external (menu: POINTER; item: INTEGER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
+	frozen change_menu_item_attributes_external (menu: POINTER; item: INTEGER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuItemAttributes, MenuItemAttributes):OSStatus"
 		alias
 			"ewg_function_macro_ChangeMenuItemAttributes"
 		end
 
-	change_menu_item_attributes_address_external: POINTER is
+	frozenchange_menu_item_attributes_address_external: POINTER is
 			-- Address of C function `ChangeMenuItemAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1908,14 +1908,14 @@ feature
 			"(void*) ChangeMenuItemAttributes"
 		end
 
-	disable_all_menu_items_external (themenu: POINTER) is
+	frozen disable_all_menu_items_external (themenu: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef)"
 		alias
 			"ewg_function_macro_DisableAllMenuItems"
 		end
 
-	disable_all_menu_items_address_external: POINTER is
+	frozendisable_all_menu_items_address_external: POINTER is
 			-- Address of C function `DisableAllMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1923,14 +1923,14 @@ feature
 			"(void*) DisableAllMenuItems"
 		end
 
-	enable_all_menu_items_external (themenu: POINTER) is
+	frozen enable_all_menu_items_external (themenu: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef)"
 		alias
 			"ewg_function_macro_EnableAllMenuItems"
 		end
 
-	enable_all_menu_items_address_external: POINTER is
+	frozenenable_all_menu_items_address_external: POINTER is
 			-- Address of C function `EnableAllMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1938,14 +1938,14 @@ feature
 			"(void*) EnableAllMenuItems"
 		end
 
-	menu_has_enabled_items_external (themenu: POINTER): INTEGER is
+	frozen menu_has_enabled_items_external (themenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):Boolean"
 		alias
 			"ewg_function_macro_MenuHasEnabledItems"
 		end
 
-	menu_has_enabled_items_address_external: POINTER is
+	frozenmenu_has_enabled_items_address_external: POINTER is
 			-- Address of C function `MenuHasEnabledItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1953,14 +1953,14 @@ feature
 			"(void*) MenuHasEnabledItems"
 		end
 
-	get_menu_tracking_data_external (themenu: POINTER; outdata: POINTER): INTEGER is
+	frozen get_menu_tracking_data_external (themenu: POINTER; outdata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuTrackingData*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuTrackingData"
 		end
 
-	get_menu_tracking_data_address_external: POINTER is
+	frozenget_menu_tracking_data_address_external: POINTER is
 			-- Address of C function `GetMenuTrackingData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1968,14 +1968,14 @@ feature
 			"(void*) GetMenuTrackingData"
 		end
 
-	get_menu_type_external (themenu: POINTER; outtype: POINTER): INTEGER is
+	frozen get_menu_type_external (themenu: POINTER; outtype: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, UInt16*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuType"
 		end
 
-	get_menu_type_address_external: POINTER is
+	frozenget_menu_type_address_external: POINTER is
 			-- Address of C function `GetMenuType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1983,14 +1983,14 @@ feature
 			"(void*) GetMenuType"
 		end
 
-	count_menu_items_with_command_id_external (inmenu: POINTER; incommandid: INTEGER): INTEGER is
+	frozen count_menu_items_with_command_id_external (inmenu: POINTER; incommandid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand):ItemCount"
 		alias
 			"ewg_function_macro_CountMenuItemsWithCommandID"
 		end
 
-	count_menu_items_with_command_id_address_external: POINTER is
+	frozencount_menu_items_with_command_id_address_external: POINTER is
 			-- Address of C function `CountMenuItemsWithCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1998,14 +1998,14 @@ feature
 			"(void*) CountMenuItemsWithCommandID"
 		end
 
-	get_ind_menu_item_with_command_id_external (inmenu: POINTER; incommandid: INTEGER; initemindex: INTEGER; outmenu: POINTER; outindex: POINTER): INTEGER is
+	frozen get_ind_menu_item_with_command_id_external (inmenu: POINTER; incommandid: INTEGER; initemindex: INTEGER; outmenu: POINTER; outindex: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand, UInt32, MenuRef*, MenuItemIndex*):OSStatus"
 		alias
 			"ewg_function_macro_GetIndMenuItemWithCommandID"
 		end
 
-	get_ind_menu_item_with_command_id_address_external: POINTER is
+	frozenget_ind_menu_item_with_command_id_address_external: POINTER is
 			-- Address of C function `GetIndMenuItemWithCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2013,14 +2013,14 @@ feature
 			"(void*) GetIndMenuItemWithCommandID"
 		end
 
-	enable_menu_command_external (inmenu: POINTER; incommandid: INTEGER) is
+	frozen enable_menu_command_external (inmenu: POINTER; incommandid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand)"
 		alias
 			"ewg_function_macro_EnableMenuCommand"
 		end
 
-	enable_menu_command_address_external: POINTER is
+	frozenenable_menu_command_address_external: POINTER is
 			-- Address of C function `EnableMenuCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2028,14 +2028,14 @@ feature
 			"(void*) EnableMenuCommand"
 		end
 
-	disable_menu_command_external (inmenu: POINTER; incommandid: INTEGER) is
+	frozen disable_menu_command_external (inmenu: POINTER; incommandid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand)"
 		alias
 			"ewg_function_macro_DisableMenuCommand"
 		end
 
-	disable_menu_command_address_external: POINTER is
+	frozendisable_menu_command_address_external: POINTER is
 			-- Address of C function `DisableMenuCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2043,14 +2043,14 @@ feature
 			"(void*) DisableMenuCommand"
 		end
 
-	is_menu_command_enabled_external (inmenu: POINTER; incommandid: INTEGER): INTEGER is
+	frozen is_menu_command_enabled_external (inmenu: POINTER; incommandid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand):Boolean"
 		alias
 			"ewg_function_macro_IsMenuCommandEnabled"
 		end
 
-	is_menu_command_enabled_address_external: POINTER is
+	frozenis_menu_command_enabled_address_external: POINTER is
 			-- Address of C function `IsMenuCommandEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2058,14 +2058,14 @@ feature
 			"(void*) IsMenuCommandEnabled"
 		end
 
-	set_menu_command_mark_external (inmenu: POINTER; incommandid: INTEGER; inmark: INTEGER): INTEGER is
+	frozen set_menu_command_mark_external (inmenu: POINTER; incommandid: INTEGER; inmark: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand, UniChar):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuCommandMark"
 		end
 
-	set_menu_command_mark_address_external: POINTER is
+	frozenset_menu_command_mark_address_external: POINTER is
 			-- Address of C function `SetMenuCommandMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2073,14 +2073,14 @@ feature
 			"(void*) SetMenuCommandMark"
 		end
 
-	get_menu_command_mark_external (inmenu: POINTER; incommandid: INTEGER; outmark: POINTER): INTEGER is
+	frozen get_menu_command_mark_external (inmenu: POINTER; incommandid: INTEGER; outmark: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand, UniChar*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuCommandMark"
 		end
 
-	get_menu_command_mark_address_external: POINTER is
+	frozenget_menu_command_mark_address_external: POINTER is
 			-- Address of C function `GetMenuCommandMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2088,14 +2088,14 @@ feature
 			"(void*) GetMenuCommandMark"
 		end
 
-	get_menu_command_property_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER; inbuffersize: INTEGER; outactualsize: POINTER; inpropertybuffer: POINTER): INTEGER is
+	frozen get_menu_command_property_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER; inbuffersize: INTEGER; outactualsize: POINTER; inpropertybuffer: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand, OSType, OSType, ByteCount, ByteCount*, void*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuCommandProperty"
 		end
 
-	get_menu_command_property_address_external: POINTER is
+	frozenget_menu_command_property_address_external: POINTER is
 			-- Address of C function `GetMenuCommandProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2103,14 +2103,14 @@ feature
 			"(void*) GetMenuCommandProperty"
 		end
 
-	get_menu_command_property_size_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER; outsize: POINTER): INTEGER is
+	frozen get_menu_command_property_size_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER; outsize: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand, OSType, OSType, ByteCount*):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuCommandPropertySize"
 		end
 
-	get_menu_command_property_size_address_external: POINTER is
+	frozenget_menu_command_property_size_address_external: POINTER is
 			-- Address of C function `GetMenuCommandPropertySize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2118,14 +2118,14 @@ feature
 			"(void*) GetMenuCommandPropertySize"
 		end
 
-	set_menu_command_property_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER; inpropertysize: INTEGER; inpropertydata: POINTER): INTEGER is
+	frozen set_menu_command_property_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER; inpropertysize: INTEGER; inpropertydata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand, OSType, OSType, ByteCount, void const*):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuCommandProperty"
 		end
 
-	set_menu_command_property_address_external: POINTER is
+	frozenset_menu_command_property_address_external: POINTER is
 			-- Address of C function `SetMenuCommandProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2133,14 +2133,14 @@ feature
 			"(void*) SetMenuCommandProperty"
 		end
 
-	remove_menu_command_property_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER): INTEGER is
+	frozen remove_menu_command_property_external (inmenu: POINTER; incommandid: INTEGER; inpropertycreator: INTEGER; inpropertytag: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuCommand, OSType, OSType):OSStatus"
 		alias
 			"ewg_function_macro_RemoveMenuCommandProperty"
 		end
 
-	remove_menu_command_property_address_external: POINTER is
+	frozenremove_menu_command_property_address_external: POINTER is
 			-- Address of C function `RemoveMenuCommandProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2148,14 +2148,14 @@ feature
 			"(void*) RemoveMenuCommandProperty"
 		end
 
-	copy_menu_item_data_external (inmenu: POINTER; initem: INTEGER; iniscommandid: INTEGER; iodata: POINTER): INTEGER is
+	frozen copy_menu_item_data_external (inmenu: POINTER; initem: INTEGER; iniscommandid: INTEGER; iodata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemID, Boolean, MenuItemDataPtr):OSStatus"
 		alias
 			"ewg_function_macro_CopyMenuItemData"
 		end
 
-	copy_menu_item_data_address_external: POINTER is
+	frozencopy_menu_item_data_address_external: POINTER is
 			-- Address of C function `CopyMenuItemData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2163,14 +2163,14 @@ feature
 			"(void*) CopyMenuItemData"
 		end
 
-	set_menu_item_data_external (inmenu: POINTER; initem: INTEGER; iniscommandid: INTEGER; indata: POINTER): INTEGER is
+	frozen set_menu_item_data_external (inmenu: POINTER; initem: INTEGER; iniscommandid: INTEGER; indata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemID, Boolean, MenuItemDataRec const*):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuItemData"
 		end
 
-	set_menu_item_data_address_external: POINTER is
+	frozenset_menu_item_data_address_external: POINTER is
 			-- Address of C function `SetMenuItemData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2178,14 +2178,14 @@ feature
 			"(void*) SetMenuItemData"
 		end
 
-	is_menu_item_invalid_external (inmenu: POINTER; initem: INTEGER): INTEGER is
+	frozen is_menu_item_invalid_external (inmenu: POINTER; initem: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex):Boolean"
 		alias
 			"ewg_function_macro_IsMenuItemInvalid"
 		end
 
-	is_menu_item_invalid_address_external: POINTER is
+	frozenis_menu_item_invalid_address_external: POINTER is
 			-- Address of C function `IsMenuItemInvalid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2193,14 +2193,14 @@ feature
 			"(void*) IsMenuItemInvalid"
 		end
 
-	invalidate_menu_items_external (inmenu: POINTER; infirstitem: INTEGER; innumitems: INTEGER): INTEGER is
+	frozen invalidate_menu_items_external (inmenu: POINTER; infirstitem: INTEGER; innumitems: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, ItemCount):OSStatus"
 		alias
 			"ewg_function_macro_InvalidateMenuItems"
 		end
 
-	invalidate_menu_items_address_external: POINTER is
+	frozeninvalidate_menu_items_address_external: POINTER is
 			-- Address of C function `InvalidateMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2208,14 +2208,14 @@ feature
 			"(void*) InvalidateMenuItems"
 		end
 
-	update_invalid_menu_items_external (inmenu: POINTER): INTEGER is
+	frozen update_invalid_menu_items_external (inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_UpdateInvalidMenuItems"
 		end
 
-	update_invalid_menu_items_address_external: POINTER is
+	frozenupdate_invalid_menu_items_address_external: POINTER is
 			-- Address of C function `UpdateInvalidMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2223,14 +2223,14 @@ feature
 			"(void*) UpdateInvalidMenuItems"
 		end
 
-	create_standard_font_menu_external (menu: POINTER; afteritem: INTEGER; firsthiermenuid: INTEGER; options: INTEGER; outhiermenucount: POINTER): INTEGER is
+	frozen create_standard_font_menu_external (menu: POINTER; afteritem: INTEGER; firsthiermenuid: INTEGER; options: INTEGER; outhiermenucount: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, MenuID, OptionBits, ItemCount*):OSStatus"
 		alias
 			"ewg_function_macro_CreateStandardFontMenu"
 		end
 
-	create_standard_font_menu_address_external: POINTER is
+	frozencreate_standard_font_menu_address_external: POINTER is
 			-- Address of C function `CreateStandardFontMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2238,14 +2238,14 @@ feature
 			"(void*) CreateStandardFontMenu"
 		end
 
-	update_standard_font_menu_external (menu: POINTER; outhiermenucount: POINTER): INTEGER is
+	frozen update_standard_font_menu_external (menu: POINTER; outhiermenucount: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ItemCount*):OSStatus"
 		alias
 			"ewg_function_macro_UpdateStandardFontMenu"
 		end
 
-	update_standard_font_menu_address_external: POINTER is
+	frozenupdate_standard_font_menu_address_external: POINTER is
 			-- Address of C function `UpdateStandardFontMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2253,14 +2253,14 @@ feature
 			"(void*) UpdateStandardFontMenu"
 		end
 
-	get_font_family_from_menu_selection_external (menu: POINTER; item: INTEGER; outfontfamily: POINTER; outstyle: POINTER): INTEGER is
+	frozen get_font_family_from_menu_selection_external (menu: POINTER; item: INTEGER; outfontfamily: POINTER; outstyle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, FMFontFamily*, FMFontStyle*):OSStatus"
 		alias
 			"ewg_function_macro_GetFontFamilyFromMenuSelection"
 		end
 
-	get_font_family_from_menu_selection_address_external: POINTER is
+	frozenget_font_family_from_menu_selection_address_external: POINTER is
 			-- Address of C function `GetFontFamilyFromMenuSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2268,14 +2268,14 @@ feature
 			"(void*) GetFontFamilyFromMenuSelection"
 		end
 
-	init_contextual_menus_external: INTEGER is
+	frozen init_contextual_menus_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_InitContextualMenus"
 		end
 
-	init_contextual_menus_address_external: POINTER is
+	frozeninit_contextual_menus_address_external: POINTER is
 			-- Address of C function `InitContextualMenus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2283,14 +2283,14 @@ feature
 			"(void*) InitContextualMenus"
 		end
 
-	is_show_contextual_menu_click_external (inevent: POINTER): INTEGER is
+	frozen is_show_contextual_menu_click_external (inevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRecord const*):Boolean"
 		alias
 			"ewg_function_macro_IsShowContextualMenuClick"
 		end
 
-	is_show_contextual_menu_click_address_external: POINTER is
+	frozenis_show_contextual_menu_click_address_external: POINTER is
 			-- Address of C function `IsShowContextualMenuClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2298,14 +2298,14 @@ feature
 			"(void*) IsShowContextualMenuClick"
 		end
 
-	is_show_contextual_menu_event_external (inevent: POINTER): INTEGER is
+	frozen is_show_contextual_menu_event_external (inevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRef):Boolean"
 		alias
 			"ewg_function_macro_IsShowContextualMenuEvent"
 		end
 
-	is_show_contextual_menu_event_address_external: POINTER is
+	frozenis_show_contextual_menu_event_address_external: POINTER is
 			-- Address of C function `IsShowContextualMenuEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2313,14 +2313,14 @@ feature
 			"(void*) IsShowContextualMenuEvent"
 		end
 
-	contextual_menu_select_external (inmenu: POINTER; ingloballocation: POINTER; inreserved: INTEGER; inhelptype: INTEGER; inhelpitemstring: POINTER; inselection: POINTER; outuserselectiontype: POINTER; outmenuid: POINTER; outmenuitem: POINTER): INTEGER is
+	frozen contextual_menu_select_external (inmenu: POINTER; ingloballocation: POINTER; inreserved: INTEGER; inhelptype: INTEGER; inhelpitemstring: POINTER; inselection: POINTER; outuserselectiontype: POINTER; outmenuid: POINTER; outmenuitem: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, Point*, Boolean, UInt32, ConstStr255Param, AEDesc const*, UInt32*, MenuID*, MenuItemIndex*):OSStatus"
 		alias
 			"ewg_function_macro_ContextualMenuSelect"
 		end
 
-	contextual_menu_select_address_external: POINTER is
+	frozencontextual_menu_select_address_external: POINTER is
 			-- Address of C function `ContextualMenuSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2328,14 +2328,14 @@ feature
 			"(void*) ContextualMenuSelect"
 		end
 
-	process_is_contextual_menu_client_external (inpsn: POINTER): INTEGER is
+	frozen process_is_contextual_menu_client_external (inpsn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ProcessSerialNumber*):Boolean"
 		alias
 			"ewg_function_macro_ProcessIsContextualMenuClient"
 		end
 
-	process_is_contextual_menu_client_address_external: POINTER is
+	frozenprocess_is_contextual_menu_client_address_external: POINTER is
 			-- Address of C function `ProcessIsContextualMenuClient'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2343,14 +2343,14 @@ feature
 			"(void*) ProcessIsContextualMenuClient"
 		end
 
-	lmget_the_menu_external: INTEGER is
+	frozen lmget_the_menu_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :MenuID"
 		alias
 			"ewg_function_macro_LMGetTheMenu"
 		end
 
-	lmget_the_menu_address_external: POINTER is
+	frozenlmget_the_menu_address_external: POINTER is
 			-- Address of C function `LMGetTheMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2358,14 +2358,14 @@ feature
 			"(void*) LMGetTheMenu"
 		end
 
-	get_menu_id_external (menu: POINTER): INTEGER is
+	frozen get_menu_id_external (menu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):MenuID"
 		alias
 			"ewg_function_macro_GetMenuID"
 		end
 
-	get_menu_id_address_external: POINTER is
+	frozenget_menu_id_address_external: POINTER is
 			-- Address of C function `GetMenuID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2373,14 +2373,14 @@ feature
 			"(void*) GetMenuID"
 		end
 
-	get_menu_width_external (menu: POINTER): INTEGER is
+	frozen get_menu_width_external (menu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):SInt16"
 		alias
 			"ewg_function_macro_GetMenuWidth"
 		end
 
-	get_menu_width_address_external: POINTER is
+	frozenget_menu_width_address_external: POINTER is
 			-- Address of C function `GetMenuWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2388,14 +2388,14 @@ feature
 			"(void*) GetMenuWidth"
 		end
 
-	get_menu_height_external (menu: POINTER): INTEGER is
+	frozen get_menu_height_external (menu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):SInt16"
 		alias
 			"ewg_function_macro_GetMenuHeight"
 		end
 
-	get_menu_height_address_external: POINTER is
+	frozenget_menu_height_address_external: POINTER is
 			-- Address of C function `GetMenuHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2403,14 +2403,14 @@ feature
 			"(void*) GetMenuHeight"
 		end
 
-	get_menu_title_external (menu: POINTER; title: POINTER): POINTER is
+	frozen get_menu_title_external (menu: POINTER; title: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, void*):StringPtr"
 		alias
 			"ewg_function_macro_GetMenuTitle"
 		end
 
-	get_menu_title_address_external: POINTER is
+	frozenget_menu_title_address_external: POINTER is
 			-- Address of C function `GetMenuTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2418,14 +2418,14 @@ feature
 			"(void*) GetMenuTitle"
 		end
 
-	get_menu_definition_external (menu: POINTER; outdefspec: POINTER): INTEGER is
+	frozen get_menu_definition_external (menu: POINTER; outdefspec: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuDefSpecPtr):OSStatus"
 		alias
 			"ewg_function_macro_GetMenuDefinition"
 		end
 
-	get_menu_definition_address_external: POINTER is
+	frozenget_menu_definition_address_external: POINTER is
 			-- Address of C function `GetMenuDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2433,14 +2433,14 @@ feature
 			"(void*) GetMenuDefinition"
 		end
 
-	set_menu_id_external (menu: POINTER; menuid: INTEGER) is
+	frozen set_menu_id_external (menu: POINTER; menuid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuID)"
 		alias
 			"ewg_function_macro_SetMenuID"
 		end
 
-	set_menu_id_address_external: POINTER is
+	frozenset_menu_id_address_external: POINTER is
 			-- Address of C function `SetMenuID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2448,14 +2448,14 @@ feature
 			"(void*) SetMenuID"
 		end
 
-	set_menu_width_external (menu: POINTER; width: INTEGER) is
+	frozen set_menu_width_external (menu: POINTER; width: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, SInt16)"
 		alias
 			"ewg_function_macro_SetMenuWidth"
 		end
 
-	set_menu_width_address_external: POINTER is
+	frozenset_menu_width_address_external: POINTER is
 			-- Address of C function `SetMenuWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2463,14 +2463,14 @@ feature
 			"(void*) SetMenuWidth"
 		end
 
-	set_menu_height_external (menu: POINTER; height: INTEGER) is
+	frozen set_menu_height_external (menu: POINTER; height: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, SInt16)"
 		alias
 			"ewg_function_macro_SetMenuHeight"
 		end
 
-	set_menu_height_address_external: POINTER is
+	frozenset_menu_height_address_external: POINTER is
 			-- Address of C function `SetMenuHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2478,14 +2478,14 @@ feature
 			"(void*) SetMenuHeight"
 		end
 
-	set_menu_title_external (menu: POINTER; title: POINTER): INTEGER is
+	frozen set_menu_title_external (menu: POINTER; title: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ConstStr255Param):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuTitle"
 		end
 
-	set_menu_title_address_external: POINTER is
+	frozenset_menu_title_address_external: POINTER is
 			-- Address of C function `SetMenuTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2493,14 +2493,14 @@ feature
 			"(void*) SetMenuTitle"
 		end
 
-	set_menu_definition_external (menu: POINTER; defspec: POINTER): INTEGER is
+	frozen set_menu_definition_external (menu: POINTER; defspec: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuDefSpec const*):OSStatus"
 		alias
 			"ewg_function_macro_SetMenuDefinition"
 		end
 
-	set_menu_definition_address_external: POINTER is
+	frozenset_menu_definition_address_external: POINTER is
 			-- Address of C function `SetMenuDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

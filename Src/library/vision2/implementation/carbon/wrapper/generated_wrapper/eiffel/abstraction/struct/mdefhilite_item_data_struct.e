@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_previousitem: INTEGER is
-		obsolete "Use `previousitem' instead."
-			-- Access member `previousItem'
-		require
-			exists: exists
-		do
-			Result := get_previousitem_external (item)
-		ensure
-			result_correct: Result = get_previousitem_external (item)
-		end
 
 	previousitem: INTEGER is
 			-- Access member `previousItem'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = previousitem
 		end
 
-	get_newitem: INTEGER is
-		obsolete "Use `newitem' instead."
-			-- Access member `newItem'
-		require
-			exists: exists
-		do
-			Result := get_newitem_external (item)
-		ensure
-			result_correct: Result = get_newitem_external (item)
-		end
-
 	newitem: INTEGER is
 			-- Access member `newItem'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_newitem_external (item, a_value)
 		ensure
 			a_value_set: a_value = newitem
-		end
-
-	get_context: POINTER is
-		obsolete "Use `context' instead."
-			-- Access member `context'
-		require
-			exists: exists
-		do
-			Result := get_context_external (item)
-		ensure
-			result_correct: Result = get_context_external (item)
 		end
 
 	context: POINTER is

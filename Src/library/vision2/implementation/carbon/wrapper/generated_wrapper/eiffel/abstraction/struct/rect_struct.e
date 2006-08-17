@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_top: INTEGER is
-		obsolete "Use `top' instead."
-			-- Access member `top'
-		require
-			exists: exists
-		do
-			Result := get_top_external (item)
-		ensure
-			result_correct: Result = get_top_external (item)
-		end
 
 	top: INTEGER is
 			-- Access member `top'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_top_external (item, a_value)
 		ensure
 			a_value_set: a_value = top
-		end
-
-	get_left: INTEGER is
-		obsolete "Use `left' instead."
-			-- Access member `left'
-		require
-			exists: exists
-		do
-			Result := get_left_external (item)
-		ensure
-			result_correct: Result = get_left_external (item)
 		end
 
 	left: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = left
 		end
 
-	get_bottom: INTEGER is
-		obsolete "Use `bottom' instead."
-			-- Access member `bottom'
-		require
-			exists: exists
-		do
-			Result := get_bottom_external (item)
-		ensure
-			result_correct: Result = get_bottom_external (item)
-		end
-
 	bottom: INTEGER is
 			-- Access member `bottom'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_bottom_external (item, a_value)
 		ensure
 			a_value_set: a_value = bottom
-		end
-
-	get_right: INTEGER is
-		obsolete "Use `right' instead."
-			-- Access member `right'
-		require
-			exists: exists
-		do
-			Result := get_right_external (item)
-		ensure
-			result_correct: Result = get_right_external (item)
 		end
 
 	right: INTEGER is

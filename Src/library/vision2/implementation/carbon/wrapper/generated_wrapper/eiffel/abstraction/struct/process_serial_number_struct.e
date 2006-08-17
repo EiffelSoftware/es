@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_highlongofpsn: INTEGER is
-		obsolete "Use `highlongofpsn' instead."
-			-- Access member `highLongOfPSN'
-		require
-			exists: exists
-		do
-			Result := get_highlongofpsn_external (item)
-		ensure
-			result_correct: Result = get_highlongofpsn_external (item)
-		end
 
 	highlongofpsn: INTEGER is
 			-- Access member `highLongOfPSN'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_highlongofpsn_external (item, a_value)
 		ensure
 			a_value_set: a_value = highlongofpsn
-		end
-
-	get_lowlongofpsn: INTEGER is
-		obsolete "Use `lowlongofpsn' instead."
-			-- Access member `lowLongOfPSN'
-		require
-			exists: exists
-		do
-			Result := get_lowlongofpsn_external (item)
-		ensure
-			result_correct: Result = get_lowlongofpsn_external (item)
 		end
 
 	lowlongofpsn: INTEGER is

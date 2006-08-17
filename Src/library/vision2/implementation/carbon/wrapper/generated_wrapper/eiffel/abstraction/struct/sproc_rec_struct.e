@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_nxtsrch: POINTER is
-		obsolete "Use `nxtsrch' instead."
-			-- Access member `nxtSrch'
-		require
-			exists: exists
-		do
-			Result := get_nxtsrch_external (item)
-		ensure
-			result_correct: Result = get_nxtsrch_external (item)
-		end
 
 	nxtsrch: POINTER is
 			-- Access member `nxtSrch'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_nxtsrch_external (item, a_value)
 		ensure
 			a_value_set: a_value = nxtsrch
-		end
-
-	get_srchproc: POINTER is
-		obsolete "Use `srchproc' instead."
-			-- Access member `srchProc'
-		require
-			exists: exists
-		do
-			Result := get_srchproc_external (item)
-		ensure
-			result_correct: Result = get_srchproc_external (item)
 		end
 
 	srchproc: POINTER is

@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_reqlsize: INTEGER is
-		obsolete "Use `reqlsize' instead."
-			-- Access member `reqLSize'
-		require
-			exists: exists
-		do
-			Result := get_reqlsize_external (item)
-		ensure
-			result_correct: Result = get_reqlsize_external (item)
-		end
 
 	reqlsize: INTEGER is
 			-- Access member `reqLSize'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_reqlsize_external (item, a_value)
 		ensure
 			a_value_set: a_value = reqlsize
-		end
-
-	get_reqldata: POINTER is
-		obsolete "Use `reqldata' instead."
-			-- Access member `reqLData'
-		require
-			exists: exists
-		do
-			Result := get_reqldata_external (item)
-		ensure
-			result_correct: Result = get_reqldata_external (item)
 		end
 
 	reqldata: POINTER is

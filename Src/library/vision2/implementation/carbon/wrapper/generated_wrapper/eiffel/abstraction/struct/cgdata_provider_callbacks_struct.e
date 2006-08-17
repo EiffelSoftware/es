@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_getbytes: POINTER is
-		obsolete "Use `getbytes' instead."
-			-- Access member `getBytes'
-		require
-			exists: exists
-		do
-			Result := get_getbytes_external (item)
-		ensure
-			result_correct: Result = get_getbytes_external (item)
-		end
 
 	getbytes: POINTER is
 			-- Access member `getBytes'
@@ -60,17 +49,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_skipbytes: POINTER is
-		obsolete "Use `skipbytes' instead."
-			-- Access member `skipBytes'
-		require
-			exists: exists
-		do
-			Result := get_skipbytes_external (item)
-		ensure
-			result_correct: Result = get_skipbytes_external (item)
-		end
-
 	skipbytes: POINTER is
 			-- Access member `skipBytes'
 		require
@@ -93,17 +71,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_rewind: POINTER is
-		obsolete "Use `rewind' instead."
-			-- Access member `rewind'
-		require
-			exists: exists
-		do
-			Result := get_rewind_external (item)
-		ensure
-			result_correct: Result = get_rewind_external (item)
-		end
-
 	rewind: POINTER is
 			-- Access member `rewind'
 		require
@@ -126,17 +93,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_releaseprovider: POINTER is
-		obsolete "Use `releaseprovider' instead."
-			-- Access member `releaseProvider'
-		require
-			exists: exists
-		do
-			Result := get_releaseprovider_external (item)
-		ensure
-			result_correct: Result = get_releaseprovider_external (item)
-		end
-
 	releaseprovider: POINTER is
 			-- Access member `releaseProvider'
 		require

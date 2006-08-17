@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_byte0: INTEGER is
-		obsolete "Use `byte0' instead."
-			-- Access member `byte0'
-		require
-			exists: exists
-		do
-			Result := get_byte0_external (item)
-		ensure
-			result_correct: Result = get_byte0_external (item)
-		end
 
 	byte0: INTEGER is
 			-- Access member `byte0'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_byte0_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte0
-		end
-
-	get_byte1: INTEGER is
-		obsolete "Use `byte1' instead."
-			-- Access member `byte1'
-		require
-			exists: exists
-		do
-			Result := get_byte1_external (item)
-		ensure
-			result_correct: Result = get_byte1_external (item)
 		end
 
 	byte1: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = byte1
 		end
 
-	get_byte2: INTEGER is
-		obsolete "Use `byte2' instead."
-			-- Access member `byte2'
-		require
-			exists: exists
-		do
-			Result := get_byte2_external (item)
-		ensure
-			result_correct: Result = get_byte2_external (item)
-		end
-
 	byte2: INTEGER is
 			-- Access member `byte2'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_byte2_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte2
-		end
-
-	get_byte3: INTEGER is
-		obsolete "Use `byte3' instead."
-			-- Access member `byte3'
-		require
-			exists: exists
-		do
-			Result := get_byte3_external (item)
-		ensure
-			result_correct: Result = get_byte3_external (item)
 		end
 
 	byte3: INTEGER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = byte3
 		end
 
-	get_byte4: INTEGER is
-		obsolete "Use `byte4' instead."
-			-- Access member `byte4'
-		require
-			exists: exists
-		do
-			Result := get_byte4_external (item)
-		ensure
-			result_correct: Result = get_byte4_external (item)
-		end
-
 	byte4: INTEGER is
 			-- Access member `byte4'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_byte4_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte4
-		end
-
-	get_byte5: INTEGER is
-		obsolete "Use `byte5' instead."
-			-- Access member `byte5'
-		require
-			exists: exists
-		do
-			Result := get_byte5_external (item)
-		ensure
-			result_correct: Result = get_byte5_external (item)
 		end
 
 	byte5: INTEGER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = byte5
 		end
 
-	get_byte6: INTEGER is
-		obsolete "Use `byte6' instead."
-			-- Access member `byte6'
-		require
-			exists: exists
-		do
-			Result := get_byte6_external (item)
-		ensure
-			result_correct: Result = get_byte6_external (item)
-		end
-
 	byte6: INTEGER is
 			-- Access member `byte6'
 		require
@@ -242,17 +165,6 @@ feature {ANY} -- Member Access
 			set_byte6_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte6
-		end
-
-	get_byte7: INTEGER is
-		obsolete "Use `byte7' instead."
-			-- Access member `byte7'
-		require
-			exists: exists
-		do
-			Result := get_byte7_external (item)
-		ensure
-			result_correct: Result = get_byte7_external (item)
 		end
 
 	byte7: INTEGER is
@@ -275,17 +187,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = byte7
 		end
 
-	get_byte8: INTEGER is
-		obsolete "Use `byte8' instead."
-			-- Access member `byte8'
-		require
-			exists: exists
-		do
-			Result := get_byte8_external (item)
-		ensure
-			result_correct: Result = get_byte8_external (item)
-		end
-
 	byte8: INTEGER is
 			-- Access member `byte8'
 		require
@@ -304,17 +205,6 @@ feature {ANY} -- Member Access
 			set_byte8_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte8
-		end
-
-	get_byte9: INTEGER is
-		obsolete "Use `byte9' instead."
-			-- Access member `byte9'
-		require
-			exists: exists
-		do
-			Result := get_byte9_external (item)
-		ensure
-			result_correct: Result = get_byte9_external (item)
 		end
 
 	byte9: INTEGER is
@@ -337,17 +227,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = byte9
 		end
 
-	get_byte10: INTEGER is
-		obsolete "Use `byte10' instead."
-			-- Access member `byte10'
-		require
-			exists: exists
-		do
-			Result := get_byte10_external (item)
-		ensure
-			result_correct: Result = get_byte10_external (item)
-		end
-
 	byte10: INTEGER is
 			-- Access member `byte10'
 		require
@@ -366,17 +245,6 @@ feature {ANY} -- Member Access
 			set_byte10_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte10
-		end
-
-	get_byte11: INTEGER is
-		obsolete "Use `byte11' instead."
-			-- Access member `byte11'
-		require
-			exists: exists
-		do
-			Result := get_byte11_external (item)
-		ensure
-			result_correct: Result = get_byte11_external (item)
 		end
 
 	byte11: INTEGER is
@@ -399,17 +267,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = byte11
 		end
 
-	get_byte12: INTEGER is
-		obsolete "Use `byte12' instead."
-			-- Access member `byte12'
-		require
-			exists: exists
-		do
-			Result := get_byte12_external (item)
-		ensure
-			result_correct: Result = get_byte12_external (item)
-		end
-
 	byte12: INTEGER is
 			-- Access member `byte12'
 		require
@@ -428,17 +285,6 @@ feature {ANY} -- Member Access
 			set_byte12_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte12
-		end
-
-	get_byte13: INTEGER is
-		obsolete "Use `byte13' instead."
-			-- Access member `byte13'
-		require
-			exists: exists
-		do
-			Result := get_byte13_external (item)
-		ensure
-			result_correct: Result = get_byte13_external (item)
 		end
 
 	byte13: INTEGER is
@@ -461,17 +307,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = byte13
 		end
 
-	get_byte14: INTEGER is
-		obsolete "Use `byte14' instead."
-			-- Access member `byte14'
-		require
-			exists: exists
-		do
-			Result := get_byte14_external (item)
-		ensure
-			result_correct: Result = get_byte14_external (item)
-		end
-
 	byte14: INTEGER is
 			-- Access member `byte14'
 		require
@@ -490,17 +325,6 @@ feature {ANY} -- Member Access
 			set_byte14_external (item, a_value)
 		ensure
 			a_value_set: a_value = byte14
-		end
-
-	get_byte15: INTEGER is
-		obsolete "Use `byte15' instead."
-			-- Access member `byte15'
-		require
-			exists: exists
-		do
-			Result := get_byte15_external (item)
-		ensure
-			result_correct: Result = get_byte15_external (item)
 		end
 
 	byte15: INTEGER is

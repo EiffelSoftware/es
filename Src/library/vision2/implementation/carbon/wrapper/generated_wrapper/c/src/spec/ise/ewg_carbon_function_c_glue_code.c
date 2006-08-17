@@ -13191,6 +13191,66 @@ void* ewg_get_function_address_HIObjectSetCustomArchiveData (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'HIGetScaleFactor'
+// For ise
+float  ewg_function_HIGetScaleFactor (void)
+{
+	return HIGetScaleFactor ();
+}
+
+// Return address of function 'HIGetScaleFactor'
+void* ewg_get_function_address_HIGetScaleFactor (void)
+{
+	return (void*) HIGetScaleFactor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIPointConvert'
+// For ise
+void  ewg_function_HIPointConvert (HIPoint *ewg_ioPoint, HICoordinateSpace ewg_inSourceSpace, void *ewg_inSourceObject, HICoordinateSpace ewg_inDestinationSpace, void *ewg_inDestinationObject)
+{
+	HIPointConvert ((HIPoint*)ewg_ioPoint, (HICoordinateSpace)ewg_inSourceSpace, (void*)ewg_inSourceObject, (HICoordinateSpace)ewg_inDestinationSpace, (void*)ewg_inDestinationObject);
+}
+
+// Return address of function 'HIPointConvert'
+void* ewg_get_function_address_HIPointConvert (void)
+{
+	return (void*) HIPointConvert;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HIRectConvert'
+// For ise
+void  ewg_function_HIRectConvert (HIRect *ewg_ioRect, HICoordinateSpace ewg_inSourceSpace, void *ewg_inSourceObject, HICoordinateSpace ewg_inDestinationSpace, void *ewg_inDestinationObject)
+{
+	HIRectConvert ((HIRect*)ewg_ioRect, (HICoordinateSpace)ewg_inSourceSpace, (void*)ewg_inSourceObject, (HICoordinateSpace)ewg_inDestinationSpace, (void*)ewg_inDestinationObject);
+}
+
+// Return address of function 'HIRectConvert'
+void* ewg_get_function_address_HIRectConvert (void)
+{
+	return (void*) HIRectConvert;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HISizeConvert'
+// For ise
+void  ewg_function_HISizeConvert (HISize *ewg_ioSize, HICoordinateSpace ewg_inSourceSpace, void *ewg_inSourceObject, HICoordinateSpace ewg_inDestinationSpace, void *ewg_inDestinationObject)
+{
+	HISizeConvert ((HISize*)ewg_ioSize, (HICoordinateSpace)ewg_inSourceSpace, (void*)ewg_inSourceObject, (HICoordinateSpace)ewg_inDestinationSpace, (void*)ewg_inDestinationObject);
+}
+
+// Return address of function 'HISizeConvert'
+void* ewg_get_function_address_HISizeConvert (void)
+{
+	return (void*) HISizeConvert;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'GetMouse'
 // For ise
 void  ewg_function_GetMouse (Point *ewg_mouseLoc)

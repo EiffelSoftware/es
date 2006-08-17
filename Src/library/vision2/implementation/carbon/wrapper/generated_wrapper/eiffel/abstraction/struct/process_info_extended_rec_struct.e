@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_processinfolength: INTEGER is
-		obsolete "Use `processinfolength' instead."
-			-- Access member `processInfoLength'
-		require
-			exists: exists
-		do
-			Result := get_processinfolength_external (item)
-		ensure
-			result_correct: Result = get_processinfolength_external (item)
-		end
 
 	processinfolength: INTEGER is
 			-- Access member `processInfoLength'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_processinfolength_external (item, a_value)
 		ensure
 			a_value_set: a_value = processinfolength
-		end
-
-	get_processname: POINTER is
-		obsolete "Use `processname' instead."
-			-- Access member `processName'
-		require
-			exists: exists
-		do
-			Result := get_processname_external (item)
-		ensure
-			result_correct: Result = get_processname_external (item)
 		end
 
 	processname: POINTER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = processname
 		end
 
-	get_processnumber: POINTER is
-		obsolete "Use `processnumber' instead."
-			-- Access member `processNumber'
-		require
-			exists: exists
-		do
-			Result := get_processnumber_external (item)
-		ensure
-			result_correct: Result = get_processnumber_external (item)
-		end
-
 	processnumber: POINTER is
 			-- Access member `processNumber'
 		require
@@ -116,17 +83,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_processnumber_external (item, a_value)
-		end
-
-	get_processtype: INTEGER is
-		obsolete "Use `processtype' instead."
-			-- Access member `processType'
-		require
-			exists: exists
-		do
-			Result := get_processtype_external (item)
-		ensure
-			result_correct: Result = get_processtype_external (item)
 		end
 
 	processtype: INTEGER is
@@ -149,17 +105,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = processtype
 		end
 
-	get_processsignature: INTEGER is
-		obsolete "Use `processsignature' instead."
-			-- Access member `processSignature'
-		require
-			exists: exists
-		do
-			Result := get_processsignature_external (item)
-		ensure
-			result_correct: Result = get_processsignature_external (item)
-		end
-
 	processsignature: INTEGER is
 			-- Access member `processSignature'
 		require
@@ -178,17 +123,6 @@ feature {ANY} -- Member Access
 			set_processsignature_external (item, a_value)
 		ensure
 			a_value_set: a_value = processsignature
-		end
-
-	get_processmode: INTEGER is
-		obsolete "Use `processmode' instead."
-			-- Access member `processMode'
-		require
-			exists: exists
-		do
-			Result := get_processmode_external (item)
-		ensure
-			result_correct: Result = get_processmode_external (item)
 		end
 
 	processmode: INTEGER is
@@ -211,17 +145,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = processmode
 		end
 
-	get_processlocation: POINTER is
-		obsolete "Use `processlocation' instead."
-			-- Access member `processLocation'
-		require
-			exists: exists
-		do
-			Result := get_processlocation_external (item)
-		ensure
-			result_correct: Result = get_processlocation_external (item)
-		end
-
 	processlocation: POINTER is
 			-- Access member `processLocation'
 		require
@@ -240,17 +163,6 @@ feature {ANY} -- Member Access
 			set_processlocation_external (item, a_value)
 		ensure
 			a_value_set: a_value = processlocation
-		end
-
-	get_processsize: INTEGER is
-		obsolete "Use `processsize' instead."
-			-- Access member `processSize'
-		require
-			exists: exists
-		do
-			Result := get_processsize_external (item)
-		ensure
-			result_correct: Result = get_processsize_external (item)
 		end
 
 	processsize: INTEGER is
@@ -273,17 +185,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = processsize
 		end
 
-	get_processfreemem: INTEGER is
-		obsolete "Use `processfreemem' instead."
-			-- Access member `processFreeMem'
-		require
-			exists: exists
-		do
-			Result := get_processfreemem_external (item)
-		ensure
-			result_correct: Result = get_processfreemem_external (item)
-		end
-
 	processfreemem: INTEGER is
 			-- Access member `processFreeMem'
 		require
@@ -304,17 +205,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = processfreemem
 		end
 
-	get_processlauncher: POINTER is
-		obsolete "Use `processlauncher' instead."
-			-- Access member `processLauncher'
-		require
-			exists: exists
-		do
-			Result := get_processlauncher_external (item)
-		ensure
-			result_correct: Result = get_processlauncher_external (item)
-		end
-
 	processlauncher: POINTER is
 			-- Access member `processLauncher'
 		require
@@ -331,17 +221,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_processlauncher_external (item, a_value)
-		end
-
-	get_processlaunchdate: INTEGER is
-		obsolete "Use `processlaunchdate' instead."
-			-- Access member `processLaunchDate'
-		require
-			exists: exists
-		do
-			Result := get_processlaunchdate_external (item)
-		ensure
-			result_correct: Result = get_processlaunchdate_external (item)
 		end
 
 	processlaunchdate: INTEGER is
@@ -362,17 +241,6 @@ feature {ANY} -- Member Access
 			set_processlaunchdate_external (item, a_value)
 		ensure
 			a_value_set: a_value = processlaunchdate
-		end
-
-	get_processactivetime: INTEGER is
-		obsolete "Use `processactivetime' instead."
-			-- Access member `processActiveTime'
-		require
-			exists: exists
-		do
-			Result := get_processactivetime_external (item)
-		ensure
-			result_correct: Result = get_processactivetime_external (item)
 		end
 
 	processactivetime: INTEGER is
@@ -417,17 +285,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = processappspec
 		end
 
-	get_processappspec: POINTER is
-		obsolete "Use `processappspec' instead."
-			-- Access member `processAppSpec'
-		require
-			exists: exists
-		do
-			Result := get_processappspec_external (item)
-		ensure
-			result_correct: Result = get_processappspec_external (item)
-		end
-
 	processappspec: POINTER is
 			-- Access member `processAppSpec'
 		require
@@ -448,17 +305,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = processappspec
 		end
 
-	get_processtempmemtotal: INTEGER is
-		obsolete "Use `processtempmemtotal' instead."
-			-- Access member `processTempMemTotal'
-		require
-			exists: exists
-		do
-			Result := get_processtempmemtotal_external (item)
-		ensure
-			result_correct: Result = get_processtempmemtotal_external (item)
-		end
-
 	processtempmemtotal: INTEGER is
 			-- Access member `processTempMemTotal'
 		require
@@ -477,17 +323,6 @@ feature {ANY} -- Member Access
 			set_processtempmemtotal_external (item, a_value)
 		ensure
 			a_value_set: a_value = processtempmemtotal
-		end
-
-	get_processpurgeabletempmemtotal: INTEGER is
-		obsolete "Use `processpurgeabletempmemtotal' instead."
-			-- Access member `processPurgeableTempMemTotal'
-		require
-			exists: exists
-		do
-			Result := get_processpurgeabletempmemtotal_external (item)
-		ensure
-			result_correct: Result = get_processpurgeabletempmemtotal_external (item)
 		end
 
 	processpurgeabletempmemtotal: INTEGER is

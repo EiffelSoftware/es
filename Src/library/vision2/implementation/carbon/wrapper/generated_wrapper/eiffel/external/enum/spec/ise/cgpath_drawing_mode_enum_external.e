@@ -9,35 +9,35 @@ feature {ANY}
 			Result := a_value = kcgpathfill or a_value = kcgpatheofill or a_value = kcgpathstroke or a_value = kcgpathfillstroke or a_value = kcgpatheofillstroke
 		end
 
-	kcgpathfill: INTEGER is
+	 frozen kcgpathfill: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGPathFill"
 		end
 
-	kcgpatheofill: INTEGER is
+	 frozen kcgpatheofill: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGPathEOFill"
 		end
 
-	kcgpathstroke: INTEGER is
+	 frozen kcgpathstroke: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGPathStroke"
 		end
 
-	kcgpathfillstroke: INTEGER is
+	 frozen kcgpathfillstroke: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGPathFillStroke"
 		end
 
-	kcgpatheofillstroke: INTEGER is
+	 frozen kcgpatheofillstroke: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

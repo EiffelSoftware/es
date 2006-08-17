@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_ccseed: INTEGER is
-		obsolete "Use `ccseed' instead."
-			-- Access member `ccSeed'
-		require
-			exists: exists
-		do
-			Result := get_ccseed_external (item)
-		ensure
-			result_correct: Result = get_ccseed_external (item)
-		end
 
 	ccseed: INTEGER is
 			-- Access member `ccSeed'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_ccseed_external (item, a_value)
 		ensure
 			a_value_set: a_value = ccseed
-		end
-
-	get_ccrider: INTEGER is
-		obsolete "Use `ccrider' instead."
-			-- Access member `ccRider'
-		require
-			exists: exists
-		do
-			Result := get_ccrider_external (item)
-		ensure
-			result_correct: Result = get_ccrider_external (item)
 		end
 
 	ccrider: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = ccrider
 		end
 
-	get_ctsize: INTEGER is
-		obsolete "Use `ctsize' instead."
-			-- Access member `ctSize'
-		require
-			exists: exists
-		do
-			Result := get_ctsize_external (item)
-		ensure
-			result_correct: Result = get_ctsize_external (item)
-		end
-
 	ctsize: INTEGER is
 			-- Access member `ctSize'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_ctsize_external (item, a_value)
 		ensure
 			a_value_set: a_value = ctsize
-		end
-
-	get_cttable: POINTER is
-		obsolete "Use `cttable' instead."
-			-- Access member `ctTable'
-		require
-			exists: exists
-		do
-			Result := get_cttable_external (item)
-		ensure
-			result_correct: Result = get_cttable_external (item)
 		end
 
 	cttable: POINTER is

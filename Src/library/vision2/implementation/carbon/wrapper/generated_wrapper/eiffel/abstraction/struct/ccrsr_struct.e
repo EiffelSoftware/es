@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_crsrtype: INTEGER is
-		obsolete "Use `crsrtype' instead."
-			-- Access member `crsrType'
-		require
-			exists: exists
-		do
-			Result := get_crsrtype_external (item)
-		ensure
-			result_correct: Result = get_crsrtype_external (item)
-		end
 
 	crsrtype: INTEGER is
 			-- Access member `crsrType'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_crsrtype_external (item, a_value)
 		ensure
 			a_value_set: a_value = crsrtype
-		end
-
-	get_crsrmap: POINTER is
-		obsolete "Use `crsrmap' instead."
-			-- Access member `crsrMap'
-		require
-			exists: exists
-		do
-			Result := get_crsrmap_external (item)
-		ensure
-			result_correct: Result = get_crsrmap_external (item)
 		end
 
 	crsrmap: POINTER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = crsrmap
 		end
 
-	get_crsrdata: POINTER is
-		obsolete "Use `crsrdata' instead."
-			-- Access member `crsrData'
-		require
-			exists: exists
-		do
-			Result := get_crsrdata_external (item)
-		ensure
-			result_correct: Result = get_crsrdata_external (item)
-		end
-
 	crsrdata: POINTER is
 			-- Access member `crsrData'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_crsrdata_external (item, a_value)
 		ensure
 			a_value_set: a_value = crsrdata
-		end
-
-	get_crsrxdata: POINTER is
-		obsolete "Use `crsrxdata' instead."
-			-- Access member `crsrXData'
-		require
-			exists: exists
-		do
-			Result := get_crsrxdata_external (item)
-		ensure
-			result_correct: Result = get_crsrxdata_external (item)
 		end
 
 	crsrxdata: POINTER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = crsrxdata
 		end
 
-	get_crsrxvalid: INTEGER is
-		obsolete "Use `crsrxvalid' instead."
-			-- Access member `crsrXValid'
-		require
-			exists: exists
-		do
-			Result := get_crsrxvalid_external (item)
-		ensure
-			result_correct: Result = get_crsrxvalid_external (item)
-		end
-
 	crsrxvalid: INTEGER is
 			-- Access member `crsrXValid'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_crsrxvalid_external (item, a_value)
 		ensure
 			a_value_set: a_value = crsrxvalid
-		end
-
-	get_crsrxhandle: POINTER is
-		obsolete "Use `crsrxhandle' instead."
-			-- Access member `crsrXHandle'
-		require
-			exists: exists
-		do
-			Result := get_crsrxhandle_external (item)
-		ensure
-			result_correct: Result = get_crsrxhandle_external (item)
 		end
 
 	crsrxhandle: POINTER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = crsrxhandle
 		end
 
-	get_crsr1data: POINTER is
-		obsolete "Use `crsr1data' instead."
-			-- Access member `crsr1Data'
-		require
-			exists: exists
-		do
-			Result := get_crsr1data_external (item)
-		ensure
-			result_correct: Result = get_crsr1data_external (item)
-		end
-
 	crsr1data: POINTER is
 			-- Access member `crsr1Data'
 		require
@@ -234,17 +157,6 @@ feature {ANY} -- Member Access
 			result_correct: Result = get_crsr1data_external (item)
 		end
 
-	get_crsrmask: POINTER is
-		obsolete "Use `crsrmask' instead."
-			-- Access member `crsrMask'
-		require
-			exists: exists
-		do
-			Result := get_crsrmask_external (item)
-		ensure
-			result_correct: Result = get_crsrmask_external (item)
-		end
-
 	crsrmask: POINTER is
 			-- Access member `crsrMask'
 		require
@@ -253,17 +165,6 @@ feature {ANY} -- Member Access
 			Result := get_crsrmask_external (item)
 		ensure
 			result_correct: Result = get_crsrmask_external (item)
-		end
-
-	get_crsrhotspot: POINTER is
-		obsolete "Use `crsrhotspot' instead."
-			-- Access member `crsrHotSpot'
-		require
-			exists: exists
-		do
-			Result := get_crsrhotspot_external (item)
-		ensure
-			result_correct: Result = get_crsrhotspot_external (item)
 		end
 
 	crsrhotspot: POINTER is
@@ -284,17 +185,6 @@ feature {ANY} -- Member Access
 			set_crsrhotspot_external (item, a_value)
 		end
 
-	get_crsrxtable: INTEGER is
-		obsolete "Use `crsrxtable' instead."
-			-- Access member `crsrXTable'
-		require
-			exists: exists
-		do
-			Result := get_crsrxtable_external (item)
-		ensure
-			result_correct: Result = get_crsrxtable_external (item)
-		end
-
 	crsrxtable: INTEGER is
 			-- Access member `crsrXTable'
 		require
@@ -313,17 +203,6 @@ feature {ANY} -- Member Access
 			set_crsrxtable_external (item, a_value)
 		ensure
 			a_value_set: a_value = crsrxtable
-		end
-
-	get_crsrid: INTEGER is
-		obsolete "Use `crsrid' instead."
-			-- Access member `crsrID'
-		require
-			exists: exists
-		do
-			Result := get_crsrid_external (item)
-		ensure
-			result_correct: Result = get_crsrid_external (item)
 		end
 
 	crsrid: INTEGER is

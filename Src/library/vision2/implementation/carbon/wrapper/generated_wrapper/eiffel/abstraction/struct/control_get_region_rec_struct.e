@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -49,17 +49,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = region
 		end
 
-	get_region: POINTER is
-		obsolete "Use `region' instead."
-			-- Access member `region'
-		require
-			exists: exists
-		do
-			Result := get_region_external (item)
-		ensure
-			result_correct: Result = get_region_external (item)
-		end
-
 	region: POINTER is
 			-- Access member `region'
 		require
@@ -78,17 +67,6 @@ feature {ANY} -- Member Access
 			set_region_external (item, a_value)
 		ensure
 			a_value_set: a_value = region
-		end
-
-	get_part: INTEGER is
-		obsolete "Use `part' instead."
-			-- Access member `part'
-		require
-			exists: exists
-		do
-			Result := get_part_external (item)
-		ensure
-			result_correct: Result = get_part_external (item)
 		end
 
 	part: INTEGER is

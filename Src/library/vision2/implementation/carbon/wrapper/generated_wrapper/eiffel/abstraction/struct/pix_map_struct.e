@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_baseaddr: POINTER is
-		obsolete "Use `baseaddr' instead."
-			-- Access member `baseAddr'
-		require
-			exists: exists
-		do
-			Result := get_baseaddr_external (item)
-		ensure
-			result_correct: Result = get_baseaddr_external (item)
-		end
 
 	baseaddr: POINTER is
 			-- Access member `baseAddr'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_baseaddr_external (item, a_value)
 		ensure
 			a_value_set: a_value = baseaddr
-		end
-
-	get_rowbytes: INTEGER is
-		obsolete "Use `rowbytes' instead."
-			-- Access member `rowBytes'
-		require
-			exists: exists
-		do
-			Result := get_rowbytes_external (item)
-		ensure
-			result_correct: Result = get_rowbytes_external (item)
 		end
 
 	rowbytes: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = rowbytes
 		end
 
-	get_bounds: POINTER is
-		obsolete "Use `bounds' instead."
-			-- Access member `bounds'
-		require
-			exists: exists
-		do
-			Result := get_bounds_external (item)
-		ensure
-			result_correct: Result = get_bounds_external (item)
-		end
-
 	bounds: POINTER is
 			-- Access member `bounds'
 		require
@@ -116,17 +83,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_bounds_external (item, a_value)
-		end
-
-	get_pmversion: INTEGER is
-		obsolete "Use `pmversion' instead."
-			-- Access member `pmVersion'
-		require
-			exists: exists
-		do
-			Result := get_pmversion_external (item)
-		ensure
-			result_correct: Result = get_pmversion_external (item)
 		end
 
 	pmversion: INTEGER is
@@ -149,17 +105,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pmversion
 		end
 
-	get_packtype: INTEGER is
-		obsolete "Use `packtype' instead."
-			-- Access member `packType'
-		require
-			exists: exists
-		do
-			Result := get_packtype_external (item)
-		ensure
-			result_correct: Result = get_packtype_external (item)
-		end
-
 	packtype: INTEGER is
 			-- Access member `packType'
 		require
@@ -178,17 +123,6 @@ feature {ANY} -- Member Access
 			set_packtype_external (item, a_value)
 		ensure
 			a_value_set: a_value = packtype
-		end
-
-	get_packsize: INTEGER is
-		obsolete "Use `packsize' instead."
-			-- Access member `packSize'
-		require
-			exists: exists
-		do
-			Result := get_packsize_external (item)
-		ensure
-			result_correct: Result = get_packsize_external (item)
 		end
 
 	packsize: INTEGER is
@@ -211,17 +145,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = packsize
 		end
 
-	get_hres: INTEGER is
-		obsolete "Use `hres' instead."
-			-- Access member `hRes'
-		require
-			exists: exists
-		do
-			Result := get_hres_external (item)
-		ensure
-			result_correct: Result = get_hres_external (item)
-		end
-
 	hres: INTEGER is
 			-- Access member `hRes'
 		require
@@ -240,17 +163,6 @@ feature {ANY} -- Member Access
 			set_hres_external (item, a_value)
 		ensure
 			a_value_set: a_value = hres
-		end
-
-	get_vres: INTEGER is
-		obsolete "Use `vres' instead."
-			-- Access member `vRes'
-		require
-			exists: exists
-		do
-			Result := get_vres_external (item)
-		ensure
-			result_correct: Result = get_vres_external (item)
 		end
 
 	vres: INTEGER is
@@ -273,17 +185,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = vres
 		end
 
-	get_pixeltype: INTEGER is
-		obsolete "Use `pixeltype' instead."
-			-- Access member `pixelType'
-		require
-			exists: exists
-		do
-			Result := get_pixeltype_external (item)
-		ensure
-			result_correct: Result = get_pixeltype_external (item)
-		end
-
 	pixeltype: INTEGER is
 			-- Access member `pixelType'
 		require
@@ -302,17 +203,6 @@ feature {ANY} -- Member Access
 			set_pixeltype_external (item, a_value)
 		ensure
 			a_value_set: a_value = pixeltype
-		end
-
-	get_pixelsize: INTEGER is
-		obsolete "Use `pixelsize' instead."
-			-- Access member `pixelSize'
-		require
-			exists: exists
-		do
-			Result := get_pixelsize_external (item)
-		ensure
-			result_correct: Result = get_pixelsize_external (item)
 		end
 
 	pixelsize: INTEGER is
@@ -335,17 +225,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pixelsize
 		end
 
-	get_cmpcount: INTEGER is
-		obsolete "Use `cmpcount' instead."
-			-- Access member `cmpCount'
-		require
-			exists: exists
-		do
-			Result := get_cmpcount_external (item)
-		ensure
-			result_correct: Result = get_cmpcount_external (item)
-		end
-
 	cmpcount: INTEGER is
 			-- Access member `cmpCount'
 		require
@@ -364,17 +243,6 @@ feature {ANY} -- Member Access
 			set_cmpcount_external (item, a_value)
 		ensure
 			a_value_set: a_value = cmpcount
-		end
-
-	get_cmpsize: INTEGER is
-		obsolete "Use `cmpsize' instead."
-			-- Access member `cmpSize'
-		require
-			exists: exists
-		do
-			Result := get_cmpsize_external (item)
-		ensure
-			result_correct: Result = get_cmpsize_external (item)
 		end
 
 	cmpsize: INTEGER is
@@ -397,17 +265,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = cmpsize
 		end
 
-	get_pixelformat: INTEGER is
-		obsolete "Use `pixelformat' instead."
-			-- Access member `pixelFormat'
-		require
-			exists: exists
-		do
-			Result := get_pixelformat_external (item)
-		ensure
-			result_correct: Result = get_pixelformat_external (item)
-		end
-
 	pixelformat: INTEGER is
 			-- Access member `pixelFormat'
 		require
@@ -428,17 +285,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pixelformat
 		end
 
-	get_pmtable: POINTER is
-		obsolete "Use `pmtable' instead."
-			-- Access member `pmTable'
-		require
-			exists: exists
-		do
-			Result := get_pmtable_external (item)
-		ensure
-			result_correct: Result = get_pmtable_external (item)
-		end
-
 	pmtable: POINTER is
 			-- Access member `pmTable'
 		require
@@ -457,17 +303,6 @@ feature {ANY} -- Member Access
 			set_pmtable_external (item, a_value)
 		ensure
 			a_value_set: a_value = pmtable
-		end
-
-	get_pmext: POINTER is
-		obsolete "Use `pmext' instead."
-			-- Access member `pmExt'
-		require
-			exists: exists
-		do
-			Result := get_pmext_external (item)
-		ensure
-			result_correct: Result = get_pmext_external (item)
 		end
 
 	pmext: POINTER is

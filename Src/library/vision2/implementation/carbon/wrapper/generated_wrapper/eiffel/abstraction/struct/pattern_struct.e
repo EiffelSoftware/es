@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_pat: POINTER is
-		obsolete "Use `pat' instead."
-			-- Access member `pat'
-		require
-			exists: exists
-		do
-			Result := get_pat_external (item)
-		ensure
-			result_correct: Result = get_pat_external (item)
-		end
 
 	pat: POINTER is
 			-- Access member `pat'

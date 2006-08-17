@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_version: INTEGER is
-		obsolete "Use `version' instead."
-			-- Access member `version'
-		require
-			exists: exists
-		do
-			Result := get_version_external (item)
-		ensure
-			result_correct: Result = get_version_external (item)
-		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = version
 		end
 
-	get_info: POINTER is
-		obsolete "Use `info' instead."
-			-- Access member `info'
-		require
-			exists: exists
-		do
-			Result := get_info_external (item)
-		ensure
-			result_correct: Result = get_info_external (item)
-		end
-
 	info: POINTER is
 			-- Access member `info'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_info_external (item, a_value)
 		ensure
 			a_value_set: a_value = info
-		end
-
-	get_retain: POINTER is
-		obsolete "Use `retain' instead."
-			-- Access member `retain'
-		require
-			exists: exists
-		do
-			Result := get_retain_external (item)
-		ensure
-			result_correct: Result = get_retain_external (item)
 		end
 
 	retain: POINTER is
@@ -122,17 +89,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_release: POINTER is
-		obsolete "Use `release' instead."
-			-- Access member `release'
-		require
-			exists: exists
-		do
-			Result := get_release_external (item)
-		ensure
-			result_correct: Result = get_release_external (item)
-		end
-
 	release: POINTER is
 			-- Access member `release'
 		require
@@ -155,17 +111,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_copydescription: POINTER is
-		obsolete "Use `copydescription' instead."
-			-- Access member `copyDescription'
-		require
-			exists: exists
-		do
-			Result := get_copydescription_external (item)
-		ensure
-			result_correct: Result = get_copydescription_external (item)
-		end
-
 	copydescription: POINTER is
 			-- Access member `copyDescription'
 		require
@@ -188,17 +133,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_allocate: POINTER is
-		obsolete "Use `allocate' instead."
-			-- Access member `allocate'
-		require
-			exists: exists
-		do
-			Result := get_allocate_external (item)
-		ensure
-			result_correct: Result = get_allocate_external (item)
-		end
-
 	allocate: POINTER is
 			-- Access member `allocate'
 		require
@@ -221,17 +155,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_reallocate: POINTER is
-		obsolete "Use `reallocate' instead."
-			-- Access member `reallocate'
-		require
-			exists: exists
-		do
-			Result := get_reallocate_external (item)
-		ensure
-			result_correct: Result = get_reallocate_external (item)
-		end
-
 	reallocate: POINTER is
 			-- Access member `reallocate'
 		require
@@ -254,17 +177,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_deallocate: POINTER is
-		obsolete "Use `deallocate' instead."
-			-- Access member `deallocate'
-		require
-			exists: exists
-		do
-			Result := get_deallocate_external (item)
-		ensure
-			result_correct: Result = get_deallocate_external (item)
-		end
-
 	deallocate: POINTER is
 			-- Access member `deallocate'
 		require
@@ -287,17 +199,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_preferredsize: POINTER is
-		obsolete "Use `preferredsize' instead."
-			-- Access member `preferredSize'
-		require
-			exists: exists
-		do
-			Result := get_preferredsize_external (item)
-		ensure
-			result_correct: Result = get_preferredsize_external (item)
-		end
-
 	preferredsize: POINTER is
 			-- Access member `preferredSize'
 		require

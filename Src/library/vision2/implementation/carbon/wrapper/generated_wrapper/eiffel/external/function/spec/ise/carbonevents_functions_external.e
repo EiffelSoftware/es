@@ -3,14 +3,14 @@
 class CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 feature
-	is_user_cancel_event_ref_external (event: POINTER): INTEGER is
+	frozen is_user_cancel_event_ref_external (event: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRef):Boolean"
 		alias
 			"ewg_function_macro_IsUserCancelEventRef"
 		end
 
-	is_user_cancel_event_ref_address_external: POINTER is
+	frozenis_user_cancel_event_ref_address_external: POINTER is
 			-- Address of C function `IsUserCancelEventRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) IsUserCancelEventRef"
 		end
 
-	track_mouse_location_external (inport: POINTER; outpt: POINTER; outresult: POINTER): INTEGER is
+	frozen track_mouse_location_external (inport: POINTER; outpt: POINTER; outresult: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (GrafPtr, Point*, MouseTrackingResult*):OSStatus"
 		alias
 			"ewg_function_macro_TrackMouseLocation"
 		end
 
-	track_mouse_location_address_external: POINTER is
+	frozentrack_mouse_location_address_external: POINTER is
 			-- Address of C function `TrackMouseLocation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) TrackMouseLocation"
 		end
 
-	track_mouse_location_with_options_external (inport: POINTER; inoptions: INTEGER; intimeout: DOUBLE; outpt: POINTER; outmodifiers: POINTER; outresult: POINTER): INTEGER is
+	frozen track_mouse_location_with_options_external (inport: POINTER; inoptions: INTEGER; intimeout: DOUBLE; outpt: POINTER; outmodifiers: POINTER; outresult: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (GrafPtr, OptionBits, EventTimeout, Point*, UInt32*, MouseTrackingResult*):OSStatus"
 		alias
 			"ewg_function_macro_TrackMouseLocationWithOptions"
 		end
 
-	track_mouse_location_with_options_address_external: POINTER is
+	frozentrack_mouse_location_with_options_address_external: POINTER is
 			-- Address of C function `TrackMouseLocationWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) TrackMouseLocationWithOptions"
 		end
 
-	track_mouse_region_external (inport: POINTER; inregion: POINTER; iowasinrgn: POINTER; outresult: POINTER): INTEGER is
+	frozen track_mouse_region_external (inport: POINTER; inregion: POINTER; iowasinrgn: POINTER; outresult: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (GrafPtr, RgnHandle, Boolean*, MouseTrackingResult*):OSStatus"
 		alias
 			"ewg_function_macro_TrackMouseRegion"
 		end
 
-	track_mouse_region_address_external: POINTER is
+	frozentrack_mouse_region_address_external: POINTER is
 			-- Address of C function `TrackMouseRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) TrackMouseRegion"
 		end
 
-	himouse_tracking_get_parameters_external (inselector: INTEGER; outtime: POINTER; outdistance: POINTER): INTEGER is
+	frozen himouse_tracking_get_parameters_external (inselector: INTEGER; outtime: POINTER; outdistance: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (OSType, EventTime*, HISize*):OSStatus"
 		alias
 			"ewg_function_macro_HIMouseTrackingGetParameters"
 		end
 
-	himouse_tracking_get_parameters_address_external: POINTER is
+	frozenhimouse_tracking_get_parameters_address_external: POINTER is
 			-- Address of C function `HIMouseTrackingGetParameters'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) HIMouseTrackingGetParameters"
 		end
 
-	convert_event_ref_to_event_record_external (inevent: POINTER; outevent: POINTER): INTEGER is
+	frozen convert_event_ref_to_event_record_external (inevent: POINTER; outevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRef, EventRecord*):Boolean"
 		alias
 			"ewg_function_macro_ConvertEventRefToEventRecord"
 		end
 
-	convert_event_ref_to_event_record_address_external: POINTER is
+	frozenconvert_event_ref_to_event_record_address_external: POINTER is
 			-- Address of C function `ConvertEventRefToEventRecord'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) ConvertEventRefToEventRecord"
 		end
 
-	is_event_in_mask_external (inevent: POINTER; inmask: INTEGER): INTEGER is
+	frozen is_event_in_mask_external (inevent: POINTER; inmask: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRef, EventMask):Boolean"
 		alias
 			"ewg_function_macro_IsEventInMask"
 		end
 
-	is_event_in_mask_address_external: POINTER is
+	frozenis_event_in_mask_address_external: POINTER is
 			-- Address of C function `IsEventInMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) IsEventInMask"
 		end
 
-	get_last_user_event_time_external: DOUBLE is
+	frozen get_last_user_event_time_external: DOUBLE is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :EventTime"
 		alias
 			"ewg_function_macro_GetLastUserEventTime"
 		end
 
-	get_last_user_event_time_address_external: POINTER is
+	frozenget_last_user_event_time_address_external: POINTER is
 			-- Address of C function `GetLastUserEventTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) GetLastUserEventTime"
 		end
 
-	is_mouse_coalescing_enabled_external: INTEGER is
+	frozen is_mouse_coalescing_enabled_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_IsMouseCoalescingEnabled"
 		end
 
-	is_mouse_coalescing_enabled_address_external: POINTER is
+	frozenis_mouse_coalescing_enabled_address_external: POINTER is
 			-- Address of C function `IsMouseCoalescingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) IsMouseCoalescingEnabled"
 		end
 
-	set_mouse_coalescing_enabled_external (innewstate: INTEGER; outoldstate: POINTER): INTEGER is
+	frozen set_mouse_coalescing_enabled_external (innewstate: INTEGER; outoldstate: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Boolean, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_SetMouseCoalescingEnabled"
 		end
 
-	set_mouse_coalescing_enabled_address_external: POINTER is
+	frozenset_mouse_coalescing_enabled_address_external: POINTER is
 			-- Address of C function `SetMouseCoalescingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) SetMouseCoalescingEnabled"
 		end
 
-	create_type_string_with_ostype_external (intype: INTEGER): POINTER is
+	frozen create_type_string_with_ostype_external (intype: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (OSType):CFStringRef"
 		alias
 			"ewg_function_macro_CreateTypeStringWithOSType"
 		end
 
-	create_type_string_with_ostype_address_external: POINTER is
+	frozencreate_type_string_with_ostype_address_external: POINTER is
 			-- Address of C function `CreateTypeStringWithOSType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CreateTypeStringWithOSType"
 		end
 
-	copy_services_menu_command_keys_external (outcommandkeyarray: POINTER): INTEGER is
+	frozen copy_services_menu_command_keys_external (outcommandkeyarray: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFArrayRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyServicesMenuCommandKeys"
 		end
 
-	copy_services_menu_command_keys_address_external: POINTER is
+	frozencopy_services_menu_command_keys_address_external: POINTER is
 			-- Address of C function `CopyServicesMenuCommandKeys'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CopyServicesMenuCommandKeys"
 		end
 
-	axuielement_create_with_hiobject_and_identifier_external (inhiobject: POINTER; inidentifier: INTEGER): POINTER is
+	frozen axuielement_create_with_hiobject_and_identifier_external (inhiobject: POINTER; inidentifier: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIObjectRef, UInt64):AXUIElementRef"
 		alias
 			"ewg_function_macro_AXUIElementCreateWithHIObjectAndIdentifier"
 		end
 
-	axuielement_create_with_hiobject_and_identifier_address_external: POINTER is
+	frozenaxuielement_create_with_hiobject_and_identifier_address_external: POINTER is
 			-- Address of C function `AXUIElementCreateWithHIObjectAndIdentifier'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) AXUIElementCreateWithHIObjectAndIdentifier"
 		end
 
-	axuielement_get_hiobject_external (inuielement: POINTER): POINTER is
+	frozen axuielement_get_hiobject_external (inuielement: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AXUIElementRef):HIObjectRef"
 		alias
 			"ewg_function_macro_AXUIElementGetHIObject"
 		end
 
-	axuielement_get_hiobject_address_external: POINTER is
+	frozenaxuielement_get_hiobject_address_external: POINTER is
 			-- Address of C function `AXUIElementGetHIObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) AXUIElementGetHIObject"
 		end
 
-	axuielement_get_identifier_external (inuielement: POINTER; outidentifier: POINTER) is
+	frozen axuielement_get_identifier_external (inuielement: POINTER; outidentifier: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (AXUIElementRef, UInt64*)"
 		alias
 			"ewg_function_macro_AXUIElementGetIdentifier"
 		end
 
-	axuielement_get_identifier_address_external: POINTER is
+	frozenaxuielement_get_identifier_address_external: POINTER is
 			-- Address of C function `AXUIElementGetIdentifier'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) AXUIElementGetIdentifier"
 		end
 
-	axnotification_hiobject_notify_external (innotification: POINTER; inhiobject: POINTER; inidentifier: INTEGER) is
+	frozen axnotification_hiobject_notify_external (innotification: POINTER; inhiobject: POINTER; inidentifier: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, HIObjectRef, UInt64)"
 		alias
 			"ewg_function_macro_AXNotificationHIObjectNotify"
 		end
 
-	axnotification_hiobject_notify_address_external: POINTER is
+	frozenaxnotification_hiobject_notify_address_external: POINTER is
 			-- Address of C function `AXNotificationHIObjectNotify'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) AXNotificationHIObjectNotify"
 		end
 
-	hicopy_accessibility_role_description_external (inrole: POINTER; insubrole: POINTER): POINTER is
+	frozen hicopy_accessibility_role_description_external (inrole: POINTER; insubrole: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef):CFStringRef"
 		alias
 			"ewg_function_macro_HICopyAccessibilityRoleDescription"
 		end
 
-	hicopy_accessibility_role_description_address_external: POINTER is
+	frozenhicopy_accessibility_role_description_address_external: POINTER is
 			-- Address of C function `HICopyAccessibilityRoleDescription'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) HICopyAccessibilityRoleDescription"
 		end
 
-	hicopy_accessibility_action_description_external (inaction: POINTER): POINTER is
+	frozen hicopy_accessibility_action_description_external (inaction: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):CFStringRef"
 		alias
 			"ewg_function_macro_HICopyAccessibilityActionDescription"
 		end
 
-	hicopy_accessibility_action_description_address_external: POINTER is
+	frozenhicopy_accessibility_action_description_address_external: POINTER is
 			-- Address of C function `HICopyAccessibilityActionDescription'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) HICopyAccessibilityActionDescription"
 		end
 
-	get_window_event_target_external (inwindow: POINTER): POINTER is
+	frozen get_window_event_target_external (inwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):EventTargetRef"
 		alias
 			"ewg_function_macro_GetWindowEventTarget"
 		end
 
-	get_window_event_target_address_external: POINTER is
+	frozenget_window_event_target_address_external: POINTER is
 			-- Address of C function `GetWindowEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) GetWindowEventTarget"
 		end
 
-	get_control_event_target_external (incontrol: POINTER): POINTER is
+	frozen get_control_event_target_external (incontrol: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):EventTargetRef"
 		alias
 			"ewg_function_macro_GetControlEventTarget"
 		end
 
-	get_control_event_target_address_external: POINTER is
+	frozenget_control_event_target_address_external: POINTER is
 			-- Address of C function `GetControlEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) GetControlEventTarget"
 		end
 
-	get_menu_event_target_external (inmenu: POINTER): POINTER is
+	frozen get_menu_event_target_external (inmenu: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef):EventTargetRef"
 		alias
 			"ewg_function_macro_GetMenuEventTarget"
 		end
 
-	get_menu_event_target_address_external: POINTER is
+	frozenget_menu_event_target_address_external: POINTER is
 			-- Address of C function `GetMenuEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) GetMenuEventTarget"
 		end
 
-	get_application_event_target_external: POINTER is
+	frozen get_application_event_target_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :EventTargetRef"
 		alias
 			"ewg_function_macro_GetApplicationEventTarget"
 		end
 
-	get_application_event_target_address_external: POINTER is
+	frozenget_application_event_target_address_external: POINTER is
 			-- Address of C function `GetApplicationEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) GetApplicationEventTarget"
 		end
 
-	get_user_focus_event_target_external: POINTER is
+	frozen get_user_focus_event_target_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :EventTargetRef"
 		alias
 			"ewg_function_macro_GetUserFocusEventTarget"
 		end
 
-	get_user_focus_event_target_address_external: POINTER is
+	frozenget_user_focus_event_target_address_external: POINTER is
 			-- Address of C function `GetUserFocusEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) GetUserFocusEventTarget"
 		end
 
-	get_event_dispatcher_target_external: POINTER is
+	frozen get_event_dispatcher_target_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :EventTargetRef"
 		alias
 			"ewg_function_macro_GetEventDispatcherTarget"
 		end
 
-	get_event_dispatcher_target_address_external: POINTER is
+	frozenget_event_dispatcher_target_address_external: POINTER is
 			-- Address of C function `GetEventDispatcherTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) GetEventDispatcherTarget"
 		end
 
-	get_event_monitor_target_external: POINTER is
+	frozen get_event_monitor_target_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :EventTargetRef"
 		alias
 			"ewg_function_macro_GetEventMonitorTarget"
 		end
 
-	get_event_monitor_target_address_external: POINTER is
+	frozenget_event_monitor_target_address_external: POINTER is
 			-- Address of C function `GetEventMonitorTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) GetEventMonitorTarget"
 		end
 
-	process_hicommand_external (incommand: POINTER): INTEGER is
+	frozen process_hicommand_external (incommand: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HICommand const*):OSStatus"
 		alias
 			"ewg_function_macro_ProcessHICommand"
 		end
 
-	process_hicommand_address_external: POINTER is
+	frozenprocess_hicommand_address_external: POINTER is
 			-- Address of C function `ProcessHICommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) ProcessHICommand"
 		end
 
-	run_application_event_loop_external is
+	frozen run_application_event_loop_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_RunApplicationEventLoop"
 		end
 
-	run_application_event_loop_address_external: POINTER is
+	frozenrun_application_event_loop_address_external: POINTER is
 			-- Address of C function `RunApplicationEventLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) RunApplicationEventLoop"
 		end
 
-	quit_application_event_loop_external is
+	frozen quit_application_event_loop_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_QuitApplicationEventLoop"
 		end
 
-	quit_application_event_loop_address_external: POINTER is
+	frozenquit_application_event_loop_address_external: POINTER is
 			-- Address of C function `QuitApplicationEventLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) QuitApplicationEventLoop"
 		end
 
-	run_app_modal_loop_for_window_external (inwindow: POINTER): INTEGER is
+	frozen run_app_modal_loop_for_window_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_RunAppModalLoopForWindow"
 		end
 
-	run_app_modal_loop_for_window_address_external: POINTER is
+	frozenrun_app_modal_loop_for_window_address_external: POINTER is
 			-- Address of C function `RunAppModalLoopForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) RunAppModalLoopForWindow"
 		end
 
-	quit_app_modal_loop_for_window_external (inwindow: POINTER): INTEGER is
+	frozen quit_app_modal_loop_for_window_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_QuitAppModalLoopForWindow"
 		end
 
-	quit_app_modal_loop_for_window_address_external: POINTER is
+	frozenquit_app_modal_loop_for_window_address_external: POINTER is
 			-- Address of C function `QuitAppModalLoopForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) QuitAppModalLoopForWindow"
 		end
 
-	begin_app_modal_state_for_window_external (inwindow: POINTER): INTEGER is
+	frozen begin_app_modal_state_for_window_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_BeginAppModalStateForWindow"
 		end
 
-	begin_app_modal_state_for_window_address_external: POINTER is
+	frozenbegin_app_modal_state_for_window_address_external: POINTER is
 			-- Address of C function `BeginAppModalStateForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) BeginAppModalStateForWindow"
 		end
 
-	end_app_modal_state_for_window_external (inwindow: POINTER): INTEGER is
+	frozen end_app_modal_state_for_window_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_EndAppModalStateForWindow"
 		end
 
-	end_app_modal_state_for_window_address_external: POINTER is
+	frozenend_app_modal_state_for_window_address_external: POINTER is
 			-- Address of C function `EndAppModalStateForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) EndAppModalStateForWindow"
 		end
 
-	set_user_focus_window_external (inwindow: POINTER): INTEGER is
+	frozen set_user_focus_window_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_SetUserFocusWindow"
 		end
 
-	set_user_focus_window_address_external: POINTER is
+	frozenset_user_focus_window_address_external: POINTER is
 			-- Address of C function `SetUserFocusWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) SetUserFocusWindow"
 		end
 
-	get_user_focus_window_external: POINTER is
+	frozen get_user_focus_window_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :WindowRef"
 		alias
 			"ewg_function_macro_GetUserFocusWindow"
 		end
 
-	get_user_focus_window_address_external: POINTER is
+	frozenget_user_focus_window_address_external: POINTER is
 			-- Address of C function `GetUserFocusWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) GetUserFocusWindow"
 		end
 
-	set_window_default_button_external (inwindow: POINTER; incontrol: POINTER): INTEGER is
+	frozen set_window_default_button_external (inwindow: POINTER; incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowDefaultButton"
 		end
 
-	set_window_default_button_address_external: POINTER is
+	frozenset_window_default_button_address_external: POINTER is
 			-- Address of C function `SetWindowDefaultButton'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) SetWindowDefaultButton"
 		end
 
-	set_window_cancel_button_external (inwindow: POINTER; incontrol: POINTER): INTEGER is
+	frozen set_window_cancel_button_external (inwindow: POINTER; incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowCancelButton"
 		end
 
-	set_window_cancel_button_address_external: POINTER is
+	frozenset_window_cancel_button_address_external: POINTER is
 			-- Address of C function `SetWindowCancelButton'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) SetWindowCancelButton"
 		end
 
-	get_window_default_button_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
+	frozen get_window_default_button_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowDefaultButton"
 		end
 
-	get_window_default_button_address_external: POINTER is
+	frozenget_window_default_button_address_external: POINTER is
 			-- Address of C function `GetWindowDefaultButton'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) GetWindowDefaultButton"
 		end
 
-	get_window_cancel_button_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
+	frozen get_window_cancel_button_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowCancelButton"
 		end
 
-	get_window_cancel_button_address_external: POINTER is
+	frozenget_window_cancel_button_address_external: POINTER is
 			-- Address of C function `GetWindowCancelButton'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) GetWindowCancelButton"
 		end
 
-	register_event_hot_key_external (inhotkeycode: INTEGER; inhotkeymodifiers: INTEGER; inhotkeyid: POINTER; intarget: POINTER; inoptions: INTEGER; outref: POINTER): INTEGER is
+	frozen register_event_hot_key_external (inhotkeycode: INTEGER; inhotkeymodifiers: INTEGER; inhotkeyid: POINTER; intarget: POINTER; inoptions: INTEGER; outref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (UInt32, UInt32, EventHotKeyID*, EventTargetRef, OptionBits, EventHotKeyRef*):OSStatus"
 		alias
 			"ewg_function_macro_RegisterEventHotKey"
 		end
 
-	register_event_hot_key_address_external: POINTER is
+	frozenregister_event_hot_key_address_external: POINTER is
 			-- Address of C function `RegisterEventHotKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) RegisterEventHotKey"
 		end
 
-	unregister_event_hot_key_external (inhotkey: POINTER): INTEGER is
+	frozen unregister_event_hot_key_external (inhotkey: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventHotKeyRef):OSStatus"
 		alias
 			"ewg_function_macro_UnregisterEventHotKey"
 		end
 
-	unregister_event_hot_key_address_external: POINTER is
+	frozenunregister_event_hot_key_address_external: POINTER is
 			-- Address of C function `UnregisterEventHotKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) UnregisterEventHotKey"
 		end
 
-	copy_symbolic_hot_keys_external (outhotkeyarray: POINTER): INTEGER is
+	frozen copy_symbolic_hot_keys_external (outhotkeyarray: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFArrayRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopySymbolicHotKeys"
 		end
 
-	copy_symbolic_hot_keys_address_external: POINTER is
+	frozencopy_symbolic_hot_keys_address_external: POINTER is
 			-- Address of C function `CopySymbolicHotKeys'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) CopySymbolicHotKeys"
 		end
 
-	push_symbolic_hot_key_mode_external (inoptions: INTEGER): POINTER is
+	frozen push_symbolic_hot_key_mode_external (inoptions: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (OptionBits):void*"
 		alias
 			"ewg_function_macro_PushSymbolicHotKeyMode"
 		end
 
-	push_symbolic_hot_key_mode_address_external: POINTER is
+	frozenpush_symbolic_hot_key_mode_address_external: POINTER is
 			-- Address of C function `PushSymbolicHotKeyMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) PushSymbolicHotKeyMode"
 		end
 
-	pop_symbolic_hot_key_mode_external (intoken: POINTER) is
+	frozen pop_symbolic_hot_key_mode_external (intoken: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*)"
 		alias
 			"ewg_function_macro_PopSymbolicHotKeyMode"
 		end
 
-	pop_symbolic_hot_key_mode_address_external: POINTER is
+	frozenpop_symbolic_hot_key_mode_address_external: POINTER is
 			-- Address of C function `PopSymbolicHotKeyMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) PopSymbolicHotKeyMode"
 		end
 
-	get_symbolic_hot_key_mode_external: INTEGER is
+	frozen get_symbolic_hot_key_mode_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OptionBits"
 		alias
 			"ewg_function_macro_GetSymbolicHotKeyMode"
 		end
 
-	get_symbolic_hot_key_mode_address_external: POINTER is
+	frozenget_symbolic_hot_key_mode_address_external: POINTER is
 			-- Address of C function `GetSymbolicHotKeyMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) GetSymbolicHotKeyMode"
 		end
 
-	create_mouse_tracking_region_external (inwindow: POINTER; inregion: POINTER; inclip: POINTER; inoptions: INTEGER; inid: POINTER; inrefcon: POINTER; intargettonotify: POINTER; outtrackingref: POINTER): INTEGER is
+	frozen create_mouse_tracking_region_external (inwindow: POINTER; inregion: POINTER; inclip: POINTER; inoptions: INTEGER; inid: POINTER; inrefcon: POINTER; intargettonotify: POINTER; outtrackingref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle, RgnHandle, MouseTrackingOptions, MouseTrackingRegionID*, void*, EventTargetRef, MouseTrackingRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateMouseTrackingRegion"
 		end
 
-	create_mouse_tracking_region_address_external: POINTER is
+	frozencreate_mouse_tracking_region_address_external: POINTER is
 			-- Address of C function `CreateMouseTrackingRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) CreateMouseTrackingRegion"
 		end
 
-	retain_mouse_tracking_region_external (inmouseref: POINTER): INTEGER is
+	frozen retain_mouse_tracking_region_external (inmouseref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef):OSStatus"
 		alias
 			"ewg_function_macro_RetainMouseTrackingRegion"
 		end
 
-	retain_mouse_tracking_region_address_external: POINTER is
+	frozenretain_mouse_tracking_region_address_external: POINTER is
 			-- Address of C function `RetainMouseTrackingRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) RetainMouseTrackingRegion"
 		end
 
-	release_mouse_tracking_region_external (inmouseref: POINTER): INTEGER is
+	frozen release_mouse_tracking_region_external (inmouseref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef):OSStatus"
 		alias
 			"ewg_function_macro_ReleaseMouseTrackingRegion"
 		end
 
-	release_mouse_tracking_region_address_external: POINTER is
+	frozenrelease_mouse_tracking_region_address_external: POINTER is
 			-- Address of C function `ReleaseMouseTrackingRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) ReleaseMouseTrackingRegion"
 		end
 
-	change_mouse_tracking_region_external (inmouseref: POINTER; inregion: POINTER; inclip: POINTER): INTEGER is
+	frozen change_mouse_tracking_region_external (inmouseref: POINTER; inregion: POINTER; inclip: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef, RgnHandle, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_ChangeMouseTrackingRegion"
 		end
 
-	change_mouse_tracking_region_address_external: POINTER is
+	frozenchange_mouse_tracking_region_address_external: POINTER is
 			-- Address of C function `ChangeMouseTrackingRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) ChangeMouseTrackingRegion"
 		end
 
-	clip_mouse_tracking_region_external (inmouseref: POINTER; inregion: POINTER): INTEGER is
+	frozen clip_mouse_tracking_region_external (inmouseref: POINTER; inregion: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_ClipMouseTrackingRegion"
 		end
 
-	clip_mouse_tracking_region_address_external: POINTER is
+	frozenclip_mouse_tracking_region_address_external: POINTER is
 			-- Address of C function `ClipMouseTrackingRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) ClipMouseTrackingRegion"
 		end
 
-	get_mouse_tracking_region_id_external (inmouseref: POINTER; outid: POINTER): INTEGER is
+	frozen get_mouse_tracking_region_id_external (inmouseref: POINTER; outid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef, MouseTrackingRegionID*):OSStatus"
 		alias
 			"ewg_function_macro_GetMouseTrackingRegionID"
 		end
 
-	get_mouse_tracking_region_id_address_external: POINTER is
+	frozenget_mouse_tracking_region_id_address_external: POINTER is
 			-- Address of C function `GetMouseTrackingRegionID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) GetMouseTrackingRegionID"
 		end
 
-	get_mouse_tracking_region_ref_con_external (inmouseref: POINTER; outrefcon: POINTER): INTEGER is
+	frozen get_mouse_tracking_region_ref_con_external (inmouseref: POINTER; outrefcon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef, void**):OSStatus"
 		alias
 			"ewg_function_macro_GetMouseTrackingRegionRefCon"
 		end
 
-	get_mouse_tracking_region_ref_con_address_external: POINTER is
+	frozenget_mouse_tracking_region_ref_con_address_external: POINTER is
 			-- Address of C function `GetMouseTrackingRegionRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) GetMouseTrackingRegionRefCon"
 		end
 
-	move_mouse_tracking_region_external (inmouseref: POINTER; deltah: INTEGER; deltav: INTEGER; inclip: POINTER): INTEGER is
+	frozen move_mouse_tracking_region_external (inmouseref: POINTER; deltah: INTEGER; deltav: INTEGER; inclip: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef, SInt16, SInt16, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_MoveMouseTrackingRegion"
 		end
 
-	move_mouse_tracking_region_address_external: POINTER is
+	frozenmove_mouse_tracking_region_address_external: POINTER is
 			-- Address of C function `MoveMouseTrackingRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) MoveMouseTrackingRegion"
 		end
 
-	set_mouse_tracking_region_enabled_external (inmouseref: POINTER; inenabled: INTEGER): INTEGER is
+	frozen set_mouse_tracking_region_enabled_external (inmouseref: POINTER; inenabled: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MouseTrackingRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetMouseTrackingRegionEnabled"
 		end
 
-	set_mouse_tracking_region_enabled_address_external: POINTER is
+	frozenset_mouse_tracking_region_enabled_address_external: POINTER is
 			-- Address of C function `SetMouseTrackingRegionEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) SetMouseTrackingRegionEnabled"
 		end
 
-	clip_window_mouse_tracking_regions_external (inwindow: POINTER; insignature: INTEGER; inclip: POINTER): INTEGER is
+	frozen clip_window_mouse_tracking_regions_external (inwindow: POINTER; insignature: INTEGER; inclip: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OSType, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_ClipWindowMouseTrackingRegions"
 		end
 
-	clip_window_mouse_tracking_regions_address_external: POINTER is
+	frozenclip_window_mouse_tracking_regions_address_external: POINTER is
 			-- Address of C function `ClipWindowMouseTrackingRegions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) ClipWindowMouseTrackingRegions"
 		end
 
-	move_window_mouse_tracking_regions_external (inwindow: POINTER; insignature: INTEGER; deltah: INTEGER; deltav: INTEGER; inclip: POINTER): INTEGER is
+	frozen move_window_mouse_tracking_regions_external (inwindow: POINTER; insignature: INTEGER; deltah: INTEGER; deltav: INTEGER; inclip: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OSType, SInt16, SInt16, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_MoveWindowMouseTrackingRegions"
 		end
 
-	move_window_mouse_tracking_regions_address_external: POINTER is
+	frozenmove_window_mouse_tracking_regions_address_external: POINTER is
 			-- Address of C function `MoveWindowMouseTrackingRegions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) MoveWindowMouseTrackingRegions"
 		end
 
-	set_window_mouse_tracking_regions_enabled_external (inwindow: POINTER; insignature: INTEGER; inenabled: INTEGER): INTEGER is
+	frozen set_window_mouse_tracking_regions_enabled_external (inwindow: POINTER; insignature: INTEGER; inenabled: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OSType, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowMouseTrackingRegionsEnabled"
 		end
 
-	set_window_mouse_tracking_regions_enabled_address_external: POINTER is
+	frozenset_window_mouse_tracking_regions_enabled_address_external: POINTER is
 			-- Address of C function `SetWindowMouseTrackingRegionsEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) SetWindowMouseTrackingRegionsEnabled"
 		end
 
-	release_window_mouse_tracking_regions_external (inwindow: POINTER; insignature: INTEGER): INTEGER is
+	frozen release_window_mouse_tracking_regions_external (inwindow: POINTER; insignature: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OSType):OSStatus"
 		alias
 			"ewg_function_macro_ReleaseWindowMouseTrackingRegions"
 		end
 
-	release_window_mouse_tracking_regions_address_external: POINTER is
+	frozenrelease_window_mouse_tracking_regions_address_external: POINTER is
 			-- Address of C function `ReleaseWindowMouseTrackingRegions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) ReleaseWindowMouseTrackingRegions"
 		end
 
-	register_toolbox_object_class_external (inclassid: POINTER; inbaseclass: POINTER; innumevents: INTEGER; ineventlist: POINTER; ineventhandler: POINTER; ineventhandlerdata: POINTER; outclassref: POINTER): INTEGER is
+	frozen register_toolbox_object_class_external (inclassid: POINTER; inbaseclass: POINTER; innumevents: INTEGER; ineventlist: POINTER; ineventhandler: POINTER; ineventhandlerdata: POINTER; outclassref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, ToolboxObjectClassRef, UInt32, EventTypeSpec const*, EventHandlerUPP, void*, ToolboxObjectClassRef*):OSStatus"
 		alias
 			"ewg_function_macro_RegisterToolboxObjectClass"
 		end
 
-	register_toolbox_object_class_address_external: POINTER is
+	frozenregister_toolbox_object_class_address_external: POINTER is
 			-- Address of C function `RegisterToolboxObjectClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) RegisterToolboxObjectClass"
 		end
 
-	unregister_toolbox_object_class_external (inclassref: POINTER): INTEGER is
+	frozen unregister_toolbox_object_class_external (inclassref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ToolboxObjectClassRef):OSStatus"
 		alias
 			"ewg_function_macro_UnregisterToolboxObjectClass"
 		end
 
-	unregister_toolbox_object_class_address_external: POINTER is
+	frozenunregister_toolbox_object_class_address_external: POINTER is
 			-- Address of C function `UnregisterToolboxObjectClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

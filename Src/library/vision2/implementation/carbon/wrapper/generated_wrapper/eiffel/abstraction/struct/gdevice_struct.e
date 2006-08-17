@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_gdrefnum: INTEGER is
-		obsolete "Use `gdrefnum' instead."
-			-- Access member `gdRefNum'
-		require
-			exists: exists
-		do
-			Result := get_gdrefnum_external (item)
-		ensure
-			result_correct: Result = get_gdrefnum_external (item)
-		end
 
 	gdrefnum: INTEGER is
 			-- Access member `gdRefNum'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_gdrefnum_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdrefnum
-		end
-
-	get_gdid: INTEGER is
-		obsolete "Use `gdid' instead."
-			-- Access member `gdID'
-		require
-			exists: exists
-		do
-			Result := get_gdid_external (item)
-		ensure
-			result_correct: Result = get_gdid_external (item)
 		end
 
 	gdid: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdid
 		end
 
-	get_gdtype: INTEGER is
-		obsolete "Use `gdtype' instead."
-			-- Access member `gdType'
-		require
-			exists: exists
-		do
-			Result := get_gdtype_external (item)
-		ensure
-			result_correct: Result = get_gdtype_external (item)
-		end
-
 	gdtype: INTEGER is
 			-- Access member `gdType'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_gdtype_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdtype
-		end
-
-	get_gditable: POINTER is
-		obsolete "Use `gditable' instead."
-			-- Access member `gdITable'
-		require
-			exists: exists
-		do
-			Result := get_gditable_external (item)
-		ensure
-			result_correct: Result = get_gditable_external (item)
 		end
 
 	gditable: POINTER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gditable
 		end
 
-	get_gdrespref: INTEGER is
-		obsolete "Use `gdrespref' instead."
-			-- Access member `gdResPref'
-		require
-			exists: exists
-		do
-			Result := get_gdrespref_external (item)
-		ensure
-			result_correct: Result = get_gdrespref_external (item)
-		end
-
 	gdrespref: INTEGER is
 			-- Access member `gdResPref'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_gdrespref_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdrespref
-		end
-
-	get_gdsearchproc: POINTER is
-		obsolete "Use `gdsearchproc' instead."
-			-- Access member `gdSearchProc'
-		require
-			exists: exists
-		do
-			Result := get_gdsearchproc_external (item)
-		ensure
-			result_correct: Result = get_gdsearchproc_external (item)
 		end
 
 	gdsearchproc: POINTER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdsearchproc
 		end
 
-	get_gdcompproc: POINTER is
-		obsolete "Use `gdcompproc' instead."
-			-- Access member `gdCompProc'
-		require
-			exists: exists
-		do
-			Result := get_gdcompproc_external (item)
-		ensure
-			result_correct: Result = get_gdcompproc_external (item)
-		end
-
 	gdcompproc: POINTER is
 			-- Access member `gdCompProc'
 		require
@@ -242,17 +165,6 @@ feature {ANY} -- Member Access
 			set_gdcompproc_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdcompproc
-		end
-
-	get_gdflags: INTEGER is
-		obsolete "Use `gdflags' instead."
-			-- Access member `gdFlags'
-		require
-			exists: exists
-		do
-			Result := get_gdflags_external (item)
-		ensure
-			result_correct: Result = get_gdflags_external (item)
 		end
 
 	gdflags: INTEGER is
@@ -275,17 +187,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdflags
 		end
 
-	get_gdpmap: POINTER is
-		obsolete "Use `gdpmap' instead."
-			-- Access member `gdPMap'
-		require
-			exists: exists
-		do
-			Result := get_gdpmap_external (item)
-		ensure
-			result_correct: Result = get_gdpmap_external (item)
-		end
-
 	gdpmap: POINTER is
 			-- Access member `gdPMap'
 		require
@@ -304,17 +205,6 @@ feature {ANY} -- Member Access
 			set_gdpmap_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdpmap
-		end
-
-	get_gdrefcon: INTEGER is
-		obsolete "Use `gdrefcon' instead."
-			-- Access member `gdRefCon'
-		require
-			exists: exists
-		do
-			Result := get_gdrefcon_external (item)
-		ensure
-			result_correct: Result = get_gdrefcon_external (item)
 		end
 
 	gdrefcon: INTEGER is
@@ -337,17 +227,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdrefcon
 		end
 
-	get_gdnextgd: POINTER is
-		obsolete "Use `gdnextgd' instead."
-			-- Access member `gdNextGD'
-		require
-			exists: exists
-		do
-			Result := get_gdnextgd_external (item)
-		ensure
-			result_correct: Result = get_gdnextgd_external (item)
-		end
-
 	gdnextgd: POINTER is
 			-- Access member `gdNextGD'
 		require
@@ -368,17 +247,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdnextgd
 		end
 
-	get_gdrect: POINTER is
-		obsolete "Use `gdrect' instead."
-			-- Access member `gdRect'
-		require
-			exists: exists
-		do
-			Result := get_gdrect_external (item)
-		ensure
-			result_correct: Result = get_gdrect_external (item)
-		end
-
 	gdrect: POINTER is
 			-- Access member `gdRect'
 		require
@@ -395,17 +263,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_gdrect_external (item, a_value)
-		end
-
-	get_gdmode: INTEGER is
-		obsolete "Use `gdmode' instead."
-			-- Access member `gdMode'
-		require
-			exists: exists
-		do
-			Result := get_gdmode_external (item)
-		ensure
-			result_correct: Result = get_gdmode_external (item)
 		end
 
 	gdmode: INTEGER is
@@ -428,17 +285,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdmode
 		end
 
-	get_gdccbytes: INTEGER is
-		obsolete "Use `gdccbytes' instead."
-			-- Access member `gdCCBytes'
-		require
-			exists: exists
-		do
-			Result := get_gdccbytes_external (item)
-		ensure
-			result_correct: Result = get_gdccbytes_external (item)
-		end
-
 	gdccbytes: INTEGER is
 			-- Access member `gdCCBytes'
 		require
@@ -457,17 +303,6 @@ feature {ANY} -- Member Access
 			set_gdccbytes_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdccbytes
-		end
-
-	get_gdccdepth: INTEGER is
-		obsolete "Use `gdccdepth' instead."
-			-- Access member `gdCCDepth'
-		require
-			exists: exists
-		do
-			Result := get_gdccdepth_external (item)
-		ensure
-			result_correct: Result = get_gdccdepth_external (item)
 		end
 
 	gdccdepth: INTEGER is
@@ -490,17 +325,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdccdepth
 		end
 
-	get_gdccxdata: POINTER is
-		obsolete "Use `gdccxdata' instead."
-			-- Access member `gdCCXData'
-		require
-			exists: exists
-		do
-			Result := get_gdccxdata_external (item)
-		ensure
-			result_correct: Result = get_gdccxdata_external (item)
-		end
-
 	gdccxdata: POINTER is
 			-- Access member `gdCCXData'
 		require
@@ -521,17 +345,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = gdccxdata
 		end
 
-	get_gdccxmask: POINTER is
-		obsolete "Use `gdccxmask' instead."
-			-- Access member `gdCCXMask'
-		require
-			exists: exists
-		do
-			Result := get_gdccxmask_external (item)
-		ensure
-			result_correct: Result = get_gdccxmask_external (item)
-		end
-
 	gdccxmask: POINTER is
 			-- Access member `gdCCXMask'
 		require
@@ -550,17 +363,6 @@ feature {ANY} -- Member Access
 			set_gdccxmask_external (item, a_value)
 		ensure
 			a_value_set: a_value = gdccxmask
-		end
-
-	get_gdext: POINTER is
-		obsolete "Use `gdext' instead."
-			-- Access member `gdExt'
-		require
-			exists: exists
-		do
-			Result := get_gdext_external (item)
-		ensure
-			result_correct: Result = get_gdext_external (item)
 		end
 
 	gdext: POINTER is

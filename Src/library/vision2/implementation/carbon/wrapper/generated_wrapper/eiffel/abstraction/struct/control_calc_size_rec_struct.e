@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_height: INTEGER is
-		obsolete "Use `height' instead."
-			-- Access member `height'
-		require
-			exists: exists
-		do
-			Result := get_height_external (item)
-		ensure
-			result_correct: Result = get_height_external (item)
-		end
 
 	height: INTEGER is
 			-- Access member `height'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = height
 		end
 
-	get_width: INTEGER is
-		obsolete "Use `width' instead."
-			-- Access member `width'
-		require
-			exists: exists
-		do
-			Result := get_width_external (item)
-		ensure
-			result_correct: Result = get_width_external (item)
-		end
-
 	width: INTEGER is
 			-- Access member `width'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_width_external (item, a_value)
 		ensure
 			a_value_set: a_value = width
-		end
-
-	get_baseline: INTEGER is
-		obsolete "Use `baseline' instead."
-			-- Access member `baseLine'
-		require
-			exists: exists
-		do
-			Result := get_baseline_external (item)
-		ensure
-			result_correct: Result = get_baseline_external (item)
 		end
 
 	baseline: INTEGER is

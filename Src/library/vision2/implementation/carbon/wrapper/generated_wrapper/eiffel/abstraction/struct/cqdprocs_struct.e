@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_textproc: POINTER is
-		obsolete "Use `textproc' instead."
-			-- Access member `textProc'
-		require
-			exists: exists
-		do
-			Result := get_textproc_external (item)
-		ensure
-			result_correct: Result = get_textproc_external (item)
-		end
 
 	textproc: POINTER is
 			-- Access member `textProc'
@@ -60,17 +49,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_lineproc: POINTER is
-		obsolete "Use `lineproc' instead."
-			-- Access member `lineProc'
-		require
-			exists: exists
-		do
-			Result := get_lineproc_external (item)
-		ensure
-			result_correct: Result = get_lineproc_external (item)
-		end
-
 	lineproc: POINTER is
 			-- Access member `lineProc'
 		require
@@ -93,17 +71,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_rectproc: POINTER is
-		obsolete "Use `rectproc' instead."
-			-- Access member `rectProc'
-		require
-			exists: exists
-		do
-			Result := get_rectproc_external (item)
-		ensure
-			result_correct: Result = get_rectproc_external (item)
-		end
-
 	rectproc: POINTER is
 			-- Access member `rectProc'
 		require
@@ -126,17 +93,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_rrectproc: POINTER is
-		obsolete "Use `rrectproc' instead."
-			-- Access member `rRectProc'
-		require
-			exists: exists
-		do
-			Result := get_rrectproc_external (item)
-		ensure
-			result_correct: Result = get_rrectproc_external (item)
-		end
-
 	rrectproc: POINTER is
 			-- Access member `rRectProc'
 		require
@@ -159,17 +115,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_ovalproc: POINTER is
-		obsolete "Use `ovalproc' instead."
-			-- Access member `ovalProc'
-		require
-			exists: exists
-		do
-			Result := get_ovalproc_external (item)
-		ensure
-			result_correct: Result = get_ovalproc_external (item)
-		end
-
 	ovalproc: POINTER is
 			-- Access member `ovalProc'
 		require
@@ -192,17 +137,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_arcproc: POINTER is
-		obsolete "Use `arcproc' instead."
-			-- Access member `arcProc'
-		require
-			exists: exists
-		do
-			Result := get_arcproc_external (item)
-		ensure
-			result_correct: Result = get_arcproc_external (item)
-		end
-
 	arcproc: POINTER is
 			-- Access member `arcProc'
 		require
@@ -225,17 +159,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_polyproc: POINTER is
-		obsolete "Use `polyproc' instead."
-			-- Access member `polyProc'
-		require
-			exists: exists
-		do
-			Result := get_polyproc_external (item)
-		ensure
-			result_correct: Result = get_polyproc_external (item)
-		end
-
 	polyproc: POINTER is
 			-- Access member `polyProc'
 		require
@@ -258,17 +181,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_rgnproc: POINTER is
-		obsolete "Use `rgnproc' instead."
-			-- Access member `rgnProc'
-		require
-			exists: exists
-		do
-			Result := get_rgnproc_external (item)
-		ensure
-			result_correct: Result = get_rgnproc_external (item)
-		end
-
 	rgnproc: POINTER is
 			-- Access member `rgnProc'
 		require
@@ -291,17 +203,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_bitsproc: POINTER is
-		obsolete "Use `bitsproc' instead."
-			-- Access member `bitsProc'
-		require
-			exists: exists
-		do
-			Result := get_bitsproc_external (item)
-		ensure
-			result_correct: Result = get_bitsproc_external (item)
-		end
-
 	bitsproc: POINTER is
 			-- Access member `bitsProc'
 		require
@@ -324,17 +225,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_commentproc: POINTER is
-		obsolete "Use `commentproc' instead."
-			-- Access member `commentProc'
-		require
-			exists: exists
-		do
-			Result := get_commentproc_external (item)
-		ensure
-			result_correct: Result = get_commentproc_external (item)
-		end
-
 	commentproc: POINTER is
 			-- Access member `commentProc'
 		require
@@ -357,17 +247,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_txmeasproc: POINTER is
-		obsolete "Use `txmeasproc' instead."
-			-- Access member `txMeasProc'
-		require
-			exists: exists
-		do
-			Result := get_txmeasproc_external (item)
-		ensure
-			result_correct: Result = get_txmeasproc_external (item)
-		end
-
 	txmeasproc: POINTER is
 			-- Access member `txMeasProc'
 		require
@@ -390,17 +269,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_getpicproc: POINTER is
-		obsolete "Use `getpicproc' instead."
-			-- Access member `getPicProc'
-		require
-			exists: exists
-		do
-			Result := get_getpicproc_external (item)
-		ensure
-			result_correct: Result = get_getpicproc_external (item)
-		end
-
 	getpicproc: POINTER is
 			-- Access member `getPicProc'
 		require
@@ -423,17 +291,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_putpicproc: POINTER is
-		obsolete "Use `putpicproc' instead."
-			-- Access member `putPicProc'
-		require
-			exists: exists
-		do
-			Result := get_putpicproc_external (item)
-		ensure
-			result_correct: Result = get_putpicproc_external (item)
-		end
-
 	putpicproc: POINTER is
 			-- Access member `putPicProc'
 		require
@@ -456,17 +313,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_opcodeproc: POINTER is
-		obsolete "Use `opcodeproc' instead."
-			-- Access member `opcodeProc'
-		require
-			exists: exists
-		do
-			Result := get_opcodeproc_external (item)
-		ensure
-			result_correct: Result = get_opcodeproc_external (item)
-		end
-
 	opcodeproc: POINTER is
 			-- Access member `opcodeProc'
 		require
@@ -489,17 +335,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_newproc1: POINTER is
-		obsolete "Use `newproc1' instead."
-			-- Access member `newProc1'
-		require
-			exists: exists
-		do
-			Result := get_newproc1_external (item)
-		ensure
-			result_correct: Result = get_newproc1_external (item)
-		end
-
 	newproc1: POINTER is
 			-- Access member `newProc1'
 		require
@@ -522,17 +357,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_glyphsproc: POINTER is
-		obsolete "Use `glyphsproc' instead."
-			-- Access member `glyphsProc'
-		require
-			exists: exists
-		do
-			Result := get_glyphsproc_external (item)
-		ensure
-			result_correct: Result = get_glyphsproc_external (item)
-		end
-
 	glyphsproc: POINTER is
 			-- Access member `glyphsProc'
 		require
@@ -555,17 +379,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_printerstatusproc: POINTER is
-		obsolete "Use `printerstatusproc' instead."
-			-- Access member `printerStatusProc'
-		require
-			exists: exists
-		do
-			Result := get_printerstatusproc_external (item)
-		ensure
-			result_correct: Result = get_printerstatusproc_external (item)
-		end
-
 	printerstatusproc: POINTER is
 			-- Access member `printerStatusProc'
 		require
@@ -588,17 +401,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_newproc4: POINTER is
-		obsolete "Use `newproc4' instead."
-			-- Access member `newProc4'
-		require
-			exists: exists
-		do
-			Result := get_newproc4_external (item)
-		ensure
-			result_correct: Result = get_newproc4_external (item)
-		end
-
 	newproc4: POINTER is
 			-- Access member `newProc4'
 		require
@@ -621,17 +423,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_newproc5: POINTER is
-		obsolete "Use `newproc5' instead."
-			-- Access member `newProc5'
-		require
-			exists: exists
-		do
-			Result := get_newproc5_external (item)
-		ensure
-			result_correct: Result = get_newproc5_external (item)
-		end
-
 	newproc5: POINTER is
 			-- Access member `newProc5'
 		require
@@ -654,17 +445,6 @@ feature {ANY} -- Member Access
 
 -- TODO: function pointers not yet callable from
 --		struct, use corresponding callback class instead
-	get_newproc6: POINTER is
-		obsolete "Use `newproc6' instead."
-			-- Access member `newProc6'
-		require
-			exists: exists
-		do
-			Result := get_newproc6_external (item)
-		ensure
-			result_correct: Result = get_newproc6_external (item)
-		end
-
 	newproc6: POINTER is
 			-- Access member `newProc6'
 		require

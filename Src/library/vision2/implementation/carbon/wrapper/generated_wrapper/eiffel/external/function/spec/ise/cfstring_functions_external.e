@@ -3,14 +3,14 @@
 class CFSTRING_FUNCTIONS_EXTERNAL
 
 feature
-	cfstring_get_type_id_external: INTEGER is
+	frozen cfstring_get_type_id_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :CFTypeID"
 		alias
 			"ewg_function_macro_CFStringGetTypeID"
 		end
 
-	cfstring_get_type_id_address_external: POINTER is
+	frozencfstring_get_type_id_address_external: POINTER is
 			-- Address of C function `CFStringGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) CFStringGetTypeID"
 		end
 
-	cfstring_create_with_pascal_string_external (alloc: POINTER; pstr: POINTER; encoding: INTEGER): POINTER is
+	frozen cfstring_create_with_pascal_string_external (alloc: POINTER; pstr: POINTER; encoding: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, ConstStr255Param, CFStringEncoding):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithPascalString"
 		end
 
-	cfstring_create_with_pascal_string_address_external: POINTER is
+	frozencfstring_create_with_pascal_string_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithPascalString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) CFStringCreateWithPascalString"
 		end
 
-	cfstring_create_with_cstring_external (alloc: POINTER; cstr: POINTER; encoding: INTEGER): POINTER is
+	frozen cfstring_create_with_cstring_external (alloc: POINTER; cstr: POINTER; encoding: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, char const*, CFStringEncoding):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithCString"
 		end
 
-	cfstring_create_with_cstring_address_external: POINTER is
+	frozencfstring_create_with_cstring_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) CFStringCreateWithCString"
 		end
 
-	cfstring_create_with_characters_external (alloc: POINTER; chars: POINTER; numchars: INTEGER): POINTER is
+	frozen cfstring_create_with_characters_external (alloc: POINTER; chars: POINTER; numchars: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, UniChar const*, CFIndex):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithCharacters"
 		end
 
-	cfstring_create_with_characters_address_external: POINTER is
+	frozencfstring_create_with_characters_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCharacters'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) CFStringCreateWithCharacters"
 		end
 
-	cfstring_create_with_pascal_string_no_copy_external (alloc: POINTER; pstr: POINTER; encoding: INTEGER; contentsdeallocator: POINTER): POINTER is
+	frozen cfstring_create_with_pascal_string_no_copy_external (alloc: POINTER; pstr: POINTER; encoding: INTEGER; contentsdeallocator: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, ConstStr255Param, CFStringEncoding, CFAllocatorRef):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithPascalStringNoCopy"
 		end
 
-	cfstring_create_with_pascal_string_no_copy_address_external: POINTER is
+	frozencfstring_create_with_pascal_string_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithPascalStringNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) CFStringCreateWithPascalStringNoCopy"
 		end
 
-	cfstring_create_with_cstring_no_copy_external (alloc: POINTER; cstr: POINTER; encoding: INTEGER; contentsdeallocator: POINTER): POINTER is
+	frozen cfstring_create_with_cstring_no_copy_external (alloc: POINTER; cstr: POINTER; encoding: INTEGER; contentsdeallocator: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, char const*, CFStringEncoding, CFAllocatorRef):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithCStringNoCopy"
 		end
 
-	cfstring_create_with_cstring_no_copy_address_external: POINTER is
+	frozencfstring_create_with_cstring_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCStringNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) CFStringCreateWithCStringNoCopy"
 		end
 
-	cfstring_create_with_characters_no_copy_external (alloc: POINTER; chars: POINTER; numchars: INTEGER; contentsdeallocator: POINTER): POINTER is
+	frozen cfstring_create_with_characters_no_copy_external (alloc: POINTER; chars: POINTER; numchars: INTEGER; contentsdeallocator: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, UniChar const*, CFIndex, CFAllocatorRef):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithCharactersNoCopy"
 		end
 
-	cfstring_create_with_characters_no_copy_address_external: POINTER is
+	frozencfstring_create_with_characters_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCharactersNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) CFStringCreateWithCharactersNoCopy"
 		end
 
-	cfstring_create_with_substring_external (alloc: POINTER; str: POINTER; range: POINTER): POINTER is
+	frozen cfstring_create_with_substring_external (alloc: POINTER; str: POINTER; range: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFStringRef, CFRange*):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithSubstring"
 		end
 
-	cfstring_create_with_substring_address_external: POINTER is
+	frozencfstring_create_with_substring_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithSubstring'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) CFStringCreateWithSubstring"
 		end
 
-	cfstring_create_copy_external (alloc: POINTER; thestring: POINTER): POINTER is
+	frozen cfstring_create_copy_external (alloc: POINTER; thestring: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFStringRef):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateCopy"
 		end
 
-	cfstring_create_copy_address_external: POINTER is
+	frozencfstring_create_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) CFStringCreateCopy"
 		end
 
-	cfstring_create_with_format_external (alloc: POINTER; formatoptions: POINTER; format: POINTER): POINTER is
+	frozen cfstring_create_with_format_external (alloc: POINTER; formatoptions: POINTER; format: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFDictionaryRef, CFStringRef):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithFormat"
 		end
 
-	cfstring_create_with_format_address_external: POINTER is
+	frozencfstring_create_with_format_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithFormat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) CFStringCreateWithFormat"
 		end
 
-	cfstring_create_mutable_external (alloc: POINTER; maxlength: INTEGER): POINTER is
+	frozen cfstring_create_mutable_external (alloc: POINTER; maxlength: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFIndex):CFMutableStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateMutable"
 		end
 
-	cfstring_create_mutable_address_external: POINTER is
+	frozencfstring_create_mutable_address_external: POINTER is
 			-- Address of C function `CFStringCreateMutable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CFStringCreateMutable"
 		end
 
-	cfstring_create_mutable_copy_external (alloc: POINTER; maxlength: INTEGER; thestring: POINTER): POINTER is
+	frozen cfstring_create_mutable_copy_external (alloc: POINTER; maxlength: INTEGER; thestring: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFIndex, CFStringRef):CFMutableStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateMutableCopy"
 		end
 
-	cfstring_create_mutable_copy_address_external: POINTER is
+	frozencfstring_create_mutable_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateMutableCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CFStringCreateMutableCopy"
 		end
 
-	cfstring_create_mutable_with_external_characters_no_copy_external (alloc: POINTER; chars: POINTER; numchars: INTEGER; capacity: INTEGER; externalcharactersallocator: POINTER): POINTER is
+	frozen cfstring_create_mutable_with_external_characters_no_copy_external (alloc: POINTER; chars: POINTER; numchars: INTEGER; capacity: INTEGER; externalcharactersallocator: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, UniChar*, CFIndex, CFIndex, CFAllocatorRef):CFMutableStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateMutableWithExternalCharactersNoCopy"
 		end
 
-	cfstring_create_mutable_with_external_characters_no_copy_address_external: POINTER is
+	frozencfstring_create_mutable_with_external_characters_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateMutableWithExternalCharactersNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) CFStringCreateMutableWithExternalCharactersNoCopy"
 		end
 
-	cfstring_get_length_external (thestring: POINTER): INTEGER is
+	frozen cfstring_get_length_external (thestring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):CFIndex"
 		alias
 			"ewg_function_macro_CFStringGetLength"
 		end
 
-	cfstring_get_length_address_external: POINTER is
+	frozencfstring_get_length_address_external: POINTER is
 			-- Address of C function `CFStringGetLength'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) CFStringGetLength"
 		end
 
-	cfstring_get_character_at_index_external (thestring: POINTER; idx: INTEGER): INTEGER is
+	frozen cfstring_get_character_at_index_external (thestring: POINTER; idx: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFIndex):UniChar"
 		alias
 			"ewg_function_macro_CFStringGetCharacterAtIndex"
 		end
 
-	cfstring_get_character_at_index_address_external: POINTER is
+	frozencfstring_get_character_at_index_address_external: POINTER is
 			-- Address of C function `CFStringGetCharacterAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CFStringGetCharacterAtIndex"
 		end
 
-	cfstring_get_characters_external (thestring: POINTER; range: POINTER; buffer: POINTER) is
+	frozen cfstring_get_characters_external (thestring: POINTER; range: POINTER; buffer: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFRange*, UniChar*)"
 		alias
 			"ewg_function_macro_CFStringGetCharacters"
 		end
 
-	cfstring_get_characters_address_external: POINTER is
+	frozencfstring_get_characters_address_external: POINTER is
 			-- Address of C function `CFStringGetCharacters'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) CFStringGetCharacters"
 		end
 
-	cfstring_get_pascal_string_external (thestring: POINTER; buffer: POINTER; buffersize: INTEGER; encoding: INTEGER): INTEGER is
+	frozen cfstring_get_pascal_string_external (thestring: POINTER; buffer: POINTER; buffersize: INTEGER; encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, StringPtr, CFIndex, CFStringEncoding):Boolean"
 		alias
 			"ewg_function_macro_CFStringGetPascalString"
 		end
 
-	cfstring_get_pascal_string_address_external: POINTER is
+	frozencfstring_get_pascal_string_address_external: POINTER is
 			-- Address of C function `CFStringGetPascalString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CFStringGetPascalString"
 		end
 
-	cfstring_get_cstring_external (thestring: POINTER; buffer: POINTER; buffersize: INTEGER; encoding: INTEGER): INTEGER is
+	frozen cfstring_get_cstring_external (thestring: POINTER; buffer: POINTER; buffersize: INTEGER; encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, char*, CFIndex, CFStringEncoding):Boolean"
 		alias
 			"ewg_function_macro_CFStringGetCString"
 		end
 
-	cfstring_get_cstring_address_external: POINTER is
+	frozencfstring_get_cstring_address_external: POINTER is
 			-- Address of C function `CFStringGetCString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) CFStringGetCString"
 		end
 
-	cfstring_get_pascal_string_ptr_external (thestring: POINTER; encoding: INTEGER): POINTER is
+	frozen cfstring_get_pascal_string_ptr_external (thestring: POINTER; encoding: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringEncoding):ConstStringPtr"
 		alias
 			"ewg_function_macro_CFStringGetPascalStringPtr"
 		end
 
-	cfstring_get_pascal_string_ptr_address_external: POINTER is
+	frozencfstring_get_pascal_string_ptr_address_external: POINTER is
 			-- Address of C function `CFStringGetPascalStringPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) CFStringGetPascalStringPtr"
 		end
 
-	cfstring_get_cstring_ptr_external (thestring: POINTER; encoding: INTEGER): POINTER is
+	frozen cfstring_get_cstring_ptr_external (thestring: POINTER; encoding: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringEncoding):char const*"
 		alias
 			"ewg_function_macro_CFStringGetCStringPtr"
 		end
 
-	cfstring_get_cstring_ptr_address_external: POINTER is
+	frozencfstring_get_cstring_ptr_address_external: POINTER is
 			-- Address of C function `CFStringGetCStringPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) CFStringGetCStringPtr"
 		end
 
-	cfstring_get_characters_ptr_external (thestring: POINTER): POINTER is
+	frozen cfstring_get_characters_ptr_external (thestring: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):UniChar const*"
 		alias
 			"ewg_function_macro_CFStringGetCharactersPtr"
 		end
 
-	cfstring_get_characters_ptr_address_external: POINTER is
+	frozencfstring_get_characters_ptr_address_external: POINTER is
 			-- Address of C function `CFStringGetCharactersPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CFStringGetCharactersPtr"
 		end
 
-	cfstring_get_bytes_external (thestring: POINTER; range: POINTER; encoding: INTEGER; lossbyte: INTEGER; isexternalrepresentation: INTEGER; buffer: POINTER; maxbuflen: INTEGER; usedbuflen: POINTER): INTEGER is
+	frozen cfstring_get_bytes_external (thestring: POINTER; range: POINTER; encoding: INTEGER; lossbyte: INTEGER; isexternalrepresentation: INTEGER; buffer: POINTER; maxbuflen: INTEGER; usedbuflen: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFRange*, CFStringEncoding, UInt8, Boolean, UInt8*, CFIndex, CFIndex*):CFIndex"
 		alias
 			"ewg_function_macro_CFStringGetBytes"
 		end
 
-	cfstring_get_bytes_address_external: POINTER is
+	frozencfstring_get_bytes_address_external: POINTER is
 			-- Address of C function `CFStringGetBytes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) CFStringGetBytes"
 		end
 
-	cfstring_create_with_bytes_external (alloc: POINTER; bytes: POINTER; numbytes: INTEGER; encoding: INTEGER; isexternalrepresentation: INTEGER): POINTER is
+	frozen cfstring_create_with_bytes_external (alloc: POINTER; bytes: POINTER; numbytes: INTEGER; encoding: INTEGER; isexternalrepresentation: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, UInt8 const*, CFIndex, CFStringEncoding, Boolean):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithBytes"
 		end
 
-	cfstring_create_with_bytes_address_external: POINTER is
+	frozencfstring_create_with_bytes_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithBytes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) CFStringCreateWithBytes"
 		end
 
-	cfstring_create_from_external_representation_external (alloc: POINTER; data: POINTER; encoding: INTEGER): POINTER is
+	frozen cfstring_create_from_external_representation_external (alloc: POINTER; data: POINTER; encoding: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFDataRef, CFStringEncoding):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateFromExternalRepresentation"
 		end
 
-	cfstring_create_from_external_representation_address_external: POINTER is
+	frozencfstring_create_from_external_representation_address_external: POINTER is
 			-- Address of C function `CFStringCreateFromExternalRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) CFStringCreateFromExternalRepresentation"
 		end
 
-	cfstring_create_external_representation_external (alloc: POINTER; thestring: POINTER; encoding: INTEGER; lossbyte: INTEGER): POINTER is
+	frozen cfstring_create_external_representation_external (alloc: POINTER; thestring: POINTER; encoding: INTEGER; lossbyte: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFStringRef, CFStringEncoding, UInt8):CFDataRef"
 		alias
 			"ewg_function_macro_CFStringCreateExternalRepresentation"
 		end
 
-	cfstring_create_external_representation_address_external: POINTER is
+	frozencfstring_create_external_representation_address_external: POINTER is
 			-- Address of C function `CFStringCreateExternalRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) CFStringCreateExternalRepresentation"
 		end
 
-	cfstring_get_smallest_encoding_external (thestring: POINTER): INTEGER is
+	frozen cfstring_get_smallest_encoding_external (thestring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):CFStringEncoding"
 		alias
 			"ewg_function_macro_CFStringGetSmallestEncoding"
 		end
 
-	cfstring_get_smallest_encoding_address_external: POINTER is
+	frozencfstring_get_smallest_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetSmallestEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) CFStringGetSmallestEncoding"
 		end
 
-	cfstring_get_fastest_encoding_external (thestring: POINTER): INTEGER is
+	frozen cfstring_get_fastest_encoding_external (thestring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):CFStringEncoding"
 		alias
 			"ewg_function_macro_CFStringGetFastestEncoding"
 		end
 
-	cfstring_get_fastest_encoding_address_external: POINTER is
+	frozencfstring_get_fastest_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetFastestEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) CFStringGetFastestEncoding"
 		end
 
-	cfstring_get_system_encoding_external: INTEGER is
+	frozen cfstring_get_system_encoding_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :CFStringEncoding"
 		alias
 			"ewg_function_macro_CFStringGetSystemEncoding"
 		end
 
-	cfstring_get_system_encoding_address_external: POINTER is
+	frozencfstring_get_system_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetSystemEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) CFStringGetSystemEncoding"
 		end
 
-	cfstring_get_maximum_size_for_encoding_external (length: INTEGER; encoding: INTEGER): INTEGER is
+	frozen cfstring_get_maximum_size_for_encoding_external (length: INTEGER; encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFIndex, CFStringEncoding):CFIndex"
 		alias
 			"ewg_function_macro_CFStringGetMaximumSizeForEncoding"
 		end
 
-	cfstring_get_maximum_size_for_encoding_address_external: POINTER is
+	frozencfstring_get_maximum_size_for_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetMaximumSizeForEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) CFStringGetMaximumSizeForEncoding"
 		end
 
-	cfstring_get_file_system_representation_external (a_string: POINTER; buffer: POINTER; maxbuflen: INTEGER): INTEGER is
+	frozen cfstring_get_file_system_representation_external (a_string: POINTER; buffer: POINTER; maxbuflen: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, char*, CFIndex):Boolean"
 		alias
 			"ewg_function_macro_CFStringGetFileSystemRepresentation"
 		end
 
-	cfstring_get_file_system_representation_address_external: POINTER is
+	frozencfstring_get_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFStringGetFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) CFStringGetFileSystemRepresentation"
 		end
 
-	cfstring_get_maximum_size_of_file_system_representation_external (a_string: POINTER): INTEGER is
+	frozen cfstring_get_maximum_size_of_file_system_representation_external (a_string: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):CFIndex"
 		alias
 			"ewg_function_macro_CFStringGetMaximumSizeOfFileSystemRepresentation"
 		end
 
-	cfstring_get_maximum_size_of_file_system_representation_address_external: POINTER is
+	frozencfstring_get_maximum_size_of_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFStringGetMaximumSizeOfFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) CFStringGetMaximumSizeOfFileSystemRepresentation"
 		end
 
-	cfstring_create_with_file_system_representation_external (alloc: POINTER; buffer: POINTER): POINTER is
+	frozen cfstring_create_with_file_system_representation_external (alloc: POINTER; buffer: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, char const*):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateWithFileSystemRepresentation"
 		end
 
-	cfstring_create_with_file_system_representation_address_external: POINTER is
+	frozencfstring_create_with_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) CFStringCreateWithFileSystemRepresentation"
 		end
 
-	cfstring_compare_with_options_external (thestring1: POINTER; thestring2: POINTER; rangetocompare: POINTER; compareoptions: INTEGER): INTEGER is
+	frozen cfstring_compare_with_options_external (thestring1: POINTER; thestring2: POINTER; rangetocompare: POINTER; compareoptions: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef, CFRange*, CFOptionFlags):CFComparisonResult"
 		alias
 			"ewg_function_macro_CFStringCompareWithOptions"
 		end
 
-	cfstring_compare_with_options_address_external: POINTER is
+	frozencfstring_compare_with_options_address_external: POINTER is
 			-- Address of C function `CFStringCompareWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) CFStringCompareWithOptions"
 		end
 
-	cfstring_compare_external (thestring1: POINTER; thestring2: POINTER; compareoptions: INTEGER): INTEGER is
+	frozen cfstring_compare_external (thestring1: POINTER; thestring2: POINTER; compareoptions: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef, CFOptionFlags):CFComparisonResult"
 		alias
 			"ewg_function_macro_CFStringCompare"
 		end
 
-	cfstring_compare_address_external: POINTER is
+	frozencfstring_compare_address_external: POINTER is
 			-- Address of C function `CFStringCompare'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) CFStringCompare"
 		end
 
-	cfstring_find_with_options_external (thestring: POINTER; stringtofind: POINTER; rangetosearch: POINTER; searchoptions: INTEGER; a_result: POINTER): INTEGER is
+	frozen cfstring_find_with_options_external (thestring: POINTER; stringtofind: POINTER; rangetosearch: POINTER; searchoptions: INTEGER; a_result: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef, CFRange*, CFOptionFlags, CFRange*):Boolean"
 		alias
 			"ewg_function_macro_CFStringFindWithOptions"
 		end
 
-	cfstring_find_with_options_address_external: POINTER is
+	frozencfstring_find_with_options_address_external: POINTER is
 			-- Address of C function `CFStringFindWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) CFStringFindWithOptions"
 		end
 
-	cfstring_create_array_with_find_results_external (alloc: POINTER; thestring: POINTER; stringtofind: POINTER; rangetosearch: POINTER; compareoptions: INTEGER): POINTER is
+	frozen cfstring_create_array_with_find_results_external (alloc: POINTER; thestring: POINTER; stringtofind: POINTER; rangetosearch: POINTER; compareoptions: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFStringRef, CFStringRef, CFRange*, CFOptionFlags):CFArrayRef"
 		alias
 			"ewg_function_macro_CFStringCreateArrayWithFindResults"
 		end
 
-	cfstring_create_array_with_find_results_address_external: POINTER is
+	frozencfstring_create_array_with_find_results_address_external: POINTER is
 			-- Address of C function `CFStringCreateArrayWithFindResults'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) CFStringCreateArrayWithFindResults"
 		end
 
-	cfstring_find_external (thestring: POINTER; stringtofind: POINTER; compareoptions: INTEGER): POINTER is
+	frozen cfstring_find_external (thestring: POINTER; stringtofind: POINTER; compareoptions: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef, CFOptionFlags):CFRange*"
 		alias
 			"ewg_function_CFStringFind"
 		end
 
-	cfstring_find_address_external: POINTER is
+	frozencfstring_find_address_external: POINTER is
 			-- Address of C function `CFStringFind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) CFStringFind"
 		end
 
-	cfstring_has_prefix_external (thestring: POINTER; a_prefix: POINTER): INTEGER is
+	frozen cfstring_has_prefix_external (thestring: POINTER; a_prefix: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef):Boolean"
 		alias
 			"ewg_function_macro_CFStringHasPrefix"
 		end
 
-	cfstring_has_prefix_address_external: POINTER is
+	frozencfstring_has_prefix_address_external: POINTER is
 			-- Address of C function `CFStringHasPrefix'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) CFStringHasPrefix"
 		end
 
-	cfstring_has_suffix_external (thestring: POINTER; suffix: POINTER): INTEGER is
+	frozen cfstring_has_suffix_external (thestring: POINTER; suffix: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFStringRef):Boolean"
 		alias
 			"ewg_function_macro_CFStringHasSuffix"
 		end
 
-	cfstring_has_suffix_address_external: POINTER is
+	frozencfstring_has_suffix_address_external: POINTER is
 			-- Address of C function `CFStringHasSuffix'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) CFStringHasSuffix"
 		end
 
-	cfstring_get_range_of_composed_characters_at_index_external (thestring: POINTER; theindex: INTEGER): POINTER is
+	frozen cfstring_get_range_of_composed_characters_at_index_external (thestring: POINTER; theindex: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFIndex):CFRange*"
 		alias
 			"ewg_function_CFStringGetRangeOfComposedCharactersAtIndex"
 		end
 
-	cfstring_get_range_of_composed_characters_at_index_address_external: POINTER is
+	frozencfstring_get_range_of_composed_characters_at_index_address_external: POINTER is
 			-- Address of C function `CFStringGetRangeOfComposedCharactersAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) CFStringGetRangeOfComposedCharactersAtIndex"
 		end
 
-	cfstring_find_character_from_set_external (thestring: POINTER; theset: POINTER; rangetosearch: POINTER; searchoptions: INTEGER; a_result: POINTER): INTEGER is
+	frozen cfstring_find_character_from_set_external (thestring: POINTER; theset: POINTER; rangetosearch: POINTER; searchoptions: INTEGER; a_result: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFCharacterSetRef, CFRange*, CFOptionFlags, CFRange*):Boolean"
 		alias
 			"ewg_function_macro_CFStringFindCharacterFromSet"
 		end
 
-	cfstring_find_character_from_set_address_external: POINTER is
+	frozencfstring_find_character_from_set_address_external: POINTER is
 			-- Address of C function `CFStringFindCharacterFromSet'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) CFStringFindCharacterFromSet"
 		end
 
-	cfstring_get_line_bounds_external (thestring: POINTER; range: POINTER; linebeginindex: POINTER; lineendindex: POINTER; contentsendindex: POINTER) is
+	frozen cfstring_get_line_bounds_external (thestring: POINTER; range: POINTER; linebeginindex: POINTER; lineendindex: POINTER; contentsendindex: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, CFRange*, CFIndex*, CFIndex*, CFIndex*)"
 		alias
 			"ewg_function_macro_CFStringGetLineBounds"
 		end
 
-	cfstring_get_line_bounds_address_external: POINTER is
+	frozencfstring_get_line_bounds_address_external: POINTER is
 			-- Address of C function `CFStringGetLineBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) CFStringGetLineBounds"
 		end
 
-	cfstring_create_by_combining_strings_external (alloc: POINTER; thearray: POINTER; separatorstring: POINTER): POINTER is
+	frozen cfstring_create_by_combining_strings_external (alloc: POINTER; thearray: POINTER; separatorstring: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFArrayRef, CFStringRef):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringCreateByCombiningStrings"
 		end
 
-	cfstring_create_by_combining_strings_address_external: POINTER is
+	frozencfstring_create_by_combining_strings_address_external: POINTER is
 			-- Address of C function `CFStringCreateByCombiningStrings'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) CFStringCreateByCombiningStrings"
 		end
 
-	cfstring_create_array_by_separating_strings_external (alloc: POINTER; thestring: POINTER; separatorstring: POINTER): POINTER is
+	frozen cfstring_create_array_by_separating_strings_external (alloc: POINTER; thestring: POINTER; separatorstring: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFAllocatorRef, CFStringRef, CFStringRef):CFArrayRef"
 		alias
 			"ewg_function_macro_CFStringCreateArrayBySeparatingStrings"
 		end
 
-	cfstring_create_array_by_separating_strings_address_external: POINTER is
+	frozencfstring_create_array_by_separating_strings_address_external: POINTER is
 			-- Address of C function `CFStringCreateArrayBySeparatingStrings'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) CFStringCreateArrayBySeparatingStrings"
 		end
 
-	cfstring_get_int_value_external (str: POINTER): INTEGER is
+	frozen cfstring_get_int_value_external (str: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):SInt32"
 		alias
 			"ewg_function_macro_CFStringGetIntValue"
 		end
 
-	cfstring_get_int_value_address_external: POINTER is
+	frozencfstring_get_int_value_address_external: POINTER is
 			-- Address of C function `CFStringGetIntValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) CFStringGetIntValue"
 		end
 
-	cfstring_get_double_value_external (str: POINTER): DOUBLE is
+	frozen cfstring_get_double_value_external (str: POINTER): DOUBLE is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):double"
 		alias
 			"ewg_function_macro_CFStringGetDoubleValue"
 		end
 
-	cfstring_get_double_value_address_external: POINTER is
+	frozencfstring_get_double_value_address_external: POINTER is
 			-- Address of C function `CFStringGetDoubleValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) CFStringGetDoubleValue"
 		end
 
-	cfstring_append_external (thestring: POINTER; appendedstring: POINTER) is
+	frozen cfstring_append_external (thestring: POINTER; appendedstring: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFStringRef)"
 		alias
 			"ewg_function_macro_CFStringAppend"
 		end
 
-	cfstring_append_address_external: POINTER is
+	frozencfstring_append_address_external: POINTER is
 			-- Address of C function `CFStringAppend'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) CFStringAppend"
 		end
 
-	cfstring_append_characters_external (thestring: POINTER; chars: POINTER; numchars: INTEGER) is
+	frozen cfstring_append_characters_external (thestring: POINTER; chars: POINTER; numchars: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, UniChar const*, CFIndex)"
 		alias
 			"ewg_function_macro_CFStringAppendCharacters"
 		end
 
-	cfstring_append_characters_address_external: POINTER is
+	frozencfstring_append_characters_address_external: POINTER is
 			-- Address of C function `CFStringAppendCharacters'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) CFStringAppendCharacters"
 		end
 
-	cfstring_append_pascal_string_external (thestring: POINTER; pstr: POINTER; encoding: INTEGER) is
+	frozen cfstring_append_pascal_string_external (thestring: POINTER; pstr: POINTER; encoding: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, ConstStr255Param, CFStringEncoding)"
 		alias
 			"ewg_function_macro_CFStringAppendPascalString"
 		end
 
-	cfstring_append_pascal_string_address_external: POINTER is
+	frozencfstring_append_pascal_string_address_external: POINTER is
 			-- Address of C function `CFStringAppendPascalString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) CFStringAppendPascalString"
 		end
 
-	cfstring_append_cstring_external (thestring: POINTER; cstr: POINTER; encoding: INTEGER) is
+	frozen cfstring_append_cstring_external (thestring: POINTER; cstr: POINTER; encoding: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, char const*, CFStringEncoding)"
 		alias
 			"ewg_function_macro_CFStringAppendCString"
 		end
 
-	cfstring_append_cstring_address_external: POINTER is
+	frozencfstring_append_cstring_address_external: POINTER is
 			-- Address of C function `CFStringAppendCString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) CFStringAppendCString"
 		end
 
-	cfstring_append_format_external (thestring: POINTER; formatoptions: POINTER; format: POINTER) is
+	frozen cfstring_append_format_external (thestring: POINTER; formatoptions: POINTER; format: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFDictionaryRef, CFStringRef)"
 		alias
 			"ewg_function_macro_CFStringAppendFormat"
 		end
 
-	cfstring_append_format_address_external: POINTER is
+	frozencfstring_append_format_address_external: POINTER is
 			-- Address of C function `CFStringAppendFormat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) CFStringAppendFormat"
 		end
 
-	cfstring_insert_external (str: POINTER; idx: INTEGER; insertedstr: POINTER) is
+	frozen cfstring_insert_external (str: POINTER; idx: INTEGER; insertedstr: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFIndex, CFStringRef)"
 		alias
 			"ewg_function_macro_CFStringInsert"
 		end
 
-	cfstring_insert_address_external: POINTER is
+	frozencfstring_insert_address_external: POINTER is
 			-- Address of C function `CFStringInsert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) CFStringInsert"
 		end
 
-	cfstring_delete_external (thestring: POINTER; range: POINTER) is
+	frozen cfstring_delete_external (thestring: POINTER; range: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFRange*)"
 		alias
 			"ewg_function_macro_CFStringDelete"
 		end
 
-	cfstring_delete_address_external: POINTER is
+	frozencfstring_delete_address_external: POINTER is
 			-- Address of C function `CFStringDelete'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) CFStringDelete"
 		end
 
-	cfstring_replace_external (thestring: POINTER; range: POINTER; replacement: POINTER) is
+	frozen cfstring_replace_external (thestring: POINTER; range: POINTER; replacement: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFRange*, CFStringRef)"
 		alias
 			"ewg_function_macro_CFStringReplace"
 		end
 
-	cfstring_replace_address_external: POINTER is
+	frozencfstring_replace_address_external: POINTER is
 			-- Address of C function `CFStringReplace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) CFStringReplace"
 		end
 
-	cfstring_replace_all_external (thestring: POINTER; replacement: POINTER) is
+	frozen cfstring_replace_all_external (thestring: POINTER; replacement: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFStringRef)"
 		alias
 			"ewg_function_macro_CFStringReplaceAll"
 		end
 
-	cfstring_replace_all_address_external: POINTER is
+	frozencfstring_replace_all_address_external: POINTER is
 			-- Address of C function `CFStringReplaceAll'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) CFStringReplaceAll"
 		end
 
-	cfstring_find_and_replace_external (thestring: POINTER; stringtofind: POINTER; replacementstring: POINTER; rangetosearch: POINTER; compareoptions: INTEGER): INTEGER is
+	frozen cfstring_find_and_replace_external (thestring: POINTER; stringtofind: POINTER; replacementstring: POINTER; rangetosearch: POINTER; compareoptions: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFStringRef, CFStringRef, CFRange*, CFOptionFlags):CFIndex"
 		alias
 			"ewg_function_macro_CFStringFindAndReplace"
 		end
 
-	cfstring_find_and_replace_address_external: POINTER is
+	frozencfstring_find_and_replace_address_external: POINTER is
 			-- Address of C function `CFStringFindAndReplace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) CFStringFindAndReplace"
 		end
 
-	cfstring_set_external_characters_no_copy_external (thestring: POINTER; chars: POINTER; length: INTEGER; capacity: INTEGER) is
+	frozen cfstring_set_external_characters_no_copy_external (thestring: POINTER; chars: POINTER; length: INTEGER; capacity: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, UniChar*, CFIndex, CFIndex)"
 		alias
 			"ewg_function_macro_CFStringSetExternalCharactersNoCopy"
 		end
 
-	cfstring_set_external_characters_no_copy_address_external: POINTER is
+	frozencfstring_set_external_characters_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringSetExternalCharactersNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) CFStringSetExternalCharactersNoCopy"
 		end
 
-	cfstring_pad_external (thestring: POINTER; padstring: POINTER; length: INTEGER; indexintopad: INTEGER) is
+	frozen cfstring_pad_external (thestring: POINTER; padstring: POINTER; length: INTEGER; indexintopad: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFStringRef, CFIndex, CFIndex)"
 		alias
 			"ewg_function_macro_CFStringPad"
 		end
 
-	cfstring_pad_address_external: POINTER is
+	frozencfstring_pad_address_external: POINTER is
 			-- Address of C function `CFStringPad'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) CFStringPad"
 		end
 
-	cfstring_trim_external (thestring: POINTER; trimstring: POINTER) is
+	frozen cfstring_trim_external (thestring: POINTER; trimstring: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFStringRef)"
 		alias
 			"ewg_function_macro_CFStringTrim"
 		end
 
-	cfstring_trim_address_external: POINTER is
+	frozencfstring_trim_address_external: POINTER is
 			-- Address of C function `CFStringTrim'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) CFStringTrim"
 		end
 
-	cfstring_trim_whitespace_external (thestring: POINTER) is
+	frozen cfstring_trim_whitespace_external (thestring: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef)"
 		alias
 			"ewg_function_macro_CFStringTrimWhitespace"
 		end
 
-	cfstring_trim_whitespace_address_external: POINTER is
+	frozencfstring_trim_whitespace_address_external: POINTER is
 			-- Address of C function `CFStringTrimWhitespace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) CFStringTrimWhitespace"
 		end
 
-	cfstring_lowercase_external (thestring: POINTER; locale: POINTER) is
+	frozen cfstring_lowercase_external (thestring: POINTER; locale: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFLocaleRef)"
 		alias
 			"ewg_function_macro_CFStringLowercase"
 		end
 
-	cfstring_lowercase_address_external: POINTER is
+	frozencfstring_lowercase_address_external: POINTER is
 			-- Address of C function `CFStringLowercase'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) CFStringLowercase"
 		end
 
-	cfstring_uppercase_external (thestring: POINTER; locale: POINTER) is
+	frozen cfstring_uppercase_external (thestring: POINTER; locale: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFLocaleRef)"
 		alias
 			"ewg_function_macro_CFStringUppercase"
 		end
 
-	cfstring_uppercase_address_external: POINTER is
+	frozencfstring_uppercase_address_external: POINTER is
 			-- Address of C function `CFStringUppercase'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) CFStringUppercase"
 		end
 
-	cfstring_capitalize_external (thestring: POINTER; locale: POINTER) is
+	frozen cfstring_capitalize_external (thestring: POINTER; locale: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFLocaleRef)"
 		alias
 			"ewg_function_macro_CFStringCapitalize"
 		end
 
-	cfstring_capitalize_address_external: POINTER is
+	frozencfstring_capitalize_address_external: POINTER is
 			-- Address of C function `CFStringCapitalize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) CFStringCapitalize"
 		end
 
-	cfstring_normalize_external (thestring: POINTER; theform: INTEGER) is
+	frozen cfstring_normalize_external (thestring: POINTER; theform: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFStringNormalizationForm)"
 		alias
 			"ewg_function_macro_CFStringNormalize"
 		end
 
-	cfstring_normalize_address_external: POINTER is
+	frozencfstring_normalize_address_external: POINTER is
 			-- Address of C function `CFStringNormalize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) CFStringNormalize"
 		end
 
-	cfstring_transform_external (a_string: POINTER; range: POINTER; transform: POINTER; reverse: INTEGER): INTEGER is
+	frozen cfstring_transform_external (a_string: POINTER; range: POINTER; transform: POINTER; reverse: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFMutableStringRef, CFRange*, CFStringRef, Boolean):Boolean"
 		alias
 			"ewg_function_macro_CFStringTransform"
 		end
 
-	cfstring_transform_address_external: POINTER is
+	frozencfstring_transform_address_external: POINTER is
 			-- Address of C function `CFStringTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) CFStringTransform"
 		end
 
-	cfstring_is_encoding_available_external (encoding: INTEGER): INTEGER is
+	frozen cfstring_is_encoding_available_external (encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringEncoding):Boolean"
 		alias
 			"ewg_function_macro_CFStringIsEncodingAvailable"
 		end
 
-	cfstring_is_encoding_available_address_external: POINTER is
+	frozencfstring_is_encoding_available_address_external: POINTER is
 			-- Address of C function `CFStringIsEncodingAvailable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) CFStringIsEncodingAvailable"
 		end
 
-	cfstring_get_list_of_available_encodings_external: POINTER is
+	frozen cfstring_get_list_of_available_encodings_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :CFStringEncoding const*"
 		alias
 			"ewg_function_macro_CFStringGetListOfAvailableEncodings"
 		end
 
-	cfstring_get_list_of_available_encodings_address_external: POINTER is
+	frozencfstring_get_list_of_available_encodings_address_external: POINTER is
 			-- Address of C function `CFStringGetListOfAvailableEncodings'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) CFStringGetListOfAvailableEncodings"
 		end
 
-	cfstring_get_name_of_encoding_external (encoding: INTEGER): POINTER is
+	frozen cfstring_get_name_of_encoding_external (encoding: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringEncoding):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringGetNameOfEncoding"
 		end
 
-	cfstring_get_name_of_encoding_address_external: POINTER is
+	frozencfstring_get_name_of_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetNameOfEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) CFStringGetNameOfEncoding"
 		end
 
-	cfstring_convert_encoding_to_nsstring_encoding_external (encoding: INTEGER): INTEGER is
+	frozen cfstring_convert_encoding_to_nsstring_encoding_external (encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringEncoding):UInt32"
 		alias
 			"ewg_function_macro_CFStringConvertEncodingToNSStringEncoding"
 		end
 
-	cfstring_convert_encoding_to_nsstring_encoding_address_external: POINTER is
+	frozencfstring_convert_encoding_to_nsstring_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertEncodingToNSStringEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) CFStringConvertEncodingToNSStringEncoding"
 		end
 
-	cfstring_convert_nsstring_encoding_to_encoding_external (encoding: INTEGER): INTEGER is
+	frozen cfstring_convert_nsstring_encoding_to_encoding_external (encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (UInt32):CFStringEncoding"
 		alias
 			"ewg_function_macro_CFStringConvertNSStringEncodingToEncoding"
 		end
 
-	cfstring_convert_nsstring_encoding_to_encoding_address_external: POINTER is
+	frozencfstring_convert_nsstring_encoding_to_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertNSStringEncodingToEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) CFStringConvertNSStringEncodingToEncoding"
 		end
 
-	cfstring_convert_encoding_to_windows_codepage_external (encoding: INTEGER): INTEGER is
+	frozen cfstring_convert_encoding_to_windows_codepage_external (encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringEncoding):UInt32"
 		alias
 			"ewg_function_macro_CFStringConvertEncodingToWindowsCodepage"
 		end
 
-	cfstring_convert_encoding_to_windows_codepage_address_external: POINTER is
+	frozencfstring_convert_encoding_to_windows_codepage_address_external: POINTER is
 			-- Address of C function `CFStringConvertEncodingToWindowsCodepage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) CFStringConvertEncodingToWindowsCodepage"
 		end
 
-	cfstring_convert_windows_codepage_to_encoding_external (codepage: INTEGER): INTEGER is
+	frozen cfstring_convert_windows_codepage_to_encoding_external (codepage: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (UInt32):CFStringEncoding"
 		alias
 			"ewg_function_macro_CFStringConvertWindowsCodepageToEncoding"
 		end
 
-	cfstring_convert_windows_codepage_to_encoding_address_external: POINTER is
+	frozencfstring_convert_windows_codepage_to_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertWindowsCodepageToEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) CFStringConvertWindowsCodepageToEncoding"
 		end
 
-	cfstring_convert_ianachar_set_name_to_encoding_external (thestring: POINTER): INTEGER is
+	frozen cfstring_convert_ianachar_set_name_to_encoding_external (thestring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef):CFStringEncoding"
 		alias
 			"ewg_function_macro_CFStringConvertIANACharSetNameToEncoding"
 		end
 
-	cfstring_convert_ianachar_set_name_to_encoding_address_external: POINTER is
+	frozencfstring_convert_ianachar_set_name_to_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertIANACharSetNameToEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) CFStringConvertIANACharSetNameToEncoding"
 		end
 
-	cfstring_convert_encoding_to_ianachar_set_name_external (encoding: INTEGER): POINTER is
+	frozen cfstring_convert_encoding_to_ianachar_set_name_external (encoding: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringEncoding):CFStringRef"
 		alias
 			"ewg_function_macro_CFStringConvertEncodingToIANACharSetName"
 		end
 
-	cfstring_convert_encoding_to_ianachar_set_name_address_external: POINTER is
+	frozencfstring_convert_encoding_to_ianachar_set_name_address_external: POINTER is
 			-- Address of C function `CFStringConvertEncodingToIANACharSetName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) CFStringConvertEncodingToIANACharSetName"
 		end
 
-	cfstring_get_most_compatible_mac_string_encoding_external (encoding: INTEGER): INTEGER is
+	frozen cfstring_get_most_compatible_mac_string_encoding_external (encoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringEncoding):CFStringEncoding"
 		alias
 			"ewg_function_macro_CFStringGetMostCompatibleMacStringEncoding"
 		end
 
-	cfstring_get_most_compatible_mac_string_encoding_address_external: POINTER is
+	frozencfstring_get_most_compatible_mac_string_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetMostCompatibleMacStringEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) CFStringGetMostCompatibleMacStringEncoding"
 		end
 
-	cfshow_external (obj: POINTER) is
+	frozen cfshow_external (obj: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFTypeRef)"
 		alias
 			"ewg_function_macro_CFShow"
 		end
 
-	cfshow_address_external: POINTER is
+	frozencfshow_address_external: POINTER is
 			-- Address of C function `CFShow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) CFShow"
 		end
 
-	cfshow_str_external (str: POINTER) is
+	frozen cfshow_str_external (str: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef)"
 		alias
 			"ewg_function_macro_CFShowStr"
 		end
 
-	cfshow_str_address_external: POINTER is
+	frozencfshow_str_address_external: POINTER is
 			-- Address of C function `CFShowStr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) CFShowStr"
 		end
 
-	cfstring_make_constant_string_external (cstr: POINTER): POINTER is
+	frozen cfstring_make_constant_string_external (cstr: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (char const*):CFStringRef"
 		alias
 			"ewg_function_macro___CFStringMakeConstantString"
 		end
 
-	cfstring_make_constant_string_address_external: POINTER is
+	frozencfstring_make_constant_string_address_external: POINTER is
 			-- Address of C function `__CFStringMakeConstantString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

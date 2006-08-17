@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_version: INTEGER is
-		obsolete "Use `version' instead."
-			-- Access member `version'
-		require
-			exists: exists
-		do
-			Result := get_version_external (item)
-		ensure
-			result_correct: Result = get_version_external (item)
-		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = version
 		end
 
-	get_abshotrect: POINTER is
-		obsolete "Use `abshotrect' instead."
-			-- Access member `absHotRect'
-		require
-			exists: exists
-		do
-			Result := get_abshotrect_external (item)
-		ensure
-			result_correct: Result = get_abshotrect_external (item)
-		end
-
 	abshotrect: POINTER is
 			-- Access member `absHotRect'
 		require
@@ -85,17 +63,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_abshotrect_external (item, a_value)
-		end
-
-	get_tagside: INTEGER is
-		obsolete "Use `tagside' instead."
-			-- Access member `tagSide'
-		require
-			exists: exists
-		do
-			Result := get_tagside_external (item)
-		ensure
-			result_correct: Result = get_tagside_external (item)
 		end
 
 	tagside: INTEGER is
@@ -116,17 +83,6 @@ feature {ANY} -- Member Access
 			set_tagside_external (item, a_value)
 		ensure
 			a_value_set: a_value = tagside
-		end
-
-	get_content: POINTER is
-		obsolete "Use `content' instead."
-			-- Access member `content'
-		require
-			exists: exists
-		do
-			Result := get_content_external (item)
-		ensure
-			result_correct: Result = get_content_external (item)
 		end
 
 	content: POINTER is

@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_limitrect: POINTER is
-		obsolete "Use `limitrect' instead."
-			-- Access member `limitRect'
-		require
-			exists: exists
-		do
-			Result := get_limitrect_external (item)
-		ensure
-			result_correct: Result = get_limitrect_external (item)
-		end
 
 	limitrect: POINTER is
 			-- Access member `limitRect'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_limitrect_external (item, a_value)
 		end
 
-	get_sloprect: POINTER is
-		obsolete "Use `sloprect' instead."
-			-- Access member `slopRect'
-		require
-			exists: exists
-		do
-			Result := get_sloprect_external (item)
-		ensure
-			result_correct: Result = get_sloprect_external (item)
-		end
-
 	sloprect: POINTER is
 			-- Access member `slopRect'
 		require
@@ -83,17 +61,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_sloprect_external (item, a_value)
-		end
-
-	get_axis: INTEGER is
-		obsolete "Use `axis' instead."
-			-- Access member `axis'
-		require
-			exists: exists
-		do
-			Result := get_axis_external (item)
-		ensure
-			result_correct: Result = get_axis_external (item)
 		end
 
 	axis: INTEGER is

@@ -9,42 +9,42 @@ feature {ANY}
 			Result := a_value = kcfcomparecaseinsensitive or a_value = kcfcomparebackwards or a_value = kcfcompareanchored or a_value = kcfcomparenonliteral or a_value = kcfcomparelocalized or a_value = kcfcomparenumerically
 		end
 
-	kcfcomparecaseinsensitive: INTEGER is
+	 frozen kcfcomparecaseinsensitive: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFCompareCaseInsensitive"
 		end
 
-	kcfcomparebackwards: INTEGER is
+	 frozen kcfcomparebackwards: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFCompareBackwards"
 		end
 
-	kcfcompareanchored: INTEGER is
+	 frozen kcfcompareanchored: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFCompareAnchored"
 		end
 
-	kcfcomparenonliteral: INTEGER is
+	 frozen kcfcomparenonliteral: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFCompareNonliteral"
 		end
 
-	kcfcomparelocalized: INTEGER is
+	 frozen kcfcomparelocalized: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFCompareLocalized"
 		end
 
-	kcfcomparenumerically: INTEGER is
+	 frozen kcfcomparenumerically: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

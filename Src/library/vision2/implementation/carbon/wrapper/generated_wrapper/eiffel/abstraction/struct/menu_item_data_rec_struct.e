@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_whichdata: INTEGER is
-		obsolete "Use `whichdata' instead."
-			-- Access member `whichData'
-		require
-			exists: exists
-		do
-			Result := get_whichdata_external (item)
-		ensure
-			result_correct: Result = get_whichdata_external (item)
-		end
 
 	whichdata: INTEGER is
 			-- Access member `whichData'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_whichdata_external (item, a_value)
 		ensure
 			a_value_set: a_value = whichdata
-		end
-
-	get_text: POINTER is
-		obsolete "Use `text' instead."
-			-- Access member `text'
-		require
-			exists: exists
-		do
-			Result := get_text_external (item)
-		ensure
-			result_correct: Result = get_text_external (item)
 		end
 
 	text: POINTER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = text
 		end
 
-	get_mark: INTEGER is
-		obsolete "Use `mark' instead."
-			-- Access member `mark'
-		require
-			exists: exists
-		do
-			Result := get_mark_external (item)
-		ensure
-			result_correct: Result = get_mark_external (item)
-		end
-
 	mark: INTEGER is
 			-- Access member `mark'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_mark_external (item, a_value)
 		ensure
 			a_value_set: a_value = mark
-		end
-
-	get_cmdkey: INTEGER is
-		obsolete "Use `cmdkey' instead."
-			-- Access member `cmdKey'
-		require
-			exists: exists
-		do
-			Result := get_cmdkey_external (item)
-		ensure
-			result_correct: Result = get_cmdkey_external (item)
 		end
 
 	cmdkey: INTEGER is
@@ -151,17 +107,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = cmdkey
 		end
 
-	get_cmdkeyglyph: INTEGER is
-		obsolete "Use `cmdkeyglyph' instead."
-			-- Access member `cmdKeyGlyph'
-		require
-			exists: exists
-		do
-			Result := get_cmdkeyglyph_external (item)
-		ensure
-			result_correct: Result = get_cmdkeyglyph_external (item)
-		end
-
 	cmdkeyglyph: INTEGER is
 			-- Access member `cmdKeyGlyph'
 		require
@@ -180,17 +125,6 @@ feature {ANY} -- Member Access
 			set_cmdkeyglyph_external (item, a_value)
 		ensure
 			a_value_set: a_value = cmdkeyglyph
-		end
-
-	get_cmdkeymodifiers: INTEGER is
-		obsolete "Use `cmdkeymodifiers' instead."
-			-- Access member `cmdKeyModifiers'
-		require
-			exists: exists
-		do
-			Result := get_cmdkeymodifiers_external (item)
-		ensure
-			result_correct: Result = get_cmdkeymodifiers_external (item)
 		end
 
 	cmdkeymodifiers: INTEGER is
@@ -213,17 +147,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = cmdkeymodifiers
 		end
 
-	get_style: INTEGER is
-		obsolete "Use `style' instead."
-			-- Access member `style'
-		require
-			exists: exists
-		do
-			Result := get_style_external (item)
-		ensure
-			result_correct: Result = get_style_external (item)
-		end
-
 	style: INTEGER is
 			-- Access member `style'
 		require
@@ -242,17 +165,6 @@ feature {ANY} -- Member Access
 			set_style_external (item, a_value)
 		ensure
 			a_value_set: a_value = style
-		end
-
-	get_enabled: INTEGER is
-		obsolete "Use `enabled' instead."
-			-- Access member `enabled'
-		require
-			exists: exists
-		do
-			Result := get_enabled_external (item)
-		ensure
-			result_correct: Result = get_enabled_external (item)
 		end
 
 	enabled: INTEGER is
@@ -275,17 +187,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = enabled
 		end
 
-	get_iconenabled: INTEGER is
-		obsolete "Use `iconenabled' instead."
-			-- Access member `iconEnabled'
-		require
-			exists: exists
-		do
-			Result := get_iconenabled_external (item)
-		ensure
-			result_correct: Result = get_iconenabled_external (item)
-		end
-
 	iconenabled: INTEGER is
 			-- Access member `iconEnabled'
 		require
@@ -304,17 +205,6 @@ feature {ANY} -- Member Access
 			set_iconenabled_external (item, a_value)
 		ensure
 			a_value_set: a_value = iconenabled
-		end
-
-	get_filler1: INTEGER is
-		obsolete "Use `filler1' instead."
-			-- Access member `filler1'
-		require
-			exists: exists
-		do
-			Result := get_filler1_external (item)
-		ensure
-			result_correct: Result = get_filler1_external (item)
 		end
 
 	filler1: INTEGER is
@@ -337,17 +227,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = filler1
 		end
 
-	get_iconid: INTEGER is
-		obsolete "Use `iconid' instead."
-			-- Access member `iconID'
-		require
-			exists: exists
-		do
-			Result := get_iconid_external (item)
-		ensure
-			result_correct: Result = get_iconid_external (item)
-		end
-
 	iconid: INTEGER is
 			-- Access member `iconID'
 		require
@@ -366,17 +245,6 @@ feature {ANY} -- Member Access
 			set_iconid_external (item, a_value)
 		ensure
 			a_value_set: a_value = iconid
-		end
-
-	get_icontype: INTEGER is
-		obsolete "Use `icontype' instead."
-			-- Access member `iconType'
-		require
-			exists: exists
-		do
-			Result := get_icontype_external (item)
-		ensure
-			result_correct: Result = get_icontype_external (item)
 		end
 
 	icontype: INTEGER is
@@ -399,17 +267,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = icontype
 		end
 
-	get_iconhandle: POINTER is
-		obsolete "Use `iconhandle' instead."
-			-- Access member `iconHandle'
-		require
-			exists: exists
-		do
-			Result := get_iconhandle_external (item)
-		ensure
-			result_correct: Result = get_iconhandle_external (item)
-		end
-
 	iconhandle: POINTER is
 			-- Access member `iconHandle'
 		require
@@ -428,17 +285,6 @@ feature {ANY} -- Member Access
 			set_iconhandle_external (item, a_value)
 		ensure
 			a_value_set: a_value = iconhandle
-		end
-
-	get_cmdid: INTEGER is
-		obsolete "Use `cmdid' instead."
-			-- Access member `cmdID'
-		require
-			exists: exists
-		do
-			Result := get_cmdid_external (item)
-		ensure
-			result_correct: Result = get_cmdid_external (item)
 		end
 
 	cmdid: INTEGER is
@@ -461,17 +307,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = cmdid
 		end
 
-	get_encoding: INTEGER is
-		obsolete "Use `encoding' instead."
-			-- Access member `encoding'
-		require
-			exists: exists
-		do
-			Result := get_encoding_external (item)
-		ensure
-			result_correct: Result = get_encoding_external (item)
-		end
-
 	encoding: INTEGER is
 			-- Access member `encoding'
 		require
@@ -490,17 +325,6 @@ feature {ANY} -- Member Access
 			set_encoding_external (item, a_value)
 		ensure
 			a_value_set: a_value = encoding
-		end
-
-	get_submenuid: INTEGER is
-		obsolete "Use `submenuid' instead."
-			-- Access member `submenuID'
-		require
-			exists: exists
-		do
-			Result := get_submenuid_external (item)
-		ensure
-			result_correct: Result = get_submenuid_external (item)
 		end
 
 	submenuid: INTEGER is
@@ -545,17 +369,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = submenuhandle
 		end
 
-	get_submenuhandle: POINTER is
-		obsolete "Use `submenuhandle' instead."
-			-- Access member `submenuHandle'
-		require
-			exists: exists
-		do
-			Result := get_submenuhandle_external (item)
-		ensure
-			result_correct: Result = get_submenuhandle_external (item)
-		end
-
 	submenuhandle: POINTER is
 			-- Access member `submenuHandle'
 		require
@@ -574,17 +387,6 @@ feature {ANY} -- Member Access
 			set_submenuhandle_external (item, a_value)
 		ensure
 			a_value_set: a_value = submenuhandle
-		end
-
-	get_fontid: INTEGER is
-		obsolete "Use `fontid' instead."
-			-- Access member `fontID'
-		require
-			exists: exists
-		do
-			Result := get_fontid_external (item)
-		ensure
-			result_correct: Result = get_fontid_external (item)
 		end
 
 	fontid: INTEGER is
@@ -607,17 +409,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = fontid
 		end
 
-	get_refcon: INTEGER is
-		obsolete "Use `refcon' instead."
-			-- Access member `refcon'
-		require
-			exists: exists
-		do
-			Result := get_refcon_external (item)
-		ensure
-			result_correct: Result = get_refcon_external (item)
-		end
-
 	refcon: INTEGER is
 			-- Access member `refcon'
 		require
@@ -636,17 +427,6 @@ feature {ANY} -- Member Access
 			set_refcon_external (item, a_value)
 		ensure
 			a_value_set: a_value = refcon
-		end
-
-	get_attr: INTEGER is
-		obsolete "Use `attr' instead."
-			-- Access member `attr'
-		require
-			exists: exists
-		do
-			Result := get_attr_external (item)
-		ensure
-			result_correct: Result = get_attr_external (item)
 		end
 
 	attr: INTEGER is
@@ -691,17 +471,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = cftext
 		end
 
-	get_cftext: POINTER is
-		obsolete "Use `cftext' instead."
-			-- Access member `cfText'
-		require
-			exists: exists
-		do
-			Result := get_cftext_external (item)
-		ensure
-			result_correct: Result = get_cftext_external (item)
-		end
-
 	cftext: POINTER is
 			-- Access member `cfText'
 		require
@@ -744,17 +513,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = properties
 		end
 
-	get_properties: POINTER is
-		obsolete "Use `properties' instead."
-			-- Access member `properties'
-		require
-			exists: exists
-		do
-			Result := get_properties_external (item)
-		ensure
-			result_correct: Result = get_properties_external (item)
-		end
-
 	properties: POINTER is
 			-- Access member `properties'
 		require
@@ -775,17 +533,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = properties
 		end
 
-	get_indent: INTEGER is
-		obsolete "Use `indent' instead."
-			-- Access member `indent'
-		require
-			exists: exists
-		do
-			Result := get_indent_external (item)
-		ensure
-			result_correct: Result = get_indent_external (item)
-		end
-
 	indent: INTEGER is
 			-- Access member `indent'
 		require
@@ -804,17 +551,6 @@ feature {ANY} -- Member Access
 			set_indent_external (item, a_value)
 		ensure
 			a_value_set: a_value = indent
-		end
-
-	get_cmdvirtualkey: INTEGER is
-		obsolete "Use `cmdvirtualkey' instead."
-			-- Access member `cmdVirtualKey'
-		require
-			exists: exists
-		do
-			Result := get_cmdvirtualkey_external (item)
-		ensure
-			result_correct: Result = get_cmdvirtualkey_external (item)
 		end
 
 	cmdvirtualkey: INTEGER is

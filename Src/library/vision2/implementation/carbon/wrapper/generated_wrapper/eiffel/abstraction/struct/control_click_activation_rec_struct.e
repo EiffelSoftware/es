@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_localpoint: POINTER is
-		obsolete "Use `localpoint' instead."
-			-- Access member `localPoint'
-		require
-			exists: exists
-		do
-			Result := get_localpoint_external (item)
-		ensure
-			result_correct: Result = get_localpoint_external (item)
-		end
 
 	localpoint: POINTER is
 			-- Access member `localPoint'
@@ -54,17 +43,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_localpoint_external (item, a_value)
-		end
-
-	get_modifiers: INTEGER is
-		obsolete "Use `modifiers' instead."
-			-- Access member `modifiers'
-		require
-			exists: exists
-		do
-			Result := get_modifiers_external (item)
-		ensure
-			result_correct: Result = get_modifiers_external (item)
 		end
 
 	modifiers: INTEGER is
@@ -85,17 +63,6 @@ feature {ANY} -- Member Access
 			set_modifiers_external (item, a_value)
 		ensure
 			a_value_set: a_value = modifiers
-		end
-
-	get_a_result: INTEGER is
-		obsolete "Use `a_result' instead."
-			-- Access member `result'
-		require
-			exists: exists
-		do
-			Result := get_a_result_external (item)
-		ensure
-			result_correct: Result = get_a_result_external (item)
 		end
 
 	a_result: INTEGER is

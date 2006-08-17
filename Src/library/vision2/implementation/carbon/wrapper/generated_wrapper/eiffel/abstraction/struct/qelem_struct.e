@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -49,17 +49,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = qlink
 		end
 
-	get_qlink: POINTER is
-		obsolete "Use `qlink' instead."
-			-- Access member `qLink'
-		require
-			exists: exists
-		do
-			Result := get_qlink_external (item)
-		ensure
-			result_correct: Result = get_qlink_external (item)
-		end
-
 	qlink: POINTER is
 			-- Access member `qLink'
 		require
@@ -80,17 +69,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = qlink
 		end
 
-	get_qtype: INTEGER is
-		obsolete "Use `qtype' instead."
-			-- Access member `qType'
-		require
-			exists: exists
-		do
-			Result := get_qtype_external (item)
-		ensure
-			result_correct: Result = get_qtype_external (item)
-		end
-
 	qtype: INTEGER is
 			-- Access member `qType'
 		require
@@ -109,17 +87,6 @@ feature {ANY} -- Member Access
 			set_qtype_external (item, a_value)
 		ensure
 			a_value_set: a_value = qtype
-		end
-
-	get_qdata: POINTER is
-		obsolete "Use `qdata' instead."
-			-- Access member `qData'
-		require
-			exists: exists
-		do
-			Result := get_qdata_external (item)
-		ensure
-			result_correct: Result = get_qdata_external (item)
 		end
 
 	qdata: POINTER is

@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_growrect: POINTER is
-		obsolete "Use `growrect' instead."
-			-- Access member `growRect'
-		require
-			exists: exists
-		do
-			Result := get_growrect_external (item)
-		ensure
-			result_correct: Result = get_growrect_external (item)
-		end
 
 	growrect: POINTER is
 			-- Access member `growRect'
@@ -76,17 +65,6 @@ feature {ANY} -- Member Access
 			set_growimageregion_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = growimageregion
-		end
-
-	get_growimageregion: POINTER is
-		obsolete "Use `growimageregion' instead."
-			-- Access member `growImageRegion'
-		require
-			exists: exists
-		do
-			Result := get_growimageregion_external (item)
-		ensure
-			result_correct: Result = get_growimageregion_external (item)
 		end
 
 	growimageregion: POINTER is

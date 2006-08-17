@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_version: INTEGER is
-		obsolete "Use `version' instead."
-			-- Access member `version'
-		require
-			exists: exists
-		do
-			Result := get_version_external (item)
-		ensure
-			result_correct: Result = get_version_external (item)
-		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_version_external (item, a_value)
 		ensure
 			a_value_set: a_value = version
-		end
-
-	get_capabilities: INTEGER is
-		obsolete "Use `capabilities' instead."
-			-- Access member `capabilities'
-		require
-			exists: exists
-		do
-			Result := get_capabilities_external (item)
-		ensure
-			result_correct: Result = get_capabilities_external (item)
 		end
 
 	capabilities: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = capabilities
 		end
 
-	get_animateduration: INTEGER is
-		obsolete "Use `animateduration' instead."
-			-- Access member `animateDuration'
-		require
-			exists: exists
-		do
-			Result := get_animateduration_external (item)
-		ensure
-			result_correct: Result = get_animateduration_external (item)
-		end
-
 	animateduration: INTEGER is
 			-- Access member `animateDuration'
 		require
@@ -120,17 +87,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = animateduration
 		end
 
-	get_bounds: POINTER is
-		obsolete "Use `bounds' instead."
-			-- Access member `bounds'
-		require
-			exists: exists
-		do
-			Result := get_bounds_external (item)
-		ensure
-			result_correct: Result = get_bounds_external (item)
-		end
-
 	bounds: POINTER is
 			-- Access member `bounds'
 		require
@@ -149,17 +105,6 @@ feature {ANY} -- Member Access
 			set_bounds_external (item, a_value)
 		end
 
-	get_hotspot: POINTER is
-		obsolete "Use `hotspot' instead."
-			-- Access member `hotspot'
-		require
-			exists: exists
-		do
-			Result := get_hotspot_external (item)
-		ensure
-			result_correct: Result = get_hotspot_external (item)
-		end
-
 	hotspot: POINTER is
 			-- Access member `hotspot'
 		require
@@ -176,17 +121,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_hotspot_external (item, a_value)
-		end
-
-	get_reserved: INTEGER is
-		obsolete "Use `reserved' instead."
-			-- Access member `reserved'
-		require
-			exists: exists
-		do
-			Result := get_reserved_external (item)
-		ensure
-			result_correct: Result = get_reserved_external (item)
 		end
 
 	reserved: INTEGER is

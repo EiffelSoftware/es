@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_rgbopcolor: POINTER is
-		obsolete "Use `rgbopcolor' instead."
-			-- Access member `rgbOpColor'
-		require
-			exists: exists
-		do
-			Result := get_rgbopcolor_external (item)
-		ensure
-			result_correct: Result = get_rgbopcolor_external (item)
-		end
 
 	rgbopcolor: POINTER is
 			-- Access member `rgbOpColor'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_rgbopcolor_external (item, a_value)
 		end
 
-	get_rgbhilitecolor: POINTER is
-		obsolete "Use `rgbhilitecolor' instead."
-			-- Access member `rgbHiliteColor'
-		require
-			exists: exists
-		do
-			Result := get_rgbhilitecolor_external (item)
-		ensure
-			result_correct: Result = get_rgbhilitecolor_external (item)
-		end
-
 	rgbhilitecolor: POINTER is
 			-- Access member `rgbHiliteColor'
 		require
@@ -83,17 +61,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_rgbhilitecolor_external (item, a_value)
-		end
-
-	get_pmfgcolor: POINTER is
-		obsolete "Use `pmfgcolor' instead."
-			-- Access member `pmFgColor'
-		require
-			exists: exists
-		do
-			Result := get_pmfgcolor_external (item)
-		ensure
-			result_correct: Result = get_pmfgcolor_external (item)
 		end
 
 	pmfgcolor: POINTER is
@@ -116,17 +83,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pmfgcolor
 		end
 
-	get_pmfgindex: INTEGER is
-		obsolete "Use `pmfgindex' instead."
-			-- Access member `pmFgIndex'
-		require
-			exists: exists
-		do
-			Result := get_pmfgindex_external (item)
-		ensure
-			result_correct: Result = get_pmfgindex_external (item)
-		end
-
 	pmfgindex: INTEGER is
 			-- Access member `pmFgIndex'
 		require
@@ -145,17 +101,6 @@ feature {ANY} -- Member Access
 			set_pmfgindex_external (item, a_value)
 		ensure
 			a_value_set: a_value = pmfgindex
-		end
-
-	get_pmbkcolor: POINTER is
-		obsolete "Use `pmbkcolor' instead."
-			-- Access member `pmBkColor'
-		require
-			exists: exists
-		do
-			Result := get_pmbkcolor_external (item)
-		ensure
-			result_correct: Result = get_pmbkcolor_external (item)
 		end
 
 	pmbkcolor: POINTER is
@@ -178,17 +123,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pmbkcolor
 		end
 
-	get_pmbkindex: INTEGER is
-		obsolete "Use `pmbkindex' instead."
-			-- Access member `pmBkIndex'
-		require
-			exists: exists
-		do
-			Result := get_pmbkindex_external (item)
-		ensure
-			result_correct: Result = get_pmbkindex_external (item)
-		end
-
 	pmbkindex: INTEGER is
 			-- Access member `pmBkIndex'
 		require
@@ -207,17 +141,6 @@ feature {ANY} -- Member Access
 			set_pmbkindex_external (item, a_value)
 		ensure
 			a_value_set: a_value = pmbkindex
-		end
-
-	get_pmflags: INTEGER is
-		obsolete "Use `pmflags' instead."
-			-- Access member `pmFlags'
-		require
-			exists: exists
-		do
-			Result := get_pmflags_external (item)
-		ensure
-			result_correct: Result = get_pmflags_external (item)
 		end
 
 	pmflags: INTEGER is

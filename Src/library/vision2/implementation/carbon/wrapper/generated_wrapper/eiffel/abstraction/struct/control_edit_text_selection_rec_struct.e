@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_selstart: INTEGER is
-		obsolete "Use `selstart' instead."
-			-- Access member `selStart'
-		require
-			exists: exists
-		do
-			Result := get_selstart_external (item)
-		ensure
-			result_correct: Result = get_selstart_external (item)
-		end
 
 	selstart: INTEGER is
 			-- Access member `selStart'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_selstart_external (item, a_value)
 		ensure
 			a_value_set: a_value = selstart
-		end
-
-	get_selend: INTEGER is
-		obsolete "Use `selend' instead."
-			-- Access member `selEnd'
-		require
-			exists: exists
-		do
-			Result := get_selend_external (item)
-		ensure
-			result_correct: Result = get_selend_external (item)
 		end
 
 	selend: INTEGER is

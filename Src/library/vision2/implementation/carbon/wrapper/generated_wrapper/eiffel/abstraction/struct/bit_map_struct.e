@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_baseaddr: POINTER is
-		obsolete "Use `baseaddr' instead."
-			-- Access member `baseAddr'
-		require
-			exists: exists
-		do
-			Result := get_baseaddr_external (item)
-		ensure
-			result_correct: Result = get_baseaddr_external (item)
-		end
 
 	baseaddr: POINTER is
 			-- Access member `baseAddr'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = baseaddr
 		end
 
-	get_rowbytes: INTEGER is
-		obsolete "Use `rowbytes' instead."
-			-- Access member `rowBytes'
-		require
-			exists: exists
-		do
-			Result := get_rowbytes_external (item)
-		ensure
-			result_correct: Result = get_rowbytes_external (item)
-		end
-
 	rowbytes: INTEGER is
 			-- Access member `rowBytes'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_rowbytes_external (item, a_value)
 		ensure
 			a_value_set: a_value = rowbytes
-		end
-
-	get_bounds: POINTER is
-		obsolete "Use `bounds' instead."
-			-- Access member `bounds'
-		require
-			exists: exists
-		do
-			Result := get_bounds_external (item)
-		ensure
-			result_correct: Result = get_bounds_external (item)
 		end
 
 	bounds: POINTER is

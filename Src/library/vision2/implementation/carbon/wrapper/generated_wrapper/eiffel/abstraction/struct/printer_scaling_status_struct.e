@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_oscalingfactors: POINTER is
-		obsolete "Use `oscalingfactors' instead."
-			-- Access member `oScalingFactors'
-		require
-			exists: exists
-		do
-			Result := get_oscalingfactors_external (item)
-		ensure
-			result_correct: Result = get_oscalingfactors_external (item)
-		end
 
 	oscalingfactors: POINTER is
 			-- Access member `oScalingFactors'

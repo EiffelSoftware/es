@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_value: INTEGER is
-		obsolete "Use `value' instead."
-			-- Access member `value'
-		require
-			exists: exists
-		do
-			Result := get_value_external (item)
-		ensure
-			result_correct: Result = get_value_external (item)
-		end
 
 	value: INTEGER is
 			-- Access member `value'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_value_external (item, a_value)
 		ensure
 			a_value_set: a_value = value
-		end
-
-	get_rgb: POINTER is
-		obsolete "Use `rgb' instead."
-			-- Access member `rgb'
-		require
-			exists: exists
-		do
-			Result := get_rgb_external (item)
-		ensure
-			result_correct: Result = get_rgb_external (item)
 		end
 
 	rgb: POINTER is

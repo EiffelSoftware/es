@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_majorversion: INTEGER is
-		obsolete "Use `majorversion' instead."
-			-- Access member `majorVersion'
-		require
-			exists: exists
-		do
-			Result := get_majorversion_external (item)
-		ensure
-			result_correct: Result = get_majorversion_external (item)
-		end
 
 	majorversion: INTEGER is
 			-- Access member `majorVersion'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_majorversion_external (item, a_value)
 		ensure
 			a_value_set: a_value = majorversion
-		end
-
-	get_minorversion: INTEGER is
-		obsolete "Use `minorversion' instead."
-			-- Access member `minorVersion'
-		require
-			exists: exists
-		do
-			Result := get_minorversion_external (item)
-		ensure
-			result_correct: Result = get_minorversion_external (item)
 		end
 
 	minorversion: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = minorversion
 		end
 
-	get_cursorpixmap: POINTER is
-		obsolete "Use `cursorpixmap' instead."
-			-- Access member `cursorPixMap'
-		require
-			exists: exists
-		do
-			Result := get_cursorpixmap_external (item)
-		ensure
-			result_correct: Result = get_cursorpixmap_external (item)
-		end
-
 	cursorpixmap: POINTER is
 			-- Access member `cursorPixMap'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_cursorpixmap_external (item, a_value)
 		ensure
 			a_value_set: a_value = cursorpixmap
-		end
-
-	get_cursorbitmask: POINTER is
-		obsolete "Use `cursorbitmask' instead."
-			-- Access member `cursorBitMask'
-		require
-			exists: exists
-		do
-			Result := get_cursorbitmask_external (item)
-		ensure
-			result_correct: Result = get_cursorbitmask_external (item)
 		end
 
 	cursorbitmask: POINTER is

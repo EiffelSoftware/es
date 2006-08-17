@@ -18,7 +18,7 @@ create
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_startpt: POINTER is
-		obsolete "Use `startpt' instead."
-			-- Access member `startPt'
-		require
-			exists: exists
-		do
-			Result := get_startpt_external (item)
-		ensure
-			result_correct: Result = get_startpt_external (item)
-		end
 
 	startpt: POINTER is
 			-- Access member `startPt'
@@ -54,17 +43,6 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_startpt_external (item, a_value)
-		end
-
-	get_modifiers: INTEGER is
-		obsolete "Use `modifiers' instead."
-			-- Access member `modifiers'
-		require
-			exists: exists
-		do
-			Result := get_modifiers_external (item)
-		ensure
-			result_correct: Result = get_modifiers_external (item)
 		end
 
 	modifiers: INTEGER is
@@ -85,17 +63,6 @@ feature {ANY} -- Member Access
 			set_modifiers_external (item, a_value)
 		ensure
 			a_value_set: a_value = modifiers
-		end
-
-	get_action: POINTER is
-		obsolete "Use `action' instead."
-			-- Access member `action'
-		require
-			exists: exists
-		do
-			Result := get_action_external (item)
-		ensure
-			result_correct: Result = get_action_external (item)
 		end
 
 	action: POINTER is
