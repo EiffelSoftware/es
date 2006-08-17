@@ -4,10 +4,10 @@ indexing
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 class
 	EV_SCROLLABLE_AREA_IMP
-	
+
 inherit
 	EV_SCROLLABLE_AREA_I
 		undefine
@@ -18,7 +18,7 @@ inherit
 		redefine
 			interface
 		end
-		
+
 	EV_VIEWPORT_IMP
 		redefine
 			horizontal_adjustment,
@@ -32,7 +32,7 @@ inherit
 			set_y_offset,
 			child_has_resized
 		end
-	
+
 create
 	make
 
@@ -41,6 +41,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create scrollable area.
 		do
+			base_make (an_interface)
 		end
 
 feature -- Access
@@ -140,7 +141,7 @@ feature {NONE} -- Implementation
 			-- Set item in center of `Current' if smaller.
 		do
 		end
-		
+
 	child_has_resized (item_imp: EV_WIDGET_IMP) is
 			-- If child has resized and smaller than parent then set position in center of `Current'.
 		do
@@ -170,7 +171,7 @@ feature {NONE} -- Implementation
 feature {EV_ANY_I} -- Implementation		
 
 	interface: EV_SCROLLABLE_AREA;
-			-- Provides a common user interface to platform dependent 
+			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
 
 indexing

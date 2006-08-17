@@ -4,10 +4,10 @@ indexing
 	status: "See notice at end of class.";
 	date: "$Date$";
 	revision: "$Revision$"
-	
+
 deferred class
 	EV_FONTABLE_IMP
-	
+
 inherit
 	EV_FONTABLE_I
 		redefine
@@ -21,12 +21,18 @@ inherit
 		redefine
 			interface
 		end
-	
+
 feature -- Access
 
 	font: EV_FONT is
 			-- Character appearance for `Current'.
 		do
+			if private_font = void then
+				create Result
+				-- Default create is standard gtk font
+			else
+				Result := private_font.twin
+			end
 		end
 
 feature -- Status setting

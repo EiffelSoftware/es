@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create a gtk text view.
 		do
-
+			base_make (an_interface)
 
 		end
 
@@ -58,7 +58,11 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'
 		do
-
+			enable_word_wrapping
+			set_editable (True)
+			set_background_color ((create {EV_STOCK_COLORS}).white)
+			initialize_buffer_events
+			Precursor {EV_TEXT_COMPONENT_IMP}
 		end
 
 	initialize_buffer_events is
@@ -264,7 +268,7 @@ feature -- Basic operation
 	enable_word_wrapping is
 			-- Enable word wrapping for `Current'
 		do
-
+				has_word_wrapping := true
 		end
 
 	disable_word_wrapping is

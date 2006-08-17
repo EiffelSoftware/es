@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 			-- Setup `Current'
 		local
 			a_column, a_cell_renderer: POINTER
-			a_gtk_c_str: EV_GTK_C_STRING
+			a_gtk_c_str: EV_CARBON_CF_STRING
 		do
 --			Precursor {EV_TREE_IMP}
 --			a_column := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_column (tree_view, 0)

@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'.
 		do
-			set_style (Ev_frame_etched_in)
+		--	set_style (Ev_frame_etched_in)
 			align_text_left
 			Precursor {EV_CELL_IMP}
 		end
@@ -60,6 +60,7 @@ feature -- Access
 	style: INTEGER is
 			-- Visual appearance. See: EV_FRAME_CONSTANTS.
 		do
+			Result := {EV_FRAME_CONSTANTS}.Ev_frame_etched_in
 		end
 
 feature -- Element change
@@ -91,18 +92,28 @@ feature -- Access
 	text_alignment: INTEGER is
 			-- Alignment of the text in the label.
 		do
+
 		end
 
 	text: STRING_32 is
 			-- Text of the frame
 		do
+			if internal_text = Void then
+				internal_text := ""
+			end
+			Result := internal_text.twin
 		end
 
 feature -- Element change
 
 	set_text (a_text: STRING_GENERAL) is
 			-- set the `text' of the frame
+		local
+			a_cs: EV_CARBON_CF_STRING
 		do
+			internal_text := a_text.twin
+			create a_cs.make_unshared_with_eiffel_string (a_text)
+		--	{EV_GTK_EXTERNALS}.gtk_frame_set_label (container_widget, a_cs.item)
 		end
 
 feature {NONE} -- Implementation

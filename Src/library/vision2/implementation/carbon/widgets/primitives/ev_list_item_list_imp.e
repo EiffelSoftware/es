@@ -42,13 +42,16 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Set up `Current'
 		do
-
+			Precursor {EV_ITEM_LIST_IMP}
+			Precursor {EV_PRIMITIVE_IMP}
+			initialize_pixmaps
+			initialize_model
 		end
 
 	initialize_model is
 			-- Create our data model for `Current'
 		do
-
+			--list_store := new_list_store
 		end
 
 feature -- Access

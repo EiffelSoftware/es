@@ -49,6 +49,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create a gtk entry.
 		do
+			base_make (an_interface)
 		end
 
 feature -- Access

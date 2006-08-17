@@ -49,10 +49,13 @@ feature {NONE} -- Implementation
 	make (an_interface: like interface) is
 			-- Create the spin button.
 		do
+			base_make  (an_interface)
 		end
 
 	initialize is
 		do
+			Precursor {EV_TEXT_FIELD_IMP}
+			ev_gauge_imp_initialize --| {EV_GAUGE} Precursor
 		end
 
 feature {NONE} -- Implementation

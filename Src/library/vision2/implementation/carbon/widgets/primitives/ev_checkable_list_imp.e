@@ -39,7 +39,7 @@ feature -- Initialization
 	initialize is
 			-- Setup `Current'
 		do
-
+			Precursor {EV_LIST_IMP}
 		end
 
 	boolean_tree_model_column: INTEGER is 2

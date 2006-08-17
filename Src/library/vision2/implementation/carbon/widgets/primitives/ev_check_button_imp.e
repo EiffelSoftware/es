@@ -33,13 +33,14 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create a gtk check button.
 		do
-
+			base_make (an_interface)
 		end
 
 	initialize is
 			-- Initialize 'Current'
 		do
-
+			Precursor {EV_TOGGLE_BUTTON_IMP}
+			align_text_left
 		end
 
 feature -- Element change

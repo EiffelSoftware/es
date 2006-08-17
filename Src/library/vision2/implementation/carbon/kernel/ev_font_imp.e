@@ -30,10 +30,22 @@ feature {NONE} -- Initialization
 			base_make (an_interface)
 		end
 
-	initialize is
-			-- Set up `Current'
 
+initialize is
+			-- Set up `Current'
+		local
+			l_app_imp: like app_implementation
 		do
+			--l_app_imp := app_implementation
+			create preferred_families
+			family := Family_sans
+			--set_face_name (l_app_imp.default_font_name)
+			--set_height_in_points (l_app_imp.default_font_point_height_internal)
+			--set_shape (l_app_imp.default_font_style_internal)
+			--set_weight (l_app_imp.default_font_weight_internal)
+			--preferred_families.internal_add_actions.extend (agent update_preferred_faces)
+			--preferred_families.internal_remove_actions.extend (preferred_families.internal_add_actions.first)
+			set_is_initialized (True)
 		end
 
 feature {EV_FONTABLE_IMP} -- Implementation

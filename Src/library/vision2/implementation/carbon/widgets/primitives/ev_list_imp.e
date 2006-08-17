@@ -38,14 +38,18 @@ feature -- Initialize
 			-- Create a list widget with `par' as parent.
 			-- By default, a list allow only one selection.
 		do
+			base_make (an_interface)
 		end
 
 	scrollable_area: POINTER
 		-- Scrollable area used for `Current'
 
-	initialize is
+		initialize is
 			-- Initialize the list.
 		do
+			Precursor {EV_LIST_ITEM_LIST_IMP}
+			previous_selection := selected_items
+			initialize_pixmaps
 		end
 
 feature -- Access

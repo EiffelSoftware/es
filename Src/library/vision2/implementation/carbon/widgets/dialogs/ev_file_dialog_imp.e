@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create a window with a parent.
 		local
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 		do
 			base_make (an_interface)
 			a_cs := "Select file"
@@ -71,7 +71,7 @@ feature -- Access
 	file_name: STRING_32 is
 			-- Full name of currently selected file including path.
 		local
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 		do
 			if
 				selected_button /= Void and then selected_button.is_equal (internal_accept)
@@ -142,7 +142,7 @@ feature -- Element change
 	set_filter (a_filter: STRING_GENERAL) is
 			-- Set `a_filter' as new filter.
 		local
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 			filter_name: STRING_32
 			a_filter_ptr: POINTER
 		do
@@ -184,7 +184,7 @@ feature -- Element change
 	set_file_name (a_name: STRING_GENERAL) is
 			-- Make `a_name' the selected file.
 		local
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 		do
 			a_cs := a_name
 --			{EV_GTK_EXTERNALS}.gtk_file_chooser_set_filename (c_object, a_cs.item)
@@ -193,7 +193,7 @@ feature -- Element change
 	set_start_directory (a_path: STRING_GENERAL) is
 			-- Make `a_path' the base directory.
 		local
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 		do
 			start_directory := a_path.twin
 			a_cs := start_directory + "/"
@@ -211,12 +211,12 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 			temp_filename: STRING_32
 			temp_file: RAW_FILE
 			a_filename: POINTER
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 		do
 			create temp_filename.make (0)
 --			a_filename := {EV_GTK_EXTERNALS}.gtk_file_chooser_get_filename (c_object)
 			if a_filename /= NULL then
-				create a_cs.share_from_pointer (a_filename)
+				create a_cs.make_shared (a_filename)
 				temp_filename := a_cs.string
 				create temp_file.make (temp_filename.as_string_8)
 				if (not temp_file.exists or else not temp_file.is_directory) and not
@@ -256,7 +256,7 @@ feature {NONE} -- Implementation
 			filter_string_list: LIST [STRING_32]
 			current_filter_string, current_filter_description: STRING_GENERAL
 			filter_ptr: POINTER
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 		do
 			if not filters.is_empty then
 				remove_file_filters

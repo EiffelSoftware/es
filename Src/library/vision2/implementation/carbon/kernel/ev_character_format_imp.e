@@ -117,57 +117,57 @@ feature {EV_RICH_TEXT_IMP} -- Implementation
 		do
 		end
 
-	family_string: EV_GTK_C_STRING is
+	family_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	size_string: EV_GTK_C_STRING is
+	size_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	style_string: EV_GTK_C_STRING is
+	style_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	weight_string: EV_GTK_C_STRING is
+	weight_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	foreground_string: EV_GTK_C_STRING is
+	foreground_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	background_string: EV_GTK_C_STRING is
+	background_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	foreground_gdk_string: EV_GTK_C_STRING is
+	foreground_gdk_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	background_gdk_string: EV_GTK_C_STRING is
+	background_gdk_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	underline_string: EV_GTK_C_STRING is
+	underline_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	strikethrough_string: EV_GTK_C_STRING is
+	strikethrough_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end
 
-	rise_string: EV_GTK_C_STRING is
+	rise_string: EV_CARBON_CF_STRING is
 			-- String optimization
 		once
 		end

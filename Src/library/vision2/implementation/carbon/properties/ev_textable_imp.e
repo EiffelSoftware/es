@@ -34,7 +34,6 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	text: STRING_32 is
-			-- Text of the label.
 		do
 			if cg_string /= void then
 				Result := cg_string.string

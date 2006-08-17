@@ -108,7 +108,7 @@ feature {EV_GRID_ITEM_I} -- Implementation
 		local
 			a_font_imp: EV_FONT_IMP
 			a_pango_layout: POINTER
-			a_cs: EV_GTK_C_STRING
+			a_cs: EV_CARBON_CF_STRING
 			a_width, a_height: INTEGER
 			l_app_imp: like app_implementation
 		do

@@ -34,7 +34,14 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Set up `Current'
 		do
+			create tab_positions
+			tab_positions.internal_add_actions.extend (agent update_tab_positions)
+			tab_positions.internal_remove_actions.extend (agent update_tab_positions)
 
+	--		set_tab_width (96 // 2)
+	--		create temp_start_iter.make
+    --		create temp_end_iter.make
+			Precursor {EV_TEXT_IMP}
 		end
 
 	initialize_buffer_events is
@@ -282,7 +289,7 @@ feature -- Status setting
 	set_tab_width (a_width: INTEGER) is
 			-- Assign `a_width' to `tab_width'.
 		do
-
+			tab_width := a_width
 		end
 
 	pango_tab_array: POINTER
