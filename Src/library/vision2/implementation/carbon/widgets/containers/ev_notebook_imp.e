@@ -129,7 +129,7 @@ feature -- Access
 
 
 					help_array.put ( tab_entry, i )
-					tab_array.put ( tab_entry.item, i )
+					tab_array.put ( tab_entry.item, i-1 )
 				end
 
 				err := create_tabs_control_external ( a_parent, a_rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, orientation, count, tab_array.array_address, $new_view )

@@ -46,13 +46,26 @@ feature -- Access
 
 	set_first (an_item: like item) is
 			-- Make `an_item' `first'.
+		local
+			item_imp: EV_WIDGET_IMP
 		do
+			item_imp ?= an_item.implementation
+			item_imp.set_parent_imp (Current)
+			--{EV_GTK_EXTERNALS}.gtk_paned_pack1 (container_widget, item_imp.c_object, False, False)
+			first := an_item
+			set_item_resize (first, False)
 		end
 
-	set_second (an_item: like item) is
+set_second (an_item: like item) is
 			-- Make `an_item' `second'.
+		local
+			item_imp: EV_WIDGET_IMP
 		do
-
+			item_imp ?= an_item.implementation
+			item_imp.set_parent_imp (Current)
+		--	{EV_GTK_EXTERNALS}.gtk_paned_pack2 (container_widget, item_imp.c_object, True, False)
+			second := an_item
+			set_item_resize (second, True)
 		end
 
 	prune (an_item: like item) is
@@ -89,7 +102,13 @@ feature {NONE} -- Implementation
 	set_item_resize (an_item: like item; a_resizable: BOOLEAN) is
 			-- Set whether `an_item' is `a_resizable' when `Current' resizes.
 		do
-
+			if an_item = first then
+				first_expandable := a_resizable
+			else
+				second_expandable := a_resizable
+			end
+			--set_gtk_paned_struct_child1_resize (container_widget, first_expandable)
+			--set_gtk_paned_struct_child2_resize (container_widget, second_expandable)
 		end
 
 feature {NONE} -- Externals.
