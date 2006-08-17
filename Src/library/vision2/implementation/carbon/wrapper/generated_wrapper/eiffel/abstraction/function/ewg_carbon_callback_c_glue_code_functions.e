@@ -640,6 +640,78 @@ feature
 			Result := call_window_paint_proc_ptr_external (a_function, device, qdcontext, window, inclientpaintrgn, outsystempaintrgn, refcon)
 		end
 
+	get_hmcontrol_content_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_hmcontrol_content_proc_ptr_stub_external
+		end
+
+	set_hmcontrol_content_proc_ptr_entry (a_class: HMCONTROL_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_hmcontrol_content_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_hmcontrol_content_proc_ptr (a_function: POINTER; incontrol: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		local
+		do
+			Result := call_hmcontrol_content_proc_ptr_external (a_function, incontrol, inglobalmouse, inrequest, outcontentprovided, iohelpcontent)
+		end
+
+	get_hmwindow_content_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_hmwindow_content_proc_ptr_stub_external
+		end
+
+	set_hmwindow_content_proc_ptr_entry (a_class: HMWINDOW_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_hmwindow_content_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_hmwindow_content_proc_ptr (a_function: POINTER; inwindow: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		local
+		do
+			Result := call_hmwindow_content_proc_ptr_external (a_function, inwindow, inglobalmouse, inrequest, outcontentprovided, iohelpcontent)
+		end
+
+	get_hmmenu_title_content_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_hmmenu_title_content_proc_ptr_stub_external
+		end
+
+	set_hmmenu_title_content_proc_ptr_entry (a_class: HMMENU_TITLE_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_hmmenu_title_content_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_hmmenu_title_content_proc_ptr (a_function: POINTER; inmenu: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		local
+		do
+			Result := call_hmmenu_title_content_proc_ptr_external (a_function, inmenu, inrequest, outcontentprovided, iohelpcontent)
+		end
+
+	get_hmmenu_item_content_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_hmmenu_item_content_proc_ptr_stub_external
+		end
+
+	set_hmmenu_item_content_proc_ptr_entry (a_class: HMMENU_ITEM_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_hmmenu_item_content_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_hmmenu_item_content_proc_ptr (a_function: POINTER; intrackingdata: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		local
+		do
+			Result := call_hmmenu_item_content_proc_ptr_external (a_function, intrackingdata, inrequest, outcontentprovided, iohelpcontent)
+		end
+
 	get_control_user_pane_draw_proc_ptr_stub: POINTER is
 		local
 		do

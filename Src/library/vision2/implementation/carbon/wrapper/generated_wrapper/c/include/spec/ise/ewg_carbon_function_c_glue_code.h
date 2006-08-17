@@ -9833,6 +9833,222 @@ HIViewImageContentType  ewg_function_HISegmentedViewGetSegmentImageContentType (
 #define ewg_function_macro_HISegmentedViewCopySegmentImage(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_ioImage) HISegmentedViewCopySegmentImage ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (HIViewImageContentInfo*)ewg_param_ioImage)
 
 OSStatus  ewg_function_HISegmentedViewCopySegmentImage (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, HIViewImageContentInfo *ioImage);
+// Wraps call to function 'NewHMControlContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewHMControlContentUPP(ewg_param_userRoutine) NewHMControlContentUPP ((HMControlContentProcPtr)ewg_param_userRoutine)
+
+HMControlContentUPP  ewg_function_NewHMControlContentUPP (HMControlContentProcPtr userRoutine);
+// Wraps call to function 'NewHMWindowContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewHMWindowContentUPP(ewg_param_userRoutine) NewHMWindowContentUPP ((HMWindowContentProcPtr)ewg_param_userRoutine)
+
+HMWindowContentUPP  ewg_function_NewHMWindowContentUPP (HMWindowContentProcPtr userRoutine);
+// Wraps call to function 'NewHMMenuTitleContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewHMMenuTitleContentUPP(ewg_param_userRoutine) NewHMMenuTitleContentUPP ((HMMenuTitleContentProcPtr)ewg_param_userRoutine)
+
+HMMenuTitleContentUPP  ewg_function_NewHMMenuTitleContentUPP (HMMenuTitleContentProcPtr userRoutine);
+// Wraps call to function 'NewHMMenuItemContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewHMMenuItemContentUPP(ewg_param_userRoutine) NewHMMenuItemContentUPP ((HMMenuItemContentProcPtr)ewg_param_userRoutine)
+
+HMMenuItemContentUPP  ewg_function_NewHMMenuItemContentUPP (HMMenuItemContentProcPtr userRoutine);
+// Wraps call to function 'DisposeHMControlContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeHMControlContentUPP(ewg_param_userUPP) DisposeHMControlContentUPP ((HMControlContentUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeHMControlContentUPP (HMControlContentUPP userUPP);
+// Wraps call to function 'DisposeHMWindowContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeHMWindowContentUPP(ewg_param_userUPP) DisposeHMWindowContentUPP ((HMWindowContentUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeHMWindowContentUPP (HMWindowContentUPP userUPP);
+// Wraps call to function 'DisposeHMMenuTitleContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeHMMenuTitleContentUPP(ewg_param_userUPP) DisposeHMMenuTitleContentUPP ((HMMenuTitleContentUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeHMMenuTitleContentUPP (HMMenuTitleContentUPP userUPP);
+// Wraps call to function 'DisposeHMMenuItemContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeHMMenuItemContentUPP(ewg_param_userUPP) DisposeHMMenuItemContentUPP ((HMMenuItemContentUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeHMMenuItemContentUPP (HMMenuItemContentUPP userUPP);
+// Wraps call to function 'InvokeHMControlContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeHMControlContentUPP(ewg_param_inControl, ewg_param_inGlobalMouse, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent, ewg_param_userUPP) InvokeHMControlContentUPP ((ControlRef)ewg_param_inControl, *(Point*)ewg_param_inGlobalMouse, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent, (HMControlContentUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeHMControlContentUPP (ControlRef inControl, Point *inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent, HMControlContentUPP userUPP);
+// Wraps call to function 'InvokeHMWindowContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeHMWindowContentUPP(ewg_param_inWindow, ewg_param_inGlobalMouse, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent, ewg_param_userUPP) InvokeHMWindowContentUPP ((WindowRef)ewg_param_inWindow, *(Point*)ewg_param_inGlobalMouse, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent, (HMWindowContentUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeHMWindowContentUPP (WindowRef inWindow, Point *inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent, HMWindowContentUPP userUPP);
+// Wraps call to function 'InvokeHMMenuTitleContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeHMMenuTitleContentUPP(ewg_param_inMenu, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent, ewg_param_userUPP) InvokeHMMenuTitleContentUPP ((MenuRef)ewg_param_inMenu, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent, (HMMenuTitleContentUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeHMMenuTitleContentUPP (MenuRef inMenu, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent, HMMenuTitleContentUPP userUPP);
+// Wraps call to function 'InvokeHMMenuItemContentUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeHMMenuItemContentUPP(ewg_param_inTrackingData, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent, ewg_param_userUPP) InvokeHMMenuItemContentUPP ((MenuTrackingData const*)ewg_param_inTrackingData, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent, (HMMenuItemContentUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeHMMenuItemContentUPP (MenuTrackingData const *inTrackingData, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent, HMMenuItemContentUPP userUPP);
+// Wraps call to function 'HMGetHelpMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetHelpMenu(ewg_param_outHelpMenu, ewg_param_outFirstCustomItemIndex) HMGetHelpMenu ((MenuRef*)ewg_param_outHelpMenu, (MenuItemIndex*)ewg_param_outFirstCustomItemIndex)
+
+OSStatus  ewg_function_HMGetHelpMenu (MenuRef *outHelpMenu, MenuItemIndex *outFirstCustomItemIndex);
+// Wraps call to function 'HMSetControlHelpContent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMSetControlHelpContent(ewg_param_inControl, ewg_param_inContent) HMSetControlHelpContent ((ControlRef)ewg_param_inControl, (HMHelpContentRec const*)ewg_param_inContent)
+
+OSStatus  ewg_function_HMSetControlHelpContent (ControlRef inControl, HMHelpContentRec const *inContent);
+// Wraps call to function 'HMGetControlHelpContent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetControlHelpContent(ewg_param_inControl, ewg_param_outContent) HMGetControlHelpContent ((ControlRef)ewg_param_inControl, (HMHelpContentRec*)ewg_param_outContent)
+
+OSStatus  ewg_function_HMGetControlHelpContent (ControlRef inControl, HMHelpContentRec *outContent);
+// Wraps call to function 'HMSetWindowHelpContent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMSetWindowHelpContent(ewg_param_inWindow, ewg_param_inContent) HMSetWindowHelpContent ((WindowRef)ewg_param_inWindow, (HMHelpContentRec const*)ewg_param_inContent)
+
+OSStatus  ewg_function_HMSetWindowHelpContent (WindowRef inWindow, HMHelpContentRec const *inContent);
+// Wraps call to function 'HMGetWindowHelpContent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetWindowHelpContent(ewg_param_inWindow, ewg_param_outContent) HMGetWindowHelpContent ((WindowRef)ewg_param_inWindow, (HMHelpContentRec*)ewg_param_outContent)
+
+OSStatus  ewg_function_HMGetWindowHelpContent (WindowRef inWindow, HMHelpContentRec *outContent);
+// Wraps call to function 'HMSetMenuItemHelpContent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMSetMenuItemHelpContent(ewg_param_inMenu, ewg_param_inItem, ewg_param_inContent) HMSetMenuItemHelpContent ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (HMHelpContentRec const*)ewg_param_inContent)
+
+OSStatus  ewg_function_HMSetMenuItemHelpContent (MenuRef inMenu, MenuItemIndex inItem, HMHelpContentRec const *inContent);
+// Wraps call to function 'HMGetMenuItemHelpContent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetMenuItemHelpContent(ewg_param_inMenu, ewg_param_inItem, ewg_param_outContent) HMGetMenuItemHelpContent ((MenuRef)ewg_param_inMenu, (MenuItemIndex)ewg_param_inItem, (HMHelpContentRec*)ewg_param_outContent)
+
+OSStatus  ewg_function_HMGetMenuItemHelpContent (MenuRef inMenu, MenuItemIndex inItem, HMHelpContentRec *outContent);
+// Wraps call to function 'HMInstallControlContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMInstallControlContentCallback(ewg_param_inControl, ewg_param_inContentUPP) HMInstallControlContentCallback ((ControlRef)ewg_param_inControl, (HMControlContentUPP)ewg_param_inContentUPP)
+
+OSStatus  ewg_function_HMInstallControlContentCallback (ControlRef inControl, HMControlContentUPP inContentUPP);
+// Wraps call to function 'HMInstallWindowContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMInstallWindowContentCallback(ewg_param_inWindow, ewg_param_inContentUPP) HMInstallWindowContentCallback ((WindowRef)ewg_param_inWindow, (HMWindowContentUPP)ewg_param_inContentUPP)
+
+OSStatus  ewg_function_HMInstallWindowContentCallback (WindowRef inWindow, HMWindowContentUPP inContentUPP);
+// Wraps call to function 'HMInstallMenuTitleContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMInstallMenuTitleContentCallback(ewg_param_inMenu, ewg_param_inContentUPP) HMInstallMenuTitleContentCallback ((MenuRef)ewg_param_inMenu, (HMMenuTitleContentUPP)ewg_param_inContentUPP)
+
+OSStatus  ewg_function_HMInstallMenuTitleContentCallback (MenuRef inMenu, HMMenuTitleContentUPP inContentUPP);
+// Wraps call to function 'HMInstallMenuItemContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMInstallMenuItemContentCallback(ewg_param_inMenu, ewg_param_inContentUPP) HMInstallMenuItemContentCallback ((MenuRef)ewg_param_inMenu, (HMMenuItemContentUPP)ewg_param_inContentUPP)
+
+OSStatus  ewg_function_HMInstallMenuItemContentCallback (MenuRef inMenu, HMMenuItemContentUPP inContentUPP);
+// Wraps call to function 'HMGetControlContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetControlContentCallback(ewg_param_inControl, ewg_param_outContentUPP) HMGetControlContentCallback ((ControlRef)ewg_param_inControl, (HMControlContentUPP*)ewg_param_outContentUPP)
+
+OSStatus  ewg_function_HMGetControlContentCallback (ControlRef inControl, HMControlContentUPP *outContentUPP);
+// Wraps call to function 'HMGetWindowContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetWindowContentCallback(ewg_param_inWindow, ewg_param_outContentUPP) HMGetWindowContentCallback ((WindowRef)ewg_param_inWindow, (HMWindowContentUPP*)ewg_param_outContentUPP)
+
+OSStatus  ewg_function_HMGetWindowContentCallback (WindowRef inWindow, HMWindowContentUPP *outContentUPP);
+// Wraps call to function 'HMGetMenuTitleContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetMenuTitleContentCallback(ewg_param_inMenu, ewg_param_outContentUPP) HMGetMenuTitleContentCallback ((MenuRef)ewg_param_inMenu, (HMMenuTitleContentUPP*)ewg_param_outContentUPP)
+
+OSStatus  ewg_function_HMGetMenuTitleContentCallback (MenuRef inMenu, HMMenuTitleContentUPP *outContentUPP);
+// Wraps call to function 'HMGetMenuItemContentCallback' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetMenuItemContentCallback(ewg_param_inMenu, ewg_param_outContentUPP) HMGetMenuItemContentCallback ((MenuRef)ewg_param_inMenu, (HMMenuItemContentUPP*)ewg_param_outContentUPP)
+
+OSStatus  ewg_function_HMGetMenuItemContentCallback (MenuRef inMenu, HMMenuItemContentUPP *outContentUPP);
+// Wraps call to function 'HMAreHelpTagsDisplayed' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMAreHelpTagsDisplayed HMAreHelpTagsDisplayed ()
+
+Boolean  ewg_function_HMAreHelpTagsDisplayed (void);
+// Wraps call to function 'HMSetHelpTagsDisplayed' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMSetHelpTagsDisplayed(ewg_param_inDisplayTags) HMSetHelpTagsDisplayed ((Boolean)ewg_param_inDisplayTags)
+
+OSStatus  ewg_function_HMSetHelpTagsDisplayed (Boolean inDisplayTags);
+// Wraps call to function 'HMSetTagDelay' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMSetTagDelay(ewg_param_inDelay) HMSetTagDelay ((Duration)ewg_param_inDelay)
+
+OSStatus  ewg_function_HMSetTagDelay (Duration inDelay);
+// Wraps call to function 'HMGetTagDelay' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMGetTagDelay(ewg_param_outDelay) HMGetTagDelay ((Duration*)ewg_param_outDelay)
+
+OSStatus  ewg_function_HMGetTagDelay (Duration *outDelay);
+// Wraps call to function 'HMSetMenuHelpFromBalloonRsrc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMSetMenuHelpFromBalloonRsrc(ewg_param_inMenu, ewg_param_inHmnuRsrcID) HMSetMenuHelpFromBalloonRsrc ((MenuRef)ewg_param_inMenu, (SInt16)ewg_param_inHmnuRsrcID)
+
+OSStatus  ewg_function_HMSetMenuHelpFromBalloonRsrc (MenuRef inMenu, SInt16 inHmnuRsrcID);
+// Wraps call to function 'HMSetDialogHelpFromBalloonRsrc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMSetDialogHelpFromBalloonRsrc(ewg_param_inDialog, ewg_param_inHdlgRsrcID, ewg_param_inItemStart) HMSetDialogHelpFromBalloonRsrc ((DialogRef)ewg_param_inDialog, (SInt16)ewg_param_inHdlgRsrcID, (SInt16)ewg_param_inItemStart)
+
+OSStatus  ewg_function_HMSetDialogHelpFromBalloonRsrc (DialogRef inDialog, SInt16 inHdlgRsrcID, SInt16 inItemStart);
+// Wraps call to function 'HMDisplayTag' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMDisplayTag(ewg_param_inContent) HMDisplayTag ((HMHelpContentRec const*)ewg_param_inContent)
+
+OSStatus  ewg_function_HMDisplayTag (HMHelpContentRec const *inContent);
+// Wraps call to function 'HMHideTag' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMHideTag HMHideTag ()
+
+OSStatus  ewg_function_HMHideTag (void);
+// Wraps call to function 'HMHideTagWithOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HMHideTagWithOptions(ewg_param_inOptions) HMHideTagWithOptions ((OptionBits)ewg_param_inOptions)
+
+OSStatus  ewg_function_HMHideTagWithOptions (OptionBits inOptions);
 // Wraps call to function 'CreateBevelButtonControl' in a macro
 #include <Carbon/Carbon.h>
 
@@ -12011,6 +12227,78 @@ void  ewg_function_set_window_paint_proc_ptr_entry (void *a_class, void *a_featu
 #define ewg_function_macro_call_window_paint_proc_ptr(ewg_param_a_function, ewg_param_device, ewg_param_qdContext, ewg_param_window, ewg_param_inClientPaintRgn, ewg_param_outSystemPaintRgn, ewg_param_refCon) call_window_paint_proc_ptr ((void*)ewg_param_a_function, (GDHandle)ewg_param_device, (GrafPtr)ewg_param_qdContext, (WindowRef)ewg_param_window, (RgnHandle)ewg_param_inClientPaintRgn, (RgnHandle)ewg_param_outSystemPaintRgn, (void*)ewg_param_refCon)
 
 OSStatus  ewg_function_call_window_paint_proc_ptr (void *a_function, GDHandle device, GrafPtr qdContext, WindowRef window, RgnHandle inClientPaintRgn, RgnHandle outSystemPaintRgn, void *refCon);
+// Wraps call to function 'get_hmcontrol_content_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_hmcontrol_content_proc_ptr_stub get_hmcontrol_content_proc_ptr_stub ()
+
+void * ewg_function_get_hmcontrol_content_proc_ptr_stub (void);
+// Wraps call to function 'set_hmcontrol_content_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_hmcontrol_content_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_hmcontrol_content_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_hmcontrol_content_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_hmcontrol_content_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_hmcontrol_content_proc_ptr(ewg_param_a_function, ewg_param_inControl, ewg_param_inGlobalMouse, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent) call_hmcontrol_content_proc_ptr ((void*)ewg_param_a_function, (ControlRef)ewg_param_inControl, *(Point*)ewg_param_inGlobalMouse, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent)
+
+OSStatus  ewg_function_call_hmcontrol_content_proc_ptr (void *a_function, ControlRef inControl, Point *inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+// Wraps call to function 'get_hmwindow_content_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_hmwindow_content_proc_ptr_stub get_hmwindow_content_proc_ptr_stub ()
+
+void * ewg_function_get_hmwindow_content_proc_ptr_stub (void);
+// Wraps call to function 'set_hmwindow_content_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_hmwindow_content_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_hmwindow_content_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_hmwindow_content_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_hmwindow_content_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_hmwindow_content_proc_ptr(ewg_param_a_function, ewg_param_inWindow, ewg_param_inGlobalMouse, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent) call_hmwindow_content_proc_ptr ((void*)ewg_param_a_function, (WindowRef)ewg_param_inWindow, *(Point*)ewg_param_inGlobalMouse, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent)
+
+OSStatus  ewg_function_call_hmwindow_content_proc_ptr (void *a_function, WindowRef inWindow, Point *inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+// Wraps call to function 'get_hmmenu_title_content_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_hmmenu_title_content_proc_ptr_stub get_hmmenu_title_content_proc_ptr_stub ()
+
+void * ewg_function_get_hmmenu_title_content_proc_ptr_stub (void);
+// Wraps call to function 'set_hmmenu_title_content_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_hmmenu_title_content_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_hmmenu_title_content_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_hmmenu_title_content_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_hmmenu_title_content_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_hmmenu_title_content_proc_ptr(ewg_param_a_function, ewg_param_inMenu, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent) call_hmmenu_title_content_proc_ptr ((void*)ewg_param_a_function, (MenuRef)ewg_param_inMenu, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent)
+
+OSStatus  ewg_function_call_hmmenu_title_content_proc_ptr (void *a_function, MenuRef inMenu, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+// Wraps call to function 'get_hmmenu_item_content_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_hmmenu_item_content_proc_ptr_stub get_hmmenu_item_content_proc_ptr_stub ()
+
+void * ewg_function_get_hmmenu_item_content_proc_ptr_stub (void);
+// Wraps call to function 'set_hmmenu_item_content_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_hmmenu_item_content_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_hmmenu_item_content_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_hmmenu_item_content_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_hmmenu_item_content_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_hmmenu_item_content_proc_ptr(ewg_param_a_function, ewg_param_inTrackingData, ewg_param_inRequest, ewg_param_outContentProvided, ewg_param_ioHelpContent) call_hmmenu_item_content_proc_ptr ((void*)ewg_param_a_function, (MenuTrackingData const*)ewg_param_inTrackingData, (HMContentRequest)ewg_param_inRequest, (HMContentProvidedType*)ewg_param_outContentProvided, (HMHelpContentPtr)ewg_param_ioHelpContent)
+
+OSStatus  ewg_function_call_hmmenu_item_content_proc_ptr (void *a_function, MenuTrackingData const *inTrackingData, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
 // Wraps call to function 'get_control_user_pane_draw_proc_ptr_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 

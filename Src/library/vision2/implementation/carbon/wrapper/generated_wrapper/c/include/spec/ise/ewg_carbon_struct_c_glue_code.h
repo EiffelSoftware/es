@@ -1323,6 +1323,17 @@
 #define ewg_struct_macro_sizeof_struct___AXUIElement 1
 
 
+// glue code macros for struct `struct BigEndianLong'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_BigEndianLong sizeof (struct BigEndianLong)
+
+#define ewg_struct_macro_struct_BigEndianLong_member_get_bigEndianValue(an_item) ((struct BigEndianLong*)an_item)->bigEndianValue
+
+#define ewg_struct_macro_struct_BigEndianLong_member_set_bigEndianValue(an_item, a_value) ((struct BigEndianLong*)an_item)->bigEndianValue =  (long)a_value
+
+
 // glue code macros for struct `struct EventRecord'
 
 #include<Carbon/Carbon.h>
@@ -1701,13 +1712,7 @@
 
 #define ewg_struct_macro_sizeof_struct_AliasRecord sizeof (struct AliasRecord)
 
-#define ewg_struct_macro_struct_AliasRecord_member_get_userType(an_item) ((struct AliasRecord*)an_item)->userType
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_userType(an_item, a_value) ((struct AliasRecord*)an_item)->userType =  (OSType)a_value
-
-#define ewg_struct_macro_struct_AliasRecord_member_get_aliasSize(an_item) ((struct AliasRecord*)an_item)->aliasSize
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_aliasSize(an_item, a_value) ((struct AliasRecord*)an_item)->aliasSize =  (unsigned short)a_value
+#define ewg_struct_macro_struct_AliasRecord_member_get_hidden(an_item) ((struct AliasRecord*)an_item)->hidden
 
 
 // glue code macros for struct `struct OpaqueIconRef'
@@ -1869,6 +1874,34 @@
 #define ewg_struct_macro_struct_ControlButtonContentInfo_member_set_contentType(an_item, a_value) ((struct ControlButtonContentInfo*)an_item)->contentType =  (ControlContentType)a_value
 
 
+// glue code macros for struct `struct HMHelpContentRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_HMHelpContentRec sizeof (struct HMHelpContentRec)
+
+#define ewg_struct_macro_struct_HMHelpContentRec_member_get_version(an_item) ((struct HMHelpContentRec*)an_item)->version
+
+#define ewg_struct_macro_struct_HMHelpContentRec_member_set_version(an_item, a_value) ((struct HMHelpContentRec*)an_item)->version =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_HMHelpContentRec_member_get_absHotRect(an_item) &((struct HMHelpContentRec*)an_item)->absHotRect
+
+#define ewg_struct_macro_struct_HMHelpContentRec_member_set_absHotRect(an_item, a_value) ((struct HMHelpContentRec*)an_item)->absHotRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_HMHelpContentRec_member_get_tagSide(an_item) ((struct HMHelpContentRec*)an_item)->tagSide
+
+#define ewg_struct_macro_struct_HMHelpContentRec_member_set_tagSide(an_item, a_value) ((struct HMHelpContentRec*)an_item)->tagSide =  (HMTagDisplaySide)a_value
+
+#define ewg_struct_macro_struct_HMHelpContentRec_member_get_content(an_item) ((struct HMHelpContentRec*)an_item)->content
+
+
+// glue code macros for struct `struct OpaqueDialogPtr'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueDialogPtr 1
+
+
 // glue code macros for struct `struct ControlTabEntry'
 
 #include<Carbon/Carbon.h>
@@ -1912,27 +1945,6 @@
 #define ewg_struct_macro_struct_ListDefSpec_member_get_defType(an_item) ((struct ListDefSpec*)an_item)->defType
 
 #define ewg_struct_macro_struct_ListDefSpec_member_set_defType(an_item, a_value) ((struct ListDefSpec*)an_item)->defType =  (ListDefType)a_value
-
-
-// glue code macros for struct `struct HMHelpContentRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_HMHelpContentRec sizeof (struct HMHelpContentRec)
-
-#define ewg_struct_macro_struct_HMHelpContentRec_member_get_version(an_item) ((struct HMHelpContentRec*)an_item)->version
-
-#define ewg_struct_macro_struct_HMHelpContentRec_member_set_version(an_item, a_value) ((struct HMHelpContentRec*)an_item)->version =  (SInt32)a_value
-
-#define ewg_struct_macro_struct_HMHelpContentRec_member_get_absHotRect(an_item) &((struct HMHelpContentRec*)an_item)->absHotRect
-
-#define ewg_struct_macro_struct_HMHelpContentRec_member_set_absHotRect(an_item, a_value) ((struct HMHelpContentRec*)an_item)->absHotRect =  *(Rect*)a_value
-
-#define ewg_struct_macro_struct_HMHelpContentRec_member_get_tagSide(an_item) ((struct HMHelpContentRec*)an_item)->tagSide
-
-#define ewg_struct_macro_struct_HMHelpContentRec_member_set_tagSide(an_item, a_value) ((struct HMHelpContentRec*)an_item)->tagSide =  (HMTagDisplaySide)a_value
-
-#define ewg_struct_macro_struct_HMHelpContentRec_member_get_content(an_item) ((struct HMHelpContentRec*)an_item)->content
 
 
 // glue code macros for struct `struct DataBrowserCallbacks'
@@ -2086,13 +2098,6 @@
 #define ewg_struct_macro_struct_PrinterScalingStatus_member_get_oScalingFactors(an_item) &((struct PrinterScalingStatus*)an_item)->oScalingFactors
 
 #define ewg_struct_macro_struct_PrinterScalingStatus_member_set_oScalingFactors(an_item, a_value) ((struct PrinterScalingStatus*)an_item)->oScalingFactors =  *(Point*)a_value
-
-
-// glue code macros for struct `struct OpaqueDialogPtr'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueDialogPtr 1
 
 
 // glue code macros for struct `struct xColorSpec'
@@ -3312,6 +3317,32 @@
 #define ewg_struct_macro_struct_HIPositioning_member_set_y(an_item, a_value) ((struct HIPositioning*)an_item)->y =  *(HIAxisPosition*)a_value
 
 
+// glue code macros for struct `struct HMStringResType'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_HMStringResType sizeof (struct HMStringResType)
+
+#define ewg_struct_macro_struct_HMStringResType_member_get_hmmResID(an_item) ((struct HMStringResType*)an_item)->hmmResID
+
+#define ewg_struct_macro_struct_HMStringResType_member_set_hmmResID(an_item, a_value) ((struct HMStringResType*)an_item)->hmmResID =  (short)a_value
+
+#define ewg_struct_macro_struct_HMStringResType_member_get_hmmIndex(an_item) ((struct HMStringResType*)an_item)->hmmIndex
+
+#define ewg_struct_macro_struct_HMStringResType_member_set_hmmIndex(an_item, a_value) ((struct HMStringResType*)an_item)->hmmIndex =  (short)a_value
+
+
+// glue code macros for struct `struct HMHelpContent'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_HMHelpContent sizeof (struct HMHelpContent)
+
+#define ewg_struct_macro_struct_HMHelpContent_member_get_contentType(an_item) ((struct HMHelpContent*)an_item)->contentType
+
+#define ewg_struct_macro_struct_HMHelpContent_member_set_contentType(an_item, a_value) ((struct HMHelpContent*)an_item)->contentType =  (HMContentType)a_value
+
+
 // glue code macros for struct `struct ControlTabInfoRec'
 
 #include<Carbon/Carbon.h>
@@ -3441,17 +3472,6 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_OpaqueAEDataStorageType 1
-
-
-// glue code macros for struct `struct HMHelpContent'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_HMHelpContent sizeof (struct HMHelpContent)
-
-#define ewg_struct_macro_struct_HMHelpContent_member_get_contentType(an_item) ((struct HMHelpContent*)an_item)->contentType
-
-#define ewg_struct_macro_struct_HMHelpContent_member_set_contentType(an_item, a_value) ((struct HMHelpContent*)an_item)->contentType =  (HMContentType)a_value
 
 
 // glue code macros for struct `struct QElem'

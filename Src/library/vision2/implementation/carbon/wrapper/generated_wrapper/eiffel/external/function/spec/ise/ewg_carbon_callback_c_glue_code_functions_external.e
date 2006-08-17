@@ -1578,6 +1578,186 @@ feature
 			"(void*) call_window_paint_proc_ptr"
 		end
 
+	frozen get_hmcontrol_content_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_hmcontrol_content_proc_ptr_stub"
+		end
+
+	frozenget_hmcontrol_content_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_hmcontrol_content_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_hmcontrol_content_proc_ptr_stub"
+		end
+
+	frozen set_hmcontrol_content_proc_ptr_entry_external (a_class: HMCONTROL_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_hmcontrol_content_proc_ptr_entry"
+		end
+
+	frozenset_hmcontrol_content_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_hmcontrol_content_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_hmcontrol_content_proc_ptr_entry"
+		end
+
+	frozen call_hmcontrol_content_proc_ptr_external (a_function: POINTER; incontrol: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, Point*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
+		alias
+			"ewg_function_macro_call_hmcontrol_content_proc_ptr"
+		end
+
+	frozencall_hmcontrol_content_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_hmcontrol_content_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_hmcontrol_content_proc_ptr"
+		end
+
+	frozen get_hmwindow_content_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_hmwindow_content_proc_ptr_stub"
+		end
+
+	frozenget_hmwindow_content_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_hmwindow_content_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_hmwindow_content_proc_ptr_stub"
+		end
+
+	frozen set_hmwindow_content_proc_ptr_entry_external (a_class: HMWINDOW_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_hmwindow_content_proc_ptr_entry"
+		end
+
+	frozenset_hmwindow_content_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_hmwindow_content_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_hmwindow_content_proc_ptr_entry"
+		end
+
+	frozen call_hmwindow_content_proc_ptr_external (a_function: POINTER; inwindow: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, WindowRef, Point*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
+		alias
+			"ewg_function_macro_call_hmwindow_content_proc_ptr"
+		end
+
+	frozencall_hmwindow_content_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_hmwindow_content_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_hmwindow_content_proc_ptr"
+		end
+
+	frozen get_hmmenu_title_content_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_hmmenu_title_content_proc_ptr_stub"
+		end
+
+	frozenget_hmmenu_title_content_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_hmmenu_title_content_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_hmmenu_title_content_proc_ptr_stub"
+		end
+
+	frozen set_hmmenu_title_content_proc_ptr_entry_external (a_class: HMMENU_TITLE_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_hmmenu_title_content_proc_ptr_entry"
+		end
+
+	frozenset_hmmenu_title_content_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_hmmenu_title_content_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_hmmenu_title_content_proc_ptr_entry"
+		end
+
+	frozen call_hmmenu_title_content_proc_ptr_external (a_function: POINTER; inmenu: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, MenuRef, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
+		alias
+			"ewg_function_macro_call_hmmenu_title_content_proc_ptr"
+		end
+
+	frozencall_hmmenu_title_content_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_hmmenu_title_content_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_hmmenu_title_content_proc_ptr"
+		end
+
+	frozen get_hmmenu_item_content_proc_ptr_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_hmmenu_item_content_proc_ptr_stub"
+		end
+
+	frozenget_hmmenu_item_content_proc_ptr_stub_address_external: POINTER is
+			-- Address of C function `get_hmmenu_item_content_proc_ptr_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_hmmenu_item_content_proc_ptr_stub"
+		end
+
+	frozen set_hmmenu_item_content_proc_ptr_entry_external (a_class: HMMENU_ITEM_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_hmmenu_item_content_proc_ptr_entry"
+		end
+
+	frozenset_hmmenu_item_content_proc_ptr_entry_address_external: POINTER is
+			-- Address of C function `set_hmmenu_item_content_proc_ptr_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_hmmenu_item_content_proc_ptr_entry"
+		end
+
+	frozen call_hmmenu_item_content_proc_ptr_external (a_function: POINTER; intrackingdata: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, MenuTrackingData const*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
+		alias
+			"ewg_function_macro_call_hmmenu_item_content_proc_ptr"
+		end
+
+	frozencall_hmmenu_item_content_proc_ptr_address_external: POINTER is
+			-- Address of C function `call_hmmenu_item_content_proc_ptr'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_hmmenu_item_content_proc_ptr"
+		end
+
 	frozen get_control_user_pane_draw_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"

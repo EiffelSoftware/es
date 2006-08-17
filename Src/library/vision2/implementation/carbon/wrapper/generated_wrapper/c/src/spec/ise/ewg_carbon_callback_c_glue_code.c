@@ -914,6 +914,110 @@ OSStatus call_window_paint_proc_ptr (void *a_function, GDHandle device, GrafPtr 
 	return ((OSStatus (*) (GDHandle device, GrafPtr qdContext, WindowRef window, RgnHandle inClientPaintRgn, RgnHandle outSystemPaintRgn, void *refCon))a_function) (device, qdContext, window, inClientPaintRgn, outSystemPaintRgn, refCon);
 }
 
+struct hmcontrol_content_proc_ptr_entry_struct hmcontrol_content_proc_ptr_entry = {NULL, NULL};
+
+OSStatus hmcontrol_content_proc_ptr_stub (ControlRef inControl, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	if (hmcontrol_content_proc_ptr_entry.a_class != NULL && hmcontrol_content_proc_ptr_entry.feature != NULL)
+	{
+		return hmcontrol_content_proc_ptr_entry.feature (eif_access(hmcontrol_content_proc_ptr_entry.a_class), inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
+	}
+}
+
+void set_hmcontrol_content_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	hmcontrol_content_proc_ptr_entry.a_class = eif_adopt(a_class);
+	hmcontrol_content_proc_ptr_entry.feature = (hmcontrol_content_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_hmcontrol_content_proc_ptr_stub ()
+{
+	return (void*) hmcontrol_content_proc_ptr_stub;
+}
+
+OSStatus call_hmcontrol_content_proc_ptr (void *a_function, ControlRef inControl, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	return ((OSStatus (*) (ControlRef inControl, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent))a_function) (inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
+}
+
+struct hmwindow_content_proc_ptr_entry_struct hmwindow_content_proc_ptr_entry = {NULL, NULL};
+
+OSStatus hmwindow_content_proc_ptr_stub (WindowRef inWindow, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	if (hmwindow_content_proc_ptr_entry.a_class != NULL && hmwindow_content_proc_ptr_entry.feature != NULL)
+	{
+		return hmwindow_content_proc_ptr_entry.feature (eif_access(hmwindow_content_proc_ptr_entry.a_class), inWindow, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
+	}
+}
+
+void set_hmwindow_content_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	hmwindow_content_proc_ptr_entry.a_class = eif_adopt(a_class);
+	hmwindow_content_proc_ptr_entry.feature = (hmwindow_content_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_hmwindow_content_proc_ptr_stub ()
+{
+	return (void*) hmwindow_content_proc_ptr_stub;
+}
+
+OSStatus call_hmwindow_content_proc_ptr (void *a_function, WindowRef inWindow, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	return ((OSStatus (*) (WindowRef inWindow, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent))a_function) (inWindow, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
+}
+
+struct hmmenu_title_content_proc_ptr_entry_struct hmmenu_title_content_proc_ptr_entry = {NULL, NULL};
+
+OSStatus hmmenu_title_content_proc_ptr_stub (MenuRef inMenu, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	if (hmmenu_title_content_proc_ptr_entry.a_class != NULL && hmmenu_title_content_proc_ptr_entry.feature != NULL)
+	{
+		return hmmenu_title_content_proc_ptr_entry.feature (eif_access(hmmenu_title_content_proc_ptr_entry.a_class), inMenu, inRequest, outContentProvided, ioHelpContent);
+	}
+}
+
+void set_hmmenu_title_content_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	hmmenu_title_content_proc_ptr_entry.a_class = eif_adopt(a_class);
+	hmmenu_title_content_proc_ptr_entry.feature = (hmmenu_title_content_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_hmmenu_title_content_proc_ptr_stub ()
+{
+	return (void*) hmmenu_title_content_proc_ptr_stub;
+}
+
+OSStatus call_hmmenu_title_content_proc_ptr (void *a_function, MenuRef inMenu, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	return ((OSStatus (*) (MenuRef inMenu, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent))a_function) (inMenu, inRequest, outContentProvided, ioHelpContent);
+}
+
+struct hmmenu_item_content_proc_ptr_entry_struct hmmenu_item_content_proc_ptr_entry = {NULL, NULL};
+
+OSStatus hmmenu_item_content_proc_ptr_stub (MenuTrackingData const *inTrackingData, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	if (hmmenu_item_content_proc_ptr_entry.a_class != NULL && hmmenu_item_content_proc_ptr_entry.feature != NULL)
+	{
+		return hmmenu_item_content_proc_ptr_entry.feature (eif_access(hmmenu_item_content_proc_ptr_entry.a_class), inTrackingData, inRequest, outContentProvided, ioHelpContent);
+	}
+}
+
+void set_hmmenu_item_content_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	hmmenu_item_content_proc_ptr_entry.a_class = eif_adopt(a_class);
+	hmmenu_item_content_proc_ptr_entry.feature = (hmmenu_item_content_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_hmmenu_item_content_proc_ptr_stub ()
+{
+	return (void*) hmmenu_item_content_proc_ptr_stub;
+}
+
+OSStatus call_hmmenu_item_content_proc_ptr (void *a_function, MenuTrackingData const *inTrackingData, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)
+{
+	return ((OSStatus (*) (MenuTrackingData const *inTrackingData, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent))a_function) (inTrackingData, inRequest, outContentProvided, ioHelpContent);
+}
+
 struct control_user_pane_draw_proc_ptr_entry_struct control_user_pane_draw_proc_ptr_entry = {NULL, NULL};
 
 void control_user_pane_draw_proc_ptr_stub (ControlRef control, SInt16 part)

@@ -24621,6 +24621,546 @@ void* ewg_get_function_address_HISegmentedViewCopySegmentImage (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'NewHMControlContentUPP'
+// For ise
+HMControlContentUPP  ewg_function_NewHMControlContentUPP (HMControlContentProcPtr ewg_userRoutine)
+{
+	return NewHMControlContentUPP ((HMControlContentProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewHMControlContentUPP'
+void* ewg_get_function_address_NewHMControlContentUPP (void)
+{
+	return (void*) NewHMControlContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewHMWindowContentUPP'
+// For ise
+HMWindowContentUPP  ewg_function_NewHMWindowContentUPP (HMWindowContentProcPtr ewg_userRoutine)
+{
+	return NewHMWindowContentUPP ((HMWindowContentProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewHMWindowContentUPP'
+void* ewg_get_function_address_NewHMWindowContentUPP (void)
+{
+	return (void*) NewHMWindowContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewHMMenuTitleContentUPP'
+// For ise
+HMMenuTitleContentUPP  ewg_function_NewHMMenuTitleContentUPP (HMMenuTitleContentProcPtr ewg_userRoutine)
+{
+	return NewHMMenuTitleContentUPP ((HMMenuTitleContentProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewHMMenuTitleContentUPP'
+void* ewg_get_function_address_NewHMMenuTitleContentUPP (void)
+{
+	return (void*) NewHMMenuTitleContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewHMMenuItemContentUPP'
+// For ise
+HMMenuItemContentUPP  ewg_function_NewHMMenuItemContentUPP (HMMenuItemContentProcPtr ewg_userRoutine)
+{
+	return NewHMMenuItemContentUPP ((HMMenuItemContentProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewHMMenuItemContentUPP'
+void* ewg_get_function_address_NewHMMenuItemContentUPP (void)
+{
+	return (void*) NewHMMenuItemContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeHMControlContentUPP'
+// For ise
+void  ewg_function_DisposeHMControlContentUPP (HMControlContentUPP ewg_userUPP)
+{
+	DisposeHMControlContentUPP ((HMControlContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeHMControlContentUPP'
+void* ewg_get_function_address_DisposeHMControlContentUPP (void)
+{
+	return (void*) DisposeHMControlContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeHMWindowContentUPP'
+// For ise
+void  ewg_function_DisposeHMWindowContentUPP (HMWindowContentUPP ewg_userUPP)
+{
+	DisposeHMWindowContentUPP ((HMWindowContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeHMWindowContentUPP'
+void* ewg_get_function_address_DisposeHMWindowContentUPP (void)
+{
+	return (void*) DisposeHMWindowContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeHMMenuTitleContentUPP'
+// For ise
+void  ewg_function_DisposeHMMenuTitleContentUPP (HMMenuTitleContentUPP ewg_userUPP)
+{
+	DisposeHMMenuTitleContentUPP ((HMMenuTitleContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeHMMenuTitleContentUPP'
+void* ewg_get_function_address_DisposeHMMenuTitleContentUPP (void)
+{
+	return (void*) DisposeHMMenuTitleContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeHMMenuItemContentUPP'
+// For ise
+void  ewg_function_DisposeHMMenuItemContentUPP (HMMenuItemContentUPP ewg_userUPP)
+{
+	DisposeHMMenuItemContentUPP ((HMMenuItemContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeHMMenuItemContentUPP'
+void* ewg_get_function_address_DisposeHMMenuItemContentUPP (void)
+{
+	return (void*) DisposeHMMenuItemContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeHMControlContentUPP'
+// For ise
+OSStatus  ewg_function_InvokeHMControlContentUPP (ControlRef ewg_inControl, Point *ewg_inGlobalMouse, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent, HMControlContentUPP ewg_userUPP)
+{
+	return InvokeHMControlContentUPP ((ControlRef)ewg_inControl, *(Point*)ewg_inGlobalMouse, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent, (HMControlContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeHMControlContentUPP'
+void* ewg_get_function_address_InvokeHMControlContentUPP (void)
+{
+	return (void*) InvokeHMControlContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeHMWindowContentUPP'
+// For ise
+OSStatus  ewg_function_InvokeHMWindowContentUPP (WindowRef ewg_inWindow, Point *ewg_inGlobalMouse, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent, HMWindowContentUPP ewg_userUPP)
+{
+	return InvokeHMWindowContentUPP ((WindowRef)ewg_inWindow, *(Point*)ewg_inGlobalMouse, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent, (HMWindowContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeHMWindowContentUPP'
+void* ewg_get_function_address_InvokeHMWindowContentUPP (void)
+{
+	return (void*) InvokeHMWindowContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeHMMenuTitleContentUPP'
+// For ise
+OSStatus  ewg_function_InvokeHMMenuTitleContentUPP (MenuRef ewg_inMenu, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent, HMMenuTitleContentUPP ewg_userUPP)
+{
+	return InvokeHMMenuTitleContentUPP ((MenuRef)ewg_inMenu, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent, (HMMenuTitleContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeHMMenuTitleContentUPP'
+void* ewg_get_function_address_InvokeHMMenuTitleContentUPP (void)
+{
+	return (void*) InvokeHMMenuTitleContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeHMMenuItemContentUPP'
+// For ise
+OSStatus  ewg_function_InvokeHMMenuItemContentUPP (MenuTrackingData const *ewg_inTrackingData, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent, HMMenuItemContentUPP ewg_userUPP)
+{
+	return InvokeHMMenuItemContentUPP ((MenuTrackingData const*)ewg_inTrackingData, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent, (HMMenuItemContentUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeHMMenuItemContentUPP'
+void* ewg_get_function_address_InvokeHMMenuItemContentUPP (void)
+{
+	return (void*) InvokeHMMenuItemContentUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetHelpMenu'
+// For ise
+OSStatus  ewg_function_HMGetHelpMenu (MenuRef *ewg_outHelpMenu, MenuItemIndex *ewg_outFirstCustomItemIndex)
+{
+	return HMGetHelpMenu ((MenuRef*)ewg_outHelpMenu, (MenuItemIndex*)ewg_outFirstCustomItemIndex);
+}
+
+// Return address of function 'HMGetHelpMenu'
+void* ewg_get_function_address_HMGetHelpMenu (void)
+{
+	return (void*) HMGetHelpMenu;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMSetControlHelpContent'
+// For ise
+OSStatus  ewg_function_HMSetControlHelpContent (ControlRef ewg_inControl, HMHelpContentRec const *ewg_inContent)
+{
+	return HMSetControlHelpContent ((ControlRef)ewg_inControl, (HMHelpContentRec const*)ewg_inContent);
+}
+
+// Return address of function 'HMSetControlHelpContent'
+void* ewg_get_function_address_HMSetControlHelpContent (void)
+{
+	return (void*) HMSetControlHelpContent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetControlHelpContent'
+// For ise
+OSStatus  ewg_function_HMGetControlHelpContent (ControlRef ewg_inControl, HMHelpContentRec *ewg_outContent)
+{
+	return HMGetControlHelpContent ((ControlRef)ewg_inControl, (HMHelpContentRec*)ewg_outContent);
+}
+
+// Return address of function 'HMGetControlHelpContent'
+void* ewg_get_function_address_HMGetControlHelpContent (void)
+{
+	return (void*) HMGetControlHelpContent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMSetWindowHelpContent'
+// For ise
+OSStatus  ewg_function_HMSetWindowHelpContent (WindowRef ewg_inWindow, HMHelpContentRec const *ewg_inContent)
+{
+	return HMSetWindowHelpContent ((WindowRef)ewg_inWindow, (HMHelpContentRec const*)ewg_inContent);
+}
+
+// Return address of function 'HMSetWindowHelpContent'
+void* ewg_get_function_address_HMSetWindowHelpContent (void)
+{
+	return (void*) HMSetWindowHelpContent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetWindowHelpContent'
+// For ise
+OSStatus  ewg_function_HMGetWindowHelpContent (WindowRef ewg_inWindow, HMHelpContentRec *ewg_outContent)
+{
+	return HMGetWindowHelpContent ((WindowRef)ewg_inWindow, (HMHelpContentRec*)ewg_outContent);
+}
+
+// Return address of function 'HMGetWindowHelpContent'
+void* ewg_get_function_address_HMGetWindowHelpContent (void)
+{
+	return (void*) HMGetWindowHelpContent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMSetMenuItemHelpContent'
+// For ise
+OSStatus  ewg_function_HMSetMenuItemHelpContent (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, HMHelpContentRec const *ewg_inContent)
+{
+	return HMSetMenuItemHelpContent ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (HMHelpContentRec const*)ewg_inContent);
+}
+
+// Return address of function 'HMSetMenuItemHelpContent'
+void* ewg_get_function_address_HMSetMenuItemHelpContent (void)
+{
+	return (void*) HMSetMenuItemHelpContent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetMenuItemHelpContent'
+// For ise
+OSStatus  ewg_function_HMGetMenuItemHelpContent (MenuRef ewg_inMenu, MenuItemIndex ewg_inItem, HMHelpContentRec *ewg_outContent)
+{
+	return HMGetMenuItemHelpContent ((MenuRef)ewg_inMenu, (MenuItemIndex)ewg_inItem, (HMHelpContentRec*)ewg_outContent);
+}
+
+// Return address of function 'HMGetMenuItemHelpContent'
+void* ewg_get_function_address_HMGetMenuItemHelpContent (void)
+{
+	return (void*) HMGetMenuItemHelpContent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMInstallControlContentCallback'
+// For ise
+OSStatus  ewg_function_HMInstallControlContentCallback (ControlRef ewg_inControl, HMControlContentUPP ewg_inContentUPP)
+{
+	return HMInstallControlContentCallback ((ControlRef)ewg_inControl, (HMControlContentUPP)ewg_inContentUPP);
+}
+
+// Return address of function 'HMInstallControlContentCallback'
+void* ewg_get_function_address_HMInstallControlContentCallback (void)
+{
+	return (void*) HMInstallControlContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMInstallWindowContentCallback'
+// For ise
+OSStatus  ewg_function_HMInstallWindowContentCallback (WindowRef ewg_inWindow, HMWindowContentUPP ewg_inContentUPP)
+{
+	return HMInstallWindowContentCallback ((WindowRef)ewg_inWindow, (HMWindowContentUPP)ewg_inContentUPP);
+}
+
+// Return address of function 'HMInstallWindowContentCallback'
+void* ewg_get_function_address_HMInstallWindowContentCallback (void)
+{
+	return (void*) HMInstallWindowContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMInstallMenuTitleContentCallback'
+// For ise
+OSStatus  ewg_function_HMInstallMenuTitleContentCallback (MenuRef ewg_inMenu, HMMenuTitleContentUPP ewg_inContentUPP)
+{
+	return HMInstallMenuTitleContentCallback ((MenuRef)ewg_inMenu, (HMMenuTitleContentUPP)ewg_inContentUPP);
+}
+
+// Return address of function 'HMInstallMenuTitleContentCallback'
+void* ewg_get_function_address_HMInstallMenuTitleContentCallback (void)
+{
+	return (void*) HMInstallMenuTitleContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMInstallMenuItemContentCallback'
+// For ise
+OSStatus  ewg_function_HMInstallMenuItemContentCallback (MenuRef ewg_inMenu, HMMenuItemContentUPP ewg_inContentUPP)
+{
+	return HMInstallMenuItemContentCallback ((MenuRef)ewg_inMenu, (HMMenuItemContentUPP)ewg_inContentUPP);
+}
+
+// Return address of function 'HMInstallMenuItemContentCallback'
+void* ewg_get_function_address_HMInstallMenuItemContentCallback (void)
+{
+	return (void*) HMInstallMenuItemContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetControlContentCallback'
+// For ise
+OSStatus  ewg_function_HMGetControlContentCallback (ControlRef ewg_inControl, HMControlContentUPP *ewg_outContentUPP)
+{
+	return HMGetControlContentCallback ((ControlRef)ewg_inControl, (HMControlContentUPP*)ewg_outContentUPP);
+}
+
+// Return address of function 'HMGetControlContentCallback'
+void* ewg_get_function_address_HMGetControlContentCallback (void)
+{
+	return (void*) HMGetControlContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetWindowContentCallback'
+// For ise
+OSStatus  ewg_function_HMGetWindowContentCallback (WindowRef ewg_inWindow, HMWindowContentUPP *ewg_outContentUPP)
+{
+	return HMGetWindowContentCallback ((WindowRef)ewg_inWindow, (HMWindowContentUPP*)ewg_outContentUPP);
+}
+
+// Return address of function 'HMGetWindowContentCallback'
+void* ewg_get_function_address_HMGetWindowContentCallback (void)
+{
+	return (void*) HMGetWindowContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetMenuTitleContentCallback'
+// For ise
+OSStatus  ewg_function_HMGetMenuTitleContentCallback (MenuRef ewg_inMenu, HMMenuTitleContentUPP *ewg_outContentUPP)
+{
+	return HMGetMenuTitleContentCallback ((MenuRef)ewg_inMenu, (HMMenuTitleContentUPP*)ewg_outContentUPP);
+}
+
+// Return address of function 'HMGetMenuTitleContentCallback'
+void* ewg_get_function_address_HMGetMenuTitleContentCallback (void)
+{
+	return (void*) HMGetMenuTitleContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetMenuItemContentCallback'
+// For ise
+OSStatus  ewg_function_HMGetMenuItemContentCallback (MenuRef ewg_inMenu, HMMenuItemContentUPP *ewg_outContentUPP)
+{
+	return HMGetMenuItemContentCallback ((MenuRef)ewg_inMenu, (HMMenuItemContentUPP*)ewg_outContentUPP);
+}
+
+// Return address of function 'HMGetMenuItemContentCallback'
+void* ewg_get_function_address_HMGetMenuItemContentCallback (void)
+{
+	return (void*) HMGetMenuItemContentCallback;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMAreHelpTagsDisplayed'
+// For ise
+Boolean  ewg_function_HMAreHelpTagsDisplayed (void)
+{
+	return HMAreHelpTagsDisplayed ();
+}
+
+// Return address of function 'HMAreHelpTagsDisplayed'
+void* ewg_get_function_address_HMAreHelpTagsDisplayed (void)
+{
+	return (void*) HMAreHelpTagsDisplayed;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMSetHelpTagsDisplayed'
+// For ise
+OSStatus  ewg_function_HMSetHelpTagsDisplayed (Boolean ewg_inDisplayTags)
+{
+	return HMSetHelpTagsDisplayed ((Boolean)ewg_inDisplayTags);
+}
+
+// Return address of function 'HMSetHelpTagsDisplayed'
+void* ewg_get_function_address_HMSetHelpTagsDisplayed (void)
+{
+	return (void*) HMSetHelpTagsDisplayed;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMSetTagDelay'
+// For ise
+OSStatus  ewg_function_HMSetTagDelay (Duration ewg_inDelay)
+{
+	return HMSetTagDelay ((Duration)ewg_inDelay);
+}
+
+// Return address of function 'HMSetTagDelay'
+void* ewg_get_function_address_HMSetTagDelay (void)
+{
+	return (void*) HMSetTagDelay;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMGetTagDelay'
+// For ise
+OSStatus  ewg_function_HMGetTagDelay (Duration *ewg_outDelay)
+{
+	return HMGetTagDelay ((Duration*)ewg_outDelay);
+}
+
+// Return address of function 'HMGetTagDelay'
+void* ewg_get_function_address_HMGetTagDelay (void)
+{
+	return (void*) HMGetTagDelay;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMSetMenuHelpFromBalloonRsrc'
+// For ise
+OSStatus  ewg_function_HMSetMenuHelpFromBalloonRsrc (MenuRef ewg_inMenu, SInt16 ewg_inHmnuRsrcID)
+{
+	return HMSetMenuHelpFromBalloonRsrc ((MenuRef)ewg_inMenu, (SInt16)ewg_inHmnuRsrcID);
+}
+
+// Return address of function 'HMSetMenuHelpFromBalloonRsrc'
+void* ewg_get_function_address_HMSetMenuHelpFromBalloonRsrc (void)
+{
+	return (void*) HMSetMenuHelpFromBalloonRsrc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMSetDialogHelpFromBalloonRsrc'
+// For ise
+OSStatus  ewg_function_HMSetDialogHelpFromBalloonRsrc (DialogRef ewg_inDialog, SInt16 ewg_inHdlgRsrcID, SInt16 ewg_inItemStart)
+{
+	return HMSetDialogHelpFromBalloonRsrc ((DialogRef)ewg_inDialog, (SInt16)ewg_inHdlgRsrcID, (SInt16)ewg_inItemStart);
+}
+
+// Return address of function 'HMSetDialogHelpFromBalloonRsrc'
+void* ewg_get_function_address_HMSetDialogHelpFromBalloonRsrc (void)
+{
+	return (void*) HMSetDialogHelpFromBalloonRsrc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMDisplayTag'
+// For ise
+OSStatus  ewg_function_HMDisplayTag (HMHelpContentRec const *ewg_inContent)
+{
+	return HMDisplayTag ((HMHelpContentRec const*)ewg_inContent);
+}
+
+// Return address of function 'HMDisplayTag'
+void* ewg_get_function_address_HMDisplayTag (void)
+{
+	return (void*) HMDisplayTag;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMHideTag'
+// For ise
+OSStatus  ewg_function_HMHideTag (void)
+{
+	return HMHideTag ();
+}
+
+// Return address of function 'HMHideTag'
+void* ewg_get_function_address_HMHideTag (void)
+{
+	return (void*) HMHideTag;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HMHideTagWithOptions'
+// For ise
+OSStatus  ewg_function_HMHideTagWithOptions (OptionBits ewg_inOptions)
+{
+	return HMHideTagWithOptions ((OptionBits)ewg_inOptions);
+}
+
+// Return address of function 'HMHideTagWithOptions'
+void* ewg_get_function_address_HMHideTagWithOptions (void)
+{
+	return (void*) HMHideTagWithOptions;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'CreateBevelButtonControl'
 // For ise
 OSStatus  ewg_function_CreateBevelButtonControl (WindowRef ewg_window, Rect const *ewg_boundsRect, CFStringRef ewg_title, ControlBevelThickness ewg_thickness, ControlBevelButtonBehavior ewg_behavior, ControlButtonContentInfoPtr ewg_info, SInt16 ewg_menuID, ControlBevelButtonMenuBehavior ewg_menuBehavior, ControlBevelButtonMenuPlacement ewg_menuPlacement, ControlRef *ewg_outControl)
@@ -30062,6 +30602,186 @@ OSStatus  ewg_function_call_window_paint_proc_ptr (void *ewg_a_function, GDHandl
 void* ewg_get_function_address_call_window_paint_proc_ptr (void)
 {
 	return (void*) call_window_paint_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_hmcontrol_content_proc_ptr_stub'
+// For ise
+void * ewg_function_get_hmcontrol_content_proc_ptr_stub (void)
+{
+	return get_hmcontrol_content_proc_ptr_stub ();
+}
+
+// Return address of function 'get_hmcontrol_content_proc_ptr_stub'
+void* ewg_get_function_address_get_hmcontrol_content_proc_ptr_stub (void)
+{
+	return (void*) get_hmcontrol_content_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_hmcontrol_content_proc_ptr_entry'
+// For ise
+void  ewg_function_set_hmcontrol_content_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_hmcontrol_content_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_hmcontrol_content_proc_ptr_entry'
+void* ewg_get_function_address_set_hmcontrol_content_proc_ptr_entry (void)
+{
+	return (void*) set_hmcontrol_content_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_hmcontrol_content_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_hmcontrol_content_proc_ptr (void *ewg_a_function, ControlRef ewg_inControl, Point *ewg_inGlobalMouse, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent)
+{
+	return call_hmcontrol_content_proc_ptr ((void*)ewg_a_function, (ControlRef)ewg_inControl, *(Point*)ewg_inGlobalMouse, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent);
+}
+
+// Return address of function 'call_hmcontrol_content_proc_ptr'
+void* ewg_get_function_address_call_hmcontrol_content_proc_ptr (void)
+{
+	return (void*) call_hmcontrol_content_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_hmwindow_content_proc_ptr_stub'
+// For ise
+void * ewg_function_get_hmwindow_content_proc_ptr_stub (void)
+{
+	return get_hmwindow_content_proc_ptr_stub ();
+}
+
+// Return address of function 'get_hmwindow_content_proc_ptr_stub'
+void* ewg_get_function_address_get_hmwindow_content_proc_ptr_stub (void)
+{
+	return (void*) get_hmwindow_content_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_hmwindow_content_proc_ptr_entry'
+// For ise
+void  ewg_function_set_hmwindow_content_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_hmwindow_content_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_hmwindow_content_proc_ptr_entry'
+void* ewg_get_function_address_set_hmwindow_content_proc_ptr_entry (void)
+{
+	return (void*) set_hmwindow_content_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_hmwindow_content_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_hmwindow_content_proc_ptr (void *ewg_a_function, WindowRef ewg_inWindow, Point *ewg_inGlobalMouse, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent)
+{
+	return call_hmwindow_content_proc_ptr ((void*)ewg_a_function, (WindowRef)ewg_inWindow, *(Point*)ewg_inGlobalMouse, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent);
+}
+
+// Return address of function 'call_hmwindow_content_proc_ptr'
+void* ewg_get_function_address_call_hmwindow_content_proc_ptr (void)
+{
+	return (void*) call_hmwindow_content_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_hmmenu_title_content_proc_ptr_stub'
+// For ise
+void * ewg_function_get_hmmenu_title_content_proc_ptr_stub (void)
+{
+	return get_hmmenu_title_content_proc_ptr_stub ();
+}
+
+// Return address of function 'get_hmmenu_title_content_proc_ptr_stub'
+void* ewg_get_function_address_get_hmmenu_title_content_proc_ptr_stub (void)
+{
+	return (void*) get_hmmenu_title_content_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_hmmenu_title_content_proc_ptr_entry'
+// For ise
+void  ewg_function_set_hmmenu_title_content_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_hmmenu_title_content_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_hmmenu_title_content_proc_ptr_entry'
+void* ewg_get_function_address_set_hmmenu_title_content_proc_ptr_entry (void)
+{
+	return (void*) set_hmmenu_title_content_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_hmmenu_title_content_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_hmmenu_title_content_proc_ptr (void *ewg_a_function, MenuRef ewg_inMenu, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent)
+{
+	return call_hmmenu_title_content_proc_ptr ((void*)ewg_a_function, (MenuRef)ewg_inMenu, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent);
+}
+
+// Return address of function 'call_hmmenu_title_content_proc_ptr'
+void* ewg_get_function_address_call_hmmenu_title_content_proc_ptr (void)
+{
+	return (void*) call_hmmenu_title_content_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_hmmenu_item_content_proc_ptr_stub'
+// For ise
+void * ewg_function_get_hmmenu_item_content_proc_ptr_stub (void)
+{
+	return get_hmmenu_item_content_proc_ptr_stub ();
+}
+
+// Return address of function 'get_hmmenu_item_content_proc_ptr_stub'
+void* ewg_get_function_address_get_hmmenu_item_content_proc_ptr_stub (void)
+{
+	return (void*) get_hmmenu_item_content_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_hmmenu_item_content_proc_ptr_entry'
+// For ise
+void  ewg_function_set_hmmenu_item_content_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_hmmenu_item_content_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_hmmenu_item_content_proc_ptr_entry'
+void* ewg_get_function_address_set_hmmenu_item_content_proc_ptr_entry (void)
+{
+	return (void*) set_hmmenu_item_content_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_hmmenu_item_content_proc_ptr'
+// For ise
+OSStatus  ewg_function_call_hmmenu_item_content_proc_ptr (void *ewg_a_function, MenuTrackingData const *ewg_inTrackingData, HMContentRequest ewg_inRequest, HMContentProvidedType *ewg_outContentProvided, HMHelpContentPtr ewg_ioHelpContent)
+{
+	return call_hmmenu_item_content_proc_ptr ((void*)ewg_a_function, (MenuTrackingData const*)ewg_inTrackingData, (HMContentRequest)ewg_inRequest, (HMContentProvidedType*)ewg_outContentProvided, (HMHelpContentPtr)ewg_ioHelpContent);
+}
+
+// Return address of function 'call_hmmenu_item_content_proc_ptr'
+void* ewg_get_function_address_call_hmmenu_item_content_proc_ptr (void)
+{
+	return (void*) call_hmmenu_item_content_proc_ptr;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>

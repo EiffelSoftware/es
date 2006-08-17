@@ -598,6 +598,74 @@ OSStatus call_window_paint_proc_ptr (void *a_function, GDHandle device, GrafPtr 
 
 #include <Carbon/Carbon.h>
 
+typedef OSStatus (*hmcontrol_content_proc_ptr_eiffel_feature) (void *a_class, ControlRef inControl, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+void* get_hmcontrol_content_proc_ptr_stub ();
+
+struct hmcontrol_content_proc_ptr_entry_struct
+{
+	void* a_class;
+	hmcontrol_content_proc_ptr_eiffel_feature feature;
+};
+
+void set_hmcontrol_content_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSStatus call_hmcontrol_content_proc_ptr (void *a_function, ControlRef inControl, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSStatus (*hmwindow_content_proc_ptr_eiffel_feature) (void *a_class, WindowRef inWindow, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+void* get_hmwindow_content_proc_ptr_stub ();
+
+struct hmwindow_content_proc_ptr_entry_struct
+{
+	void* a_class;
+	hmwindow_content_proc_ptr_eiffel_feature feature;
+};
+
+void set_hmwindow_content_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSStatus call_hmwindow_content_proc_ptr (void *a_function, WindowRef inWindow, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSStatus (*hmmenu_title_content_proc_ptr_eiffel_feature) (void *a_class, MenuRef inMenu, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+void* get_hmmenu_title_content_proc_ptr_stub ();
+
+struct hmmenu_title_content_proc_ptr_entry_struct
+{
+	void* a_class;
+	hmmenu_title_content_proc_ptr_eiffel_feature feature;
+};
+
+void set_hmmenu_title_content_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSStatus call_hmmenu_title_content_proc_ptr (void *a_function, MenuRef inMenu, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSStatus (*hmmenu_item_content_proc_ptr_eiffel_feature) (void *a_class, MenuTrackingData const *inTrackingData, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+void* get_hmmenu_item_content_proc_ptr_stub ();
+
+struct hmmenu_item_content_proc_ptr_entry_struct
+{
+	void* a_class;
+	hmmenu_item_content_proc_ptr_eiffel_feature feature;
+};
+
+void set_hmmenu_item_content_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSStatus call_hmmenu_item_content_proc_ptr (void *a_function, MenuTrackingData const *inTrackingData, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
+
+
+#include <Carbon/Carbon.h>
+
 typedef void (*control_user_pane_draw_proc_ptr_eiffel_feature) (void *a_class, ControlRef control, SInt16 part);
 
 void* get_control_user_pane_draw_proc_ptr_stub ();
