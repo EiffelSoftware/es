@@ -122,41 +122,41 @@ feature -- Status Setting
 			res : INTEGER
 		do
 			is_default_push_button := True
-			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
+		--	res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
 		end
 
 
-	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
-			-- get a boolean value with get_control_data
-			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-				 	Boolean temp;
-				 	Size ActualSize;
-					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
-					if ( ActualSize == sizeof(temp) )
-						return temp;
-					else
-						return res;
-				}
-			]"
-		end
-
-		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
-			-- set a boolean value with set_control_data
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-				 	Boolean temp = $value;
-					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
-				}
-			]"
-		end
+--	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
+--			-- get a boolean value with get_control_data
+--			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
+--		external
+--			"C inline use <Carbon/Carbon.h>"
+--		alias
+--			"[
+--				{
+--				 	Boolean temp;
+--				 	Size ActualSize;
+--					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
+--					if ( ActualSize == sizeof(temp) )
+--						return temp;
+--					else
+--						return res;
+--				}
+--			]"
+--		end
+--
+--		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+--			-- set a boolean value with set_control_data
+--		external
+--			"C inline use <Carbon/Carbon.h>"
+--		alias
+--			"[
+--				{
+--				 	Boolean temp = $value;
+--					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
+--				}
+--			]"
+--		end
 
 	disable_default_push_button is
 			-- Remove the style of the button corresponding
@@ -165,7 +165,7 @@ feature -- Status Setting
 			res : INTEGER
 		do
 			is_default_push_button := False
-			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
+		--	res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
 		end
 
 	enable_can_default is

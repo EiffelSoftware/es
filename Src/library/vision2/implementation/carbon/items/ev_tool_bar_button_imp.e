@@ -46,6 +46,7 @@ inherit
 			set_tooltip,
 			tooltip
 		end
+	MACHELP_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -111,12 +112,16 @@ feature -- Element change
 		end
 	set_pixmap (a_pixmap: EV_PIXMAP) is
 			-- Assign `a_pixmap' to `pixmap'.
+		local
+			ret: INTEGER
 		do
+
 		end
 
 	set_tooltip (a_text: STRING_GENERAL) is
 			-- Set `tooltip' to `a_text'.
 		do
+
 		end
 
 	set_gray_pixmap (a_gray_pixmap: EV_PIXMAP) is
@@ -129,7 +134,8 @@ feature -- Element change
 		do
 		end
 
-	enable_sensitive is
+	enable_sensitive
+	is
 			--
 		do
 		end

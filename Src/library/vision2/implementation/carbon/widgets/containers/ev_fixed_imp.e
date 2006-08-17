@@ -64,7 +64,7 @@ feature -- Status setting
 
 	carbon_arrange_children is
 			do
-				
+
 			end
 
 
@@ -109,7 +109,7 @@ feature {EV_ANY_I} -- Implementation
 		do
 			create rect.make_new_unshared
 			dummy := get_control_bounds_external ( a_widget_imp.c_object, rect.item )
-			Result := rect.get_left
+			Result := rect.left
 		end
 
 	y_position_of_child (a_widget_imp: EV_WIDGET_IMP): INTEGER is
@@ -120,7 +120,7 @@ feature {EV_ANY_I} -- Implementation
 		do
 			create rect.make_new_unshared
 			dummy := get_control_bounds_external ( a_widget_imp.c_object, rect.item )
-			Result := rect.get_top
+			Result := rect.top
 		end
 
 	i_th_fixed_child (i: INTEGER): POINTER is

@@ -22,27 +22,32 @@ inherit
 		redefine
 			interface
 		end
+	HIVIEW_FUNCTIONS_EXTERNAL
 
 feature -- Status report
 
 	is_sensitive: BOOLEAN is
 			-- Is the object sensitive to user input.
 		do
-			Result := True
+			Result := hiview_is_enabled_external ( c_object, null).to_boolean
 		end
 
 feature -- Status setting
 
 	enable_sensitive is
 			-- Allow the object to be sensitive to user input.
+		local
+			ret: INTEGER
 		do
-		--	is_sensitive := True
+			ret := hiview_set_enabled_external (c_object, 1)
 		end
 
 	disable_sensitive is
 			-- Set the object to ignore all user input.
+		local
+			ret: INTEGER
 		do
-		--	is_sensitive := False
+			ret := hiview_set_enabled_external (c_object, 1)
 		end
 
 feature {EV_ANY_I} -- Implementation

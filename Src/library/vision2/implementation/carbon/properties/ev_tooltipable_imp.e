@@ -36,7 +36,15 @@ feature -- Element change
 
 	set_tooltip (a_text: STRING_GENERAL) is
 			-- Set `tooltip' to `a_text'.
+		local
+			hmrect: HMHELP_CONTENT_REC_STRUCT
+			hm_rect : HMHELP_CONTENT_REC_STRUCT
+			hm: HMHELP_CONTENT_STRUCT
 		do
+			create hm_rect.make_new_unshared
+			create hm.make_new_unshared
+		
+
 		end
 
 feature {NONE} -- Implementation
