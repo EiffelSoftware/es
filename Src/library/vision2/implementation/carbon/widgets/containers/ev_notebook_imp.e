@@ -254,18 +254,14 @@ feature -- Status report
 
 	selected_item: like item is
 			-- Page displayed topmost.
-		local
-			p: POINTER
-			pn: INTEGER
-			imp: EV_WIDGET_IMP
 		do
-
+			Resukt := i_th ( selected_item_index )
 		end
 
 	selected_item_index: INTEGER is
 			-- Page index of selected item
 		do
-
+			Result := get_control32bit_value_external ( c_object )
 		end
 
 	tab_position: INTEGER
@@ -299,7 +295,6 @@ feature -- Element change
 			-- Remove item at `i'-th position.
 		do
 			Precursor {EV_WIDGET_LIST_IMP} (i)
-			set_control32bit_value_external ( c_object, i )
 			set_control32bit_maximum_external ( c_object, count )
 		end
 
@@ -329,29 +324,29 @@ feature -- Element change
 			err := hiview_add_subview_external ( c_object, w_imp.c_object )
 			create a_rect.make_new_unshared
 			err := get_control_data_struct ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item )
+			if err /= 0 then
+				a_rect.set_top ( 0 ); a_rect.set_left ( 0 );
+				a_rect.set_bottom ( 0 ); a_rect.set_right ( 0 );
+			end
 			a_rect.set_top ( a_rect.top + 35 )
 			set_control_bounds_external ( w_imp.c_object, a_rect.item )
 			bind_to_tabcontrol ( w_imp.c_object, c_object )
-			set_control32bit_value_external ( c_object, 1 )
+			if count = 0 or else selected_item_index <= 0 or else selected_item_index > count then
+				set_control32bit_value_external ( c_object, 1 )
+			end
 		end
 
 	replace (v: like item) is
 			-- Replace current item by `v'.
-		local
-			i: INTEGER
 		do
-			i := 1
 			remove_i_th (index)
 			insert_i_th (v, index)
-
 		end
 
 feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 
 	ensure_tab_label (tab_widget: POINTER) is
 			-- Ensure the is a tab label widget for `tab_widget'.
-		local
-			a_event_box, a_hbox, a_image, a_label: POINTER
 		do
 
 		end
@@ -362,9 +357,32 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 	set_item_text (an_item: like item; a_text: STRING_GENERAL) is
 			-- Assign `a_text' to the label for `an_item'.
 		local
-			item_imp: EV_WIDGET_IMP
+			i : INTEGER
+			err : INTEGER
+			found : BOOLEAN
+			tab_info : CONTROL_TAB_INFO_REC_V1_STRUCT
+			actual_size : INTEGER
+			cf_string : EV_CARBON_CF_STRING
 		do
-			item_imp ?= an_item.implementation
+			from
+				i := 1
+				found := false
+			until
+				i > count or found
+			loop
+				if i_th( i ) = an_item  then
+					found := true
+				end
+			end
+			create tab_info.make_new_unshared
+			tab_info.set_version ( {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfoversionone )
+			err := get_control_data_external ( c_object, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_info.sizeof, tab_info.item, $actual_size )
+			check
+				no_overflow : err = 0 implies actual_size = tab_info.sizeof
+			end
+			create cf_string.make_unshared_with_eiffel_string ( a_text )
+			tab_info.set_name ( cf_string.item )
+			err := set_control_data_external ( c_object, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfotag, tab_info.sizeof, tab_info.item )
 
 		end
 
