@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_NewHMControlContentUPP"
 		end
 
-	frozennew_hmcontrol_content_upp_address_external: POINTER is
+	frozen new_hmcontrol_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMControlContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_NewHMWindowContentUPP"
 		end
 
-	frozennew_hmwindow_content_upp_address_external: POINTER is
+	frozen new_hmwindow_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMWindowContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_NewHMMenuTitleContentUPP"
 		end
 
-	frozennew_hmmenu_title_content_upp_address_external: POINTER is
+	frozen new_hmmenu_title_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMMenuTitleContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_NewHMMenuItemContentUPP"
 		end
 
-	frozennew_hmmenu_item_content_upp_address_external: POINTER is
+	frozen new_hmmenu_item_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMMenuItemContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_DisposeHMControlContentUPP"
 		end
 
-	frozendispose_hmcontrol_content_upp_address_external: POINTER is
+	frozen dispose_hmcontrol_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMControlContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_DisposeHMWindowContentUPP"
 		end
 
-	frozendispose_hmwindow_content_upp_address_external: POINTER is
+	frozen dispose_hmwindow_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMWindowContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_DisposeHMMenuTitleContentUPP"
 		end
 
-	frozendispose_hmmenu_title_content_upp_address_external: POINTER is
+	frozen dispose_hmmenu_title_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMMenuTitleContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_DisposeHMMenuItemContentUPP"
 		end
 
-	frozendispose_hmmenu_item_content_upp_address_external: POINTER is
+	frozen dispose_hmmenu_item_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMMenuItemContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_InvokeHMControlContentUPP"
 		end
 
-	frozeninvoke_hmcontrol_content_upp_address_external: POINTER is
+	frozen invoke_hmcontrol_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMControlContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_InvokeHMWindowContentUPP"
 		end
 
-	frozeninvoke_hmwindow_content_upp_address_external: POINTER is
+	frozen invoke_hmwindow_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMWindowContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_InvokeHMMenuTitleContentUPP"
 		end
 
-	frozeninvoke_hmmenu_title_content_upp_address_external: POINTER is
+	frozen invoke_hmmenu_title_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMMenuTitleContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_InvokeHMMenuItemContentUPP"
 		end
 
-	frozeninvoke_hmmenu_item_content_upp_address_external: POINTER is
+	frozen invoke_hmmenu_item_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMMenuItemContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_HMGetHelpMenu"
 		end
 
-	frozenhmget_help_menu_address_external: POINTER is
+	frozen hmget_help_menu_address_external: POINTER is
 			-- Address of C function `HMGetHelpMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_HMSetControlHelpContent"
 		end
 
-	frozenhmset_control_help_content_address_external: POINTER is
+	frozen hmset_control_help_content_address_external: POINTER is
 			-- Address of C function `HMSetControlHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_HMGetControlHelpContent"
 		end
 
-	frozenhmget_control_help_content_address_external: POINTER is
+	frozen hmget_control_help_content_address_external: POINTER is
 			-- Address of C function `HMGetControlHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_HMSetWindowHelpContent"
 		end
 
-	frozenhmset_window_help_content_address_external: POINTER is
+	frozen hmset_window_help_content_address_external: POINTER is
 			-- Address of C function `HMSetWindowHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_HMGetWindowHelpContent"
 		end
 
-	frozenhmget_window_help_content_address_external: POINTER is
+	frozen hmget_window_help_content_address_external: POINTER is
 			-- Address of C function `HMGetWindowHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_HMSetMenuItemHelpContent"
 		end
 
-	frozenhmset_menu_item_help_content_address_external: POINTER is
+	frozen hmset_menu_item_help_content_address_external: POINTER is
 			-- Address of C function `HMSetMenuItemHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_HMGetMenuItemHelpContent"
 		end
 
-	frozenhmget_menu_item_help_content_address_external: POINTER is
+	frozen hmget_menu_item_help_content_address_external: POINTER is
 			-- Address of C function `HMGetMenuItemHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_HMInstallControlContentCallback"
 		end
 
-	frozenhminstall_control_content_callback_address_external: POINTER is
+	frozen hminstall_control_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallControlContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_HMInstallWindowContentCallback"
 		end
 
-	frozenhminstall_window_content_callback_address_external: POINTER is
+	frozen hminstall_window_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallWindowContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_HMInstallMenuTitleContentCallback"
 		end
 
-	frozenhminstall_menu_title_content_callback_address_external: POINTER is
+	frozen hminstall_menu_title_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallMenuTitleContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_HMInstallMenuItemContentCallback"
 		end
 
-	frozenhminstall_menu_item_content_callback_address_external: POINTER is
+	frozen hminstall_menu_item_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallMenuItemContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_HMGetControlContentCallback"
 		end
 
-	frozenhmget_control_content_callback_address_external: POINTER is
+	frozen hmget_control_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetControlContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_HMGetWindowContentCallback"
 		end
 
-	frozenhmget_window_content_callback_address_external: POINTER is
+	frozen hmget_window_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetWindowContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_HMGetMenuTitleContentCallback"
 		end
 
-	frozenhmget_menu_title_content_callback_address_external: POINTER is
+	frozen hmget_menu_title_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetMenuTitleContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_HMGetMenuItemContentCallback"
 		end
 
-	frozenhmget_menu_item_content_callback_address_external: POINTER is
+	frozen hmget_menu_item_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetMenuItemContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_HMAreHelpTagsDisplayed"
 		end
 
-	frozenhmare_help_tags_displayed_address_external: POINTER is
+	frozen hmare_help_tags_displayed_address_external: POINTER is
 			-- Address of C function `HMAreHelpTagsDisplayed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_HMSetHelpTagsDisplayed"
 		end
 
-	frozenhmset_help_tags_displayed_address_external: POINTER is
+	frozen hmset_help_tags_displayed_address_external: POINTER is
 			-- Address of C function `HMSetHelpTagsDisplayed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_HMSetTagDelay"
 		end
 
-	frozenhmset_tag_delay_address_external: POINTER is
+	frozen hmset_tag_delay_address_external: POINTER is
 			-- Address of C function `HMSetTagDelay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_HMGetTagDelay"
 		end
 
-	frozenhmget_tag_delay_address_external: POINTER is
+	frozen hmget_tag_delay_address_external: POINTER is
 			-- Address of C function `HMGetTagDelay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_HMSetMenuHelpFromBalloonRsrc"
 		end
 
-	frozenhmset_menu_help_from_balloon_rsrc_address_external: POINTER is
+	frozen hmset_menu_help_from_balloon_rsrc_address_external: POINTER is
 			-- Address of C function `HMSetMenuHelpFromBalloonRsrc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_HMSetDialogHelpFromBalloonRsrc"
 		end
 
-	frozenhmset_dialog_help_from_balloon_rsrc_address_external: POINTER is
+	frozen hmset_dialog_help_from_balloon_rsrc_address_external: POINTER is
 			-- Address of C function `HMSetDialogHelpFromBalloonRsrc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_HMDisplayTag"
 		end
 
-	frozenhmdisplay_tag_address_external: POINTER is
+	frozen hmdisplay_tag_address_external: POINTER is
 			-- Address of C function `HMDisplayTag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_HMHideTag"
 		end
 
-	frozenhmhide_tag_address_external: POINTER is
+	frozen hmhide_tag_address_external: POINTER is
 			-- Address of C function `HMHideTag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_HMHideTagWithOptions"
 		end
 
-	frozenhmhide_tag_with_options_address_external: POINTER is
+	frozen hmhide_tag_with_options_address_external: POINTER is
 			-- Address of C function `HMHideTagWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

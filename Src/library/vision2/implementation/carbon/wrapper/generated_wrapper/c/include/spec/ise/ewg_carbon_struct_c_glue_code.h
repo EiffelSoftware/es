@@ -1323,17 +1323,6 @@
 #define ewg_struct_macro_sizeof_struct___AXUIElement 1
 
 
-// glue code macros for struct `struct BigEndianLong'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_BigEndianLong sizeof (struct BigEndianLong)
-
-#define ewg_struct_macro_struct_BigEndianLong_member_get_bigEndianValue(an_item) ((struct BigEndianLong*)an_item)->bigEndianValue
-
-#define ewg_struct_macro_struct_BigEndianLong_member_set_bigEndianValue(an_item, a_value) ((struct BigEndianLong*)an_item)->bigEndianValue =  (long)a_value
-
-
 // glue code macros for struct `struct EventRecord'
 
 #include<Carbon/Carbon.h>
@@ -1712,7 +1701,13 @@
 
 #define ewg_struct_macro_sizeof_struct_AliasRecord sizeof (struct AliasRecord)
 
-#define ewg_struct_macro_struct_AliasRecord_member_get_hidden(an_item) ((struct AliasRecord*)an_item)->hidden
+#define ewg_struct_macro_struct_AliasRecord_member_get_userType(an_item) ((struct AliasRecord*)an_item)->userType
+
+#define ewg_struct_macro_struct_AliasRecord_member_set_userType(an_item, a_value) ((struct AliasRecord*)an_item)->userType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_AliasRecord_member_get_aliasSize(an_item) ((struct AliasRecord*)an_item)->aliasSize
+
+#define ewg_struct_macro_struct_AliasRecord_member_set_aliasSize(an_item, a_value) ((struct AliasRecord*)an_item)->aliasSize =  (unsigned short)a_value
 
 
 // glue code macros for struct `struct OpaqueIconRef'

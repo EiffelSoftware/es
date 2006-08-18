@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_NewWindowDefUPP"
 		end
 
-	frozennew_window_def_upp_address_external: POINTER is
+	frozen new_window_def_upp_address_external: POINTER is
 			-- Address of C function `NewWindowDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_NewWindowPaintUPP"
 		end
 
-	frozennew_window_paint_upp_address_external: POINTER is
+	frozen new_window_paint_upp_address_external: POINTER is
 			-- Address of C function `NewWindowPaintUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_DisposeWindowDefUPP"
 		end
 
-	frozendispose_window_def_upp_address_external: POINTER is
+	frozen dispose_window_def_upp_address_external: POINTER is
 			-- Address of C function `DisposeWindowDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_DisposeWindowPaintUPP"
 		end
 
-	frozendispose_window_paint_upp_address_external: POINTER is
+	frozen dispose_window_paint_upp_address_external: POINTER is
 			-- Address of C function `DisposeWindowPaintUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_InvokeWindowDefUPP"
 		end
 
-	frozeninvoke_window_def_upp_address_external: POINTER is
+	frozen invoke_window_def_upp_address_external: POINTER is
 			-- Address of C function `InvokeWindowDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_InvokeWindowPaintUPP"
 		end
 
-	frozeninvoke_window_paint_upp_address_external: POINTER is
+	frozen invoke_window_paint_upp_address_external: POINTER is
 			-- Address of C function `InvokeWindowPaintUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_GetNewCWindow"
 		end
 
-	frozenget_new_cwindow_address_external: POINTER is
+	frozen get_new_cwindow_address_external: POINTER is
 			-- Address of C function `GetNewCWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_NewWindow"
 		end
 
-	frozennew_window_address_external: POINTER is
+	frozen new_window_address_external: POINTER is
 			-- Address of C function `NewWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_GetNewWindow"
 		end
 
-	frozenget_new_window_address_external: POINTER is
+	frozen get_new_window_address_external: POINTER is
 			-- Address of C function `GetNewWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_NewCWindow"
 		end
 
-	frozennew_cwindow_address_external: POINTER is
+	frozen new_cwindow_address_external: POINTER is
 			-- Address of C function `NewCWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_DisposeWindow"
 		end
 
-	frozendispose_window_address_external: POINTER is
+	frozen dispose_window_address_external: POINTER is
 			-- Address of C function `DisposeWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_CreateNewWindow"
 		end
 
-	frozencreate_new_window_address_external: POINTER is
+	frozen create_new_window_address_external: POINTER is
 			-- Address of C function `CreateNewWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_CreateWindowFromResource"
 		end
 
-	frozencreate_window_from_resource_address_external: POINTER is
+	frozen create_window_from_resource_address_external: POINTER is
 			-- Address of C function `CreateWindowFromResource'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_StoreWindowIntoCollection"
 		end
 
-	frozenstore_window_into_collection_address_external: POINTER is
+	frozen store_window_into_collection_address_external: POINTER is
 			-- Address of C function `StoreWindowIntoCollection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CreateWindowFromCollection"
 		end
 
-	frozencreate_window_from_collection_address_external: POINTER is
+	frozen create_window_from_collection_address_external: POINTER is
 			-- Address of C function `CreateWindowFromCollection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_GetWindowOwnerCount"
 		end
 
-	frozenget_window_owner_count_address_external: POINTER is
+	frozen get_window_owner_count_address_external: POINTER is
 			-- Address of C function `GetWindowOwnerCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CloneWindow"
 		end
 
-	frozenclone_window_address_external: POINTER is
+	frozen clone_window_address_external: POINTER is
 			-- Address of C function `CloneWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_GetWindowRetainCount"
 		end
 
-	frozenget_window_retain_count_address_external: POINTER is
+	frozen get_window_retain_count_address_external: POINTER is
 			-- Address of C function `GetWindowRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_RetainWindow"
 		end
 
-	frozenretain_window_address_external: POINTER is
+	frozen retain_window_address_external: POINTER is
 			-- Address of C function `RetainWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_ReleaseWindow"
 		end
 
-	frozenrelease_window_address_external: POINTER is
+	frozen release_window_address_external: POINTER is
 			-- Address of C function `ReleaseWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CreateCustomWindow"
 		end
 
-	frozencreate_custom_window_address_external: POINTER is
+	frozen create_custom_window_address_external: POINTER is
 			-- Address of C function `CreateCustomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_ReshapeCustomWindow"
 		end
 
-	frozenreshape_custom_window_address_external: POINTER is
+	frozen reshape_custom_window_address_external: POINTER is
 			-- Address of C function `ReshapeCustomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_RegisterWindowDefinition"
 		end
 
-	frozenregister_window_definition_address_external: POINTER is
+	frozen register_window_definition_address_external: POINTER is
 			-- Address of C function `RegisterWindowDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_GetWindowWidgetHilite"
 		end
 
-	frozenget_window_widget_hilite_address_external: POINTER is
+	frozen get_window_widget_hilite_address_external: POINTER is
 			-- Address of C function `GetWindowWidgetHilite'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_IsValidWindowClass"
 		end
 
-	frozenis_valid_window_class_address_external: POINTER is
+	frozen is_valid_window_class_address_external: POINTER is
 			-- Address of C function `IsValidWindowClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_GetAvailableWindowAttributes"
 		end
 
-	frozenget_available_window_attributes_address_external: POINTER is
+	frozen get_available_window_attributes_address_external: POINTER is
 			-- Address of C function `GetAvailableWindowAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_GetWindowClass"
 		end
 
-	frozenget_window_class_address_external: POINTER is
+	frozen get_window_class_address_external: POINTER is
 			-- Address of C function `GetWindowClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_GetWindowAttributes"
 		end
 
-	frozenget_window_attributes_address_external: POINTER is
+	frozen get_window_attributes_address_external: POINTER is
 			-- Address of C function `GetWindowAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_ChangeWindowAttributes"
 		end
 
-	frozenchange_window_attributes_address_external: POINTER is
+	frozen change_window_attributes_address_external: POINTER is
 			-- Address of C function `ChangeWindowAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_SetWindowClass"
 		end
 
-	frozenset_window_class_address_external: POINTER is
+	frozen set_window_class_address_external: POINTER is
 			-- Address of C function `SetWindowClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_HIWindowChangeClass"
 		end
 
-	frozenhiwindow_change_class_address_external: POINTER is
+	frozen hiwindow_change_class_address_external: POINTER is
 			-- Address of C function `HIWindowChangeClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_HIWindowFlush"
 		end
 
-	frozenhiwindow_flush_address_external: POINTER is
+	frozen hiwindow_flush_address_external: POINTER is
 			-- Address of C function `HIWindowFlush'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_SetWindowModality"
 		end
 
-	frozenset_window_modality_address_external: POINTER is
+	frozen set_window_modality_address_external: POINTER is
 			-- Address of C function `SetWindowModality'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_GetWindowModality"
 		end
 
-	frozenget_window_modality_address_external: POINTER is
+	frozen get_window_modality_address_external: POINTER is
 			-- Address of C function `GetWindowModality'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_HIWindowIsDocumentModalTarget"
 		end
 
-	frozenhiwindow_is_document_modal_target_address_external: POINTER is
+	frozen hiwindow_is_document_modal_target_address_external: POINTER is
 			-- Address of C function `HIWindowIsDocumentModalTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_ShowFloatingWindows"
 		end
 
-	frozenshow_floating_windows_address_external: POINTER is
+	frozen show_floating_windows_address_external: POINTER is
 			-- Address of C function `ShowFloatingWindows'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_HideFloatingWindows"
 		end
 
-	frozenhide_floating_windows_address_external: POINTER is
+	frozen hide_floating_windows_address_external: POINTER is
 			-- Address of C function `HideFloatingWindows'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_AreFloatingWindowsVisible"
 		end
 
-	frozenare_floating_windows_visible_address_external: POINTER is
+	frozen are_floating_windows_visible_address_external: POINTER is
 			-- Address of C function `AreFloatingWindowsVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_CreateWindowGroup"
 		end
 
-	frozencreate_window_group_address_external: POINTER is
+	frozen create_window_group_address_external: POINTER is
 			-- Address of C function `CreateWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_RetainWindowGroup"
 		end
 
-	frozenretain_window_group_address_external: POINTER is
+	frozen retain_window_group_address_external: POINTER is
 			-- Address of C function `RetainWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_ReleaseWindowGroup"
 		end
 
-	frozenrelease_window_group_address_external: POINTER is
+	frozen release_window_group_address_external: POINTER is
 			-- Address of C function `ReleaseWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_GetWindowGroupRetainCount"
 		end
 
-	frozenget_window_group_retain_count_address_external: POINTER is
+	frozen get_window_group_retain_count_address_external: POINTER is
 			-- Address of C function `GetWindowGroupRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_GetWindowGroupOfClass"
 		end
 
-	frozenget_window_group_of_class_address_external: POINTER is
+	frozen get_window_group_of_class_address_external: POINTER is
 			-- Address of C function `GetWindowGroupOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_SetWindowGroupName"
 		end
 
-	frozenset_window_group_name_address_external: POINTER is
+	frozen set_window_group_name_address_external: POINTER is
 			-- Address of C function `SetWindowGroupName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_CopyWindowGroupName"
 		end
 
-	frozencopy_window_group_name_address_external: POINTER is
+	frozen copy_window_group_name_address_external: POINTER is
 			-- Address of C function `CopyWindowGroupName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_GetWindowGroupAttributes"
 		end
 
-	frozenget_window_group_attributes_address_external: POINTER is
+	frozen get_window_group_attributes_address_external: POINTER is
 			-- Address of C function `GetWindowGroupAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_ChangeWindowGroupAttributes"
 		end
 
-	frozenchange_window_group_attributes_address_external: POINTER is
+	frozen change_window_group_attributes_address_external: POINTER is
 			-- Address of C function `ChangeWindowGroupAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_SetWindowGroupLevel"
 		end
 
-	frozenset_window_group_level_address_external: POINTER is
+	frozen set_window_group_level_address_external: POINTER is
 			-- Address of C function `SetWindowGroupLevel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_GetWindowGroupLevel"
 		end
 
-	frozenget_window_group_level_address_external: POINTER is
+	frozen get_window_group_level_address_external: POINTER is
 			-- Address of C function `GetWindowGroupLevel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_SetWindowGroupLevelOfType"
 		end
 
-	frozenset_window_group_level_of_type_address_external: POINTER is
+	frozen set_window_group_level_of_type_address_external: POINTER is
 			-- Address of C function `SetWindowGroupLevelOfType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_GetWindowGroupLevelOfType"
 		end
 
-	frozenget_window_group_level_of_type_address_external: POINTER is
+	frozen get_window_group_level_of_type_address_external: POINTER is
 			-- Address of C function `GetWindowGroupLevelOfType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_SendWindowGroupBehind"
 		end
 
-	frozensend_window_group_behind_address_external: POINTER is
+	frozen send_window_group_behind_address_external: POINTER is
 			-- Address of C function `SendWindowGroupBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_GetWindowGroup"
 		end
 
-	frozenget_window_group_address_external: POINTER is
+	frozen get_window_group_address_external: POINTER is
 			-- Address of C function `GetWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_SetWindowGroup"
 		end
 
-	frozenset_window_group_address_external: POINTER is
+	frozen set_window_group_address_external: POINTER is
 			-- Address of C function `SetWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_IsWindowContainedInGroup"
 		end
 
-	frozenis_window_contained_in_group_address_external: POINTER is
+	frozen is_window_contained_in_group_address_external: POINTER is
 			-- Address of C function `IsWindowContainedInGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_GetWindowGroupParent"
 		end
 
-	frozenget_window_group_parent_address_external: POINTER is
+	frozen get_window_group_parent_address_external: POINTER is
 			-- Address of C function `GetWindowGroupParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_SetWindowGroupParent"
 		end
 
-	frozenset_window_group_parent_address_external: POINTER is
+	frozen set_window_group_parent_address_external: POINTER is
 			-- Address of C function `SetWindowGroupParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_GetWindowGroupSibling"
 		end
 
-	frozenget_window_group_sibling_address_external: POINTER is
+	frozen get_window_group_sibling_address_external: POINTER is
 			-- Address of C function `GetWindowGroupSibling'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_GetWindowGroupOwner"
 		end
 
-	frozenget_window_group_owner_address_external: POINTER is
+	frozen get_window_group_owner_address_external: POINTER is
 			-- Address of C function `GetWindowGroupOwner'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_SetWindowGroupOwner"
 		end
 
-	frozenset_window_group_owner_address_external: POINTER is
+	frozen set_window_group_owner_address_external: POINTER is
 			-- Address of C function `SetWindowGroupOwner'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_CountWindowGroupContents"
 		end
 
-	frozencount_window_group_contents_address_external: POINTER is
+	frozen count_window_group_contents_address_external: POINTER is
 			-- Address of C function `CountWindowGroupContents'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -925,7 +925,7 @@ feature
 			"ewg_function_macro_GetWindowGroupContents"
 		end
 
-	frozenget_window_group_contents_address_external: POINTER is
+	frozen get_window_group_contents_address_external: POINTER is
 			-- Address of C function `GetWindowGroupContents'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -940,7 +940,7 @@ feature
 			"ewg_function_macro_GetIndexedWindow"
 		end
 
-	frozenget_indexed_window_address_external: POINTER is
+	frozen get_indexed_window_address_external: POINTER is
 			-- Address of C function `GetIndexedWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -955,7 +955,7 @@ feature
 			"ewg_function_macro_GetWindowIndex"
 		end
 
-	frozenget_window_index_address_external: POINTER is
+	frozen get_window_index_address_external: POINTER is
 			-- Address of C function `GetWindowIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -970,7 +970,7 @@ feature
 			"ewg_function_macro_ActiveNonFloatingWindow"
 		end
 
-	frozenactive_non_floating_window_address_external: POINTER is
+	frozen active_non_floating_window_address_external: POINTER is
 			-- Address of C function `ActiveNonFloatingWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -985,7 +985,7 @@ feature
 			"ewg_function_macro_IsWindowActive"
 		end
 
-	frozenis_window_active_address_external: POINTER is
+	frozen is_window_active_address_external: POINTER is
 			-- Address of C function `IsWindowActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1000,7 +1000,7 @@ feature
 			"ewg_function_macro_ActivateWindow"
 		end
 
-	frozenactivate_window_address_external: POINTER is
+	frozen activate_window_address_external: POINTER is
 			-- Address of C function `ActivateWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1015,7 +1015,7 @@ feature
 			"ewg_function_macro_GetWindowActivationScope"
 		end
 
-	frozenget_window_activation_scope_address_external: POINTER is
+	frozen get_window_activation_scope_address_external: POINTER is
 			-- Address of C function `GetWindowActivationScope'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1030,7 +1030,7 @@ feature
 			"ewg_function_macro_SetWindowActivationScope"
 		end
 
-	frozenset_window_activation_scope_address_external: POINTER is
+	frozen set_window_activation_scope_address_external: POINTER is
 			-- Address of C function `SetWindowActivationScope'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1045,7 +1045,7 @@ feature
 			"ewg_function_macro_DebugPrintWindowGroup"
 		end
 
-	frozendebug_print_window_group_address_external: POINTER is
+	frozen debug_print_window_group_address_external: POINTER is
 			-- Address of C function `DebugPrintWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1060,7 +1060,7 @@ feature
 			"ewg_function_macro_DebugPrintAllWindowGroups"
 		end
 
-	frozendebug_print_all_window_groups_address_external: POINTER is
+	frozen debug_print_all_window_groups_address_external: POINTER is
 			-- Address of C function `DebugPrintAllWindowGroups'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1075,7 +1075,7 @@ feature
 			"ewg_function_macro_SetThemeWindowBackground"
 		end
 
-	frozenset_theme_window_background_address_external: POINTER is
+	frozen set_theme_window_background_address_external: POINTER is
 			-- Address of C function `SetThemeWindowBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1090,7 +1090,7 @@ feature
 			"ewg_function_macro_SetThemeTextColorForWindow"
 		end
 
-	frozenset_theme_text_color_for_window_address_external: POINTER is
+	frozen set_theme_text_color_for_window_address_external: POINTER is
 			-- Address of C function `SetThemeTextColorForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1105,7 +1105,7 @@ feature
 			"ewg_function_macro_SetWindowContentColor"
 		end
 
-	frozenset_window_content_color_address_external: POINTER is
+	frozen set_window_content_color_address_external: POINTER is
 			-- Address of C function `SetWindowContentColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1120,7 +1120,7 @@ feature
 			"ewg_function_macro_GetWindowContentColor"
 		end
 
-	frozenget_window_content_color_address_external: POINTER is
+	frozen get_window_content_color_address_external: POINTER is
 			-- Address of C function `GetWindowContentColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1135,7 +1135,7 @@ feature
 			"ewg_function_macro_GetWindowContentPattern"
 		end
 
-	frozenget_window_content_pattern_address_external: POINTER is
+	frozen get_window_content_pattern_address_external: POINTER is
 			-- Address of C function `GetWindowContentPattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1150,7 +1150,7 @@ feature
 			"ewg_function_macro_SetWindowContentPattern"
 		end
 
-	frozenset_window_content_pattern_address_external: POINTER is
+	frozen set_window_content_pattern_address_external: POINTER is
 			-- Address of C function `SetWindowContentPattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1165,7 +1165,7 @@ feature
 			"ewg_function_macro_InstallWindowContentPaintProc"
 		end
 
-	frozeninstall_window_content_paint_proc_address_external: POINTER is
+	frozen install_window_content_paint_proc_address_external: POINTER is
 			-- Address of C function `InstallWindowContentPaintProc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1180,7 +1180,7 @@ feature
 			"ewg_function_macro_ScrollWindowRect"
 		end
 
-	frozenscroll_window_rect_address_external: POINTER is
+	frozen scroll_window_rect_address_external: POINTER is
 			-- Address of C function `ScrollWindowRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1195,7 +1195,7 @@ feature
 			"ewg_function_macro_ScrollWindowRegion"
 		end
 
-	frozenscroll_window_region_address_external: POINTER is
+	frozen scroll_window_region_address_external: POINTER is
 			-- Address of C function `ScrollWindowRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1210,7 +1210,7 @@ feature
 			"ewg_function_macro_ClipAbove"
 		end
 
-	frozenclip_above_address_external: POINTER is
+	frozen clip_above_address_external: POINTER is
 			-- Address of C function `ClipAbove'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1225,7 +1225,7 @@ feature
 			"ewg_function_macro_PaintOne"
 		end
 
-	frozenpaint_one_address_external: POINTER is
+	frozen paint_one_address_external: POINTER is
 			-- Address of C function `PaintOne'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1240,7 +1240,7 @@ feature
 			"ewg_function_macro_PaintBehind"
 		end
 
-	frozenpaint_behind_address_external: POINTER is
+	frozen paint_behind_address_external: POINTER is
 			-- Address of C function `PaintBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1255,7 +1255,7 @@ feature
 			"ewg_function_macro_CalcVis"
 		end
 
-	frozencalc_vis_address_external: POINTER is
+	frozen calc_vis_address_external: POINTER is
 			-- Address of C function `CalcVis'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1270,7 +1270,7 @@ feature
 			"ewg_function_macro_CalcVisBehind"
 		end
 
-	frozencalc_vis_behind_address_external: POINTER is
+	frozen calc_vis_behind_address_external: POINTER is
 			-- Address of C function `CalcVisBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1285,7 +1285,7 @@ feature
 			"ewg_function_macro_CheckUpdate"
 		end
 
-	frozencheck_update_address_external: POINTER is
+	frozen check_update_address_external: POINTER is
 			-- Address of C function `CheckUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1300,7 +1300,7 @@ feature
 			"ewg_function_macro_FindWindow"
 		end
 
-	frozenfind_window_address_external: POINTER is
+	frozen find_window_address_external: POINTER is
 			-- Address of C function `FindWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1315,7 +1315,7 @@ feature
 			"ewg_function_macro_FrontWindow"
 		end
 
-	frozenfront_window_address_external: POINTER is
+	frozen front_window_address_external: POINTER is
 			-- Address of C function `FrontWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1330,7 +1330,7 @@ feature
 			"ewg_function_macro_BringToFront"
 		end
 
-	frozenbring_to_front_address_external: POINTER is
+	frozen bring_to_front_address_external: POINTER is
 			-- Address of C function `BringToFront'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1345,7 +1345,7 @@ feature
 			"ewg_function_macro_SendBehind"
 		end
 
-	frozensend_behind_address_external: POINTER is
+	frozen send_behind_address_external: POINTER is
 			-- Address of C function `SendBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1360,7 +1360,7 @@ feature
 			"ewg_function_macro_SelectWindow"
 		end
 
-	frozenselect_window_address_external: POINTER is
+	frozen select_window_address_external: POINTER is
 			-- Address of C function `SelectWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1375,7 +1375,7 @@ feature
 			"ewg_function_macro_FrontNonFloatingWindow"
 		end
 
-	frozenfront_non_floating_window_address_external: POINTER is
+	frozen front_non_floating_window_address_external: POINTER is
 			-- Address of C function `FrontNonFloatingWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1390,7 +1390,7 @@ feature
 			"ewg_function_macro_GetNextWindowOfClass"
 		end
 
-	frozenget_next_window_of_class_address_external: POINTER is
+	frozen get_next_window_of_class_address_external: POINTER is
 			-- Address of C function `GetNextWindowOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1405,7 +1405,7 @@ feature
 			"ewg_function_macro_GetFrontWindowOfClass"
 		end
 
-	frozenget_front_window_of_class_address_external: POINTER is
+	frozen get_front_window_of_class_address_external: POINTER is
 			-- Address of C function `GetFrontWindowOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1420,7 +1420,7 @@ feature
 			"ewg_function_macro_FindWindowOfClass"
 		end
 
-	frozenfind_window_of_class_address_external: POINTER is
+	frozen find_window_of_class_address_external: POINTER is
 			-- Address of C function `FindWindowOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1435,7 +1435,7 @@ feature
 			"ewg_function_macro_CreateStandardWindowMenu"
 		end
 
-	frozencreate_standard_window_menu_address_external: POINTER is
+	frozen create_standard_window_menu_address_external: POINTER is
 			-- Address of C function `CreateStandardWindowMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1450,7 +1450,7 @@ feature
 			"ewg_function_macro_SetWindowAlternateTitle"
 		end
 
-	frozenset_window_alternate_title_address_external: POINTER is
+	frozen set_window_alternate_title_address_external: POINTER is
 			-- Address of C function `SetWindowAlternateTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1465,7 +1465,7 @@ feature
 			"ewg_function_macro_CopyWindowAlternateTitle"
 		end
 
-	frozencopy_window_alternate_title_address_external: POINTER is
+	frozen copy_window_alternate_title_address_external: POINTER is
 			-- Address of C function `CopyWindowAlternateTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1480,7 +1480,7 @@ feature
 			"ewg_function_macro_IsValidWindowPtr"
 		end
 
-	frozenis_valid_window_ptr_address_external: POINTER is
+	frozen is_valid_window_ptr_address_external: POINTER is
 			-- Address of C function `IsValidWindowPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1495,7 +1495,7 @@ feature
 			"ewg_function_macro_HiliteWindow"
 		end
 
-	frozenhilite_window_address_external: POINTER is
+	frozen hilite_window_address_external: POINTER is
 			-- Address of C function `HiliteWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1510,7 +1510,7 @@ feature
 			"ewg_function_macro_SetWRefCon"
 		end
 
-	frozenset_wref_con_address_external: POINTER is
+	frozen set_wref_con_address_external: POINTER is
 			-- Address of C function `SetWRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1525,7 +1525,7 @@ feature
 			"ewg_function_macro_GetWRefCon"
 		end
 
-	frozenget_wref_con_address_external: POINTER is
+	frozen get_wref_con_address_external: POINTER is
 			-- Address of C function `GetWRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1540,7 +1540,7 @@ feature
 			"ewg_function_macro_SetWindowPic"
 		end
 
-	frozenset_window_pic_address_external: POINTER is
+	frozen set_window_pic_address_external: POINTER is
 			-- Address of C function `SetWindowPic'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1555,7 +1555,7 @@ feature
 			"ewg_function_macro_GetWindowPic"
 		end
 
-	frozenget_window_pic_address_external: POINTER is
+	frozen get_window_pic_address_external: POINTER is
 			-- Address of C function `GetWindowPic'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1570,7 +1570,7 @@ feature
 			"ewg_function_macro_GetWVariant"
 		end
 
-	frozenget_wvariant_address_external: POINTER is
+	frozen get_wvariant_address_external: POINTER is
 			-- Address of C function `GetWVariant'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1585,7 +1585,7 @@ feature
 			"ewg_function_macro_GetWindowFeatures"
 		end
 
-	frozenget_window_features_address_external: POINTER is
+	frozen get_window_features_address_external: POINTER is
 			-- Address of C function `GetWindowFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1600,7 +1600,7 @@ feature
 			"ewg_function_macro_GetWindowRegion"
 		end
 
-	frozenget_window_region_address_external: POINTER is
+	frozen get_window_region_address_external: POINTER is
 			-- Address of C function `GetWindowRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1615,7 +1615,7 @@ feature
 			"ewg_function_macro_GetWindowStructureWidths"
 		end
 
-	frozenget_window_structure_widths_address_external: POINTER is
+	frozen get_window_structure_widths_address_external: POINTER is
 			-- Address of C function `GetWindowStructureWidths'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1630,7 +1630,7 @@ feature
 			"ewg_function_macro_HIWindowChangeFeatures"
 		end
 
-	frozenhiwindow_change_features_address_external: POINTER is
+	frozen hiwindow_change_features_address_external: POINTER is
 			-- Address of C function `HIWindowChangeFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1645,7 +1645,7 @@ feature
 			"ewg_function_macro_BeginUpdate"
 		end
 
-	frozenbegin_update_address_external: POINTER is
+	frozen begin_update_address_external: POINTER is
 			-- Address of C function `BeginUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1660,7 +1660,7 @@ feature
 			"ewg_function_macro_EndUpdate"
 		end
 
-	frozenend_update_address_external: POINTER is
+	frozen end_update_address_external: POINTER is
 			-- Address of C function `EndUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1675,7 +1675,7 @@ feature
 			"ewg_function_macro_InvalWindowRgn"
 		end
 
-	frozeninval_window_rgn_address_external: POINTER is
+	frozen inval_window_rgn_address_external: POINTER is
 			-- Address of C function `InvalWindowRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1690,7 +1690,7 @@ feature
 			"ewg_function_macro_InvalWindowRect"
 		end
 
-	frozeninval_window_rect_address_external: POINTER is
+	frozen inval_window_rect_address_external: POINTER is
 			-- Address of C function `InvalWindowRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1705,7 +1705,7 @@ feature
 			"ewg_function_macro_ValidWindowRgn"
 		end
 
-	frozenvalid_window_rgn_address_external: POINTER is
+	frozen valid_window_rgn_address_external: POINTER is
 			-- Address of C function `ValidWindowRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1720,7 +1720,7 @@ feature
 			"ewg_function_macro_ValidWindowRect"
 		end
 
-	frozenvalid_window_rect_address_external: POINTER is
+	frozen valid_window_rect_address_external: POINTER is
 			-- Address of C function `ValidWindowRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1735,7 +1735,7 @@ feature
 			"ewg_function_macro_DrawGrowIcon"
 		end
 
-	frozendraw_grow_icon_address_external: POINTER is
+	frozen draw_grow_icon_address_external: POINTER is
 			-- Address of C function `DrawGrowIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1750,7 +1750,7 @@ feature
 			"ewg_function_macro_SetWTitle"
 		end
 
-	frozenset_wtitle_address_external: POINTER is
+	frozen set_wtitle_address_external: POINTER is
 			-- Address of C function `SetWTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1765,7 +1765,7 @@ feature
 			"ewg_function_macro_GetWTitle"
 		end
 
-	frozenget_wtitle_address_external: POINTER is
+	frozen get_wtitle_address_external: POINTER is
 			-- Address of C function `GetWTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1780,7 +1780,7 @@ feature
 			"ewg_function_macro_SetWindowTitleWithCFString"
 		end
 
-	frozenset_window_title_with_cfstring_address_external: POINTER is
+	frozen set_window_title_with_cfstring_address_external: POINTER is
 			-- Address of C function `SetWindowTitleWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1795,7 +1795,7 @@ feature
 			"ewg_function_macro_CopyWindowTitleAsCFString"
 		end
 
-	frozencopy_window_title_as_cfstring_address_external: POINTER is
+	frozen copy_window_title_as_cfstring_address_external: POINTER is
 			-- Address of C function `CopyWindowTitleAsCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1810,7 +1810,7 @@ feature
 			"ewg_function_macro_SetWindowProxyFSSpec"
 		end
 
-	frozenset_window_proxy_fsspec_address_external: POINTER is
+	frozen set_window_proxy_fsspec_address_external: POINTER is
 			-- Address of C function `SetWindowProxyFSSpec'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1825,7 +1825,7 @@ feature
 			"ewg_function_macro_GetWindowProxyFSSpec"
 		end
 
-	frozenget_window_proxy_fsspec_address_external: POINTER is
+	frozen get_window_proxy_fsspec_address_external: POINTER is
 			-- Address of C function `GetWindowProxyFSSpec'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1840,7 +1840,7 @@ feature
 			"ewg_function_macro_HIWindowSetProxyFSRef"
 		end
 
-	frozenhiwindow_set_proxy_fsref_address_external: POINTER is
+	frozen hiwindow_set_proxy_fsref_address_external: POINTER is
 			-- Address of C function `HIWindowSetProxyFSRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1855,7 +1855,7 @@ feature
 			"ewg_function_macro_HIWindowGetProxyFSRef"
 		end
 
-	frozenhiwindow_get_proxy_fsref_address_external: POINTER is
+	frozen hiwindow_get_proxy_fsref_address_external: POINTER is
 			-- Address of C function `HIWindowGetProxyFSRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1870,7 +1870,7 @@ feature
 			"ewg_function_macro_SetWindowProxyAlias"
 		end
 
-	frozenset_window_proxy_alias_address_external: POINTER is
+	frozen set_window_proxy_alias_address_external: POINTER is
 			-- Address of C function `SetWindowProxyAlias'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1885,7 +1885,7 @@ feature
 			"ewg_function_macro_GetWindowProxyAlias"
 		end
 
-	frozenget_window_proxy_alias_address_external: POINTER is
+	frozen get_window_proxy_alias_address_external: POINTER is
 			-- Address of C function `GetWindowProxyAlias'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1900,7 +1900,7 @@ feature
 			"ewg_function_macro_SetWindowProxyCreatorAndType"
 		end
 
-	frozenset_window_proxy_creator_and_type_address_external: POINTER is
+	frozen set_window_proxy_creator_and_type_address_external: POINTER is
 			-- Address of C function `SetWindowProxyCreatorAndType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1915,7 +1915,7 @@ feature
 			"ewg_function_macro_GetWindowProxyIcon"
 		end
 
-	frozenget_window_proxy_icon_address_external: POINTER is
+	frozen get_window_proxy_icon_address_external: POINTER is
 			-- Address of C function `GetWindowProxyIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1930,7 +1930,7 @@ feature
 			"ewg_function_macro_SetWindowProxyIcon"
 		end
 
-	frozenset_window_proxy_icon_address_external: POINTER is
+	frozen set_window_proxy_icon_address_external: POINTER is
 			-- Address of C function `SetWindowProxyIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1945,7 +1945,7 @@ feature
 			"ewg_function_macro_RemoveWindowProxy"
 		end
 
-	frozenremove_window_proxy_address_external: POINTER is
+	frozen remove_window_proxy_address_external: POINTER is
 			-- Address of C function `RemoveWindowProxy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1960,7 +1960,7 @@ feature
 			"ewg_function_macro_BeginWindowProxyDrag"
 		end
 
-	frozenbegin_window_proxy_drag_address_external: POINTER is
+	frozen begin_window_proxy_drag_address_external: POINTER is
 			-- Address of C function `BeginWindowProxyDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1975,7 +1975,7 @@ feature
 			"ewg_function_macro_EndWindowProxyDrag"
 		end
 
-	frozenend_window_proxy_drag_address_external: POINTER is
+	frozen end_window_proxy_drag_address_external: POINTER is
 			-- Address of C function `EndWindowProxyDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1990,7 +1990,7 @@ feature
 			"ewg_function_macro_TrackWindowProxyFromExistingDrag"
 		end
 
-	frozentrack_window_proxy_from_existing_drag_address_external: POINTER is
+	frozen track_window_proxy_from_existing_drag_address_external: POINTER is
 			-- Address of C function `TrackWindowProxyFromExistingDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2005,7 +2005,7 @@ feature
 			"ewg_function_macro_TrackWindowProxyDrag"
 		end
 
-	frozentrack_window_proxy_drag_address_external: POINTER is
+	frozen track_window_proxy_drag_address_external: POINTER is
 			-- Address of C function `TrackWindowProxyDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2020,7 +2020,7 @@ feature
 			"ewg_function_macro_IsWindowModified"
 		end
 
-	frozenis_window_modified_address_external: POINTER is
+	frozen is_window_modified_address_external: POINTER is
 			-- Address of C function `IsWindowModified'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2035,7 +2035,7 @@ feature
 			"ewg_function_macro_SetWindowModified"
 		end
 
-	frozenset_window_modified_address_external: POINTER is
+	frozen set_window_modified_address_external: POINTER is
 			-- Address of C function `SetWindowModified'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2050,7 +2050,7 @@ feature
 			"ewg_function_macro_IsWindowPathSelectClick"
 		end
 
-	frozenis_window_path_select_click_address_external: POINTER is
+	frozen is_window_path_select_click_address_external: POINTER is
 			-- Address of C function `IsWindowPathSelectClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2065,7 +2065,7 @@ feature
 			"ewg_function_macro_IsWindowPathSelectEvent"
 		end
 
-	frozenis_window_path_select_event_address_external: POINTER is
+	frozen is_window_path_select_event_address_external: POINTER is
 			-- Address of C function `IsWindowPathSelectEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2080,7 +2080,7 @@ feature
 			"ewg_function_macro_WindowPathSelect"
 		end
 
-	frozenwindow_path_select_address_external: POINTER is
+	frozen window_path_select_address_external: POINTER is
 			-- Address of C function `WindowPathSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2095,7 +2095,7 @@ feature
 			"ewg_function_macro_HiliteWindowFrameForDrag"
 		end
 
-	frozenhilite_window_frame_for_drag_address_external: POINTER is
+	frozen hilite_window_frame_for_drag_address_external: POINTER is
 			-- Address of C function `HiliteWindowFrameForDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2110,7 +2110,7 @@ feature
 			"ewg_function_macro_TransitionWindow"
 		end
 
-	frozentransition_window_address_external: POINTER is
+	frozen transition_window_address_external: POINTER is
 			-- Address of C function `TransitionWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2125,7 +2125,7 @@ feature
 			"ewg_function_macro_TransitionWindowAndParent"
 		end
 
-	frozentransition_window_and_parent_address_external: POINTER is
+	frozen transition_window_and_parent_address_external: POINTER is
 			-- Address of C function `TransitionWindowAndParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2140,7 +2140,7 @@ feature
 			"ewg_function_macro_TransitionWindowWithOptions"
 		end
 
-	frozentransition_window_with_options_address_external: POINTER is
+	frozen transition_window_with_options_address_external: POINTER is
 			-- Address of C function `TransitionWindowWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2155,7 +2155,7 @@ feature
 			"ewg_function_macro_MoveWindow"
 		end
 
-	frozenmove_window_address_external: POINTER is
+	frozen move_window_address_external: POINTER is
 			-- Address of C function `MoveWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2170,7 +2170,7 @@ feature
 			"ewg_function_macro_SizeWindow"
 		end
 
-	frozensize_window_address_external: POINTER is
+	frozen size_window_address_external: POINTER is
 			-- Address of C function `SizeWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2185,7 +2185,7 @@ feature
 			"ewg_function_macro_GrowWindow"
 		end
 
-	frozengrow_window_address_external: POINTER is
+	frozen grow_window_address_external: POINTER is
 			-- Address of C function `GrowWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2200,7 +2200,7 @@ feature
 			"ewg_function_macro_DragWindow"
 		end
 
-	frozendrag_window_address_external: POINTER is
+	frozen drag_window_address_external: POINTER is
 			-- Address of C function `DragWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2215,7 +2215,7 @@ feature
 			"ewg_function_macro_ZoomWindow"
 		end
 
-	frozenzoom_window_address_external: POINTER is
+	frozen zoom_window_address_external: POINTER is
 			-- Address of C function `ZoomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2230,7 +2230,7 @@ feature
 			"ewg_function_macro_IsWindowCollapsable"
 		end
 
-	frozenis_window_collapsable_address_external: POINTER is
+	frozen is_window_collapsable_address_external: POINTER is
 			-- Address of C function `IsWindowCollapsable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2245,7 +2245,7 @@ feature
 			"ewg_function_macro_IsWindowCollapsed"
 		end
 
-	frozenis_window_collapsed_address_external: POINTER is
+	frozen is_window_collapsed_address_external: POINTER is
 			-- Address of C function `IsWindowCollapsed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2260,7 +2260,7 @@ feature
 			"ewg_function_macro_CollapseWindow"
 		end
 
-	frozencollapse_window_address_external: POINTER is
+	frozen collapse_window_address_external: POINTER is
 			-- Address of C function `CollapseWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2275,7 +2275,7 @@ feature
 			"ewg_function_macro_CollapseAllWindows"
 		end
 
-	frozencollapse_all_windows_address_external: POINTER is
+	frozen collapse_all_windows_address_external: POINTER is
 			-- Address of C function `CollapseAllWindows'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2290,7 +2290,7 @@ feature
 			"ewg_function_macro_CreateQDContextForCollapsedWindowDockTile"
 		end
 
-	frozencreate_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
+	frozen create_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
 			-- Address of C function `CreateQDContextForCollapsedWindowDockTile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2305,7 +2305,7 @@ feature
 			"ewg_function_macro_ReleaseQDContextForCollapsedWindowDockTile"
 		end
 
-	frozenrelease_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
+	frozen release_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
 			-- Address of C function `ReleaseQDContextForCollapsedWindowDockTile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2320,7 +2320,7 @@ feature
 			"ewg_function_macro_UpdateCollapsedWindowDockTile"
 		end
 
-	frozenupdate_collapsed_window_dock_tile_address_external: POINTER is
+	frozen update_collapsed_window_dock_tile_address_external: POINTER is
 			-- Address of C function `UpdateCollapsedWindowDockTile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2335,7 +2335,7 @@ feature
 			"ewg_function_macro_SetWindowDockTileMenu"
 		end
 
-	frozenset_window_dock_tile_menu_address_external: POINTER is
+	frozen set_window_dock_tile_menu_address_external: POINTER is
 			-- Address of C function `SetWindowDockTileMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2350,7 +2350,7 @@ feature
 			"ewg_function_macro_GetWindowDockTileMenu"
 		end
 
-	frozenget_window_dock_tile_menu_address_external: POINTER is
+	frozen get_window_dock_tile_menu_address_external: POINTER is
 			-- Address of C function `GetWindowDockTileMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2365,7 +2365,7 @@ feature
 			"ewg_function_macro_GetWindowBounds"
 		end
 
-	frozenget_window_bounds_address_external: POINTER is
+	frozen get_window_bounds_address_external: POINTER is
 			-- Address of C function `GetWindowBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2380,7 +2380,7 @@ feature
 			"ewg_function_macro_SetWindowResizeLimits"
 		end
 
-	frozenset_window_resize_limits_address_external: POINTER is
+	frozen set_window_resize_limits_address_external: POINTER is
 			-- Address of C function `SetWindowResizeLimits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2395,7 +2395,7 @@ feature
 			"ewg_function_macro_GetWindowResizeLimits"
 		end
 
-	frozenget_window_resize_limits_address_external: POINTER is
+	frozen get_window_resize_limits_address_external: POINTER is
 			-- Address of C function `GetWindowResizeLimits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2410,7 +2410,7 @@ feature
 			"ewg_function_macro_ResizeWindow"
 		end
 
-	frozenresize_window_address_external: POINTER is
+	frozen resize_window_address_external: POINTER is
 			-- Address of C function `ResizeWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2425,7 +2425,7 @@ feature
 			"ewg_function_macro_SetWindowBounds"
 		end
 
-	frozenset_window_bounds_address_external: POINTER is
+	frozen set_window_bounds_address_external: POINTER is
 			-- Address of C function `SetWindowBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2440,7 +2440,7 @@ feature
 			"ewg_function_macro_RepositionWindow"
 		end
 
-	frozenreposition_window_address_external: POINTER is
+	frozen reposition_window_address_external: POINTER is
 			-- Address of C function `RepositionWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2455,7 +2455,7 @@ feature
 			"ewg_function_macro_MoveWindowStructure"
 		end
 
-	frozenmove_window_structure_address_external: POINTER is
+	frozen move_window_structure_address_external: POINTER is
 			-- Address of C function `MoveWindowStructure'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2470,7 +2470,7 @@ feature
 			"ewg_function_macro_IsWindowInStandardState"
 		end
 
-	frozenis_window_in_standard_state_address_external: POINTER is
+	frozen is_window_in_standard_state_address_external: POINTER is
 			-- Address of C function `IsWindowInStandardState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2485,7 +2485,7 @@ feature
 			"ewg_function_macro_ZoomWindowIdeal"
 		end
 
-	frozenzoom_window_ideal_address_external: POINTER is
+	frozen zoom_window_ideal_address_external: POINTER is
 			-- Address of C function `ZoomWindowIdeal'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2500,7 +2500,7 @@ feature
 			"ewg_function_macro_GetWindowIdealUserState"
 		end
 
-	frozenget_window_ideal_user_state_address_external: POINTER is
+	frozen get_window_ideal_user_state_address_external: POINTER is
 			-- Address of C function `GetWindowIdealUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2515,7 +2515,7 @@ feature
 			"ewg_function_macro_SetWindowIdealUserState"
 		end
 
-	frozenset_window_ideal_user_state_address_external: POINTER is
+	frozen set_window_ideal_user_state_address_external: POINTER is
 			-- Address of C function `SetWindowIdealUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2530,7 +2530,7 @@ feature
 			"ewg_function_macro_GetWindowGreatestAreaDevice"
 		end
 
-	frozenget_window_greatest_area_device_address_external: POINTER is
+	frozen get_window_greatest_area_device_address_external: POINTER is
 			-- Address of C function `GetWindowGreatestAreaDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2545,7 +2545,7 @@ feature
 			"ewg_function_macro_ConstrainWindowToScreen"
 		end
 
-	frozenconstrain_window_to_screen_address_external: POINTER is
+	frozen constrain_window_to_screen_address_external: POINTER is
 			-- Address of C function `ConstrainWindowToScreen'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2560,7 +2560,7 @@ feature
 			"ewg_function_macro_GetAvailableWindowPositioningBounds"
 		end
 
-	frozenget_available_window_positioning_bounds_address_external: POINTER is
+	frozen get_available_window_positioning_bounds_address_external: POINTER is
 			-- Address of C function `GetAvailableWindowPositioningBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2575,7 +2575,7 @@ feature
 			"ewg_function_macro_GetAvailableWindowPositioningRegion"
 		end
 
-	frozenget_available_window_positioning_region_address_external: POINTER is
+	frozen get_available_window_positioning_region_address_external: POINTER is
 			-- Address of C function `GetAvailableWindowPositioningRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2590,7 +2590,7 @@ feature
 			"ewg_function_macro_HideWindow"
 		end
 
-	frozenhide_window_address_external: POINTER is
+	frozen hide_window_address_external: POINTER is
 			-- Address of C function `HideWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2605,7 +2605,7 @@ feature
 			"ewg_function_macro_ShowWindow"
 		end
 
-	frozenshow_window_address_external: POINTER is
+	frozen show_window_address_external: POINTER is
 			-- Address of C function `ShowWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2620,7 +2620,7 @@ feature
 			"ewg_function_macro_ShowHide"
 		end
 
-	frozenshow_hide_address_external: POINTER is
+	frozen show_hide_address_external: POINTER is
 			-- Address of C function `ShowHide'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2635,7 +2635,7 @@ feature
 			"ewg_function_macro_IsWindowVisible"
 		end
 
-	frozenis_window_visible_address_external: POINTER is
+	frozen is_window_visible_address_external: POINTER is
 			-- Address of C function `IsWindowVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2650,7 +2650,7 @@ feature
 			"ewg_function_macro_IsWindowLatentVisible"
 		end
 
-	frozenis_window_latent_visible_address_external: POINTER is
+	frozen is_window_latent_visible_address_external: POINTER is
 			-- Address of C function `IsWindowLatentVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2665,7 +2665,7 @@ feature
 			"ewg_function_macro_HIWindowGetAvailability"
 		end
 
-	frozenhiwindow_get_availability_address_external: POINTER is
+	frozen hiwindow_get_availability_address_external: POINTER is
 			-- Address of C function `HIWindowGetAvailability'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2680,7 +2680,7 @@ feature
 			"ewg_function_macro_HIWindowChangeAvailability"
 		end
 
-	frozenhiwindow_change_availability_address_external: POINTER is
+	frozen hiwindow_change_availability_address_external: POINTER is
 			-- Address of C function `HIWindowChangeAvailability'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2695,7 +2695,7 @@ feature
 			"ewg_function_macro_ShowSheetWindow"
 		end
 
-	frozenshow_sheet_window_address_external: POINTER is
+	frozen show_sheet_window_address_external: POINTER is
 			-- Address of C function `ShowSheetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2710,7 +2710,7 @@ feature
 			"ewg_function_macro_HideSheetWindow"
 		end
 
-	frozenhide_sheet_window_address_external: POINTER is
+	frozen hide_sheet_window_address_external: POINTER is
 			-- Address of C function `HideSheetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2725,7 +2725,7 @@ feature
 			"ewg_function_macro_DetachSheetWindow"
 		end
 
-	frozendetach_sheet_window_address_external: POINTER is
+	frozen detach_sheet_window_address_external: POINTER is
 			-- Address of C function `DetachSheetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2740,7 +2740,7 @@ feature
 			"ewg_function_macro_GetSheetWindowParent"
 		end
 
-	frozenget_sheet_window_parent_address_external: POINTER is
+	frozen get_sheet_window_parent_address_external: POINTER is
 			-- Address of C function `GetSheetWindowParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2755,7 +2755,7 @@ feature
 			"ewg_function_macro_GetDrawerPreferredEdge"
 		end
 
-	frozenget_drawer_preferred_edge_address_external: POINTER is
+	frozen get_drawer_preferred_edge_address_external: POINTER is
 			-- Address of C function `GetDrawerPreferredEdge'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2770,7 +2770,7 @@ feature
 			"ewg_function_macro_SetDrawerPreferredEdge"
 		end
 
-	frozenset_drawer_preferred_edge_address_external: POINTER is
+	frozen set_drawer_preferred_edge_address_external: POINTER is
 			-- Address of C function `SetDrawerPreferredEdge'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2785,7 +2785,7 @@ feature
 			"ewg_function_macro_GetDrawerCurrentEdge"
 		end
 
-	frozenget_drawer_current_edge_address_external: POINTER is
+	frozen get_drawer_current_edge_address_external: POINTER is
 			-- Address of C function `GetDrawerCurrentEdge'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2800,7 +2800,7 @@ feature
 			"ewg_function_macro_GetDrawerState"
 		end
 
-	frozenget_drawer_state_address_external: POINTER is
+	frozen get_drawer_state_address_external: POINTER is
 			-- Address of C function `GetDrawerState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2815,7 +2815,7 @@ feature
 			"ewg_function_macro_GetDrawerParent"
 		end
 
-	frozenget_drawer_parent_address_external: POINTER is
+	frozen get_drawer_parent_address_external: POINTER is
 			-- Address of C function `GetDrawerParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2830,7 +2830,7 @@ feature
 			"ewg_function_macro_SetDrawerParent"
 		end
 
-	frozenset_drawer_parent_address_external: POINTER is
+	frozen set_drawer_parent_address_external: POINTER is
 			-- Address of C function `SetDrawerParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2845,7 +2845,7 @@ feature
 			"ewg_function_macro_SetDrawerOffsets"
 		end
 
-	frozenset_drawer_offsets_address_external: POINTER is
+	frozen set_drawer_offsets_address_external: POINTER is
 			-- Address of C function `SetDrawerOffsets'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2860,7 +2860,7 @@ feature
 			"ewg_function_macro_GetDrawerOffsets"
 		end
 
-	frozenget_drawer_offsets_address_external: POINTER is
+	frozen get_drawer_offsets_address_external: POINTER is
 			-- Address of C function `GetDrawerOffsets'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2875,7 +2875,7 @@ feature
 			"ewg_function_macro_ToggleDrawer"
 		end
 
-	frozentoggle_drawer_address_external: POINTER is
+	frozen toggle_drawer_address_external: POINTER is
 			-- Address of C function `ToggleDrawer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2890,7 +2890,7 @@ feature
 			"ewg_function_macro_OpenDrawer"
 		end
 
-	frozenopen_drawer_address_external: POINTER is
+	frozen open_drawer_address_external: POINTER is
 			-- Address of C function `OpenDrawer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2905,7 +2905,7 @@ feature
 			"ewg_function_macro_CloseDrawer"
 		end
 
-	frozenclose_drawer_address_external: POINTER is
+	frozen close_drawer_address_external: POINTER is
 			-- Address of C function `CloseDrawer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2920,7 +2920,7 @@ feature
 			"ewg_function_macro_DisableScreenUpdates"
 		end
 
-	frozendisable_screen_updates_address_external: POINTER is
+	frozen disable_screen_updates_address_external: POINTER is
 			-- Address of C function `DisableScreenUpdates'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2935,7 +2935,7 @@ feature
 			"ewg_function_macro_EnableScreenUpdates"
 		end
 
-	frozenenable_screen_updates_address_external: POINTER is
+	frozen enable_screen_updates_address_external: POINTER is
 			-- Address of C function `EnableScreenUpdates'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2950,7 +2950,7 @@ feature
 			"ewg_function_macro_SetWindowToolbar"
 		end
 
-	frozenset_window_toolbar_address_external: POINTER is
+	frozen set_window_toolbar_address_external: POINTER is
 			-- Address of C function `SetWindowToolbar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2965,7 +2965,7 @@ feature
 			"ewg_function_macro_GetWindowToolbar"
 		end
 
-	frozenget_window_toolbar_address_external: POINTER is
+	frozen get_window_toolbar_address_external: POINTER is
 			-- Address of C function `GetWindowToolbar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2980,7 +2980,7 @@ feature
 			"ewg_function_macro_ShowHideWindowToolbar"
 		end
 
-	frozenshow_hide_window_toolbar_address_external: POINTER is
+	frozen show_hide_window_toolbar_address_external: POINTER is
 			-- Address of C function `ShowHideWindowToolbar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2995,7 +2995,7 @@ feature
 			"ewg_function_macro_IsWindowToolbarVisible"
 		end
 
-	frozenis_window_toolbar_visible_address_external: POINTER is
+	frozen is_window_toolbar_visible_address_external: POINTER is
 			-- Address of C function `IsWindowToolbarVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3010,7 +3010,7 @@ feature
 			"ewg_function_macro_SetWindowAlpha"
 		end
 
-	frozenset_window_alpha_address_external: POINTER is
+	frozen set_window_alpha_address_external: POINTER is
 			-- Address of C function `SetWindowAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3025,7 +3025,7 @@ feature
 			"ewg_function_macro_GetWindowAlpha"
 		end
 
-	frozenget_window_alpha_address_external: POINTER is
+	frozen get_window_alpha_address_external: POINTER is
 			-- Address of C function `GetWindowAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3040,7 +3040,7 @@ feature
 			"ewg_function_macro_HIWindowInvalidateShadow"
 		end
 
-	frozenhiwindow_invalidate_shadow_address_external: POINTER is
+	frozen hiwindow_invalidate_shadow_address_external: POINTER is
 			-- Address of C function `HIWindowInvalidateShadow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3055,7 +3055,7 @@ feature
 			"ewg_function_macro_HIWindowGetScaleMode"
 		end
 
-	frozenhiwindow_get_scale_mode_address_external: POINTER is
+	frozen hiwindow_get_scale_mode_address_external: POINTER is
 			-- Address of C function `HIWindowGetScaleMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3070,7 +3070,7 @@ feature
 			"ewg_function_macro_GetWindowProperty"
 		end
 
-	frozenget_window_property_address_external: POINTER is
+	frozen get_window_property_address_external: POINTER is
 			-- Address of C function `GetWindowProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3085,7 +3085,7 @@ feature
 			"ewg_function_macro_GetWindowPropertySize"
 		end
 
-	frozenget_window_property_size_address_external: POINTER is
+	frozen get_window_property_size_address_external: POINTER is
 			-- Address of C function `GetWindowPropertySize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3100,7 +3100,7 @@ feature
 			"ewg_function_macro_SetWindowProperty"
 		end
 
-	frozenset_window_property_address_external: POINTER is
+	frozen set_window_property_address_external: POINTER is
 			-- Address of C function `SetWindowProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3115,7 +3115,7 @@ feature
 			"ewg_function_macro_RemoveWindowProperty"
 		end
 
-	frozenremove_window_property_address_external: POINTER is
+	frozen remove_window_property_address_external: POINTER is
 			-- Address of C function `RemoveWindowProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3130,7 +3130,7 @@ feature
 			"ewg_function_macro_GetWindowPropertyAttributes"
 		end
 
-	frozenget_window_property_attributes_address_external: POINTER is
+	frozen get_window_property_attributes_address_external: POINTER is
 			-- Address of C function `GetWindowPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3145,7 +3145,7 @@ feature
 			"ewg_function_macro_ChangeWindowPropertyAttributes"
 		end
 
-	frozenchange_window_property_attributes_address_external: POINTER is
+	frozen change_window_property_attributes_address_external: POINTER is
 			-- Address of C function `ChangeWindowPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3160,7 +3160,7 @@ feature
 			"ewg_function_macro_PinRect"
 		end
 
-	frozenpin_rect_address_external: POINTER is
+	frozen pin_rect_address_external: POINTER is
 			-- Address of C function `PinRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3175,7 +3175,7 @@ feature
 			"ewg_function_macro_GetGrayRgn"
 		end
 
-	frozenget_gray_rgn_address_external: POINTER is
+	frozen get_gray_rgn_address_external: POINTER is
 			-- Address of C function `GetGrayRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3190,7 +3190,7 @@ feature
 			"ewg_function_macro_TrackBox"
 		end
 
-	frozentrack_box_address_external: POINTER is
+	frozen track_box_address_external: POINTER is
 			-- Address of C function `TrackBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3205,7 +3205,7 @@ feature
 			"ewg_function_macro_TrackGoAway"
 		end
 
-	frozentrack_go_away_address_external: POINTER is
+	frozen track_go_away_address_external: POINTER is
 			-- Address of C function `TrackGoAway'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3220,7 +3220,7 @@ feature
 			"ewg_function_macro_DragGrayRgn"
 		end
 
-	frozendrag_gray_rgn_address_external: POINTER is
+	frozen drag_gray_rgn_address_external: POINTER is
 			-- Address of C function `DragGrayRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3235,7 +3235,7 @@ feature
 			"ewg_function_macro_DragTheRgn"
 		end
 
-	frozendrag_the_rgn_address_external: POINTER is
+	frozen drag_the_rgn_address_external: POINTER is
 			-- Address of C function `DragTheRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3250,7 +3250,7 @@ feature
 			"ewg_function_macro_GetWindowList"
 		end
 
-	frozenget_window_list_address_external: POINTER is
+	frozen get_window_list_address_external: POINTER is
 			-- Address of C function `GetWindowList'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3265,7 +3265,7 @@ feature
 			"ewg_function_macro_GetWindowPort"
 		end
 
-	frozenget_window_port_address_external: POINTER is
+	frozen get_window_port_address_external: POINTER is
 			-- Address of C function `GetWindowPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3280,7 +3280,7 @@ feature
 			"ewg_function_macro_GetWindowStructurePort"
 		end
 
-	frozenget_window_structure_port_address_external: POINTER is
+	frozen get_window_structure_port_address_external: POINTER is
 			-- Address of C function `GetWindowStructurePort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3295,7 +3295,7 @@ feature
 			"ewg_function_macro_GetWindowKind"
 		end
 
-	frozenget_window_kind_address_external: POINTER is
+	frozen get_window_kind_address_external: POINTER is
 			-- Address of C function `GetWindowKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3310,7 +3310,7 @@ feature
 			"ewg_function_macro_IsWindowHilited"
 		end
 
-	frozenis_window_hilited_address_external: POINTER is
+	frozen is_window_hilited_address_external: POINTER is
 			-- Address of C function `IsWindowHilited'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3325,7 +3325,7 @@ feature
 			"ewg_function_macro_IsWindowUpdatePending"
 		end
 
-	frozenis_window_update_pending_address_external: POINTER is
+	frozen is_window_update_pending_address_external: POINTER is
 			-- Address of C function `IsWindowUpdatePending'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3340,7 +3340,7 @@ feature
 			"ewg_function_macro_GetNextWindow"
 		end
 
-	frozenget_next_window_address_external: POINTER is
+	frozen get_next_window_address_external: POINTER is
 			-- Address of C function `GetNextWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3355,7 +3355,7 @@ feature
 			"ewg_function_macro_GetPreviousWindow"
 		end
 
-	frozenget_previous_window_address_external: POINTER is
+	frozen get_previous_window_address_external: POINTER is
 			-- Address of C function `GetPreviousWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3370,7 +3370,7 @@ feature
 			"ewg_function_macro_GetWindowStandardState"
 		end
 
-	frozenget_window_standard_state_address_external: POINTER is
+	frozen get_window_standard_state_address_external: POINTER is
 			-- Address of C function `GetWindowStandardState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3385,7 +3385,7 @@ feature
 			"ewg_function_macro_GetWindowUserState"
 		end
 
-	frozenget_window_user_state_address_external: POINTER is
+	frozen get_window_user_state_address_external: POINTER is
 			-- Address of C function `GetWindowUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3400,7 +3400,7 @@ feature
 			"ewg_function_macro_SetWindowKind"
 		end
 
-	frozenset_window_kind_address_external: POINTER is
+	frozen set_window_kind_address_external: POINTER is
 			-- Address of C function `SetWindowKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3415,7 +3415,7 @@ feature
 			"ewg_function_macro_SetWindowStandardState"
 		end
 
-	frozenset_window_standard_state_address_external: POINTER is
+	frozen set_window_standard_state_address_external: POINTER is
 			-- Address of C function `SetWindowStandardState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3430,7 +3430,7 @@ feature
 			"ewg_function_macro_SetWindowUserState"
 		end
 
-	frozenset_window_user_state_address_external: POINTER is
+	frozen set_window_user_state_address_external: POINTER is
 			-- Address of C function `SetWindowUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3445,7 +3445,7 @@ feature
 			"ewg_function_macro_SetPortWindowPort"
 		end
 
-	frozenset_port_window_port_address_external: POINTER is
+	frozen set_port_window_port_address_external: POINTER is
 			-- Address of C function `SetPortWindowPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3460,7 +3460,7 @@ feature
 			"ewg_function_macro_GetWindowPortBounds"
 		end
 
-	frozenget_window_port_bounds_address_external: POINTER is
+	frozen get_window_port_bounds_address_external: POINTER is
 			-- Address of C function `GetWindowPortBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3475,7 +3475,7 @@ feature
 			"ewg_function_macro_GetWindowFromPort"
 		end
 
-	frozenget_window_from_port_address_external: POINTER is
+	frozen get_window_from_port_address_external: POINTER is
 			-- Address of C function `GetWindowFromPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

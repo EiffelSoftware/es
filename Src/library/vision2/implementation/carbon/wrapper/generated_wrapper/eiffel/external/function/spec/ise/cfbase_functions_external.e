@@ -10,7 +10,7 @@ feature
 			"ewg_function___CFRangeMake"
 		end
 
-	frozencfrange_make_address_external: POINTER is
+	frozen cfrange_make_address_external: POINTER is
 			-- Address of C function `__CFRangeMake'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_CFNullGetTypeID"
 		end
 
-	frozencfnull_get_type_id_address_external: POINTER is
+	frozen cfnull_get_type_id_address_external: POINTER is
 			-- Address of C function `CFNullGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_CFAllocatorGetTypeID"
 		end
 
-	frozencfallocator_get_type_id_address_external: POINTER is
+	frozen cfallocator_get_type_id_address_external: POINTER is
 			-- Address of C function `CFAllocatorGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_CFAllocatorSetDefault"
 		end
 
-	frozencfallocator_set_default_address_external: POINTER is
+	frozen cfallocator_set_default_address_external: POINTER is
 			-- Address of C function `CFAllocatorSetDefault'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_CFAllocatorGetDefault"
 		end
 
-	frozencfallocator_get_default_address_external: POINTER is
+	frozen cfallocator_get_default_address_external: POINTER is
 			-- Address of C function `CFAllocatorGetDefault'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_CFAllocatorCreate"
 		end
 
-	frozencfallocator_create_address_external: POINTER is
+	frozen cfallocator_create_address_external: POINTER is
 			-- Address of C function `CFAllocatorCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CFAllocatorAllocate"
 		end
 
-	frozencfallocator_allocate_address_external: POINTER is
+	frozen cfallocator_allocate_address_external: POINTER is
 			-- Address of C function `CFAllocatorAllocate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CFAllocatorReallocate"
 		end
 
-	frozencfallocator_reallocate_address_external: POINTER is
+	frozen cfallocator_reallocate_address_external: POINTER is
 			-- Address of C function `CFAllocatorReallocate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_CFAllocatorDeallocate"
 		end
 
-	frozencfallocator_deallocate_address_external: POINTER is
+	frozen cfallocator_deallocate_address_external: POINTER is
 			-- Address of C function `CFAllocatorDeallocate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_CFAllocatorGetPreferredSizeForSize"
 		end
 
-	frozencfallocator_get_preferred_size_for_size_address_external: POINTER is
+	frozen cfallocator_get_preferred_size_for_size_address_external: POINTER is
 			-- Address of C function `CFAllocatorGetPreferredSizeForSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_CFAllocatorGetContext"
 		end
 
-	frozencfallocator_get_context_address_external: POINTER is
+	frozen cfallocator_get_context_address_external: POINTER is
 			-- Address of C function `CFAllocatorGetContext'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_CFGetTypeID"
 		end
 
-	frozencfget_type_id_address_external: POINTER is
+	frozen cfget_type_id_address_external: POINTER is
 			-- Address of C function `CFGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_CFCopyTypeIDDescription"
 		end
 
-	frozencfcopy_type_iddescription_address_external: POINTER is
+	frozen cfcopy_type_iddescription_address_external: POINTER is
 			-- Address of C function `CFCopyTypeIDDescription'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CFRetain"
 		end
 
-	frozencfretain_address_external: POINTER is
+	frozen cfretain_address_external: POINTER is
 			-- Address of C function `CFRetain'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CFRelease"
 		end
 
-	frozencfrelease_address_external: POINTER is
+	frozen cfrelease_address_external: POINTER is
 			-- Address of C function `CFRelease'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_CFGetRetainCount"
 		end
 
-	frozencfget_retain_count_address_external: POINTER is
+	frozen cfget_retain_count_address_external: POINTER is
 			-- Address of C function `CFGetRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CFMakeCollectable"
 		end
 
-	frozencfmake_collectable_address_external: POINTER is
+	frozen cfmake_collectable_address_external: POINTER is
 			-- Address of C function `CFMakeCollectable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_CFEqual"
 		end
 
-	frozencfequal_address_external: POINTER is
+	frozen cfequal_address_external: POINTER is
 			-- Address of C function `CFEqual'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_CFHash"
 		end
 
-	frozencfhash_address_external: POINTER is
+	frozen cfhash_address_external: POINTER is
 			-- Address of C function `CFHash'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_CFCopyDescription"
 		end
 
-	frozencfcopy_description_address_external: POINTER is
+	frozen cfcopy_description_address_external: POINTER is
 			-- Address of C function `CFCopyDescription'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CFGetAllocator"
 		end
 
-	frozencfget_allocator_address_external: POINTER is
+	frozen cfget_allocator_address_external: POINTER is
 			-- Address of C function `CFGetAllocator'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
