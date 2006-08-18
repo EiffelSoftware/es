@@ -255,7 +255,7 @@ feature -- Status report
 	selected_item: like item is
 			-- Page displayed topmost.
 		do
-			Resukt := i_th ( selected_item_index )
+			Result := i_th ( selected_item_index )
 		end
 
 	selected_item_index: INTEGER is
