@@ -143,9 +143,25 @@ feature -- Access
 			-- Global list of windows.
 		local
 			list: LINKED_LIST [EV_WINDOW]
+			w: EV_WINDOW_IMP
+			id: IDENTIFIED
 		do
+			create id
 			create list.make
 			Result := list
+			from
+				window_oids.start
+			until
+				window_oids.after
+			loop
+				w ?= id.id_object (window_oids.item)
+				if w = Void or else w.is_destroyed then
+					window_oids.prune_all (window_oids.item)
+				else
+					list.extend (w.interface)
+					window_oids.forth
+				end
+			end
 		end
 
 feature -- creation and destruction

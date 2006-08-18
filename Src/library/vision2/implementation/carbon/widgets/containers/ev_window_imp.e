@@ -79,32 +79,32 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create the window.
-			local
-					window_attributes: INTEGER
-					rect: RECT_STRUCT
-					res: INTEGER
-					ptr: POINTER
-					root_control_ptr : POINTER
-					target: POINTER
-					h_ret: POINTER
-			do
-					base_make (an_interface)
-					create rect.make_new_shared
+		local
+			window_attributes: INTEGER
+			rect: RECT_STRUCT
+			res: INTEGER
+			ptr: POINTER
+			root_control_ptr : POINTER
+			target: POINTER
+			h_ret: POINTER
+		do
+			base_make (an_interface)
+			create rect.make_new_shared
 
-					rect.set_bottom (46)
-					rect.set_left (45)
-					rect.set_right (46)
-					rect.set_top (45)
-					window_attributes := ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowCompositingAttribute)
-					res := create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
-					res := create_root_control_external( ptr, $root_control_ptr )
-					set_c_object (ptr)
-					allow_resize
+			rect.set_bottom (46)
+			rect.set_left (45)
+			rect.set_right (46)
+			rect.set_top (45)
+			window_attributes := ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowCompositingAttribute)
+			res := create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
+			res := create_root_control_external( ptr, $root_control_ptr )
+			set_c_object (ptr)
+			allow_resize
 
-					id := app_implementation.get_id (current)  --getting an id from the application
-					target := get_window_event_target_external(ptr)
-					h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
-			end
+			id := app_implementation.get_id (current)  --getting an id from the application
+			target := get_window_event_target_external(ptr)
+			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
+		end
 
 	initialize is
 			-- Create the vertical box `vbox' and horizontal box `hbox'
@@ -262,6 +262,7 @@ feature -- Element change
 		end
 
 	setup_window_binding (a_control : POINTER) is
+			-- What does this do?
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -304,41 +305,20 @@ feature -- Element change
 			-- Set the horizontal size to `a_width'.
 			-- Set the vertical size to `a_height'.
 		do
-			set_width(a_width)
-			set_height(a_height)
+			set_width (a_width)
+			set_height (a_height)
 		end
-
 
 	set_title (new_title: STRING_GENERAL) is
 			-- Set `title' to `new_title'.
-			local
-			c_str: C_STRING
-			ptr: POINTER
+		local
 			res: INTEGER
+			cfstring: EV_CARBON_CF_STRING
 		do
-			create c_str.make (new_title)
-			ptr := c_string_to_cfstring_ptr(c_str)
-			res := set_window_title_with_cfstring_external (c_object, ptr)
+			create cfstring.make_unshared_with_eiffel_string (new_title)
+			res := set_window_title_with_cfstring_external (c_object, cfstring.item)
 			title := new_title
 		end
-
-	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
-			local
-				null_ptr:POINTER
-			do
-				Result:= cfstring_create_with_cstring_external(null_ptr, c_str.item,  kCFStringEncodingASCII)
-			end
-
-	frozen kCFStringEncodingASCII: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-		"kCFStringEncodingASCII"
-	end
-
-
-
-
 
 	set_menu_bar (a_menu_bar: EV_MENU_BAR) is
 			-- Set `menu_bar' to `a_menu_bar'.
@@ -448,6 +428,7 @@ feature {NONE} -- Implementation
 	initialize_client_area is
 			-- Initialize the client area of 'Current'.
 		do
+			-- TODO: init vbox/hbox?
 			app_implementation.window_oids.extend (internal_id)
 		end
 
@@ -458,23 +439,12 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
-feature {EV_ACCELERATOR_IMP} -- Implementation
-
-	vbox: POINTER
-			-- Vertical_box to have a possibility for a menu on the
-			-- top and a status bar at the bottom.
-
 feature {EV_INTERMEDIARY_ROUTINES}
 
 	call_close_request_actions is
 			-- Call the close request actions.
 		do
 		end
-
-feature {EV_CLIPBOARD_IMP} -- Implementation
-
-	hbox: POINTER
-			-- Horizontal box for the child.
 
 feature {EV_ANY_I} -- Implementation
 

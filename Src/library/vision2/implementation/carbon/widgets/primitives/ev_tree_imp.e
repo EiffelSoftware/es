@@ -32,7 +32,6 @@ inherit
 			pre_pick_steps,
 			post_drop_steps,
 			call_pebble_function,
-			visual_widget,
 			needs_event_box,
 			on_pointer_motion
 		end
@@ -76,6 +75,7 @@ feature {NONE} -- Initialization
 			rect.set_right(100)
 			rect.set_bottom(40)
 			rect.set_top (20)
+			app_implementation.windows.start
 			window ?= app_implementation.windows.item.implementation -- HACK
 			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
 			set_c_object (ptr)
@@ -111,12 +111,6 @@ feature {NONE} -- Initialization
 				end
 			end
 			previous_selected_item := a_selected_item
-		end
-
-	visual_widget: POINTER is
-			-- Visible widget on screen.
-		do
-			Result := tree_view
 		end
 
 	initialize_model is
@@ -471,30 +465,12 @@ feature {EV_TREE_NODE_IMP} -- Implementation
 
 	set_text_on_position (a_tree_node_imp: EV_TREE_NODE_IMP; a_text: STRING_GENERAL) is
 			-- Set cell text at to `a_text'.
-		local
-			str_value: POINTER
 		do
---			a_cs := App_implementation.reusable_gtk_c_string
---			a_cs.share_with_eiffel_string (a_text)
---			str_value := g_value_string_struct
---			{EV_GTK_DEPENDENT_EXTERNALS}.g_value_take_string (str_value, a_cs.item)
---			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_store_set_value (tree_store, a_tree_node_imp.list_iter.item, 1, str_value)
-		end
-
-	g_value_string_struct: POINTER is
-			-- Optimization for GValue struct access
-		once
---			Result := {EV_GTK_DEPENDENT_EXTERNALS}.c_g_value_struct_allocate
---			{EV_GTK_DEPENDENT_EXTERNALS}.g_value_init_string (Result)
 		end
 
 	update_row_pixmap (a_tree_node_imp: EV_TREE_NODE_IMP) is
 			-- Set the pixmap for `a_tree_node_imp'.
-		local
-			a_pix: POINTER
 		do
---			a_pix := a_tree_node_imp.gdk_pixbuf
---			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_store_set_pixbuf (tree_store, a_tree_node_imp.list_iter.item, 0, a_pix)
 		end
 
 	tree_store: POINTER
@@ -520,17 +496,8 @@ feature {EV_TREE_NODE_IMP} -- Implementation
 
 	row_height: INTEGER is
 			-- Height of rows in `Current'
-		local
-			a_column_ptr: POINTER
-			a_x, a_y, a_width, a_height: INTEGER
 		do
---			a_column_ptr := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_column (tree_view, 0)
---			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_column_cell_get_size (a_column_ptr, NULL, $a_x, $a_y, $a_width, $a_height)
---			Result := a_height
 		end
-
-	tree_view: POINTER
-			-- Pointer to the gtktree widget.
 
 feature {NONE} -- Implementation
 
@@ -555,18 +522,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_TREE;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_TREE_IMP
 
