@@ -66,6 +66,7 @@ feature {NONE} -- Initialization
 			ptr: POINTER
 			rect : RECT_STRUCT
 			ret: INTEGER
+			window: EV_WINDOW_IMP
 		do
 			base_make (an_interface)
 
@@ -75,7 +76,8 @@ feature {NONE} -- Initialization
 			rect.set_right(100)
 			rect.set_bottom(40)
 			rect.set_top (20)
-			ret := create_data_browser_control_external (app_implementation.windows.item.c_object, rect.item, kDataBrowserListView, $ptr)
+			window ?= app_implementation.windows.item.implementation -- HACK
+			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
 			set_c_object (ptr)
 		end
 

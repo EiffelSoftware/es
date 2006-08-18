@@ -77,6 +77,7 @@ feature -- Element change
 			ret: INTEGER
 			t: STRING
 			i: INTEGER
+			cfstring: EV_CARBON_CF_STRING
 		do
 			-- Get rid of the & sign which denotes a shortcut key
 			t := a_text.as_string_8
@@ -86,7 +87,8 @@ feature -- Element change
 			end
 
 			ptr := c_object
-			ret := set_menu_title_with_cfstring_external (ptr, string_to_cfstring(t))
+			create cfstring.make_unshared_with_eiffel_string (t)
+			ret := set_menu_title_with_cfstring_external (ptr, cfstring.item)
 			text := a_text
 		end
 
