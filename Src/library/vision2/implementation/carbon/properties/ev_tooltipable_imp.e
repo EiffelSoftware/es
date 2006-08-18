@@ -29,7 +29,7 @@ feature -- Initialization
 	tooltip: STRING_32 is
 			-- Tooltip that has been set.
 		do
-			create Result.make_empty
+			Result := tooltip_text.string
 		end
 
 feature -- Element change
@@ -37,22 +37,51 @@ feature -- Element change
 	set_tooltip (a_text: STRING_GENERAL) is
 			-- Set `tooltip' to `a_text'.
 		local
-			hmrect: HMHELP_CONTENT_REC_STRUCT
-			hm_rect : HMHELP_CONTENT_REC_STRUCT
-			hm: HMHELP_CONTENT_STRUCT
+			ret: INTEGER
 		do
-			create hm_rect.make_new_unshared
-			create hm.make_new_unshared
-		
-
+			create tooltip_text.make_unshared_with_eiffel_string (a_text)
+			ret := set_tool_tip_external (tooltip_text.item, c_object)
 		end
+
+
 
 feature {NONE} -- Implementation
 
-	tooltips_pointer: POINTER is
-			-- Pointer to the tooltips pointer
-		do
+		set_tool_tip_external (a_cf_string_ptr: POINTER; a_object: POINTER): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					    OSStatus status;
+					    HMHelpContentRec helpTag;
+					    helpTag.version = kMacHelpVersion;
+					    helpTag.tagSide = kHMDefaultSide;
+					    SetRect (&helpTag.absHotRect, 0, 0, 0, 0);
+					    helpTag.content[kHMMinimumContentIndex].contentType = kHMCFStringLocalizedContent;
+					    helpTag.content[kHMMinimumContentIndex].u.tagCFString = $a_cf_string_ptr;
+					    helpTag.content[kHMMaximumContentIndex].contentType = kHMNoContent;
+					    status = HMSetControlHelpContent ($a_object, &helpTag);
+				}
+			]"
 		end
+
+		get_tool_tip_external (out_cfstring: POINTER; a_object: POINTER): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					    OSStatus status;
+					    HMHelpContentRec helpTag;
+					    status = HMGetControlHelpContent ($a_object, &helpTag);
+					    $out_cfstring = helpTag.content[kHMMinimumContentIndex].u.tagCFString;
+				}
+			]"
+		end
+	tooltip_text: EV_CARBON_CF_STRING
 
 feature {EV_ANY_I} -- Implementation
 

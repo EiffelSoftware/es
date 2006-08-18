@@ -32,7 +32,6 @@ inherit
 			destroy,
 			call_button_event_actions,
 			initialize,
-			tooltips_pointer,
 			set_tooltip,
 			tooltip,
 			on_pointer_enter_leave,
