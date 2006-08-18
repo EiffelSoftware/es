@@ -49,9 +49,7 @@ feature {NONE} -- Implementation
 		local
 			v_imp : EV_WIDGET_IMP
 			err : INTEGER
-			bounds: RECT_STRUCT
 		do
-			--create bounds.make_new_shared
 			if v /= Void then
 				v_imp ?= v.implementation
 				check

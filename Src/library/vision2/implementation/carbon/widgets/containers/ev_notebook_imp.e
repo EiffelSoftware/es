@@ -24,7 +24,8 @@ inherit
 			interface,
 			replace,
 			initialize,
-			remove_i_th
+			remove_i_th,
+			insert_i_th
 		end
 
 	EV_FONTABLE_IMP
@@ -298,7 +299,40 @@ feature -- Element change
 			-- Remove item at `i'-th position.
 		do
 			Precursor {EV_WIDGET_LIST_IMP} (i)
+			set_control32bit_value_external ( c_object, i )
+			set_control32bit_maximum_external ( c_object, count )
+		end
 
+	insert_i_th (v: like item; i: INTEGER) is
+			-- Insert `v' at position `i'.
+		local
+			info_rec : CONTROL_TAB_INFO_REC_V1_STRUCT
+			err : INTEGER
+			name : EV_CARBON_CF_STRING
+			w_imp : EV_WIDGET_IMP
+			actual_size : INTEGER
+			a_rect : RECT_STRUCT
+		do
+			Precursor {EV_WIDGET_LIST_IMP} ( v, i )
+			create name.make_unshared_with_eiffel_string ( "Page " + i.out )
+			create info_rec.make_new_unshared
+			info_rec.set_version ( {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfoversionone )
+			info_rec.set_name ( name.item )
+			info_rec.set_iconsuiteid ( 0 )
+			set_control32bit_maximum_external ( c_object, count )
+			err := set_control_data_external ( c_object, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfotag, info_rec.sizeof, info_rec.item )
+
+			w_imp ?= v.implementation
+			check
+				not_void : w_imp /=  Void
+			end
+			err := hiview_add_subview_external ( c_object, w_imp.c_object )
+			create a_rect.make_new_unshared
+			err := get_control_data_struct ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item )
+			a_rect.set_top ( a_rect.top + 35 )
+			set_control_bounds_external ( w_imp.c_object, a_rect.item )
+			bind_to_tabcontrol ( w_imp.c_object, c_object )
+			set_control32bit_value_external ( c_object, 1 )
 		end
 
 	replace (v: like item) is
@@ -352,6 +386,24 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 			-- Called when the page is switched.
 		do
 
+		end
+
+	get_control_data_struct (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; insize : INTEGER; outstruct : POINTER): INTEGER is
+			-- get a boolean value with get_control_data
+			-- Returns 0 if everything was ok, a Mac Error code otherwise
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Size ActualSize;
+					OSErr res = GetControlData( $incontrol, $inpart, $intagname, $insize, $outstruct, &ActualSize );
+					if ( ActualSize == $insize )
+						return res;
+					else
+						return -res;
+				}
+			]"
 		end
 
 
