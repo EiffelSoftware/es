@@ -65,8 +65,9 @@ feature {NONE} -- Initialization
 			-- Initialize default options, colors and sizes.
 		do
 			Precursor {EV_PICK_AND_DROPABLE_IMP}
+			internal_minimum_width := -1
+			internal_minimum_height := -1
 			set_is_initialized (True)
-
 		end
 
 	initialize_file_drop (a_widget: POINTER) is

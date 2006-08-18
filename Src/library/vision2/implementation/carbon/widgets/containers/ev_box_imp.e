@@ -22,9 +22,7 @@ inherit
 	EV_WIDGET_LIST_IMP
 		redefine
 			interface,
-			needs_event_box,
-			minimum_height,
-			minimum_width
+			needs_event_box
 		end
 
 feature -- Access
@@ -73,44 +71,6 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 		do
 
 		end
-
-feature -- Measturement
-
-	minimum_width: INTEGER is
-			-- Minimum width that the widget may occupy.
-	local
-		a, b: INTEGER
-	do
-		a := internal_minimum_width
-		from
-			b := 0
-			start
-		until
-			index > count
-		loop
-			b := b + item.minimum_width
-			forth
-		end
-		Result := a.max (b)
-	end
-
-	minimum_height: INTEGER is
-			-- Minimum width that the widget may occupy.
-	local
-		a, b: INTEGER
-	do
-		a := internal_minimum_height
-		from
-			b := 0
-			start
-		until
-			index > count
-		loop
-			b := b + item.minimum_height
-			forth
-		end
-		Result := a.max (b)
-	end
 
 feature {EV_ANY_I} -- Implementation
 

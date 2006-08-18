@@ -22,7 +22,9 @@ inherit
 	EV_BOX_IMP
 		redefine
 			interface,
-			make
+			make,
+			minimum_width,
+			minimum_height
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -52,6 +54,46 @@ feature {NONE} -- Initialization
 			err := create_user_pane_control_external ( null, rect.item, 0, $dummy_control )
 			err := hiview_add_subview_external ( c_object, dummy_control )
 		end
+
+feature -- Measturement
+
+	minimum_width: INTEGER is
+			-- The minimum width of a vertical box is the maximum of the minimum_width's of its children
+	local
+		a, b: INTEGER
+	do
+		a := internal_minimum_width
+		from
+			b := 0
+			start
+		until
+			index > count
+		loop
+			b := b.max(item.minimum_width)
+			forth
+		end
+		Result := a.max (b)
+	end
+
+	minimum_height: INTEGER is
+			-- The minimum height of a horizontal box is the sum of the minimum_width's of its children
+	local
+		a, b: INTEGER
+	do
+		a := internal_minimum_height
+		from
+			b := 0
+			start
+		until
+			index > count
+		loop
+			b := b + item.minimum_height
+			forth
+		end
+		Result := a.max (b)
+	end
+
+feature -- Implementation
 
 	dummy_control : POINTER
 

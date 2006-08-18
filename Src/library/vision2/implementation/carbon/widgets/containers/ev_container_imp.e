@@ -23,7 +23,9 @@ inherit
 			interface,
 			initialize,
 			destroy,
-			set_parent_imp
+			set_parent_imp,
+			minimum_width,
+			minimum_height
 		end
 
 	EV_CONTAINER_ACTION_SEQUENCES_IMP
@@ -89,6 +91,28 @@ feature -- Element change
 				on_new_item (w)
 			end
 
+		end
+
+feature -- Measurement
+
+	minimum_width: INTEGER is
+			-- If not set otherwise, the minimum width of a container is equal to the minimum width of 'item'
+		do
+			if internal_minimum_width /= -1 then
+				Result := internal_minimum_width
+			else
+				Result := item.minimum_width
+			end
+		end
+
+	minimum_height: INTEGER is
+			-- If not set otherwise, the minimum height of a container is equal to the minimum height of 'item'
+		do
+			if internal_minimum_height /= -1 then
+				Result := internal_minimum_height
+			else
+				Result := item.minimum_height
+			end
 		end
 
 feature {EV_RADIO_BUTTON_IMP, EV_CONTAINER_IMP} -- Access
@@ -185,9 +209,9 @@ feature -- Command
 	destroy is
 			-- Render `Current' unusable.
 		do
-			if interface.prunable then
-				interface.wipe_out
-			end
+--			if interface.prunable then
+--				interface.wipe_out
+--			end
 			Precursor {EV_WIDGET_IMP}
 		end
 
@@ -230,22 +254,6 @@ feature {EV_WIDGET_IMP} -- Implementation
 			end
 		end
 
-feature {NONE} -- Externals
-
-	gslist_to_eiffel (gslist: POINTER): ARRAYED_LIST [POINTER] is
-			-- Convert `gslist' to Eiffel structure.
-		do
-		ensure
-		--	same_size: Result.count = g_slist_length (gslist)
-		end
-
-	glist_to_eiffel (gslist: POINTER): ARRAYED_LIST [POINTER] is
-			-- Convert `gslist' to Eiffel structure.
-		do
-		ensure
-		--	same_size: Result.count = g_slist_length (gslist)
-		end
-
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_CONTAINER;
@@ -253,18 +261,6 @@ feature {EV_ANY_I} -- Implementation
 			-- functionality implemented by `Current'
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_CONTAINER_IMP
 

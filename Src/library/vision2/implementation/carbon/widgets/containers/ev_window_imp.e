@@ -95,8 +95,8 @@ feature {NONE} -- Initialization
 					rect.set_left (45)
 					rect.set_right (46)
 					rect.set_top (45)
-					window_attributes:= ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowCompositingAttribute)
-					res:=create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
+					window_attributes := ({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowCompositingAttribute)
+					res := create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
 					res := create_root_control_external( ptr, $root_control_ptr )
 					set_c_object (ptr)
 					allow_resize
@@ -405,7 +405,6 @@ feature {NONE} -- Implementation
 			if height < a_minimum_height then
 				set_height (a_minimum_height)
 			end
-			print ("internal_set:minimum_size called%N")
 		end
 
 	on_size_allocate (a_x, a_y, a_width, a_height: INTEGER) is

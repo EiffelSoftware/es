@@ -55,6 +55,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	minimum_width, real_minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
 		do
+			-- See hiview_get_size_constraints
 			Result := 20
 		end
 
@@ -66,6 +67,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	minimum_height, real_minimum_height: INTEGER is
 			-- Minimum width that the widget may occupy.
 		do
+			-- See hiview_get_size_constraints
 			Result := 20
 		end
 
