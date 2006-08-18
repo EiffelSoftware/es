@@ -75,8 +75,8 @@ feature {NONE} -- Initialization
 			rect.set_right(100)
 			rect.set_bottom(40)
 			rect.set_top (20)
-			app_implementation.windows.start
-			window ?= app_implementation.windows.item.implementation -- HACK
+--			app_implementation.windows.start
+--			window ?= app_implementation.windows.item.implementation -- HACK
 			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
 			set_c_object (ptr)
 		end
