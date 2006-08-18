@@ -23,8 +23,6 @@ inherit
 			dispose
 		end
 
-	CFSTRING_FUNCTIONS_EXTERNAL
-
 feature {EV_ANY_I} -- Access
 
 	c_object: POINTER -- C pointer to corresponding carbon struct
@@ -118,24 +116,6 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_ANY_I, EV_STOCK_PIXMAPS_IMP} -- Implementa
 				Result_not_void: Result /= Void
 			end
 		end
-
-	frozen string_to_cfstring (a_string: STRING_GENERAL): POINTER is
-			-- Turns an Eiffel string into a carbon cf_string
-		local
-			c_str: C_STRING
-		do
-			create c_str.make (a_string)
-			Result := cfstring_create_with_cstring_external (NULL, c_str.item,  kCFStringEncodingASCII2)
-		end
-
-	frozen kCFStringEncodingASCII2: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-		"kCFStringEncodingASCII"
-	end
-
-
 
 feature -- Measurement
 

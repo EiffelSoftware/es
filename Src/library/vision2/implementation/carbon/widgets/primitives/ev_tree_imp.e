@@ -50,6 +50,9 @@ inherit
 
 	EV_PND_DEFERRED_ITEM_PARENT
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+	CARBONEVENTS_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -57,13 +60,23 @@ feature {NONE} -- Initialization
 
 	needs_event_box: BOOLEAN is True
 
-	scrollable_area: POINTER
-		-- Pointer to the GtkScrolledWindow widget used for scrolling the tree view
-
 	make (an_interface: like interface) is
 			-- Create an empty Tree.
+		local
+			ptr: POINTER
+			rect : RECT_STRUCT
+			ret: INTEGER
 		do
 			base_make (an_interface)
+
+			-- Fix Problems: A DataBrowser Control does not follow the standard hirarchical widgets idea, but is attached directly to the window: UGLY!
+			create rect.make_new_unshared
+			rect.set_left(20)
+			rect.set_right(100)
+			rect.set_bottom(40)
+			rect.set_top (20)
+			ret := create_data_browser_control_external (app_implementation.windows.item.c_object, rect.item, kDataBrowserListView, $ptr)
+			set_c_object (ptr)
 		end
 
 	call_selection_action_sequences is
