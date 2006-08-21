@@ -31,21 +31,8 @@ feature {NONE} -- Initialization
 
 	textable_imp_initialize is
 			-- Create a GtkLabel to display the text.
-				local
-			err : INTEGER
-			rect : RECT_STRUCT
-			struct_ptr : POINTER
-			target: POINTER
-			c_str: C_STRING
-			ptr: POINTER
-			res: INTEGER
 		do
-			create rect.make_new_unshared
-			rect.set_left(1)
-			rect.set_right(1)
-			rect.set_bottom(1)
-			rect.set_top (1)
-			err := create_static_text_control_external( null, rect.item, null,null,$text_label )
+
 		end
 
 feature -- Access
@@ -55,16 +42,11 @@ feature -- Access
 		local
 			a_str: POINTER
 		do
-		--	if real_text /= Void then
-		--		Result := real_text.string
-		--	else
-			--	a_str :={EV_GTK_EXTERNALS}.gtk_label_get_label (text_label)
-		--		if a_str /= default_pointer then
-			--		Result := (create{EV_GTK_C_STRING}.share_from_pointer (a_str)).string
-		--		else
-		--			Result := ""
-		--		end
-		--	end
+			if real_text /= Void then
+				Result := real_text.string
+			else
+				create Result.make_empty
+			end
 		end
 
 	text_alignment: INTEGER is
@@ -114,15 +96,7 @@ feature -- Element change
 		local
 		--	a_cs: EV_GTK_C_STRING
 		do
-		--	if accelerators_enabled then
-		--		real_text := a_text
-		--		a_cs := App_implementation.c_string_from_eiffel_string (u_lined_filter (a_text))
-		--		{EV_GTK_DEPENDENT_EXTERNALS}.gtk_label_set_text_with_mnemonic (text_label, a_cs.item)
-		--	else
-		--		a_cs := App_implementation.c_string_from_eiffel_string (a_text)
-		--		real_text := Void
-	--			{EV_GTK_EXTERNALS}.gtk_label_set_text (text_label, a_cs.item)
-		--	end
+			create real_text.make_unshared_with_eiffel_string (a_text)
 		end
 
 feature {EV_ANY_IMP} -- Implementation
@@ -136,7 +110,7 @@ feature {EV_ANY_IMP} -- Implementation
 			Result := False
 		end
 
-	--real_text: EV_GTK_C_STRING
+	real_text: EV_CARBON_CF_STRING
 			-- Internal `text'. (with ampersands)
 
 	filter_ampersand (s: STRING_32; char: CHARACTER) is
@@ -148,21 +122,21 @@ feature {EV_ANY_IMP} -- Implementation
 		local
 			i: INTEGER
 		do
-	--		from
-	--			i := 1
-	--		until
-	--			i > s.count
-	--		loop
-	--			if s.item (i) = '&' then
-	--				if s.item (i + 1) /= '&' then
-	--					s.put (char, i)
-	--				else
-	--					i := i + 1
-	--				end
-	--			end
-	--			i := i + 1
-	--		end
-	--		s.replace_substring_all (once "&&", once "&")
+			from
+				i := 1
+			until
+				i > s.count
+			loop
+				if s.item (i) = '&' then
+					if s.item (i + 1) /= '&' then
+						s.put (char, i)
+					else
+						i := i + 1
+					end
+				end
+				i := i + 1
+			end
+			s.replace_substring_all (once "&&", once "&")
 		end
 
 	u_lined_filter (s: STRING_GENERAL): STRING_32 is
@@ -171,11 +145,11 @@ feature {EV_ANY_IMP} -- Implementation
 		require
 			s_not_void: s /= Void
 		do
-		--	Result := s.twin
-		--	Result.replace_substring_all (once  "_", once  "__")
-		--	if s.has_code (('&').natural_32_code) then
-		--		filter_ampersand (Result, '_')
-		--	end
+			Result := s.twin
+			Result.replace_substring_all (once  "_", once  "__")
+			if s.has_code (('&').natural_32_code) then
+				filter_ampersand (Result, '_')
+			end
 		end
 
 feature {EV_ANY_I} -- Implementation

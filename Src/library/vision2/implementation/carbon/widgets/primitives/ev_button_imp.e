@@ -38,7 +38,8 @@ inherit
 			initialize,
 			align_text_left,
 			align_text_center,
-			align_text_right
+			align_text_right,
+			set_text
 		end
 
 	EV_FONTABLE_IMP
@@ -121,7 +122,7 @@ feature -- Status Setting
 			res : INTEGER
 		do
 			is_default_push_button := True
-		--	res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, true  )
 		end
 
 
@@ -164,7 +165,7 @@ feature -- Status Setting
 			res : INTEGER
 		do
 			is_default_push_button := False
-		--	res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
+			res := set_control_data_boolean( c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlButtonPart, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlPushButtonDefaultTag, false  )
 		end
 
 	enable_can_default is
@@ -176,6 +177,15 @@ feature -- Status Setting
 	set_foreground_color (a_color: EV_COLOR) is
 		do
 		end
+
+	set_text (a_str: STRING_GENERAL) is
+			local
+				ret: INTEGER
+			do
+				Precursor {EV_TEXTABLE_IMP}(a_str)
+				ret := set_control_title_with_cfstring_external (c_object, real_text.item)
+			end
+
 
 feature {NONE} -- implementation
 
