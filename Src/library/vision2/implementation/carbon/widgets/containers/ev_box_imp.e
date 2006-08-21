@@ -21,7 +21,8 @@ inherit
 
 	EV_WIDGET_LIST_IMP
 		redefine
-			interface
+			interface,
+			on_new_item
 		end
 
 feature -- Access
@@ -71,10 +72,6 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 
 		end
 
-feature {EV_ANY_I} -- Implementation
-
-	needs_event_box: BOOLEAN is True
-
 feature {NONE} -- Carbon implementation
 	setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER ) is
 			-- Setup Carbon Layout API
@@ -85,6 +82,23 @@ feature {NONE} -- Carbon implementation
 			-- Setup dummy control for size constraints
 		deferred
 		end
+
+	carbon_arrange_children is
+			-- Setup positioning constraints for all children
+		require
+			at_least_one_child : count > 0
+		deferred
+		end
+
+feature -- Event handling
+
+	on_new_item (an_item_imp: EV_WIDGET_IMP) is
+			-- Called after a new item is added
+		do
+			Precursor ( an_item_imp )
+			carbon_arrange_children
+		end
+
 
 feature {EV_ANY_I, EV_ANY} -- Implementation
 

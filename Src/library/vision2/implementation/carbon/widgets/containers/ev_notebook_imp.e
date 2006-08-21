@@ -25,7 +25,9 @@ inherit
 			replace,
 			initialize,
 			remove_i_th,
-			insert_i_th
+			insert_i_th,
+			minimum_width,
+			minimum_height
 		end
 
 	EV_FONTABLE_IMP
@@ -286,8 +288,21 @@ feature -- Status report
 		end
 
 	tab_position: INTEGER
-			-- Position of tabs.
+			-- Position of tabs
 
+feature -- Measurement
+
+	minimum_width : INTEGER is
+			--
+		do
+			Result := 100
+		end
+
+	minimum_height : INTEGER is
+			--
+		do
+			Result := 100
+		end
 
 feature {EV_NOTEBOOK} -- Status setting
 
@@ -354,7 +369,6 @@ feature -- Element change
 			bind_to_tabcontrol ( w_imp.c_object, c_object )
 			if count = 1  then
 				set_control32bit_value_external ( c_object, 1 )
-				index := 1
 			end
 		end
 
