@@ -1,15 +1,15 @@
 indexing
-	description: 
+	description:
 		"Eiffel Vision pixmapable. GTK+ implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "pixmap, bitmap, icon, graphic, image"
 	date: "$Date$"
 	revision: "$Revision$"
-	
+
 deferred class
 	EV_PIXMAPABLE_IMP
-	
+
 inherit
 	EV_PIXMAPABLE_I
 		redefine
@@ -18,7 +18,6 @@ inherit
 
 	EV_ANY_IMP
 		undefine
-			needs_event_box,
 			destroy
 		redefine
 			interface
@@ -47,20 +46,20 @@ feature -- Element change
 
 	remove_pixmap is
 			-- Assign Void to `pixmap'.
-		do	
+		do
 		end
-		
+
 feature {EV_ITEM_PIXMAP_SCALER_I} -- Implementation
 
 	internal_set_pixmap (a_pixmap_imp: EV_PIXMAP_IMP; a_width, a_height: INTEGER) is
-			-- 
+			--
 		do
 		end
-		
+
 	internal_remove_pixmap is
 			-- Remove pixmap from Current
-		do	
-		end	
+		do
+		end
 
 	internal_pixmap: EV_PIXMAP_IMP
 			-- Internal stored pixmap.		

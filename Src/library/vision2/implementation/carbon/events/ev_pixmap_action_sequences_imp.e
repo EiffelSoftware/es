@@ -13,7 +13,11 @@ deferred class
 inherit
 	EV_PIXMAP_ACTION_SEQUENCES_I
 
-EV_ANY_IMP undefine dispose, destroy end
+	EV_ANY_IMP
+		undefine
+			dispose,
+			destroy
+		end
 
 feature -- Event handling
 

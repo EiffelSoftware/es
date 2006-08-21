@@ -15,7 +15,6 @@ inherit
 
 	EV_ANY_IMP
 		undefine
-			needs_event_box,
 			dispose,
 			destroy
 		end
@@ -30,10 +29,6 @@ feature -- Event handling
 --			signal_connect (visual_widget, App_implementation.clicked_event_string, agent (App_implementation.gtk_marshal).button_select_intermediary (c_object), Void, False)
 		end
 
---	Gtk_signal_clicked: INTEGER is
---		once
---			Result := C.gtk_signal_name ("clicked")
---		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

@@ -22,9 +22,7 @@ inherit
 		redefine
 			interface,
 			initialize,
-			event_widget,
-			set_pixmap,
-			needs_event_box
+			set_pixmap
 		end
 
 	EV_DOCKABLE_SOURCE_IMP
@@ -67,11 +65,6 @@ feature {NONE} -- Initialization
 			Precursor {EV_ITEM_IMP}
 			pixmapable_imp_initialize
 			set_is_initialized (True)
-		end
-
-	event_widget: POINTER is
-			-- Pointer to the Gtk widget that handles the events
-		do
 		end
 
 feature -- Access

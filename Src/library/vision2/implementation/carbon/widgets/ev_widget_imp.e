@@ -56,6 +56,7 @@ inherit
 		redefine
 			interface
 		end
+
 	CONTROLS_FUNCTIONS_EXTERNAL
 
 feature {NONE} -- Initialization

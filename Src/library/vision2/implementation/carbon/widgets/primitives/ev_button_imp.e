@@ -23,7 +23,7 @@ inherit
 			make,
 			set_foreground_color,
 			on_focus_changed,
-			needs_event_box
+			on_event
 		end
 
 	EV_PIXMAPABLE_IMP
@@ -55,7 +55,6 @@ inherit
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
-	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -126,37 +125,37 @@ feature -- Status Setting
 		end
 
 
---	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
---			-- get a boolean value with get_control_data
---			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp;
---				 	Size ActualSize;
---					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
---					if ( ActualSize == sizeof(temp) )
---						return temp;
---					else
---						return res;
---				}
---			]"
---		end
---
---		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
---			-- set a boolean value with set_control_data
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp = $value;
---					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
---				}
---			]"
---		end
+	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
+			-- get a boolean value with get_control_data
+			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp;
+				 	Size ActualSize;
+					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
+					if ( ActualSize == sizeof(temp) )
+						return temp;
+					else
+						return res;
+				}
+			]"
+		end
+
+		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp = $value;
+					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
+				}
+			]"
+		end
 
 	disable_default_push_button is
 			-- Remove the style of the button corresponding
@@ -186,14 +185,28 @@ feature {NONE} -- implementation
 		do
 		end
 
+	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind : INTEGER
+		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+
+				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
+					select_actions.call (void)
+					Result := noErr -- event handled
+				else
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+				end
+		end
+
 feature {EV_ANY_I} -- implementation
 
-	interface: EV_BUTTON
+	interface: EV_BUTTON;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
 
-invariant
-true
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

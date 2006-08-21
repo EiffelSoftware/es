@@ -29,6 +29,11 @@ inherit
 			default_create
 		end
 
+	EV_CARBON_EVENTABLE
+		redefine
+			on_event
+		end
+
 	MATH_CONST
 	HIVIEW_FUNCTIONS_EXTERNAL
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -36,9 +41,6 @@ inherit
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 	CARBONEVENTSCORE_FUNCTIONS_EXTERNAL
 
-
-
-feature
 
 feature {NONE} -- Initialization
 
@@ -493,10 +495,24 @@ feature {NONE} -- Implementation
 
 	interface: EV_DRAWABLE
 
-	gdk_gc_unref (a_gc: POINTER) is
-			-- void   gdk_gc_unref		  (GdkGC	    *gc);
+	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind : INTEGER
+			err : INTEGER
 		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+
+				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
+					err := call_next_event_handler_external (a_inhandlercallref, a_inevent)
+					draw ( a_inevent )
+					Result := {EV_ANY_IMP}.noErr -- event handled
+				else
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+				end
 		end
+
 
 	set_dashes_pattern (a_gc, dash_pattern: POINTER) is
 			-- Set the dashes pattern for gc `a_gc', `dash_pattern' is a pointer to a two count gint8[]] denoting the pattern.

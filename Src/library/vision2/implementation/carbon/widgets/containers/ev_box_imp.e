@@ -21,8 +21,7 @@ inherit
 
 	EV_WIDGET_LIST_IMP
 		redefine
-			interface,
-			needs_event_box
+			interface
 		end
 
 feature -- Access

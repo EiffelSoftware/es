@@ -17,8 +17,7 @@ inherit
 
 	EV_ITEM_IMP
 		redefine
-			interface,
-			needs_event_box
+			interface
 		end
 
 create

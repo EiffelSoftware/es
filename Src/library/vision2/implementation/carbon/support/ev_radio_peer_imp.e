@@ -1,11 +1,11 @@
-indexing	
+indexing
 	description: "Eiffel Vision radio peer. GTK+ implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class 
+deferred class
 	EV_RADIO_PEER_IMP
 
 inherit
@@ -16,12 +16,11 @@ inherit
 
 	EV_ANY_IMP
 		undefine
-			needs_event_box,
 			destroy
 		redefine
 			interface
 		end
-	
+
 feature -- Status report
 
 	peers: LINKED_LIST [like interface] is

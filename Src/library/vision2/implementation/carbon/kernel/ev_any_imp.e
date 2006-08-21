@@ -26,8 +26,6 @@ inherit
 feature {EV_ANY_I} -- Access
 
 	c_object: POINTER -- C pointer to corresponding carbon struct
-	id: INTEGER  -- id is a unique integer to identifie the widgets
-
 
 feature {EV_ANY_I} -- Access
 
@@ -47,10 +45,6 @@ feature {EV_ANY_I} -- Access
 --			-- Retrieve the EV_ANY_IMP stored in `a_c_object'.
 --		do
 --		end
-
-	frozen gtk_is_object (a_c_object: POINTER): BOOLEAN is
-		do
-		end
 
 feature {EV_ANY, EV_ANY_IMP} -- Implementation
 
@@ -80,11 +74,6 @@ feature --dispose
 
 feature {NONE} -- Implementation
 
-	needs_event_box: BOOLEAN is
-			-- Does `event_widget' need an event box to receive events?
-		do
---			Result := False
-		end
 
 	c_object_dispose is
 			-- Called when `c_object' is destroyed.
@@ -119,12 +108,14 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_ANY_I, EV_STOCK_PIXMAPS_IMP} -- Implementa
 
 feature -- Measurement
 
-	NULL: POINTER is
+	frozen NULL: POINTER is
 		external
 			"C [macro <stdio.h>]"
 		alias
 			"NULL"
 		end
+
+	frozen noErr : INTEGER is 0
 
 invariant
 	c_object_not_void : c_object /= null

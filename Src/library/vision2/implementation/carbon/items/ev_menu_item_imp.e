@@ -13,8 +13,7 @@ inherit
 	EV_ITEM_IMP
 		redefine
 			interface,
-			initialize,
-			needs_event_box
+			initialize
 		end
 
 	EV_SENSITIVE_IMP
@@ -32,6 +31,11 @@ inherit
 
 	EV_MENU_ITEM_ACTION_SEQUENCES_IMP
 
+	EV_CARBON_EVENTABLE
+		redefine
+			on_event
+		end
+
 	MENUS_FUNCTIONS_EXTERNAL
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
@@ -39,8 +43,6 @@ create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is False
 
 	is_dockable: BOOLEAN is False
 
@@ -100,6 +102,26 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	on_activate is
 		do
+		end
+
+	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind : INTEGER
+			err : INTEGER
+			command_struct: HICOMMAND_STRUCT
+		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+
+				if event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassCommand and event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventCommandProcess then
+					create command_struct.make_new_unshared
+					err := get_event_parameter_external (a_inevent, {CARBONEVENTS_ANON_ENUMS}.kEventParamDirectObject, {CARBONEVENTS_ANON_ENUMS}.typeHICommand, NULL, 30, NULL, command_struct.item)
+
+					Result := noErr -- event handled
+				else
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+				end
 		end
 
 	interface: EV_MENU_ITEM;

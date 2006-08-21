@@ -18,7 +18,6 @@ inherit
 		redefine
 			interface,
 			initialize,
-			needs_event_box,
 			set_parent_imp
 		end
 

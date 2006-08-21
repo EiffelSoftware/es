@@ -42,16 +42,6 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
-	width_request_string: EV_CARBON_CF_STRING is
-			-- Once string to pass to gtk.
-		do
-		end
-
-	height_request_string: EV_CARBON_CF_STRING is
-			-- Once string to pass to gtk.
-		do
-		end
-
 	minimum_width, real_minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
 		do
@@ -59,21 +49,11 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			Result := 20
 		end
 
-	reusable_requisition_struct: MANAGED_POINTER is
-			-- Reusable GtkRequisition struct.
-		once
-		end
-
 	minimum_height, real_minimum_height: INTEGER is
 			-- Minimum width that the widget may occupy.
 		do
 			-- See hiview_get_size_constraints
 			Result := 20
-		end
-
-	event_widget: POINTER is
-			-- Pointer to the widget handling the widget events
-		do
 		end
 
 	set_pointer_style (a_cursor: like pointer_style) is

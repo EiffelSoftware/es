@@ -34,7 +34,7 @@ inherit
 			background_color,
 			set_foreground_color,
 			set_background_color,
-			needs_event_box
+			on_event
 		redefine
 			interface,
 			width,
@@ -46,7 +46,6 @@ inherit
 
 	EV_PIXMAP_ACTION_SEQUENCES_IMP
 		redefine
-			needs_event_box,
 			interface,
 			destroy
 		end
@@ -63,9 +62,6 @@ create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is True
-		-- Needed to receive events on GtkImage
 
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.

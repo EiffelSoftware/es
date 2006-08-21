@@ -13,7 +13,16 @@ deferred class
 inherit
 	EV_WIDGET_ACTION_SEQUENCES_I
 
-EV_ANY_IMP undefine dispose, destroy end
+	EV_ANY_IMP
+		 undefine
+		 	dispose,
+		 	destroy
+		 end
+
+	EV_CARBON_EVENTABLE
+		redefine
+			on_event
+		end
 
 feature -- Event handling
 
@@ -145,10 +154,24 @@ feature {EV_ANY_I} -- Implementation
 --			Result := agent (App_implementation.gtk_marshal).size_allocate_translate
 		end
 
-	event_widget: POINTER is
-			-- Pointer to the gtk event widget
-		deferred
+feature {EV_APPLICATION_IMP} -- Implementation
+
+	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind : INTEGER
+		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+
+				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
+					pointer_button_press_actions.call ( void )
+					Result := noErr -- event handled
+				else
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+				end
 		end
+
 
 
 indexing

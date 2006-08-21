@@ -18,8 +18,6 @@ inherit
 		end
 
 	EV_ANY_IMP
-		undefine
-			needs_event_box
 		redefine
 			interface
 		end
@@ -67,7 +65,7 @@ feature {NONE} -- Implementation
 			if seq_imp /= Void then
 				-- EV_MENU_SEPARATOR_ITEM
 				create cfstring.make_unshared_with_eiffel_string ("")
-				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, cfstring.item, pos + 1, 64, an_item_imp.id)
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, cfstring.item, pos + 1, {MENUS_ANON_ENUMS}.kMenuItemAttrSeparator , an_item_imp.id)
 				--    kMenuItemAttrSeparator = (1 << 6)
 			else
 				-- EV_MENU_ITEM

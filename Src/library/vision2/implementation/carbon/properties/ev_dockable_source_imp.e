@@ -16,8 +16,7 @@ inherit
 
 	EV_ANY_IMP
 		undefine
-			destroy,
-			needs_event_box
+			destroy
 		redefine
 			interface
 		end
@@ -101,13 +100,6 @@ feature {NONE} -- Implementation
 			-- as on some platforms, they end up in an invalid state, and need refreshing.
 		do
 			-- For now do nothing until further investigation has taken place.
-		end
-
-feature {NONE} -- Implementation
-
-	event_widget: POINTER is
-			-- Pointer to the GtkWidget to which the events are hooked up to
-		deferred
 		end
 
 feature {EV_ANY_I} -- Implementation

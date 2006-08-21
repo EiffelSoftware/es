@@ -41,9 +41,6 @@ inherit
 
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
---	EWG_CALLBACK_CALLBACK_C_GLUE_CODE_FUNCTIONS_EXTERNAL
---		export {NONE} all end
-
 	EVENT_HANDLER_PROC_PTR_CALLBACK
 
 
@@ -96,21 +93,41 @@ feature  -- Implementation
 			ret: INTEGER
 			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
-			user_data: RECT_STRUCT
 			handler: POINTER
 		do
-			create user_data.make_new_unshared
-			user_data.set_top (a_id)
-
 			create dispatcher.make (Current)
 			event_target := a_target
 
 			create event_type.make_new_unshared
 			event_type.set_eventclass (a_event_class)
 			event_type.set_eventkind (a_event_kind)
-			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, user_data.item, $handler)
+			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, int_to_pointer( a_id ), $handler)
 			Result := handler
 		end
+
+int_to_pointer ( a_int: INTEGER ) : POINTER is
+		external
+			"C inline"
+		alias
+			"[
+				{
+					return (void*) $a_int;
+				}
+			]"
+		end
+
+pointer_to_int ( a_pointer: POINTER ) : INTEGER is
+		external
+			"C inline"
+		alias
+			"[
+				{
+					return (EIF_INTEGER_32) $a_pointer;
+				}
+			]"
+		end
+
+
 
 
 feature -- Access
@@ -119,7 +136,7 @@ feature -- Access
 
 	free_ids: LINKED_LIST[INTEGER]
 
-	widget_list: ARRAY[EV_ANY_IMP]
+	widget_list: ARRAY[EV_CARBON_EVENTABLE]
 
 	ctrl_pressed: BOOLEAN is
 			-- Is ctrl key currently pressed?
@@ -166,7 +183,7 @@ feature -- Access
 
 feature -- creation and destruction
 
-	get_id (a_widget : EV_ANY_IMP) : INTEGER is
+	get_id (a_widget : EV_CARBON_EVENTABLE) : INTEGER is
 		do
 			if free_ids.is_empty then
 				widget_list.force (a_widget, id_count)
@@ -414,64 +431,65 @@ feature {NONE} -- Carbon callback handling for events
 			-- Callback target. This feature gets called
 			-- anytime somebody calls `trigger_event_external'
 		local
-			user_data: RECT_STRUCT
-			null: POINTER
 			a_button: EV_BUTTON_IMP
 			a_drawer: EV_DRAWABLE_IMP
 			a_window: EV_WINDOW_IMP
 			a_menu: EV_MENU_ITEM_IMP
 			event_class, event_kind, a_id: INTEGER
 			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
-			a_event : TUPLE [INTEGER, INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]
 			ret: INTEGER
 			command_struct: HICOMMAND_STRUCT
 		do
-				create a_event.default_create
 
-				if a_inuserdata /= null then
-					create user_data.make_shared (a_inuserdata) --just a hack, because i dont know how to get to integer from a pointer in eiffel.
 
-					event_class := get_event_class_external (a_inevent)
-					event_kind := get_event_kind_external (a_inevent)
-					a_id := user_data.top
+				if a_inuserdata /= default_pointer then
+					a_id := pointer_to_int ( a_inuserdata )
 					-- print ("on_callback has been called by id:" + a_id.out + "%N")
-
-					-- fill in the event kinds and classes to all the events, for whiche Handlers are installed
-
-						if event_kind = {carbonevents_anon_enums}.kEventMouseDown and event_class = {carbonevents_anon_enums}.kEventClassControl then
-							a_button ?= widget_list.item (a_id)
-							if a_button /= void then
-								a_button.select_actions.call (void)
-							end
-							a_seq ?= widget_list.item (a_id)
-							if a_seq /= void then
-								a_seq.pointer_button_press_actions.call (a_event)
-							end
-
-						elseif event_kind = {carbonevents_anon_enums}.kEventControlDraw and event_class = {carbonevents_anon_enums}.kEventClassControl then
-							ret := call_next_event_handler_external (a_inhandlercallref, a_inevent);
-							a_drawer ?= widget_list.item (a_id)
-							if a_drawer /= void then
-								a_drawer.draw (a_inevent)
-							end
-
-						elseif event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
-							a_window ?= widget_list.item (a_id)
-							if a_window /= void then
-								a_window.close_request_actions.call (void)
-							end
-
-						elseif event_class = {carbonevents_anon_enums}.kEventClassCommand and event_kind = {carbonevents_anon_enums}.kEventCommandProcess then
-							create command_struct.make_new_unshared
-							ret := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamDirectObject, {carbonevents_anon_enums}.typeHICommand, NULL, 30, NULL, command_struct.item)
-							-- Due to the strange implementation of menus in carbon we don't get the ID of the element that was selected
-							-- but the id of the parent with, so get the real ID here.
-							a_menu ?= widget_list.item (command_struct.commandid)
-							if a_menu /= Void then
-								a_menu.select_actions.call (void)
-							end
-						end
+					Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
 				end
+--				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
+--				a_button ?= widget_list.item (a_id)
+--				if a_button /= void then
+--					a_button.select_actions.call (void)
+--				end
+--							a_seq ?= widget_list.item (a_id)
+--							if a_seq /= void then
+--								a_seq.pointer_button_press_actions.call (a_event)
+--							end
+--						if event_kind = {carbonevents_anon_enums}.kEventMouseDown and event_class = {carbonevents_anon_enums}.kEventClassControl then
+--							a_button ?= widget_list.item (a_id)
+--							if a_button /= void then
+--								a_button.select_actions.call (void)
+--							end
+--							a_seq ?= widget_list.item (a_id)
+--							if a_seq /= void then
+--								a_seq.pointer_button_press_actions.call (a_event)
+--							end
+
+--						elseif event_kind = {carbonevents_anon_enums}.kEventControlDraw and event_class = {carbonevents_anon_enums}.kEventClassControl then
+--							ret := call_next_event_handler_external (a_inhandlercallref, a_inevent);
+--							a_drawer ?= widget_list.item (a_id)
+--							if a_drawer /= void then
+--								a_drawer.draw (a_inevent)
+--							end
+
+--						elseif event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
+--							a_window ?= widget_list.item (a_id)
+--							if a_window /= void then
+--								a_window.close_request_actions.call (void)
+--							end
+
+--						elseif event_class = {carbonevents_anon_enums}.kEventClassCommand and event_kind = {carbonevents_anon_enums}.kEventCommandProcess then
+--							create command_struct.make_new_unshared
+--							ret := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamDirectObject, {carbonevents_anon_enums}.typeHICommand, NULL, 30, NULL, command_struct.item)
+--							-- Due to the strange implementation of menus in carbon we don't get the ID of the element that was selected
+--							-- but the id of the parent with, so get the real ID here.
+--							a_menu ?= widget_list.item (command_struct.commandid)
+--							if a_menu /= Void then
+--								a_menu.select_actions.call (void)
+--							end
+--						end
+--				end
 		end
 
 

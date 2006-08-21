@@ -19,8 +19,7 @@ inherit
 
 	EV_PRIMITIVE_IMP
 		redefine
-			interface,
-			needs_event_box
+			interface
 		end
 
 	EV_TEXTABLE_IMP
@@ -40,8 +39,6 @@ create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is True
 
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.

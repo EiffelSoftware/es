@@ -35,7 +35,8 @@ inherit
 			on_widget_mapped,
 			destroy,
 			has_focus,
-			on_focus_changed
+			on_focus_changed,
+			on_event
 		end
 
 	EV_CARBON_WINDOW_IMP
@@ -438,6 +439,23 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 			-- The focus of a widget has changed within `Current'.
 		do
 		end
+
+	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind : INTEGER
+		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+
+				if event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassWindow and event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventWindowClose then
+					close_request_actions.call (void)
+					Result := noErr -- event handled
+				else
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+				end
+		end
+
 
 feature {EV_INTERMEDIARY_ROUTINES}
 
