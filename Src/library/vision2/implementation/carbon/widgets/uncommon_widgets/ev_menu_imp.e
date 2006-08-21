@@ -18,7 +18,6 @@ inherit
 		redefine
 			interface,
 			initialize,
-			on_activate,
 			destroy,
 			show
 		end
@@ -27,7 +26,6 @@ inherit
 		redefine
 			interface,
 			initialize,
-			list_widget,
 			destroy
 		end
 
@@ -55,15 +53,7 @@ feature -- Basic operations
 		do
 		end
 
-feature {NONE} -- Externals
-
 feature {EV_ANY_I} -- Implementation
-
-	on_activate is
-		do
-		end
-
-	list_widget: POINTER
 
 	interface: EV_MENU
 

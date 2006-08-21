@@ -83,60 +83,7 @@ feature {NONE} -- Event loop
 		end
 
 
-
-feature  -- Implementation
-
-	install_event_handler (a_id: INTEGER ; a_target: POINTER; a_event_class: INTEGER; a_event_kind: INTEGER): POINTER is
-			-- install a carbon event handler
-			-- this hack with RECT_STRUCT is just a workearound, because i dont know how to get an Integer  from a pointer in eiffel
-		local
-			ret: INTEGER
-			event_target: POINTER
-			event_type: EVENT_TYPE_SPEC_STRUCT
-			handler: POINTER
-		do
-			create dispatcher.make (Current)
-			event_target := a_target
-
-			create event_type.make_new_unshared
-			event_type.set_eventclass (a_event_class)
-			event_type.set_eventkind (a_event_kind)
-			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, int_to_pointer( a_id ), $handler)
-			Result := handler
-		end
-
-int_to_pointer ( a_int: INTEGER ) : POINTER is
-		external
-			"C inline"
-		alias
-			"[
-				{
-					return (void*) $a_int;
-				}
-			]"
-		end
-
-pointer_to_int ( a_pointer: POINTER ) : INTEGER is
-		external
-			"C inline"
-		alias
-			"[
-				{
-					return (EIF_INTEGER_32) $a_pointer;
-				}
-			]"
-		end
-
-
-
-
 feature -- Access
-
-	id_count: INTEGER  --the next id.
-
-	free_ids: LINKED_LIST[INTEGER]
-
-	widget_list: ARRAY[EV_CARBON_EVENTABLE]
 
 	ctrl_pressed: BOOLEAN is
 			-- Is ctrl key currently pressed?
@@ -181,29 +128,6 @@ feature -- Access
 			end
 		end
 
-feature -- creation and destruction
-
-	get_id (a_widget : EV_CARBON_EVENTABLE) : INTEGER is
-		do
-			if free_ids.is_empty then
-				widget_list.force (a_widget, id_count)
-				Result := id_count
-				id_count := id_count + 1
-			else
-				widget_list.force (a_widget, free_ids.first)
-				Result :=  free_ids.first
-				free_ids.remove_left
-			end
-			--io.put_string ("Get ID: " + Result.out + "%N")
-		end
-
-	give_free (a_id: INTEGER) is
-			do
-				widget_list.force (void, a_id)
-				free_ids.put_right (a_id)
-				--io.put_string ("Freed " + a_id.out + "/n")
-			end
-
 
 feature -- Basic operation
 
@@ -212,6 +136,7 @@ feature -- Basic operation
 			-- by `widget'.
 		do
 			run_application_event_loop_external
+
 		end
 
 	process_events is
@@ -418,7 +343,7 @@ feature -- Thread Handling.
 		do
 		end
 
-feature {NONE} -- Carbon callback handling for events
+feature {NONE} -- callback handling for events
 
 	dispatcher: EVENT_HANDLER_PROC_PTR_DISPATCHER
 			-- The dispatcher is on the one side connected to a C function,
@@ -431,69 +356,91 @@ feature {NONE} -- Carbon callback handling for events
 			-- Callback target. This feature gets called
 			-- anytime somebody calls `trigger_event_external'
 		local
-			a_button: EV_BUTTON_IMP
-			a_drawer: EV_DRAWABLE_IMP
-			a_window: EV_WINDOW_IMP
-			a_menu: EV_MENU_ITEM_IMP
 			event_class, event_kind, a_id: INTEGER
 			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
 			ret: INTEGER
 			command_struct: HICOMMAND_STRUCT
 		do
-
-
 				if a_inuserdata /= default_pointer then
 					a_id := pointer_to_int ( a_inuserdata )
 					-- print ("on_callback has been called by id:" + a_id.out + "%N")
 					Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
 				end
---				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
---				a_button ?= widget_list.item (a_id)
---				if a_button /= void then
---					a_button.select_actions.call (void)
---				end
---							a_seq ?= widget_list.item (a_id)
---							if a_seq /= void then
---								a_seq.pointer_button_press_actions.call (a_event)
---							end
---						if event_kind = {carbonevents_anon_enums}.kEventMouseDown and event_class = {carbonevents_anon_enums}.kEventClassControl then
---							a_button ?= widget_list.item (a_id)
---							if a_button /= void then
---								a_button.select_actions.call (void)
---							end
---							a_seq ?= widget_list.item (a_id)
---							if a_seq /= void then
---								a_seq.pointer_button_press_actions.call (a_event)
---							end
-
---						elseif event_kind = {carbonevents_anon_enums}.kEventControlDraw and event_class = {carbonevents_anon_enums}.kEventClassControl then
---							ret := call_next_event_handler_external (a_inhandlercallref, a_inevent);
---							a_drawer ?= widget_list.item (a_id)
---							if a_drawer /= void then
---								a_drawer.draw (a_inevent)
---							end
-
---						elseif event_class = {carbonevents_anon_enums}.kEventClassWindow and event_kind = {carbonevents_anon_enums}.kEventWindowClose then
---							a_window ?= widget_list.item (a_id)
---							if a_window /= void then
---								a_window.close_request_actions.call (void)
---							end
-
---						elseif event_class = {carbonevents_anon_enums}.kEventClassCommand and event_kind = {carbonevents_anon_enums}.kEventCommandProcess then
---							create command_struct.make_new_unshared
---							ret := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamDirectObject, {carbonevents_anon_enums}.typeHICommand, NULL, 30, NULL, command_struct.item)
---							-- Due to the strange implementation of menus in carbon we don't get the ID of the element that was selected
---							-- but the id of the parent with, so get the real ID here.
---							a_menu ?= widget_list.item (command_struct.commandid)
---							if a_menu /= Void then
---								a_menu.select_actions.call (void)
---							end
---						end
---				end
 		end
 
+	id_count: INTEGER  -- the next id for an event.
 
+	free_ids: LINKED_LIST[INTEGER]
 
+feature {EV_CARBON_EVENTABLE} -- event handling
+
+	widget_list: ARRAY[EV_CARBON_EVENTABLE]
+
+	get_id (a_widget : EV_CARBON_EVENTABLE) : INTEGER is
+			-- Get a unique ID so we can associate a event by it's ID with a control
+		do
+			if free_ids.is_empty then
+				widget_list.force (a_widget, id_count)
+				Result := id_count
+				id_count := id_count + 1
+			else
+				widget_list.force (a_widget, free_ids.first)
+				Result :=  free_ids.first
+				free_ids.remove_left
+			end
+			--io.put_string ("Get ID: " + Result.out + "%N")
+		end
+
+	give_free (a_id: INTEGER) is
+				-- Give an id back (it will be recycled)
+			do
+				widget_list.force (void, a_id)
+				free_ids.put_right (a_id)
+				--io.put_string ("Freed " + a_id.out + "/n")
+			end
+
+feature -- event handling
+
+	install_event_handler (a_id: INTEGER ; a_target: POINTER; a_event_class: INTEGER; a_event_kind: INTEGER): POINTER is
+			-- install a carbon event handler
+			-- this hack with RECT_STRUCT is just a workearound, because i dont know how to get an Integer  from a pointer in eiffel
+		local
+			ret: INTEGER
+			event_target: POINTER
+			event_type: EVENT_TYPE_SPEC_STRUCT
+			handler: POINTER
+		do
+			create dispatcher.make (Current)
+			event_target := a_target
+
+			create event_type.make_new_unshared
+			event_type.set_eventclass (a_event_class)
+			event_type.set_eventkind (a_event_kind)
+			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, int_to_pointer( a_id ), $handler)
+			Result := handler
+		end
+
+	int_to_pointer ( a_int: INTEGER ) : POINTER is
+		external
+			"C inline"
+		alias
+			"[
+				{
+					return (void*) $a_int;
+				}
+			]"
+		end
+
+	pointer_to_int ( a_pointer: POINTER ) : INTEGER is
+		external
+			"C inline"
+		alias
+			"[
+				{
+					return (EIF_INTEGER_32) $a_pointer;
+				}
+			]"
+		end
 
 invariant
 	window_oids_not_void: is_usable implies window_oids /= void

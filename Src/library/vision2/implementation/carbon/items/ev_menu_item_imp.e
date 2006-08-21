@@ -100,16 +100,13 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	accelerators_enabled: BOOLEAN is True
 
-	on_activate is
-		do
-		end
-
 	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
 			-- Feature that is called if an event occurs
 		local
-			event_class, event_kind : INTEGER
-			err : INTEGER
+			event_class, event_kind: INTEGER
+			err: INTEGER
 			command_struct: HICOMMAND_STRUCT
+			menu_item: EV_MENU_ITEM_IMP
 		do
 				event_class := get_event_class_external (a_inevent)
 				event_kind := get_event_kind_external (a_inevent)
@@ -118,9 +115,14 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 					create command_struct.make_new_unshared
 					err := get_event_parameter_external (a_inevent, {CARBONEVENTS_ANON_ENUMS}.kEventParamDirectObject, {CARBONEVENTS_ANON_ENUMS}.typeHICommand, NULL, 30, NULL, command_struct.item)
 
+					menu_item ?= app_implementation.widget_list.item (command_struct.commandid)
+					check
+						menu_item /= Void
+					end
+					menu_item.select_actions.call (void)
 					Result := noErr -- event handled
 				else
-					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.EventNotHandledErr
 				end
 		end
 

@@ -26,14 +26,6 @@ inherit
 
 	MENUS_FUNCTIONS_EXTERNAL
 
-
-feature {EV_MENU_ITEM_IMP} -- implementation
-
-	list_widget: POINTER is
-			--
-		do
-		end
-
 feature {NONE} -- Implementation
 
 	insert_i_th (v: like item; pos: INTEGER) is
@@ -110,25 +102,22 @@ feature {NONE} -- Implementation
 		do
 		end
 
-feature -- Access
+feature -- Implementation
 
-	radio_group_ref: POINTER_REF is
+	child_selected (a_id: INTEGER) is
+			--
+		local
+			i: INTEGER
 		do
+			from
+				i := 0
+			until
+				i > count
+			loop
+				--print(i_th(i).implementation.id) --.select_actions.call ()
+				i := i + 1
+			end
 		end
-
-	set_radio_group (p: POINTER) is
-			-- Assign `p' to `radio_group'.
-		do
-		end
-
-	radio_group: POINTER is
-			-- GSList with all radio items of this container.
-		do
-		end
-
-feature {NONE} -- Implementation
-
-	radio_group_ref_internal: POINTER_REF
 
 feature {EV_ANY_I} -- Implementation
 

@@ -13,7 +13,6 @@ inherit
 
 	EV_MENU_ITEM_IMP
 		redefine
-			on_activate,
 			interface
 		end
 
@@ -51,10 +50,6 @@ feature {EV_ANY_I} -- Implementation
 
 	ignore_select_actions: BOOLEAN
 		-- Should select_actions be called.
-
-	on_activate is
-		do
-		end
 
 	set_radio_group (a_gslist: POINTER) is
 			-- Make current a member of `a_gslist' radio group.
