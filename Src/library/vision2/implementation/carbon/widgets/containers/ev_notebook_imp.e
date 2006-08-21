@@ -129,7 +129,7 @@ feature -- Access
 					i > count
 				loop
 					create tab_entry.make_new_unshared
-					err := get_control_data_external ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_entry.sizeof, tab_entry.item, $actual_size )
+			--		err := get_control_data_external ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_entry.sizeof, tab_entry.item, $actual_size )
 					check
 						no_overflow : actual_size = tab_entry.sizeof
 					end
@@ -158,12 +158,12 @@ feature -- Access
 					end
 					err := hiview_remove_from_superview_external ( w_imp.c_object )
 					err := hiview_add_subview_external ( new_view, w_imp.c_object )
-					err := get_control_data_external ( new_view, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item, $actual_size )
+		--			err := get_control_data_external ( new_view, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item, $actual_size )
 					check
 						no_overflow : actual_size = a_rect.sizeof
 					end
 					set_control_bounds_external ( w_imp.c_object, a_rect.item )
-					bind_to_tabcontrol ( w_imp.c_object, new_view )
+			--		bind_to_tabcontrol ( w_imp.c_object, new_view )
 					i := i + 1
 				end
 
@@ -172,37 +172,37 @@ feature -- Access
 				initialize
 		end
 
-	bind_to_tabcontrol ( a_control, a_tabcontrol: POINTER ) is
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-					HILayoutInfo LayoutInfo;
-					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
-					
-					LayoutInfo.binding.top.toView = $a_tabcontrol;
-					LayoutInfo.binding.top.kind = kHILayoutBindTop;
-					LayoutInfo.binding.top.offset = 0;
-					
-					LayoutInfo.binding.bottom.toView = $a_tabcontrol;
-					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
-					LayoutInfo.binding.bottom.offset = 0;
-					
-					LayoutInfo.binding.left.toView = $a_tabcontrol;
-					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
-					LayoutInfo.binding.left.offset = 0;
-					
-					LayoutInfo.binding.right.toView = $a_tabcontrol;
-					LayoutInfo.binding.right.kind = kHILayoutBindRight;
-					LayoutInfo.binding.right.offset = 0;
-					
-					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
-					HIViewApplyLayout( $a_control );
-				}
-			]"
-		end
+--	bind_to_tabcontrol ( a_control, a_tabcontrol: POINTER ) is
+--		external
+--			"C inline use <Carbon/Carbon.h>"
+--		alias
+--			"[
+--				{
+--					HILayoutInfo LayoutInfo;
+--					LayoutInfo.version = kHILayoutInfoVersionZero;
+--					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+--					
+--					LayoutInfo.binding.top.toView = $a_tabcontrol;
+--					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+--					LayoutInfo.binding.top.offset = 0;
+--					
+--					LayoutInfo.binding.bottom.toView = $a_tabcontrol;
+--					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+--					LayoutInfo.binding.bottom.offset = 0;
+--					
+--					LayoutInfo.binding.left.toView = $a_tabcontrol;
+--					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+--					LayoutInfo.binding.left.offset = 0;
+--					
+--					LayoutInfo.binding.right.toView = $a_tabcontrol;
+--					LayoutInfo.binding.right.kind = kHILayoutBindRight;
+--					LayoutInfo.binding.right.offset = 0;
+--					
+--					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+--					HIViewApplyLayout( $a_control );
+--				}
+--			]"
+--		end
 
 	pointed_tab_index: INTEGER is
 			-- index of tab currently under mouse pointer, or 0 if none.
@@ -323,14 +323,14 @@ feature -- Element change
 			end
 			err := hiview_add_subview_external ( c_object, w_imp.c_object )
 			create a_rect.make_new_unshared
-			err := get_control_data_struct ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item )
+		--	err := get_control_data_struct ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item )
 			if err /= 0 then
 				a_rect.set_top ( 0 ); a_rect.set_left ( 0 );
 				a_rect.set_bottom ( 0 ); a_rect.set_right ( 0 );
 			end
 			a_rect.set_top ( a_rect.top + 35 )
 			set_control_bounds_external ( w_imp.c_object, a_rect.item )
-			bind_to_tabcontrol ( w_imp.c_object, c_object )
+	--		bind_to_tabcontrol ( w_imp.c_object, c_object )
 			if count = 0 or else selected_item_index <= 0 or else selected_item_index > count then
 				set_control32bit_value_external ( c_object, 1 )
 			end
@@ -406,23 +406,23 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 		end
 
-	get_control_data_struct (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; insize : INTEGER; outstruct : POINTER): INTEGER is
-			-- get a boolean value with get_control_data
-			-- Returns 0 if everything was ok, a Mac Error code otherwise
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-				 	Size ActualSize;
-					OSErr res = GetControlData( $incontrol, $inpart, $intagname, $insize, $outstruct, &ActualSize );
-					if ( ActualSize == $insize )
-						return res;
-					else
-						return -res;
-				}
-			]"
-		end
+--	get_control_data_struct (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; insize : INTEGER; outstruct : POINTER): INTEGER is
+--			-- get a boolean value with get_control_data
+--			-- Returns 0 if everything was ok, a Mac Error code otherwise
+--		external
+--			"C inline use <Carbon/Carbon.h>"
+--		alias
+--			"[
+--				{
+--				 	Size ActualSize;
+--					OSErr res = GetControlData( $incontrol, $inpart, $intagname, $insize, $outstruct, &ActualSize );
+--					if ( ActualSize == $insize )
+--						return res;
+--					else
+--						return -res;
+--				}
+--			]"
+--		end
 
 
 feature {EV_ANY_I, EV_ANY} -- Implementation

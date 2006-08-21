@@ -42,9 +42,7 @@ inherit
 		undefine
 			visual_widget
 		redefine
-			interface,
-			set_tooltip,
-			tooltip
+			interface
 		end
 	MACHELP_FUNCTIONS_EXTERNAL
 
@@ -91,12 +89,6 @@ feature -- Access
 	gray_pixmap: EV_PIXMAP
 			-- Image displayed on `Current'.
 
-	tooltip: STRING_32 is
-			-- Tooltip use for describing `Current'.
-		do
-			create Result.make_empty
-		end
-
 	internal_tooltip: STRING_32
 		-- Tooltip for `Current'.
 
@@ -114,12 +106,6 @@ feature -- Element change
 			-- Assign `a_pixmap' to `pixmap'.
 		local
 			ret: INTEGER
-		do
-
-		end
-
-	set_tooltip (a_text: STRING_GENERAL) is
-			-- Set `tooltip' to `a_text'.
 		do
 
 		end

@@ -39,48 +39,50 @@ feature -- Element change
 		local
 			ret: INTEGER
 		do
---			create tooltip_text.make_unshared_with_eiffel_string (a_text)
---			ret := set_tool_tip_external (tooltip_text.item, c_object)
+			create tooltip_text.make_unshared_with_eiffel_string (a_text)
+			ret := set_tool_tip_external (tooltip_text.item, c_object)
 		end
 
 
 
 feature {NONE} -- Implementation
 
---		set_tool_tip_external (a_cf_string_ptr: POINTER; a_object: POINTER): INTEGER is
---			-- set a boolean value with set_control_data
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---					    OSStatus status;
---					    HMHelpContentRec helpTag;
---					    helpTag.version = kMacHelpVersion;
---					    helpTag.tagSide = kHMDefaultSide;
---					    SetRect (&helpTag.absHotRect, 0, 0, 0, 0);
---					    helpTag.content[kHMMinimumContentIndex].contentType = kHMCFStringLocalizedContent;
---					    helpTag.content[kHMMinimumContentIndex].u.tagCFString = $a_cf_string_ptr;
---					    helpTag.content[kHMMaximumContentIndex].contentType = kHMNoContent;
---					    status = HMSetControlHelpContent ($a_object, &helpTag);
---				}
---			]"
---		end
---
---		get_tool_tip_external (out_cfstring: POINTER; a_object: POINTER): INTEGER is
---			-- set a boolean value with set_control_data
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---					    OSStatus status;
---					    HMHelpContentRec helpTag;
---					    status = HMGetControlHelpContent ($a_object, &helpTag);
---					    $out_cfstring = helpTag.content[kHMMinimumContentIndex].u.tagCFString;
---				}
---			]"
---		end
+		set_tool_tip_external (a_cf_string_ptr: POINTER; a_object: POINTER): INTEGER is
+		-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					    OSStatus status;
+					    HMHelpContentRec helpTag;
+					    helpTag.version = kMacHelpVersion;
+					    helpTag.tagSide = kHMDefaultSide;
+					    SetRect (&helpTag.absHotRect, 0, 0, 0, 0);
+					    helpTag.content[kHMMinimumContentIndex].contentType = kHMCFStringLocalizedContent;
+					    helpTag.content[kHMMinimumContentIndex].u.tagCFString = $a_cf_string_ptr;
+					    helpTag.content[kHMMaximumContentIndex].contentType = kHMNoContent;
+					    status = HMSetControlHelpContent ($a_object, &helpTag);
+					    return status;
+				}
+			]"
+		end
+
+		get_tool_tip_external (out_cfstring: POINTER; a_object: POINTER): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					    OSStatus status;
+					    HMHelpContentRec helpTag;
+					    status = HMGetControlHelpContent ($a_object, &helpTag);
+					    $out_cfstring = helpTag.content[kHMMinimumContentIndex].u.tagCFString;
+					    return status;
+				}
+			]"
+		end
 	tooltip_text: EV_CARBON_CF_STRING
 
 feature {EV_ANY_I} -- Implementation
