@@ -101,7 +101,9 @@ feature -- Measurement
 			if internal_minimum_width /= -1 then
 				Result := internal_minimum_width
 			else
-				Result := item.minimum_width
+				if interface.count > 0 then
+					Result := item.minimum_width
+				end
 			end
 		end
 
@@ -111,7 +113,9 @@ feature -- Measurement
 			if internal_minimum_height /= -1 then
 				Result := internal_minimum_height
 			else
-				Result := item.minimum_height
+				if interface.count > 0 then
+					Result := item.minimum_height
+				end
 			end
 		end
 
@@ -220,18 +224,13 @@ feature -- Event handling
 	on_new_item (an_item_imp: EV_WIDGET_IMP) is
 			-- Called after `an_item' is added.
 		do
-			add_radio_button (an_item_imp)
 			an_item_imp.set_parent_imp (Current)
---			if new_item_actions_internal /= Void then
---				new_item_actions_internal.call ([an_item])
---			end
 		end
 
 	on_removed_item (an_item_imp: EV_WIDGET_IMP) is
 			-- Called just before `an_item' is removed.
 		do
 			an_item_imp.set_parent_imp (Void)
-			remove_radio_button (an_item_imp)
 		end
 
 

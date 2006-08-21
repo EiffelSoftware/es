@@ -77,8 +77,9 @@ feature {NONE} -- Initialization
 			rect.set_top (20)
 --			app_implementation.windows.start
 --			window ?= app_implementation.windows.item.implementation -- HACK
-			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
-			set_c_object (ptr)
+--			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
+--			set_c_object (ptr)
+			set_c_object ($current)
 		end
 
 	call_selection_action_sequences is
@@ -113,17 +114,12 @@ feature {NONE} -- Initialization
 			previous_selected_item := a_selected_item
 		end
 
-	initialize_model is
-			-- Initialize data model
-		do
-
-		end
-
 	initialize is
 			-- Connect action sequences to signals.
-
 		do
-
+			Precursor {EV_ITEM_LIST_IMP}
+			Precursor {EV_PRIMITIVE_IMP}
+			Precursor {EV_TREE_I}
 		end
 
 	create_pointer_motion_actions: EV_POINTER_MOTION_ACTION_SEQUENCE is
@@ -369,14 +365,14 @@ feature {EV_TREE_NODE_IMP}
 	row_from_y_coord (a_y: INTEGER): EV_TREE_NODE_IMP is
 			-- Returns the row index at relative coordinate `a_y'.
 		local
-			a_tree_path, a_tree_column: POINTER
-			a_success: BOOLEAN
-			a_int_ptr: POINTER
-			mp: MANAGED_POINTER
-			a_depth: INTEGER
-			a_tree_node_imp: EV_TREE_NODE_IMP
-			i: INTEGER
-			current_depth_index: INTEGER
+--			a_tree_path, a_tree_column: POINTER
+--			a_success: BOOLEAN
+--			a_int_ptr: POINTER
+--			mp: MANAGED_POINTER
+--			a_depth: INTEGER
+--			a_tree_node_imp: EV_TREE_NODE_IMP
+--			i: INTEGER
+--			current_depth_index: INTEGER
 		do
 --			a_success := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_get_path_at_pos (tree_view, 1, a_y, $a_tree_path, $a_tree_column, NULL, NULL)
 --			if a_success then
@@ -415,12 +411,12 @@ feature {NONE} -- Implementation
 		local
 			item_imp: EV_TREE_NODE_IMP
 		do
---			item_imp ?= v.implementation
---			item_imp.set_parent_imp (Current)
---
---			child_array.go_i_th (i)
---			child_array.put_left (v)
---
+			item_imp ?= v.implementation
+			item_imp.set_parent_imp (Current)
+
+			child_array.go_i_th (i)
+			child_array.put_left (v)
+
 --			item_imp.add_item_and_children_to_parent_tree (Current, Void, i)
 --			update_row_pixmap (item_imp)
 --			item_imp.remove_internal_text
@@ -435,13 +431,13 @@ feature {NONE} -- Implementation
 		local
 			item_imp: EV_TREE_NODE_IMP
 		do
---			item_imp ?= (child_array @ (a_position)).implementation
+			item_imp ?= (child_array @ (a_position)).implementation
 --				-- Remove from tree if present
 --			item_imp.set_internal_text (get_text_from_position (item_imp))
 --			{EV_GTK_EXTERNALS}.gtk_tree_store_remove (tree_store, item_imp.list_iter.item)
---			item_imp.set_parent_imp (Void)
---			child_array.go_i_th (a_position)
---			child_array.remove
+			item_imp.set_parent_imp (Void)
+			child_array.go_i_th (a_position)
+			child_array.remove
 --			update_pnd_status
 		end
 

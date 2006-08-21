@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 				--print ("insert " + an_item_imp.id.out + " under " + id.out + " with text: " + an_item_imp.text + "%N")
 				if i /= 0 then
 					ret := set_menu_item_command_key_external (parent_item.c_object, pos, 0, shortcut_key)
-					print ("err: " + ret.out + ", pos: " + pos.out + "%N")
+					--print ("err: " + ret.out + ", pos: " + pos.out + "%N")
 				end
 			end
 			child_array.go_i_th (pos)

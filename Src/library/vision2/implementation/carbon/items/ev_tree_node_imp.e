@@ -86,7 +86,6 @@ feature -- Status setting
 	enable_select is
 			-- Select `Current' in its parent.
 		local
-			a_selection: POINTER
 			par_tree: EV_TREE_IMP
 		do
 			par_tree := parent_tree_imp
@@ -99,7 +98,6 @@ feature -- Status setting
 	disable_select is
 			-- Disable selection of `Current' in its parent.
 		local
-			a_selection: POINTER
 			par_tree: EV_TREE_IMP
 		do
 			par_tree := parent_tree_imp
