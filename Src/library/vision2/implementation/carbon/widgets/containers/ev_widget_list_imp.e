@@ -20,7 +20,9 @@ inherit
 
 	EV_CONTAINER_IMP
 		undefine
-			replace
+			replace,
+			minimum_width,
+			minimum_height
 		redefine
 			interface,
 			initialize

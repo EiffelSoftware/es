@@ -56,7 +56,6 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'.
 		do
-
 			Precursor
 		end
 
@@ -93,6 +92,21 @@ feature -- Status setting
 			end
 			size_control_external( w_imp.c_object, a_width, a_height )
 		end
+
+feature -- Measurement
+
+	minimum_width: INTEGER
+				-- What should the minimum width of a ev_fixed be?
+		do
+			Result := 10
+		end
+
+	minimum_height: INTEGER is
+			-- What should the minimum height of a ev_fixed be?
+		do
+			Result := 10
+		end
+
 
 feature {EV_ANY_I} -- Implementation
 
