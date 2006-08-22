@@ -27,7 +27,8 @@ inherit
 			remove_i_th,
 			insert_i_th,
 			minimum_width,
-			minimum_height
+			minimum_height,
+			on_event
 		end
 
 	EV_FONTABLE_IMP
@@ -62,6 +63,8 @@ feature {NONE} -- Initialization
 			set_c_object ( struct_ptr )
 
 			id := app_implementation.get_id (current)  --getting an id from the application
+
+			tab_position := interface.tab_top
 		end
 
 	initialize is
@@ -72,139 +75,23 @@ feature {NONE} -- Initialization
 			Precursor {EV_WIDGET_LIST_IMP}
 			initialize_pixmaps
 
-			target := get_control_event_target_external( c_object )
-			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
-			tab_position := interface.tab_top
+			install_event_handlers
+
+			last_selected := 0
 		end
+
+	install_event_handlers is
+			-- Install carbon event handlers
+		local
+			target, h_ret: POINTER
+		do
+			target := get_control_event_target_external( c_object )
+			h_ret := app_implementation.install_event_handler (id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventcontrolhit)
+			h_ret := app_implementation.install_event_handler (id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassCommand, {CARBONEVENTS_ANON_ENUMS}.keventcommandprocess)
+		end
+
 
 feature -- Access
-
-	carbon_arrange_children is
-			--
-		do
-
-		end
-
-	blub is
-			-- Recreate the tab control with changed settings
-		local
-			a_parent : POINTER
-			a_rect : RECT_STRUCT
-			dummy_ptr : POINTER
-			new_view : POINTER
-			a_layout_info : HILAYOUT_INFO_STRUCT
-			orientation : INTEGER
-			err : INTEGER
-			i : INTEGER
-			actual_size : INTEGER
-			tab_array : EWG_POINTER_ARRAY
-			tab_entry : CONTROL_TAB_ENTRY_STRUCT
-			help_array : ARRAY[CONTROL_TAB_ENTRY_STRUCT]
-			w_imp : EV_WIDGET_IMP
-		do
-				a_parent := hiview_get_superview_external ( c_object )
-				create a_rect.make_new_unshared
-				dummy_ptr := get_control_bounds_external ( c_object, a_rect.item )
-				create a_layout_info.make_new_unshared
-				a_layout_info.set_version ( {HIVIEW_ANON_ENUMS}.kHILayoutInfoVersionZero )
-				err := hiview_get_layout_info_external ( c_object, a_layout_info.item )
-
-	 			if tab_position = interface.Tab_top  then
-	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionNorth
-	 			elseif tab_position =  interface.Tab_left  then
-	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionWest
-	 			elseif tab_position =  interface.Tab_bottom  then
-	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionSouth
-	 			elseif tab_position =  interface.Tab_right  then
-	 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionEast
-	 			else
-	 				check
-	 					must_not_be_reached : false
-	 				end
-				end
-
-				create tab_array.make_new_unshared ( count )
-				create help_array.make ( 1, count ) -- Array to put in STRUCT wrappers so that they don't get collected
-				from
-					i := 1
-				until
-					i > count
-				loop
-					create tab_entry.make_new_unshared
-					err := get_control_data_external ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_entry.sizeof, tab_entry.item, $actual_size )
-					check
-						no_overflow : actual_size = tab_entry.sizeof
-					end
-
-					help_array.put ( tab_entry, i )
-					tab_array.put ( tab_entry.item, i-1 )
-					i := i + 1
-				end
-
-				-- Create new tab control
-				err := create_tabs_control_external ( a_parent, a_rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, orientation, count, tab_array.array_address, $new_view )
-
-				set_control_bounds_external ( new_view, a_rect.item )
-				err := hiview_set_layout_info_external ( new_view, a_layout_info.item )
-				err := hiview_apply_layout_external ( new_view )
-
-				-- Bind content to new tab_control
-				from
-					i := 1
-				until
-					i > count
-				loop
-					w_imp ?= i_th ( i ).implementation
-					check
-						w_imp_not_void : w_imp /= Void
-					end
-					err := hiview_remove_from_superview_external ( w_imp.c_object )
-					err := hiview_add_subview_external ( new_view, w_imp.c_object )
-					err := get_control_data_external ( new_view, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item, $actual_size )
-					check
-						no_overflow : actual_size = a_rect.sizeof
-					end
-					set_control_bounds_external ( w_imp.c_object, a_rect.item )
-					bind_to_tabcontrol ( w_imp.c_object, new_view )
-					i := i + 1
-				end
-
-				dispose_control_external ( c_object )
-				set_c_object ( new_view )
-				initialize
-		end
-
-	bind_to_tabcontrol ( a_control, a_tabcontrol: POINTER ) is
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-					HILayoutInfo LayoutInfo;
-					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
-					
-					LayoutInfo.binding.top.toView = $a_tabcontrol;
-					LayoutInfo.binding.top.kind = kHILayoutBindTop;
-					LayoutInfo.binding.top.offset = 0;
-					
-					LayoutInfo.binding.bottom.toView = $a_tabcontrol;
-					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
-					LayoutInfo.binding.bottom.offset = 0;
-					
-					LayoutInfo.binding.left.toView = $a_tabcontrol;
-					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
-					LayoutInfo.binding.left.offset = 0;
-					
-					LayoutInfo.binding.right.toView = $a_tabcontrol;
-					LayoutInfo.binding.right.kind = kHILayoutBindRight;
-					LayoutInfo.binding.right.offset = 0;
-					
-					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
-					HIViewApplyLayout( $a_control );
-				}
-			]"
-		end
 
 	pointed_tab_index: INTEGER is
 			-- index of tab currently under mouse pointer, or 0 if none.
@@ -236,26 +123,16 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Access
 	item_text (an_item: like item): STRING_32 is
 			-- Label of `an_item'.
 		local
-			i : INTEGER
+			item_index : INTEGER
 			err : INTEGER
-			found : BOOLEAN
 			tab_info : CONTROL_TAB_INFO_REC_V1_STRUCT
 			actual_size : INTEGER
 			cf_string : EV_CARBON_CF_STRING
 		do
-			from
-				i := 1
-				found := false
-			until
-				i > count or found
-			loop
-				if i_th( i ) = an_item  then
-					found := true
-				end
-			end
+			item_index := index_of ( an_item, 1)
 			create tab_info.make_new_unshared
 			tab_info.set_version ( {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfoversionone )
-			err := get_control_data_external ( c_object, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_info.sizeof, tab_info.item, $actual_size )
+			err := get_control_data_external ( c_object, item_index, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_info.sizeof, tab_info.item, $actual_size )
 			check
 				no_overflow : err = 0 implies actual_size = tab_info.sizeof
 			end
@@ -293,36 +170,179 @@ feature -- Status report
 feature -- Measurement
 
 	minimum_width : INTEGER is
-			--
+			-- minimum_width is the largest minimum_width of all items + tab_offset if tabs are on left or right
+		local
+			i : INTEGER
+			max : INTEGER
 		do
-			Result := 100
+			if count > 0 then
+				max := 0
+				from
+					i := 1
+				until
+					i > count
+				loop
+					max := max.max ( i_th(i).minimum_width )
+					i := i + 1
+				end
+				if tab_position = interface.tab_left or else tab_position = interface.tab_right then
+					Result := max + tab_offset
+				else
+					Result := max
+				end
+			else
+				Result := 0
+			end
 		end
 
 	minimum_height : INTEGER is
-			--
+			-- minimum_hight is the largest minimum_width of all items + tab_offset if tabs are on top or bottom
+		local
+			i : INTEGER
+			max : INTEGER
 		do
-			Result := 100
+			if count > 0 then
+				max := 0
+				from
+					i := 1
+				until
+					i > count
+				loop
+					max := max.max ( i_th(i).minimum_height )
+					i := i + 1
+				end
+				if tab_position = interface.tab_top or else tab_position = interface.tab_bottom then
+					Result := max + tab_offset
+				else
+					Result := max
+				end
+			else
+				Result := 0
+			end
 		end
-
+		
 feature {EV_NOTEBOOK} -- Status setting
 
 	set_tab_position (a_tab_position: INTEGER) is
 			-- Display tabs at `a_position'.
+			-- Recreate the tab control with changed settings
+		local
+			a_parent : POINTER
+			a_rect : RECT_STRUCT
+			dummy_ptr : POINTER
+			new_view : POINTER
+			a_layout_info : HILAYOUT_INFO_STRUCT
+			orientation : INTEGER
+			err : INTEGER
+			i : INTEGER
+			actual_size : INTEGER
+			tab_array : EWG_POINTER_ARRAY
+			info_rec : CONTROL_TAB_INFO_REC_V1_STRUCT
+			help_array : ARRAY[CONTROL_TAB_ENTRY_STRUCT]
+			w_imp : EV_WIDGET_IMP
 		do
+ 			if a_tab_position = interface.Tab_top  then
+ 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionNorth
+ 			elseif a_tab_position =  interface.Tab_left  then
+ 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionWest
+ 			elseif a_tab_position =  interface.Tab_bottom  then
+ 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionSouth
+ 			elseif a_tab_position =  interface.Tab_right  then
+ 				orientation := {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionEast
+ 			else
+ 				check
+ 					must_not_be_reached : false
+ 				end
+			end
+			tab_position := a_tab_position
 
+			a_parent := hiview_get_superview_external ( c_object )
+			create a_rect.make_new_unshared
+			dummy_ptr := get_control_bounds_external ( c_object, a_rect.item )
+			create a_layout_info.make_new_unshared
+			a_layout_info.set_version ( {HIVIEW_ANON_ENUMS}.kHILayoutInfoVersionZero )
+			err := hiview_get_layout_info_external ( c_object, a_layout_info.item )
+			-- Create new tab control
+			err := create_tabs_control_external ( null, a_rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, orientation, 0, default_pointer, $new_view )
+			err := hiview_add_subview_external ( a_parent, new_view )
+			set_control_bounds_external ( new_view, a_rect.item )
+			err := hiview_set_layout_info_external ( new_view, a_layout_info.item )
+			err := hiview_apply_layout_external ( new_view )
 
+			set_control32bit_maximum_external ( new_view, count )
+			from
+				i := 1
+			until
+				i > count
+			loop
+				create info_rec.make_new_unshared
+				info_rec.set_version ( {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfoversionone )
+				err := get_control_data_external ( c_object, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, info_rec.sizeof, info_rec.item, $actual_size )
+				check
+					no_overflow : actual_size = info_rec.sizeof
+				end
+				err := set_control_data_external ( new_view, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfotag, info_rec.sizeof, info_rec.item )
+
+				-- Bind content to new view
+				w_imp ?= i_th ( i ).implementation
+				check
+					w_imp_not_void : w_imp /= Void
+				end
+				err := hiview_remove_from_superview_external ( w_imp.c_object )
+				err := hiview_add_subview_external ( new_view, w_imp.c_object )
+				err := get_control_data_external ( new_view, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item, $actual_size )
+				check
+					no_overflow : err = noErr implies actual_size = a_rect.sizeof
+				end
+				if err /= 0 then
+					a_rect.set_top ( 0 ); a_rect.set_left ( 0 );
+					a_rect.set_bottom ( 0 ); a_rect.set_right ( 0 );
+				end
+
+				if tab_position = interface.tab_top then
+					a_rect.set_top ( a_rect.top + tab_offset )
+				elseif tab_position = interface.tab_left then
+					a_rect.set_left ( a_rect.left + tab_offset )
+				elseif tab_position = interface.tab_bottom then
+					a_rect.set_bottom ( a_rect.bottom + tab_offset )
+				elseif tab_position = interface.tab_right then
+					a_rect.set_right ( a_rect.right + tab_offset )
+				end
+
+				set_control_bounds_external ( w_imp.c_object, a_rect.item )
+				bind_to_tabcontrol ( w_imp.c_object, new_view )
+				i := i + 1
+			end
+
+			set_control32bit_value_external ( new_view, selected_item_index )
+
+			dispose_control_external ( c_object )
+			set_c_object ( new_view )
+			install_event_handlers
 		end
 
 	select_item (an_item: like item) is
 			-- Display `an_item' above all others.
 		local
-			item_imp: EV_WIDGET_IMP
+			w_imp, item_imp: EV_WIDGET_IMP
+			item_index : INTEGER
+			err : INTEGER
 		do
 			item_imp ?= an_item.implementation
 			check
-				an_item_has_implementation: item_imp /= Void
+				item_imp_not_void : item_imp /= Void
 			end
-
+			item_index := index_of (an_item, 1)
+			if last_selected > 0 and last_selected <= count then
+				w_imp ?= i_th ( last_selected ).implementation
+				check
+					w_imp_not_void : w_imp /= Void
+				end
+				err := hiview_set_visible_external ( w_imp.c_object, 1 ) -- 1 = true
+			end
+			set_control32bit_value_external ( c_object, item_index )
+			err := hiview_set_visible_external ( item_imp.c_object, 0 ) -- 0 = false
+			last_selected := selected_item_index
 		end
 
 feature -- Element change
@@ -360,15 +380,30 @@ feature -- Element change
 			err := hiview_add_subview_external ( c_object, w_imp.c_object )
 			create a_rect.make_new_unshared
 			err := get_control_data_external ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item, $actual_size )
+			check
+				no_overflow : err = noErr implies actual_size = a_rect.sizeof
+			end
 			if err /= 0 then
 				a_rect.set_top ( 0 ); a_rect.set_left ( 0 );
 				a_rect.set_bottom ( 0 ); a_rect.set_right ( 0 );
 			end
-			a_rect.set_top ( a_rect.top + 35 )
+
+			if tab_position = interface.tab_top then
+				a_rect.set_top ( a_rect.top + tab_offset )
+			elseif tab_position = interface.tab_left then
+				a_rect.set_left ( a_rect.left + tab_offset )
+			elseif tab_position = interface.tab_bottom then
+				a_rect.set_bottom ( a_rect.bottom + tab_offset )
+			elseif tab_position = interface.tab_right then
+				a_rect.set_right ( a_rect.right + tab_offset )
+			end
+
 			set_control_bounds_external ( w_imp.c_object, a_rect.item )
 			bind_to_tabcontrol ( w_imp.c_object, c_object )
+			err := hiview_set_visible_external ( w_imp.c_object, 1 ) -- 1 = true
 			if count = 1  then
 				set_control32bit_value_external ( c_object, 1 )
+				page_switch
 			end
 		end
 
@@ -393,32 +428,22 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 	set_item_text (an_item: like item; a_text: STRING_GENERAL) is
 			-- Assign `a_text' to the label for `an_item'.
 		local
-			i : INTEGER
+			item_index : INTEGER
 			err : INTEGER
-			found : BOOLEAN
 			tab_info : CONTROL_TAB_INFO_REC_V1_STRUCT
 			actual_size : INTEGER
 			cf_string : EV_CARBON_CF_STRING
 		do
-			from
-				i := 1
-				found := false
-			until
-				i > count or found
-			loop
-				if i_th( i ) = an_item  then
-					found := true
-				end
-			end
+			item_index := index_of ( an_item, 1 )
 			create tab_info.make_new_unshared
 			tab_info.set_version ( {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfoversionone )
-			err := get_control_data_external ( c_object, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_info.sizeof, tab_info.item, $actual_size )
+			err := get_control_data_external ( c_object, item_index, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabInfoTag, tab_info.sizeof, tab_info.item, $actual_size )
 			check
 				no_overflow : err = 0 implies actual_size = tab_info.sizeof
 			end
 			create cf_string.make_unshared_with_eiffel_string ( a_text )
 			tab_info.set_name ( cf_string.item )
-			err := set_control_data_external ( c_object, i, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfotag, tab_info.sizeof, tab_info.item )
+			err := set_control_data_external ( c_object, item_index, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroltabinfotag, tab_info.sizeof, tab_info.item )
 
 		end
 
@@ -430,10 +455,65 @@ feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 
-	page_switch (a_page: INTEGER) is
+	tab_offset : INTEGER is 30
+		-- Offset between the tabs and the content
+
+	last_selected : INTEGER
+
+	page_switch is
 			-- Called when the page is switched.
 		do
+			select_item ( i_th ( selected_item_index ) )
+		end
 
+	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind : INTEGER
+		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+
+				if  ( event_kind = {CARBONEVENTS_ANON_ENUMS}.keventcontrolhit and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl ) or
+					( event_kind = {CARBONEVENTS_ANON_ENUMS}.keventcommandprocess and event_class = {CARBONEVENTS_ANON_ENUMS}.keventclasscommand )
+				then
+					page_switch
+					Result := noErr -- event handled
+				else
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+				end
+		end
+
+	bind_to_tabcontrol ( a_control, a_tabcontrol: POINTER ) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+					
+					LayoutInfo.binding.top.toView = $a_tabcontrol;
+					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+					LayoutInfo.binding.top.offset = 0;
+					
+					LayoutInfo.binding.bottom.toView = $a_tabcontrol;
+					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+					LayoutInfo.binding.bottom.offset = 0;
+					
+					LayoutInfo.binding.left.toView = $a_tabcontrol;
+					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+					LayoutInfo.binding.left.offset = 0;
+					
+					LayoutInfo.binding.right.toView = $a_tabcontrol;
+					LayoutInfo.binding.right.kind = kHILayoutBindRight;
+					LayoutInfo.binding.right.offset = 0;
+					
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
+				}
+			]"
 		end
 
 feature {EV_ANY_I, EV_ANY} -- Implementation
