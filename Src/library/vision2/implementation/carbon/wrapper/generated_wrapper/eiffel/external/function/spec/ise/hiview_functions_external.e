@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_HIViewGetRoot"
 		end
 
-	frozen hiview_get_root_address_external: POINTER is
+	frozenhiview_get_root_address_external: POINTER is
 			-- Address of C function `HIViewGetRoot'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_HIViewAddSubview"
 		end
 
-	frozen hiview_add_subview_address_external: POINTER is
+	frozenhiview_add_subview_address_external: POINTER is
 			-- Address of C function `HIViewAddSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_HIViewRemoveFromSuperview"
 		end
 
-	frozen hiview_remove_from_superview_address_external: POINTER is
+	frozenhiview_remove_from_superview_address_external: POINTER is
 			-- Address of C function `HIViewRemoveFromSuperview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_HIViewGetSuperview"
 		end
 
-	frozen hiview_get_superview_address_external: POINTER is
+	frozenhiview_get_superview_address_external: POINTER is
 			-- Address of C function `HIViewGetSuperview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_HIViewGetFirstSubview"
 		end
 
-	frozen hiview_get_first_subview_address_external: POINTER is
+	frozenhiview_get_first_subview_address_external: POINTER is
 			-- Address of C function `HIViewGetFirstSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_HIViewGetLastSubview"
 		end
 
-	frozen hiview_get_last_subview_address_external: POINTER is
+	frozenhiview_get_last_subview_address_external: POINTER is
 			-- Address of C function `HIViewGetLastSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_HIViewGetNextView"
 		end
 
-	frozen hiview_get_next_view_address_external: POINTER is
+	frozenhiview_get_next_view_address_external: POINTER is
 			-- Address of C function `HIViewGetNextView'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_HIViewGetPreviousView"
 		end
 
-	frozen hiview_get_previous_view_address_external: POINTER is
+	frozenhiview_get_previous_view_address_external: POINTER is
 			-- Address of C function `HIViewGetPreviousView'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_HIViewCountSubviews"
 		end
 
-	frozen hiview_count_subviews_address_external: POINTER is
+	frozenhiview_count_subviews_address_external: POINTER is
 			-- Address of C function `HIViewCountSubviews'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_HIViewGetIndexedSubview"
 		end
 
-	frozen hiview_get_indexed_subview_address_external: POINTER is
+	frozenhiview_get_indexed_subview_address_external: POINTER is
 			-- Address of C function `HIViewGetIndexedSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_HIViewSetZOrder"
 		end
 
-	frozen hiview_set_zorder_address_external: POINTER is
+	frozenhiview_set_zorder_address_external: POINTER is
 			-- Address of C function `HIViewSetZOrder'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_HIViewSetVisible"
 		end
 
-	frozen hiview_set_visible_address_external: POINTER is
+	frozenhiview_set_visible_address_external: POINTER is
 			-- Address of C function `HIViewSetVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_HIViewIsVisible"
 		end
 
-	frozen hiview_is_visible_address_external: POINTER is
+	frozenhiview_is_visible_address_external: POINTER is
 			-- Address of C function `HIViewIsVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_HIViewIsLatentlyVisible"
 		end
 
-	frozen hiview_is_latently_visible_address_external: POINTER is
+	frozenhiview_is_latently_visible_address_external: POINTER is
 			-- Address of C function `HIViewIsLatentlyVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_HIViewSetHilite"
 		end
 
-	frozen hiview_set_hilite_address_external: POINTER is
+	frozenhiview_set_hilite_address_external: POINTER is
 			-- Address of C function `HIViewSetHilite'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_HIViewIsActive"
 		end
 
-	frozen hiview_is_active_address_external: POINTER is
+	frozenhiview_is_active_address_external: POINTER is
 			-- Address of C function `HIViewIsActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_HIViewSetActivated"
 		end
 
-	frozen hiview_set_activated_address_external: POINTER is
+	frozenhiview_set_activated_address_external: POINTER is
 			-- Address of C function `HIViewSetActivated'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_HIViewIsEnabled"
 		end
 
-	frozen hiview_is_enabled_address_external: POINTER is
+	frozenhiview_is_enabled_address_external: POINTER is
 			-- Address of C function `HIViewIsEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_HIViewSetEnabled"
 		end
 
-	frozen hiview_set_enabled_address_external: POINTER is
+	frozenhiview_set_enabled_address_external: POINTER is
 			-- Address of C function `HIViewSetEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_HIViewIsCompositingEnabled"
 		end
 
-	frozen hiview_is_compositing_enabled_address_external: POINTER is
+	frozenhiview_is_compositing_enabled_address_external: POINTER is
 			-- Address of C function `HIViewIsCompositingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_HIViewSetText"
 		end
 
-	frozen hiview_set_text_address_external: POINTER is
+	frozenhiview_set_text_address_external: POINTER is
 			-- Address of C function `HIViewSetText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_HIViewCopyText"
 		end
 
-	frozen hiview_copy_text_address_external: POINTER is
+	frozenhiview_copy_text_address_external: POINTER is
 			-- Address of C function `HIViewCopyText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_HIViewGetValue"
 		end
 
-	frozen hiview_get_value_address_external: POINTER is
+	frozenhiview_get_value_address_external: POINTER is
 			-- Address of C function `HIViewGetValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_HIViewSetValue"
 		end
 
-	frozen hiview_set_value_address_external: POINTER is
+	frozenhiview_set_value_address_external: POINTER is
 			-- Address of C function `HIViewSetValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_HIViewGetMinimum"
 		end
 
-	frozen hiview_get_minimum_address_external: POINTER is
+	frozenhiview_get_minimum_address_external: POINTER is
 			-- Address of C function `HIViewGetMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_HIViewSetMinimum"
 		end
 
-	frozen hiview_set_minimum_address_external: POINTER is
+	frozenhiview_set_minimum_address_external: POINTER is
 			-- Address of C function `HIViewSetMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_HIViewGetMaximum"
 		end
 
-	frozen hiview_get_maximum_address_external: POINTER is
+	frozenhiview_get_maximum_address_external: POINTER is
 			-- Address of C function `HIViewGetMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_HIViewSetMaximum"
 		end
 
-	frozen hiview_set_maximum_address_external: POINTER is
+	frozenhiview_set_maximum_address_external: POINTER is
 			-- Address of C function `HIViewSetMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_HIViewGetViewSize"
 		end
 
-	frozen hiview_get_view_size_address_external: POINTER is
+	frozenhiview_get_view_size_address_external: POINTER is
 			-- Address of C function `HIViewGetViewSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_HIViewSetViewSize"
 		end
 
-	frozen hiview_set_view_size_address_external: POINTER is
+	frozenhiview_set_view_size_address_external: POINTER is
 			-- Address of C function `HIViewSetViewSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_HIViewIsValid"
 		end
 
-	frozen hiview_is_valid_address_external: POINTER is
+	frozenhiview_is_valid_address_external: POINTER is
 			-- Address of C function `HIViewIsValid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_HIViewSetID"
 		end
 
-	frozen hiview_set_id_address_external: POINTER is
+	frozenhiview_set_id_address_external: POINTER is
 			-- Address of C function `HIViewSetID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_HIViewGetID"
 		end
 
-	frozen hiview_get_id_address_external: POINTER is
+	frozenhiview_get_id_address_external: POINTER is
 			-- Address of C function `HIViewGetID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_HIViewSetCommandID"
 		end
 
-	frozen hiview_set_command_id_address_external: POINTER is
+	frozenhiview_set_command_id_address_external: POINTER is
 			-- Address of C function `HIViewSetCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_HIViewGetCommandID"
 		end
 
-	frozen hiview_get_command_id_address_external: POINTER is
+	frozenhiview_get_command_id_address_external: POINTER is
 			-- Address of C function `HIViewGetCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_HIViewGetKind"
 		end
 
-	frozen hiview_get_kind_address_external: POINTER is
+	frozenhiview_get_kind_address_external: POINTER is
 			-- Address of C function `HIViewGetKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_HIViewGetBounds"
 		end
 
-	frozen hiview_get_bounds_address_external: POINTER is
+	frozenhiview_get_bounds_address_external: POINTER is
 			-- Address of C function `HIViewGetBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_HIViewGetFrame"
 		end
 
-	frozen hiview_get_frame_address_external: POINTER is
+	frozenhiview_get_frame_address_external: POINTER is
 			-- Address of C function `HIViewGetFrame'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_HIViewSetFrame"
 		end
 
-	frozen hiview_set_frame_address_external: POINTER is
+	frozenhiview_set_frame_address_external: POINTER is
 			-- Address of C function `HIViewSetFrame'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_HIViewMoveBy"
 		end
 
-	frozen hiview_move_by_address_external: POINTER is
+	frozenhiview_move_by_address_external: POINTER is
 			-- Address of C function `HIViewMoveBy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_HIViewPlaceInSuperviewAt"
 		end
 
-	frozen hiview_place_in_superview_at_address_external: POINTER is
+	frozenhiview_place_in_superview_at_address_external: POINTER is
 			-- Address of C function `HIViewPlaceInSuperviewAt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_HIViewReshapeStructure"
 		end
 
-	frozen hiview_reshape_structure_address_external: POINTER is
+	frozenhiview_reshape_structure_address_external: POINTER is
 			-- Address of C function `HIViewReshapeStructure'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_HIViewRegionChanged"
 		end
 
-	frozen hiview_region_changed_address_external: POINTER is
+	frozenhiview_region_changed_address_external: POINTER is
 			-- Address of C function `HIViewRegionChanged'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_HIViewCopyShape"
 		end
 
-	frozen hiview_copy_shape_address_external: POINTER is
+	frozenhiview_copy_shape_address_external: POINTER is
 			-- Address of C function `HIViewCopyShape'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_HIViewGetOptimalBounds"
 		end
 
-	frozen hiview_get_optimal_bounds_address_external: POINTER is
+	frozenhiview_get_optimal_bounds_address_external: POINTER is
 			-- Address of C function `HIViewGetOptimalBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_HIViewGetViewForMouseEvent"
 		end
 
-	frozen hiview_get_view_for_mouse_event_address_external: POINTER is
+	frozenhiview_get_view_for_mouse_event_address_external: POINTER is
 			-- Address of C function `HIViewGetViewForMouseEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_HIViewClick"
 		end
 
-	frozen hiview_click_address_external: POINTER is
+	frozenhiview_click_address_external: POINTER is
 			-- Address of C function `HIViewClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_HIViewSimulateClick"
 		end
 
-	frozen hiview_simulate_click_address_external: POINTER is
+	frozenhiview_simulate_click_address_external: POINTER is
 			-- Address of C function `HIViewSimulateClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_HIViewGetPartHit"
 		end
 
-	frozen hiview_get_part_hit_address_external: POINTER is
+	frozenhiview_get_part_hit_address_external: POINTER is
 			-- Address of C function `HIViewGetPartHit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_HIViewGetSubviewHit"
 		end
 
-	frozen hiview_get_subview_hit_address_external: POINTER is
+	frozenhiview_get_subview_hit_address_external: POINTER is
 			-- Address of C function `HIViewGetSubviewHit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_HIViewNewTrackingArea"
 		end
 
-	frozen hiview_new_tracking_area_address_external: POINTER is
+	frozenhiview_new_tracking_area_address_external: POINTER is
 			-- Address of C function `HIViewNewTrackingArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_HIViewChangeTrackingArea"
 		end
 
-	frozen hiview_change_tracking_area_address_external: POINTER is
+	frozenhiview_change_tracking_area_address_external: POINTER is
 			-- Address of C function `HIViewChangeTrackingArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_HIViewGetTrackingAreaID"
 		end
 
-	frozen hiview_get_tracking_area_id_address_external: POINTER is
+	frozenhiview_get_tracking_area_id_address_external: POINTER is
 			-- Address of C function `HIViewGetTrackingAreaID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_HIViewDisposeTrackingArea"
 		end
 
-	frozen hiview_dispose_tracking_area_address_external: POINTER is
+	frozenhiview_dispose_tracking_area_address_external: POINTER is
 			-- Address of C function `HIViewDisposeTrackingArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_HIViewGetNeedsDisplay"
 		end
 
-	frozen hiview_get_needs_display_address_external: POINTER is
+	frozenhiview_get_needs_display_address_external: POINTER is
 			-- Address of C function `HIViewGetNeedsDisplay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_HIViewSetNeedsDisplay"
 		end
 
-	frozen hiview_set_needs_display_address_external: POINTER is
+	frozenhiview_set_needs_display_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_HIViewSetNeedsDisplayInRect"
 		end
 
-	frozen hiview_set_needs_display_in_rect_address_external: POINTER is
+	frozenhiview_set_needs_display_in_rect_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplayInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_HIViewSetNeedsDisplayInShape"
 		end
 
-	frozen hiview_set_needs_display_in_shape_address_external: POINTER is
+	frozenhiview_set_needs_display_in_shape_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplayInShape'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_HIViewSetNeedsDisplayInRegion"
 		end
 
-	frozen hiview_set_needs_display_in_region_address_external: POINTER is
+	frozenhiview_set_needs_display_in_region_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplayInRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_HIViewRender"
 		end
 
-	frozen hiview_render_address_external: POINTER is
+	frozenhiview_render_address_external: POINTER is
 			-- Address of C function `HIViewRender'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_HIViewFlashDirtyArea"
 		end
 
-	frozen hiview_flash_dirty_area_address_external: POINTER is
+	frozenhiview_flash_dirty_area_address_external: POINTER is
 			-- Address of C function `HIViewFlashDirtyArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -925,7 +925,7 @@ feature
 			"ewg_function_macro_HIViewGetSizeConstraints"
 		end
 
-	frozen hiview_get_size_constraints_address_external: POINTER is
+	frozenhiview_get_size_constraints_address_external: POINTER is
 			-- Address of C function `HIViewGetSizeConstraints'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -940,7 +940,7 @@ feature
 			"ewg_function_macro_HIViewConvertPoint"
 		end
 
-	frozen hiview_convert_point_address_external: POINTER is
+	frozenhiview_convert_point_address_external: POINTER is
 			-- Address of C function `HIViewConvertPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -955,7 +955,7 @@ feature
 			"ewg_function_macro_HIViewConvertRect"
 		end
 
-	frozen hiview_convert_rect_address_external: POINTER is
+	frozenhiview_convert_rect_address_external: POINTER is
 			-- Address of C function `HIViewConvertRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -970,7 +970,7 @@ feature
 			"ewg_function_macro_HIViewConvertRegion"
 		end
 
-	frozen hiview_convert_region_address_external: POINTER is
+	frozenhiview_convert_region_address_external: POINTER is
 			-- Address of C function `HIViewConvertRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -985,7 +985,7 @@ feature
 			"ewg_function_macro_HIViewSetDrawingEnabled"
 		end
 
-	frozen hiview_set_drawing_enabled_address_external: POINTER is
+	frozenhiview_set_drawing_enabled_address_external: POINTER is
 			-- Address of C function `HIViewSetDrawingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1000,7 +1000,7 @@ feature
 			"ewg_function_macro_HIViewIsDrawingEnabled"
 		end
 
-	frozen hiview_is_drawing_enabled_address_external: POINTER is
+	frozenhiview_is_drawing_enabled_address_external: POINTER is
 			-- Address of C function `HIViewIsDrawingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1015,7 +1015,7 @@ feature
 			"ewg_function_macro_HIViewScrollRect"
 		end
 
-	frozen hiview_scroll_rect_address_external: POINTER is
+	frozenhiview_scroll_rect_address_external: POINTER is
 			-- Address of C function `HIViewScrollRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1030,7 +1030,7 @@ feature
 			"ewg_function_macro_HIViewSetBoundsOrigin"
 		end
 
-	frozen hiview_set_bounds_origin_address_external: POINTER is
+	frozenhiview_set_bounds_origin_address_external: POINTER is
 			-- Address of C function `HIViewSetBoundsOrigin'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1045,7 +1045,7 @@ feature
 			"ewg_function_macro_HIViewAdvanceFocus"
 		end
 
-	frozen hiview_advance_focus_address_external: POINTER is
+	frozenhiview_advance_focus_address_external: POINTER is
 			-- Address of C function `HIViewAdvanceFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1060,7 +1060,7 @@ feature
 			"ewg_function_macro_HIViewGetFocusPart"
 		end
 
-	frozen hiview_get_focus_part_address_external: POINTER is
+	frozenhiview_get_focus_part_address_external: POINTER is
 			-- Address of C function `HIViewGetFocusPart'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1075,7 +1075,7 @@ feature
 			"ewg_function_macro_HIViewSubtreeContainsFocus"
 		end
 
-	frozen hiview_subtree_contains_focus_address_external: POINTER is
+	frozenhiview_subtree_contains_focus_address_external: POINTER is
 			-- Address of C function `HIViewSubtreeContainsFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1090,7 +1090,7 @@ feature
 			"ewg_function_macro_HIViewSetNextFocus"
 		end
 
-	frozen hiview_set_next_focus_address_external: POINTER is
+	frozenhiview_set_next_focus_address_external: POINTER is
 			-- Address of C function `HIViewSetNextFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1105,7 +1105,7 @@ feature
 			"ewg_function_macro_HIViewSetFirstSubViewFocus"
 		end
 
-	frozen hiview_set_first_sub_view_focus_address_external: POINTER is
+	frozenhiview_set_first_sub_view_focus_address_external: POINTER is
 			-- Address of C function `HIViewSetFirstSubViewFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1120,7 +1120,7 @@ feature
 			"ewg_function_macro_HIViewGetLayoutInfo"
 		end
 
-	frozen hiview_get_layout_info_address_external: POINTER is
+	frozenhiview_get_layout_info_address_external: POINTER is
 			-- Address of C function `HIViewGetLayoutInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1135,7 +1135,7 @@ feature
 			"ewg_function_macro_HIViewSetLayoutInfo"
 		end
 
-	frozen hiview_set_layout_info_address_external: POINTER is
+	frozenhiview_set_layout_info_address_external: POINTER is
 			-- Address of C function `HIViewSetLayoutInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1150,7 +1150,7 @@ feature
 			"ewg_function_macro_HIViewSuspendLayout"
 		end
 
-	frozen hiview_suspend_layout_address_external: POINTER is
+	frozenhiview_suspend_layout_address_external: POINTER is
 			-- Address of C function `HIViewSuspendLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1165,7 +1165,7 @@ feature
 			"ewg_function_macro_HIViewResumeLayout"
 		end
 
-	frozen hiview_resume_layout_address_external: POINTER is
+	frozenhiview_resume_layout_address_external: POINTER is
 			-- Address of C function `HIViewResumeLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1180,7 +1180,7 @@ feature
 			"ewg_function_macro_HIViewIsLayoutActive"
 		end
 
-	frozen hiview_is_layout_active_address_external: POINTER is
+	frozenhiview_is_layout_active_address_external: POINTER is
 			-- Address of C function `HIViewIsLayoutActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1195,7 +1195,7 @@ feature
 			"ewg_function_macro_HIViewIsLayoutLatentlyActive"
 		end
 
-	frozen hiview_is_layout_latently_active_address_external: POINTER is
+	frozenhiview_is_layout_latently_active_address_external: POINTER is
 			-- Address of C function `HIViewIsLayoutLatentlyActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1210,7 +1210,7 @@ feature
 			"ewg_function_macro_HIViewApplyLayout"
 		end
 
-	frozen hiview_apply_layout_address_external: POINTER is
+	frozenhiview_apply_layout_address_external: POINTER is
 			-- Address of C function `HIViewApplyLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1225,7 +1225,7 @@ feature
 			"ewg_function_macro_HIViewGetWindow"
 		end
 
-	frozen hiview_get_window_address_external: POINTER is
+	frozenhiview_get_window_address_external: POINTER is
 			-- Address of C function `HIViewGetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1240,7 +1240,7 @@ feature
 			"ewg_function_macro_HIViewFindByID"
 		end
 
-	frozen hiview_find_by_id_address_external: POINTER is
+	frozenhiview_find_by_id_address_external: POINTER is
 			-- Address of C function `HIViewFindByID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1255,7 +1255,7 @@ feature
 			"ewg_function_macro_HIViewGetAttributes"
 		end
 
-	frozen hiview_get_attributes_address_external: POINTER is
+	frozenhiview_get_attributes_address_external: POINTER is
 			-- Address of C function `HIViewGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1270,7 +1270,7 @@ feature
 			"ewg_function_macro_HIViewChangeAttributes"
 		end
 
-	frozen hiview_change_attributes_address_external: POINTER is
+	frozenhiview_change_attributes_address_external: POINTER is
 			-- Address of C function `HIViewChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1285,7 +1285,7 @@ feature
 			"ewg_function_macro_HIViewCreateOffscreenImage"
 		end
 
-	frozen hiview_create_offscreen_image_address_external: POINTER is
+	frozenhiview_create_offscreen_image_address_external: POINTER is
 			-- Address of C function `HIViewCreateOffscreenImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1300,7 +1300,7 @@ feature
 			"ewg_function_macro_HIViewDrawCGImage"
 		end
 
-	frozen hiview_draw_cgimage_address_external: POINTER is
+	frozenhiview_draw_cgimage_address_external: POINTER is
 			-- Address of C function `HIViewDrawCGImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1315,7 +1315,7 @@ feature
 			"ewg_function_macro_HIViewGetFeatures"
 		end
 
-	frozen hiview_get_features_address_external: POINTER is
+	frozenhiview_get_features_address_external: POINTER is
 			-- Address of C function `HIViewGetFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1330,7 +1330,7 @@ feature
 			"ewg_function_macro_HIViewChangeFeatures"
 		end
 
-	frozen hiview_change_features_address_external: POINTER is
+	frozenhiview_change_features_address_external: POINTER is
 			-- Address of C function `HIViewChangeFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1345,7 +1345,7 @@ feature
 			"ewg_function_macro_HICreateTransformedCGImage"
 		end
 
-	frozen hicreate_transformed_cgimage_address_external: POINTER is
+	frozenhicreate_transformed_cgimage_address_external: POINTER is
 			-- Address of C function `HICreateTransformedCGImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1360,7 +1360,7 @@ feature
 			"ewg_function_macro_HIViewGetEventTarget"
 		end
 
-	frozen hiview_get_event_target_address_external: POINTER is
+	frozenhiview_get_event_target_address_external: POINTER is
 			-- Address of C function `HIViewGetEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1375,7 +1375,7 @@ feature
 			"ewg_function_macro_HIGrowBoxViewSetTransparent"
 		end
 
-	frozen higrow_box_view_set_transparent_address_external: POINTER is
+	frozenhigrow_box_view_set_transparent_address_external: POINTER is
 			-- Address of C function `HIGrowBoxViewSetTransparent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1390,7 +1390,7 @@ feature
 			"ewg_function_macro_HIGrowBoxViewIsTransparent"
 		end
 
-	frozen higrow_box_view_is_transparent_address_external: POINTER is
+	frozenhigrow_box_view_is_transparent_address_external: POINTER is
 			-- Address of C function `HIGrowBoxViewIsTransparent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1405,7 +1405,7 @@ feature
 			"ewg_function_macro_HIScrollViewCreate"
 		end
 
-	frozen hiscroll_view_create_address_external: POINTER is
+	frozenhiscroll_view_create_address_external: POINTER is
 			-- Address of C function `HIScrollViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1420,7 +1420,7 @@ feature
 			"ewg_function_macro_HIScrollViewSetScrollBarAutoHide"
 		end
 
-	frozen hiscroll_view_set_scroll_bar_auto_hide_address_external: POINTER is
+	frozenhiscroll_view_set_scroll_bar_auto_hide_address_external: POINTER is
 			-- Address of C function `HIScrollViewSetScrollBarAutoHide'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1435,7 +1435,7 @@ feature
 			"ewg_function_macro_HIScrollViewGetScrollBarAutoHide"
 		end
 
-	frozen hiscroll_view_get_scroll_bar_auto_hide_address_external: POINTER is
+	frozenhiscroll_view_get_scroll_bar_auto_hide_address_external: POINTER is
 			-- Address of C function `HIScrollViewGetScrollBarAutoHide'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1450,7 +1450,7 @@ feature
 			"ewg_function_macro_HIScrollViewNavigate"
 		end
 
-	frozen hiscroll_view_navigate_address_external: POINTER is
+	frozenhiscroll_view_navigate_address_external: POINTER is
 			-- Address of C function `HIScrollViewNavigate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1465,7 +1465,7 @@ feature
 			"ewg_function_macro_HIScrollViewCanNavigate"
 		end
 
-	frozen hiscroll_view_can_navigate_address_external: POINTER is
+	frozenhiscroll_view_can_navigate_address_external: POINTER is
 			-- Address of C function `HIScrollViewCanNavigate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1480,7 +1480,7 @@ feature
 			"ewg_function_macro_HIImageViewCreate"
 		end
 
-	frozen hiimage_view_create_address_external: POINTER is
+	frozenhiimage_view_create_address_external: POINTER is
 			-- Address of C function `HIImageViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1495,7 +1495,7 @@ feature
 			"ewg_function_macro_HIImageViewSetOpaque"
 		end
 
-	frozen hiimage_view_set_opaque_address_external: POINTER is
+	frozenhiimage_view_set_opaque_address_external: POINTER is
 			-- Address of C function `HIImageViewSetOpaque'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1510,7 +1510,7 @@ feature
 			"ewg_function_macro_HIImageViewIsOpaque"
 		end
 
-	frozen hiimage_view_is_opaque_address_external: POINTER is
+	frozenhiimage_view_is_opaque_address_external: POINTER is
 			-- Address of C function `HIImageViewIsOpaque'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1525,7 +1525,7 @@ feature
 			"ewg_function_macro_HIImageViewSetAlpha"
 		end
 
-	frozen hiimage_view_set_alpha_address_external: POINTER is
+	frozenhiimage_view_set_alpha_address_external: POINTER is
 			-- Address of C function `HIImageViewSetAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1540,7 +1540,7 @@ feature
 			"ewg_function_macro_HIImageViewGetAlpha"
 		end
 
-	frozen hiimage_view_get_alpha_address_external: POINTER is
+	frozenhiimage_view_get_alpha_address_external: POINTER is
 			-- Address of C function `HIImageViewGetAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1555,7 +1555,7 @@ feature
 			"ewg_function_macro_HIImageViewSetScaleToFit"
 		end
 
-	frozen hiimage_view_set_scale_to_fit_address_external: POINTER is
+	frozenhiimage_view_set_scale_to_fit_address_external: POINTER is
 			-- Address of C function `HIImageViewSetScaleToFit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1570,7 +1570,7 @@ feature
 			"ewg_function_macro_HIImageViewGetScaleToFit"
 		end
 
-	frozen hiimage_view_get_scale_to_fit_address_external: POINTER is
+	frozenhiimage_view_get_scale_to_fit_address_external: POINTER is
 			-- Address of C function `HIImageViewGetScaleToFit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1585,7 +1585,7 @@ feature
 			"ewg_function_macro_HIImageViewSetImage"
 		end
 
-	frozen hiimage_view_set_image_address_external: POINTER is
+	frozenhiimage_view_set_image_address_external: POINTER is
 			-- Address of C function `HIImageViewSetImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1600,7 +1600,7 @@ feature
 			"ewg_function_macro_HIImageViewCopyImage"
 		end
 
-	frozen hiimage_view_copy_image_address_external: POINTER is
+	frozenhiimage_view_copy_image_address_external: POINTER is
 			-- Address of C function `HIImageViewCopyImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1615,7 +1615,7 @@ feature
 			"ewg_function_macro_HIComboBoxCreate"
 		end
 
-	frozen hicombo_box_create_address_external: POINTER is
+	frozenhicombo_box_create_address_external: POINTER is
 			-- Address of C function `HIComboBoxCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1630,7 +1630,7 @@ feature
 			"ewg_function_macro_HIComboBoxGetItemCount"
 		end
 
-	frozen hicombo_box_get_item_count_address_external: POINTER is
+	frozenhicombo_box_get_item_count_address_external: POINTER is
 			-- Address of C function `HIComboBoxGetItemCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1645,7 +1645,7 @@ feature
 			"ewg_function_macro_HIComboBoxInsertTextItemAtIndex"
 		end
 
-	frozen hicombo_box_insert_text_item_at_index_address_external: POINTER is
+	frozenhicombo_box_insert_text_item_at_index_address_external: POINTER is
 			-- Address of C function `HIComboBoxInsertTextItemAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1660,7 +1660,7 @@ feature
 			"ewg_function_macro_HIComboBoxAppendTextItem"
 		end
 
-	frozen hicombo_box_append_text_item_address_external: POINTER is
+	frozenhicombo_box_append_text_item_address_external: POINTER is
 			-- Address of C function `HIComboBoxAppendTextItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1675,7 +1675,7 @@ feature
 			"ewg_function_macro_HIComboBoxCopyTextItemAtIndex"
 		end
 
-	frozen hicombo_box_copy_text_item_at_index_address_external: POINTER is
+	frozenhicombo_box_copy_text_item_at_index_address_external: POINTER is
 			-- Address of C function `HIComboBoxCopyTextItemAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1690,7 +1690,7 @@ feature
 			"ewg_function_macro_HIComboBoxRemoveItemAtIndex"
 		end
 
-	frozen hicombo_box_remove_item_at_index_address_external: POINTER is
+	frozenhicombo_box_remove_item_at_index_address_external: POINTER is
 			-- Address of C function `HIComboBoxRemoveItemAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1705,7 +1705,7 @@ feature
 			"ewg_function_macro_HIComboBoxChangeAttributes"
 		end
 
-	frozen hicombo_box_change_attributes_address_external: POINTER is
+	frozenhicombo_box_change_attributes_address_external: POINTER is
 			-- Address of C function `HIComboBoxChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1720,7 +1720,7 @@ feature
 			"ewg_function_macro_HIComboBoxGetAttributes"
 		end
 
-	frozen hicombo_box_get_attributes_address_external: POINTER is
+	frozenhicombo_box_get_attributes_address_external: POINTER is
 			-- Address of C function `HIComboBoxGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1735,7 +1735,7 @@ feature
 			"ewg_function_macro_HIComboBoxIsListVisible"
 		end
 
-	frozen hicombo_box_is_list_visible_address_external: POINTER is
+	frozenhicombo_box_is_list_visible_address_external: POINTER is
 			-- Address of C function `HIComboBoxIsListVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1750,7 +1750,7 @@ feature
 			"ewg_function_macro_HIComboBoxSetListVisible"
 		end
 
-	frozen hicombo_box_set_list_visible_address_external: POINTER is
+	frozenhicombo_box_set_list_visible_address_external: POINTER is
 			-- Address of C function `HIComboBoxSetListVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1765,7 +1765,7 @@ feature
 			"ewg_function_macro_HISearchFieldCreate"
 		end
 
-	frozen hisearch_field_create_address_external: POINTER is
+	frozenhisearch_field_create_address_external: POINTER is
 			-- Address of C function `HISearchFieldCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1780,7 +1780,7 @@ feature
 			"ewg_function_macro_HISearchFieldSetSearchMenu"
 		end
 
-	frozen hisearch_field_set_search_menu_address_external: POINTER is
+	frozenhisearch_field_set_search_menu_address_external: POINTER is
 			-- Address of C function `HISearchFieldSetSearchMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1795,7 +1795,7 @@ feature
 			"ewg_function_macro_HISearchFieldGetSearchMenu"
 		end
 
-	frozen hisearch_field_get_search_menu_address_external: POINTER is
+	frozenhisearch_field_get_search_menu_address_external: POINTER is
 			-- Address of C function `HISearchFieldGetSearchMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1810,7 +1810,7 @@ feature
 			"ewg_function_macro_HISearchFieldChangeAttributes"
 		end
 
-	frozen hisearch_field_change_attributes_address_external: POINTER is
+	frozenhisearch_field_change_attributes_address_external: POINTER is
 			-- Address of C function `HISearchFieldChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1825,7 +1825,7 @@ feature
 			"ewg_function_macro_HISearchFieldGetAttributes"
 		end
 
-	frozen hisearch_field_get_attributes_address_external: POINTER is
+	frozenhisearch_field_get_attributes_address_external: POINTER is
 			-- Address of C function `HISearchFieldGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1840,7 +1840,7 @@ feature
 			"ewg_function_macro_HISearchFieldSetDescriptiveText"
 		end
 
-	frozen hisearch_field_set_descriptive_text_address_external: POINTER is
+	frozenhisearch_field_set_descriptive_text_address_external: POINTER is
 			-- Address of C function `HISearchFieldSetDescriptiveText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1855,7 +1855,7 @@ feature
 			"ewg_function_macro_HISearchFieldCopyDescriptiveText"
 		end
 
-	frozen hisearch_field_copy_descriptive_text_address_external: POINTER is
+	frozenhisearch_field_copy_descriptive_text_address_external: POINTER is
 			-- Address of C function `HISearchFieldCopyDescriptiveText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1870,7 +1870,7 @@ feature
 			"ewg_function_macro_HIMenuViewGetMenu"
 		end
 
-	frozen himenu_view_get_menu_address_external: POINTER is
+	frozenhimenu_view_get_menu_address_external: POINTER is
 			-- Address of C function `HIMenuViewGetMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1885,7 +1885,7 @@ feature
 			"ewg_function_macro_HIMenuGetContentView"
 		end
 
-	frozen himenu_get_content_view_address_external: POINTER is
+	frozenhimenu_get_content_view_address_external: POINTER is
 			-- Address of C function `HIMenuGetContentView'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1900,7 +1900,7 @@ feature
 			"ewg_function_macro_HISegmentedViewCreate"
 		end
 
-	frozen hisegmented_view_create_address_external: POINTER is
+	frozenhisegmented_view_create_address_external: POINTER is
 			-- Address of C function `HISegmentedViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1915,7 +1915,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentCount"
 		end
 
-	frozen hisegmented_view_set_segment_count_address_external: POINTER is
+	frozenhisegmented_view_set_segment_count_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1930,7 +1930,7 @@ feature
 			"ewg_function_macro_HISegmentedViewGetSegmentCount"
 		end
 
-	frozen hisegmented_view_get_segment_count_address_external: POINTER is
+	frozenhisegmented_view_get_segment_count_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1945,7 +1945,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentBehavior"
 		end
 
-	frozen hisegmented_view_set_segment_behavior_address_external: POINTER is
+	frozenhisegmented_view_set_segment_behavior_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentBehavior'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1960,7 +1960,7 @@ feature
 			"ewg_function_macro_HISegmentedViewGetSegmentBehavior"
 		end
 
-	frozen hisegmented_view_get_segment_behavior_address_external: POINTER is
+	frozenhisegmented_view_get_segment_behavior_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentBehavior'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1975,7 +1975,7 @@ feature
 			"ewg_function_macro_HISegmentedViewChangeSegmentAttributes"
 		end
 
-	frozen hisegmented_view_change_segment_attributes_address_external: POINTER is
+	frozenhisegmented_view_change_segment_attributes_address_external: POINTER is
 			-- Address of C function `HISegmentedViewChangeSegmentAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1990,7 +1990,7 @@ feature
 			"ewg_function_macro_HISegmentedViewGetSegmentAttributes"
 		end
 
-	frozen hisegmented_view_get_segment_attributes_address_external: POINTER is
+	frozenhisegmented_view_get_segment_attributes_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2005,7 +2005,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentValue"
 		end
 
-	frozen hisegmented_view_set_segment_value_address_external: POINTER is
+	frozenhisegmented_view_set_segment_value_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2020,7 +2020,7 @@ feature
 			"ewg_function_macro_HISegmentedViewGetSegmentValue"
 		end
 
-	frozen hisegmented_view_get_segment_value_address_external: POINTER is
+	frozenhisegmented_view_get_segment_value_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2035,7 +2035,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentEnabled"
 		end
 
-	frozen hisegmented_view_set_segment_enabled_address_external: POINTER is
+	frozenhisegmented_view_set_segment_enabled_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2050,7 +2050,7 @@ feature
 			"ewg_function_macro_HISegmentedViewIsSegmentEnabled"
 		end
 
-	frozen hisegmented_view_is_segment_enabled_address_external: POINTER is
+	frozenhisegmented_view_is_segment_enabled_address_external: POINTER is
 			-- Address of C function `HISegmentedViewIsSegmentEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2065,7 +2065,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentCommand"
 		end
 
-	frozen hisegmented_view_set_segment_command_address_external: POINTER is
+	frozenhisegmented_view_set_segment_command_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2080,7 +2080,7 @@ feature
 			"ewg_function_macro_HISegmentedViewGetSegmentCommand"
 		end
 
-	frozen hisegmented_view_get_segment_command_address_external: POINTER is
+	frozenhisegmented_view_get_segment_command_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2095,7 +2095,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentLabel"
 		end
 
-	frozen hisegmented_view_set_segment_label_address_external: POINTER is
+	frozenhisegmented_view_set_segment_label_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentLabel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2110,7 +2110,7 @@ feature
 			"ewg_function_macro_HISegmentedViewCopySegmentLabel"
 		end
 
-	frozen hisegmented_view_copy_segment_label_address_external: POINTER is
+	frozenhisegmented_view_copy_segment_label_address_external: POINTER is
 			-- Address of C function `HISegmentedViewCopySegmentLabel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2125,7 +2125,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentContentWidth"
 		end
 
-	frozen hisegmented_view_set_segment_content_width_address_external: POINTER is
+	frozenhisegmented_view_set_segment_content_width_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentContentWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2140,7 +2140,7 @@ feature
 			"ewg_function_macro_HISegmentedViewGetSegmentContentWidth"
 		end
 
-	frozen hisegmented_view_get_segment_content_width_address_external: POINTER is
+	frozenhisegmented_view_get_segment_content_width_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentContentWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2155,7 +2155,7 @@ feature
 			"ewg_function_macro_HISegmentedViewSetSegmentImage"
 		end
 
-	frozen hisegmented_view_set_segment_image_address_external: POINTER is
+	frozenhisegmented_view_set_segment_image_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2170,7 +2170,7 @@ feature
 			"ewg_function_macro_HISegmentedViewGetSegmentImageContentType"
 		end
 
-	frozen hisegmented_view_get_segment_image_content_type_address_external: POINTER is
+	frozenhisegmented_view_get_segment_image_content_type_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentImageContentType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2185,7 +2185,7 @@ feature
 			"ewg_function_macro_HISegmentedViewCopySegmentImage"
 		end
 
-	frozen hisegmented_view_copy_segment_image_address_external: POINTER is
+	frozenhisegmented_view_copy_segment_image_address_external: POINTER is
 			-- Address of C function `HISegmentedViewCopySegmentImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

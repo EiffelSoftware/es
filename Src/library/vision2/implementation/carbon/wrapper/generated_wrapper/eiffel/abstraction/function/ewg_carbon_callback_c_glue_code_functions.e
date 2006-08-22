@@ -640,6 +640,98 @@ feature
 			Result := call_window_paint_proc_ptr_external (a_function, device, qdcontext, window, inclientpaintrgn, outsystempaintrgn, refcon)
 		end
 
+	get_txnfind_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_txnfind_proc_ptr_stub_external
+		end
+
+	set_txnfind_proc_ptr_entry (a_class: TXNFIND_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_txnfind_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_txnfind_proc_ptr (a_function: POINTER; matchdata: POINTER; idatatype: INTEGER; imatchoptions: INTEGER; isearchtextptr: POINTER; encoding: INTEGER; absstartoffset: INTEGER; searchtextlength: INTEGER; ostartmatch: POINTER; oendmatch: POINTER; ofound: STRING; refcon: INTEGER): INTEGER is
+		local
+			ofound_c_string: EWG_ZERO_TERMINATED_STRING
+		do
+			create ofound_c_string.make_shared_from_string (ofound)
+			Result := call_txnfind_proc_ptr_external (a_function, matchdata, idatatype, imatchoptions, isearchtextptr, encoding, absstartoffset, searchtextlength, ostartmatch, oendmatch, ofound_c_string.item, refcon)
+		end
+
+	get_txnaction_name_mapper_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_txnaction_name_mapper_proc_ptr_stub_external
+		end
+
+	set_txnaction_name_mapper_proc_ptr_entry (a_class: TXNACTION_NAME_MAPPER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_txnaction_name_mapper_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_txnaction_name_mapper_proc_ptr (a_function: POINTER; actionname: POINTER; commandid: INTEGER; inuserdata: POINTER): POINTER is
+		local
+		do
+			Result := call_txnaction_name_mapper_proc_ptr_external (a_function, actionname, commandid, inuserdata)
+		end
+
+	get_txncontextual_menu_setup_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_txncontextual_menu_setup_proc_ptr_stub_external
+		end
+
+	set_txncontextual_menu_setup_proc_ptr_entry (a_class: TXNCONTEXTUAL_MENU_SETUP_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_txncontextual_menu_setup_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_txncontextual_menu_setup_proc_ptr (a_function: POINTER; icontextualmenu: POINTER; object: POINTER; inuserdata: POINTER) is
+		local
+		do
+			call_txncontextual_menu_setup_proc_ptr_external (a_function, icontextualmenu, object, inuserdata)
+		end
+
+	get_txnscroll_info_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_txnscroll_info_proc_ptr_stub_external
+		end
+
+	set_txnscroll_info_proc_ptr_entry (a_class: TXNSCROLL_INFO_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_txnscroll_info_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_txnscroll_info_proc_ptr (a_function: POINTER; ivalue: INTEGER; imaximumvalue: INTEGER; iscrollbarorientation: INTEGER; irefcon: INTEGER) is
+		local
+		do
+			call_txnscroll_info_proc_ptr_external (a_function, ivalue, imaximumvalue, iscrollbarorientation, irefcon)
+		end
+
+	get_txnaction_key_mapper_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_txnaction_key_mapper_proc_ptr_stub_external
+		end
+
+	set_txnaction_key_mapper_proc_ptr_entry (a_class: TXNACTION_KEY_MAPPER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_txnaction_key_mapper_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_txnaction_key_mapper_proc_ptr (a_function: POINTER; actionkey: INTEGER; commandid: INTEGER): POINTER is
+		local
+		do
+			Result := call_txnaction_key_mapper_proc_ptr_external (a_function, actionkey, commandid)
+		end
+
 	get_hmcontrol_content_proc_ptr_stub: POINTER is
 		local
 		do

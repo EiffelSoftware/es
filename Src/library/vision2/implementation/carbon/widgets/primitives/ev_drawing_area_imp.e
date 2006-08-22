@@ -16,7 +16,8 @@ inherit
 
 	EV_DRAWABLE_IMP
 		redefine
-			interface
+			interface,
+			on_event
 		end
 
 	EV_PRIMITIVE_IMP
@@ -24,7 +25,8 @@ inherit
 			foreground_color,
 			background_color,
 			set_foreground_color,
-			set_background_color
+			set_background_color,
+			on_event
 		redefine
 			interface,
 			default_key_processing_blocked,
@@ -71,6 +73,12 @@ feature -- Status report
 			-- Is Current able to be tabbed from?
 
 feature -- Status setting
+
+	on_event (a_inhandlercallref, a_inevent, a_inuserdata: POINTER): INTEGER_32 is
+		do
+
+		end
+
 
 	enable_double_buffering is
 			-- Allow `Current' to have all exposed area double buffered.

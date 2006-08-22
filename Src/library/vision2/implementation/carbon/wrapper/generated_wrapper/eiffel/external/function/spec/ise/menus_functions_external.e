@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_NewMenuDefUPP"
 		end
 
-	frozen new_menu_def_upp_address_external: POINTER is
+	frozennew_menu_def_upp_address_external: POINTER is
 			-- Address of C function `NewMenuDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_DisposeMenuDefUPP"
 		end
 
-	frozen dispose_menu_def_upp_address_external: POINTER is
+	frozendispose_menu_def_upp_address_external: POINTER is
 			-- Address of C function `DisposeMenuDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_InvokeMenuDefUPP"
 		end
 
-	frozen invoke_menu_def_upp_address_external: POINTER is
+	frozeninvoke_menu_def_upp_address_external: POINTER is
 			-- Address of C function `InvokeMenuDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_NewMenu"
 		end
 
-	frozen new_menu_address_external: POINTER is
+	frozennew_menu_address_external: POINTER is
 			-- Address of C function `NewMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_GetMenu"
 		end
 
-	frozen get_menu_address_external: POINTER is
+	frozenget_menu_address_external: POINTER is
 			-- Address of C function `GetMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_DisposeMenu"
 		end
 
-	frozen dispose_menu_address_external: POINTER is
+	frozendispose_menu_address_external: POINTER is
 			-- Address of C function `DisposeMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CalcMenuSize"
 		end
 
-	frozen calc_menu_size_address_external: POINTER is
+	frozencalc_menu_size_address_external: POINTER is
 			-- Address of C function `CalcMenuSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CountMenuItems"
 		end
 
-	frozen count_menu_items_address_external: POINTER is
+	frozencount_menu_items_address_external: POINTER is
 			-- Address of C function `CountMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_GetMenuFont"
 		end
 
-	frozen get_menu_font_address_external: POINTER is
+	frozenget_menu_font_address_external: POINTER is
 			-- Address of C function `GetMenuFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_SetMenuFont"
 		end
 
-	frozen set_menu_font_address_external: POINTER is
+	frozenset_menu_font_address_external: POINTER is
 			-- Address of C function `SetMenuFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_GetMenuExcludesMarkColumn"
 		end
 
-	frozen get_menu_excludes_mark_column_address_external: POINTER is
+	frozenget_menu_excludes_mark_column_address_external: POINTER is
 			-- Address of C function `GetMenuExcludesMarkColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_SetMenuExcludesMarkColumn"
 		end
 
-	frozen set_menu_excludes_mark_column_address_external: POINTER is
+	frozenset_menu_excludes_mark_column_address_external: POINTER is
 			-- Address of C function `SetMenuExcludesMarkColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_RegisterMenuDefinition"
 		end
 
-	frozen register_menu_definition_address_external: POINTER is
+	frozenregister_menu_definition_address_external: POINTER is
 			-- Address of C function `RegisterMenuDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CreateNewMenu"
 		end
 
-	frozen create_new_menu_address_external: POINTER is
+	frozencreate_new_menu_address_external: POINTER is
 			-- Address of C function `CreateNewMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CreateCustomMenu"
 		end
 
-	frozen create_custom_menu_address_external: POINTER is
+	frozencreate_custom_menu_address_external: POINTER is
 			-- Address of C function `CreateCustomMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_IsValidMenu"
 		end
 
-	frozen is_valid_menu_address_external: POINTER is
+	frozenis_valid_menu_address_external: POINTER is
 			-- Address of C function `IsValidMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_GetMenuRetainCount"
 		end
 
-	frozen get_menu_retain_count_address_external: POINTER is
+	frozenget_menu_retain_count_address_external: POINTER is
 			-- Address of C function `GetMenuRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_RetainMenu"
 		end
 
-	frozen retain_menu_address_external: POINTER is
+	frozenretain_menu_address_external: POINTER is
 			-- Address of C function `RetainMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_ReleaseMenu"
 		end
 
-	frozen release_menu_address_external: POINTER is
+	frozenrelease_menu_address_external: POINTER is
 			-- Address of C function `ReleaseMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_DuplicateMenu"
 		end
 
-	frozen duplicate_menu_address_external: POINTER is
+	frozenduplicate_menu_address_external: POINTER is
 			-- Address of C function `DuplicateMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CopyMenuTitleAsCFString"
 		end
 
-	frozen copy_menu_title_as_cfstring_address_external: POINTER is
+	frozencopy_menu_title_as_cfstring_address_external: POINTER is
 			-- Address of C function `CopyMenuTitleAsCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_SetMenuTitleWithCFString"
 		end
 
-	frozen set_menu_title_with_cfstring_address_external: POINTER is
+	frozenset_menu_title_with_cfstring_address_external: POINTER is
 			-- Address of C function `SetMenuTitleWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_SetMenuTitleIcon"
 		end
 
-	frozen set_menu_title_icon_address_external: POINTER is
+	frozenset_menu_title_icon_address_external: POINTER is
 			-- Address of C function `SetMenuTitleIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_GetMenuTitleIcon"
 		end
 
-	frozen get_menu_title_icon_address_external: POINTER is
+	frozenget_menu_title_icon_address_external: POINTER is
 			-- Address of C function `GetMenuTitleIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_InvalidateMenuSize"
 		end
 
-	frozen invalidate_menu_size_address_external: POINTER is
+	frozeninvalidate_menu_size_address_external: POINTER is
 			-- Address of C function `InvalidateMenuSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_IsMenuSizeInvalid"
 		end
 
-	frozen is_menu_size_invalid_address_external: POINTER is
+	frozenis_menu_size_invalid_address_external: POINTER is
 			-- Address of C function `IsMenuSizeInvalid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_EraseMenuBackground"
 		end
 
-	frozen erase_menu_background_address_external: POINTER is
+	frozenerase_menu_background_address_external: POINTER is
 			-- Address of C function `EraseMenuBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_ScrollMenuImage"
 		end
 
-	frozen scroll_menu_image_address_external: POINTER is
+	frozenscroll_menu_image_address_external: POINTER is
 			-- Address of C function `ScrollMenuImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_AppendMenu"
 		end
 
-	frozen append_menu_address_external: POINTER is
+	frozenappend_menu_address_external: POINTER is
 			-- Address of C function `AppendMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_InsertResMenu"
 		end
 
-	frozen insert_res_menu_address_external: POINTER is
+	frozeninsert_res_menu_address_external: POINTER is
 			-- Address of C function `InsertResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_AppendResMenu"
 		end
 
-	frozen append_res_menu_address_external: POINTER is
+	frozenappend_res_menu_address_external: POINTER is
 			-- Address of C function `AppendResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_InsertMenuItem"
 		end
 
-	frozen insert_menu_item_address_external: POINTER is
+	frozeninsert_menu_item_address_external: POINTER is
 			-- Address of C function `InsertMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_DeleteMenuItem"
 		end
 
-	frozen delete_menu_item_address_external: POINTER is
+	frozendelete_menu_item_address_external: POINTER is
 			-- Address of C function `DeleteMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_InsertFontResMenu"
 		end
 
-	frozen insert_font_res_menu_address_external: POINTER is
+	frozeninsert_font_res_menu_address_external: POINTER is
 			-- Address of C function `InsertFontResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_InsertIntlResMenu"
 		end
 
-	frozen insert_intl_res_menu_address_external: POINTER is
+	frozeninsert_intl_res_menu_address_external: POINTER is
 			-- Address of C function `InsertIntlResMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_AppendMenuItemText"
 		end
 
-	frozen append_menu_item_text_address_external: POINTER is
+	frozenappend_menu_item_text_address_external: POINTER is
 			-- Address of C function `AppendMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_InsertMenuItemText"
 		end
 
-	frozen insert_menu_item_text_address_external: POINTER is
+	frozeninsert_menu_item_text_address_external: POINTER is
 			-- Address of C function `InsertMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_CopyMenuItems"
 		end
 
-	frozen copy_menu_items_address_external: POINTER is
+	frozencopy_menu_items_address_external: POINTER is
 			-- Address of C function `CopyMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_DeleteMenuItems"
 		end
 
-	frozen delete_menu_items_address_external: POINTER is
+	frozendelete_menu_items_address_external: POINTER is
 			-- Address of C function `DeleteMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_AppendMenuItemTextWithCFString"
 		end
 
-	frozen append_menu_item_text_with_cfstring_address_external: POINTER is
+	frozenappend_menu_item_text_with_cfstring_address_external: POINTER is
 			-- Address of C function `AppendMenuItemTextWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_InsertMenuItemTextWithCFString"
 		end
 
-	frozen insert_menu_item_text_with_cfstring_address_external: POINTER is
+	frozeninsert_menu_item_text_with_cfstring_address_external: POINTER is
 			-- Address of C function `InsertMenuItemTextWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_MenuKey"
 		end
 
-	frozen menu_key_address_external: POINTER is
+	frozenmenu_key_address_external: POINTER is
 			-- Address of C function `MenuKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_MenuSelect"
 		end
 
-	frozen menu_select_address_external: POINTER is
+	frozenmenu_select_address_external: POINTER is
 			-- Address of C function `MenuSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_PopUpMenuSelect"
 		end
 
-	frozen pop_up_menu_select_address_external: POINTER is
+	frozenpop_up_menu_select_address_external: POINTER is
 			-- Address of C function `PopUpMenuSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_MenuChoice"
 		end
 
-	frozen menu_choice_address_external: POINTER is
+	frozenmenu_choice_address_external: POINTER is
 			-- Address of C function `MenuChoice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_MenuEvent"
 		end
 
-	frozen menu_event_address_external: POINTER is
+	frozenmenu_event_address_external: POINTER is
 			-- Address of C function `MenuEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_IsMenuKeyEvent"
 		end
 
-	frozen is_menu_key_event_address_external: POINTER is
+	frozenis_menu_key_event_address_external: POINTER is
 			-- Address of C function `IsMenuKeyEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_InvalidateMenuEnabling"
 		end
 
-	frozen invalidate_menu_enabling_address_external: POINTER is
+	frozeninvalidate_menu_enabling_address_external: POINTER is
 			-- Address of C function `InvalidateMenuEnabling'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_CancelMenuTracking"
 		end
 
-	frozen cancel_menu_tracking_address_external: POINTER is
+	frozencancel_menu_tracking_address_external: POINTER is
 			-- Address of C function `CancelMenuTracking'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_GetMBarHeight"
 		end
 
-	frozen get_mbar_height_address_external: POINTER is
+	frozenget_mbar_height_address_external: POINTER is
 			-- Address of C function `GetMBarHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_DrawMenuBar"
 		end
 
-	frozen draw_menu_bar_address_external: POINTER is
+	frozendraw_menu_bar_address_external: POINTER is
 			-- Address of C function `DrawMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_InvalMenuBar"
 		end
 
-	frozen inval_menu_bar_address_external: POINTER is
+	frozeninval_menu_bar_address_external: POINTER is
 			-- Address of C function `InvalMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_IsMenuBarInvalid"
 		end
 
-	frozen is_menu_bar_invalid_address_external: POINTER is
+	frozenis_menu_bar_invalid_address_external: POINTER is
 			-- Address of C function `IsMenuBarInvalid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_HiliteMenu"
 		end
 
-	frozen hilite_menu_address_external: POINTER is
+	frozenhilite_menu_address_external: POINTER is
 			-- Address of C function `HiliteMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_GetNewMBar"
 		end
 
-	frozen get_new_mbar_address_external: POINTER is
+	frozenget_new_mbar_address_external: POINTER is
 			-- Address of C function `GetNewMBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_GetMenuBar"
 		end
 
-	frozen get_menu_bar_address_external: POINTER is
+	frozenget_menu_bar_address_external: POINTER is
 			-- Address of C function `GetMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_SetMenuBar"
 		end
 
-	frozen set_menu_bar_address_external: POINTER is
+	frozenset_menu_bar_address_external: POINTER is
 			-- Address of C function `SetMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_DuplicateMenuBar"
 		end
 
-	frozen duplicate_menu_bar_address_external: POINTER is
+	frozenduplicate_menu_bar_address_external: POINTER is
 			-- Address of C function `DuplicateMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_DisposeMenuBar"
 		end
 
-	frozen dispose_menu_bar_address_external: POINTER is
+	frozendispose_menu_bar_address_external: POINTER is
 			-- Address of C function `DisposeMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_GetMenuHandle"
 		end
 
-	frozen get_menu_handle_address_external: POINTER is
+	frozenget_menu_handle_address_external: POINTER is
 			-- Address of C function `GetMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_InsertMenu"
 		end
 
-	frozen insert_menu_address_external: POINTER is
+	frozeninsert_menu_address_external: POINTER is
 			-- Address of C function `InsertMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -925,7 +925,7 @@ feature
 			"ewg_function_macro_DeleteMenu"
 		end
 
-	frozen delete_menu_address_external: POINTER is
+	frozendelete_menu_address_external: POINTER is
 			-- Address of C function `DeleteMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -940,7 +940,7 @@ feature
 			"ewg_function_macro_ClearMenuBar"
 		end
 
-	frozen clear_menu_bar_address_external: POINTER is
+	frozenclear_menu_bar_address_external: POINTER is
 			-- Address of C function `ClearMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -955,7 +955,7 @@ feature
 			"ewg_function_macro_SetMenuFlashCount"
 		end
 
-	frozen set_menu_flash_count_address_external: POINTER is
+	frozenset_menu_flash_count_address_external: POINTER is
 			-- Address of C function `SetMenuFlashCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -970,7 +970,7 @@ feature
 			"ewg_function_macro_FlashMenuBar"
 		end
 
-	frozen flash_menu_bar_address_external: POINTER is
+	frozenflash_menu_bar_address_external: POINTER is
 			-- Address of C function `FlashMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -985,7 +985,7 @@ feature
 			"ewg_function_macro_IsMenuBarVisible"
 		end
 
-	frozen is_menu_bar_visible_address_external: POINTER is
+	frozenis_menu_bar_visible_address_external: POINTER is
 			-- Address of C function `IsMenuBarVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1000,7 +1000,7 @@ feature
 			"ewg_function_macro_ShowMenuBar"
 		end
 
-	frozen show_menu_bar_address_external: POINTER is
+	frozenshow_menu_bar_address_external: POINTER is
 			-- Address of C function `ShowMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1015,7 +1015,7 @@ feature
 			"ewg_function_macro_HideMenuBar"
 		end
 
-	frozen hide_menu_bar_address_external: POINTER is
+	frozenhide_menu_bar_address_external: POINTER is
 			-- Address of C function `HideMenuBar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1030,7 +1030,7 @@ feature
 			"ewg_function_macro_AcquireRootMenu"
 		end
 
-	frozen acquire_root_menu_address_external: POINTER is
+	frozenacquire_root_menu_address_external: POINTER is
 			-- Address of C function `AcquireRootMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1045,7 +1045,7 @@ feature
 			"ewg_function_macro_SetRootMenu"
 		end
 
-	frozen set_root_menu_address_external: POINTER is
+	frozenset_root_menu_address_external: POINTER is
 			-- Address of C function `SetRootMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1060,7 +1060,7 @@ feature
 			"ewg_function_macro_CheckMenuItem"
 		end
 
-	frozen check_menu_item_address_external: POINTER is
+	frozencheck_menu_item_address_external: POINTER is
 			-- Address of C function `CheckMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1075,7 +1075,7 @@ feature
 			"ewg_function_macro_SetMenuItemText"
 		end
 
-	frozen set_menu_item_text_address_external: POINTER is
+	frozenset_menu_item_text_address_external: POINTER is
 			-- Address of C function `SetMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1090,7 +1090,7 @@ feature
 			"ewg_function_macro_GetMenuItemText"
 		end
 
-	frozen get_menu_item_text_address_external: POINTER is
+	frozenget_menu_item_text_address_external: POINTER is
 			-- Address of C function `GetMenuItemText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1105,7 +1105,7 @@ feature
 			"ewg_function_macro_SetItemMark"
 		end
 
-	frozen set_item_mark_address_external: POINTER is
+	frozenset_item_mark_address_external: POINTER is
 			-- Address of C function `SetItemMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1120,7 +1120,7 @@ feature
 			"ewg_function_macro_GetItemMark"
 		end
 
-	frozen get_item_mark_address_external: POINTER is
+	frozenget_item_mark_address_external: POINTER is
 			-- Address of C function `GetItemMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1135,7 +1135,7 @@ feature
 			"ewg_function_macro_SetItemCmd"
 		end
 
-	frozen set_item_cmd_address_external: POINTER is
+	frozenset_item_cmd_address_external: POINTER is
 			-- Address of C function `SetItemCmd'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1150,7 +1150,7 @@ feature
 			"ewg_function_macro_GetItemCmd"
 		end
 
-	frozen get_item_cmd_address_external: POINTER is
+	frozenget_item_cmd_address_external: POINTER is
 			-- Address of C function `GetItemCmd'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1165,7 +1165,7 @@ feature
 			"ewg_function_macro_SetItemIcon"
 		end
 
-	frozen set_item_icon_address_external: POINTER is
+	frozenset_item_icon_address_external: POINTER is
 			-- Address of C function `SetItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1180,7 +1180,7 @@ feature
 			"ewg_function_macro_GetItemIcon"
 		end
 
-	frozen get_item_icon_address_external: POINTER is
+	frozenget_item_icon_address_external: POINTER is
 			-- Address of C function `GetItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1195,7 +1195,7 @@ feature
 			"ewg_function_macro_SetItemStyle"
 		end
 
-	frozen set_item_style_address_external: POINTER is
+	frozenset_item_style_address_external: POINTER is
 			-- Address of C function `SetItemStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1210,7 +1210,7 @@ feature
 			"ewg_function_macro_GetItemStyle"
 		end
 
-	frozen get_item_style_address_external: POINTER is
+	frozenget_item_style_address_external: POINTER is
 			-- Address of C function `GetItemStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1225,7 +1225,7 @@ feature
 			"ewg_function_macro_SetMenuItemCommandID"
 		end
 
-	frozen set_menu_item_command_id_address_external: POINTER is
+	frozenset_menu_item_command_id_address_external: POINTER is
 			-- Address of C function `SetMenuItemCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1240,7 +1240,7 @@ feature
 			"ewg_function_macro_GetMenuItemCommandID"
 		end
 
-	frozen get_menu_item_command_id_address_external: POINTER is
+	frozenget_menu_item_command_id_address_external: POINTER is
 			-- Address of C function `GetMenuItemCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1255,7 +1255,7 @@ feature
 			"ewg_function_macro_SetMenuItemModifiers"
 		end
 
-	frozen set_menu_item_modifiers_address_external: POINTER is
+	frozenset_menu_item_modifiers_address_external: POINTER is
 			-- Address of C function `SetMenuItemModifiers'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1270,7 +1270,7 @@ feature
 			"ewg_function_macro_GetMenuItemModifiers"
 		end
 
-	frozen get_menu_item_modifiers_address_external: POINTER is
+	frozenget_menu_item_modifiers_address_external: POINTER is
 			-- Address of C function `GetMenuItemModifiers'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1285,7 +1285,7 @@ feature
 			"ewg_function_macro_SetMenuItemIconHandle"
 		end
 
-	frozen set_menu_item_icon_handle_address_external: POINTER is
+	frozenset_menu_item_icon_handle_address_external: POINTER is
 			-- Address of C function `SetMenuItemIconHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1300,7 +1300,7 @@ feature
 			"ewg_function_macro_GetMenuItemIconHandle"
 		end
 
-	frozen get_menu_item_icon_handle_address_external: POINTER is
+	frozenget_menu_item_icon_handle_address_external: POINTER is
 			-- Address of C function `GetMenuItemIconHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1315,7 +1315,7 @@ feature
 			"ewg_function_macro_SetMenuItemTextEncoding"
 		end
 
-	frozen set_menu_item_text_encoding_address_external: POINTER is
+	frozenset_menu_item_text_encoding_address_external: POINTER is
 			-- Address of C function `SetMenuItemTextEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1330,7 +1330,7 @@ feature
 			"ewg_function_macro_GetMenuItemTextEncoding"
 		end
 
-	frozen get_menu_item_text_encoding_address_external: POINTER is
+	frozenget_menu_item_text_encoding_address_external: POINTER is
 			-- Address of C function `GetMenuItemTextEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1345,7 +1345,7 @@ feature
 			"ewg_function_macro_SetMenuItemHierarchicalID"
 		end
 
-	frozen set_menu_item_hierarchical_id_address_external: POINTER is
+	frozenset_menu_item_hierarchical_id_address_external: POINTER is
 			-- Address of C function `SetMenuItemHierarchicalID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1360,7 +1360,7 @@ feature
 			"ewg_function_macro_GetMenuItemHierarchicalID"
 		end
 
-	frozen get_menu_item_hierarchical_id_address_external: POINTER is
+	frozenget_menu_item_hierarchical_id_address_external: POINTER is
 			-- Address of C function `GetMenuItemHierarchicalID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1375,7 +1375,7 @@ feature
 			"ewg_function_macro_SetMenuItemFontID"
 		end
 
-	frozen set_menu_item_font_id_address_external: POINTER is
+	frozenset_menu_item_font_id_address_external: POINTER is
 			-- Address of C function `SetMenuItemFontID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1390,7 +1390,7 @@ feature
 			"ewg_function_macro_GetMenuItemFontID"
 		end
 
-	frozen get_menu_item_font_id_address_external: POINTER is
+	frozenget_menu_item_font_id_address_external: POINTER is
 			-- Address of C function `GetMenuItemFontID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1405,7 +1405,7 @@ feature
 			"ewg_function_macro_SetMenuItemRefCon"
 		end
 
-	frozen set_menu_item_ref_con_address_external: POINTER is
+	frozenset_menu_item_ref_con_address_external: POINTER is
 			-- Address of C function `SetMenuItemRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1420,7 +1420,7 @@ feature
 			"ewg_function_macro_GetMenuItemRefCon"
 		end
 
-	frozen get_menu_item_ref_con_address_external: POINTER is
+	frozenget_menu_item_ref_con_address_external: POINTER is
 			-- Address of C function `GetMenuItemRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1435,7 +1435,7 @@ feature
 			"ewg_function_macro_SetMenuItemKeyGlyph"
 		end
 
-	frozen set_menu_item_key_glyph_address_external: POINTER is
+	frozenset_menu_item_key_glyph_address_external: POINTER is
 			-- Address of C function `SetMenuItemKeyGlyph'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1450,7 +1450,7 @@ feature
 			"ewg_function_macro_GetMenuItemKeyGlyph"
 		end
 
-	frozen get_menu_item_key_glyph_address_external: POINTER is
+	frozenget_menu_item_key_glyph_address_external: POINTER is
 			-- Address of C function `GetMenuItemKeyGlyph'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1465,7 +1465,7 @@ feature
 			"ewg_function_macro_EnableMenuItem"
 		end
 
-	frozen enable_menu_item_address_external: POINTER is
+	frozenenable_menu_item_address_external: POINTER is
 			-- Address of C function `EnableMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1480,7 +1480,7 @@ feature
 			"ewg_function_macro_DisableMenuItem"
 		end
 
-	frozen disable_menu_item_address_external: POINTER is
+	frozendisable_menu_item_address_external: POINTER is
 			-- Address of C function `DisableMenuItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1495,7 +1495,7 @@ feature
 			"ewg_function_macro_IsMenuItemEnabled"
 		end
 
-	frozen is_menu_item_enabled_address_external: POINTER is
+	frozenis_menu_item_enabled_address_external: POINTER is
 			-- Address of C function `IsMenuItemEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1510,7 +1510,7 @@ feature
 			"ewg_function_macro_EnableMenuItemIcon"
 		end
 
-	frozen enable_menu_item_icon_address_external: POINTER is
+	frozenenable_menu_item_icon_address_external: POINTER is
 			-- Address of C function `EnableMenuItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1525,7 +1525,7 @@ feature
 			"ewg_function_macro_DisableMenuItemIcon"
 		end
 
-	frozen disable_menu_item_icon_address_external: POINTER is
+	frozendisable_menu_item_icon_address_external: POINTER is
 			-- Address of C function `DisableMenuItemIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1540,7 +1540,7 @@ feature
 			"ewg_function_macro_IsMenuItemIconEnabled"
 		end
 
-	frozen is_menu_item_icon_enabled_address_external: POINTER is
+	frozenis_menu_item_icon_enabled_address_external: POINTER is
 			-- Address of C function `IsMenuItemIconEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1555,7 +1555,7 @@ feature
 			"ewg_function_macro_SetMenuItemHierarchicalMenu"
 		end
 
-	frozen set_menu_item_hierarchical_menu_address_external: POINTER is
+	frozenset_menu_item_hierarchical_menu_address_external: POINTER is
 			-- Address of C function `SetMenuItemHierarchicalMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1570,7 +1570,7 @@ feature
 			"ewg_function_macro_GetMenuItemHierarchicalMenu"
 		end
 
-	frozen get_menu_item_hierarchical_menu_address_external: POINTER is
+	frozenget_menu_item_hierarchical_menu_address_external: POINTER is
 			-- Address of C function `GetMenuItemHierarchicalMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1585,7 +1585,7 @@ feature
 			"ewg_function_macro_CopyMenuItemTextAsCFString"
 		end
 
-	frozen copy_menu_item_text_as_cfstring_address_external: POINTER is
+	frozencopy_menu_item_text_as_cfstring_address_external: POINTER is
 			-- Address of C function `CopyMenuItemTextAsCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1600,7 +1600,7 @@ feature
 			"ewg_function_macro_SetMenuItemTextWithCFString"
 		end
 
-	frozen set_menu_item_text_with_cfstring_address_external: POINTER is
+	frozenset_menu_item_text_with_cfstring_address_external: POINTER is
 			-- Address of C function `SetMenuItemTextWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1615,7 +1615,7 @@ feature
 			"ewg_function_macro_GetMenuItemIndent"
 		end
 
-	frozen get_menu_item_indent_address_external: POINTER is
+	frozenget_menu_item_indent_address_external: POINTER is
 			-- Address of C function `GetMenuItemIndent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1630,7 +1630,7 @@ feature
 			"ewg_function_macro_SetMenuItemIndent"
 		end
 
-	frozen set_menu_item_indent_address_external: POINTER is
+	frozenset_menu_item_indent_address_external: POINTER is
 			-- Address of C function `SetMenuItemIndent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1645,7 +1645,7 @@ feature
 			"ewg_function_macro_GetMenuItemCommandKey"
 		end
 
-	frozen get_menu_item_command_key_address_external: POINTER is
+	frozenget_menu_item_command_key_address_external: POINTER is
 			-- Address of C function `GetMenuItemCommandKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1660,7 +1660,7 @@ feature
 			"ewg_function_macro_SetMenuItemCommandKey"
 		end
 
-	frozen set_menu_item_command_key_address_external: POINTER is
+	frozenset_menu_item_command_key_address_external: POINTER is
 			-- Address of C function `SetMenuItemCommandKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1675,7 +1675,7 @@ feature
 			"ewg_function_macro_DeleteMCEntries"
 		end
 
-	frozen delete_mcentries_address_external: POINTER is
+	frozendelete_mcentries_address_external: POINTER is
 			-- Address of C function `DeleteMCEntries'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1690,7 +1690,7 @@ feature
 			"ewg_function_macro_GetMCInfo"
 		end
 
-	frozen get_mcinfo_address_external: POINTER is
+	frozenget_mcinfo_address_external: POINTER is
 			-- Address of C function `GetMCInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1705,7 +1705,7 @@ feature
 			"ewg_function_macro_SetMCInfo"
 		end
 
-	frozen set_mcinfo_address_external: POINTER is
+	frozenset_mcinfo_address_external: POINTER is
 			-- Address of C function `SetMCInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1720,7 +1720,7 @@ feature
 			"ewg_function_macro_DisposeMCInfo"
 		end
 
-	frozen dispose_mcinfo_address_external: POINTER is
+	frozendispose_mcinfo_address_external: POINTER is
 			-- Address of C function `DisposeMCInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1735,7 +1735,7 @@ feature
 			"ewg_function_macro_GetMCEntry"
 		end
 
-	frozen get_mcentry_address_external: POINTER is
+	frozenget_mcentry_address_external: POINTER is
 			-- Address of C function `GetMCEntry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1750,7 +1750,7 @@ feature
 			"ewg_function_macro_SetMCEntries"
 		end
 
-	frozen set_mcentries_address_external: POINTER is
+	frozenset_mcentries_address_external: POINTER is
 			-- Address of C function `SetMCEntries'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1765,7 +1765,7 @@ feature
 			"ewg_function_macro_GetMenuItemProperty"
 		end
 
-	frozen get_menu_item_property_address_external: POINTER is
+	frozenget_menu_item_property_address_external: POINTER is
 			-- Address of C function `GetMenuItemProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1780,7 +1780,7 @@ feature
 			"ewg_function_macro_GetMenuItemPropertySize"
 		end
 
-	frozen get_menu_item_property_size_address_external: POINTER is
+	frozenget_menu_item_property_size_address_external: POINTER is
 			-- Address of C function `GetMenuItemPropertySize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1795,7 +1795,7 @@ feature
 			"ewg_function_macro_SetMenuItemProperty"
 		end
 
-	frozen set_menu_item_property_address_external: POINTER is
+	frozenset_menu_item_property_address_external: POINTER is
 			-- Address of C function `SetMenuItemProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1810,7 +1810,7 @@ feature
 			"ewg_function_macro_RemoveMenuItemProperty"
 		end
 
-	frozen remove_menu_item_property_address_external: POINTER is
+	frozenremove_menu_item_property_address_external: POINTER is
 			-- Address of C function `RemoveMenuItemProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1825,7 +1825,7 @@ feature
 			"ewg_function_macro_GetMenuItemPropertyAttributes"
 		end
 
-	frozen get_menu_item_property_attributes_address_external: POINTER is
+	frozenget_menu_item_property_attributes_address_external: POINTER is
 			-- Address of C function `GetMenuItemPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1840,7 +1840,7 @@ feature
 			"ewg_function_macro_ChangeMenuItemPropertyAttributes"
 		end
 
-	frozen change_menu_item_property_attributes_address_external: POINTER is
+	frozenchange_menu_item_property_attributes_address_external: POINTER is
 			-- Address of C function `ChangeMenuItemPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1855,7 +1855,7 @@ feature
 			"ewg_function_macro_GetMenuAttributes"
 		end
 
-	frozen get_menu_attributes_address_external: POINTER is
+	frozenget_menu_attributes_address_external: POINTER is
 			-- Address of C function `GetMenuAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1870,7 +1870,7 @@ feature
 			"ewg_function_macro_ChangeMenuAttributes"
 		end
 
-	frozen change_menu_attributes_address_external: POINTER is
+	frozenchange_menu_attributes_address_external: POINTER is
 			-- Address of C function `ChangeMenuAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1885,7 +1885,7 @@ feature
 			"ewg_function_macro_GetMenuItemAttributes"
 		end
 
-	frozen get_menu_item_attributes_address_external: POINTER is
+	frozenget_menu_item_attributes_address_external: POINTER is
 			-- Address of C function `GetMenuItemAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1900,7 +1900,7 @@ feature
 			"ewg_function_macro_ChangeMenuItemAttributes"
 		end
 
-	frozen change_menu_item_attributes_address_external: POINTER is
+	frozenchange_menu_item_attributes_address_external: POINTER is
 			-- Address of C function `ChangeMenuItemAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1915,7 +1915,7 @@ feature
 			"ewg_function_macro_DisableAllMenuItems"
 		end
 
-	frozen disable_all_menu_items_address_external: POINTER is
+	frozendisable_all_menu_items_address_external: POINTER is
 			-- Address of C function `DisableAllMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1930,7 +1930,7 @@ feature
 			"ewg_function_macro_EnableAllMenuItems"
 		end
 
-	frozen enable_all_menu_items_address_external: POINTER is
+	frozenenable_all_menu_items_address_external: POINTER is
 			-- Address of C function `EnableAllMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1945,7 +1945,7 @@ feature
 			"ewg_function_macro_MenuHasEnabledItems"
 		end
 
-	frozen menu_has_enabled_items_address_external: POINTER is
+	frozenmenu_has_enabled_items_address_external: POINTER is
 			-- Address of C function `MenuHasEnabledItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1960,7 +1960,7 @@ feature
 			"ewg_function_macro_GetMenuTrackingData"
 		end
 
-	frozen get_menu_tracking_data_address_external: POINTER is
+	frozenget_menu_tracking_data_address_external: POINTER is
 			-- Address of C function `GetMenuTrackingData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1975,7 +1975,7 @@ feature
 			"ewg_function_macro_GetMenuType"
 		end
 
-	frozen get_menu_type_address_external: POINTER is
+	frozenget_menu_type_address_external: POINTER is
 			-- Address of C function `GetMenuType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1990,7 +1990,7 @@ feature
 			"ewg_function_macro_CountMenuItemsWithCommandID"
 		end
 
-	frozen count_menu_items_with_command_id_address_external: POINTER is
+	frozencount_menu_items_with_command_id_address_external: POINTER is
 			-- Address of C function `CountMenuItemsWithCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2005,7 +2005,7 @@ feature
 			"ewg_function_macro_GetIndMenuItemWithCommandID"
 		end
 
-	frozen get_ind_menu_item_with_command_id_address_external: POINTER is
+	frozenget_ind_menu_item_with_command_id_address_external: POINTER is
 			-- Address of C function `GetIndMenuItemWithCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2020,7 +2020,7 @@ feature
 			"ewg_function_macro_EnableMenuCommand"
 		end
 
-	frozen enable_menu_command_address_external: POINTER is
+	frozenenable_menu_command_address_external: POINTER is
 			-- Address of C function `EnableMenuCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2035,7 +2035,7 @@ feature
 			"ewg_function_macro_DisableMenuCommand"
 		end
 
-	frozen disable_menu_command_address_external: POINTER is
+	frozendisable_menu_command_address_external: POINTER is
 			-- Address of C function `DisableMenuCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2050,7 +2050,7 @@ feature
 			"ewg_function_macro_IsMenuCommandEnabled"
 		end
 
-	frozen is_menu_command_enabled_address_external: POINTER is
+	frozenis_menu_command_enabled_address_external: POINTER is
 			-- Address of C function `IsMenuCommandEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2065,7 +2065,7 @@ feature
 			"ewg_function_macro_SetMenuCommandMark"
 		end
 
-	frozen set_menu_command_mark_address_external: POINTER is
+	frozenset_menu_command_mark_address_external: POINTER is
 			-- Address of C function `SetMenuCommandMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2080,7 +2080,7 @@ feature
 			"ewg_function_macro_GetMenuCommandMark"
 		end
 
-	frozen get_menu_command_mark_address_external: POINTER is
+	frozenget_menu_command_mark_address_external: POINTER is
 			-- Address of C function `GetMenuCommandMark'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2095,7 +2095,7 @@ feature
 			"ewg_function_macro_GetMenuCommandProperty"
 		end
 
-	frozen get_menu_command_property_address_external: POINTER is
+	frozenget_menu_command_property_address_external: POINTER is
 			-- Address of C function `GetMenuCommandProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2110,7 +2110,7 @@ feature
 			"ewg_function_macro_GetMenuCommandPropertySize"
 		end
 
-	frozen get_menu_command_property_size_address_external: POINTER is
+	frozenget_menu_command_property_size_address_external: POINTER is
 			-- Address of C function `GetMenuCommandPropertySize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2125,7 +2125,7 @@ feature
 			"ewg_function_macro_SetMenuCommandProperty"
 		end
 
-	frozen set_menu_command_property_address_external: POINTER is
+	frozenset_menu_command_property_address_external: POINTER is
 			-- Address of C function `SetMenuCommandProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2140,7 +2140,7 @@ feature
 			"ewg_function_macro_RemoveMenuCommandProperty"
 		end
 
-	frozen remove_menu_command_property_address_external: POINTER is
+	frozenremove_menu_command_property_address_external: POINTER is
 			-- Address of C function `RemoveMenuCommandProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2155,7 +2155,7 @@ feature
 			"ewg_function_macro_CopyMenuItemData"
 		end
 
-	frozen copy_menu_item_data_address_external: POINTER is
+	frozencopy_menu_item_data_address_external: POINTER is
 			-- Address of C function `CopyMenuItemData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2170,7 +2170,7 @@ feature
 			"ewg_function_macro_SetMenuItemData"
 		end
 
-	frozen set_menu_item_data_address_external: POINTER is
+	frozenset_menu_item_data_address_external: POINTER is
 			-- Address of C function `SetMenuItemData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2185,7 +2185,7 @@ feature
 			"ewg_function_macro_IsMenuItemInvalid"
 		end
 
-	frozen is_menu_item_invalid_address_external: POINTER is
+	frozenis_menu_item_invalid_address_external: POINTER is
 			-- Address of C function `IsMenuItemInvalid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2200,7 +2200,7 @@ feature
 			"ewg_function_macro_InvalidateMenuItems"
 		end
 
-	frozen invalidate_menu_items_address_external: POINTER is
+	frozeninvalidate_menu_items_address_external: POINTER is
 			-- Address of C function `InvalidateMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2215,7 +2215,7 @@ feature
 			"ewg_function_macro_UpdateInvalidMenuItems"
 		end
 
-	frozen update_invalid_menu_items_address_external: POINTER is
+	frozenupdate_invalid_menu_items_address_external: POINTER is
 			-- Address of C function `UpdateInvalidMenuItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2230,7 +2230,7 @@ feature
 			"ewg_function_macro_CreateStandardFontMenu"
 		end
 
-	frozen create_standard_font_menu_address_external: POINTER is
+	frozencreate_standard_font_menu_address_external: POINTER is
 			-- Address of C function `CreateStandardFontMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2245,7 +2245,7 @@ feature
 			"ewg_function_macro_UpdateStandardFontMenu"
 		end
 
-	frozen update_standard_font_menu_address_external: POINTER is
+	frozenupdate_standard_font_menu_address_external: POINTER is
 			-- Address of C function `UpdateStandardFontMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2260,7 +2260,7 @@ feature
 			"ewg_function_macro_GetFontFamilyFromMenuSelection"
 		end
 
-	frozen get_font_family_from_menu_selection_address_external: POINTER is
+	frozenget_font_family_from_menu_selection_address_external: POINTER is
 			-- Address of C function `GetFontFamilyFromMenuSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2275,7 +2275,7 @@ feature
 			"ewg_function_macro_InitContextualMenus"
 		end
 
-	frozen init_contextual_menus_address_external: POINTER is
+	frozeninit_contextual_menus_address_external: POINTER is
 			-- Address of C function `InitContextualMenus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2290,7 +2290,7 @@ feature
 			"ewg_function_macro_IsShowContextualMenuClick"
 		end
 
-	frozen is_show_contextual_menu_click_address_external: POINTER is
+	frozenis_show_contextual_menu_click_address_external: POINTER is
 			-- Address of C function `IsShowContextualMenuClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2305,7 +2305,7 @@ feature
 			"ewg_function_macro_IsShowContextualMenuEvent"
 		end
 
-	frozen is_show_contextual_menu_event_address_external: POINTER is
+	frozenis_show_contextual_menu_event_address_external: POINTER is
 			-- Address of C function `IsShowContextualMenuEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2320,7 +2320,7 @@ feature
 			"ewg_function_macro_ContextualMenuSelect"
 		end
 
-	frozen contextual_menu_select_address_external: POINTER is
+	frozencontextual_menu_select_address_external: POINTER is
 			-- Address of C function `ContextualMenuSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2335,7 +2335,7 @@ feature
 			"ewg_function_macro_ProcessIsContextualMenuClient"
 		end
 
-	frozen process_is_contextual_menu_client_address_external: POINTER is
+	frozenprocess_is_contextual_menu_client_address_external: POINTER is
 			-- Address of C function `ProcessIsContextualMenuClient'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2350,7 +2350,7 @@ feature
 			"ewg_function_macro_LMGetTheMenu"
 		end
 
-	frozen lmget_the_menu_address_external: POINTER is
+	frozenlmget_the_menu_address_external: POINTER is
 			-- Address of C function `LMGetTheMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2365,7 +2365,7 @@ feature
 			"ewg_function_macro_GetMenuID"
 		end
 
-	frozen get_menu_id_address_external: POINTER is
+	frozenget_menu_id_address_external: POINTER is
 			-- Address of C function `GetMenuID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2380,7 +2380,7 @@ feature
 			"ewg_function_macro_GetMenuWidth"
 		end
 
-	frozen get_menu_width_address_external: POINTER is
+	frozenget_menu_width_address_external: POINTER is
 			-- Address of C function `GetMenuWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2395,7 +2395,7 @@ feature
 			"ewg_function_macro_GetMenuHeight"
 		end
 
-	frozen get_menu_height_address_external: POINTER is
+	frozenget_menu_height_address_external: POINTER is
 			-- Address of C function `GetMenuHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2410,7 +2410,7 @@ feature
 			"ewg_function_macro_GetMenuTitle"
 		end
 
-	frozen get_menu_title_address_external: POINTER is
+	frozenget_menu_title_address_external: POINTER is
 			-- Address of C function `GetMenuTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2425,7 +2425,7 @@ feature
 			"ewg_function_macro_GetMenuDefinition"
 		end
 
-	frozen get_menu_definition_address_external: POINTER is
+	frozenget_menu_definition_address_external: POINTER is
 			-- Address of C function `GetMenuDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2440,7 +2440,7 @@ feature
 			"ewg_function_macro_SetMenuID"
 		end
 
-	frozen set_menu_id_address_external: POINTER is
+	frozenset_menu_id_address_external: POINTER is
 			-- Address of C function `SetMenuID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2455,7 +2455,7 @@ feature
 			"ewg_function_macro_SetMenuWidth"
 		end
 
-	frozen set_menu_width_address_external: POINTER is
+	frozenset_menu_width_address_external: POINTER is
 			-- Address of C function `SetMenuWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2470,7 +2470,7 @@ feature
 			"ewg_function_macro_SetMenuHeight"
 		end
 
-	frozen set_menu_height_address_external: POINTER is
+	frozenset_menu_height_address_external: POINTER is
 			-- Address of C function `SetMenuHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2485,7 +2485,7 @@ feature
 			"ewg_function_macro_SetMenuTitle"
 		end
 
-	frozen set_menu_title_address_external: POINTER is
+	frozenset_menu_title_address_external: POINTER is
 			-- Address of C function `SetMenuTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2500,7 +2500,7 @@ feature
 			"ewg_function_macro_SetMenuDefinition"
 		end
 
-	frozen set_menu_definition_address_external: POINTER is
+	frozenset_menu_definition_address_external: POINTER is
 			-- Address of C function `SetMenuDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_GetCurrentEventLoop"
 		end
 
-	frozen get_current_event_loop_address_external: POINTER is
+	frozenget_current_event_loop_address_external: POINTER is
 			-- Address of C function `GetCurrentEventLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_GetMainEventLoop"
 		end
 
-	frozen get_main_event_loop_address_external: POINTER is
+	frozenget_main_event_loop_address_external: POINTER is
 			-- Address of C function `GetMainEventLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_RunCurrentEventLoop"
 		end
 
-	frozen run_current_event_loop_address_external: POINTER is
+	frozenrun_current_event_loop_address_external: POINTER is
 			-- Address of C function `RunCurrentEventLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_QuitEventLoop"
 		end
 
-	frozen quit_event_loop_address_external: POINTER is
+	frozenquit_event_loop_address_external: POINTER is
 			-- Address of C function `QuitEventLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_GetCFRunLoopFromEventLoop"
 		end
 
-	frozen get_cfrun_loop_from_event_loop_address_external: POINTER is
+	frozenget_cfrun_loop_from_event_loop_address_external: POINTER is
 			-- Address of C function `GetCFRunLoopFromEventLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_ReceiveNextEvent"
 		end
 
-	frozen receive_next_event_address_external: POINTER is
+	frozenreceive_next_event_address_external: POINTER is
 			-- Address of C function `ReceiveNextEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CreateEvent"
 		end
 
-	frozen create_event_address_external: POINTER is
+	frozencreate_event_address_external: POINTER is
 			-- Address of C function `CreateEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CopyEvent"
 		end
 
-	frozen copy_event_address_external: POINTER is
+	frozencopy_event_address_external: POINTER is
 			-- Address of C function `CopyEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_CopyEventAs"
 		end
 
-	frozen copy_event_as_address_external: POINTER is
+	frozencopy_event_as_address_external: POINTER is
 			-- Address of C function `CopyEventAs'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_RetainEvent"
 		end
 
-	frozen retain_event_address_external: POINTER is
+	frozenretain_event_address_external: POINTER is
 			-- Address of C function `RetainEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_GetEventRetainCount"
 		end
 
-	frozen get_event_retain_count_address_external: POINTER is
+	frozenget_event_retain_count_address_external: POINTER is
 			-- Address of C function `GetEventRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_ReleaseEvent"
 		end
 
-	frozen release_event_address_external: POINTER is
+	frozenrelease_event_address_external: POINTER is
 			-- Address of C function `ReleaseEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_SetEventParameter"
 		end
 
-	frozen set_event_parameter_address_external: POINTER is
+	frozenset_event_parameter_address_external: POINTER is
 			-- Address of C function `SetEventParameter'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_GetEventParameter"
 		end
 
-	frozen get_event_parameter_address_external: POINTER is
+	frozenget_event_parameter_address_external: POINTER is
 			-- Address of C function `GetEventParameter'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_GetEventClass"
 		end
 
-	frozen get_event_class_address_external: POINTER is
+	frozenget_event_class_address_external: POINTER is
 			-- Address of C function `GetEventClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_GetEventKind"
 		end
 
-	frozen get_event_kind_address_external: POINTER is
+	frozenget_event_kind_address_external: POINTER is
 			-- Address of C function `GetEventKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_GetEventTime"
 		end
 
-	frozen get_event_time_address_external: POINTER is
+	frozenget_event_time_address_external: POINTER is
 			-- Address of C function `GetEventTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_SetEventTime"
 		end
 
-	frozen set_event_time_address_external: POINTER is
+	frozenset_event_time_address_external: POINTER is
 			-- Address of C function `SetEventTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_GetCurrentEventQueue"
 		end
 
-	frozen get_current_event_queue_address_external: POINTER is
+	frozenget_current_event_queue_address_external: POINTER is
 			-- Address of C function `GetCurrentEventQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_GetMainEventQueue"
 		end
 
-	frozen get_main_event_queue_address_external: POINTER is
+	frozenget_main_event_queue_address_external: POINTER is
 			-- Address of C function `GetMainEventQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_NewEventComparatorUPP"
 		end
 
-	frozen new_event_comparator_upp_address_external: POINTER is
+	frozennew_event_comparator_upp_address_external: POINTER is
 			-- Address of C function `NewEventComparatorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_DisposeEventComparatorUPP"
 		end
 
-	frozen dispose_event_comparator_upp_address_external: POINTER is
+	frozendispose_event_comparator_upp_address_external: POINTER is
 			-- Address of C function `DisposeEventComparatorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_InvokeEventComparatorUPP"
 		end
 
-	frozen invoke_event_comparator_upp_address_external: POINTER is
+	frozeninvoke_event_comparator_upp_address_external: POINTER is
 			-- Address of C function `InvokeEventComparatorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_PostEventToQueue"
 		end
 
-	frozen post_event_to_queue_address_external: POINTER is
+	frozenpost_event_to_queue_address_external: POINTER is
 			-- Address of C function `PostEventToQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_FlushEventsMatchingListFromQueue"
 		end
 
-	frozen flush_events_matching_list_from_queue_address_external: POINTER is
+	frozenflush_events_matching_list_from_queue_address_external: POINTER is
 			-- Address of C function `FlushEventsMatchingListFromQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_FlushSpecificEventsFromQueue"
 		end
 
-	frozen flush_specific_events_from_queue_address_external: POINTER is
+	frozenflush_specific_events_from_queue_address_external: POINTER is
 			-- Address of C function `FlushSpecificEventsFromQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_FlushEventQueue"
 		end
 
-	frozen flush_event_queue_address_external: POINTER is
+	frozenflush_event_queue_address_external: POINTER is
 			-- Address of C function `FlushEventQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_FindSpecificEventInQueue"
 		end
 
-	frozen find_specific_event_in_queue_address_external: POINTER is
+	frozenfind_specific_event_in_queue_address_external: POINTER is
 			-- Address of C function `FindSpecificEventInQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_GetNumEventsInQueue"
 		end
 
-	frozen get_num_events_in_queue_address_external: POINTER is
+	frozenget_num_events_in_queue_address_external: POINTER is
 			-- Address of C function `GetNumEventsInQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_RemoveEventFromQueue"
 		end
 
-	frozen remove_event_from_queue_address_external: POINTER is
+	frozenremove_event_from_queue_address_external: POINTER is
 			-- Address of C function `RemoveEventFromQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_IsEventInQueue"
 		end
 
-	frozen is_event_in_queue_address_external: POINTER is
+	frozenis_event_in_queue_address_external: POINTER is
 			-- Address of C function `IsEventInQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_AcquireFirstMatchingEventInQueue"
 		end
 
-	frozen acquire_first_matching_event_in_queue_address_external: POINTER is
+	frozenacquire_first_matching_event_in_queue_address_external: POINTER is
 			-- Address of C function `AcquireFirstMatchingEventInQueue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_GetCurrentEvent"
 		end
 
-	frozen get_current_event_address_external: POINTER is
+	frozenget_current_event_address_external: POINTER is
 			-- Address of C function `GetCurrentEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_GetCurrentEventButtonState"
 		end
 
-	frozen get_current_event_button_state_address_external: POINTER is
+	frozenget_current_event_button_state_address_external: POINTER is
 			-- Address of C function `GetCurrentEventButtonState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_GetCurrentEventKeyModifiers"
 		end
 
-	frozen get_current_event_key_modifiers_address_external: POINTER is
+	frozenget_current_event_key_modifiers_address_external: POINTER is
 			-- Address of C function `GetCurrentEventKeyModifiers'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_GetCurrentButtonState"
 		end
 
-	frozen get_current_button_state_address_external: POINTER is
+	frozenget_current_button_state_address_external: POINTER is
 			-- Address of C function `GetCurrentButtonState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_GetCurrentEventTime"
 		end
 
-	frozen get_current_event_time_address_external: POINTER is
+	frozenget_current_event_time_address_external: POINTER is
 			-- Address of C function `GetCurrentEventTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_NewEventLoopTimerUPP"
 		end
 
-	frozen new_event_loop_timer_upp_address_external: POINTER is
+	frozennew_event_loop_timer_upp_address_external: POINTER is
 			-- Address of C function `NewEventLoopTimerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_NewEventLoopIdleTimerUPP"
 		end
 
-	frozen new_event_loop_idle_timer_upp_address_external: POINTER is
+	frozennew_event_loop_idle_timer_upp_address_external: POINTER is
 			-- Address of C function `NewEventLoopIdleTimerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_DisposeEventLoopTimerUPP"
 		end
 
-	frozen dispose_event_loop_timer_upp_address_external: POINTER is
+	frozendispose_event_loop_timer_upp_address_external: POINTER is
 			-- Address of C function `DisposeEventLoopTimerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_DisposeEventLoopIdleTimerUPP"
 		end
 
-	frozen dispose_event_loop_idle_timer_upp_address_external: POINTER is
+	frozendispose_event_loop_idle_timer_upp_address_external: POINTER is
 			-- Address of C function `DisposeEventLoopIdleTimerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_InvokeEventLoopTimerUPP"
 		end
 
-	frozen invoke_event_loop_timer_upp_address_external: POINTER is
+	frozeninvoke_event_loop_timer_upp_address_external: POINTER is
 			-- Address of C function `InvokeEventLoopTimerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_InvokeEventLoopIdleTimerUPP"
 		end
 
-	frozen invoke_event_loop_idle_timer_upp_address_external: POINTER is
+	frozeninvoke_event_loop_idle_timer_upp_address_external: POINTER is
 			-- Address of C function `InvokeEventLoopIdleTimerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_InstallEventLoopTimer"
 		end
 
-	frozen install_event_loop_timer_address_external: POINTER is
+	frozeninstall_event_loop_timer_address_external: POINTER is
 			-- Address of C function `InstallEventLoopTimer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_InstallEventLoopIdleTimer"
 		end
 
-	frozen install_event_loop_idle_timer_address_external: POINTER is
+	frozeninstall_event_loop_idle_timer_address_external: POINTER is
 			-- Address of C function `InstallEventLoopIdleTimer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_RemoveEventLoopTimer"
 		end
 
-	frozen remove_event_loop_timer_address_external: POINTER is
+	frozenremove_event_loop_timer_address_external: POINTER is
 			-- Address of C function `RemoveEventLoopTimer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_SetEventLoopTimerNextFireTime"
 		end
 
-	frozen set_event_loop_timer_next_fire_time_address_external: POINTER is
+	frozenset_event_loop_timer_next_fire_time_address_external: POINTER is
 			-- Address of C function `SetEventLoopTimerNextFireTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_NewEventHandlerUPP"
 		end
 
-	frozen new_event_handler_upp_address_external: POINTER is
+	frozennew_event_handler_upp_address_external: POINTER is
 			-- Address of C function `NewEventHandlerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_DisposeEventHandlerUPP"
 		end
 
-	frozen dispose_event_handler_upp_address_external: POINTER is
+	frozendispose_event_handler_upp_address_external: POINTER is
 			-- Address of C function `DisposeEventHandlerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_InvokeEventHandlerUPP"
 		end
 
-	frozen invoke_event_handler_upp_address_external: POINTER is
+	frozeninvoke_event_handler_upp_address_external: POINTER is
 			-- Address of C function `InvokeEventHandlerUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_InstallEventHandler"
 		end
 
-	frozen install_event_handler_address_external: POINTER is
+	frozeninstall_event_handler_address_external: POINTER is
 			-- Address of C function `InstallEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_InstallStandardEventHandler"
 		end
 
-	frozen install_standard_event_handler_address_external: POINTER is
+	frozeninstall_standard_event_handler_address_external: POINTER is
 			-- Address of C function `InstallStandardEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_RemoveEventHandler"
 		end
 
-	frozen remove_event_handler_address_external: POINTER is
+	frozenremove_event_handler_address_external: POINTER is
 			-- Address of C function `RemoveEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_AddEventTypesToHandler"
 		end
 
-	frozen add_event_types_to_handler_address_external: POINTER is
+	frozenadd_event_types_to_handler_address_external: POINTER is
 			-- Address of C function `AddEventTypesToHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_RemoveEventTypesFromHandler"
 		end
 
-	frozen remove_event_types_from_handler_address_external: POINTER is
+	frozenremove_event_types_from_handler_address_external: POINTER is
 			-- Address of C function `RemoveEventTypesFromHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_CallNextEventHandler"
 		end
 
-	frozen call_next_event_handler_address_external: POINTER is
+	frozencall_next_event_handler_address_external: POINTER is
 			-- Address of C function `CallNextEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_SendEventToEventTarget"
 		end
 
-	frozen send_event_to_event_target_address_external: POINTER is
+	frozensend_event_to_event_target_address_external: POINTER is
 			-- Address of C function `SendEventToEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_SendEventToEventTargetWithOptions"
 		end
 
-	frozen send_event_to_event_target_with_options_address_external: POINTER is
+	frozensend_event_to_event_target_with_options_address_external: POINTER is
 			-- Address of C function `SendEventToEventTargetWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_EnableSecureEventInput"
 		end
 
-	frozen enable_secure_event_input_address_external: POINTER is
+	frozenenable_secure_event_input_address_external: POINTER is
 			-- Address of C function `EnableSecureEventInput'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_DisableSecureEventInput"
 		end
 
-	frozen disable_secure_event_input_address_external: POINTER is
+	frozendisable_secure_event_input_address_external: POINTER is
 			-- Address of C function `DisableSecureEventInput'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_IsSecureEventInputEnabled"
 		end
 
-	frozen is_secure_event_input_enabled_address_external: POINTER is
+	frozenis_secure_event_input_enabled_address_external: POINTER is
 			-- Address of C function `IsSecureEventInputEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

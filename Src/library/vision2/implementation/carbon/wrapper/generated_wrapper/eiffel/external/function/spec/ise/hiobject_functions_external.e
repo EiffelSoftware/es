@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_HIObjectRegisterSubclass"
 		end
 
-	frozen hiobject_register_subclass_address_external: POINTER is
+	frozenhiobject_register_subclass_address_external: POINTER is
 			-- Address of C function `HIObjectRegisterSubclass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_HIObjectUnregisterClass"
 		end
 
-	frozen hiobject_unregister_class_address_external: POINTER is
+	frozenhiobject_unregister_class_address_external: POINTER is
 			-- Address of C function `HIObjectUnregisterClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_HIObjectCreate"
 		end
 
-	frozen hiobject_create_address_external: POINTER is
+	frozenhiobject_create_address_external: POINTER is
 			-- Address of C function `HIObjectCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_HIObjectGetEventTarget"
 		end
 
-	frozen hiobject_get_event_target_address_external: POINTER is
+	frozenhiobject_get_event_target_address_external: POINTER is
 			-- Address of C function `HIObjectGetEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_HIObjectPrintDebugInfo"
 		end
 
-	frozen hiobject_print_debug_info_address_external: POINTER is
+	frozenhiobject_print_debug_info_address_external: POINTER is
 			-- Address of C function `HIObjectPrintDebugInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_HIObjectCopyClassID"
 		end
 
-	frozen hiobject_copy_class_id_address_external: POINTER is
+	frozenhiobject_copy_class_id_address_external: POINTER is
 			-- Address of C function `HIObjectCopyClassID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_HIObjectIsOfClass"
 		end
 
-	frozen hiobject_is_of_class_address_external: POINTER is
+	frozenhiobject_is_of_class_address_external: POINTER is
 			-- Address of C function `HIObjectIsOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_HIObjectDynamicCast"
 		end
 
-	frozen hiobject_dynamic_cast_address_external: POINTER is
+	frozenhiobject_dynamic_cast_address_external: POINTER is
 			-- Address of C function `HIObjectDynamicCast'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_HIObjectCreateFromBundle"
 		end
 
-	frozen hiobject_create_from_bundle_address_external: POINTER is
+	frozenhiobject_create_from_bundle_address_external: POINTER is
 			-- Address of C function `HIObjectCreateFromBundle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_HIObjectIsAccessibilityIgnored"
 		end
 
-	frozen hiobject_is_accessibility_ignored_address_external: POINTER is
+	frozenhiobject_is_accessibility_ignored_address_external: POINTER is
 			-- Address of C function `HIObjectIsAccessibilityIgnored'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_HIObjectSetAccessibilityIgnored"
 		end
 
-	frozen hiobject_set_accessibility_ignored_address_external: POINTER is
+	frozenhiobject_set_accessibility_ignored_address_external: POINTER is
 			-- Address of C function `HIObjectSetAccessibilityIgnored'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_HIObjectSetAuxiliaryAccessibilityAttribute"
 		end
 
-	frozen hiobject_set_auxiliary_accessibility_attribute_address_external: POINTER is
+	frozenhiobject_set_auxiliary_accessibility_attribute_address_external: POINTER is
 			-- Address of C function `HIObjectSetAuxiliaryAccessibilityAttribute'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_HIObjectOverrideAccessibilityContainment"
 		end
 
-	frozen hiobject_override_accessibility_containment_address_external: POINTER is
+	frozenhiobject_override_accessibility_containment_address_external: POINTER is
 			-- Address of C function `HIObjectOverrideAccessibilityContainment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_HIObjectIsArchivingIgnored"
 		end
 
-	frozen hiobject_is_archiving_ignored_address_external: POINTER is
+	frozenhiobject_is_archiving_ignored_address_external: POINTER is
 			-- Address of C function `HIObjectIsArchivingIgnored'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_HIObjectSetArchivingIgnored"
 		end
 
-	frozen hiobject_set_archiving_ignored_address_external: POINTER is
+	frozenhiobject_set_archiving_ignored_address_external: POINTER is
 			-- Address of C function `HIObjectSetArchivingIgnored'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_HIObjectCopyCustomArchiveData"
 		end
 
-	frozen hiobject_copy_custom_archive_data_address_external: POINTER is
+	frozenhiobject_copy_custom_archive_data_address_external: POINTER is
 			-- Address of C function `HIObjectCopyCustomArchiveData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_HIObjectSetCustomArchiveData"
 		end
 
-	frozen hiobject_set_custom_archive_data_address_external: POINTER is
+	frozenhiobject_set_custom_archive_data_address_external: POINTER is
 			-- Address of C function `HIObjectSetCustomArchiveData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

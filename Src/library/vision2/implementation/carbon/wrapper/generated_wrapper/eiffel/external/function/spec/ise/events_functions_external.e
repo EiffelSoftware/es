@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_GetMouse"
 		end
 
-	frozen get_mouse_address_external: POINTER is
+	frozenget_mouse_address_external: POINTER is
 			-- Address of C function `GetMouse'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_Button"
 		end
 
-	frozen button_address_external: POINTER is
+	frozenbutton_address_external: POINTER is
 			-- Address of C function `Button'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_StillDown"
 		end
 
-	frozen still_down_address_external: POINTER is
+	frozenstill_down_address_external: POINTER is
 			-- Address of C function `StillDown'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_WaitMouseUp"
 		end
 
-	frozen wait_mouse_up_address_external: POINTER is
+	frozenwait_mouse_up_address_external: POINTER is
 			-- Address of C function `WaitMouseUp'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_KeyTranslate"
 		end
 
-	frozen key_translate_address_external: POINTER is
+	frozenkey_translate_address_external: POINTER is
 			-- Address of C function `KeyTranslate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_GetCaretTime"
 		end
 
-	frozen get_caret_time_address_external: POINTER is
+	frozenget_caret_time_address_external: POINTER is
 			-- Address of C function `GetCaretTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_GetKeys"
 		end
 
-	frozen get_keys_address_external: POINTER is
+	frozenget_keys_address_external: POINTER is
 			-- Address of C function `GetKeys'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_GetDblTime"
 		end
 
-	frozen get_dbl_time_address_external: POINTER is
+	frozenget_dbl_time_address_external: POINTER is
 			-- Address of C function `GetDblTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_SetEventMask"
 		end
 
-	frozen set_event_mask_address_external: POINTER is
+	frozenset_event_mask_address_external: POINTER is
 			-- Address of C function `SetEventMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_GetNextEvent"
 		end
 
-	frozen get_next_event_address_external: POINTER is
+	frozenget_next_event_address_external: POINTER is
 			-- Address of C function `GetNextEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_WaitNextEvent"
 		end
 
-	frozen wait_next_event_address_external: POINTER is
+	frozenwait_next_event_address_external: POINTER is
 			-- Address of C function `WaitNextEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_EventAvail"
 		end
 
-	frozen event_avail_address_external: POINTER is
+	frozenevent_avail_address_external: POINTER is
 			-- Address of C function `EventAvail'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_PostEvent"
 		end
 
-	frozen post_event_address_external: POINTER is
+	frozenpost_event_address_external: POINTER is
 			-- Address of C function `PostEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_FlushEvents"
 		end
 
-	frozen flush_events_address_external: POINTER is
+	frozenflush_events_address_external: POINTER is
 			-- Address of C function `FlushEvents'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_GetGlobalMouse"
 		end
 
-	frozen get_global_mouse_address_external: POINTER is
+	frozenget_global_mouse_address_external: POINTER is
 			-- Address of C function `GetGlobalMouse'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_GetCurrentKeyModifiers"
 		end
 
-	frozen get_current_key_modifiers_address_external: POINTER is
+	frozenget_current_key_modifiers_address_external: POINTER is
 			-- Address of C function `GetCurrentKeyModifiers'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CheckEventQueueForUserCancel"
 		end
 
-	frozen check_event_queue_for_user_cancel_address_external: POINTER is
+	frozencheck_event_queue_for_user_cancel_address_external: POINTER is
 			-- Address of C function `CheckEventQueueForUserCancel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_KeyScript"
 		end
 
-	frozen key_script_address_external: POINTER is
+	frozenkey_script_address_external: POINTER is
 			-- Address of C function `KeyScript'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_IsCmdChar"
 		end
 
-	frozen is_cmd_char_address_external: POINTER is
+	frozenis_cmd_char_address_external: POINTER is
 			-- Address of C function `IsCmdChar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_LMGetKeyThresh"
 		end
 
-	frozen lmget_key_thresh_address_external: POINTER is
+	frozenlmget_key_thresh_address_external: POINTER is
 			-- Address of C function `LMGetKeyThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_LMSetKeyThresh"
 		end
 
-	frozen lmset_key_thresh_address_external: POINTER is
+	frozenlmset_key_thresh_address_external: POINTER is
 			-- Address of C function `LMSetKeyThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_LMGetKeyRepThresh"
 		end
 
-	frozen lmget_key_rep_thresh_address_external: POINTER is
+	frozenlmget_key_rep_thresh_address_external: POINTER is
 			-- Address of C function `LMGetKeyRepThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_LMSetKeyRepThresh"
 		end
 
-	frozen lmset_key_rep_thresh_address_external: POINTER is
+	frozenlmset_key_rep_thresh_address_external: POINTER is
 			-- Address of C function `LMSetKeyRepThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_LMGetKbdLast"
 		end
 
-	frozen lmget_kbd_last_address_external: POINTER is
+	frozenlmget_kbd_last_address_external: POINTER is
 			-- Address of C function `LMGetKbdLast'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_LMSetKbdLast"
 		end
 
-	frozen lmset_kbd_last_address_external: POINTER is
+	frozenlmset_kbd_last_address_external: POINTER is
 			-- Address of C function `LMSetKbdLast'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_LMGetKbdType"
 		end
 
-	frozen lmget_kbd_type_address_external: POINTER is
+	frozenlmget_kbd_type_address_external: POINTER is
 			-- Address of C function `LMGetKbdType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_LMSetKbdType"
 		end
 
-	frozen lmset_kbd_type_address_external: POINTER is
+	frozenlmset_kbd_type_address_external: POINTER is
 			-- Address of C function `LMSetKbdType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

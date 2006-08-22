@@ -1323,6 +1323,17 @@
 #define ewg_struct_macro_sizeof_struct___AXUIElement 1
 
 
+// glue code macros for struct `struct BigEndianLong'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_BigEndianLong sizeof (struct BigEndianLong)
+
+#define ewg_struct_macro_struct_BigEndianLong_member_get_bigEndianValue(an_item) ((struct BigEndianLong*)an_item)->bigEndianValue
+
+#define ewg_struct_macro_struct_BigEndianLong_member_set_bigEndianValue(an_item, a_value) ((struct BigEndianLong*)an_item)->bigEndianValue =  (long)a_value
+
+
 // glue code macros for struct `struct EventRecord'
 
 #include<Carbon/Carbon.h>
@@ -1701,13 +1712,7 @@
 
 #define ewg_struct_macro_sizeof_struct_AliasRecord sizeof (struct AliasRecord)
 
-#define ewg_struct_macro_struct_AliasRecord_member_get_userType(an_item) ((struct AliasRecord*)an_item)->userType
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_userType(an_item, a_value) ((struct AliasRecord*)an_item)->userType =  (OSType)a_value
-
-#define ewg_struct_macro_struct_AliasRecord_member_get_aliasSize(an_item) ((struct AliasRecord*)an_item)->aliasSize
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_aliasSize(an_item, a_value) ((struct AliasRecord*)an_item)->aliasSize =  (unsigned short)a_value
+#define ewg_struct_macro_struct_AliasRecord_member_get_hidden(an_item) ((struct AliasRecord*)an_item)->hidden
 
 
 // glue code macros for struct `struct OpaqueIconRef'
@@ -1867,6 +1872,153 @@
 #define ewg_struct_macro_struct_ControlButtonContentInfo_member_get_contentType(an_item) ((struct ControlButtonContentInfo*)an_item)->contentType
 
 #define ewg_struct_macro_struct_ControlButtonContentInfo_member_set_contentType(an_item, a_value) ((struct ControlButtonContentInfo*)an_item)->contentType =  (ControlContentType)a_value
+
+
+// glue code macros for struct `struct TXNMatchTextRecord'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNMatchTextRecord sizeof (struct TXNMatchTextRecord)
+
+#define ewg_struct_macro_struct_TXNMatchTextRecord_member_get_iTextPtr(an_item) ((struct TXNMatchTextRecord*)an_item)->iTextPtr
+
+#define ewg_struct_macro_struct_TXNMatchTextRecord_member_set_iTextPtr(an_item, a_value) ((struct TXNMatchTextRecord*)an_item)->iTextPtr =  (void*)a_value
+
+#define ewg_struct_macro_struct_TXNMatchTextRecord_member_get_iTextToMatchLength(an_item) ((struct TXNMatchTextRecord*)an_item)->iTextToMatchLength
+
+#define ewg_struct_macro_struct_TXNMatchTextRecord_member_set_iTextToMatchLength(an_item, a_value) ((struct TXNMatchTextRecord*)an_item)->iTextToMatchLength =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_TXNMatchTextRecord_member_get_iTextEncoding(an_item) ((struct TXNMatchTextRecord*)an_item)->iTextEncoding
+
+#define ewg_struct_macro_struct_TXNMatchTextRecord_member_set_iTextEncoding(an_item, a_value) ((struct TXNMatchTextRecord*)an_item)->iTextEncoding =  (TextEncoding)a_value
+
+
+// glue code macros for struct `struct OpaqueTXNObject'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueTXNObject 1
+
+
+// glue code macros for struct `struct TXNMacOSPreferredFontDescription'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNMacOSPreferredFontDescription sizeof (struct TXNMacOSPreferredFontDescription)
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_get_fontID(an_item) ((struct TXNMacOSPreferredFontDescription*)an_item)->fontID
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_set_fontID(an_item, a_value) ((struct TXNMacOSPreferredFontDescription*)an_item)->fontID =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_get_pointSize(an_item) ((struct TXNMacOSPreferredFontDescription*)an_item)->pointSize
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_set_pointSize(an_item, a_value) ((struct TXNMacOSPreferredFontDescription*)an_item)->pointSize =  (Fixed)a_value
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_get_encoding(an_item) ((struct TXNMacOSPreferredFontDescription*)an_item)->encoding
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_set_encoding(an_item, a_value) ((struct TXNMacOSPreferredFontDescription*)an_item)->encoding =  (TextEncoding)a_value
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_get_fontStyle(an_item) ((struct TXNMacOSPreferredFontDescription*)an_item)->fontStyle
+
+#define ewg_struct_macro_struct_TXNMacOSPreferredFontDescription_member_set_fontStyle(an_item, a_value) ((struct TXNMacOSPreferredFontDescription*)an_item)->fontStyle =  (Style)a_value
+
+
+// glue code macros for struct `struct TXNTypeAttributes'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNTypeAttributes sizeof (struct TXNTypeAttributes)
+
+#define ewg_struct_macro_struct_TXNTypeAttributes_member_get_tag(an_item) ((struct TXNTypeAttributes*)an_item)->tag
+
+#define ewg_struct_macro_struct_TXNTypeAttributes_member_set_tag(an_item, a_value) ((struct TXNTypeAttributes*)an_item)->tag =  (TXNTypeRunAttributes)a_value
+
+#define ewg_struct_macro_struct_TXNTypeAttributes_member_get_size(an_item) ((struct TXNTypeAttributes*)an_item)->size
+
+#define ewg_struct_macro_struct_TXNTypeAttributes_member_set_size(an_item, a_value) ((struct TXNTypeAttributes*)an_item)->size =  (ByteCount)a_value
+
+#define ewg_struct_macro_struct_TXNTypeAttributes_member_get_data(an_item) &((struct TXNTypeAttributes*)an_item)->data
+
+#define ewg_struct_macro_struct_TXNTypeAttributes_member_set_data(an_item, a_value) ((struct TXNTypeAttributes*)an_item)->data =  *(TXNAttributeData*)a_value
+
+
+// glue code macros for struct `struct TXNBackground'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNBackground sizeof (struct TXNBackground)
+
+#define ewg_struct_macro_struct_TXNBackground_member_get_bgType(an_item) ((struct TXNBackground*)an_item)->bgType
+
+#define ewg_struct_macro_struct_TXNBackground_member_set_bgType(an_item, a_value) ((struct TXNBackground*)an_item)->bgType =  (TXNBackgroundType)a_value
+
+#define ewg_struct_macro_struct_TXNBackground_member_get_bg(an_item) &((struct TXNBackground*)an_item)->bg
+
+#define ewg_struct_macro_struct_TXNBackground_member_set_bg(an_item, a_value) ((struct TXNBackground*)an_item)->bg =  *(TXNBackgroundData*)a_value
+
+
+// glue code macros for struct `struct OpaqueTXNFontMenuObject'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueTXNFontMenuObject 1
+
+
+// glue code macros for struct `struct OpaqueATSUStyle'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueATSUStyle 1
+
+
+// glue code macros for struct `struct TXNTextBoxOptionsData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNTextBoxOptionsData sizeof (struct TXNTextBoxOptionsData)
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_get_optionTags(an_item) ((struct TXNTextBoxOptionsData*)an_item)->optionTags
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_set_optionTags(an_item, a_value) ((struct TXNTextBoxOptionsData*)an_item)->optionTags =  (TXNTextBoxOptions)a_value
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_get_flushness(an_item) ((struct TXNTextBoxOptionsData*)an_item)->flushness
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_set_flushness(an_item, a_value) ((struct TXNTextBoxOptionsData*)an_item)->flushness =  (Fract)a_value
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_get_justification(an_item) ((struct TXNTextBoxOptionsData*)an_item)->justification
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_set_justification(an_item, a_value) ((struct TXNTextBoxOptionsData*)an_item)->justification =  (Fract)a_value
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_get_rotation(an_item) ((struct TXNTextBoxOptionsData*)an_item)->rotation
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_set_rotation(an_item, a_value) ((struct TXNTextBoxOptionsData*)an_item)->rotation =  (Fixed)a_value
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_get_options(an_item) ((struct TXNTextBoxOptionsData*)an_item)->options
+
+#define ewg_struct_macro_struct_TXNTextBoxOptionsData_member_set_options(an_item, a_value) ((struct TXNTextBoxOptionsData*)an_item)->options =  (void*)a_value
+
+
+// glue code macros for struct `struct TXNLongRect'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNLongRect sizeof (struct TXNLongRect)
+
+#define ewg_struct_macro_struct_TXNLongRect_member_get_top(an_item) ((struct TXNLongRect*)an_item)->top
+
+#define ewg_struct_macro_struct_TXNLongRect_member_set_top(an_item, a_value) ((struct TXNLongRect*)an_item)->top =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_TXNLongRect_member_get_left(an_item) ((struct TXNLongRect*)an_item)->left
+
+#define ewg_struct_macro_struct_TXNLongRect_member_set_left(an_item, a_value) ((struct TXNLongRect*)an_item)->left =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_TXNLongRect_member_get_bottom(an_item) ((struct TXNLongRect*)an_item)->bottom
+
+#define ewg_struct_macro_struct_TXNLongRect_member_set_bottom(an_item, a_value) ((struct TXNLongRect*)an_item)->bottom =  (SInt32)a_value
+
+#define ewg_struct_macro_struct_TXNLongRect_member_get_right(an_item) ((struct TXNLongRect*)an_item)->right
+
+#define ewg_struct_macro_struct_TXNLongRect_member_set_right(an_item, a_value) ((struct TXNLongRect*)an_item)->right =  (SInt32)a_value
 
 
 // glue code macros for struct `struct HMHelpContentRec'
@@ -3310,6 +3462,109 @@
 #define ewg_struct_macro_struct_HIPositioning_member_get_y(an_item) &((struct HIPositioning*)an_item)->y
 
 #define ewg_struct_macro_struct_HIPositioning_member_set_y(an_item, a_value) ((struct HIPositioning*)an_item)->y =  *(HIAxisPosition*)a_value
+
+
+// glue code macros for struct `struct TXNTab'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNTab sizeof (struct TXNTab)
+
+#define ewg_struct_macro_struct_TXNTab_member_get_value(an_item) ((struct TXNTab*)an_item)->value
+
+#define ewg_struct_macro_struct_TXNTab_member_set_value(an_item, a_value) ((struct TXNTab*)an_item)->value =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_TXNTab_member_get_tabType(an_item) ((struct TXNTab*)an_item)->tabType
+
+#define ewg_struct_macro_struct_TXNTab_member_set_tabType(an_item, a_value) ((struct TXNTab*)an_item)->tabType =  (TXNTabType)a_value
+
+#define ewg_struct_macro_struct_TXNTab_member_get_filler(an_item) ((struct TXNTab*)an_item)->filler
+
+#define ewg_struct_macro_struct_TXNTab_member_set_filler(an_item, a_value) ((struct TXNTab*)an_item)->filler =  (UInt8)a_value
+
+
+// glue code macros for struct `struct TXNMargins'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNMargins sizeof (struct TXNMargins)
+
+#define ewg_struct_macro_struct_TXNMargins_member_get_topMargin(an_item) ((struct TXNMargins*)an_item)->topMargin
+
+#define ewg_struct_macro_struct_TXNMargins_member_set_topMargin(an_item, a_value) ((struct TXNMargins*)an_item)->topMargin =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_TXNMargins_member_get_leftMargin(an_item) ((struct TXNMargins*)an_item)->leftMargin
+
+#define ewg_struct_macro_struct_TXNMargins_member_set_leftMargin(an_item, a_value) ((struct TXNMargins*)an_item)->leftMargin =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_TXNMargins_member_get_bottomMargin(an_item) ((struct TXNMargins*)an_item)->bottomMargin
+
+#define ewg_struct_macro_struct_TXNMargins_member_set_bottomMargin(an_item, a_value) ((struct TXNMargins*)an_item)->bottomMargin =  (SInt16)a_value
+
+#define ewg_struct_macro_struct_TXNMargins_member_get_rightMargin(an_item) ((struct TXNMargins*)an_item)->rightMargin
+
+#define ewg_struct_macro_struct_TXNMargins_member_set_rightMargin(an_item, a_value) ((struct TXNMargins*)an_item)->rightMargin =  (SInt16)a_value
+
+
+// glue code macros for struct `struct TXNATSUIFeatures'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNATSUIFeatures sizeof (struct TXNATSUIFeatures)
+
+#define ewg_struct_macro_struct_TXNATSUIFeatures_member_get_featureCount(an_item) ((struct TXNATSUIFeatures*)an_item)->featureCount
+
+#define ewg_struct_macro_struct_TXNATSUIFeatures_member_set_featureCount(an_item, a_value) ((struct TXNATSUIFeatures*)an_item)->featureCount =  (ItemCount)a_value
+
+#define ewg_struct_macro_struct_TXNATSUIFeatures_member_get_featureTypes(an_item) ((struct TXNATSUIFeatures*)an_item)->featureTypes
+
+#define ewg_struct_macro_struct_TXNATSUIFeatures_member_set_featureTypes(an_item, a_value) ((struct TXNATSUIFeatures*)an_item)->featureTypes =  (ATSUFontFeatureType*)a_value
+
+#define ewg_struct_macro_struct_TXNATSUIFeatures_member_get_featureSelectors(an_item) ((struct TXNATSUIFeatures*)an_item)->featureSelectors
+
+#define ewg_struct_macro_struct_TXNATSUIFeatures_member_set_featureSelectors(an_item, a_value) ((struct TXNATSUIFeatures*)an_item)->featureSelectors =  (ATSUFontFeatureSelector*)a_value
+
+
+// glue code macros for struct `struct TXNATSUIVariations'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNATSUIVariations sizeof (struct TXNATSUIVariations)
+
+#define ewg_struct_macro_struct_TXNATSUIVariations_member_get_variationCount(an_item) ((struct TXNATSUIVariations*)an_item)->variationCount
+
+#define ewg_struct_macro_struct_TXNATSUIVariations_member_set_variationCount(an_item, a_value) ((struct TXNATSUIVariations*)an_item)->variationCount =  (ItemCount)a_value
+
+#define ewg_struct_macro_struct_TXNATSUIVariations_member_get_variationAxis(an_item) ((struct TXNATSUIVariations*)an_item)->variationAxis
+
+#define ewg_struct_macro_struct_TXNATSUIVariations_member_set_variationAxis(an_item, a_value) ((struct TXNATSUIVariations*)an_item)->variationAxis =  (ATSUFontVariationAxis*)a_value
+
+#define ewg_struct_macro_struct_TXNATSUIVariations_member_get_variationValues(an_item) ((struct TXNATSUIVariations*)an_item)->variationValues
+
+#define ewg_struct_macro_struct_TXNATSUIVariations_member_set_variationValues(an_item, a_value) ((struct TXNATSUIVariations*)an_item)->variationValues =  (ATSUFontVariationValue*)a_value
+
+
+// glue code macros for struct `struct TXNCarbonEventInfo'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_TXNCarbonEventInfo sizeof (struct TXNCarbonEventInfo)
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_get_useCarbonEvents(an_item) ((struct TXNCarbonEventInfo*)an_item)->useCarbonEvents
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_set_useCarbonEvents(an_item, a_value) ((struct TXNCarbonEventInfo*)an_item)->useCarbonEvents =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_get_filler(an_item) ((struct TXNCarbonEventInfo*)an_item)->filler
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_set_filler(an_item, a_value) ((struct TXNCarbonEventInfo*)an_item)->filler =  (UInt8)a_value
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_get_flags(an_item) ((struct TXNCarbonEventInfo*)an_item)->flags
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_set_flags(an_item, a_value) ((struct TXNCarbonEventInfo*)an_item)->flags =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_get_fDictionary(an_item) ((struct TXNCarbonEventInfo*)an_item)->fDictionary
+
+#define ewg_struct_macro_struct_TXNCarbonEventInfo_member_set_fDictionary(an_item, a_value) ((struct TXNCarbonEventInfo*)an_item)->fDictionary =  (CFDictionaryRef)a_value
 
 
 // glue code macros for struct `struct HMStringResType'

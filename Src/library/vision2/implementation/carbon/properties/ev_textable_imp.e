@@ -54,6 +54,7 @@ feature -- Access
 		local
 			an_alignment_code: INTEGER
 		do
+			Result := is_aligned
 		--	an_alignment_code := {EV_GTK_EXTERNALS}.gtk_label_struct_jtype (text_label)
 		--	if an_alignment_code = {EV_GTK_EXTERNALS}.gtk_justify_center_enum then
 		--		Result := {EV_TEXT_ALIGNMENT_CONSTANTS}.Ev_text_alignment_center
@@ -73,6 +74,7 @@ feature -- Status setting
 		do
 			--{EV_GTK_EXTERNALS}.gtk_misc_set_alignment (text_label, 0.5, 0.5)
 			--{EV_GTK_EXTERNALS}.gtk_label_set_justify (text_label, {EV_GTK_EXTERNALS}.gtk_justify_center_enum)
+			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center
 		end
 
 	align_text_left is
@@ -80,6 +82,7 @@ feature -- Status setting
 		do
 			--{EV_GTK_EXTERNALS}.gtk_misc_set_alignment (text_label, 0, 0.5)
 			--{EV_GTK_EXTERNALS}.gtk_label_set_justify (text_label, {EV_GTK_EXTERNALS}.gtk_justify_left_enum)
+			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_left
 		end
 
 	align_text_right is
@@ -87,6 +90,7 @@ feature -- Status setting
 		do
 			--{EV_GTK_EXTERNALS}.gtk_misc_set_alignment (text_label, 1, 0.5)
 			--{EV_GTK_EXTERNALS}.gtk_label_set_justify (text_label, {EV_GTK_EXTERNALS}.gtk_justify_right_enum)
+			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_right
 		end
 
 feature -- Element change	
@@ -96,7 +100,12 @@ feature -- Element change
 		local
 		--	a_cs: EV_GTK_C_STRING
 		do
-			create real_text.make_unshared_with_eiffel_string (a_text)
+
+			if accelerators_enabled then
+				create real_text.make_unshared_with_eiffel_string (u_lined_filter (a_text))
+			else
+				create real_text.make_unshared_with_eiffel_string (a_text)
+			end
 		end
 
 feature {EV_ANY_IMP} -- Implementation
@@ -112,6 +121,8 @@ feature {EV_ANY_IMP} -- Implementation
 
 	real_text: EV_CARBON_CF_STRING
 			-- Internal `text'. (with ampersands)
+
+	is_aligned: INTEGER --the alignement
 
 	filter_ampersand (s: STRING_32; char: CHARACTER) is
 			-- Replace occurrences of '&' from `s'  by `char' and

@@ -43,7 +43,6 @@ inherit
 			interface,
 			initialize,
 			make,
-			needs_event_box,
 			set_background_color,
 			set_foreground_color
 		end

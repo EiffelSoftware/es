@@ -44,7 +44,20 @@ feature -- Status setting
 
 	set_background_color (a_color: EV_COLOR) is
 			-- Assign `a_color' to `background_color'
+		local
+			color: POINTER
 		do
+			if background_color_imp /= Void then
+				Result := background_color_imp.interface
+			else
+				color := background_color_pointer
+				create Result
+				Result.set_rgb_with_16_bit (
+					{EV_GTK_EXTERNALS}.gdk_color_struct_red (color),
+					{EV_GTK_EXTERNALS}.gdk_color_struct_green (color),
+					{EV_GTK_EXTERNALS}.gdk_color_struct_blue (color)
+				)
+			end
 		end
 
 	real_set_background_color (a_c_object: POINTER; a_color: EV_COLOR) is

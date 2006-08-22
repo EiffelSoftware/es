@@ -9833,6 +9833,786 @@ HIViewImageContentType  ewg_function_HISegmentedViewGetSegmentImageContentType (
 #define ewg_function_macro_HISegmentedViewCopySegmentImage(ewg_param_inSegmentedView, ewg_param_inSegmentIndexOneBased, ewg_param_ioImage) HISegmentedViewCopySegmentImage ((HIViewRef)ewg_param_inSegmentedView, (UInt32)ewg_param_inSegmentIndexOneBased, (HIViewImageContentInfo*)ewg_param_ioImage)
 
 OSStatus  ewg_function_HISegmentedViewCopySegmentImage (HIViewRef inSegmentedView, UInt32 inSegmentIndexOneBased, HIViewImageContentInfo *ioImage);
+// Wraps call to function 'NewTXNFindUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewTXNFindUPP(ewg_param_userRoutine) NewTXNFindUPP ((TXNFindProcPtr)ewg_param_userRoutine)
+
+TXNFindUPP  ewg_function_NewTXNFindUPP (TXNFindProcPtr userRoutine);
+// Wraps call to function 'NewTXNActionNameMapperUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewTXNActionNameMapperUPP(ewg_param_userRoutine) NewTXNActionNameMapperUPP ((TXNActionNameMapperProcPtr)ewg_param_userRoutine)
+
+TXNActionNameMapperUPP  ewg_function_NewTXNActionNameMapperUPP (TXNActionNameMapperProcPtr userRoutine);
+// Wraps call to function 'NewTXNContextualMenuSetupUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewTXNContextualMenuSetupUPP(ewg_param_userRoutine) NewTXNContextualMenuSetupUPP ((TXNContextualMenuSetupProcPtr)ewg_param_userRoutine)
+
+TXNContextualMenuSetupUPP  ewg_function_NewTXNContextualMenuSetupUPP (TXNContextualMenuSetupProcPtr userRoutine);
+// Wraps call to function 'NewTXNScrollInfoUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewTXNScrollInfoUPP(ewg_param_userRoutine) NewTXNScrollInfoUPP ((TXNScrollInfoProcPtr)ewg_param_userRoutine)
+
+TXNScrollInfoUPP  ewg_function_NewTXNScrollInfoUPP (TXNScrollInfoProcPtr userRoutine);
+// Wraps call to function 'DisposeTXNFindUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeTXNFindUPP(ewg_param_userUPP) DisposeTXNFindUPP ((TXNFindUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeTXNFindUPP (TXNFindUPP userUPP);
+// Wraps call to function 'DisposeTXNActionNameMapperUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeTXNActionNameMapperUPP(ewg_param_userUPP) DisposeTXNActionNameMapperUPP ((TXNActionNameMapperUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeTXNActionNameMapperUPP (TXNActionNameMapperUPP userUPP);
+// Wraps call to function 'DisposeTXNContextualMenuSetupUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeTXNContextualMenuSetupUPP(ewg_param_userUPP) DisposeTXNContextualMenuSetupUPP ((TXNContextualMenuSetupUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeTXNContextualMenuSetupUPP (TXNContextualMenuSetupUPP userUPP);
+// Wraps call to function 'DisposeTXNScrollInfoUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeTXNScrollInfoUPP(ewg_param_userUPP) DisposeTXNScrollInfoUPP ((TXNScrollInfoUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeTXNScrollInfoUPP (TXNScrollInfoUPP userUPP);
+// Wraps call to function 'InvokeTXNFindUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeTXNFindUPP(ewg_param_matchData, ewg_param_iDataType, ewg_param_iMatchOptions, ewg_param_iSearchTextPtr, ewg_param_encoding, ewg_param_absStartOffset, ewg_param_searchTextLength, ewg_param_oStartMatch, ewg_param_oEndMatch, ewg_param_ofound, ewg_param_refCon, ewg_param_userUPP) InvokeTXNFindUPP ((TXNMatchTextRecord const*)ewg_param_matchData, (TXNDataType)ewg_param_iDataType, (TXNMatchOptions)ewg_param_iMatchOptions, (void const*)ewg_param_iSearchTextPtr, (TextEncoding)ewg_param_encoding, (TXNOffset)ewg_param_absStartOffset, (ByteCount)ewg_param_searchTextLength, (TXNOffset*)ewg_param_oStartMatch, (TXNOffset*)ewg_param_oEndMatch, (Boolean*)ewg_param_ofound, (UInt32)ewg_param_refCon, (TXNFindUPP)ewg_param_userUPP)
+
+OSStatus  ewg_function_InvokeTXNFindUPP (TXNMatchTextRecord const *matchData, TXNDataType iDataType, TXNMatchOptions iMatchOptions, void const *iSearchTextPtr, TextEncoding encoding, TXNOffset absStartOffset, ByteCount searchTextLength, TXNOffset *oStartMatch, TXNOffset *oEndMatch, Boolean *ofound, UInt32 refCon, TXNFindUPP userUPP);
+// Wraps call to function 'InvokeTXNActionNameMapperUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeTXNActionNameMapperUPP(ewg_param_actionName, ewg_param_commandID, ewg_param_inUserData, ewg_param_userUPP) InvokeTXNActionNameMapperUPP ((CFStringRef)ewg_param_actionName, (UInt32)ewg_param_commandID, (void*)ewg_param_inUserData, (TXNActionNameMapperUPP)ewg_param_userUPP)
+
+CFStringRef  ewg_function_InvokeTXNActionNameMapperUPP (CFStringRef actionName, UInt32 commandID, void *inUserData, TXNActionNameMapperUPP userUPP);
+// Wraps call to function 'InvokeTXNContextualMenuSetupUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeTXNContextualMenuSetupUPP(ewg_param_iContextualMenu, ewg_param_object, ewg_param_inUserData, ewg_param_userUPP) InvokeTXNContextualMenuSetupUPP ((MenuRef)ewg_param_iContextualMenu, (TXNObject)ewg_param_object, (void*)ewg_param_inUserData, (TXNContextualMenuSetupUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeTXNContextualMenuSetupUPP (MenuRef iContextualMenu, TXNObject object, void *inUserData, TXNContextualMenuSetupUPP userUPP);
+// Wraps call to function 'InvokeTXNScrollInfoUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeTXNScrollInfoUPP(ewg_param_iValue, ewg_param_iMaximumValue, ewg_param_iScrollBarOrientation, ewg_param_iRefCon, ewg_param_userUPP) InvokeTXNScrollInfoUPP ((SInt32)ewg_param_iValue, (SInt32)ewg_param_iMaximumValue, (TXNScrollBarOrientation)ewg_param_iScrollBarOrientation, (SInt32)ewg_param_iRefCon, (TXNScrollInfoUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeTXNScrollInfoUPP (SInt32 iValue, SInt32 iMaximumValue, TXNScrollBarOrientation iScrollBarOrientation, SInt32 iRefCon, TXNScrollInfoUPP userUPP);
+// Wraps call to function 'TXNCreateObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCreateObject(ewg_param_iFrameRect, ewg_param_iFrameOptions, ewg_param_oTXNObject) TXNCreateObject ((HIRect const*)ewg_param_iFrameRect, (TXNFrameOptions)ewg_param_iFrameOptions, (TXNObject*)ewg_param_oTXNObject)
+
+OSStatus  ewg_function_TXNCreateObject (HIRect const *iFrameRect, TXNFrameOptions iFrameOptions, TXNObject *oTXNObject);
+// Wraps call to function 'TXNDeleteObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDeleteObject(ewg_param_iTXNObject) TXNDeleteObject ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNDeleteObject (TXNObject iTXNObject);
+// Wraps call to function 'TXNInitTextension' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNInitTextension(ewg_param_iDefaultFonts, ewg_param_iCountDefaultFonts, ewg_param_iUsageFlags) TXNInitTextension (ewg_param_iDefaultFonts, (ItemCount)ewg_param_iCountDefaultFonts, (TXNInitOptions)ewg_param_iUsageFlags)
+
+OSStatus  ewg_function_TXNInitTextension (void *iDefaultFonts, ItemCount iCountDefaultFonts, TXNInitOptions iUsageFlags);
+// Wraps call to function 'TXNVersionInformation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNVersionInformation(ewg_param_oFeatureFlags) TXNVersionInformation ((TXNFeatureBits*)ewg_param_oFeatureFlags)
+
+TXNVersionValue  ewg_function_TXNVersionInformation (TXNFeatureBits *oFeatureFlags);
+// Wraps call to function 'TXNAttachObjectToWindowRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNAttachObjectToWindowRef(ewg_param_iTXNObject, ewg_param_iWindowRef) TXNAttachObjectToWindowRef ((TXNObject)ewg_param_iTXNObject, (WindowRef)ewg_param_iWindowRef)
+
+OSStatus  ewg_function_TXNAttachObjectToWindowRef (TXNObject iTXNObject, WindowRef iWindowRef);
+// Wraps call to function 'TXNGetWindowRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetWindowRef(ewg_param_iTXNObject) TXNGetWindowRef ((TXNObject)ewg_param_iTXNObject)
+
+WindowRef  ewg_function_TXNGetWindowRef (TXNObject iTXNObject);
+// Wraps call to function 'TXNKeyDown' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNKeyDown(ewg_param_iTXNObject, ewg_param_iEvent) TXNKeyDown ((TXNObject)ewg_param_iTXNObject, (EventRecord const*)ewg_param_iEvent)
+
+void  ewg_function_TXNKeyDown (TXNObject iTXNObject, EventRecord const *iEvent);
+// Wraps call to function 'TXNAdjustCursor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNAdjustCursor(ewg_param_iTXNObject, ewg_param_ioCursorRgn) TXNAdjustCursor ((TXNObject)ewg_param_iTXNObject, (RgnHandle)ewg_param_ioCursorRgn)
+
+void  ewg_function_TXNAdjustCursor (TXNObject iTXNObject, RgnHandle ioCursorRgn);
+// Wraps call to function 'TXNClick' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNClick(ewg_param_iTXNObject, ewg_param_iEvent) TXNClick ((TXNObject)ewg_param_iTXNObject, (EventRecord const*)ewg_param_iEvent)
+
+void  ewg_function_TXNClick (TXNObject iTXNObject, EventRecord const *iEvent);
+// Wraps call to function 'TXNSelectAll' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSelectAll(ewg_param_iTXNObject) TXNSelectAll ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNSelectAll (TXNObject iTXNObject);
+// Wraps call to function 'TXNFocus' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNFocus(ewg_param_iTXNObject, ewg_param_iBecomingFocused) TXNFocus ((TXNObject)ewg_param_iTXNObject, (Boolean)ewg_param_iBecomingFocused)
+
+void  ewg_function_TXNFocus (TXNObject iTXNObject, Boolean iBecomingFocused);
+// Wraps call to function 'TXNUpdate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNUpdate(ewg_param_iTXNObject) TXNUpdate ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNUpdate (TXNObject iTXNObject);
+// Wraps call to function 'TXNDrawObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDrawObject(ewg_param_iTXNObject, ewg_param_iClipRect, ewg_param_iDrawItems) TXNDrawObject ((TXNObject)ewg_param_iTXNObject, (HIRect const*)ewg_param_iClipRect, (TXNDrawItems)ewg_param_iDrawItems)
+
+OSStatus  ewg_function_TXNDrawObject (TXNObject iTXNObject, HIRect const *iClipRect, TXNDrawItems iDrawItems);
+// Wraps call to function 'TXNForceUpdate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNForceUpdate(ewg_param_iTXNObject) TXNForceUpdate ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNForceUpdate (TXNObject iTXNObject);
+// Wraps call to function 'TXNGetSleepTicks' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetSleepTicks(ewg_param_iTXNObject) TXNGetSleepTicks ((TXNObject)ewg_param_iTXNObject)
+
+UInt32  ewg_function_TXNGetSleepTicks (TXNObject iTXNObject);
+// Wraps call to function 'TXNIdle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNIdle(ewg_param_iTXNObject) TXNIdle ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNIdle (TXNObject iTXNObject);
+// Wraps call to function 'TXNGrowWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGrowWindow(ewg_param_iTXNObject, ewg_param_iEvent) TXNGrowWindow ((TXNObject)ewg_param_iTXNObject, (EventRecord const*)ewg_param_iEvent)
+
+void  ewg_function_TXNGrowWindow (TXNObject iTXNObject, EventRecord const *iEvent);
+// Wraps call to function 'TXNZoomWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNZoomWindow(ewg_param_iTXNObject, ewg_param_iPart) TXNZoomWindow ((TXNObject)ewg_param_iTXNObject, (SInt16)ewg_param_iPart)
+
+void  ewg_function_TXNZoomWindow (TXNObject iTXNObject, SInt16 iPart);
+// Wraps call to function 'TXNBeginActionGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNBeginActionGroup(ewg_param_iTXNObject, ewg_param_iActionGroupName) TXNBeginActionGroup ((TXNObject)ewg_param_iTXNObject, (CFStringRef)ewg_param_iActionGroupName)
+
+OSStatus  ewg_function_TXNBeginActionGroup (TXNObject iTXNObject, CFStringRef iActionGroupName);
+// Wraps call to function 'TXNEndActionGroup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNEndActionGroup(ewg_param_iTXNObject) TXNEndActionGroup ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNEndActionGroup (TXNObject iTXNObject);
+// Wraps call to function 'TXNCanUndoAction' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCanUndoAction(ewg_param_iTXNObject, ewg_param_oActionName) TXNCanUndoAction ((TXNObject)ewg_param_iTXNObject, (CFStringRef*)ewg_param_oActionName)
+
+Boolean  ewg_function_TXNCanUndoAction (TXNObject iTXNObject, CFStringRef *oActionName);
+// Wraps call to function 'TXNCanRedoAction' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCanRedoAction(ewg_param_iTXNObject, ewg_param_oActionName) TXNCanRedoAction ((TXNObject)ewg_param_iTXNObject, (CFStringRef*)ewg_param_oActionName)
+
+Boolean  ewg_function_TXNCanRedoAction (TXNObject iTXNObject, CFStringRef *oActionName);
+// Wraps call to function 'TXNSetActionNameMapper' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetActionNameMapper(ewg_param_iTXNObject, ewg_param_iStringForKeyProc, ewg_param_iUserData) TXNSetActionNameMapper ((TXNObject)ewg_param_iTXNObject, (TXNActionNameMapperUPP)ewg_param_iStringForKeyProc, (void const*)ewg_param_iUserData)
+
+OSStatus  ewg_function_TXNSetActionNameMapper (TXNObject iTXNObject, TXNActionNameMapperUPP iStringForKeyProc, void const *iUserData);
+// Wraps call to function 'TXNUndo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNUndo(ewg_param_iTXNObject) TXNUndo ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNUndo (TXNObject iTXNObject);
+// Wraps call to function 'TXNRedo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNRedo(ewg_param_iTXNObject) TXNRedo ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNRedo (TXNObject iTXNObject);
+// Wraps call to function 'TXNClearUndo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNClearUndo(ewg_param_iTXNObject) TXNClearUndo ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNClearUndo (TXNObject iTXNObject);
+// Wraps call to function 'TXNCut' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCut(ewg_param_iTXNObject) TXNCut ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNCut (TXNObject iTXNObject);
+// Wraps call to function 'TXNCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCopy(ewg_param_iTXNObject) TXNCopy ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNCopy (TXNObject iTXNObject);
+// Wraps call to function 'TXNPaste' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNPaste(ewg_param_iTXNObject) TXNPaste ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNPaste (TXNObject iTXNObject);
+// Wraps call to function 'TXNClear' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNClear(ewg_param_iTXNObject) TXNClear ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNClear (TXNObject iTXNObject);
+// Wraps call to function 'TXNIsScrapPastable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNIsScrapPastable TXNIsScrapPastable ()
+
+Boolean  ewg_function_TXNIsScrapPastable (void);
+// Wraps call to function 'TXNGetSelection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetSelection(ewg_param_iTXNObject, ewg_param_oStartOffset, ewg_param_oEndOffset) TXNGetSelection ((TXNObject)ewg_param_iTXNObject, (TXNOffset*)ewg_param_oStartOffset, (TXNOffset*)ewg_param_oEndOffset)
+
+void  ewg_function_TXNGetSelection (TXNObject iTXNObject, TXNOffset *oStartOffset, TXNOffset *oEndOffset);
+// Wraps call to function 'TXNShowSelection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNShowSelection(ewg_param_iTXNObject, ewg_param_iShowEnd) TXNShowSelection ((TXNObject)ewg_param_iTXNObject, (Boolean)ewg_param_iShowEnd)
+
+void  ewg_function_TXNShowSelection (TXNObject iTXNObject, Boolean iShowEnd);
+// Wraps call to function 'TXNIsSelectionEmpty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNIsSelectionEmpty(ewg_param_iTXNObject) TXNIsSelectionEmpty ((TXNObject)ewg_param_iTXNObject)
+
+Boolean  ewg_function_TXNIsSelectionEmpty (TXNObject iTXNObject);
+// Wraps call to function 'TXNSetSelection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetSelection(ewg_param_iTXNObject, ewg_param_iStartOffset, ewg_param_iEndOffset) TXNSetSelection ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset)
+
+OSStatus  ewg_function_TXNSetSelection (TXNObject iTXNObject, TXNOffset iStartOffset, TXNOffset iEndOffset);
+// Wraps call to function 'TXNGetContinuousTypeAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetContinuousTypeAttributes(ewg_param_iTXNObject, ewg_param_oContinuousFlags, ewg_param_iCount, ewg_param_ioTypeAttributes) TXNGetContinuousTypeAttributes ((TXNObject)ewg_param_iTXNObject, (TXNContinuousFlags*)ewg_param_oContinuousFlags, (ItemCount)ewg_param_iCount, ewg_param_ioTypeAttributes)
+
+OSStatus  ewg_function_TXNGetContinuousTypeAttributes (TXNObject iTXNObject, TXNContinuousFlags *oContinuousFlags, ItemCount iCount, void *ioTypeAttributes);
+// Wraps call to function 'TXNSetTypeAttributes' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetTypeAttributes(ewg_param_iTXNObject, ewg_param_iAttrCount, ewg_param_iAttributes, ewg_param_iStartOffset, ewg_param_iEndOffset) TXNSetTypeAttributes ((TXNObject)ewg_param_iTXNObject, (ItemCount)ewg_param_iAttrCount, ewg_param_iAttributes, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset)
+
+OSStatus  ewg_function_TXNSetTypeAttributes (TXNObject iTXNObject, ItemCount iAttrCount, void *iAttributes, TXNOffset iStartOffset, TXNOffset iEndOffset);
+// Wraps call to function 'TXNSetTXNObjectControls' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetTXNObjectControls(ewg_param_iTXNObject, ewg_param_iClearAll, ewg_param_iControlCount, ewg_param_iControlTags, ewg_param_iControlData) TXNSetTXNObjectControls ((TXNObject)ewg_param_iTXNObject, (Boolean)ewg_param_iClearAll, (ItemCount)ewg_param_iControlCount, ewg_param_iControlTags, ewg_param_iControlData)
+
+OSStatus  ewg_function_TXNSetTXNObjectControls (TXNObject iTXNObject, Boolean iClearAll, ItemCount iControlCount, void *iControlTags, void *iControlData);
+// Wraps call to function 'TXNGetTXNObjectControls' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetTXNObjectControls(ewg_param_iTXNObject, ewg_param_iControlCount, ewg_param_iControlTags, ewg_param_oControlData) TXNGetTXNObjectControls ((TXNObject)ewg_param_iTXNObject, (ItemCount)ewg_param_iControlCount, ewg_param_iControlTags, ewg_param_oControlData)
+
+OSStatus  ewg_function_TXNGetTXNObjectControls (TXNObject iTXNObject, ItemCount iControlCount, void *iControlTags, void *oControlData);
+// Wraps call to function 'TXNSetBackground' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetBackground(ewg_param_iTXNObject, ewg_param_iBackgroundInfo) TXNSetBackground ((TXNObject)ewg_param_iTXNObject, (TXNBackground const*)ewg_param_iBackgroundInfo)
+
+OSStatus  ewg_function_TXNSetBackground (TXNObject iTXNObject, TXNBackground const *iBackgroundInfo);
+// Wraps call to function 'TXNEchoMode' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNEchoMode(ewg_param_iTXNObject, ewg_param_iEchoCharacter, ewg_param_iEncoding, ewg_param_iOn) TXNEchoMode ((TXNObject)ewg_param_iTXNObject, (UniChar)ewg_param_iEchoCharacter, (TextEncoding)ewg_param_iEncoding, (Boolean)ewg_param_iOn)
+
+OSStatus  ewg_function_TXNEchoMode (TXNObject iTXNObject, UniChar iEchoCharacter, TextEncoding iEncoding, Boolean iOn);
+// Wraps call to function 'TXNCountRunsInRange' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCountRunsInRange(ewg_param_iTXNObject, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_oRunCount) TXNCountRunsInRange ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset, (ItemCount*)ewg_param_oRunCount)
+
+OSStatus  ewg_function_TXNCountRunsInRange (TXNObject iTXNObject, TXNOffset iStartOffset, TXNOffset iEndOffset, ItemCount *oRunCount);
+// Wraps call to function 'TXNGetIndexedRunInfoFromRange' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetIndexedRunInfoFromRange(ewg_param_iTXNObject, ewg_param_iIndex, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_oRunStartOffset, ewg_param_oRunEndOffset, ewg_param_oRunDataType, ewg_param_iTypeAttributeCount, ewg_param_ioTypeAttributes) TXNGetIndexedRunInfoFromRange ((TXNObject)ewg_param_iTXNObject, (ItemCount)ewg_param_iIndex, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset, (TXNOffset*)ewg_param_oRunStartOffset, (TXNOffset*)ewg_param_oRunEndOffset, (TXNDataType*)ewg_param_oRunDataType, (ItemCount)ewg_param_iTypeAttributeCount, (TXNTypeAttributes*)ewg_param_ioTypeAttributes)
+
+OSStatus  ewg_function_TXNGetIndexedRunInfoFromRange (TXNObject iTXNObject, ItemCount iIndex, TXNOffset iStartOffset, TXNOffset iEndOffset, TXNOffset *oRunStartOffset, TXNOffset *oRunEndOffset, TXNDataType *oRunDataType, ItemCount iTypeAttributeCount, TXNTypeAttributes *ioTypeAttributes);
+// Wraps call to function 'TXNDataSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDataSize(ewg_param_iTXNObject) TXNDataSize ((TXNObject)ewg_param_iTXNObject)
+
+ByteCount  ewg_function_TXNDataSize (TXNObject iTXNObject);
+// Wraps call to function 'TXNWriteRangeToCFURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNWriteRangeToCFURL(ewg_param_iTXNObject, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_iDataOptions, ewg_param_iDocumentAttributes, ewg_param_iFileURL) TXNWriteRangeToCFURL ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset, (CFDictionaryRef)ewg_param_iDataOptions, (CFDictionaryRef)ewg_param_iDocumentAttributes, (CFURLRef)ewg_param_iFileURL)
+
+OSStatus  ewg_function_TXNWriteRangeToCFURL (TXNObject iTXNObject, TXNOffset iStartOffset, TXNOffset iEndOffset, CFDictionaryRef iDataOptions, CFDictionaryRef iDocumentAttributes, CFURLRef iFileURL);
+// Wraps call to function 'TXNReadFromCFURL' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNReadFromCFURL(ewg_param_iTXNObject, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_iDataOptions, ewg_param_iFileURL, ewg_param_oDocumentAttributes) TXNReadFromCFURL ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset, (CFDictionaryRef)ewg_param_iDataOptions, (CFURLRef)ewg_param_iFileURL, (CFDictionaryRef*)ewg_param_oDocumentAttributes)
+
+OSStatus  ewg_function_TXNReadFromCFURL (TXNObject iTXNObject, TXNOffset iStartOffset, TXNOffset iEndOffset, CFDictionaryRef iDataOptions, CFURLRef iFileURL, CFDictionaryRef *oDocumentAttributes);
+// Wraps call to function 'TXNCopyTypeIdentifiersForRange' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCopyTypeIdentifiersForRange(ewg_param_iTXNObject, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_oTypeIdentifiersForRange) TXNCopyTypeIdentifiersForRange ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset, (CFArrayRef*)ewg_param_oTypeIdentifiersForRange)
+
+OSStatus  ewg_function_TXNCopyTypeIdentifiersForRange (TXNObject iTXNObject, TXNOffset iStartOffset, TXNOffset iEndOffset, CFArrayRef *oTypeIdentifiersForRange);
+// Wraps call to function 'TXNGetData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetData(ewg_param_iTXNObject, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_oDataHandle) TXNGetData ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset, (Handle*)ewg_param_oDataHandle)
+
+OSStatus  ewg_function_TXNGetData (TXNObject iTXNObject, TXNOffset iStartOffset, TXNOffset iEndOffset, Handle *oDataHandle);
+// Wraps call to function 'TXNGetDataEncoded' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetDataEncoded(ewg_param_iTXNObject, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_oDataHandle, ewg_param_iEncoding) TXNGetDataEncoded ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset, (Handle*)ewg_param_oDataHandle, (TXNDataType)ewg_param_iEncoding)
+
+OSStatus  ewg_function_TXNGetDataEncoded (TXNObject iTXNObject, TXNOffset iStartOffset, TXNOffset iEndOffset, Handle *oDataHandle, TXNDataType iEncoding);
+// Wraps call to function 'TXNSetData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetData(ewg_param_iTXNObject, ewg_param_iDataType, ewg_param_iDataPtr, ewg_param_iDataSize, ewg_param_iStartOffset, ewg_param_iEndOffset) TXNSetData ((TXNObject)ewg_param_iTXNObject, (TXNDataType)ewg_param_iDataType, (void const*)ewg_param_iDataPtr, (ByteCount)ewg_param_iDataSize, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset)
+
+OSStatus  ewg_function_TXNSetData (TXNObject iTXNObject, TXNDataType iDataType, void const *iDataPtr, ByteCount iDataSize, TXNOffset iStartOffset, TXNOffset iEndOffset);
+// Wraps call to function 'TXNFlattenObjectToCFDataRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNFlattenObjectToCFDataRef(ewg_param_iTXNObject, ewg_param_iTXNDataType, ewg_param_oDataRef) TXNFlattenObjectToCFDataRef ((TXNObject)ewg_param_iTXNObject, (TXNDataType)ewg_param_iTXNDataType, (CFDataRef*)ewg_param_oDataRef)
+
+OSStatus  ewg_function_TXNFlattenObjectToCFDataRef (TXNObject iTXNObject, TXNDataType iTXNDataType, CFDataRef *oDataRef);
+// Wraps call to function 'TXNRevert' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNRevert(ewg_param_iTXNObject) TXNRevert ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNRevert (TXNObject iTXNObject);
+// Wraps call to function 'TXNPageSetup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNPageSetup(ewg_param_iTXNObject) TXNPageSetup ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNPageSetup (TXNObject iTXNObject);
+// Wraps call to function 'TXNPrint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNPrint(ewg_param_iTXNObject) TXNPrint ((TXNObject)ewg_param_iTXNObject)
+
+OSStatus  ewg_function_TXNPrint (TXNObject iTXNObject);
+// Wraps call to function 'TXNFind' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNFind(ewg_param_iTXNObject, ewg_param_iMatchTextDataPtr, ewg_param_iDataType, ewg_param_iMatchOptions, ewg_param_iStartSearchOffset, ewg_param_iEndSearchOffset, ewg_param_iFindProc, ewg_param_iRefCon, ewg_param_oStartMatchOffset, ewg_param_oEndMatchOffset) TXNFind ((TXNObject)ewg_param_iTXNObject, (TXNMatchTextRecord const*)ewg_param_iMatchTextDataPtr, (TXNDataType)ewg_param_iDataType, (TXNMatchOptions)ewg_param_iMatchOptions, (TXNOffset)ewg_param_iStartSearchOffset, (TXNOffset)ewg_param_iEndSearchOffset, (TXNFindUPP)ewg_param_iFindProc, (SInt32)ewg_param_iRefCon, (TXNOffset*)ewg_param_oStartMatchOffset, (TXNOffset*)ewg_param_oEndMatchOffset)
+
+OSStatus  ewg_function_TXNFind (TXNObject iTXNObject, TXNMatchTextRecord const *iMatchTextDataPtr, TXNDataType iDataType, TXNMatchOptions iMatchOptions, TXNOffset iStartSearchOffset, TXNOffset iEndSearchOffset, TXNFindUPP iFindProc, SInt32 iRefCon, TXNOffset *oStartMatchOffset, TXNOffset *oEndMatchOffset);
+// Wraps call to function 'TXNSetFontDefaults' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetFontDefaults(ewg_param_iTXNObject, ewg_param_iCount, ewg_param_iFontDefaults) TXNSetFontDefaults ((TXNObject)ewg_param_iTXNObject, (ItemCount)ewg_param_iCount, ewg_param_iFontDefaults)
+
+OSStatus  ewg_function_TXNSetFontDefaults (TXNObject iTXNObject, ItemCount iCount, void *iFontDefaults);
+// Wraps call to function 'TXNGetFontDefaults' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetFontDefaults(ewg_param_iTXNObject, ewg_param_ioCount, ewg_param_oFontDefaults) TXNGetFontDefaults ((TXNObject)ewg_param_iTXNObject, (ItemCount*)ewg_param_ioCount, ewg_param_oFontDefaults)
+
+OSStatus  ewg_function_TXNGetFontDefaults (TXNObject iTXNObject, ItemCount *ioCount, void *oFontDefaults);
+// Wraps call to function 'TXNNewFontMenuObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNNewFontMenuObject(ewg_param_iFontMenuHandle, ewg_param_iMenuID, ewg_param_iStartHierMenuID, ewg_param_oTXNFontMenuObject) TXNNewFontMenuObject ((MenuRef)ewg_param_iFontMenuHandle, (SInt16)ewg_param_iMenuID, (SInt16)ewg_param_iStartHierMenuID, (TXNFontMenuObject*)ewg_param_oTXNFontMenuObject)
+
+OSStatus  ewg_function_TXNNewFontMenuObject (MenuRef iFontMenuHandle, SInt16 iMenuID, SInt16 iStartHierMenuID, TXNFontMenuObject *oTXNFontMenuObject);
+// Wraps call to function 'TXNGetFontMenuHandle' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetFontMenuHandle(ewg_param_iTXNFontMenuObject, ewg_param_oFontMenuHandle) TXNGetFontMenuHandle ((TXNFontMenuObject)ewg_param_iTXNFontMenuObject, (MenuRef*)ewg_param_oFontMenuHandle)
+
+OSStatus  ewg_function_TXNGetFontMenuHandle (TXNFontMenuObject iTXNFontMenuObject, MenuRef *oFontMenuHandle);
+// Wraps call to function 'TXNDisposeFontMenuObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDisposeFontMenuObject(ewg_param_iTXNFontMenuObject) TXNDisposeFontMenuObject ((TXNFontMenuObject)ewg_param_iTXNFontMenuObject)
+
+OSStatus  ewg_function_TXNDisposeFontMenuObject (TXNFontMenuObject iTXNFontMenuObject);
+// Wraps call to function 'TXNDoFontMenuSelection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDoFontMenuSelection(ewg_param_iTXNObject, ewg_param_iTXNFontMenuObject, ewg_param_iMenuID, ewg_param_iMenuItem) TXNDoFontMenuSelection ((TXNObject)ewg_param_iTXNObject, (TXNFontMenuObject)ewg_param_iTXNFontMenuObject, (SInt16)ewg_param_iMenuID, (SInt16)ewg_param_iMenuItem)
+
+OSStatus  ewg_function_TXNDoFontMenuSelection (TXNObject iTXNObject, TXNFontMenuObject iTXNFontMenuObject, SInt16 iMenuID, SInt16 iMenuItem);
+// Wraps call to function 'TXNPrepareFontMenu' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNPrepareFontMenu(ewg_param_iTXNObject, ewg_param_iTXNFontMenuObject) TXNPrepareFontMenu ((TXNObject)ewg_param_iTXNObject, (TXNFontMenuObject)ewg_param_iTXNFontMenuObject)
+
+OSStatus  ewg_function_TXNPrepareFontMenu (TXNObject iTXNObject, TXNFontMenuObject iTXNFontMenuObject);
+// Wraps call to function 'TXNDrawUnicodeTextBox' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDrawUnicodeTextBox(ewg_param_iText, ewg_param_iLen, ewg_param_ioBox, ewg_param_iStyle, ewg_param_iOptions) TXNDrawUnicodeTextBox (ewg_param_iText, (UniCharCount)ewg_param_iLen, (Rect*)ewg_param_ioBox, (ATSUStyle)ewg_param_iStyle, (TXNTextBoxOptionsData const*)ewg_param_iOptions)
+
+OSStatus  ewg_function_TXNDrawUnicodeTextBox (void *iText, UniCharCount iLen, Rect *ioBox, ATSUStyle iStyle, TXNTextBoxOptionsData const *iOptions);
+// Wraps call to function 'TXNDrawCFStringTextBox' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDrawCFStringTextBox(ewg_param_iText, ewg_param_ioBox, ewg_param_iStyle, ewg_param_iOptions) TXNDrawCFStringTextBox ((CFStringRef)ewg_param_iText, (Rect*)ewg_param_ioBox, (ATSUStyle)ewg_param_iStyle, (TXNTextBoxOptionsData const*)ewg_param_iOptions)
+
+OSStatus  ewg_function_TXNDrawCFStringTextBox (CFStringRef iText, Rect *ioBox, ATSUStyle iStyle, TXNTextBoxOptionsData const *iOptions);
+// Wraps call to function 'TXNGetLineCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetLineCount(ewg_param_iTXNObject, ewg_param_oLineTotal) TXNGetLineCount ((TXNObject)ewg_param_iTXNObject, (ItemCount*)ewg_param_oLineTotal)
+
+OSStatus  ewg_function_TXNGetLineCount (TXNObject iTXNObject, ItemCount *oLineTotal);
+// Wraps call to function 'TXNGetLineMetrics' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetLineMetrics(ewg_param_iTXNObject, ewg_param_iLineNumber, ewg_param_oLineWidth, ewg_param_oLineHeight) TXNGetLineMetrics ((TXNObject)ewg_param_iTXNObject, (UInt32)ewg_param_iLineNumber, (Fixed*)ewg_param_oLineWidth, (Fixed*)ewg_param_oLineHeight)
+
+OSStatus  ewg_function_TXNGetLineMetrics (TXNObject iTXNObject, UInt32 iLineNumber, Fixed *oLineWidth, Fixed *oLineHeight);
+// Wraps call to function 'TXNGetChangeCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetChangeCount(ewg_param_iTXNObject) TXNGetChangeCount ((TXNObject)ewg_param_iTXNObject)
+
+ItemCount  ewg_function_TXNGetChangeCount (TXNObject iTXNObject);
+// Wraps call to function 'TXNGetCountForActionType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetCountForActionType(ewg_param_iTXNObject, ewg_param_iActionTypeName, ewg_param_oCount) TXNGetCountForActionType ((TXNObject)ewg_param_iTXNObject, (CFStringRef)ewg_param_iActionTypeName, (ItemCount*)ewg_param_oCount)
+
+OSStatus  ewg_function_TXNGetCountForActionType (TXNObject iTXNObject, CFStringRef iActionTypeName, ItemCount *oCount);
+// Wraps call to function 'TXNClearCountForActionType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNClearCountForActionType(ewg_param_iTXNObject, ewg_param_iActionTypeName) TXNClearCountForActionType ((TXNObject)ewg_param_iTXNObject, (CFStringRef)ewg_param_iActionTypeName)
+
+OSStatus  ewg_function_TXNClearCountForActionType (TXNObject iTXNObject, CFStringRef iActionTypeName);
+// Wraps call to function 'TXNSetHIRectBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetHIRectBounds(ewg_param_iTXNObject, ewg_param_iViewRect, ewg_param_iDestinationRect, ewg_param_iUpdate) TXNSetHIRectBounds ((TXNObject)ewg_param_iTXNObject, (HIRect const*)ewg_param_iViewRect, (HIRect const*)ewg_param_iDestinationRect, (Boolean)ewg_param_iUpdate)
+
+void  ewg_function_TXNSetHIRectBounds (TXNObject iTXNObject, HIRect const *iViewRect, HIRect const *iDestinationRect, Boolean iUpdate);
+// Wraps call to function 'TXNGetHIRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetHIRect(ewg_param_iTXNObject, ewg_param_iTXNRectKey, ewg_param_oRectangle) TXNGetHIRect ((TXNObject)ewg_param_iTXNObject, (TXNRectKey)ewg_param_iTXNRectKey, (HIRect*)ewg_param_oRectangle)
+
+OSStatus  ewg_function_TXNGetHIRect (TXNObject iTXNObject, TXNRectKey iTXNRectKey, HIRect *oRectangle);
+// Wraps call to function 'TXNResizeFrame' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNResizeFrame(ewg_param_iTXNObject, ewg_param_iWidth, ewg_param_iHeight, ewg_param_iTXNFrameID) TXNResizeFrame ((TXNObject)ewg_param_iTXNObject, (UInt32)ewg_param_iWidth, (UInt32)ewg_param_iHeight, (TXNFrameID)ewg_param_iTXNFrameID)
+
+void  ewg_function_TXNResizeFrame (TXNObject iTXNObject, UInt32 iWidth, UInt32 iHeight, TXNFrameID iTXNFrameID);
+// Wraps call to function 'TXNSetFrameBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetFrameBounds(ewg_param_iTXNObject, ewg_param_iTop, ewg_param_iLeft, ewg_param_iBottom, ewg_param_iRight, ewg_param_iTXNFrameID) TXNSetFrameBounds ((TXNObject)ewg_param_iTXNObject, (SInt32)ewg_param_iTop, (SInt32)ewg_param_iLeft, (SInt32)ewg_param_iBottom, (SInt32)ewg_param_iRight, (TXNFrameID)ewg_param_iTXNFrameID)
+
+void  ewg_function_TXNSetFrameBounds (TXNObject iTXNObject, SInt32 iTop, SInt32 iLeft, SInt32 iBottom, SInt32 iRight, TXNFrameID iTXNFrameID);
+// Wraps call to function 'TXNGetViewRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetViewRect(ewg_param_iTXNObject, ewg_param_oViewRect) TXNGetViewRect ((TXNObject)ewg_param_iTXNObject, (Rect*)ewg_param_oViewRect)
+
+void  ewg_function_TXNGetViewRect (TXNObject iTXNObject, Rect *oViewRect);
+// Wraps call to function 'TXNRecalcTextLayout' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNRecalcTextLayout(ewg_param_iTXNObject) TXNRecalcTextLayout ((TXNObject)ewg_param_iTXNObject)
+
+void  ewg_function_TXNRecalcTextLayout (TXNObject iTXNObject);
+// Wraps call to function 'TXNScroll' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNScroll(ewg_param_iTXNObject, ewg_param_iVerticalScrollUnit, ewg_param_iHorizontalScrollUnit, ewg_param_ioVerticalDelta, ewg_param_ioHorizontalDelta) TXNScroll ((TXNObject)ewg_param_iTXNObject, (TXNScrollUnit)ewg_param_iVerticalScrollUnit, (TXNScrollUnit)ewg_param_iHorizontalScrollUnit, (SInt32*)ewg_param_ioVerticalDelta, (SInt32*)ewg_param_ioHorizontalDelta)
+
+OSStatus  ewg_function_TXNScroll (TXNObject iTXNObject, TXNScrollUnit iVerticalScrollUnit, TXNScrollUnit iHorizontalScrollUnit, SInt32 *ioVerticalDelta, SInt32 *ioHorizontalDelta);
+// Wraps call to function 'TXNRegisterScrollInfoProc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNRegisterScrollInfoProc(ewg_param_iTXNObject, ewg_param_iTXNScrollInfoUPP, ewg_param_iRefCon) TXNRegisterScrollInfoProc ((TXNObject)ewg_param_iTXNObject, (TXNScrollInfoUPP)ewg_param_iTXNScrollInfoUPP, (SInt32)ewg_param_iRefCon)
+
+void  ewg_function_TXNRegisterScrollInfoProc (TXNObject iTXNObject, TXNScrollInfoUPP iTXNScrollInfoUPP, SInt32 iRefCon);
+// Wraps call to function 'TXNSetScrollbarState' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetScrollbarState(ewg_param_iTXNObject, ewg_param_iActiveState) TXNSetScrollbarState ((TXNObject)ewg_param_iTXNObject, (TXNScrollBarState)ewg_param_iActiveState)
+
+OSStatus  ewg_function_TXNSetScrollbarState (TXNObject iTXNObject, TXNScrollBarState iActiveState);
+// Wraps call to function 'TXNHIPointToOffset' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNHIPointToOffset(ewg_param_iTXNObject, ewg_param_iHIPoint, ewg_param_oOffset) TXNHIPointToOffset ((TXNObject)ewg_param_iTXNObject, (HIPoint const*)ewg_param_iHIPoint, (TXNOffset*)ewg_param_oOffset)
+
+OSStatus  ewg_function_TXNHIPointToOffset (TXNObject iTXNObject, HIPoint const *iHIPoint, TXNOffset *oOffset);
+// Wraps call to function 'TXNOffsetToHIPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNOffsetToHIPoint(ewg_param_iTXNObject, ewg_param_iOffset, ewg_param_oHIPoint) TXNOffsetToHIPoint ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iOffset, (HIPoint*)ewg_param_oHIPoint)
+
+OSStatus  ewg_function_TXNOffsetToHIPoint (TXNObject iTXNObject, TXNOffset iOffset, HIPoint *oHIPoint);
+// Wraps call to function 'TXNDragTracker' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDragTracker(ewg_param_iTXNObject, ewg_param_iTXNFrameID, ewg_param_iMessage, ewg_param_iWindow, ewg_param_iDragReference, ewg_param_iDifferentObjectSameWindow) TXNDragTracker ((TXNObject)ewg_param_iTXNObject, (TXNFrameID)ewg_param_iTXNFrameID, (DragTrackingMessage)ewg_param_iMessage, (WindowRef)ewg_param_iWindow, (DragReference)ewg_param_iDragReference, (Boolean)ewg_param_iDifferentObjectSameWindow)
+
+OSErr  ewg_function_TXNDragTracker (TXNObject iTXNObject, TXNFrameID iTXNFrameID, DragTrackingMessage iMessage, WindowRef iWindow, DragReference iDragReference, Boolean iDifferentObjectSameWindow);
+// Wraps call to function 'TXNDragReceiver' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDragReceiver(ewg_param_iTXNObject, ewg_param_iTXNFrameID, ewg_param_iWindow, ewg_param_iDragReference, ewg_param_iDifferentObjectSameWindow) TXNDragReceiver ((TXNObject)ewg_param_iTXNObject, (TXNFrameID)ewg_param_iTXNFrameID, (WindowRef)ewg_param_iWindow, (DragReference)ewg_param_iDragReference, (Boolean)ewg_param_iDifferentObjectSameWindow)
+
+OSErr  ewg_function_TXNDragReceiver (TXNObject iTXNObject, TXNFrameID iTXNFrameID, WindowRef iWindow, DragReference iDragReference, Boolean iDifferentObjectSameWindow);
+// Wraps call to function 'TXNSetCommandEventSupport' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetCommandEventSupport(ewg_param_iTXNObject, ewg_param_iOptions) TXNSetCommandEventSupport ((TXNObject)ewg_param_iTXNObject, (TXNCommandEventSupportOptions)ewg_param_iOptions)
+
+OSStatus  ewg_function_TXNSetCommandEventSupport (TXNObject iTXNObject, TXNCommandEventSupportOptions iOptions);
+// Wraps call to function 'TXNGetCommandEventSupport' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetCommandEventSupport(ewg_param_iTXNObject, ewg_param_oOptions) TXNGetCommandEventSupport ((TXNObject)ewg_param_iTXNObject, (TXNCommandEventSupportOptions*)ewg_param_oOptions)
+
+OSStatus  ewg_function_TXNGetCommandEventSupport (TXNObject iTXNObject, TXNCommandEventSupportOptions *oOptions);
+// Wraps call to function 'TXNSetSpellCheckAsYouType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetSpellCheckAsYouType(ewg_param_iTXNObject, ewg_param_iActivate) TXNSetSpellCheckAsYouType ((TXNObject)ewg_param_iTXNObject, (Boolean)ewg_param_iActivate)
+
+OSStatus  ewg_function_TXNSetSpellCheckAsYouType (TXNObject iTXNObject, Boolean iActivate);
+// Wraps call to function 'TXNGetSpellCheckAsYouType' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetSpellCheckAsYouType(ewg_param_iTXNObject) TXNGetSpellCheckAsYouType ((TXNObject)ewg_param_iTXNObject)
+
+Boolean  ewg_function_TXNGetSpellCheckAsYouType (TXNObject iTXNObject);
+// Wraps call to function 'TXNSetEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetEventTarget(ewg_param_iTXNObject, ewg_param_iEventTarget) TXNSetEventTarget ((TXNObject)ewg_param_iTXNObject, (HIObjectRef)ewg_param_iEventTarget)
+
+OSStatus  ewg_function_TXNSetEventTarget (TXNObject iTXNObject, HIObjectRef iEventTarget);
+// Wraps call to function 'TXNGetEventTarget' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetEventTarget(ewg_param_iTXNObject, ewg_param_oEventTarget) TXNGetEventTarget ((TXNObject)ewg_param_iTXNObject, (HIObjectRef*)ewg_param_oEventTarget)
+
+OSStatus  ewg_function_TXNGetEventTarget (TXNObject iTXNObject, HIObjectRef *oEventTarget);
+// Wraps call to function 'TXNSetContextualMenuSetup' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetContextualMenuSetup(ewg_param_iTXNObject, ewg_param_iMenuSetupProc, ewg_param_iUserData) TXNSetContextualMenuSetup ((TXNObject)ewg_param_iTXNObject, (TXNContextualMenuSetupUPP)ewg_param_iMenuSetupProc, (void const*)ewg_param_iUserData)
+
+OSStatus  ewg_function_TXNSetContextualMenuSetup (TXNObject iTXNObject, TXNContextualMenuSetupUPP iMenuSetupProc, void const *iUserData);
+// Wraps call to function 'TXNGetAccessibilityHIObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetAccessibilityHIObject(ewg_param_iTXNObject, ewg_param_oHIObjectRef) TXNGetAccessibilityHIObject ((TXNObject)ewg_param_iTXNObject, (HIObjectRef*)ewg_param_oHIObjectRef)
+
+OSStatus  ewg_function_TXNGetAccessibilityHIObject (TXNObject iTXNObject, HIObjectRef *oHIObjectRef);
+// Wraps call to function 'HITextViewCreate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HITextViewCreate(ewg_param_inBoundsRect, ewg_param_inOptions, ewg_param_inTXNFrameOptions, ewg_param_outTextView) HITextViewCreate ((HIRect const*)ewg_param_inBoundsRect, (OptionBits)ewg_param_inOptions, (TXNFrameOptions)ewg_param_inTXNFrameOptions, (HIViewRef*)ewg_param_outTextView)
+
+OSStatus  ewg_function_HITextViewCreate (HIRect const *inBoundsRect, OptionBits inOptions, TXNFrameOptions inTXNFrameOptions, HIViewRef *outTextView);
+// Wraps call to function 'HITextViewGetTXNObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HITextViewGetTXNObject(ewg_param_inTextView) HITextViewGetTXNObject ((HIViewRef)ewg_param_inTextView)
+
+TXNObject  ewg_function_HITextViewGetTXNObject (HIViewRef inTextView);
+// Wraps call to function 'HITextViewSetBackgroundColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HITextViewSetBackgroundColor(ewg_param_inTextView, ewg_param_inColor) HITextViewSetBackgroundColor ((HIViewRef)ewg_param_inTextView, (CGColorRef)ewg_param_inColor)
+
+OSStatus  ewg_function_HITextViewSetBackgroundColor (HIViewRef inTextView, CGColorRef inColor);
+// Wraps call to function 'HITextViewCopyBackgroundColor' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_HITextViewCopyBackgroundColor(ewg_param_inTextView, ewg_param_outColor) HITextViewCopyBackgroundColor ((HIViewRef)ewg_param_inTextView, (CGColorRef*)ewg_param_outColor)
+
+OSStatus  ewg_function_HITextViewCopyBackgroundColor (HIViewRef inTextView, CGColorRef *outColor);
+// Wraps call to function 'NewTXNActionKeyMapperUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewTXNActionKeyMapperUPP(ewg_param_userRoutine) NewTXNActionKeyMapperUPP ((TXNActionKeyMapperProcPtr)ewg_param_userRoutine)
+
+TXNActionKeyMapperUPP  ewg_function_NewTXNActionKeyMapperUPP (TXNActionKeyMapperProcPtr userRoutine);
+// Wraps call to function 'DisposeTXNActionKeyMapperUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeTXNActionKeyMapperUPP(ewg_param_userUPP) DisposeTXNActionKeyMapperUPP ((TXNActionKeyMapperUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeTXNActionKeyMapperUPP (TXNActionKeyMapperUPP userUPP);
+// Wraps call to function 'InvokeTXNActionKeyMapperUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeTXNActionKeyMapperUPP(ewg_param_actionKey, ewg_param_commandID, ewg_param_userUPP) InvokeTXNActionKeyMapperUPP ((TXNActionKey)ewg_param_actionKey, (UInt32)ewg_param_commandID, (TXNActionKeyMapperUPP)ewg_param_userUPP)
+
+CFStringRef  ewg_function_InvokeTXNActionKeyMapperUPP (TXNActionKey actionKey, UInt32 commandID, TXNActionKeyMapperUPP userUPP);
+// Wraps call to function 'TXNSetViewRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetViewRect(ewg_param_iTXNObject, ewg_param_iViewRect) TXNSetViewRect ((TXNObject)ewg_param_iTXNObject, (Rect const*)ewg_param_iViewRect)
+
+void  ewg_function_TXNSetViewRect (TXNObject iTXNObject, Rect const *iViewRect);
+// Wraps call to function 'TXNNewObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNNewObject(ewg_param_iFileSpec, ewg_param_iWindow, ewg_param_iFrame, ewg_param_iFrameOptions, ewg_param_iFrameType, ewg_param_iFileType, ewg_param_iPermanentEncoding, ewg_param_oTXNObject, ewg_param_oTXNFrameID, ewg_param_iRefCon) TXNNewObject ((FSSpec const*)ewg_param_iFileSpec, (WindowRef)ewg_param_iWindow, (Rect const*)ewg_param_iFrame, (TXNFrameOptions)ewg_param_iFrameOptions, (TXNFrameType)ewg_param_iFrameType, (TXNFileType)ewg_param_iFileType, (TXNPermanentTextEncodingType)ewg_param_iPermanentEncoding, (TXNObject*)ewg_param_oTXNObject, (TXNFrameID*)ewg_param_oTXNFrameID, (TXNObjectRefcon)ewg_param_iRefCon)
+
+OSStatus  ewg_function_TXNNewObject (FSSpec const *iFileSpec, WindowRef iWindow, Rect const *iFrame, TXNFrameOptions iFrameOptions, TXNFrameType iFrameType, TXNFileType iFileType, TXNPermanentTextEncodingType iPermanentEncoding, TXNObject *oTXNObject, TXNFrameID *oTXNFrameID, TXNObjectRefcon iRefCon);
+// Wraps call to function 'TXNTerminateTextension' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNTerminateTextension TXNTerminateTextension ()
+
+void  ewg_function_TXNTerminateTextension (void);
+// Wraps call to function 'TXNSetDataFromFile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetDataFromFile(ewg_param_iTXNObject, ewg_param_iFileRefNum, ewg_param_iFileType, ewg_param_iFileLength, ewg_param_iStartOffset, ewg_param_iEndOffset) TXNSetDataFromFile ((TXNObject)ewg_param_iTXNObject, (SInt16)ewg_param_iFileRefNum, (OSType)ewg_param_iFileType, (ByteCount)ewg_param_iFileLength, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset)
+
+OSStatus  ewg_function_TXNSetDataFromFile (TXNObject iTXNObject, SInt16 iFileRefNum, OSType iFileType, ByteCount iFileLength, TXNOffset iStartOffset, TXNOffset iEndOffset);
+// Wraps call to function 'TXNConvertToPublicScrap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNConvertToPublicScrap TXNConvertToPublicScrap ()
+
+OSStatus  ewg_function_TXNConvertToPublicScrap (void);
+// Wraps call to function 'TXNConvertFromPublicScrap' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNConvertFromPublicScrap TXNConvertFromPublicScrap ()
+
+OSStatus  ewg_function_TXNConvertFromPublicScrap (void);
+// Wraps call to function 'TXNDraw' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNDraw(ewg_param_iTXNObject, ewg_param_iDrawPort) TXNDraw ((TXNObject)ewg_param_iTXNObject, (GWorldPtr)ewg_param_iDrawPort)
+
+void  ewg_function_TXNDraw (TXNObject iTXNObject, GWorldPtr iDrawPort);
+// Wraps call to function 'TXNAttachObjectToWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNAttachObjectToWindow(ewg_param_iTXNObject, ewg_param_iWindow, ewg_param_iIsActualWindow) TXNAttachObjectToWindow ((TXNObject)ewg_param_iTXNObject, (GWorldPtr)ewg_param_iWindow, (Boolean)ewg_param_iIsActualWindow)
+
+OSStatus  ewg_function_TXNAttachObjectToWindow (TXNObject iTXNObject, GWorldPtr iWindow, Boolean iIsActualWindow);
+// Wraps call to function 'TXNIsObjectAttachedToWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNIsObjectAttachedToWindow(ewg_param_iTXNObject) TXNIsObjectAttachedToWindow ((TXNObject)ewg_param_iTXNObject)
+
+Boolean  ewg_function_TXNIsObjectAttachedToWindow (TXNObject iTXNObject);
+// Wraps call to function 'TXNIsObjectAttachedToSpecificWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNIsObjectAttachedToSpecificWindow(ewg_param_iTXNObject, ewg_param_iWindow, ewg_param_oAttached) TXNIsObjectAttachedToSpecificWindow ((TXNObject)ewg_param_iTXNObject, (WindowRef)ewg_param_iWindow, (Boolean*)ewg_param_oAttached)
+
+OSStatus  ewg_function_TXNIsObjectAttachedToSpecificWindow (TXNObject iTXNObject, WindowRef iWindow, Boolean *oAttached);
+// Wraps call to function 'TXNSetRectBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetRectBounds(ewg_param_iTXNObject, ewg_param_iViewRect, ewg_param_iDestinationRect, ewg_param_iUpdate) TXNSetRectBounds ((TXNObject)ewg_param_iTXNObject, (Rect const*)ewg_param_iViewRect, (TXNLongRect const*)ewg_param_iDestinationRect, (Boolean)ewg_param_iUpdate)
+
+void  ewg_function_TXNSetRectBounds (TXNObject iTXNObject, Rect const *iViewRect, TXNLongRect const *iDestinationRect, Boolean iUpdate);
+// Wraps call to function 'TXNGetRectBounds' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetRectBounds(ewg_param_iTXNObject, ewg_param_oViewRect, ewg_param_oDestinationRect, ewg_param_oTextRect) TXNGetRectBounds ((TXNObject)ewg_param_iTXNObject, (Rect*)ewg_param_oViewRect, (TXNLongRect*)ewg_param_oDestinationRect, (TXNLongRect*)ewg_param_oTextRect)
+
+OSStatus  ewg_function_TXNGetRectBounds (TXNObject iTXNObject, Rect *oViewRect, TXNLongRect *oDestinationRect, TXNLongRect *oTextRect);
+// Wraps call to function 'TXNActivate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNActivate(ewg_param_iTXNObject, ewg_param_iTXNFrameID, ewg_param_iActiveState) TXNActivate ((TXNObject)ewg_param_iTXNObject, (TXNFrameID)ewg_param_iTXNFrameID, (TXNScrollBarState)ewg_param_iActiveState)
+
+OSStatus  ewg_function_TXNActivate (TXNObject iTXNObject, TXNFrameID iTXNFrameID, TXNScrollBarState iActiveState);
+// Wraps call to function 'TXNPointToOffset' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNPointToOffset(ewg_param_iTXNObject, ewg_param_iPoint, ewg_param_oOffset) TXNPointToOffset ((TXNObject)ewg_param_iTXNObject, *(Point*)ewg_param_iPoint, (TXNOffset*)ewg_param_oOffset)
+
+OSStatus  ewg_function_TXNPointToOffset (TXNObject iTXNObject, Point *iPoint, TXNOffset *oOffset);
+// Wraps call to function 'TXNOffsetToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNOffsetToPoint(ewg_param_iTXNObject, ewg_param_iOffset, ewg_param_oPoint) TXNOffsetToPoint ((TXNObject)ewg_param_iTXNObject, (TXNOffset)ewg_param_iOffset, (Point*)ewg_param_oPoint)
+
+OSStatus  ewg_function_TXNOffsetToPoint (TXNObject iTXNObject, TXNOffset iOffset, Point *oPoint);
+// Wraps call to function 'TXNCanUndo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCanUndo(ewg_param_iTXNObject, ewg_param_oTXNActionKey) TXNCanUndo ((TXNObject)ewg_param_iTXNObject, (TXNActionKey*)ewg_param_oTXNActionKey)
+
+Boolean  ewg_function_TXNCanUndo (TXNObject iTXNObject, TXNActionKey *oTXNActionKey);
+// Wraps call to function 'TXNCanRedo' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNCanRedo(ewg_param_iTXNObject, ewg_param_oTXNActionKey) TXNCanRedo ((TXNObject)ewg_param_iTXNObject, (TXNActionKey*)ewg_param_oTXNActionKey)
+
+Boolean  ewg_function_TXNCanRedo (TXNObject iTXNObject, TXNActionKey *oTXNActionKey);
+// Wraps call to function 'TXNGetActionChangeCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNGetActionChangeCount(ewg_param_iTXNObject, ewg_param_iOptions, ewg_param_oCount) TXNGetActionChangeCount ((TXNObject)ewg_param_iTXNObject, (TXNCountOptions)ewg_param_iOptions, (ItemCount*)ewg_param_oCount)
+
+OSStatus  ewg_function_TXNGetActionChangeCount (TXNObject iTXNObject, TXNCountOptions iOptions, ItemCount *oCount);
+// Wraps call to function 'TXNClearActionChangeCount' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNClearActionChangeCount(ewg_param_iTXNObject, ewg_param_iOptions) TXNClearActionChangeCount ((TXNObject)ewg_param_iTXNObject, (TXNCountOptions)ewg_param_iOptions)
+
+OSStatus  ewg_function_TXNClearActionChangeCount (TXNObject iTXNObject, TXNCountOptions iOptions);
+// Wraps call to function 'TXNSetDataFromCFURLRef' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSetDataFromCFURLRef(ewg_param_iTXNObject, ewg_param_iURL, ewg_param_iStartOffset, ewg_param_iEndOffset) TXNSetDataFromCFURLRef ((TXNObject)ewg_param_iTXNObject, (CFURLRef)ewg_param_iURL, (TXNOffset)ewg_param_iStartOffset, (TXNOffset)ewg_param_iEndOffset)
+
+OSStatus  ewg_function_TXNSetDataFromCFURLRef (TXNObject iTXNObject, CFURLRef iURL, TXNOffset iStartOffset, TXNOffset iEndOffset);
+// Wraps call to function 'TXNSave' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_TXNSave(ewg_param_iTXNObject, ewg_param_iType, ewg_param_iResType, ewg_param_iPermanentEncoding, ewg_param_iFileSpecification, ewg_param_iDataReference, ewg_param_iResourceReference) TXNSave ((TXNObject)ewg_param_iTXNObject, (TXNFileType)ewg_param_iType, (OSType)ewg_param_iResType, (TXNPermanentTextEncodingType)ewg_param_iPermanentEncoding, (FSSpec const*)ewg_param_iFileSpecification, (SInt16)ewg_param_iDataReference, (SInt16)ewg_param_iResourceReference)
+
+OSStatus  ewg_function_TXNSave (TXNObject iTXNObject, TXNFileType iType, OSType iResType, TXNPermanentTextEncodingType iPermanentEncoding, FSSpec const *iFileSpecification, SInt16 iDataReference, SInt16 iResourceReference);
 // Wraps call to function 'NewHMControlContentUPP' in a macro
 #include <Carbon/Carbon.h>
 
@@ -12227,6 +13007,96 @@ void  ewg_function_set_window_paint_proc_ptr_entry (void *a_class, void *a_featu
 #define ewg_function_macro_call_window_paint_proc_ptr(ewg_param_a_function, ewg_param_device, ewg_param_qdContext, ewg_param_window, ewg_param_inClientPaintRgn, ewg_param_outSystemPaintRgn, ewg_param_refCon) call_window_paint_proc_ptr ((void*)ewg_param_a_function, (GDHandle)ewg_param_device, (GrafPtr)ewg_param_qdContext, (WindowRef)ewg_param_window, (RgnHandle)ewg_param_inClientPaintRgn, (RgnHandle)ewg_param_outSystemPaintRgn, (void*)ewg_param_refCon)
 
 OSStatus  ewg_function_call_window_paint_proc_ptr (void *a_function, GDHandle device, GrafPtr qdContext, WindowRef window, RgnHandle inClientPaintRgn, RgnHandle outSystemPaintRgn, void *refCon);
+// Wraps call to function 'get_txnfind_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_txnfind_proc_ptr_stub get_txnfind_proc_ptr_stub ()
+
+void * ewg_function_get_txnfind_proc_ptr_stub (void);
+// Wraps call to function 'set_txnfind_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_txnfind_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_txnfind_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_txnfind_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_txnfind_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_txnfind_proc_ptr(ewg_param_a_function, ewg_param_matchData, ewg_param_iDataType, ewg_param_iMatchOptions, ewg_param_iSearchTextPtr, ewg_param_encoding, ewg_param_absStartOffset, ewg_param_searchTextLength, ewg_param_oStartMatch, ewg_param_oEndMatch, ewg_param_ofound, ewg_param_refCon) call_txnfind_proc_ptr ((void*)ewg_param_a_function, (TXNMatchTextRecord const*)ewg_param_matchData, (TXNDataType)ewg_param_iDataType, (TXNMatchOptions)ewg_param_iMatchOptions, (void const*)ewg_param_iSearchTextPtr, (TextEncoding)ewg_param_encoding, (TXNOffset)ewg_param_absStartOffset, (ByteCount)ewg_param_searchTextLength, (TXNOffset*)ewg_param_oStartMatch, (TXNOffset*)ewg_param_oEndMatch, (Boolean*)ewg_param_ofound, (UInt32)ewg_param_refCon)
+
+OSStatus  ewg_function_call_txnfind_proc_ptr (void *a_function, TXNMatchTextRecord const *matchData, TXNDataType iDataType, TXNMatchOptions iMatchOptions, void const *iSearchTextPtr, TextEncoding encoding, TXNOffset absStartOffset, ByteCount searchTextLength, TXNOffset *oStartMatch, TXNOffset *oEndMatch, Boolean *ofound, UInt32 refCon);
+// Wraps call to function 'get_txnaction_name_mapper_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_txnaction_name_mapper_proc_ptr_stub get_txnaction_name_mapper_proc_ptr_stub ()
+
+void * ewg_function_get_txnaction_name_mapper_proc_ptr_stub (void);
+// Wraps call to function 'set_txnaction_name_mapper_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_txnaction_name_mapper_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_txnaction_name_mapper_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_txnaction_name_mapper_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_txnaction_name_mapper_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_txnaction_name_mapper_proc_ptr(ewg_param_a_function, ewg_param_actionName, ewg_param_commandID, ewg_param_inUserData) call_txnaction_name_mapper_proc_ptr ((void*)ewg_param_a_function, (CFStringRef)ewg_param_actionName, (UInt32)ewg_param_commandID, (void*)ewg_param_inUserData)
+
+CFStringRef  ewg_function_call_txnaction_name_mapper_proc_ptr (void *a_function, CFStringRef actionName, UInt32 commandID, void *inUserData);
+// Wraps call to function 'get_txncontextual_menu_setup_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_txncontextual_menu_setup_proc_ptr_stub get_txncontextual_menu_setup_proc_ptr_stub ()
+
+void * ewg_function_get_txncontextual_menu_setup_proc_ptr_stub (void);
+// Wraps call to function 'set_txncontextual_menu_setup_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_txncontextual_menu_setup_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_txncontextual_menu_setup_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_txncontextual_menu_setup_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_txncontextual_menu_setup_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_txncontextual_menu_setup_proc_ptr(ewg_param_a_function, ewg_param_iContextualMenu, ewg_param_object, ewg_param_inUserData) call_txncontextual_menu_setup_proc_ptr ((void*)ewg_param_a_function, (MenuRef)ewg_param_iContextualMenu, (TXNObject)ewg_param_object, (void*)ewg_param_inUserData)
+
+void  ewg_function_call_txncontextual_menu_setup_proc_ptr (void *a_function, MenuRef iContextualMenu, TXNObject object, void *inUserData);
+// Wraps call to function 'get_txnscroll_info_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_txnscroll_info_proc_ptr_stub get_txnscroll_info_proc_ptr_stub ()
+
+void * ewg_function_get_txnscroll_info_proc_ptr_stub (void);
+// Wraps call to function 'set_txnscroll_info_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_txnscroll_info_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_txnscroll_info_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_txnscroll_info_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_txnscroll_info_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_txnscroll_info_proc_ptr(ewg_param_a_function, ewg_param_iValue, ewg_param_iMaximumValue, ewg_param_iScrollBarOrientation, ewg_param_iRefCon) call_txnscroll_info_proc_ptr ((void*)ewg_param_a_function, (SInt32)ewg_param_iValue, (SInt32)ewg_param_iMaximumValue, (TXNScrollBarOrientation)ewg_param_iScrollBarOrientation, (SInt32)ewg_param_iRefCon)
+
+void  ewg_function_call_txnscroll_info_proc_ptr (void *a_function, SInt32 iValue, SInt32 iMaximumValue, TXNScrollBarOrientation iScrollBarOrientation, SInt32 iRefCon);
+// Wraps call to function 'get_txnaction_key_mapper_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_txnaction_key_mapper_proc_ptr_stub get_txnaction_key_mapper_proc_ptr_stub ()
+
+void * ewg_function_get_txnaction_key_mapper_proc_ptr_stub (void);
+// Wraps call to function 'set_txnaction_key_mapper_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_txnaction_key_mapper_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_txnaction_key_mapper_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_txnaction_key_mapper_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_txnaction_key_mapper_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_txnaction_key_mapper_proc_ptr(ewg_param_a_function, ewg_param_actionKey, ewg_param_commandID) call_txnaction_key_mapper_proc_ptr ((void*)ewg_param_a_function, (TXNActionKey)ewg_param_actionKey, (UInt32)ewg_param_commandID)
+
+CFStringRef  ewg_function_call_txnaction_key_mapper_proc_ptr (void *a_function, TXNActionKey actionKey, UInt32 commandID);
 // Wraps call to function 'get_hmcontrol_content_proc_ptr_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 

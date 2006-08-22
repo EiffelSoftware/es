@@ -363,7 +363,7 @@ feature {NONE} -- callback handling for events
 		do
 				if a_inuserdata /= default_pointer then
 					a_id := pointer_to_int ( a_inuserdata )
-					-- print ("on_callback has been called by id:" + a_id.out + "%N")
+					--print ("on_callback has been called by id:" + a_id.out + "%N")
 					Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
 				end
 		end
@@ -403,7 +403,6 @@ feature -- event handling
 
 	install_event_handler (a_id: INTEGER ; a_target: POINTER; a_event_class: INTEGER; a_event_kind: INTEGER): POINTER is
 			-- install a carbon event handler
-			-- this hack with RECT_STRUCT is just a workearound, because i dont know how to get an Integer  from a pointer in eiffel
 		local
 			ret: INTEGER
 			event_target: POINTER

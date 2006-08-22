@@ -27,8 +27,7 @@ inherit
 		redefine
 			interface,
 			make,
-			initialize,
-			initialize_model
+			initialize
 		end
 
 	EV_GTK_TREE_VIEW

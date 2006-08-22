@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_CFBundleGetMainBundle"
 		end
 
-	frozen cfbundle_get_main_bundle_address_external: POINTER is
+	frozencfbundle_get_main_bundle_address_external: POINTER is
 			-- Address of C function `CFBundleGetMainBundle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_CFBundleGetBundleWithIdentifier"
 		end
 
-	frozen cfbundle_get_bundle_with_identifier_address_external: POINTER is
+	frozencfbundle_get_bundle_with_identifier_address_external: POINTER is
 			-- Address of C function `CFBundleGetBundleWithIdentifier'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_CFBundleGetAllBundles"
 		end
 
-	frozen cfbundle_get_all_bundles_address_external: POINTER is
+	frozencfbundle_get_all_bundles_address_external: POINTER is
 			-- Address of C function `CFBundleGetAllBundles'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_CFBundleGetTypeID"
 		end
 
-	frozen cfbundle_get_type_id_address_external: POINTER is
+	frozencfbundle_get_type_id_address_external: POINTER is
 			-- Address of C function `CFBundleGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_CFBundleCreate"
 		end
 
-	frozen cfbundle_create_address_external: POINTER is
+	frozencfbundle_create_address_external: POINTER is
 			-- Address of C function `CFBundleCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_CFBundleCreateBundlesFromDirectory"
 		end
 
-	frozen cfbundle_create_bundles_from_directory_address_external: POINTER is
+	frozencfbundle_create_bundles_from_directory_address_external: POINTER is
 			-- Address of C function `CFBundleCreateBundlesFromDirectory'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CFBundleCopyBundleURL"
 		end
 
-	frozen cfbundle_copy_bundle_url_address_external: POINTER is
+	frozencfbundle_copy_bundle_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyBundleURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CFBundleGetValueForInfoDictionaryKey"
 		end
 
-	frozen cfbundle_get_value_for_info_dictionary_key_address_external: POINTER is
+	frozencfbundle_get_value_for_info_dictionary_key_address_external: POINTER is
 			-- Address of C function `CFBundleGetValueForInfoDictionaryKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_CFBundleGetInfoDictionary"
 		end
 
-	frozen cfbundle_get_info_dictionary_address_external: POINTER is
+	frozencfbundle_get_info_dictionary_address_external: POINTER is
 			-- Address of C function `CFBundleGetInfoDictionary'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_CFBundleGetLocalInfoDictionary"
 		end
 
-	frozen cfbundle_get_local_info_dictionary_address_external: POINTER is
+	frozencfbundle_get_local_info_dictionary_address_external: POINTER is
 			-- Address of C function `CFBundleGetLocalInfoDictionary'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_CFBundleGetPackageInfo"
 		end
 
-	frozen cfbundle_get_package_info_address_external: POINTER is
+	frozencfbundle_get_package_info_address_external: POINTER is
 			-- Address of C function `CFBundleGetPackageInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_CFBundleGetIdentifier"
 		end
 
-	frozen cfbundle_get_identifier_address_external: POINTER is
+	frozencfbundle_get_identifier_address_external: POINTER is
 			-- Address of C function `CFBundleGetIdentifier'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_CFBundleGetVersionNumber"
 		end
 
-	frozen cfbundle_get_version_number_address_external: POINTER is
+	frozencfbundle_get_version_number_address_external: POINTER is
 			-- Address of C function `CFBundleGetVersionNumber'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CFBundleGetDevelopmentRegion"
 		end
 
-	frozen cfbundle_get_development_region_address_external: POINTER is
+	frozencfbundle_get_development_region_address_external: POINTER is
 			-- Address of C function `CFBundleGetDevelopmentRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CFBundleCopySupportFilesDirectoryURL"
 		end
 
-	frozen cfbundle_copy_support_files_directory_url_address_external: POINTER is
+	frozencfbundle_copy_support_files_directory_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopySupportFilesDirectoryURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_CFBundleCopyResourcesDirectoryURL"
 		end
 
-	frozen cfbundle_copy_resources_directory_url_address_external: POINTER is
+	frozencfbundle_copy_resources_directory_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyResourcesDirectoryURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CFBundleCopyPrivateFrameworksURL"
 		end
 
-	frozen cfbundle_copy_private_frameworks_url_address_external: POINTER is
+	frozencfbundle_copy_private_frameworks_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyPrivateFrameworksURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_CFBundleCopySharedFrameworksURL"
 		end
 
-	frozen cfbundle_copy_shared_frameworks_url_address_external: POINTER is
+	frozencfbundle_copy_shared_frameworks_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopySharedFrameworksURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_CFBundleCopySharedSupportURL"
 		end
 
-	frozen cfbundle_copy_shared_support_url_address_external: POINTER is
+	frozencfbundle_copy_shared_support_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopySharedSupportURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_CFBundleCopyBuiltInPlugInsURL"
 		end
 
-	frozen cfbundle_copy_built_in_plug_ins_url_address_external: POINTER is
+	frozencfbundle_copy_built_in_plug_ins_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyBuiltInPlugInsURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CFBundleCopyInfoDictionaryInDirectory"
 		end
 
-	frozen cfbundle_copy_info_dictionary_in_directory_address_external: POINTER is
+	frozencfbundle_copy_info_dictionary_in_directory_address_external: POINTER is
 			-- Address of C function `CFBundleCopyInfoDictionaryInDirectory'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_CFBundleGetPackageInfoInDirectory"
 		end
 
-	frozen cfbundle_get_package_info_in_directory_address_external: POINTER is
+	frozencfbundle_get_package_info_in_directory_address_external: POINTER is
 			-- Address of C function `CFBundleGetPackageInfoInDirectory'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_CFBundleCopyResourceURL"
 		end
 
-	frozen cfbundle_copy_resource_url_address_external: POINTER is
+	frozencfbundle_copy_resource_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyResourceURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_CFBundleCopyResourceURLsOfType"
 		end
 
-	frozen cfbundle_copy_resource_urls_of_type_address_external: POINTER is
+	frozencfbundle_copy_resource_urls_of_type_address_external: POINTER is
 			-- Address of C function `CFBundleCopyResourceURLsOfType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_CFBundleCopyLocalizedString"
 		end
 
-	frozen cfbundle_copy_localized_string_address_external: POINTER is
+	frozencfbundle_copy_localized_string_address_external: POINTER is
 			-- Address of C function `CFBundleCopyLocalizedString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_CFBundleCopyResourceURLInDirectory"
 		end
 
-	frozen cfbundle_copy_resource_urlin_directory_address_external: POINTER is
+	frozencfbundle_copy_resource_urlin_directory_address_external: POINTER is
 			-- Address of C function `CFBundleCopyResourceURLInDirectory'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_CFBundleCopyResourceURLsOfTypeInDirectory"
 		end
 
-	frozen cfbundle_copy_resource_urls_of_type_in_directory_address_external: POINTER is
+	frozencfbundle_copy_resource_urls_of_type_in_directory_address_external: POINTER is
 			-- Address of C function `CFBundleCopyResourceURLsOfTypeInDirectory'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_CFBundleCopyBundleLocalizations"
 		end
 
-	frozen cfbundle_copy_bundle_localizations_address_external: POINTER is
+	frozencfbundle_copy_bundle_localizations_address_external: POINTER is
 			-- Address of C function `CFBundleCopyBundleLocalizations'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_CFBundleCopyPreferredLocalizationsFromArray"
 		end
 
-	frozen cfbundle_copy_preferred_localizations_from_array_address_external: POINTER is
+	frozencfbundle_copy_preferred_localizations_from_array_address_external: POINTER is
 			-- Address of C function `CFBundleCopyPreferredLocalizationsFromArray'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_CFBundleCopyLocalizationsForPreferences"
 		end
 
-	frozen cfbundle_copy_localizations_for_preferences_address_external: POINTER is
+	frozencfbundle_copy_localizations_for_preferences_address_external: POINTER is
 			-- Address of C function `CFBundleCopyLocalizationsForPreferences'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_CFBundleCopyResourceURLForLocalization"
 		end
 
-	frozen cfbundle_copy_resource_urlfor_localization_address_external: POINTER is
+	frozencfbundle_copy_resource_urlfor_localization_address_external: POINTER is
 			-- Address of C function `CFBundleCopyResourceURLForLocalization'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_CFBundleCopyResourceURLsOfTypeForLocalization"
 		end
 
-	frozen cfbundle_copy_resource_urls_of_type_for_localization_address_external: POINTER is
+	frozencfbundle_copy_resource_urls_of_type_for_localization_address_external: POINTER is
 			-- Address of C function `CFBundleCopyResourceURLsOfTypeForLocalization'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_CFBundleCopyInfoDictionaryForURL"
 		end
 
-	frozen cfbundle_copy_info_dictionary_for_url_address_external: POINTER is
+	frozencfbundle_copy_info_dictionary_for_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyInfoDictionaryForURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_CFBundleCopyLocalizationsForURL"
 		end
 
-	frozen cfbundle_copy_localizations_for_url_address_external: POINTER is
+	frozencfbundle_copy_localizations_for_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyLocalizationsForURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_CFBundleCopyExecutableURL"
 		end
 
-	frozen cfbundle_copy_executable_url_address_external: POINTER is
+	frozencfbundle_copy_executable_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyExecutableURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_CFBundleIsExecutableLoaded"
 		end
 
-	frozen cfbundle_is_executable_loaded_address_external: POINTER is
+	frozencfbundle_is_executable_loaded_address_external: POINTER is
 			-- Address of C function `CFBundleIsExecutableLoaded'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_CFBundleLoadExecutable"
 		end
 
-	frozen cfbundle_load_executable_address_external: POINTER is
+	frozencfbundle_load_executable_address_external: POINTER is
 			-- Address of C function `CFBundleLoadExecutable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_CFBundleUnloadExecutable"
 		end
 
-	frozen cfbundle_unload_executable_address_external: POINTER is
+	frozencfbundle_unload_executable_address_external: POINTER is
 			-- Address of C function `CFBundleUnloadExecutable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_CFBundleGetFunctionPointerForName"
 		end
 
-	frozen cfbundle_get_function_pointer_for_name_address_external: POINTER is
+	frozencfbundle_get_function_pointer_for_name_address_external: POINTER is
 			-- Address of C function `CFBundleGetFunctionPointerForName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_CFBundleGetFunctionPointersForNames"
 		end
 
-	frozen cfbundle_get_function_pointers_for_names_address_external: POINTER is
+	frozencfbundle_get_function_pointers_for_names_address_external: POINTER is
 			-- Address of C function `CFBundleGetFunctionPointersForNames'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_CFBundleGetDataPointerForName"
 		end
 
-	frozen cfbundle_get_data_pointer_for_name_address_external: POINTER is
+	frozencfbundle_get_data_pointer_for_name_address_external: POINTER is
 			-- Address of C function `CFBundleGetDataPointerForName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_CFBundleGetDataPointersForNames"
 		end
 
-	frozen cfbundle_get_data_pointers_for_names_address_external: POINTER is
+	frozencfbundle_get_data_pointers_for_names_address_external: POINTER is
 			-- Address of C function `CFBundleGetDataPointersForNames'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_CFBundleCopyAuxiliaryExecutableURL"
 		end
 
-	frozen cfbundle_copy_auxiliary_executable_url_address_external: POINTER is
+	frozencfbundle_copy_auxiliary_executable_url_address_external: POINTER is
 			-- Address of C function `CFBundleCopyAuxiliaryExecutableURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_CFBundleGetPlugIn"
 		end
 
-	frozen cfbundle_get_plug_in_address_external: POINTER is
+	frozencfbundle_get_plug_in_address_external: POINTER is
 			-- Address of C function `CFBundleGetPlugIn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_CFBundleOpenBundleResourceMap"
 		end
 
-	frozen cfbundle_open_bundle_resource_map_address_external: POINTER is
+	frozencfbundle_open_bundle_resource_map_address_external: POINTER is
 			-- Address of C function `CFBundleOpenBundleResourceMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_CFBundleOpenBundleResourceFiles"
 		end
 
-	frozen cfbundle_open_bundle_resource_files_address_external: POINTER is
+	frozencfbundle_open_bundle_resource_files_address_external: POINTER is
 			-- Address of C function `CFBundleOpenBundleResourceFiles'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_CFBundleCloseBundleResourceMap"
 		end
 
-	frozen cfbundle_close_bundle_resource_map_address_external: POINTER is
+	frozencfbundle_close_bundle_resource_map_address_external: POINTER is
 			-- Address of C function `CFBundleCloseBundleResourceMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

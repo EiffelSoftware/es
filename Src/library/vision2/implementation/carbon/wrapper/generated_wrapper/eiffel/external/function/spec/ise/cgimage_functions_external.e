@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_CGImageGetTypeID"
 		end
 
-	frozen cgimage_get_type_id_address_external: POINTER is
+	frozencgimage_get_type_id_address_external: POINTER is
 			-- Address of C function `CGImageGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_CGImageCreate"
 		end
 
-	frozen cgimage_create_address_external: POINTER is
+	frozencgimage_create_address_external: POINTER is
 			-- Address of C function `CGImageCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_CGImageMaskCreate"
 		end
 
-	frozen cgimage_mask_create_address_external: POINTER is
+	frozencgimage_mask_create_address_external: POINTER is
 			-- Address of C function `CGImageMaskCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_CGImageCreateCopy"
 		end
 
-	frozen cgimage_create_copy_address_external: POINTER is
+	frozencgimage_create_copy_address_external: POINTER is
 			-- Address of C function `CGImageCreateCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_CGImageCreateWithJPEGDataProvider"
 		end
 
-	frozen cgimage_create_with_jpegdata_provider_address_external: POINTER is
+	frozencgimage_create_with_jpegdata_provider_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithJPEGDataProvider'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_CGImageCreateWithPNGDataProvider"
 		end
 
-	frozen cgimage_create_with_pngdata_provider_address_external: POINTER is
+	frozencgimage_create_with_pngdata_provider_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithPNGDataProvider'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CGImageCreateWithImageInRect"
 		end
 
-	frozen cgimage_create_with_image_in_rect_address_external: POINTER is
+	frozencgimage_create_with_image_in_rect_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithImageInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CGImageCreateWithMask"
 		end
 
-	frozen cgimage_create_with_mask_address_external: POINTER is
+	frozencgimage_create_with_mask_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_CGImageCreateWithMaskingColors"
 		end
 
-	frozen cgimage_create_with_masking_colors_address_external: POINTER is
+	frozencgimage_create_with_masking_colors_address_external: POINTER is
 			-- Address of C function `CGImageCreateWithMaskingColors'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_CGImageCreateCopyWithColorSpace"
 		end
 
-	frozen cgimage_create_copy_with_color_space_address_external: POINTER is
+	frozencgimage_create_copy_with_color_space_address_external: POINTER is
 			-- Address of C function `CGImageCreateCopyWithColorSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_CGImageRetain"
 		end
 
-	frozen cgimage_retain_address_external: POINTER is
+	frozencgimage_retain_address_external: POINTER is
 			-- Address of C function `CGImageRetain'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_CGImageRelease"
 		end
 
-	frozen cgimage_release_address_external: POINTER is
+	frozencgimage_release_address_external: POINTER is
 			-- Address of C function `CGImageRelease'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_CGImageIsMask"
 		end
 
-	frozen cgimage_is_mask_address_external: POINTER is
+	frozencgimage_is_mask_address_external: POINTER is
 			-- Address of C function `CGImageIsMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CGImageGetWidth"
 		end
 
-	frozen cgimage_get_width_address_external: POINTER is
+	frozencgimage_get_width_address_external: POINTER is
 			-- Address of C function `CGImageGetWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CGImageGetHeight"
 		end
 
-	frozen cgimage_get_height_address_external: POINTER is
+	frozencgimage_get_height_address_external: POINTER is
 			-- Address of C function `CGImageGetHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_CGImageGetBitsPerComponent"
 		end
 
-	frozen cgimage_get_bits_per_component_address_external: POINTER is
+	frozencgimage_get_bits_per_component_address_external: POINTER is
 			-- Address of C function `CGImageGetBitsPerComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CGImageGetBitsPerPixel"
 		end
 
-	frozen cgimage_get_bits_per_pixel_address_external: POINTER is
+	frozencgimage_get_bits_per_pixel_address_external: POINTER is
 			-- Address of C function `CGImageGetBitsPerPixel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_CGImageGetBytesPerRow"
 		end
 
-	frozen cgimage_get_bytes_per_row_address_external: POINTER is
+	frozencgimage_get_bytes_per_row_address_external: POINTER is
 			-- Address of C function `CGImageGetBytesPerRow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_CGImageGetColorSpace"
 		end
 
-	frozen cgimage_get_color_space_address_external: POINTER is
+	frozencgimage_get_color_space_address_external: POINTER is
 			-- Address of C function `CGImageGetColorSpace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_CGImageGetAlphaInfo"
 		end
 
-	frozen cgimage_get_alpha_info_address_external: POINTER is
+	frozencgimage_get_alpha_info_address_external: POINTER is
 			-- Address of C function `CGImageGetAlphaInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CGImageGetDataProvider"
 		end
 
-	frozen cgimage_get_data_provider_address_external: POINTER is
+	frozencgimage_get_data_provider_address_external: POINTER is
 			-- Address of C function `CGImageGetDataProvider'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_CGImageGetDecode"
 		end
 
-	frozen cgimage_get_decode_address_external: POINTER is
+	frozencgimage_get_decode_address_external: POINTER is
 			-- Address of C function `CGImageGetDecode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_CGImageGetShouldInterpolate"
 		end
 
-	frozen cgimage_get_should_interpolate_address_external: POINTER is
+	frozencgimage_get_should_interpolate_address_external: POINTER is
 			-- Address of C function `CGImageGetShouldInterpolate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_CGImageGetRenderingIntent"
 		end
 
-	frozen cgimage_get_rendering_intent_address_external: POINTER is
+	frozencgimage_get_rendering_intent_address_external: POINTER is
 			-- Address of C function `CGImageGetRenderingIntent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_CGImageGetBitmapInfo"
 		end
 
-	frozen cgimage_get_bitmap_info_address_external: POINTER is
+	frozencgimage_get_bitmap_info_address_external: POINTER is
 			-- Address of C function `CGImageGetBitmapInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

@@ -914,6 +914,136 @@ OSStatus call_window_paint_proc_ptr (void *a_function, GDHandle device, GrafPtr 
 	return ((OSStatus (*) (GDHandle device, GrafPtr qdContext, WindowRef window, RgnHandle inClientPaintRgn, RgnHandle outSystemPaintRgn, void *refCon))a_function) (device, qdContext, window, inClientPaintRgn, outSystemPaintRgn, refCon);
 }
 
+struct txnfind_proc_ptr_entry_struct txnfind_proc_ptr_entry = {NULL, NULL};
+
+OSStatus txnfind_proc_ptr_stub (TXNMatchTextRecord const *matchData, TXNDataType iDataType, TXNMatchOptions iMatchOptions, void const *iSearchTextPtr, TextEncoding encoding, TXNOffset absStartOffset, ByteCount searchTextLength, TXNOffset *oStartMatch, TXNOffset *oEndMatch, Boolean *ofound, UInt32 refCon)
+{
+	if (txnfind_proc_ptr_entry.a_class != NULL && txnfind_proc_ptr_entry.feature != NULL)
+	{
+		return txnfind_proc_ptr_entry.feature (eif_access(txnfind_proc_ptr_entry.a_class), matchData, iDataType, iMatchOptions, iSearchTextPtr, encoding, absStartOffset, searchTextLength, oStartMatch, oEndMatch, ofound, refCon);
+	}
+}
+
+void set_txnfind_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	txnfind_proc_ptr_entry.a_class = eif_adopt(a_class);
+	txnfind_proc_ptr_entry.feature = (txnfind_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_txnfind_proc_ptr_stub ()
+{
+	return (void*) txnfind_proc_ptr_stub;
+}
+
+OSStatus call_txnfind_proc_ptr (void *a_function, TXNMatchTextRecord const *matchData, TXNDataType iDataType, TXNMatchOptions iMatchOptions, void const *iSearchTextPtr, TextEncoding encoding, TXNOffset absStartOffset, ByteCount searchTextLength, TXNOffset *oStartMatch, TXNOffset *oEndMatch, Boolean *ofound, UInt32 refCon)
+{
+	return ((OSStatus (*) (TXNMatchTextRecord const *matchData, TXNDataType iDataType, TXNMatchOptions iMatchOptions, void const *iSearchTextPtr, TextEncoding encoding, TXNOffset absStartOffset, ByteCount searchTextLength, TXNOffset *oStartMatch, TXNOffset *oEndMatch, Boolean *ofound, UInt32 refCon))a_function) (matchData, iDataType, iMatchOptions, iSearchTextPtr, encoding, absStartOffset, searchTextLength, oStartMatch, oEndMatch, ofound, refCon);
+}
+
+struct txnaction_name_mapper_proc_ptr_entry_struct txnaction_name_mapper_proc_ptr_entry = {NULL, NULL};
+
+CFStringRef txnaction_name_mapper_proc_ptr_stub (CFStringRef actionName, UInt32 commandID, void *inUserData)
+{
+	if (txnaction_name_mapper_proc_ptr_entry.a_class != NULL && txnaction_name_mapper_proc_ptr_entry.feature != NULL)
+	{
+		return txnaction_name_mapper_proc_ptr_entry.feature (eif_access(txnaction_name_mapper_proc_ptr_entry.a_class), actionName, commandID, inUserData);
+	}
+}
+
+void set_txnaction_name_mapper_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	txnaction_name_mapper_proc_ptr_entry.a_class = eif_adopt(a_class);
+	txnaction_name_mapper_proc_ptr_entry.feature = (txnaction_name_mapper_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_txnaction_name_mapper_proc_ptr_stub ()
+{
+	return (void*) txnaction_name_mapper_proc_ptr_stub;
+}
+
+CFStringRef call_txnaction_name_mapper_proc_ptr (void *a_function, CFStringRef actionName, UInt32 commandID, void *inUserData)
+{
+	return ((CFStringRef (*) (CFStringRef actionName, UInt32 commandID, void *inUserData))a_function) (actionName, commandID, inUserData);
+}
+
+struct txncontextual_menu_setup_proc_ptr_entry_struct txncontextual_menu_setup_proc_ptr_entry = {NULL, NULL};
+
+void txncontextual_menu_setup_proc_ptr_stub (MenuRef iContextualMenu, TXNObject object, void *inUserData)
+{
+	if (txncontextual_menu_setup_proc_ptr_entry.a_class != NULL && txncontextual_menu_setup_proc_ptr_entry.feature != NULL)
+	{
+		txncontextual_menu_setup_proc_ptr_entry.feature (eif_access(txncontextual_menu_setup_proc_ptr_entry.a_class), iContextualMenu, object, inUserData);
+	}
+}
+
+void set_txncontextual_menu_setup_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	txncontextual_menu_setup_proc_ptr_entry.a_class = eif_adopt(a_class);
+	txncontextual_menu_setup_proc_ptr_entry.feature = (txncontextual_menu_setup_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_txncontextual_menu_setup_proc_ptr_stub ()
+{
+	return (void*) txncontextual_menu_setup_proc_ptr_stub;
+}
+
+void call_txncontextual_menu_setup_proc_ptr (void *a_function, MenuRef iContextualMenu, TXNObject object, void *inUserData)
+{
+	((void (*) (MenuRef iContextualMenu, TXNObject object, void *inUserData))a_function) (iContextualMenu, object, inUserData);
+}
+
+struct txnscroll_info_proc_ptr_entry_struct txnscroll_info_proc_ptr_entry = {NULL, NULL};
+
+void txnscroll_info_proc_ptr_stub (SInt32 iValue, SInt32 iMaximumValue, TXNScrollBarOrientation iScrollBarOrientation, SInt32 iRefCon)
+{
+	if (txnscroll_info_proc_ptr_entry.a_class != NULL && txnscroll_info_proc_ptr_entry.feature != NULL)
+	{
+		txnscroll_info_proc_ptr_entry.feature (eif_access(txnscroll_info_proc_ptr_entry.a_class), iValue, iMaximumValue, iScrollBarOrientation, iRefCon);
+	}
+}
+
+void set_txnscroll_info_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	txnscroll_info_proc_ptr_entry.a_class = eif_adopt(a_class);
+	txnscroll_info_proc_ptr_entry.feature = (txnscroll_info_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_txnscroll_info_proc_ptr_stub ()
+{
+	return (void*) txnscroll_info_proc_ptr_stub;
+}
+
+void call_txnscroll_info_proc_ptr (void *a_function, SInt32 iValue, SInt32 iMaximumValue, TXNScrollBarOrientation iScrollBarOrientation, SInt32 iRefCon)
+{
+	((void (*) (SInt32 iValue, SInt32 iMaximumValue, TXNScrollBarOrientation iScrollBarOrientation, SInt32 iRefCon))a_function) (iValue, iMaximumValue, iScrollBarOrientation, iRefCon);
+}
+
+struct txnaction_key_mapper_proc_ptr_entry_struct txnaction_key_mapper_proc_ptr_entry = {NULL, NULL};
+
+CFStringRef txnaction_key_mapper_proc_ptr_stub (TXNActionKey actionKey, UInt32 commandID)
+{
+	if (txnaction_key_mapper_proc_ptr_entry.a_class != NULL && txnaction_key_mapper_proc_ptr_entry.feature != NULL)
+	{
+		return txnaction_key_mapper_proc_ptr_entry.feature (eif_access(txnaction_key_mapper_proc_ptr_entry.a_class), actionKey, commandID);
+	}
+}
+
+void set_txnaction_key_mapper_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	txnaction_key_mapper_proc_ptr_entry.a_class = eif_adopt(a_class);
+	txnaction_key_mapper_proc_ptr_entry.feature = (txnaction_key_mapper_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_txnaction_key_mapper_proc_ptr_stub ()
+{
+	return (void*) txnaction_key_mapper_proc_ptr_stub;
+}
+
+CFStringRef call_txnaction_key_mapper_proc_ptr (void *a_function, TXNActionKey actionKey, UInt32 commandID)
+{
+	return ((CFStringRef (*) (TXNActionKey actionKey, UInt32 commandID))a_function) (actionKey, commandID);
+}
+
 struct hmcontrol_content_proc_ptr_entry_struct hmcontrol_content_proc_ptr_entry = {NULL, NULL};
 
 OSStatus hmcontrol_content_proc_ptr_stub (ControlRef inControl, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent)

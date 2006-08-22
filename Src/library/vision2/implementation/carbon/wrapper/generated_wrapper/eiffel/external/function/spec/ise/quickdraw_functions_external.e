@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_NewQDTextUPP"
 		end
 
-	frozen new_qdtext_upp_address_external: POINTER is
+	frozennew_qdtext_upp_address_external: POINTER is
 			-- Address of C function `NewQDTextUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_NewQDLineUPP"
 		end
 
-	frozen new_qdline_upp_address_external: POINTER is
+	frozennew_qdline_upp_address_external: POINTER is
 			-- Address of C function `NewQDLineUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_NewQDRectUPP"
 		end
 
-	frozen new_qdrect_upp_address_external: POINTER is
+	frozennew_qdrect_upp_address_external: POINTER is
 			-- Address of C function `NewQDRectUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_NewQDRRectUPP"
 		end
 
-	frozen new_qdrrect_upp_address_external: POINTER is
+	frozennew_qdrrect_upp_address_external: POINTER is
 			-- Address of C function `NewQDRRectUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_NewQDOvalUPP"
 		end
 
-	frozen new_qdoval_upp_address_external: POINTER is
+	frozennew_qdoval_upp_address_external: POINTER is
 			-- Address of C function `NewQDOvalUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_NewQDArcUPP"
 		end
 
-	frozen new_qdarc_upp_address_external: POINTER is
+	frozennew_qdarc_upp_address_external: POINTER is
 			-- Address of C function `NewQDArcUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_NewQDPolyUPP"
 		end
 
-	frozen new_qdpoly_upp_address_external: POINTER is
+	frozennew_qdpoly_upp_address_external: POINTER is
 			-- Address of C function `NewQDPolyUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_NewQDRgnUPP"
 		end
 
-	frozen new_qdrgn_upp_address_external: POINTER is
+	frozennew_qdrgn_upp_address_external: POINTER is
 			-- Address of C function `NewQDRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_NewQDBitsUPP"
 		end
 
-	frozen new_qdbits_upp_address_external: POINTER is
+	frozennew_qdbits_upp_address_external: POINTER is
 			-- Address of C function `NewQDBitsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_NewQDCommentUPP"
 		end
 
-	frozen new_qdcomment_upp_address_external: POINTER is
+	frozennew_qdcomment_upp_address_external: POINTER is
 			-- Address of C function `NewQDCommentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_NewQDTxMeasUPP"
 		end
 
-	frozen new_qdtx_meas_upp_address_external: POINTER is
+	frozennew_qdtx_meas_upp_address_external: POINTER is
 			-- Address of C function `NewQDTxMeasUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_NewQDGetPicUPP"
 		end
 
-	frozen new_qdget_pic_upp_address_external: POINTER is
+	frozennew_qdget_pic_upp_address_external: POINTER is
 			-- Address of C function `NewQDGetPicUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_NewQDPutPicUPP"
 		end
 
-	frozen new_qdput_pic_upp_address_external: POINTER is
+	frozennew_qdput_pic_upp_address_external: POINTER is
 			-- Address of C function `NewQDPutPicUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_NewQDOpcodeUPP"
 		end
 
-	frozen new_qdopcode_upp_address_external: POINTER is
+	frozennew_qdopcode_upp_address_external: POINTER is
 			-- Address of C function `NewQDOpcodeUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_NewQDStdGlyphsUPP"
 		end
 
-	frozen new_qdstd_glyphs_upp_address_external: POINTER is
+	frozennew_qdstd_glyphs_upp_address_external: POINTER is
 			-- Address of C function `NewQDStdGlyphsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_NewQDJShieldCursorUPP"
 		end
 
-	frozen new_qdjshield_cursor_upp_address_external: POINTER is
+	frozennew_qdjshield_cursor_upp_address_external: POINTER is
 			-- Address of C function `NewQDJShieldCursorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_DisposeQDTextUPP"
 		end
 
-	frozen dispose_qdtext_upp_address_external: POINTER is
+	frozendispose_qdtext_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDTextUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_DisposeQDLineUPP"
 		end
 
-	frozen dispose_qdline_upp_address_external: POINTER is
+	frozendispose_qdline_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDLineUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_DisposeQDRectUPP"
 		end
 
-	frozen dispose_qdrect_upp_address_external: POINTER is
+	frozendispose_qdrect_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDRectUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_DisposeQDRRectUPP"
 		end
 
-	frozen dispose_qdrrect_upp_address_external: POINTER is
+	frozendispose_qdrrect_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDRRectUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_DisposeQDOvalUPP"
 		end
 
-	frozen dispose_qdoval_upp_address_external: POINTER is
+	frozendispose_qdoval_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDOvalUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_DisposeQDArcUPP"
 		end
 
-	frozen dispose_qdarc_upp_address_external: POINTER is
+	frozendispose_qdarc_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDArcUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_DisposeQDPolyUPP"
 		end
 
-	frozen dispose_qdpoly_upp_address_external: POINTER is
+	frozendispose_qdpoly_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDPolyUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_DisposeQDRgnUPP"
 		end
 
-	frozen dispose_qdrgn_upp_address_external: POINTER is
+	frozendispose_qdrgn_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_DisposeQDBitsUPP"
 		end
 
-	frozen dispose_qdbits_upp_address_external: POINTER is
+	frozendispose_qdbits_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDBitsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_DisposeQDCommentUPP"
 		end
 
-	frozen dispose_qdcomment_upp_address_external: POINTER is
+	frozendispose_qdcomment_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDCommentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_DisposeQDTxMeasUPP"
 		end
 
-	frozen dispose_qdtx_meas_upp_address_external: POINTER is
+	frozendispose_qdtx_meas_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDTxMeasUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_DisposeQDGetPicUPP"
 		end
 
-	frozen dispose_qdget_pic_upp_address_external: POINTER is
+	frozendispose_qdget_pic_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDGetPicUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_DisposeQDPutPicUPP"
 		end
 
-	frozen dispose_qdput_pic_upp_address_external: POINTER is
+	frozendispose_qdput_pic_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDPutPicUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_DisposeQDOpcodeUPP"
 		end
 
-	frozen dispose_qdopcode_upp_address_external: POINTER is
+	frozendispose_qdopcode_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDOpcodeUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_DisposeQDStdGlyphsUPP"
 		end
 
-	frozen dispose_qdstd_glyphs_upp_address_external: POINTER is
+	frozendispose_qdstd_glyphs_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDStdGlyphsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_DisposeQDJShieldCursorUPP"
 		end
 
-	frozen dispose_qdjshield_cursor_upp_address_external: POINTER is
+	frozendispose_qdjshield_cursor_upp_address_external: POINTER is
 			-- Address of C function `DisposeQDJShieldCursorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_InvokeQDTextUPP"
 		end
 
-	frozen invoke_qdtext_upp_address_external: POINTER is
+	frozeninvoke_qdtext_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDTextUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_InvokeQDLineUPP"
 		end
 
-	frozen invoke_qdline_upp_address_external: POINTER is
+	frozeninvoke_qdline_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDLineUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_InvokeQDRectUPP"
 		end
 
-	frozen invoke_qdrect_upp_address_external: POINTER is
+	frozeninvoke_qdrect_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDRectUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_InvokeQDRRectUPP"
 		end
 
-	frozen invoke_qdrrect_upp_address_external: POINTER is
+	frozeninvoke_qdrrect_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDRRectUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_InvokeQDOvalUPP"
 		end
 
-	frozen invoke_qdoval_upp_address_external: POINTER is
+	frozeninvoke_qdoval_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDOvalUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_InvokeQDArcUPP"
 		end
 
-	frozen invoke_qdarc_upp_address_external: POINTER is
+	frozeninvoke_qdarc_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDArcUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_InvokeQDPolyUPP"
 		end
 
-	frozen invoke_qdpoly_upp_address_external: POINTER is
+	frozeninvoke_qdpoly_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDPolyUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_InvokeQDRgnUPP"
 		end
 
-	frozen invoke_qdrgn_upp_address_external: POINTER is
+	frozeninvoke_qdrgn_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_InvokeQDBitsUPP"
 		end
 
-	frozen invoke_qdbits_upp_address_external: POINTER is
+	frozeninvoke_qdbits_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDBitsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_InvokeQDCommentUPP"
 		end
 
-	frozen invoke_qdcomment_upp_address_external: POINTER is
+	frozeninvoke_qdcomment_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDCommentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_InvokeQDTxMeasUPP"
 		end
 
-	frozen invoke_qdtx_meas_upp_address_external: POINTER is
+	frozeninvoke_qdtx_meas_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDTxMeasUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_InvokeQDGetPicUPP"
 		end
 
-	frozen invoke_qdget_pic_upp_address_external: POINTER is
+	frozeninvoke_qdget_pic_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDGetPicUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_InvokeQDPutPicUPP"
 		end
 
-	frozen invoke_qdput_pic_upp_address_external: POINTER is
+	frozeninvoke_qdput_pic_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDPutPicUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_InvokeQDOpcodeUPP"
 		end
 
-	frozen invoke_qdopcode_upp_address_external: POINTER is
+	frozeninvoke_qdopcode_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDOpcodeUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_InvokeQDStdGlyphsUPP"
 		end
 
-	frozen invoke_qdstd_glyphs_upp_address_external: POINTER is
+	frozeninvoke_qdstd_glyphs_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDStdGlyphsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_InvokeQDJShieldCursorUPP"
 		end
 
-	frozen invoke_qdjshield_cursor_upp_address_external: POINTER is
+	frozeninvoke_qdjshield_cursor_upp_address_external: POINTER is
 			-- Address of C function `InvokeQDJShieldCursorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_NewDragGrayRgnUPP"
 		end
 
-	frozen new_drag_gray_rgn_upp_address_external: POINTER is
+	frozennew_drag_gray_rgn_upp_address_external: POINTER is
 			-- Address of C function `NewDragGrayRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_NewColorSearchUPP"
 		end
 
-	frozen new_color_search_upp_address_external: POINTER is
+	frozennew_color_search_upp_address_external: POINTER is
 			-- Address of C function `NewColorSearchUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_NewColorComplementUPP"
 		end
 
-	frozen new_color_complement_upp_address_external: POINTER is
+	frozennew_color_complement_upp_address_external: POINTER is
 			-- Address of C function `NewColorComplementUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_DisposeDragGrayRgnUPP"
 		end
 
-	frozen dispose_drag_gray_rgn_upp_address_external: POINTER is
+	frozendispose_drag_gray_rgn_upp_address_external: POINTER is
 			-- Address of C function `DisposeDragGrayRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_DisposeColorSearchUPP"
 		end
 
-	frozen dispose_color_search_upp_address_external: POINTER is
+	frozendispose_color_search_upp_address_external: POINTER is
 			-- Address of C function `DisposeColorSearchUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_DisposeColorComplementUPP"
 		end
 
-	frozen dispose_color_complement_upp_address_external: POINTER is
+	frozendispose_color_complement_upp_address_external: POINTER is
 			-- Address of C function `DisposeColorComplementUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_InvokeDragGrayRgnUPP"
 		end
 
-	frozen invoke_drag_gray_rgn_upp_address_external: POINTER is
+	frozeninvoke_drag_gray_rgn_upp_address_external: POINTER is
 			-- Address of C function `InvokeDragGrayRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_InvokeColorSearchUPP"
 		end
 
-	frozen invoke_color_search_upp_address_external: POINTER is
+	frozeninvoke_color_search_upp_address_external: POINTER is
 			-- Address of C function `InvokeColorSearchUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_InvokeColorComplementUPP"
 		end
 
-	frozen invoke_color_complement_upp_address_external: POINTER is
+	frozeninvoke_color_complement_upp_address_external: POINTER is
 			-- Address of C function `InvokeColorComplementUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_NewDeviceLoopDrawingUPP"
 		end
 
-	frozen new_device_loop_drawing_upp_address_external: POINTER is
+	frozennew_device_loop_drawing_upp_address_external: POINTER is
 			-- Address of C function `NewDeviceLoopDrawingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_DisposeDeviceLoopDrawingUPP"
 		end
 
-	frozen dispose_device_loop_drawing_upp_address_external: POINTER is
+	frozendispose_device_loop_drawing_upp_address_external: POINTER is
 			-- Address of C function `DisposeDeviceLoopDrawingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_InvokeDeviceLoopDrawingUPP"
 		end
 
-	frozen invoke_device_loop_drawing_upp_address_external: POINTER is
+	frozeninvoke_device_loop_drawing_upp_address_external: POINTER is
 			-- Address of C function `InvokeDeviceLoopDrawingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_LockPortBits"
 		end
 
-	frozen lock_port_bits_address_external: POINTER is
+	frozenlock_port_bits_address_external: POINTER is
 			-- Address of C function `LockPortBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -925,7 +925,7 @@ feature
 			"ewg_function_macro_UnlockPortBits"
 		end
 
-	frozen unlock_port_bits_address_external: POINTER is
+	frozenunlock_port_bits_address_external: POINTER is
 			-- Address of C function `UnlockPortBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -940,7 +940,7 @@ feature
 			"ewg_function_macro_NewRegionToRectsUPP"
 		end
 
-	frozen new_region_to_rects_upp_address_external: POINTER is
+	frozennew_region_to_rects_upp_address_external: POINTER is
 			-- Address of C function `NewRegionToRectsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -955,7 +955,7 @@ feature
 			"ewg_function_macro_DisposeRegionToRectsUPP"
 		end
 
-	frozen dispose_region_to_rects_upp_address_external: POINTER is
+	frozendispose_region_to_rects_upp_address_external: POINTER is
 			-- Address of C function `DisposeRegionToRectsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -970,7 +970,7 @@ feature
 			"ewg_function_macro_InvokeRegionToRectsUPP"
 		end
 
-	frozen invoke_region_to_rects_upp_address_external: POINTER is
+	frozeninvoke_region_to_rects_upp_address_external: POINTER is
 			-- Address of C function `InvokeRegionToRectsUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -985,7 +985,7 @@ feature
 			"ewg_function_macro_QDRegionToRects"
 		end
 
-	frozen qdregion_to_rects_address_external: POINTER is
+	frozenqdregion_to_rects_address_external: POINTER is
 			-- Address of C function `QDRegionToRects'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1000,7 +1000,7 @@ feature
 			"ewg_function_macro_SetPort"
 		end
 
-	frozen set_port_address_external: POINTER is
+	frozenset_port_address_external: POINTER is
 			-- Address of C function `SetPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1015,7 +1015,7 @@ feature
 			"ewg_function_macro_GetPort"
 		end
 
-	frozen get_port_address_external: POINTER is
+	frozenget_port_address_external: POINTER is
 			-- Address of C function `GetPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1030,7 +1030,7 @@ feature
 			"ewg_function_macro_QDSwapPort"
 		end
 
-	frozen qdswap_port_address_external: POINTER is
+	frozenqdswap_port_address_external: POINTER is
 			-- Address of C function `QDSwapPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1045,7 +1045,7 @@ feature
 			"ewg_function_macro_GrafDevice"
 		end
 
-	frozen graf_device_address_external: POINTER is
+	frozengraf_device_address_external: POINTER is
 			-- Address of C function `GrafDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1060,7 +1060,7 @@ feature
 			"ewg_function_macro_SetPortBits"
 		end
 
-	frozen set_port_bits_address_external: POINTER is
+	frozenset_port_bits_address_external: POINTER is
 			-- Address of C function `SetPortBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1075,7 +1075,7 @@ feature
 			"ewg_function_macro_PortSize"
 		end
 
-	frozen port_size_address_external: POINTER is
+	frozenport_size_address_external: POINTER is
 			-- Address of C function `PortSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1090,7 +1090,7 @@ feature
 			"ewg_function_macro_MovePortTo"
 		end
 
-	frozen move_port_to_address_external: POINTER is
+	frozenmove_port_to_address_external: POINTER is
 			-- Address of C function `MovePortTo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1105,7 +1105,7 @@ feature
 			"ewg_function_macro_SetOrigin"
 		end
 
-	frozen set_origin_address_external: POINTER is
+	frozenset_origin_address_external: POINTER is
 			-- Address of C function `SetOrigin'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1120,7 +1120,7 @@ feature
 			"ewg_function_macro_SetClip"
 		end
 
-	frozen set_clip_address_external: POINTER is
+	frozenset_clip_address_external: POINTER is
 			-- Address of C function `SetClip'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1135,7 +1135,7 @@ feature
 			"ewg_function_macro_GetClip"
 		end
 
-	frozen get_clip_address_external: POINTER is
+	frozenget_clip_address_external: POINTER is
 			-- Address of C function `GetClip'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1150,7 +1150,7 @@ feature
 			"ewg_function_macro_ClipRect"
 		end
 
-	frozen clip_rect_address_external: POINTER is
+	frozenclip_rect_address_external: POINTER is
 			-- Address of C function `ClipRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1165,7 +1165,7 @@ feature
 			"ewg_function_macro_BackPat"
 		end
 
-	frozen back_pat_address_external: POINTER is
+	frozenback_pat_address_external: POINTER is
 			-- Address of C function `BackPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1180,7 +1180,7 @@ feature
 			"ewg_function_macro_InitCursor"
 		end
 
-	frozen init_cursor_address_external: POINTER is
+	frozeninit_cursor_address_external: POINTER is
 			-- Address of C function `InitCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1195,7 +1195,7 @@ feature
 			"ewg_function_macro_SetCursor"
 		end
 
-	frozen set_cursor_address_external: POINTER is
+	frozenset_cursor_address_external: POINTER is
 			-- Address of C function `SetCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1210,7 +1210,7 @@ feature
 			"ewg_function_macro_HideCursor"
 		end
 
-	frozen hide_cursor_address_external: POINTER is
+	frozenhide_cursor_address_external: POINTER is
 			-- Address of C function `HideCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1225,7 +1225,7 @@ feature
 			"ewg_function_macro_ShowCursor"
 		end
 
-	frozen show_cursor_address_external: POINTER is
+	frozenshow_cursor_address_external: POINTER is
 			-- Address of C function `ShowCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1240,7 +1240,7 @@ feature
 			"ewg_function_macro_ObscureCursor"
 		end
 
-	frozen obscure_cursor_address_external: POINTER is
+	frozenobscure_cursor_address_external: POINTER is
 			-- Address of C function `ObscureCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1255,7 +1255,7 @@ feature
 			"ewg_function_macro_HidePen"
 		end
 
-	frozen hide_pen_address_external: POINTER is
+	frozenhide_pen_address_external: POINTER is
 			-- Address of C function `HidePen'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1270,7 +1270,7 @@ feature
 			"ewg_function_macro_ShowPen"
 		end
 
-	frozen show_pen_address_external: POINTER is
+	frozenshow_pen_address_external: POINTER is
 			-- Address of C function `ShowPen'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1285,7 +1285,7 @@ feature
 			"ewg_function_macro_GetPen"
 		end
 
-	frozen get_pen_address_external: POINTER is
+	frozenget_pen_address_external: POINTER is
 			-- Address of C function `GetPen'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1300,7 +1300,7 @@ feature
 			"ewg_function_macro_GetPenState"
 		end
 
-	frozen get_pen_state_address_external: POINTER is
+	frozenget_pen_state_address_external: POINTER is
 			-- Address of C function `GetPenState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1315,7 +1315,7 @@ feature
 			"ewg_function_macro_SetPenState"
 		end
 
-	frozen set_pen_state_address_external: POINTER is
+	frozenset_pen_state_address_external: POINTER is
 			-- Address of C function `SetPenState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1330,7 +1330,7 @@ feature
 			"ewg_function_macro_PenSize"
 		end
 
-	frozen pen_size_address_external: POINTER is
+	frozenpen_size_address_external: POINTER is
 			-- Address of C function `PenSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1345,7 +1345,7 @@ feature
 			"ewg_function_macro_PenMode"
 		end
 
-	frozen pen_mode_address_external: POINTER is
+	frozenpen_mode_address_external: POINTER is
 			-- Address of C function `PenMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1360,7 +1360,7 @@ feature
 			"ewg_function_macro_PenPat"
 		end
 
-	frozen pen_pat_address_external: POINTER is
+	frozenpen_pat_address_external: POINTER is
 			-- Address of C function `PenPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1375,7 +1375,7 @@ feature
 			"ewg_function_macro_PenNormal"
 		end
 
-	frozen pen_normal_address_external: POINTER is
+	frozenpen_normal_address_external: POINTER is
 			-- Address of C function `PenNormal'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1390,7 +1390,7 @@ feature
 			"ewg_function_macro_MoveTo"
 		end
 
-	frozen move_to_address_external: POINTER is
+	frozenmove_to_address_external: POINTER is
 			-- Address of C function `MoveTo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1405,7 +1405,7 @@ feature
 			"ewg_function_macro_Move"
 		end
 
-	frozen move_address_external: POINTER is
+	frozenmove_address_external: POINTER is
 			-- Address of C function `Move'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1420,7 +1420,7 @@ feature
 			"ewg_function_macro_LineTo"
 		end
 
-	frozen line_to_address_external: POINTER is
+	frozenline_to_address_external: POINTER is
 			-- Address of C function `LineTo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1435,7 +1435,7 @@ feature
 			"ewg_function_macro_Line"
 		end
 
-	frozen line_address_external: POINTER is
+	frozenline_address_external: POINTER is
 			-- Address of C function `Line'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1450,7 +1450,7 @@ feature
 			"ewg_function_macro_ForeColor"
 		end
 
-	frozen fore_color_address_external: POINTER is
+	frozenfore_color_address_external: POINTER is
 			-- Address of C function `ForeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1465,7 +1465,7 @@ feature
 			"ewg_function_macro_BackColor"
 		end
 
-	frozen back_color_address_external: POINTER is
+	frozenback_color_address_external: POINTER is
 			-- Address of C function `BackColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1480,7 +1480,7 @@ feature
 			"ewg_function_macro_ColorBit"
 		end
 
-	frozen color_bit_address_external: POINTER is
+	frozencolor_bit_address_external: POINTER is
 			-- Address of C function `ColorBit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1495,7 +1495,7 @@ feature
 			"ewg_function_macro_SetRect"
 		end
 
-	frozen set_rect_address_external: POINTER is
+	frozenset_rect_address_external: POINTER is
 			-- Address of C function `SetRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1510,7 +1510,7 @@ feature
 			"ewg_function_macro_OffsetRect"
 		end
 
-	frozen offset_rect_address_external: POINTER is
+	frozenoffset_rect_address_external: POINTER is
 			-- Address of C function `OffsetRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1525,7 +1525,7 @@ feature
 			"ewg_function_macro_InsetRect"
 		end
 
-	frozen inset_rect_address_external: POINTER is
+	frozeninset_rect_address_external: POINTER is
 			-- Address of C function `InsetRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1540,7 +1540,7 @@ feature
 			"ewg_function_macro_SectRect"
 		end
 
-	frozen sect_rect_address_external: POINTER is
+	frozensect_rect_address_external: POINTER is
 			-- Address of C function `SectRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1555,7 +1555,7 @@ feature
 			"ewg_function_macro_UnionRect"
 		end
 
-	frozen union_rect_address_external: POINTER is
+	frozenunion_rect_address_external: POINTER is
 			-- Address of C function `UnionRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1570,7 +1570,7 @@ feature
 			"ewg_function_macro_EqualRect"
 		end
 
-	frozen equal_rect_address_external: POINTER is
+	frozenequal_rect_address_external: POINTER is
 			-- Address of C function `EqualRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1585,7 +1585,7 @@ feature
 			"ewg_function_macro_EmptyRect"
 		end
 
-	frozen empty_rect_address_external: POINTER is
+	frozenempty_rect_address_external: POINTER is
 			-- Address of C function `EmptyRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1600,7 +1600,7 @@ feature
 			"ewg_function_macro_FrameRect"
 		end
 
-	frozen frame_rect_address_external: POINTER is
+	frozenframe_rect_address_external: POINTER is
 			-- Address of C function `FrameRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1615,7 +1615,7 @@ feature
 			"ewg_function_macro_PaintRect"
 		end
 
-	frozen paint_rect_address_external: POINTER is
+	frozenpaint_rect_address_external: POINTER is
 			-- Address of C function `PaintRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1630,7 +1630,7 @@ feature
 			"ewg_function_macro_EraseRect"
 		end
 
-	frozen erase_rect_address_external: POINTER is
+	frozenerase_rect_address_external: POINTER is
 			-- Address of C function `EraseRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1645,7 +1645,7 @@ feature
 			"ewg_function_macro_InvertRect"
 		end
 
-	frozen invert_rect_address_external: POINTER is
+	frozeninvert_rect_address_external: POINTER is
 			-- Address of C function `InvertRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1660,7 +1660,7 @@ feature
 			"ewg_function_macro_FillRect"
 		end
 
-	frozen fill_rect_address_external: POINTER is
+	frozenfill_rect_address_external: POINTER is
 			-- Address of C function `FillRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1675,7 +1675,7 @@ feature
 			"ewg_function_macro_FrameOval"
 		end
 
-	frozen frame_oval_address_external: POINTER is
+	frozenframe_oval_address_external: POINTER is
 			-- Address of C function `FrameOval'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1690,7 +1690,7 @@ feature
 			"ewg_function_macro_PaintOval"
 		end
 
-	frozen paint_oval_address_external: POINTER is
+	frozenpaint_oval_address_external: POINTER is
 			-- Address of C function `PaintOval'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1705,7 +1705,7 @@ feature
 			"ewg_function_macro_EraseOval"
 		end
 
-	frozen erase_oval_address_external: POINTER is
+	frozenerase_oval_address_external: POINTER is
 			-- Address of C function `EraseOval'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1720,7 +1720,7 @@ feature
 			"ewg_function_macro_InvertOval"
 		end
 
-	frozen invert_oval_address_external: POINTER is
+	frozeninvert_oval_address_external: POINTER is
 			-- Address of C function `InvertOval'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1735,7 +1735,7 @@ feature
 			"ewg_function_macro_FillOval"
 		end
 
-	frozen fill_oval_address_external: POINTER is
+	frozenfill_oval_address_external: POINTER is
 			-- Address of C function `FillOval'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1750,7 +1750,7 @@ feature
 			"ewg_function_macro_FrameRoundRect"
 		end
 
-	frozen frame_round_rect_address_external: POINTER is
+	frozenframe_round_rect_address_external: POINTER is
 			-- Address of C function `FrameRoundRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1765,7 +1765,7 @@ feature
 			"ewg_function_macro_PaintRoundRect"
 		end
 
-	frozen paint_round_rect_address_external: POINTER is
+	frozenpaint_round_rect_address_external: POINTER is
 			-- Address of C function `PaintRoundRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1780,7 +1780,7 @@ feature
 			"ewg_function_macro_EraseRoundRect"
 		end
 
-	frozen erase_round_rect_address_external: POINTER is
+	frozenerase_round_rect_address_external: POINTER is
 			-- Address of C function `EraseRoundRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1795,7 +1795,7 @@ feature
 			"ewg_function_macro_InvertRoundRect"
 		end
 
-	frozen invert_round_rect_address_external: POINTER is
+	frozeninvert_round_rect_address_external: POINTER is
 			-- Address of C function `InvertRoundRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1810,7 +1810,7 @@ feature
 			"ewg_function_macro_FillRoundRect"
 		end
 
-	frozen fill_round_rect_address_external: POINTER is
+	frozenfill_round_rect_address_external: POINTER is
 			-- Address of C function `FillRoundRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1825,7 +1825,7 @@ feature
 			"ewg_function_macro_FrameArc"
 		end
 
-	frozen frame_arc_address_external: POINTER is
+	frozenframe_arc_address_external: POINTER is
 			-- Address of C function `FrameArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1840,7 +1840,7 @@ feature
 			"ewg_function_macro_PaintArc"
 		end
 
-	frozen paint_arc_address_external: POINTER is
+	frozenpaint_arc_address_external: POINTER is
 			-- Address of C function `PaintArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1855,7 +1855,7 @@ feature
 			"ewg_function_macro_EraseArc"
 		end
 
-	frozen erase_arc_address_external: POINTER is
+	frozenerase_arc_address_external: POINTER is
 			-- Address of C function `EraseArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1870,7 +1870,7 @@ feature
 			"ewg_function_macro_InvertArc"
 		end
 
-	frozen invert_arc_address_external: POINTER is
+	frozeninvert_arc_address_external: POINTER is
 			-- Address of C function `InvertArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1885,7 +1885,7 @@ feature
 			"ewg_function_macro_FillArc"
 		end
 
-	frozen fill_arc_address_external: POINTER is
+	frozenfill_arc_address_external: POINTER is
 			-- Address of C function `FillArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1900,7 +1900,7 @@ feature
 			"ewg_function_macro_NewRgn"
 		end
 
-	frozen new_rgn_address_external: POINTER is
+	frozennew_rgn_address_external: POINTER is
 			-- Address of C function `NewRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1915,7 +1915,7 @@ feature
 			"ewg_function_macro_OpenRgn"
 		end
 
-	frozen open_rgn_address_external: POINTER is
+	frozenopen_rgn_address_external: POINTER is
 			-- Address of C function `OpenRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1930,7 +1930,7 @@ feature
 			"ewg_function_macro_CloseRgn"
 		end
 
-	frozen close_rgn_address_external: POINTER is
+	frozenclose_rgn_address_external: POINTER is
 			-- Address of C function `CloseRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1945,7 +1945,7 @@ feature
 			"ewg_function_macro_BitMapToRegion"
 		end
 
-	frozen bit_map_to_region_address_external: POINTER is
+	frozenbit_map_to_region_address_external: POINTER is
 			-- Address of C function `BitMapToRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1960,7 +1960,7 @@ feature
 			"ewg_function_macro_RgnToHandle"
 		end
 
-	frozen rgn_to_handle_address_external: POINTER is
+	frozenrgn_to_handle_address_external: POINTER is
 			-- Address of C function `RgnToHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1975,7 +1975,7 @@ feature
 			"ewg_function_macro_HandleToRgn"
 		end
 
-	frozen handle_to_rgn_address_external: POINTER is
+	frozenhandle_to_rgn_address_external: POINTER is
 			-- Address of C function `HandleToRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1990,7 +1990,7 @@ feature
 			"ewg_function_macro_DisposeRgn"
 		end
 
-	frozen dispose_rgn_address_external: POINTER is
+	frozendispose_rgn_address_external: POINTER is
 			-- Address of C function `DisposeRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2005,7 +2005,7 @@ feature
 			"ewg_function_macro_CopyRgn"
 		end
 
-	frozen copy_rgn_address_external: POINTER is
+	frozencopy_rgn_address_external: POINTER is
 			-- Address of C function `CopyRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2020,7 +2020,7 @@ feature
 			"ewg_function_macro_SetEmptyRgn"
 		end
 
-	frozen set_empty_rgn_address_external: POINTER is
+	frozenset_empty_rgn_address_external: POINTER is
 			-- Address of C function `SetEmptyRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2035,7 +2035,7 @@ feature
 			"ewg_function_macro_SetRectRgn"
 		end
 
-	frozen set_rect_rgn_address_external: POINTER is
+	frozenset_rect_rgn_address_external: POINTER is
 			-- Address of C function `SetRectRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2050,7 +2050,7 @@ feature
 			"ewg_function_macro_RectRgn"
 		end
 
-	frozen rect_rgn_address_external: POINTER is
+	frozenrect_rgn_address_external: POINTER is
 			-- Address of C function `RectRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2065,7 +2065,7 @@ feature
 			"ewg_function_macro_OffsetRgn"
 		end
 
-	frozen offset_rgn_address_external: POINTER is
+	frozenoffset_rgn_address_external: POINTER is
 			-- Address of C function `OffsetRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2080,7 +2080,7 @@ feature
 			"ewg_function_macro_InsetRgn"
 		end
 
-	frozen inset_rgn_address_external: POINTER is
+	frozeninset_rgn_address_external: POINTER is
 			-- Address of C function `InsetRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2095,7 +2095,7 @@ feature
 			"ewg_function_macro_SectRgn"
 		end
 
-	frozen sect_rgn_address_external: POINTER is
+	frozensect_rgn_address_external: POINTER is
 			-- Address of C function `SectRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2110,7 +2110,7 @@ feature
 			"ewg_function_macro_UnionRgn"
 		end
 
-	frozen union_rgn_address_external: POINTER is
+	frozenunion_rgn_address_external: POINTER is
 			-- Address of C function `UnionRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2125,7 +2125,7 @@ feature
 			"ewg_function_macro_DiffRgn"
 		end
 
-	frozen diff_rgn_address_external: POINTER is
+	frozendiff_rgn_address_external: POINTER is
 			-- Address of C function `DiffRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2140,7 +2140,7 @@ feature
 			"ewg_function_macro_XorRgn"
 		end
 
-	frozen xor_rgn_address_external: POINTER is
+	frozenxor_rgn_address_external: POINTER is
 			-- Address of C function `XorRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2155,7 +2155,7 @@ feature
 			"ewg_function_macro_RectInRgn"
 		end
 
-	frozen rect_in_rgn_address_external: POINTER is
+	frozenrect_in_rgn_address_external: POINTER is
 			-- Address of C function `RectInRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2170,7 +2170,7 @@ feature
 			"ewg_function_macro_EqualRgn"
 		end
 
-	frozen equal_rgn_address_external: POINTER is
+	frozenequal_rgn_address_external: POINTER is
 			-- Address of C function `EqualRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2185,7 +2185,7 @@ feature
 			"ewg_function_macro_EmptyRgn"
 		end
 
-	frozen empty_rgn_address_external: POINTER is
+	frozenempty_rgn_address_external: POINTER is
 			-- Address of C function `EmptyRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2200,7 +2200,7 @@ feature
 			"ewg_function_macro_FrameRgn"
 		end
 
-	frozen frame_rgn_address_external: POINTER is
+	frozenframe_rgn_address_external: POINTER is
 			-- Address of C function `FrameRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2215,7 +2215,7 @@ feature
 			"ewg_function_macro_PaintRgn"
 		end
 
-	frozen paint_rgn_address_external: POINTER is
+	frozenpaint_rgn_address_external: POINTER is
 			-- Address of C function `PaintRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2230,7 +2230,7 @@ feature
 			"ewg_function_macro_EraseRgn"
 		end
 
-	frozen erase_rgn_address_external: POINTER is
+	frozenerase_rgn_address_external: POINTER is
 			-- Address of C function `EraseRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2245,7 +2245,7 @@ feature
 			"ewg_function_macro_InvertRgn"
 		end
 
-	frozen invert_rgn_address_external: POINTER is
+	frozeninvert_rgn_address_external: POINTER is
 			-- Address of C function `InvertRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2260,7 +2260,7 @@ feature
 			"ewg_function_macro_FillRgn"
 		end
 
-	frozen fill_rgn_address_external: POINTER is
+	frozenfill_rgn_address_external: POINTER is
 			-- Address of C function `FillRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2275,7 +2275,7 @@ feature
 			"ewg_function_macro_ScrollRect"
 		end
 
-	frozen scroll_rect_address_external: POINTER is
+	frozenscroll_rect_address_external: POINTER is
 			-- Address of C function `ScrollRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2290,7 +2290,7 @@ feature
 			"ewg_function_macro_CopyBits"
 		end
 
-	frozen copy_bits_address_external: POINTER is
+	frozencopy_bits_address_external: POINTER is
 			-- Address of C function `CopyBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2305,7 +2305,7 @@ feature
 			"ewg_function_macro_SeedFill"
 		end
 
-	frozen seed_fill_address_external: POINTER is
+	frozenseed_fill_address_external: POINTER is
 			-- Address of C function `SeedFill'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2320,7 +2320,7 @@ feature
 			"ewg_function_macro_CalcMask"
 		end
 
-	frozen calc_mask_address_external: POINTER is
+	frozencalc_mask_address_external: POINTER is
 			-- Address of C function `CalcMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2335,7 +2335,7 @@ feature
 			"ewg_function_macro_CopyMask"
 		end
 
-	frozen copy_mask_address_external: POINTER is
+	frozencopy_mask_address_external: POINTER is
 			-- Address of C function `CopyMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2350,7 +2350,7 @@ feature
 			"ewg_function_macro_OpenPicture"
 		end
 
-	frozen open_picture_address_external: POINTER is
+	frozenopen_picture_address_external: POINTER is
 			-- Address of C function `OpenPicture'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2365,7 +2365,7 @@ feature
 			"ewg_function_macro_PicComment"
 		end
 
-	frozen pic_comment_address_external: POINTER is
+	frozenpic_comment_address_external: POINTER is
 			-- Address of C function `PicComment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2380,7 +2380,7 @@ feature
 			"ewg_function_macro_ClosePicture"
 		end
 
-	frozen close_picture_address_external: POINTER is
+	frozenclose_picture_address_external: POINTER is
 			-- Address of C function `ClosePicture'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2395,7 +2395,7 @@ feature
 			"ewg_function_macro_QDGetPictureBounds"
 		end
 
-	frozen qdget_picture_bounds_address_external: POINTER is
+	frozenqdget_picture_bounds_address_external: POINTER is
 			-- Address of C function `QDGetPictureBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2410,7 +2410,7 @@ feature
 			"ewg_function_macro_DrawPicture"
 		end
 
-	frozen draw_picture_address_external: POINTER is
+	frozendraw_picture_address_external: POINTER is
 			-- Address of C function `DrawPicture'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2425,7 +2425,7 @@ feature
 			"ewg_function_macro_KillPicture"
 		end
 
-	frozen kill_picture_address_external: POINTER is
+	frozenkill_picture_address_external: POINTER is
 			-- Address of C function `KillPicture'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2440,7 +2440,7 @@ feature
 			"ewg_function_macro_OpenPoly"
 		end
 
-	frozen open_poly_address_external: POINTER is
+	frozenopen_poly_address_external: POINTER is
 			-- Address of C function `OpenPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2455,7 +2455,7 @@ feature
 			"ewg_function_macro_ClosePoly"
 		end
 
-	frozen close_poly_address_external: POINTER is
+	frozenclose_poly_address_external: POINTER is
 			-- Address of C function `ClosePoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2470,7 +2470,7 @@ feature
 			"ewg_function_macro_KillPoly"
 		end
 
-	frozen kill_poly_address_external: POINTER is
+	frozenkill_poly_address_external: POINTER is
 			-- Address of C function `KillPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2485,7 +2485,7 @@ feature
 			"ewg_function_macro_OffsetPoly"
 		end
 
-	frozen offset_poly_address_external: POINTER is
+	frozenoffset_poly_address_external: POINTER is
 			-- Address of C function `OffsetPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2500,7 +2500,7 @@ feature
 			"ewg_function_macro_FramePoly"
 		end
 
-	frozen frame_poly_address_external: POINTER is
+	frozenframe_poly_address_external: POINTER is
 			-- Address of C function `FramePoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2515,7 +2515,7 @@ feature
 			"ewg_function_macro_PaintPoly"
 		end
 
-	frozen paint_poly_address_external: POINTER is
+	frozenpaint_poly_address_external: POINTER is
 			-- Address of C function `PaintPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2530,7 +2530,7 @@ feature
 			"ewg_function_macro_ErasePoly"
 		end
 
-	frozen erase_poly_address_external: POINTER is
+	frozenerase_poly_address_external: POINTER is
 			-- Address of C function `ErasePoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2545,7 +2545,7 @@ feature
 			"ewg_function_macro_InvertPoly"
 		end
 
-	frozen invert_poly_address_external: POINTER is
+	frozeninvert_poly_address_external: POINTER is
 			-- Address of C function `InvertPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2560,7 +2560,7 @@ feature
 			"ewg_function_macro_FillPoly"
 		end
 
-	frozen fill_poly_address_external: POINTER is
+	frozenfill_poly_address_external: POINTER is
 			-- Address of C function `FillPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2575,7 +2575,7 @@ feature
 			"ewg_function_macro_SetPt"
 		end
 
-	frozen set_pt_address_external: POINTER is
+	frozenset_pt_address_external: POINTER is
 			-- Address of C function `SetPt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2590,7 +2590,7 @@ feature
 			"ewg_function_macro_LocalToGlobal"
 		end
 
-	frozen local_to_global_address_external: POINTER is
+	frozenlocal_to_global_address_external: POINTER is
 			-- Address of C function `LocalToGlobal'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2605,7 +2605,7 @@ feature
 			"ewg_function_macro_GlobalToLocal"
 		end
 
-	frozen global_to_local_address_external: POINTER is
+	frozenglobal_to_local_address_external: POINTER is
 			-- Address of C function `GlobalToLocal'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2620,7 +2620,7 @@ feature
 			"ewg_function_macro_Random"
 		end
 
-	frozen random_address_external: POINTER is
+	frozenrandom_address_external: POINTER is
 			-- Address of C function `Random'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2635,7 +2635,7 @@ feature
 			"ewg_function_macro_StuffHex"
 		end
 
-	frozen stuff_hex_address_external: POINTER is
+	frozenstuff_hex_address_external: POINTER is
 			-- Address of C function `StuffHex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2650,7 +2650,7 @@ feature
 			"ewg_function_macro_GetPixel"
 		end
 
-	frozen get_pixel_address_external: POINTER is
+	frozenget_pixel_address_external: POINTER is
 			-- Address of C function `GetPixel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2665,7 +2665,7 @@ feature
 			"ewg_function_macro_ScalePt"
 		end
 
-	frozen scale_pt_address_external: POINTER is
+	frozenscale_pt_address_external: POINTER is
 			-- Address of C function `ScalePt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2680,7 +2680,7 @@ feature
 			"ewg_function_macro_MapPt"
 		end
 
-	frozen map_pt_address_external: POINTER is
+	frozenmap_pt_address_external: POINTER is
 			-- Address of C function `MapPt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2695,7 +2695,7 @@ feature
 			"ewg_function_macro_MapRect"
 		end
 
-	frozen map_rect_address_external: POINTER is
+	frozenmap_rect_address_external: POINTER is
 			-- Address of C function `MapRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2710,7 +2710,7 @@ feature
 			"ewg_function_macro_MapRgn"
 		end
 
-	frozen map_rgn_address_external: POINTER is
+	frozenmap_rgn_address_external: POINTER is
 			-- Address of C function `MapRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2725,7 +2725,7 @@ feature
 			"ewg_function_macro_MapPoly"
 		end
 
-	frozen map_poly_address_external: POINTER is
+	frozenmap_poly_address_external: POINTER is
 			-- Address of C function `MapPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2740,7 +2740,7 @@ feature
 			"ewg_function_macro_SetStdProcs"
 		end
 
-	frozen set_std_procs_address_external: POINTER is
+	frozenset_std_procs_address_external: POINTER is
 			-- Address of C function `SetStdProcs'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2755,7 +2755,7 @@ feature
 			"ewg_function_macro_StdRect"
 		end
 
-	frozen std_rect_address_external: POINTER is
+	frozenstd_rect_address_external: POINTER is
 			-- Address of C function `StdRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2770,7 +2770,7 @@ feature
 			"ewg_function_macro_StdRRect"
 		end
 
-	frozen std_rrect_address_external: POINTER is
+	frozenstd_rrect_address_external: POINTER is
 			-- Address of C function `StdRRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2785,7 +2785,7 @@ feature
 			"ewg_function_macro_StdOval"
 		end
 
-	frozen std_oval_address_external: POINTER is
+	frozenstd_oval_address_external: POINTER is
 			-- Address of C function `StdOval'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2800,7 +2800,7 @@ feature
 			"ewg_function_macro_StdArc"
 		end
 
-	frozen std_arc_address_external: POINTER is
+	frozenstd_arc_address_external: POINTER is
 			-- Address of C function `StdArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2815,7 +2815,7 @@ feature
 			"ewg_function_macro_StdPoly"
 		end
 
-	frozen std_poly_address_external: POINTER is
+	frozenstd_poly_address_external: POINTER is
 			-- Address of C function `StdPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2830,7 +2830,7 @@ feature
 			"ewg_function_macro_StdRgn"
 		end
 
-	frozen std_rgn_address_external: POINTER is
+	frozenstd_rgn_address_external: POINTER is
 			-- Address of C function `StdRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2845,7 +2845,7 @@ feature
 			"ewg_function_macro_StdBits"
 		end
 
-	frozen std_bits_address_external: POINTER is
+	frozenstd_bits_address_external: POINTER is
 			-- Address of C function `StdBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2860,7 +2860,7 @@ feature
 			"ewg_function_macro_StdComment"
 		end
 
-	frozen std_comment_address_external: POINTER is
+	frozenstd_comment_address_external: POINTER is
 			-- Address of C function `StdComment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2875,7 +2875,7 @@ feature
 			"ewg_function_macro_StdGetPic"
 		end
 
-	frozen std_get_pic_address_external: POINTER is
+	frozenstd_get_pic_address_external: POINTER is
 			-- Address of C function `StdGetPic'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2890,7 +2890,7 @@ feature
 			"ewg_function_macro_StdPutPic"
 		end
 
-	frozen std_put_pic_address_external: POINTER is
+	frozenstd_put_pic_address_external: POINTER is
 			-- Address of C function `StdPutPic'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2905,7 +2905,7 @@ feature
 			"ewg_function_macro_StdOpcode"
 		end
 
-	frozen std_opcode_address_external: POINTER is
+	frozenstd_opcode_address_external: POINTER is
 			-- Address of C function `StdOpcode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2920,7 +2920,7 @@ feature
 			"ewg_function_macro_AddPt"
 		end
 
-	frozen add_pt_address_external: POINTER is
+	frozenadd_pt_address_external: POINTER is
 			-- Address of C function `AddPt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2935,7 +2935,7 @@ feature
 			"ewg_function_macro_EqualPt"
 		end
 
-	frozen equal_pt_address_external: POINTER is
+	frozenequal_pt_address_external: POINTER is
 			-- Address of C function `EqualPt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2950,7 +2950,7 @@ feature
 			"ewg_function_macro_PtInRect"
 		end
 
-	frozen pt_in_rect_address_external: POINTER is
+	frozenpt_in_rect_address_external: POINTER is
 			-- Address of C function `PtInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2965,7 +2965,7 @@ feature
 			"ewg_function_macro_Pt2Rect"
 		end
 
-	frozen pt2rect_address_external: POINTER is
+	frozenpt2rect_address_external: POINTER is
 			-- Address of C function `Pt2Rect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2980,7 +2980,7 @@ feature
 			"ewg_function_macro_PtToAngle"
 		end
 
-	frozen pt_to_angle_address_external: POINTER is
+	frozenpt_to_angle_address_external: POINTER is
 			-- Address of C function `PtToAngle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2995,7 +2995,7 @@ feature
 			"ewg_function_macro_SubPt"
 		end
 
-	frozen sub_pt_address_external: POINTER is
+	frozensub_pt_address_external: POINTER is
 			-- Address of C function `SubPt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3010,7 +3010,7 @@ feature
 			"ewg_function_macro_PtInRgn"
 		end
 
-	frozen pt_in_rgn_address_external: POINTER is
+	frozenpt_in_rgn_address_external: POINTER is
 			-- Address of C function `PtInRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3025,7 +3025,7 @@ feature
 			"ewg_function_macro_StdLine"
 		end
 
-	frozen std_line_address_external: POINTER is
+	frozenstd_line_address_external: POINTER is
 			-- Address of C function `StdLine'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3040,7 +3040,7 @@ feature
 			"ewg_function_macro_NewPixMap"
 		end
 
-	frozen new_pix_map_address_external: POINTER is
+	frozennew_pix_map_address_external: POINTER is
 			-- Address of C function `NewPixMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3055,7 +3055,7 @@ feature
 			"ewg_function_macro_DisposePixMap"
 		end
 
-	frozen dispose_pix_map_address_external: POINTER is
+	frozendispose_pix_map_address_external: POINTER is
 			-- Address of C function `DisposePixMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3070,7 +3070,7 @@ feature
 			"ewg_function_macro_CopyPixMap"
 		end
 
-	frozen copy_pix_map_address_external: POINTER is
+	frozencopy_pix_map_address_external: POINTER is
 			-- Address of C function `CopyPixMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3085,7 +3085,7 @@ feature
 			"ewg_function_macro_NewPixPat"
 		end
 
-	frozen new_pix_pat_address_external: POINTER is
+	frozennew_pix_pat_address_external: POINTER is
 			-- Address of C function `NewPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3100,7 +3100,7 @@ feature
 			"ewg_function_macro_DisposePixPat"
 		end
 
-	frozen dispose_pix_pat_address_external: POINTER is
+	frozendispose_pix_pat_address_external: POINTER is
 			-- Address of C function `DisposePixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3115,7 +3115,7 @@ feature
 			"ewg_function_macro_CopyPixPat"
 		end
 
-	frozen copy_pix_pat_address_external: POINTER is
+	frozencopy_pix_pat_address_external: POINTER is
 			-- Address of C function `CopyPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3130,7 +3130,7 @@ feature
 			"ewg_function_macro_PenPixPat"
 		end
 
-	frozen pen_pix_pat_address_external: POINTER is
+	frozenpen_pix_pat_address_external: POINTER is
 			-- Address of C function `PenPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3145,7 +3145,7 @@ feature
 			"ewg_function_macro_BackPixPat"
 		end
 
-	frozen back_pix_pat_address_external: POINTER is
+	frozenback_pix_pat_address_external: POINTER is
 			-- Address of C function `BackPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3160,7 +3160,7 @@ feature
 			"ewg_function_macro_GetPixPat"
 		end
 
-	frozen get_pix_pat_address_external: POINTER is
+	frozenget_pix_pat_address_external: POINTER is
 			-- Address of C function `GetPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3175,7 +3175,7 @@ feature
 			"ewg_function_macro_MakeRGBPat"
 		end
 
-	frozen make_rgbpat_address_external: POINTER is
+	frozenmake_rgbpat_address_external: POINTER is
 			-- Address of C function `MakeRGBPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3190,7 +3190,7 @@ feature
 			"ewg_function_macro_FillCRect"
 		end
 
-	frozen fill_crect_address_external: POINTER is
+	frozenfill_crect_address_external: POINTER is
 			-- Address of C function `FillCRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3205,7 +3205,7 @@ feature
 			"ewg_function_macro_FillCOval"
 		end
 
-	frozen fill_coval_address_external: POINTER is
+	frozenfill_coval_address_external: POINTER is
 			-- Address of C function `FillCOval'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3220,7 +3220,7 @@ feature
 			"ewg_function_macro_FillCRoundRect"
 		end
 
-	frozen fill_cround_rect_address_external: POINTER is
+	frozenfill_cround_rect_address_external: POINTER is
 			-- Address of C function `FillCRoundRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3235,7 +3235,7 @@ feature
 			"ewg_function_macro_FillCArc"
 		end
 
-	frozen fill_carc_address_external: POINTER is
+	frozenfill_carc_address_external: POINTER is
 			-- Address of C function `FillCArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3250,7 +3250,7 @@ feature
 			"ewg_function_macro_FillCRgn"
 		end
 
-	frozen fill_crgn_address_external: POINTER is
+	frozenfill_crgn_address_external: POINTER is
 			-- Address of C function `FillCRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3265,7 +3265,7 @@ feature
 			"ewg_function_macro_FillCPoly"
 		end
 
-	frozen fill_cpoly_address_external: POINTER is
+	frozenfill_cpoly_address_external: POINTER is
 			-- Address of C function `FillCPoly'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3280,7 +3280,7 @@ feature
 			"ewg_function_macro_RGBForeColor"
 		end
 
-	frozen rgbfore_color_address_external: POINTER is
+	frozenrgbfore_color_address_external: POINTER is
 			-- Address of C function `RGBForeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3295,7 +3295,7 @@ feature
 			"ewg_function_macro_RGBBackColor"
 		end
 
-	frozen rgbback_color_address_external: POINTER is
+	frozenrgbback_color_address_external: POINTER is
 			-- Address of C function `RGBBackColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3310,7 +3310,7 @@ feature
 			"ewg_function_macro_SetCPixel"
 		end
 
-	frozen set_cpixel_address_external: POINTER is
+	frozenset_cpixel_address_external: POINTER is
 			-- Address of C function `SetCPixel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3325,7 +3325,7 @@ feature
 			"ewg_function_macro_SetPortPix"
 		end
 
-	frozen set_port_pix_address_external: POINTER is
+	frozenset_port_pix_address_external: POINTER is
 			-- Address of C function `SetPortPix'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3340,7 +3340,7 @@ feature
 			"ewg_function_macro_GetCPixel"
 		end
 
-	frozen get_cpixel_address_external: POINTER is
+	frozenget_cpixel_address_external: POINTER is
 			-- Address of C function `GetCPixel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3355,7 +3355,7 @@ feature
 			"ewg_function_macro_GetForeColor"
 		end
 
-	frozen get_fore_color_address_external: POINTER is
+	frozenget_fore_color_address_external: POINTER is
 			-- Address of C function `GetForeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3370,7 +3370,7 @@ feature
 			"ewg_function_macro_GetBackColor"
 		end
 
-	frozen get_back_color_address_external: POINTER is
+	frozenget_back_color_address_external: POINTER is
 			-- Address of C function `GetBackColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3385,7 +3385,7 @@ feature
 			"ewg_function_macro_SeedCFill"
 		end
 
-	frozen seed_cfill_address_external: POINTER is
+	frozenseed_cfill_address_external: POINTER is
 			-- Address of C function `SeedCFill'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3400,7 +3400,7 @@ feature
 			"ewg_function_macro_CalcCMask"
 		end
 
-	frozen calc_cmask_address_external: POINTER is
+	frozencalc_cmask_address_external: POINTER is
 			-- Address of C function `CalcCMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3415,7 +3415,7 @@ feature
 			"ewg_function_macro_OpenCPicture"
 		end
 
-	frozen open_cpicture_address_external: POINTER is
+	frozenopen_cpicture_address_external: POINTER is
 			-- Address of C function `OpenCPicture'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3430,7 +3430,7 @@ feature
 			"ewg_function_macro_OpColor"
 		end
 
-	frozen op_color_address_external: POINTER is
+	frozenop_color_address_external: POINTER is
 			-- Address of C function `OpColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3445,7 +3445,7 @@ feature
 			"ewg_function_macro_HiliteColor"
 		end
 
-	frozen hilite_color_address_external: POINTER is
+	frozenhilite_color_address_external: POINTER is
 			-- Address of C function `HiliteColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3460,7 +3460,7 @@ feature
 			"ewg_function_macro_DisposeCTable"
 		end
 
-	frozen dispose_ctable_address_external: POINTER is
+	frozendispose_ctable_address_external: POINTER is
 			-- Address of C function `DisposeCTable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3475,7 +3475,7 @@ feature
 			"ewg_function_macro_GetCTable"
 		end
 
-	frozen get_ctable_address_external: POINTER is
+	frozenget_ctable_address_external: POINTER is
 			-- Address of C function `GetCTable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3490,7 +3490,7 @@ feature
 			"ewg_function_macro_GetCCursor"
 		end
 
-	frozen get_ccursor_address_external: POINTER is
+	frozenget_ccursor_address_external: POINTER is
 			-- Address of C function `GetCCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3505,7 +3505,7 @@ feature
 			"ewg_function_macro_SetCCursor"
 		end
 
-	frozen set_ccursor_address_external: POINTER is
+	frozenset_ccursor_address_external: POINTER is
 			-- Address of C function `SetCCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3520,7 +3520,7 @@ feature
 			"ewg_function_macro_AllocCursor"
 		end
 
-	frozen alloc_cursor_address_external: POINTER is
+	frozenalloc_cursor_address_external: POINTER is
 			-- Address of C function `AllocCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3535,7 +3535,7 @@ feature
 			"ewg_function_macro_DisposeCCursor"
 		end
 
-	frozen dispose_ccursor_address_external: POINTER is
+	frozendispose_ccursor_address_external: POINTER is
 			-- Address of C function `DisposeCCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3550,7 +3550,7 @@ feature
 			"ewg_function_macro_SetStdCProcs"
 		end
 
-	frozen set_std_cprocs_address_external: POINTER is
+	frozenset_std_cprocs_address_external: POINTER is
 			-- Address of C function `SetStdCProcs'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3565,7 +3565,7 @@ feature
 			"ewg_function_macro_GetMaxDevice"
 		end
 
-	frozen get_max_device_address_external: POINTER is
+	frozenget_max_device_address_external: POINTER is
 			-- Address of C function `GetMaxDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3580,7 +3580,7 @@ feature
 			"ewg_function_macro_GetCTSeed"
 		end
 
-	frozen get_ctseed_address_external: POINTER is
+	frozenget_ctseed_address_external: POINTER is
 			-- Address of C function `GetCTSeed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3595,7 +3595,7 @@ feature
 			"ewg_function_macro_GetDeviceList"
 		end
 
-	frozen get_device_list_address_external: POINTER is
+	frozenget_device_list_address_external: POINTER is
 			-- Address of C function `GetDeviceList'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3610,7 +3610,7 @@ feature
 			"ewg_function_macro_GetMainDevice"
 		end
 
-	frozen get_main_device_address_external: POINTER is
+	frozenget_main_device_address_external: POINTER is
 			-- Address of C function `GetMainDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3625,7 +3625,7 @@ feature
 			"ewg_function_macro_GetNextDevice"
 		end
 
-	frozen get_next_device_address_external: POINTER is
+	frozenget_next_device_address_external: POINTER is
 			-- Address of C function `GetNextDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3640,7 +3640,7 @@ feature
 			"ewg_function_macro_TestDeviceAttribute"
 		end
 
-	frozen test_device_attribute_address_external: POINTER is
+	frozentest_device_attribute_address_external: POINTER is
 			-- Address of C function `TestDeviceAttribute'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3655,7 +3655,7 @@ feature
 			"ewg_function_macro_SetDeviceAttribute"
 		end
 
-	frozen set_device_attribute_address_external: POINTER is
+	frozenset_device_attribute_address_external: POINTER is
 			-- Address of C function `SetDeviceAttribute'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3670,7 +3670,7 @@ feature
 			"ewg_function_macro_InitGDevice"
 		end
 
-	frozen init_gdevice_address_external: POINTER is
+	frozeninit_gdevice_address_external: POINTER is
 			-- Address of C function `InitGDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3685,7 +3685,7 @@ feature
 			"ewg_function_macro_NewGDevice"
 		end
 
-	frozen new_gdevice_address_external: POINTER is
+	frozennew_gdevice_address_external: POINTER is
 			-- Address of C function `NewGDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3700,7 +3700,7 @@ feature
 			"ewg_function_macro_DisposeGDevice"
 		end
 
-	frozen dispose_gdevice_address_external: POINTER is
+	frozendispose_gdevice_address_external: POINTER is
 			-- Address of C function `DisposeGDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3715,7 +3715,7 @@ feature
 			"ewg_function_macro_SetGDevice"
 		end
 
-	frozen set_gdevice_address_external: POINTER is
+	frozenset_gdevice_address_external: POINTER is
 			-- Address of C function `SetGDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3730,7 +3730,7 @@ feature
 			"ewg_function_macro_GetGDevice"
 		end
 
-	frozen get_gdevice_address_external: POINTER is
+	frozenget_gdevice_address_external: POINTER is
 			-- Address of C function `GetGDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3745,7 +3745,7 @@ feature
 			"ewg_function_macro_Color2Index"
 		end
 
-	frozen color2index_address_external: POINTER is
+	frozencolor2index_address_external: POINTER is
 			-- Address of C function `Color2Index'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3760,7 +3760,7 @@ feature
 			"ewg_function_macro_Index2Color"
 		end
 
-	frozen index2color_address_external: POINTER is
+	frozenindex2color_address_external: POINTER is
 			-- Address of C function `Index2Color'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3775,7 +3775,7 @@ feature
 			"ewg_function_macro_InvertColor"
 		end
 
-	frozen invert_color_address_external: POINTER is
+	frozeninvert_color_address_external: POINTER is
 			-- Address of C function `InvertColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3790,7 +3790,7 @@ feature
 			"ewg_function_macro_RealColor"
 		end
 
-	frozen real_color_address_external: POINTER is
+	frozenreal_color_address_external: POINTER is
 			-- Address of C function `RealColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3805,7 +3805,7 @@ feature
 			"ewg_function_macro_GetSubTable"
 		end
 
-	frozen get_sub_table_address_external: POINTER is
+	frozenget_sub_table_address_external: POINTER is
 			-- Address of C function `GetSubTable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3820,7 +3820,7 @@ feature
 			"ewg_function_macro_MakeITable"
 		end
 
-	frozen make_itable_address_external: POINTER is
+	frozenmake_itable_address_external: POINTER is
 			-- Address of C function `MakeITable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3835,7 +3835,7 @@ feature
 			"ewg_function_macro_AddSearch"
 		end
 
-	frozen add_search_address_external: POINTER is
+	frozenadd_search_address_external: POINTER is
 			-- Address of C function `AddSearch'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3850,7 +3850,7 @@ feature
 			"ewg_function_macro_AddComp"
 		end
 
-	frozen add_comp_address_external: POINTER is
+	frozenadd_comp_address_external: POINTER is
 			-- Address of C function `AddComp'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3865,7 +3865,7 @@ feature
 			"ewg_function_macro_DelSearch"
 		end
 
-	frozen del_search_address_external: POINTER is
+	frozendel_search_address_external: POINTER is
 			-- Address of C function `DelSearch'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3880,7 +3880,7 @@ feature
 			"ewg_function_macro_DelComp"
 		end
 
-	frozen del_comp_address_external: POINTER is
+	frozendel_comp_address_external: POINTER is
 			-- Address of C function `DelComp'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3895,7 +3895,7 @@ feature
 			"ewg_function_macro_SetClientID"
 		end
 
-	frozen set_client_id_address_external: POINTER is
+	frozenset_client_id_address_external: POINTER is
 			-- Address of C function `SetClientID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3910,7 +3910,7 @@ feature
 			"ewg_function_macro_ProtectEntry"
 		end
 
-	frozen protect_entry_address_external: POINTER is
+	frozenprotect_entry_address_external: POINTER is
 			-- Address of C function `ProtectEntry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3925,7 +3925,7 @@ feature
 			"ewg_function_macro_ReserveEntry"
 		end
 
-	frozen reserve_entry_address_external: POINTER is
+	frozenreserve_entry_address_external: POINTER is
 			-- Address of C function `ReserveEntry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3940,7 +3940,7 @@ feature
 			"ewg_function_macro_SetEntries"
 		end
 
-	frozen set_entries_address_external: POINTER is
+	frozenset_entries_address_external: POINTER is
 			-- Address of C function `SetEntries'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3955,7 +3955,7 @@ feature
 			"ewg_function_macro_SaveEntries"
 		end
 
-	frozen save_entries_address_external: POINTER is
+	frozensave_entries_address_external: POINTER is
 			-- Address of C function `SaveEntries'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3970,7 +3970,7 @@ feature
 			"ewg_function_macro_RestoreEntries"
 		end
 
-	frozen restore_entries_address_external: POINTER is
+	frozenrestore_entries_address_external: POINTER is
 			-- Address of C function `RestoreEntries'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3985,7 +3985,7 @@ feature
 			"ewg_function_macro_QDError"
 		end
 
-	frozen qderror_address_external: POINTER is
+	frozenqderror_address_external: POINTER is
 			-- Address of C function `QDError'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4000,7 +4000,7 @@ feature
 			"ewg_function_macro_CopyDeepMask"
 		end
 
-	frozen copy_deep_mask_address_external: POINTER is
+	frozencopy_deep_mask_address_external: POINTER is
 			-- Address of C function `CopyDeepMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4015,7 +4015,7 @@ feature
 			"ewg_function_macro_DeviceLoop"
 		end
 
-	frozen device_loop_address_external: POINTER is
+	frozendevice_loop_address_external: POINTER is
 			-- Address of C function `DeviceLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4030,7 +4030,7 @@ feature
 			"ewg_function_macro_GetMaskTable"
 		end
 
-	frozen get_mask_table_address_external: POINTER is
+	frozenget_mask_table_address_external: POINTER is
 			-- Address of C function `GetMaskTable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4045,7 +4045,7 @@ feature
 			"ewg_function_macro_GetPattern"
 		end
 
-	frozen get_pattern_address_external: POINTER is
+	frozenget_pattern_address_external: POINTER is
 			-- Address of C function `GetPattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4060,7 +4060,7 @@ feature
 			"ewg_function_macro_GetCursor"
 		end
 
-	frozen get_cursor_address_external: POINTER is
+	frozenget_cursor_address_external: POINTER is
 			-- Address of C function `GetCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4075,7 +4075,7 @@ feature
 			"ewg_function_macro_GetPicture"
 		end
 
-	frozen get_picture_address_external: POINTER is
+	frozenget_picture_address_external: POINTER is
 			-- Address of C function `GetPicture'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4090,7 +4090,7 @@ feature
 			"ewg_function_macro_DeltaPoint"
 		end
 
-	frozen delta_point_address_external: POINTER is
+	frozendelta_point_address_external: POINTER is
 			-- Address of C function `DeltaPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4105,7 +4105,7 @@ feature
 			"ewg_function_macro_ShieldCursor"
 		end
 
-	frozen shield_cursor_address_external: POINTER is
+	frozenshield_cursor_address_external: POINTER is
 			-- Address of C function `ShieldCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4120,7 +4120,7 @@ feature
 			"ewg_function_macro_ScreenRes"
 		end
 
-	frozen screen_res_address_external: POINTER is
+	frozenscreen_res_address_external: POINTER is
 			-- Address of C function `ScreenRes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4135,7 +4135,7 @@ feature
 			"ewg_function_macro_GetIndPattern"
 		end
 
-	frozen get_ind_pattern_address_external: POINTER is
+	frozenget_ind_pattern_address_external: POINTER is
 			-- Address of C function `GetIndPattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4150,7 +4150,7 @@ feature
 			"ewg_function_macro_deltapoint"
 		end
 
-	frozen deltapoint_address_external: POINTER is
+	frozendeltapoint_address_external: POINTER is
 			-- Address of C function `deltapoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4165,7 +4165,7 @@ feature
 			"ewg_function_macro_PackBits"
 		end
 
-	frozen pack_bits_address_external: POINTER is
+	frozenpack_bits_address_external: POINTER is
 			-- Address of C function `PackBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4180,7 +4180,7 @@ feature
 			"ewg_function_macro_UnpackBits"
 		end
 
-	frozen unpack_bits_address_external: POINTER is
+	frozenunpack_bits_address_external: POINTER is
 			-- Address of C function `UnpackBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4195,7 +4195,7 @@ feature
 			"ewg_function_macro_SlopeFromAngle"
 		end
 
-	frozen slope_from_angle_address_external: POINTER is
+	frozenslope_from_angle_address_external: POINTER is
 			-- Address of C function `SlopeFromAngle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4210,7 +4210,7 @@ feature
 			"ewg_function_macro_AngleFromSlope"
 		end
 
-	frozen angle_from_slope_address_external: POINTER is
+	frozenangle_from_slope_address_external: POINTER is
 			-- Address of C function `AngleFromSlope'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4225,7 +4225,7 @@ feature
 			"ewg_function_macro_GetPortCustomXFerProc"
 		end
 
-	frozen get_port_custom_xfer_proc_address_external: POINTER is
+	frozenget_port_custom_xfer_proc_address_external: POINTER is
 			-- Address of C function `GetPortCustomXFerProc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4240,7 +4240,7 @@ feature
 			"ewg_function_macro_SetPortCustomXFerProc"
 		end
 
-	frozen set_port_custom_xfer_proc_address_external: POINTER is
+	frozenset_port_custom_xfer_proc_address_external: POINTER is
 			-- Address of C function `SetPortCustomXFerProc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4255,7 +4255,7 @@ feature
 			"ewg_function_macro_OpenCursorComponent"
 		end
 
-	frozen open_cursor_component_address_external: POINTER is
+	frozenopen_cursor_component_address_external: POINTER is
 			-- Address of C function `OpenCursorComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4270,7 +4270,7 @@ feature
 			"ewg_function_macro_CloseCursorComponent"
 		end
 
-	frozen close_cursor_component_address_external: POINTER is
+	frozenclose_cursor_component_address_external: POINTER is
 			-- Address of C function `CloseCursorComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4285,7 +4285,7 @@ feature
 			"ewg_function_macro_SetCursorComponent"
 		end
 
-	frozen set_cursor_component_address_external: POINTER is
+	frozenset_cursor_component_address_external: POINTER is
 			-- Address of C function `SetCursorComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4300,7 +4300,7 @@ feature
 			"ewg_function_macro_CursorComponentChanged"
 		end
 
-	frozen cursor_component_changed_address_external: POINTER is
+	frozencursor_component_changed_address_external: POINTER is
 			-- Address of C function `CursorComponentChanged'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4315,7 +4315,7 @@ feature
 			"ewg_function_macro_CursorComponentSetData"
 		end
 
-	frozen cursor_component_set_data_address_external: POINTER is
+	frozencursor_component_set_data_address_external: POINTER is
 			-- Address of C function `CursorComponentSetData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4330,7 +4330,7 @@ feature
 			"ewg_function_macro_CWMatchPixMap"
 		end
 
-	frozen cwmatch_pix_map_address_external: POINTER is
+	frozencwmatch_pix_map_address_external: POINTER is
 			-- Address of C function `CWMatchPixMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4345,7 +4345,7 @@ feature
 			"ewg_function_macro_CWCheckPixMap"
 		end
 
-	frozen cwcheck_pix_map_address_external: POINTER is
+	frozencwcheck_pix_map_address_external: POINTER is
 			-- Address of C function `CWCheckPixMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4360,7 +4360,7 @@ feature
 			"ewg_function_macro_NCMBeginMatching"
 		end
 
-	frozen ncmbegin_matching_address_external: POINTER is
+	frozenncmbegin_matching_address_external: POINTER is
 			-- Address of C function `NCMBeginMatching'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4375,7 +4375,7 @@ feature
 			"ewg_function_macro_CMEndMatching"
 		end
 
-	frozen cmend_matching_address_external: POINTER is
+	frozencmend_matching_address_external: POINTER is
 			-- Address of C function `CMEndMatching'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4390,7 +4390,7 @@ feature
 			"ewg_function_macro_NCMDrawMatchedPicture"
 		end
 
-	frozen ncmdraw_matched_picture_address_external: POINTER is
+	frozenncmdraw_matched_picture_address_external: POINTER is
 			-- Address of C function `NCMDrawMatchedPicture'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4405,7 +4405,7 @@ feature
 			"ewg_function_macro_CMEnableMatchingComment"
 		end
 
-	frozen cmenable_matching_comment_address_external: POINTER is
+	frozencmenable_matching_comment_address_external: POINTER is
 			-- Address of C function `CMEnableMatchingComment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4420,7 +4420,7 @@ feature
 			"ewg_function_macro_NCMUseProfileComment"
 		end
 
-	frozen ncmuse_profile_comment_address_external: POINTER is
+	frozenncmuse_profile_comment_address_external: POINTER is
 			-- Address of C function `NCMUseProfileComment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4435,7 +4435,7 @@ feature
 			"ewg_function_macro_IsValidPort"
 		end
 
-	frozen is_valid_port_address_external: POINTER is
+	frozenis_valid_port_address_external: POINTER is
 			-- Address of C function `IsValidPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4450,7 +4450,7 @@ feature
 			"ewg_function_macro_IsValidRgnHandle"
 		end
 
-	frozen is_valid_rgn_handle_address_external: POINTER is
+	frozenis_valid_rgn_handle_address_external: POINTER is
 			-- Address of C function `IsValidRgnHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4465,7 +4465,7 @@ feature
 			"ewg_function_macro_GetPortPixMap"
 		end
 
-	frozen get_port_pix_map_address_external: POINTER is
+	frozenget_port_pix_map_address_external: POINTER is
 			-- Address of C function `GetPortPixMap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4480,7 +4480,7 @@ feature
 			"ewg_function_macro_GetPortBitMapForCopyBits"
 		end
 
-	frozen get_port_bit_map_for_copy_bits_address_external: POINTER is
+	frozenget_port_bit_map_for_copy_bits_address_external: POINTER is
 			-- Address of C function `GetPortBitMapForCopyBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4495,7 +4495,7 @@ feature
 			"ewg_function_macro_GetPortBounds"
 		end
 
-	frozen get_port_bounds_address_external: POINTER is
+	frozenget_port_bounds_address_external: POINTER is
 			-- Address of C function `GetPortBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4510,7 +4510,7 @@ feature
 			"ewg_function_macro_GetPortForeColor"
 		end
 
-	frozen get_port_fore_color_address_external: POINTER is
+	frozenget_port_fore_color_address_external: POINTER is
 			-- Address of C function `GetPortForeColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4525,7 +4525,7 @@ feature
 			"ewg_function_macro_GetPortBackColor"
 		end
 
-	frozen get_port_back_color_address_external: POINTER is
+	frozenget_port_back_color_address_external: POINTER is
 			-- Address of C function `GetPortBackColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4540,7 +4540,7 @@ feature
 			"ewg_function_macro_GetPortOpColor"
 		end
 
-	frozen get_port_op_color_address_external: POINTER is
+	frozenget_port_op_color_address_external: POINTER is
 			-- Address of C function `GetPortOpColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4555,7 +4555,7 @@ feature
 			"ewg_function_macro_GetPortHiliteColor"
 		end
 
-	frozen get_port_hilite_color_address_external: POINTER is
+	frozenget_port_hilite_color_address_external: POINTER is
 			-- Address of C function `GetPortHiliteColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4570,7 +4570,7 @@ feature
 			"ewg_function_macro_GetPortGrafProcs"
 		end
 
-	frozen get_port_graf_procs_address_external: POINTER is
+	frozenget_port_graf_procs_address_external: POINTER is
 			-- Address of C function `GetPortGrafProcs'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4585,7 +4585,7 @@ feature
 			"ewg_function_macro_GetPortTextFont"
 		end
 
-	frozen get_port_text_font_address_external: POINTER is
+	frozenget_port_text_font_address_external: POINTER is
 			-- Address of C function `GetPortTextFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4600,7 +4600,7 @@ feature
 			"ewg_function_macro_GetPortTextFace"
 		end
 
-	frozen get_port_text_face_address_external: POINTER is
+	frozenget_port_text_face_address_external: POINTER is
 			-- Address of C function `GetPortTextFace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4615,7 +4615,7 @@ feature
 			"ewg_function_macro_GetPortTextMode"
 		end
 
-	frozen get_port_text_mode_address_external: POINTER is
+	frozenget_port_text_mode_address_external: POINTER is
 			-- Address of C function `GetPortTextMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4630,7 +4630,7 @@ feature
 			"ewg_function_macro_GetPortTextSize"
 		end
 
-	frozen get_port_text_size_address_external: POINTER is
+	frozenget_port_text_size_address_external: POINTER is
 			-- Address of C function `GetPortTextSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4645,7 +4645,7 @@ feature
 			"ewg_function_macro_GetPortChExtra"
 		end
 
-	frozen get_port_ch_extra_address_external: POINTER is
+	frozenget_port_ch_extra_address_external: POINTER is
 			-- Address of C function `GetPortChExtra'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4660,7 +4660,7 @@ feature
 			"ewg_function_macro_GetPortFracHPenLocation"
 		end
 
-	frozen get_port_frac_hpen_location_address_external: POINTER is
+	frozenget_port_frac_hpen_location_address_external: POINTER is
 			-- Address of C function `GetPortFracHPenLocation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4675,7 +4675,7 @@ feature
 			"ewg_function_macro_GetPortSpExtra"
 		end
 
-	frozen get_port_sp_extra_address_external: POINTER is
+	frozenget_port_sp_extra_address_external: POINTER is
 			-- Address of C function `GetPortSpExtra'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4690,7 +4690,7 @@ feature
 			"ewg_function_macro_GetPortPenVisibility"
 		end
 
-	frozen get_port_pen_visibility_address_external: POINTER is
+	frozenget_port_pen_visibility_address_external: POINTER is
 			-- Address of C function `GetPortPenVisibility'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4705,7 +4705,7 @@ feature
 			"ewg_function_macro_GetPortVisibleRegion"
 		end
 
-	frozen get_port_visible_region_address_external: POINTER is
+	frozenget_port_visible_region_address_external: POINTER is
 			-- Address of C function `GetPortVisibleRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4720,7 +4720,7 @@ feature
 			"ewg_function_macro_GetPortClipRegion"
 		end
 
-	frozen get_port_clip_region_address_external: POINTER is
+	frozenget_port_clip_region_address_external: POINTER is
 			-- Address of C function `GetPortClipRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4735,7 +4735,7 @@ feature
 			"ewg_function_macro_GetPortBackPixPat"
 		end
 
-	frozen get_port_back_pix_pat_address_external: POINTER is
+	frozenget_port_back_pix_pat_address_external: POINTER is
 			-- Address of C function `GetPortBackPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4750,7 +4750,7 @@ feature
 			"ewg_function_macro_GetPortPenPixPat"
 		end
 
-	frozen get_port_pen_pix_pat_address_external: POINTER is
+	frozenget_port_pen_pix_pat_address_external: POINTER is
 			-- Address of C function `GetPortPenPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4765,7 +4765,7 @@ feature
 			"ewg_function_macro_GetPortFillPixPat"
 		end
 
-	frozen get_port_fill_pix_pat_address_external: POINTER is
+	frozenget_port_fill_pix_pat_address_external: POINTER is
 			-- Address of C function `GetPortFillPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4780,7 +4780,7 @@ feature
 			"ewg_function_macro_GetPortPenSize"
 		end
 
-	frozen get_port_pen_size_address_external: POINTER is
+	frozenget_port_pen_size_address_external: POINTER is
 			-- Address of C function `GetPortPenSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4795,7 +4795,7 @@ feature
 			"ewg_function_macro_GetPortPenMode"
 		end
 
-	frozen get_port_pen_mode_address_external: POINTER is
+	frozenget_port_pen_mode_address_external: POINTER is
 			-- Address of C function `GetPortPenMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4810,7 +4810,7 @@ feature
 			"ewg_function_macro_GetPortPenLocation"
 		end
 
-	frozen get_port_pen_location_address_external: POINTER is
+	frozenget_port_pen_location_address_external: POINTER is
 			-- Address of C function `GetPortPenLocation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4825,7 +4825,7 @@ feature
 			"ewg_function_macro_IsPortRegionBeingDefined"
 		end
 
-	frozen is_port_region_being_defined_address_external: POINTER is
+	frozenis_port_region_being_defined_address_external: POINTER is
 			-- Address of C function `IsPortRegionBeingDefined'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4840,7 +4840,7 @@ feature
 			"ewg_function_macro_IsPortPictureBeingDefined"
 		end
 
-	frozen is_port_picture_being_defined_address_external: POINTER is
+	frozenis_port_picture_being_defined_address_external: POINTER is
 			-- Address of C function `IsPortPictureBeingDefined'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4855,7 +4855,7 @@ feature
 			"ewg_function_macro_IsPortPolyBeingDefined"
 		end
 
-	frozen is_port_poly_being_defined_address_external: POINTER is
+	frozenis_port_poly_being_defined_address_external: POINTER is
 			-- Address of C function `IsPortPolyBeingDefined'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4870,7 +4870,7 @@ feature
 			"ewg_function_macro_IsPortOffscreen"
 		end
 
-	frozen is_port_offscreen_address_external: POINTER is
+	frozenis_port_offscreen_address_external: POINTER is
 			-- Address of C function `IsPortOffscreen'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4885,7 +4885,7 @@ feature
 			"ewg_function_macro_IsPortColor"
 		end
 
-	frozen is_port_color_address_external: POINTER is
+	frozenis_port_color_address_external: POINTER is
 			-- Address of C function `IsPortColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4900,7 +4900,7 @@ feature
 			"ewg_function_macro_IsPortVisibleRegionEmpty"
 		end
 
-	frozen is_port_visible_region_empty_address_external: POINTER is
+	frozenis_port_visible_region_empty_address_external: POINTER is
 			-- Address of C function `IsPortVisibleRegionEmpty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4915,7 +4915,7 @@ feature
 			"ewg_function_macro_IsPortClipRegionEmpty"
 		end
 
-	frozen is_port_clip_region_empty_address_external: POINTER is
+	frozenis_port_clip_region_empty_address_external: POINTER is
 			-- Address of C function `IsPortClipRegionEmpty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4930,7 +4930,7 @@ feature
 			"ewg_function_macro_SectRegionWithPortClipRegion"
 		end
 
-	frozen sect_region_with_port_clip_region_address_external: POINTER is
+	frozensect_region_with_port_clip_region_address_external: POINTER is
 			-- Address of C function `SectRegionWithPortClipRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4945,7 +4945,7 @@ feature
 			"ewg_function_macro_SectRegionWithPortVisibleRegion"
 		end
 
-	frozen sect_region_with_port_visible_region_address_external: POINTER is
+	frozensect_region_with_port_visible_region_address_external: POINTER is
 			-- Address of C function `SectRegionWithPortVisibleRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4960,7 +4960,7 @@ feature
 			"ewg_function_macro_SwapPortPicSaveHandle"
 		end
 
-	frozen swap_port_pic_save_handle_address_external: POINTER is
+	frozenswap_port_pic_save_handle_address_external: POINTER is
 			-- Address of C function `SwapPortPicSaveHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4975,7 +4975,7 @@ feature
 			"ewg_function_macro_SwapPortPolySaveHandle"
 		end
 
-	frozen swap_port_poly_save_handle_address_external: POINTER is
+	frozenswap_port_poly_save_handle_address_external: POINTER is
 			-- Address of C function `SwapPortPolySaveHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -4990,7 +4990,7 @@ feature
 			"ewg_function_macro_SwapPortRegionSaveHandle"
 		end
 
-	frozen swap_port_region_save_handle_address_external: POINTER is
+	frozenswap_port_region_save_handle_address_external: POINTER is
 			-- Address of C function `SwapPortRegionSaveHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5005,7 +5005,7 @@ feature
 			"ewg_function_macro_SetPortBounds"
 		end
 
-	frozen set_port_bounds_address_external: POINTER is
+	frozenset_port_bounds_address_external: POINTER is
 			-- Address of C function `SetPortBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5020,7 +5020,7 @@ feature
 			"ewg_function_macro_SetPortOpColor"
 		end
 
-	frozen set_port_op_color_address_external: POINTER is
+	frozenset_port_op_color_address_external: POINTER is
 			-- Address of C function `SetPortOpColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5035,7 +5035,7 @@ feature
 			"ewg_function_macro_SetPortGrafProcs"
 		end
 
-	frozen set_port_graf_procs_address_external: POINTER is
+	frozenset_port_graf_procs_address_external: POINTER is
 			-- Address of C function `SetPortGrafProcs'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5050,7 +5050,7 @@ feature
 			"ewg_function_macro_SetPortTextFont"
 		end
 
-	frozen set_port_text_font_address_external: POINTER is
+	frozenset_port_text_font_address_external: POINTER is
 			-- Address of C function `SetPortTextFont'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5065,7 +5065,7 @@ feature
 			"ewg_function_macro_SetPortTextSize"
 		end
 
-	frozen set_port_text_size_address_external: POINTER is
+	frozenset_port_text_size_address_external: POINTER is
 			-- Address of C function `SetPortTextSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5080,7 +5080,7 @@ feature
 			"ewg_function_macro_SetPortTextFace"
 		end
 
-	frozen set_port_text_face_address_external: POINTER is
+	frozenset_port_text_face_address_external: POINTER is
 			-- Address of C function `SetPortTextFace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5095,7 +5095,7 @@ feature
 			"ewg_function_macro_SetPortTextMode"
 		end
 
-	frozen set_port_text_mode_address_external: POINTER is
+	frozenset_port_text_mode_address_external: POINTER is
 			-- Address of C function `SetPortTextMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5110,7 +5110,7 @@ feature
 			"ewg_function_macro_SetPortVisibleRegion"
 		end
 
-	frozen set_port_visible_region_address_external: POINTER is
+	frozenset_port_visible_region_address_external: POINTER is
 			-- Address of C function `SetPortVisibleRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5125,7 +5125,7 @@ feature
 			"ewg_function_macro_SetPortClipRegion"
 		end
 
-	frozen set_port_clip_region_address_external: POINTER is
+	frozenset_port_clip_region_address_external: POINTER is
 			-- Address of C function `SetPortClipRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5140,7 +5140,7 @@ feature
 			"ewg_function_macro_SetPortPenPixPat"
 		end
 
-	frozen set_port_pen_pix_pat_address_external: POINTER is
+	frozenset_port_pen_pix_pat_address_external: POINTER is
 			-- Address of C function `SetPortPenPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5155,7 +5155,7 @@ feature
 			"ewg_function_macro_SetPortFillPixPat"
 		end
 
-	frozen set_port_fill_pix_pat_address_external: POINTER is
+	frozenset_port_fill_pix_pat_address_external: POINTER is
 			-- Address of C function `SetPortFillPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5170,7 +5170,7 @@ feature
 			"ewg_function_macro_SetPortBackPixPat"
 		end
 
-	frozen set_port_back_pix_pat_address_external: POINTER is
+	frozenset_port_back_pix_pat_address_external: POINTER is
 			-- Address of C function `SetPortBackPixPat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5185,7 +5185,7 @@ feature
 			"ewg_function_macro_SetPortPenSize"
 		end
 
-	frozen set_port_pen_size_address_external: POINTER is
+	frozenset_port_pen_size_address_external: POINTER is
 			-- Address of C function `SetPortPenSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5200,7 +5200,7 @@ feature
 			"ewg_function_macro_SetPortPenMode"
 		end
 
-	frozen set_port_pen_mode_address_external: POINTER is
+	frozenset_port_pen_mode_address_external: POINTER is
 			-- Address of C function `SetPortPenMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5215,7 +5215,7 @@ feature
 			"ewg_function_macro_SetPortFracHPenLocation"
 		end
 
-	frozen set_port_frac_hpen_location_address_external: POINTER is
+	frozenset_port_frac_hpen_location_address_external: POINTER is
 			-- Address of C function `SetPortFracHPenLocation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5230,7 +5230,7 @@ feature
 			"ewg_function_macro_GetPixBounds"
 		end
 
-	frozen get_pix_bounds_address_external: POINTER is
+	frozenget_pix_bounds_address_external: POINTER is
 			-- Address of C function `GetPixBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5245,7 +5245,7 @@ feature
 			"ewg_function_macro_GetPixDepth"
 		end
 
-	frozen get_pix_depth_address_external: POINTER is
+	frozenget_pix_depth_address_external: POINTER is
 			-- Address of C function `GetPixDepth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5260,7 +5260,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsRandomSeed"
 		end
 
-	frozen get_qdglobals_random_seed_address_external: POINTER is
+	frozenget_qdglobals_random_seed_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsRandomSeed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5275,7 +5275,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsScreenBits"
 		end
 
-	frozen get_qdglobals_screen_bits_address_external: POINTER is
+	frozenget_qdglobals_screen_bits_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsScreenBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5290,7 +5290,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsArrow"
 		end
 
-	frozen get_qdglobals_arrow_address_external: POINTER is
+	frozenget_qdglobals_arrow_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsArrow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5305,7 +5305,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsDarkGray"
 		end
 
-	frozen get_qdglobals_dark_gray_address_external: POINTER is
+	frozenget_qdglobals_dark_gray_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsDarkGray'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5320,7 +5320,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsLightGray"
 		end
 
-	frozen get_qdglobals_light_gray_address_external: POINTER is
+	frozenget_qdglobals_light_gray_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsLightGray'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5335,7 +5335,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsGray"
 		end
 
-	frozen get_qdglobals_gray_address_external: POINTER is
+	frozenget_qdglobals_gray_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsGray'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5350,7 +5350,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsBlack"
 		end
 
-	frozen get_qdglobals_black_address_external: POINTER is
+	frozenget_qdglobals_black_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsBlack'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5365,7 +5365,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsWhite"
 		end
 
-	frozen get_qdglobals_white_address_external: POINTER is
+	frozenget_qdglobals_white_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsWhite'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5380,7 +5380,7 @@ feature
 			"ewg_function_macro_GetQDGlobalsThePort"
 		end
 
-	frozen get_qdglobals_the_port_address_external: POINTER is
+	frozenget_qdglobals_the_port_address_external: POINTER is
 			-- Address of C function `GetQDGlobalsThePort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5395,7 +5395,7 @@ feature
 			"ewg_function_macro_SetQDGlobalsRandomSeed"
 		end
 
-	frozen set_qdglobals_random_seed_address_external: POINTER is
+	frozenset_qdglobals_random_seed_address_external: POINTER is
 			-- Address of C function `SetQDGlobalsRandomSeed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5410,7 +5410,7 @@ feature
 			"ewg_function_macro_SetQDGlobalsArrow"
 		end
 
-	frozen set_qdglobals_arrow_address_external: POINTER is
+	frozenset_qdglobals_arrow_address_external: POINTER is
 			-- Address of C function `SetQDGlobalsArrow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5425,7 +5425,7 @@ feature
 			"ewg_function_macro_GetRegionBounds"
 		end
 
-	frozen get_region_bounds_address_external: POINTER is
+	frozenget_region_bounds_address_external: POINTER is
 			-- Address of C function `GetRegionBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5440,7 +5440,7 @@ feature
 			"ewg_function_macro_IsRegionRectangular"
 		end
 
-	frozen is_region_rectangular_address_external: POINTER is
+	frozenis_region_rectangular_address_external: POINTER is
 			-- Address of C function `IsRegionRectangular'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5455,7 +5455,7 @@ feature
 			"ewg_function_macro_CreateNewPort"
 		end
 
-	frozen create_new_port_address_external: POINTER is
+	frozencreate_new_port_address_external: POINTER is
 			-- Address of C function `CreateNewPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5470,7 +5470,7 @@ feature
 			"ewg_function_macro_DisposePort"
 		end
 
-	frozen dispose_port_address_external: POINTER is
+	frozendispose_port_address_external: POINTER is
 			-- Address of C function `DisposePort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5485,7 +5485,7 @@ feature
 			"ewg_function_macro_SetQDError"
 		end
 
-	frozen set_qderror_address_external: POINTER is
+	frozenset_qderror_address_external: POINTER is
 			-- Address of C function `SetQDError'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5500,7 +5500,7 @@ feature
 			"ewg_function_macro_QDLocalToGlobalPoint"
 		end
 
-	frozen qdlocal_to_global_point_address_external: POINTER is
+	frozenqdlocal_to_global_point_address_external: POINTER is
 			-- Address of C function `QDLocalToGlobalPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5515,7 +5515,7 @@ feature
 			"ewg_function_macro_QDGlobalToLocalPoint"
 		end
 
-	frozen qdglobal_to_local_point_address_external: POINTER is
+	frozenqdglobal_to_local_point_address_external: POINTER is
 			-- Address of C function `QDGlobalToLocalPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5530,7 +5530,7 @@ feature
 			"ewg_function_macro_QDLocalToGlobalRect"
 		end
 
-	frozen qdlocal_to_global_rect_address_external: POINTER is
+	frozenqdlocal_to_global_rect_address_external: POINTER is
 			-- Address of C function `QDLocalToGlobalRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5545,7 +5545,7 @@ feature
 			"ewg_function_macro_QDGlobalToLocalRect"
 		end
 
-	frozen qdglobal_to_local_rect_address_external: POINTER is
+	frozenqdglobal_to_local_rect_address_external: POINTER is
 			-- Address of C function `QDGlobalToLocalRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5560,7 +5560,7 @@ feature
 			"ewg_function_macro_QDLocalToGlobalRegion"
 		end
 
-	frozen qdlocal_to_global_region_address_external: POINTER is
+	frozenqdlocal_to_global_region_address_external: POINTER is
 			-- Address of C function `QDLocalToGlobalRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5575,7 +5575,7 @@ feature
 			"ewg_function_macro_QDGlobalToLocalRegion"
 		end
 
-	frozen qdglobal_to_local_region_address_external: POINTER is
+	frozenqdglobal_to_local_region_address_external: POINTER is
 			-- Address of C function `QDGlobalToLocalRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5590,7 +5590,7 @@ feature
 			"ewg_function_macro_QDIsPortBuffered"
 		end
 
-	frozen qdis_port_buffered_address_external: POINTER is
+	frozenqdis_port_buffered_address_external: POINTER is
 			-- Address of C function `QDIsPortBuffered'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5605,7 +5605,7 @@ feature
 			"ewg_function_macro_QDIsPortBufferDirty"
 		end
 
-	frozen qdis_port_buffer_dirty_address_external: POINTER is
+	frozenqdis_port_buffer_dirty_address_external: POINTER is
 			-- Address of C function `QDIsPortBufferDirty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5620,7 +5620,7 @@ feature
 			"ewg_function_macro_QDFlushPortBuffer"
 		end
 
-	frozen qdflush_port_buffer_address_external: POINTER is
+	frozenqdflush_port_buffer_address_external: POINTER is
 			-- Address of C function `QDFlushPortBuffer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5635,7 +5635,7 @@ feature
 			"ewg_function_macro_QDGetDirtyRegion"
 		end
 
-	frozen qdget_dirty_region_address_external: POINTER is
+	frozenqdget_dirty_region_address_external: POINTER is
 			-- Address of C function `QDGetDirtyRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5650,7 +5650,7 @@ feature
 			"ewg_function_macro_QDSetDirtyRegion"
 		end
 
-	frozen qdset_dirty_region_address_external: POINTER is
+	frozenqdset_dirty_region_address_external: POINTER is
 			-- Address of C function `QDSetDirtyRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5665,7 +5665,7 @@ feature
 			"ewg_function_macro_QDAddRectToDirtyRegion"
 		end
 
-	frozen qdadd_rect_to_dirty_region_address_external: POINTER is
+	frozenqdadd_rect_to_dirty_region_address_external: POINTER is
 			-- Address of C function `QDAddRectToDirtyRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5680,7 +5680,7 @@ feature
 			"ewg_function_macro_QDAddRegionToDirtyRegion"
 		end
 
-	frozen qdadd_region_to_dirty_region_address_external: POINTER is
+	frozenqdadd_region_to_dirty_region_address_external: POINTER is
 			-- Address of C function `QDAddRegionToDirtyRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5695,7 +5695,7 @@ feature
 			"ewg_function_macro_CreateCGContextForPort"
 		end
 
-	frozen create_cgcontext_for_port_address_external: POINTER is
+	frozencreate_cgcontext_for_port_address_external: POINTER is
 			-- Address of C function `CreateCGContextForPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5710,7 +5710,7 @@ feature
 			"ewg_function_macro_ClipCGContextToRegion"
 		end
 
-	frozen clip_cgcontext_to_region_address_external: POINTER is
+	frozenclip_cgcontext_to_region_address_external: POINTER is
 			-- Address of C function `ClipCGContextToRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5725,7 +5725,7 @@ feature
 			"ewg_function_macro_SyncCGContextOriginWithPort"
 		end
 
-	frozen sync_cgcontext_origin_with_port_address_external: POINTER is
+	frozensync_cgcontext_origin_with_port_address_external: POINTER is
 			-- Address of C function `SyncCGContextOriginWithPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5740,7 +5740,7 @@ feature
 			"ewg_function_macro_QDBeginCGContext"
 		end
 
-	frozen qdbegin_cgcontext_address_external: POINTER is
+	frozenqdbegin_cgcontext_address_external: POINTER is
 			-- Address of C function `QDBeginCGContext'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5755,7 +5755,7 @@ feature
 			"ewg_function_macro_QDEndCGContext"
 		end
 
-	frozen qdend_cgcontext_address_external: POINTER is
+	frozenqdend_cgcontext_address_external: POINTER is
 			-- Address of C function `QDEndCGContext'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5770,7 +5770,7 @@ feature
 			"ewg_function_macro_QDSaveRegionBits"
 		end
 
-	frozen qdsave_region_bits_address_external: POINTER is
+	frozenqdsave_region_bits_address_external: POINTER is
 			-- Address of C function `QDSaveRegionBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5785,7 +5785,7 @@ feature
 			"ewg_function_macro_QDRestoreRegionBits"
 		end
 
-	frozen qdrestore_region_bits_address_external: POINTER is
+	frozenqdrestore_region_bits_address_external: POINTER is
 			-- Address of C function `QDRestoreRegionBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5800,7 +5800,7 @@ feature
 			"ewg_function_macro_QDDisposeRegionBits"
 		end
 
-	frozen qddispose_region_bits_address_external: POINTER is
+	frozenqddispose_region_bits_address_external: POINTER is
 			-- Address of C function `QDDisposeRegionBits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5815,7 +5815,7 @@ feature
 			"ewg_function_macro_CreateNewPortForCGDisplayID"
 		end
 
-	frozen create_new_port_for_cgdisplay_id_address_external: POINTER is
+	frozencreate_new_port_for_cgdisplay_id_address_external: POINTER is
 			-- Address of C function `CreateNewPortForCGDisplayID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5830,7 +5830,7 @@ feature
 			"ewg_function_macro_QDDisplayWaitCursor"
 		end
 
-	frozen qddisplay_wait_cursor_address_external: POINTER is
+	frozenqddisplay_wait_cursor_address_external: POINTER is
 			-- Address of C function `QDDisplayWaitCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5845,7 +5845,7 @@ feature
 			"ewg_function_macro_QDSetPatternOrigin"
 		end
 
-	frozen qdset_pattern_origin_address_external: POINTER is
+	frozenqdset_pattern_origin_address_external: POINTER is
 			-- Address of C function `QDSetPatternOrigin'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5860,7 +5860,7 @@ feature
 			"ewg_function_macro_QDGetPatternOrigin"
 		end
 
-	frozen qdget_pattern_origin_address_external: POINTER is
+	frozenqdget_pattern_origin_address_external: POINTER is
 			-- Address of C function `QDGetPatternOrigin'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5875,7 +5875,7 @@ feature
 			"ewg_function_macro_QDIsNamedPixMapCursorRegistered"
 		end
 
-	frozen qdis_named_pix_map_cursor_registered_address_external: POINTER is
+	frozenqdis_named_pix_map_cursor_registered_address_external: POINTER is
 			-- Address of C function `QDIsNamedPixMapCursorRegistered'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5890,7 +5890,7 @@ feature
 			"ewg_function_macro_QDRegisterNamedPixMapCursor"
 		end
 
-	frozen qdregister_named_pix_map_cursor_address_external: POINTER is
+	frozenqdregister_named_pix_map_cursor_address_external: POINTER is
 			-- Address of C function `QDRegisterNamedPixMapCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5905,7 +5905,7 @@ feature
 			"ewg_function_macro_QDUnregisterNamedPixMapCursur"
 		end
 
-	frozen qdunregister_named_pix_map_cursur_address_external: POINTER is
+	frozenqdunregister_named_pix_map_cursur_address_external: POINTER is
 			-- Address of C function `QDUnregisterNamedPixMapCursur'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5920,7 +5920,7 @@ feature
 			"ewg_function_macro_QDUnregisterNamedPixMapCursor"
 		end
 
-	frozen qdunregister_named_pix_map_cursor_address_external: POINTER is
+	frozenqdunregister_named_pix_map_cursor_address_external: POINTER is
 			-- Address of C function `QDUnregisterNamedPixMapCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5935,7 +5935,7 @@ feature
 			"ewg_function_macro_QDSetNamedPixMapCursor"
 		end
 
-	frozen qdset_named_pix_map_cursor_address_external: POINTER is
+	frozenqdset_named_pix_map_cursor_address_external: POINTER is
 			-- Address of C function `QDSetNamedPixMapCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5950,7 +5950,7 @@ feature
 			"ewg_function_macro_QDGetCursorNameForSystemCursor"
 		end
 
-	frozen qdget_cursor_name_for_system_cursor_address_external: POINTER is
+	frozenqdget_cursor_name_for_system_cursor_address_external: POINTER is
 			-- Address of C function `QDGetCursorNameForSystemCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5965,7 +5965,7 @@ feature
 			"ewg_function_macro_QDSetCursorScale"
 		end
 
-	frozen qdset_cursor_scale_address_external: POINTER is
+	frozenqdset_cursor_scale_address_external: POINTER is
 			-- Address of C function `QDSetCursorScale'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5980,7 +5980,7 @@ feature
 			"ewg_function_macro_QDGetCursorScale"
 		end
 
-	frozen qdget_cursor_scale_address_external: POINTER is
+	frozenqdget_cursor_scale_address_external: POINTER is
 			-- Address of C function `QDGetCursorScale'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -5995,7 +5995,7 @@ feature
 			"ewg_function_macro_QDGetCursorData"
 		end
 
-	frozen qdget_cursor_data_address_external: POINTER is
+	frozenqdget_cursor_data_address_external: POINTER is
 			-- Address of C function `QDGetCursorData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6010,7 +6010,7 @@ feature
 			"ewg_function_macro_QDSwapTextFlags"
 		end
 
-	frozen qdswap_text_flags_address_external: POINTER is
+	frozenqdswap_text_flags_address_external: POINTER is
 			-- Address of C function `QDSwapTextFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6025,7 +6025,7 @@ feature
 			"ewg_function_macro_QDSwapPortTextFlags"
 		end
 
-	frozen qdswap_port_text_flags_address_external: POINTER is
+	frozenqdswap_port_text_flags_address_external: POINTER is
 			-- Address of C function `QDSwapPortTextFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6040,7 +6040,7 @@ feature
 			"ewg_function_macro_QDGetCGDirectDisplayID"
 		end
 
-	frozen qdget_cgdirect_display_id_address_external: POINTER is
+	frozenqdget_cgdirect_display_id_address_external: POINTER is
 			-- Address of C function `QDGetCGDirectDisplayID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6055,7 +6055,7 @@ feature
 			"ewg_function_macro_LMGetScrVRes"
 		end
 
-	frozen lmget_scr_vres_address_external: POINTER is
+	frozenlmget_scr_vres_address_external: POINTER is
 			-- Address of C function `LMGetScrVRes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6070,7 +6070,7 @@ feature
 			"ewg_function_macro_LMSetScrVRes"
 		end
 
-	frozen lmset_scr_vres_address_external: POINTER is
+	frozenlmset_scr_vres_address_external: POINTER is
 			-- Address of C function `LMSetScrVRes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6085,7 +6085,7 @@ feature
 			"ewg_function_macro_LMGetScrHRes"
 		end
 
-	frozen lmget_scr_hres_address_external: POINTER is
+	frozenlmget_scr_hres_address_external: POINTER is
 			-- Address of C function `LMGetScrHRes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6100,7 +6100,7 @@ feature
 			"ewg_function_macro_LMSetScrHRes"
 		end
 
-	frozen lmset_scr_hres_address_external: POINTER is
+	frozenlmset_scr_hres_address_external: POINTER is
 			-- Address of C function `LMSetScrHRes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6115,7 +6115,7 @@ feature
 			"ewg_function_macro_LMGetMainDevice"
 		end
 
-	frozen lmget_main_device_address_external: POINTER is
+	frozenlmget_main_device_address_external: POINTER is
 			-- Address of C function `LMGetMainDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6130,7 +6130,7 @@ feature
 			"ewg_function_macro_LMSetMainDevice"
 		end
 
-	frozen lmset_main_device_address_external: POINTER is
+	frozenlmset_main_device_address_external: POINTER is
 			-- Address of C function `LMSetMainDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6145,7 +6145,7 @@ feature
 			"ewg_function_macro_LMGetDeviceList"
 		end
 
-	frozen lmget_device_list_address_external: POINTER is
+	frozenlmget_device_list_address_external: POINTER is
 			-- Address of C function `LMGetDeviceList'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6160,7 +6160,7 @@ feature
 			"ewg_function_macro_LMSetDeviceList"
 		end
 
-	frozen lmset_device_list_address_external: POINTER is
+	frozenlmset_device_list_address_external: POINTER is
 			-- Address of C function `LMSetDeviceList'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6175,7 +6175,7 @@ feature
 			"ewg_function_macro_LMGetQDColors"
 		end
 
-	frozen lmget_qdcolors_address_external: POINTER is
+	frozenlmget_qdcolors_address_external: POINTER is
 			-- Address of C function `LMGetQDColors'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6190,7 +6190,7 @@ feature
 			"ewg_function_macro_LMSetQDColors"
 		end
 
-	frozen lmset_qdcolors_address_external: POINTER is
+	frozenlmset_qdcolors_address_external: POINTER is
 			-- Address of C function `LMSetQDColors'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6205,7 +6205,7 @@ feature
 			"ewg_function_macro_LMGetWidthListHand"
 		end
 
-	frozen lmget_width_list_hand_address_external: POINTER is
+	frozenlmget_width_list_hand_address_external: POINTER is
 			-- Address of C function `LMGetWidthListHand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6220,7 +6220,7 @@ feature
 			"ewg_function_macro_LMSetWidthListHand"
 		end
 
-	frozen lmset_width_list_hand_address_external: POINTER is
+	frozenlmset_width_list_hand_address_external: POINTER is
 			-- Address of C function `LMSetWidthListHand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6235,7 +6235,7 @@ feature
 			"ewg_function_macro_LMGetHiliteMode"
 		end
 
-	frozen lmget_hilite_mode_address_external: POINTER is
+	frozenlmget_hilite_mode_address_external: POINTER is
 			-- Address of C function `LMGetHiliteMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6250,7 +6250,7 @@ feature
 			"ewg_function_macro_LMSetHiliteMode"
 		end
 
-	frozen lmset_hilite_mode_address_external: POINTER is
+	frozenlmset_hilite_mode_address_external: POINTER is
 			-- Address of C function `LMSetHiliteMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6265,7 +6265,7 @@ feature
 			"ewg_function_macro_LMGetWidthPtr"
 		end
 
-	frozen lmget_width_ptr_address_external: POINTER is
+	frozenlmget_width_ptr_address_external: POINTER is
 			-- Address of C function `LMGetWidthPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6280,7 +6280,7 @@ feature
 			"ewg_function_macro_LMSetWidthPtr"
 		end
 
-	frozen lmset_width_ptr_address_external: POINTER is
+	frozenlmset_width_ptr_address_external: POINTER is
 			-- Address of C function `LMSetWidthPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6295,7 +6295,7 @@ feature
 			"ewg_function_macro_LMGetWidthTabHandle"
 		end
 
-	frozen lmget_width_tab_handle_address_external: POINTER is
+	frozenlmget_width_tab_handle_address_external: POINTER is
 			-- Address of C function `LMGetWidthTabHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6310,7 +6310,7 @@ feature
 			"ewg_function_macro_LMSetWidthTabHandle"
 		end
 
-	frozen lmset_width_tab_handle_address_external: POINTER is
+	frozenlmset_width_tab_handle_address_external: POINTER is
 			-- Address of C function `LMSetWidthTabHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6325,7 +6325,7 @@ feature
 			"ewg_function_macro_LMGetLastSPExtra"
 		end
 
-	frozen lmget_last_spextra_address_external: POINTER is
+	frozenlmget_last_spextra_address_external: POINTER is
 			-- Address of C function `LMGetLastSPExtra'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6340,7 +6340,7 @@ feature
 			"ewg_function_macro_LMSetLastSPExtra"
 		end
 
-	frozen lmset_last_spextra_address_external: POINTER is
+	frozenlmset_last_spextra_address_external: POINTER is
 			-- Address of C function `LMSetLastSPExtra'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6355,7 +6355,7 @@ feature
 			"ewg_function_macro_LMGetLastFOND"
 		end
 
-	frozen lmget_last_fond_address_external: POINTER is
+	frozenlmget_last_fond_address_external: POINTER is
 			-- Address of C function `LMGetLastFOND'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6370,7 +6370,7 @@ feature
 			"ewg_function_macro_LMSetLastFOND"
 		end
 
-	frozen lmset_last_fond_address_external: POINTER is
+	frozenlmset_last_fond_address_external: POINTER is
 			-- Address of C function `LMSetLastFOND'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6385,7 +6385,7 @@ feature
 			"ewg_function_macro_LMGetFractEnable"
 		end
 
-	frozen lmget_fract_enable_address_external: POINTER is
+	frozenlmget_fract_enable_address_external: POINTER is
 			-- Address of C function `LMGetFractEnable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6400,7 +6400,7 @@ feature
 			"ewg_function_macro_LMSetFractEnable"
 		end
 
-	frozen lmset_fract_enable_address_external: POINTER is
+	frozenlmset_fract_enable_address_external: POINTER is
 			-- Address of C function `LMSetFractEnable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6415,7 +6415,7 @@ feature
 			"ewg_function_macro_LMGetTheGDevice"
 		end
 
-	frozen lmget_the_gdevice_address_external: POINTER is
+	frozenlmget_the_gdevice_address_external: POINTER is
 			-- Address of C function `LMGetTheGDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6430,7 +6430,7 @@ feature
 			"ewg_function_macro_LMSetTheGDevice"
 		end
 
-	frozen lmset_the_gdevice_address_external: POINTER is
+	frozenlmset_the_gdevice_address_external: POINTER is
 			-- Address of C function `LMSetTheGDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6445,7 +6445,7 @@ feature
 			"ewg_function_macro_LMGetHiliteRGB"
 		end
 
-	frozen lmget_hilite_rgb_address_external: POINTER is
+	frozenlmget_hilite_rgb_address_external: POINTER is
 			-- Address of C function `LMGetHiliteRGB'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6460,7 +6460,7 @@ feature
 			"ewg_function_macro_LMSetHiliteRGB"
 		end
 
-	frozen lmset_hilite_rgb_address_external: POINTER is
+	frozenlmset_hilite_rgb_address_external: POINTER is
 			-- Address of C function `LMSetHiliteRGB'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6475,7 +6475,7 @@ feature
 			"ewg_function_macro_LMGetCursorNew"
 		end
 
-	frozen lmget_cursor_new_address_external: POINTER is
+	frozenlmget_cursor_new_address_external: POINTER is
 			-- Address of C function `LMGetCursorNew'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -6490,7 +6490,7 @@ feature
 			"ewg_function_macro_LMSetCursorNew"
 		end
 
-	frozen lmset_cursor_new_address_external: POINTER is
+	frozenlmset_cursor_new_address_external: POINTER is
 			-- Address of C function `LMSetCursorNew'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

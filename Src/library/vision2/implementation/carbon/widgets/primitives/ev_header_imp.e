@@ -25,7 +25,6 @@ inherit
 		redefine
 			interface,
 			initialize,
-			needs_event_box,
 			call_button_event_actions
 		end
 

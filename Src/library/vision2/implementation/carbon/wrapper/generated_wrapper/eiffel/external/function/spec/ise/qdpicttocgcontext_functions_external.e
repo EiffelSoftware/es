@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_QDPictCreateWithProvider"
 		end
 
-	frozen qdpict_create_with_provider_address_external: POINTER is
+	frozenqdpict_create_with_provider_address_external: POINTER is
 			-- Address of C function `QDPictCreateWithProvider'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_QDPictCreateWithURL"
 		end
 
-	frozen qdpict_create_with_url_address_external: POINTER is
+	frozenqdpict_create_with_url_address_external: POINTER is
 			-- Address of C function `QDPictCreateWithURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_QDPictRetain"
 		end
 
-	frozen qdpict_retain_address_external: POINTER is
+	frozenqdpict_retain_address_external: POINTER is
 			-- Address of C function `QDPictRetain'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_QDPictRelease"
 		end
 
-	frozen qdpict_release_address_external: POINTER is
+	frozenqdpict_release_address_external: POINTER is
 			-- Address of C function `QDPictRelease'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -67,10 +67,10 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (QDPictRef):CGRect*"
 		alias
-			"ewg_function_QDPictGetBounds"
+			"ewg_function_QDPictGetBounds()"
 		end
 
-	frozen qdpict_get_bounds_address_external: POINTER is
+	frozenqdpict_get_bounds_address_external: POINTER is
 			-- Address of C function `QDPictGetBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_QDPictGetResolution"
 		end
 
-	frozen qdpict_get_resolution_address_external: POINTER is
+	frozenqdpict_get_resolution_address_external: POINTER is
 			-- Address of C function `QDPictGetResolution'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_QDPictDrawToCGContext"
 		end
 
-	frozen qdpict_draw_to_cgcontext_address_external: POINTER is
+	frozenqdpict_draw_to_cgcontext_address_external: POINTER is
 			-- Address of C function `QDPictDrawToCGContext'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

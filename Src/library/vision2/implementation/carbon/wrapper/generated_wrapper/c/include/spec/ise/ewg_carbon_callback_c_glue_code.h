@@ -598,6 +598,91 @@ OSStatus call_window_paint_proc_ptr (void *a_function, GDHandle device, GrafPtr 
 
 #include <Carbon/Carbon.h>
 
+typedef OSStatus (*txnfind_proc_ptr_eiffel_feature) (void *a_class, TXNMatchTextRecord const *matchData, TXNDataType iDataType, TXNMatchOptions iMatchOptions, void const *iSearchTextPtr, TextEncoding encoding, TXNOffset absStartOffset, ByteCount searchTextLength, TXNOffset *oStartMatch, TXNOffset *oEndMatch, Boolean *ofound, UInt32 refCon);
+
+void* get_txnfind_proc_ptr_stub ();
+
+struct txnfind_proc_ptr_entry_struct
+{
+	void* a_class;
+	txnfind_proc_ptr_eiffel_feature feature;
+};
+
+void set_txnfind_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSStatus call_txnfind_proc_ptr (void *a_function, TXNMatchTextRecord const *matchData, TXNDataType iDataType, TXNMatchOptions iMatchOptions, void const *iSearchTextPtr, TextEncoding encoding, TXNOffset absStartOffset, ByteCount searchTextLength, TXNOffset *oStartMatch, TXNOffset *oEndMatch, Boolean *ofound, UInt32 refCon);
+
+
+#include <Carbon/Carbon.h>
+
+typedef CFStringRef (*txnaction_name_mapper_proc_ptr_eiffel_feature) (void *a_class, CFStringRef actionName, UInt32 commandID, void *inUserData);
+
+void* get_txnaction_name_mapper_proc_ptr_stub ();
+
+struct txnaction_name_mapper_proc_ptr_entry_struct
+{
+	void* a_class;
+	txnaction_name_mapper_proc_ptr_eiffel_feature feature;
+};
+
+void set_txnaction_name_mapper_proc_ptr_entry (void* a_class, void* a_feature);
+
+CFStringRef call_txnaction_name_mapper_proc_ptr (void *a_function, CFStringRef actionName, UInt32 commandID, void *inUserData);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*txncontextual_menu_setup_proc_ptr_eiffel_feature) (void *a_class, MenuRef iContextualMenu, TXNObject object, void *inUserData);
+
+void* get_txncontextual_menu_setup_proc_ptr_stub ();
+
+struct txncontextual_menu_setup_proc_ptr_entry_struct
+{
+	void* a_class;
+	txncontextual_menu_setup_proc_ptr_eiffel_feature feature;
+};
+
+void set_txncontextual_menu_setup_proc_ptr_entry (void* a_class, void* a_feature);
+
+void call_txncontextual_menu_setup_proc_ptr (void *a_function, MenuRef iContextualMenu, TXNObject object, void *inUserData);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*txnscroll_info_proc_ptr_eiffel_feature) (void *a_class, SInt32 iValue, SInt32 iMaximumValue, TXNScrollBarOrientation iScrollBarOrientation, SInt32 iRefCon);
+
+void* get_txnscroll_info_proc_ptr_stub ();
+
+struct txnscroll_info_proc_ptr_entry_struct
+{
+	void* a_class;
+	txnscroll_info_proc_ptr_eiffel_feature feature;
+};
+
+void set_txnscroll_info_proc_ptr_entry (void* a_class, void* a_feature);
+
+void call_txnscroll_info_proc_ptr (void *a_function, SInt32 iValue, SInt32 iMaximumValue, TXNScrollBarOrientation iScrollBarOrientation, SInt32 iRefCon);
+
+
+#include <Carbon/Carbon.h>
+
+typedef CFStringRef (*txnaction_key_mapper_proc_ptr_eiffel_feature) (void *a_class, TXNActionKey actionKey, UInt32 commandID);
+
+void* get_txnaction_key_mapper_proc_ptr_stub ();
+
+struct txnaction_key_mapper_proc_ptr_entry_struct
+{
+	void* a_class;
+	txnaction_key_mapper_proc_ptr_eiffel_feature feature;
+};
+
+void set_txnaction_key_mapper_proc_ptr_entry (void* a_class, void* a_feature);
+
+CFStringRef call_txnaction_key_mapper_proc_ptr (void *a_function, TXNActionKey actionKey, UInt32 commandID);
+
+
+#include <Carbon/Carbon.h>
+
 typedef OSStatus (*hmcontrol_content_proc_ptr_eiffel_feature) (void *a_class, ControlRef inControl, Point inGlobalMouse, HMContentRequest inRequest, HMContentProvidedType *outContentProvided, HMHelpContentPtr ioHelpContent);
 
 void* get_hmcontrol_content_proc_ptr_stub ();

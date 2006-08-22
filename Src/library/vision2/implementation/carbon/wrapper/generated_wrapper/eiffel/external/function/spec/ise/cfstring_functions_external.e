@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_CFStringGetTypeID"
 		end
 
-	frozen cfstring_get_type_id_address_external: POINTER is
+	frozencfstring_get_type_id_address_external: POINTER is
 			-- Address of C function `CFStringGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithPascalString"
 		end
 
-	frozen cfstring_create_with_pascal_string_address_external: POINTER is
+	frozencfstring_create_with_pascal_string_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithPascalString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithCString"
 		end
 
-	frozen cfstring_create_with_cstring_address_external: POINTER is
+	frozencfstring_create_with_cstring_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithCharacters"
 		end
 
-	frozen cfstring_create_with_characters_address_external: POINTER is
+	frozencfstring_create_with_characters_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCharacters'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithPascalStringNoCopy"
 		end
 
-	frozen cfstring_create_with_pascal_string_no_copy_address_external: POINTER is
+	frozencfstring_create_with_pascal_string_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithPascalStringNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithCStringNoCopy"
 		end
 
-	frozen cfstring_create_with_cstring_no_copy_address_external: POINTER is
+	frozencfstring_create_with_cstring_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCStringNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithCharactersNoCopy"
 		end
 
-	frozen cfstring_create_with_characters_no_copy_address_external: POINTER is
+	frozencfstring_create_with_characters_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithCharactersNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithSubstring"
 		end
 
-	frozen cfstring_create_with_substring_address_external: POINTER is
+	frozencfstring_create_with_substring_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithSubstring'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_CFStringCreateCopy"
 		end
 
-	frozen cfstring_create_copy_address_external: POINTER is
+	frozencfstring_create_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithFormat"
 		end
 
-	frozen cfstring_create_with_format_address_external: POINTER is
+	frozencfstring_create_with_format_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithFormat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_CFStringCreateMutable"
 		end
 
-	frozen cfstring_create_mutable_address_external: POINTER is
+	frozencfstring_create_mutable_address_external: POINTER is
 			-- Address of C function `CFStringCreateMutable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_CFStringCreateMutableCopy"
 		end
 
-	frozen cfstring_create_mutable_copy_address_external: POINTER is
+	frozencfstring_create_mutable_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateMutableCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_CFStringCreateMutableWithExternalCharactersNoCopy"
 		end
 
-	frozen cfstring_create_mutable_with_external_characters_no_copy_address_external: POINTER is
+	frozencfstring_create_mutable_with_external_characters_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringCreateMutableWithExternalCharactersNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CFStringGetLength"
 		end
 
-	frozen cfstring_get_length_address_external: POINTER is
+	frozencfstring_get_length_address_external: POINTER is
 			-- Address of C function `CFStringGetLength'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CFStringGetCharacterAtIndex"
 		end
 
-	frozen cfstring_get_character_at_index_address_external: POINTER is
+	frozencfstring_get_character_at_index_address_external: POINTER is
 			-- Address of C function `CFStringGetCharacterAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_CFStringGetCharacters"
 		end
 
-	frozen cfstring_get_characters_address_external: POINTER is
+	frozencfstring_get_characters_address_external: POINTER is
 			-- Address of C function `CFStringGetCharacters'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CFStringGetPascalString"
 		end
 
-	frozen cfstring_get_pascal_string_address_external: POINTER is
+	frozencfstring_get_pascal_string_address_external: POINTER is
 			-- Address of C function `CFStringGetPascalString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_CFStringGetCString"
 		end
 
-	frozen cfstring_get_cstring_address_external: POINTER is
+	frozencfstring_get_cstring_address_external: POINTER is
 			-- Address of C function `CFStringGetCString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_CFStringGetPascalStringPtr"
 		end
 
-	frozen cfstring_get_pascal_string_ptr_address_external: POINTER is
+	frozencfstring_get_pascal_string_ptr_address_external: POINTER is
 			-- Address of C function `CFStringGetPascalStringPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_CFStringGetCStringPtr"
 		end
 
-	frozen cfstring_get_cstring_ptr_address_external: POINTER is
+	frozencfstring_get_cstring_ptr_address_external: POINTER is
 			-- Address of C function `CFStringGetCStringPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CFStringGetCharactersPtr"
 		end
 
-	frozen cfstring_get_characters_ptr_address_external: POINTER is
+	frozencfstring_get_characters_ptr_address_external: POINTER is
 			-- Address of C function `CFStringGetCharactersPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_CFStringGetBytes"
 		end
 
-	frozen cfstring_get_bytes_address_external: POINTER is
+	frozencfstring_get_bytes_address_external: POINTER is
 			-- Address of C function `CFStringGetBytes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithBytes"
 		end
 
-	frozen cfstring_create_with_bytes_address_external: POINTER is
+	frozencfstring_create_with_bytes_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithBytes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_CFStringCreateFromExternalRepresentation"
 		end
 
-	frozen cfstring_create_from_external_representation_address_external: POINTER is
+	frozencfstring_create_from_external_representation_address_external: POINTER is
 			-- Address of C function `CFStringCreateFromExternalRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_CFStringCreateExternalRepresentation"
 		end
 
-	frozen cfstring_create_external_representation_address_external: POINTER is
+	frozencfstring_create_external_representation_address_external: POINTER is
 			-- Address of C function `CFStringCreateExternalRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_CFStringGetSmallestEncoding"
 		end
 
-	frozen cfstring_get_smallest_encoding_address_external: POINTER is
+	frozencfstring_get_smallest_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetSmallestEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_CFStringGetFastestEncoding"
 		end
 
-	frozen cfstring_get_fastest_encoding_address_external: POINTER is
+	frozencfstring_get_fastest_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetFastestEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_CFStringGetSystemEncoding"
 		end
 
-	frozen cfstring_get_system_encoding_address_external: POINTER is
+	frozencfstring_get_system_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetSystemEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_CFStringGetMaximumSizeForEncoding"
 		end
 
-	frozen cfstring_get_maximum_size_for_encoding_address_external: POINTER is
+	frozencfstring_get_maximum_size_for_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetMaximumSizeForEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_CFStringGetFileSystemRepresentation"
 		end
 
-	frozen cfstring_get_file_system_representation_address_external: POINTER is
+	frozencfstring_get_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFStringGetFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_CFStringGetMaximumSizeOfFileSystemRepresentation"
 		end
 
-	frozen cfstring_get_maximum_size_of_file_system_representation_address_external: POINTER is
+	frozencfstring_get_maximum_size_of_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFStringGetMaximumSizeOfFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_CFStringCreateWithFileSystemRepresentation"
 		end
 
-	frozen cfstring_create_with_file_system_representation_address_external: POINTER is
+	frozencfstring_create_with_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFStringCreateWithFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_CFStringCompareWithOptions"
 		end
 
-	frozen cfstring_compare_with_options_address_external: POINTER is
+	frozencfstring_compare_with_options_address_external: POINTER is
 			-- Address of C function `CFStringCompareWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_CFStringCompare"
 		end
 
-	frozen cfstring_compare_address_external: POINTER is
+	frozencfstring_compare_address_external: POINTER is
 			-- Address of C function `CFStringCompare'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_CFStringFindWithOptions"
 		end
 
-	frozen cfstring_find_with_options_address_external: POINTER is
+	frozencfstring_find_with_options_address_external: POINTER is
 			-- Address of C function `CFStringFindWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_CFStringCreateArrayWithFindResults"
 		end
 
-	frozen cfstring_create_array_with_find_results_address_external: POINTER is
+	frozencfstring_create_array_with_find_results_address_external: POINTER is
 			-- Address of C function `CFStringCreateArrayWithFindResults'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_CFStringFind"
 		end
 
-	frozen cfstring_find_address_external: POINTER is
+	frozencfstring_find_address_external: POINTER is
 			-- Address of C function `CFStringFind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_CFStringHasPrefix"
 		end
 
-	frozen cfstring_has_prefix_address_external: POINTER is
+	frozencfstring_has_prefix_address_external: POINTER is
 			-- Address of C function `CFStringHasPrefix'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_CFStringHasSuffix"
 		end
 
-	frozen cfstring_has_suffix_address_external: POINTER is
+	frozencfstring_has_suffix_address_external: POINTER is
 			-- Address of C function `CFStringHasSuffix'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_CFStringGetRangeOfComposedCharactersAtIndex"
 		end
 
-	frozen cfstring_get_range_of_composed_characters_at_index_address_external: POINTER is
+	frozencfstring_get_range_of_composed_characters_at_index_address_external: POINTER is
 			-- Address of C function `CFStringGetRangeOfComposedCharactersAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_CFStringFindCharacterFromSet"
 		end
 
-	frozen cfstring_find_character_from_set_address_external: POINTER is
+	frozencfstring_find_character_from_set_address_external: POINTER is
 			-- Address of C function `CFStringFindCharacterFromSet'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_CFStringGetLineBounds"
 		end
 
-	frozen cfstring_get_line_bounds_address_external: POINTER is
+	frozencfstring_get_line_bounds_address_external: POINTER is
 			-- Address of C function `CFStringGetLineBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_CFStringCreateByCombiningStrings"
 		end
 
-	frozen cfstring_create_by_combining_strings_address_external: POINTER is
+	frozencfstring_create_by_combining_strings_address_external: POINTER is
 			-- Address of C function `CFStringCreateByCombiningStrings'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_CFStringCreateArrayBySeparatingStrings"
 		end
 
-	frozen cfstring_create_array_by_separating_strings_address_external: POINTER is
+	frozencfstring_create_array_by_separating_strings_address_external: POINTER is
 			-- Address of C function `CFStringCreateArrayBySeparatingStrings'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_CFStringGetIntValue"
 		end
 
-	frozen cfstring_get_int_value_address_external: POINTER is
+	frozencfstring_get_int_value_address_external: POINTER is
 			-- Address of C function `CFStringGetIntValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_CFStringGetDoubleValue"
 		end
 
-	frozen cfstring_get_double_value_address_external: POINTER is
+	frozencfstring_get_double_value_address_external: POINTER is
 			-- Address of C function `CFStringGetDoubleValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_CFStringAppend"
 		end
 
-	frozen cfstring_append_address_external: POINTER is
+	frozencfstring_append_address_external: POINTER is
 			-- Address of C function `CFStringAppend'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_CFStringAppendCharacters"
 		end
 
-	frozen cfstring_append_characters_address_external: POINTER is
+	frozencfstring_append_characters_address_external: POINTER is
 			-- Address of C function `CFStringAppendCharacters'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_CFStringAppendPascalString"
 		end
 
-	frozen cfstring_append_pascal_string_address_external: POINTER is
+	frozencfstring_append_pascal_string_address_external: POINTER is
 			-- Address of C function `CFStringAppendPascalString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_CFStringAppendCString"
 		end
 
-	frozen cfstring_append_cstring_address_external: POINTER is
+	frozencfstring_append_cstring_address_external: POINTER is
 			-- Address of C function `CFStringAppendCString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_CFStringAppendFormat"
 		end
 
-	frozen cfstring_append_format_address_external: POINTER is
+	frozencfstring_append_format_address_external: POINTER is
 			-- Address of C function `CFStringAppendFormat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_CFStringInsert"
 		end
 
-	frozen cfstring_insert_address_external: POINTER is
+	frozencfstring_insert_address_external: POINTER is
 			-- Address of C function `CFStringInsert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_CFStringDelete"
 		end
 
-	frozen cfstring_delete_address_external: POINTER is
+	frozencfstring_delete_address_external: POINTER is
 			-- Address of C function `CFStringDelete'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_CFStringReplace"
 		end
 
-	frozen cfstring_replace_address_external: POINTER is
+	frozencfstring_replace_address_external: POINTER is
 			-- Address of C function `CFStringReplace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_CFStringReplaceAll"
 		end
 
-	frozen cfstring_replace_all_address_external: POINTER is
+	frozencfstring_replace_all_address_external: POINTER is
 			-- Address of C function `CFStringReplaceAll'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_CFStringFindAndReplace"
 		end
 
-	frozen cfstring_find_and_replace_address_external: POINTER is
+	frozencfstring_find_and_replace_address_external: POINTER is
 			-- Address of C function `CFStringFindAndReplace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_CFStringSetExternalCharactersNoCopy"
 		end
 
-	frozen cfstring_set_external_characters_no_copy_address_external: POINTER is
+	frozencfstring_set_external_characters_no_copy_address_external: POINTER is
 			-- Address of C function `CFStringSetExternalCharactersNoCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_CFStringPad"
 		end
 
-	frozen cfstring_pad_address_external: POINTER is
+	frozencfstring_pad_address_external: POINTER is
 			-- Address of C function `CFStringPad'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_CFStringTrim"
 		end
 
-	frozen cfstring_trim_address_external: POINTER is
+	frozencfstring_trim_address_external: POINTER is
 			-- Address of C function `CFStringTrim'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_CFStringTrimWhitespace"
 		end
 
-	frozen cfstring_trim_whitespace_address_external: POINTER is
+	frozencfstring_trim_whitespace_address_external: POINTER is
 			-- Address of C function `CFStringTrimWhitespace'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_CFStringLowercase"
 		end
 
-	frozen cfstring_lowercase_address_external: POINTER is
+	frozencfstring_lowercase_address_external: POINTER is
 			-- Address of C function `CFStringLowercase'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -925,7 +925,7 @@ feature
 			"ewg_function_macro_CFStringUppercase"
 		end
 
-	frozen cfstring_uppercase_address_external: POINTER is
+	frozencfstring_uppercase_address_external: POINTER is
 			-- Address of C function `CFStringUppercase'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -940,7 +940,7 @@ feature
 			"ewg_function_macro_CFStringCapitalize"
 		end
 
-	frozen cfstring_capitalize_address_external: POINTER is
+	frozencfstring_capitalize_address_external: POINTER is
 			-- Address of C function `CFStringCapitalize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -955,7 +955,7 @@ feature
 			"ewg_function_macro_CFStringNormalize"
 		end
 
-	frozen cfstring_normalize_address_external: POINTER is
+	frozencfstring_normalize_address_external: POINTER is
 			-- Address of C function `CFStringNormalize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -970,7 +970,7 @@ feature
 			"ewg_function_macro_CFStringTransform"
 		end
 
-	frozen cfstring_transform_address_external: POINTER is
+	frozencfstring_transform_address_external: POINTER is
 			-- Address of C function `CFStringTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -985,7 +985,7 @@ feature
 			"ewg_function_macro_CFStringIsEncodingAvailable"
 		end
 
-	frozen cfstring_is_encoding_available_address_external: POINTER is
+	frozencfstring_is_encoding_available_address_external: POINTER is
 			-- Address of C function `CFStringIsEncodingAvailable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1000,7 +1000,7 @@ feature
 			"ewg_function_macro_CFStringGetListOfAvailableEncodings"
 		end
 
-	frozen cfstring_get_list_of_available_encodings_address_external: POINTER is
+	frozencfstring_get_list_of_available_encodings_address_external: POINTER is
 			-- Address of C function `CFStringGetListOfAvailableEncodings'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1015,7 +1015,7 @@ feature
 			"ewg_function_macro_CFStringGetNameOfEncoding"
 		end
 
-	frozen cfstring_get_name_of_encoding_address_external: POINTER is
+	frozencfstring_get_name_of_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetNameOfEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1030,7 +1030,7 @@ feature
 			"ewg_function_macro_CFStringConvertEncodingToNSStringEncoding"
 		end
 
-	frozen cfstring_convert_encoding_to_nsstring_encoding_address_external: POINTER is
+	frozencfstring_convert_encoding_to_nsstring_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertEncodingToNSStringEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1045,7 +1045,7 @@ feature
 			"ewg_function_macro_CFStringConvertNSStringEncodingToEncoding"
 		end
 
-	frozen cfstring_convert_nsstring_encoding_to_encoding_address_external: POINTER is
+	frozencfstring_convert_nsstring_encoding_to_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertNSStringEncodingToEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1060,7 +1060,7 @@ feature
 			"ewg_function_macro_CFStringConvertEncodingToWindowsCodepage"
 		end
 
-	frozen cfstring_convert_encoding_to_windows_codepage_address_external: POINTER is
+	frozencfstring_convert_encoding_to_windows_codepage_address_external: POINTER is
 			-- Address of C function `CFStringConvertEncodingToWindowsCodepage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1075,7 +1075,7 @@ feature
 			"ewg_function_macro_CFStringConvertWindowsCodepageToEncoding"
 		end
 
-	frozen cfstring_convert_windows_codepage_to_encoding_address_external: POINTER is
+	frozencfstring_convert_windows_codepage_to_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertWindowsCodepageToEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1090,7 +1090,7 @@ feature
 			"ewg_function_macro_CFStringConvertIANACharSetNameToEncoding"
 		end
 
-	frozen cfstring_convert_ianachar_set_name_to_encoding_address_external: POINTER is
+	frozencfstring_convert_ianachar_set_name_to_encoding_address_external: POINTER is
 			-- Address of C function `CFStringConvertIANACharSetNameToEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1105,7 +1105,7 @@ feature
 			"ewg_function_macro_CFStringConvertEncodingToIANACharSetName"
 		end
 
-	frozen cfstring_convert_encoding_to_ianachar_set_name_address_external: POINTER is
+	frozencfstring_convert_encoding_to_ianachar_set_name_address_external: POINTER is
 			-- Address of C function `CFStringConvertEncodingToIANACharSetName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1120,7 +1120,7 @@ feature
 			"ewg_function_macro_CFStringGetMostCompatibleMacStringEncoding"
 		end
 
-	frozen cfstring_get_most_compatible_mac_string_encoding_address_external: POINTER is
+	frozencfstring_get_most_compatible_mac_string_encoding_address_external: POINTER is
 			-- Address of C function `CFStringGetMostCompatibleMacStringEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1135,7 +1135,7 @@ feature
 			"ewg_function_macro_CFShow"
 		end
 
-	frozen cfshow_address_external: POINTER is
+	frozencfshow_address_external: POINTER is
 			-- Address of C function `CFShow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1150,7 +1150,7 @@ feature
 			"ewg_function_macro_CFShowStr"
 		end
 
-	frozen cfshow_str_address_external: POINTER is
+	frozencfshow_str_address_external: POINTER is
 			-- Address of C function `CFShowStr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1165,7 +1165,7 @@ feature
 			"ewg_function_macro___CFStringMakeConstantString"
 		end
 
-	frozen cfstring_make_constant_string_address_external: POINTER is
+	frozencfstring_make_constant_string_address_external: POINTER is
 			-- Address of C function `__CFStringMakeConstantString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

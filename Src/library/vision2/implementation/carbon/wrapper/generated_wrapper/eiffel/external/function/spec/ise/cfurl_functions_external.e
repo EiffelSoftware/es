@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_CFURLGetTypeID"
 		end
 
-	frozen cfurlget_type_id_address_external: POINTER is
+	frozencfurlget_type_id_address_external: POINTER is
 			-- Address of C function `CFURLGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_CFURLCreateWithBytes"
 		end
 
-	frozen cfurlcreate_with_bytes_address_external: POINTER is
+	frozencfurlcreate_with_bytes_address_external: POINTER is
 			-- Address of C function `CFURLCreateWithBytes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_CFURLCreateData"
 		end
 
-	frozen cfurlcreate_data_address_external: POINTER is
+	frozencfurlcreate_data_address_external: POINTER is
 			-- Address of C function `CFURLCreateData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_CFURLCreateWithString"
 		end
 
-	frozen cfurlcreate_with_string_address_external: POINTER is
+	frozencfurlcreate_with_string_address_external: POINTER is
 			-- Address of C function `CFURLCreateWithString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_CFURLCreateAbsoluteURLWithBytes"
 		end
 
-	frozen cfurlcreate_absolute_urlwith_bytes_address_external: POINTER is
+	frozencfurlcreate_absolute_urlwith_bytes_address_external: POINTER is
 			-- Address of C function `CFURLCreateAbsoluteURLWithBytes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_CFURLCreateWithFileSystemPath"
 		end
 
-	frozen cfurlcreate_with_file_system_path_address_external: POINTER is
+	frozencfurlcreate_with_file_system_path_address_external: POINTER is
 			-- Address of C function `CFURLCreateWithFileSystemPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CFURLCreateFromFileSystemRepresentation"
 		end
 
-	frozen cfurlcreate_from_file_system_representation_address_external: POINTER is
+	frozencfurlcreate_from_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFURLCreateFromFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CFURLCreateWithFileSystemPathRelativeToBase"
 		end
 
-	frozen cfurlcreate_with_file_system_path_relative_to_base_address_external: POINTER is
+	frozencfurlcreate_with_file_system_path_relative_to_base_address_external: POINTER is
 			-- Address of C function `CFURLCreateWithFileSystemPathRelativeToBase'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_CFURLCreateFromFileSystemRepresentationRelativeToBase"
 		end
 
-	frozen cfurlcreate_from_file_system_representation_relative_to_base_address_external: POINTER is
+	frozencfurlcreate_from_file_system_representation_relative_to_base_address_external: POINTER is
 			-- Address of C function `CFURLCreateFromFileSystemRepresentationRelativeToBase'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_CFURLGetFileSystemRepresentation"
 		end
 
-	frozen cfurlget_file_system_representation_address_external: POINTER is
+	frozencfurlget_file_system_representation_address_external: POINTER is
 			-- Address of C function `CFURLGetFileSystemRepresentation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_CFURLCopyAbsoluteURL"
 		end
 
-	frozen cfurlcopy_absolute_url_address_external: POINTER is
+	frozencfurlcopy_absolute_url_address_external: POINTER is
 			-- Address of C function `CFURLCopyAbsoluteURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_CFURLGetString"
 		end
 
-	frozen cfurlget_string_address_external: POINTER is
+	frozencfurlget_string_address_external: POINTER is
 			-- Address of C function `CFURLGetString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_CFURLGetBaseURL"
 		end
 
-	frozen cfurlget_base_url_address_external: POINTER is
+	frozencfurlget_base_url_address_external: POINTER is
 			-- Address of C function `CFURLGetBaseURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CFURLCanBeDecomposed"
 		end
 
-	frozen cfurlcan_be_decomposed_address_external: POINTER is
+	frozencfurlcan_be_decomposed_address_external: POINTER is
 			-- Address of C function `CFURLCanBeDecomposed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CFURLCopyScheme"
 		end
 
-	frozen cfurlcopy_scheme_address_external: POINTER is
+	frozencfurlcopy_scheme_address_external: POINTER is
 			-- Address of C function `CFURLCopyScheme'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_CFURLCopyNetLocation"
 		end
 
-	frozen cfurlcopy_net_location_address_external: POINTER is
+	frozencfurlcopy_net_location_address_external: POINTER is
 			-- Address of C function `CFURLCopyNetLocation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CFURLCopyPath"
 		end
 
-	frozen cfurlcopy_path_address_external: POINTER is
+	frozencfurlcopy_path_address_external: POINTER is
 			-- Address of C function `CFURLCopyPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_CFURLCopyStrictPath"
 		end
 
-	frozen cfurlcopy_strict_path_address_external: POINTER is
+	frozencfurlcopy_strict_path_address_external: POINTER is
 			-- Address of C function `CFURLCopyStrictPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_CFURLCopyFileSystemPath"
 		end
 
-	frozen cfurlcopy_file_system_path_address_external: POINTER is
+	frozencfurlcopy_file_system_path_address_external: POINTER is
 			-- Address of C function `CFURLCopyFileSystemPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_CFURLHasDirectoryPath"
 		end
 
-	frozen cfurlhas_directory_path_address_external: POINTER is
+	frozencfurlhas_directory_path_address_external: POINTER is
 			-- Address of C function `CFURLHasDirectoryPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CFURLCopyResourceSpecifier"
 		end
 
-	frozen cfurlcopy_resource_specifier_address_external: POINTER is
+	frozencfurlcopy_resource_specifier_address_external: POINTER is
 			-- Address of C function `CFURLCopyResourceSpecifier'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_CFURLCopyHostName"
 		end
 
-	frozen cfurlcopy_host_name_address_external: POINTER is
+	frozencfurlcopy_host_name_address_external: POINTER is
 			-- Address of C function `CFURLCopyHostName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_CFURLGetPortNumber"
 		end
 
-	frozen cfurlget_port_number_address_external: POINTER is
+	frozencfurlget_port_number_address_external: POINTER is
 			-- Address of C function `CFURLGetPortNumber'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_CFURLCopyUserName"
 		end
 
-	frozen cfurlcopy_user_name_address_external: POINTER is
+	frozencfurlcopy_user_name_address_external: POINTER is
 			-- Address of C function `CFURLCopyUserName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_CFURLCopyPassword"
 		end
 
-	frozen cfurlcopy_password_address_external: POINTER is
+	frozencfurlcopy_password_address_external: POINTER is
 			-- Address of C function `CFURLCopyPassword'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_CFURLCopyParameterString"
 		end
 
-	frozen cfurlcopy_parameter_string_address_external: POINTER is
+	frozencfurlcopy_parameter_string_address_external: POINTER is
 			-- Address of C function `CFURLCopyParameterString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_CFURLCopyQueryString"
 		end
 
-	frozen cfurlcopy_query_string_address_external: POINTER is
+	frozencfurlcopy_query_string_address_external: POINTER is
 			-- Address of C function `CFURLCopyQueryString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_CFURLCopyFragment"
 		end
 
-	frozen cfurlcopy_fragment_address_external: POINTER is
+	frozencfurlcopy_fragment_address_external: POINTER is
 			-- Address of C function `CFURLCopyFragment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_CFURLCopyLastPathComponent"
 		end
 
-	frozen cfurlcopy_last_path_component_address_external: POINTER is
+	frozencfurlcopy_last_path_component_address_external: POINTER is
 			-- Address of C function `CFURLCopyLastPathComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_CFURLCopyPathExtension"
 		end
 
-	frozen cfurlcopy_path_extension_address_external: POINTER is
+	frozencfurlcopy_path_extension_address_external: POINTER is
 			-- Address of C function `CFURLCopyPathExtension'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_CFURLCreateCopyAppendingPathComponent"
 		end
 
-	frozen cfurlcreate_copy_appending_path_component_address_external: POINTER is
+	frozencfurlcreate_copy_appending_path_component_address_external: POINTER is
 			-- Address of C function `CFURLCreateCopyAppendingPathComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_CFURLCreateCopyDeletingLastPathComponent"
 		end
 
-	frozen cfurlcreate_copy_deleting_last_path_component_address_external: POINTER is
+	frozencfurlcreate_copy_deleting_last_path_component_address_external: POINTER is
 			-- Address of C function `CFURLCreateCopyDeletingLastPathComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_CFURLCreateCopyAppendingPathExtension"
 		end
 
-	frozen cfurlcreate_copy_appending_path_extension_address_external: POINTER is
+	frozencfurlcreate_copy_appending_path_extension_address_external: POINTER is
 			-- Address of C function `CFURLCreateCopyAppendingPathExtension'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_CFURLCreateCopyDeletingPathExtension"
 		end
 
-	frozen cfurlcreate_copy_deleting_path_extension_address_external: POINTER is
+	frozencfurlcreate_copy_deleting_path_extension_address_external: POINTER is
 			-- Address of C function `CFURLCreateCopyDeletingPathExtension'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_CFURLGetBytes"
 		end
 
-	frozen cfurlget_bytes_address_external: POINTER is
+	frozencfurlget_bytes_address_external: POINTER is
 			-- Address of C function `CFURLGetBytes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -532,10 +532,10 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFURLRef, CFURLComponentType, CFRange*):CFRange*"
 		alias
-			"ewg_function_CFURLGetByteRangeForComponent"
+			"ewg_function_CFURLGetByteRangeForComponent()"
 		end
 
-	frozen cfurlget_byte_range_for_component_address_external: POINTER is
+	frozencfurlget_byte_range_for_component_address_external: POINTER is
 			-- Address of C function `CFURLGetByteRangeForComponent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_CFURLCreateStringByReplacingPercentEscapes"
 		end
 
-	frozen cfurlcreate_string_by_replacing_percent_escapes_address_external: POINTER is
+	frozencfurlcreate_string_by_replacing_percent_escapes_address_external: POINTER is
 			-- Address of C function `CFURLCreateStringByReplacingPercentEscapes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_CFURLCreateStringByReplacingPercentEscapesUsingEncoding"
 		end
 
-	frozen cfurlcreate_string_by_replacing_percent_escapes_using_encoding_address_external: POINTER is
+	frozencfurlcreate_string_by_replacing_percent_escapes_using_encoding_address_external: POINTER is
 			-- Address of C function `CFURLCreateStringByReplacingPercentEscapesUsingEncoding'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_CFURLCreateStringByAddingPercentEscapes"
 		end
 
-	frozen cfurlcreate_string_by_adding_percent_escapes_address_external: POINTER is
+	frozencfurlcreate_string_by_adding_percent_escapes_address_external: POINTER is
 			-- Address of C function `CFURLCreateStringByAddingPercentEscapes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_CFURLCreateFromFSRef"
 		end
 
-	frozen cfurlcreate_from_fsref_address_external: POINTER is
+	frozencfurlcreate_from_fsref_address_external: POINTER is
 			-- Address of C function `CFURLCreateFromFSRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_CFURLGetFSRef"
 		end
 
-	frozen cfurlget_fsref_address_external: POINTER is
+	frozencfurlget_fsref_address_external: POINTER is
 			-- Address of C function `CFURLGetFSRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
