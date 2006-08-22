@@ -25,8 +25,7 @@ inherit
 			make,
 			container_widget,
 			visual_widget,
-			on_removed_item,
-			needs_event_box
+			on_removed_item
 		end
 
 create

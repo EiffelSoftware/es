@@ -26,8 +26,7 @@ inherit
 
 	EV_CONTAINER_IMP
 		redefine
-			interface,
-			needs_event_box
+			interface
 		end
 create
 	make
@@ -152,7 +151,7 @@ feature {EV_ANY_I, EV_ANY} -- Status Settings
 	set_item_span (v: EV_WIDGET; column_span, row_span: INTEGER) is
 			-- Resize 'v' to occupy column span and row span
 		do
-	
+
 		end
 
 feature {NONE} -- Externals

@@ -25,7 +25,6 @@ inherit
 			vertical_adjustment,
 			interface,
 			make,
-			on_size_allocate,
 			x_offset,
 			y_offset,
 			set_x_offset,

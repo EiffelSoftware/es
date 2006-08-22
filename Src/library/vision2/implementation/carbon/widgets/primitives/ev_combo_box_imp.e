@@ -23,7 +23,6 @@ inherit
 		undefine
 			create_focus_in_actions,
 			create_focus_out_actions,
-			needs_event_box,
 			pre_pick_steps,
 			call_pebble_function,
 			enable_transport,
@@ -32,7 +31,6 @@ inherit
 			initialize,
 			make,
 			interface,
-			needs_event_box,
 			has_focus,
 			on_focus_changed
 		end
@@ -49,7 +47,6 @@ inherit
 			set_focus
 		redefine
 			initialize,
-			needs_event_box,
 			make,
 			interface,
 			insert_i_th
@@ -63,8 +60,6 @@ create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is False
 
 	make (an_interface: like interface) is
 			-- Create a combo-box.

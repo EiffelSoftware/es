@@ -20,7 +20,6 @@ inherit
 			interface,
 			visual_widget,
 			create_change_actions,
-			needs_event_box,
 			on_key_event,
 			set_minimum_width_in_characters
 		end
@@ -43,8 +42,6 @@ create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is do Result := True end
 
 	make (an_interface: like interface) is
 			-- Create a gtk entry.

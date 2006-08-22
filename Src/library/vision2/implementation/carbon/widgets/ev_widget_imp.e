@@ -82,11 +82,6 @@ feature {EV_WINDOW_IMP, EV_INTERMEDIARY_ROUTINES, EV_ANY_I} -- Implementation
 		do
 		end
 
-	on_size_allocate (a_x, a_y, a_width, a_height: INTEGER) is
-			-- Gtk_Widget."size-allocate" happened.
-		do
-		end
-
 	on_focus_changed (a_has_focus: BOOLEAN) is
 			-- Called from focus intermediary agents when focus for `Current' has changed.
 			-- if `a_has_focus' then `Current' has just received focus.

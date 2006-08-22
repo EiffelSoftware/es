@@ -21,8 +21,7 @@ inherit
 			visual_widget,
 			on_key_event,
 			default_key_processing_blocked,
-			on_focus_changed,
-			needs_event_box
+			on_focus_changed
 		redefine
 			interface,
 			initialize,

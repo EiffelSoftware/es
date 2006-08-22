@@ -23,7 +23,6 @@ inherit
 			make
 		redefine
 			interface,
-			needs_event_box,
 			initialize
 		end
 

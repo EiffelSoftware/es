@@ -29,7 +29,6 @@ inherit
 			initialize,
 			make,
 			on_key_event,
-			on_size_allocate,
 			hide,
 			internal_set_minimum_size,
 			on_widget_mapped,
@@ -225,6 +224,7 @@ feature -- Status setting
 
 feature -- Element change
 
+	on_change_notification_list: PROCEDURE [ANY, TUPLE]
 
 	replace (v: like item) is
 			-- Replace `item' with `v'.
@@ -243,7 +243,7 @@ feature -- Element change
 				check
 					item_has_implementation: w /= Void
 				end
-				dispose_control_external (w.c_object )
+				dispose_control_external ( w.c_object )
 			end
 			if v /= Void then
 				w ?= v.implementation
@@ -252,8 +252,11 @@ feature -- Element change
 
 				setup_window_binding( w.c_object )
 
-
 				on_new_item (w)
+				-- Tree-hack:
+
+
+				-- What does this do and why is in necessary? There should be some documentation for hacks like this one
 				a_list ?= v.implementation
 				if a_list /= void then
 					a_list.embed_all
@@ -387,14 +390,6 @@ feature {NONE} -- Implementation
 				set_height (a_minimum_height)
 			end
 		end
-
-	on_size_allocate (a_x, a_y, a_width, a_height: INTEGER) is
-			-- Gtk_Widget."size-allocate" happened.
-		do
-		end
-
-	previously_focused_widget: POINTER
-		-- Widget that was previously focused within `Current'.
 
 	set_focused_widget (a_widget: EV_WIDGET_IMP) is
 			-- Set currently focused widget to `a_widget'.

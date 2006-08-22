@@ -32,7 +32,6 @@ inherit
 			pre_pick_steps,
 			post_drop_steps,
 			call_pebble_function,
-			needs_event_box,
 			on_pointer_motion
 		end
 
