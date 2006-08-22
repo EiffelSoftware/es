@@ -67,8 +67,10 @@ feature -- Access
 	step: INTEGER is
 			-- Value by which `value' is increased after `step_forward'.
 		do
-
+			Result := l_step
 		end
+
+	l_step: INTEGER
 
 	leap: INTEGER is
 			-- Value by which `value' is increased after `leap_forward'.
@@ -128,7 +130,7 @@ feature -- Element change
 			-- Set `step' to `a_step'.
 		do
 			if step /= a_step then
-
+				l_step := a_step
 			end
 		ensure then
 			value_same: value = old value

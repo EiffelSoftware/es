@@ -274,6 +274,10 @@ feature -- Basic operation
 	disable_word_wrapping is
 			-- Disable word wrapping for `Current'
 		do
+			-- Make sure both scrollbars are showing
+			--{EV_GTK_EXTERNALS}.gtk_scrolled_window_set_policy (scrolled_window,{EV_GTK_EXTERNALS}.GTK_POLICY_ALWAYS_ENUM,{EV_GTK_EXTERNALS}.GTK_POLICY_ALWAYS_ENUM)
+			--{EV_GTK_DEPENDENT_EXTERNALS}.gtk_text_view_set_wrap_mode (text_view, {EV_GTK_DEPENDENT_EXTERNALS}.gtk_wrap_none_enum)
+			has_word_wrapping := False
 
 		end
 

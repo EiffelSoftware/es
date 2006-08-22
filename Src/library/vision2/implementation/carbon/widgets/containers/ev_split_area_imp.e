@@ -70,8 +70,29 @@ set_second (an_item: like item) is
 
 	prune (an_item: like item) is
 			-- Remove `an_item' if present from `Current'.
+		local
+			item_imp: EV_WIDGET_IMP
 		do
-
+			if has (an_item) and then an_item /= Void then
+				item_imp ?= an_item.implementation
+				item_imp.set_parent_imp (Void)
+				check item_imp_not_void: item_imp /= Void end
+				--{EV_GTK_EXTERNALS}.gtk_container_remove ({EV_GTK_EXTERNALS}.gtk_widget_struct_parent (item_imp.c_object), item_imp.c_object)
+				if an_item = first then
+					first_expandable := False
+					first := Void
+					set_split_position (0)
+					if second /= Void then
+						set_item_resize (second, True)
+					end
+				else
+					second := Void
+					second_expandable := True
+					if first /= Void then
+						set_item_resize (first, True)
+					end
+				end
+			end
 		end
 
 	enable_item_expand (an_item: like item) is
@@ -83,7 +104,7 @@ set_second (an_item: like item) is
 	disable_item_expand (an_item: like item) is
 			-- Make `an_item' non-expandable on `Current' resize.
 		do
-
+			set_item_resize (an_item, False)
 		end
 
 	set_split_position (a_split_position: INTEGER) is

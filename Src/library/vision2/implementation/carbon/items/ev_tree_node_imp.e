@@ -78,8 +78,10 @@ feature -- Status report
 			par_tree: EV_TREE_IMP
 		do
 			par_tree := parent_tree_imp
-
+			Result := l_exp
 		end
+
+	l_exp: BOOLEAN
 
 feature -- Status setting
 
@@ -109,7 +111,7 @@ feature -- Status setting
 	set_expand (a_flag: BOOLEAN) is
 			-- Expand the item if `flag', collapse it otherwise.
 		do
-
+			l_exp := a_flag
 		end
 
 	set_text (a_text: STRING_GENERAL) is
@@ -328,6 +330,9 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			if internal_text = Void then
 				par_t_imp := parent_tree_imp
 				Result := par_t_imp.get_text_from_position (Current)
+				if result = void then
+					create Result. make_empty
+				end
 			else
 				Result := internal_text.twin
 			end

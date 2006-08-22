@@ -39,6 +39,7 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Initialize.
 		do
+			base_make (an_interface)
 		end
 
 feature -- Access
