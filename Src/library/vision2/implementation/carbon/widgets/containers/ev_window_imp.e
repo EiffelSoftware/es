@@ -123,6 +123,8 @@ feature {NONE} -- Initialization
 			maximum_width := interface.maximum_dimension
 			maximum_height := interface.maximum_dimension
 
+			app_implementation.windows.extend (current.interface)
+
 			initialize_client_area
 
 			default_height := -1
@@ -224,7 +226,7 @@ feature -- Status setting
 
 feature -- Element change
 
-	on_change_notification_list: PROCEDURE [ANY, TUPLE]
+	on_attach: ACTION_SEQUENCE [TUPLE]
 
 	replace (v: like item) is
 			-- Replace `item' with `v'.
@@ -253,8 +255,6 @@ feature -- Element change
 				setup_window_binding( w.c_object )
 
 				on_new_item (w)
-				-- Tree-hack:
-
 
 				-- What does this do and why is in necessary? There should be some documentation for hacks like this one
 				a_list ?= v.implementation
@@ -425,7 +425,6 @@ feature {NONE} -- Implementation
 			-- Initialize the client area of 'Current'.
 		do
 			-- TODO: init vbox/hbox?
-			app_implementation.window_oids.extend (internal_id)
 		end
 
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation

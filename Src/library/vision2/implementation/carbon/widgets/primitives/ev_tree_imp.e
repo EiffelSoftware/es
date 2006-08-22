@@ -56,8 +56,6 @@ create
 
 feature {NONE} -- Initialization
 
-	needs_event_box: BOOLEAN is True
-
 	make (an_interface: like interface) is
 			-- Create an empty Tree.
 		local
@@ -69,16 +67,16 @@ feature {NONE} -- Initialization
 			base_make (an_interface)
 
 			-- Fix Problems: A DataBrowser Control does not follow the standard hirarchical widgets idea, but is attached directly to the window: UGLY!
+			-- This is very buggy currently: Don't try to use it with several windows
 			create rect.make_new_unshared
 			rect.set_left(20)
 			rect.set_right(100)
 			rect.set_bottom(40)
 			rect.set_top (20)
---			app_implementation.windows.start
---			window ?= app_implementation.windows.item.implementation -- HACK
---			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
---			set_c_object (ptr)
-			set_c_object ($current)
+			app_implementation.windows.start
+			window ?= app_implementation.windows.item.implementation -- HACK
+			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
+			set_c_object (ptr)
 		end
 
 	call_selection_action_sequences is

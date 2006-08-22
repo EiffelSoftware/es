@@ -56,7 +56,7 @@ feature {NONE} -- Initialization
 
 			id_count := 1
 			create free_ids.make
-			create window_oids.make
+			create windows.make
 			create widget_list.make (1, 200)
 		end
 
@@ -100,34 +100,8 @@ feature -- Access
 		do
 		end
 
-	window_oids: LINKED_LIST [INTEGER]
-			-- Global list of window object ids.
-
-	windows: LINEAR [EV_WINDOW] is
+	windows: LINKED_LIST [EV_WINDOW]
 			-- Global list of windows.
-		local
-			list: LINKED_LIST [EV_WINDOW]
-			w: EV_WINDOW_IMP
-			id: IDENTIFIED
-		do
-			create id
-			create list.make
-			Result := list
-			from
-				window_oids.start
-			until
-				window_oids.after
-			loop
-				w ?= id.id_object (window_oids.item)
-				if w = Void or else w.is_destroyed then
-					window_oids.prune_all (window_oids.item)
-				else
-					list.extend (w.interface)
-					window_oids.forth
-				end
-			end
-		end
-
 
 feature -- Basic operation
 
@@ -440,9 +414,6 @@ feature -- event handling
 				}
 			]"
 		end
-
-invariant
-	window_oids_not_void: is_usable implies window_oids /= void
 
 indexing
 	copyright:	"Copyright (c) 2006, The ETH Eiffel.Mac Team"
