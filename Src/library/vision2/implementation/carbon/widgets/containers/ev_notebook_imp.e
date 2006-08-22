@@ -220,7 +220,7 @@ feature -- Measurement
 				Result := 0
 			end
 		end
-		
+
 feature {EV_NOTEBOOK} -- Status setting
 
 	set_tab_position (a_tab_position: INTEGER) is
@@ -236,9 +236,7 @@ feature {EV_NOTEBOOK} -- Status setting
 			err : INTEGER
 			i : INTEGER
 			actual_size : INTEGER
-			tab_array : EWG_POINTER_ARRAY
 			info_rec : CONTROL_TAB_INFO_REC_V1_STRUCT
-			help_array : ARRAY[CONTROL_TAB_ENTRY_STRUCT]
 			w_imp : EV_WIDGET_IMP
 		do
  			if a_tab_position = interface.Tab_top  then
