@@ -27,6 +27,7 @@ inherit
 			visual_widget,
 			on_removed_item
 		end
+	HIVIEW_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -93,11 +94,13 @@ feature -- Element change
 	set_item_width (a_width: INTEGER) is
 			-- Set `a_widget.width' to `a_width'.
 		do
+			internal_set_item_size (a_width, -1)
 		end
 
 	set_item_height (a_height: INTEGER) is
 			-- Set `a_widget.height' to `a_height'.
 		do
+			internal_set_item_size (-1, a_height)
 		end
 
 feature {NONE} -- Implementation
@@ -113,7 +116,32 @@ feature {NONE} -- Implementation
 	internal_set_item_size (a_width, a_height: INTEGER) is
 			-- Set `a_widget.width' to `a_width'.
 			-- Set `a_widget.height' to `a_height'.
+		local
+			item_width, item_height: INTEGER
+			w_imp: EV_WIDGET_IMP
+			a_rect: CGRECT_STRUCT
+			a_size: CGSIZE_STRUCT
+			ret: INTEGER
 		do
+			create a_rect.make_new_unshared
+			ret := hiview_get_frame_external ( c_object, a_rect.item )
+			create a_size.make_shared ( a_rect.size )
+
+
+			if a_width > 0 then
+				a_size.set_width (a_width)
+			end
+
+			if a_height > 0 then
+				a_size.set_height (a_height)
+			end
+
+			w_imp ?= item.implementation
+			w_imp.store_minimum_size
+
+			a_rect.set_size (a_size.item)
+
+			ret := hiview_set_frame_external (w_imp.c_object, a_rect.item)
 		end
 
 	on_removed_item (a_widget_imp: EV_WIDGET_IMP) is
