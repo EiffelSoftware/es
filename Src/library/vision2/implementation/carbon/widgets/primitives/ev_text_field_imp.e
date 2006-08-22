@@ -240,6 +240,8 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
+	real_text
+
 feature {NONE} -- Implementation
 
 	entry_widget: POINTER
