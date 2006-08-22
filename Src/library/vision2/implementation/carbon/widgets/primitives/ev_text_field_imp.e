@@ -240,7 +240,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
-	real_text
+	real_text: STRING_GENERAL
 
 feature {NONE} -- Implementation
 
