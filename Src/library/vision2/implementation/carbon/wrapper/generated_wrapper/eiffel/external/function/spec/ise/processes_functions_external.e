@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_LaunchApplication"
 		end
 
-	frozenlaunch_application_address_external: POINTER is
+	frozen launch_application_address_external: POINTER is
 			-- Address of C function `LaunchApplication'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_GetCurrentProcess"
 		end
 
-	frozenget_current_process_address_external: POINTER is
+	frozen get_current_process_address_external: POINTER is
 			-- Address of C function `GetCurrentProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_GetFrontProcess"
 		end
 
-	frozenget_front_process_address_external: POINTER is
+	frozen get_front_process_address_external: POINTER is
 			-- Address of C function `GetFrontProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_GetNextProcess"
 		end
 
-	frozenget_next_process_address_external: POINTER is
+	frozen get_next_process_address_external: POINTER is
 			-- Address of C function `GetNextProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_GetProcessInformation"
 		end
 
-	frozenget_process_information_address_external: POINTER is
+	frozen get_process_information_address_external: POINTER is
 			-- Address of C function `GetProcessInformation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_ProcessInformationCopyDictionary"
 		end
 
-	frozenprocess_information_copy_dictionary_address_external: POINTER is
+	frozen process_information_copy_dictionary_address_external: POINTER is
 			-- Address of C function `ProcessInformationCopyDictionary'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_SetFrontProcess"
 		end
 
-	frozenset_front_process_address_external: POINTER is
+	frozen set_front_process_address_external: POINTER is
 			-- Address of C function `SetFrontProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_SetFrontProcessWithOptions"
 		end
 
-	frozenset_front_process_with_options_address_external: POINTER is
+	frozen set_front_process_with_options_address_external: POINTER is
 			-- Address of C function `SetFrontProcessWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_WakeUpProcess"
 		end
 
-	frozenwake_up_process_address_external: POINTER is
+	frozen wake_up_process_address_external: POINTER is
 			-- Address of C function `WakeUpProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_SameProcess"
 		end
 
-	frozensame_process_address_external: POINTER is
+	frozen same_process_address_external: POINTER is
 			-- Address of C function `SameProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_ExitToShell"
 		end
 
-	frozenexit_to_shell_address_external: POINTER is
+	frozen exit_to_shell_address_external: POINTER is
 			-- Address of C function `ExitToShell'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_KillProcess"
 		end
 
-	frozenkill_process_address_external: POINTER is
+	frozen kill_process_address_external: POINTER is
 			-- Address of C function `KillProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_GetProcessBundleLocation"
 		end
 
-	frozenget_process_bundle_location_address_external: POINTER is
+	frozen get_process_bundle_location_address_external: POINTER is
 			-- Address of C function `GetProcessBundleLocation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CopyProcessName"
 		end
 
-	frozencopy_process_name_address_external: POINTER is
+	frozen copy_process_name_address_external: POINTER is
 			-- Address of C function `CopyProcessName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_GetProcessPID"
 		end
 
-	frozenget_process_pid_address_external: POINTER is
+	frozen get_process_pid_address_external: POINTER is
 			-- Address of C function `GetProcessPID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_GetProcessForPID"
 		end
 
-	frozenget_process_for_pid_address_external: POINTER is
+	frozen get_process_for_pid_address_external: POINTER is
 			-- Address of C function `GetProcessForPID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_IsProcessVisible"
 		end
 
-	frozenis_process_visible_address_external: POINTER is
+	frozen is_process_visible_address_external: POINTER is
 			-- Address of C function `IsProcessVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_ShowHideProcess"
 		end
 
-	frozenshow_hide_process_address_external: POINTER is
+	frozen show_hide_process_address_external: POINTER is
 			-- Address of C function `ShowHideProcess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_TransformProcessType"
 		end
 
-	frozentransform_process_type_address_external: POINTER is
+	frozen transform_process_type_address_external: POINTER is
 			-- Address of C function `TransformProcessType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

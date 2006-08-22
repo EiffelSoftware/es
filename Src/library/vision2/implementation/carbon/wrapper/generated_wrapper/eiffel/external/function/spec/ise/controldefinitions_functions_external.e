@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_CreateBevelButtonControl"
 		end
 
-	frozencreate_bevel_button_control_address_external: POINTER is
+	frozen create_bevel_button_control_address_external: POINTER is
 			-- Address of C function `CreateBevelButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_GetBevelButtonMenuValue"
 		end
 
-	frozenget_bevel_button_menu_value_address_external: POINTER is
+	frozen get_bevel_button_menu_value_address_external: POINTER is
 			-- Address of C function `GetBevelButtonMenuValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_SetBevelButtonMenuValue"
 		end
 
-	frozenset_bevel_button_menu_value_address_external: POINTER is
+	frozen set_bevel_button_menu_value_address_external: POINTER is
 			-- Address of C function `SetBevelButtonMenuValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_GetBevelButtonMenuHandle"
 		end
 
-	frozenget_bevel_button_menu_handle_address_external: POINTER is
+	frozen get_bevel_button_menu_handle_address_external: POINTER is
 			-- Address of C function `GetBevelButtonMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_GetBevelButtonContentInfo"
 		end
 
-	frozenget_bevel_button_content_info_address_external: POINTER is
+	frozen get_bevel_button_content_info_address_external: POINTER is
 			-- Address of C function `GetBevelButtonContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_SetBevelButtonContentInfo"
 		end
 
-	frozenset_bevel_button_content_info_address_external: POINTER is
+	frozen set_bevel_button_content_info_address_external: POINTER is
 			-- Address of C function `SetBevelButtonContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_SetBevelButtonTransform"
 		end
 
-	frozenset_bevel_button_transform_address_external: POINTER is
+	frozen set_bevel_button_transform_address_external: POINTER is
 			-- Address of C function `SetBevelButtonTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_SetBevelButtonGraphicAlignment"
 		end
 
-	frozenset_bevel_button_graphic_alignment_address_external: POINTER is
+	frozen set_bevel_button_graphic_alignment_address_external: POINTER is
 			-- Address of C function `SetBevelButtonGraphicAlignment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_SetBevelButtonTextAlignment"
 		end
 
-	frozenset_bevel_button_text_alignment_address_external: POINTER is
+	frozen set_bevel_button_text_alignment_address_external: POINTER is
 			-- Address of C function `SetBevelButtonTextAlignment'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_SetBevelButtonTextPlacement"
 		end
 
-	frozenset_bevel_button_text_placement_address_external: POINTER is
+	frozen set_bevel_button_text_placement_address_external: POINTER is
 			-- Address of C function `SetBevelButtonTextPlacement'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_CreateSliderControl"
 		end
 
-	frozencreate_slider_control_address_external: POINTER is
+	frozen create_slider_control_address_external: POINTER is
 			-- Address of C function `CreateSliderControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_CreateDisclosureTriangleControl"
 		end
 
-	frozencreate_disclosure_triangle_control_address_external: POINTER is
+	frozen create_disclosure_triangle_control_address_external: POINTER is
 			-- Address of C function `CreateDisclosureTriangleControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_SetDisclosureTriangleLastValue"
 		end
 
-	frozenset_disclosure_triangle_last_value_address_external: POINTER is
+	frozen set_disclosure_triangle_last_value_address_external: POINTER is
 			-- Address of C function `SetDisclosureTriangleLastValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_CreateProgressBarControl"
 		end
 
-	frozencreate_progress_bar_control_address_external: POINTER is
+	frozen create_progress_bar_control_address_external: POINTER is
 			-- Address of C function `CreateProgressBarControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_CreateRelevanceBarControl"
 		end
 
-	frozencreate_relevance_bar_control_address_external: POINTER is
+	frozen create_relevance_bar_control_address_external: POINTER is
 			-- Address of C function `CreateRelevanceBarControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_CreateLittleArrowsControl"
 		end
 
-	frozencreate_little_arrows_control_address_external: POINTER is
+	frozen create_little_arrows_control_address_external: POINTER is
 			-- Address of C function `CreateLittleArrowsControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_CreateChasingArrowsControl"
 		end
 
-	frozencreate_chasing_arrows_control_address_external: POINTER is
+	frozen create_chasing_arrows_control_address_external: POINTER is
 			-- Address of C function `CreateChasingArrowsControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_CreateTabsControl"
 		end
 
-	frozencreate_tabs_control_address_external: POINTER is
+	frozen create_tabs_control_address_external: POINTER is
 			-- Address of C function `CreateTabsControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_GetTabContentRect"
 		end
 
-	frozenget_tab_content_rect_address_external: POINTER is
+	frozen get_tab_content_rect_address_external: POINTER is
 			-- Address of C function `GetTabContentRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_SetTabEnabled"
 		end
 
-	frozenset_tab_enabled_address_external: POINTER is
+	frozen set_tab_enabled_address_external: POINTER is
 			-- Address of C function `SetTabEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_CreateSeparatorControl"
 		end
 
-	frozencreate_separator_control_address_external: POINTER is
+	frozen create_separator_control_address_external: POINTER is
 			-- Address of C function `CreateSeparatorControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_CreateGroupBoxControl"
 		end
 
-	frozencreate_group_box_control_address_external: POINTER is
+	frozen create_group_box_control_address_external: POINTER is
 			-- Address of C function `CreateGroupBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_CreateCheckGroupBoxControl"
 		end
 
-	frozencreate_check_group_box_control_address_external: POINTER is
+	frozen create_check_group_box_control_address_external: POINTER is
 			-- Address of C function `CreateCheckGroupBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_CreatePopupGroupBoxControl"
 		end
 
-	frozencreate_popup_group_box_control_address_external: POINTER is
+	frozen create_popup_group_box_control_address_external: POINTER is
 			-- Address of C function `CreatePopupGroupBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_CreateImageWellControl"
 		end
 
-	frozencreate_image_well_control_address_external: POINTER is
+	frozen create_image_well_control_address_external: POINTER is
 			-- Address of C function `CreateImageWellControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_GetImageWellContentInfo"
 		end
 
-	frozenget_image_well_content_info_address_external: POINTER is
+	frozen get_image_well_content_info_address_external: POINTER is
 			-- Address of C function `GetImageWellContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_SetImageWellContentInfo"
 		end
 
-	frozenset_image_well_content_info_address_external: POINTER is
+	frozen set_image_well_content_info_address_external: POINTER is
 			-- Address of C function `SetImageWellContentInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_SetImageWellTransform"
 		end
 
-	frozenset_image_well_transform_address_external: POINTER is
+	frozen set_image_well_transform_address_external: POINTER is
 			-- Address of C function `SetImageWellTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_CreatePopupArrowControl"
 		end
 
-	frozencreate_popup_arrow_control_address_external: POINTER is
+	frozen create_popup_arrow_control_address_external: POINTER is
 			-- Address of C function `CreatePopupArrowControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_CreatePlacardControl"
 		end
 
-	frozencreate_placard_control_address_external: POINTER is
+	frozen create_placard_control_address_external: POINTER is
 			-- Address of C function `CreatePlacardControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_CreateClockControl"
 		end
 
-	frozencreate_clock_control_address_external: POINTER is
+	frozen create_clock_control_address_external: POINTER is
 			-- Address of C function `CreateClockControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_CreateUserPaneControl"
 		end
 
-	frozencreate_user_pane_control_address_external: POINTER is
+	frozen create_user_pane_control_address_external: POINTER is
 			-- Address of C function `CreateUserPaneControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneDrawUPP"
 		end
 
-	frozennew_control_user_pane_draw_upp_address_external: POINTER is
+	frozen new_control_user_pane_draw_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneDrawUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneHitTestUPP"
 		end
 
-	frozennew_control_user_pane_hit_test_upp_address_external: POINTER is
+	frozen new_control_user_pane_hit_test_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneTrackingUPP"
 		end
 
-	frozennew_control_user_pane_tracking_upp_address_external: POINTER is
+	frozen new_control_user_pane_tracking_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneIdleUPP"
 		end
 
-	frozennew_control_user_pane_idle_upp_address_external: POINTER is
+	frozen new_control_user_pane_idle_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneIdleUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneKeyDownUPP"
 		end
 
-	frozennew_control_user_pane_key_down_upp_address_external: POINTER is
+	frozen new_control_user_pane_key_down_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneKeyDownUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneActivateUPP"
 		end
 
-	frozennew_control_user_pane_activate_upp_address_external: POINTER is
+	frozen new_control_user_pane_activate_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneActivateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneFocusUPP"
 		end
 
-	frozennew_control_user_pane_focus_upp_address_external: POINTER is
+	frozen new_control_user_pane_focus_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneFocusUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_NewControlUserPaneBackgroundUPP"
 		end
 
-	frozennew_control_user_pane_background_upp_address_external: POINTER is
+	frozen new_control_user_pane_background_upp_address_external: POINTER is
 			-- Address of C function `NewControlUserPaneBackgroundUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneDrawUPP"
 		end
 
-	frozendispose_control_user_pane_draw_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_draw_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneDrawUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneHitTestUPP"
 		end
 
-	frozendispose_control_user_pane_hit_test_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_hit_test_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneTrackingUPP"
 		end
 
-	frozendispose_control_user_pane_tracking_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_tracking_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneIdleUPP"
 		end
 
-	frozendispose_control_user_pane_idle_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_idle_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneIdleUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneKeyDownUPP"
 		end
 
-	frozendispose_control_user_pane_key_down_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_key_down_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneKeyDownUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneActivateUPP"
 		end
 
-	frozendispose_control_user_pane_activate_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_activate_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneActivateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneFocusUPP"
 		end
 
-	frozendispose_control_user_pane_focus_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_focus_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneFocusUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_DisposeControlUserPaneBackgroundUPP"
 		end
 
-	frozendispose_control_user_pane_background_upp_address_external: POINTER is
+	frozen dispose_control_user_pane_background_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlUserPaneBackgroundUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneDrawUPP"
 		end
 
-	frozeninvoke_control_user_pane_draw_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_draw_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneDrawUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneHitTestUPP"
 		end
 
-	frozeninvoke_control_user_pane_hit_test_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_hit_test_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneTrackingUPP"
 		end
 
-	frozeninvoke_control_user_pane_tracking_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_tracking_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneIdleUPP"
 		end
 
-	frozeninvoke_control_user_pane_idle_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_idle_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneIdleUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneKeyDownUPP"
 		end
 
-	frozeninvoke_control_user_pane_key_down_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_key_down_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneKeyDownUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneActivateUPP"
 		end
 
-	frozeninvoke_control_user_pane_activate_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_activate_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneActivateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneFocusUPP"
 		end
 
-	frozeninvoke_control_user_pane_focus_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_focus_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneFocusUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_InvokeControlUserPaneBackgroundUPP"
 		end
 
-	frozeninvoke_control_user_pane_background_upp_address_external: POINTER is
+	frozen invoke_control_user_pane_background_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlUserPaneBackgroundUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_CreateEditTextControl"
 		end
 
-	frozencreate_edit_text_control_address_external: POINTER is
+	frozen create_edit_text_control_address_external: POINTER is
 			-- Address of C function `CreateEditTextControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_NewControlEditTextValidationUPP"
 		end
 
-	frozennew_control_edit_text_validation_upp_address_external: POINTER is
+	frozen new_control_edit_text_validation_upp_address_external: POINTER is
 			-- Address of C function `NewControlEditTextValidationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_DisposeControlEditTextValidationUPP"
 		end
 
-	frozendispose_control_edit_text_validation_upp_address_external: POINTER is
+	frozen dispose_control_edit_text_validation_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlEditTextValidationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_InvokeControlEditTextValidationUPP"
 		end
 
-	frozeninvoke_control_edit_text_validation_upp_address_external: POINTER is
+	frozen invoke_control_edit_text_validation_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlEditTextValidationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_CreateStaticTextControl"
 		end
 
-	frozencreate_static_text_control_address_external: POINTER is
+	frozen create_static_text_control_address_external: POINTER is
 			-- Address of C function `CreateStaticTextControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -925,7 +925,7 @@ feature
 			"ewg_function_macro_CreatePictureControl"
 		end
 
-	frozencreate_picture_control_address_external: POINTER is
+	frozen create_picture_control_address_external: POINTER is
 			-- Address of C function `CreatePictureControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -940,7 +940,7 @@ feature
 			"ewg_function_macro_CreateIconControl"
 		end
 
-	frozencreate_icon_control_address_external: POINTER is
+	frozen create_icon_control_address_external: POINTER is
 			-- Address of C function `CreateIconControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -955,7 +955,7 @@ feature
 			"ewg_function_macro_CreateWindowHeaderControl"
 		end
 
-	frozencreate_window_header_control_address_external: POINTER is
+	frozen create_window_header_control_address_external: POINTER is
 			-- Address of C function `CreateWindowHeaderControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -970,7 +970,7 @@ feature
 			"ewg_function_macro_CreateListBoxControl"
 		end
 
-	frozencreate_list_box_control_address_external: POINTER is
+	frozen create_list_box_control_address_external: POINTER is
 			-- Address of C function `CreateListBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -985,7 +985,7 @@ feature
 			"ewg_function_macro_CreatePushButtonControl"
 		end
 
-	frozencreate_push_button_control_address_external: POINTER is
+	frozen create_push_button_control_address_external: POINTER is
 			-- Address of C function `CreatePushButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1000,7 +1000,7 @@ feature
 			"ewg_function_macro_CreatePushButtonWithIconControl"
 		end
 
-	frozencreate_push_button_with_icon_control_address_external: POINTER is
+	frozen create_push_button_with_icon_control_address_external: POINTER is
 			-- Address of C function `CreatePushButtonWithIconControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1015,7 +1015,7 @@ feature
 			"ewg_function_macro_CreateRadioButtonControl"
 		end
 
-	frozencreate_radio_button_control_address_external: POINTER is
+	frozen create_radio_button_control_address_external: POINTER is
 			-- Address of C function `CreateRadioButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1030,7 +1030,7 @@ feature
 			"ewg_function_macro_CreateCheckBoxControl"
 		end
 
-	frozencreate_check_box_control_address_external: POINTER is
+	frozen create_check_box_control_address_external: POINTER is
 			-- Address of C function `CreateCheckBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1045,7 +1045,7 @@ feature
 			"ewg_function_macro_CreateScrollBarControl"
 		end
 
-	frozencreate_scroll_bar_control_address_external: POINTER is
+	frozen create_scroll_bar_control_address_external: POINTER is
 			-- Address of C function `CreateScrollBarControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1060,7 +1060,7 @@ feature
 			"ewg_function_macro_CreatePopupButtonControl"
 		end
 
-	frozencreate_popup_button_control_address_external: POINTER is
+	frozen create_popup_button_control_address_external: POINTER is
 			-- Address of C function `CreatePopupButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1075,7 +1075,7 @@ feature
 			"ewg_function_macro_CreateRadioGroupControl"
 		end
 
-	frozencreate_radio_group_control_address_external: POINTER is
+	frozen create_radio_group_control_address_external: POINTER is
 			-- Address of C function `CreateRadioGroupControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1090,7 +1090,7 @@ feature
 			"ewg_function_macro_CreateScrollingTextBoxControl"
 		end
 
-	frozencreate_scrolling_text_box_control_address_external: POINTER is
+	frozen create_scrolling_text_box_control_address_external: POINTER is
 			-- Address of C function `CreateScrollingTextBoxControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1105,7 +1105,7 @@ feature
 			"ewg_function_macro_CreateDisclosureButtonControl"
 		end
 
-	frozencreate_disclosure_button_control_address_external: POINTER is
+	frozen create_disclosure_button_control_address_external: POINTER is
 			-- Address of C function `CreateDisclosureButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1120,7 +1120,7 @@ feature
 			"ewg_function_macro_CreateRoundButtonControl"
 		end
 
-	frozencreate_round_button_control_address_external: POINTER is
+	frozen create_round_button_control_address_external: POINTER is
 			-- Address of C function `CreateRoundButtonControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1135,7 +1135,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemUPP"
 		end
 
-	frozennew_data_browser_item_upp_address_external: POINTER is
+	frozen new_data_browser_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1150,7 +1150,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemUPP"
 		end
 
-	frozendispose_data_browser_item_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1165,7 +1165,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemUPP"
 		end
 
-	frozeninvoke_data_browser_item_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1180,7 +1180,7 @@ feature
 			"ewg_function_macro_CreateDataBrowserControl"
 		end
 
-	frozencreate_data_browser_control_address_external: POINTER is
+	frozen create_data_browser_control_address_external: POINTER is
 			-- Address of C function `CreateDataBrowserControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1195,7 +1195,7 @@ feature
 			"ewg_function_macro_GetDataBrowserViewStyle"
 		end
 
-	frozenget_data_browser_view_style_address_external: POINTER is
+	frozen get_data_browser_view_style_address_external: POINTER is
 			-- Address of C function `GetDataBrowserViewStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1210,7 +1210,7 @@ feature
 			"ewg_function_macro_SetDataBrowserViewStyle"
 		end
 
-	frozenset_data_browser_view_style_address_external: POINTER is
+	frozen set_data_browser_view_style_address_external: POINTER is
 			-- Address of C function `SetDataBrowserViewStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1225,7 +1225,7 @@ feature
 			"ewg_function_macro_DataBrowserChangeAttributes"
 		end
 
-	frozendata_browser_change_attributes_address_external: POINTER is
+	frozen data_browser_change_attributes_address_external: POINTER is
 			-- Address of C function `DataBrowserChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1240,7 +1240,7 @@ feature
 			"ewg_function_macro_DataBrowserGetAttributes"
 		end
 
-	frozendata_browser_get_attributes_address_external: POINTER is
+	frozen data_browser_get_attributes_address_external: POINTER is
 			-- Address of C function `DataBrowserGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1255,7 +1255,7 @@ feature
 			"ewg_function_macro_DataBrowserSetMetric"
 		end
 
-	frozendata_browser_set_metric_address_external: POINTER is
+	frozen data_browser_set_metric_address_external: POINTER is
 			-- Address of C function `DataBrowserSetMetric'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1270,7 +1270,7 @@ feature
 			"ewg_function_macro_DataBrowserGetMetric"
 		end
 
-	frozendata_browser_get_metric_address_external: POINTER is
+	frozen data_browser_get_metric_address_external: POINTER is
 			-- Address of C function `DataBrowserGetMetric'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1285,7 +1285,7 @@ feature
 			"ewg_function_macro_AddDataBrowserItems"
 		end
 
-	frozenadd_data_browser_items_address_external: POINTER is
+	frozen add_data_browser_items_address_external: POINTER is
 			-- Address of C function `AddDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1300,7 +1300,7 @@ feature
 			"ewg_function_macro_RemoveDataBrowserItems"
 		end
 
-	frozenremove_data_browser_items_address_external: POINTER is
+	frozen remove_data_browser_items_address_external: POINTER is
 			-- Address of C function `RemoveDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1315,7 +1315,7 @@ feature
 			"ewg_function_macro_UpdateDataBrowserItems"
 		end
 
-	frozenupdate_data_browser_items_address_external: POINTER is
+	frozen update_data_browser_items_address_external: POINTER is
 			-- Address of C function `UpdateDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1330,7 +1330,7 @@ feature
 			"ewg_function_macro_EnableDataBrowserEditCommand"
 		end
 
-	frozenenable_data_browser_edit_command_address_external: POINTER is
+	frozen enable_data_browser_edit_command_address_external: POINTER is
 			-- Address of C function `EnableDataBrowserEditCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1345,7 +1345,7 @@ feature
 			"ewg_function_macro_ExecuteDataBrowserEditCommand"
 		end
 
-	frozenexecute_data_browser_edit_command_address_external: POINTER is
+	frozen execute_data_browser_edit_command_address_external: POINTER is
 			-- Address of C function `ExecuteDataBrowserEditCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1360,7 +1360,7 @@ feature
 			"ewg_function_macro_GetDataBrowserSelectionAnchor"
 		end
 
-	frozenget_data_browser_selection_anchor_address_external: POINTER is
+	frozen get_data_browser_selection_anchor_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSelectionAnchor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1375,7 +1375,7 @@ feature
 			"ewg_function_macro_MoveDataBrowserSelectionAnchor"
 		end
 
-	frozenmove_data_browser_selection_anchor_address_external: POINTER is
+	frozen move_data_browser_selection_anchor_address_external: POINTER is
 			-- Address of C function `MoveDataBrowserSelectionAnchor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1390,7 +1390,7 @@ feature
 			"ewg_function_macro_OpenDataBrowserContainer"
 		end
 
-	frozenopen_data_browser_container_address_external: POINTER is
+	frozen open_data_browser_container_address_external: POINTER is
 			-- Address of C function `OpenDataBrowserContainer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1405,7 +1405,7 @@ feature
 			"ewg_function_macro_CloseDataBrowserContainer"
 		end
 
-	frozenclose_data_browser_container_address_external: POINTER is
+	frozen close_data_browser_container_address_external: POINTER is
 			-- Address of C function `CloseDataBrowserContainer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1420,7 +1420,7 @@ feature
 			"ewg_function_macro_SortDataBrowserContainer"
 		end
 
-	frozensort_data_browser_container_address_external: POINTER is
+	frozen sort_data_browser_container_address_external: POINTER is
 			-- Address of C function `SortDataBrowserContainer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1435,7 +1435,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItems"
 		end
 
-	frozenget_data_browser_items_address_external: POINTER is
+	frozen get_data_browser_items_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1450,7 +1450,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemCount"
 		end
 
-	frozenget_data_browser_item_count_address_external: POINTER is
+	frozen get_data_browser_item_count_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1465,7 +1465,7 @@ feature
 			"ewg_function_macro_ForEachDataBrowserItem"
 		end
 
-	frozenfor_each_data_browser_item_address_external: POINTER is
+	frozen for_each_data_browser_item_address_external: POINTER is
 			-- Address of C function `ForEachDataBrowserItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1480,7 +1480,7 @@ feature
 			"ewg_function_macro_IsDataBrowserItemSelected"
 		end
 
-	frozenis_data_browser_item_selected_address_external: POINTER is
+	frozen is_data_browser_item_selected_address_external: POINTER is
 			-- Address of C function `IsDataBrowserItemSelected'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1495,7 +1495,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemState"
 		end
 
-	frozenget_data_browser_item_state_address_external: POINTER is
+	frozen get_data_browser_item_state_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1510,7 +1510,7 @@ feature
 			"ewg_function_macro_RevealDataBrowserItem"
 		end
 
-	frozenreveal_data_browser_item_address_external: POINTER is
+	frozen reveal_data_browser_item_address_external: POINTER is
 			-- Address of C function `RevealDataBrowserItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1525,7 +1525,7 @@ feature
 			"ewg_function_macro_SetDataBrowserSelectedItems"
 		end
 
-	frozenset_data_browser_selected_items_address_external: POINTER is
+	frozen set_data_browser_selected_items_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSelectedItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1540,7 +1540,7 @@ feature
 			"ewg_function_macro_SetDataBrowserUserState"
 		end
 
-	frozenset_data_browser_user_state_address_external: POINTER is
+	frozen set_data_browser_user_state_address_external: POINTER is
 			-- Address of C function `SetDataBrowserUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1555,7 +1555,7 @@ feature
 			"ewg_function_macro_GetDataBrowserUserState"
 		end
 
-	frozenget_data_browser_user_state_address_external: POINTER is
+	frozen get_data_browser_user_state_address_external: POINTER is
 			-- Address of C function `GetDataBrowserUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1570,7 +1570,7 @@ feature
 			"ewg_function_macro_SetDataBrowserActiveItems"
 		end
 
-	frozenset_data_browser_active_items_address_external: POINTER is
+	frozen set_data_browser_active_items_address_external: POINTER is
 			-- Address of C function `SetDataBrowserActiveItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1585,7 +1585,7 @@ feature
 			"ewg_function_macro_GetDataBrowserActiveItems"
 		end
 
-	frozenget_data_browser_active_items_address_external: POINTER is
+	frozen get_data_browser_active_items_address_external: POINTER is
 			-- Address of C function `GetDataBrowserActiveItems'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1600,7 +1600,7 @@ feature
 			"ewg_function_macro_SetDataBrowserScrollBarInset"
 		end
 
-	frozenset_data_browser_scroll_bar_inset_address_external: POINTER is
+	frozen set_data_browser_scroll_bar_inset_address_external: POINTER is
 			-- Address of C function `SetDataBrowserScrollBarInset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1615,7 +1615,7 @@ feature
 			"ewg_function_macro_GetDataBrowserScrollBarInset"
 		end
 
-	frozenget_data_browser_scroll_bar_inset_address_external: POINTER is
+	frozen get_data_browser_scroll_bar_inset_address_external: POINTER is
 			-- Address of C function `GetDataBrowserScrollBarInset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1630,7 +1630,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTarget"
 		end
 
-	frozenset_data_browser_target_address_external: POINTER is
+	frozen set_data_browser_target_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1645,7 +1645,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTarget"
 		end
 
-	frozenget_data_browser_target_address_external: POINTER is
+	frozen get_data_browser_target_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1660,7 +1660,7 @@ feature
 			"ewg_function_macro_SetDataBrowserSortOrder"
 		end
 
-	frozenset_data_browser_sort_order_address_external: POINTER is
+	frozen set_data_browser_sort_order_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSortOrder'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1675,7 +1675,7 @@ feature
 			"ewg_function_macro_GetDataBrowserSortOrder"
 		end
 
-	frozenget_data_browser_sort_order_address_external: POINTER is
+	frozen get_data_browser_sort_order_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSortOrder'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1690,7 +1690,7 @@ feature
 			"ewg_function_macro_SetDataBrowserScrollPosition"
 		end
 
-	frozenset_data_browser_scroll_position_address_external: POINTER is
+	frozen set_data_browser_scroll_position_address_external: POINTER is
 			-- Address of C function `SetDataBrowserScrollPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1705,7 +1705,7 @@ feature
 			"ewg_function_macro_GetDataBrowserScrollPosition"
 		end
 
-	frozenget_data_browser_scroll_position_address_external: POINTER is
+	frozen get_data_browser_scroll_position_address_external: POINTER is
 			-- Address of C function `GetDataBrowserScrollPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1720,7 +1720,7 @@ feature
 			"ewg_function_macro_SetDataBrowserHasScrollBars"
 		end
 
-	frozenset_data_browser_has_scroll_bars_address_external: POINTER is
+	frozen set_data_browser_has_scroll_bars_address_external: POINTER is
 			-- Address of C function `SetDataBrowserHasScrollBars'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1735,7 +1735,7 @@ feature
 			"ewg_function_macro_GetDataBrowserHasScrollBars"
 		end
 
-	frozenget_data_browser_has_scroll_bars_address_external: POINTER is
+	frozen get_data_browser_has_scroll_bars_address_external: POINTER is
 			-- Address of C function `GetDataBrowserHasScrollBars'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1750,7 +1750,7 @@ feature
 			"ewg_function_macro_SetDataBrowserSortProperty"
 		end
 
-	frozenset_data_browser_sort_property_address_external: POINTER is
+	frozen set_data_browser_sort_property_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSortProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1765,7 +1765,7 @@ feature
 			"ewg_function_macro_GetDataBrowserSortProperty"
 		end
 
-	frozenget_data_browser_sort_property_address_external: POINTER is
+	frozen get_data_browser_sort_property_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSortProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1780,7 +1780,7 @@ feature
 			"ewg_function_macro_SetDataBrowserSelectionFlags"
 		end
 
-	frozenset_data_browser_selection_flags_address_external: POINTER is
+	frozen set_data_browser_selection_flags_address_external: POINTER is
 			-- Address of C function `SetDataBrowserSelectionFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1795,7 +1795,7 @@ feature
 			"ewg_function_macro_GetDataBrowserSelectionFlags"
 		end
 
-	frozenget_data_browser_selection_flags_address_external: POINTER is
+	frozen get_data_browser_selection_flags_address_external: POINTER is
 			-- Address of C function `GetDataBrowserSelectionFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1810,7 +1810,7 @@ feature
 			"ewg_function_macro_SetDataBrowserPropertyFlags"
 		end
 
-	frozenset_data_browser_property_flags_address_external: POINTER is
+	frozen set_data_browser_property_flags_address_external: POINTER is
 			-- Address of C function `SetDataBrowserPropertyFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1825,7 +1825,7 @@ feature
 			"ewg_function_macro_GetDataBrowserPropertyFlags"
 		end
 
-	frozenget_data_browser_property_flags_address_external: POINTER is
+	frozen get_data_browser_property_flags_address_external: POINTER is
 			-- Address of C function `GetDataBrowserPropertyFlags'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1840,7 +1840,7 @@ feature
 			"ewg_function_macro_SetDataBrowserEditText"
 		end
 
-	frozenset_data_browser_edit_text_address_external: POINTER is
+	frozen set_data_browser_edit_text_address_external: POINTER is
 			-- Address of C function `SetDataBrowserEditText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1855,7 +1855,7 @@ feature
 			"ewg_function_macro_CopyDataBrowserEditText"
 		end
 
-	frozencopy_data_browser_edit_text_address_external: POINTER is
+	frozen copy_data_browser_edit_text_address_external: POINTER is
 			-- Address of C function `CopyDataBrowserEditText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1870,7 +1870,7 @@ feature
 			"ewg_function_macro_GetDataBrowserEditText"
 		end
 
-	frozenget_data_browser_edit_text_address_external: POINTER is
+	frozen get_data_browser_edit_text_address_external: POINTER is
 			-- Address of C function `GetDataBrowserEditText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1885,7 +1885,7 @@ feature
 			"ewg_function_macro_SetDataBrowserEditItem"
 		end
 
-	frozenset_data_browser_edit_item_address_external: POINTER is
+	frozen set_data_browser_edit_item_address_external: POINTER is
 			-- Address of C function `SetDataBrowserEditItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1900,7 +1900,7 @@ feature
 			"ewg_function_macro_GetDataBrowserEditItem"
 		end
 
-	frozenget_data_browser_edit_item_address_external: POINTER is
+	frozen get_data_browser_edit_item_address_external: POINTER is
 			-- Address of C function `GetDataBrowserEditItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1915,7 +1915,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemPartBounds"
 		end
 
-	frozenget_data_browser_item_part_bounds_address_external: POINTER is
+	frozen get_data_browser_item_part_bounds_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemPartBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1930,7 +1930,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataIcon"
 		end
 
-	frozenset_data_browser_item_data_icon_address_external: POINTER is
+	frozen set_data_browser_item_data_icon_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1945,7 +1945,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataIcon"
 		end
 
-	frozenget_data_browser_item_data_icon_address_external: POINTER is
+	frozen get_data_browser_item_data_icon_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1960,7 +1960,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataText"
 		end
 
-	frozenset_data_browser_item_data_text_address_external: POINTER is
+	frozen set_data_browser_item_data_text_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1975,7 +1975,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataText"
 		end
 
-	frozenget_data_browser_item_data_text_address_external: POINTER is
+	frozen get_data_browser_item_data_text_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1990,7 +1990,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataValue"
 		end
 
-	frozenset_data_browser_item_data_value_address_external: POINTER is
+	frozen set_data_browser_item_data_value_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2005,7 +2005,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataValue"
 		end
 
-	frozenget_data_browser_item_data_value_address_external: POINTER is
+	frozen get_data_browser_item_data_value_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2020,7 +2020,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataMinimum"
 		end
 
-	frozenset_data_browser_item_data_minimum_address_external: POINTER is
+	frozen set_data_browser_item_data_minimum_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2035,7 +2035,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataMinimum"
 		end
 
-	frozenget_data_browser_item_data_minimum_address_external: POINTER is
+	frozen get_data_browser_item_data_minimum_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2050,7 +2050,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataMaximum"
 		end
 
-	frozenset_data_browser_item_data_maximum_address_external: POINTER is
+	frozen set_data_browser_item_data_maximum_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2065,7 +2065,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataMaximum"
 		end
 
-	frozenget_data_browser_item_data_maximum_address_external: POINTER is
+	frozen get_data_browser_item_data_maximum_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2080,7 +2080,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataBooleanValue"
 		end
 
-	frozenset_data_browser_item_data_boolean_value_address_external: POINTER is
+	frozen set_data_browser_item_data_boolean_value_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataBooleanValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2095,7 +2095,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataBooleanValue"
 		end
 
-	frozenget_data_browser_item_data_boolean_value_address_external: POINTER is
+	frozen get_data_browser_item_data_boolean_value_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataBooleanValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2110,7 +2110,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataMenuRef"
 		end
 
-	frozenset_data_browser_item_data_menu_ref_address_external: POINTER is
+	frozen set_data_browser_item_data_menu_ref_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataMenuRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2125,7 +2125,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataMenuRef"
 		end
 
-	frozenget_data_browser_item_data_menu_ref_address_external: POINTER is
+	frozen get_data_browser_item_data_menu_ref_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataMenuRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2140,7 +2140,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataRGBColor"
 		end
 
-	frozenset_data_browser_item_data_rgbcolor_address_external: POINTER is
+	frozen set_data_browser_item_data_rgbcolor_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataRGBColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2155,7 +2155,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataRGBColor"
 		end
 
-	frozenget_data_browser_item_data_rgbcolor_address_external: POINTER is
+	frozen get_data_browser_item_data_rgbcolor_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataRGBColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2170,7 +2170,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataDrawState"
 		end
 
-	frozenset_data_browser_item_data_draw_state_address_external: POINTER is
+	frozen set_data_browser_item_data_draw_state_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataDrawState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2185,7 +2185,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataDrawState"
 		end
 
-	frozenget_data_browser_item_data_draw_state_address_external: POINTER is
+	frozen get_data_browser_item_data_draw_state_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataDrawState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2200,7 +2200,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataButtonValue"
 		end
 
-	frozenset_data_browser_item_data_button_value_address_external: POINTER is
+	frozen set_data_browser_item_data_button_value_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataButtonValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2215,7 +2215,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataButtonValue"
 		end
 
-	frozenget_data_browser_item_data_button_value_address_external: POINTER is
+	frozen get_data_browser_item_data_button_value_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataButtonValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2230,7 +2230,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataIconTransform"
 		end
 
-	frozenset_data_browser_item_data_icon_transform_address_external: POINTER is
+	frozen set_data_browser_item_data_icon_transform_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataIconTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2245,7 +2245,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataIconTransform"
 		end
 
-	frozenget_data_browser_item_data_icon_transform_address_external: POINTER is
+	frozen get_data_browser_item_data_icon_transform_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataIconTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2260,7 +2260,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataDateTime"
 		end
 
-	frozenset_data_browser_item_data_date_time_address_external: POINTER is
+	frozen set_data_browser_item_data_date_time_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2275,7 +2275,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataDateTime"
 		end
 
-	frozenget_data_browser_item_data_date_time_address_external: POINTER is
+	frozen get_data_browser_item_data_date_time_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2290,7 +2290,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataLongDateTime"
 		end
 
-	frozenset_data_browser_item_data_long_date_time_address_external: POINTER is
+	frozen set_data_browser_item_data_long_date_time_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataLongDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2305,7 +2305,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataLongDateTime"
 		end
 
-	frozenget_data_browser_item_data_long_date_time_address_external: POINTER is
+	frozen get_data_browser_item_data_long_date_time_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataLongDateTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2320,7 +2320,7 @@ feature
 			"ewg_function_macro_SetDataBrowserItemDataItemID"
 		end
 
-	frozenset_data_browser_item_data_item_id_address_external: POINTER is
+	frozen set_data_browser_item_data_item_id_address_external: POINTER is
 			-- Address of C function `SetDataBrowserItemDataItemID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2335,7 +2335,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataItemID"
 		end
 
-	frozenget_data_browser_item_data_item_id_address_external: POINTER is
+	frozen get_data_browser_item_data_item_id_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataItemID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2350,7 +2350,7 @@ feature
 			"ewg_function_macro_GetDataBrowserItemDataProperty"
 		end
 
-	frozenget_data_browser_item_data_property_address_external: POINTER is
+	frozen get_data_browser_item_data_property_address_external: POINTER is
 			-- Address of C function `GetDataBrowserItemDataProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2365,7 +2365,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemDataUPP"
 		end
 
-	frozennew_data_browser_item_data_upp_address_external: POINTER is
+	frozen new_data_browser_item_data_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemDataUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2380,7 +2380,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemCompareUPP"
 		end
 
-	frozennew_data_browser_item_compare_upp_address_external: POINTER is
+	frozen new_data_browser_item_compare_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemCompareUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2395,7 +2395,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemNotificationWithItemUPP"
 		end
 
-	frozennew_data_browser_item_notification_with_item_upp_address_external: POINTER is
+	frozen new_data_browser_item_notification_with_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemNotificationWithItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2410,7 +2410,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemNotificationUPP"
 		end
 
-	frozennew_data_browser_item_notification_upp_address_external: POINTER is
+	frozen new_data_browser_item_notification_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemNotificationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2425,7 +2425,7 @@ feature
 			"ewg_function_macro_NewDataBrowserAddDragItemUPP"
 		end
 
-	frozennew_data_browser_add_drag_item_upp_address_external: POINTER is
+	frozen new_data_browser_add_drag_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserAddDragItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2440,7 +2440,7 @@ feature
 			"ewg_function_macro_NewDataBrowserAcceptDragUPP"
 		end
 
-	frozennew_data_browser_accept_drag_upp_address_external: POINTER is
+	frozen new_data_browser_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2455,7 +2455,7 @@ feature
 			"ewg_function_macro_NewDataBrowserReceiveDragUPP"
 		end
 
-	frozennew_data_browser_receive_drag_upp_address_external: POINTER is
+	frozen new_data_browser_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2470,7 +2470,7 @@ feature
 			"ewg_function_macro_NewDataBrowserPostProcessDragUPP"
 		end
 
-	frozennew_data_browser_post_process_drag_upp_address_external: POINTER is
+	frozen new_data_browser_post_process_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserPostProcessDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2485,7 +2485,7 @@ feature
 			"ewg_function_macro_NewDataBrowserGetContextualMenuUPP"
 		end
 
-	frozennew_data_browser_get_contextual_menu_upp_address_external: POINTER is
+	frozen new_data_browser_get_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserGetContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2500,7 +2500,7 @@ feature
 			"ewg_function_macro_NewDataBrowserSelectContextualMenuUPP"
 		end
 
-	frozennew_data_browser_select_contextual_menu_upp_address_external: POINTER is
+	frozen new_data_browser_select_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserSelectContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2515,7 +2515,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemHelpContentUPP"
 		end
 
-	frozennew_data_browser_item_help_content_upp_address_external: POINTER is
+	frozen new_data_browser_item_help_content_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemHelpContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2530,7 +2530,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemDataUPP"
 		end
 
-	frozendispose_data_browser_item_data_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_data_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemDataUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2545,7 +2545,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemCompareUPP"
 		end
 
-	frozendispose_data_browser_item_compare_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_compare_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemCompareUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2560,7 +2560,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemNotificationWithItemUPP"
 		end
 
-	frozendispose_data_browser_item_notification_with_item_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_notification_with_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemNotificationWithItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2575,7 +2575,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemNotificationUPP"
 		end
 
-	frozendispose_data_browser_item_notification_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_notification_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemNotificationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2590,7 +2590,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserAddDragItemUPP"
 		end
 
-	frozendispose_data_browser_add_drag_item_upp_address_external: POINTER is
+	frozen dispose_data_browser_add_drag_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserAddDragItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2605,7 +2605,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserAcceptDragUPP"
 		end
 
-	frozendispose_data_browser_accept_drag_upp_address_external: POINTER is
+	frozen dispose_data_browser_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2620,7 +2620,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserReceiveDragUPP"
 		end
 
-	frozendispose_data_browser_receive_drag_upp_address_external: POINTER is
+	frozen dispose_data_browser_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2635,7 +2635,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserPostProcessDragUPP"
 		end
 
-	frozendispose_data_browser_post_process_drag_upp_address_external: POINTER is
+	frozen dispose_data_browser_post_process_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserPostProcessDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2650,7 +2650,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserGetContextualMenuUPP"
 		end
 
-	frozendispose_data_browser_get_contextual_menu_upp_address_external: POINTER is
+	frozen dispose_data_browser_get_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserGetContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2665,7 +2665,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserSelectContextualMenuUPP"
 		end
 
-	frozendispose_data_browser_select_contextual_menu_upp_address_external: POINTER is
+	frozen dispose_data_browser_select_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserSelectContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2680,7 +2680,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemHelpContentUPP"
 		end
 
-	frozendispose_data_browser_item_help_content_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_help_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemHelpContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2695,7 +2695,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemDataUPP"
 		end
 
-	frozeninvoke_data_browser_item_data_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_data_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemDataUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2710,7 +2710,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemCompareUPP"
 		end
 
-	frozeninvoke_data_browser_item_compare_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_compare_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemCompareUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2725,7 +2725,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemNotificationWithItemUPP"
 		end
 
-	frozeninvoke_data_browser_item_notification_with_item_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_notification_with_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemNotificationWithItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2740,7 +2740,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemNotificationUPP"
 		end
 
-	frozeninvoke_data_browser_item_notification_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_notification_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemNotificationUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2755,7 +2755,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserAddDragItemUPP"
 		end
 
-	frozeninvoke_data_browser_add_drag_item_upp_address_external: POINTER is
+	frozen invoke_data_browser_add_drag_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserAddDragItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2770,7 +2770,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserAcceptDragUPP"
 		end
 
-	frozeninvoke_data_browser_accept_drag_upp_address_external: POINTER is
+	frozen invoke_data_browser_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2785,7 +2785,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserReceiveDragUPP"
 		end
 
-	frozeninvoke_data_browser_receive_drag_upp_address_external: POINTER is
+	frozen invoke_data_browser_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2800,7 +2800,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserPostProcessDragUPP"
 		end
 
-	frozeninvoke_data_browser_post_process_drag_upp_address_external: POINTER is
+	frozen invoke_data_browser_post_process_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserPostProcessDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2815,7 +2815,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserGetContextualMenuUPP"
 		end
 
-	frozeninvoke_data_browser_get_contextual_menu_upp_address_external: POINTER is
+	frozen invoke_data_browser_get_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserGetContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2830,7 +2830,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserSelectContextualMenuUPP"
 		end
 
-	frozeninvoke_data_browser_select_contextual_menu_upp_address_external: POINTER is
+	frozen invoke_data_browser_select_contextual_menu_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserSelectContextualMenuUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2845,7 +2845,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemHelpContentUPP"
 		end
 
-	frozeninvoke_data_browser_item_help_content_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_help_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemHelpContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2860,7 +2860,7 @@ feature
 			"ewg_function_macro_InitDataBrowserCallbacks"
 		end
 
-	frozeninit_data_browser_callbacks_address_external: POINTER is
+	frozen init_data_browser_callbacks_address_external: POINTER is
 			-- Address of C function `InitDataBrowserCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2875,7 +2875,7 @@ feature
 			"ewg_function_macro_GetDataBrowserCallbacks"
 		end
 
-	frozenget_data_browser_callbacks_address_external: POINTER is
+	frozen get_data_browser_callbacks_address_external: POINTER is
 			-- Address of C function `GetDataBrowserCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2890,7 +2890,7 @@ feature
 			"ewg_function_macro_SetDataBrowserCallbacks"
 		end
 
-	frozenset_data_browser_callbacks_address_external: POINTER is
+	frozen set_data_browser_callbacks_address_external: POINTER is
 			-- Address of C function `SetDataBrowserCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2905,7 +2905,7 @@ feature
 			"ewg_function_macro_NewDataBrowserDrawItemUPP"
 		end
 
-	frozennew_data_browser_draw_item_upp_address_external: POINTER is
+	frozen new_data_browser_draw_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserDrawItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2920,7 +2920,7 @@ feature
 			"ewg_function_macro_NewDataBrowserEditItemUPP"
 		end
 
-	frozennew_data_browser_edit_item_upp_address_external: POINTER is
+	frozen new_data_browser_edit_item_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserEditItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2935,7 +2935,7 @@ feature
 			"ewg_function_macro_NewDataBrowserHitTestUPP"
 		end
 
-	frozennew_data_browser_hit_test_upp_address_external: POINTER is
+	frozen new_data_browser_hit_test_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2950,7 +2950,7 @@ feature
 			"ewg_function_macro_NewDataBrowserTrackingUPP"
 		end
 
-	frozennew_data_browser_tracking_upp_address_external: POINTER is
+	frozen new_data_browser_tracking_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2965,7 +2965,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemDragRgnUPP"
 		end
 
-	frozennew_data_browser_item_drag_rgn_upp_address_external: POINTER is
+	frozen new_data_browser_item_drag_rgn_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemDragRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2980,7 +2980,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemAcceptDragUPP"
 		end
 
-	frozennew_data_browser_item_accept_drag_upp_address_external: POINTER is
+	frozen new_data_browser_item_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2995,7 +2995,7 @@ feature
 			"ewg_function_macro_NewDataBrowserItemReceiveDragUPP"
 		end
 
-	frozennew_data_browser_item_receive_drag_upp_address_external: POINTER is
+	frozen new_data_browser_item_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `NewDataBrowserItemReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3010,7 +3010,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserDrawItemUPP"
 		end
 
-	frozendispose_data_browser_draw_item_upp_address_external: POINTER is
+	frozen dispose_data_browser_draw_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserDrawItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3025,7 +3025,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserEditItemUPP"
 		end
 
-	frozendispose_data_browser_edit_item_upp_address_external: POINTER is
+	frozen dispose_data_browser_edit_item_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserEditItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3040,7 +3040,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserHitTestUPP"
 		end
 
-	frozendispose_data_browser_hit_test_upp_address_external: POINTER is
+	frozen dispose_data_browser_hit_test_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3055,7 +3055,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserTrackingUPP"
 		end
 
-	frozendispose_data_browser_tracking_upp_address_external: POINTER is
+	frozen dispose_data_browser_tracking_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3070,7 +3070,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemDragRgnUPP"
 		end
 
-	frozendispose_data_browser_item_drag_rgn_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_drag_rgn_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemDragRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3085,7 +3085,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemAcceptDragUPP"
 		end
 
-	frozendispose_data_browser_item_accept_drag_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3100,7 +3100,7 @@ feature
 			"ewg_function_macro_DisposeDataBrowserItemReceiveDragUPP"
 		end
 
-	frozendispose_data_browser_item_receive_drag_upp_address_external: POINTER is
+	frozen dispose_data_browser_item_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `DisposeDataBrowserItemReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3115,7 +3115,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserDrawItemUPP"
 		end
 
-	frozeninvoke_data_browser_draw_item_upp_address_external: POINTER is
+	frozen invoke_data_browser_draw_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserDrawItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3130,7 +3130,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserEditItemUPP"
 		end
 
-	frozeninvoke_data_browser_edit_item_upp_address_external: POINTER is
+	frozen invoke_data_browser_edit_item_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserEditItemUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3145,7 +3145,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserHitTestUPP"
 		end
 
-	frozeninvoke_data_browser_hit_test_upp_address_external: POINTER is
+	frozen invoke_data_browser_hit_test_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserHitTestUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3160,7 +3160,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserTrackingUPP"
 		end
 
-	frozeninvoke_data_browser_tracking_upp_address_external: POINTER is
+	frozen invoke_data_browser_tracking_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserTrackingUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3175,7 +3175,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemDragRgnUPP"
 		end
 
-	frozeninvoke_data_browser_item_drag_rgn_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_drag_rgn_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemDragRgnUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3190,7 +3190,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemAcceptDragUPP"
 		end
 
-	frozeninvoke_data_browser_item_accept_drag_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_accept_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemAcceptDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3205,7 +3205,7 @@ feature
 			"ewg_function_macro_InvokeDataBrowserItemReceiveDragUPP"
 		end
 
-	frozeninvoke_data_browser_item_receive_drag_upp_address_external: POINTER is
+	frozen invoke_data_browser_item_receive_drag_upp_address_external: POINTER is
 			-- Address of C function `InvokeDataBrowserItemReceiveDragUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3220,7 +3220,7 @@ feature
 			"ewg_function_macro_InitDataBrowserCustomCallbacks"
 		end
 
-	frozeninit_data_browser_custom_callbacks_address_external: POINTER is
+	frozen init_data_browser_custom_callbacks_address_external: POINTER is
 			-- Address of C function `InitDataBrowserCustomCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3235,7 +3235,7 @@ feature
 			"ewg_function_macro_GetDataBrowserCustomCallbacks"
 		end
 
-	frozenget_data_browser_custom_callbacks_address_external: POINTER is
+	frozen get_data_browser_custom_callbacks_address_external: POINTER is
 			-- Address of C function `GetDataBrowserCustomCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3250,7 +3250,7 @@ feature
 			"ewg_function_macro_SetDataBrowserCustomCallbacks"
 		end
 
-	frozenset_data_browser_custom_callbacks_address_external: POINTER is
+	frozen set_data_browser_custom_callbacks_address_external: POINTER is
 			-- Address of C function `SetDataBrowserCustomCallbacks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3265,7 +3265,7 @@ feature
 			"ewg_function_macro_RemoveDataBrowserTableViewColumn"
 		end
 
-	frozenremove_data_browser_table_view_column_address_external: POINTER is
+	frozen remove_data_browser_table_view_column_address_external: POINTER is
 			-- Address of C function `RemoveDataBrowserTableViewColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3280,7 +3280,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewColumnCount"
 		end
 
-	frozenget_data_browser_table_view_column_count_address_external: POINTER is
+	frozen get_data_browser_table_view_column_count_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3295,7 +3295,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewHiliteStyle"
 		end
 
-	frozenset_data_browser_table_view_hilite_style_address_external: POINTER is
+	frozen set_data_browser_table_view_hilite_style_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewHiliteStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3310,7 +3310,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewHiliteStyle"
 		end
 
-	frozenget_data_browser_table_view_hilite_style_address_external: POINTER is
+	frozen get_data_browser_table_view_hilite_style_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewHiliteStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3325,7 +3325,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewRowHeight"
 		end
 
-	frozenset_data_browser_table_view_row_height_address_external: POINTER is
+	frozen set_data_browser_table_view_row_height_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3340,7 +3340,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewRowHeight"
 		end
 
-	frozenget_data_browser_table_view_row_height_address_external: POINTER is
+	frozen get_data_browser_table_view_row_height_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3355,7 +3355,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewColumnWidth"
 		end
 
-	frozenset_data_browser_table_view_column_width_address_external: POINTER is
+	frozen set_data_browser_table_view_column_width_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3370,7 +3370,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewColumnWidth"
 		end
 
-	frozenget_data_browser_table_view_column_width_address_external: POINTER is
+	frozen get_data_browser_table_view_column_width_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3385,7 +3385,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewItemRowHeight"
 		end
 
-	frozenset_data_browser_table_view_item_row_height_address_external: POINTER is
+	frozen set_data_browser_table_view_item_row_height_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewItemRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3400,7 +3400,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewItemRowHeight"
 		end
 
-	frozenget_data_browser_table_view_item_row_height_address_external: POINTER is
+	frozen get_data_browser_table_view_item_row_height_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewItemRowHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3415,7 +3415,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewNamedColumnWidth"
 		end
 
-	frozenset_data_browser_table_view_named_column_width_address_external: POINTER is
+	frozen set_data_browser_table_view_named_column_width_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewNamedColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3430,7 +3430,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewNamedColumnWidth"
 		end
 
-	frozenget_data_browser_table_view_named_column_width_address_external: POINTER is
+	frozen get_data_browser_table_view_named_column_width_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewNamedColumnWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3445,7 +3445,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewGeometry"
 		end
 
-	frozenset_data_browser_table_view_geometry_address_external: POINTER is
+	frozen set_data_browser_table_view_geometry_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewGeometry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3460,7 +3460,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewGeometry"
 		end
 
-	frozenget_data_browser_table_view_geometry_address_external: POINTER is
+	frozen get_data_browser_table_view_geometry_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewGeometry'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3475,7 +3475,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewItemID"
 		end
 
-	frozenget_data_browser_table_view_item_id_address_external: POINTER is
+	frozen get_data_browser_table_view_item_id_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewItemID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3490,7 +3490,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewItemRow"
 		end
 
-	frozenset_data_browser_table_view_item_row_address_external: POINTER is
+	frozen set_data_browser_table_view_item_row_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewItemRow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3505,7 +3505,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewItemRow"
 		end
 
-	frozenget_data_browser_table_view_item_row_address_external: POINTER is
+	frozen get_data_browser_table_view_item_row_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewItemRow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3520,7 +3520,7 @@ feature
 			"ewg_function_macro_SetDataBrowserTableViewColumnPosition"
 		end
 
-	frozenset_data_browser_table_view_column_position_address_external: POINTER is
+	frozen set_data_browser_table_view_column_position_address_external: POINTER is
 			-- Address of C function `SetDataBrowserTableViewColumnPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3535,7 +3535,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewColumnPosition"
 		end
 
-	frozenget_data_browser_table_view_column_position_address_external: POINTER is
+	frozen get_data_browser_table_view_column_position_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnPosition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3550,7 +3550,7 @@ feature
 			"ewg_function_macro_GetDataBrowserTableViewColumnProperty"
 		end
 
-	frozenget_data_browser_table_view_column_property_address_external: POINTER is
+	frozen get_data_browser_table_view_column_property_address_external: POINTER is
 			-- Address of C function `GetDataBrowserTableViewColumnProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3565,7 +3565,7 @@ feature
 			"ewg_function_macro_AutoSizeDataBrowserListViewColumns"
 		end
 
-	frozenauto_size_data_browser_list_view_columns_address_external: POINTER is
+	frozen auto_size_data_browser_list_view_columns_address_external: POINTER is
 			-- Address of C function `AutoSizeDataBrowserListViewColumns'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3580,7 +3580,7 @@ feature
 			"ewg_function_macro_AddDataBrowserListViewColumn"
 		end
 
-	frozenadd_data_browser_list_view_column_address_external: POINTER is
+	frozen add_data_browser_list_view_column_address_external: POINTER is
 			-- Address of C function `AddDataBrowserListViewColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3595,7 +3595,7 @@ feature
 			"ewg_function_macro_GetDataBrowserListViewHeaderDesc"
 		end
 
-	frozenget_data_browser_list_view_header_desc_address_external: POINTER is
+	frozen get_data_browser_list_view_header_desc_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewHeaderDesc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3610,7 +3610,7 @@ feature
 			"ewg_function_macro_SetDataBrowserListViewHeaderDesc"
 		end
 
-	frozenset_data_browser_list_view_header_desc_address_external: POINTER is
+	frozen set_data_browser_list_view_header_desc_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewHeaderDesc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3625,7 +3625,7 @@ feature
 			"ewg_function_macro_SetDataBrowserListViewHeaderBtnHeight"
 		end
 
-	frozenset_data_browser_list_view_header_btn_height_address_external: POINTER is
+	frozen set_data_browser_list_view_header_btn_height_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewHeaderBtnHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3640,7 +3640,7 @@ feature
 			"ewg_function_macro_GetDataBrowserListViewHeaderBtnHeight"
 		end
 
-	frozenget_data_browser_list_view_header_btn_height_address_external: POINTER is
+	frozen get_data_browser_list_view_header_btn_height_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewHeaderBtnHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3655,7 +3655,7 @@ feature
 			"ewg_function_macro_SetDataBrowserListViewUsePlainBackground"
 		end
 
-	frozenset_data_browser_list_view_use_plain_background_address_external: POINTER is
+	frozen set_data_browser_list_view_use_plain_background_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewUsePlainBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3670,7 +3670,7 @@ feature
 			"ewg_function_macro_GetDataBrowserListViewUsePlainBackground"
 		end
 
-	frozenget_data_browser_list_view_use_plain_background_address_external: POINTER is
+	frozen get_data_browser_list_view_use_plain_background_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewUsePlainBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3685,7 +3685,7 @@ feature
 			"ewg_function_macro_SetDataBrowserListViewDisclosureColumn"
 		end
 
-	frozenset_data_browser_list_view_disclosure_column_address_external: POINTER is
+	frozen set_data_browser_list_view_disclosure_column_address_external: POINTER is
 			-- Address of C function `SetDataBrowserListViewDisclosureColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3700,7 +3700,7 @@ feature
 			"ewg_function_macro_GetDataBrowserListViewDisclosureColumn"
 		end
 
-	frozenget_data_browser_list_view_disclosure_column_address_external: POINTER is
+	frozen get_data_browser_list_view_disclosure_column_address_external: POINTER is
 			-- Address of C function `GetDataBrowserListViewDisclosureColumn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3715,7 +3715,7 @@ feature
 			"ewg_function_macro_GetDataBrowserColumnViewPath"
 		end
 
-	frozenget_data_browser_column_view_path_address_external: POINTER is
+	frozen get_data_browser_column_view_path_address_external: POINTER is
 			-- Address of C function `GetDataBrowserColumnViewPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3730,7 +3730,7 @@ feature
 			"ewg_function_macro_GetDataBrowserColumnViewPathLength"
 		end
 
-	frozenget_data_browser_column_view_path_length_address_external: POINTER is
+	frozen get_data_browser_column_view_path_length_address_external: POINTER is
 			-- Address of C function `GetDataBrowserColumnViewPathLength'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3745,7 +3745,7 @@ feature
 			"ewg_function_macro_SetDataBrowserColumnViewPath"
 		end
 
-	frozenset_data_browser_column_view_path_address_external: POINTER is
+	frozen set_data_browser_column_view_path_address_external: POINTER is
 			-- Address of C function `SetDataBrowserColumnViewPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3760,7 +3760,7 @@ feature
 			"ewg_function_macro_SetDataBrowserColumnViewDisplayType"
 		end
 
-	frozenset_data_browser_column_view_display_type_address_external: POINTER is
+	frozen set_data_browser_column_view_display_type_address_external: POINTER is
 			-- Address of C function `SetDataBrowserColumnViewDisplayType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3775,7 +3775,7 @@ feature
 			"ewg_function_macro_GetDataBrowserColumnViewDisplayType"
 		end
 
-	frozenget_data_browser_column_view_display_type_address_external: POINTER is
+	frozen get_data_browser_column_view_display_type_address_external: POINTER is
 			-- Address of C function `GetDataBrowserColumnViewDisplayType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3790,7 +3790,7 @@ feature
 			"ewg_function_macro_AXUIElementGetDataBrowserItemInfo"
 		end
 
-	frozenaxuielement_get_data_browser_item_info_address_external: POINTER is
+	frozen axuielement_get_data_browser_item_info_address_external: POINTER is
 			-- Address of C function `AXUIElementGetDataBrowserItemInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3805,7 +3805,7 @@ feature
 			"ewg_function_macro_AXUIElementCreateWithDataBrowserAndItemInfo"
 		end
 
-	frozenaxuielement_create_with_data_browser_and_item_info_address_external: POINTER is
+	frozen axuielement_create_with_data_browser_and_item_info_address_external: POINTER is
 			-- Address of C function `AXUIElementCreateWithDataBrowserAndItemInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3820,7 +3820,7 @@ feature
 			"ewg_function_macro_NewEditUnicodePostUpdateUPP"
 		end
 
-	frozennew_edit_unicode_post_update_upp_address_external: POINTER is
+	frozen new_edit_unicode_post_update_upp_address_external: POINTER is
 			-- Address of C function `NewEditUnicodePostUpdateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3835,7 +3835,7 @@ feature
 			"ewg_function_macro_DisposeEditUnicodePostUpdateUPP"
 		end
 
-	frozendispose_edit_unicode_post_update_upp_address_external: POINTER is
+	frozen dispose_edit_unicode_post_update_upp_address_external: POINTER is
 			-- Address of C function `DisposeEditUnicodePostUpdateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3850,7 +3850,7 @@ feature
 			"ewg_function_macro_InvokeEditUnicodePostUpdateUPP"
 		end
 
-	frozeninvoke_edit_unicode_post_update_upp_address_external: POINTER is
+	frozen invoke_edit_unicode_post_update_upp_address_external: POINTER is
 			-- Address of C function `InvokeEditUnicodePostUpdateUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3865,7 +3865,7 @@ feature
 			"ewg_function_macro_CreateEditUnicodeTextControl"
 		end
 
-	frozencreate_edit_unicode_text_control_address_external: POINTER is
+	frozen create_edit_unicode_text_control_address_external: POINTER is
 			-- Address of C function `CreateEditUnicodeTextControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

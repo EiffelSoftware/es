@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_CGDataProviderGetTypeID"
 		end
 
-	frozencgdata_provider_get_type_id_address_external: POINTER is
+	frozen cgdata_provider_get_type_id_address_external: POINTER is
 			-- Address of C function `CGDataProviderGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_CGDataProviderCreate"
 		end
 
-	frozencgdata_provider_create_address_external: POINTER is
+	frozen cgdata_provider_create_address_external: POINTER is
 			-- Address of C function `CGDataProviderCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_CGDataProviderCreateDirectAccess"
 		end
 
-	frozencgdata_provider_create_direct_access_address_external: POINTER is
+	frozen cgdata_provider_create_direct_access_address_external: POINTER is
 			-- Address of C function `CGDataProviderCreateDirectAccess'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_CGDataProviderCreateWithData"
 		end
 
-	frozencgdata_provider_create_with_data_address_external: POINTER is
+	frozen cgdata_provider_create_with_data_address_external: POINTER is
 			-- Address of C function `CGDataProviderCreateWithData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_CGDataProviderCreateWithCFData"
 		end
 
-	frozencgdata_provider_create_with_cfdata_address_external: POINTER is
+	frozen cgdata_provider_create_with_cfdata_address_external: POINTER is
 			-- Address of C function `CGDataProviderCreateWithCFData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_CGDataProviderCreateWithURL"
 		end
 
-	frozencgdata_provider_create_with_url_address_external: POINTER is
+	frozen cgdata_provider_create_with_url_address_external: POINTER is
 			-- Address of C function `CGDataProviderCreateWithURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_CGDataProviderRetain"
 		end
 
-	frozencgdata_provider_retain_address_external: POINTER is
+	frozen cgdata_provider_retain_address_external: POINTER is
 			-- Address of C function `CGDataProviderRetain'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_CGDataProviderRelease"
 		end
 
-	frozencgdata_provider_release_address_external: POINTER is
+	frozen cgdata_provider_release_address_external: POINTER is
 			-- Address of C function `CGDataProviderRelease'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_CGDataProviderCreateWithFilename"
 		end
 
-	frozencgdata_provider_create_with_filename_address_external: POINTER is
+	frozen cgdata_provider_create_with_filename_address_external: POINTER is
 			-- Address of C function `CGDataProviderCreateWithFilename'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

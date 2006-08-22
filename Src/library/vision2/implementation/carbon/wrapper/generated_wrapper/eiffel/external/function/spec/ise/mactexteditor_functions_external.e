@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_NewTXNFindUPP"
 		end
 
-	frozennew_txnfind_upp_address_external: POINTER is
+	frozen new_txnfind_upp_address_external: POINTER is
 			-- Address of C function `NewTXNFindUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_NewTXNActionNameMapperUPP"
 		end
 
-	frozennew_txnaction_name_mapper_upp_address_external: POINTER is
+	frozen new_txnaction_name_mapper_upp_address_external: POINTER is
 			-- Address of C function `NewTXNActionNameMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_NewTXNContextualMenuSetupUPP"
 		end
 
-	frozennew_txncontextual_menu_setup_upp_address_external: POINTER is
+	frozen new_txncontextual_menu_setup_upp_address_external: POINTER is
 			-- Address of C function `NewTXNContextualMenuSetupUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_NewTXNScrollInfoUPP"
 		end
 
-	frozennew_txnscroll_info_upp_address_external: POINTER is
+	frozen new_txnscroll_info_upp_address_external: POINTER is
 			-- Address of C function `NewTXNScrollInfoUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_DisposeTXNFindUPP"
 		end
 
-	frozendispose_txnfind_upp_address_external: POINTER is
+	frozen dispose_txnfind_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNFindUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_DisposeTXNActionNameMapperUPP"
 		end
 
-	frozendispose_txnaction_name_mapper_upp_address_external: POINTER is
+	frozen dispose_txnaction_name_mapper_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNActionNameMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_DisposeTXNContextualMenuSetupUPP"
 		end
 
-	frozendispose_txncontextual_menu_setup_upp_address_external: POINTER is
+	frozen dispose_txncontextual_menu_setup_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNContextualMenuSetupUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_DisposeTXNScrollInfoUPP"
 		end
 
-	frozendispose_txnscroll_info_upp_address_external: POINTER is
+	frozen dispose_txnscroll_info_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNScrollInfoUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_InvokeTXNFindUPP"
 		end
 
-	frozeninvoke_txnfind_upp_address_external: POINTER is
+	frozen invoke_txnfind_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNFindUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_InvokeTXNActionNameMapperUPP"
 		end
 
-	frozeninvoke_txnaction_name_mapper_upp_address_external: POINTER is
+	frozen invoke_txnaction_name_mapper_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNActionNameMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_InvokeTXNContextualMenuSetupUPP"
 		end
 
-	frozeninvoke_txncontextual_menu_setup_upp_address_external: POINTER is
+	frozen invoke_txncontextual_menu_setup_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNContextualMenuSetupUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -175,7 +175,7 @@ feature
 			"ewg_function_macro_InvokeTXNScrollInfoUPP"
 		end
 
-	frozeninvoke_txnscroll_info_upp_address_external: POINTER is
+	frozen invoke_txnscroll_info_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNScrollInfoUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -190,7 +190,7 @@ feature
 			"ewg_function_macro_TXNCreateObject"
 		end
 
-	frozentxncreate_object_address_external: POINTER is
+	frozen txncreate_object_address_external: POINTER is
 			-- Address of C function `TXNCreateObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -205,7 +205,7 @@ feature
 			"ewg_function_macro_TXNDeleteObject"
 		end
 
-	frozentxndelete_object_address_external: POINTER is
+	frozen txndelete_object_address_external: POINTER is
 			-- Address of C function `TXNDeleteObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -220,7 +220,7 @@ feature
 			"ewg_function_macro_TXNInitTextension"
 		end
 
-	frozentxninit_textension_address_external: POINTER is
+	frozen txninit_textension_address_external: POINTER is
 			-- Address of C function `TXNInitTextension'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -235,7 +235,7 @@ feature
 			"ewg_function_macro_TXNVersionInformation"
 		end
 
-	frozentxnversion_information_address_external: POINTER is
+	frozen txnversion_information_address_external: POINTER is
 			-- Address of C function `TXNVersionInformation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -250,7 +250,7 @@ feature
 			"ewg_function_macro_TXNAttachObjectToWindowRef"
 		end
 
-	frozentxnattach_object_to_window_ref_address_external: POINTER is
+	frozen txnattach_object_to_window_ref_address_external: POINTER is
 			-- Address of C function `TXNAttachObjectToWindowRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -265,7 +265,7 @@ feature
 			"ewg_function_macro_TXNGetWindowRef"
 		end
 
-	frozentxnget_window_ref_address_external: POINTER is
+	frozen txnget_window_ref_address_external: POINTER is
 			-- Address of C function `TXNGetWindowRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -280,7 +280,7 @@ feature
 			"ewg_function_macro_TXNKeyDown"
 		end
 
-	frozentxnkey_down_address_external: POINTER is
+	frozen txnkey_down_address_external: POINTER is
 			-- Address of C function `TXNKeyDown'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -295,7 +295,7 @@ feature
 			"ewg_function_macro_TXNAdjustCursor"
 		end
 
-	frozentxnadjust_cursor_address_external: POINTER is
+	frozen txnadjust_cursor_address_external: POINTER is
 			-- Address of C function `TXNAdjustCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -310,7 +310,7 @@ feature
 			"ewg_function_macro_TXNClick"
 		end
 
-	frozentxnclick_address_external: POINTER is
+	frozen txnclick_address_external: POINTER is
 			-- Address of C function `TXNClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -325,7 +325,7 @@ feature
 			"ewg_function_macro_TXNSelectAll"
 		end
 
-	frozentxnselect_all_address_external: POINTER is
+	frozen txnselect_all_address_external: POINTER is
 			-- Address of C function `TXNSelectAll'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -340,7 +340,7 @@ feature
 			"ewg_function_macro_TXNFocus"
 		end
 
-	frozentxnfocus_address_external: POINTER is
+	frozen txnfocus_address_external: POINTER is
 			-- Address of C function `TXNFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -355,7 +355,7 @@ feature
 			"ewg_function_macro_TXNUpdate"
 		end
 
-	frozentxnupdate_address_external: POINTER is
+	frozen txnupdate_address_external: POINTER is
 			-- Address of C function `TXNUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -370,7 +370,7 @@ feature
 			"ewg_function_macro_TXNDrawObject"
 		end
 
-	frozentxndraw_object_address_external: POINTER is
+	frozen txndraw_object_address_external: POINTER is
 			-- Address of C function `TXNDrawObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -385,7 +385,7 @@ feature
 			"ewg_function_macro_TXNForceUpdate"
 		end
 
-	frozentxnforce_update_address_external: POINTER is
+	frozen txnforce_update_address_external: POINTER is
 			-- Address of C function `TXNForceUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -400,7 +400,7 @@ feature
 			"ewg_function_macro_TXNGetSleepTicks"
 		end
 
-	frozentxnget_sleep_ticks_address_external: POINTER is
+	frozen txnget_sleep_ticks_address_external: POINTER is
 			-- Address of C function `TXNGetSleepTicks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -415,7 +415,7 @@ feature
 			"ewg_function_macro_TXNIdle"
 		end
 
-	frozentxnidle_address_external: POINTER is
+	frozen txnidle_address_external: POINTER is
 			-- Address of C function `TXNIdle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -430,7 +430,7 @@ feature
 			"ewg_function_macro_TXNGrowWindow"
 		end
 
-	frozentxngrow_window_address_external: POINTER is
+	frozen txngrow_window_address_external: POINTER is
 			-- Address of C function `TXNGrowWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -445,7 +445,7 @@ feature
 			"ewg_function_macro_TXNZoomWindow"
 		end
 
-	frozentxnzoom_window_address_external: POINTER is
+	frozen txnzoom_window_address_external: POINTER is
 			-- Address of C function `TXNZoomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -460,7 +460,7 @@ feature
 			"ewg_function_macro_TXNBeginActionGroup"
 		end
 
-	frozentxnbegin_action_group_address_external: POINTER is
+	frozen txnbegin_action_group_address_external: POINTER is
 			-- Address of C function `TXNBeginActionGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -475,7 +475,7 @@ feature
 			"ewg_function_macro_TXNEndActionGroup"
 		end
 
-	frozentxnend_action_group_address_external: POINTER is
+	frozen txnend_action_group_address_external: POINTER is
 			-- Address of C function `TXNEndActionGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -490,7 +490,7 @@ feature
 			"ewg_function_macro_TXNCanUndoAction"
 		end
 
-	frozentxncan_undo_action_address_external: POINTER is
+	frozen txncan_undo_action_address_external: POINTER is
 			-- Address of C function `TXNCanUndoAction'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -505,7 +505,7 @@ feature
 			"ewg_function_macro_TXNCanRedoAction"
 		end
 
-	frozentxncan_redo_action_address_external: POINTER is
+	frozen txncan_redo_action_address_external: POINTER is
 			-- Address of C function `TXNCanRedoAction'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -520,7 +520,7 @@ feature
 			"ewg_function_macro_TXNSetActionNameMapper"
 		end
 
-	frozentxnset_action_name_mapper_address_external: POINTER is
+	frozen txnset_action_name_mapper_address_external: POINTER is
 			-- Address of C function `TXNSetActionNameMapper'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -535,7 +535,7 @@ feature
 			"ewg_function_macro_TXNUndo"
 		end
 
-	frozentxnundo_address_external: POINTER is
+	frozen txnundo_address_external: POINTER is
 			-- Address of C function `TXNUndo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -550,7 +550,7 @@ feature
 			"ewg_function_macro_TXNRedo"
 		end
 
-	frozentxnredo_address_external: POINTER is
+	frozen txnredo_address_external: POINTER is
 			-- Address of C function `TXNRedo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -565,7 +565,7 @@ feature
 			"ewg_function_macro_TXNClearUndo"
 		end
 
-	frozentxnclear_undo_address_external: POINTER is
+	frozen txnclear_undo_address_external: POINTER is
 			-- Address of C function `TXNClearUndo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -580,7 +580,7 @@ feature
 			"ewg_function_macro_TXNCut"
 		end
 
-	frozentxncut_address_external: POINTER is
+	frozen txncut_address_external: POINTER is
 			-- Address of C function `TXNCut'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -595,7 +595,7 @@ feature
 			"ewg_function_macro_TXNCopy"
 		end
 
-	frozentxncopy_address_external: POINTER is
+	frozen txncopy_address_external: POINTER is
 			-- Address of C function `TXNCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -610,7 +610,7 @@ feature
 			"ewg_function_macro_TXNPaste"
 		end
 
-	frozentxnpaste_address_external: POINTER is
+	frozen txnpaste_address_external: POINTER is
 			-- Address of C function `TXNPaste'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -625,7 +625,7 @@ feature
 			"ewg_function_macro_TXNClear"
 		end
 
-	frozentxnclear_address_external: POINTER is
+	frozen txnclear_address_external: POINTER is
 			-- Address of C function `TXNClear'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -640,7 +640,7 @@ feature
 			"ewg_function_macro_TXNIsScrapPastable"
 		end
 
-	frozentxnis_scrap_pastable_address_external: POINTER is
+	frozen txnis_scrap_pastable_address_external: POINTER is
 			-- Address of C function `TXNIsScrapPastable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -655,7 +655,7 @@ feature
 			"ewg_function_macro_TXNGetSelection"
 		end
 
-	frozentxnget_selection_address_external: POINTER is
+	frozen txnget_selection_address_external: POINTER is
 			-- Address of C function `TXNGetSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -670,7 +670,7 @@ feature
 			"ewg_function_macro_TXNShowSelection"
 		end
 
-	frozentxnshow_selection_address_external: POINTER is
+	frozen txnshow_selection_address_external: POINTER is
 			-- Address of C function `TXNShowSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -685,7 +685,7 @@ feature
 			"ewg_function_macro_TXNIsSelectionEmpty"
 		end
 
-	frozentxnis_selection_empty_address_external: POINTER is
+	frozen txnis_selection_empty_address_external: POINTER is
 			-- Address of C function `TXNIsSelectionEmpty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -700,7 +700,7 @@ feature
 			"ewg_function_macro_TXNSetSelection"
 		end
 
-	frozentxnset_selection_address_external: POINTER is
+	frozen txnset_selection_address_external: POINTER is
 			-- Address of C function `TXNSetSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -715,7 +715,7 @@ feature
 			"ewg_function_macro_TXNGetContinuousTypeAttributes"
 		end
 
-	frozentxnget_continuous_type_attributes_address_external: POINTER is
+	frozen txnget_continuous_type_attributes_address_external: POINTER is
 			-- Address of C function `TXNGetContinuousTypeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -730,7 +730,7 @@ feature
 			"ewg_function_macro_TXNSetTypeAttributes"
 		end
 
-	frozentxnset_type_attributes_address_external: POINTER is
+	frozen txnset_type_attributes_address_external: POINTER is
 			-- Address of C function `TXNSetTypeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -745,7 +745,7 @@ feature
 			"ewg_function_macro_TXNSetTXNObjectControls"
 		end
 
-	frozentxnset_txnobject_controls_address_external: POINTER is
+	frozen txnset_txnobject_controls_address_external: POINTER is
 			-- Address of C function `TXNSetTXNObjectControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -760,7 +760,7 @@ feature
 			"ewg_function_macro_TXNGetTXNObjectControls"
 		end
 
-	frozentxnget_txnobject_controls_address_external: POINTER is
+	frozen txnget_txnobject_controls_address_external: POINTER is
 			-- Address of C function `TXNGetTXNObjectControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -775,7 +775,7 @@ feature
 			"ewg_function_macro_TXNSetBackground"
 		end
 
-	frozentxnset_background_address_external: POINTER is
+	frozen txnset_background_address_external: POINTER is
 			-- Address of C function `TXNSetBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -790,7 +790,7 @@ feature
 			"ewg_function_macro_TXNEchoMode"
 		end
 
-	frozentxnecho_mode_address_external: POINTER is
+	frozen txnecho_mode_address_external: POINTER is
 			-- Address of C function `TXNEchoMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -805,7 +805,7 @@ feature
 			"ewg_function_macro_TXNCountRunsInRange"
 		end
 
-	frozentxncount_runs_in_range_address_external: POINTER is
+	frozen txncount_runs_in_range_address_external: POINTER is
 			-- Address of C function `TXNCountRunsInRange'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -820,7 +820,7 @@ feature
 			"ewg_function_macro_TXNGetIndexedRunInfoFromRange"
 		end
 
-	frozentxnget_indexed_run_info_from_range_address_external: POINTER is
+	frozen txnget_indexed_run_info_from_range_address_external: POINTER is
 			-- Address of C function `TXNGetIndexedRunInfoFromRange'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -835,7 +835,7 @@ feature
 			"ewg_function_macro_TXNDataSize"
 		end
 
-	frozentxndata_size_address_external: POINTER is
+	frozen txndata_size_address_external: POINTER is
 			-- Address of C function `TXNDataSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -850,7 +850,7 @@ feature
 			"ewg_function_macro_TXNWriteRangeToCFURL"
 		end
 
-	frozentxnwrite_range_to_cfurl_address_external: POINTER is
+	frozen txnwrite_range_to_cfurl_address_external: POINTER is
 			-- Address of C function `TXNWriteRangeToCFURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -865,7 +865,7 @@ feature
 			"ewg_function_macro_TXNReadFromCFURL"
 		end
 
-	frozentxnread_from_cfurl_address_external: POINTER is
+	frozen txnread_from_cfurl_address_external: POINTER is
 			-- Address of C function `TXNReadFromCFURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -880,7 +880,7 @@ feature
 			"ewg_function_macro_TXNCopyTypeIdentifiersForRange"
 		end
 
-	frozentxncopy_type_identifiers_for_range_address_external: POINTER is
+	frozen txncopy_type_identifiers_for_range_address_external: POINTER is
 			-- Address of C function `TXNCopyTypeIdentifiersForRange'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -895,7 +895,7 @@ feature
 			"ewg_function_macro_TXNGetData"
 		end
 
-	frozentxnget_data_address_external: POINTER is
+	frozen txnget_data_address_external: POINTER is
 			-- Address of C function `TXNGetData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -910,7 +910,7 @@ feature
 			"ewg_function_macro_TXNGetDataEncoded"
 		end
 
-	frozentxnget_data_encoded_address_external: POINTER is
+	frozen txnget_data_encoded_address_external: POINTER is
 			-- Address of C function `TXNGetDataEncoded'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -925,7 +925,7 @@ feature
 			"ewg_function_macro_TXNSetData"
 		end
 
-	frozentxnset_data_address_external: POINTER is
+	frozen txnset_data_address_external: POINTER is
 			-- Address of C function `TXNSetData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -940,7 +940,7 @@ feature
 			"ewg_function_macro_TXNFlattenObjectToCFDataRef"
 		end
 
-	frozentxnflatten_object_to_cfdata_ref_address_external: POINTER is
+	frozen txnflatten_object_to_cfdata_ref_address_external: POINTER is
 			-- Address of C function `TXNFlattenObjectToCFDataRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -955,7 +955,7 @@ feature
 			"ewg_function_macro_TXNRevert"
 		end
 
-	frozentxnrevert_address_external: POINTER is
+	frozen txnrevert_address_external: POINTER is
 			-- Address of C function `TXNRevert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -970,7 +970,7 @@ feature
 			"ewg_function_macro_TXNPageSetup"
 		end
 
-	frozentxnpage_setup_address_external: POINTER is
+	frozen txnpage_setup_address_external: POINTER is
 			-- Address of C function `TXNPageSetup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -985,7 +985,7 @@ feature
 			"ewg_function_macro_TXNPrint"
 		end
 
-	frozentxnprint_address_external: POINTER is
+	frozen txnprint_address_external: POINTER is
 			-- Address of C function `TXNPrint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1000,7 +1000,7 @@ feature
 			"ewg_function_macro_TXNFind"
 		end
 
-	frozentxnfind_address_external: POINTER is
+	frozen txnfind_address_external: POINTER is
 			-- Address of C function `TXNFind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1015,7 +1015,7 @@ feature
 			"ewg_function_macro_TXNSetFontDefaults"
 		end
 
-	frozentxnset_font_defaults_address_external: POINTER is
+	frozen txnset_font_defaults_address_external: POINTER is
 			-- Address of C function `TXNSetFontDefaults'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1030,7 +1030,7 @@ feature
 			"ewg_function_macro_TXNGetFontDefaults"
 		end
 
-	frozentxnget_font_defaults_address_external: POINTER is
+	frozen txnget_font_defaults_address_external: POINTER is
 			-- Address of C function `TXNGetFontDefaults'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1045,7 +1045,7 @@ feature
 			"ewg_function_macro_TXNNewFontMenuObject"
 		end
 
-	frozentxnnew_font_menu_object_address_external: POINTER is
+	frozen txnnew_font_menu_object_address_external: POINTER is
 			-- Address of C function `TXNNewFontMenuObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1060,7 +1060,7 @@ feature
 			"ewg_function_macro_TXNGetFontMenuHandle"
 		end
 
-	frozentxnget_font_menu_handle_address_external: POINTER is
+	frozen txnget_font_menu_handle_address_external: POINTER is
 			-- Address of C function `TXNGetFontMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1075,7 +1075,7 @@ feature
 			"ewg_function_macro_TXNDisposeFontMenuObject"
 		end
 
-	frozentxndispose_font_menu_object_address_external: POINTER is
+	frozen txndispose_font_menu_object_address_external: POINTER is
 			-- Address of C function `TXNDisposeFontMenuObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1090,7 +1090,7 @@ feature
 			"ewg_function_macro_TXNDoFontMenuSelection"
 		end
 
-	frozentxndo_font_menu_selection_address_external: POINTER is
+	frozen txndo_font_menu_selection_address_external: POINTER is
 			-- Address of C function `TXNDoFontMenuSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1105,7 +1105,7 @@ feature
 			"ewg_function_macro_TXNPrepareFontMenu"
 		end
 
-	frozentxnprepare_font_menu_address_external: POINTER is
+	frozen txnprepare_font_menu_address_external: POINTER is
 			-- Address of C function `TXNPrepareFontMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1120,7 +1120,7 @@ feature
 			"ewg_function_macro_TXNDrawUnicodeTextBox"
 		end
 
-	frozentxndraw_unicode_text_box_address_external: POINTER is
+	frozen txndraw_unicode_text_box_address_external: POINTER is
 			-- Address of C function `TXNDrawUnicodeTextBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1135,7 +1135,7 @@ feature
 			"ewg_function_macro_TXNDrawCFStringTextBox"
 		end
 
-	frozentxndraw_cfstring_text_box_address_external: POINTER is
+	frozen txndraw_cfstring_text_box_address_external: POINTER is
 			-- Address of C function `TXNDrawCFStringTextBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1150,7 +1150,7 @@ feature
 			"ewg_function_macro_TXNGetLineCount"
 		end
 
-	frozentxnget_line_count_address_external: POINTER is
+	frozen txnget_line_count_address_external: POINTER is
 			-- Address of C function `TXNGetLineCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1165,7 +1165,7 @@ feature
 			"ewg_function_macro_TXNGetLineMetrics"
 		end
 
-	frozentxnget_line_metrics_address_external: POINTER is
+	frozen txnget_line_metrics_address_external: POINTER is
 			-- Address of C function `TXNGetLineMetrics'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1180,7 +1180,7 @@ feature
 			"ewg_function_macro_TXNGetChangeCount"
 		end
 
-	frozentxnget_change_count_address_external: POINTER is
+	frozen txnget_change_count_address_external: POINTER is
 			-- Address of C function `TXNGetChangeCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1195,7 +1195,7 @@ feature
 			"ewg_function_macro_TXNGetCountForActionType"
 		end
 
-	frozentxnget_count_for_action_type_address_external: POINTER is
+	frozen txnget_count_for_action_type_address_external: POINTER is
 			-- Address of C function `TXNGetCountForActionType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1210,7 +1210,7 @@ feature
 			"ewg_function_macro_TXNClearCountForActionType"
 		end
 
-	frozentxnclear_count_for_action_type_address_external: POINTER is
+	frozen txnclear_count_for_action_type_address_external: POINTER is
 			-- Address of C function `TXNClearCountForActionType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1225,7 +1225,7 @@ feature
 			"ewg_function_macro_TXNSetHIRectBounds"
 		end
 
-	frozentxnset_hirect_bounds_address_external: POINTER is
+	frozen txnset_hirect_bounds_address_external: POINTER is
 			-- Address of C function `TXNSetHIRectBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1240,7 +1240,7 @@ feature
 			"ewg_function_macro_TXNGetHIRect"
 		end
 
-	frozentxnget_hirect_address_external: POINTER is
+	frozen txnget_hirect_address_external: POINTER is
 			-- Address of C function `TXNGetHIRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1255,7 +1255,7 @@ feature
 			"ewg_function_macro_TXNResizeFrame"
 		end
 
-	frozentxnresize_frame_address_external: POINTER is
+	frozen txnresize_frame_address_external: POINTER is
 			-- Address of C function `TXNResizeFrame'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1270,7 +1270,7 @@ feature
 			"ewg_function_macro_TXNSetFrameBounds"
 		end
 
-	frozentxnset_frame_bounds_address_external: POINTER is
+	frozen txnset_frame_bounds_address_external: POINTER is
 			-- Address of C function `TXNSetFrameBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1285,7 +1285,7 @@ feature
 			"ewg_function_macro_TXNGetViewRect"
 		end
 
-	frozentxnget_view_rect_address_external: POINTER is
+	frozen txnget_view_rect_address_external: POINTER is
 			-- Address of C function `TXNGetViewRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1300,7 +1300,7 @@ feature
 			"ewg_function_macro_TXNRecalcTextLayout"
 		end
 
-	frozentxnrecalc_text_layout_address_external: POINTER is
+	frozen txnrecalc_text_layout_address_external: POINTER is
 			-- Address of C function `TXNRecalcTextLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1315,7 +1315,7 @@ feature
 			"ewg_function_macro_TXNScroll"
 		end
 
-	frozentxnscroll_address_external: POINTER is
+	frozen txnscroll_address_external: POINTER is
 			-- Address of C function `TXNScroll'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1330,7 +1330,7 @@ feature
 			"ewg_function_macro_TXNRegisterScrollInfoProc"
 		end
 
-	frozentxnregister_scroll_info_proc_address_external: POINTER is
+	frozen txnregister_scroll_info_proc_address_external: POINTER is
 			-- Address of C function `TXNRegisterScrollInfoProc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1345,7 +1345,7 @@ feature
 			"ewg_function_macro_TXNSetScrollbarState"
 		end
 
-	frozentxnset_scrollbar_state_address_external: POINTER is
+	frozen txnset_scrollbar_state_address_external: POINTER is
 			-- Address of C function `TXNSetScrollbarState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1360,7 +1360,7 @@ feature
 			"ewg_function_macro_TXNHIPointToOffset"
 		end
 
-	frozentxnhipoint_to_offset_address_external: POINTER is
+	frozen txnhipoint_to_offset_address_external: POINTER is
 			-- Address of C function `TXNHIPointToOffset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1375,7 +1375,7 @@ feature
 			"ewg_function_macro_TXNOffsetToHIPoint"
 		end
 
-	frozentxnoffset_to_hipoint_address_external: POINTER is
+	frozen txnoffset_to_hipoint_address_external: POINTER is
 			-- Address of C function `TXNOffsetToHIPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1390,7 +1390,7 @@ feature
 			"ewg_function_macro_TXNDragTracker"
 		end
 
-	frozentxndrag_tracker_address_external: POINTER is
+	frozen txndrag_tracker_address_external: POINTER is
 			-- Address of C function `TXNDragTracker'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1405,7 +1405,7 @@ feature
 			"ewg_function_macro_TXNDragReceiver"
 		end
 
-	frozentxndrag_receiver_address_external: POINTER is
+	frozen txndrag_receiver_address_external: POINTER is
 			-- Address of C function `TXNDragReceiver'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1420,7 +1420,7 @@ feature
 			"ewg_function_macro_TXNSetCommandEventSupport"
 		end
 
-	frozentxnset_command_event_support_address_external: POINTER is
+	frozen txnset_command_event_support_address_external: POINTER is
 			-- Address of C function `TXNSetCommandEventSupport'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1435,7 +1435,7 @@ feature
 			"ewg_function_macro_TXNGetCommandEventSupport"
 		end
 
-	frozentxnget_command_event_support_address_external: POINTER is
+	frozen txnget_command_event_support_address_external: POINTER is
 			-- Address of C function `TXNGetCommandEventSupport'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1450,7 +1450,7 @@ feature
 			"ewg_function_macro_TXNSetSpellCheckAsYouType"
 		end
 
-	frozentxnset_spell_check_as_you_type_address_external: POINTER is
+	frozen txnset_spell_check_as_you_type_address_external: POINTER is
 			-- Address of C function `TXNSetSpellCheckAsYouType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1465,7 +1465,7 @@ feature
 			"ewg_function_macro_TXNGetSpellCheckAsYouType"
 		end
 
-	frozentxnget_spell_check_as_you_type_address_external: POINTER is
+	frozen txnget_spell_check_as_you_type_address_external: POINTER is
 			-- Address of C function `TXNGetSpellCheckAsYouType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1480,7 +1480,7 @@ feature
 			"ewg_function_macro_TXNSetEventTarget"
 		end
 
-	frozentxnset_event_target_address_external: POINTER is
+	frozen txnset_event_target_address_external: POINTER is
 			-- Address of C function `TXNSetEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1495,7 +1495,7 @@ feature
 			"ewg_function_macro_TXNGetEventTarget"
 		end
 
-	frozentxnget_event_target_address_external: POINTER is
+	frozen txnget_event_target_address_external: POINTER is
 			-- Address of C function `TXNGetEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1510,7 +1510,7 @@ feature
 			"ewg_function_macro_TXNSetContextualMenuSetup"
 		end
 
-	frozentxnset_contextual_menu_setup_address_external: POINTER is
+	frozen txnset_contextual_menu_setup_address_external: POINTER is
 			-- Address of C function `TXNSetContextualMenuSetup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1525,7 +1525,7 @@ feature
 			"ewg_function_macro_TXNGetAccessibilityHIObject"
 		end
 
-	frozentxnget_accessibility_hiobject_address_external: POINTER is
+	frozen txnget_accessibility_hiobject_address_external: POINTER is
 			-- Address of C function `TXNGetAccessibilityHIObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1540,7 +1540,7 @@ feature
 			"ewg_function_macro_HITextViewCreate"
 		end
 
-	frozenhitext_view_create_address_external: POINTER is
+	frozen hitext_view_create_address_external: POINTER is
 			-- Address of C function `HITextViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1555,7 +1555,7 @@ feature
 			"ewg_function_macro_HITextViewGetTXNObject"
 		end
 
-	frozenhitext_view_get_txnobject_address_external: POINTER is
+	frozen hitext_view_get_txnobject_address_external: POINTER is
 			-- Address of C function `HITextViewGetTXNObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1570,7 +1570,7 @@ feature
 			"ewg_function_macro_HITextViewSetBackgroundColor"
 		end
 
-	frozenhitext_view_set_background_color_address_external: POINTER is
+	frozen hitext_view_set_background_color_address_external: POINTER is
 			-- Address of C function `HITextViewSetBackgroundColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1585,7 +1585,7 @@ feature
 			"ewg_function_macro_HITextViewCopyBackgroundColor"
 		end
 
-	frozenhitext_view_copy_background_color_address_external: POINTER is
+	frozen hitext_view_copy_background_color_address_external: POINTER is
 			-- Address of C function `HITextViewCopyBackgroundColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1600,7 +1600,7 @@ feature
 			"ewg_function_macro_NewTXNActionKeyMapperUPP"
 		end
 
-	frozennew_txnaction_key_mapper_upp_address_external: POINTER is
+	frozen new_txnaction_key_mapper_upp_address_external: POINTER is
 			-- Address of C function `NewTXNActionKeyMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1615,7 +1615,7 @@ feature
 			"ewg_function_macro_DisposeTXNActionKeyMapperUPP"
 		end
 
-	frozendispose_txnaction_key_mapper_upp_address_external: POINTER is
+	frozen dispose_txnaction_key_mapper_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNActionKeyMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1630,7 +1630,7 @@ feature
 			"ewg_function_macro_InvokeTXNActionKeyMapperUPP"
 		end
 
-	frozeninvoke_txnaction_key_mapper_upp_address_external: POINTER is
+	frozen invoke_txnaction_key_mapper_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNActionKeyMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1645,7 +1645,7 @@ feature
 			"ewg_function_macro_TXNSetViewRect"
 		end
 
-	frozentxnset_view_rect_address_external: POINTER is
+	frozen txnset_view_rect_address_external: POINTER is
 			-- Address of C function `TXNSetViewRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1660,7 +1660,7 @@ feature
 			"ewg_function_macro_TXNNewObject"
 		end
 
-	frozentxnnew_object_address_external: POINTER is
+	frozen txnnew_object_address_external: POINTER is
 			-- Address of C function `TXNNewObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1675,7 +1675,7 @@ feature
 			"ewg_function_macro_TXNTerminateTextension"
 		end
 
-	frozentxnterminate_textension_address_external: POINTER is
+	frozen txnterminate_textension_address_external: POINTER is
 			-- Address of C function `TXNTerminateTextension'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1690,7 +1690,7 @@ feature
 			"ewg_function_macro_TXNSetDataFromFile"
 		end
 
-	frozentxnset_data_from_file_address_external: POINTER is
+	frozen txnset_data_from_file_address_external: POINTER is
 			-- Address of C function `TXNSetDataFromFile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1705,7 +1705,7 @@ feature
 			"ewg_function_macro_TXNConvertToPublicScrap"
 		end
 
-	frozentxnconvert_to_public_scrap_address_external: POINTER is
+	frozen txnconvert_to_public_scrap_address_external: POINTER is
 			-- Address of C function `TXNConvertToPublicScrap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1720,7 +1720,7 @@ feature
 			"ewg_function_macro_TXNConvertFromPublicScrap"
 		end
 
-	frozentxnconvert_from_public_scrap_address_external: POINTER is
+	frozen txnconvert_from_public_scrap_address_external: POINTER is
 			-- Address of C function `TXNConvertFromPublicScrap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1735,7 +1735,7 @@ feature
 			"ewg_function_macro_TXNDraw"
 		end
 
-	frozentxndraw_address_external: POINTER is
+	frozen txndraw_address_external: POINTER is
 			-- Address of C function `TXNDraw'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1750,7 +1750,7 @@ feature
 			"ewg_function_macro_TXNAttachObjectToWindow"
 		end
 
-	frozentxnattach_object_to_window_address_external: POINTER is
+	frozen txnattach_object_to_window_address_external: POINTER is
 			-- Address of C function `TXNAttachObjectToWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1765,7 +1765,7 @@ feature
 			"ewg_function_macro_TXNIsObjectAttachedToWindow"
 		end
 
-	frozentxnis_object_attached_to_window_address_external: POINTER is
+	frozen txnis_object_attached_to_window_address_external: POINTER is
 			-- Address of C function `TXNIsObjectAttachedToWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1780,7 +1780,7 @@ feature
 			"ewg_function_macro_TXNIsObjectAttachedToSpecificWindow"
 		end
 
-	frozentxnis_object_attached_to_specific_window_address_external: POINTER is
+	frozen txnis_object_attached_to_specific_window_address_external: POINTER is
 			-- Address of C function `TXNIsObjectAttachedToSpecificWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1795,7 +1795,7 @@ feature
 			"ewg_function_macro_TXNSetRectBounds"
 		end
 
-	frozentxnset_rect_bounds_address_external: POINTER is
+	frozen txnset_rect_bounds_address_external: POINTER is
 			-- Address of C function `TXNSetRectBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1810,7 +1810,7 @@ feature
 			"ewg_function_macro_TXNGetRectBounds"
 		end
 
-	frozentxnget_rect_bounds_address_external: POINTER is
+	frozen txnget_rect_bounds_address_external: POINTER is
 			-- Address of C function `TXNGetRectBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1825,7 +1825,7 @@ feature
 			"ewg_function_macro_TXNActivate"
 		end
 
-	frozentxnactivate_address_external: POINTER is
+	frozen txnactivate_address_external: POINTER is
 			-- Address of C function `TXNActivate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1840,7 +1840,7 @@ feature
 			"ewg_function_macro_TXNPointToOffset"
 		end
 
-	frozentxnpoint_to_offset_address_external: POINTER is
+	frozen txnpoint_to_offset_address_external: POINTER is
 			-- Address of C function `TXNPointToOffset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1855,7 +1855,7 @@ feature
 			"ewg_function_macro_TXNOffsetToPoint"
 		end
 
-	frozentxnoffset_to_point_address_external: POINTER is
+	frozen txnoffset_to_point_address_external: POINTER is
 			-- Address of C function `TXNOffsetToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1870,7 +1870,7 @@ feature
 			"ewg_function_macro_TXNCanUndo"
 		end
 
-	frozentxncan_undo_address_external: POINTER is
+	frozen txncan_undo_address_external: POINTER is
 			-- Address of C function `TXNCanUndo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1885,7 +1885,7 @@ feature
 			"ewg_function_macro_TXNCanRedo"
 		end
 
-	frozentxncan_redo_address_external: POINTER is
+	frozen txncan_redo_address_external: POINTER is
 			-- Address of C function `TXNCanRedo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1900,7 +1900,7 @@ feature
 			"ewg_function_macro_TXNGetActionChangeCount"
 		end
 
-	frozentxnget_action_change_count_address_external: POINTER is
+	frozen txnget_action_change_count_address_external: POINTER is
 			-- Address of C function `TXNGetActionChangeCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1915,7 +1915,7 @@ feature
 			"ewg_function_macro_TXNClearActionChangeCount"
 		end
 
-	frozentxnclear_action_change_count_address_external: POINTER is
+	frozen txnclear_action_change_count_address_external: POINTER is
 			-- Address of C function `TXNClearActionChangeCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1930,7 +1930,7 @@ feature
 			"ewg_function_macro_TXNSetDataFromCFURLRef"
 		end
 
-	frozentxnset_data_from_cfurlref_address_external: POINTER is
+	frozen txnset_data_from_cfurlref_address_external: POINTER is
 			-- Address of C function `TXNSetDataFromCFURLRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1945,7 +1945,7 @@ feature
 			"ewg_function_macro_TXNSave"
 		end
 
-	frozentxnsave_address_external: POINTER is
+	frozen txnsave_address_external: POINTER is
 			-- Address of C function `TXNSave'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

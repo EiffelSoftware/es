@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_HIGetScaleFactor"
 		end
 
-	frozenhiget_scale_factor_address_external: POINTER is
+	frozen higet_scale_factor_address_external: POINTER is
 			-- Address of C function `HIGetScaleFactor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_HIPointConvert"
 		end
 
-	frozenhipoint_convert_address_external: POINTER is
+	frozen hipoint_convert_address_external: POINTER is
 			-- Address of C function `HIPointConvert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_HIRectConvert"
 		end
 
-	frozenhirect_convert_address_external: POINTER is
+	frozen hirect_convert_address_external: POINTER is
 			-- Address of C function `HIRectConvert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_HISizeConvert"
 		end
 
-	frozenhisize_convert_address_external: POINTER is
+	frozen hisize_convert_address_external: POINTER is
 			-- Address of C function `HISizeConvert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

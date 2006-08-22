@@ -10,7 +10,7 @@ feature
 			"ewg_function_macro_AEInstallEventHandler"
 		end
 
-	frozenaeinstall_event_handler_address_external: POINTER is
+	frozen aeinstall_event_handler_address_external: POINTER is
 			-- Address of C function `AEInstallEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -25,7 +25,7 @@ feature
 			"ewg_function_macro_AERemoveEventHandler"
 		end
 
-	frozenaeremove_event_handler_address_external: POINTER is
+	frozen aeremove_event_handler_address_external: POINTER is
 			-- Address of C function `AERemoveEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -40,7 +40,7 @@ feature
 			"ewg_function_macro_AEGetEventHandler"
 		end
 
-	frozenaeget_event_handler_address_external: POINTER is
+	frozen aeget_event_handler_address_external: POINTER is
 			-- Address of C function `AEGetEventHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -55,7 +55,7 @@ feature
 			"ewg_function_macro_AEInstallSpecialHandler"
 		end
 
-	frozenaeinstall_special_handler_address_external: POINTER is
+	frozen aeinstall_special_handler_address_external: POINTER is
 			-- Address of C function `AEInstallSpecialHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -70,7 +70,7 @@ feature
 			"ewg_function_macro_AERemoveSpecialHandler"
 		end
 
-	frozenaeremove_special_handler_address_external: POINTER is
+	frozen aeremove_special_handler_address_external: POINTER is
 			-- Address of C function `AERemoveSpecialHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -85,7 +85,7 @@ feature
 			"ewg_function_macro_AEGetSpecialHandler"
 		end
 
-	frozenaeget_special_handler_address_external: POINTER is
+	frozen aeget_special_handler_address_external: POINTER is
 			-- Address of C function `AEGetSpecialHandler'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -100,7 +100,7 @@ feature
 			"ewg_function_macro_AEManagerInfo"
 		end
 
-	frozenaemanager_info_address_external: POINTER is
+	frozen aemanager_info_address_external: POINTER is
 			-- Address of C function `AEManagerInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -115,7 +115,7 @@ feature
 			"ewg_function_macro_AECreateRemoteProcessResolver"
 		end
 
-	frozenaecreate_remote_process_resolver_address_external: POINTER is
+	frozen aecreate_remote_process_resolver_address_external: POINTER is
 			-- Address of C function `AECreateRemoteProcessResolver'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -130,7 +130,7 @@ feature
 			"ewg_function_macro_AEDisposeRemoteProcessResolver"
 		end
 
-	frozenaedispose_remote_process_resolver_address_external: POINTER is
+	frozen aedispose_remote_process_resolver_address_external: POINTER is
 			-- Address of C function `AEDisposeRemoteProcessResolver'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -145,7 +145,7 @@ feature
 			"ewg_function_macro_AERemoteProcessResolverGetProcesses"
 		end
 
-	frozenaeremote_process_resolver_get_processes_address_external: POINTER is
+	frozen aeremote_process_resolver_get_processes_address_external: POINTER is
 			-- Address of C function `AERemoteProcessResolverGetProcesses'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -160,7 +160,7 @@ feature
 			"ewg_function_macro_AERemoteProcessResolverScheduleWithRunLoop"
 		end
 
-	frozenaeremote_process_resolver_schedule_with_run_loop_address_external: POINTER is
+	frozen aeremote_process_resolver_schedule_with_run_loop_address_external: POINTER is
 			-- Address of C function `AERemoteProcessResolverScheduleWithRunLoop'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

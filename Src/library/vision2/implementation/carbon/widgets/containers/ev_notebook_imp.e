@@ -336,10 +336,10 @@ feature {EV_NOTEBOOK} -- Status setting
 				check
 					w_imp_not_void : w_imp /= Void
 				end
-				err := hiview_set_visible_external ( w_imp.c_object, 1 ) -- 1 = true
+				err := hiview_set_visible_external ( w_imp.c_object, (true).to_integer )
 			end
 			set_control32bit_value_external ( c_object, item_index )
-			err := hiview_set_visible_external ( item_imp.c_object, 0 ) -- 0 = false
+			err := hiview_set_visible_external ( item_imp.c_object, (false).to_integer )
 			last_selected := selected_item_index
 		end
 
@@ -398,7 +398,7 @@ feature -- Element change
 
 			set_control_bounds_external ( w_imp.c_object, a_rect.item )
 			bind_to_tabcontrol ( w_imp.c_object, c_object )
-			err := hiview_set_visible_external ( w_imp.c_object, 1 ) -- 1 = true
+			err := hiview_set_visible_external ( w_imp.c_object, (true).to_integer )
 			if count = 1  then
 				set_control32bit_value_external ( c_object, 1 )
 				page_switch
