@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision gauge. GTK+ implementation."
+	description: "Eiffel Vision gauge. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -22,13 +22,16 @@ inherit
 
 	EV_GAUGE_ACTION_SEQUENCES_IMP
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create the horizontal scroll bar.
+		local
+			err : INTEGER
 		do
 			base_make (an_interface)
-
 		end
 
 	initialize is
@@ -45,12 +48,6 @@ feature {NONE} -- Initialization
 		do
 			create value_range.make (0, 100)
 			value_range.change_actions.extend (agent set_range)
---			real_signal_connect (
---				adjustment,
---				once "value-changed",
---				agent (App_implementation.gtk_marshal).on_gauge_value_changed_intermediary (c_object),
---				Void
---			)
 			set_range
 		end
 
@@ -59,32 +56,14 @@ feature -- Access
 	value: INTEGER is
 			-- Current value of the gauge.
 		do
-			Result := l_val
+			Result := get_control32bit_value_external ( c_object )
 		end
 
-	l_val: INTEGER
-
-	step: INTEGER is
+	step: INTEGER
 			-- Value by which `value' is increased after `step_forward'.
-		do
-			Result := l_step
-		end
 
-	l_step: INTEGER
-
-	leap: INTEGER is
+	leap: INTEGER
 			-- Value by which `value' is increased after `leap_forward'.
-		do
-
-		end
-
-	page_size: INTEGER is
-			-- Size of slider.
-			--| We define it here to add to the internal maximum.
-			--| Value should be zero for ranges but not for scrollbars.
-		do
-
-		end
 
 feature -- Status setting
 
@@ -117,9 +96,7 @@ feature -- Element change
 	set_value (a_value: INTEGER) is
 			-- Set `value' to `a_value'.
 		do
-			internal_set_value (a_value)
-				-- Make sure value is immediately displayed on screen.
-			refresh_now
+			set_control32bit_value_external ( c_object, a_value )
 		ensure then
 			step_same: step = old step
 			leap_same: leap = old leap
@@ -129,9 +106,7 @@ feature -- Element change
 	set_step (a_step: INTEGER) is
 			-- Set `step' to `a_step'.
 		do
-			if step /= a_step then
-				l_step := a_step
-			end
+			step := a_step
 		ensure then
 			value_same: value = old value
 			leap_same: leap = old leap
@@ -141,9 +116,7 @@ feature -- Element change
 	set_leap (a_leap: INTEGER) is
 			-- Set `leap' to `a_leap'.
 		do
-			if leap /= a_leap then
-
-			end
+			leap := a_leap
 		end
 
 	set_range is
@@ -157,36 +130,15 @@ feature -- Element change
 			elseif temp_value < value_range.lower then
 				temp_value := value_range.lower
 			end
+			set_control32bit_minimum_external ( c_object, value_range.lower )
+			set_control32bit_maximum_external ( c_object, value_range.upper )
 
-			internal_set_upper
-			internal_set_value (temp_value)
-
+			set_value ( temp_value )
 		end
 
 feature {NONE} -- Implementation
 
-	internal_set_upper is
-			-- Set the upper value of the adjustment struct
-		do
-
-		end
-
 	interface: EV_GAUGE
-
-	adjustment: POINTER
-			-- Pointer to GtkAdjustment of gauge.
-
-	old_value: INTEGER
-			-- Value of `value' when last "value-changed" signal occurred.
-
-	internal_set_value (a_value: INTEGER) is
-			-- Set `value' to `a_value'.
-		do
-			if value /= a_value then
-				l_val := a_value
-
-			end
-		end
 
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 
@@ -198,8 +150,6 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 			end
 		end
 
-invariant
-	adjustment_not_void: adjustment /= NULL
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

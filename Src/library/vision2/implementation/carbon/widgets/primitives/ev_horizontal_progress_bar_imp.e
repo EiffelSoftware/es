@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelV ision horizontal progress bar. GTK+ implementation."
+	description: "EiffelV ision horizontal progress bar. Carbonimplementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
