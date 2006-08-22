@@ -59,8 +59,10 @@ feature -- Access
 	value: INTEGER is
 			-- Current value of the gauge.
 		do
-
+			Result := l_val
 		end
+
+	l_val: INTEGER
 
 	step: INTEGER is
 			-- Value by which `value' is increased after `step_forward'.
@@ -179,6 +181,7 @@ feature {NONE} -- Implementation
 			-- Set `value' to `a_value'.
 		do
 			if value /= a_value then
+				l_val := a_value
 
 			end
 		end

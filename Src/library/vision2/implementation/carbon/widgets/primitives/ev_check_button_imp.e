@@ -49,6 +49,7 @@ feature -- Element change
 			-- Set current button text to `txt'.
 			-- Redefined because we want the text to be left-aligned.
 		do
+			precursor {EV_TOGGLE_BUTTON_IMP}(txt)
 
 		end
 

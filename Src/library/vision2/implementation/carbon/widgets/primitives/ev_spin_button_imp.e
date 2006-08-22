@@ -62,6 +62,7 @@ feature {NONE} -- Implementation
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
 		do
+			precursor {EV_TEXT_FIELD_IMP} (a_text)
 		end
 
 feature {EV_ANY_I} -- Implementation

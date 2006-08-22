@@ -54,6 +54,7 @@ feature -- Access
 	text: STRING_32 is
 			-- Text displayed in field.
 		do
+			Result := real_text.as_string_32
 		end
 
 feature -- Status setting
@@ -66,6 +67,7 @@ feature -- Status setting
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
 		do
+			real_text := a_text.twin
 		end
 
 	append_text (txt: STRING_GENERAL) is

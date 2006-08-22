@@ -135,6 +135,8 @@ feature {EV_ANY_I, EV_GTK_CALLBACK_MARSHAL} -- Implementation
 			-- Create a select action sequence.
 			-- Attach to GTK "clicked" signal.
 		do
+			create Result
+			--real_signal_connect (c_object, once "clicked", agent (App_implementation.gtk_marshal).new_toolbar_item_select_actions_intermediary (internal_id), Void)
 		end
 
 	create_drop_down_actions: EV_NOTIFY_ACTION_SEQUENCE is
