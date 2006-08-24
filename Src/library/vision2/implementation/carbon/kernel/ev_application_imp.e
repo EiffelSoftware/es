@@ -367,7 +367,7 @@ feature {EV_CARBON_EVENTABLE} -- event handling
 			--io.put_string ("Get ID: " + Result.out + "%N")
 		end
 
-	give_free (a_id: INTEGER) is
+	dispose_id (a_id: INTEGER) is
 				-- Give an id back (it will be recycled)
 			do
 				widget_list.force (void, a_id)
