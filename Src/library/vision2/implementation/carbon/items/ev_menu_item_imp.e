@@ -91,6 +91,10 @@ feature -- Element change
 			ptr := c_object
 			create cfstring.make_unshared_with_eiffel_string (t)
 			ret := set_menu_title_with_cfstring_external (ptr, cfstring.item)
+
+			-- TODO: The text of menu-items is currently not changeable (i.e. after they are attached)
+			-- ret := set_menu_item_text_with_cfstring_external (parent_imp.c_object, pos, cfstring.item)
+
 			text := a_text
 		end
 

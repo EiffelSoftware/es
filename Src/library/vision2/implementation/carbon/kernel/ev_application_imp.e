@@ -9,8 +9,8 @@ class
 inherit
 	EV_APPLICATION_I
 			export
---				{EV_PICK_AND_DROPABLE_IMP}
---					captured_widget
+				{EV_PICK_AND_DROPABLE_IMP}
+					captured_widget
 				{EV_INTERMEDIARY_ROUTINES}
 					pointer_motion_actions_internal,
 					pointer_button_press_actions_internal,
