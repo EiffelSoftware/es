@@ -81,25 +81,12 @@ feature -- Implementation
 
 	pixbuf_formats (a_writeable: BOOLEAN): ARRAYED_LIST [STRING_32] is
 			-- List of the readable formats available with current Gtk 2.0 library
-		local
-			formats: POINTER
-			i,format_count: INTEGER
-			format_name: STRING_32
-			pixbuf_format: POINTER
-			a_cs: EV_GTK_C_STRING
 		do
 
 		end
 
 	initialize_default_font_values is
 			-- Initialize values use for creating our default font
-		local
-			font_desc: STRING_32
-			font_names, font_names_as_lower: ARRAYED_LIST [STRING_32]
-			exit_loop: BOOLEAN
-			split_values: LIST [STRING_32]
-			i, l_font_names_count: INTEGER
-			l_font_item: STRING_32
 		do
 
 		end
@@ -141,17 +128,12 @@ feature -- Implementation
 
 	font_settings_changed: BOOLEAN is
 			-- Have the default font settings been changed by the user
-		local
-			a_settings: STRING_32
 		do
 
 		end
 
 	default_font_description: STRING_32 is
 			-- Description string of the current font used
-		local
-			font_name_ptr: POINTER
-			a_cs: EV_GTK_C_STRING
 		do
 
 		end
@@ -164,10 +146,6 @@ feature -- Implementation
 
 	font_names_on_system: ARRAYED_LIST [STRING_32] is
 			-- Retrieve a list of all the font names available on the system
-		local
-			a_name_array: POINTER
-			i, n_array_elements: INTEGER
-			utf8_string: EV_GTK_C_STRING
 		once
 
 		end
@@ -175,9 +153,6 @@ feature -- Implementation
 	font_names_on_system_as_lower: ARRAYED_LIST [STRING_32] is
 			-- Retrieve a list of all the font names available on the system in lower case
 			-- This is needed for easy case insensitive lookup in EV_FONT_IMP.
-		local
-			i, l_font_count: INTEGER
-			l_font_names: like font_names_on_system
 		once
 
 		end
@@ -187,9 +162,6 @@ feature -- Implementation
 
 	gdk_cursor_from_pixmap (a_cursor: EV_CURSOR): POINTER is
 			-- Return a GdkCursor constructed from `a_cursor'
-		local
-			a_cursor_imp: EV_PIXMAP_IMP
-			a_pixbuf: POINTER
 		do
 
 		end

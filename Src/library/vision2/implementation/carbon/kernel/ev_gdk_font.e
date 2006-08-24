@@ -17,28 +17,19 @@ feature {NONE} -- Initialization
 
 	make (a_full_name: STRING_GENERAL) is
 			-- Initialize.
-		require
-			a_full_name_not_void: a_full_name /= Void
 		do
-			full_name := a_full_name
-			load
 		end
 
 feature {NONE} -- Implementation
 
 	load is
 			-- Load font specified in `full_name'.
-		local
-			a_cs: EV_GTK_C_STRING
 		do
-			a_cs := full_name
-			c_object := {EV_GTK_EXTERNALS}.gdk_font_load (a_cs.item)
 		end
 
 	destroy is
 			-- Unreference font.
 		do
-			{EV_GTK_EXTERNALS}.gdk_font_unref (c_object)
 		end
 
 feature -- Access
