@@ -335,11 +335,13 @@ feature {NONE} -- callback handling for events
 			ret: INTEGER
 			command_struct: HICOMMAND_STRUCT
 		do
-				if a_inuserdata /= default_pointer then
-					a_id := pointer_to_int ( a_inuserdata )
-					--print ("on_callback has been called by id:" + a_id.out + "%N")
-					Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
+				a_id := pointer_to_int ( a_inuserdata )
+				check
+					valid_id : widget_list.index_set.has ( a_id )
+					target_valid : widget_list.item ( a_id ) /= Void
 				end
+				--print ("on_callback has been called by id:" + a_id.out + "%N")
+				Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
 		end
 
 	id_count: INTEGER  -- the next id for an event.
