@@ -23,7 +23,7 @@ inherit
 			dispose
 		end
 
-feature {EV_ANY_I} -- Access
+feature {EV_ANY_I, EV_ANY} -- Access
 
 	c_object: POINTER -- C pointer to corresponding carbon struct
 

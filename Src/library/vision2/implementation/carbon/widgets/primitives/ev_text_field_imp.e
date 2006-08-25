@@ -37,6 +37,8 @@ inherit
 		redefine
 			create_return_actions
 		end
+	MACTEXTEDITOR_FUNCTIONS_EXTERNAL
+	HIVIEW_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -44,12 +46,81 @@ create
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Create a gtk entry.
+			-- Create a carbon entry.
+		local
+			ret: INTEGER
+			struct_ptr: POINTER
+			buffer: C_STRING
+			point : CGPOINT_STRUCT
+			size : CGSIZE_STRUCT
+			rect : CGRECT_STRUCT
+			a_string: C_STRING
 		do
 			base_make (an_interface)
+
+			create point.make_new_unshared
+			create rect.make_new_unshared
+			create size.make_new_unshared
+
+			size.set_height(20)
+			size.set_width (100)
+			point.set_x (0)
+			point.set_y (0)
+			rect.set_origin (point.item)
+			rect.set_size (size.item)
+
+			ret := hitext_view_create_external (null, 0, kTXNSingleLineOnlyMask, $c_object)
+
+			ret := hiview_set_visible_external (c_object, 1)
+
+			entry_widget := hitext_view_get_txnobject_external (struct_ptr)
+
+			ret := hiview_set_frame_external (c_object, rect.item)
+
+			id := app_implementation.get_id (current)  --getting an id from the application
+
+			create a_string.make ("Hallo")
+			ret := set_text_external (a_string.item, c_object, 5)
 		end
 
 feature -- Access
+
+	set_text_external (a_c_str_ptr, a_obj: POINTER; length: INTEGER): INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"[
+			{			  
+              OSStatus theStatus = TXNSetData(HITextViewGetTXNObject($a_obj), kTXNTextData, $a_c_str_ptr, $length, kTXNStartOffset, kTXNStartOffset);
+			  return theStatus;
+			}
+		]"
+	end
+
+
+	frozen kTXNSingleLineOnlyMask: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNSingleLineOnlyMask"
+	end
+
+	frozen kTXNTextData: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNSingleLineOnlyMask"
+	end
+
+	frozen kTXNStartOffset: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNSingleLineOnlyMask"
+	end
 
 	text: STRING_32 is
 			-- Text displayed in field.

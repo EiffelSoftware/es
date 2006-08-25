@@ -304,7 +304,7 @@ feature -- Drawing operations
         	end
         end
 
-       frozen kEventAttributeUserEvent: INTEGER is
+    frozen kEventAttributeUserEvent: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
