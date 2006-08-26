@@ -43,6 +43,8 @@ inherit
 
 	EVENT_HANDLER_PROC_PTR_CALLBACK
 
+	HIOBJECT_FUNCTIONS_EXTERNAL
+
 
 create
 	make
@@ -54,11 +56,26 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 
+			create windows.make
+
 			id_count := 1
 			create free_ids.make
-			create windows.make
-			create widget_list.make (1, 200)
+			create widget_list.make ( 1, initial_widget_list_size )
+			custom_id_count := 1
+			create custom_widget_list.make ( 1, initial_custom_control_list_size )
+
+			create dispatcher.make (Current)
+		ensure then
+			free_ids_exists : free_ids /= Void
+			windows_exists : windows /= Void
+			widget_list_exists : widget_list /= Void
+			dispatcher_exists : dispatcher /= Void
 		end
+
+feature -- Settings
+
+	initial_widget_list_size : INTEGER is 200
+	initial_custom_control_list_size : INTEGER is 5
 
 feature {NONE} -- Event loop
 
@@ -76,7 +93,7 @@ feature {NONE} -- Event loop
 			psn: PROCESS_SERIAL_NUMBER_STRUCT
 			ret: INTEGER
 		do
-			create psn.make_new_shared
+			create psn.make_new_unshared
 			ret := get_current_process_external(psn.item)
 			ret := transform_process_type_external(psn.item, 1)
 			ret := set_front_process_external(psn.item)
@@ -131,19 +148,6 @@ feature -- Basic operation
 	motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER] is
 			-- Tuple optimizations
 		once
-		end
-
-	process_button_event (a_gdk_event: POINTER) is
-			-- Process button event `a_gdk_event'.
-		require
-			a_gdkevent_not_null: a_gdk_event /= default_pointer
-		do
-		end
-
-	process_carbon_event is
-			-- Process all carbon events
-		do
-
 		end
 
 	handle_dnd (a_event: POINTER) is
@@ -240,42 +244,6 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 		do
 		end
 
-	default_font_ascent: INTEGER is
-			-- Default font ascent.
-		do
-		end
-
-	default_font_descent: INTEGER is
-			-- Default font descent.
-		do
-		end
-
-	default_translate: FUNCTION [ANY, TUPLE [INTEGER, POINTER], TUPLE] is
-			-- Default Gdk event marshaller.
-		once
-		end
-
-	fg_color: POINTER is
-			-- Default allocated background color.
-		once
-		end
-
-	bg_color: POINTER is
-			-- Default allocate foreground color.
-		once
-		end
-
-	reusable_color_struct: POINTER is
-			-- Persistent GdkColorStruct
-		once
-		end
-
-	reusable_rectangle_struct: POINTER is
-			-- Persistent GdkColorStruct
-		once
-		end
-
-
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pnd Handling
 
 	x_origin, y_origin: INTEGER
@@ -317,6 +285,36 @@ feature -- Thread Handling.
 		do
 		end
 
+feature -- Custom Views
+
+	register_custom_control ( inClassID, inBaseClassID : STRING_32; inConstructProc : FUNCTION[ANY,TUPLE[POINTER,POINTER,POINTER],INTEGER]; inEventList : EVENT_TYPE_SPEC_ARRAY; outClassRef : POINTER ): INTEGER is
+			-- Register a custom HIView
+		local
+			strClassID, strBaseClassID : EV_CARBON_CF_STRING
+			id : POINTER
+		do
+			create strClassID.make_unshared_with_eiffel_string ( inClassID )
+			create strBaseClassID.make_unshared_with_eiffel_string ( inBaseClassID )
+
+			id := int_to_pointer ( -custom_get_id ( inConstructProc ) )
+
+			Result := hiobject_register_subclass_external ( strClassID.item, strBaseClassID.item, 0, dispatcher.c_dispatcher, inEventList.count, ineventlist.array_address, id, outclassref )
+		end
+
+	custom_id_count: INTEGER  -- the next id for an event.
+
+	custom_widget_list: ARRAY[FUNCTION[ANY,TUPLE[POINTER,POINTER,POINTER],INTEGER]]
+
+	custom_get_id (an_agent : FUNCTION[ANY,TUPLE[POINTER,POINTER,POINTER],INTEGER] ) : INTEGER is
+			-- Get a unique ID so we can associate an event by its ID with a control class
+		do
+			custom_widget_list.force (an_agent, custom_id_count)
+			Result := custom_id_count
+			custom_id_count := custom_id_count + 1
+		end
+
+
+
 feature {NONE} -- callback handling for events
 
 	dispatcher: EVENT_HANDLER_PROC_PTR_DISPATCHER
@@ -330,18 +328,25 @@ feature {NONE} -- callback handling for events
 			-- Callback target. This feature gets called
 			-- anytime somebody calls `trigger_event_external'
 		local
-			event_class, event_kind, a_id: INTEGER
-			a_seq : EV_WIDGET_ACTION_SEQUENCES_IMP
+			a_id: INTEGER
 			ret: INTEGER
-			command_struct: HICOMMAND_STRUCT
 		do
 				a_id := pointer_to_int ( a_inuserdata )
-				check
-					valid_id : widget_list.index_set.has ( a_id )
-					target_valid : widget_list.item ( a_id ) /= Void
+				if a_id > 0 then -- Normal widget event
+					check
+						valid_id : widget_list.index_set.has ( a_id )
+						target_valid : widget_list.item ( a_id ) /= Void
+					end
+					--print ("on_callback has been called by id:" + a_id.out + "%N")
+					Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
+				else -- Custom control default handler
+					check
+						valid_id : custom_widget_list.index_set.has ( a_id )
+					end
+					-- Call the correct agent
+					custom_widget_list.item ( a_id ).call ( [a_inhandlercallref, a_inevent, a_inuserdata] )
+					Result := custom_widget_list.item ( a_id ).last_result
 				end
-				--print ("on_callback has been called by id:" + a_id.out + "%N")
-				Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
 		end
 
 	id_count: INTEGER  -- the next id for an event.
@@ -353,7 +358,7 @@ feature {EV_CARBON_EVENTABLE} -- event handling
 	widget_list: ARRAY[EV_CARBON_EVENTABLE]
 
 	get_id (a_widget : EV_CARBON_EVENTABLE) : INTEGER is
-			-- Get a unique ID so we can associate a event by it's ID with a control
+			-- Get a unique ID so we can associate an event by its ID with a control
 		do
 			if free_ids.is_empty then
 				widget_list.force (a_widget, id_count)
@@ -372,7 +377,7 @@ feature {EV_CARBON_EVENTABLE} -- event handling
 			do
 				widget_list.force (void, a_id)
 				free_ids.put_right (a_id)
-				--io.put_string ("Freed " + a_id.out + "/n")
+				--io.put_string ("Freed " + a_id.out + "%N")
 			end
 
 feature -- event handling
@@ -381,17 +386,13 @@ feature -- event handling
 			-- install a carbon event handler
 		local
 			ret: INTEGER
-			event_target: POINTER
 			event_type: EVENT_TYPE_SPEC_STRUCT
 			handler: POINTER
 		do
-			create dispatcher.make (Current)
-			event_target := a_target
-
 			create event_type.make_new_unshared
 			event_type.set_eventclass (a_event_class)
 			event_type.set_eventkind (a_event_kind)
-			ret := install_event_handler_external (event_target, dispatcher.c_dispatcher, 1, event_type.item, int_to_pointer( a_id ), $handler)
+			ret := install_event_handler_external (a_target, dispatcher.c_dispatcher, 1, event_type.item, int_to_pointer( a_id ), $handler)
 			Result := handler
 		end
 
@@ -416,6 +417,9 @@ feature -- event handling
 				}
 			]"
 		end
+
+invariant
+	dispatcher_exists : dispatcher /= Void
 
 indexing
 	copyright:	"Copyright (c) 2006, The ETH Eiffel.Mac Team"

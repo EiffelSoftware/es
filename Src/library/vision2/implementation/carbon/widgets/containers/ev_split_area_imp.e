@@ -1,6 +1,6 @@
 indexing
 	description:
-		"EiffelVision Split Area. GTK+ implementation."
+		"EiffelVision Split Area. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	id: "$Id$"
@@ -24,8 +24,7 @@ inherit
 			replace
 		redefine
 			interface,
-			initialize,
-			container_widget
+			initialize
 		end
 
 feature {NONE} -- Initialization
@@ -115,9 +114,6 @@ set_second (an_item: like item) is
 
 feature {NONE} -- Implementation
 
-	container_widget: POINTER
-		-- Pointer to the GtkPaned widget.
-
 	splitter_width: INTEGER is 8
 
 	set_item_resize (an_item: like item; a_resizable: BOOLEAN) is
@@ -132,28 +128,26 @@ feature {NONE} -- Implementation
 			--set_gtk_paned_struct_child2_resize (container_widget, second_expandable)
 		end
 
-feature {NONE} -- Externals.
+	get_split_view_class : INTEGER is
+			-- Register the custom SplitView Class
+		local
+			event_array : EVENT_TYPE_SPEC_ARRAY
+		do
+			create event_array.make_new_unshared( 4 )
+			event_array.item ( 1 ).set_eventclass ( {HIOBJECT_ANON_ENUMS}.kEventClassHIObject )
+			event_array.item ( 1 ).set_eventkind ( {HIOBJECT_ANON_ENUMS}.kEventHIObjectConstruct )
 
---	gtk_paned_struct_child1_size (a_c_struct: POINTER): INTEGER is
---		external
---			"C [struct <gtk/gtk.h>] (GtkPaned): EIF_INTEGER"
---		alias
---			"child1_size"
---		end
---
---	set_gtk_paned_struct_child1_resize (a_c_struct: POINTER; a_resize: BOOLEAN) is
---		external
---			"C [struct <gtk/gtk.h>] (GtkPaned, EIF_BOOLEAN)"
---		alias
---			"child1_resize"
---		end
---
---	set_gtk_paned_struct_child2_resize (a_c_struct: POINTER; a_resize: BOOLEAN) is
---		external
---			"C [struct <gtk/gtk.h>] (GtkPaned, EIF_BOOLEAN)"
---		alias
---			"child2_resize"
---		end
+			event_array.item ( 2 ).set_eventclass ( {HIOBJECT_ANON_ENUMS}.kEventClassHIObject )
+			event_array.item ( 2 ).set_eventkind ( {HIOBJECT_ANON_ENUMS}.kEventHIObjectDestruct )
+
+			event_array.item ( 3 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
+			event_array.item ( 3 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw )
+
+			--app_implementation.register_custom_control (inclassid, inbaseclassid: STRING_32, inconstructproc: FUNCTION [ANY, TUPLE [POINTER, POINTER, POINTER], INTEGER_32], ineventlist: EVENT_TYPE_SPEC_ARRAY, outclassref: POINTER)
+		end
+
+	--default_event_handler
+
 
 feature {EV_ANY_I} -- Implementation
 
