@@ -73,30 +73,14 @@ feature {NONE} -- Initialization
 
 			ret := hiview_set_visible_external (c_object, 1)
 
-			entry_widget := hitext_view_get_txnobject_external (struct_ptr)
+			entry_widget := hitext_view_get_txnobject_external (c_object)
 
 			ret := hiview_set_frame_external (c_object, rect.item)
 
 			id := app_implementation.get_id (current)  --getting an id from the application
-
-			create a_string.make ("Hallo")
-			ret := set_text_external (a_string.item, c_object, 5)
 		end
 
 feature -- Access
-
-	set_text_external (a_c_str_ptr, a_obj: POINTER; length: INTEGER): INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-		"[
-			{			  
-              OSStatus theStatus = TXNSetData(HITextViewGetTXNObject($a_obj), kTXNTextData, $a_c_str_ptr, $length, kTXNStartOffset, kTXNStartOffset);
-			  return theStatus;
-			}
-		]"
-	end
-
 
 	frozen kTXNSingleLineOnlyMask: INTEGER is
 	external
@@ -111,7 +95,7 @@ feature -- Access
 		"C inline use <Carbon/Carbon.h>"
 	alias
 
-		"kTXNSingleLineOnlyMask"
+		"kTXNTextData"
 	end
 
 	frozen kTXNStartOffset: INTEGER is
@@ -119,13 +103,36 @@ feature -- Access
 		"C inline use <Carbon/Carbon.h>"
 	alias
 
-		"kTXNSingleLineOnlyMask"
+		"kTXNStartOffset"
+	end
+
+	frozen kTXNEndOffset: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNEndOffset"
+	end
+
+	frozen kTXNUnicodeTextData: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNUnicodeTextData"
 	end
 
 	text: STRING_32 is
 			-- Text displayed in field.
+		local
+			ptr: POINTER
+			a_str: C_STRING
+			ret: INTEGER
 		do
-			Result := real_text.as_string_32
+			--ret := txnget_data_external (entry_widget, kTXNStartOffset,kTXNEndOffset, $ptr)
+			ret := txnget_data_encoded_external (entry_widget,kTXNStartOffset,kTXNEndOffset, $ptr, kTXNUnicodeTextData)
+			create a_str. make_by_pointer (ptr)
+			Result := a_str.string
 		end
 
 feature -- Status setting
@@ -133,22 +140,58 @@ feature -- Status setting
 	set_minimum_width_in_characters (nb: INTEGER) is
 			-- Make `nb' characters visible on one line.
 		do
+			create point.make_new_unshared
+			create size.make_new_unshared
+
+			size.set_height(20)
+			size.set_width (100)
+			point.set_x (0)
+			point.set_y (0)
+			rect.set_origin (point.item)
+			rect.set_size (size.item)
+
+			ret := hitext_view_create_external (null, 0, kTXNSingleLineOnlyMask, $c_object)
+
+			ret := hiview_set_visible_external (c_object, 1)
+
+			entry_widget := hitext_view_get_txnobject_external (c_object)
+
+			ret := hiview_set_frame_external (c_object, rect.item)
+			(nb + 1) * maximum_character_width
+
 		end
 
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
+		local
+			a_c_str: C_STRING
+			ret: INTEGER
 		do
+			create a_c_str.make (a_text)
+			ret := txnset_data_external (entry_widget, kTXNTextData, a_c_str.item, a_text.count, kTXNStartOffset, kTXNEndOffset)
 			real_text := a_text.twin
 		end
 
 	append_text (txt: STRING_GENERAL) is
 			-- Append `txt' to the end of the text.
+		local
+			a_c_str: C_STRING
+			ret: INTEGER
 		do
+			create a_c_str.make (txt)
+			ret := txnset_data_external (entry_widget, kTXNTextData, a_c_str.item, txt.count, kTXNEndOffset, kTXNEndOffset)
+			real_text.append (txt)
 		end
 
 	prepend_text (txt: STRING_GENERAL) is
 			-- Prepend `txt' to the end of the text.
+		local
+			a_c_str: C_STRING
+			ret: INTEGER
 		do
+			create a_c_str.make (txt)
+			ret := txnset_data_external (entry_widget, kTXNTextData, a_c_str.item, txt.count, kTXNStartOffset, kTXNStartOffset)
+			real_text.append (txt)
 		end
 
 	set_capacity (len: INTEGER) is
