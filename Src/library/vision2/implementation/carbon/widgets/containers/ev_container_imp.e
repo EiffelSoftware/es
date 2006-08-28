@@ -29,7 +29,12 @@ inherit
 		end
 
 	EV_CONTAINER_ACTION_SEQUENCES_IMP
+
 	CONTROLS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	PLATFORM
 
 feature {NONE} -- Initialization
@@ -85,15 +90,43 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
-				err := get_root_control_external ( c_object, $root_control_ptr ) -- Get the root control of the window
-				if err = -50 then
-				--	err := get_super_control_external ( c_object, $root_control_ptr )
-				end
+				err := get_super_control_external ( c_object, $root_control_ptr )
+				-- I replaced the call to GetRootContainer with this one, because it makes sense for FRAME, hope it doesn't break anything
 				err := embed_control_external ( w.c_object, root_control_ptr )
+				setup_layout (w.c_object, c_object)
 				on_new_item (w)
 			end
 
 		end
+
+
+		setup_layout (a_control, a_container: POINTER) is
+				--
+			external
+				"C inline use <Carbon/Carbon.h>"
+			alias
+				"[
+					{
+						HILayoutInfo LayoutInfo;
+						LayoutInfo.version = kHILayoutInfoVersionZero;
+						HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+						LayoutInfo.scale.x.toView = $a_container;
+						LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
+						LayoutInfo.scale.x.ratio = 1.0;
+						LayoutInfo.scale.y.toView = $a_container;
+						LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+						LayoutInfo.scale.y.ratio = 1.0;
+						LayoutInfo.position.x.toView = $a_container;
+						LayoutInfo.position.x.kind = kHILayoutPositionLeft;
+						LayoutInfo.position.x.offset = 0.0;
+						LayoutInfo.position.y.toView = $a_container;
+						LayoutInfo.position.y.kind = kHILayoutPositionTop;
+						LayoutInfo.position.y.offset = 0.0;
+						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+						HIViewApplyLayout( $a_control );
+					}
+				]"
+			end
 
 feature -- Measurement
 

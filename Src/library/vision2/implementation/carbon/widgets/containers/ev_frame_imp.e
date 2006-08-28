@@ -32,18 +32,33 @@ inherit
 			initialize
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	needs_event_box: BOOLEAN is True
-
 	make (an_interface: like interface) is
 			-- Create frame.
+		local
+			err: INTEGER
+			rect: RECT_STRUCT
+			struct_ptr: POINTER
 		do
 			base_make (an_interface)
-			set_c_object ($current)
+			create rect.make_new_unshared
+			rect.set_left (20)
+			rect.set_right (100)
+			rect.set_bottom (40)
+			rect.set_top (20)
+			err := create_placard_control_external ( null, rect.item, $struct_ptr )
+			set_c_object ( struct_ptr )
+
+			event_id := app_implementation.get_id (current)  --getting an id from the application
 		end
 
 	initialize is
@@ -130,18 +145,6 @@ feature {EV_ANY_I} -- Implementation
 			-- dependent functionality implemented by `Current'
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_FRAME_IMP
 

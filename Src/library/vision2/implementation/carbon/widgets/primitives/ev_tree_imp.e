@@ -279,6 +279,7 @@ feature {NONE} -- Initialization
 	create_pointer_motion_actions: EV_POINTER_MOTION_ACTION_SEQUENCE is
 			-- Create a pointer_motion action sequence.
 		do
+			create Result
 		end
 
 	call_button_event_actions (
