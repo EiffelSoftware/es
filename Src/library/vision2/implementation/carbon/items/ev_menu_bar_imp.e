@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision menu bar. GTK+ implementation."
+	description: "Eiffel Vision menu bar. Carbon implementation."
 
 class
 	EV_MENU_BAR_IMP
