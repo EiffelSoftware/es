@@ -52,7 +52,14 @@ inherit
 	EV_PND_DEFERRED_ITEM_PARENT
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 	DATA_BROWSER_ITEM_DATA_PROC_PTR_CALLBACK
 		rename
@@ -104,11 +111,12 @@ feature {NONE} -- Initialization
 
 			do_ugly_things (ptr, get_set_item_data_dispatcher.c_dispatcher, item_notification_dispatcher.c_dispatcher)
 			ret := auto_size_data_browser_list_view_columns_external (ptr)
-			--print ("EV_TREE_IMP make called, object: " + ($current).out + "%N")
 
-			-- add a column:
-			--add_data_browser_list_view_column ($ptr, column_desc, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListViewAppendColumn)
 			tree_list.extend ([current, c_object])
+
+			id_count := 1
+			create free_ids.make
+			create item_list.make ( 1, 20 )
 		end
 
 	do_ugly_things (db_control, a_item_data_dispatcher, a_item_notification_dispatcher: POINTER) is
@@ -169,7 +177,8 @@ feature {NONE} -- Initialization
 		local
 			cfstring: EV_CARBON_CF_STRING
 --			ret: INTEGER
-			a_tree_imp: EV_TREE_IMP
+			tree_imp: EV_TREE_IMP
+			node_imp: EV_TREE_NODE_IMP
 		do
 			Result := {CONTROLDEFINITIONS_ANON_ENUMS}.errDataBrowserPropertyNotSupported
 			if a_setvalue = true then
@@ -178,16 +187,17 @@ feature {NONE} -- Initialization
 			else
 				-- Get Information (request from the control)
 				if a_property = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemIsContainerProperty then
-					a_tree_imp := get_object_from_pointer (a_browser)
-					print ("item " + a_item.out + " has " + a_tree_imp.child_array.count.out + " children %N")
-					if a_tree_imp.child_array.count = 0 then
+					tree_imp := get_object_from_pointer (a_browser)
+					node_imp := tree_imp.item_list.item (a_item)
+					if node_imp.child_array.count = 0 then
 						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 0)
 					else
 						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 1)
 					end
 				else
-					a_tree_imp := get_object_from_pointer (a_browser)
-					create cfstring.make_unshared_with_eiffel_string (a_tree_imp.child_array.i_th(a_item).text)
+					tree_imp := get_object_from_pointer (a_browser)
+					node_imp := tree_imp.item_list.item (a_item)
+					create cfstring.make_unshared_with_eiffel_string (node_imp.text)
 					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
 				end
 			end
@@ -204,16 +214,25 @@ feature {NONE} -- Initialization
 	item_notification_callback (a_browser: POINTER; a_item: INTEGER; a_message: INTEGER) is
 			-- A item has changed
 		local
-			a_id: INTEGER
+			id: INTEGER
 			ret: INTEGER
-			a_tree_imp: EV_TREE_IMP
+			tree_imp: EV_TREE_IMP
+			node_imp, child_node: EV_TREE_NODE_IMP
 		do
 			if a_message = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserContainerOpened then
-				a_tree_imp := get_object_from_pointer (a_browser)
-				--a_tree_imp.child_array.i_th (1).
-				a_id := 3
-				ret := add_data_browser_items_external (a_browser, a_item, 1, $a_id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
-
+				tree_imp := get_object_from_pointer (a_browser)
+				node_imp := tree_imp.item_list.item (a_item)
+				from
+					node_imp.child_array.start
+				until
+					node_imp.child_array.after
+				loop
+					child_node ?= node_imp.child_array.item.implementation
+					id := child_node.item_id
+					ret := add_data_browser_items_external (a_browser, a_item, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
+					node_imp.child_array.forth
+				end
+				--print ("item_notification: Container-Opened id " + a_item.out + ", " + id.out + "%N")
 			end
 		end
 
@@ -278,12 +297,6 @@ feature -- Status report
 		do
 		end
 
-	node_from_tree_path (a_tree_path: POINTER): EV_TREE_NODE_IMP is
-			-- Retrieve node from `a_tree_path'
-		do
-
-		end
-
 	selected: BOOLEAN is
 			-- Is one item selected?
 		do
@@ -291,6 +304,33 @@ feature -- Status report
 		end
 
 feature -- Implementation
+
+	id_count: INTEGER  -- the next id for an event.
+
+	free_ids: LINKED_LIST[INTEGER]
+
+	item_list: ARRAY[EV_TREE_NODE_IMP]
+
+	get_id (a_widget : EV_TREE_NODE_IMP) : INTEGER is
+			-- Get a unique ID so we can associate an event by its ID with a control
+		do
+			if free_ids.is_empty then
+				item_list.force (a_widget, id_count)
+				Result := id_count
+				id_count := id_count + 1
+			else
+				item_list.force (a_widget, free_ids.first)
+				Result :=  free_ids.first
+				free_ids.remove_left
+			end
+		end
+
+	dispose_id (a_id: INTEGER) is
+				-- Give an id back (it will be recycled)
+			do
+				item_list.force (void, a_id)
+				free_ids.put_right (a_id)
+			end
 
 	ensure_item_visible (an_item: EV_TREE_NODE) is
 
@@ -388,6 +428,7 @@ feature {NONE} -- Implementation
 		local
 			item_imp: EV_TREE_NODE_IMP
 			ret: INTEGER
+			id: INTEGER
 		do
 			item_imp ?= v.implementation
 			item_imp.set_parent_imp (Current)
@@ -395,13 +436,12 @@ feature {NONE} -- Implementation
 			child_array.go_i_th (i)
 			child_array.put_left (v)
 --			print ("INSERT " + i.out + "  " + v.text + "%N")
+			id := get_id (item_imp)
+			item_imp.set_item_id (id)
 
-			item_id := item_id + 1
-			ret := add_data_browser_items_external (c_object, 0, 1, $item_id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
+			ret := add_data_browser_items_external (c_object, 0, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
 			-- 3rd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
 		end
-
-	item_id: POINTER
 
 	remove_i_th (a_position: INTEGER) is
 			-- Remove item at `a_position'
@@ -413,6 +453,7 @@ feature {NONE} -- Implementation
 --			child_array.go_i_th (a_position)
 --			child_array.remove
 		end
+
 
 feature {EV_TREE_NODE_IMP} -- Implementation
 
@@ -448,11 +489,10 @@ feature {NONE} -- Implementation
 		do
 		end
 
-
 	tree_list: LIST [TUPLE] is
 			-- A shared list of all trees created
 		once
-			create {LINKED_LIST [TUPLE]}Result.make
+			create {LINKED_LIST [TUPLE]} Result.make
 		end
 
 

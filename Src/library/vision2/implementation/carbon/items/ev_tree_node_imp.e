@@ -153,6 +153,18 @@ feature -- PND
 		do
 		end
 
+feature {EV_TREE_IMP, EV_TREE_NODE_IMP}-- Implementation
+
+	set_item_id (a_id: INTEGER) is
+			--
+		do
+			item_id := a_id
+		end
+
+
+	item_id: INTEGER
+			-- A tree-wide unique ID
+
 feature {EV_TREE_IMP} -- Implementation
 
 	set_pebble_void is
@@ -167,15 +179,6 @@ feature {EV_TREE_IMP} -- Implementation
 		end
 
 feature {EV_ANY_I} -- Implementation
-
-	set_list_iter (a_iter: POINTER) is
-			-- Set `list_iter' to `a_iter'
-		do
-			list_iter := a_iter
-		end
-
-	list_iter: POINTER
-		-- Object representing position of `Current' in parent tree model
 
 	set_parent_imp (par_imp: like parent_imp) is
 		do
@@ -292,12 +295,15 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			-- Insert `v' at position `i'.
 		local
 			item_imp: EV_TREE_NODE_IMP
+			id: INTEGER
 		do
 			item_imp ?= v.implementation
 			item_imp.set_parent_imp (Current)
 			child_array.go_i_th (i)
 			child_array.put_left (v)
 
+			id := parent_tree_imp.get_id (item_imp)
+			item_imp.set_item_id (id)
 		end
 
 	remove_i_th (a_position: INTEGER) is
