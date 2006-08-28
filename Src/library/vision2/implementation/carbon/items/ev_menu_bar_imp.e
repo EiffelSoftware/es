@@ -17,7 +17,14 @@ inherit
 		end
 
 	CFSTRING_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	MENUS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 
 create
@@ -65,7 +72,6 @@ feature {NONE} -- Implementation
 			-- Generic menu item insertion.
 		local
 			ptr: POINTER
-			ret: INTEGER
 		do
 			an_item_imp.set_item_parent_imp (Current)
 

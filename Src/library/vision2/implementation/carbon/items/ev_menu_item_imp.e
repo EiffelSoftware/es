@@ -37,7 +37,14 @@ inherit
 		end
 
 	MENUS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 create
 	make

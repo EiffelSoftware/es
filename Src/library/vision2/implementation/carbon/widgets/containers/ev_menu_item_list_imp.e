@@ -25,6 +25,9 @@ inherit
 	EV_MENU_ITEM_LIST_ACTION_SEQUENCES_IMP
 
 	MENUS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Implementation
 
