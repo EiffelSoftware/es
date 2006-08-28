@@ -122,16 +122,55 @@ feature -- Access
 		"kTXNUnicodeTextData"
 	end
 
+	get_text (obj: POINTER): POINTER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+			"[
+				{	
+					Handle h;
+					TXNObject t;
+					TXNDataType runType;
+					UInt32 startOffset, endOffset;
+					CFRange range;
+					CFIndex len;
+					
+			        t = HITextViewGetTXNObject($obj);
+	
+					//Find where the text is in it
+					TXNGetIndexedRunInfoFromRange(t, 0, 0, TXNDataSize(t), &startOffset, &endOffset, &runType, 0, NULL);
+					
+					//Get the actual data into a handle
+					
+					TXNGetData(t, kTXNStartOffset, kTXNStartOffset, &h);
+					
+					//Create a CFData reference to the data, which we will make a string with
+					HLock(h);
+						CFDataRef stringData = CFDataCreate(kCFAllocatorDefault, (UInt8*)*h, GetHandleSize(h));
+					HUnlock(h);
+					
+					//Don't need the handle anmore, get rid of it
+					DisposeHandle(h);
+
+					//Now build the first string from the CFData we've created
+					CFStringRef stringRef = CFStringCreateFromExternalRepresentation(kCFAllocatorDefault, stringData, kCFStringEncodingUnicode);
+					return stringRef;
+				}
+			]"
+	end
+
 	text: STRING_32 is
 			-- Text displayed in field.
 		local
 			ptr: POINTER
-			a_str: C_STRING
+			a_str: EV_CARBON_CF_STRING
 			ret: INTEGER
+
 		do
 			--ret := txnget_data_external (entry_widget, kTXNStartOffset,kTXNEndOffset, $ptr)
-			ret := txnget_data_encoded_external (entry_widget,kTXNStartOffset,kTXNEndOffset, $ptr, kTXNUnicodeTextData)
-			create a_str. make_by_pointer (ptr)
+			--ret := txnget_data_encoded_external (entry_widget, kTXNStartOffset,kTXNEndOffset, $ptr, kTXNUnicodeTextData)
+			create a_str.make_shared (get_text (c_object))
 			Result := a_str.string
 		end
 
@@ -140,24 +179,24 @@ feature -- Status setting
 	set_minimum_width_in_characters (nb: INTEGER) is
 			-- Make `nb' characters visible on one line.
 		do
-			create point.make_new_unshared
-			create size.make_new_unshared
+--			create point.make_new_unshared
+--			create size.make_new_unshared
 
-			size.set_height(20)
-			size.set_width (100)
-			point.set_x (0)
-			point.set_y (0)
-			rect.set_origin (point.item)
-			rect.set_size (size.item)
+--			size.set_height(20)
+--			size.set_width (100)
+--			point.set_x (0)
+--			point.set_y (0)
+--			rect.set_origin (point.item)
+--			rect.set_size (size.item)
 
-			ret := hitext_view_create_external (null, 0, kTXNSingleLineOnlyMask, $c_object)
+--			ret := hitext_view_create_external (null, 0, kTXNSingleLineOnlyMask, $c_object)
 
-			ret := hiview_set_visible_external (c_object, 1)
+--			ret := hiview_set_visible_external (c_object, 1)
 
-			entry_widget := hitext_view_get_txnobject_external (c_object)
+--			entry_widget := hitext_view_get_txnobject_external (c_object)
 
-			ret := hiview_set_frame_external (c_object, rect.item)
-			(nb + 1) * maximum_character_width
+--			ret := hiview_set_frame_external (c_object, rect.item)
+--			(nb + 1) * maximum_character_width
 
 		end
 
@@ -197,6 +236,7 @@ feature -- Status setting
 	set_capacity (len: INTEGER) is
 			-- Set the maximum number of characters that `Current' can hold to `len'.
 		do
+
 		end
 
 	capacity: INTEGER is
