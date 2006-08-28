@@ -396,6 +396,16 @@ feature -- event handling
 			Result := handler
 		end
 
+	install_event_handlers (a_id: INTEGER ; a_target: POINTER; a_event_array : EVENT_TYPE_SPEC_ARRAY ): POINTER is
+			-- install a carbon event handler for multiple events
+		local
+			ret: INTEGER
+			handler: POINTER
+		do
+			ret := install_event_handler_external (a_target, dispatcher.c_dispatcher, a_event_array.count, a_event_array.array_address, int_to_pointer( a_id ), $handler)
+			Result := handler
+		end
+
 	int_to_pointer ( a_int: INTEGER ) : POINTER is
 		external
 			"C inline"

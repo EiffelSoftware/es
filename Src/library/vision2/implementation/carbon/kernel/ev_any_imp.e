@@ -115,6 +115,13 @@ feature -- Measurement
 			"NULL"
 		end
 
+	frozen sizeof ( item : POINTER ) : INTEGER_32 is
+		external
+			"C [macro <stdio.h>]"
+		alias
+			"sizeof"
+		end
+
 	frozen noErr : INTEGER is 0
 
 invariant

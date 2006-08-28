@@ -23,6 +23,8 @@ inherit
 			interface
 		end
 
+	HIOBJECT_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -30,10 +32,17 @@ feature -- initialization
 
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.
+		local
+			split_view : EV_CARBON_SPLIT_VIEW
+			struct_ptr : POINTER
+			err : INTEGER
 		do
 			base_make (an_interface)
+			create split_view
+			err := hiobject_create_external (split_view.get_split_view_class.item, default_pointer, $struct_ptr )
 
-			set_c_object ($current)
+			event_id := app_implementation.get_id (current)  --getting an id from the application
+			set_c_object (struct_ptr)
 		end
 
 feature {EV_ANY_I} -- Implementation

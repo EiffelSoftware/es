@@ -1,5 +1,5 @@
 indexing
-	"description: wrapper for anynymous enums from file ControlDefinitions.h "
+	description : "Wrapper for anynymous enums from file ControlDefinitions.h"
 
 class
 	CONTROLDEFINITIONS_ANON_ENUMS

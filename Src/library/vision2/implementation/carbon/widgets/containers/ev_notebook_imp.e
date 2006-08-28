@@ -84,10 +84,16 @@ feature {NONE} -- Initialization
 			-- Install carbon event handlers
 		local
 			target, h_ret: POINTER
+			event_array : EVENT_TYPE_SPEC_ARRAY
 		do
 			target := get_control_event_target_external( c_object )
-			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventcontrolhit)
-			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassCommand, {CARBONEVENTS_ANON_ENUMS}.keventcommandprocess)
+			create event_array.make_new_unshared ( 2 )
+			event_array.item ( 0 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
+			event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventcontrolhit )
+			event_array.item ( 1 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassCommand )
+			event_array.item ( 1 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.keventcommandprocess )
+
+			h_ret := app_implementation.install_event_handlers ( event_id, target, event_array )
 		end
 
 
