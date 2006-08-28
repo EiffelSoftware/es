@@ -109,8 +109,8 @@ feature {NONE} -- Initialization
 			end
 
 
-			do_ugly_things (ptr, get_set_item_data_dispatcher.c_dispatcher, item_notification_dispatcher.c_dispatcher)
-			--ret := auto_size_data_browser_list_view_columns_external (ptr)
+			do_ugly_things (c_object, get_set_item_data_dispatcher.c_dispatcher, item_notification_dispatcher.c_dispatcher)
+			ret := set_data_browser_list_view_header_btn_height_external (c_object, 0) -- Don't show a header
 
 			tree_list.extend ([current, c_object])
 
