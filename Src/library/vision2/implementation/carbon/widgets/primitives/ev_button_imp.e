@@ -78,7 +78,7 @@ feature {NONE} -- Initialization
 			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )
 			set_c_object ( struct_ptr )
 
-			id := app_implementation.get_id (current)  --getting an id from the application
+			event_id := app_implementation.get_id (current)  --getting an id from the application
 		end
 
 	initialize is
@@ -89,7 +89,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_PRIMITIVE_IMP}
 			target := get_control_event_target_external( c_object )
-			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 		end
 
 	needs_event_box: BOOLEAN is True

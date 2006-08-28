@@ -57,7 +57,7 @@ feature {NONE} -- Implementation
 			if seq_imp /= Void then
 				-- EV_MENU_SEPARATOR_ITEM
 				create cfstring.make_unshared_with_eiffel_string ("")
-				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, cfstring.item, pos + 1, {MENUS_ANON_ENUMS}.kMenuItemAttrSeparator , an_item_imp.id)
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, cfstring.item, pos + 1, {MENUS_ANON_ENUMS}.kMenuItemAttrSeparator , an_item_imp.event_id)
 				--    kMenuItemAttrSeparator = (1 << 6)
 			else
 				-- EV_MENU_ITEM
@@ -68,9 +68,9 @@ feature {NONE} -- Implementation
 					shortcut_key := an_item_imp.text.code (i + 1).as_integer_32
 				end
 				create cfstring.make_unshared_with_eiffel_string (text)
-				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, cfstring.item, pos + 1, 0, an_item_imp.id)
+				ret := insert_menu_item_text_with_cfstring_external (parent_item.c_object, cfstring.item, pos + 1, 0, an_item_imp.event_id)
 				-- Note: Menu indices start at 1 in Carbon
-				ret := set_menu_item_command_id_external (parent_item.c_object, pos + 1, an_item_imp.id)
+				ret := set_menu_item_command_id_external (parent_item.c_object, pos + 1, an_item_imp.event_id)
 				--print ("insert " + an_item_imp.id.out + " under " + id.out + " with text: " + an_item_imp.text + "%N")
 				if i /= 0 then
 					ret := set_menu_item_command_key_external (parent_item.c_object, pos, 0, shortcut_key)

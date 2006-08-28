@@ -61,7 +61,7 @@ feature {NONE} -- Initialization
 			err := create_static_text_control_external( null, rect.item, null,null,$struct_ptr )
 
 			set_c_object ( struct_ptr )
-			id:=app_implementation.get_id (current)  --getting an id from the application
+			event_id:=app_implementation.get_id (current)  --getting an id from the application
 
 			textable_imp_initialize
 		end

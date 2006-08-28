@@ -62,7 +62,7 @@ feature {NONE} -- Initialization
 			err := create_tabs_control_external ( null, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabSizeLarge, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabDirectionNorth, 0, null, $struct_ptr )
 			set_c_object ( struct_ptr )
 
-			id := app_implementation.get_id (current)  --getting an id from the application
+			event_id := app_implementation.get_id (current)  --getting an id from the application
 
 			tab_position := interface.tab_top
 		end
@@ -86,8 +86,8 @@ feature {NONE} -- Initialization
 			target, h_ret: POINTER
 		do
 			target := get_control_event_target_external( c_object )
-			h_ret := app_implementation.install_event_handler (id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventcontrolhit)
-			h_ret := app_implementation.install_event_handler (id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassCommand, {CARBONEVENTS_ANON_ENUMS}.keventcommandprocess)
+			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventcontrolhit)
+			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassCommand, {CARBONEVENTS_ANON_ENUMS}.keventcommandprocess)
 		end
 
 

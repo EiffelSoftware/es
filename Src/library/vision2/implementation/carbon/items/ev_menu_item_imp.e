@@ -57,9 +57,9 @@ feature {NONE} -- Initialization
 			ret := create_new_menu_external (object_id, 0, $ptr) -- We use the unique object_id (-> IDENTIFIED) as menu id
 			set_c_object(ptr)
 
-			id := app_implementation.get_id (current)  -- getting an id from the application
+			event_id := app_implementation.get_id (current)  -- getting an id from the application
 			target := get_menu_event_target_external (c_object)
-			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassCommand, {carbonevents_anon_enums}.kEventCommandProcess)
+			h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassCommand, {carbonevents_anon_enums}.kEventCommandProcess)
 			create text.make_empty
 		end
 

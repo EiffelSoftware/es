@@ -84,9 +84,9 @@ feature {NONE} -- Initialization
 			Precursor {EV_PRIMITIVE_IMP}
 
 			ret := hiview_set_drawing_enabled_external (c_object, 1)
-			id := app_implementation.get_id (current)  --getting an id from the application
+			event_id := app_implementation.get_id (current)  --getting an id from the application
 			target := get_control_event_target_external(c_object)
-			h_ret := app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 		end
 
 feature -- Drawing operations

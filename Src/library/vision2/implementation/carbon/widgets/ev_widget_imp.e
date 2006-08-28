@@ -275,7 +275,7 @@ feature {EV_ANY_IMP, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
 
 	destroy is
 			do
-				app_implementation.dispose_id (id)
+				app_implementation.dispose_id (event_id)
 			end
 
 	parent_imp: EV_CONTAINER_IMP

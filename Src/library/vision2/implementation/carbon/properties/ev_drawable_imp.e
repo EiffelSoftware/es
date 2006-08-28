@@ -300,7 +300,7 @@ feature -- Drawing operations
         	if c_imp /=void then
         		target := get_control_event_target_external(c_imp.c_object)
         		ret := hiview_set_drawing_enabled_external (c_imp.c_object, 1)  --enable drawing
-        		event_handler := c_imp.app_implementation.install_event_handler (id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventControlDraw)
+        		event_handler := c_imp.app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventControlDraw)
         	end
         end
 

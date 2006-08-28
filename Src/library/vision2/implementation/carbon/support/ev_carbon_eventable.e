@@ -9,7 +9,14 @@ deferred class
 
 inherit
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	CARBONEVENTSCORE_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {EV_APPLICATION_IMP} -- Implementation
 
@@ -22,6 +29,6 @@ feature {EV_APPLICATION_IMP} -- Implementation
 
 feature -- Access
 
-	id: INTEGER  -- id is a unique integer to identify the widgets
+	event_id: INTEGER  -- a unique integer to identify the widgets
 
 end

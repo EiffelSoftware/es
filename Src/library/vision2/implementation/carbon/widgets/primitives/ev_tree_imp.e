@@ -55,6 +55,15 @@ inherit
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 
 	DATA_BROWSER_ITEM_DATA_PROC_PTR_CALLBACK
+		rename
+			on_callback as get_set_item_data_callback
+		end
+
+	DATA_BROWSER_ITEM_NOTIFICATION_PROC_PTR_CALLBACK
+		rename
+			on_callback as item_notification_callback
+		end
+
 
 create
 	make
@@ -85,12 +94,15 @@ feature {NONE} -- Initialization
 
 			ret := set_data_browser_has_scroll_bars_external (ptr, 0, 1) -- set a vertical scrollbar only
 
-			if dispatcher = Void then
-				create dispatcher.make (current)
+			if get_set_item_data_dispatcher = Void then
+				create get_set_item_data_dispatcher.make (current)
+			end
+			if item_notification_dispatcher = Void then
+				create item_notification_dispatcher.make (current)
 			end
 
 
-			do_ugly_things (ptr, dispatcher.c_dispatcher)
+			do_ugly_things (ptr, get_set_item_data_dispatcher.c_dispatcher, item_notification_dispatcher.c_dispatcher)
 			ret := auto_size_data_browser_list_view_columns_external (ptr)
 			--print ("EV_TREE_IMP make called, object: " + ($current).out + "%N")
 
@@ -99,7 +111,7 @@ feature {NONE} -- Initialization
 			tree_list.extend ([current, c_object])
 		end
 
-	do_ugly_things (db_control, c_dispatcher: POINTER) is
+	do_ugly_things (db_control, a_item_data_dispatcher, a_item_notification_dispatcher: POINTER) is
 			-- move this to the application class or make it somehow unique
 		external
 			"C inline"
@@ -114,10 +126,12 @@ feature {NONE} -- Initialization
 					DataBrowserCallbacks  dbCallbacks;
 					dbCallbacks.version = kDataBrowserLatestCallbacks;
 					InitDataBrowserCallbacks (&dbCallbacks);
-					dbCallbacks.u.v1.itemDataCallback = NewDataBrowserItemDataUPP ( (DataBrowserItemDataProcPtr) $c_dispatcher );
+					dbCallbacks.u.v1.itemDataCallback = NewDataBrowserItemDataUPP ( (DataBrowserItemDataProcPtr) $a_item_data_dispatcher );
+				    dbCallbacks.u.v1.itemNotificationCallback = NewDataBrowserItemNotificationUPP ( $a_item_notification_dispatcher );
+
 					SetDataBrowserCallbacks ( $db_control, &dbCallbacks );
 
-					// Initialize a single column without name:
+					// Initialize a single column (ID 1) without name:
 					DataBrowserListViewColumnDesc columnDesc;
 			
 					columnDesc.propertyDesc.propertyID = 1;
@@ -136,51 +150,93 @@ feature {NONE} -- Initialization
 					columnDesc.headerBtnDesc.btnContentInfo.contentType = kControlContentTextOnly; //kControlNoContent;
 			
 					AddDataBrowserListViewColumn( $db_control, &columnDesc, kDataBrowserListViewAppendColumn);
+					
+					// Make the column (ID 1) have the disclosure triangles.
+					SetDataBrowserListViewDisclosureColumn ( $db_control, 1, false);
 				}
 			]"
 		end
 
-	dispatcher: DATA_BROWSER_ITEM_DATA_PROC_PTR_DISPATCHER
+	get_set_item_data_dispatcher: DATA_BROWSER_ITEM_DATA_PROC_PTR_DISPATCHER
 			-- The dispatcher is on the one side connected to a C function,
 			-- that can be given to the C library as a callback target
 			-- and on the other hand to an Eiffel object with a feature
 			-- `on_callback'. Whenn its C function gets called, the dispatcher
-			-- calls `on_callback' in the connected Eiffel object
+			-- calls `on_callback' in the connected Eiffel object (`on callback' ~> `get_set_item_data_callback')
 
-	on_callback (a_browser: POINTER; a_item: INTEGER; a_property: INTEGER; a_itemdata: POINTER; a_setvalue: INTEGER): INTEGER is
-			-- Callback target. This feature gets called
-			-- Here the DataBrowser is requesting information about an item
+	get_set_item_data_callback (a_browser: POINTER; a_item: INTEGER; a_property: INTEGER; a_itemdata: POINTER; a_setvalue: INTEGER): INTEGER is
+			-- Through this callback the DataBrowser is requesting information about an item
 		local
 			cfstring: EV_CARBON_CF_STRING
+--			ret: INTEGER
+			a_tree_imp: EV_TREE_IMP
+		do
+			Result := {CONTROLDEFINITIONS_ANON_ENUMS}.errDataBrowserPropertyNotSupported
+			if a_setvalue = true then
+				-- Set Information: Some information has changed: update data structures
+				-- Should not happen, since we don't support e.g. inline editing of the items!
+			else
+				-- Get Information (request from the control)
+				if a_property = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemIsContainerProperty then
+					a_tree_imp := get_object_from_pointer (a_browser)
+					print ("item " + a_item.out + " has " + a_tree_imp.child_array.count.out + " children %N")
+					if a_tree_imp.child_array.count = 0 then
+						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 0)
+					else
+						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 1)
+					end
+				else
+					a_tree_imp := get_object_from_pointer (a_browser)
+					create cfstring.make_unshared_with_eiffel_string (a_tree_imp.child_array.i_th(a_item).text)
+					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
+				end
+			end
+--			print ("on_callback for item: " + a_item.out + "%N")
+		end
+
+	item_notification_dispatcher: DATA_BROWSER_ITEM_NOTIFICATION_PROC_PTR_DISPATCHER
+			-- The dispatcher is on the one side connected to a C function,
+			-- that can be given to the C library as a callback target
+			-- and on the other hand to an Eiffel object with a feature
+			-- `on_callback'. Whenn its C function gets called, the dispatcher
+			-- calls `on_callback' in the connected Eiffel object (`on callback' ~> `item_notification_callback')
+
+	item_notification_callback (a_browser: POINTER; a_item: INTEGER; a_message: INTEGER) is
+			-- A item has changed
+		local
+			a_id: INTEGER
 			ret: INTEGER
 			a_tree_imp: EV_TREE_IMP
 		do
-			if a_setvalue = true then
-				-- Some information has changed: update data structures
-				-- Should not happen, since we don't support e.g. inline editing of the items!
-			else
-				-- Okay, this is really ugly now: Since there is only one callback function
-				--  the current object doesn't have to be the one it should. We have to figure
-				--  out for which TREE object we should give out the data by looking at the
-				--  DataBrowser pointer, going through the list and comparing with all c_objects.
-				from
-					tree_list.start
-				until
-					tree_list.after or else a_browser = tree_list.item.pointer_item (2)
-				loop
-					print ("tree-item: " + tree_list.item.pointer_item (2) .out + " %N")
-					tree_list.forth
-				end
-				if a_browser = tree_list.item.pointer_item (2) then
-					-- We have found the object for a_browser. It is in 'tree_list.item.item (1)'
-					a_tree_imp ?= tree_list.item.item (1)
-					create cfstring.make_unshared_with_eiffel_string (a_tree_imp.child_array.i_th(a_item).text)
-					ret := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
-				end
+			if a_message = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserContainerOpened then
+				a_tree_imp := get_object_from_pointer (a_browser)
+				--a_tree_imp.child_array.i_th (1).
+				a_id := 3
+				ret := add_data_browser_items_external (a_browser, a_item, 1, $a_id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
+
 			end
-			print ("on_callback for item: " + a_item.out + "%N")
 		end
 
+	get_object_from_pointer (a_pointer: POINTER): EV_TREE_IMP is
+			-- Takes a c-pointer to the associated c_object of a object of type EV_TREE_IMP and returns a handle to that.
+		do
+			-- Okay, this is really ugly now: Since there is only one callback function
+			--  the "current" object doesn't have to be the one it should. We have to figure
+			--  out for which TREE object we should give out the data by looking at the
+			--  DataBrowser pointer, going through the list and comparing with all c_objects.
+			from
+				tree_list.start
+			until
+				tree_list.after or else a_pointer = tree_list.item.pointer_item (2)
+			loop
+				tree_list.forth
+			end
+			check
+				tree_imp_found: a_pointer = tree_list.item.pointer_item (2)
+			end
+			-- We have found the object for a_browser. It is in 'tree_list.item.item (1)'
+			Result ?= tree_list.item.item (1)
+		end
 
 	call_selection_action_sequences is
 			-- Call the appropriate selection action sequences
@@ -338,7 +394,7 @@ feature {NONE} -- Implementation
 
 			child_array.go_i_th (i)
 			child_array.put_left (v)
-			print ("INSERT " + i.out + "  " + v.text + "%N")
+--			print ("INSERT " + i.out + "  " + v.text + "%N")
 
 			item_id := item_id + 1
 			ret := add_data_browser_items_external (c_object, 0, 1, $item_id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);

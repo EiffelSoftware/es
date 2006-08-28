@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 			res := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
 
 			set_c_object ( control_ptr )
-			id:=app_implementation.get_id (current)  --getting an id from the application
+			event_id:=app_implementation.get_id (current)  --getting an id from the application
 		end
 
 	initialize is
