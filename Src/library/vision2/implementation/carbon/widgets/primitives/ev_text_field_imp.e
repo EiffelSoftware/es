@@ -77,7 +77,7 @@ feature {NONE} -- Initialization
 
 			ret := hiview_set_frame_external (c_object, rect.item)
 
-			id := app_implementation.get_id (current)  --getting an id from the application
+			event_id := app_implementation.get_id (current)  --getting an id from the application
 		end
 
 feature -- Access
