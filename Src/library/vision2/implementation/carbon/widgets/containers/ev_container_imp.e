@@ -72,10 +72,9 @@ feature -- Element change
 			--ueli: copied actual version from ev_window made by Jann
 		local
 			w: EV_WIDGET_IMP
-			err:INTEGER
-			root_control_ptr : POINTER
+			err: INTEGER
+			root_control_ptr: POINTER
 		do
-
 			if not interface.is_empty then
 				w ?= interface.item.implementation
 				on_removed_item (w)
@@ -86,7 +85,7 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
-				err := get_root_control_external ( c_object, $root_control_ptr )
+				err := get_root_control_external ( c_object, $root_control_ptr ) -- Get the root control of the window
 				err := embed_control_external ( w.c_object, root_control_ptr )
 				on_new_item (w)
 			end
