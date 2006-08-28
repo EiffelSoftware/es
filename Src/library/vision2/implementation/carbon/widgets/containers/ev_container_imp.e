@@ -86,6 +86,9 @@ feature -- Element change
 			if v /= Void then
 				w ?= v.implementation
 				err := get_root_control_external ( c_object, $root_control_ptr ) -- Get the root control of the window
+				if err = -50 then
+				--	err := get_super_control_external ( c_object, $root_control_ptr )
+				end
 				err := embed_control_external ( w.c_object, root_control_ptr )
 				on_new_item (w)
 			end
