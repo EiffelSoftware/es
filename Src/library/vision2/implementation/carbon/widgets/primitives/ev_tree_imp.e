@@ -110,7 +110,7 @@ feature {NONE} -- Initialization
 
 
 			do_ugly_things (ptr, get_set_item_data_dispatcher.c_dispatcher, item_notification_dispatcher.c_dispatcher)
-			ret := auto_size_data_browser_list_view_columns_external (ptr)
+			--ret := auto_size_data_browser_list_view_columns_external (ptr)
 
 			tree_list.extend ([current, c_object])
 
@@ -147,7 +147,7 @@ feature {NONE} -- Initialization
 
 					columnDesc.headerBtnDesc.version = kDataBrowserListViewLatestHeaderDesc;
 					columnDesc.headerBtnDesc.minimumWidth = 100;
-					columnDesc.headerBtnDesc.maximumWidth = 1000;
+					columnDesc.headerBtnDesc.maximumWidth = 3000;
 					columnDesc.headerBtnDesc.titleOffset = 0;
 					columnDesc.headerBtnDesc.titleString = CFSTR("");
 
@@ -233,6 +233,12 @@ feature {NONE} -- Initialization
 					node_imp.child_array.forth
 				end
 				--print ("item_notification: Container-Opened id " + a_item.out + ", " + id.out + "%N")
+			elseif a_message = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemSelected then
+				tree_imp := get_object_from_pointer (a_browser)
+				node_imp := tree_imp.item_list.item (a_item)
+				node_imp.select_actions.call ([])
+				selected_item := node_imp.interface
+				selected := true
 			end
 		end
 
@@ -292,16 +298,11 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	selected_item: EV_TREE_NODE is
+	selected_item: EV_TREE_NODE
 			-- Item which is currently selected
-		do
-		end
 
-	selected: BOOLEAN is
+	selected: BOOLEAN
 			-- Is one item selected?
-		do
-
-		end
 
 feature -- Implementation
 

@@ -50,14 +50,14 @@ feature {NONE} -- Implementation
 			-- Insert `v' at position `i'.
 		local
 			v_imp : EV_WIDGET_IMP
-			err : INTEGER
+			ret : INTEGER
 		do
 			if v /= Void then
 				v_imp ?= v.implementation
 				check
 					v_imp_not_void : v_imp /= Void
 				end
-				err := hiview_add_subview_external( c_object, v_imp.c_object)
+				ret := hiview_add_subview_external ( c_object, v_imp.c_object)
 				child_array.go_i_th (i)
 				child_array.put_left (v)
 			end
@@ -66,8 +66,21 @@ feature {NONE} -- Implementation
 
 	remove_i_th (i: INTEGER) is
 			-- Remove item at `i'-th position.
+		local
+			v_imp: EV_WIDGET_IMP
+			ret: INTEGER
 		do
+			v_imp ?= i_th (i).implementation
+			check
+				v_imp_not_void: v_imp /= Void
+			end
+			child_array.go_i_th (i)
+			child_array.remove
+			on_removed_item (v_imp)
+
+			ret := hiview_remove_from_superview_external (v_imp.c_object)
 		end
+
 
 feature {NONE} -- Implementation
 
