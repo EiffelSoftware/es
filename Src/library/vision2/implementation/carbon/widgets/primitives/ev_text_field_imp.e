@@ -89,6 +89,14 @@ feature -- Access
 		"kTXNSingleLineOnlyMask"
 	end
 
+	frozen kTXNNoUserIOTag: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNNoUserIOTag"
+	end
+
 	frozen kTXNTextData: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
@@ -267,8 +275,12 @@ feature -- Status report
 
 	is_editable: BOOLEAN is
 			-- Is the text editable.
+		local
+			tag, ret, data: INTEGER
 		do
-			Result := true
+			tag := kTXNNoUserIOTag
+			 ret := txnget_txnobject_controls_external (entry_widget, 1, $tag, $data)
+			Result := (data = 0)
 		end
 
 	has_selection: BOOLEAN is
@@ -326,7 +338,19 @@ feature -- status settings
 	set_editable (flag: BOOLEAN) is
 			-- `flag' true make the component read-write and
 			-- `flag' false make the component read-only.
+			-- kTXNNoUserIOTag
+		local
+			tag1, tag2, ret: INTEGER
 		do
+			tag2 := kTXNNoUserIOTag
+			if flag then
+				tag1 := 0
+				ret := txnset_txnobject_controls_external (entry_widget, 0, 1, $tag2, $tag1)
+			else
+				tag1 := 1
+				ret := txnset_txnobject_controls_external (entry_widget, 0, 1, $tag2, $tag1)
+			end
+
 		end
 
 	set_caret_position (pos: INTEGER) is

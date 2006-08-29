@@ -36,6 +36,8 @@ inherit
 			visual_widget,
 			dispose
 		end
+	MACTEXTEDITOR_FUNCTIONS_EXTERNAL
+	HIVIEW_FUNCTIONS_EXTERNAL
 
 create
 	make
@@ -44,9 +46,34 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create a gtk text view.
+		local
+			ret: INTEGER
+			struct_ptr: POINTER
+			buffer: C_STRING
+			point : CGPOINT_STRUCT
+			size : CGSIZE_STRUCT
+			rect : CGRECT_STRUCT
+			a_string: C_STRING
 		do
 			base_make (an_interface)
 
+			create point.make_new_unshared
+			create rect.make_new_unshared
+			create size.make_new_unshared
+
+			size.set_height(100)
+			size.set_width (100)
+			point.set_x (0)
+			point.set_y (0)
+			rect.set_origin (point.item)
+			rect.set_size (size.item)
+
+			ret := hitext_view_create_external (null, 0, kTXNSystemDefaultEncoding, $c_object)
+			ret := hiview_set_visible_external (c_object, 1)
+			entry_widget := hitext_view_get_txnobject_external (c_object)
+
+			ret := hiview_set_frame_external (c_object, rect.item)
+			event_id := app_implementation.get_id (current)  --getting an id from the application
 		end
 
 	create_change_actions: EV_NOTIFY_ACTION_SEQUENCE is
@@ -72,6 +99,57 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
+
+	frozen kTXNStartOffset: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNStartOffset"
+	end
+
+	frozen kTXNEndOffset: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNEndOffset"
+	end
+
+	frozen kTXNTextData: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNTextData"
+	end
+
+	frozen kTXNTextEditStyleFrameType: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNTextEditStyleFrameType"
+	end
+
+	frozen kTXNUnicodeTextFile: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNUnicodeTextFile"
+	end
+
+	frozen kTXNSystemDefaultEncoding: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kTXNSystemDefaultEncoding"
+	end
+
+
+
 
 	clipboard_content: STRING_32 is
 			-- `Result' is current clipboard content.
@@ -233,9 +311,13 @@ feature -- Status setting
 		end
 
 	set_text (a_text: STRING_GENERAL) is
-			-- Set `text' to `a_text'
+			-- Assign `a_text' to `text'.
+		local
+			a_c_str: C_STRING
+			ret: INTEGER
 		do
-
+			create a_c_str.make (a_text)
+			ret := txnset_data_external (entry_widget, kTXNTextData, a_c_str.item, a_text.count, kTXNStartOffset, kTXNEndOffset)
 		end
 
 	append_text (a_text: STRING_GENERAL) is
@@ -333,6 +415,8 @@ feature {NONE} -- Implementation
 
 	text_view: POINTER
 		-- Pointer to the GtkTextView widget
+
+	entry_widget: POINTER
 
 	scrolled_window: POINTER
 		-- Pointer to the GtkScrolledWindow
