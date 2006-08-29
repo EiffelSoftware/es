@@ -75,11 +75,6 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			-- Cursor displayed when the pointer is over this widget.
 			-- Position retrieval.
 
-	frozen has_struct_flag (a_gtk_object: POINTER; a_flag: INTEGER): BOOLEAN is
-			-- Has this widget the flag `a_flag' set in struct_flags?
-		do
-		end
-
 	has_focus: BOOLEAN is
 			-- Does widget have the keyboard focus?
 		do
@@ -111,11 +106,6 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			Result := a_size.height.rounded
 		end
 
-	aux_info_struct: POINTER is
-			-- Pointer to the auxillary information struct used for retrieving when widget is unmapped
-		do
-		end
-
 	show is
 			-- Request that `Current' be displayed when its parent is.
 		do
@@ -126,13 +116,6 @@ feature -- Status report
 	is_displayed: BOOLEAN is
 			-- Is `Current' visible on the screen?
 		do
-		end
-
-feature {NONE} -- Implementation
-
-	aux_info_string: EV_CARBON_CF_STRING is
-			-- String optimization for  "gtk-aux-info"
-		once
 		end
 
 indexing

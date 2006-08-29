@@ -38,7 +38,7 @@ feature {NONE} -- Initialization
 			target, h_ret : POINTER
 		do
 			Precursor {EV_CONTAINER_IMP}
-			create event_array.make_new_unshared ( 7 )
+			create event_array.make_new_unshared ( 5 )
 			event_array.item ( 0 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
 			event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw )
 
@@ -52,13 +52,7 @@ feature {NONE} -- Initialization
 			event_array.item ( 3 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlGetPartRegion )
 
 			event_array.item ( 4 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 4 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlGetData )
-
-			event_array.item ( 5 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 5 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlSetData )
-
-			event_array.item ( 6 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 6 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlTrack )
+			event_array.item ( 4 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlTrack )
 
 			target := hiobject_get_event_target_external ( c_object )
 			h_ret := app_implementation.install_event_handlers ( event_id, target, event_array )
@@ -158,6 +152,80 @@ feature {NONE} -- Implementation
 			--set_gtk_paned_struct_child2_resize (container_widget, second_expandable)
 		end
 
+	calculate_rects ( rect_a, rect_b, split_rect : CGRECT_STRUCT ) is
+			--
+		local
+			bounds : CGRECT_STRUCT
+		do
+			create bounds.make_new_unshared
+			--err := hiview_get_bounds_external ( c_object, bounds.item )
+		end
+
+--		setup_binding ( view_a, view_b, parent_control : POINTER; splitter_width : INTEGER ) is
+--		external
+--			"C inline use <Carbon/Carbon.h>"
+--		alias
+--			"[
+--				{
+--					HIRect bounds;
+--					HIViewGetBounds( $parent_control, &bounds );
+--					HIRect rectA, rectB;
+--					
+--					rectA = bounds;
+--					rectA.size.width = (int) (( rectA.size.width - $splitter_width ) * 0.5 );
+--					
+--					rectB = rectA;
+--					rectB.origin.x = rectA.origin.x + rectA.size.width + $splitter_width;
+--					rectB.size.width = bounds.size.width - $splitter_width - rectA.size.width;
+--					
+--					HIViewSetFrame( $view_a, &rectA );
+--					HIViewSetFrame( $view_b, &rectB );
+--				
+--					HILayoutInfo LayoutInfo;
+--					LayoutInfo.version = kHILayoutInfoVersionZero;
+--					HIViewGetLayoutInfo ( $view_a, &LayoutInfo );
+--					
+--					LayoutInfo.position.x.toView = NULL;
+--					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
+--					LayoutInfo.position.x.offset = 0.0;
+
+--					LayoutInfo.position.y.toView = NULL;
+--					LayoutInfo.position.y.kind = kHILayoutPositionTop;
+--					LayoutInfo.position.y.offset = 0.0;
+--						
+--					HIViewSetLayoutInfo( $view_a, &LayoutInfo );
+--					
+--					LayoutInfo.version = kHILayoutInfoVersionZero;
+--					HIViewGetLayoutInfo ( $view_b, &LayoutInfo );
+--					
+--					LayoutInfo.binding.left.toView = $view_a;
+--					LayoutInfo.binding.left.kind = KHILayoutBindRight;
+--					LayoutInfo.binding.left.offst = 0;
+--					
+--					
+--										
+--				}
+--			]"
+--		end
+
+feature {NONE} -- Implementation constants
+
+	kSubViewA : INTEGER is unique
+
+	kSubViewB : INTEGER is unique
+
+	kSubViewSplitter : INTEGER is unique
+
+feature {NONE} -- Implementation
+
+	SubviewA : POINTER
+
+	SubviewB : POINTER
+
+	is_vertical : BOOLEAN
+
+	split_ratio : DOUBLE
+
 feature {NONE} -- Implementation
 
 	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
@@ -230,7 +298,7 @@ feature {NONE} -- Implementation
 		end
 
 	hit_test ( where : CGPOINT_STRUCT ) : INTEGER_16 is
-			--
+			-- Check to see if a point hits the view
 		do
 
 		end

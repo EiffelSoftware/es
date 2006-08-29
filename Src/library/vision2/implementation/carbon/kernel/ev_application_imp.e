@@ -61,8 +61,6 @@ feature {NONE} -- Initialization
 			id_count := 1
 			create free_ids.make
 			create widget_list.make ( 1, initial_widget_list_size )
-			custom_id_count := 1
-			create custom_widget_list.make ( 1, initial_custom_control_list_size )
 
 			create dispatcher.make (Current)
 		ensure then
@@ -285,36 +283,6 @@ feature -- Thread Handling.
 		do
 		end
 
-feature -- Custom Views
-
-	register_custom_control ( inClassID, inBaseClassID : STRING_32; inConstructProc : FUNCTION[ANY,TUPLE[POINTER,POINTER,POINTER],INTEGER]; inEventList : EVENT_TYPE_SPEC_ARRAY; outClassRef : POINTER ): INTEGER is
-			-- Register a custom HIView
-		local
-			strClassID, strBaseClassID : EV_CARBON_CF_STRING
-			id : POINTER
-		do
-			create strClassID.make_unshared_with_eiffel_string ( inClassID )
-			create strBaseClassID.make_unshared_with_eiffel_string ( inBaseClassID )
-
-			id := int_to_pointer ( -custom_get_id ( inConstructProc ) )
-
-			Result := hiobject_register_subclass_external ( strClassID.item, strBaseClassID.item, 0, dispatcher.c_dispatcher, inEventList.count, ineventlist.array_address, id, outclassref )
-		end
-
-	custom_id_count: INTEGER  -- the next id for an event.
-
-	custom_widget_list: ARRAY[FUNCTION[ANY,TUPLE[POINTER,POINTER,POINTER],INTEGER]]
-
-	custom_get_id (an_agent : FUNCTION[ANY,TUPLE[POINTER,POINTER,POINTER],INTEGER] ) : INTEGER is
-			-- Get a unique ID so we can associate an event by its ID with a control class
-		do
-			custom_widget_list.force (an_agent, custom_id_count)
-			Result := custom_id_count
-			custom_id_count := custom_id_count + 1
-		end
-
-
-
 feature {NONE} -- callback handling for events
 
 	dispatcher: EVENT_HANDLER_PROC_PTR_DISPATCHER
@@ -332,21 +300,12 @@ feature {NONE} -- callback handling for events
 			ret: INTEGER
 		do
 				a_id := pointer_to_int ( a_inuserdata )
-				if a_id > 0 then -- Normal widget event
-					check
-						valid_id : widget_list.index_set.has ( a_id )
-						target_valid : widget_list.item ( a_id ) /= Void
-					end
-					--print ("on_callback has been called by id:" + a_id.out + "%N")
-					Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
-				else -- Custom control default handler
-					check
-						valid_id : custom_widget_list.index_set.has ( a_id )
-					end
-					-- Call the correct agent
-					custom_widget_list.item ( a_id ).call ( [a_inhandlercallref, a_inevent, a_inuserdata] )
-					Result := custom_widget_list.item ( a_id ).last_result
+				check
+					valid_id : widget_list.index_set.has ( a_id )
+					target_valid : widget_list.item ( a_id ) /= Void
 				end
+				--print ("on_callback has been called by id:" + a_id.out + "%N")
+				Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
 		end
 
 	id_count: INTEGER  -- the next id for an event.
