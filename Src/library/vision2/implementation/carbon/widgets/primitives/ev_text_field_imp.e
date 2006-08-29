@@ -121,21 +121,22 @@ feature -- Access
 		"kTXNUnicodeTextData"
 	end
 
-	get_text_length (obj: POINTER):INTEGER is
+	get_text_length (obj: POINTER; starto, endo: INTEGER):INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
 
 			"[
 				{	Handle h;
-					TXNGetData ($obj, kTXNStartOffset, kTXNEndOffset, &h);
+					TXNGetData ($obj, $starto, $endo, &h);
 					int length = GetHandleSize(h);
 					return length/2;
+					DisposeHandle (h);
 				}
 			]"
 	end
 
-	get_text (obj, buf_ptr: POINTER) is
+	get_text (obj, buf_ptr: POINTER; starto, endo: INTEGER) is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
@@ -145,17 +146,15 @@ feature -- Access
 					char chr;
 					Handle h;
 					TXNObject t = HITextViewGetTXNObject($obj);
-					TXNGetData (t, kTXNStartOffset, kTXNEndOffset, &h);
+					TXNGetData (t, $starto, $endo, &h);
 					int length = GetHandleSize(h);
-
-					//char buffer[length/2];
 
 					char* buffer=$buf_ptr;
 					HLock (h);
 						char* p = (char *)*h;
 						char* q= (char *)*h;
 						int i=0;
-						for (; q <= (p+length)&& ((char) *q!='\n'); q++)
+						for (; (q <= (p+length)) && ((char) *q!=0); q++)
 						{
 							buffer[i] = (char) *q;
 							i++;
@@ -176,8 +175,8 @@ feature -- Access
 
 		do
 
-			create c_str.make_empty (get_text_length(entry_widget))
-			get_text (c_object, c_str.item)
+			create c_str.make_empty (get_text_length(entry_widget, kTXNStartOffset, kTXNEndOffset))
+			get_text (c_object, c_str.item, kTXNStartOffset, kTXNEndOffset)
 			io.put_string (c_str.string)
 			Result := c_str.string
 		end
@@ -254,7 +253,7 @@ feature -- Status Report
 			starto, endo: INTEGER
 		do
 			txnget_selection_external (entry_widget, $starto, $endo)
-			Result := starto
+			Result := starto+1
 		end
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
@@ -269,26 +268,52 @@ feature -- Status report
 	is_editable: BOOLEAN is
 			-- Is the text editable.
 		do
+			Result := true
 		end
 
 	has_selection: BOOLEAN is
 			-- Is something selected?
+		local
+			starto, endo: INTEGER
 		do
+			txnget_selection_external (entry_widget, $starto, $endo)
+			Result := starto < endo
+
 		end
 
 	selection_start: INTEGER is
 			-- Index of the first character selected.
+		local
+			starto, endo: INTEGER
 		do
+			txnget_selection_external (entry_widget, $starto, $endo)
+			Result := starto+1
 		end
 
 	selection_end: INTEGER is
 			-- Index of the last character selected.
+		local
+			starto, endo: INTEGER
 		do
+			txnget_selection_external (entry_widget, $starto, $endo)
+			Result := endo+1
 		end
 
 	clipboard_content: STRING_32 is
 			-- `Result' is current clipboard content.
+		local
+			string_ptr: POINTER
+			ret: INTEGER
+			c_str: C_STRING
 		do
+			set_caret_position (1)
+			paste (1)
+			create c_str.make_empty (get_text_length(entry_widget, kTXNStartOffset, caret_position-1))
+			get_text (c_object, c_str.item, kTXNStartOffset, caret_position-1)
+			io.put_string (c_str.string)
+			Result := c_str.string
+			select_region (kTXNStartOffset+1, caret_position)
+			delete_selection
 		end
 
 feature -- status settings
@@ -306,45 +331,63 @@ feature -- status settings
 
 	set_caret_position (pos: INTEGER) is
 			-- Set the position of the caret to `pos'.
+		local
+			ret: INTEGER
 		do
+			ret := txnset_selection_external (entry_widget, pos-1, pos-1)
 		end
 
 feature -- Basic operation
 
 	insert_text (txt: STRING_GENERAL) is
 			-- Insert `txt' at the current position.
+		local
+			a_c_str: C_STRING
+			ret: INTEGER
 		do
+			create a_c_str.make (txt)
+			ret := txnset_data_external (entry_widget, kTXNTextData, a_c_str.item, txt.count, selection_start-1, selection_end-1)
 		end
 
 	insert_text_at_position (txt: STRING_GENERAL; a_pos: INTEGER) is
 			-- Insert `txt' at the current position at position `a_pos'
+		local
+			a_c_str: C_STRING
+			ret: INTEGER
 		do
+			create a_c_str.make (txt)
+			ret := txnset_data_external (entry_widget, kTXNTextData, a_c_str.item, txt.count, a_pos-1, a_pos-1)
 		end
 
 	select_region (start_pos, end_pos: INTEGER) is
 			-- Select (highlight) the text between
 			-- 'start_pos' and 'end_pos'.
+		local
+			ret: INTEGER
 		do
+			ret := txnset_selection_external (entry_widget, start_pos-1, end_pos-1)
 		end
 
-	select_from_start_pos (start_pos, end_pos: INTEGER) is
-			-- Hack to select region from change actions
-		do
-		end
+--	select_from_start_pos (start_pos, end_pos: INTEGER) is
+--			-- Hack to select region from change actions
+--		do
+--		end
 
-	select_region_internal (start_pos, end_pos: INTEGER) is
-			-- Select region
-		do
-		end
+--	select_region_internal (start_pos, end_pos: INTEGER) is
+--			-- Select region
+--		do
+--		end
 
 	deselect_all is
 			-- Unselect the current selection.
 		do
+		set_caret_position (selection_start)
 		end
 
 	delete_selection is
 			-- Delete the current selection.
 		do
+			insert_text("")
 		end
 
 	cut_selection is
@@ -353,7 +396,10 @@ feature -- Basic operation
 			-- to paste it later.
 			-- If the `selected_region' is empty, it does
 			-- nothing.
+		local
+			ret: INTEGER
 		do
+			ret := txncut_external (entry_widget)
 		end
 
 	copy_selection is
@@ -361,7 +407,11 @@ feature -- Basic operation
 			-- to paste it later.
 			-- If the `selected_region' is empty, it does
 			-- nothing.
+		local
+			ret: INTEGER
 		do
+			ret := txncopy_external (entry_widget)
+
 		end
 
 	paste (index: INTEGER) is
@@ -369,15 +419,19 @@ feature -- Basic operation
 			-- Clipboard at the `index' position in the
 			-- text.
 			-- If the Clipboard is empty, it does nothing.
+		local
+			ret: INTEGER
 		do
+			set_caret_position (1)
+			ret := txnpaste_external (entry_widget)
 		end
 
 feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
-	internal_set_caret_position (pos: INTEGER) is
-			-- Set the position of the caret to `pos'.
-		do
-		end
+	--internal_set_caret_position (pos: INTEGER) is
+	--		-- Set the position of the caret to `pos'.
+	--	do
+	--	end
 
 	create_change_actions: EV_NOTIFY_ACTION_SEQUENCE is
 		do
@@ -414,6 +468,7 @@ feature {NONE} -- Implementation
 	visual_widget: POINTER is
 			-- Pointer to the widget shown on screen.
 		do
+			Result := c_object
 		end
 
 feature {EV_TEXT_FIELD_I} -- Implementation
