@@ -32,6 +32,12 @@ inherit
 			initialize
 		end
 
+	EV_TEXTABLE_IMP
+		redefine
+			interface,
+			initialize
+		end
+
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
 		export
 			{NONE} all
@@ -45,9 +51,9 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Create frame.
 		local
-			err: INTEGER
+			ret: INTEGER
 			rect: RECT_STRUCT
-			struct_ptr: POINTER
+			ptr: POINTER
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
@@ -55,10 +61,11 @@ feature {NONE} -- Initialization
 			rect.set_right (100)
 			rect.set_bottom (40)
 			rect.set_top (20)
-			err := create_placard_control_external ( null, rect.item, $struct_ptr )
-			set_c_object ( struct_ptr )
+--			ret := create_placard_control_external ( null, rect.item, $ptr )
+			ret := create_group_box_control_external (null, rect.item, null, 1, $ptr)
+			set_c_object ( ptr )
 
-			event_id := app_implementation.get_id (current)  --getting an id from the application
+			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is
@@ -84,51 +91,17 @@ feature -- Element change
 		do
 		end
 
-feature -- Status setting
-
-	align_text_left is
-			-- Display `text' left aligned.
-		do
-		end
-
-	align_text_right is
-			-- Display `text' right aligned.
-		do
-		end
-
-	align_text_center is
-			-- Display `text' centered.
-		do
-		end
-
-feature -- Access
-
-	text_alignment: INTEGER is
-			-- Alignment of the text in the label.
-		do
-
-		end
-
-	text: STRING_32 is
-			-- Text of the frame
-		do
-			if internal_text = Void then
-				internal_text := ""
-			end
-			Result := internal_text.twin
-		end
-
 feature -- Element change
 
-	set_text (a_text: STRING_GENERAL) is
-			-- set the `text' of the frame
-		local
-			a_cs: EV_CARBON_CF_STRING
-		do
-			internal_text := a_text.twin
-			create a_cs.make_unshared_with_eiffel_string (a_text)
-		--	{EV_GTK_EXTERNALS}.gtk_frame_set_label (container_widget, a_cs.item)
-		end
+--	set_text (a_text: STRING_GENERAL) is
+--			-- set the `text' of the frame
+--		local
+--			a_cs: EV_CARBON_CF_STRING
+--		do
+--			internal_text := a_text.twin
+--			create a_cs.make_unshared_with_eiffel_string (a_text)
+--			--hiview_set_text_external()
+--		end
 
 feature {NONE} -- Implementation
 

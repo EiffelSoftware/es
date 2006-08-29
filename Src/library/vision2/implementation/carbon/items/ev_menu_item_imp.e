@@ -74,7 +74,6 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'
 		do
 			Precursor {EV_ITEM_IMP}
-			textable_imp_initialize
 		end
 
 feature -- Element change

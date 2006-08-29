@@ -35,7 +35,6 @@ feature {NONE} -- Initialization
 			-- Do nothing because an empty GtkMenuItem is a separator.
 		do
 			pixmapable_imp_initialize
-			textable_imp_initialize
 			is_sensitive := True
 			set_is_initialized (True)
 		end

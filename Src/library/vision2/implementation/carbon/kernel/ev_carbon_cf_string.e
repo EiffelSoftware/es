@@ -11,8 +11,16 @@ class
 
 inherit
 	DISPOSABLE
+
 	CFSTRING_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	CFBASE_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 create
 	make_unshared_with_eiffel_string,

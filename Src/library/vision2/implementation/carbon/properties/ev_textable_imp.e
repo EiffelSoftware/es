@@ -21,19 +21,12 @@ inherit
 		redefine
 			interface
 		end
-	CFSTRING_FUNCTIONS_EXTERNAL
-	CONTROLS_FUNCTIONS_EXTERNAL
-	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
-	CARBONEVENTS_FUNCTIONS_EXTERNAL
+
+	HIVIEW_FUNCTIONS_EXTERNAL
+
 
 feature {NONE} -- Initialization
 
-
-	textable_imp_initialize is
-			-- Create a GtkLabel to display the text.
-		do
-
-		end
 
 feature -- Access
 
@@ -98,14 +91,15 @@ feature -- Element change
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
 		local
-		--	a_cs: EV_GTK_C_STRING
+			cfstring: EV_CARBON_CF_STRING
+			ret: INTEGER
 		do
-
 			if accelerators_enabled then
 				create real_text.make_unshared_with_eiffel_string (u_lined_filter (a_text))
 			else
 				create real_text.make_unshared_with_eiffel_string (a_text)
 			end
+			ret := hiview_set_text_external (c_object, real_text.item)
 		end
 
 feature {EV_ANY_IMP} -- Implementation
