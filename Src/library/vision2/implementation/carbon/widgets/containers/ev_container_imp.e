@@ -77,7 +77,7 @@ feature -- Element change
 			--ueli: copied actual version from ev_window made by Jann
 		local
 			w: EV_WIDGET_IMP
-			err: INTEGER
+			ret: INTEGER
 			root_control_ptr: POINTER
 		do
 			if not interface.is_empty then
@@ -86,14 +86,13 @@ feature -- Element change
 				check
 					item_has_implementation: w /= Void
 				end
-				hide_control_external (w.c_object) -- Don't get rid of the conrol yet. We may want to attach it again somewhere at a later point.
+				ret := hiview_remove_from_superview_external (w.c_object)
 			end
 			if v /= Void then
 				w ?= v.implementation
-				err := get_super_control_external ( c_object, $root_control_ptr )
+				ret := get_super_control_external ( c_object, $root_control_ptr )
 				-- I replaced the call to GetRootContainer with this one, because it makes sense for FRAME, hope it doesn't break anything
-				err := embed_control_external ( w.c_object, root_control_ptr )
-				show_control_external (w.c_object)
+				ret := embed_control_external ( w.c_object, root_control_ptr )
 				setup_layout (w.c_object, c_object)
 				on_new_item (w)
 			end
