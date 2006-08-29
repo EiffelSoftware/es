@@ -74,7 +74,6 @@ feature -- Element change
 
 	replace (v: like item) is
 			-- Replace `item' with `v'.
-			--ueli: copied actual version from ev_window made by Jann
 		local
 			w: EV_WIDGET_IMP
 			ret: INTEGER
@@ -91,8 +90,7 @@ feature -- Element change
 			if v /= Void then
 				w ?= v.implementation
 				ret := get_super_control_external ( c_object, $root_control_ptr )
-				-- I replaced the call to GetRootContainer with this one, because it makes sense for FRAME, hope it doesn't break anything
-				ret := embed_control_external ( w.c_object, root_control_ptr )
+				ret := hiview_add_subview_external ( root_control_ptr, w.c_object )
 				setup_layout (w.c_object, c_object)
 				on_new_item (w)
 			end
