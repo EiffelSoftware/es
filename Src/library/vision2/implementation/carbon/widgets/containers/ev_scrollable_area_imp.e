@@ -32,6 +32,11 @@ inherit
 			child_has_resized
 		end
 
+	HIVIEW_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -39,8 +44,14 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create scrollable area.
+		local
+			ptr: POINTER
+			ret: INTEGER
 		do
 			base_make (an_interface)
+			ret := hiscroll_view_create_external ({HIVIEW_ANON_ENUMS}.kHIScrollViewValidOptions, $ptr)
+			set_c_object (ptr)
+
 		end
 
 feature -- Access

@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision viewport. GTK+ implementation."
+	description: "Eiffel Vision viewport. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -27,14 +27,16 @@ inherit
 			visual_widget,
 			on_removed_item
 		end
+
 	HIVIEW_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is False
 
 	make (an_interface: like interface) is
 			-- Initialize.
