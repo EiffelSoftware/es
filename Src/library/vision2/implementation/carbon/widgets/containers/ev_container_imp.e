@@ -86,17 +86,17 @@ feature -- Element change
 				check
 					item_has_implementation: w /= Void
 				end
-				dispose_control_external( w.c_object )
+				hide_control_external (w.c_object) -- Don't get rid of the conrol yet. We may want to attach it again somewhere at a later point.
 			end
 			if v /= Void then
 				w ?= v.implementation
 				err := get_super_control_external ( c_object, $root_control_ptr )
 				-- I replaced the call to GetRootContainer with this one, because it makes sense for FRAME, hope it doesn't break anything
 				err := embed_control_external ( w.c_object, root_control_ptr )
+				show_control_external (w.c_object)
 				setup_layout (w.c_object, c_object)
 				on_new_item (w)
 			end
-
 		end
 
 

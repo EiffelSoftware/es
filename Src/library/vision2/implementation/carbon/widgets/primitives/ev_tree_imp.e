@@ -321,9 +321,10 @@ feature -- Implementation
 				Result := id_count
 				id_count := id_count + 1
 			else
-				item_list.force (a_widget, free_ids.first)
-				Result :=  free_ids.first
-				free_ids.remove_left
+				free_ids.start
+				item_list.force (a_widget, free_ids.item)
+				Result :=  free_ids.item
+				free_ids.remove
 			end
 		end
 

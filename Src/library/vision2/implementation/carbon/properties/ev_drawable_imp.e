@@ -119,12 +119,14 @@ feature -- Access
 	foreground_color: EV_COLOR is
 			-- Color used to draw primitives.
 		do
+			create Result
 		end
 
 	background_color: EV_COLOR is
 			-- Color used for erasing of canvas.
 			-- Default: white.
 		do
+			create Result
 		end
 
 	line_width: INTEGER is

@@ -29,16 +29,11 @@ feature -- Access
 
 	background_color: EV_COLOR is
 			-- Color of face.
-		local
-			color: POINTER
 		do
 			if background_color_imp /= Void then
 				Result := background_color_imp.interface
 			else
-				color := background_color_pointer
 				create Result
-				--comment
-				--Result.set_rgb_with_16_bit ({EV_GTK_EXTERNALS}.gdk_color_struct_red (color),{EV_GTK_EXTERNALS}.gdk_color_struct_green (color),{EV_GTK_EXTERNALS}.gdk_color_struct_blue (color))
 			end
 		end
 
