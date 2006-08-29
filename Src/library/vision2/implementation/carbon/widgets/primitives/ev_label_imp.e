@@ -31,8 +31,16 @@ inherit
 		redefine
 			interface
 		end
+
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 create
 	make
