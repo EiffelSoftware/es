@@ -31,7 +31,20 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Create password field with `*'.
 		do
+			set_password (entry_widget)
 		end
+	set_password (obj: POINTER) is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+			"[
+				{	
+					TXNEchoMode($obj, '*',kTextEncodingUnicodeDefault, true);
+				}
+			]"
+	end
+
 
 feature {NONE} -- Implementation
 
