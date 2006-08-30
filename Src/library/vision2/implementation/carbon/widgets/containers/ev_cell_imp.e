@@ -29,6 +29,11 @@ inherit
 			interface
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -36,9 +41,19 @@ feature -- initialization
 
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
 			base_make (an_interface)
-			set_c_object ($current) -- just to make sure the contract is valid
+			create rect.make_new_unshared
+			rect.set_left (20)
+			rect.set_right (100)
+			rect.set_bottom (40)
+			rect.set_top (20)
+			ret := create_placard_control_external ( null, rect.item, $ptr )
+			set_c_object ( ptr )
 		end
 
 feature -- Access
