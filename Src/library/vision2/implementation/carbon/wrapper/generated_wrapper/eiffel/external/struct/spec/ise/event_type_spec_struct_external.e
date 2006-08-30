@@ -3,7 +3,7 @@
 
 class EVENT_TYPE_SPEC_STRUCT_EXTERNAL
 
-feature {NONE}  -- Implementation
+feature {NONE} -- Implementation
 
 	sizeof_external: INTEGER is
 		external

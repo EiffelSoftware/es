@@ -131,6 +131,51 @@
 #define ewg_struct_macro_sizeof_struct___CFBundle 1
 
 
+// glue code macros for struct `struct CGPoint'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CGPoint sizeof (struct CGPoint)
+
+#define ewg_struct_macro_struct_CGPoint_member_get_x(an_item) ((struct CGPoint*)an_item)->x
+
+#define ewg_struct_macro_struct_CGPoint_member_set_x(an_item, a_value) ((struct CGPoint*)an_item)->x =  (float)a_value
+
+#define ewg_struct_macro_struct_CGPoint_member_get_y(an_item) ((struct CGPoint*)an_item)->y
+
+#define ewg_struct_macro_struct_CGPoint_member_set_y(an_item, a_value) ((struct CGPoint*)an_item)->y =  (float)a_value
+
+
+// glue code macros for struct `struct CGSize'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CGSize sizeof (struct CGSize)
+
+#define ewg_struct_macro_struct_CGSize_member_get_width(an_item) ((struct CGSize*)an_item)->width
+
+#define ewg_struct_macro_struct_CGSize_member_set_width(an_item, a_value) ((struct CGSize*)an_item)->width =  (float)a_value
+
+#define ewg_struct_macro_struct_CGSize_member_get_height(an_item) ((struct CGSize*)an_item)->height
+
+#define ewg_struct_macro_struct_CGSize_member_set_height(an_item, a_value) ((struct CGSize*)an_item)->height =  (float)a_value
+
+
+// glue code macros for struct `struct CGRect'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CGRect sizeof (struct CGRect)
+
+#define ewg_struct_macro_struct_CGRect_member_get_origin(an_item) &((struct CGRect*)an_item)->origin
+
+#define ewg_struct_macro_struct_CGRect_member_set_origin(an_item, a_value) ((struct CGRect*)an_item)->origin =  *(CGPoint*)a_value
+
+#define ewg_struct_macro_struct_CGRect_member_get_size(an_item) &((struct CGRect*)an_item)->size
+
+#define ewg_struct_macro_struct_CGRect_member_set_size(an_item, a_value) ((struct CGRect*)an_item)->size =  *(CGSize*)a_value
+
+
 // glue code macros for struct `struct CGDataProviderCallbacks'
 
 #include<Carbon/Carbon.h>
@@ -198,21 +243,6 @@
 #define ewg_struct_macro_sizeof_struct_CGImage 1
 
 
-// glue code macros for struct `struct CGRect'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CGRect sizeof (struct CGRect)
-
-#define ewg_struct_macro_struct_CGRect_member_get_origin(an_item) &((struct CGRect*)an_item)->origin
-
-#define ewg_struct_macro_struct_CGRect_member_set_origin(an_item, a_value) ((struct CGRect*)an_item)->origin =  *(CGPoint*)a_value
-
-#define ewg_struct_macro_struct_CGRect_member_get_size(an_item) &((struct CGRect*)an_item)->size
-
-#define ewg_struct_macro_struct_CGRect_member_set_size(an_item, a_value) ((struct CGRect*)an_item)->size =  *(CGSize*)a_value
-
-
 // glue code macros for struct `struct CGContext'
 
 #include<Carbon/Carbon.h>
@@ -251,21 +281,6 @@
 #define ewg_struct_macro_struct_CGAffineTransform_member_set_ty(an_item, a_value) ((struct CGAffineTransform*)an_item)->ty =  (float)a_value
 
 
-// glue code macros for struct `struct CGPoint'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CGPoint sizeof (struct CGPoint)
-
-#define ewg_struct_macro_struct_CGPoint_member_get_x(an_item) ((struct CGPoint*)an_item)->x
-
-#define ewg_struct_macro_struct_CGPoint_member_set_x(an_item, a_value) ((struct CGPoint*)an_item)->x =  (float)a_value
-
-#define ewg_struct_macro_struct_CGPoint_member_get_y(an_item) ((struct CGPoint*)an_item)->y
-
-#define ewg_struct_macro_struct_CGPoint_member_set_y(an_item, a_value) ((struct CGPoint*)an_item)->y =  (float)a_value
-
-
 // glue code macros for struct `struct CGPath'
 
 #include<Carbon/Carbon.h>
@@ -285,21 +300,6 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_CGPattern 1
-
-
-// glue code macros for struct `struct CGSize'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CGSize sizeof (struct CGSize)
-
-#define ewg_struct_macro_struct_CGSize_member_get_width(an_item) ((struct CGSize*)an_item)->width
-
-#define ewg_struct_macro_struct_CGSize_member_set_width(an_item, a_value) ((struct CGSize*)an_item)->width =  (float)a_value
-
-#define ewg_struct_macro_struct_CGSize_member_get_height(an_item) ((struct CGSize*)an_item)->height
-
-#define ewg_struct_macro_struct_CGSize_member_set_height(an_item, a_value) ((struct CGSize*)an_item)->height =  (float)a_value
 
 
 // glue code macros for struct `struct CGShading'

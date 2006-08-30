@@ -1121,6 +1121,168 @@ SInt32  ewg_function_CFBundleOpenBundleResourceFiles (CFBundleRef bundle, short 
 #define ewg_function_macro_CFBundleCloseBundleResourceMap(ewg_param_bundle, ewg_param_refNum) CFBundleCloseBundleResourceMap ((CFBundleRef)ewg_param_bundle, (short)ewg_param_refNum)
 
 void  ewg_function_CFBundleCloseBundleResourceMap (CFBundleRef bundle, short refNum);
+// Wraps call to function 'CGPointMake' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPointMake(ewg_param_x, ewg_param_y) CGPointMake ((float)ewg_param_x, (float)ewg_param_y)
+
+CGPoint * ewg_function_CGPointMake (float x, float y);
+// Wraps call to function 'CGSizeMake' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGSizeMake(ewg_param_width, ewg_param_height) CGSizeMake ((float)ewg_param_width, (float)ewg_param_height)
+
+CGSize * ewg_function_CGSizeMake (float width, float height);
+// Wraps call to function 'CGRectMake' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectMake(ewg_param_x, ewg_param_y, ewg_param_width, ewg_param_height) CGRectMake ((float)ewg_param_x, (float)ewg_param_y, (float)ewg_param_width, (float)ewg_param_height)
+
+CGRect * ewg_function_CGRectMake (float x, float y, float width, float height);
+// Wraps call to function 'CGRectGetMinX' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetMinX(ewg_param_rect) CGRectGetMinX (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetMinX (CGRect *rect);
+// Wraps call to function 'CGRectGetMidX' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetMidX(ewg_param_rect) CGRectGetMidX (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetMidX (CGRect *rect);
+// Wraps call to function 'CGRectGetMaxX' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetMaxX(ewg_param_rect) CGRectGetMaxX (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetMaxX (CGRect *rect);
+// Wraps call to function 'CGRectGetMinY' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetMinY(ewg_param_rect) CGRectGetMinY (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetMinY (CGRect *rect);
+// Wraps call to function 'CGRectGetMidY' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetMidY(ewg_param_rect) CGRectGetMidY (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetMidY (CGRect *rect);
+// Wraps call to function 'CGRectGetMaxY' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetMaxY(ewg_param_rect) CGRectGetMaxY (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetMaxY (CGRect *rect);
+// Wraps call to function 'CGRectGetWidth' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetWidth(ewg_param_rect) CGRectGetWidth (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetWidth (CGRect *rect);
+// Wraps call to function 'CGRectGetHeight' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectGetHeight(ewg_param_rect) CGRectGetHeight (*(CGRect*)ewg_param_rect)
+
+float  ewg_function_CGRectGetHeight (CGRect *rect);
+// Wraps call to function 'CGPointEqualToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPointEqualToPoint(ewg_param_point1, ewg_param_point2) CGPointEqualToPoint (*(CGPoint*)ewg_param_point1, *(CGPoint*)ewg_param_point2)
+
+int  ewg_function_CGPointEqualToPoint (CGPoint *point1, CGPoint *point2);
+// Wraps call to function 'CGSizeEqualToSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGSizeEqualToSize(ewg_param_size1, ewg_param_size2) CGSizeEqualToSize (*(CGSize*)ewg_param_size1, *(CGSize*)ewg_param_size2)
+
+int  ewg_function_CGSizeEqualToSize (CGSize *size1, CGSize *size2);
+// Wraps call to function 'CGRectEqualToRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectEqualToRect(ewg_param_rect1, ewg_param_rect2) CGRectEqualToRect (*(CGRect*)ewg_param_rect1, *(CGRect*)ewg_param_rect2)
+
+int  ewg_function_CGRectEqualToRect (CGRect *rect1, CGRect *rect2);
+// Wraps call to function 'CGRectStandardize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectStandardize(ewg_param_rect) CGRectStandardize (*(CGRect*)ewg_param_rect)
+
+CGRect * ewg_function_CGRectStandardize (CGRect *rect);
+// Wraps call to function 'CGRectIsEmpty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectIsEmpty(ewg_param_rect) CGRectIsEmpty (*(CGRect*)ewg_param_rect)
+
+int  ewg_function_CGRectIsEmpty (CGRect *rect);
+// Wraps call to function 'CGRectIsNull' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectIsNull(ewg_param_rect) CGRectIsNull (*(CGRect*)ewg_param_rect)
+
+int  ewg_function_CGRectIsNull (CGRect *rect);
+// Wraps call to function 'CGRectIsInfinite' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectIsInfinite(ewg_param_rect) CGRectIsInfinite (*(CGRect*)ewg_param_rect)
+
+_Bool  ewg_function_CGRectIsInfinite (CGRect *rect);
+// Wraps call to function 'CGRectInset' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectInset(ewg_param_rect, ewg_param_dx, ewg_param_dy) CGRectInset (*(CGRect*)ewg_param_rect, (float)ewg_param_dx, (float)ewg_param_dy)
+
+CGRect * ewg_function_CGRectInset (CGRect *rect, float dx, float dy);
+// Wraps call to function 'CGRectIntegral' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectIntegral(ewg_param_rect) CGRectIntegral (*(CGRect*)ewg_param_rect)
+
+CGRect * ewg_function_CGRectIntegral (CGRect *rect);
+// Wraps call to function 'CGRectUnion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectUnion(ewg_param_r1, ewg_param_r2) CGRectUnion (*(CGRect*)ewg_param_r1, *(CGRect*)ewg_param_r2)
+
+CGRect * ewg_function_CGRectUnion (CGRect *r1, CGRect *r2);
+// Wraps call to function 'CGRectIntersection' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectIntersection(ewg_param_r1, ewg_param_r2) CGRectIntersection (*(CGRect*)ewg_param_r1, *(CGRect*)ewg_param_r2)
+
+CGRect * ewg_function_CGRectIntersection (CGRect *r1, CGRect *r2);
+// Wraps call to function 'CGRectOffset' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectOffset(ewg_param_rect, ewg_param_dx, ewg_param_dy) CGRectOffset (*(CGRect*)ewg_param_rect, (float)ewg_param_dx, (float)ewg_param_dy)
+
+CGRect * ewg_function_CGRectOffset (CGRect *rect, float dx, float dy);
+// Wraps call to function 'CGRectDivide' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectDivide(ewg_param_rect, ewg_param_slice, ewg_param_remainder, ewg_param_amount, ewg_param_edge) CGRectDivide (*(CGRect*)ewg_param_rect, (CGRect*)ewg_param_slice, (CGRect*)ewg_param_remainder, (float)ewg_param_amount, (CGRectEdge)ewg_param_edge)
+
+void  ewg_function_CGRectDivide (CGRect *rect, CGRect *slice, CGRect *remainder, float amount, CGRectEdge edge);
+// Wraps call to function 'CGRectContainsPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectContainsPoint(ewg_param_rect, ewg_param_point) CGRectContainsPoint (*(CGRect*)ewg_param_rect, *(CGPoint*)ewg_param_point)
+
+int  ewg_function_CGRectContainsPoint (CGRect *rect, CGPoint *point);
+// Wraps call to function 'CGRectContainsRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectContainsRect(ewg_param_rect1, ewg_param_rect2) CGRectContainsRect (*(CGRect*)ewg_param_rect1, *(CGRect*)ewg_param_rect2)
+
+int  ewg_function_CGRectContainsRect (CGRect *rect1, CGRect *rect2);
+// Wraps call to function 'CGRectIntersectsRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectIntersectsRect(ewg_param_rect1, ewg_param_rect2) CGRectIntersectsRect (*(CGRect*)ewg_param_rect1, *(CGRect*)ewg_param_rect2)
+
+int  ewg_function_CGRectIntersectsRect (CGRect *rect1, CGRect *rect2);
 // Wraps call to function 'CGDataProviderGetTypeID' in a macro
 #include <Carbon/Carbon.h>
 

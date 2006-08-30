@@ -2813,6 +2813,429 @@ void* ewg_get_function_address_CFBundleCloseBundleResourceMap (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'CGPointMake'
+// For ise
+CGPoint * ewg_function_CGPointMake (float ewg_x, float ewg_y)
+{
+	CGPoint *result = (CGPoint*) malloc (sizeof(CGPoint));
+	*result = CGPointMake ((float)ewg_x, (float)ewg_y);
+	return result;
+}
+
+// Return address of function 'CGPointMake'
+void* ewg_get_function_address_CGPointMake (void)
+{
+	return (void*) CGPointMake;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGSizeMake'
+// For ise
+CGSize * ewg_function_CGSizeMake (float ewg_width, float ewg_height)
+{
+	CGSize *result = (CGSize*) malloc (sizeof(CGSize));
+	*result = CGSizeMake ((float)ewg_width, (float)ewg_height);
+	return result;
+}
+
+// Return address of function 'CGSizeMake'
+void* ewg_get_function_address_CGSizeMake (void)
+{
+	return (void*) CGSizeMake;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectMake'
+// For ise
+CGRect * ewg_function_CGRectMake (float ewg_x, float ewg_y, float ewg_width, float ewg_height)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectMake ((float)ewg_x, (float)ewg_y, (float)ewg_width, (float)ewg_height);
+	return result;
+}
+
+// Return address of function 'CGRectMake'
+void* ewg_get_function_address_CGRectMake (void)
+{
+	return (void*) CGRectMake;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetMinX'
+// For ise
+float  ewg_function_CGRectGetMinX (CGRect *ewg_rect)
+{
+	return CGRectGetMinX (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetMinX'
+void* ewg_get_function_address_CGRectGetMinX (void)
+{
+	return (void*) CGRectGetMinX;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetMidX'
+// For ise
+float  ewg_function_CGRectGetMidX (CGRect *ewg_rect)
+{
+	return CGRectGetMidX (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetMidX'
+void* ewg_get_function_address_CGRectGetMidX (void)
+{
+	return (void*) CGRectGetMidX;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetMaxX'
+// For ise
+float  ewg_function_CGRectGetMaxX (CGRect *ewg_rect)
+{
+	return CGRectGetMaxX (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetMaxX'
+void* ewg_get_function_address_CGRectGetMaxX (void)
+{
+	return (void*) CGRectGetMaxX;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetMinY'
+// For ise
+float  ewg_function_CGRectGetMinY (CGRect *ewg_rect)
+{
+	return CGRectGetMinY (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetMinY'
+void* ewg_get_function_address_CGRectGetMinY (void)
+{
+	return (void*) CGRectGetMinY;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetMidY'
+// For ise
+float  ewg_function_CGRectGetMidY (CGRect *ewg_rect)
+{
+	return CGRectGetMidY (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetMidY'
+void* ewg_get_function_address_CGRectGetMidY (void)
+{
+	return (void*) CGRectGetMidY;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetMaxY'
+// For ise
+float  ewg_function_CGRectGetMaxY (CGRect *ewg_rect)
+{
+	return CGRectGetMaxY (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetMaxY'
+void* ewg_get_function_address_CGRectGetMaxY (void)
+{
+	return (void*) CGRectGetMaxY;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetWidth'
+// For ise
+float  ewg_function_CGRectGetWidth (CGRect *ewg_rect)
+{
+	return CGRectGetWidth (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetWidth'
+void* ewg_get_function_address_CGRectGetWidth (void)
+{
+	return (void*) CGRectGetWidth;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectGetHeight'
+// For ise
+float  ewg_function_CGRectGetHeight (CGRect *ewg_rect)
+{
+	return CGRectGetHeight (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectGetHeight'
+void* ewg_get_function_address_CGRectGetHeight (void)
+{
+	return (void*) CGRectGetHeight;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPointEqualToPoint'
+// For ise
+int  ewg_function_CGPointEqualToPoint (CGPoint *ewg_point1, CGPoint *ewg_point2)
+{
+	return CGPointEqualToPoint (*(CGPoint*)ewg_point1, *(CGPoint*)ewg_point2);
+}
+
+// Return address of function 'CGPointEqualToPoint'
+void* ewg_get_function_address_CGPointEqualToPoint (void)
+{
+	return (void*) CGPointEqualToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGSizeEqualToSize'
+// For ise
+int  ewg_function_CGSizeEqualToSize (CGSize *ewg_size1, CGSize *ewg_size2)
+{
+	return CGSizeEqualToSize (*(CGSize*)ewg_size1, *(CGSize*)ewg_size2);
+}
+
+// Return address of function 'CGSizeEqualToSize'
+void* ewg_get_function_address_CGSizeEqualToSize (void)
+{
+	return (void*) CGSizeEqualToSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectEqualToRect'
+// For ise
+int  ewg_function_CGRectEqualToRect (CGRect *ewg_rect1, CGRect *ewg_rect2)
+{
+	return CGRectEqualToRect (*(CGRect*)ewg_rect1, *(CGRect*)ewg_rect2);
+}
+
+// Return address of function 'CGRectEqualToRect'
+void* ewg_get_function_address_CGRectEqualToRect (void)
+{
+	return (void*) CGRectEqualToRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectStandardize'
+// For ise
+CGRect * ewg_function_CGRectStandardize (CGRect *ewg_rect)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectStandardize (*(CGRect*)ewg_rect);
+	return result;
+}
+
+// Return address of function 'CGRectStandardize'
+void* ewg_get_function_address_CGRectStandardize (void)
+{
+	return (void*) CGRectStandardize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectIsEmpty'
+// For ise
+int  ewg_function_CGRectIsEmpty (CGRect *ewg_rect)
+{
+	return CGRectIsEmpty (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectIsEmpty'
+void* ewg_get_function_address_CGRectIsEmpty (void)
+{
+	return (void*) CGRectIsEmpty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectIsNull'
+// For ise
+int  ewg_function_CGRectIsNull (CGRect *ewg_rect)
+{
+	return CGRectIsNull (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectIsNull'
+void* ewg_get_function_address_CGRectIsNull (void)
+{
+	return (void*) CGRectIsNull;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectIsInfinite'
+// For ise
+_Bool  ewg_function_CGRectIsInfinite (CGRect *ewg_rect)
+{
+	return CGRectIsInfinite (*(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGRectIsInfinite'
+void* ewg_get_function_address_CGRectIsInfinite (void)
+{
+	return (void*) CGRectIsInfinite;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectInset'
+// For ise
+CGRect * ewg_function_CGRectInset (CGRect *ewg_rect, float ewg_dx, float ewg_dy)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectInset (*(CGRect*)ewg_rect, (float)ewg_dx, (float)ewg_dy);
+	return result;
+}
+
+// Return address of function 'CGRectInset'
+void* ewg_get_function_address_CGRectInset (void)
+{
+	return (void*) CGRectInset;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectIntegral'
+// For ise
+CGRect * ewg_function_CGRectIntegral (CGRect *ewg_rect)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectIntegral (*(CGRect*)ewg_rect);
+	return result;
+}
+
+// Return address of function 'CGRectIntegral'
+void* ewg_get_function_address_CGRectIntegral (void)
+{
+	return (void*) CGRectIntegral;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectUnion'
+// For ise
+CGRect * ewg_function_CGRectUnion (CGRect *ewg_r1, CGRect *ewg_r2)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectUnion (*(CGRect*)ewg_r1, *(CGRect*)ewg_r2);
+	return result;
+}
+
+// Return address of function 'CGRectUnion'
+void* ewg_get_function_address_CGRectUnion (void)
+{
+	return (void*) CGRectUnion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectIntersection'
+// For ise
+CGRect * ewg_function_CGRectIntersection (CGRect *ewg_r1, CGRect *ewg_r2)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectIntersection (*(CGRect*)ewg_r1, *(CGRect*)ewg_r2);
+	return result;
+}
+
+// Return address of function 'CGRectIntersection'
+void* ewg_get_function_address_CGRectIntersection (void)
+{
+	return (void*) CGRectIntersection;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectOffset'
+// For ise
+CGRect * ewg_function_CGRectOffset (CGRect *ewg_rect, float ewg_dx, float ewg_dy)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectOffset (*(CGRect*)ewg_rect, (float)ewg_dx, (float)ewg_dy);
+	return result;
+}
+
+// Return address of function 'CGRectOffset'
+void* ewg_get_function_address_CGRectOffset (void)
+{
+	return (void*) CGRectOffset;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectDivide'
+// For ise
+void  ewg_function_CGRectDivide (CGRect *ewg_rect, CGRect *ewg_slice, CGRect *ewg_remainder, float ewg_amount, CGRectEdge ewg_edge)
+{
+	CGRectDivide (*(CGRect*)ewg_rect, (CGRect*)ewg_slice, (CGRect*)ewg_remainder, (float)ewg_amount, (CGRectEdge)ewg_edge);
+}
+
+// Return address of function 'CGRectDivide'
+void* ewg_get_function_address_CGRectDivide (void)
+{
+	return (void*) CGRectDivide;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectContainsPoint'
+// For ise
+int  ewg_function_CGRectContainsPoint (CGRect *ewg_rect, CGPoint *ewg_point)
+{
+	return CGRectContainsPoint (*(CGRect*)ewg_rect, *(CGPoint*)ewg_point);
+}
+
+// Return address of function 'CGRectContainsPoint'
+void* ewg_get_function_address_CGRectContainsPoint (void)
+{
+	return (void*) CGRectContainsPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectContainsRect'
+// For ise
+int  ewg_function_CGRectContainsRect (CGRect *ewg_rect1, CGRect *ewg_rect2)
+{
+	return CGRectContainsRect (*(CGRect*)ewg_rect1, *(CGRect*)ewg_rect2);
+}
+
+// Return address of function 'CGRectContainsRect'
+void* ewg_get_function_address_CGRectContainsRect (void)
+{
+	return (void*) CGRectContainsRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectIntersectsRect'
+// For ise
+int  ewg_function_CGRectIntersectsRect (CGRect *ewg_rect1, CGRect *ewg_rect2)
+{
+	return CGRectIntersectsRect (*(CGRect*)ewg_rect1, *(CGRect*)ewg_rect2);
+}
+
+// Return address of function 'CGRectIntersectsRect'
+void* ewg_get_function_address_CGRectIntersectsRect (void)
+{
+	return (void*) CGRectIntersectsRect;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'CGDataProviderGetTypeID'
 // For ise
 CFTypeID  ewg_function_CGDataProviderGetTypeID (void)
