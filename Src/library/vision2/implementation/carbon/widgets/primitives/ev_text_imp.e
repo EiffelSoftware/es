@@ -115,8 +115,8 @@ feature -- Status report
 			ret: INTEGER
 			point: POINTER
 		do
-			ret := txnoffset_to_hipoint (entry_widget, i, $point)
-			
+			--ret := txnoffset_to_hipoint (entry_widget, i, $point)
+
 		end
 
 feature -- Access
@@ -144,20 +144,21 @@ feature -- Status report
 	text_length: INTEGER is
 			-- Number of characters in `Current'
 		do
+			Result := get_text_length (entry_widget, kTXNStartOffset, kTXNEndOffset)
 
 		end
 
 	line_count: INTEGER is
 			-- Number of display lines present in widget.
 		do
-
+			Result := line_number_from_position (kTXNEndOffset+1)
 		end
 
 	current_line_number: INTEGER is
 			-- Returns the number of the display line the cursor currently
 			-- is on.
 		do
-
+			Result := line_number_from_position (caret_position)
 		end
 
 	has_word_wrapping: BOOLEAN
@@ -197,17 +198,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	selection_start_internal: INTEGER is
-			-- Index of the first character selected.
-		do
 
-		end
-
-	selection_end_internal: INTEGER is
-			-- Index of the last character selected.
-		do
-
-		end
 
 	dispose is
 			-- Clean up `Current'
@@ -217,18 +208,6 @@ feature {NONE} -- Implementation
 
 	on_change_actions is
 			-- The text within the widget has changed.
-		do
-
-		end
-
-	append_text_internal (a_text_buffer: POINTER; a_text: STRING_GENERAL) is
-			-- Append `txt' to `text'.
-		do
-
-		end
-
-	internal_set_caret_position (pos: INTEGER) is
-			-- set current insertion position
 		do
 
 		end

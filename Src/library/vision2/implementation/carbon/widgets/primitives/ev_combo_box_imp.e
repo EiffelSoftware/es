@@ -32,7 +32,8 @@ inherit
 			make,
 			interface,
 			has_focus,
-			on_focus_changed
+			on_focus_changed,
+			dispose
 		end
 
 	EV_LIST_ITEM_LIST_IMP
@@ -44,7 +45,8 @@ inherit
 			default_key_processing_blocked,
 			on_focus_changed,
 			has_focus,
-			set_focus
+			set_focus,
+			dispose
 		redefine
 			initialize,
 			make,
@@ -182,6 +184,11 @@ feature {EV_LIST_ITEM_IMP, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			-- Gtk combo struct
 
 feature {NONE} -- Implementation
+	dispose is
+			do
+				precursor {EV_LIST_ITEM_LIST_IMP}
+				precursor {EV_TEXT_FIELD_IMP}
+			end
 
 	pixmaps_size_changed is
 			-- The size of the displayed pixmaps has just

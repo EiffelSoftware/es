@@ -25,7 +25,8 @@ inherit
 		redefine
 			interface,
 			initialize,
-			make
+			make,
+			dispose
 		end
 
 	EV_TEXT_FIELD_IMP
@@ -37,7 +38,8 @@ inherit
 			make,
 			interface,
 			initialize,
-			set_text
+			set_text,
+			dispose
 		end
 
 create
@@ -58,6 +60,13 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Implementation
+
+	dispose is
+			do
+				precursor {EV_TEXT_FIELD_IMP}
+				precursor {EV_GAUGE_IMP}
+			end
+
 
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
