@@ -36,6 +36,15 @@ inherit
 			visual_widget,
 			dispose
 		end
+	EV_CARBON_TXN
+		redefine
+			make,
+			interface,
+			initialize,
+			default_key_processing_blocked,
+			visual_widget,
+			dispose
+		end
 	MACTEXTEDITOR_FUNCTIONS_EXTERNAL
 	HIVIEW_FUNCTIONS_EXTERNAL
 
@@ -98,162 +107,19 @@ feature {NONE} -- Initialization
 
 		end
 
-feature -- Access
-
-	frozen kTXNStartOffset: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-
-		"kTXNStartOffset"
-	end
-
-	frozen kTXNEndOffset: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-
-		"kTXNEndOffset"
-	end
-
-	frozen kTXNTextData: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-
-		"kTXNTextData"
-	end
-
-	frozen kTXNTextEditStyleFrameType: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-
-		"kTXNTextEditStyleFrameType"
-	end
-
-	frozen kTXNUnicodeTextFile: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-
-		"kTXNUnicodeTextFile"
-	end
-
-	frozen kTXNSystemDefaultEncoding: INTEGER is
-	external
-		"C inline use <Carbon/Carbon.h>"
-	alias
-
-		"kTXNSystemDefaultEncoding"
-	end
-
-
-
-
-	clipboard_content: STRING_32 is
-			-- `Result' is current clipboard content.
-		do
-
-		end
-
 feature -- Status report
 
 	line_number_from_position (i: INTEGER): INTEGER is
 			-- Line containing caret position `i'.
+		local
+			ret: INTEGER
+			point: POINTER
 		do
-
-		end
-
-	is_editable: BOOLEAN
-			-- Is the text editable by the user?
-
-	has_selection: BOOLEAN is
-			-- Does `Current' have a selection?
-		do
-
-		end
-
-	selection_start: INTEGER is
-			-- Index of the first character selected.
-		do
-
-		end
-
-	selection_end: INTEGER is
-			-- Index of the last character selected.
-		do
-
-		end
-
-feature -- Status setting
-
-	set_editable (flag: BOOLEAN) is
-			-- if `flag' then make the component read-write.
-			-- if not `flag' then make the component read-only.
-		do
-
-		end
-
-	set_caret_position (pos: INTEGER) is
-			-- set current insertion position
-		do
-
-		end
-
-feature -- Basic operation
-
-	select_region (start_pos, end_pos: INTEGER) is
-			-- Select (hilight) the text between
-			-- `start_pos' and `end_pos'. Both `start_pos' and
-			-- `end_pos' are selected.
-		do
-
-		end
-
-	deselect_all is
-			-- Unselect the current selection.
-		do
-
-		end
-
-	delete_selection is
-			-- Delete the current selection.
-		do
-
-		end
-
-	cut_selection is
-			-- Cut `selected_region' by erasing it from
-			-- the text and putting it in the Clipboard to paste it later.
-			-- If `selectd_region' is empty, it does nothing.
-		do
-
-		end
-
-	copy_selection is
-			-- Copy `selected_region' into the Clipboard.
-			-- If the `selected_region' is empty, it does nothing.
-		do
-
-		end
-
-	paste (index: INTEGER) is
-			-- Insert the contents of the clipboard
-			-- at `index' postion of `text'.
-			-- If the Clipboard is empty, it does nothing.
-
-		do
-
+			ret := txnoffset_to_hipoint (entry_widget, i, $point)
+			
 		end
 
 feature -- Access
-
-	text: STRING_32 is
-
-		do
-
-		end
 
 	line (a_line: INTEGER): STRING_32 is
 			-- Returns the content of line `a_line'.
@@ -294,50 +160,10 @@ feature -- Status report
 
 		end
 
-	caret_position: INTEGER is
-			-- Current position of the caret.
-		do
-
-		end
-
 	has_word_wrapping: BOOLEAN
 			-- Does `Current' have word wrapping enabled?
 
 feature -- Status setting
-
-	insert_text (a_text: STRING_GENERAL) is
-		do
-
-		end
-
-	set_text (a_text: STRING_GENERAL) is
-			-- Assign `a_text' to `text'.
-		local
-			a_c_str: C_STRING
-			ret: INTEGER
-		do
-			create a_c_str.make (a_text)
-			ret := txnset_data_external (entry_widget, kTXNTextData, a_c_str.item, a_text.count, kTXNStartOffset, kTXNEndOffset)
-		end
-
-	append_text (a_text: STRING_GENERAL) is
-			-- Append `a_text' to `text'.
-		do
-
-		end
-
-	prepend_text (a_text: STRING_GENERAL) is
-			-- Prepend 'txt' to `text'.
-		do
-
-		end
-
-	delete_text (start, finish: INTEGER) is
-			-- Delete the text between `start' and `finish' index
-			-- both sides include.
-		do
-
-		end
 
 feature -- Basic operation
 
@@ -371,12 +197,6 @@ feature {NONE} -- Implementation
 
 		end
 
-	visual_widget: POINTER is
-			-- Pointer to the GtkWidget representing `Current'
-		do
-			Result := text_view
-		end
-
 	selection_start_internal: INTEGER is
 			-- Index of the first character selected.
 		do
@@ -392,7 +212,7 @@ feature {NONE} -- Implementation
 	dispose is
 			-- Clean up `Current'
 		do
-
+			precursor {EV_CARBON_TXN}
 		end
 
 	on_change_actions is
@@ -413,10 +233,15 @@ feature {NONE} -- Implementation
 
 		end
 
+
+	visual_widget: POINTER is
+			do
+				Result := entry_widget
+			end
+
+
 	text_view: POINTER
 		-- Pointer to the GtkTextView widget
-
-	entry_widget: POINTER
 
 	scrolled_window: POINTER
 		-- Pointer to the GtkScrolledWindow
