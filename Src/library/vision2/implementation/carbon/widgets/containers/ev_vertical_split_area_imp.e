@@ -28,6 +28,8 @@ inherit
 			{NONE} all
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -36,13 +38,20 @@ feature -- initialization
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.
 		local
-			struct_ptr : POINTER
+			control_ptr : POINTER
+			rect : RECT_STRUCT
 			err : INTEGER
 		do
-			base_make (an_interface)
-			
+			base_make( an_interface )
+			create rect.make_new_unshared
+			rect.set_top ( 0)
+			rect.set_left ( 0 )
+			rect.set_right ( 0 )
+			rect.set_bottom ( 0 )
+			err := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
+
 			event_id := app_implementation.get_id (current)  --getting an id from the application
-			set_c_object (struct_ptr)
+			set_c_object (control_ptr)
 		end
 
 feature {EV_ANY_I} -- Implementation

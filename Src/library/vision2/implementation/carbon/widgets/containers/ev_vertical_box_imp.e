@@ -112,8 +112,8 @@ feature -- Implementation
 		do
 			-- Get initial positions right
 			create a_rect.make_new_unshared
-			create a_size.make_new_unshared
-			create a_point.make_new_unshared
+			create a_size.make_shared ( a_rect.size )
+			create a_point.make_shared ( a_rect.origin )
 			-- Set height of userpane so that it can accomodate all widgets + padding
 			old_height := height -- save old height
 			initial_control_height := 20
@@ -137,8 +137,6 @@ feature -- Implementation
 					a_point.set_y ( (control_height + padding) * (j-1) )
 					a_size.set_width ( width )
 					a_size.set_height ( control_height )
-					a_rect.set_origin ( a_point.item )
-					a_rect.set_size ( a_size.item )
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
 					j := j + 1
 			end
