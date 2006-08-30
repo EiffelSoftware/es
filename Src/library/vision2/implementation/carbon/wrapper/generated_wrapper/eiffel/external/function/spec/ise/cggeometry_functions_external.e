@@ -7,7 +7,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float):CGPoint*"
 		alias
-			"ewg_function_CGPointMake()"
+			"ewg_function_CGPointMake"
 		end
 
 	frozen cgpoint_make_address_external: POINTER is
@@ -22,7 +22,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float):CGSize*"
 		alias
-			"ewg_function_CGSizeMake()"
+			"ewg_function_CGSizeMake"
 		end
 
 	frozen cgsize_make_address_external: POINTER is
@@ -37,7 +37,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float, float, float):CGRect*"
 		alias
-			"ewg_function_CGRectMake()"
+			"ewg_function_CGRectMake"
 		end
 
 	frozen cgrect_make_address_external: POINTER is
@@ -217,7 +217,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectStandardize()"
+			"ewg_function_CGRectStandardize"
 		end
 
 	frozen cgrect_standardize_address_external: POINTER is
@@ -277,7 +277,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, float, float):CGRect*"
 		alias
-			"ewg_function_CGRectInset()"
+			"ewg_function_CGRectInset"
 		end
 
 	frozen cgrect_inset_address_external: POINTER is
@@ -292,7 +292,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectIntegral()"
+			"ewg_function_CGRectIntegral"
 		end
 
 	frozen cgrect_integral_address_external: POINTER is
@@ -307,7 +307,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectUnion()"
+			"ewg_function_CGRectUnion"
 		end
 
 	frozen cgrect_union_address_external: POINTER is
@@ -322,7 +322,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectIntersection()"
+			"ewg_function_CGRectIntersection"
 		end
 
 	frozen cgrect_intersection_address_external: POINTER is
@@ -337,7 +337,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, float, float):CGRect*"
 		alias
-			"ewg_function_CGRectOffset()"
+			"ewg_function_CGRectOffset"
 		end
 
 	frozen cgrect_offset_address_external: POINTER is
