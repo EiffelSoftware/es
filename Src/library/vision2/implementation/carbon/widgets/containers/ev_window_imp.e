@@ -95,8 +95,8 @@ feature {NONE} -- Initialization
 			rect.set_left (45)
 			rect.set_right (46)
 			rect.set_top (45)
-			window_attributes := ({MACWINDOWS_ANON_ENUMS}.kwindowliveresizeattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandarddocumentattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowCompositingAttribute)
-	   
+			window_attributes := ({MACWINDOWS_ANON_ENUMS}.kwindowliveresizeattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandarddocumentattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardfloatingattributes).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowstandardhandlerattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kwindowinwindowmenuattribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowCompositingAttribute).bit_or({MACWINDOWS_ANON_ENUMS}.kWindowMetalAttribute)
+
 			res := create_new_window_external({MACWINDOWS_ANON_ENUMS}.kdocumentwindowclass, window_attributes, rect.item, $ptr)
 			res := create_root_control_external( ptr, $root_control_ptr )
 			set_c_object (ptr)
