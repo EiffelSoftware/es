@@ -153,7 +153,6 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	create_change_actions: EV_NOTIFY_ACTION_SEQUENCE is
 		do
 			create Result
-			--real_signal_connect (entry_widget, once "changed", agent  (App_implementation.gtk_marshal).text_component_change_intermediary (c_object), Void)
 		end
 
 	stored_text: STRING_32

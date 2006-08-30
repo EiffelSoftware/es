@@ -1,10 +1,10 @@
 indexing
-	description: "Eiffel Vision radio button. GTK+ implementation."
+	description: "Eiffel Vision radio button. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
-		
+
 class
 	EV_RADIO_BUTTON_IMP
 
@@ -13,7 +13,7 @@ inherit
 		redefine
 			interface
 		end
-	
+
 	EV_BUTTON_IMP
 		export
 			{NONE}
@@ -34,6 +34,11 @@ inherit
 			widget_object
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -41,7 +46,17 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create radio button.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
+			base_make (an_interface)
+			create rect.make_new_unshared
+			ret := create_radio_button_control_external ( null, rect.item, null, 0, 1, $ptr )
+			set_c_object ( ptr )
+
+			event_id := app_implementation.get_id (current)  --getting an id from the application
 		end
 
 	initialize is
@@ -50,12 +65,12 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Status report
-	
+
 	is_selected: BOOLEAN is
 			-- Is toggle button pressed?
 		do
-		end 
-	
+		end
+
 feature -- Status setting
 
 	enable_select is
@@ -79,18 +94,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_RADIO_BUTTON;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_RADIO_BUTTON_IMP
 

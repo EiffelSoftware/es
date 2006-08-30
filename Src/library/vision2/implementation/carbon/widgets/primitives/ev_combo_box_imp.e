@@ -58,6 +58,11 @@ inherit
 
 	EV_KEY_CONSTANTS
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -65,8 +70,17 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create a combo-box.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
+			base_make (an_interface)
+			create rect.make_new_unshared
+			ret := create_popup_button_control_external ( null, rect.item, null, -12345, 0, 0, 0, 0, $ptr )
+			set_c_object ( ptr )
 
+			event_id := app_implementation.get_id ( current )
 		end
 
 feature {NONE} -- Initialization

@@ -89,8 +89,9 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
-				ret := get_super_control_external ( c_object, $root_control_ptr )
-				ret := hiview_add_subview_external ( root_control_ptr, w.c_object )
+--				ret := get_super_control_external ( c_object, $root_control_ptr )
+--				ret := hiview_add_subview_external ( root_control_ptr, w.c_object )
+				ret := hiview_add_subview_external ( c_object, w.c_object )
 				setup_layout (w.c_object, c_object)
 				on_new_item (w)
 			end

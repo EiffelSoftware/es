@@ -56,6 +56,9 @@ inherit
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -71,10 +74,6 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_left(20)
-			rect.set_right(100)
-			rect.set_bottom(40)
-			rect.set_top (20)
 			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )
 			set_c_object ( struct_ptr )
 

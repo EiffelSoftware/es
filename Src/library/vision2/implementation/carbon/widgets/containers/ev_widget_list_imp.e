@@ -58,6 +58,9 @@ feature {NONE} -- Implementation
 					v_imp_not_void : v_imp /= Void
 				end
 				ret := hiview_add_subview_external ( c_object, v_imp.c_object)
+				check
+					view_added: ret = 0
+				end
 				child_array.go_i_th (i)
 				child_array.put_left (v)
 			end
@@ -79,6 +82,9 @@ feature {NONE} -- Implementation
 			on_removed_item (v_imp)
 
 			ret := hiview_remove_from_superview_external (v_imp.c_object)
+			check
+				view_removed: ret = 0
+			end
 		end
 
 

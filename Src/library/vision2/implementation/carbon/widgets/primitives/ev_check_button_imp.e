@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelVision check button, gtk implementation."
+	description: "EiffelVision check button, Carbon implementation."
 	legal: "See notice at end of class.";
 	status: "See notice at end of class.";
 	id: "$Id$";
@@ -25,6 +25,11 @@ inherit
 			initialize
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -32,8 +37,17 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create a gtk check button.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
 			base_make (an_interface)
+			create rect.make_new_unshared
+			ret := create_check_box_control_external ( null, rect.item, null, 0, 1, $ptr )
+			set_c_object ( ptr )
+
+			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is
@@ -50,7 +64,6 @@ feature -- Element change
 			-- Redefined because we want the text to be left-aligned.
 		do
 			precursor {EV_TOGGLE_BUTTON_IMP}(txt)
-
 		end
 
 feature {EV_ANY_I}
@@ -58,18 +71,6 @@ feature {EV_ANY_I}
 	interface: EV_CHECK_BUTTON;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_CHECK_BUTTON_IMP
 
