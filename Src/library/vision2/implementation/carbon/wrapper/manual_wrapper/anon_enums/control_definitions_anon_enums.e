@@ -5,6 +5,13 @@ class
 	CONTROLDEFINITIONS_ANON_ENUMS
 
 feature -- Carbon constants
+	
+	frozen kControlEntireControl: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kControlEntireControl"
+	end	
 
 	frozen kControlTabListResType: INTEGER is
 	external
