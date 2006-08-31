@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelVision drawing area. GTK implementation."
+	description: "EiffelVision drawing area. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -53,9 +53,21 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create an empty drawing area.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
+			cfstring: EV_CARBON_CF_STRING
 		do
 			base_make (an_interface)
-			set_c_object ($current)
+			create rect.make_new_unshared
+			rect.set_right (200)
+			rect.set_bottom (20)
+			create cfstring.make_unshared_with_eiffel_string ("NOT IMPLEMENTED :D")
+			ret := create_static_text_control_external( null, rect.item, cfstring.item, null, $ptr )
+			set_c_object ( ptr )
+
+			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is

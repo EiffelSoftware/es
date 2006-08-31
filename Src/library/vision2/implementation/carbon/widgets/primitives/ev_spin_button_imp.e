@@ -56,10 +56,8 @@ feature {NONE} -- Implementation
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_left(60)
-			rect.set_right(150)
-			rect.set_bottom(90)
-			rect.set_top (60)
+			rect.set_right (200)
+			rect.set_bottom (20)
 			create cfstring.make_unshared_with_eiffel_string ("NOT IMPLEMENTED :D")
 			ret := create_static_text_control_external( null, rect.item, cfstring.item, null, $ptr )
 			set_c_object ( ptr )
