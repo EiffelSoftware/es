@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision spin button. GTK+ Implementation."
+	description: "Eiffel Vision spin button. Carbon Implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -56,8 +56,8 @@ feature {NONE} -- Implementation
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_right (200)
-			rect.set_bottom (20)
+			rect.set_right (300)
+			rect.set_bottom (30)
 			create cfstring.make_unshared_with_eiffel_string ("NOT IMPLEMENTED :D")
 			ret := create_static_text_control_external( null, rect.item, cfstring.item, null, $ptr )
 			set_c_object ( ptr )
@@ -91,18 +91,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_SPIN_BUTTON;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_SPIN_BUTTON_IMP
 

@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelVision2 toolbar, implementation interface."
+	description: "EiffelVision2 toolbar, carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -30,12 +30,15 @@ inherit
 			initialize
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature {NONE} -- Implementation
-
-	needs_event_box: BOOLEAN is False
 
 	remove_i_th (i: INTEGER) is
 			-- Remove item at `i'-th position.
@@ -44,8 +47,21 @@ feature {NONE} -- Implementation
 
 	make (an_interface: like interface) is
 			-- Create the tool-bar.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
+			cfstring: EV_CARBON_CF_STRING
 		do
 			base_make (an_interface)
+			create rect.make_new_unshared
+			rect.set_right (300)
+			rect.set_bottom (30)
+			create cfstring.make_unshared_with_eiffel_string ("NOT IMPLEMENTED :D")
+			ret := create_static_text_control_external( null, rect.item, cfstring.item, null, $ptr )
+			set_c_object ( ptr )
+
+			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is

@@ -46,6 +46,11 @@ inherit
 			interface
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+		
 create
 	make
 

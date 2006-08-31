@@ -93,7 +93,7 @@ feature -- Element change
 				check
 					view_added: ret = 0
 				end
---				setup_layout (w.c_object, c_object)
+				setup_layout (w.c_object, c_object)
 				on_new_item (w)
 
 			--	ret := hiview_set_visible_external (w.c_object, 0)
