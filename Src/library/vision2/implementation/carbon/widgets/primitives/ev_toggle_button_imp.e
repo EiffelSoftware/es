@@ -57,6 +57,7 @@ feature -- Status setting
 	enable_select is
 			-- Set `is_selected' `True'.
 		do
+			
 		end
 
 	disable_select is

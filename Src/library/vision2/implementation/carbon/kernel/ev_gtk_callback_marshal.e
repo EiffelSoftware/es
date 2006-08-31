@@ -17,11 +17,6 @@ inherit
 			is_equal
 		end
 
-	EV_GTK_KEY_CONVERSION
-		undefine
-			default_create
-		end
-
 	EV_INTERMEDIARY_ROUTINES
 		undefine
 			default_create

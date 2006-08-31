@@ -23,7 +23,8 @@ inherit
 			make
 		redefine
 			interface,
-			initialize
+			initialize,
+			child_offset_top
 		end
 
 	EV_FONTABLE_IMP
@@ -57,11 +58,8 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_left (20)
 			rect.set_right (100)
-			rect.set_bottom (40)
-			rect.set_top (20)
---			ret := create_placard_control_external ( null, rect.item, $ptr )
+			rect.set_bottom (50)
 			ret := create_group_box_control_external (null, rect.item, null, 1, $ptr)
 			set_c_object ( ptr )
 
@@ -74,6 +72,18 @@ feature {NONE} -- Initialization
 		--	set_style (Ev_frame_etched_in)
 			align_text_left
 			Precursor {EV_CELL_IMP}
+		end
+
+feature -- layout information
+
+	child_offset_top: INTEGER is
+			--
+		do
+			if text.is_empty then
+				Result := 8
+			else
+				Result := 18
+			end
 		end
 
 feature -- Access

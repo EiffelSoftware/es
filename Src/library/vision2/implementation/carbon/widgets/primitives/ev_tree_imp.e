@@ -92,9 +92,7 @@ feature {NONE} -- Initialization
 			create rect.make_new_unshared
 			rect.set_right (100)
 			rect.set_bottom (100)
-			app_implementation.windows.start
-			window ?= app_implementation.windows.item.implementation -- HACK
-			ret := create_data_browser_control_external (window.c_object, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
+			ret := create_data_browser_control_external (null, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
 			set_c_object (ptr)
 
 			ret := set_data_browser_has_scroll_bars_external (ptr, 0, 1) -- set a vertical scrollbar only

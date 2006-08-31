@@ -28,6 +28,9 @@ inherit
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -49,7 +52,7 @@ feature {NONE} -- Initialization
 			rect.set_bottom ( 0 )
 			err := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
 			set_c_object ( control_ptr )
-			event_id:=app_implementation.get_id (current)  --getting an id from the application
+			event_id := app_implementation.get_id (current)
 
 			err := create_user_pane_control_external ( null, rect.item, 0, $dummy_control )
 			err := hiview_add_subview_external ( c_object, dummy_control )

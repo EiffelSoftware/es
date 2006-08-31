@@ -43,7 +43,6 @@ feature {NONE} -- Initialization
 			-- Create `shared_pointer' for radio groups.
 		do
 			Precursor {EV_WIDGET_IMP}
-			create shared_pointer
 		end
 
 feature -- Access
@@ -73,6 +72,7 @@ feature -- Element change
 			w: EV_WIDGET_IMP
 			ret: INTEGER
 			root_control_ptr: POINTER
+			cfstring: EV_CARBON_CF_STRING
 		do
 			if not interface.is_empty then
 				w ?= interface.item.implementation
@@ -87,23 +87,54 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
---				ret := get_super_control_external ( c_object, $root_control_ptr )
---				ret := hiview_add_subview_external ( root_control_ptr, w.c_object )
 				ret := hiview_add_subview_external ( c_object, w.c_object )
 				check
 					view_added: ret = 0
 				end
-				setup_layout (w.c_object, c_object)
-				on_new_item (w)
 
-			--	ret := hiview_set_visible_external (w.c_object, 0)
-			--	ret := hiview_set_needs_display_external (w.c_object, 1)
+--				create cfstring.make_unshared (hiview_copy_text_external (w.c_object))
+--				print (cfstring.string + " " + w.generator +" attached to ")
+--				create cfstring.make_unshared (hiview_copy_text_external (c_object))
+--				print (cfstring.string + " " + generator + "%N")
+
+				setup_layout (w)
+
+				on_new_item (w)
+--				print (current.height.out + " - " +  w.height.out + "%N")
 			end
 		end
 
+		child_offset_top: INTEGER is
+				-- The offset a child needs to have from this type of container
+			do
+				Result := 5
+			end
 
-		setup_layout (a_control, a_container: POINTER) is
-				--
+
+		setup_layout (a_widget: EV_WIDGET_IMP) is
+				-- Sets the child control's size to the container site minus some spacing
+		local
+			a_rect : CGRECT_STRUCT
+			a_size : CGSIZE_STRUCT
+			a_point : CGPOINT_STRUCT
+			ret: INTEGER
+		do
+			-- Get initial positions right
+			create a_rect.make_new_unshared
+			create a_size.make_shared ( a_rect.size )
+			create a_point.make_shared ( a_rect.origin )
+
+			a_point.set_x (5)
+			a_point.set_y (child_offset_top)
+			a_size.set_width (width - 10)
+			a_size.set_height (height - 8 - child_offset_top)
+			ret := hiview_set_frame_external (a_widget.c_object, a_rect.item)
+
+			setup_automatic_layout (a_widget.c_object, c_object)
+		end
+
+		setup_automatic_layout (a_control, a_container: POINTER) is
+				-- Make the child follow it's parent when it's reszed
 			external
 				"C inline use <Carbon/Carbon.h>"
 			alias
@@ -112,18 +143,14 @@ feature -- Element change
 						HILayoutInfo LayoutInfo;
 						LayoutInfo.version = kHILayoutInfoVersionZero;
 						HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
-						LayoutInfo.scale.x.toView = $a_container;
-						LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
-						LayoutInfo.scale.x.ratio = 1.0;
-						LayoutInfo.scale.y.toView = $a_container;
-						LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-						LayoutInfo.scale.y.ratio = 1.0;
-						LayoutInfo.position.x.toView = $a_container;
-						LayoutInfo.position.x.kind = kHILayoutPositionLeft;
-						LayoutInfo.position.x.offset = 0.0;
-						LayoutInfo.position.y.toView = $a_container;
-						LayoutInfo.position.y.kind = kHILayoutPositionTop;
-						LayoutInfo.position.y.offset = 0.0;
+						LayoutInfo.binding.left.toView = $a_container;
+						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+						LayoutInfo.binding.right.toView = $a_container;
+						LayoutInfo.binding.right.kind = kHILayoutBindRight;
+						LayoutInfo.binding.top.toView = $a_container;
+						LayoutInfo.binding.top.kind = kHILayoutBindTop;
+						LayoutInfo.binding.bottom.toView = $a_container;
+						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
 						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 						HIViewApplyLayout( $a_control );
 					}
@@ -154,32 +181,6 @@ feature -- Measurement
 					Result := item.minimum_height
 				end
 			end
-		end
-
-feature {EV_RADIO_BUTTON_IMP, EV_CONTAINER_IMP} -- Access
-
-	shared_pointer: POINTER_REF
-			-- Reference to `radio_group'. Used to share the
-			-- pointer `radio_group' with merged containers even when
-			-- its value is still `NULL'.
-
-	set_shared_pointer (p: POINTER_REF) is
-			-- Assign `p' to `shared_pointer'.
-		do
-			shared_pointer.set_item (p)
-		end
-
-	set_radio_group (p: POINTER) is
-			-- Assign `p' to `radio_group'.
-		do
-			shared_pointer.set_item (p)
-		end
-
-	radio_group: POINTER is
-			-- GSList with all radio items of this container.
-			-- `Current' Shares reference with merged containers.
-		do
-			Result := shared_pointer.item
 		end
 
 feature -- Status setting

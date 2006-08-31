@@ -23,8 +23,6 @@ inherit
 			initialize
 		end
 
-	EV_GTK_DEPENDENT_ROUTINES
-
 create
 	make
 
@@ -118,11 +116,6 @@ feature -- Basic operation
 		do
 		end
 
-	key_conversion: EV_GTK_KEY_CONVERSION is
-			-- Utilities for converting X key codes.
-		once
-		end
-
 feature -- Measurement
 
 	horizontal_resolution: INTEGER is
@@ -142,33 +135,6 @@ feature -- Measurement
 
 	width: INTEGER is
 			-- Horizontal size in pixels.
-		do
-		end
-
-feature {NONE} -- Externals (XTEST extension)
-
-	frozen x_keysym_to_keycode (a_display: POINTER; a_keycode: INTEGER): INTEGER is
-			-- (from EV_C_GTK)
-		do
-		end
-
-	frozen x_test_fake_button_event (a_display: POINTER; a_button: INTEGER; a_is_press: BOOLEAN; a_delay: INTEGER): BOOLEAN is
-			-- (from EV_C_GTK)
-		do
-		end
-
-	frozen x_test_fake_key_event (a_display: POINTER; a_keycode: INTEGER; a_is_press: BOOLEAN; a_delay: INTEGER): BOOLEAN is
-			-- (from EV_C_GTK)
-		do
-		end
-
-	frozen x_test_fake_motion_event (a_display: POINTER; a_scr_num, a_x, a_y, a_delay: INTEGER): BOOLEAN is
-			-- (from EV_C_GTK)
-		do
-		end
-
-	frozen x_test_query_extension (a_display, a_event_base, a_error_base, a_major_version, a_minor_version: POINTER): BOOLEAN is
-			-- (from EV_C_GTK)
 		do
 		end
 

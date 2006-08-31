@@ -81,8 +81,6 @@ feature {NONE} -- Initialization
 			rect.set_bottom(20)
 			ret := create_push_button_control_external( null, rect.item, null, $c_object )
 
-
-
 			event_id := app_implementation.get_id (current)
 		end
 
