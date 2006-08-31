@@ -21,14 +21,12 @@ inherit
 			default_key_processing_blocked
 		redefine
 			interface,
-			visual_widget,
 			on_key_event
 		end
 
 	EV_TEXT_COMPONENT_IMP
 		redefine
 			interface,
-			visual_widget,
 			create_change_actions,
 			on_key_event,
 			set_minimum_width_in_characters
@@ -36,8 +34,7 @@ inherit
 
 	EV_FONTABLE_IMP
 		redefine
-			interface,
-			visual_widget
+			interface
 		end
 
 	EV_TEXT_FIELD_ACTION_SEQUENCES_IMP
@@ -47,6 +44,7 @@ inherit
 		redefine
 			create_return_actions
 		end
+
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
 		export
 			{NONE} all
@@ -56,8 +54,6 @@ create
 	make
 
 feature {NONE} -- Initialization
-
-	needs_event_box: BOOLEAN is do Result := True end
 
 	make (an_interface: like interface) is
 			-- Create a gtk entry.

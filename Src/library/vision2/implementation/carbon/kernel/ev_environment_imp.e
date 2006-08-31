@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision Environment. GTK implementation."
+		"Eiffel Vision Environment. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	keywords: "environment, global, system"

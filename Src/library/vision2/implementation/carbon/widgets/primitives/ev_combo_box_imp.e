@@ -39,7 +39,6 @@ inherit
 	EV_LIST_ITEM_LIST_IMP
 		undefine
 			set_default_colors,
-			visual_widget,
 			destroy,
 			on_key_event,
 			default_key_processing_blocked,

@@ -48,11 +48,6 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	container_widget: POINTER is
-		do
-			Result := visual_widget
-		end
-
 	client_width: INTEGER is
 			-- Width of the client area of container.
 			-- Redefined in children.
@@ -86,14 +81,23 @@ feature -- Element change
 					item_has_implementation: w /= Void
 				end
 				ret := hiview_remove_from_superview_external (w.c_object)
+				check
+					view_removed: ret = 0
+				end
 			end
 			if v /= Void then
 				w ?= v.implementation
 --				ret := get_super_control_external ( c_object, $root_control_ptr )
 --				ret := hiview_add_subview_external ( root_control_ptr, w.c_object )
 				ret := hiview_add_subview_external ( c_object, w.c_object )
-				setup_layout (w.c_object, c_object)
+				check
+					view_added: ret = 0
+				end
+--				setup_layout (w.c_object, c_object)
 				on_new_item (w)
+
+			--	ret := hiview_set_visible_external (w.c_object, 0)
+			--	ret := hiview_set_needs_display_external (w.c_object, 1)
 			end
 		end
 

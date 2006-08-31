@@ -18,8 +18,6 @@ inherit
 		export
 			{NONE}
 				c_object
-			{EV_CONTAINER_IMP}
-				visual_widget
 		undefine
 			default_alignment
 		redefine

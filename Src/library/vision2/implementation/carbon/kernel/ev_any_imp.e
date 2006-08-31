@@ -85,13 +85,6 @@ feature {NONE} -- Implementation
 			c_object_detached: c_object = NULL
 		end
 
-feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Access
-
-	visual_widget: POINTER is
-			-- Pointer to the widget viewed by user.
-		do
-		end
-
 feature {EV_INTERMEDIARY_ROUTINES, EV_ANY_I, EV_STOCK_PIXMAPS_IMP} -- Implementation
 
 		App_implementation: EV_APPLICATION_IMP is

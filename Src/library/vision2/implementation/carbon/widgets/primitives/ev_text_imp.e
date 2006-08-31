@@ -26,25 +26,24 @@ inherit
 			create_change_actions,
 			dispose,
 			text_length,
-			default_key_processing_blocked,
-			visual_widget
+			default_key_processing_blocked
 		end
 
 	EV_FONTABLE_IMP
 		redefine
 			interface,
-			visual_widget,
 			dispose
 		end
+
 	EV_CARBON_TXN
 		redefine
 			make,
 			interface,
 			initialize,
 			default_key_processing_blocked,
-			visual_widget,
 			dispose
 		end
+		
 	MACTEXTEDITOR_FUNCTIONS_EXTERNAL
 	HIVIEW_FUNCTIONS_EXTERNAL
 

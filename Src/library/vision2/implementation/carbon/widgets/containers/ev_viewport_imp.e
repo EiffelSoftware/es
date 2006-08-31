@@ -23,8 +23,6 @@ inherit
 		redefine
 			interface,
 			make,
-			container_widget,
-			visual_widget,
 			on_removed_item
 		end
 
@@ -153,14 +151,6 @@ feature {NONE} -- Implementation
 		end
 
 	internal_x_offset, internal_y_offset: INTEGER
-
-	horizontal_adjustment: POINTER is
-		do
-		end
-
-	vertical_adjustment: POINTER is
-		do
-		end
 
 	internal_set_value_from_adjustment (l_adj: POINTER; a_value: INTEGER) is
 			-- Set `value' of adjustment `l_adj' to `a_value'.

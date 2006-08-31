@@ -22,7 +22,6 @@ inherit
 	EV_LIST_ITEM_LIST_IMP
 		redefine
 			interface,
-			visual_widget,
 			initialize,
 			row_from_y_coord,
 			on_mouse_button_event,

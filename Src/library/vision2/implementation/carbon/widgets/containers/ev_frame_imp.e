@@ -91,26 +91,6 @@ feature -- Element change
 		do
 		end
 
-feature -- Element change
-
---	set_text (a_text: STRING_GENERAL) is
---			-- set the `text' of the frame
---		local
---			a_cs: EV_CARBON_CF_STRING
---		do
---			internal_text := a_text.twin
---			create a_cs.make_unshared_with_eiffel_string (a_text)
---			--hiview_set_text_external()
---		end
-
-feature {NONE} -- Implementation
-
-	internal_text: STRING_32
-		-- Text used to represent frame's label text
-
-	internal_alignment_code: INTEGER
-		-- Code used to represent label alignment
-
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_FRAME;

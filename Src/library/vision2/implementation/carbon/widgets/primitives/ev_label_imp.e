@@ -56,10 +56,8 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_left(60)
 			rect.set_right(150)
 			rect.set_bottom(90)
-			rect.set_top (60)
 
 			ret := create_static_text_control_external( null, rect.item, null, null, $ptr )
 			set_c_object ( ptr )

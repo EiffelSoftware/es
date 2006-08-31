@@ -21,8 +21,6 @@ inherit
 
 	EV_VIEWPORT_IMP
 		redefine
-			horizontal_adjustment,
-			vertical_adjustment,
 			interface,
 			make,
 			x_offset,
@@ -52,7 +50,7 @@ feature {NONE} -- Initialization
 			ret := hiscroll_view_create_external ({HIVIEW_ANON_ENUMS}.kHIScrollViewValidOptions, $ptr)
 			set_c_object (ptr)
 
-			ret := hiscroll_view_set_scroll_bar_auto_hide_external (c_object, 1)
+--			ret := hiscroll_view_set_scroll_bar_auto_hide_external (c_object, 1)
 		end
 
 feature -- Access
@@ -119,7 +117,21 @@ feature -- Element change
 	hide_horizontal_scroll_bar is
 			-- Do not display horizontal scroll bar.
 		do
+			print (hiview_count_subviews_external (c_object).out + "%N")
 		end
+
+--	dump_info (p: POINTER)
+--		external
+--			"C inline use <Files.h>"
+--		alias
+--			"[
+--				{
+--					FSSpec f;
+--					FSMakeFSSpec (0, 0, "window_dump", &f);
+--					DumpControlHirarchy (GetControlOwner_external ( $p ), f);
+--				}
+--			]"
+--		end
 
 	show_vertical_scroll_bar is
 			-- Display vertical scroll bar.
@@ -133,20 +145,10 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	fixed_widget: POINTER
-		-- Pointer to the fixed widget used for central positioning when `item' cannot be scrolled.
-
-	fixed_width: INTEGER is
-			-- Fixed Horizontal size measured in pixels.
-		do
-		end
-
 	fixed_height: INTEGER is
 			-- Fixed Vertical size measured in pixels.
 		do
 		end
-
-	scrolled_window: POINTER
 
 	on_size_allocate (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
 			-- Set item in center of `Current' if smaller.
@@ -155,16 +157,6 @@ feature {NONE} -- Implementation
 
 	child_has_resized (item_imp: EV_WIDGET_IMP) is
 			-- If child has resized and smaller than parent then set position in center of `Current'.
-		do
-		end
-
-	horizontal_adjustment: POINTER is
-			-- Pointer to the adjustment struct of the hscrollbar
-		do
-		end
-
-	vertical_adjustment: POINTER is
-			-- Pointer to the adjustment struct of the vscrollbar
 		do
 		end
 

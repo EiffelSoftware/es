@@ -34,7 +34,6 @@ inherit
 			ready_for_pnd_menu,
 			set_to_drag_and_drop,
 			create_pointer_motion_actions,
-			visual_widget,
 			on_pointer_motion
 		end
 
@@ -53,6 +52,15 @@ inherit
 	EV_MULTI_COLUMN_LIST_ACTION_SEQUENCES_IMP
 
 	EV_PND_DEFERRED_ITEM_PARENT
+
+	EV_CARBON_DATABROWSER
+		undefine
+			destroy
+		redefine
+			make,
+			initialize,
+			interface
+		end
 
 create
 	make
