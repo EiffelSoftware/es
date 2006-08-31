@@ -27,14 +27,17 @@ inherit
 			{NONE} all
 		end
 
+	CONTROLS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Create the horizontal scroll bar.
-		local
-			err : INTEGER
+			-- deferred creation
 		do
-			base_make (an_interface)
+			base_make ( an_interface )
 		end
 
 	initialize is
@@ -59,7 +62,7 @@ feature -- Access
 	value: INTEGER is
 			-- Current value of the gauge.
 		do
-			Result := get_control32bit_value_external ( c_object )
+			Result := get_control32bit_value_external ( gauge_ptr )
 		end
 
 	step: INTEGER
@@ -99,7 +102,7 @@ feature -- Element change
 	set_value (a_value: INTEGER) is
 			-- Set `value' to `a_value'.
 		do
-			set_control32bit_value_external ( c_object, a_value )
+			set_control32bit_value_external ( gauge_ptr, a_value )
 		ensure then
 			step_same: step = old step
 			leap_same: leap = old leap
@@ -133,8 +136,8 @@ feature -- Element change
 			elseif temp_value < value_range.lower then
 				temp_value := value_range.lower
 			end
-			set_control32bit_minimum_external ( c_object, value_range.lower )
-			set_control32bit_maximum_external ( c_object, value_range.upper )
+			set_control32bit_minimum_external ( gauge_ptr, value_range.lower )
+			set_control32bit_maximum_external ( gauge_ptr, value_range.upper )
 
 			set_value ( temp_value )
 		end
@@ -142,6 +145,11 @@ feature -- Element change
 feature {NONE} -- Implementation
 
 	interface: EV_GAUGE
+
+feature {NONE} -- Implementation
+
+	gauge_ptr : POINTER
+			-- Pointer to the real gauge control, c_object points to a userpane
 
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 

@@ -46,8 +46,8 @@ feature -- initialization
 			create rect.make_new_unshared
 			rect.set_top ( 0)
 			rect.set_left ( 0 )
-			rect.set_right ( 0 )
-			rect.set_bottom ( 0 )
+			rect.set_right ( 100 )
+			rect.set_bottom ( 100 )
 			err := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
 
 			event_id := app_implementation.get_id (current)  --getting an id from the application

@@ -1,5 +1,5 @@
-indexing 
-	description: "Eiffel Vision vertical progress bar. GTK+ implementation."
+indexing
+	description: "Eiffel Vision vertical progress bar. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -16,25 +16,45 @@ inherit
 
 	EV_PROGRESS_BAR_IMP
 		redefine
-			initialize,
 			interface
 		end
 
 create
 	make
 
-feature {NONE} -- Initialization
+feature {NONE} -- Implementation
 
-	initialize is
-			-- Initialize `Current'.
-		do
+	setup_binding ( user_pane, progress_bar : POINTER ) is
+			-- setup layout binding
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $progress_bar, &LayoutInfo );
+					
+					LayoutInfo.position.x.toView = $user_pane;
+					LayoutInfo.position.x.kind = kHILayoutPositionCenter;
+					LayoutInfo.position.x.offset = -10;
+					
+					LayoutInfo.position.y.toView = $user_pane;
+					LayoutInfo.position.y.kind = kHILayoutPositionTop;
+					LayoutInfo.position.y.offset = 0.0;
+					
+					LayoutInfo.scale.y.toView = $user_pane;
+					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.y.ratio = 1.0;
+					
+					HIViewSetLayoutInfo( $progress_bar, &LayoutInfo );
+					HIViewApplyLayout( $progress_bar );
+				}
+			]"
 		end
-			
+
+
 feature {EV_ANY_I} -- Implementation
-
-	gtk_progress_bottom_to_top_enum: INTEGER is
-		do
-		end
 
 	interface: EV_VERTICAL_PROGRESS_BAR;
 

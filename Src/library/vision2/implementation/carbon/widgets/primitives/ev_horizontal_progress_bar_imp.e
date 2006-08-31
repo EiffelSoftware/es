@@ -16,25 +16,44 @@ inherit
 
 	EV_PROGRESS_BAR_IMP
 		redefine
-			initialize,
 			interface
 		end
 
 create
 	make
 
-feature {NONE} -- Initialization
+feature {NONE} -- Implementation
 
-	initialize is
-			-- Initialize `Current'.
-		do
-			Precursor {EV_PROGRESS_BAR_IMP}
-
+	setup_binding ( user_pane, progress_bar : POINTER ) is
+			-- setup layout binding
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $progress_bar, &LayoutInfo );
+					
+					LayoutInfo.position.x.toView = $user_pane;
+					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
+					LayoutInfo.position.x.offset = 0.0;
+					
+					LayoutInfo.position.y.toView = $user_pane;
+					LayoutInfo.position.y.kind = kHILayoutPositionCenter;
+					LayoutInfo.position.y.offset = -10;
+					
+					LayoutInfo.scale.x.toView = $user_pane;
+					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.x.ratio = 1.0;
+					
+					HIViewSetLayoutInfo( $progress_bar, &LayoutInfo );
+					HIViewApplyLayout( $progress_bar );
+				}
+			]"
 		end
 
 feature {EV_ANY_I} -- Implementation
-
-
 
 	interface: EV_HORIZONTAL_PROGRESS_BAR;
 

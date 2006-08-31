@@ -39,21 +39,21 @@ feature {NONE} -- Initialization
 			target, h_ret : POINTER
 		do
 			Precursor {EV_CONTAINER_IMP}
-			create event_array.make_new_unshared ( 5 )
+			create event_array.make_new_unshared ( 4 )
+			--event_array.item ( 0 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
+			--event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw )
+
 			event_array.item ( 0 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw )
+			event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlHitTest )
 
 			event_array.item ( 1 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 1 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlHitTest )
+			event_array.item ( 1 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlBoundsChanged )
 
 			event_array.item ( 2 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 2 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlBoundsChanged )
+			event_array.item ( 2 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlGetPartRegion )
 
 			event_array.item ( 3 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 3 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlGetPartRegion )
-
-			event_array.item ( 4 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 4 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlTrack )
+			event_array.item ( 3 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlTrack )
 
 			target := hiobject_get_event_target_external ( c_object )
 			h_ret := app_implementation.install_event_handlers ( event_id, target, event_array )
@@ -63,7 +63,6 @@ feature {NONE} -- Initialization
 			create splitter_rect.make_new_unshared
 
 			split_ratio := 0.5
-
 		end
 
 feature -- Access
@@ -87,8 +86,8 @@ feature -- Access
 			err := hiview_add_subview_external ( c_object, item_imp.c_object )
 			subview_a := item_imp.c_object
 			first := an_item
-			calculate_rects
-			adjust_subviews
+--			calculate_rects
+--			adjust_subviews
 		end
 
 set_second (an_item: like item) is
@@ -104,8 +103,9 @@ set_second (an_item: like item) is
 			err := hiview_add_subview_external ( c_object, item_imp.c_object )
 			subview_b := item_imp.c_object
 			second := an_item
-			calculate_rects
-			adjust_subviews
+--			calculate_rects
+--			adjust_subviews
+			setup_binding( subview_a.item, subview_b.item, c_object )
 		end
 
 	prune (an_item: like item) is
@@ -178,27 +178,37 @@ feature {NONE} -- Implementation
 			rect : CGRECT_STRUCT
 			size : CGSIZE_STRUCT
 			blubb : INTEGER
+			ptr : POINTER
 		do
 			err := hiview_set_frame_external ( subview_a.item, rect_a.item )
 			err := hiview_set_frame_external ( subview_b.item, rect_b.item )
-			err := hiview_set_needs_display_external ( c_object, ( true ).to_integer )
+			--err := hiview_set_needs_display_external ( c_object, ( true ).to_integer )
 
-			create rect.make_new_unshared
-			err := hiview_get_frame_external (c_object, rect.item)
-			create size.make_shared ( rect.size )
-			blubb := size.width.rounded
-			blubb := size.height.rounded
+			err := hiview_apply_layout_external ( subview_a )
 
-			err := hiview_get_frame_external (subview_a.item, rect.item)
-			create size.make_shared ( rect.size )
-			blubb := size.width.rounded
-			blubb := size.height.rounded
 
-			blubb := hiview_count_subviews_external ( c_object )
+--			err := hiview_set_zorder_external ( c_object, {HIVIEW_ANON_ENUMS}.khiviewzorderabove, default_pointer)
+--			err := hiview_set_zorder_external ( subview_a, {HIVIEW_ANON_ENUMS}.khiviewzorderabove, default_pointer)
 
-			err := hiview_set_visible_external (c_object, 0 )
-			err := hiview_set_visible_external (subview_a.item, 0 )
-			err := hiview_set_visible_external (subview_b.item, 0 )
+--			ptr := hiview_get_superview_external (c_object )
+
+--			create rect.make_new_unshared
+--			err := hiview_get_frame_external (c_object, rect.item)
+--			create size.make_shared ( rect.size )
+--			blubb := size.width.rounded
+--			blubb := size.height.rounded
+
+--			err := hiview_get_frame_external (subview_a.item, rect.item)
+--			create size.make_shared ( rect.size )
+--			blubb := size.width.rounded
+--			blubb := size.height.rounded
+
+--			blubb := hiview_count_subviews_external ( c_object )
+--			blubb := hiview_count_subviews_external ( ptr )
+
+--			err := hiview_set_visible_external (c_object, 0 )
+--			err := hiview_set_visible_external (subview_a.item, 0 )
+--			err := hiview_set_visible_external (subview_b.item, 0 )
 
 		end
 
@@ -239,52 +249,52 @@ feature {NONE} -- Implementation
 			rect_b_origin.set_y ( splitter_rect_origin.y )
 		end
 
---		setup_binding ( view_a, view_b, parent_control : POINTER; splitter_width : INTEGER ) is
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---					HIRect bounds;
---					HIViewGetBounds( $parent_control, &bounds );
---					HIRect rectA, rectB;
---					
---					rectA = bounds;
---					rectA.size.width = (int) (( rectA.size.width - $splitter_width ) * 0.5 );
---					
---					rectB = rectA;
---					rectB.origin.x = rectA.origin.x + rectA.size.width + $splitter_width;
---					rectB.size.width = bounds.size.width - $splitter_width - rectA.size.width;
---					
---					HIViewSetFrame( $view_a, &rectA );
---					HIViewSetFrame( $view_b, &rectB );
---				
---					HILayoutInfo LayoutInfo;
---					LayoutInfo.version = kHILayoutInfoVersionZero;
---					HIViewGetLayoutInfo ( $view_a, &LayoutInfo );
---					
---					LayoutInfo.position.x.toView = NULL;
---					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
---					LayoutInfo.position.x.offset = 0.0;
+		setup_binding ( view_a, view_b, parent_control : POINTER ) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $view_a, &LayoutInfo );
+					
+					LayoutInfo.position.x.toView = NULL;
+					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
+					LayoutInfo.position.x.offset = 0.0;
 
---					LayoutInfo.position.y.toView = NULL;
---					LayoutInfo.position.y.kind = kHILayoutPositionTop;
---					LayoutInfo.position.y.offset = 0.0;
---						
---					HIViewSetLayoutInfo( $view_a, &LayoutInfo );
---					
---					LayoutInfo.version = kHILayoutInfoVersionZero;
---					HIViewGetLayoutInfo ( $view_b, &LayoutInfo );
---					
---					LayoutInfo.binding.left.toView = $view_a;
---					LayoutInfo.binding.left.kind = KHILayoutBindRight;
---					LayoutInfo.binding.left.offst = 0;
---					
---					
---										
---				}
---			]"
---		end
+					LayoutInfo.position.y.toView = NULL;
+					LayoutInfo.position.y.kind = kHILayoutPositionTop;
+					LayoutInfo.position.y.offset = 0.0;
+					
+					LayoutInfo.scale.x.toView = NULL;
+					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.x.ratio = 1.0;
+						
+					LayoutInfo.scale.y.toView = NULL;
+					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.y.ratio = 1.0;
+
+					HIViewSetLayoutInfo( $view_a, &LayoutInfo );
+
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $view_b, &LayoutInfo );
+
+					LayoutInfo.position.y.toView = NULL;
+					LayoutInfo.position.y.kind = kHILayoutPositionTop;
+					LayoutInfo.position.y.offset = 0.0;
+
+					LayoutInfo.scale.y.toView = NULL;
+					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.y.ratio = 1.0;
+
+					HIViewSetLayoutInfo( $view_b, &LayoutInfo );
+
+					HIViewApplyLayout( $view_a );
+					HIViewApplyLayout( $view_b );
+				}
+			]"
+		end
 
 feature {NONE} -- Implementation constants
 
@@ -357,6 +367,7 @@ feature {NONE} -- Implementation
 						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamoriginalbounds, {CARBONEVENTS_ANON_ENUMS}.typehirect, $actual_type, prev_rect.sizeof, $actual_size, prev_rect.item )
 						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcurrentbounds, {CARBONEVENTS_ANON_ENUMS}.typehirect, $actual_type, cur_rect.sizeof, $actual_size, cur_rect.item )
 						bounds_changed ( attributes, prev_rect, cur_rect )
+						Result := noErr -- Event handled
 					end
 				else
 					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
@@ -366,12 +377,10 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	bounds_changed ( options : INTEGER; original_bounds, current_bounds : CGRECT_STRUCT ) is
-			--
-		local
-
+			-- Handler for the bounds changed event
 		do
-			calculate_rects
-			adjust_subviews
+--			calculate_rects
+--			adjust_subviews
 		end
 
 	draw ( limit_rgn, context : POINTER ) is
@@ -383,7 +392,7 @@ feature {NONE} -- Implementation
 	get_region (  part : INTEGER_16; region : POINTER ) : INTEGER is
 			--
 		do
-
+			Result :=noerr
 		end
 
 	hit_test ( where : CGPOINT_STRUCT ) : INTEGER_16 is
@@ -404,7 +413,7 @@ feature {NONE} -- Implementation
 	track ( event :POINTER ) : INTEGER is
 			--
 		do
-
+			Result := noErr
 		end
 
 feature {EV_ANY_I} -- Implementation

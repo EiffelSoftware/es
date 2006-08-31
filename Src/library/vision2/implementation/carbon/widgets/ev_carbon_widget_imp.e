@@ -111,6 +111,35 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
+feature -- Helper features
+
+	get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): BOOLEAN is
+			-- get a boolean value with get_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp = false;
+					GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, NULL );
+					return temp;
+				}
+			]"
+		end
+
+		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+				 	Boolean temp = $value;
+					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
+				}
+			]"
+		end
+
 feature -- Status report
 
 	is_displayed: BOOLEAN is
@@ -132,4 +161,4 @@ indexing
 
 
 
-end -- class EV_GTK_WIDGET_IMP
+end

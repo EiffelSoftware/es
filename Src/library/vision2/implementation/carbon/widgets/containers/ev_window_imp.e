@@ -276,18 +276,23 @@ feature -- Element change
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
 					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+					
 					LayoutInfo.scale.x.toView = NULL;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
 					LayoutInfo.scale.x.ratio = 1.0;
+					
 					LayoutInfo.scale.y.toView = NULL;
 					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
 					LayoutInfo.scale.y.ratio = 1.0;
+					
 					LayoutInfo.position.x.toView = NULL;
 					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
 					LayoutInfo.position.x.offset = 0.0;
+					
 					LayoutInfo.position.y.toView = NULL;
 					LayoutInfo.position.y.kind = kHILayoutPositionTop;
 					LayoutInfo.position.y.offset = 0.0;
+					
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 					HIViewApplyLayout( $a_control );
 				}

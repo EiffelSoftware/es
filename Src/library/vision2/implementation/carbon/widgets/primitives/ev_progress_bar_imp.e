@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision Progress bar. GTK+ implementation."
+	description: "Eiffel Vision Progress bar. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -28,15 +28,21 @@ feature {NONE} -- Implementation
 			rect : RECT_STRUCT
 			struct_ptr : POINTER
 			err : INTEGER
+			data : INTEGER_16
 		do
 			Precursor {EV_GAUGE_IMP} (an_interface)
 			create rect.make_new_unshared
 			rect.set_left(0)
 			rect.set_right(100)
-			rect.set_bottom(10)
+			rect.set_bottom(20)
 			rect.set_top (0)
-			err := create_progress_bar_control_external (default_pointer, rect.item, 0, 0, 100, 0, $struct_ptr)
+			err := create_user_pane_control_external ( default_pointer, rect.item, {CONTROLS_ANON_ENUMS}.kcontrolsupportsembedding, $struct_ptr )
 			set_c_object ( struct_ptr )
+			err := create_progress_bar_control_external (default_pointer, rect.item, 0, 0, 100, 0, $gauge_ptr )
+			err := hiview_add_subview_external ( c_object, gauge_ptr )
+			setup_binding ( c_object, gauge_ptr )
+			data := {CONTROLS_ANON_ENUMS}.kcontrolsizelarge.to_integer_16
+			err := set_control_data_external ( gauge_ptr, {CONTROLS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLS_ANON_ENUMS}.kControlSizeTag, 2, $data ) -- 2 = sizeof(INTEGER_16)
 		end
 
 feature -- Status report
@@ -61,8 +67,15 @@ feature -- Status setting
 			-- Not supported on Carbon
 		end
 
-feature {EV_ANY_I} -- Implementation
+feature {NONE} -- Implementation
 
+	setup_binding ( user_pane, progress_bar : POINTER ) is
+			-- setup layout binding
+		deferred
+		end
+
+
+feature {EV_ANY_I} -- Implementation
 
 	interface: EV_PROGRESS_BAR;
 
