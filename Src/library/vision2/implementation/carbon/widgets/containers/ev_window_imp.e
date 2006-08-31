@@ -27,6 +27,7 @@ inherit
 		redefine
 			interface,
 			initialize,
+			is_sensitive,
 			make,
 			on_key_event,
 			hide,
@@ -139,6 +140,13 @@ feature {NONE} -- Initialization
 		end
 
 feature  -- Access
+
+	is_sensitive: BOOLEAN is
+			--
+		do
+			Result := True
+		end
+
 
 	has_focus: BOOLEAN is
 			-- Does `Current' have the keyboard focus?
