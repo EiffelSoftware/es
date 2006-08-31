@@ -76,7 +76,7 @@ feature {NONE} -- Initialization
 			create rect.make_new_unshared
 			rect.set_bottom (20)
 			rect.set_right (100)
-			ret := create_push_button_control_external( null, rect.item, null, $ptr )
+			ret := create_push_button_control_external ( null, rect.item, null, $ptr )
 			set_c_object ( ptr )
 
 			event_id := app_implementation.get_id (current)
