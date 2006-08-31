@@ -68,16 +68,18 @@ feature {NONE} -- Initialization
 	make (an_interface: like interface) is
 			-- Connect interface and initialize `c_object'.
 		local
-			err : INTEGER
-			rect : RECT_STRUCT
-			struct_ptr : POINTER
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			err := create_push_button_control_external( null, rect.item, null, $struct_ptr )
-			set_c_object ( struct_ptr )
+			rect.set_bottom (20)
+			rect.set_right (100)
+			ret := create_push_button_control_external( null, rect.item, null, $ptr )
+			set_c_object ( ptr )
 
-			event_id := app_implementation.get_id (current)  --getting an id from the application
+			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is
@@ -90,9 +92,6 @@ feature {NONE} -- Initialization
 			target := get_control_event_target_external( c_object )
 			h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
 		end
-
-	needs_event_box: BOOLEAN is True
-		-- Make sure `Current' is placed within a GtkEventBox.
 
 feature -- Access
 

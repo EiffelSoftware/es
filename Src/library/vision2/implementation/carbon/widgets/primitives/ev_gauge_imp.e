@@ -23,6 +23,9 @@ inherit
 	EV_GAUGE_ACTION_SEQUENCES_IMP
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
 

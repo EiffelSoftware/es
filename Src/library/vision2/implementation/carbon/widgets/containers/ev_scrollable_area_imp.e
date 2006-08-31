@@ -52,6 +52,7 @@ feature {NONE} -- Initialization
 			ret := hiscroll_view_create_external ({HIVIEW_ANON_ENUMS}.kHIScrollViewValidOptions, $ptr)
 			set_c_object (ptr)
 
+			ret := hiscroll_view_set_scroll_bar_auto_hide_external (c_object, 1)
 		end
 
 feature -- Access

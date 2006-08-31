@@ -17,7 +17,30 @@ inherit
 	EV_GAUGE_IMP
 		redefine
 			interface,
-			set_leap
+			set_leap,
+			make
+		end
+
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
+feature -- Creation
+
+	make (an_interface: like interface) is
+			-- Create the horizontal scroll bar.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
+		do
+			base_make (an_interface)
+			create rect.make_new_unshared
+			ret := create_scroll_bar_control_external ( null, rect.item, 0, 0, 100, 0, 0, null, $ptr )
+			set_c_object ( ptr )
+
+			event_id := app_implementation.get_id (current)
 		end
 
 feature -- Element change

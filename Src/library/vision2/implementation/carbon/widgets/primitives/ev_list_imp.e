@@ -29,6 +29,11 @@ inherit
 			row_height
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -37,8 +42,17 @@ feature -- Initialize
 	make (an_interface: like interface) is
 			-- Create a list widget with `par' as parent.
 			-- By default, a list allow only one selection.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
 			base_make (an_interface)
+			create rect.make_new_unshared
+			ret := create_list_box_control_external ( null, rect.item, 0, 10, 1, 1, 1, 20, 100, 0, null, $ptr )
+			set_c_object ( ptr )
+
+			event_id := app_implementation.get_id (current)
 		end
 
 	scrollable_area: POINTER
