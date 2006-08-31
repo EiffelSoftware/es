@@ -28,7 +28,7 @@ feature -- Status report
 	is_sensitive: BOOLEAN is
 			-- Is the object sensitive to user input.
 		do
-			Result := hiview_is_enabled_external ( c_object, null).to_boolean
+			Result := hiview_is_enabled_external ( c_object, null ).to_boolean
 		end
 
 feature -- Status setting
@@ -46,7 +46,7 @@ feature -- Status setting
 		local
 			ret: INTEGER
 		do
-			ret := hiview_set_enabled_external (c_object, 1)
+			ret := hiview_set_enabled_external (c_object, 0)
 		end
 
 feature {EV_ANY_I} -- Implementation
