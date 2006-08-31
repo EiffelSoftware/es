@@ -307,7 +307,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	create_change_actions: EV_NOTIFY_ACTION_SEQUENCE is
 		do
-
+			create Result
 		end
 
 	stored_text: STRING_32
@@ -382,18 +382,6 @@ feature {EV_TEXT_FIELD_I} -- Implementation
 			-- functionality implemented by `Current'
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_TEXT_FIELD_IMP
 
