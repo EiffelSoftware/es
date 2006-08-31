@@ -76,7 +76,7 @@ feature {NONE} -- Initialization
 			create rect.make_new_unshared
 			create size.make_new_unshared
 
-			size.set_height(15)
+			size.set_height(18)
 			size.set_width (100)
 			point.set_x (0)
 			point.set_y (0)
@@ -102,9 +102,14 @@ feature -- Access
 	text: STRING_32 is
 			-- Text displayed in field.
 		local
-
+			ret, size: INTEGER
+			str: C_STRING
 		do
 
+			ret := get_control_data_size_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, $size)
+			create str.make_empty (size)
+			ret := get_control_data_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, size, str.item, $size)
+			Result := str.string
 		end
 
 feature -- Status setting
@@ -131,7 +136,12 @@ feature -- Status setting
 
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
+		local
+			str: C_STRING
+			ret: INTEGER
 		do
+			create str.make (a_text)
+			ret := set_control_data_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, a_text.count, str.item)
 
 		end
 

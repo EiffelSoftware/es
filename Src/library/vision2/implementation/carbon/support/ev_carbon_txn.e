@@ -139,7 +139,6 @@ feature -- Access
 
 			create c_str.make_empty (get_text_length(entry_widget, kTXNStartOffset, kTXNEndOffset))
 			get_text (c_object, c_str.item, kTXNStartOffset, kTXNEndOffset)
-			io.put_string (c_str.string)
 			Result := c_str.string
 		end
 
@@ -249,7 +248,6 @@ feature -- Status report
 			paste (1)
 			create c_str.make_empty (get_text_length(entry_widget, kTXNStartOffset, caret_position-1))
 			get_text (c_object, c_str.item, kTXNStartOffset, caret_position-1)
-			io.put_string (c_str.string)
 			Result := c_str.string
 			select_region (kTXNStartOffset+1, caret_position)
 			delete_selection
