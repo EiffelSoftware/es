@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision vertical range. GTK+ implementation."
+	description: "Eiffel Vision vertical range. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -20,34 +20,35 @@ inherit
 			make
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Create the vertical range.
+				-- Create a horizontal carbon range
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
-		
+			base_make (an_interface)
+			create rect.make_new_unshared
+			ret := create_slider_control_external ( null, rect.item, 0, 0, 100, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlSliderPointsDownOrRight, 10, 0, null, $ptr )
+			set_c_object ( ptr )
 		end
+
 
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_VERTICAL_RANGE;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
-end -- class EV_VERTICAL_RANGE_IMP
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+end -- class EV_HORIZONTAL_RANGE_IMP
 
