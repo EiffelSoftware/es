@@ -1,7 +1,7 @@
 indexing
 
 	description:
-		"EiffelVision multi-column list row, gtk implementation."
+		"EiffelVision multi-column list row, Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
 	date: "$Date$";
@@ -187,24 +187,12 @@ feature {NONE} -- Implementation
 
 	on_item_added_at (an_item: STRING_GENERAL; item_index: INTEGER) is
 			-- `an_item' has been added to index `item_index'.
-		local
-			a_parent_imp: like parent_imp
 		do
-			a_parent_imp := parent_imp
-			if a_parent_imp /= Void then
-				if a_parent_imp.column_count < item_index then
-					a_parent_imp.expand_column_count_to (item_index)
-				end
-				a_parent_imp.set_text_on_position (item_index, index, an_item)
-			end
 		end
 
 	on_item_removed_at (an_item: STRING_GENERAL; item_index: INTEGER) is
 			-- `an_item' has been removed from index `item_index'.
 		do
-			if parent_imp /= Void then
-				parent_imp.set_text_on_position (item_index, index, "")
-			end
 		end
 
 feature {EV_MULTI_COLUMN_LIST_IMP} -- Implementation
@@ -259,18 +247,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_MULTI_COLUMN_LIST_ROW;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_MULTI_COLUMN_LIST_ROW_IMP
 

@@ -334,37 +334,37 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 feature {NONE} -- Implementation
 
-		get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
-			-- get a boolean value with get_control_data
-			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-				 	Boolean temp;
-				 	Size ActualSize;
-					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
-					if ( ActualSize == sizeof(temp) )
-						return temp;
-					else
-						return res;
-				}
-			]"
-		end
+--		get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
+--			-- get a boolean value with get_control_data
+--			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
+--		external
+--			"C inline use <Carbon/Carbon.h>"
+--		alias
+--			"[
+--				{
+--				 	Boolean temp;
+--				 	Size ActualSize;
+--					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
+--					if ( ActualSize == sizeof(temp) )
+--						return temp;
+--					else
+--						return res;
+--				}
+--			]"
+--		end
 
-		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
-			-- set a boolean value with set_control_data
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-				 	Boolean temp = $value;
-					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
-				}
-			]"
-		end
+--		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
+--			-- set a boolean value with set_control_data
+--		external
+--			"C inline use <Carbon/Carbon.h>"
+--		alias
+--			"[
+--				{
+--				 	Boolean temp = $value;
+--					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
+--				}
+--			]"
+--		end
 
 	entry_widget: POINTER
 		-- A pointer on the text field

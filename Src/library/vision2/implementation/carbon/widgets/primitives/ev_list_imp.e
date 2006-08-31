@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelVision list, gtk implementation"
+	description: "EiffelVision list, Carbon implementation"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -28,9 +28,13 @@ inherit
 			row_height
 		end
 
-	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
-		export
-			{NONE} all
+	EV_CARBON_DATABROWSER
+		undefine
+			destroy
+		redefine
+			make,
+			initialize,
+			interface
 		end
 
 create
@@ -41,29 +45,17 @@ feature -- Initialize
 	make (an_interface: like interface) is
 			-- Create a list widget with `par' as parent.
 			-- By default, a list allow only one selection.
-		local
-			ret: INTEGER
-			rect: RECT_STRUCT
-			ptr: POINTER
 		do
-			base_make (an_interface)
-			create rect.make_new_unshared
-			ret := create_list_box_control_external ( null, rect.item, 0, 10, 1, 1, 1, 20, 100, 0, null, $ptr )
-			set_c_object ( ptr )
-
-			event_id := app_implementation.get_id (current)
+			Precursor {EV_CARBON_DATABROWSER} (an_interface)
+			hide_title_row
 		end
 
-	scrollable_area: POINTER
-		-- Scrollable area used for `Current'
-
-		initialize is
-			-- Initialize the list.
+	initialize is
+			--
 		do
-			Precursor {EV_LIST_ITEM_LIST_IMP}
-			previous_selection := selected_items
-			initialize_pixmaps
+
 		end
+
 
 feature -- Access
 
@@ -172,9 +164,6 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	tree_view: POINTER
-		-- Pointer to the view widget used to display the model within `Current'
-
 	pixmaps_size_changed is
 			-- The size of the displayed pixmaps has just
 			-- changed.
@@ -189,18 +178,6 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_LIST_IMP
 

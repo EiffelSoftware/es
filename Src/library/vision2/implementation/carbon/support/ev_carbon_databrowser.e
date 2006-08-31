@@ -58,7 +58,6 @@ feature -- Creation
 
 
 			do_ugly_things (c_object, get_set_item_data_dispatcher.c_dispatcher, item_notification_dispatcher.c_dispatcher)
-			ret := set_data_browser_list_view_header_btn_height_external (c_object, 0) -- Don't show a header
 
 			tree_list.extend ([current, c_object])
 
@@ -72,6 +71,25 @@ feature -- Creation
 		do
 
 		end
+
+feature -- settings
+
+	show_title_row
+			-- Show the row of the titles.
+		local
+			ret: INTEGER
+		do
+			ret := set_data_browser_list_view_header_btn_height_external (c_object, 15)
+		end
+
+	hide_title_row
+			-- Hide the row of the titles.
+		local
+			ret: INTEGER
+		do
+			ret := set_data_browser_list_view_header_btn_height_external (c_object, 0)
+		end
+
 
 feature -- internals
 

@@ -72,8 +72,8 @@ feature {NONE} -- Initialization
 			-- parent and `col_nb' columns.
 			-- By default, a list allow only one selection.
 		do
-			base_make (an_interface)
-			set_c_object ($current)
+			Precursor {EV_CARBON_DATABROWSER} (an_interface)
+
 			create ev_children.make (0)
 		end
 
@@ -153,9 +153,6 @@ feature {NONE} -- Implementation
 		do
 
 		end
-
-	list_store: POINTER
-		-- Pointer to the Model
 
 	on_pointer_motion (a_motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]) is
 		local
@@ -254,18 +251,6 @@ feature -- Status setting
 		do
 			wipe_out
 			Precursor {EV_PRIMITIVE_IMP}
-		end
-
-	show_title_row is
-			-- Show the row of the titles.
-		do
-		end
-
-	hide_title_row is
-			-- Hide the row of the titles.
-		do
-
-			resize_column_to_content (1)
 		end
 
 	enable_multiple_selection is
@@ -566,14 +551,9 @@ feature {EV_MULTI_COLUMN_LIST_ROW_IMP} -- Implementation
 feature {EV_MULTI_COLUMN_LIST_ROW_IMP}
 
 	set_text_on_position (a_column, a_row: INTEGER; a_text: STRING_GENERAL) is
-			-- Set cell text at (a_column, a_row) to `a_text'.
+			--
 		do
-		end
-
-	g_value_string_struct: POINTER is
-			-- Optimization for GValue struct access
-		once
-
+			
 		end
 
 	set_row_pixmap (a_row: INTEGER; a_pixmap: EV_PIXMAP) is
