@@ -48,18 +48,18 @@ feature {NONE} -- Implementation
 
 	make (an_interface: like interface) is
 			-- Create the spin button.
+			-- There is no control like this in carbon. It's probably best to take
+			-- a text-field and a little-arrow control to do the same
 		local
 			ret: INTEGER
 			rect: RECT_STRUCT
 			ptr: POINTER
-			cfstring: EV_CARBON_CF_STRING
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
 			rect.set_right (300)
 			rect.set_bottom (30)
-			create cfstring.make_unshared_with_eiffel_string ("NOT IMPLEMENTED :D")
-			ret := create_static_text_control_external( null, rect.item, cfstring.item, null, $ptr )
+			ret := create_little_arrows_control_external ( null, rect.item, 0, 0, 100, 1, $ptr )
 			set_c_object ( ptr )
 
 			event_id := app_implementation.get_id (current)
@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
 		do
-			--precursor {EV_TEXT_FIELD_IMP} (a_text)
+			precursor {EV_TEXT_FIELD_IMP} (a_text)
 		end
 
 feature {EV_ANY_I} -- Implementation
