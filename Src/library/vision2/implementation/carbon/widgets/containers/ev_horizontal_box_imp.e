@@ -159,7 +159,6 @@ feature -- Implementation
 
 				j := j + 1
 			end
-			--bind_bottom_control( w2.c_object )
 
 			size_control_external ( c_object, old_width, height )
 		end

@@ -92,7 +92,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_PRIMITIVE_IMP}
 			target := get_control_event_target_external( c_object )
-			h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown )
 		end
 
 feature -- Access

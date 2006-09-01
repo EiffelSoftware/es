@@ -35,13 +35,9 @@ feature {NONE} -- Implementation
 					LayoutInfo.version = kHILayoutInfoVersionZero;
 					HIViewGetLayoutInfo ( $progress_bar, &LayoutInfo );
 					
-					LayoutInfo.position.x.toView = $user_pane;
-					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
-					LayoutInfo.position.x.offset = 0.0;
-					
 					LayoutInfo.position.y.toView = $user_pane;
 					LayoutInfo.position.y.kind = kHILayoutPositionCenter;
-					LayoutInfo.position.y.offset = -10;
+					LayoutInfo.position.y.offset = 0.0;
 					
 					LayoutInfo.scale.x.toView = $user_pane;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
@@ -51,6 +47,19 @@ feature {NONE} -- Implementation
 					HIViewApplyLayout( $progress_bar );
 				}
 			]"
+		end
+
+	bounds_changed ( options : INTEGER; original_bounds, current_bounds : CGRECT_STRUCT ) is
+			-- Handler for the bounds changed event
+		local
+			size : CGSIZE_STRUCT
+		do
+			create size.make_shared ( current_bounds.size )
+			if size.height < 20 and then current_style /= {CONTROLS_ANON_ENUMS}.kcontrolsizenormal then
+				set_style_small
+			elseif size.height >= 20 and then current_style /= {CONTROLS_ANON_ENUMS}.kcontrolsizelarge then
+				set_style_large
+			end
 		end
 
 feature {EV_ANY_I} -- Implementation

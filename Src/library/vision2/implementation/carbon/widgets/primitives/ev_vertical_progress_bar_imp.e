@@ -37,11 +37,7 @@ feature {NONE} -- Implementation
 					
 					LayoutInfo.position.x.toView = $user_pane;
 					LayoutInfo.position.x.kind = kHILayoutPositionCenter;
-					LayoutInfo.position.x.offset = -10;
-					
-					LayoutInfo.position.y.toView = $user_pane;
-					LayoutInfo.position.y.kind = kHILayoutPositionTop;
-					LayoutInfo.position.y.offset = 0.0;
+					LayoutInfo.position.x.offset = 0.0;
 					
 					LayoutInfo.scale.y.toView = $user_pane;
 					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
@@ -53,6 +49,18 @@ feature {NONE} -- Implementation
 			]"
 		end
 
+	bounds_changed ( options : INTEGER; original_bounds, current_bounds : CGRECT_STRUCT ) is
+			-- Handler for the bounds changed event
+		local
+			size : CGSIZE_STRUCT
+		do
+			create size.make_shared ( current_bounds.size )
+			if size.width < 20 and then current_style /= {CONTROLS_ANON_ENUMS}.kcontrolsizenormal then
+				set_style_small
+			elseif size.width >= 20 and then current_style /= {CONTROLS_ANON_ENUMS}.kcontrolsizelarge then
+				set_style_large
+			end
+		end
 
 feature {EV_ANY_I} -- Implementation
 
