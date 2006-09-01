@@ -39,8 +39,8 @@ feature -- Creation
 			rect : RECT_STRUCT
 			ret: INTEGER
 		do
-			-- Fix Problems: A DataBrowser Control does not follow the standard hirarchical widgets idea, but is attached directly to the window: UGLY!
-			-- This is very buggy currently: Don't try to use it with several windows
+			base_make (an_interface)
+
 			create rect.make_new_unshared
 			rect.set_right (100)
 			rect.set_bottom (100)
@@ -150,30 +150,30 @@ feature -- internals
 			-- Through this callback the DataBrowser is requesting information about an item
 		local
 			cfstring: EV_CARBON_CF_STRING
-			tree_imp: EV_CARBON_DATABROWSER
-			node_imp: EV_TREE_NODE_IMP
+			db: like Current
+			node: EV_CARBON_DATABROWSER_ITEM
 		do
---			Result := {CONTROLDEFINITIONS_ANON_ENUMS}.errDataBrowserPropertyNotSupported
---			if a_setvalue = true then
---				-- Set Information: Some information has changed: update data structures
---				-- Should not happen, since we don't support e.g. inline editing of the items!
---			else
---				-- Get Information (request from the control)
---				if a_property = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemIsContainerProperty then
---					tree_imp := get_object_from_pointer (a_browser)
---					node_imp := tree_imp.item_list.item (a_item)
+			Result := {CONTROLDEFINITIONS_ANON_ENUMS}.errDataBrowserPropertyNotSupported
+			if a_setvalue = true then
+				-- Set Information: Some information has changed: update data structures
+				-- Should not happen, since we don't support e.g. inline editing of the items!
+			else
+				-- Get Information (request from the control)
+				if a_property = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemIsContainerProperty then
+					db := get_object_from_pointer (a_browser)
+					node := db.item_list.item (a_item)
 --					if node_imp.child_array.count = 0 then
 --						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 0)
 --					else
 --						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 1)
 --					end
---				else
---					tree_imp := get_object_from_pointer (a_browser)
---					node_imp := tree_imp.item_list.item (a_item)
---					create cfstring.make_unshared_with_eiffel_string (node_imp.text)
---					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
---				end
---			end
+				else
+					db := get_object_from_pointer (a_browser)
+					node := db.item_list.item (a_item)
+					create cfstring.make_unshared_with_eiffel_string (node.text)
+					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
+				end
+			end
 --			print ("on_callback for item: " + a_item.out + "%N")
 		end
 
@@ -215,7 +215,7 @@ feature -- internals
 --			end
 		end
 
-	get_object_from_pointer (a_pointer: POINTER): EV_TREE_IMP is
+	get_object_from_pointer (a_pointer: POINTER): like Current is
 			-- Takes a c-pointer to the associated c_object of a object of type EV_TREE_IMP and returns a handle to that.
 		do
 			-- Okay, this is really ugly now: Since there is only one callback function
@@ -236,24 +236,26 @@ feature -- internals
 			Result ?= tree_list.item.item (1)
 		end
 
-feature {NONE} -- Implementation
+feature {EV_CARBON_DATABROWSER} -- Implementation
+
+	db_item: EV_CARBON_DATABROWSER_ITEM
 
 	id_count: INTEGER  -- the next id for an event.
 
 	free_ids: LINKED_LIST[INTEGER]
 
-	item_list: ARRAY[EV_TREE_NODE_IMP]
+	item_list: ARRAY[like db_item]
 
-	get_id (a_widget : EV_TREE_NODE_IMP) : INTEGER is
+	get_id (a_node: like db_item) : INTEGER is
 			-- Get a unique ID so we can associate an event by its ID with a control
 		do
 			if free_ids.is_empty then
-				item_list.force (a_widget, id_count)
+				item_list.force (a_node, id_count)
 				Result := id_count
 				id_count := id_count + 1
 			else
 				free_ids.start
-				item_list.force (a_widget, free_ids.item)
+				item_list.force (a_node, free_ids.item)
 				Result :=  free_ids.item
 				free_ids.remove
 			end

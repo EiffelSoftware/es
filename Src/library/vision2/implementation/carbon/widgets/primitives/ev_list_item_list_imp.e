@@ -45,13 +45,6 @@ feature {NONE} -- Initialization
 			Precursor {EV_ITEM_LIST_IMP}
 			Precursor {EV_PRIMITIVE_IMP}
 			initialize_pixmaps
-			initialize_model
-		end
-
-	initialize_model is
-			-- Create our data model for `Current'
-		do
-			--list_store := new_list_store
 		end
 
 feature -- Access
@@ -128,12 +121,6 @@ feature -- Insertion
 
 		end
 
-	g_value_string_struct: POINTER is
-			-- Optimization for GValue struct access
-		once
-
-		end
-
 	set_row_pixmap (a_row: INTEGER; a_pixmap: EV_PIXMAP) is
 			-- Set row `a_row' pixmap to `a_pixmap'.
 		do
@@ -149,15 +136,12 @@ feature -- Insertion
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
 		do
-
+			
 		end
 
 feature {EV_LIST_ITEM_LIST_IMP, EV_LIST_ITEM_IMP} -- Implementation
 
 	interface: EV_LIST_ITEM_LIST
-
-	list_store: POINTER
-		-- Pointer to the model which holds all of the column data
 
 feature {NONE} -- Implementation
 
@@ -166,27 +150,7 @@ feature {NONE} -- Implementation
 
 		end
 
---	new_list_store: POINTER is
---			-- New instance of a list store.
---		external
---			"C inline use <gtk/gtk.h>"
---		alias
---			"gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING)"
---		end
-
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_LIST_ITEM_LIST_IMP
 

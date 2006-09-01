@@ -87,8 +87,6 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 
-			-- Fix Problems: A DataBrowser Control does not follow the standard hirarchical widgets idea, but is attached directly to the window: UGLY!
-			-- This is very buggy currently: Don't try to use it with several windows
 			create rect.make_new_unshared
 			rect.set_right (100)
 			rect.set_bottom (100)

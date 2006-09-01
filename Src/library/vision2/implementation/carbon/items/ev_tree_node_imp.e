@@ -302,7 +302,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			child_array.go_i_th (i)
 			child_array.put_left (v)
 
-			id := parent_tree_imp.get_id (item_imp)
+			id := parent_tree_imp.get_id (item_imp) -- Currently buggy: we may not have a tree from which we can get an ID yet.
 			item_imp.set_item_id (id)
 		end
 

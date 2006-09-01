@@ -25,6 +25,12 @@ inherit
 
 	EV_LIST_ITEM_ACTION_SEQUENCES_IMP
 
+	EV_CARBON_DATABROWSER_ITEM
+		undefine
+			text
+		end
+
+
 create
 	make
 
