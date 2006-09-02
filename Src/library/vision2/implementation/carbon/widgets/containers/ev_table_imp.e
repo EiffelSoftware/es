@@ -28,17 +28,38 @@ inherit
 		redefine
 			interface
 		end
+
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature {NONE} -- Implementation
 
-	needs_event_box: BOOLEAN is True
-
 	make (an_interface: like interface) is
-                        -- Create a table widget with `par' as
-                        -- parent.
+			-- Create a table widget with `par' as parent.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
+			base_make (an_interface)
+			create rect.make_new_unshared
+			rect.set_left (20)
+			rect.set_right (100)
+			rect.set_bottom (40)
+			rect.set_top (20)
+			ret := create_placard_control_external ( null, rect.item, $ptr )
+			set_c_object ( ptr )
+
+			-- Initialize internal values
+			rows := 1
+			columns := 1
+			create internal_array.make (1, 1)
+			rebuild_internal_item_list
 		end
 
 feature -- Status report
