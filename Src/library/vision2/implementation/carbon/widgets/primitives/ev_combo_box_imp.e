@@ -107,13 +107,18 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Connect action sequences to signals.
 		do
-
+			Precursor {EV_LIST_ITEM_LIST_IMP}
 		end
 
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
+		local
+			ret: INTEGER
+			cfstring: EV_CARBON_CF_STRING
 		do
-
+			Precursor {EV_LIST_ITEM_LIST_IMP} (v, i)
+			create cfstring.make_unshared_with_eiffel_string ( v.text )
+			ret := hicombo_box_append_text_item_external ( c_object, cfstring.item, null )
 		end
 
 feature -- Status report

@@ -73,6 +73,7 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 		end
 
 feature {NONE} -- Carbon implementation
+
 	setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER ) is
 			-- Setup Carbon Layout API
 		deferred

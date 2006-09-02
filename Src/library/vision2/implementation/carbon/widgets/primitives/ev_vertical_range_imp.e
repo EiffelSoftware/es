@@ -22,7 +22,7 @@ inherit
 create
 	make
 
-feature {NONE} -- Initialization
+feature {NONE} -- Layout
 
 	setup_binding ( user_pane, progress_bar : POINTER ) is
 			-- Take a vertical orientation

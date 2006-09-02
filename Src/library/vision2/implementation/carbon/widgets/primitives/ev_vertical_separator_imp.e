@@ -20,27 +20,34 @@ inherit
 			interface
 		end
 
-	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
-		export
-			{NONE} all
-		end
-
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface) is
-				-- Create a horizontal carbon separator.
-		local
-			ret: INTEGER
-			rect: RECT_STRUCT
-			ptr: POINTER
-		do
-			base_make (an_interface)
-			create rect.make_new_unshared
-			ret := create_separator_control_external ( null, rect.item, $ptr )
-			set_c_object ( ptr )
+	setup_binding ( user_pane, progress_bar : POINTER ) is
+			-- Take a vertical orientation
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ( $progress_bar, &LayoutInfo );
+					
+					LayoutInfo.position.x.toView = $user_pane;
+					LayoutInfo.position.x.kind = kHILayoutPositionCenter;
+					LayoutInfo.position.x.offset = 0.0;
+					
+					LayoutInfo.scale.y.toView = $user_pane;
+					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.y.ratio = 1.0;
+					
+					HIViewSetLayoutInfo( $progress_bar, &LayoutInfo );
+					HIViewApplyLayout( $progress_bar );
+				}
+			]"
 		end
 
 feature {EV_ANY_I} -- Implementation

@@ -18,12 +18,10 @@ inherit
 	EV_BUTTON_IMP
 		redefine
 			make,
-			interface
-		end
-
-	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
-		export
-			{NONE} all
+			interface,
+			align_text_center,
+			align_text_left,
+			align_text_right
 		end
 
 create
@@ -54,10 +52,31 @@ feature {NONE} -- Initialization
 
 feature -- Status setting
 
+	align_text_center is
+			-- Display `text' centered.
+		local
+			ret: INTEGER
+		do
+			ret := set_bevel_button_text_alignment_external ( c_object, 1, 20 )
+			-- .. doesn't seem to work - why??
+		end
+
+	align_text_left is
+			-- Display `text' left aligned.
+		do
+		end
+
+	align_text_right is
+			-- Display `text' right aligned.
+		do
+		end
+
+feature -- Status setting
+
 	enable_select is
 			-- Set `is_selected' `True'.
 		do
-			
+
 		end
 
 	disable_select is

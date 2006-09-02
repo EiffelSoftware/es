@@ -1,6 +1,6 @@
 indexing
 	description:
-		"Eiffel Vision separator. GTK+ implementation"
+		"Eiffel Vision separator. Carbon implementation"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -17,7 +17,42 @@ inherit
 
 	EV_PRIMITIVE_IMP
 		redefine
+			make,
 			interface
+		end
+
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
+feature {NONE} -- Initialization
+
+	make (an_interface: like interface) is
+			-- Create the separator control.
+		local
+			rect: RECT_STRUCT
+			ptr: POINTER
+			ret: INTEGER
+		do
+			base_make (an_interface)
+			create rect.make_new_unshared
+			rect.set_right (20)
+			rect.set_bottom (20)
+			ret := create_user_pane_control_external ( default_pointer, rect.item, {CONTROLS_ANON_ENUMS}.kcontrolsupportsembedding, $ptr )
+			set_c_object ( ptr )
+			ret := create_separator_control_external ( null, rect.item, $ptr )
+			ret := hiview_add_subview_external ( c_object, ptr )
+			setup_binding ( c_object, ptr )
+
+			event_id := app_implementation.get_id (current)
+		end
+
+feature -- Layout handling
+
+	setup_binding ( user_pane, progress_bar : POINTER ) is
+			-- Setup layout binding. This is redefined by vertical/horizontal separator to make sure the control has the right orientation
+		deferred
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -25,18 +60,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_SEPARATOR;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_SEPARATOR_IMP
 

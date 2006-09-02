@@ -23,7 +23,14 @@ inherit
 		end
 
 	HIVIEW_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
+	CONTROLS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
 
@@ -32,8 +39,6 @@ feature -- Access
 
 	text: STRING_32 is
 			-- Text of the label.
-		local
-			a_str: POINTER
 		do
 			if real_text /= Void then
 				Result := real_text.string
@@ -44,8 +49,6 @@ feature -- Access
 
 	text_alignment: INTEGER is
 			-- Alignment of the text in the label.
-		local
-			an_alignment_code: INTEGER
 		do
 			Result := is_aligned
 		--	an_alignment_code := {EV_GTK_EXTERNALS}.gtk_label_struct_jtype (text_label)
@@ -64,25 +67,25 @@ feature -- Status setting
 
 	align_text_center is
 			-- Display `text' centered.
+		local
+			ret: INTEGER
+			cfs: CONTROL_FONT_STYLE_REC_STRUCT
 		do
-			--{EV_GTK_EXTERNALS}.gtk_misc_set_alignment (text_label, 0.5, 0.5)
-			--{EV_GTK_EXTERNALS}.gtk_label_set_justify (text_label, {EV_GTK_EXTERNALS}.gtk_justify_center_enum)
+			create cfs.make_new_unshared
+			cfs.set_just (-1)
+			ret := set_control_font_style_external (c_object, cfs.item)
 			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center
 		end
 
 	align_text_left is
 			-- Display `text' left aligned.
 		do
-			--{EV_GTK_EXTERNALS}.gtk_misc_set_alignment (text_label, 0, 0.5)
-			--{EV_GTK_EXTERNALS}.gtk_label_set_justify (text_label, {EV_GTK_EXTERNALS}.gtk_justify_left_enum)
 			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_left
 		end
 
 	align_text_right is
 			-- Display `text' right aligned.
 		do
-			--{EV_GTK_EXTERNALS}.gtk_misc_set_alignment (text_label, 1, 0.5)
-			--{EV_GTK_EXTERNALS}.gtk_label_set_justify (text_label, {EV_GTK_EXTERNALS}.gtk_justify_right_enum)
 			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_right
 		end
 
@@ -91,7 +94,6 @@ feature -- Element change
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
 		local
-			cfstring: EV_CARBON_CF_STRING
 			ret: INTEGER
 		do
 			if accelerators_enabled then

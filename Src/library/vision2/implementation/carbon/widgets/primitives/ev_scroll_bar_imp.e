@@ -17,7 +17,6 @@ inherit
 	EV_GAUGE_IMP
 		redefine
 			interface,
-			set_leap,
 			make
 		end
 
@@ -26,38 +25,33 @@ inherit
 			{NONE} all
 		end
 
-feature -- Creation
+feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Create the horizontal scroll bar.
+			-- Create the separator control.
 		local
-			ret: INTEGER
 			rect: RECT_STRUCT
 			ptr: POINTER
+			ret: INTEGER
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			ret := create_scroll_bar_control_external ( null, rect.item, 0, 0, 100, 0, 0, null, $ptr )
+			rect.set_right (16)
+			rect.set_bottom (16)
+			ret := create_user_pane_control_external ( default_pointer, rect.item, {CONTROLS_ANON_ENUMS}.kcontrolsupportsembedding, $ptr )
 			set_c_object ( ptr )
+			ret := create_scroll_bar_control_external ( null, rect.item, 0, 0, 100, 0, 0, null, $gauge_ptr )
+			ret := hiview_add_subview_external ( c_object, gauge_ptr )
+			setup_binding ( c_object, gauge_ptr )
 
 			event_id := app_implementation.get_id (current)
 		end
 
-feature -- Element change
+feature -- Layout handling
 
-	set_leap (a_leap: INTEGER) is
-			-- Set `leap' to `a_leap'.
-			-- We redefine it to keep the page size the same as leap.
-		do
-		ensure then
-			range_same: value_range.is_equal (old value_range)
-		end
-
-feature {NONE} -- Implementation
-
-	internal_set_upper is
-			-- Sets the upper value of the adjustment struct to take 'leap' in to account
-		do
+	setup_binding ( user_pane, progress_bar : POINTER ) is
+			-- Setup layout binding. This is redefined by vertical/horizontal separator to make sure the control has the right orientation
+		deferred
 		end
 
 feature {EV_ANY_I} -- Implementation
