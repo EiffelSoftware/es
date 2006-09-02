@@ -57,7 +57,7 @@ inherit
 
 	EV_KEY_CONSTANTS
 
-	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+	HIVIEW_FUNCTIONS_EXTERNAL
 		export
 			{NONE} all
 		end
@@ -69,15 +69,26 @@ feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
 			-- Create a combo-box.
+			-- How can we do this in carbon? We probably need a normal textfield alongside with an disclosure button control and ..?
 		local
+			rect: CGRECT_STRUCT
+			size: CGSIZE_STRUCT
+			point: CGPOINT_STRUCT
+			cfs: CONTROL_FONT_STYLE_REC_STRUCT
 			ret: INTEGER
-			rect: RECT_STRUCT
 			ptr: POINTER
 		do
-			base_make (an_interface)
+			-- Get initial positions right
 			create rect.make_new_unshared
-			ret := create_popup_button_control_external ( null, rect.item, null, -12345, 0, 0, 0, 0, $ptr )
+			create size.make_shared ( rect.size )
+			create point.make_shared ( rect.origin )
+			create cfs.make_new_unshared
+
+			base_make (an_interface)
+			ret := hicombo_box_create_external ( rect.item, null, cfs.item, null, {HIVIEW_ANON_ENUMS}.kHIComboBoxStandardAttributes, $ptr )
 			set_c_object ( ptr )
+
+			show
 
 			event_id := app_implementation.get_id ( current )
 		end

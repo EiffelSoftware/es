@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelVision list item list, gtk implementation"
+	description: "EiffelVision list item list, Carbon implementation"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -136,7 +136,7 @@ feature -- Insertion
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
 		do
-			
+
 		end
 
 feature {EV_LIST_ITEM_LIST_IMP, EV_LIST_ITEM_IMP} -- Implementation
