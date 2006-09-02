@@ -156,9 +156,10 @@ feature -- PND
 feature {EV_TREE_IMP, EV_TREE_NODE_IMP}-- Implementation
 
 	set_item_id (a_id: INTEGER) is
-			--
+			-- Set the item id of this item and give ids to all its children if they don't have yet.
 		do
 			item_id := a_id
+			--
 		end
 
 
@@ -198,7 +199,21 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 
 	add_item_and_children_to_parent_tree (a_parent_tree: EV_TREE_IMP; a_parent_node: EV_TREE_NODE_IMP; a_index: INTEGER)  is
 			-- Used for setting items within parent tree
+		local
+			item_imp: EV_TREE_NODE_IMP
+			i: INTEGER
 		do
+			set_item_id (a_parent_tree.get_id (current))
+
+			from
+				i := 1
+			until
+				i > child_array.count
+			loop
+				item_imp ?= (child_array @ i).implementation
+				item_imp.add_item_and_children_to_parent_tree (a_parent_tree, Current, i)
+				i := i + 1
+			end
 		end
 
 feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
@@ -295,6 +310,7 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			-- Insert `v' at position `i'.
 		local
 			item_imp: EV_TREE_NODE_IMP
+			par_t_imp: EV_TREE_IMP
 			id: INTEGER
 		do
 			item_imp ?= v.implementation
@@ -302,8 +318,12 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			child_array.go_i_th (i)
 			child_array.put_left (v)
 
-			id := parent_tree_imp.get_id (item_imp) -- Currently buggy: we may not have a tree from which we can get an ID yet.
-			item_imp.set_item_id (id)
+			par_t_imp := parent_tree_imp
+			if par_t_imp /= Void then
+				item_imp.add_item_and_children_to_parent_tree (par_t_imp, Current, i)
+			end
+			--id := parent_tree_imp.get_id (item_imp) -- Currently buggy: we may not have a tree from which we can get an ID yet.
+			--item_imp.set_item_id (id)
 		end
 
 	remove_i_th (a_position: INTEGER) is

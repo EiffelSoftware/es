@@ -432,23 +432,31 @@ feature {NONE} -- Implementation
 
 			child_array.go_i_th (i)
 			child_array.put_left (v)
---			print ("INSERT " + i.out + "  " + v.text + "%N")
-			id := get_id (item_imp)
-			item_imp.set_item_id (id)
 
+			-- carbon specifics:
+			item_imp.add_item_and_children_to_parent_tree (Current, Void, i);
+			id := item_imp.item_id
 			ret := add_data_browser_items_external (c_object, 0, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
-			-- 3rd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
+			-- 2nd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
 		end
 
 	remove_i_th (a_position: INTEGER) is
 			-- Remove item at `a_position'
 		local
---			item_imp: EV_TREE_NODE_IMP
+			item_imp: EV_TREE_NODE_IMP
+			ret: INTEGER
+			id: INTEGER
 		do
---			item_imp ?= (child_array @ (a_position)).implementation
---			item_imp.set_parent_imp (Void)
---			child_array.go_i_th (a_position)
---			child_array.remove
+			item_imp ?= (child_array @ (a_position)).implementation
+			item_imp.set_parent_imp (Void)
+			child_array.go_i_th (a_position)
+			child_array.remove
+
+			-- carbon specifics:
+			-- TODO: remove the id (and those of children) from the 'item_list'
+			id := item_imp.item_id
+			ret := remove_data_browser_items_external (c_object, 0, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
+			-- 2nd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
 		end
 
 

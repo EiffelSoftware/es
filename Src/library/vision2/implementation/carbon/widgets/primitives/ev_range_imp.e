@@ -1,5 +1,5 @@
 indexing
-	description: "Eiffel Vision range. GTK+ implementation."
+	description: "Eiffel Vision range. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -16,16 +16,39 @@ inherit
 
 	EV_GAUGE_IMP
 		redefine
-			interface,
-			initialize
+			make,
+			interface
 		end
 
 feature {NONE} -- Initialization
 
-	initialize is
-			-- Initialize `Current'
+	make (an_interface: like interface) is
+			-- Create the range control.
+		local
+			rect : RECT_STRUCT
+			struct_ptr : POINTER
+			err : INTEGER
 		do
+			Precursor {EV_GAUGE_IMP} (an_interface)
+			create rect.make_new_unshared
+			rect.set_left(0)
+			rect.set_right(20)
+			rect.set_bottom(20)
+			rect.set_top (0)
+			err := create_user_pane_control_external ( default_pointer, rect.item, {CONTROLS_ANON_ENUMS}.kcontrolsupportsembedding, $struct_ptr )
+			set_c_object ( struct_ptr )
+			err := create_slider_control_external ( null, rect.item, 0, 0, 100, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlSliderPointsDownOrRight, 10, 0, null, $gauge_ptr )
+			err := hiview_add_subview_external ( c_object, gauge_ptr )
+			setup_binding ( c_object, gauge_ptr )
 
+			event_id := app_implementation.get_id (current)
+		end
+
+feature -- Layout handling
+
+	setup_binding ( user_pane, progress_bar : POINTER ) is
+			-- Setup layout binding. This is redefined by vertical/horizontal range to make sure the control has the right orientation
+		deferred
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -33,18 +56,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_RANGE;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- class EV_RANGE_IMP
 
