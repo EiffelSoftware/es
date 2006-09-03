@@ -29,9 +29,38 @@ inherit
 		end
 
 	HIOBJECT_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CGGEOMETRY_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
+
+	make (an_interface: like interface) is
+			-- Connect interface and initialize `c_object'.
+		local
+			control_ptr : POINTER
+			rect : RECT_STRUCT
+			err : INTEGER
+		do
+			base_make( an_interface )
+			create rect.make_new_unshared
+			rect.set_top ( 0)
+			rect.set_left ( 0 )
+			rect.set_right ( 100 )
+			rect.set_bottom ( 100 )
+			err := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
+
+			event_id := app_implementation.get_id (current)  --getting an id from the application
+			set_c_object (control_ptr)
+		end
 
 	initialize is
 		local
@@ -40,17 +69,14 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_CONTAINER_IMP}
 			create event_array.make_new_unshared ( 4 )
-			--event_array.item ( 0 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			--event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw )
-
 			event_array.item ( 0 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlHitTest )
+			event_array.item ( 0 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw )
 
 			event_array.item ( 1 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 1 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlBoundsChanged )
+			event_array.item ( 1 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlHitTest )
 
 			event_array.item ( 2 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
-			event_array.item ( 2 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlGetPartRegion )
+			event_array.item ( 2 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlBoundsChanged )
 
 			event_array.item ( 3 ).set_eventclass ( {CARBONEVENTS_ANON_ENUMS}.kEventClassControl )
 			event_array.item ( 3 ).set_eventkind ( {CARBONEVENTS_ANON_ENUMS}.kEventControlTrack )
@@ -177,6 +203,7 @@ feature {NONE} -- Implementation
 			err : INTEGER
 			rect : CGRECT_STRUCT
 			size : CGSIZE_STRUCT
+			point : CGPOINT_STRUCT
 			blubb : INTEGER
 			ptr : POINTER
 		do
@@ -184,24 +211,37 @@ feature {NONE} -- Implementation
 			err := hiview_set_frame_external ( subview_b.item, rect_b.item )
 			--err := hiview_set_needs_display_external ( c_object, ( true ).to_integer )
 
-			err := hiview_apply_layout_external ( subview_a )
 
 
 --			err := hiview_set_zorder_external ( c_object, {HIVIEW_ANON_ENUMS}.khiviewzorderabove, default_pointer)
 --			err := hiview_set_zorder_external ( subview_a, {HIVIEW_ANON_ENUMS}.khiviewzorderabove, default_pointer)
 
---			ptr := hiview_get_superview_external (c_object )
+			ptr := hiview_get_superview_external (c_object )
 
---			create rect.make_new_unshared
---			err := hiview_get_frame_external (c_object, rect.item)
---			create size.make_shared ( rect.size )
---			blubb := size.width.rounded
---			blubb := size.height.rounded
+			create rect.make_new_unshared
+			err := hiview_get_frame_external (ptr, rect.item)
+			create size.make_shared ( rect.size )
+			create point.make_shared ( rect.origin )
+			blubb := size.width.rounded
+			blubb := size.height.rounded
+			blubb := point.x.rounded
+			blubb := point.y.rounded
 
---			err := hiview_get_frame_external (subview_a.item, rect.item)
---			create size.make_shared ( rect.size )
---			blubb := size.width.rounded
---			blubb := size.height.rounded
+			err := hiview_get_frame_external (c_object, rect.item)
+			create size.make_shared ( rect.size )
+			create point.make_shared ( rect.origin )
+			blubb := size.width.rounded
+			blubb := size.height.rounded
+			blubb := point.x.rounded
+			blubb := point.y.rounded
+
+			err := hiview_get_frame_external (subview_a.item, rect.item)
+			create size.make_shared ( rect.size )
+			create point.make_shared ( rect.origin )
+			blubb := size.width.rounded
+			blubb := size.height.rounded
+			blubb := point.x.rounded
+			blubb := point.y.rounded
 
 --			blubb := hiview_count_subviews_external ( c_object )
 --			blubb := hiview_count_subviews_external ( ptr )
@@ -344,6 +384,7 @@ feature {NONE} -- Implementation
 						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamrgnhandle,{CARBONEVENTS_ANON_ENUMS}.typeqdrgnhandle, $actual_type, sizeof(region.item), $actual_size, region.item )
 						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcgcontextref, {CARBONEVENTS_ANON_ENUMS}.typecgcontextref, $actual_type, sizeof(context.item), $actual_size, context.item)
 						draw ( region, context )
+						err := call_next_event_handler_external (a_inhandlercallref, a_inevent )
 						Result := noErr -- event handled
 					elseif event_kind =  {CARBONEVENTS_ANON_ENUMS}.keventcontrolhittest then
 						create where.make_new_unshared
@@ -351,10 +392,6 @@ feature {NONE} -- Implementation
 						part := hit_test ( where )
 						err := set_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcontrolpart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, 2, $part ) -- 2 = sizeof(INTEGER_16)
 						Result := noErr --event handled
-					elseif  event_kind = {CARBONEVENTS_ANON_ENUMS}.keventcontrolgetpartregion then
-						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcontrolpart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, $actual_type, 2, $actual_size, $part ) -- 2 = sizeof(INTEGER_16)
-						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcontrolregion,{CARBONEVENTS_ANON_ENUMS}.typeqdrgnhandle, $actual_type, sizeof(region.item), $actual_size, region.item )
-						Result := get_region ( part, region )
 					elseif event_kind = {CARBONEVENTS_ANON_ENUMS}.keventcontroltrack then
 						Result := track ( a_inevent )
 						--err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparammouselocation, {CARBONEVENTS_ANON_ENUMS}.typehipoint, $actual_type, where.sizeof, $actual_size, where.item )
@@ -379,20 +416,14 @@ feature {NONE} -- Implementation
 	bounds_changed ( options : INTEGER; original_bounds, current_bounds : CGRECT_STRUCT ) is
 			-- Handler for the bounds changed event
 		do
---			calculate_rects
---			adjust_subviews
+			calculate_rects
+			adjust_subviews
 		end
 
 	draw ( limit_rgn, context : POINTER ) is
 			-- Draw the splitter
 		do
 
-		end
-
-	get_region (  part : INTEGER_16; region : POINTER ) : INTEGER is
-			--
-		do
-			Result :=noerr
 		end
 
 	hit_test ( where : CGPOINT_STRUCT ) : INTEGER_16 is

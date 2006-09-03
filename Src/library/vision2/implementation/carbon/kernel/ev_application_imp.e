@@ -297,7 +297,6 @@ feature {NONE} -- callback handling for events
 			-- anytime somebody calls `trigger_event_external'
 		local
 			a_id: INTEGER
-			ret: INTEGER
 		do
 				a_id := pointer_to_int ( a_inuserdata )
 				check

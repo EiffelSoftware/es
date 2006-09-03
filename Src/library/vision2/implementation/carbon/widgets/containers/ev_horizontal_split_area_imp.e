@@ -23,28 +23,10 @@ inherit
 			interface
 		end
 
-	HIOBJECT_FUNCTIONS_EXTERNAL
-		export
-			{NONE} all
-		end
-
 create
 	make
 
 feature -- initialization
-
-	make (an_interface: like interface) is
-			-- Connect interface and initialize `c_object'.
-		local
-			struct_ptr : POINTER
-			err : INTEGER
-		do
-			base_make (an_interface)
-
-			event_id := app_implementation.get_id (current)  --getting an id from the application
-			set_c_object (struct_ptr)
-		end
-
 
 feature {EV_ANY_I} -- Implementation
 

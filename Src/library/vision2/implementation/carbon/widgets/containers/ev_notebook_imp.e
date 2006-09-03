@@ -69,8 +69,6 @@ feature {NONE} -- Initialization
 
 	initialize is
 			-- Initialize the notebook.
-		local
-			target, h_ret: POINTER
 		do
 			Precursor {EV_WIDGET_LIST_IMP}
 			initialize_pixmaps
@@ -342,10 +340,10 @@ feature {EV_NOTEBOOK} -- Status setting
 				check
 					w_imp_not_void : w_imp /= Void
 				end
-				err := hiview_set_visible_external ( w_imp.c_object, (true).to_integer )
+				hide_control_external ( w_imp.c_object )
 			end
 			set_control32bit_value_external ( c_object, item_index )
-			err := hiview_set_visible_external ( item_imp.c_object, (false).to_integer )
+			show_control_external ( item_imp.c_object )
 			last_selected := selected_item_index
 		end
 
@@ -381,7 +379,6 @@ feature -- Element change
 			check
 				not_void : w_imp /=  Void
 			end
-			err := hiview_add_subview_external ( c_object, w_imp.c_object )
 			create a_rect.make_new_unshared
 			err := get_control_data_external ( c_object, {CONTROLS_ANON_ENUMS}.kControlEntireControl, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlTabContentRectTag, a_rect.sizeof, a_rect.item, $actual_size )
 			check
@@ -404,9 +401,9 @@ feature -- Element change
 
 			set_control_bounds_external ( w_imp.c_object, a_rect.item )
 			bind_to_tabcontrol ( w_imp.c_object, c_object )
-			err := hiview_set_visible_external ( w_imp.c_object, (true).to_integer )
+			hide_control_external ( w_imp.c_object )
 			if count = 1  then
-				set_control32bit_value_external ( c_object, 1 )
+				--set_control32bit_value_external ( c_object, 1 )
 				page_switch
 			end
 		end

@@ -154,7 +154,7 @@ feature -- internals
 			node: EV_CARBON_DATABROWSER_ITEM
 		do
 			Result := {CONTROLDEFINITIONS_ANON_ENUMS}.errDataBrowserPropertyNotSupported
-			if a_setvalue = true then
+			if a_setvalue.to_boolean then
 				-- Set Information: Some information has changed: update data structures
 				-- Should not happen, since we don't support e.g. inline editing of the items!
 			else
