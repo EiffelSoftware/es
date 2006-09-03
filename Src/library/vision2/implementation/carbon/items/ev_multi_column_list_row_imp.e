@@ -28,6 +28,12 @@ inherit
 			interface
 		end
 
+	EV_CARBON_DATABROWSER_ITEM
+		redefine
+			interface,
+			text
+		end
+
 create
 	make
 
@@ -184,6 +190,13 @@ feature -- Element Change
 			-- Tooltip displayed on `Current'.
 
 feature {NONE} -- Implementation
+
+	text: STRING_32 is
+			--
+		do
+			Result := interface.i_th (1)
+		end
+
 
 	on_item_added_at (an_item: STRING_GENERAL; item_index: INTEGER) is
 			-- `an_item' has been added to index `item_index'.

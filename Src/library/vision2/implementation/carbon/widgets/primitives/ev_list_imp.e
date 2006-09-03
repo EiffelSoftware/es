@@ -25,7 +25,8 @@ inherit
 			initialize,
 			row_from_y_coord,
 			on_mouse_button_event,
-			row_height
+			row_height,
+			insert_i_th
 		end
 
 	EV_CARBON_DATABROWSER
@@ -34,7 +35,8 @@ inherit
 		redefine
 			make,
 			initialize,
-			interface
+			interface,
+			insert_i_th
 		end
 
 create
@@ -51,11 +53,18 @@ feature -- Initialize
 		end
 
 	initialize is
-			--
+			-- Initialize the list.
 		do
-
+			Precursor {EV_LIST_ITEM_LIST_IMP}
 		end
 
+
+	insert_i_th (v: like item; i: INTEGER) is
+			-- Insert `v' at position `i'.
+		do
+			Precursor {EV_LIST_ITEM_LIST_IMP} (v, i)
+			Precursor {EV_CARBON_DATABROWSER} (v, i)
+		end
 
 feature -- Access
 

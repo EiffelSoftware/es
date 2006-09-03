@@ -59,7 +59,8 @@ inherit
 		redefine
 			make,
 			initialize,
-			interface
+			interface,
+			insert_i_th
 		end
 
 create
@@ -553,7 +554,7 @@ feature {EV_MULTI_COLUMN_LIST_ROW_IMP}
 	set_text_on_position (a_column, a_row: INTEGER; a_text: STRING_GENERAL) is
 			--
 		do
-			
+
 		end
 
 	set_row_pixmap (a_row: INTEGER; a_pixmap: EV_PIXMAP) is
@@ -648,12 +649,14 @@ feature {NONE} -- Implementation
 --			item_imp.set_list_iter (a_tree_iter)
 --			update_child (item_imp, ev_children.count)
 
-			if item_imp.is_transport_enabled then
-				update_pnd_connection (True)
-			end
+--			if item_imp.is_transport_enabled then
+--				update_pnd_connection (True)
+--			end
 
 			child_array.go_i_th (i)
 			child_array.put_left (v)
+
+			Precursor {EV_CARBON_DATABROWSER} (v, i)
 		end
 
 	remove_i_th (a_position: INTEGER) is

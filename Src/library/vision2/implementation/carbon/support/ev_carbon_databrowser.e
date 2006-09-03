@@ -36,7 +36,7 @@ feature -- Creation
 				--
 		local
 			ptr: POINTER
-			rect : RECT_STRUCT
+			rect: RECT_STRUCT
 			ret: INTEGER
 		do
 			base_make (an_interface)
@@ -72,9 +72,29 @@ feature -- Creation
 
 		end
 
+
+	insert_i_th (v: EV_ANY; i: INTEGER) is
+			-- Insert `v' at position `i'.
+		local
+			item: like db_item
+			ret: INTEGER
+			id: INTEGER
+		do
+			item ?= v.implementation
+			--item.set_parent_imp (Current)
+
+			-- carbon specifics:
+			item.add_item_and_children_to_parent_tree (Current, Void, i);
+			id := item.item_id
+			ret := add_data_browser_items_external (c_object, 0, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
+			-- 2nd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
+		end
+
+--	selected_item: like db_item
+
 feature -- settings
 
-	show_title_row
+	show_title_row is
 			-- Show the row of the titles.
 		local
 			ret: INTEGER
@@ -82,12 +102,21 @@ feature -- settings
 			ret := set_data_browser_list_view_header_btn_height_external (c_object, 15)
 		end
 
-	hide_title_row
+	hide_title_row is
 			-- Hide the row of the titles.
 		local
 			ret: INTEGER
 		do
 			ret := set_data_browser_list_view_header_btn_height_external (c_object, 0)
+		end
+
+	set_disclosure_column is
+			--
+		local
+			ret: INTEGER
+		do
+			-- Make the column (ID 1) have the disclosure triangles.
+			ret := set_data_browser_list_view_disclosure_column_external ( c_object, 1, 0 );
 		end
 
 
@@ -132,9 +161,6 @@ feature -- internals
 					columnDesc.headerBtnDesc.btnContentInfo.contentType = kControlContentTextOnly; //kControlNoContent;
 			
 					AddDataBrowserListViewColumn( $db_control, &columnDesc, kDataBrowserListViewAppendColumn);
-					
-					// Make the column (ID 1) have the disclosure triangles.
-					SetDataBrowserListViewDisclosureColumn ( $db_control, 1, false);
 				}
 			]"
 		end
@@ -151,7 +177,7 @@ feature -- internals
 		local
 			cfstring: EV_CARBON_CF_STRING
 			db: like Current
-			node: EV_CARBON_DATABROWSER_ITEM
+			node: like db_item
 		do
 			Result := {CONTROLDEFINITIONS_ANON_ENUMS}.errDataBrowserPropertyNotSupported
 			if a_setvalue.to_boolean then
@@ -162,11 +188,11 @@ feature -- internals
 				if a_property = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemIsContainerProperty then
 					db := get_object_from_pointer (a_browser)
 					node := db.item_list.item (a_item)
---					if node_imp.child_array.count = 0 then
---						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 0)
---					else
---						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 1)
---					end
+					if node.child_array /= Void and then node.child_array.count /= 0 then
+						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 1)
+					else
+						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 0)
+					end
 				else
 					db := get_object_from_pointer (a_browser)
 					node := db.item_list.item (a_item)
@@ -189,33 +215,33 @@ feature -- internals
 		local
 			id: INTEGER
 			ret: INTEGER
-			tree_imp: EV_TREE_IMP
-			node_imp, child_node: EV_TREE_NODE_IMP
+			tree: like current
+			node, child_node: like db_item
 		do
---			if a_message = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserContainerOpened then
---				tree_imp := get_object_from_pointer (a_browser)
---				node_imp := tree_imp.item_list.item (a_item)
---				from
---					node_imp.child_array.start
---				until
---					node_imp.child_array.after
---				loop
---					child_node ?= node_imp.child_array.item.implementation
---					id := child_node.item_id
---					ret := add_data_browser_items_external (a_browser, a_item, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
---					node_imp.child_array.forth
---				end
---				--print ("item_notification: Container-Opened id " + a_item.out + ", " + id.out + "%N")
---			elseif a_message = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemSelected then
---				tree_imp := get_object_from_pointer (a_browser)
---				node_imp := tree_imp.item_list.item (a_item)
---				node_imp.select_actions.call ([])
---				selected_item := node_imp.interface
+			if a_message = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserContainerOpened then
+				tree := get_object_from_pointer (a_browser)
+				node := tree.item_list.item (a_item)
+				from
+					node.child_array.start
+				until
+					node.child_array.after
+				loop
+					child_node ?= node.child_array.item.implementation
+					id := child_node.item_id
+					ret := add_data_browser_items_external (a_browser, a_item, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
+					node.child_array.forth
+				end
+				--print ("item_notification: Container-Opened id " + a_item.out + ", " + id.out + "%N")
+			elseif a_message = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemSelected then
+				tree := get_object_from_pointer (a_browser)
+				node := tree.item_list.item (a_item)
+				node.select_actions.call ([])
+--				selected_item := node.interface
 --				selected := true
---			end
+			end
 		end
 
-	get_object_from_pointer (a_pointer: POINTER): like Current is
+	get_object_from_pointer (a_pointer: POINTER): EV_CARBON_DATABROWSER is -- Doesn't work with 'like Current' since the instance of the class could be of another type,... callback confusion
 			-- Takes a c-pointer to the associated c_object of a object of type EV_TREE_IMP and returns a handle to that.
 		do
 			-- Okay, this is really ugly now: Since there is only one callback function
@@ -236,7 +262,7 @@ feature -- internals
 			Result ?= tree_list.item.item (1)
 		end
 
-feature {EV_CARBON_DATABROWSER} -- Implementation
+feature {EV_CARBON_DATABROWSER, EV_CARBON_DATABROWSER_ITEM} -- Implementation
 
 	db_item: EV_CARBON_DATABROWSER_ITEM
 

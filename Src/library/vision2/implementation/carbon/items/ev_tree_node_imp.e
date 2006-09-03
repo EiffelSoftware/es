@@ -33,6 +33,14 @@ inherit
 			interface
 		end
 
+	EV_CARBON_DATABROWSER_ITEM
+		undefine
+			child_array
+		redefine
+			interface,
+			text
+		end
+
 create
 	make
 
@@ -153,19 +161,6 @@ feature -- PND
 		do
 		end
 
-feature {EV_TREE_IMP, EV_TREE_NODE_IMP}-- Implementation
-
-	set_item_id (a_id: INTEGER) is
-			-- Set the item id of this item and give ids to all its children if they don't have yet.
-		do
-			item_id := a_id
-			--
-		end
-
-
-	item_id: INTEGER
-			-- A tree-wide unique ID
-
 feature {EV_TREE_IMP} -- Implementation
 
 	set_pebble_void is
@@ -197,24 +192,24 @@ feature {EV_ANY_I} -- Implementation
 
 feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 
-	add_item_and_children_to_parent_tree (a_parent_tree: EV_TREE_IMP; a_parent_node: EV_TREE_NODE_IMP; a_index: INTEGER)  is
-			-- Used for setting items within parent tree
-		local
-			item_imp: EV_TREE_NODE_IMP
-			i: INTEGER
-		do
-			set_item_id (a_parent_tree.get_id (current))
+--	add_item_and_children_to_parent_tree (a_parent_tree: EV_TREE_IMP; a_parent_node: EV_TREE_NODE_IMP; a_index: INTEGER)  is
+--			-- Used for setting items within parent tree
+--		local
+--			item_imp: EV_TREE_NODE_IMP
+--			i: INTEGER
+--		do
+--			item_id := a_parent_tree.get_id (current)
 
-			from
-				i := 1
-			until
-				i > child_array.count
-			loop
-				item_imp ?= (child_array @ i).implementation
-				item_imp.add_item_and_children_to_parent_tree (a_parent_tree, Current, i)
-				i := i + 1
-			end
-		end
+--			from
+--				i := 1
+--			until
+--				i > child_array.count
+--			loop
+--				item_imp ?= (child_array @ i).implementation
+--				item_imp.add_item_and_children_to_parent_tree (a_parent_tree, Current, i)
+--				i := i + 1
+--			end
+--		end
 
 feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 

@@ -28,6 +28,8 @@ inherit
 	EV_CARBON_DATABROWSER_ITEM
 		undefine
 			text
+		redefine
+			interface
 		end
 
 
