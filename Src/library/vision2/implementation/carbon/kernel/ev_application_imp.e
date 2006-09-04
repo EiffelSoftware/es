@@ -36,15 +36,29 @@ inherit
 	EXCEPTIONS
 
 	PROCESSES_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 	CARBONEVENTSCORE_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 	EVENT_HANDLER_PROC_PTR_CALLBACK
-
+		export
+			{NONE} all
+		end
+		
 	HIOBJECT_FUNCTIONS_EXTERNAL
-
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -365,7 +379,7 @@ feature -- event handling
 			Result := handler
 		end
 
-	int_to_pointer ( a_int: INTEGER ) : POINTER is
+	frozen int_to_pointer ( a_int: INTEGER ) : POINTER is
 		external
 			"C inline"
 		alias
@@ -376,7 +390,7 @@ feature -- event handling
 			]"
 		end
 
-	pointer_to_int ( a_pointer: POINTER ) : INTEGER is
+	frozen pointer_to_int ( a_pointer: POINTER ) : INTEGER is
 		external
 			"C inline"
 		alias

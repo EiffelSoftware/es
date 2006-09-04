@@ -40,6 +40,10 @@ inherit
 		export
 			{NONE} all
 		end
+	HIGEOMETRY_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
 
@@ -84,9 +88,18 @@ feature {NONE} -- Initialization
 			target := hiobject_get_event_target_external ( c_object )
 			h_ret := app_implementation.install_event_handlers ( event_id, target, event_array )
 
+			-- Create rect wrappers
 			create rect_a.make_new_unshared
 			create rect_b.make_new_unshared
 			create splitter_rect.make_new_unshared
+
+			create rect_a_size.make_shared ( rect_a.size )
+			create rect_b_size.make_shared ( rect_b.size )
+			create splitter_rect_size.make_shared ( splitter_rect.size )
+
+			create rect_a_origin.make_shared ( rect_a.origin )
+			create rect_b_origin.make_shared ( rect_b.origin )
+			create splitter_rect_origin.make_shared ( splitter_rect.origin )
 
 			split_ratio := 0.5
 		end
@@ -112,8 +125,8 @@ feature -- Access
 			err := hiview_add_subview_external ( c_object, item_imp.c_object )
 			subview_a := item_imp.c_object
 			first := an_item
---			calculate_rects
---			adjust_subviews
+			calculate_rects
+			adjust_subviews
 		end
 
 set_second (an_item: like item) is
@@ -129,9 +142,8 @@ set_second (an_item: like item) is
 			err := hiview_add_subview_external ( c_object, item_imp.c_object )
 			subview_b := item_imp.c_object
 			second := an_item
---			calculate_rects
---			adjust_subviews
-			setup_binding( subview_a.item, subview_b.item, c_object )
+			calculate_rects
+			adjust_subviews
 		end
 
 	prune (an_item: like item) is
@@ -183,7 +195,7 @@ feature {NONE} -- Implementation
 
 	splitter_width: INTEGER is 8
 
-	split_ratio : DOUBLE
+	split_ratio : REAL_32
 
 	set_item_resize (an_item: like item; a_resizable: BOOLEAN) is
 			-- Set whether `an_item' is `a_resizable' when `Current' resizes.
@@ -201,139 +213,27 @@ feature {NONE} -- Implementation
 			-- Set the subview sizes according to the rects
 		local
 			err : INTEGER
-			rect : CGRECT_STRUCT
-			size : CGSIZE_STRUCT
-			point : CGPOINT_STRUCT
-			blubb : INTEGER
-			ptr : POINTER
 		do
 			err := hiview_set_frame_external ( subview_a.item, rect_a.item )
 			err := hiview_set_frame_external ( subview_b.item, rect_b.item )
-			--err := hiview_set_needs_display_external ( c_object, ( true ).to_integer )
+			err := hiview_set_needs_display_external ( c_object, ( true ).to_integer )
+		end
 
-
-
---			err := hiview_set_zorder_external ( c_object, {HIVIEW_ANON_ENUMS}.khiviewzorderabove, default_pointer)
---			err := hiview_set_zorder_external ( subview_a, {HIVIEW_ANON_ENUMS}.khiviewzorderabove, default_pointer)
-
-			ptr := hiview_get_superview_external (c_object )
-
-			create rect.make_new_unshared
-			err := hiview_get_frame_external (ptr, rect.item)
-			create size.make_shared ( rect.size )
-			create point.make_shared ( rect.origin )
-			blubb := size.width.rounded
-			blubb := size.height.rounded
-			blubb := point.x.rounded
-			blubb := point.y.rounded
-
-			err := hiview_get_frame_external (c_object, rect.item)
-			create size.make_shared ( rect.size )
-			create point.make_shared ( rect.origin )
-			blubb := size.width.rounded
-			blubb := size.height.rounded
-			blubb := point.x.rounded
-			blubb := point.y.rounded
-
-			err := hiview_get_frame_external (subview_a.item, rect.item)
-			create size.make_shared ( rect.size )
-			create point.make_shared ( rect.origin )
-			blubb := size.width.rounded
-			blubb := size.height.rounded
-			blubb := point.x.rounded
-			blubb := point.y.rounded
-
---			blubb := hiview_count_subviews_external ( c_object )
---			blubb := hiview_count_subviews_external ( ptr )
-
---			err := hiview_set_visible_external (c_object, 0 )
---			err := hiview_set_visible_external (subview_a.item, 0 )
---			err := hiview_set_visible_external (subview_b.item, 0 )
-
+	qdglobal_to_hiview_local ( a_global_point : POINT_STRUCT; dest_view : POINTER ) : CGPOINT_STRUCT is
+			-- Convert a global Quickdraw point to a local HIView Point
+		local
+			view_point : CGPOINT_STRUCT
+		do
+			create view_point.make_new_unshared
+			view_point.set_x ( a_global_point.h )
+			view_point.set_y ( a_global_point.v  )
+			hipoint_convert_external (view_point.item, {HIGEOMETRY_ANON_ENUMS}.khicoordspace72dpiglobal, default_pointer, {HIGEOMETRY_ANON_ENUMS}.khicoordspaceview, dest_view )
+			Result := view_point
 		end
 
 	calculate_rects is
 			-- Calculate the CGRECTS rect_a, rect_b and splitter_rect
-		local
-			bounds : CGRECT_STRUCT
-			bounds_size : CGSIZE_STRUCT
-			rect_a_size, rect_b_size, splitter_rect_size : CGSIZE_STRUCT
-			rect_a_origin, rect_b_origin, splitter_rect_origin : CGPOINT_STRUCT
-			err : INTEGER
-		do
-			create bounds.make_new_unshared
-			create bounds_size.make_shared ( bounds.size )
-			err := hiview_get_bounds_external ( c_object, bounds.item )
-
-			create rect_a_size.make_shared ( rect_a.size )
-			create rect_b_size.make_shared ( rect_b.size )
-			create splitter_rect_size.make_shared ( splitter_rect.size )
-
-			create rect_a_origin.make_shared ( rect_a.origin )
-			create rect_b_origin.make_shared ( rect_b.origin )
-			create splitter_rect_origin.make_shared ( splitter_rect.origin )
-
-			rect_a_size.set_width ( (( bounds_size.width - splitter_width ) * split_ratio).rounded )
-			rect_a_size.set_height ( bounds_size.height )
-			rect_a_origin.set_x ( 0 )
-			rect_a_origin.set_y ( 0 )
-
-			splitter_rect_origin.set_x ( rect_a_origin.x + rect_a_size.width )
-			splitter_rect_origin.set_y ( rect_a_origin.y )
-			splitter_rect_size.set_width ( rect_a_size.width )
-			splitter_rect_size.set_height ( rect_a_size.height )
-
-			rect_b_size.set_width ( bounds_size.width - splitter_width - rect_a_size.width )
-			rect_b_size.set_height ( bounds_size.height )
-			rect_b_origin.set_x ( splitter_rect_origin.x + splitter_rect_size.width )
-			rect_b_origin.set_y ( splitter_rect_origin.y )
-		end
-
-		setup_binding ( view_a, view_b, parent_control : POINTER ) is
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-					HILayoutInfo LayoutInfo;
-					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ( $view_a, &LayoutInfo );
-					
-					LayoutInfo.position.x.toView = NULL;
-					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
-					LayoutInfo.position.x.offset = 0.0;
-
-					LayoutInfo.position.y.toView = NULL;
-					LayoutInfo.position.y.kind = kHILayoutPositionTop;
-					LayoutInfo.position.y.offset = 0.0;
-					
-					LayoutInfo.scale.x.toView = NULL;
-					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.x.ratio = 1.0;
-						
-					LayoutInfo.scale.y.toView = NULL;
-					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.y.ratio = 1.0;
-
-					HIViewSetLayoutInfo( $view_a, &LayoutInfo );
-
-					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ( $view_b, &LayoutInfo );
-
-					LayoutInfo.position.y.toView = NULL;
-					LayoutInfo.position.y.kind = kHILayoutPositionTop;
-					LayoutInfo.position.y.offset = 0.0;
-
-					LayoutInfo.scale.y.toView = NULL;
-					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.y.ratio = 1.0;
-
-					HIViewSetLayoutInfo( $view_b, &LayoutInfo );
-
-					HIViewApplyLayout( $view_a );
-					HIViewApplyLayout( $view_b );
-				}
-			]"
+		deferred
 		end
 
 feature {NONE} -- Implementation constants
@@ -345,7 +245,7 @@ feature {NONE} -- Implementation constants
 	kSubViewSplitter : INTEGER_16 is unique
 
 	kControlNoPart : INTEGER_16 is
-		do
+		once
 			Result := ( {CONTROLS_ANON_ENUMS}.kcontrolnopart ).to_integer_16
 		end
 
@@ -357,10 +257,16 @@ feature {NONE} -- Implementation
 	subview_b : POINTER
 
 	rect_a : CGRECT_STRUCT
+	rect_a_size : CGSIZE_STRUCT
+	rect_a_origin : CGPOINT_STRUCT
 
 	rect_b : CGRECT_STRUCT
+	rect_b_size : CGSIZE_STRUCT
+	rect_b_origin : CGPOINT_STRUCT
 
 	splitter_rect : CGRECT_STRUCT
+	splitter_rect_size : CGSIZE_STRUCT
+	splitter_rect_origin : CGPOINT_STRUCT
 
 feature {NONE} -- Implementation
 
@@ -368,13 +274,14 @@ feature {NONE} -- Implementation
 			-- Feature that is called if an event occurs
 		local
 			event_class, event_kind : INTEGER_32
-			actual_type, actual_size : INTEGER_32
+			actual_type, actual_size : NATURAL_32
 			region, context : POINTER
 			err : INTEGER
 			where : CGPOINT_STRUCT
 			prev_rect, cur_rect : CGRECT_STRUCT
-			attributes : INTEGER_32
+			attributes : NATURAL_32
 			part : INTEGER_16
+			res : TUPLE[INTEGER,INTEGER_16]
 		do
 				event_class := get_event_class_external (a_inevent)
 				event_kind := get_event_kind_external (a_inevent)
@@ -393,10 +300,10 @@ feature {NONE} -- Implementation
 						err := set_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcontrolpart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, 2, $part ) -- 2 = sizeof(INTEGER_16)
 						Result := noErr --event handled
 					elseif event_kind = {CARBONEVENTS_ANON_ENUMS}.keventcontroltrack then
-						Result := track ( a_inevent )
-						--err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparammouselocation, {CARBONEVENTS_ANON_ENUMS}.typehipoint, $actual_type, where.sizeof, $actual_size, where.item )
-						--part := hit_test ( where )
-						--err := set_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcontrolpart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, 2, $part ) -- 2 = sizeof(INTEGER_16)
+						res := track ( a_inevent )
+						Result := res.integer_32_item (1)
+						part := res.integer_16_item(2)
+						err := set_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcontrolpart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, 2, $part ) -- 2 = sizeof(INTEGER_16)
 					elseif event_kind =  {CARBONEVENTS_ANON_ENUMS}.keventcontrolboundschanged then
 						create prev_rect.make_new_unshared
 						create cur_rect.make_new_unshared
@@ -413,7 +320,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	bounds_changed ( options : INTEGER; original_bounds, current_bounds : CGRECT_STRUCT ) is
+	bounds_changed ( options : NATURAL_32; original_bounds, current_bounds : CGRECT_STRUCT ) is
 			-- Handler for the bounds changed event
 		do
 			calculate_rects
@@ -441,10 +348,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	track ( event :POINTER ) : INTEGER is
-			--
-		do
-			Result := noErr
+	track ( event :POINTER ) : TUPLE[INTEGER, INTEGER_16] is
+			-- Tracking event handler
+		deferred
 		end
 
 feature {EV_ANY_I} -- Implementation
