@@ -40,12 +40,6 @@
 		</rule>
 		<rule>
   			<match>
-   				<header name=".*Quickdraw.h"/>
-			</match>
-			<wrapper type="default" />
-		</rule>
-		<rule>
-  			<match>
    				<header name=".*Processes.h"/>
 			</match>
 			<wrapper type="default" />

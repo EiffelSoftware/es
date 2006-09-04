@@ -386,722 +386,6 @@
 #define ewg_struct_macro_struct_AERemoteProcessResolverContext_member_set_copyDescription(an_item, a_value) ((struct AERemoteProcessResolverContext*)an_item)->copyDescription =  (CFAllocatorCopyDescriptionCallBack)a_value
 
 
-// glue code macros for struct `struct Point'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_Point sizeof (struct Point)
-
-#define ewg_struct_macro_struct_Point_member_get_v(an_item) ((struct Point*)an_item)->v
-
-#define ewg_struct_macro_struct_Point_member_set_v(an_item, a_value) ((struct Point*)an_item)->v =  (short)a_value
-
-#define ewg_struct_macro_struct_Point_member_get_h(an_item) ((struct Point*)an_item)->h
-
-#define ewg_struct_macro_struct_Point_member_set_h(an_item, a_value) ((struct Point*)an_item)->h =  (short)a_value
-
-
-// glue code macros for struct `struct Rect'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_Rect sizeof (struct Rect)
-
-#define ewg_struct_macro_struct_Rect_member_get_top(an_item) ((struct Rect*)an_item)->top
-
-#define ewg_struct_macro_struct_Rect_member_set_top(an_item, a_value) ((struct Rect*)an_item)->top =  (short)a_value
-
-#define ewg_struct_macro_struct_Rect_member_get_left(an_item) ((struct Rect*)an_item)->left
-
-#define ewg_struct_macro_struct_Rect_member_set_left(an_item, a_value) ((struct Rect*)an_item)->left =  (short)a_value
-
-#define ewg_struct_macro_struct_Rect_member_get_bottom(an_item) ((struct Rect*)an_item)->bottom
-
-#define ewg_struct_macro_struct_Rect_member_set_bottom(an_item, a_value) ((struct Rect*)an_item)->bottom =  (short)a_value
-
-#define ewg_struct_macro_struct_Rect_member_get_right(an_item) ((struct Rect*)an_item)->right
-
-#define ewg_struct_macro_struct_Rect_member_set_right(an_item, a_value) ((struct Rect*)an_item)->right =  (short)a_value
-
-
-// glue code macros for struct `struct MacPolygon'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_MacPolygon sizeof (struct MacPolygon)
-
-#define ewg_struct_macro_struct_MacPolygon_member_get_polySize(an_item) ((struct MacPolygon*)an_item)->polySize
-
-#define ewg_struct_macro_struct_MacPolygon_member_set_polySize(an_item, a_value) ((struct MacPolygon*)an_item)->polySize =  (short)a_value
-
-#define ewg_struct_macro_struct_MacPolygon_member_get_polyBBox(an_item) &((struct MacPolygon*)an_item)->polyBBox
-
-#define ewg_struct_macro_struct_MacPolygon_member_set_polyBBox(an_item, a_value) ((struct MacPolygon*)an_item)->polyBBox =  *(Rect*)a_value
-
-#define ewg_struct_macro_struct_MacPolygon_member_get_polyPoints(an_item) ((struct MacPolygon*)an_item)->polyPoints
-
-
-// glue code macros for struct `struct OpaqueRgnHandle'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueRgnHandle 1
-
-
-// glue code macros for struct `struct BitMap'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_BitMap sizeof (struct BitMap)
-
-#define ewg_struct_macro_struct_BitMap_member_get_baseAddr(an_item) ((struct BitMap*)an_item)->baseAddr
-
-#define ewg_struct_macro_struct_BitMap_member_set_baseAddr(an_item, a_value) ((struct BitMap*)an_item)->baseAddr =  (Ptr)a_value
-
-#define ewg_struct_macro_struct_BitMap_member_get_rowBytes(an_item) ((struct BitMap*)an_item)->rowBytes
-
-#define ewg_struct_macro_struct_BitMap_member_set_rowBytes(an_item, a_value) ((struct BitMap*)an_item)->rowBytes =  (short)a_value
-
-#define ewg_struct_macro_struct_BitMap_member_get_bounds(an_item) &((struct BitMap*)an_item)->bounds
-
-#define ewg_struct_macro_struct_BitMap_member_set_bounds(an_item, a_value) ((struct BitMap*)an_item)->bounds =  *(Rect*)a_value
-
-
-// glue code macros for struct `struct FontInfo'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_FontInfo sizeof (struct FontInfo)
-
-#define ewg_struct_macro_struct_FontInfo_member_get_ascent(an_item) ((struct FontInfo*)an_item)->ascent
-
-#define ewg_struct_macro_struct_FontInfo_member_set_ascent(an_item, a_value) ((struct FontInfo*)an_item)->ascent =  (short)a_value
-
-#define ewg_struct_macro_struct_FontInfo_member_get_descent(an_item) ((struct FontInfo*)an_item)->descent
-
-#define ewg_struct_macro_struct_FontInfo_member_set_descent(an_item, a_value) ((struct FontInfo*)an_item)->descent =  (short)a_value
-
-#define ewg_struct_macro_struct_FontInfo_member_get_widMax(an_item) ((struct FontInfo*)an_item)->widMax
-
-#define ewg_struct_macro_struct_FontInfo_member_set_widMax(an_item, a_value) ((struct FontInfo*)an_item)->widMax =  (short)a_value
-
-#define ewg_struct_macro_struct_FontInfo_member_get_leading(an_item) ((struct FontInfo*)an_item)->leading
-
-#define ewg_struct_macro_struct_FontInfo_member_set_leading(an_item, a_value) ((struct FontInfo*)an_item)->leading =  (short)a_value
-
-
-// glue code macros for struct `struct RGBColor'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_RGBColor sizeof (struct RGBColor)
-
-#define ewg_struct_macro_struct_RGBColor_member_get_red(an_item) ((struct RGBColor*)an_item)->red
-
-#define ewg_struct_macro_struct_RGBColor_member_set_red(an_item, a_value) ((struct RGBColor*)an_item)->red =  (unsigned short)a_value
-
-#define ewg_struct_macro_struct_RGBColor_member_get_green(an_item) ((struct RGBColor*)an_item)->green
-
-#define ewg_struct_macro_struct_RGBColor_member_set_green(an_item, a_value) ((struct RGBColor*)an_item)->green =  (unsigned short)a_value
-
-#define ewg_struct_macro_struct_RGBColor_member_get_blue(an_item) ((struct RGBColor*)an_item)->blue
-
-#define ewg_struct_macro_struct_RGBColor_member_set_blue(an_item, a_value) ((struct RGBColor*)an_item)->blue =  (unsigned short)a_value
-
-
-// glue code macros for struct `struct GDevice'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_GDevice sizeof (struct GDevice)
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdRefNum(an_item) ((struct GDevice*)an_item)->gdRefNum
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdRefNum(an_item, a_value) ((struct GDevice*)an_item)->gdRefNum =  (short)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdID(an_item) ((struct GDevice*)an_item)->gdID
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdID(an_item, a_value) ((struct GDevice*)an_item)->gdID =  (short)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdType(an_item) ((struct GDevice*)an_item)->gdType
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdType(an_item, a_value) ((struct GDevice*)an_item)->gdType =  (short)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdITable(an_item) ((struct GDevice*)an_item)->gdITable
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdITable(an_item, a_value) ((struct GDevice*)an_item)->gdITable =  (ITabHandle)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdResPref(an_item) ((struct GDevice*)an_item)->gdResPref
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdResPref(an_item, a_value) ((struct GDevice*)an_item)->gdResPref =  (short)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdSearchProc(an_item) ((struct GDevice*)an_item)->gdSearchProc
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdSearchProc(an_item, a_value) ((struct GDevice*)an_item)->gdSearchProc =  (SProcHndl)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdCompProc(an_item) ((struct GDevice*)an_item)->gdCompProc
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdCompProc(an_item, a_value) ((struct GDevice*)an_item)->gdCompProc =  (CProcHndl)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdFlags(an_item) ((struct GDevice*)an_item)->gdFlags
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdFlags(an_item, a_value) ((struct GDevice*)an_item)->gdFlags =  (short)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdPMap(an_item) ((struct GDevice*)an_item)->gdPMap
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdPMap(an_item, a_value) ((struct GDevice*)an_item)->gdPMap =  (PixMapHandle)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdRefCon(an_item) ((struct GDevice*)an_item)->gdRefCon
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdRefCon(an_item, a_value) ((struct GDevice*)an_item)->gdRefCon =  (long)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdNextGD(an_item) ((struct GDevice*)an_item)->gdNextGD
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdNextGD(an_item, a_value) ((struct GDevice*)an_item)->gdNextGD =  (GDHandle)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdRect(an_item) &((struct GDevice*)an_item)->gdRect
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdRect(an_item, a_value) ((struct GDevice*)an_item)->gdRect =  *(Rect*)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdMode(an_item) ((struct GDevice*)an_item)->gdMode
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdMode(an_item, a_value) ((struct GDevice*)an_item)->gdMode =  (long)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdCCBytes(an_item) ((struct GDevice*)an_item)->gdCCBytes
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdCCBytes(an_item, a_value) ((struct GDevice*)an_item)->gdCCBytes =  (short)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdCCDepth(an_item) ((struct GDevice*)an_item)->gdCCDepth
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdCCDepth(an_item, a_value) ((struct GDevice*)an_item)->gdCCDepth =  (short)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdCCXData(an_item) ((struct GDevice*)an_item)->gdCCXData
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdCCXData(an_item, a_value) ((struct GDevice*)an_item)->gdCCXData =  (Handle)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdCCXMask(an_item) ((struct GDevice*)an_item)->gdCCXMask
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdCCXMask(an_item, a_value) ((struct GDevice*)an_item)->gdCCXMask =  (Handle)a_value
-
-#define ewg_struct_macro_struct_GDevice_member_get_gdExt(an_item) ((struct GDevice*)an_item)->gdExt
-
-#define ewg_struct_macro_struct_GDevice_member_set_gdExt(an_item, a_value) ((struct GDevice*)an_item)->gdExt =  (Handle)a_value
-
-
-// glue code macros for struct `struct OpaqueGrafPtr'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueGrafPtr 1
-
-
-// glue code macros for struct `struct Pattern'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_Pattern sizeof (struct Pattern)
-
-#define ewg_struct_macro_struct_Pattern_member_get_pat(an_item) ((struct Pattern*)an_item)->pat
-
-
-// glue code macros for struct `struct Cursor'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_Cursor sizeof (struct Cursor)
-
-#define ewg_struct_macro_struct_Cursor_member_get_data(an_item) ((struct Cursor*)an_item)->data
-
-#define ewg_struct_macro_struct_Cursor_member_get_mask(an_item) ((struct Cursor*)an_item)->mask
-
-#define ewg_struct_macro_struct_Cursor_member_get_hotSpot(an_item) &((struct Cursor*)an_item)->hotSpot
-
-#define ewg_struct_macro_struct_Cursor_member_set_hotSpot(an_item, a_value) ((struct Cursor*)an_item)->hotSpot =  *(Point*)a_value
-
-
-// glue code macros for struct `struct PenState'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_PenState sizeof (struct PenState)
-
-#define ewg_struct_macro_struct_PenState_member_get_pnLoc(an_item) &((struct PenState*)an_item)->pnLoc
-
-#define ewg_struct_macro_struct_PenState_member_set_pnLoc(an_item, a_value) ((struct PenState*)an_item)->pnLoc =  *(Point*)a_value
-
-#define ewg_struct_macro_struct_PenState_member_get_pnSize(an_item) &((struct PenState*)an_item)->pnSize
-
-#define ewg_struct_macro_struct_PenState_member_set_pnSize(an_item, a_value) ((struct PenState*)an_item)->pnSize =  *(Point*)a_value
-
-#define ewg_struct_macro_struct_PenState_member_get_pnMode(an_item) ((struct PenState*)an_item)->pnMode
-
-#define ewg_struct_macro_struct_PenState_member_set_pnMode(an_item, a_value) ((struct PenState*)an_item)->pnMode =  (short)a_value
-
-#define ewg_struct_macro_struct_PenState_member_get_pnPat(an_item) &((struct PenState*)an_item)->pnPat
-
-#define ewg_struct_macro_struct_PenState_member_set_pnPat(an_item, a_value) ((struct PenState*)an_item)->pnPat =  *(Pattern*)a_value
-
-
-// glue code macros for struct `struct Picture'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_Picture sizeof (struct Picture)
-
-#define ewg_struct_macro_struct_Picture_member_get_picSize(an_item) ((struct Picture*)an_item)->picSize
-
-#define ewg_struct_macro_struct_Picture_member_set_picSize(an_item, a_value) ((struct Picture*)an_item)->picSize =  (short)a_value
-
-#define ewg_struct_macro_struct_Picture_member_get_picFrame(an_item) &((struct Picture*)an_item)->picFrame
-
-#define ewg_struct_macro_struct_Picture_member_set_picFrame(an_item, a_value) ((struct Picture*)an_item)->picFrame =  *(Rect*)a_value
-
-
-// glue code macros for struct `struct QDProcs'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_QDProcs sizeof (struct QDProcs)
-
-#define ewg_struct_macro_struct_QDProcs_member_get_textProc(an_item) ((struct QDProcs*)an_item)->textProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_textProc(an_item, a_value) ((struct QDProcs*)an_item)->textProc =  (QDTextUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_lineProc(an_item) ((struct QDProcs*)an_item)->lineProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_lineProc(an_item, a_value) ((struct QDProcs*)an_item)->lineProc =  (QDLineUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_rectProc(an_item) ((struct QDProcs*)an_item)->rectProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_rectProc(an_item, a_value) ((struct QDProcs*)an_item)->rectProc =  (QDRectUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_rRectProc(an_item) ((struct QDProcs*)an_item)->rRectProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_rRectProc(an_item, a_value) ((struct QDProcs*)an_item)->rRectProc =  (QDRRectUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_ovalProc(an_item) ((struct QDProcs*)an_item)->ovalProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_ovalProc(an_item, a_value) ((struct QDProcs*)an_item)->ovalProc =  (QDOvalUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_arcProc(an_item) ((struct QDProcs*)an_item)->arcProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_arcProc(an_item, a_value) ((struct QDProcs*)an_item)->arcProc =  (QDArcUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_polyProc(an_item) ((struct QDProcs*)an_item)->polyProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_polyProc(an_item, a_value) ((struct QDProcs*)an_item)->polyProc =  (QDPolyUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_rgnProc(an_item) ((struct QDProcs*)an_item)->rgnProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_rgnProc(an_item, a_value) ((struct QDProcs*)an_item)->rgnProc =  (QDRgnUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_bitsProc(an_item) ((struct QDProcs*)an_item)->bitsProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_bitsProc(an_item, a_value) ((struct QDProcs*)an_item)->bitsProc =  (QDBitsUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_commentProc(an_item) ((struct QDProcs*)an_item)->commentProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_commentProc(an_item, a_value) ((struct QDProcs*)an_item)->commentProc =  (QDCommentUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_txMeasProc(an_item) ((struct QDProcs*)an_item)->txMeasProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_txMeasProc(an_item, a_value) ((struct QDProcs*)an_item)->txMeasProc =  (QDTxMeasUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_getPicProc(an_item) ((struct QDProcs*)an_item)->getPicProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_getPicProc(an_item, a_value) ((struct QDProcs*)an_item)->getPicProc =  (QDGetPicUPP)a_value
-
-#define ewg_struct_macro_struct_QDProcs_member_get_putPicProc(an_item) ((struct QDProcs*)an_item)->putPicProc
-
-#define ewg_struct_macro_struct_QDProcs_member_set_putPicProc(an_item, a_value) ((struct QDProcs*)an_item)->putPicProc =  (QDPutPicUPP)a_value
-
-
-// glue code macros for struct `struct PixMap'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_PixMap sizeof (struct PixMap)
-
-#define ewg_struct_macro_struct_PixMap_member_get_baseAddr(an_item) ((struct PixMap*)an_item)->baseAddr
-
-#define ewg_struct_macro_struct_PixMap_member_set_baseAddr(an_item, a_value) ((struct PixMap*)an_item)->baseAddr =  (Ptr)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_rowBytes(an_item) ((struct PixMap*)an_item)->rowBytes
-
-#define ewg_struct_macro_struct_PixMap_member_set_rowBytes(an_item, a_value) ((struct PixMap*)an_item)->rowBytes =  (short)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_bounds(an_item) &((struct PixMap*)an_item)->bounds
-
-#define ewg_struct_macro_struct_PixMap_member_set_bounds(an_item, a_value) ((struct PixMap*)an_item)->bounds =  *(Rect*)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_pmVersion(an_item) ((struct PixMap*)an_item)->pmVersion
-
-#define ewg_struct_macro_struct_PixMap_member_set_pmVersion(an_item, a_value) ((struct PixMap*)an_item)->pmVersion =  (short)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_packType(an_item) ((struct PixMap*)an_item)->packType
-
-#define ewg_struct_macro_struct_PixMap_member_set_packType(an_item, a_value) ((struct PixMap*)an_item)->packType =  (short)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_packSize(an_item) ((struct PixMap*)an_item)->packSize
-
-#define ewg_struct_macro_struct_PixMap_member_set_packSize(an_item, a_value) ((struct PixMap*)an_item)->packSize =  (long)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_hRes(an_item) ((struct PixMap*)an_item)->hRes
-
-#define ewg_struct_macro_struct_PixMap_member_set_hRes(an_item, a_value) ((struct PixMap*)an_item)->hRes =  (Fixed)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_vRes(an_item) ((struct PixMap*)an_item)->vRes
-
-#define ewg_struct_macro_struct_PixMap_member_set_vRes(an_item, a_value) ((struct PixMap*)an_item)->vRes =  (Fixed)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_pixelType(an_item) ((struct PixMap*)an_item)->pixelType
-
-#define ewg_struct_macro_struct_PixMap_member_set_pixelType(an_item, a_value) ((struct PixMap*)an_item)->pixelType =  (short)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_pixelSize(an_item) ((struct PixMap*)an_item)->pixelSize
-
-#define ewg_struct_macro_struct_PixMap_member_set_pixelSize(an_item, a_value) ((struct PixMap*)an_item)->pixelSize =  (short)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_cmpCount(an_item) ((struct PixMap*)an_item)->cmpCount
-
-#define ewg_struct_macro_struct_PixMap_member_set_cmpCount(an_item, a_value) ((struct PixMap*)an_item)->cmpCount =  (short)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_cmpSize(an_item) ((struct PixMap*)an_item)->cmpSize
-
-#define ewg_struct_macro_struct_PixMap_member_set_cmpSize(an_item, a_value) ((struct PixMap*)an_item)->cmpSize =  (short)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_pixelFormat(an_item) ((struct PixMap*)an_item)->pixelFormat
-
-#define ewg_struct_macro_struct_PixMap_member_set_pixelFormat(an_item, a_value) ((struct PixMap*)an_item)->pixelFormat =  (OSType)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_pmTable(an_item) ((struct PixMap*)an_item)->pmTable
-
-#define ewg_struct_macro_struct_PixMap_member_set_pmTable(an_item, a_value) ((struct PixMap*)an_item)->pmTable =  (CTabHandle)a_value
-
-#define ewg_struct_macro_struct_PixMap_member_get_pmExt(an_item) ((struct PixMap*)an_item)->pmExt
-
-#define ewg_struct_macro_struct_PixMap_member_set_pmExt(an_item, a_value) ((struct PixMap*)an_item)->pmExt =  (void*)a_value
-
-
-// glue code macros for struct `struct PixPat'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_PixPat sizeof (struct PixPat)
-
-#define ewg_struct_macro_struct_PixPat_member_get_patType(an_item) ((struct PixPat*)an_item)->patType
-
-#define ewg_struct_macro_struct_PixPat_member_set_patType(an_item, a_value) ((struct PixPat*)an_item)->patType =  (short)a_value
-
-#define ewg_struct_macro_struct_PixPat_member_get_patMap(an_item) ((struct PixPat*)an_item)->patMap
-
-#define ewg_struct_macro_struct_PixPat_member_set_patMap(an_item, a_value) ((struct PixPat*)an_item)->patMap =  (PixMapHandle)a_value
-
-#define ewg_struct_macro_struct_PixPat_member_get_patData(an_item) ((struct PixPat*)an_item)->patData
-
-#define ewg_struct_macro_struct_PixPat_member_set_patData(an_item, a_value) ((struct PixPat*)an_item)->patData =  (Handle)a_value
-
-#define ewg_struct_macro_struct_PixPat_member_get_patXData(an_item) ((struct PixPat*)an_item)->patXData
-
-#define ewg_struct_macro_struct_PixPat_member_set_patXData(an_item, a_value) ((struct PixPat*)an_item)->patXData =  (Handle)a_value
-
-#define ewg_struct_macro_struct_PixPat_member_get_patXValid(an_item) ((struct PixPat*)an_item)->patXValid
-
-#define ewg_struct_macro_struct_PixPat_member_set_patXValid(an_item, a_value) ((struct PixPat*)an_item)->patXValid =  (short)a_value
-
-#define ewg_struct_macro_struct_PixPat_member_get_patXMap(an_item) ((struct PixPat*)an_item)->patXMap
-
-#define ewg_struct_macro_struct_PixPat_member_set_patXMap(an_item, a_value) ((struct PixPat*)an_item)->patXMap =  (Handle)a_value
-
-#define ewg_struct_macro_struct_PixPat_member_get_pat1Data(an_item) &((struct PixPat*)an_item)->pat1Data
-
-#define ewg_struct_macro_struct_PixPat_member_set_pat1Data(an_item, a_value) ((struct PixPat*)an_item)->pat1Data =  *(Pattern*)a_value
-
-
-// glue code macros for struct `struct OpenCPicParams'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpenCPicParams sizeof (struct OpenCPicParams)
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_get_srcRect(an_item) &((struct OpenCPicParams*)an_item)->srcRect
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_set_srcRect(an_item, a_value) ((struct OpenCPicParams*)an_item)->srcRect =  *(Rect*)a_value
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_get_hRes(an_item) ((struct OpenCPicParams*)an_item)->hRes
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_set_hRes(an_item, a_value) ((struct OpenCPicParams*)an_item)->hRes =  (Fixed)a_value
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_get_vRes(an_item) ((struct OpenCPicParams*)an_item)->vRes
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_set_vRes(an_item, a_value) ((struct OpenCPicParams*)an_item)->vRes =  (Fixed)a_value
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_get_version(an_item) ((struct OpenCPicParams*)an_item)->version
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_set_version(an_item, a_value) ((struct OpenCPicParams*)an_item)->version =  (short)a_value
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_get_reserved1(an_item) ((struct OpenCPicParams*)an_item)->reserved1
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_set_reserved1(an_item, a_value) ((struct OpenCPicParams*)an_item)->reserved1 =  (short)a_value
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_get_reserved2(an_item) ((struct OpenCPicParams*)an_item)->reserved2
-
-#define ewg_struct_macro_struct_OpenCPicParams_member_set_reserved2(an_item, a_value) ((struct OpenCPicParams*)an_item)->reserved2 =  (long)a_value
-
-
-// glue code macros for struct `struct ColorTable'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ColorTable sizeof (struct ColorTable)
-
-#define ewg_struct_macro_struct_ColorTable_member_get_ctSeed(an_item) ((struct ColorTable*)an_item)->ctSeed
-
-#define ewg_struct_macro_struct_ColorTable_member_set_ctSeed(an_item, a_value) ((struct ColorTable*)an_item)->ctSeed =  (long)a_value
-
-#define ewg_struct_macro_struct_ColorTable_member_get_ctFlags(an_item) ((struct ColorTable*)an_item)->ctFlags
-
-#define ewg_struct_macro_struct_ColorTable_member_set_ctFlags(an_item, a_value) ((struct ColorTable*)an_item)->ctFlags =  (short)a_value
-
-#define ewg_struct_macro_struct_ColorTable_member_get_ctSize(an_item) ((struct ColorTable*)an_item)->ctSize
-
-#define ewg_struct_macro_struct_ColorTable_member_set_ctSize(an_item, a_value) ((struct ColorTable*)an_item)->ctSize =  (short)a_value
-
-#define ewg_struct_macro_struct_ColorTable_member_get_ctTable(an_item) ((struct ColorTable*)an_item)->ctTable
-
-
-// glue code macros for struct `struct CCrsr'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CCrsr sizeof (struct CCrsr)
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrType(an_item) ((struct CCrsr*)an_item)->crsrType
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrType(an_item, a_value) ((struct CCrsr*)an_item)->crsrType =  (short)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrMap(an_item) ((struct CCrsr*)an_item)->crsrMap
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrMap(an_item, a_value) ((struct CCrsr*)an_item)->crsrMap =  (PixMapHandle)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrData(an_item) ((struct CCrsr*)an_item)->crsrData
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrData(an_item, a_value) ((struct CCrsr*)an_item)->crsrData =  (Handle)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrXData(an_item) ((struct CCrsr*)an_item)->crsrXData
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrXData(an_item, a_value) ((struct CCrsr*)an_item)->crsrXData =  (Handle)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrXValid(an_item) ((struct CCrsr*)an_item)->crsrXValid
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrXValid(an_item, a_value) ((struct CCrsr*)an_item)->crsrXValid =  (short)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrXHandle(an_item) ((struct CCrsr*)an_item)->crsrXHandle
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrXHandle(an_item, a_value) ((struct CCrsr*)an_item)->crsrXHandle =  (Handle)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsr1Data(an_item) ((struct CCrsr*)an_item)->crsr1Data
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrMask(an_item) ((struct CCrsr*)an_item)->crsrMask
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrHotSpot(an_item) &((struct CCrsr*)an_item)->crsrHotSpot
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrHotSpot(an_item, a_value) ((struct CCrsr*)an_item)->crsrHotSpot =  *(Point*)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrXTable(an_item) ((struct CCrsr*)an_item)->crsrXTable
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrXTable(an_item, a_value) ((struct CCrsr*)an_item)->crsrXTable =  (long)a_value
-
-#define ewg_struct_macro_struct_CCrsr_member_get_crsrID(an_item) ((struct CCrsr*)an_item)->crsrID
-
-#define ewg_struct_macro_struct_CCrsr_member_set_crsrID(an_item, a_value) ((struct CCrsr*)an_item)->crsrID =  (long)a_value
-
-
-// glue code macros for struct `struct CQDProcs'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CQDProcs sizeof (struct CQDProcs)
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_textProc(an_item) ((struct CQDProcs*)an_item)->textProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_textProc(an_item, a_value) ((struct CQDProcs*)an_item)->textProc =  (QDTextUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_lineProc(an_item) ((struct CQDProcs*)an_item)->lineProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_lineProc(an_item, a_value) ((struct CQDProcs*)an_item)->lineProc =  (QDLineUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_rectProc(an_item) ((struct CQDProcs*)an_item)->rectProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_rectProc(an_item, a_value) ((struct CQDProcs*)an_item)->rectProc =  (QDRectUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_rRectProc(an_item) ((struct CQDProcs*)an_item)->rRectProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_rRectProc(an_item, a_value) ((struct CQDProcs*)an_item)->rRectProc =  (QDRRectUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_ovalProc(an_item) ((struct CQDProcs*)an_item)->ovalProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_ovalProc(an_item, a_value) ((struct CQDProcs*)an_item)->ovalProc =  (QDOvalUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_arcProc(an_item) ((struct CQDProcs*)an_item)->arcProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_arcProc(an_item, a_value) ((struct CQDProcs*)an_item)->arcProc =  (QDArcUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_polyProc(an_item) ((struct CQDProcs*)an_item)->polyProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_polyProc(an_item, a_value) ((struct CQDProcs*)an_item)->polyProc =  (QDPolyUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_rgnProc(an_item) ((struct CQDProcs*)an_item)->rgnProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_rgnProc(an_item, a_value) ((struct CQDProcs*)an_item)->rgnProc =  (QDRgnUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_bitsProc(an_item) ((struct CQDProcs*)an_item)->bitsProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_bitsProc(an_item, a_value) ((struct CQDProcs*)an_item)->bitsProc =  (QDBitsUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_commentProc(an_item) ((struct CQDProcs*)an_item)->commentProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_commentProc(an_item, a_value) ((struct CQDProcs*)an_item)->commentProc =  (QDCommentUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_txMeasProc(an_item) ((struct CQDProcs*)an_item)->txMeasProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_txMeasProc(an_item, a_value) ((struct CQDProcs*)an_item)->txMeasProc =  (QDTxMeasUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_getPicProc(an_item) ((struct CQDProcs*)an_item)->getPicProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_getPicProc(an_item, a_value) ((struct CQDProcs*)an_item)->getPicProc =  (QDGetPicUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_putPicProc(an_item) ((struct CQDProcs*)an_item)->putPicProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_putPicProc(an_item, a_value) ((struct CQDProcs*)an_item)->putPicProc =  (QDPutPicUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_opcodeProc(an_item) ((struct CQDProcs*)an_item)->opcodeProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_opcodeProc(an_item, a_value) ((struct CQDProcs*)an_item)->opcodeProc =  (QDOpcodeUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_newProc1(an_item) ((struct CQDProcs*)an_item)->newProc1
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_newProc1(an_item, a_value) ((struct CQDProcs*)an_item)->newProc1 =  (UniversalProcPtr)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_glyphsProc(an_item) ((struct CQDProcs*)an_item)->glyphsProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_glyphsProc(an_item, a_value) ((struct CQDProcs*)an_item)->glyphsProc =  (QDStdGlyphsUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_printerStatusProc(an_item) ((struct CQDProcs*)an_item)->printerStatusProc
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_printerStatusProc(an_item, a_value) ((struct CQDProcs*)an_item)->printerStatusProc =  (QDPrinterStatusUPP)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_newProc4(an_item) ((struct CQDProcs*)an_item)->newProc4
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_newProc4(an_item, a_value) ((struct CQDProcs*)an_item)->newProc4 =  (UniversalProcPtr)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_newProc5(an_item) ((struct CQDProcs*)an_item)->newProc5
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_newProc5(an_item, a_value) ((struct CQDProcs*)an_item)->newProc5 =  (UniversalProcPtr)a_value
-
-#define ewg_struct_macro_struct_CQDProcs_member_get_newProc6(an_item) ((struct CQDProcs*)an_item)->newProc6
-
-#define ewg_struct_macro_struct_CQDProcs_member_set_newProc6(an_item, a_value) ((struct CQDProcs*)an_item)->newProc6 =  (UniversalProcPtr)a_value
-
-
-// glue code macros for struct `struct ITab'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ITab sizeof (struct ITab)
-
-#define ewg_struct_macro_struct_ITab_member_get_iTabSeed(an_item) ((struct ITab*)an_item)->iTabSeed
-
-#define ewg_struct_macro_struct_ITab_member_set_iTabSeed(an_item, a_value) ((struct ITab*)an_item)->iTabSeed =  (long)a_value
-
-#define ewg_struct_macro_struct_ITab_member_get_iTabRes(an_item) ((struct ITab*)an_item)->iTabRes
-
-#define ewg_struct_macro_struct_ITab_member_set_iTabRes(an_item, a_value) ((struct ITab*)an_item)->iTabRes =  (short)a_value
-
-#define ewg_struct_macro_struct_ITab_member_get_iTTable(an_item) ((struct ITab*)an_item)->iTTable
-
-
-// glue code macros for struct `struct ColorSpec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ColorSpec sizeof (struct ColorSpec)
-
-#define ewg_struct_macro_struct_ColorSpec_member_get_value(an_item) ((struct ColorSpec*)an_item)->value
-
-#define ewg_struct_macro_struct_ColorSpec_member_set_value(an_item, a_value) ((struct ColorSpec*)an_item)->value =  (short)a_value
-
-#define ewg_struct_macro_struct_ColorSpec_member_get_rgb(an_item) &((struct ColorSpec*)an_item)->rgb
-
-#define ewg_struct_macro_struct_ColorSpec_member_set_rgb(an_item, a_value) ((struct ColorSpec*)an_item)->rgb =  *(RGBColor*)a_value
-
-
-// glue code macros for struct `struct ReqListRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ReqListRec sizeof (struct ReqListRec)
-
-#define ewg_struct_macro_struct_ReqListRec_member_get_reqLSize(an_item) ((struct ReqListRec*)an_item)->reqLSize
-
-#define ewg_struct_macro_struct_ReqListRec_member_set_reqLSize(an_item, a_value) ((struct ReqListRec*)an_item)->reqLSize =  (short)a_value
-
-#define ewg_struct_macro_struct_ReqListRec_member_get_reqLData(an_item) ((struct ReqListRec*)an_item)->reqLData
-
-
-// glue code macros for struct `struct ComponentRecord'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ComponentRecord sizeof (struct ComponentRecord)
-
-#define ewg_struct_macro_struct_ComponentRecord_member_get_data(an_item) ((struct ComponentRecord*)an_item)->data
-
-
-// glue code macros for struct `struct ComponentInstanceRecord'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_ComponentInstanceRecord sizeof (struct ComponentInstanceRecord)
-
-#define ewg_struct_macro_struct_ComponentInstanceRecord_member_get_data(an_item) ((struct ComponentInstanceRecord*)an_item)->data
-
-
-// glue code macros for struct `struct OpaqueCMWorldRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueCMWorldRef 1
-
-
-// glue code macros for struct `struct OpaqueCMProfileRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueCMProfileRef 1
-
-
-// glue code macros for struct `struct OpaqueCMMatchRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueCMMatchRef 1
-
-
-// glue code macros for struct `struct OpaqueQDRegionBitsRef'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueQDRegionBitsRef 1
-
-
-// glue code macros for struct `struct _CGDirectDisplayID'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct__CGDirectDisplayID 1
-
-
 // glue code macros for struct `struct QDPict'
 
 #include<Carbon/Carbon.h>
@@ -1323,6 +607,21 @@
 #define ewg_struct_macro_sizeof_struct___AXUIElement 1
 
 
+// glue code macros for struct `struct Point'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_Point sizeof (struct Point)
+
+#define ewg_struct_macro_struct_Point_member_get_v(an_item) ((struct Point*)an_item)->v
+
+#define ewg_struct_macro_struct_Point_member_set_v(an_item, a_value) ((struct Point*)an_item)->v =  (short)a_value
+
+#define ewg_struct_macro_struct_Point_member_get_h(an_item) ((struct Point*)an_item)->h
+
+#define ewg_struct_macro_struct_Point_member_set_h(an_item, a_value) ((struct Point*)an_item)->h =  (short)a_value
+
+
 // glue code macros for struct `struct EventRecord'
 
 #include<Carbon/Carbon.h>
@@ -1350,11 +649,41 @@
 #define ewg_struct_macro_struct_EventRecord_member_set_modifiers(an_item, a_value) ((struct EventRecord*)an_item)->modifiers =  (EventModifiers)a_value
 
 
+// glue code macros for struct `struct OpaqueRgnHandle'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueRgnHandle 1
+
+
 // glue code macros for struct `struct OpaqueMenuRef'
 
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_OpaqueMenuRef 1
+
+
+// glue code macros for struct `struct Rect'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_Rect sizeof (struct Rect)
+
+#define ewg_struct_macro_struct_Rect_member_get_top(an_item) ((struct Rect*)an_item)->top
+
+#define ewg_struct_macro_struct_Rect_member_set_top(an_item, a_value) ((struct Rect*)an_item)->top =  (short)a_value
+
+#define ewg_struct_macro_struct_Rect_member_get_left(an_item) ((struct Rect*)an_item)->left
+
+#define ewg_struct_macro_struct_Rect_member_set_left(an_item, a_value) ((struct Rect*)an_item)->left =  (short)a_value
+
+#define ewg_struct_macro_struct_Rect_member_get_bottom(an_item) ((struct Rect*)an_item)->bottom
+
+#define ewg_struct_macro_struct_Rect_member_set_bottom(an_item, a_value) ((struct Rect*)an_item)->bottom =  (short)a_value
+
+#define ewg_struct_macro_struct_Rect_member_get_right(an_item) ((struct Rect*)an_item)->right
+
+#define ewg_struct_macro_struct_Rect_member_set_right(an_item, a_value) ((struct Rect*)an_item)->right =  (short)a_value
 
 
 // glue code macros for struct `struct MenuDefSpec'
@@ -1677,6 +1006,92 @@
 #define ewg_struct_macro_sizeof_struct_OpaqueDragRef 1
 
 
+// glue code macros for struct `struct GDevice'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_GDevice sizeof (struct GDevice)
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdRefNum(an_item) ((struct GDevice*)an_item)->gdRefNum
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdRefNum(an_item, a_value) ((struct GDevice*)an_item)->gdRefNum =  (short)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdID(an_item) ((struct GDevice*)an_item)->gdID
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdID(an_item, a_value) ((struct GDevice*)an_item)->gdID =  (short)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdType(an_item) ((struct GDevice*)an_item)->gdType
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdType(an_item, a_value) ((struct GDevice*)an_item)->gdType =  (short)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdITable(an_item) ((struct GDevice*)an_item)->gdITable
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdITable(an_item, a_value) ((struct GDevice*)an_item)->gdITable =  (ITabHandle)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdResPref(an_item) ((struct GDevice*)an_item)->gdResPref
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdResPref(an_item, a_value) ((struct GDevice*)an_item)->gdResPref =  (short)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdSearchProc(an_item) ((struct GDevice*)an_item)->gdSearchProc
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdSearchProc(an_item, a_value) ((struct GDevice*)an_item)->gdSearchProc =  (SProcHndl)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdCompProc(an_item) ((struct GDevice*)an_item)->gdCompProc
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdCompProc(an_item, a_value) ((struct GDevice*)an_item)->gdCompProc =  (CProcHndl)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdFlags(an_item) ((struct GDevice*)an_item)->gdFlags
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdFlags(an_item, a_value) ((struct GDevice*)an_item)->gdFlags =  (short)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdPMap(an_item) ((struct GDevice*)an_item)->gdPMap
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdPMap(an_item, a_value) ((struct GDevice*)an_item)->gdPMap =  (PixMapHandle)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdRefCon(an_item) ((struct GDevice*)an_item)->gdRefCon
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdRefCon(an_item, a_value) ((struct GDevice*)an_item)->gdRefCon =  (long)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdNextGD(an_item) ((struct GDevice*)an_item)->gdNextGD
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdNextGD(an_item, a_value) ((struct GDevice*)an_item)->gdNextGD =  (GDHandle)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdRect(an_item) &((struct GDevice*)an_item)->gdRect
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdRect(an_item, a_value) ((struct GDevice*)an_item)->gdRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdMode(an_item) ((struct GDevice*)an_item)->gdMode
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdMode(an_item, a_value) ((struct GDevice*)an_item)->gdMode =  (long)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdCCBytes(an_item) ((struct GDevice*)an_item)->gdCCBytes
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdCCBytes(an_item, a_value) ((struct GDevice*)an_item)->gdCCBytes =  (short)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdCCDepth(an_item) ((struct GDevice*)an_item)->gdCCDepth
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdCCDepth(an_item, a_value) ((struct GDevice*)an_item)->gdCCDepth =  (short)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdCCXData(an_item) ((struct GDevice*)an_item)->gdCCXData
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdCCXData(an_item, a_value) ((struct GDevice*)an_item)->gdCCXData =  (Handle)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdCCXMask(an_item) ((struct GDevice*)an_item)->gdCCXMask
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdCCXMask(an_item, a_value) ((struct GDevice*)an_item)->gdCCXMask =  (Handle)a_value
+
+#define ewg_struct_macro_struct_GDevice_member_get_gdExt(an_item) ((struct GDevice*)an_item)->gdExt
+
+#define ewg_struct_macro_struct_GDevice_member_set_gdExt(an_item, a_value) ((struct GDevice*)an_item)->gdExt =  (Handle)a_value
+
+
+// glue code macros for struct `struct OpaqueGrafPtr'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueGrafPtr 1
+
+
 // glue code macros for struct `struct WindowDefSpec'
 
 #include<Carbon/Carbon.h>
@@ -1693,6 +1108,75 @@
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_OpaqueWindowGroupRef 1
+
+
+// glue code macros for struct `struct RGBColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_RGBColor sizeof (struct RGBColor)
+
+#define ewg_struct_macro_struct_RGBColor_member_get_red(an_item) ((struct RGBColor*)an_item)->red
+
+#define ewg_struct_macro_struct_RGBColor_member_set_red(an_item, a_value) ((struct RGBColor*)an_item)->red =  (unsigned short)a_value
+
+#define ewg_struct_macro_struct_RGBColor_member_get_green(an_item) ((struct RGBColor*)an_item)->green
+
+#define ewg_struct_macro_struct_RGBColor_member_set_green(an_item, a_value) ((struct RGBColor*)an_item)->green =  (unsigned short)a_value
+
+#define ewg_struct_macro_struct_RGBColor_member_get_blue(an_item) ((struct RGBColor*)an_item)->blue
+
+#define ewg_struct_macro_struct_RGBColor_member_set_blue(an_item, a_value) ((struct RGBColor*)an_item)->blue =  (unsigned short)a_value
+
+
+// glue code macros for struct `struct PixPat'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_PixPat sizeof (struct PixPat)
+
+#define ewg_struct_macro_struct_PixPat_member_get_patType(an_item) ((struct PixPat*)an_item)->patType
+
+#define ewg_struct_macro_struct_PixPat_member_set_patType(an_item, a_value) ((struct PixPat*)an_item)->patType =  (short)a_value
+
+#define ewg_struct_macro_struct_PixPat_member_get_patMap(an_item) ((struct PixPat*)an_item)->patMap
+
+#define ewg_struct_macro_struct_PixPat_member_set_patMap(an_item, a_value) ((struct PixPat*)an_item)->patMap =  (PixMapHandle)a_value
+
+#define ewg_struct_macro_struct_PixPat_member_get_patData(an_item) ((struct PixPat*)an_item)->patData
+
+#define ewg_struct_macro_struct_PixPat_member_set_patData(an_item, a_value) ((struct PixPat*)an_item)->patData =  (Handle)a_value
+
+#define ewg_struct_macro_struct_PixPat_member_get_patXData(an_item) ((struct PixPat*)an_item)->patXData
+
+#define ewg_struct_macro_struct_PixPat_member_set_patXData(an_item, a_value) ((struct PixPat*)an_item)->patXData =  (Handle)a_value
+
+#define ewg_struct_macro_struct_PixPat_member_get_patXValid(an_item) ((struct PixPat*)an_item)->patXValid
+
+#define ewg_struct_macro_struct_PixPat_member_set_patXValid(an_item, a_value) ((struct PixPat*)an_item)->patXValid =  (short)a_value
+
+#define ewg_struct_macro_struct_PixPat_member_get_patXMap(an_item) ((struct PixPat*)an_item)->patXMap
+
+#define ewg_struct_macro_struct_PixPat_member_set_patXMap(an_item, a_value) ((struct PixPat*)an_item)->patXMap =  (Handle)a_value
+
+#define ewg_struct_macro_struct_PixPat_member_get_pat1Data(an_item) &((struct PixPat*)an_item)->pat1Data
+
+#define ewg_struct_macro_struct_PixPat_member_set_pat1Data(an_item, a_value) ((struct PixPat*)an_item)->pat1Data =  *(Pattern*)a_value
+
+
+// glue code macros for struct `struct Picture'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_Picture sizeof (struct Picture)
+
+#define ewg_struct_macro_struct_Picture_member_get_picSize(an_item) ((struct Picture*)an_item)->picSize
+
+#define ewg_struct_macro_struct_Picture_member_set_picSize(an_item, a_value) ((struct Picture*)an_item)->picSize =  (short)a_value
+
+#define ewg_struct_macro_struct_Picture_member_get_picFrame(an_item) &((struct Picture*)an_item)->picFrame
+
+#define ewg_struct_macro_struct_Picture_member_set_picFrame(an_item, a_value) ((struct Picture*)an_item)->picFrame =  *(Rect*)a_value
 
 
 // glue code macros for struct `struct AliasRecord'
@@ -2212,273 +1696,6 @@
 #define ewg_struct_macro_CFStringInlineBuffer_member_set_bufferedRangeEnd(an_item, a_value) ((CFStringInlineBuffer*)an_item)->bufferedRangeEnd =  (CFIndex)a_value
 
 
-// glue code macros for struct `struct PrinterFontStatus'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_PrinterFontStatus sizeof (struct PrinterFontStatus)
-
-#define ewg_struct_macro_struct_PrinterFontStatus_member_get_oResult(an_item) ((struct PrinterFontStatus*)an_item)->oResult
-
-#define ewg_struct_macro_struct_PrinterFontStatus_member_set_oResult(an_item, a_value) ((struct PrinterFontStatus*)an_item)->oResult =  (SInt32)a_value
-
-#define ewg_struct_macro_struct_PrinterFontStatus_member_get_iFondID(an_item) ((struct PrinterFontStatus*)an_item)->iFondID
-
-#define ewg_struct_macro_struct_PrinterFontStatus_member_set_iFondID(an_item, a_value) ((struct PrinterFontStatus*)an_item)->iFondID =  (SInt16)a_value
-
-#define ewg_struct_macro_struct_PrinterFontStatus_member_get_iStyle(an_item) ((struct PrinterFontStatus*)an_item)->iStyle
-
-#define ewg_struct_macro_struct_PrinterFontStatus_member_set_iStyle(an_item, a_value) ((struct PrinterFontStatus*)an_item)->iStyle =  (Style)a_value
-
-
-// glue code macros for struct `struct PrinterScalingStatus'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_PrinterScalingStatus sizeof (struct PrinterScalingStatus)
-
-#define ewg_struct_macro_struct_PrinterScalingStatus_member_get_oScalingFactors(an_item) &((struct PrinterScalingStatus*)an_item)->oScalingFactors
-
-#define ewg_struct_macro_struct_PrinterScalingStatus_member_set_oScalingFactors(an_item, a_value) ((struct PrinterScalingStatus*)an_item)->oScalingFactors =  *(Point*)a_value
-
-
-// glue code macros for struct `struct xColorSpec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_xColorSpec sizeof (struct xColorSpec)
-
-#define ewg_struct_macro_struct_xColorSpec_member_get_value(an_item) ((struct xColorSpec*)an_item)->value
-
-#define ewg_struct_macro_struct_xColorSpec_member_set_value(an_item, a_value) ((struct xColorSpec*)an_item)->value =  (short)a_value
-
-#define ewg_struct_macro_struct_xColorSpec_member_get_rgb(an_item) &((struct xColorSpec*)an_item)->rgb
-
-#define ewg_struct_macro_struct_xColorSpec_member_set_rgb(an_item, a_value) ((struct xColorSpec*)an_item)->rgb =  *(RGBColor*)a_value
-
-#define ewg_struct_macro_struct_xColorSpec_member_get_xalpha(an_item) ((struct xColorSpec*)an_item)->xalpha
-
-#define ewg_struct_macro_struct_xColorSpec_member_set_xalpha(an_item, a_value) ((struct xColorSpec*)an_item)->xalpha =  (short)a_value
-
-
-// glue code macros for struct `struct MatchRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_MatchRec sizeof (struct MatchRec)
-
-#define ewg_struct_macro_struct_MatchRec_member_get_red(an_item) ((struct MatchRec*)an_item)->red
-
-#define ewg_struct_macro_struct_MatchRec_member_set_red(an_item, a_value) ((struct MatchRec*)an_item)->red =  (unsigned short)a_value
-
-#define ewg_struct_macro_struct_MatchRec_member_get_green(an_item) ((struct MatchRec*)an_item)->green
-
-#define ewg_struct_macro_struct_MatchRec_member_set_green(an_item, a_value) ((struct MatchRec*)an_item)->green =  (unsigned short)a_value
-
-#define ewg_struct_macro_struct_MatchRec_member_get_blue(an_item) ((struct MatchRec*)an_item)->blue
-
-#define ewg_struct_macro_struct_MatchRec_member_set_blue(an_item, a_value) ((struct MatchRec*)an_item)->blue =  (unsigned short)a_value
-
-#define ewg_struct_macro_struct_MatchRec_member_get_matchData(an_item) ((struct MatchRec*)an_item)->matchData
-
-#define ewg_struct_macro_struct_MatchRec_member_set_matchData(an_item, a_value) ((struct MatchRec*)an_item)->matchData =  (long)a_value
-
-
-// glue code macros for struct `struct GammaTbl'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_GammaTbl sizeof (struct GammaTbl)
-
-#define ewg_struct_macro_struct_GammaTbl_member_get_gVersion(an_item) ((struct GammaTbl*)an_item)->gVersion
-
-#define ewg_struct_macro_struct_GammaTbl_member_set_gVersion(an_item, a_value) ((struct GammaTbl*)an_item)->gVersion =  (short)a_value
-
-#define ewg_struct_macro_struct_GammaTbl_member_get_gType(an_item) ((struct GammaTbl*)an_item)->gType
-
-#define ewg_struct_macro_struct_GammaTbl_member_set_gType(an_item, a_value) ((struct GammaTbl*)an_item)->gType =  (short)a_value
-
-#define ewg_struct_macro_struct_GammaTbl_member_get_gFormulaSize(an_item) ((struct GammaTbl*)an_item)->gFormulaSize
-
-#define ewg_struct_macro_struct_GammaTbl_member_set_gFormulaSize(an_item, a_value) ((struct GammaTbl*)an_item)->gFormulaSize =  (short)a_value
-
-#define ewg_struct_macro_struct_GammaTbl_member_get_gChanCnt(an_item) ((struct GammaTbl*)an_item)->gChanCnt
-
-#define ewg_struct_macro_struct_GammaTbl_member_set_gChanCnt(an_item, a_value) ((struct GammaTbl*)an_item)->gChanCnt =  (short)a_value
-
-#define ewg_struct_macro_struct_GammaTbl_member_get_gDataCnt(an_item) ((struct GammaTbl*)an_item)->gDataCnt
-
-#define ewg_struct_macro_struct_GammaTbl_member_set_gDataCnt(an_item, a_value) ((struct GammaTbl*)an_item)->gDataCnt =  (short)a_value
-
-#define ewg_struct_macro_struct_GammaTbl_member_get_gDataWidth(an_item) ((struct GammaTbl*)an_item)->gDataWidth
-
-#define ewg_struct_macro_struct_GammaTbl_member_set_gDataWidth(an_item, a_value) ((struct GammaTbl*)an_item)->gDataWidth =  (short)a_value
-
-#define ewg_struct_macro_struct_GammaTbl_member_get_gFormulaData(an_item) ((struct GammaTbl*)an_item)->gFormulaData
-
-
-// glue code macros for struct `struct SProcRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_SProcRec sizeof (struct SProcRec)
-
-#define ewg_struct_macro_struct_SProcRec_member_get_nxtSrch(an_item) ((struct SProcRec*)an_item)->nxtSrch
-
-#define ewg_struct_macro_struct_SProcRec_member_set_nxtSrch(an_item, a_value) ((struct SProcRec*)an_item)->nxtSrch =  (Handle)a_value
-
-#define ewg_struct_macro_struct_SProcRec_member_get_srchProc(an_item) ((struct SProcRec*)an_item)->srchProc
-
-#define ewg_struct_macro_struct_SProcRec_member_set_srchProc(an_item, a_value) ((struct SProcRec*)an_item)->srchProc =  (ColorSearchUPP)a_value
-
-
-// glue code macros for struct `struct CProcRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CProcRec sizeof (struct CProcRec)
-
-#define ewg_struct_macro_struct_CProcRec_member_get_nxtComp(an_item) ((struct CProcRec*)an_item)->nxtComp
-
-#define ewg_struct_macro_struct_CProcRec_member_set_nxtComp(an_item, a_value) ((struct CProcRec*)an_item)->nxtComp =  (Handle)a_value
-
-#define ewg_struct_macro_struct_CProcRec_member_get_compProc(an_item) ((struct CProcRec*)an_item)->compProc
-
-#define ewg_struct_macro_struct_CProcRec_member_set_compProc(an_item, a_value) ((struct CProcRec*)an_item)->compProc =  (ColorComplementUPP)a_value
-
-
-// glue code macros for struct `struct GrafVars'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_GrafVars sizeof (struct GrafVars)
-
-#define ewg_struct_macro_struct_GrafVars_member_get_rgbOpColor(an_item) &((struct GrafVars*)an_item)->rgbOpColor
-
-#define ewg_struct_macro_struct_GrafVars_member_set_rgbOpColor(an_item, a_value) ((struct GrafVars*)an_item)->rgbOpColor =  *(RGBColor*)a_value
-
-#define ewg_struct_macro_struct_GrafVars_member_get_rgbHiliteColor(an_item) &((struct GrafVars*)an_item)->rgbHiliteColor
-
-#define ewg_struct_macro_struct_GrafVars_member_set_rgbHiliteColor(an_item, a_value) ((struct GrafVars*)an_item)->rgbHiliteColor =  *(RGBColor*)a_value
-
-#define ewg_struct_macro_struct_GrafVars_member_get_pmFgColor(an_item) ((struct GrafVars*)an_item)->pmFgColor
-
-#define ewg_struct_macro_struct_GrafVars_member_set_pmFgColor(an_item, a_value) ((struct GrafVars*)an_item)->pmFgColor =  (Handle)a_value
-
-#define ewg_struct_macro_struct_GrafVars_member_get_pmFgIndex(an_item) ((struct GrafVars*)an_item)->pmFgIndex
-
-#define ewg_struct_macro_struct_GrafVars_member_set_pmFgIndex(an_item, a_value) ((struct GrafVars*)an_item)->pmFgIndex =  (short)a_value
-
-#define ewg_struct_macro_struct_GrafVars_member_get_pmBkColor(an_item) ((struct GrafVars*)an_item)->pmBkColor
-
-#define ewg_struct_macro_struct_GrafVars_member_set_pmBkColor(an_item, a_value) ((struct GrafVars*)an_item)->pmBkColor =  (Handle)a_value
-
-#define ewg_struct_macro_struct_GrafVars_member_get_pmBkIndex(an_item) ((struct GrafVars*)an_item)->pmBkIndex
-
-#define ewg_struct_macro_struct_GrafVars_member_set_pmBkIndex(an_item, a_value) ((struct GrafVars*)an_item)->pmBkIndex =  (short)a_value
-
-#define ewg_struct_macro_struct_GrafVars_member_get_pmFlags(an_item) ((struct GrafVars*)an_item)->pmFlags
-
-#define ewg_struct_macro_struct_GrafVars_member_set_pmFlags(an_item, a_value) ((struct GrafVars*)an_item)->pmFlags =  (short)a_value
-
-
-// glue code macros for struct `struct CursorImageRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CursorImageRec sizeof (struct CursorImageRec)
-
-#define ewg_struct_macro_struct_CursorImageRec_member_get_majorVersion(an_item) ((struct CursorImageRec*)an_item)->majorVersion
-
-#define ewg_struct_macro_struct_CursorImageRec_member_set_majorVersion(an_item, a_value) ((struct CursorImageRec*)an_item)->majorVersion =  (UInt16)a_value
-
-#define ewg_struct_macro_struct_CursorImageRec_member_get_minorVersion(an_item) ((struct CursorImageRec*)an_item)->minorVersion
-
-#define ewg_struct_macro_struct_CursorImageRec_member_set_minorVersion(an_item, a_value) ((struct CursorImageRec*)an_item)->minorVersion =  (UInt16)a_value
-
-#define ewg_struct_macro_struct_CursorImageRec_member_get_cursorPixMap(an_item) ((struct CursorImageRec*)an_item)->cursorPixMap
-
-#define ewg_struct_macro_struct_CursorImageRec_member_set_cursorPixMap(an_item, a_value) ((struct CursorImageRec*)an_item)->cursorPixMap =  (PixMapHandle)a_value
-
-#define ewg_struct_macro_struct_CursorImageRec_member_get_cursorBitMask(an_item) ((struct CursorImageRec*)an_item)->cursorBitMask
-
-#define ewg_struct_macro_struct_CursorImageRec_member_set_cursorBitMask(an_item, a_value) ((struct CursorImageRec*)an_item)->cursorBitMask =  (BitMapHandle)a_value
-
-
-// glue code macros for struct `struct CustomXFerRec'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CustomXFerRec sizeof (struct CustomXFerRec)
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_version(an_item) ((struct CustomXFerRec*)an_item)->version
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_version(an_item, a_value) ((struct CustomXFerRec*)an_item)->version =  (UInt32)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_srcPixels(an_item) ((struct CustomXFerRec*)an_item)->srcPixels
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_srcPixels(an_item, a_value) ((struct CustomXFerRec*)an_item)->srcPixels =  (void*)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_destPixels(an_item) ((struct CustomXFerRec*)an_item)->destPixels
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_destPixels(an_item, a_value) ((struct CustomXFerRec*)an_item)->destPixels =  (void*)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_resultPixels(an_item) ((struct CustomXFerRec*)an_item)->resultPixels
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_resultPixels(an_item, a_value) ((struct CustomXFerRec*)an_item)->resultPixels =  (void*)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_refCon(an_item) ((struct CustomXFerRec*)an_item)->refCon
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_refCon(an_item, a_value) ((struct CustomXFerRec*)an_item)->refCon =  (UInt32)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_pixelSize(an_item) ((struct CustomXFerRec*)an_item)->pixelSize
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_pixelSize(an_item, a_value) ((struct CustomXFerRec*)an_item)->pixelSize =  (UInt32)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_pixelCount(an_item) ((struct CustomXFerRec*)an_item)->pixelCount
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_pixelCount(an_item, a_value) ((struct CustomXFerRec*)an_item)->pixelCount =  (UInt32)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_firstPixelHV(an_item) &((struct CustomXFerRec*)an_item)->firstPixelHV
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_firstPixelHV(an_item, a_value) ((struct CustomXFerRec*)an_item)->firstPixelHV =  *(Point*)a_value
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_get_destBounds(an_item) &((struct CustomXFerRec*)an_item)->destBounds
-
-#define ewg_struct_macro_struct_CustomXFerRec_member_set_destBounds(an_item, a_value) ((struct CustomXFerRec*)an_item)->destBounds =  *(Rect*)a_value
-
-
-// glue code macros for struct `struct CursorInfo'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CursorInfo sizeof (struct CursorInfo)
-
-#define ewg_struct_macro_struct_CursorInfo_member_get_version(an_item) ((struct CursorInfo*)an_item)->version
-
-#define ewg_struct_macro_struct_CursorInfo_member_set_version(an_item, a_value) ((struct CursorInfo*)an_item)->version =  (long)a_value
-
-#define ewg_struct_macro_struct_CursorInfo_member_get_capabilities(an_item) ((struct CursorInfo*)an_item)->capabilities
-
-#define ewg_struct_macro_struct_CursorInfo_member_set_capabilities(an_item, a_value) ((struct CursorInfo*)an_item)->capabilities =  (long)a_value
-
-#define ewg_struct_macro_struct_CursorInfo_member_get_animateDuration(an_item) ((struct CursorInfo*)an_item)->animateDuration
-
-#define ewg_struct_macro_struct_CursorInfo_member_set_animateDuration(an_item, a_value) ((struct CursorInfo*)an_item)->animateDuration =  (long)a_value
-
-#define ewg_struct_macro_struct_CursorInfo_member_get_bounds(an_item) &((struct CursorInfo*)an_item)->bounds
-
-#define ewg_struct_macro_struct_CursorInfo_member_set_bounds(an_item, a_value) ((struct CursorInfo*)an_item)->bounds =  *(Rect*)a_value
-
-#define ewg_struct_macro_struct_CursorInfo_member_get_hotspot(an_item) &((struct CursorInfo*)an_item)->hotspot
-
-#define ewg_struct_macro_struct_CursorInfo_member_set_hotspot(an_item, a_value) ((struct CursorInfo*)an_item)->hotspot =  *(Point*)a_value
-
-#define ewg_struct_macro_struct_CursorInfo_member_get_reserved(an_item) ((struct CursorInfo*)an_item)->reserved
-
-#define ewg_struct_macro_struct_CursorInfo_member_set_reserved(an_item, a_value) ((struct CursorInfo*)an_item)->reserved =  (long)a_value
-
-
 // glue code macros for struct `struct AppParameters'
 
 #include<Carbon/Carbon.h>
@@ -2838,6 +2055,21 @@
 #define ewg_struct_macro_struct_ControlTemplate_member_set_controlReference(an_item, a_value) ((struct ControlTemplate*)an_item)->controlReference =  (SInt32)a_value
 
 #define ewg_struct_macro_struct_ControlTemplate_member_get_controlTitle(an_item) ((struct ControlTemplate*)an_item)->controlTitle
+
+
+// glue code macros for struct `struct ColorSpec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ColorSpec sizeof (struct ColorSpec)
+
+#define ewg_struct_macro_struct_ColorSpec_member_get_value(an_item) ((struct ColorSpec*)an_item)->value
+
+#define ewg_struct_macro_struct_ColorSpec_member_set_value(an_item, a_value) ((struct ColorSpec*)an_item)->value =  (short)a_value
+
+#define ewg_struct_macro_struct_ColorSpec_member_get_rgb(an_item) &((struct ColorSpec*)an_item)->rgb
+
+#define ewg_struct_macro_struct_ColorSpec_member_set_rgb(an_item, a_value) ((struct ColorSpec*)an_item)->rgb =  *(RGBColor*)a_value
 
 
 // glue code macros for struct `struct CtlCTab'
@@ -3719,6 +2951,129 @@
 #define ewg_struct_macro_sizeof_struct_OpaqueAEDataStorageType 1
 
 
+// glue code macros for struct `struct ITab'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ITab sizeof (struct ITab)
+
+#define ewg_struct_macro_struct_ITab_member_get_iTabSeed(an_item) ((struct ITab*)an_item)->iTabSeed
+
+#define ewg_struct_macro_struct_ITab_member_set_iTabSeed(an_item, a_value) ((struct ITab*)an_item)->iTabSeed =  (long)a_value
+
+#define ewg_struct_macro_struct_ITab_member_get_iTabRes(an_item) ((struct ITab*)an_item)->iTabRes
+
+#define ewg_struct_macro_struct_ITab_member_set_iTabRes(an_item, a_value) ((struct ITab*)an_item)->iTabRes =  (short)a_value
+
+#define ewg_struct_macro_struct_ITab_member_get_iTTable(an_item) ((struct ITab*)an_item)->iTTable
+
+
+// glue code macros for struct `struct SProcRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_SProcRec sizeof (struct SProcRec)
+
+#define ewg_struct_macro_struct_SProcRec_member_get_nxtSrch(an_item) ((struct SProcRec*)an_item)->nxtSrch
+
+#define ewg_struct_macro_struct_SProcRec_member_set_nxtSrch(an_item, a_value) ((struct SProcRec*)an_item)->nxtSrch =  (Handle)a_value
+
+#define ewg_struct_macro_struct_SProcRec_member_get_srchProc(an_item) ((struct SProcRec*)an_item)->srchProc
+
+#define ewg_struct_macro_struct_SProcRec_member_set_srchProc(an_item, a_value) ((struct SProcRec*)an_item)->srchProc =  (ColorSearchUPP)a_value
+
+
+// glue code macros for struct `struct CProcRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CProcRec sizeof (struct CProcRec)
+
+#define ewg_struct_macro_struct_CProcRec_member_get_nxtComp(an_item) ((struct CProcRec*)an_item)->nxtComp
+
+#define ewg_struct_macro_struct_CProcRec_member_set_nxtComp(an_item, a_value) ((struct CProcRec*)an_item)->nxtComp =  (Handle)a_value
+
+#define ewg_struct_macro_struct_CProcRec_member_get_compProc(an_item) ((struct CProcRec*)an_item)->compProc
+
+#define ewg_struct_macro_struct_CProcRec_member_set_compProc(an_item, a_value) ((struct CProcRec*)an_item)->compProc =  (ColorComplementUPP)a_value
+
+
+// glue code macros for struct `struct PixMap'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_PixMap sizeof (struct PixMap)
+
+#define ewg_struct_macro_struct_PixMap_member_get_baseAddr(an_item) ((struct PixMap*)an_item)->baseAddr
+
+#define ewg_struct_macro_struct_PixMap_member_set_baseAddr(an_item, a_value) ((struct PixMap*)an_item)->baseAddr =  (Ptr)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_rowBytes(an_item) ((struct PixMap*)an_item)->rowBytes
+
+#define ewg_struct_macro_struct_PixMap_member_set_rowBytes(an_item, a_value) ((struct PixMap*)an_item)->rowBytes =  (short)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_bounds(an_item) &((struct PixMap*)an_item)->bounds
+
+#define ewg_struct_macro_struct_PixMap_member_set_bounds(an_item, a_value) ((struct PixMap*)an_item)->bounds =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_pmVersion(an_item) ((struct PixMap*)an_item)->pmVersion
+
+#define ewg_struct_macro_struct_PixMap_member_set_pmVersion(an_item, a_value) ((struct PixMap*)an_item)->pmVersion =  (short)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_packType(an_item) ((struct PixMap*)an_item)->packType
+
+#define ewg_struct_macro_struct_PixMap_member_set_packType(an_item, a_value) ((struct PixMap*)an_item)->packType =  (short)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_packSize(an_item) ((struct PixMap*)an_item)->packSize
+
+#define ewg_struct_macro_struct_PixMap_member_set_packSize(an_item, a_value) ((struct PixMap*)an_item)->packSize =  (long)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_hRes(an_item) ((struct PixMap*)an_item)->hRes
+
+#define ewg_struct_macro_struct_PixMap_member_set_hRes(an_item, a_value) ((struct PixMap*)an_item)->hRes =  (Fixed)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_vRes(an_item) ((struct PixMap*)an_item)->vRes
+
+#define ewg_struct_macro_struct_PixMap_member_set_vRes(an_item, a_value) ((struct PixMap*)an_item)->vRes =  (Fixed)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_pixelType(an_item) ((struct PixMap*)an_item)->pixelType
+
+#define ewg_struct_macro_struct_PixMap_member_set_pixelType(an_item, a_value) ((struct PixMap*)an_item)->pixelType =  (short)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_pixelSize(an_item) ((struct PixMap*)an_item)->pixelSize
+
+#define ewg_struct_macro_struct_PixMap_member_set_pixelSize(an_item, a_value) ((struct PixMap*)an_item)->pixelSize =  (short)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_cmpCount(an_item) ((struct PixMap*)an_item)->cmpCount
+
+#define ewg_struct_macro_struct_PixMap_member_set_cmpCount(an_item, a_value) ((struct PixMap*)an_item)->cmpCount =  (short)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_cmpSize(an_item) ((struct PixMap*)an_item)->cmpSize
+
+#define ewg_struct_macro_struct_PixMap_member_set_cmpSize(an_item, a_value) ((struct PixMap*)an_item)->cmpSize =  (short)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_pixelFormat(an_item) ((struct PixMap*)an_item)->pixelFormat
+
+#define ewg_struct_macro_struct_PixMap_member_set_pixelFormat(an_item, a_value) ((struct PixMap*)an_item)->pixelFormat =  (OSType)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_pmTable(an_item) ((struct PixMap*)an_item)->pmTable
+
+#define ewg_struct_macro_struct_PixMap_member_set_pmTable(an_item, a_value) ((struct PixMap*)an_item)->pmTable =  (CTabHandle)a_value
+
+#define ewg_struct_macro_struct_PixMap_member_get_pmExt(an_item) ((struct PixMap*)an_item)->pmExt
+
+#define ewg_struct_macro_struct_PixMap_member_set_pmExt(an_item, a_value) ((struct PixMap*)an_item)->pmExt =  (void*)a_value
+
+
+// glue code macros for struct `struct Pattern'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_Pattern sizeof (struct Pattern)
+
+#define ewg_struct_macro_struct_Pattern_member_get_pat(an_item) ((struct Pattern*)an_item)->pat
+
+
 // glue code macros for struct `struct QElem'
 
 #include<Carbon/Carbon.h>
@@ -3805,5 +3160,26 @@
 #define ewg_struct_macro_CFUUIDBytes_member_get_byte15(an_item) ((CFUUIDBytes*)an_item)->byte15
 
 #define ewg_struct_macro_CFUUIDBytes_member_set_byte15(an_item, a_value) ((CFUUIDBytes*)an_item)->byte15 =  (UInt8)a_value
+
+
+// glue code macros for struct `struct ColorTable'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ColorTable sizeof (struct ColorTable)
+
+#define ewg_struct_macro_struct_ColorTable_member_get_ctSeed(an_item) ((struct ColorTable*)an_item)->ctSeed
+
+#define ewg_struct_macro_struct_ColorTable_member_set_ctSeed(an_item, a_value) ((struct ColorTable*)an_item)->ctSeed =  (long)a_value
+
+#define ewg_struct_macro_struct_ColorTable_member_get_ctFlags(an_item) ((struct ColorTable*)an_item)->ctFlags
+
+#define ewg_struct_macro_struct_ColorTable_member_set_ctFlags(an_item, a_value) ((struct ColorTable*)an_item)->ctFlags =  (short)a_value
+
+#define ewg_struct_macro_struct_ColorTable_member_get_ctSize(an_item) ((struct ColorTable*)an_item)->ctSize
+
+#define ewg_struct_macro_struct_ColorTable_member_set_ctSize(an_item, a_value) ((struct ColorTable*)an_item)->ctSize =  (short)a_value
+
+#define ewg_struct_macro_struct_ColorTable_member_get_ctTable(an_item) ((struct ColorTable*)an_item)->ctTable
 
 
