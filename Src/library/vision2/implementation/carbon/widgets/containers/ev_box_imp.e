@@ -134,7 +134,9 @@ feature -- Event handling
 			if  an_item_imp.expandable then
 				expandable_item_count := expandable_item_count - 1
 			end
-			carbon_arrange_children
+			if count > 0 then
+				carbon_arrange_children
+			end
 		end
 
 
