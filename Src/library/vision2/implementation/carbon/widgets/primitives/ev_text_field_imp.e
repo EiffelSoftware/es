@@ -186,6 +186,7 @@ feature -- Status report
 	is_editable: BOOLEAN is
 			-- Is the text editable.
 		do
+			Result := (get_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextLockedTag) = 0)
 
 		end
 
@@ -226,7 +227,10 @@ feature -- status settings
 
 	set_editable (a_editable: BOOLEAN) is
 			-- Set editable state to `a_editable'.
+		local
+			ret: INTEGER
 		do
+			ret := set_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextLockedTag, not a_editable)
 
 		end
 

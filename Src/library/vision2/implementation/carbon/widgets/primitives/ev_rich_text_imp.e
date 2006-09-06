@@ -267,7 +267,7 @@ feature -- Status setting
 
 		end
 
-	temp_start_iter, temp_end_iter: EV_GTK_TEXT_ITER_STRUCT
+	--temp_start_iter, temp_end_iter: EV_GTK_TEXT_ITER_STRUCT
 		-- Reusable GtkTextIter objects
 
 	flush_buffer is

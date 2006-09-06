@@ -27,7 +27,7 @@ inherit
 			initialize_model
 		end
 
-	EV_GTK_TREE_VIEW
+	--EV_GTK_TREE_VIEW
 
 	EV_CHECKABLE_LIST_ACTION_SEQUENCES_IMP
 

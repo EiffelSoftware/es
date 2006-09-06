@@ -306,6 +306,7 @@ feature {NONE} -- callback handling for events
 			-- `on_callback'. Whenn its C function gets called, the dispatcher
 			-- calls `on_callback' in the connected Eiffel object
 
+
 	on_callback (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
 			-- Callback target. This feature gets called
 			-- anytime somebody calls `trigger_event_external'
@@ -366,6 +367,7 @@ feature -- event handling
 			event_type.set_eventclass (a_event_class)
 			event_type.set_eventkind (a_event_kind)
 			ret := install_event_handler_external (a_target, dispatcher.c_dispatcher, 1, event_type.item, int_to_pointer( a_id ), $handler)
+		--	io.put_string ("handler installed for id: " + a_id.out + " ret: " + ret.out + "%N")
 			Result := handler
 		end
 
@@ -376,6 +378,7 @@ feature -- event handling
 			handler: POINTER
 		do
 			ret := install_event_handler_external (a_target, dispatcher.c_dispatcher, a_event_array.count, a_event_array.array_address, int_to_pointer( a_id ), $handler)
+		--	io.put_string ("handler installed for id: " + a_id.out + " ret: " + ret.out + "%N")
 			Result := handler
 		end
 

@@ -25,8 +25,6 @@ inherit
 		end
 
 	EV_RADIO_PEER_IMP
-		undefine
-			visual_widget
 		redefine
 			interface,
 			widget_object

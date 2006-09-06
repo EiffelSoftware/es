@@ -283,7 +283,6 @@ feature -- Element change
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
 					
 					LayoutInfo.scale.x.toView = NULL;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
