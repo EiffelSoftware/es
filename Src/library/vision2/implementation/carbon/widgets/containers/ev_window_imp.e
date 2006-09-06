@@ -59,20 +59,6 @@ inherit
 			interface
 		end
 
-	QUICKDRAW_FUNCTIONS_EXTERNAL
-	MACWINDOWS_FUNCTIONS_EXTERNAL
-	PROCESSES_FUNCTIONS_EXTERNAL
-	CARBONEVENTS_FUNCTIONS_EXTERNAL
-	CONTROLS_FUNCTIONS_EXTERNAL
-	CFSTRING_FUNCTIONS_EXTERNAL
-	HIVIEW_FUNCTIONS_EXTERNAL
-
-	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
-	CGIMAGE_FUNCTIONS_EXTERNAL
-	CGDATAPROVIDER_FUNCTIONS_EXTERNAL
-	CFBASE_FUNCTIONS_EXTERNAL
-	CFBUNDLE_FUNCTIONS_EXTERNAL
-
 create
 	make
 
@@ -105,7 +91,7 @@ feature {NONE} -- Initialization
 
 			event_id := app_implementation.get_id (current)  --getting an id from the application
 			target := get_window_event_target_external(ptr)
-			h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassWindow, {carbonevents_anon_enums}.kEventWindowClose)
+			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassWindow, {CARBONEVENTS_ANON_ENUMS}.kEventWindowClose)
 		end
 
 	initialize is
