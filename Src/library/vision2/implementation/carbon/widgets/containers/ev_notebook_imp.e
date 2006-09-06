@@ -495,6 +495,7 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo( $a_control, &LayoutInfo );
 					
 					LayoutInfo.binding.top.toView = $a_tabcontrol;
 					LayoutInfo.binding.top.kind = kHILayoutBindTop;
