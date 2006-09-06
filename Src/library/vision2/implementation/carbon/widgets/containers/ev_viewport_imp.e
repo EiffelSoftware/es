@@ -94,11 +94,17 @@ feature -- Element change
 			-- Replace `item' with `v'.
 		local
 			w: EV_WIDGET_IMP
+			old_item: EV_WIDGET_IMP
 			ret: INTEGER
 			root_control_ptr: POINTER
 			cfstring: EV_CARBON_CF_STRING
+			point: CGPOINT_STRUCT
+			size: CGSIZE_STRUCT
+			rect: CGRECT_STRUCT
 		do
 			if not interface.is_empty then
+				old_item ?= item.implementation
+				unset_child_size (container, old_item.c_object)
 				w ?= interface.item.implementation
 				on_removed_item (w)
 				check
@@ -109,6 +115,17 @@ feature -- Element change
 					view_removed: ret = 0
 				end
 				item := void
+				create rect.make_new_unshared
+				ret := hiview_get_frame_external (container, rect.item)
+				create size.make_shared (rect.size)
+				create point.make_shared (rect.origin)
+
+				size.set_height (1)
+				size.set_width (1)
+
+				rect.set_origin (point.item)
+				rect.set_size (size.item)
+				ret := hiview_set_frame_external (container, rect.item)
 			end
 			if v /= Void then
 				w ?= v.implementation
@@ -192,7 +209,32 @@ feature {NONE} -- Implementation
 					LayoutInfo.scale.y.toView = $a_child;
 					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
 					LayoutInfo.scale.y.ratio = 1.1;
+
+
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
+				}
+			]"
+		end
+
+	unset_child_size (a_control, a_child : POINTER) is
+			-- What does this do?
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
 					
+					LayoutInfo.scale.x.toView = $a_child;
+					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.x.ratio = 0;
+					
+					LayoutInfo.scale.y.toView = $a_child;
+					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					LayoutInfo.scale.y.ratio = 0;
+
 
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 					HIViewApplyLayout( $a_control );

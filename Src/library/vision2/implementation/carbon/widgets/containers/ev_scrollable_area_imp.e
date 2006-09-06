@@ -97,7 +97,9 @@ feature {NONE} -- Initialization
 			ret := hiview_add_subview_external (viewport, container)
 
 			event_id := app_implementation.get_id (current)
-
+			
+			set_horizontal_step (20)
+			set_vertical_step (20)
 		end
 
 
@@ -123,17 +125,9 @@ feature -- Access
 			end
 
 
-	horizontal_step: INTEGER is
-			-- Number of pixels scrolled up or down when user clicks
-			-- an arrow on the horizontal scrollbar.
-		do
-		end
+	horizontal_step: INTEGER
 
-	vertical_step: INTEGER is
-			-- Number of pixels scrolled left or right when user clicks
-			-- an arrow on the vertical scrollbar.
-		do
-		end
+	vertical_step: INTEGER
 
 	is_horizontal_scroll_bar_visible: BOOLEAN is
 			-- Should horizontal scroll bar be displayed?
@@ -150,11 +144,13 @@ feature -- Element change
 	set_horizontal_step (a_step: INTEGER) is
 			-- Set `horizontal_step' to `a_step'.
 		do
+			horizontal_step := a_step
 		end
 
 	set_vertical_step (a_step: INTEGER) is
 			-- Set `vertical_step' to `a_step'.
 		do
+			vertical_step := a_step
 		end
 
 	show_horizontal_scroll_bar is
@@ -165,7 +161,7 @@ feature -- Element change
 	hide_horizontal_scroll_bar is
 			-- Do not display horizontal scroll bar.
 		do
-			print (hiview_count_subviews_external (c_object).out + "%N")
+		--	print (hiview_count_subviews_external (c_object).out + "%N")
 		end
 
 --	dump_info (p: POINTER)
@@ -211,11 +207,11 @@ feature {NONE} -- Implementation
 					create size.make_shared (rect.size)
 					ret := set_event_parameter_external (a_inevent, kEventParamImageSize,  {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
 					io.put_string ("Container size: " + size.height.out + ", " + size.width.out + "%N")
-					size.set_height (10)
-					size.set_width (10)
+					size.set_height (vertical_step)
+					size.set_width (horizontal_step)
 					ret := set_event_parameter_external (a_inevent, kEventParamLineSize,  {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
 
-					ret := hiview_get_frame_external (c_object, rect.item)
+					ret := hiview_get_frame_external (viewport, rect.item)
 					create size.make_shared (rect.size)
 					create point.make_shared (rect.origin)
 					ret := set_event_parameter_external (a_inevent, kEventParamViewSize, {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
@@ -307,15 +303,31 @@ feature {NONE} -- Implementation
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
-					
+					/*
 					LayoutInfo.scale.x.toView = NULL;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
 					LayoutInfo.scale.x.ratio = 1.0;
 					
 					LayoutInfo.scale.y.toView = NULL;
 					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.y.ratio = 1.0;
+					LayoutInfo.scale.y.ratio = 1.0;*/
 					
+					LayoutInfo.binding.top.toView = NULL;
+					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+					LayoutInfo.binding.top.offset = 0;
+					
+					LayoutInfo.binding.bottom.toView = NULL;
+					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+					LayoutInfo.binding.bottom.offset = 10;
+					
+					LayoutInfo.binding.left.toView = NULL;
+					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+					LayoutInfo.binding.left.offset = 0;
+					
+					LayoutInfo.binding.right.toView = NULL;
+					LayoutInfo.binding.right.kind = kHILayoutBindRight;
+					LayoutInfo.binding.right.offset = 10;
+					/*
 					LayoutInfo.position.x.toView = NULL;
 					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
 					LayoutInfo.position.x.offset = 0.0;
@@ -323,6 +335,8 @@ feature {NONE} -- Implementation
 					LayoutInfo.position.y.toView = NULL;
 					LayoutInfo.position.y.kind = kHILayoutPositionTop;
 					LayoutInfo.position.y.offset = 0.0;
+					*/
+					
 					
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 					HIViewApplyLayout( $a_control );
