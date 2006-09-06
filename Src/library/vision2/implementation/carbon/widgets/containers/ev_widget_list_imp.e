@@ -85,6 +85,7 @@ feature {NONE} -- Implementation
 			check
 				view_removed: ret = 0
 			end
+			on_removed_item ( v_imp )
 		end
 
 

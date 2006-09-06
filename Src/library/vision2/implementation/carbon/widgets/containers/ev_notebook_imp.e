@@ -105,6 +105,8 @@ feature -- Access
 		do
 			create a_point.make_new_unshared
 
+			-- GetGlobalMouse
+
 			--err := hiview_get_subview_hit_external ( c_object,
 
 		end
@@ -493,7 +495,6 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
 					
 					LayoutInfo.binding.top.toView = $a_tabcontrol;
 					LayoutInfo.binding.top.kind = kHILayoutBindTop;

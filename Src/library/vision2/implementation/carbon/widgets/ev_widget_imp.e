@@ -69,6 +69,8 @@ feature {NONE} -- Initialization
 			internal_minimum_width := -1
 			internal_minimum_height := -1
 			set_is_initialized (True)
+
+			expandable := True -- default
 		end
 
 	initialize_file_drop (a_widget: POINTER) is

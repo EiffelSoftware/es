@@ -261,7 +261,7 @@ feature -- Element change
 		end
 
 	setup_window_binding (a_control : POINTER) is
-			-- What does this do?
+			-- Allign the main_container to the window size
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias

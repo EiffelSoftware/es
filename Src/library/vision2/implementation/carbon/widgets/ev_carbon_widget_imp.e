@@ -11,7 +11,15 @@ deferred class
 
 inherit
 	EV_ANY_IMP
+
 	HIVIEW_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+	CONTROLS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
 
@@ -70,12 +78,22 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 	set_pointer_style (a_cursor: like pointer_style) is
 			-- Assign `a_cursor' to `pointer_style'.
+		local
+			bla : APPEARANCE_ANON_ENUMS
 		do
 		end
 
 	set_focus is
 			-- Grab keyboard focus.
+		local
+			window : POINTER
+			err : INTEGER
 		do
+			-- This needs to be redefined for every widget, because the focus part has to be selected,
+			-- which is different for every widget
+
+			--window := hiview_get_window_external ( c_object )
+			--err := set_keyboard_focus_external ( window, c_object, {CONTROLS_ANON_ENUMS}.kcontrolentirecontrol )
 		end
 
 	internal_set_pointer_style (a_cursor: like pointer_style) is
@@ -121,6 +139,16 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	show is
 			-- Request that `Current' be displayed when its parent is.
 		do
+		end
+
+feature {EV_BOX_IMP} --Box specific
+
+	expandable : BOOLEAN
+
+	set_expandable ( value : BOOLEAN ) is
+			-- set expandable
+		do
+			expandable := value
 		end
 
 feature -- Helper features

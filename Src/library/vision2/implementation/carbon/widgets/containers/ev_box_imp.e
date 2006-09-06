@@ -22,7 +22,8 @@ inherit
 	EV_WIDGET_LIST_IMP
 		redefine
 			interface,
-			on_new_item
+			on_new_item,
+			on_removed_item
 		end
 
 feature -- Access
@@ -40,7 +41,14 @@ feature {EV_ANY, EV_ANY_I} -- Status report
 
 	is_item_expanded (child: EV_WIDGET): BOOLEAN is
 			-- Is `child' expanded to occupy available spare space?
+		local
+			w_imp : EV_WIDGET_IMP
 		do
+			w_imp ?= child.implementation
+			check
+				w_imp_not_void : w_imp /= Void
+			end
+			Result := w_imp.expandable
 		end
 
 feature {EV_ANY, EV_ANY_I} -- Status settings
@@ -49,6 +57,7 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 			-- Set whether every child is the same size.
 		do
 			is_homogeneous := flag
+			carbon_arrange_children
 		end
 
 	set_border_width (value: INTEGER) is
@@ -68,13 +77,29 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 
 	set_child_expandable (child: EV_WIDGET; flag: BOOLEAN) is
 			-- Set whether `child' expands to fill available spare space.
+		local
+			w_imp : EV_WIDGET_IMP
 		do
-
+			w_imp ?= child.implementation
+			check
+				w_imp_not_void : w_imp /= Void
+			end
+			if flag /= w_imp.expandable then
+				if flag then
+					expandable_item_count := expandable_item_count + 1
+				else
+					expandable_item_count := expandable_item_count - 1
+				end
+			end
+			w_imp.set_expandable ( flag )
+			carbon_arrange_children
 		end
 
 feature {NONE} -- Carbon implementation
 
-	setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER ) is
+	expandable_item_count : INTEGER
+
+	setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER; is_expandable : BOOLEAN ) is
 			-- Setup Carbon Layout API
 		deferred
 		end
@@ -97,6 +122,18 @@ feature -- Event handling
 			-- Called after a new item is added
 		do
 			Precursor ( an_item_imp )
+			an_item_imp.set_expandable ( True )
+			expandable_item_count := expandable_item_count + 1
+			carbon_arrange_children
+		end
+
+	on_removed_item (an_item_imp: EV_WIDGET_IMP) is
+			-- Called just before `an_item' is removed.
+		do
+			Precursor ( an_item_imp )
+			if  an_item_imp.expandable then
+				expandable_item_count := expandable_item_count - 1
+			end
 			carbon_arrange_children
 		end
 
@@ -106,6 +143,9 @@ feature {EV_ANY_I, EV_ANY} -- Implementation
 	interface: EV_BOX;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
+
+invariant
+	expandable_item_count_correct : expandable_item_count >= 0 and expandable_item_count <= count
 
 indexing
 	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
