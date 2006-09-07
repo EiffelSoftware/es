@@ -60,7 +60,7 @@ feature {NONE} -- Initialization
 			create rect.make_new_unshared
 			rect.set_right (100)
 			rect.set_bottom (50)
-			ret := create_group_box_control_external (null, rect.item, null, 1, $ptr)
+			ret := create_group_box_control_external (null, rect.item, null, (True).to_integer, $ptr)
 			set_c_object ( ptr )
 
 			event_id := app_implementation.get_id (current)

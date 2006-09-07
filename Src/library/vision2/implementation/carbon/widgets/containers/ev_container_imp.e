@@ -143,14 +143,19 @@ feature -- Element change
 						HILayoutInfo LayoutInfo;
 						LayoutInfo.version = kHILayoutInfoVersionZero;
 						HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+						
 						LayoutInfo.binding.left.toView = $a_container;
 						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+						
 						LayoutInfo.binding.right.toView = $a_container;
 						LayoutInfo.binding.right.kind = kHILayoutBindRight;
+						
 						LayoutInfo.binding.top.toView = $a_container;
 						LayoutInfo.binding.top.kind = kHILayoutBindTop;
+						
 						LayoutInfo.binding.bottom.toView = $a_container;
 						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+						
 						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 						HIViewApplyLayout( $a_control );
 					}

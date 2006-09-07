@@ -23,7 +23,22 @@ inherit
 		redefine
 			interface,
 			on_new_item,
-			on_removed_item
+			on_removed_item,
+			on_event,
+			initialize
+		end
+
+feature -- Initialization
+
+	initialize is
+			-- Initialize `Current'
+		local
+			target, h_ret: POINTER
+		do
+			Precursor
+			event_id := app_implementation.get_id (current)
+			target := get_control_event_target_external( c_object )
+			h_ret := app_implementation.install_event_handler ( event_id, target, {CARBONEVENTS_ANON_ENUMS}.keventclasscontrol, {CARBONEVENTS_ANON_ENUMS}.keventcontrolboundschanged )
 		end
 
 feature -- Access
@@ -99,13 +114,8 @@ feature {NONE} -- Carbon implementation
 
 	expandable_item_count : INTEGER
 
-	setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER; is_expandable : BOOLEAN ) is
+	setup_binding ( upper_control, lower_control : POINTER ) is
 			-- Setup Carbon Layout API
-		deferred
-		end
-
-	setup_dummy_control ( a_control: POINTER ) is
-			-- Setup dummy control for size constraints
 		deferred
 		end
 
@@ -117,6 +127,36 @@ feature {NONE} -- Carbon implementation
 		end
 
 feature -- Event handling
+
+	on_event (a_inhandlercallref, a_inevent, a_inuserdata: POINTER ) : INTEGER is
+			-- Called when a Carbon event arrives
+		local
+			event_class, event_kind : INTEGER_32
+			actual_type, actual_size : NATURAL_32
+			prev_rect, cur_rect :CGRECT_STRUCT
+			attributes : NATURAL_32
+			err : INTEGER
+		do
+			event_class := get_event_class_external (a_inevent)
+			event_kind := get_event_kind_external (a_inevent)
+
+			if event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl and event_kind =  {CARBONEVENTS_ANON_ENUMS}.keventcontrolboundschanged then
+				create prev_rect.make_new_unshared
+				create cur_rect.make_new_unshared
+				err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamattributes, {AEDATA_MODEL_ANON_ENUMS}.typeWildCard, $actual_type, 4, $actual_size, $attributes ) -- 4 = sizeof(INTEGER_32)
+				err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamoriginalbounds, {CARBONEVENTS_ANON_ENUMS}.typehirect, $actual_type, prev_rect.sizeof, $actual_size, prev_rect.item )
+				err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcurrentbounds, {CARBONEVENTS_ANON_ENUMS}.typehirect, $actual_type, cur_rect.sizeof, $actual_size, cur_rect.item )
+				bounds_changed ( attributes, prev_rect, cur_rect )
+				Result := noErr -- Event handled
+			else
+				Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+			end
+		end
+
+	bounds_changed ( options : NATURAL_32; original_bounds, current_bounds : CGRECT_STRUCT ) is
+			-- Handler for the bounds changed event
+		deferred
+		end
 
 	on_new_item (an_item_imp: EV_WIDGET_IMP) is
 			-- Called after a new item is added

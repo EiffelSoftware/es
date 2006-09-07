@@ -80,8 +80,6 @@ feature {NONE} -- Initialization
 			rect.set_top (0)
 			rect.set_bottom(20)
 			ret := create_push_button_control_external( null, rect.item, null, $c_object )
-
-			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is
@@ -91,6 +89,7 @@ feature {NONE} -- Initialization
 			target, h_ret: POINTER
 		do
 			Precursor {EV_PRIMITIVE_IMP}
+			event_id := app_implementation.get_id (current)
 			target := get_control_event_target_external( c_object )
 			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown )
 		end

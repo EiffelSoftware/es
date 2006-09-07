@@ -52,7 +52,6 @@ feature {NONE} -- Initialization
 			rect.set_bottom ( 0 )
 			err := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
 			set_c_object ( control_ptr )
-			event_id := app_implementation.get_id (current)
 
 			err := create_user_pane_control_external ( null, rect.item, 0, $dummy_control )
 			err := hiview_add_subview_external ( c_object, dummy_control )
@@ -121,7 +120,7 @@ feature -- Implementation
 			create a_size.make_shared ( a_rect.size )
 			create a_point.make_shared ( a_rect.origin )
 
-			-- Calculate height of all non-expandable controls
+			-- Calculate height of all controls
 			from
 				start
 			until
@@ -131,10 +130,12 @@ feature -- Implementation
 				check
 					w1_not_void : w1 /= Void
 				end
-				if not w1.expandable then
-					err := hiview_get_optimal_bounds_external ( w1.c_object, a_rect.item, default_pointer )
-					err := hiview_set_frame_external ( w1.c_object, a_rect.item )	-- Set optimal size here, we need it later
-					non_expandable_height := non_expandable_height + a_size.height.rounded.max (w1.minimum_height)
+				if w1.expandable then
+					expandable_height := expandable_height + w1.minimum_height
+					size_control_external ( w1.c_object, width, w1.minimum_height ) -- Set optimal size here, we need it later
+				else
+					non_expandable_height := non_expandable_height + w1.minimum_height
+					size_control_external ( w1.c_object, width, w1.minimum_height ) -- Set optimal size here, we need it later
 				end
 				forth
 			end
@@ -146,23 +147,11 @@ feature -- Implementation
 			if is_homogeneous then
 				expandable_height := count * initial_control_height
 				size_control_external ( c_object, width, expandable_height + (count-1)*padding )
-
-				-- Setup dummy control
-				err := hiview_place_in_superview_at_external ( dummy_control, 0, (count-1)*padding )
 			else
-				expandable_height := expandable_item_count * initial_control_height
 				size_control_external ( c_object, width, expandable_height + non_expandable_height + (count-1)*padding )
-
-				-- Setup dummy control
-				err := hiview_place_in_superview_at_external ( dummy_control, 0, (count-1)*padding + non_expandable_height )
 			end
 
-			size_control_external ( dummy_control, width, expandable_height )
-			setup_dummy_control ( dummy_control )
-
-			if expandable_item_count > 0 and then not is_homogeneous then
-				control_height := ( height - (count-1)*padding - non_expandable_height ) / expandable_item_count
-			else
+			if is_homogeneous then
 				control_height := ( height - (count-1)*padding ) / count
 			end
 
@@ -183,7 +172,7 @@ feature -- Implementation
 					if w1.expandable or is_homogeneous then
 						a_size.set_height ( control_height )
 					else
-						a_size.set_height ( a_size.height.rounded.max ( w1.minimum_height ) )
+						a_size.set_height ( w1.minimum_height )
 					end
 
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
@@ -196,11 +185,8 @@ feature -- Implementation
 			check
 				w2_not_void : w2 /= Void
 			end
-			if is_homogeneous then
-				setup_binding( default_pointer, w2.c_object, dummy_control, count, True )
-			else
-				setup_binding( default_pointer, w2.c_object, dummy_control, expandable_item_count, w2.expandable )
-			end
+
+			setup_binding( default_pointer, w2.c_object )
 
 			from
 				j := 2
@@ -214,11 +200,7 @@ feature -- Implementation
 					w2_not_void : w2 /= Void
 				end
 
-				if is_homogeneous then
-					setup_binding( w1.c_object, w2.c_object, dummy_control, count, True )
-				else
-					setup_binding( w1.c_object, w2.c_object, dummy_control, expandable_item_count, w2.expandable )
-				end
+				setup_binding( w1.c_object, w2.c_object )
 
 				j := j + 1
 			end
@@ -227,7 +209,7 @@ feature -- Implementation
 		end
 
 
-		setup_binding ( upper_control, lower_control, a_dummy_control : POINTER; a_count : INTEGER; is_expandable : BOOLEAN ) is
+		setup_binding ( upper_control, lower_control : POINTER ) is
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -237,23 +219,10 @@ feature -- Implementation
 					LayoutInfo.version = kHILayoutInfoVersionZero;
 					HIViewGetLayoutInfo( $lower_control, &LayoutInfo );
 					
-					// Always occupy full width of the box
-					LayoutInfo.scale.x.toView = NULL;
-					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.x.ratio = 1.0;
-					
 					// always allign to the box in x-direction
 					LayoutInfo.position.x.toView = NULL;
 					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
 					LayoutInfo.position.x.offset = 0.0;
-
-					// Scale to dummy box which is the window size - all padding
-					LayoutInfo.scale.y.toView = $a_dummy_control;
-					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-					if ( $is_expandable )
-						LayoutInfo.scale.y.ratio = 1.0 / $a_count;
-					else
-						LayoutInfo.scale.y.ratio = 0;
 					
 					if ( $upper_control != NULL )
 					{
@@ -275,34 +244,71 @@ feature -- Implementation
 			]"
 		end
 
-setup_dummy_control ( a_control: POINTER ) is
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-					HILayoutInfo LayoutInfo;
-					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo( $a_control, &LayoutInfo );
-					
-					LayoutInfo.scale.x.toView = NULL;
-					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.x.ratio = 1.0;
-					
-					LayoutInfo.binding.top.toView = NULL;
-					LayoutInfo.binding.top.kind = kHILayoutBindTop;
-					LayoutInfo.binding.top.offset = 0;
-					
-					LayoutInfo.binding.bottom.toView = NULL;
-					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
-					LayoutInfo.binding.bottom.offset = 0;
-					
-					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
-					HIViewApplyLayout( $a_control );
-				}
-			]"
-		end
+feature {NONE} -- Events
 
+	bounds_changed ( options : NATURAL_32; original_bounds, current_bounds : CGRECT_STRUCT ) is
+			-- Handler for the bounds changed event
+		local
+			w_imp : EV_WIDGET_IMP
+			control_width, control_height :INTEGER
+			expandable_height, non_expandable_height : INTEGER
+		do
+			-- Calculate height of all controls
+			from
+				start
+			until
+				off
+			loop
+				w_imp ?= item.implementation
+				check
+					w_imp_not_void : w_imp /= Void
+				end
+				if w_imp.expandable then
+					expandable_height := expandable_height + w_imp.minimum_height
+				else
+					non_expandable_height := non_expandable_height + w_imp.minimum_height
+				end
+				forth
+			end
+
+			control_width := width
+			if is_homogeneous then -- Make all control equally high
+				control_height := (height / count).rounded
+				from
+					start
+				until
+					off
+				loop
+					w_imp ?= item.implementation
+					check
+						w_imp_not_void : w_imp /= Void
+					end
+					size_control_external (	w_imp.c_object, control_width, control_height )
+					forth
+				end
+			else
+				control_height := ( (height - expandable_height) / expandable_item_count ).rounded
+				if control_height < 0 then
+					control_height := 0
+				end
+				from
+					start
+				until
+					off
+				loop
+					w_imp ?= item.implementation
+					check
+						w_imp_not_void : w_imp /= Void
+					end
+					if w_imp.expandable then
+						size_control_external ( w_imp.c_object, control_width, w_imp.minimum_height + control_height )
+					else
+						size_control_external ( w_imp.c_object, control_width, w_imp.minimum_height )
+					end
+					forth
+				end
+			end
+		end
 
 feature {EV_ANY_I} -- Implementation
 
