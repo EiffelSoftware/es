@@ -226,42 +226,36 @@ feature -- Element change
 	replace (v: like item) is
 			-- Replace `item' with `v'.
 		local
-			w: EV_WIDGET_IMP
-			i: EV_WIDGET
+			w_imp: EV_WIDGET_IMP
 			root_control_ptr : POINTER
 			err : INTEGER
-			a_list: EV_WIDGET_LIST_IMP
 		do
-			i := item
-
-			if i /= Void then
-				w ?= i.implementation
-				on_removed_item (w)
+			-- Remove current item, if any
+			if item /= Void then
+				w_imp ?= item.implementation
 				check
-					item_has_implementation: w /= Void
+					item_has_implementation: w_imp /= Void
 				end
-				dispose_control_external ( w.c_object )
+				on_removed_item ( w_imp )
+				dispose_control_external ( w_imp.c_object )
 			end
+			-- Insert new item, if any
 			if v /= Void then
-				w ?= v.implementation
-				err := get_root_control_external ( c_object, $root_control_ptr )
-				err := hiview_add_subview_external ( root_control_ptr, w.c_object )
-
-				setup_window_binding( w.c_object )
-
-				on_new_item (w)
-
-				-- What does this do and why is in necessary? There should be some documentation for hacks like this one
-				a_list ?= v.implementation
-				if a_list /= void then
-					a_list.embed_all
+				w_imp ?= v.implementation
+				check
+					v_has_implementation: v /= Void
 				end
+				err := get_root_control_external ( c_object, $root_control_ptr )
+				err := hiview_add_subview_external ( root_control_ptr, w_imp.c_object )
+
+				setup_window_binding( w_imp.c_object )
+				on_new_item ( w_imp )
 			end
 			item := v
 		end
 
 	setup_window_binding (a_control : POINTER) is
-			-- Allign the main_container to the window size
+			-- Align the main_container to the window size
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -269,6 +263,7 @@ feature -- Element change
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo( $a_control, &LayoutInfo );
 					
 					LayoutInfo.scale.x.toView = NULL;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;

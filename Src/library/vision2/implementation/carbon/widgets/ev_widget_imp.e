@@ -201,13 +201,29 @@ feature -- Measurement
 	x_position: INTEGER is
 			-- Horizontal offset relative to parent `x_position'.
 			-- Unit of measurement: screen pixels.
+		local
+			err : INTEGER
+			rect : CGRECT_STRUCT
+			origin : CGPOINT_STRUCT
 		do
+			create rect.make_new_unshared
+			create origin.make_shared ( rect.origin )
+			err := hiview_get_frame_external ( c_object, rect.item )
+			Result := origin.x.rounded
 		end
 
 	y_position: INTEGER is
 			-- Vertical offset relative to parent `y_position'.
 			-- Unit of measurement: screen pixels.
+		local
+			err : INTEGER
+			rect : CGRECT_STRUCT
+			origin : CGPOINT_STRUCT
 		do
+			create rect.make_new_unshared
+			create origin.make_shared ( rect.origin )
+			err := hiview_get_frame_external ( c_object, rect.item )
+			Result := origin.y.rounded
 		end
 
 	minimum_width: INTEGER is

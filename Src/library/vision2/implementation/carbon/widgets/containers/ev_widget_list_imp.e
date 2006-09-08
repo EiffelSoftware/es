@@ -59,7 +59,7 @@ feature {NONE} -- Implementation
 				end
 				ret := hiview_add_subview_external ( c_object, v_imp.c_object)
 				check
-					view_added: ret = 0
+					view_added: ret = noerr
 				end
 				child_array.go_i_th (i)
 				child_array.put_left (v)
@@ -79,11 +79,10 @@ feature {NONE} -- Implementation
 			end
 			child_array.go_i_th (i)
 			child_array.remove
-			on_removed_item (v_imp)
 
 			ret := hiview_remove_from_superview_external (v_imp.c_object)
 			check
-				view_removed: ret = 0
+				view_removed: ret = noErr
 			end
 			on_removed_item ( v_imp )
 		end
@@ -94,34 +93,6 @@ feature {NONE} -- Implementation
 	interface: EV_WIDGET_LIST;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
-feature
-	--set
-		embed_all is
-				-- Embed all widgets from the child array in the carbon control
-			local
-				i:INTEGER
-				a_imp: EV_WIDGET_IMP
-				err:INTEGER
-				a_list: EV_WIDGET_LIST_IMP
-				bounds : RECT_STRUCT
-			do
-				--create bounds.make_new_unshared
-				from i := 1
-				until i > child_array.count
-				loop
-					a_imp ?= child_array.i_th(i).implementation
-					if a_imp /= void then
-						--
-						err := hiview_add_subview_external( c_object, a_imp.c_object)
-						err := set_control_visibility_external (a_imp.c_object, 1, 1)
-						a_list ?= a_imp
-						if a_list /= void then
-							a_list.embed_all
-						end
-					end
-					i := i + 1
-				end
-			end
 
 indexing
 	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"

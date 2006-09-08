@@ -22,7 +22,7 @@ inherit
 			propagate_foreground_color
 		redefine
 			interface,
-			on_removed_item,
+			insert_i_th,
 			initialize
 		end
 
@@ -47,37 +47,32 @@ feature {NONE} -- Initialization
 			rect.set_left ( 0 )
 			rect.set_right ( 0 )
 			rect.set_bottom ( 0 )
-			res := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
+			res := create_user_pane_control_external ( default_pointer, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $control_ptr )
 
 			set_c_object ( control_ptr )
-			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is
 			-- Initialize `Current'.
 		do
 			Precursor
+			event_id := app_implementation.get_id (current)
 		end
 
 feature -- Status setting
-
-	carbon_arrange_children is
-			do
-
-			end
-
 
 	set_item_position (a_widget: EV_WIDGET; an_x, a_y: INTEGER) is
 			-- Set `a_widget.x_position' to `an_x'.
 			-- Set `a_widget.y_position' to `a_y'.
 		local
 			w_imp : EV_WIDGET_IMP
+			err : INTEGER
 		do
 			w_imp ?= a_widget.implementation
 			check
 				w_imp_not_void : w_imp /= Void
 			end
-			move_control_external( w_imp.c_object , an_x, a_y )
+			err := hiview_place_in_superview_at_external ( w_imp.c_object, an_x, a_y )
 		end
 
 	set_item_size (a_widget: EV_WIDGET; a_width, a_height: INTEGER) is
@@ -95,51 +90,68 @@ feature -- Status setting
 
 feature -- Measurement
 
-	minimum_width: INTEGER
-				-- What should the minimum width of a ev_fixed be?
+	minimum_width: INTEGER is
+			-- Item edge with highest x value
 		do
-			Result := 10
+			from
+				start
+				Result := 0
+			until
+				off
+			loop
+				Result := Result.max ( item.x_position + item.width )
+				forth
+			end
 		end
 
 	minimum_height: INTEGER is
-			-- What should the minimum height of a ev_fixed be?
+			-- Item edge with highest y value
 		do
-			Result := 10
+			from
+				start
+				Result := 0
+			until
+				off
+			loop
+				Result := Result.max ( item.y_position + item.height )
+				forth
+			end
 		end
-
 
 feature {EV_ANY_I} -- Implementation
 
-	on_removed_item (a_widget_imp: EV_WIDGET_IMP) is
-			-- Reset minimum size.
+	insert_i_th (v: like item; i: INTEGER) is
+			-- Insert `v' at position `i'.
 		do
+			Precursor ( v, i )
+			set_item_position ( v, 0, 0 )
+			set_item_size ( v, v.minimum_width, v.minimum_height )
 		end
 
 	x_position_of_child (a_widget_imp: EV_WIDGET_IMP): INTEGER is
 			-- X position of `a_widget_imp' within `Current'.
 		local
-			rect : RECT_STRUCT
-			dummy : POINTER
+			rect : CGRECT_STRUCT
+			origin : CGPOINT_STRUCT
+			err : INTEGER
 		do
 			create rect.make_new_unshared
-			dummy := get_control_bounds_external ( a_widget_imp.c_object, rect.item )
-			Result := rect.left
+			create origin.make_shared ( rect.origin )
+			err := hiview_get_frame_external ( a_widget_imp.c_object, rect.item )
+			Result := origin.x.rounded
 		end
 
 	y_position_of_child (a_widget_imp: EV_WIDGET_IMP): INTEGER is
 			-- Y position of `a_widget_imp' within `Current'.
 		local
-			rect : RECT_STRUCT
-			dummy : POINTER
+			rect : CGRECT_STRUCT
+			origin : CGPOINT_STRUCT
+			err : INTEGER
 		do
 			create rect.make_new_unshared
-			dummy := get_control_bounds_external ( a_widget_imp.c_object, rect.item )
-			Result := rect.top
-		end
-
-	i_th_fixed_child (i: INTEGER): POINTER is
-			-- `i-th' fixed child of `Current'.
-		do
+			create origin.make_shared ( rect.origin )
+			err := hiview_get_frame_external ( a_widget_imp.c_object, rect.item )
+			Result := origin.y.rounded
 		end
 
 	interface: EV_FIXED;

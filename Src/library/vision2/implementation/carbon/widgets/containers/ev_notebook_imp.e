@@ -330,7 +330,6 @@ feature {EV_NOTEBOOK} -- Status setting
 		local
 			w_imp, item_imp: EV_WIDGET_IMP
 			item_index : INTEGER
-			err : INTEGER
 		do
 			item_imp ?= an_item.implementation
 			check
