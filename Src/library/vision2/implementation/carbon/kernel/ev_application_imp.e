@@ -54,7 +54,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	HIOBJECT_FUNCTIONS_EXTERNAL
 		export
 			{NONE} all
@@ -147,7 +147,6 @@ feature -- Basic operation
 		local
 			ret: INTEGER
 		do
-			--run_application_event_loop_external
 			ret := run_current_event_loop_external (100)
 		end
 

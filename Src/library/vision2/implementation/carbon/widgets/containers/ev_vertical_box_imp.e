@@ -287,7 +287,7 @@ feature {NONE} -- Events
 					forth
 				end
 			else
-				control_height := ( (height - expandable_height) / expandable_item_count ).rounded
+				control_height := ( (height - non_expandable_height - expandable_height) / expandable_item_count ).rounded
 				if control_height < 0 then
 					control_height := 0
 				end

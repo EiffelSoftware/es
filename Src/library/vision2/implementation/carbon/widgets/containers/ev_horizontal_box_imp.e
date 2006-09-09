@@ -294,7 +294,7 @@ feature {NONE} -- Events
 					forth
 				end
 			else
-				control_width := ( (width- expandable_width) / expandable_item_count ).rounded
+				control_width := ( (width - non_expandable_width - expandable_width) / expandable_item_count ).rounded
 				if control_width < 0 then
 					control_width := 0
 				end
