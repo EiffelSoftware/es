@@ -139,7 +139,7 @@ feature {EV_ANY_IMP} -- Implementation
 				i > s.count
 			loop
 				if s.item (i) = '&' then
-					if s.item (i + 1) /= '&' then
+					if i < s.count and then s.item (i + 1) /= '&' then
 						s.put (char, i)
 					else
 						i := i + 1
