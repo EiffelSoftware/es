@@ -1,0 +1,21 @@
+indexing
+	description: "Objects that ..."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	I18N_URI_PARSER
+
+	feature
+		parse_uri(uri: STRING_GENERAL): I18N_DATASOURCE_MANAGER is
+				-- parses an uri and returns the appropriate datasource manager
+			do
+				-- for now we only know about directories, so we always return
+				-- a I18N_FILE_MANAGER
+				create {I18N_FILE_MANAGER} Result
+
+			end
+
+
+end

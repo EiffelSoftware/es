@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="i18n" uuid="1428822B-CDC0-4B9E-B519-63FEFC7CE3C6" library_target="i18n">
+	<target name="i18n">
+		<description>i18n: internationalise applications</description>
+		<option>
+			<assertions precondition="true" postcondition="false" check="false" invariant="false" loop="false"/>
+			<warning name="export_class_missing" enabled="false"/>
+			<warning name="old_verbatim_strings" enabled="false"/>
+			<warning name="syntax" enabled="false"/>
+			<warning name="vjrv" enabled="false"/>
+			<warning name="vweq" enabled="false"/>
+		</option>
+		<!-- all header files in the include directory -->
+		<external_include location="./include"/>
+		<!-- to be uncommented when the nls stuff is commited -->
+		<!-- <external_object location="./obj/nls.obj"/>-->
+		<file_rule>
+			<exclude>/\.svn$</exclude>
+			<exclude>/documents$</exclude>
+                        <exclude>/EIFGENs$</exclude>
+			<!-- add further excludes as needed -->
+		</file_rule>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="True"/>
+		
+		
+		<library name="time" location="$ISE_LIBRARY\library\gobo\gobo.ecf" readonly="false"/>
+		<library name="gobo" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
+		<cluster name="i18n" location="." recursive="true">
+			<cluster name="utility" location="./utility"></cluster>
+		</cluster>
+		
+	</target>
+</system>
+
