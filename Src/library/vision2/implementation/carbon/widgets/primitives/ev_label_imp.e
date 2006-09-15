@@ -19,7 +19,9 @@ inherit
 
 	EV_PRIMITIVE_IMP
 		redefine
-			interface
+			interface,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_TEXTABLE_IMP
@@ -75,6 +77,39 @@ feature -- Access
 		do
 			angle := a_angle
 		end
+
+feature
+
+	minimum_height: INTEGER is
+			local
+				a_rect: CGRECT_STRUCT
+				a_size: CGSIZE_STRUCT
+				ret: INTEGER
+			do
+				create a_rect.make_new_unshared
+				create a_size.make_shared (a_rect.size)
+				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
+				Result := a_size.height.rounded
+				if Result < 0 then
+					Result := 0
+				end
+			end
+
+	minimum_width: INTEGER is
+			local
+				a_rect: CGRECT_STRUCT
+				a_size: CGSIZE_STRUCT
+				ret: INTEGER
+			do
+				create a_rect.make_new_unshared
+				create a_size.make_shared (a_rect.size)
+				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
+				Result := a_size.width.rounded
+				if Result < 0 then
+					Result := 0
+				end
+			end
+
 
 feature {EV_ANY_I} -- Implementation
 

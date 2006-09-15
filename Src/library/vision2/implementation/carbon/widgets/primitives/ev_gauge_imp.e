@@ -58,6 +58,7 @@ feature {NONE} -- Initialization
 			value_range.change_actions.extend (agent set_range)
 			set_range
 		end
+	
 
 feature -- Access
 
@@ -152,6 +153,8 @@ feature {NONE} -- Implementation
 
 	gauge_ptr : POINTER
 			-- Pointer to the real gauge control, c_object points to a userpane
+
+
 
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 

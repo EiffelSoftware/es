@@ -21,7 +21,10 @@ inherit
 			default_key_processing_blocked
 		redefine
 			interface,
-			on_key_event
+			on_key_event,
+			minimum_height,
+			minimum_width,
+			on_event
 		end
 
 	EV_TEXT_COMPONENT_IMP
@@ -29,7 +32,11 @@ inherit
 			interface,
 			create_change_actions,
 			on_key_event,
-			set_minimum_width_in_characters
+			set_minimum_width_in_characters,
+			minimum_height,
+			minimum_width,
+			initialize,
+			on_event
 		end
 
 	EV_FONTABLE_IMP
@@ -48,6 +55,10 @@ inherit
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
 		export
 			{NONE} all
+		end
+	EV_CARBON_EVENTABLE
+		redefine
+			on_event
 		end
 
 create
@@ -82,15 +93,25 @@ feature {NONE} -- Initialization
 			ret := create_edit_unicode_text_control_external (null,rect.item, null,0, NULL, $c_object)
 			ret := set_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroledittextsinglelinetag, true)
 
-
-
---			io.put_string ("create:" +ret.out)
-
 			ret := hiview_set_visible_external (c_object, 1)
 			ret := hiview_set_frame_external (c_object, rect.item)
 
 			event_id := app_implementation.get_id (current)  --getting an id from the application
 
+			entry_widget := c_object
+
+		end
+
+	initialize is
+			-- `Precursor' initialization,
+			-- create button box to hold label and pixmap.
+		local
+			target, h_ret: POINTER
+		do
+			Precursor {EV_TEXT_COMPONENT_IMP}
+			event_id := app_implementation.get_id (current)
+			target := get_control_event_target_external( entry_widget )
+			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.keventclasstextinput, {CARBONEVENTS_ANON_ENUMS}.keventtextinputunicodeforkeyevent )
 		end
 
 feature -- Access
@@ -102,9 +123,9 @@ feature -- Access
 			str: C_STRING
 		do
 
-			ret := get_control_data_size_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, $size)
+			ret := get_control_data_size_external (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, $size)
 			create str.make_empty (size)
-			ret := get_control_data_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, size, str.item, $size)
+			ret := get_control_data_external (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, size, str.item, $size)
 			Result := str.string
 		end
 
@@ -137,7 +158,7 @@ feature -- Status setting
 			ret: INTEGER
 		do
 			create str.make (a_text)
-			ret := set_control_data_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, a_text.count, str.item)
+			ret := set_control_data_external (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextTextTag, a_text.count, str.item)
 
 		end
 
@@ -181,12 +202,43 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		--	real_signal_connect_after (entry_widget, once "activate", agent (App_implementation.gtk_marshal).text_field_return_intermediary (c_object), Void)
 		end
 
+feature
+	minimum_height: INTEGER is
+			local
+				a_rect: CGRECT_STRUCT
+				a_size: CGSIZE_STRUCT
+				ret: INTEGER
+			do
+				create a_rect.make_new_unshared
+				create a_size.make_shared (a_rect.size)
+				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
+				Result := a_size.height.rounded
+				if Result < 0 then
+					Result := 0
+				end
+			end
+
+	minimum_width: INTEGER is
+			local
+				a_rect: CGRECT_STRUCT
+				a_size: CGSIZE_STRUCT
+				ret: INTEGER
+			do
+				create a_rect.make_new_unshared
+				create a_size.make_shared (a_rect.size)
+				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
+				Result := a_size.width.rounded
+				if Result < 0 then
+					Result := 0
+				end
+			end
+
 feature -- Status report
 
 	is_editable: BOOLEAN is
 			-- Is the text editable.
 		do
-			Result := (get_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextLockedTag) = 0)
+			Result := (get_control_data_boolean (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextLockedTag) = 0)
 
 		end
 
@@ -230,7 +282,7 @@ feature -- status settings
 		local
 			ret: INTEGER
 		do
-			ret := set_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextLockedTag, not a_editable)
+			ret := set_control_data_boolean (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kControlEditTextLockedTag, not a_editable)
 
 		end
 
@@ -318,9 +370,22 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 			-- Value of 'text' prior to a change action, used to compare
 			-- between old and new text.
 
+
 	on_change_actions is
 			-- A change action has occurred.
+		local
+			new_text: STRING_32
 		do
+			new_text := text
+			if not in_change_action and then (stored_text /= Void and then not new_text.is_equal (stored_text)) or else stored_text = Void then
+					-- The text has actually changed
+				in_change_action := True
+				if change_actions_internal /= Void then
+					change_actions_internal.call (Void)
+				end
+				in_change_action := False
+				stored_text := text
+			end
 
 		end
 
@@ -333,10 +398,64 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 	on_key_event (a_key: EV_KEY; a_key_string: STRING_32; a_key_press: BOOLEAN) is
 			-- A key event has occurred
 		do
+			if a_key_press then
+				if a_key /= Void then
+					last_key_backspace := a_key.code = {EV_KEY_CONSTANTS}.key_back_space
+				end
+			end
 			Precursor {EV_TEXT_COMPONENT_IMP} (a_key, a_key_string, a_key_press)
 		end
 
 feature {NONE} -- Implementation
+
+
+on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind: INTEGER
+			ret, length: INTEGER
+			a_string: C_STRING
+			a_key: EV_KEY
+		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+				if event_kind = {CARBONEVENTS_ANON_ENUMS}.keventtextinputunicodeforkeyevent and event_class =  {CARBONEVENTS_ANON_ENUMS}.keventclasstextinput then
+					ret := call_next_event_handler_external (a_inhandlercallref, a_inevent)
+
+					ret := get_event_parameter_external (a_inevent, kEventParamTextInputSendText, typeUnicodeText, null, 0, $length, NULL)
+					create a_string. make_empty (length)
+					ret := get_event_parameter_external (a_inevent, kEventParamTextInputSendText, typeUnicodeText, null, length, null, a_string.item)
+
+					create a_key.default_create
+					on_key_event (a_key, a_string.string.as_string_32, true)
+
+					on_change_actions
+
+					Result := {EV_ANY_IMP}.noErr -- event handled
+				else
+
+					Result := Precursor {EV_TEXT_COMPONENT_IMP} (a_inhandlercallref, a_inevent, a_inuserdata)
+
+				end
+		end
+
+
+	frozen typeUnicodeText: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"typeUnicodeText"
+	end
+
+	frozen kEventParamTextInputSendText: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kEventParamTextInputSendText"
+	end
+
 
 --		get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
 --			-- get a boolean value with get_control_data

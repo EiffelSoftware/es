@@ -20,12 +20,18 @@ inherit
 		undefine
 			on_key_event,
 			default_key_processing_blocked,
-			on_focus_changed
+			on_focus_changed,
+			on_event,
+			value,
+			set_value,
+			set_range
 		redefine
 			interface,
 			initialize,
 			make,
-			dispose
+			dispose,
+			minimum_width,
+			minimum_height
 		end
 
 	EV_TEXT_FIELD_IMP
@@ -37,8 +43,23 @@ inherit
 			make,
 			interface,
 			initialize,
+			minimum_width,
+			minimum_height,
 			set_text,
-			dispose
+			dispose,
+			on_event
+		end
+	EV_CARBON_EVENTABLE
+		redefine
+			on_event
+		end
+	EVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+	MACWINDOWS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
 		end
 
 create
@@ -57,21 +78,197 @@ feature {NONE} -- Implementation
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_right (300)
-			rect.set_bottom (30)
-			ret := create_little_arrows_control_external ( null, rect.item, 0, 0, 100, 1, $ptr )
-			set_c_object ( ptr )
+			rect.set_left (0)
+			rect.set_right (106)
+			rect.set_bottom (26)
+			rect.set_top (0)
+			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $c_object )
+
+			rect.set_left (84)
+			rect.set_right (104)
+			rect.set_bottom (24)
+			rect.set_top (4)
+			ret := create_little_arrows_control_external ( null, rect.item, 0, 0, 100, 1, $gauge_ptr )
+
+			rect.set_left (4)
+			rect.set_right (82)
+			rect.set_bottom (24)
+			rect.set_top (4)
+			ret := create_edit_unicode_text_control_external (null,rect.item, null,0, NULL, $entry_widget)
+			ret := set_control_data_boolean (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroledittextsinglelinetag, true)
+
+
+			ret := hiview_set_visible_external (gauge_ptr, 1)
+			ret := hiview_set_visible_external (entry_widget, 1)
+			ret := hiview_add_subview_external (c_object, entry_widget)
+			text_binding (entry_widget)
+			ret := hiview_add_subview_external (c_object, gauge_ptr)
+			gauge_binding (gauge_ptr)
+
 
 			event_id := app_implementation.get_id (current)
 		end
 
 	initialize is
+		local
+			target, h_ret: POINTER
 		do
 			Precursor {EV_TEXT_FIELD_IMP}
 			ev_gauge_imp_initialize --| {EV_GAUGE} Precursor
+			target := get_control_event_target_external( gauge_ptr )
+			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown )
+
 		end
 
+	value: INTEGER is
+			-- Current value of the gauge.
+		do
+			if text /= void and then text.is_integer_32 then
+				Result := text.to_integer
+			else
+				Result := ((value_range.upper + value_range.lower) /2).rounded
+			end
+		end
+
+feature {NONE}--binding
+
+		text_binding (a_control : POINTER) is
+			-- What does this do?
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
+										
+					LayoutInfo.binding.left.toView = NULL;
+					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+					LayoutInfo.binding.left.offset = 4;
+					
+					LayoutInfo.binding.right.toView = NULL;
+					LayoutInfo.binding.right.kind = kHILayoutBindRight;
+					LayoutInfo.binding.right.offset = 24;
+					
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
+				}
+			]"
+		end
+
+			gauge_binding (a_control : POINTER) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
+										
+					
+					LayoutInfo.binding.right.toView = NULL;
+					LayoutInfo.binding.right.kind = kHILayoutBindRight;
+					LayoutInfo.binding.right.offset = 2;
+					
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
+				}
+			]"
+		end
+
+
+feature -- Element change
+
+	set_value (a_value: INTEGER) is
+			-- Set `value' to `a_value'.
+		do
+			set_text (a_value.out)
+		ensure then
+			step_same: step = old step
+			leap_same: leap = old leap
+			range_same: value_range.is_equal (old value_range)
+		end
+
+	set_range is
+			-- Update widget range from `value_range'
+		local
+			temp_value: INTEGER
+		do
+			temp_value := value
+			if temp_value > value_range.upper then
+				temp_value := value_range.upper
+			elseif temp_value < value_range.lower then
+				temp_value := value_range.lower
+			end
+
+			set_value ( temp_value )
+		end
+
+
 feature {NONE} -- Implementation
+
+	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
+			-- Feature that is called if an event occurs
+		local
+			event_class, event_kind : INTEGER
+			ret, part : INTEGER
+		do
+				event_class := get_event_class_external (a_inevent)
+				event_kind := get_event_kind_external (a_inevent)
+
+				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown then
+					on_change_actions
+					ret := get_event_parameter_external (a_inevent, kEventParamControlPart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, null, 32, NULL, $part );
+					if part = kControlUpButtonPart then
+						step_forward
+					elseif part = kControlDownButtonPart then
+						step_backward
+					end
+					Result := {EV_ANY_IMP}.noErr -- event handled
+				else
+
+					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+				end
+		end
+
+	frozen kEventParamControlPart: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kEventParamControlPart"
+	end
+
+		frozen kControlDownButtonPart: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kControlDownButtonPart"
+	end
+		frozen kControlUpButtonPart: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kControlUpButtonPart"
+	end
+
+	minimum_height: INTEGER_32 is
+			do
+				Result := 26
+				--Result := Precursor {EV_GAUGE_IMP} + Precursor {EV_TEXT_FIELD_IMP}
+			end
+
+	minimum_width: INTEGER_32 is
+			do
+				--Result := 106
+				Result := Precursor {EV_GAUGE_IMP} + Precursor {EV_TEXT_FIELD_IMP}
+			end
+
+
 
 	dispose is
 			do

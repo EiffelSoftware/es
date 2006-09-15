@@ -25,7 +25,8 @@ inherit
 			make,
 			child_has_resized,
 			on_event,
-			initialize
+			initialize,
+			replace
 		end
 
 	HIVIEW_FUNCTIONS_EXTERNAL
@@ -97,7 +98,7 @@ feature {NONE} -- Initialization
 			ret := hiview_add_subview_external (viewport, container)
 
 			event_id := app_implementation.get_id (current)
-			
+
 			set_horizontal_step (20)
 			set_vertical_step (20)
 		end
@@ -123,6 +124,18 @@ feature -- Access
 				h_ret := app_implementation.install_event_handlers ( event_id, target, event_array )
 
 			end
+
+	replace (v: like item) is
+			local
+				a_event: POINTER
+				ret: INTEGER
+			do
+				precursor {EV_VIEWPORT_IMP} (v)
+				ret := create_event_external (null, kEventClassScrollable, kEventScrollableInfoChanged, 0, kEventAttributeUserEvent, $a_event)
+				ret := send_event_to_event_target_external (a_event, get_control_event_target_external (c_object))
+				release_event_external (a_event)
+			end
+
 
 
 	horizontal_step: INTEGER
@@ -206,7 +219,7 @@ feature {NONE} -- Implementation
 
 					create size.make_shared (rect.size)
 					ret := set_event_parameter_external (a_inevent, kEventParamImageSize,  {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
-					io.put_string ("Container size: " + size.height.out + ", " + size.width.out + "%N")
+
 					size.set_height (vertical_step)
 					size.set_width (horizontal_step)
 					ret := set_event_parameter_external (a_inevent, kEventParamLineSize,  {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
@@ -215,7 +228,7 @@ feature {NONE} -- Implementation
 					create size.make_shared (rect.size)
 					create point.make_shared (rect.origin)
 					ret := set_event_parameter_external (a_inevent, kEventParamViewSize, {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
-					io.put_string ("Scroll size: " + size.height.out + ", " + size.width.out + "%N")
+
 					ret := set_event_parameter_external (a_inevent, kEventParamOrigin, {CARBONEVENTS_ANON_ENUMS}.typehipoint, point.sizeof, point.item)
 
 
@@ -237,6 +250,22 @@ feature {NONE} -- Implementation
 					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
 				end
 		end
+
+	frozen kEventScrollableInfoChanged: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kEventScrollableInfoChanged"
+	end
+
+	frozen kEventAttributeUserEvent: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+
+		"kEventAttributeUserEvent"
+	end
 
 	frozen kEventClassScrollable: INTEGER is
 	external
@@ -303,14 +332,7 @@ feature {NONE} -- Implementation
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
-					/*
-					LayoutInfo.scale.x.toView = NULL;
-					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.x.ratio = 1.0;
-					
-					LayoutInfo.scale.y.toView = NULL;
-					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.y.ratio = 1.0;*/
+					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
 					
 					LayoutInfo.binding.top.toView = NULL;
 					LayoutInfo.binding.top.kind = kHILayoutBindTop;
@@ -327,16 +349,6 @@ feature {NONE} -- Implementation
 					LayoutInfo.binding.right.toView = NULL;
 					LayoutInfo.binding.right.kind = kHILayoutBindRight;
 					LayoutInfo.binding.right.offset = 10;
-					/*
-					LayoutInfo.position.x.toView = NULL;
-					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
-					LayoutInfo.position.x.offset = 0.0;
-					
-					LayoutInfo.position.y.toView = NULL;
-					LayoutInfo.position.y.kind = kHILayoutPositionTop;
-					LayoutInfo.position.y.offset = 0.0;
-					*/
-					
 					
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 					HIViewApplyLayout( $a_control );
@@ -358,8 +370,18 @@ feature {NONE} -- Implementation
 
 	child_has_resized (item_imp: EV_WIDGET_IMP) is
 			-- If child has resized and smaller than parent then set position in center of `Current'.
+		local
+			a_height: INTEGER_32
+			a: CGSIZE_STRUCT
+			a_event: POINTER
+			ret: INTEGER
 		do
+			internal_set_container_size (item_imp.minimum_height, item_imp.minimum_width)
+			ret := create_event_external (null, kEventClassScrollable, kEventScrollableInfoChanged, 0, kEventAttributeUserEvent, $a_event)
+			ret := send_event_to_event_target_external (a_event, get_control_event_target_external (c_object))
+			release_event_external (a_event)
 		end
+
 
 	horizontal_policy: INTEGER
 		-- Policy type used for the horizontal scrollbar (ALWAYS, AUTOMATIC or NEVER)

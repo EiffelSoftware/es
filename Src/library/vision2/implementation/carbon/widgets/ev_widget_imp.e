@@ -81,7 +81,59 @@ feature {EV_WINDOW_IMP, EV_INTERMEDIARY_ROUTINES, EV_ANY_I} -- Implementation
 
 	on_key_event (a_key: EV_KEY; a_key_string: STRING_32; a_key_press: BOOLEAN) is
 			-- Used for key event actions sequences.
+		local
+			temp_key_string: STRING_32
+			app_imp: like app_implementation
 		do
+			app_imp := app_implementation
+			if has_focus or else has_capture then
+					-- We make sure that only the widget with either the focus or the keyboard capture receives key events
+				if a_key_press then
+						-- The event is a key press event.
+					if app_imp.key_press_actions_internal /= Void then
+						app_imp.key_press_actions_internal.call ([interface, a_key])
+					end
+					if a_key /= Void and then key_press_actions_internal /= Void then
+						key_press_actions_internal.call ([a_key])
+					end
+					if key_press_string_actions_internal /= Void then
+						temp_key_string := a_key_string
+						if a_key /= Void then
+							if a_key.out.count /= 1 and not a_key.is_numpad then
+									-- The key pressed is an action key, we only want
+								inspect
+									a_key.code
+								when {EV_KEY_CONSTANTS}.Key_space then
+									temp_key_string := once  " "
+								when {EV_KEY_CONSTANTS}.Key_enter then
+									temp_key_string := once "%N"
+								when {EV_KEY_CONSTANTS}.Key_tab then
+									temp_key_string := once "%T"
+								else
+										-- The action key pressed has no printable value
+									temp_key_string := Void
+								end
+							end
+						end
+						if temp_key_string /= Void then
+							if app_imp.key_press_string_actions_internal /= Void then
+								app_imp.key_press_string_actions_internal.call ([interface, temp_key_string])
+							end
+							key_press_string_actions_internal.call ([temp_key_string])
+						end
+					end
+				else
+						-- The event is a key release event.
+					if a_key /= Void then
+						if app_imp.key_release_actions_internal /= Void then
+							app_imp.key_release_actions.call ([interface, a_key])
+						end
+						if key_release_actions_internal /= Void then
+							key_release_actions_internal.call ([a_key])
+						end
+					end
+				end
+			end
 		end
 
 	on_focus_changed (a_has_focus: BOOLEAN) is
@@ -229,7 +281,7 @@ feature -- Measurement
 	minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
 	do
-		if internal_minimum_width /= -1 then
+		if internal_minimum_width > 0 then
 			Result := internal_minimum_width
 		else
 			Result := Precursor {EV_PICK_AND_DROPABLE_IMP}
@@ -239,7 +291,7 @@ feature -- Measurement
 	minimum_height: INTEGER is
 			-- Minimum width that the widget may occupy.
 	do
-		if internal_minimum_height /= -1 then
+		if internal_minimum_height > 0 then
 			Result := internal_minimum_height
 		else
 			Result := Precursor {EV_PICK_AND_DROPABLE_IMP}

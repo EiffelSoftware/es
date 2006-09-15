@@ -45,7 +45,10 @@ inherit
 			on_focus_changed,
 			has_focus,
 			set_focus,
-			dispose
+			dispose,
+			minimum_height,
+			minimum_width,
+			on_event
 		redefine
 			initialize,
 			make,

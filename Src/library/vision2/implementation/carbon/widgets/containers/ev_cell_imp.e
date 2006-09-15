@@ -21,7 +21,9 @@ inherit
 	EV_CONTAINER_IMP
 		redefine
 			interface,
-			replace
+			replace,
+			minimum_width,
+			minimum_height
 		end
 
 	EV_DOCKABLE_TARGET_IMP
@@ -68,6 +70,26 @@ feature -- Element change
 		do
 			Precursor {EV_CONTAINER_IMP} (v)
 			item := v
+		end
+feature -- Measurement
+
+	minimum_width: INTEGER is
+		do
+			if item /= void then
+				Result := item.minimum_width + 20
+			else
+				Result := Precursor {EV_CONTAINER_IMP} +20
+			end
+
+		end
+
+	minimum_height: INTEGER is
+		do
+			if item /= void then
+				Result := item.minimum_height + 40
+			else
+				Result := Precursor {EV_CONTAINER_IMP} + 20
+			end
 		end
 
 feature {EV_ANY_I} -- Implementation

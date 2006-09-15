@@ -92,7 +92,7 @@ feature -- Measturement
 			b := b + item.minimum_height
 			forth
 		end
-		Result := a.max (b)
+		Result := a.max (b) + 20
 	end
 
 feature -- Implementation

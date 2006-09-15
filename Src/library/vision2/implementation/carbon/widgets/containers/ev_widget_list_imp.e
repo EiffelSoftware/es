@@ -65,6 +65,9 @@ feature {NONE} -- Implementation
 				child_array.put_left (v)
 			end
 			on_new_item (v_imp)
+			if parent_imp /= void then
+				parent_imp.child_has_resized (current)
+			end
 		end
 
 	remove_i_th (i: INTEGER) is

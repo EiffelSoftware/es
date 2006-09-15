@@ -283,6 +283,10 @@ feature {EV_WIDGET_IMP} -- Implementation
 			--
 		do
 			-- By default do nothing
+			if parent_imp /= void then
+				parent_imp.child_has_resized (current)
+			end
+
 		end
 
 	set_parent_imp (a_parent_imp: EV_CONTAINER_IMP) is

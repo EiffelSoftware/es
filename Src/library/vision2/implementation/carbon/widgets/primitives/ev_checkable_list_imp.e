@@ -23,8 +23,7 @@ inherit
 	EV_LIST_IMP
 		redefine
 			interface,
-			initialize,
-			initialize_model
+			initialize
 		end
 
 	--EV_GTK_TREE_VIEW

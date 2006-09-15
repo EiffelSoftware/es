@@ -50,20 +50,24 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_left (20)
-			rect.set_right (100)
-			rect.set_bottom (40)
-			rect.set_top (20)
+			rect.set_left (0)
+			rect.set_right (0)
+			rect.set_bottom (0)
+			rect.set_top (0)
+
 			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $viewport )
 			set_c_object ( viewport )
-			rect.set_left (20)
-			rect.set_right (200)
-			rect.set_bottom (100)
-			rect.set_top (20)
+
+			rect.set_left (0)
+			rect.set_right (0)
+			rect.set_bottom (0)
+			rect.set_top (0)
 			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $container )
+
 			ret := hiview_set_visible_external (viewport, 1)
 			ret := hiview_set_visible_external (container, 1)
 			ret := hiview_add_subview_external (viewport, container)
+
 		end
 
 feature -- Access
@@ -99,52 +103,56 @@ feature -- Element change
 			root_control_ptr: POINTER
 			cfstring: EV_CARBON_CF_STRING
 			point: CGPOINT_STRUCT
-			size: CGSIZE_STRUCT
-			rect: CGRECT_STRUCT
+			size, v_size: CGSIZE_STRUCT
+			rect, v_rect: CGRECT_STRUCT
 		do
+			create rect.make_new_unshared
+			create v_rect.make_new_unshared
+			ret := hiview_get_frame_external (container, rect.item)
+			create size.make_shared (rect.size)
+
 			if not interface.is_empty then
-				old_item ?= item.implementation
-				unset_child_size (container, old_item.c_object)
+				--remove old item
 				w ?= interface.item.implementation
+				old_item ?= item.implementation
+
+				unset_child_size (w.c_object, container)
 				on_removed_item (w)
+
 				check
 					item_has_implementation: w /= Void
 				end
+
 				ret := hiview_remove_from_superview_external (w.c_object)
+
 				check
 					view_removed: ret = 0
 				end
-				item := void
-				create rect.make_new_unshared
-				ret := hiview_get_frame_external (container, rect.item)
-				create size.make_shared (rect.size)
-				create point.make_shared (rect.origin)
 
+				item := void
 				size.set_height (1)
 				size.set_width (1)
-
-				rect.set_origin (point.item)
-				rect.set_size (size.item)
 				ret := hiview_set_frame_external (container, rect.item)
+
 			end
 			if v /= Void then
+				--adding v
 				w ?= v.implementation
+
+				ret := hiview_get_frame_external (w.c_object, v_rect.item)
+				rect.set_size (v_rect.size.item)
+				ret := hiview_set_frame_external (container, rect.item)
 				ret := hiview_add_subview_external ( container, w.c_object )
-				get_child_size (container, w.c_object )
+
+				get_child_size (w.c_object, container )
 				check
 					view_added: ret = 0
 				end
-
---				create cfstring.make_unshared (hiview_copy_text_external (w.c_object))
---				print (cfstring.string + " " + w.generator +" attached to ")
---				create cfstring.make_unshared (hiview_copy_text_external (c_object))
---				print (cfstring.string + " " + generator + "%N")
 
 				setup_layout (w)
 
 				on_new_item (w)
 				item := v
---				print (current.height.out + " - " +  w.height.out + "%N")
 			end
 		end
 
@@ -201,14 +209,15 @@ feature {NONE} -- Implementation
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
 					
 					LayoutInfo.scale.x.toView = $a_child;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.x.ratio = 1.1;
+					LayoutInfo.scale.x.ratio = 1;
 					
 					LayoutInfo.scale.y.toView = $a_child;
 					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
-					LayoutInfo.scale.y.ratio = 1.1;
+					LayoutInfo.scale.y.ratio = 1;
 
 
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
@@ -226,6 +235,7 @@ feature {NONE} -- Implementation
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
 					
 					LayoutInfo.scale.x.toView = $a_child;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
@@ -278,7 +288,24 @@ feature {NONE} -- Implementation
 			end
 			set_control_bounds_external (c_object,rect.item)
 		end
-
+	internal_set_container_size (a_height, a_width: INTEGER_32)
+		local
+			a_rect: CGRECT_STRUCT
+			a_size: CGSIZE_STRUCT
+			ret: INTEGER_32
+			ptr: POINTER
+		do
+			create a_rect.make_new_unshared
+			create a_size.make_shared (a_rect.size)
+			ret := hiview_get_frame_external (container, a_rect.item)
+			if (a_height > 0) then
+				a_size.set_height (a_height)
+			end
+			if (a_width > 0) then
+				a_size.set_width (a_width)
+			end
+			ret := hiview_set_frame_external (container, a_rect.item)
+		end
 
 	internal_set_item_size (a_width, a_height: INTEGER) is
 			-- Set `a_widget.width' to `a_width'.
