@@ -11,12 +11,13 @@ creation
 	make
 
 
-	feature
-		--creation
+feature --creation
+
 		make is
 				-- creates a I18N_LOCALE_INFO with default values
 			do
-				-- initialise to arbitrary default values so we can ensure that all fields will have valid/non-void contents
+				-- initialise to arbitrary default values so we can ensure
+				-- that all fields will have valid/non-void contents
 
 
 				--use iso 8601 date / time formats
@@ -45,24 +46,17 @@ creation
 				currency_group_separator := ","
 				currency_number_list_separator := ";"
 				currency_grouping := <<>> --need to define a format for this!
-
-
-
-
 			end
 
 
 
-	feature
-		--identification
+feature	--identification
+
 		id: I18N_LOCALE_ID
 
-	feature
-		-- date and time formatting
+feature	-- date and time formatting
 
 		long_date_format: STRING_32
-
-
 
 		short_date_format: STRING_32
 
@@ -74,8 +68,7 @@ creation
 
 
 
-	feature
-		-- day and month names
+feature	-- day and month names
 
 		day_names: ARRAY[STRING_32]
 		month_names: ARRAY[STRING_32]
@@ -83,8 +76,7 @@ creation
 		abbreviated_day_names: ARRAY[STRING_32]
 		abbreviated_month_names: ARRAY[STRING_32]
 
-	feature
-		-- number formatting
+feature	-- number formatting
 
 		value_decimal_separator: STRING_32
 		value_numbers_after_decimal_separator: INTEGER
@@ -92,8 +84,7 @@ creation
 		value_number_list_separator: STRING_32
 		value_grouping: ARRAY[STRING_32]
 
-	feature
-		-- currency formatting
+feature	-- currency formatting
 		currency_symbol: STRING_32
 		currency_decimal_separator: STRING_32
 		currency_numbers_after_decimal_separator: INTEGER
@@ -101,8 +92,42 @@ creation
 		currency_number_list_separator: STRING_32
 		currency_grouping: ARRAY[STRING_32]
 
-	feature
-		-- modification
+feature	-- modification
+
+		set_day_names (a_day_names : ARRAY[STRING_32]) is
+				-- set the day names
+			require
+				a_day_names_exist: day_names /= Void
+			do
+				day_names := a_day_names
+			end
+
+		set_abbreviated_day_names (a_abbreviated_day_names : ARRAY[STRING_32]) is
+				-- set abbreviated day names
+			require
+				a_abbreviated_day_names_exists: a_abbreviated_day_names /= Void
+			do
+				abbreviated_day_names := a_abbreviated_day_names
+			end
+
+		set_month_names ( a_month_names : ARRAY[STRING_32]) is
+				-- set month names
+			require
+				a_month_names_exists: a_month_names /= Void
+			do
+				month_names := a_month_names
+			end
+
+		set_abbreviated_month_names (a_abbreviated_month_names : ARRAY[STRING_32]) is
+				-- Set abbreviated month names
+			require
+				a_abbreviated_month_names_exists: a_abbreviated_month_names /= Void
+			do
+				abbreviated_month_names := a_abbreviated_month_names
+			end
+
+
+
 		set_long_date_format(format:STRING_GENERAL) is
 				-- set the long date format string
 			require
@@ -205,6 +230,15 @@ creation
 				value_number_list_separator_set: value_number_list_separator.is_equal(separator.as_string_32)
 			end
 
+		set_currency_symbol (a_currency_simbol : STRING_GENERAL) is
+				--
+			require
+				a_currency_simbol_exists: a_currency_simbol /= Void
+			do
+				currency_symbol := a_currency_simbol
+			end
+
+
 
 		set_currency_decimal_separator(separator:STRING_GENERAL) is
 				-- set the decimal separator for currency values
@@ -245,9 +279,4 @@ creation
 			ensure
 				currency_number_list_separator_set: currency_number_list_separator.is_equal(separator.as_string_32)
 			end
-
-
-
-
-
 end

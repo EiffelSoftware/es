@@ -13,6 +13,18 @@ class
 		is_equal
 	end
 
+create
+	make
+
+feature
+
+	make (a_string : STRING_32) is
+			--
+		do
+			name := a_string
+		end
+
+
 
 feature  -- Informations
 	name : STRING_32
