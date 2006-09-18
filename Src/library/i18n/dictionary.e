@@ -8,7 +8,22 @@ deferred class
 	I18N_DICTIONARY
 
 	inherit
-		I18N_PLURAL_TOOLS
+		SHARED_I18N_PLURAL_TOOLS
+
+
+feature -- Creation
+
+	make(a_plural_form:INTEGER) is
+			-- Create an empty dictionary with the given plural form
+			require
+				valid_plural_form: plural_tools.valid_plural_form (plural_form)
+			do
+				plural_form := a_plural_form
+			ensure
+				plural_form_set: a_plural_form = plural_form
+			end
+
+
 
 feature -- Manipulation
 
@@ -29,12 +44,12 @@ feature -- Access
 		deferred
 		end
 
-	has_plural (original_singular, original_plural : STRING_GENERAL; plural_form : INTEGER) : BOOLEAN is
+	has_plural (original_singular, original_plural : STRING_GENERAL; plural_number : INTEGER) : BOOLEAN is
 			--
 		require
 			original_singular_exists: original_singular /= Void
 			original_plural_exists: original_plural /= Void
-			valid_plural_form: plural_form >= 0
+			valid_plural_number: plural_number >= 0
 		deferred
 		end
 
@@ -49,15 +64,41 @@ feature -- Access
 			result_exists: Result /= Void
 		end
 
-	get_plural (original_singular, original_plural : STRING_GENERAL; plural_form : INTEGER) : STRING_32 is
+	get_plural (original_singular, original_plural : STRING_GENERAL; plural_number : INTEGER) : STRING_32 is
 			-- get the translation of `original_singular'
 			-- in the given plural form
 		require
 			original_singular_exists: original_singular /= Void
 			original_plural_exists: original_plural /= Void
-			valid_plural_form: plural_form >= 0
+			valid_plural_number: plural_number >= 0
 		deferred
 		ensure
 			result_exists: Result /= Void
 		end
+
+	feature --Information
+
+		plural_form: INTEGER --valid constant from I18N_PLURAL_TOOLS
+
+		count: INTEGER is
+				 deferred
+				 ensure
+				 	count_non_negative: Result >= 0
+				 end
+			-- number of entries in the dictionary
+
+	feature {NONE} --Helpers
+		reduce(a_plural_form:INTEGER):INTEGER is
+				-- reduce a given plural forms to a smallest one
+			require
+				a_plural_form >= 0
+			do
+				Result := plural_tools.reduce (plural_form, a_plural_form)
+			end
+
+
+
+
+
+
 end

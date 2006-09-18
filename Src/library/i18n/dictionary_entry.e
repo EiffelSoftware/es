@@ -20,7 +20,7 @@ class
 				do
 					original_singular := an_original_singular.to_string_32
 					singular_translation := a_translated_singular.to_string_32
-					create plural_translations.make (1,4) -- there are at most 4 forms
+					create plural_translations.make (0,3) -- there are at most 4 forms, INDEX IS 0-BASED!!!!!!!!!!!!
 				ensure
 					original_singular_set: original_singular.is_equal (an_original_singular.as_string_32)
 					singular_translation_set: singular_translation.is_equal (a_translated_singular.as_string_32)
@@ -49,6 +49,6 @@ class
 		original_singular: STRING_32
 		original_plural: STRING_32
 		singular_translation: STRING_32
-		plural_translations: ARRAY[TUPLE[INTEGER,STRING_32]]
+		plural_translations: ARRAY[STRING_32]
 
 end
