@@ -7,6 +7,9 @@ indexing
 class
 	I18N_LOCALE_MANAGER
 
+	inherit
+		SHARED_I18N_URI_PARSER
+
 create make
 
 feature -- Initialization

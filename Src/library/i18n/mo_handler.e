@@ -9,7 +9,8 @@ class
 
 		I18N_FILE_HANDLER
 
+
 		feature
-			file: I18N_MO_FILE
+		--	file: I18N_MO_FILE -- do this in make?
 
 end

@@ -20,6 +20,10 @@ feature -- Access
 		end
 
 
+ feature {NONE}
+ 	-- Implementation
+	file: I18N_FILE
+
 
 
 end

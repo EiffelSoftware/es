@@ -7,7 +7,11 @@ indexing
 class
 	I18N_DICTIONARY_ENTRY
 
-	feature
+	create
+		make,
+		make_with_plural
+
+	feature --creation
 		make(an_original_singular, a_translated_singular: STRING_GENERAL) is
 				-- create the entry for a singular-form string
 				require

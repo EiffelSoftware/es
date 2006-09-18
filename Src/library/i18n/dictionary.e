@@ -7,6 +7,9 @@ indexing
 deferred class
 	I18N_DICTIONARY
 
+	inherit
+		I18N_PLURAL_TOOLS
+
 feature -- Manipulation
 
 	extend (a_entry : I18N_DICTIONARY_ENTRY) is
@@ -57,17 +60,4 @@ feature -- Access
 		ensure
 			result_exists: Result /= Void
 		end
-
-feature
-	-- plural form handling
-
-	reduce_plural_form (plural_form: INTEGER):INTEGER is
-			-- reduce plural form to smallest equivalent, for index lookup
-			require
-				argument_is_valid_plural_form: plural_form >= 0
-			deferred
-			ensure
-				result_is_valid_plural_form: Result  >= 0
-			end
-
 end
