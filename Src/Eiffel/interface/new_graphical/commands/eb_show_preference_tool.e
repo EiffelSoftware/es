@@ -52,13 +52,15 @@ feature {NONE} -- Execution
 
 feature -- Properties
 
-	name: STRING is
+--i18n
+	name: STRING_32 is
 			-- Command name
 		do
 			Result := Interface_names.f_Preferences
 		end
 
-	menu_name: STRING is
+--i18n
+	menu_name: STRING_32 is
 			-- Name used in menu entry
 		do
 			Result := Interface_names.m_Preferences

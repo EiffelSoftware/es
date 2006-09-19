@@ -33,12 +33,12 @@ feature -- Initialization
 
 feature -- Status report
 
-	description: STRING is
+	description: STRING_32 is
 		do
 			Result := Interface_names.e_Toggle_stone_management
 		end
 
-	name: STRING is "Toggle_stone"
+	name: STRING_32 is do Result := "Toggle_stone" end
 
 	pixmap: EV_PIXMAP is
 		do
@@ -50,7 +50,7 @@ feature -- Status report
 
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 		do
 			if window.unified_stone then
 				Result := Interface_names.e_Separate_stone
@@ -59,13 +59,13 @@ feature -- Status report
 			end
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text displayed on the toolbar button.
 		do
 			Result := Interface_names.b_Toggle_stone_management
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 		do
 			if window.unified_stone then
 				Result := Interface_names.m_Separate_stone

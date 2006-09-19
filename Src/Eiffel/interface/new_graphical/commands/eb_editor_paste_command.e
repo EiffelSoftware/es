@@ -43,7 +43,7 @@ feature -- Execution
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Paste
@@ -55,13 +55,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_paste_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Paste
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Paste
@@ -73,13 +73,13 @@ feature {NONE} -- Implementation
 			Result := target.current_editor
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for current command
 		do
 			Result := Interface_names.e_Paste
 		end
 
-	name: STRING is "Editor_paste";
+	name: STRING_32 is do Result := "Editor_paste" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

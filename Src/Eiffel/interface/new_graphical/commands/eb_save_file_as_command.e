@@ -56,7 +56,7 @@ feature -- Execution
 			execute_with_dialog (Void)
 		end
 
-	execute_with_filename (new_filename: STRING) is
+	execute_with_filename (new_filename: STRING_GENERAL) is
 			-- Save a file with a chosen name.
 		require
 			valid_filename: new_filename /= Void and then not new_filename.is_empty
@@ -140,7 +140,7 @@ feature {EB_SAVE_FILE_COMMAND} -- Implementation
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Export_to
@@ -148,14 +148,14 @@ feature {NONE} -- Implementation
 
 feature -- Obsolete
 
-	save_it (fn: STRING) is
+	save_it (fn: STRING_GENERAL) is
 			-- Save a file with a chosen name.
 		obsolete "use `save_as' instead"
 		do
 			save_as (fn)
 		end
 
-	save_as (new_filename: STRING) is
+	save_as (new_filename: STRING_GENERAL) is
 			-- Save a file with a chosen name.
 		obsolete "use `execute_with_filename' instead"
 		do

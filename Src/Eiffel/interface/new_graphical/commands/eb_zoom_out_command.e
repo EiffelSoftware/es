@@ -68,13 +68,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_zoom_out_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_zoom_out
 		end
 
-	name: STRING is "Zoom_out";
+	name: STRING_32 is do Result := "Zoom_out" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

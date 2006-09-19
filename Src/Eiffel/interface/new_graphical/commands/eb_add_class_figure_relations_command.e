@@ -180,7 +180,7 @@ feature -- Basic operations
 			end
 		end
 
-	undo_name: STRING is
+	undo_name: STRING_32 is
 			-- Undo name for operation of `Current'.
 		do
 			inspect
@@ -357,7 +357,7 @@ feature -- Basic operations
 
 feature -- Access
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			inspect
@@ -391,7 +391,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			inspect
@@ -407,7 +407,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	Name: STRING is "Supplier_visibility"
+	Name: STRING_32 is do Result := "Supplier_visibility" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

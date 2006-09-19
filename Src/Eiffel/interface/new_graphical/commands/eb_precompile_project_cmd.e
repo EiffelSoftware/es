@@ -99,16 +99,16 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Attributes
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Precompile
 		end
 
-	name: STRING is "Precompile"
+	name: STRING_32 is do Result := "Precompile" end
 			-- Name of precompile command.
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name used in menu entry
 		once
 			Result := Interface_names.m_Precompile_new

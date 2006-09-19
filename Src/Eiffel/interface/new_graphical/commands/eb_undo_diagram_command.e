@@ -57,13 +57,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_undo_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_undo
 		end
 
-	name: STRING is "Undo_command";
+	name: STRING_32 is do Result := "Undo_command" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

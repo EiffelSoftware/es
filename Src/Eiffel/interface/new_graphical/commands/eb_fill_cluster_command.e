@@ -120,13 +120,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_fill_cluster_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_fill_cluster
 		end
 
-	name: STRING is "Cluster_filling";
+	name: STRING_32 is do Result := "Cluster_filling" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

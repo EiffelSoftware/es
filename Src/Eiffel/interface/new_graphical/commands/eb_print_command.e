@@ -95,7 +95,7 @@ feature -- Execution
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Print
@@ -107,25 +107,25 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_print_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Print
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Print
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.e_Print
 		end
 
-	name: STRING is "Print"
+	name: STRING_32 is do Result := "Print" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

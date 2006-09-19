@@ -50,7 +50,7 @@ feature -- Access
 	explorer_bar_item: EB_EXPLORER_BAR_ITEM
 			-- Tool associated with Current.
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for Current
 		do
 			if is_selected then
@@ -61,7 +61,7 @@ feature -- Access
 			Result.append_string (explorer_bar_item.title)
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for toolbar button.
 		do
 			Result := explorer_bar_item.title
@@ -73,19 +73,19 @@ feature -- Access
 			Result := True
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for current command.
 		do
 			Result := "Show/hide " + explorer_bar_item.title
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in menus.
 		do
 			Result := explorer_bar_item.menu_name
 		end
 
-	name: STRING is
+	name: STRING_32 is
 			-- Name to be displayed.
 		do
 			Result := explorer_bar_item.title

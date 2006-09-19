@@ -169,7 +169,7 @@ feature {NONE} -- Callbacks
 
 feature {NONE} -- Attributes
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name used in menu entry
 		do
 			Result := Interface_names.m_Exit_project

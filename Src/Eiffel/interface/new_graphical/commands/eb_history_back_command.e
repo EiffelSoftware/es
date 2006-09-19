@@ -40,7 +40,7 @@ feature {NONE} -- Implementation
 			history_manager.back
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_History_back
@@ -52,19 +52,19 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.view_previous_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_history_back
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.e_history_back
 		end
 
-	name: STRING is "History_back";
+	name: STRING_32 is do Result := "History_back" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

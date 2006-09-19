@@ -43,22 +43,22 @@ feature {NONE} -- Attributes
 			Result := pixmaps.icon_pixmaps.debug_run_without_breakpoint_icon
 		end
 
-	name: STRING is "Exec_no_stop"
+	name: STRING_32 is do Result := "Exec_no_stop" end
 			-- Name of the command.
 
-	internal_tooltip: STRING is
+	internal_tooltip: STRING_32 is
 			-- Tooltip displayed on `Current's buttons.
 		do
 			Result := Interface_names.e_Exec_no_stop
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text displayed on `Current's buttons.
 		do
 			Result := Interface_names.b_Exec_no_stop
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name used in menu entry.
 		once
 			Result := Interface_names.m_Exec_nostop

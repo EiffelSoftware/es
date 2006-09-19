@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			if selected_type = inheritance then
@@ -128,13 +128,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.l_diagram_create_links
 		end
 
-	name: STRING is "New_links"
+	name: STRING_32 is do Result := "New_links" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

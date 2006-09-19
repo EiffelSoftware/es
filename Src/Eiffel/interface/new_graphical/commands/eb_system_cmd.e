@@ -195,7 +195,7 @@ feature {NONE} -- Implementation
 			gc_window_not_void: Result /= Void
 		end
 
-	name: STRING is "System_tool"
+	name: STRING_32 is do Result := "System_tool" end
 			-- Name of command. Used to store command in preferences
 
 	pixmap: EV_PIXMAP is
@@ -204,25 +204,25 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.tool_config_icon
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for command
 		do
 			Result := Interface_names.e_Project_settings
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for toolbar button
 		do
 			Result := Interface_names.e_Project_settings
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Tooltip for toolbar button
 		do
 			Result := Interface_names.b_Project_settings
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 		do
 			Result := Interface_names.m_System_new
 		end

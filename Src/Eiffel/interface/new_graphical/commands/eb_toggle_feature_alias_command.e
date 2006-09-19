@@ -44,7 +44,7 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			if is_selected then
@@ -59,13 +59,13 @@ feature {NONE} -- Implementation
 			Result := target.features_tool.is_alias_enabled
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.l_toggle_alias
 		end
 
-	name: STRING is "Toggle_feature_alias";
+	name: STRING_32 is do Result := "Toggle_feature_alias" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

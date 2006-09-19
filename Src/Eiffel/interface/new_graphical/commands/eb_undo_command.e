@@ -37,7 +37,7 @@ feature -- Execution
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Undo
@@ -49,25 +49,25 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_undo_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Undo
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Undo
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.e_Undo
 		end
 
-	name: STRING is "Undo";
+	name: STRING_32 is do Result := "Undo" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

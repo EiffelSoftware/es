@@ -87,7 +87,7 @@ feature -- Basic operation
 
 feature -- Properties
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 		do
 			Result := Interface_names.m_Open_new
 		end
@@ -97,19 +97,19 @@ feature -- Properties
 			Result := pixmaps.icon_pixmaps.general_open_icon
 		end
 
-	name: STRING is "Open_file"
+	name: STRING_32 is do Result := "Open_file" end
 
-	description: STRING is
+	description: STRING_32 is
 		do
 			Result := Interface_names.e_Open_file
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 		do
 			Result := description
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text of toolbar button
 		do
 			Result := Interface_names.b_Open

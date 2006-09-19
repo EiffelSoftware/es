@@ -57,13 +57,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_redo_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_redo
 		end
 
-	name: STRING is "Redo_command";
+	name: STRING_32 is do Result := "Redo_command" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

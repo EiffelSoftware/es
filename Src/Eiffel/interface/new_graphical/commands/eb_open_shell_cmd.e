@@ -213,13 +213,13 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation properties
 
-	command_shell_name: STRING is
+	command_shell_name: STRING_32 is
 			-- Name of the command to execute in the shell dialog.
 		do
 			Result := preferences.misc_data.external_editor_command.twin
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_external_editor
@@ -231,25 +231,25 @@ feature {NONE} -- Implementation properties
 			Result := pixmaps.icon_pixmaps.command_send_to_external_editor_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.e_shell
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Textp for the toolbar button.
 		do
 			Result := Interface_names.b_shell
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.e_shell
 		end
 
-	name: STRING is "Open_shell"
+	name: STRING_32 is do Result := "Open_shell" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

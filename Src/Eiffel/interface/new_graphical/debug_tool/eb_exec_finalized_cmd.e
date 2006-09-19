@@ -120,28 +120,28 @@ feature -- Properties
 			Result := pixmaps.icon_pixmaps.debug_run_finalized_icon
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Text describing `Current' in the customize tool bar dialog.
 		do
 			Result := Interface_names.f_Run_finalized
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Short description of Current.
 		do
 			Result := Interface_names.f_Run_finalized
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Short description of Current.
 		do
 			Result := Interface_names.b_Run_finalized
 		end
 
-	name: STRING is "Run_final"
+	name: STRING_32 is do Result := "Run_final" end
 			-- Text internally defining Current.
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name used in menu entry
 		do
 			Result := Interface_names.m_Run_finalized

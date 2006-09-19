@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_parent (caller: EB_FILE_OPENER_CALLBACK; fn: STRING; parent_window: EV_WINDOW) is
+	make_with_parent (caller: EB_FILE_OPENER_CALLBACK; fn: STRING_GENERAL; parent_window: EV_WINDOW) is
 			-- Initialize with parent window `a_parent'
 		local
 			aok: BOOLEAN
@@ -31,33 +31,33 @@ feature {NONE} -- Initialization
 			file: RAW_FILE -- It should be PLAIN_TEXT_FILE, however windows will expand %R and %N as %N
 		do
 			if not fn.is_empty then
-				create file.make (fn)
+				create file.make (fn.to_string_8)
 				aok := True
 				if file.exists and then not file.is_plain then
-					warning_message := Warning_messages.w_Not_a_plain_file (fn)
-					
+					warning_message := Warning_messages.w_Not_a_plain_file (fn.to_string_8)
+
 				elseif file.exists and then not file.is_writable then
-					warning_message := Warning_messages.w_Not_writable (fn)
-					
+					warning_message := Warning_messages.w_Not_writable (fn.to_string_8)
+
 				elseif not file.is_creatable then
-					warning_message := Warning_messages.w_Not_creatable (fn)
-					
+					warning_message := Warning_messages.w_Not_creatable (fn.to_string_8)
+
 				elseif file.exists and then file.is_writable then
-					create qd.make_with_text (Warning_messages.w_File_exists (fn))
+					create qd.make_with_text (Warning_messages.w_File_exists (fn.to_string_8))
 					qd.show_modal_to_window (parent_window)
 					aok := qd.selected_button.is_equal ((create {EV_DIALOG_CONSTANTS}).ev_yes)
 				end
 			else
-				warning_message := Warning_messages.w_Not_a_plain_file (fn)
+				warning_message := Warning_messages.w_Not_a_plain_file (fn.to_string_8)
 			end
-			
+
 			if warning_message /= Void then
 				aok := False
 				create wd.make_with_text (warning_message)
 				wd.show_modal_to_window (parent_window)
 			end
-			
-			if aok then 
+
+			if aok then
 				caller.save_file (file)
 			end
 		end

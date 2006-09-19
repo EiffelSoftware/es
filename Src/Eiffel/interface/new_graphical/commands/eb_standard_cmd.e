@@ -42,19 +42,19 @@ feature -- Access
 	mini_pixmap: EV_PIXMAP
 			-- Icon for mini tool bar button representing `Current'.
 
-	tooltip: STRING
+	tooltip: STRING_32
 			-- Help text displayed when associated buttons are focused.
 
-	tooltext: STRING
+	tooltext: STRING_32
 			-- Text displayed on toolbar button.
 
-	description: STRING
+	description: STRING_32
 			-- Help text displayed in the customize tool bar dialog.
 
-	menu_name: STRING
+	menu_name: STRING_32
 			-- Menu entry corresponding to `Current'.
 
-	name: STRING
+	name: STRING_32
 			-- Internal string identifier of `Current'.
 
 feature -- Status setting
@@ -67,7 +67,7 @@ feature -- Status setting
 			pixmap := new_p
 		end
 
-	set_tooltip (s: STRING) is
+	set_tooltip (s: STRING_GENERAL) is
 			-- Define a new tooltip for `Current', and possibly a new description.
 		do
 			tooltip := s
@@ -76,13 +76,13 @@ feature -- Status setting
 			end
 		end
 
-	set_tooltext (s: STRING) is
+	set_tooltext (s: STRING_GENERAL) is
 			-- Define a new tooltext for `Current' that is displayed
 		do
 			tooltext := s
 		end
 
-	set_description (s: STRING) is
+	set_description (s: STRING_GENERAL) is
 			-- Define a new description for `Current', and possibly a new tooltip.
 		do
 			description := s
@@ -100,13 +100,13 @@ feature -- Status setting
 			end
 		end
 
-	set_menu_name (s: STRING) is
+	set_menu_name (s: STRING_GENERAL) is
 			-- Define a new menu name for `Current'.
 		do
 			menu_name := s
 		end
 
-	set_name (s: STRING) is
+	set_name (s: STRING_GENERAL) is
 			-- Define a new name for `Current'.
 		do
 			name := s

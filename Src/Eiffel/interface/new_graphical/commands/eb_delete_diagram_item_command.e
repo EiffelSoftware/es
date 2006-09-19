@@ -84,19 +84,19 @@ feature -- Access
 			Result := pixmaps.icon_pixmaps.general_delete_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_delete
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.l_diagram_delete
 		end
 
-	name: STRING is "Delete_item"
+	name: STRING_32 is do Result := "Delete_item" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

@@ -39,19 +39,19 @@ feature -- Access
 	history: EB_HISTORY_DIALOG
 			-- History of undoable commands.
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name on corresponding menu items
 		do
 			Result := "Diagram command"
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := tooltip
 		end
 
-	shortcut_string: STRING is
+	shortcut_string: STRING_32 is
 			-- String discribing shortcut combination for `Current'.
 		do
 			if accelerator = Void then

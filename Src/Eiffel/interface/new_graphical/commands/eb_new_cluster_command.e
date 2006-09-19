@@ -57,7 +57,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Create_new_cluster
@@ -69,25 +69,25 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.new_cluster_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Create_new_cluster
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Create_new_cluster
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.f_Create_new_cluster
 		end
 
-	name: STRING is "New_cluster";
+	name: STRING_32 is do Result := "New_cluster" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

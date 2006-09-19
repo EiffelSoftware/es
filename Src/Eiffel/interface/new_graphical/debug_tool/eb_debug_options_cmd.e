@@ -75,7 +75,7 @@ feature -- Properties
 	debugger_manager: EB_DEBUGGER_MANAGER
 			-- Manager in charge of all debugging operations.
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for `Current'.
 		do
 			Result := "Debugging options"
@@ -87,12 +87,12 @@ feature -- Properties
 			Result := pixmaps.icon_pixmaps.tool_config_icon
 		end
 
-	name: STRING is "Debugging_options"
+	name: STRING_32 is do Result := "Debugging_options" end
 			-- Name of the command.
 
-	menu_name: STRING is "De&bugging Options"
+	menu_name: STRING_32 is do Result := "De&bugging Options" end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Default text displayed in toolbar button
 		do
 			Result := "Debugging options"
@@ -100,7 +100,7 @@ feature -- Properties
 
 feature {NONE} -- Attributes
 
-	description: STRING is
+	description: STRING_32 is
 			-- What appears in the customize dialog box.
 		do
 			Result := tooltip

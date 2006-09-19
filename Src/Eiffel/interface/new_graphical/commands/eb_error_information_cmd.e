@@ -45,25 +45,25 @@ feature -- Status setting
 
 feature -- Status report
 
-	description: STRING is
+	description: STRING_32 is
 			-- Explanatory text for this command.
 		do
 			Result := Interface_names.e_Display_error_help
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for `Current's toolbar button.
 		do
 			Result := Interface_names.e_Display_error_help
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for `Current's toolbar button.
 		do
 			Result := Interface_names.b_Display_error_help
 		end
 
-	name: STRING is "Open_help_tool"
+	name: STRING_32 is do Result := "Open_help_tool" end
 			-- Internal textual representation.
 
 	pixmap: EV_PIXMAP is
@@ -72,7 +72,7 @@ feature -- Status report
 			Result := pixmaps.icon_pixmaps.command_error_info_icon
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Text used for menu items for `Current'.
 		do
 			Result := Interface_names.m_Display_error_help

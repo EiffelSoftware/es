@@ -11,7 +11,7 @@ deferred class
 
 feature -- Access
 
-	name: STRING is
+	name: STRING_32 is
 			-- Name of the command. Use to store the command in the
 			-- preferences.
 		deferred
@@ -31,7 +31,7 @@ feature {EB_CUSTOMIZABLE_LIST_ITEM, EB_CUSTOM_TOOLBAR_LIST} -- Implementation
 		deferred
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description of the command as it appears in the
 			-- "customize" dialog.
 		deferred

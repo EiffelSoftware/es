@@ -106,19 +106,19 @@ feature -- Basic operations
 			Result := pixmaps.icon_pixmaps.diagram_export_to_png_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_to_png
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name for the menu entry.
 		do
 			Result := Interface_names.m_diagram_to_png
 		end
 
-	name: STRING is "Diagram_to_png";
+	name: STRING_32 is do Result := "Diagram_to_png" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

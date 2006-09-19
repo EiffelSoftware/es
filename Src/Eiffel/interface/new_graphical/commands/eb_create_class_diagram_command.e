@@ -48,13 +48,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.new_class_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_new_class
 		end
 
-	name: STRING is "Create_class"
+	name: STRING_32 is do Result := "Create_class" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

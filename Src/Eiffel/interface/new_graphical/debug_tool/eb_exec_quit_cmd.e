@@ -51,28 +51,28 @@ feature -- Formatting
 
 feature {NONE} -- Attributes
 
-	description: STRING is
+	description: STRING_32 is
 			-- What appears in the customize dialog box.
 		do
 			Result := tooltip
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip displayed on `Current's buttons.
 		do
 			Result := Interface_names.e_Exec_kill
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text displayed on `Current's buttons.
 		do
 			Result := Interface_names.b_Exec_kill
 		end
 
-	name: STRING is "Exec_quit"
+	name: STRING_32 is do Result := "Exec_quit" end
 			-- Name of the command.
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Menu entry corresponding to `Current'.
 		do
 			Result := Interface_names.m_Debug_kill

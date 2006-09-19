@@ -40,10 +40,10 @@ feature -- Implementation
 			Result := pixmaps.icon_pixmaps.toolbar_separator_icon
 		end
 
-	description: STRING is "Separator"
+	description: STRING_32 is do Result := "Separator" end
 			-- Identifier of a separator in the customize toolbar dialog box
 
-	name: STRING is "Separator";
+	name: STRING_32 is do Result := "Separator" end
 			-- Name of the command. Use to store the command in the
 			-- preferences.
 

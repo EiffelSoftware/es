@@ -69,19 +69,19 @@ feature -- Access
 
 feature -- Properties
 
-	description: STRING is
+	description: STRING_32 is
 			-- Comment about `Current' for customization.
 		do
 			Result := Interface_names.e_Remove_class_cluster
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name of the menu corresponding to `Current'.
 		do
 			Result := Interface_names.m_Remove_class_cluster
 		end
 
-	name: STRING is "Remove_class_cluster"
+	name: STRING_32 is do Result := "Remove_class_cluster" end
 			-- Internal identifier of `Current'.
 
 	pixmap: EV_PIXMAP is
@@ -96,13 +96,13 @@ feature -- Properties
 			Result := pixmaps.mini_pixmaps.general_delete_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Text string that appears when focus is given to `Current's buttons.
 		once
 			Result := description
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text that appears on toolbar button
 		once
 			Result := Interface_names.B_remove_class_cluster

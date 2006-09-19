@@ -49,19 +49,19 @@ feature -- Status
 
 feature -- Access
 
-	description: STRING is
+	description: STRING_32 is
 			-- What is printed in the customize dialog.
 		do
 			Result := interface_names.f_refactoring_undo
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Pop-up help on buttons.
 		do
 			Result := description
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for toolbar button
 		do
 			Result := interface_names.b_refactoring_undo
@@ -73,7 +73,7 @@ feature -- Access
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND} (display_text)
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Menu entry corresponding to `Current'.
 		do
 			Result := tooltext
@@ -85,7 +85,7 @@ feature -- Access
 			Result := pixmaps.icon_pixmaps.general_undo_icon
 		end
 
-	Name: STRING is "RF_undo"
+	Name: STRING_32 is do Result := "RF_undo" end
 			-- Name of `Current' to identify it.
 
 feature -- Execution

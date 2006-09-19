@@ -28,7 +28,8 @@ feature -- Initialization
 
 feature -- Access
 
-	menu_name: STRING is
+--i18n
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with '&' symbol).
 		do
 			Result := Interface_names.m_Export_XMI

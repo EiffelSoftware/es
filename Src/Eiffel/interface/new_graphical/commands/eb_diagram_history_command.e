@@ -54,13 +54,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_undo_history_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_history
 		end
 
-	name: STRING is "History_tool";
+	name: STRING_32 is do Result := "History_tool" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

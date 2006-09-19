@@ -43,7 +43,7 @@ feature -- Access
 			Result := pixmaps.mini_pixmaps.debugger_show_hex_value_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.e_switch_num_format_to_hex
@@ -56,13 +56,13 @@ feature -- Status report
 	command_call_back: PROCEDURE [ANY, TUPLE [BOOLEAN]]
 			-- Call back procedure to execute current
 
-	name: STRING is
+	name: STRING_32 is
 			-- Name of the command.
 		do
 			Result := Interface_names.e_Switch_num_formating
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description of the command.
 		do
 			Result := Interface_names.l_Switch_num_format_desc

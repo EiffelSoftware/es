@@ -49,7 +49,7 @@ feature -- Initialization
 
 feature -- Access
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Menu name for `Current'.
 		once
 			Result := Interface_names.m_Set_slice_size + "New"
@@ -67,7 +67,7 @@ feature -- Access
 			Result := pixmaps.mini_pixmaps.debugger_set_sizes_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := description
@@ -86,13 +86,13 @@ feature -- Status report
 	for_tool: BOOLEAN
 			-- Is `Current' associated with an object tool or with a pretty print dialog?
 
-	name: STRING is
+	name: STRING_32 is
 			-- Name of the command.
 		once
 			Result := Interface_names.l_Set_slice_limits + "New"
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description of the command.
 		once
 			Result := Interface_names.l_Set_slice_limits_desc

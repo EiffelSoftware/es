@@ -40,19 +40,19 @@ feature -- Access
 			Result := pixmaps.mini_pixmaps.debugger_expand_info_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for Current.
 		do
 			Result := Interface_names.e_Pretty_print
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Tooltip for Current.
 		do
 			Result := Interface_names.e_Pretty_print
 		end
 
-	name: STRING is
+	name: STRING_32 is
 			-- Tooltip for Current.
 		do
 			Result := "Pretty_print"
@@ -64,7 +64,7 @@ feature -- Access
 
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Menu name for `Current'.
 		do
 			Result := Interface_names.m_Pretty_print

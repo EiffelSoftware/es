@@ -28,14 +28,16 @@ feature -- Access
 		do
 		end
 
-	tooltip: STRING is
+--i18n
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		deferred
 		ensure
 			valid_result: Result /= Void
 		end
 
-	tooltext: STRING is
+--i18n
+	tooltext: STRING_32 is
 			-- Text displayed on the toolbar button.
 		do
 			Result := ""
@@ -206,8 +208,8 @@ feature {NONE} -- Implementaiton
 
 	internal_managed_toolbar_items: ARRAYED_LIST [like new_toolbar_item]
 
-	Opening_parenthesis: STRING is " ("
-	Closing_parenthesis: STRING is ")";
+	Opening_parenthesis: STRING_32 is do Result := " (" end
+	Closing_parenthesis: STRING_32 is do Result := ")" end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

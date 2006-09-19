@@ -13,7 +13,7 @@ inherit
 			new_toolbar_item, new_mini_toolbar_item, mini_pixmap,
 			tooltext
 		end
-	
+
 	EB_VETO_FACTORY
 
 	EB_SHARED_DEBUG_TOOLS
@@ -28,19 +28,19 @@ inherit
 
 feature -- Access
 
-	description: STRING is
+	description: STRING_32 is
 			-- What is printed in the customize dialog.
 		do
 			Result := Interface_names.f_Clear_breakpoints
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Pop-up help on buttons.
 		do
 			Result := description
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for toolbar button
 		do
 			Result := Interface_names.b_bkpt_remove
@@ -66,7 +66,7 @@ feature -- Access
 			Result.drop_actions.set_veto_pebble_function (agent can_drop_debuggable_feature_or_class)
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Menu entry corresponding tp `Current'.
 		do
 			Result := Interface_names.m_Clear_breakpoints
@@ -84,7 +84,7 @@ feature -- Access
 			Result := pixmaps.mini_pixmaps.general_delete_icon
 		end
 
-	name: STRING is "Clear_bkpt"
+	name: STRING_32 is do Result := "Clear_bkpt" end
 			-- Name of `Current' to identify it.
 
 feature -- Events

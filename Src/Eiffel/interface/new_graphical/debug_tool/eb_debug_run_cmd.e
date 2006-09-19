@@ -505,13 +505,13 @@ feature -- Execution
 
 feature {NONE} -- Implementation / Attributes
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Toolbar button text for the command
 		do
 			Result := Interface_names.b_Launch
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the command.
 		do
 			Result := Interface_names.f_Debug_run
@@ -523,19 +523,19 @@ feature {NONE} -- Implementation / Attributes
 			Result := True
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for the command.
 		do
 			Result := Interface_names.f_Debug_run
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name used in menu entry
 		do
 			Result := Interface_names.m_Debug_run
 		end
 
-	name: STRING is "Run"
+	name: STRING_32 is do Result := "Run" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 
@@ -551,7 +551,7 @@ feature {NONE} -- Implementation / Attributes
 	need_to_wait: BOOLEAN
 			-- Do we need to wait until the end of the compilation?
 
-	dotnet_debugger: STRING is
+	dotnet_debugger: STRING_32 is
 			-- String indicating the .NET debugger to launch if specified in the
 			-- Preferences Tool.
 		do

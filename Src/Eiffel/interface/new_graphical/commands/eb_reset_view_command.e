@@ -52,19 +52,19 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_reset_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_reset_view
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name for the menu entry.
 		do
 			Result := Interface_names.m_diagram_reset_view
 		end
 
-	name: STRING is "Reset_view"
+	name: STRING_32 is do Result := "Reset_view" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

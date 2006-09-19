@@ -93,7 +93,8 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING is
+--i18n
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			inspect style
@@ -119,13 +120,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	tooltip: STRING is
+--i18n
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := description
 		end
 
-	tooltext: STRING is
+--i18n
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			inspect style
@@ -147,7 +150,8 @@ feature {NONE} -- Implementation
 			Result := conv_st /= Void and then conv_st.is_storable and then conv_st.is_valid
 		end
 
-	description: STRING is
+--i18n
+	description: STRING_32 is
 			-- Description for this commane
 		do
 			inspect style
@@ -160,7 +164,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	name: STRING is
+--i18n
+	name: STRING_32 is
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 		do

@@ -41,22 +41,22 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Attributes
 
-	name: STRING is "Override_scan"
+	name: STRING_32 is do Result := "Override_scan" end
 			-- Name of the command.
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_override_scan
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name used in menu entry
 		do
 			Result := Interface_names.m_override_scan
 		end
 
-	description, tooltip: STRING is
+	description, tooltip: STRING_32 is
 			-- String displayed as a tooltip and in the toolbar customization dialog.
 		do
 			Result := Interface_names.e_override_scan

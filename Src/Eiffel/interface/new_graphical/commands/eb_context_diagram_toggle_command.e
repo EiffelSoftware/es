@@ -43,11 +43,11 @@ feature -- Access
 		deferred
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 		deferred
 		end
 
-	shortcut_string: STRING is
+	shortcut_string: STRING_32 is
 		deferred
 		end
 

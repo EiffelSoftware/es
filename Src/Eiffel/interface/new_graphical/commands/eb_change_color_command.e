@@ -235,13 +235,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_choose_color_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_change_color
 		end
 
-	name: STRING is "Color"
+	name: STRING_32 is do Result := "Color" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

@@ -59,8 +59,10 @@ feature -- Initialization
 			manager := a_manager
 			capital_command_name := command_name.twin
 			capital_command_name.left_adjust
+--i18n
 				-- Set the first character to upper case.
-			capital_command_name.put ((capital_command_name @ 1) - 32, 1)
+			-- What kind of surgery is this?
+			--capital_command_name.put ((capital_command_name @ 1) - 32, 1)
 			create post_execution_action
 		ensure
 			valid_capital_command_name: valid_string (capital_command_name)

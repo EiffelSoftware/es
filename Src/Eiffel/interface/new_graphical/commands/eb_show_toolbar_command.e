@@ -113,10 +113,10 @@ feature -- Basic operations
 
 feature -- Access
 
-	menu_name: STRING
+	menu_name: STRING_32
 			-- Name as it appears in the menu.
 
-	name: STRING;
+	name: STRING_32;
 			-- Name for the command.
 
 indexing

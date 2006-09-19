@@ -539,7 +539,7 @@ feature -- Execution
 
 feature -- Properties
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Representation of `Current' in menus.
 		do
 			create Result.make (name.count + 15)
@@ -551,19 +551,19 @@ feature -- Properties
 			Result.append ((create {EB_EXTERNAL_COMMANDS_EDITOR}.make).accelerators.item (index).out)
 		end
 
-	name: STRING
+	name: STRING_32
 			-- Name that the user gave to this command.
 
 	index: INTEGER
 			-- Index of `Current' in the global list of known external commands.
 
-	external_command: STRING
+	external_command: STRING_32
 			-- Command line that is invoked when `Current' is executed.
 
-	working_directory: STRING
+	working_directory: STRING_32
 			-- Working director where the corresponding external command is invoked.
 
-	last_call_output: STRING
+	last_call_output: STRING_32
 			-- Output of the last invocation of command.
 
 feature -- Status setting
@@ -600,7 +600,7 @@ feature -- Status setting
 
 feature{EB_EXTERNAL_OUTPUT_TOOL} -- Status setting
 
-	set_command (cmd: STRING) is
+	set_command (cmd: STRING_GENERAL) is
 			-- Set `external_command' with `cmd'.
 		require
 			cmd_not_void: cmd /= Void
@@ -611,7 +611,7 @@ feature{EB_EXTERNAL_OUTPUT_TOOL} -- Status setting
 			external_command_set: external_command.is_equal (cmd)
 		end
 
-	set_working_directory (dir: STRING) is
+	set_working_directory (dir: STRING_GENERAL) is
 			-- Set `working_directory' with `dir'.
 		do
 			if dir /= Void then
@@ -633,7 +633,7 @@ feature{EB_EXTERNAL_OUTPUT_TOOL} -- Status setting
 
 feature -- Status report
 
-	resource: STRING is
+	resource: STRING_32 is
 			-- Save `Current's information to a string representation.
 		do
 			create Result.make (menu_name.count + external_command.count + 10)
@@ -654,12 +654,12 @@ feature -- Status report
 			valid: valid_resource (Result)
 		end
 
-	valid_resource (r: STRING): BOOLEAN is
+	valid_resource (r: STRING_GENERAL): BOOLEAN is
 			-- Is `r' a valid resource representation of an external command?
 		require
 			not_void_resource: r /= Void
 		do
-			Result := r.occurrences (separator) = 3
+			Result := r.to_string_32.occurrences (separator) = 3
 		end
 
 	is_valid: BOOLEAN is

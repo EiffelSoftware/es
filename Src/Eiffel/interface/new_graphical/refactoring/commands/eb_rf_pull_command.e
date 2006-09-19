@@ -49,19 +49,19 @@ feature -- Status
 
 feature -- Access
 
-	description: STRING is
+	description: STRING_32 is
 			-- What is printed in the customize dialog.
 		do
 			Result := interface_names.f_refactoring_pull
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Pop-up help on buttons.
 		do
 			Result := description
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for toolbar button
 		do
 			Result := interface_names.b_refactoring_pull
@@ -74,7 +74,7 @@ feature -- Access
 			Result.drop_actions.extend (agent drop_feature (?))
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Menu entry corresponding to `Current'.
 		do
 			Result := tooltext
@@ -86,7 +86,7 @@ feature -- Access
 			Result := pixmaps.icon_pixmaps.refactor_feature_up_icon
 		end
 
-	Name: STRING is "RF_pull"
+	Name: STRING_32 is do Result := "RF_pull" end
 			-- Name of `Current' to identify it.
 
 feature -- Events

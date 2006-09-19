@@ -366,7 +366,7 @@ feature {NONE} -- Execution
 
 feature {NONE} -- Implementation
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text displayed in toolbar
 		do
 			Result := Interface_names.b_Compile
@@ -378,7 +378,7 @@ feature {NONE} -- Implementation
 			Result := tooltext.is_equal (Interface_names.b_Compile)
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Melt_new
@@ -390,19 +390,19 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.project_melt_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Melt
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for the command.
 		do
 			Result := Interface_names.f_Melt
 		end
 
-	name: STRING is
+	name: STRING_32 is
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 		do

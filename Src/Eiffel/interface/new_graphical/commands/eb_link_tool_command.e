@@ -188,7 +188,7 @@ feature {EB_LINK_TOOL_DIALOG} -- Implementation
 
 feature -- Access
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			if current_button.is_selected then
@@ -209,13 +209,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_force_right_angles_icon
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name of the menu entry
 		do
 			Result := Interface_names.m_diagram_link_tool
 		end
 
-	name: STRING is "Link_tool"
+	name: STRING_32 is do Result := "Link_tool" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

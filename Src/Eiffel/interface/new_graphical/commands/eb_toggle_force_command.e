@@ -66,7 +66,7 @@ feature -- Basic operations
 
 feature -- Access
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			if current_button.is_selected then
@@ -84,13 +84,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_toogle_physics_icon
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.l_diagram_force_directed
 		end
 
-	name: STRING is "Force_directed"
+	name: STRING_32 is do Result := "Force_directed" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

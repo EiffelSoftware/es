@@ -67,13 +67,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_fit_to_screen_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_fit_to_screen
 		end
 
-	name: STRING is "Fit_to_screen";
+	name: STRING_32 is do Result := "Fit_to_screen" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

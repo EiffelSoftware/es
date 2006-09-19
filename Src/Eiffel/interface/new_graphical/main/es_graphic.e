@@ -94,7 +94,7 @@ feature {NONE} -- Implementation (preparation of all widgets)
 
 --i18n
 --			i18n_use_mo_file_with_name ("/home/marti/ethz/SemArb/Eiffel-trunk/Src/library/old_i18n/example/mo_files/it.mo", "it")
-			i18n_use_mo_file_with_name ("/home/marti/Desktop/zh.mo", "zh")
+			i18n_use_mo_file_with_name ("/home/marti/Desktop/azh.mo", "zh")
 			i18n_use_heap
 			i18n_load
 

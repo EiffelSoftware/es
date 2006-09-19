@@ -71,13 +71,13 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for the command.
 		do
 			Result := Interface_names.f_Freeze
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Freeze_new
@@ -89,19 +89,19 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.project_freeze_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Freeze
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Freeze
 		end
 
-	name: STRING is "Freeze_project";
+	name: STRING_32 is do Result := "Freeze_project" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

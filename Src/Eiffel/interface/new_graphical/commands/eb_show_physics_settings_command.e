@@ -57,7 +57,7 @@ feature -- Basic operations
 
 feature -- Access
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_diagram_force_settings
@@ -71,13 +71,13 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.diagram_physics_settings_icon
 		end
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for this command.
 		do
 			Result := Interface_names.f_diagram_force_settings
 		end
 
-	name: STRING is "Force_settings";
+	name: STRING_32 is do Result := "Force_settings" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 

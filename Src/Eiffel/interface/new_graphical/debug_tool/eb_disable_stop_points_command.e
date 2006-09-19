@@ -28,19 +28,19 @@ inherit
 
 feature -- Access
 
-	description: STRING is
+	description: STRING_32 is
 			-- What is printed in the customize dialog.
 		do
 			Result := Interface_names.f_Disable_stop_points
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Pop-up help on buttons.
 		do
 			Result := description
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_bkpt_disable
@@ -66,7 +66,7 @@ feature -- Access
 			Result.drop_actions.set_veto_pebble_function (agent can_drop_debuggable_feature_or_class)
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Menu entry corresponding to `Current'.
 		do
 			Result := Interface_names.m_Disable_stop_points
@@ -84,7 +84,7 @@ feature -- Access
 			Result := pixmaps.mini_pixmaps.breakpoints_disable_icon
 		end
 
-	name: STRING is "Disable_bkpt"
+	name: STRING_32 is do Result := "Disable_bkpt" end
 			-- Name of `Current' to identify it.
 
 feature -- Execution

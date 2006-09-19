@@ -121,13 +121,13 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	description: STRING is
+	description: STRING_32 is
 			-- Description for the command.
 		do
 			Result := Interface_names.f_Finalize
 		end
 
-	menu_name: STRING is
+	menu_name: STRING_32 is
 			-- Name as it appears in the menu (with & symbol).
 		do
 			Result := Interface_names.m_Finalize_new
@@ -139,19 +139,19 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.project_finalize_icon
 		end
 
-	tooltip: STRING is
+	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		do
 			Result := Interface_names.f_Finalize
 		end
 
-	tooltext: STRING is
+	tooltext: STRING_32 is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_Finalize
 		end
 
-	name: STRING is "Finalize_project";
+	name: STRING_32 is do Result := "Finalize_project" end
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 
