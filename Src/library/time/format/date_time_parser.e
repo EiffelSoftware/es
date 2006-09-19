@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 		
 feature -- Access
 
-	source_string: STRING
+	source_string: STRING_32
 			-- String to be parsed
 
 	year: INTEGER is
@@ -88,7 +88,7 @@ feature -- Access
 			Result := fine_second_val
 		end
 
-	day_text: STRING is
+	day_text: STRING_32 is
 			-- Text representation of `day'
 		require
 			value_parsed: parsed
@@ -141,7 +141,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_source_string (s: STRING) is
+	set_source_string (s: STRING_32) is
 			-- Assign `s' to `source_string'.
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -153,7 +153,7 @@ feature -- Status setting
 			not_parsed: not parsed
 		end
 
-	set_day_array (d: ARRAY [STRING]) is
+	set_day_array (d: ARRAY [STRING_32]) is
 			-- Set day array to `d'.
 		require
 			not_void: d /= Void
@@ -163,7 +163,7 @@ feature -- Status setting
 			days_set: days = d
 		end
 
-	set_month_array (m: ARRAY [STRING]) is
+	set_month_array (m: ARRAY [STRING_32]) is
 			-- Set month array to `m'.
 		require
 			not_void: m /= Void
@@ -193,7 +193,7 @@ feature -- Basic operations
 			pos1, pos2, i, j: INTEGER
 			type: INTEGER
 			second_val: INTEGER
-			s: STRING
+			s: STRING_32
 			has_seps: BOOLEAN
 			l_year_now: INTEGER
 			l_is_pm, l_is_pm_computed: BOOLEAN
@@ -229,12 +229,16 @@ feature -- Basic operations
 					inspect
 						type
 					when 1, 2 then
+						-- day-numeric or day-numeric-on-2-digits
 						day_val := substrg.to_integer
-					when 3 then
+					when 3, 25 then
+						-- day-text or full day-text
 						day_text_val := substrg
 					when 4 then
+						-- year-on-4-digits"
 						year_val := substrg.to_integer
 					when 5 then 
+						-- year-on-2-digits
 						if base_century < 0 then
 							-- A negative value in `base_century' indicates
 							-- that this value has been calculated
@@ -255,8 +259,10 @@ feature -- Basic operations
 							year_val := substrg.to_integer - base_century
 						end
 					when 6, 7 then
+						-- month-numeric or month-numeric-on-2-digits
 						month_val := substrg.to_integer
-					when 8 then
+					when 8, 26 then
+						-- month-text or full month text
 						from
 							j := 1
 						until 
@@ -270,8 +276,10 @@ feature -- Basic operations
 							j := j + 1
 						end
 					when 9, 10 then
+						-- hour-numeric or hour-numeric-on-2-digits
 						hour_val := substrg.to_integer
 					when 11 then
+						-- hour-12-clock-scale
 						hour_val := substrg.to_integer
 						if l_is_pm_computed then
 							if l_is_pm then
@@ -286,13 +294,17 @@ feature -- Basic operations
 							l_hour_val_need_computation := True
 						end
 					when 23 then
+						-- meridiem
 						l_is_pm_computed := True
 						l_is_pm := s.as_upper.is_equal ("PM")
 					when 12, 13 then 
+						-- minute-numeric or minute-numeric-on-2-digits
 						minute_val := substrg.to_integer
 					when 14, 15 then
+						-- second-numeric or second-numeric-on-2-digits
 						second_val := substrg.to_integer
 					when 16 then
+						-- fractional-second-numeric
 						fine_second_val := substrg.to_double / 
 							(10 ^ (substrg.count))
 					end
@@ -339,15 +351,15 @@ feature {NONE} -- Implementation
 
 	fine_second_val: DOUBLE
 
-	day_text_val: STRING
+	day_text_val: STRING_32
 
 	code: HASH_TABLE [DATE_TIME_CODE, INTEGER]
 			-- Hash table containing the parsed date/time code
 
-	months: ARRAY [STRING]
+	months: ARRAY [STRING_32]
 			-- Names of months
 			
-	days: ARRAY [STRING]
+	days: ARRAY [STRING_32]
 			-- Names of days	
 
 	base_century: INTEGER

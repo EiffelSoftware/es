@@ -10,42 +10,42 @@ deferred class
 
 feature
 
-	name: STRING is
+	name: STRING_32 is
 			-- Language
 		deferred
 		end
 
-	days_text: ARRAY [STRING] is
+	days_text: ARRAY [STRING_32] is
 			-- Array of days in short format.
 		deferred
 		end
 
-	months_text: ARRAY [STRING] is
+	months_text: ARRAY [STRING_32] is
 			-- Array of monthes in short format.
 		deferred
 		end
 
-	long_days_text: ARRAY [STRING] is
+	long_days_text: ARRAY [STRING_32] is
 			-- Array of days in long format.
 		deferred
 		end
 
-	long_months_text: ARRAY [STRING] is
+	long_months_text: ARRAY [STRING_32] is
 			-- Array of monthes in long format.
 		deferred
 		end
 
-	default_format_string: STRING is 
+	default_format_string: STRING_32 is 
 			-- Standard output of the date and time.
 		deferred
 		end
 
-	date_default_format_string: STRING is 
+	date_default_format_string: STRING_32 is 
 			-- Standard output of the date.
 		deferred
 		end		
 
-	time_default_format_string: STRING is 
+	time_default_format_string: STRING_32 is 
 			-- Standard output of the time.
 		deferred
 		end

@@ -7,224 +7,245 @@ indexing
 
 class 
 	CODE_VALIDITY_CHECKER
+		inherit
+			DATE_TIME_FORMAT_CONVERTIONS_CODES
 
 feature -- Preconditions
 
-	is_code (s: STRING): BOOLEAN is
+	is_code (s: STRING_32): BOOLEAN is
 			-- Is the string a code?
 		require
 			s_exists: s /= Void
 		do
 			Result := is_colon (s) or
 			is_comma (s) or is_day (s) or
-			is_day0 (s) or is_day_text (s) or
+			is_day0 (s) or is_day_text (s) or is_full_day_text (s) or
 			is_dot (s) or is_fractional_second (s) or
 			is_hour (s) or is_hour0 (s) or is_hour12 (s) or
 			is_hour12_0 (s) or is_meridiem (s) or
 			is_minus (s) or is_minute (s) or
 			is_minute0 (s) or is_month (s) or
-			is_month0 (s) or is_month_text (s) or
+			is_month0 (s) or is_month_text (s) or is_full_month_text (s) or
 			is_second (s) or is_second0 (s) or
 			is_slash (s) or is_space (s) or
 			is_year2 (s) or is_year4 (s)
 		end
 
-	is_day (s: STRING): BOOLEAN is
+	is_day (s: STRING_32): BOOLEAN is
 			-- Is the code a day-numeric?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("dd")
+			Result := s.is_equal (day_numeric)
 		ensure
-			definition: Result = s.is_equal ("dd")
+			definition: Result = s.is_equal (day_numeric)
 		end
 
-	is_day0 (s: STRING): BOOLEAN is
+	is_day0 (s: STRING_32): BOOLEAN is
 			-- Is the code a day-numeric
 			-- Padded with zero?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("[0]dd")
+			Result := s.is_equal (day_numeric_padded)
 		ensure
-			definition: Result = s.is_equal ("[0]dd")
+			definition: Result = s.is_equal (day_numeric_padded)
 		end
 
-	is_day_text (s: STRING): BOOLEAN is
+	is_day_text (s: STRING_32): BOOLEAN is
 			-- Is the code a day-text?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("ddd")
+			Result := s.is_equal (abbreviated_day_name)
 		ensure
-			definition: Result = s.is_equal ("ddd")
+			definition: Result = s.is_equal (abbreviated_day_name)
 		end
 
-	is_year4 (s: STRING): BOOLEAN is
+	is_full_day_text (s: STRING_32): BOOLEAN is
+			-- is the cod a full day text)
+		require
+			s_exists: s /= Void
+		do
+			Result := s.is_equal (day_name)
+		ensure
+			definition: Result = s.is_equal (day_name)
+		end
+
+	is_year4 (s: STRING_32): BOOLEAN is
 			-- Is the code a year-numeric 
 			-- On 4 figures?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("yyyy")
+			Result := s.is_equal (long_year)
 		ensure
-			definition: Result = s.is_equal ("yyyy")
+			definition: Result = s.is_equal (long_year)
 		end
 
 
-	is_year2 (s: STRING): BOOLEAN is
+	is_year2 (s: STRING_32): BOOLEAN is
 			-- Is the code a year-numeric 
 			-- On 2 figures?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("yy")
+			Result := s.is_equal (short_year)
 		ensure
-			definition: Result = s.is_equal ("yy")
+			definition: Result = s.is_equal (short_year)
 		end
 
 
-	is_month (s: STRING): BOOLEAN is
+	is_month (s: STRING_32): BOOLEAN is
 			-- Is the code a month-numeric?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("mm")
+			Result := s.is_equal (month_numeric)
 		ensure
-			definition: Result = s.is_equal ("mm")
+			definition: Result = s.is_equal (month_numeric)
 		end
 
-	is_month0 (s: STRING): BOOLEAN is
+	is_month0 (s: STRING_32): BOOLEAN is
 			-- Is the code a month-numeric
 			-- Padded with zero?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("[0]mm")
+			Result := s.is_equal (month_numeric_padded)
 		ensure
-			definition: Result = s.is_equal ("[0]mm")
+			definition: Result = s.is_equal (month_numeric_padded)
 		end
 
 
-	is_month_text (s: STRING): BOOLEAN is
+	is_month_text (s: STRING_32): BOOLEAN is
 			-- Is the code a month-text?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("mmm")
+			Result := s.is_equal (abbreviated_month_name)
 		ensure
-			definition: Result = s.is_equal ("mmm")
+			definition: Result = s.is_equal (abbreviated_month_name)
 		end
 
+	is_full_month_text (s: STRING_32): BOOLEAN is
+			-- Is the code a full month-text?
+		require
+			s_exists: s /= Void
+		do
+			Result := s.is_equal (month_name)
+		ensure
+			definition: Result = s.is_equal (month_name)
+		end
 
-	is_hour (s: STRING): BOOLEAN is
+	is_hour (s: STRING_32): BOOLEAN is
 			-- Is the code a 24-hour-clock-scale?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("hh")
+			Result := s.is_equal (hour_24)
 		ensure
-			definition: Result = s.is_equal ("hh")
+			definition: Result = s.is_equal (hour_24)
 		end
 
 
-	is_hour0 (s: STRING): BOOLEAN is
+	is_hour0 (s: STRING_32): BOOLEAN is
 			-- Is the code a 24-hour-clock-scale
 			-- Padded with zero?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("[0]hh")
+			Result := s.is_equal (hour_24_padded)
 		ensure
-			definition: Result = s.is_equal ("[0]hh")
+			definition: Result = s.is_equal (hour_24_padded)
 		end
 
 
-	is_hour12 (s: STRING): BOOLEAN is
+	is_hour12 (s: STRING_32): BOOLEAN is
 			-- Is the code a 12-hour-clock-scale?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("hh12")
+			Result := s.is_equal (hour_12)
 		ensure
-			definition: Result = s.is_equal ("hh12")
+			definition: Result = s.is_equal (hour_12)
 		end
 
-	is_hour12_0 (s: STRING): BOOLEAN is
+	is_hour12_0 (s: STRING_32): BOOLEAN is
 			-- Is the code a 12-hour-clock-scale padded with zero?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("[0]hh12")
+			Result := s.is_equal (hour_12_padded)
 		ensure
-			definition: Result = s.is_equal ("[0]hh12")
+			definition: Result = s.is_equal (hour_12_padded)
 		end
 
-	is_minute (s: STRING): BOOLEAN is
+	is_minute (s: STRING_32): BOOLEAN is
 			-- Is the code a minute-numeric?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("mi")
+			Result := s.is_equal (numeric_minute)
 		ensure
-			definition: Result = s.is_equal ("mi")
+			definition: Result = s.is_equal (numeric_minute)
 		end
 
 
-	is_minute0 (s: STRING): BOOLEAN is
+	is_minute0 (s: STRING_32): BOOLEAN is
 			-- Is the code a minute-numeric
 			-- Padded with zero?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("[0]mi")
+			Result := s.is_equal (numeric_minute_padded)
 		ensure
-			definition: Result = s.is_equal ("[0]mi")
+			definition: Result = s.is_equal (numeric_minute_padded)
 		end
 
 
-	is_second (s: STRING): BOOLEAN is
+	is_second (s: STRING_32): BOOLEAN is
 			-- Is the code a second-numeric?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("ss")
+			Result := s.is_equal (numeric_seconds)
 		ensure
-			definition: Result = s.is_equal ("ss")
+			definition: Result = s.is_equal (numeric_seconds)
 		end
 
 
-	is_second0 (s: STRING): BOOLEAN is
+	is_second0 (s: STRING_32): BOOLEAN is
 			-- Is the code a second-numeric
 			-- Padded with zero?
 		require
 			s_exists: s /= Void
 		do
-			Result := s.is_equal ("[0]ss")
+			Result := s.is_equal (numeric_seconds_padded)
 		ensure
-			definition: Result = s.is_equal ("[0]ss")
+			definition: Result = s.is_equal (numeric_seconds_padded)
 		end
 
 
-	is_fractional_second (s: STRING): BOOLEAN is
+	is_fractional_second (s: STRING_32): BOOLEAN is
 			-- Is the code a fractional-second 
 			-- With precision to n figures?
 		require
 			s_exists: s /= Void
 		local
-			substrg, substrg2: STRING
+			substrg, substrg2: STRING_32
 		do
 			if s.count > 2 then
 				substrg := s.substring (1, 2)
 				substrg2 := s.substring (3, s.count)
-				Result := substrg.is_equal ("ff") and substrg2.is_integer
+				Result := substrg.is_equal (seconds_fractional) and substrg2.is_integer
 			end
 		ensure
-			definition: Result = ((s.count > 2) and then (s.substring (1, 2).is_equal ("ff") and
-									s.substring (3, s.count).is_integer))
+			definition: Result = ((s.count > 2) and then (s.substring (1, 2).is_equal (seconds_fractional) and
+									(s.substring (3, s.count)).is_integer))
 		end
 
-	is_colon (s: STRING): BOOLEAN is
+	is_colon (s: STRING_32): BOOLEAN is
 			-- Is the code a separator-colomn?
 		require
 			s_exists: s /= Void
@@ -235,7 +256,7 @@ feature -- Preconditions
 		end
 
 
-	is_slash (s: STRING): BOOLEAN is
+	is_slash (s: STRING_32): BOOLEAN is
 			-- Is the code a separator-slash?
 		require
 			s_exists: s /= Void
@@ -246,7 +267,7 @@ feature -- Preconditions
 		end
 
 
-	is_minus (s: STRING): BOOLEAN is
+	is_minus (s: STRING_32): BOOLEAN is
 			-- Is the code a separator-minus?
 		require
 			s_exists: s /= Void
@@ -257,7 +278,7 @@ feature -- Preconditions
 		end
 
 
-	is_comma (s: STRING): BOOLEAN is
+	is_comma (s: STRING_32): BOOLEAN is
 			-- Is the code a separator-coma?
 		require
 			s_exists: s /= Void
@@ -268,7 +289,7 @@ feature -- Preconditions
 		end
 
 
-	is_space (s: STRING): BOOLEAN is
+	is_space (s: STRING_32): BOOLEAN is
 			-- Is the code a separator-space?
 		require
 			s_exists: s /= Void
@@ -279,7 +300,7 @@ feature -- Preconditions
 		end
 
 
-	is_dot (s: STRING): BOOLEAN is
+	is_dot (s: STRING_32): BOOLEAN is
 			-- Is the code a separator-dot?
 		require
 			s_exists: s /= Void
@@ -289,7 +310,7 @@ feature -- Preconditions
 			definition: Result = s.is_equal (".")
 		end
 
-	is_separator (s: STRING): BOOLEAN is
+	is_separator (s: STRING_32): BOOLEAN is
 			-- Is the code a seperator?
 		require
 			s_exists: s /= Void
@@ -303,12 +324,12 @@ feature -- Preconditions
 						is_space (s) or else is_dot (s)
 		end
 
-	is_meridiem (s: STRING): BOOLEAN is
+	is_meridiem (s: STRING_32): BOOLEAN is
 			-- Is the code a meridiem notation?
 		require
 			s_exists: s /= Void
 		local
-			tmp: STRING
+			tmp: STRING_32
 		do
 			tmp := s.as_upper
 			Result := tmp.is_equal ("AM") or tmp.is_equal ("PM")

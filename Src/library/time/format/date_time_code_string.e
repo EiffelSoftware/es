@@ -1,5 +1,5 @@
 indexing
-	description: "DATE/TIME to STRING conversion"
+	description: "DATE/TIME to STRING_32 conversion"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -15,7 +15,7 @@ create
 
 feature -- Creation
 
-	make (s: STRING) is
+	make (s: STRING_32) is
 			-- Create code descriptors and hash-table from `s'.
 		require
 			s_exists: s /= Void
@@ -25,11 +25,17 @@ feature -- Creation
 			date_constants: DATE_CONSTANTS
 		do
 			create value.make (20)
+				-- 20 is the number of special characters
 			pos1 := 1
 			pos2 := 1
 			create date_constants
 			days := date_constants.days_text.twin
+				-- Short text representation of days
+			long_days := date_constants.long_days_text.twin
 			months := date_constants.months_text.twin
+				-- Short text representation of months
+
+			
 			from
 				i := 1
 			until
@@ -38,13 +44,16 @@ feature -- Creation
 				pos2 := find_separator (s, pos1)
 				extract_substrings (s, pos1, pos2)
 				pos2 := abs (pos2)
-				substrg.to_lower
+-- 				substrg.to_lower	-- i18n
 				if substrg.count > 0 then
+-- 					substring found, create according
+-- 					code and store it
 					create code.make (substrg)
 					value.put (code, i)
 					i := i + 1
 				end
 				if substrg2.count > 0 then
+-- 					add separator
 					value.put (create {DATE_TIME_CODE}.make (substrg2), i)
 					i := i + 1
 					separators_used := True
@@ -64,7 +73,7 @@ feature -- Attributes
 	value: HASH_TABLE [DATE_TIME_CODE, INTEGER]
 			-- Hash-table representing the code string.
 
-	name: STRING is
+	name: STRING_32 is
 			-- Name of the code string.
 		local
 			i: INTEGER
@@ -87,7 +96,7 @@ feature -- Attributes
 			
 feature -- Status report
 
-	is_date (s: STRING): BOOLEAN is
+	is_date (s: STRING_32): BOOLEAN is
 			-- Does `s' contain a DATE?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -96,7 +105,7 @@ feature -- Status report
 			Result := parser.is_date
 		end
 
-	is_time (s: STRING): BOOLEAN is
+	is_time (s: STRING_32): BOOLEAN is
 			-- Does `s' contain a TIME?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -105,7 +114,7 @@ feature -- Status report
 			Result := parser.is_time
 		end	
 
-	is_date_time (s: STRING): BOOLEAN is
+	is_date_time (s: STRING_32): BOOLEAN is
 			-- Does `s' contain a DATE_TIME?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -114,7 +123,7 @@ feature -- Status report
 			Result := parser.is_date_time
 		end
 
-	is_value_valid (s: STRING): BOOLEAN is
+	is_value_valid (s: STRING_32): BOOLEAN is
 			-- Does `s' contain a valid date or time as string representation?
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -140,7 +149,7 @@ feature -- Status setting
 
 feature -- Interface
 
-	correspond (s: STRING): BOOLEAN is
+	correspond (s: STRING_32): BOOLEAN is
 			-- Does the user string `s' correspond to the code string?
 		require
 			s_exists: s /= Void
@@ -209,7 +218,7 @@ feature -- Interface
 			end
 		end	
 
-	create_string (date_time: DATE_TIME): STRING is
+	create_string (date_time: DATE_TIME): STRING_32 is
 			-- Create the output of `date_time' according to the code string.
 		require
 			non_void: date_time /= Void
@@ -218,7 +227,7 @@ feature -- Interface
 			time: TIME
 			int, i, type: INTEGER
 			double: DOUBLE
-			l_tmp: STRING
+			l_tmp: STRING_32
 		do
 			create Result.make (1)
 			date := date_time.date
@@ -232,17 +241,25 @@ feature -- Interface
 				inspect
 					type
 				when 1 then
+					-- day-numeric
 					Result.append (date.day.out)
 				when 2 then
+					-- day-numeric-on-2-digits
 					int := date.day
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
 				when 3 then
+					-- day-text
 					int := date.day_of_the_week
 					Result.append (days.item (int))
+				when 25 then
+					-- full day-text
+					int := date.day_of_the_week
+					Result.append (long_days.item (int))
 				when 4 then
+					-- year-on-4-digits
 					-- Test if the year has four digits, if not put 0 to fill it
 					l_tmp := date.year.out
 					if l_tmp.count = 4 then
@@ -269,25 +286,31 @@ feature -- Interface
 					end
 					Result.append (l_tmp)
 				when 6 then
+					-- month-numeric
 					Result.append (date.month.out)
 				when 7 then
+					-- month-numeric-on-2-digits
 					int := date.month
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
 				when 8 then
+					-- month-text
 					int := date.month
 					Result.append (months.item (int))
 				when 9 then
+					-- hour-numeric
 					Result.append (time.hour.out)
 				when 10 then
+					-- hour-numeric-on-2-digits
 					int := time.hour
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
 				when 11, 24 then
+					-- hour-12-clock-scale or hour-numeric
 					int := time.hour
 					if int < 12 then
 						if int = 0 then
@@ -304,27 +327,33 @@ feature -- Interface
 					end
 					Result.append (int.out)
 				when 12 then 
+					-- minute-numeric
 					Result.append (time.minute.out)
 				when 13 then
+					-- minute-numeric-on-2-digits
 					int := time.minute
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
 				when 14 then
+					-- second-numeric
 					Result.append (time.second.out)
 				when 15 then
+					-- second-numeric-on-2-digits
 					int := time.second
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
 				when 16 then
+					-- fractional-second-numeric
 					double := time.fractional_second * 
 						10 ^ (value.item (i).count_max)
 					int := double.truncated_to_integer
 					Result.append (int.out)
 				when 23 then
+					-- meridiem
 					int := time.hour
 					if int < 12 then
 						Result.append ("AM")
@@ -341,7 +370,7 @@ feature -- Interface
 			string_correspond: correspond (Result)
 		end	
 	
-	create_date_string (date: DATE): STRING is
+	create_date_string (date: DATE): STRING_32 is
 				-- Create the output of `date' according to the code string.
 		require
 			date_exists: date /= Void
@@ -355,7 +384,7 @@ feature -- Interface
 			string_correspond: correspond (Result)
 		end
 
-	create_time_string (time: TIME): STRING is
+	create_time_string (time: TIME): STRING_32 is
 				-- Create the output of `time' according to the code string.
 		require
 			time_exists: time /= Void
@@ -370,7 +399,7 @@ feature -- Interface
 			string_correspond: correspond (Result)
 		end
 
-	create_date_time (s: STRING): DATE_TIME is
+	create_date_time (s: STRING_32): DATE_TIME is
 			-- Create DATE_TIME according to `s'.
 		require
 			s_exist: s /= Void
@@ -393,7 +422,7 @@ feature -- Interface
 			day_text_equal_day: right_day_text
 		end
 
-	create_date (s: STRING): DATE is
+	create_date (s: STRING_32): DATE is
 			-- Create a DATE according to the format in `s'.
 		require
 			s_exists: s /= Void
@@ -439,7 +468,7 @@ feature -- Interface
 			day_text_equal_day: right_day_text
 		end
 
-	create_time (s: STRING): TIME is
+	create_time (s: STRING_32): TIME is
 			-- Create a TIME according to the format in `s'.
 		require
 			s_exists: s /= Void
@@ -594,14 +623,16 @@ feature {NONE} -- Implementation
 	parser: DATE_TIME_PARSER
 			-- Instance of date-time string parser
 
-	days: ARRAY [STRING]
+	days: ARRAY [STRING_32]
 
-	months: ARRAY [STRING]	
+	long_days : ARRAY [STRING_32]
+
+	months: ARRAY [STRING_32]	
 
 	right_day_text: BOOLEAN
 			-- Is the name of the day the right one?
 
-	build_parser (s: STRING) is
+	build_parser (s: STRING_32) is
 			-- Build parser from `s'.
 		require
 			non_empty_string: s /= Void and then not s.is_empty
@@ -632,6 +663,6 @@ indexing
 
 
 
-end -- class DATE_TIME_CODE_STRING
+end -- class DATE_TIME_CODE_STRING_32
 
 

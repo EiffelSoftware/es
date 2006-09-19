@@ -1,5 +1,5 @@
 indexing
-	description: "Code used by the DATE/TIME to STRING conversion"
+	description: "Code used by the DATE/TIME to STRING_32 conversion"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -15,7 +15,7 @@ create
 
 feature -- Creation
 	
-	make (v: STRING) is
+	make (v: STRING_32) is
 			-- Create code.
 		require
 			v_exists: v /= Void
@@ -28,7 +28,7 @@ feature -- Creation
 
 feature -- Change
 
-	set_value (v: STRING) is
+	set_value (v: STRING_32) is
 			-- Set all the attributes such as
 			-- Value, count_max, etc.
 		require
@@ -63,6 +63,15 @@ feature -- Change
 				is_text := True
 				is_numeric := False
 				type := 3
+			elseif is_full_day_text (value) then
+				count_max := 3
+				count_min := 3
+				name := "full-day-text"
+				value_max := -1
+				value_min := -1
+				is_text := True
+				is_numeric := False
+				type := 25
 			elseif is_year4 (value) then
 				count_max := 4
 				count_min := 4
@@ -108,6 +117,15 @@ feature -- Change
 				is_text := True
 				is_numeric := False
 				type := 8
+			elseif is_full_day_text (value) then
+				count_max := 3
+				count_min := 3
+				name := "full-month-text"
+				value_max := -1
+				value_min := -1
+				is_text := True
+				is_numeric := False
+				type := 26
 			elseif is_hour (value) then
 				count_max := 2
 				count_min := 1
@@ -245,7 +263,7 @@ feature -- Change
 
 feature -- Attributes
 
-	value: STRING
+	value: STRING_32
 			-- String code
 
 	count_max: INTEGER
@@ -254,7 +272,7 @@ feature -- Attributes
 	count_min: INTEGER
 			-- Count min of the real value
 
-	name: STRING
+	name: STRING_32
 			-- Name of the code
 
 	value_max: INTEGER

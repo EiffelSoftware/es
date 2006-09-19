@@ -44,31 +44,31 @@ feature -- Access
 			end 
 		end; 
 
-	date_default_format_string: STRING is
+	date_default_format_string: STRING_32 is
 			-- Default output format for dates
 		do
 			Result := date_time_tools.date_default_format_string
 		end
 
-	days_text: ARRAY [STRING] is
+	days_text: ARRAY [STRING_32] is
 			-- Short text representation of days
 		do
 			Result := date_time_tools.days_text
 		end
 
-	months_text: ARRAY [STRING] is
+	months_text: ARRAY [STRING_32] is
 			-- Short text representation of months
 		do
 			Result := date_time_tools.months_text
 		end
 
-	long_days_text: ARRAY [STRING] is
+	long_days_text: ARRAY [STRING_32] is
 			-- Long text representation of days
 		do
 			Result := date_time_tools.long_days_text
 		end
 
-	long_months_text: ARRAY [STRING] is
+	long_months_text: ARRAY [STRING_32] is
 			-- Long text representation of months
 		do
 			Result := date_time_tools.long_months_text

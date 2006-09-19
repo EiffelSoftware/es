@@ -44,7 +44,7 @@ feature -- Access
 		end
 
 
-	default_format_string: STRING is
+	default_format_string: STRING_32 is
 			-- Default output format string
 		do
 			Result := date_time_tools.default_format_string
