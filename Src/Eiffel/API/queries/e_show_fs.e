@@ -22,7 +22,7 @@ create
 
 feature -- Status report
 
-	feature_clause_order: ARRAY [STRING]
+	feature_clause_order: ARRAY [STRING_32]
 			-- Array of orderd feature clause comments
 
 feature -- Status setting

@@ -26,12 +26,12 @@ feature {EB_PREFERENCES} -- Initialization
 
 feature {EB_SHARED_PREFERENCES} -- Value
 
-	feature_clause_order: ARRAY [STRING] is
+	feature_clause_order: ARRAY [STRING_32] is
 		do
 			Result := feature_clause_order_preference.value
 		end
 
-	excluded_indexing_items: ARRAY [STRING] is
+	excluded_indexing_items: ARRAY [STRING_32] is
 		do
 			Result := excluded_indexing_items_preference.value
 		end
@@ -48,10 +48,16 @@ feature {NONE} -- Preference Strings
 
 feature {NONE} -- Defaults
 
-	default_feature_clause_order: ARRAY [STRING] is
+	default_feature_clause_order: ARRAY [STRING_32] is
 			--
 		once
 			Result := <<"Initialization","Access","Measurement","Comparison","Status report","Status setting","Cursor movement","Element change","Removal","Resizing","Transformation","Conversion","Duplication","Miscellaneous","Basic operations","Obsolete","Inapplicable","Implementation","*">>
+		end
+
+	default_excluded_indexing_items: ARRAY [STRING_32] is
+			--
+		once
+			Result := <<"revision", "date", "status">>
 		end
 
 feature {NONE} -- Implementation
@@ -64,7 +70,7 @@ feature {NONE} -- Implementation
 			create l_manager.make (preferences, "flat_short")
 
 			feature_clause_order_preference := l_manager.new_array_preference_value (l_manager, feature_clause_order_string, default_feature_clause_order)
-			excluded_indexing_items_preference := l_manager.new_array_preference_value (l_manager, excluded_indexing_items_string, <<"revision", "date", "status">>)
+			excluded_indexing_items_preference := l_manager.new_array_preference_value (l_manager, excluded_indexing_items_string, default_excluded_indexing_items)
 		end
 
 	preferences: PREFERENCES

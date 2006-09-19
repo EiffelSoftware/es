@@ -17,7 +17,7 @@ inherit
 
 feature -- Status setting
 
-	set_excluded_indexing_items (l: LINEAR [STRING]) is
+	set_excluded_indexing_items (l: LINEAR [STRING_32]) is
 			-- Assign `l' to `excluded_indexing_items'.
 		do
 			excluded_indexing_items := l
@@ -28,7 +28,7 @@ feature -- Access
 	current_class: CLASS_C
 			-- Class currently being processed.
 
-	excluded_indexing_items: LINEAR [STRING]
+	excluded_indexing_items: LINEAR [STRING_32]
 			-- Indexing items not to include in HTML meta clause.
 
 	index_text (a_text_formatter: TEXT_FORMATTER) is

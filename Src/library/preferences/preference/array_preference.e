@@ -9,18 +9,18 @@ class
 	ARRAY_PREFERENCE
 
 inherit
-	TYPED_PREFERENCE [ARRAY [STRING]]
+	TYPED_PREFERENCE [ARRAY [STRING_32]]
 
 create {PREFERENCE_FACTORY}
 	make, make_from_string_value
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING_32 is
 			-- String representation of `value'.				
 		local
 			index: INTEGER
-			l_value: STRING
+			l_value: STRING_32
 		do
 			create Result.make_empty
 			from
@@ -39,17 +39,17 @@ feature -- Access
 				end
 				index := index + 1
 			end
-		end	
+		end
 
 	string_type: STRING is
 			-- String description of this preference type.
 		once
-			Result := "LIST"			
-		end	
-		
-		
+			Result := "LIST"
+		end
 
-	selected_value: STRING is
+
+
+	selected_value: STRING_32 is
 			-- Value of the selected index.
 		do
 			Result := value.item (selected_index)
@@ -66,7 +66,7 @@ feature -- Status Setting
 			is_choice := a_flag
 			if selected_index = 0 then
 				selected_index := 1
-			end		
+			end
 		end
 
 	set_selected_index (a_index: INTEGER) is
@@ -80,19 +80,19 @@ feature -- Status Setting
 			index_set: selected_index = a_index
 		end
 
-	set_value_from_string (a_value: STRING) is
+	set_value_from_string (a_value: STRING_GENERAL) is
 			-- Parse the string value `a_value' and set `value'.
 		local
-			cnt: INTEGER			
-			l_value: STRING
-			values: LIST [STRING]
+			cnt: INTEGER
+			l_value: STRING_32
+			values: LIST [STRING_32]
 		do
 			create internal_value.make (1, 0)
-			values := a_value.split (';')
+			values := a_value.as_string_32.split (';')
 			if values.count > 1 or not values.first.is_empty then
-				from 
+				from
 					values.start
-					cnt := 1					
+					cnt := 1
 				until
 					values.after
 				loop
@@ -102,24 +102,24 @@ feature -- Status Setting
 						is_choice := True
 						set_selected_index (cnt)
 					end
-					value.force (l_value, cnt)			
+					value.force (l_value, cnt)
 					values.forth
 					cnt := cnt + 1
-				end				
+				end
 			end
 			set_value (internal_value)
-		end	
+		end
 
 feature -- Query
 
 	is_choice: BOOLEAN
 			-- Is this preference a single choice or the full list?
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING_GENERAL): BOOLEAN is
 			-- Is `a_string' valid for this preference type to convert into a value?		
 		do
 			Result := a_string /= Void
-		end		
+		end
 
 feature {PREFERENCES} -- Access
 
@@ -134,8 +134,8 @@ feature {PREFERENCES} -- Access
 		end
 
 feature {NONE} -- Implementation
-	
-	auto_default_value: ARRAY [STRING] is
+
+	auto_default_value: ARRAY [STRING_32] is
 			-- Value to use when Current is using auto by default (until real auto is set)
 		once
 			create Result.make (0, 1)

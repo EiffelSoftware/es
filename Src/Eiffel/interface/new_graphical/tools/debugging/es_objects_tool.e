@@ -99,7 +99,7 @@ feature {NONE} -- Internal properties
 
 	second_grid_id: STRING is "2"
 
-	objects_grids_positions: ARRAY [STRING]
+	objects_grids_positions: ARRAY [STRING_32]
 
 	reset_objects_grids_positions_to_default is
 		do
@@ -384,11 +384,11 @@ feature {NONE} -- Interface
 			end
 		end
 
-	assign_objects_grids_position (a_gid: STRING; a_pos: INTEGER) is
+	assign_objects_grids_position (a_gid: STRING_GENERAL; a_pos: INTEGER) is
 			-- Change grid position for item at position `a_pos' to grid identified by `a_gid'
 		local
 			apref: ARRAY_PREFERENCE
-			ap: ARRAY [STRING]
+			ap: ARRAY [STRING_32]
 		do
 			apref := Preferences.Debug_tool_data.objects_tool_layout_preference
 			ap := apref.value
@@ -402,11 +402,11 @@ feature -- preference
 			-- Refresh the layout using preference `p'
 		local
 			retried: BOOLEAN
-			vals: ARRAY [STRING]
+			vals: ARRAY [STRING_32]
 			i: INTEGER
 			l_changed: BOOLEAN
 			l_pref_changed: BOOLEAN
-			l_pos: STRING
+			l_pos: STRING_32
 		do
 			vals := p.value
 			if retried or (vals = Void or else vals.is_empty) then

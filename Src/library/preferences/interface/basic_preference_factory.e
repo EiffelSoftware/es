@@ -74,7 +74,7 @@ feature -- Access
 			preference_added: a_manager.preferences.has_preference (a_name)
 		end
 
-	new_array_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING]): ARRAY_PREFERENCE is
+	new_array_preference_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING_32]): ARRAY_PREFERENCE is
 			-- Add a new array preference with name `a_name'.  If preference cannot be found in
 			-- underlying datastore or in a default values then `a_fallback_value' is used for the value.
 		require
@@ -83,7 +83,7 @@ feature -- Access
 			value_not_void: a_fallback_value /= Void
 			not_has_preference: not a_manager.known_preference (a_name)
 		do
-			Result := (create {PREFERENCE_FACTORY [ARRAY [STRING], ARRAY_PREFERENCE]}).
+			Result := (create {PREFERENCE_FACTORY [ARRAY [STRING_32], ARRAY_PREFERENCE]}).
 				new_preference (a_manager.preferences, a_manager, a_name, a_fallback_value)
 		ensure
 			has_result: Result /= Void
@@ -106,7 +106,7 @@ feature -- Access
 		do
 			Result := new_string_preference_value (a_manager, a_name, a_fallback_value)
 		end
-	new_array_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING]): ARRAY_PREFERENCE is
+	new_array_resource_value (a_manager: PREFERENCE_MANAGER; a_name: STRING; a_fallback_value: ARRAY [STRING_32]): ARRAY_PREFERENCE is
 		obsolete "use new_array_preference_value."
 		do
 			Result := new_array_preference_value (a_manager, a_name, a_fallback_value)

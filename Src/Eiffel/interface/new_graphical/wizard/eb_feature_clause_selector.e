@@ -95,7 +95,7 @@ feature {EB_FEATURE_COMPOSITION_WIZARD} -- Implementation
 	fill_comment_field is
 			-- Fill `comment_field' with feature clauses in order.
 		local
-			fco: ARRAY [STRING]
+			fco: ARRAY [STRING_32]
 			i: INTEGER
 			s: STRING
 			li: EV_LIST_ITEM

@@ -26,7 +26,7 @@ feature {EB_PREFERENCES} -- Initialization
 
 feature -- Value
 
-	last_opened_projects: ARRAY [STRING] is
+	last_opened_projects: ARRAY [STRING_32] is
 			-- List of last opened projects	
 		do
 			Result := last_opened_projects_preference.value

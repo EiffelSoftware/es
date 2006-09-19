@@ -1244,7 +1244,7 @@ feature {NONE} -- Implementation
 	saved_minimized: BOOLEAN
 			-- Was the editor in the debugging window minimized before the debug session started?
 
-	debug_right_layout, debug_left_layout: ARRAY [STRING]
+	debug_right_layout, debug_left_layout: ARRAY [STRING_32]
 			-- Used to save the display of the debugging window during debugging sessions.
 
 	debug_splitter_position, normal_splitter_position: INTEGER
@@ -1253,7 +1253,7 @@ feature {NONE} -- Implementation
 	objects_split_proportion: REAL
 			-- Position of the splitter inside the object tool.
 
-	normal_right_layout, normal_left_layout: ARRAY [STRING]
+	normal_right_layout, normal_left_layout: ARRAY [STRING_32]
 			-- Used to save the display of the debugging window outside debugging sessions.
 
 	bkpt_info_cmd: EB_STANDARD_CMD

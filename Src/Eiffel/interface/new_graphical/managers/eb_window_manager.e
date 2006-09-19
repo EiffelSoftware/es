@@ -1439,12 +1439,12 @@ feature {EB_C_COMPILER_LAUNCHER, EB_WINDOW_MANAGER_LIST, EB_WINDOW_MANAGER_MENU,
 
 feature {NONE} -- Implementation
 
-	new_title: STRING is
+	new_title: STRING_32 is
 			-- Find an empty titled not yet used.
 		local
 			saved_cursor: CURSOR
-			empty_title: STRING
-			window_titles: ARRAYED_LIST [STRING]
+			empty_title: STRING_32
+			window_titles: ARRAYED_LIST [STRING_32]
 			i: INTEGER
 		do
 				-- Remember the title of all windows.

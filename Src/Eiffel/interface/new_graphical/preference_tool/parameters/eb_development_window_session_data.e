@@ -83,10 +83,10 @@ feature {EB_DEVELOPMENT_WINDOW} -- Access
 	left_panel_width: INTEGER
 			-- Width for the left panel.
 
-	left_panel_layout: ARRAY [STRING]
+	left_panel_layout: ARRAY [STRING_32]
 			-- Layout of the left panel of the window.
 
-	right_panel_layout: ARRAY [STRING]
+	right_panel_layout: ARRAY [STRING_32]
 			-- Layout of the left panel of the window.
 
 	show_general_toolbar: BOOLEAN
@@ -116,10 +116,10 @@ feature {EB_DEVELOPMENT_WINDOW} -- Access
 	context_unified_stone: BOOLEAN
 			-- Is the context tool linked?
 
-	general_toolbar_layout: ARRAY [STRING]
+	general_toolbar_layout: ARRAY [STRING_32]
 			-- Toolbar organization
 
-	refactoring_toolbar_layout: ARRAY [STRING]
+	refactoring_toolbar_layout: ARRAY [STRING_32]
 			-- Toolbar organization
 
 feature {EB_DEVELOPMENT_WINDOW} -- Element change
@@ -180,13 +180,13 @@ feature {EB_DEVELOPMENT_WINDOW} -- Element change
 			left_panel_width := a_width
 		end
 
-	save_left_panel_layout (a_layout: ARRAY [STRING]) is
+	save_left_panel_layout (a_layout: ARRAY [STRING_32]) is
 			-- Save the layout of the left panel of the window.
 		do
 			left_panel_layout := a_layout.twin
 		end
 
-	save_right_panel_layout (a_layout: ARRAY [STRING]) is
+	save_right_panel_layout (a_layout: ARRAY [STRING_32]) is
 			-- Save the layout of the left panel of the window.
 		do
 			right_panel_layout := a_layout.twin

@@ -22,7 +22,7 @@ create
 
 feature -- Status report
 
-	feature_clause_order: ARRAY [STRING]
+	feature_clause_order: ARRAY [STRING_32]
 			-- Array of orderd feature clause comments
 
 feature -- Status setting
@@ -48,7 +48,7 @@ feature -- Output
 			ctxt.set_one_class_only;
 			ctxt.format (current_class, text_formatter);
 		end;
-		
+
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

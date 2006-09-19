@@ -104,6 +104,25 @@ feature -- Access
 			same_size: Result.count = count
 		end
 
+	strings_32: ARRAYED_LIST [STRING_32] is
+			-- Representation of `Current' as STRING_32.
+		require
+			not_destroyed: not is_destroyed
+		local
+			c: CURSOR
+		do
+			create Result.make (count)
+			c := cursor
+			from start until after loop
+				Result.extend (item.text.twin.as_string_32)
+				forth
+			end
+			go_to (c)
+		ensure
+			not_void: Result /= Void
+			same_size: Result.count = count
+		end
+
 feature -- Status setting
 
 	remove_selection is

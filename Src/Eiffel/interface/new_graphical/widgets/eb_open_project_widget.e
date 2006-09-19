@@ -417,7 +417,7 @@ feature {NONE} -- Initialization
 		require
 			is_empty: is_empty
 		local
-			lop: ARRAYED_LIST [STRING]
+			lop: ARRAYED_LIST [STRING_32]
 			project_exist: BOOLEAN
 			i, n: INTEGER
 			l_header: EV_GRID_HEADER
@@ -478,7 +478,7 @@ feature {NONE} -- Initialization
 			projects_list_created: projects_list /= Void
 		end
 
-	insert_new_project (a_project_file: STRING; a_row_index: INTEGER) is
+	insert_new_project (a_project_file: STRING_GENERAL; a_row_index: INTEGER) is
 			-- Create an empty new row for `a_project_file' in `projects_list'.
 		require
 			a_project_file_not_void: a_project_file /= Void
@@ -826,7 +826,7 @@ feature {NONE} -- Implementation
 		local
 			l_item: EV_GRID_LABEL_ITEM
 			i, nb: INTEGER
-			l_projects: ARRAYED_LIST [STRING]
+			l_projects: ARRAYED_LIST [STRING_32]
 		do
 				-- Search first if it is a file which is already in the list.
 				-- If in the list, we simply ensure it is visible and selected.
@@ -1132,7 +1132,7 @@ feature {NONE} -- Actions
 
 feature {NONE} -- Convenience
 
-	is_file_readable (a_file_name: STRING): BOOLEAN is
+	is_file_readable (a_file_name: STRING_GENERAL): BOOLEAN is
 			-- Does file of path `a_file_name' exist and is readable?
 		require
 			a_file_name_not_void: a_file_name /= Void
@@ -1140,7 +1140,7 @@ feature {NONE} -- Convenience
 		local
 			l_file: RAW_FILE
 		do
-			create l_file.make (a_file_name)
+			create l_file.make (a_file_name.as_string_8)
 			Result := l_file.exists and then l_file.is_readable
 		end
 

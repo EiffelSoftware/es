@@ -276,7 +276,7 @@ feature -- Access
 			item_list_index_not_changed: item_list.index = old item_list.index
 		end
 
-	save_to_resource: ARRAY [STRING] is
+	save_to_resource: ARRAY [STRING_32] is
 			-- Save representation of `Current' into `Result', ready for storage
 			-- as a preference.
 		local
@@ -332,21 +332,21 @@ feature -- Access
 			position_consitent: item_list.index = old item_list.index
 		end
 
-	load_from_resource (a_layout: ARRAY [STRING]) is
+	load_from_resource (a_layout: ARRAY [STRING_32]) is
 			-- Build contents and structure of `Current' from `a_layout',
 			-- corresponding to that built by `save_to_resource'.
 		require
 			layout_not_void: a_layout /= Void
 		local
 			curr_item: like explorer_item
-			item_state: STRING
+			item_state: STRING_32
 			i, j: INTEGER
-			item_height: STRING
+			item_height: STRING_32
 			all_heights: ARRAYED_LIST [INTEGER]
 			a_height: INTEGER
 			has_maximized_tool: BOOLEAN
-			items_by_name: HASH_TABLE [EB_EXPLORER_BAR_ITEM, STRING]
-			temp_layout: ARRAY [STRING]
+			items_by_name: HASH_TABLE [EB_EXPLORER_BAR_ITEM, STRING_32]
+			temp_layout: ARRAY [STRING_32]
 			minimized_count: INTEGER
 		do
 				-- Clear `item_list' and store all items in `items_by_name', hashed

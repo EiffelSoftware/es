@@ -570,13 +570,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_feature_clause_order (array: ARRAY [STRING]) is
+	update_feature_clause_order (array: ARRAY [STRING_32]) is
 			-- Update the feature clause order.
 		require
 			valid_array: array /= Void
 		local
 			cat: like current_category;
-			feature_clause_order_table: HASH_TABLE [INTEGER, STRING];
+			feature_clause_order_table: HASH_TABLE [INTEGER, STRING_32];
 			default_feature_clause_order: INTEGER;
 			order, i, c: INTEGER;
 			comment: STRING;
@@ -632,7 +632,7 @@ feature {NONE} -- Implementation
 			end;
 		end;
 
-	feature_clause_order: ARRAY [STRING];
+	feature_clause_order: ARRAY [STRING_32];
 			-- Array of ordered feature clause comments
 
 indexing

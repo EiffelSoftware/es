@@ -30,16 +30,16 @@ feature -- Status setting
 			description := new_description
 		ensure
 			description_set: description = new_description
-		end		
-	
+		end
+
 	set_hidden (a_flag: BOOLEAN) is
 			-- Set if this is hidden from user view.
 		do
 			is_hidden := a_flag
 		ensure
 			value_set: is_hidden = a_flag
-		end		
-	
+		end
+
 	set_default_value (a_value: STRING) is
 			-- Set the value to be used for default in the event `value' is not set.
 		require
@@ -50,31 +50,31 @@ feature -- Status setting
 			if internal_change_actions /= Void then
 				internal_change_actions.call ([Current])
 			end
-		ensure		
+		ensure
 			default_value_set: internal_default_value = a_value
-		end		
-	
-	set_value_from_string (a_value: STRING) is
+		end
+
+	set_value_from_string (a_value: STRING_GENERAL) is
 			-- Parse the string value `a_value' and set `value'.
 		require
 			a_value_not_void: a_value /= Void
 			a_value_valid: valid_value_string (a_value)
 		deferred
-		end	
+		end
 
 	reset is
 			-- Reset value to `default_value'.
 		require
 			has_default_value: has_default_value
 		do
-			if auto_preference /= Void then			
-				set_value_from_string (auto_preference.string_value)			
-			else			
-				set_value_from_string (default_value)	
+			if auto_preference /= Void then
+				set_value_from_string (auto_preference.string_value)
+			else
+				set_value_from_string (default_value)
 			end
 		ensure
 			is_reset: is_default_value
-		end		
+		end
 
 	set_restart_required (is_required: BOOLEAN) is
 			-- Set 'restart_required'
@@ -82,7 +82,7 @@ feature -- Status setting
 			restart_required := is_required
 		ensure
 			restart_required_set: restart_required = is_required
-		end		
+		end
 
 feature -- Access
 
@@ -102,28 +102,28 @@ feature -- Access
 			end
 		end
 
-	string_value: STRING is
+	string_value: STRING_32 is
 			-- String value for this preference.
 		require
 			has_value: has_value
 		deferred
 		ensure
 			not_void: Result /= Void
-		end		
+		end
 
 	string_type: STRING is
 			-- String description of this preference type.
 		deferred
 		ensure
 			string_type_not_void: Result /= Void
-		end		
+		end
 
 	generating_preference_type: STRING is
 			-- The generating type of the preference for graphical representation.
 		deferred
 		ensure
 			generating_preference_type_not_void: Result /= Void
-		end	
+		end
 
 	manager: PREFERENCE_MANAGER
 			-- Manager to which Current belongs.
@@ -132,17 +132,17 @@ feature -- Access
 			-- Preference to use for auto color.
 
 feature -- Query
-		
+
 	has_value: BOOLEAN is
 			-- Does this preference have a value to use?
 		deferred
 		end
-		
+
 	has_default_value: BOOLEAN is
 			-- Does this preference have a default value to use?
 		do
 			Result := default_value /= Void	or auto_preference /= Void
-		end		
+		end
 
 	is_default_value: BOOLEAN is
 			-- Is this preference value the same as the default value?
@@ -150,17 +150,17 @@ feature -- Query
 			if has_default_value then
 				Result := string_value.as_lower.is_equal (default_value.as_lower)
 			end
-		end		
+		end
 
 	is_hidden: BOOLEAN
 			-- Should Current be hidden from user view?
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING_GENERAL): BOOLEAN is
 			-- Is `a_string' valid for this preference type to convert into a value?
 		require
 			string_not_void: a_string /= Void
 		deferred
-		end	
+		end
 
 	restart_required: BOOLEAN
 			-- Is a restart required to apply the preference when changed? (Default: False)

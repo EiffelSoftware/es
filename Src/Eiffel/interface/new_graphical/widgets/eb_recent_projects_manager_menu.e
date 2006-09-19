@@ -57,7 +57,7 @@ feature {EB_RECENT_PROJECTS_MANAGER} -- Observer pattern
 	update is
 			-- (Re)build the menu.
 		local
-			recent_projects: ARRAYED_LIST [STRING]
+			recent_projects: ARRAYED_LIST [STRING_32]
 			open_cmd: EB_OPEN_PROJECT_COMMAND
 			menu_item: EV_MENU_ITEM
 			project_file_name: STRING

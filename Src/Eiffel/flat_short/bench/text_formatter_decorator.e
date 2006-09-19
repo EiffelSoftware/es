@@ -228,7 +228,7 @@ feature -- Properties
 	format_registration: FORMAT_REGISTRATION
 			-- Structure registerd for formatting
 
-	feature_clause_order: ARRAY [STRING]
+	feature_clause_order: ARRAY [STRING_32]
 			-- Array of feature clause comment ordering
 
 	current_class: CLASS_C

@@ -37,7 +37,7 @@ feature -- Properties
 	ordered_same_as_text: BOOLEAN;
 			-- Will the format output be in the same order as text file?
 
-	feature_clause_order: ARRAY [STRING]
+	feature_clause_order: ARRAY [STRING_32]
 			-- Array of orderd feature clause comments
 
 	is_flat: BOOLEAN is

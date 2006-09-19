@@ -14,10 +14,10 @@ inherit
 
 feature {NONE} -- Implementation
 
-	retrieve_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]; layout: ARRAY [STRING]): EB_TOOLBAR is
+	retrieve_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]; layout: ARRAY [STRING_32]): EB_TOOLBAR is
 		local
 			i: INTEGER
-			command_name: STRING
+			command_name: STRING_32
 			command_visibility: BOOLEAN
 			command_suffix: STRING
 			command_name_count: INTEGER
@@ -92,10 +92,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	save_toolbar (a_toolbar: EB_TOOLBAR): ARRAY [STRING] is
+	save_toolbar (a_toolbar: EB_TOOLBAR): ARRAY [STRING_32] is
 			-- Turn `a_toolbar' into a storable string.
 		local
-			storage_name: STRING
+			storage_name: STRING_32
 			toolbar_item: EB_TOOLBARABLE
 			command: EB_TOOLBARABLE_COMMAND
 			index: INTEGER

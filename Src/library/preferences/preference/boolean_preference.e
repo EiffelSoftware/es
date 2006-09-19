@@ -19,7 +19,7 @@ create {PREFERENCE_FACTORY}
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING_32 is
 			-- String representation of `value'.		
 		do
 			Result := value.out

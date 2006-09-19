@@ -21,9 +21,9 @@ feature {NONE} -- Initialization
 			-- Create a project manager.
 		local
 			l_value: STRING
-			l_projects: ARRAY [STRING]
+			l_projects: ARRAY [STRING_32]
 			i: INTEGER
-			l_project_name: STRING
+			l_project_name: STRING_32
 		do
 				-- Get values from preferences.
 			l_value := preferences.preferences.get_preference_value_direct ("LIST_" + preferences.recent_projects_data.last_opened_projects_string)
@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	recent_projects: ARRAYED_LIST [STRING]
+	recent_projects: ARRAYED_LIST [STRING_32]
 			-- Save the list of recent opened projects during the execution
 			-- Purpose: make it easier to save the data at the end.
 
@@ -71,7 +71,7 @@ feature -- Menus handling
 
 feature -- Basic operations
 
-	add_recent_project (a_project: STRING) is
+	add_recent_project (a_project: STRING_GENERAL) is
 			-- Add `a_project' to list of recent projects.
 		require
 			a_project_not_void: a_project /= Void

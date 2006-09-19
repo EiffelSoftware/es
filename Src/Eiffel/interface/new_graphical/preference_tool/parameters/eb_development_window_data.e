@@ -51,12 +51,12 @@ feature {EB_DEVELOPMENT_WINDOW_DATA, EB_SHARED_PREFERENCES} -- Value
 		deferred
 		end
 
-	left_panel_layout: ARRAY [STRING] is
+	left_panel_layout: ARRAY [STRING_32] is
 			-- Layout of the left panel of the window.
 		deferred
 		end
 
-	right_panel_layout: ARRAY [STRING] is
+	right_panel_layout: ARRAY [STRING_32] is
 			-- Layout of the left panel of the window.
 		deferred
 		end
@@ -106,12 +106,12 @@ feature {EB_DEVELOPMENT_WINDOW_DATA, EB_SHARED_PREFERENCES} -- Value
 		deferred
 		end
 
-	general_toolbar_layout: ARRAY [STRING] is
+	general_toolbar_layout: ARRAY [STRING_32] is
 			-- Toolbar organization
 		deferred
 		end
 
-	refactoring_toolbar_layout: ARRAY [STRING] is
+	refactoring_toolbar_layout: ARRAY [STRING_32] is
 			-- Toolbar organization
 		deferred
 		end
@@ -153,13 +153,13 @@ feature -- Element change
 			width_set: a_width = left_panel_width
 		end
 
-	save_left_panel_layout (a_layout: ARRAY [STRING]) is
+	save_left_panel_layout (a_layout: ARRAY [STRING_32]) is
 			-- Save the layout of the left panel of the window.
 			-- Call `commit_save' to have the changes actually saved.
 		deferred
 		end
 
-	save_right_panel_layout (a_layout: ARRAY [STRING]) is
+	save_right_panel_layout (a_layout: ARRAY [STRING_32]) is
 			-- Save the layout of the left panel of the window.
 			-- Call `commit_save' to have the changes actually saved.
 		deferred

@@ -594,7 +594,7 @@ feature -- Status settings.
 			-- Preferences may have changed.
 			-- Refresh `excluded_class_figures' and `ignore_excluded_figures'.
 		local
-			l_array: ARRAY [STRING]
+			l_array: ARRAY [STRING_32]
 			i: INTEGER
 		do
 			ignore_excluded_figures := preferences.diagram_tool_data.ignore_excluded_class_figures
@@ -2007,10 +2007,10 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	excluded_class_figures: HASH_TABLE [STRING, STRING]
+	excluded_class_figures: HASH_TABLE [STRING_32, STRING_32]
 			-- Classes never present on the diagram (unless `ignore_excluded_figures' is False).
 
-	default_excluded_class_figures: ARRAY [STRING] is
+	default_excluded_class_figures: ARRAY [STRING_32] is
 			-- Default settings for `excluded_class_figures'.
 		once
 			Result := <<

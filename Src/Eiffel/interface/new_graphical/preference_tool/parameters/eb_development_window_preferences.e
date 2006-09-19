@@ -77,13 +77,13 @@ feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_SESSION_DATA} -- Value
 			Result := left_panel_width_preference.value
 		end
 
-	left_panel_layout: ARRAY [STRING] is
+	left_panel_layout: ARRAY [STRING_32] is
 			-- Layout of the left panel of the window.
 		do
 			Result := left_panel_layout_preference.value
 		end
 
-	right_panel_layout: ARRAY [STRING] is
+	right_panel_layout: ARRAY [STRING_32] is
 			-- Layout of the left panel of the window.
 		do
 			Result := right_panel_layout_preference.value
@@ -137,13 +137,13 @@ feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_SESSION_DATA} -- Value
 			Result := show_refactoring_toolbar_preference.value
 		end
 
-	general_toolbar_layout: ARRAY [STRING] is
+	general_toolbar_layout: ARRAY [STRING_32] is
 			-- Toolbar organization
 		do
 			Result := general_toolbar_layout_preference.value
 		end
 
-	refactoring_toolbar_layout: ARRAY [STRING] is
+	refactoring_toolbar_layout: ARRAY [STRING_32] is
 			-- Toolbar organization
 		do
 			Result := refactoring_toolbar_layout_preference.value
@@ -359,7 +359,7 @@ feature -- Element change
 			preferences.save_preference (left_panel_width_preference)
 		end
 
-	save_left_panel_layout (a_layout: ARRAY [STRING]) is
+	save_left_panel_layout (a_layout: ARRAY [STRING_32]) is
 			-- Save the layout of the left panel of the window.
 			-- Call `commit_save' to have the changes actually saved.
 		do
@@ -367,7 +367,7 @@ feature -- Element change
 			preferences.save_preference (left_panel_width_preference)
 		end
 
-	save_right_panel_layout (a_layout: ARRAY [STRING]) is
+	save_right_panel_layout (a_layout: ARRAY [STRING_32]) is
 			-- Save the layout of the left panel of the window.
 			-- Call `commit_save' to have the changes actually saved.
 		do

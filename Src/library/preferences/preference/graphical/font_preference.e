@@ -13,18 +13,18 @@ inherit
 		redefine
 			set_value
 		end
-	
+
 	EV_FONT_CONSTANTS
 		undefine
 			is_equal
 		end
-		
+
 create {PREFERENCE_FACTORY}
 	make, make_from_string_value
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING_32 is
 			-- String representation of `value'.		
 		do
 			Result := generated_value
@@ -42,14 +42,14 @@ feature -- Status Setting
 			shape := a_value.shape
 			weight := a_value.weight
 			height := a_value.height_in_points
-			family := a_value.family			
+			family := a_value.family
 		end
 
 	string_type: STRING is
 			-- String description of this preference type.
 		once
 			Result := "FONT"
-		end	
+		end
 
 feature -- Query
 
@@ -60,7 +60,7 @@ feature -- Query
 			s: STRING
 		do
 			s := a_string.twin
-			Result := s.occurrences ('-') = 4			
+			Result := s.occurrences ('-') = 4
 		end
 
 feature {PREFERENCES} -- Access
@@ -75,9 +75,9 @@ feature {NONE} -- Implementation
 
 	face: STRING
 			-- Font faces
-	shape, 
-	weight, 
-	height, 
+	shape,
+	weight,
+	height,
 	family: INTEGER
 		-- Attributes
 

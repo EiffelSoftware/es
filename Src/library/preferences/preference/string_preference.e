@@ -16,7 +16,7 @@ create {PREFERENCE_FACTORY}
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING_32 is
 			-- String representation of `value'.
 		do
 			Result := value.twin
@@ -30,7 +30,7 @@ feature -- Access
 
 feature -- Query
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING_GENERAL): BOOLEAN is
 			-- Is `a_string' valid for this preference type to convert into a value?
 		do
 				-- True.  A string preference may be empty and precondition ensures it is not void.

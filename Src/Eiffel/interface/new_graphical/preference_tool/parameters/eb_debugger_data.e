@@ -71,13 +71,13 @@ feature {EB_SHARED_PREFERENCES} -- Value
 			Result := keep_stepping_info_dotnet_feature_preference.value
 		end
 
-	dotnet_debugger: ARRAY [STRING] is
+	dotnet_debugger: ARRAY [STRING_32] is
 			-- .NET debugger to launch
 		do
 			Result := dotnet_debugger_preference.value
 		end
 
-	project_toolbar_layout: ARRAY [STRING] is
+	project_toolbar_layout: ARRAY [STRING_32] is
 			-- Toolbar organization
 		do
 			Result := project_toolbar_layout_preference.value

@@ -1159,7 +1159,7 @@ feature {NONE} -- Implementation
 --			end
 --		end
 
-	leading_clauses (a_clause: STRING): ARRAYED_LIST [STRING] is
+	leading_clauses (a_clause: STRING_GENERAL): ARRAYED_LIST [STRING_32] is
 			-- Subset of `feature_clause_order' that should appear before `c' in the class text.
 		require
 			a_clause_not_void: a_clause /= Void

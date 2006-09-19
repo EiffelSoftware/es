@@ -191,10 +191,10 @@ feature -- Access
 			end
 		end
 
-	excluded_indexing_items: ARRAYED_LIST [STRING] is
+	excluded_indexing_items: ARRAYED_LIST [STRING_32] is
 			-- Indexing items user does not want generated in HTML meta clauses.
 		do
-			Result := indexing_include.exclude_list.strings_8
+			Result := indexing_include.exclude_list.strings_32
 		end
 
 	diagram_views: HASH_TABLE [STRING, STRING]

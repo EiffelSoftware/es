@@ -16,25 +16,25 @@ create {PREFERENCE_FACTORY}
 
 feature -- Access
 
-	string_value: STRING is
+	string_value: STRING_32 is
 			-- String representation of `value'.		
 		do
 			Result := value.out
-		end	
-		
+		end
+
 	string_type: STRING is
 			-- String description of this preference type.
 		once
 			Result := "INTEGER"
-		end	
+		end
 
 feature -- Query
 
-	valid_value_string (a_string: STRING): BOOLEAN is
+	valid_value_string (a_string: STRING_GENERAL): BOOLEAN is
 			-- Is `a_string' valid for this preference type to convert into a value?
 		do
-			Result := a_string.is_integer
-		end		
+			Result := a_string.as_string_8.is_integer
+		end
 
 feature {PREFERENCES} -- Access
 
@@ -50,9 +50,9 @@ feature {NONE} -- Implementation
 			-- Parse the string value `a_value' and set `value'.
 		require else
 			string_valid: valid_value_string (a_value)
-		do	
-			set_value (a_value.to_integer)			
-		end		
+		do
+			set_value (a_value.to_integer)
+		end
 
 	auto_default_value: INTEGER;
 			-- Value to use when Current is using auto by default (until real auto is set)
