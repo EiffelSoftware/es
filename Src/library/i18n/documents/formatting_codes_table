@@ -1,0 +1,71 @@
+legend:	"-"		Simbols formatting codes not in eiffel
+		"??"	formatting codes not in NLS,POSIX or .NET
+		"{..}"	Simbols in Eiffel, but not yet supported by Date/Time->String Converter
+
+Eiffel	NLS		POSIX	
+dd		d 		%e		Day of the month as digits without leading zeros for single digit days.
+[0]dd	dd 		%d		The day of the month as a decimal number (range 01 to 31)
+ddd		ddd 	%a		Abbreviated day of the week
+DD		dddd 	%A		The full weekday name according to the current locale.
+-		??		%j		The day of the year as a decimal number (range 001 to 366).
+-		??		%u,(%w)	The day of the week as a decimal, range 1 to 7, Monday being 1.
+-		??		%w,(%u)	The day of the week as a decimal, range 0 to 6, Sunday being 0.
+mm		M 		??		Month as digits without leading zeros for single digit months.
+[0]mm	MM 		%m		The month as a decimal number (range 01 to 12).
+mmm		MMM 	%b,%h	Appreviated month name 
+MM		MMMM 	%B		Month full name
+-		??		%C		The century number (year/100) as a 2-digit integer
+-		??		%V		The ISO 8601:1988 week number of the current year as a decimal number, range 01 to 53, where week 1 is the first
+-		??		%U		The week number of the current year as a decimal number, range 00 to 53, starting with the first Sunday as the first
+-		??		%W		The week number of the current year as a decimal number, range 00 to 53, starting with the first Monday as the first day of week 01
+-		??		%G		The ISO 8601 year with century as a decimal number.
+-		??		%g		The ISO 8601 year with century as a decimal number, but without century, i.e., with a 2-digit year (00-99).
+-		y 		??		Year represented only by the last digit.
+yy		yy 		%y		The year as a decimal number without a century (range 00 to 99).
+yyyy	yyyy 	%Y		Year represented by full four or five digits, depending on the calendar used.
+yyyy	yyyyy 	%Y		Behaves identically to "yyyy".  [Not sure for the posix :-)]
+-		gg 		??		Period/era string as specified by the CAL_SERASTRING value. 
+hh12	h 		%l		Hours without leading zeros for single-digit hours (12-hour clock).
+-		hh 		%I		Hours with leading zeros for single-digit hours (12-hour clock).
+hh		H 		%k		Hours without leading zeros for single-digit hours (24-hour clock).
+[0]hh	HH 		%H		Hours with leading zeros for single-digit hours (24-hour clock).
+
+mi		m 		??		Minutes without leading zeros for single-digit minutes.
+[0]mi	mm 		%M		The minute as a decimal number (range 00 to 59)
+ss		s 		%S		Seconds without leading zeros for single-digit seconds.
+[0]ss	ss 		??		The second as a decimal number (range 00 to 60).
+-		t 		??		One-character time marker string. (Am/pm -> a/p)
+-		tt 		%p		Multi-character time marker string  Lowercase
+-		tt 		%P		Multi-character time marker string 	Uppercase
+
+-		??		%c		The preferred date and time representation for the current locale.
+-		??		%D		Equivalent to %m/%d/%y. (Yecch  for Americans only.
+-		??		%F		Equivalent to %Y-%m-%d (the ISO 8601 date format).
+-		??		%r		The time in a.m. or p.m. notation. In the POSIX locale this is equivalent to `%I:%M:%S %p'
+-		??		%R		The time in 24-hour notation (%H:%M)
+-		??		%T		The time in 24-hour notation (%H:%M:%S).
+{%N}	??		%n		New line character
+{%T}	??		%t		Insert a Tab
+-		??		%x		The preferred date representation for the current locale without the time.
+-		??		%X		The preferred time representation for the current locale without the date.
+-		??		%z		Time zone as hour offeset from GMT (Required to emit RFC 822-conformant dates (using "%a, %d %b %Y %H:%M:%S %z"))
+-		??		%Z		The time zone or name or abbreviation.
+-		??		%Ec		Replaced by the locale's alternative appropriate date and time representation. 
+-		??		%EC 	Replaced by the name of the base year (period) in the locale's alternative representation. 
+-		??		%Ex 	Replaced by the locale's alternative date representation. 
+-		??		%EX 	Replaced by the locale's alternative time representation. 
+-		??		%Ey 	Replaced by the offset from %EC (year only) in the locale's alternative representation. 
+-		??		%EY 	Replaced by the full alternative year representation. 
+-		??		%Od 	Replaced by the day of the month, using the locale's alternative numeric symbols, filled as needed with leading zeros if there is any alternative symbol for zero; otherwise, with leading spaces. 
+-		??		%Oe 	Replaced by the day of the month, using the locale's alternative numeric symbols, filled as needed with leading spaces. 
+-		??		%OH 	Replaced by the hour (24-hour clock) using the locale's alternative numeric symbols. 
+-		??		%OI 	Replaced by the hour (12-hour clock) using the locale's alternative numeric symbols. 
+-		??		%Om 	Replaced by the month using the locale's alternative numeric symbols. 
+-		??		%OM 	Replaced by the minutes using the locale's alternative numeric symbols. 
+-		??		%OS 	Replaced by the seconds using the locale's alternative numeric symbols. 
+-		??		%Ou 	Replaced by the weekday as a number in the locale's alternative representation (Monday=1). 
+-		??		%OU 	Replaced by the week number of the year (Sunday as the first day of the week, rules corresponding to %U ) using the locale's alternative numeric symbols. 
+-		??		%OV 	Replaced by the week number of the year (Monday as the first day of the week, rules corresponding to %V ) using the locale's alternative numeric symbols. 
+-		??		%Ow 	Replaced by the number of the weekday (Sunday=0) using the locale's alternative numeric symbols. 
+-		??		%OW 	Replaced by the week number of the year (Monday as the first day of the week) using the locale's alternative numeric symbols. 
+-		??		%Oy 	Replaced by the year (offset from %C ) using the locale's alternative numeric symbols. 
