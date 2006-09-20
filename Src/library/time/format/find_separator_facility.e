@@ -23,7 +23,7 @@ inherit
 
 feature {NONE} -- Constants
 
-	Separator_characters: STRING is ":/-, ."
+	Separator_characters: STRING is ":/-, .;"
 
 feature {NONE} -- Implementation
 
@@ -55,6 +55,7 @@ feature {NONE} -- Implementation
 			until 
 				j > Separator_characters.count
 			loop
+				-- find separator
 				pos := s.index_of (Separator_characters @ j, 1)
 				if pos /= 0 then
 					sep_found := True

@@ -12,7 +12,7 @@ feature -- Day/Months names
 	day_name : STRING_32 is
 			-- Full day name e.g "Monday", "Tuesday"
 		do
-			Result := "D"
+			Result := "DD"
 		end
 
 	abbreviated_day_name : STRING_32 is
@@ -24,7 +24,7 @@ feature -- Day/Months names
 	month_name : STRING_32 is
 			-- Full month name e.g "December", "January"
 		do
-			Result := "M"
+			Result := "MM"
 		end
 
 	abbreviated_month_name : STRING_32 is

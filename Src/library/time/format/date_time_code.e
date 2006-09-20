@@ -64,8 +64,8 @@ feature -- Change
 				is_numeric := False
 				type := 3
 			elseif is_full_day_text (value) then
-				count_max := 3
-				count_min := 3
+				count_max := 2
+				count_min := 2
 				name := "full-day-text"
 				value_max := -1
 				value_min := -1
@@ -117,9 +117,9 @@ feature -- Change
 				is_text := True
 				is_numeric := False
 				type := 8
-			elseif is_full_day_text (value) then
-				count_max := 3
-				count_min := 3
+			elseif is_full_month_text (value) then
+				count_max := 2
+				count_min := 2
 				name := "full-month-text"
 				value_max := -1
 				value_min := -1

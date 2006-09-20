@@ -17,18 +17,14 @@ feature -- Preconditions
 		require
 			s_exists: s /= Void
 		do
-			Result := is_colon (s) or
-			is_comma (s) or is_day (s) or
-			is_day0 (s) or is_day_text (s) or is_full_day_text (s) or
-			is_dot (s) or is_fractional_second (s) or
-			is_hour (s) or is_hour0 (s) or is_hour12 (s) or
-			is_hour12_0 (s) or is_meridiem (s) or
-			is_minus (s) or is_minute (s) or
-			is_minute0 (s) or is_month (s) or
+			Result :=
+			is_day (s) or is_day0 (s) or is_day_text (s) or is_full_day_text (s) or
 			is_month0 (s) or is_month_text (s) or is_full_month_text (s) or
-			is_second (s) or is_second0 (s) or
-			is_slash (s) or is_space (s) or
-			is_year2 (s) or is_year4 (s)
+			is_year2 (s) or is_year4 (s) or
+			is_hour (s) or is_hour0 (s) or is_hour12 (s) or is_hour12_0 (s) or is_meridiem (s) or
+			is_minus (s) or is_minute (s) or is_minute0 (s) or is_month (s) or
+			is_second (s) or is_second0 (s) or is_fractional_second (s) or
+			is_separator (s)
 		end
 
 	is_day (s: STRING_32): BOOLEAN is
@@ -309,6 +305,16 @@ feature -- Preconditions
 		ensure
 			definition: Result = s.is_equal (".")
 		end
+	
+	is_semi_colon (s : STRING_32): BOOLEAN is
+			-- Is the code a separator-semi-colon?
+		require
+			s_exists: s /= Void
+		do
+			Result := s.is_equal (";")
+		ensure
+			definition: Result = s.is_equal (";")
+		end
 
 	is_separator (s: STRING_32): BOOLEAN is
 			-- Is the code a seperator?
@@ -317,7 +323,7 @@ feature -- Preconditions
 		do
 			Result := is_slash (s) or else is_colon (s) or else
 				is_minus (s) or else is_comma (s) or else is_space (s) or else
-				is_dot (s)
+				is_dot (s) or else is_semi_colon (s)
 		ensure
 			definition: Result = is_slash (s) or else is_colon (s) or else
 						is_minus (s) or else is_comma (s) or else

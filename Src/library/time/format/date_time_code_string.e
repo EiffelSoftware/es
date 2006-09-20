@@ -32,9 +32,11 @@ feature -- Creation
 			days := date_constants.days_text.twin
 				-- Short text representation of days
 			long_days := date_constants.long_days_text.twin
+				-- Long text representation of days
 			months := date_constants.months_text.twin
 				-- Short text representation of months
-
+			long_months := date_constants.long_months_text.twin		--? Why twin??
+				-- Long text representation of months
 			
 			from
 				i := 1
@@ -299,6 +301,10 @@ feature -- Interface
 					-- month-text
 					int := date.month
 					Result.append (months.item (int))
+				when 26 then
+					-- full month-text
+					int := date.month
+					Result.append (long_months.item (int))
 				when 9 then
 					-- hour-numeric
 					Result.append (time.hour.out)
@@ -627,7 +633,9 @@ feature {NONE} -- Implementation
 
 	long_days : ARRAY [STRING_32]
 
-	months: ARRAY [STRING_32]	
+	months: ARRAY [STRING_32]
+	
+	long_months : ARRAY [STRING_32]
 
 	right_day_text: BOOLEAN
 			-- Is the name of the day the right one?

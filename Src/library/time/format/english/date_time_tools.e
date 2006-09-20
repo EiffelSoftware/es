@@ -14,145 +14,88 @@ inherit
 feature 
 
 	name: STRING_32 is
-		do
+		once
 			Result := "English"
 		end
 
 	days_text: ARRAY [STRING_32] is
-		local
-			t_s: STRING_32
 		once
-			create Result.make (1,7)
-			create t_s.make_empty
-			t_s.make_from_string ("SUN")
-			Result.put (t_s.twin,1)
-			t_s.make_from_string ("MON")
-			Result.put (t_s.twin,2)
-			t_s.make_from_string ("TUE")
-			Result.put (t_s.twin,3)
-			t_s.make_from_string ("WED")
-			Result.put (t_s.twin,4)
-			t_s.make_from_string ("THU")
-			Result.put (t_s.twin,5)
-			t_s.make_from_string ("FRI")
-			Result.put (t_s.twin,6)
-			t_s.make_from_string ("SAT")
-			Result.put (t_s.twin,7)
+			Result := <<
+				("SUN").to_string_32,
+				("MON").to_string_32,
+				("TUE").to_string_32,
+				("WED").to_string_32,
+				("THU").to_string_32,
+				("FRI").to_string_32,
+				("SAT").to_string_32
+				>>
 			Result.compare_objects
 		end
 
 	months_text: ARRAY [STRING_32] is
-		local
-			t_s: STRING_32
 		once
-			create Result.make (1,12)
-			create t_s.make_empty
-			t_s.make_from_string ("JAN")
-			Result.put (t_s.twin,1)
-			t_s.make_from_string ("FEB")
-			Result.put (t_s.twin,2)
-			t_s.make_from_string ("MAR")
-			Result.put (t_s.twin,3)
-			t_s.make_from_string ("APR")
-			Result.put (t_s.twin,4)
-			t_s.make_from_string ("MAY")
-			Result.put (t_s.twin,5)
-			t_s.make_from_string ("JUN")
-			Result.put (t_s.twin,6)
-			t_s.make_from_string ("JUL")
-			Result.put (t_s.twin,7)
-			t_s.make_from_string ("AUG")
-			Result.put (t_s.twin,8)
-			t_s.make_from_string ("SEP")
-			Result.put (t_s.twin,9)
-			t_s.make_from_string ("OCT")
-			Result.put (t_s.twin,10)
-			t_s.make_from_string ("NOV")
-			Result.put (t_s.twin,11)
-			t_s.make_from_string ("DEC")
-			Result.put (t_s.twin,12)
--- 			Result := <<
--- 				"JAN",
--- 				"FEB",
--- 				"MAR",
--- 				"APR",
--- 				"MAY",
--- 				"JUN",
--- 				"JUL",
--- 				"AUG",
--- 				"SEP",
--- 				"OCT",
--- 				"NOV",
--- 				"DEC"
--- 			>>
+			Result := <<
+				("JAN").to_string_32,
+				("FEB").to_string_32,
+				("MAR").to_string_32,
+				("APR").to_string_32,
+				("MAY").to_string_32,
+				("JUN").to_string_32,
+				("JUL").to_string_32,
+				("AUG").to_string_32,
+				("SEP").to_string_32,
+				("OCT").to_string_32,
+				("NOV").to_string_32,
+				("DEC").to_string_32
+			>>
 			Result.compare_objects
 		end
 
 	long_days_text: ARRAY [STRING_32] is
-		local
-			t_s : STRING_32
 		once
-			create Result.make (1,7)
-			create t_s.make_empty
-			t_s.make_from_string ("Sunday")
-			Result.put (t_s.twin,1)
-			t_s.make_from_string ("Monday")
-			Result.put (t_s.twin,2)
-			t_s.make_from_string ("Tuesday")
-			Result.put (t_s.twin,3)
-			t_s.make_from_string ("Wednesday")
-			Result.put (t_s.twin,4)
-			t_s.make_from_string ("Thursday")
-			Result.put (t_s.twin,5)
-			t_s.make_from_string ("Friday")
-			Result.put (t_s.twin,6)
-			t_s.make_from_string ("Saturday")
-			Result.put (t_s.twin,7)
-			Result.compare_objects
--- 			Result := <<
--- 				"SUNDAY",
--- 				"MONDAY",
--- 				"TUESDAY",
--- 				"WEDNESDAY",
--- 				"THURSDAY",
--- 				"FRIDAY",
--- 				"SATURDAY"
--- 				
--- 			>>
+			Result := <<
+				("SUNDAY").to_string_32,
+				("MONDAY").to_string_32,
+				("TUESDAY").to_string_32,
+				("WEDNESDAY").to_string_32,
+				("THURSDAY").to_string_32,
+				("FRIDAY").to_string_32,
+				("SATURDAY").to_string_32
+			>>
 			Result.compare_objects
 		end
 
 	long_months_text: ARRAY [STRING_32] is
 		once
--- 			Result := <<
--- 				"JANUARY",
--- 				"FEBRUARY",
--- 				"MARCH",
--- 				"APRIL",
--- 				"MAY",
--- 				"JUNE",
--- 				"JULY",
--- 				"AUGUST",
--- 				"SEPTEMBER",
--- 				"OCTOBER",
--- 				"NOVEMBER",
--- 				"DECEMBER"
--- 				>>
+			Result := <<
+				("JANUARY").to_string_32,
+				("FEBRUARY").to_string_32,
+				("MARCH").to_string_32,
+				("APRIL").to_string_32,
+				("MAY").to_string_32,
+				("JUNE").to_string_32,
+				("JULY").to_string_32,
+				("AUGUST").to_string_32,
+				("SEPTEMBER").to_string_32,
+				("OCTOBER").to_string_32,
+				("NOVEMBER").to_string_32,
+				("DECEMBER").to_string_32
+				>>
 			Result.compare_objects
 		end
 
 	date_default_format_string: STRING_32 is
-		do
+		once
 			Result := "[0]mm/[0]dd/yyyy"
 		end
 
 	time_default_format_string: STRING_32 is
-		do	
+		once	
 			Result := "hh12:[0]mi:[0]ss.ff3 AM"
 		end
 
 	default_format_string: STRING_32 is
-		do
+		once
 			Result := "[0]mm/[0]dd/yyyy hh12:[0]mi:[0]ss.ff3 AM";
 		end
 
