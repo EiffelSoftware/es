@@ -45,11 +45,12 @@ feature -- Informations
 			Result := c_is_available (l_c_string.item)
 		end
 
-	available_locales : LINKED_LIST[STRING_32] is
+	available_locales : LINKED_LIST[I18N_LOCALE_ID] is
 			-- get list of available locales
 		local
 			i, max : INTEGER
 			l_string : STRING_32
+			l_locale_id: I18N_LOCALE_ID
 			l_pointer : POINTER
 		do
 			max := c_init_available_locales
@@ -65,7 +66,8 @@ feature -- Informations
 				l_pointer := c_ith_locale (i-1)
 				if l_pointer /= default_pointer then
 					l_string.make_from_c (l_pointer)
-					Result.extend (l_string.twin)
+					create l_locale_id.make (l_string)
+					Result.extend (l_locale_id.twin)
 				end
 				i := i + 1
 			end

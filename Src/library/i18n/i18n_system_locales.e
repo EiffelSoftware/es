@@ -10,10 +10,10 @@ class
 
 feature -- Informations
 
-	avaiable_locales : LINEAR[I18N_LOCALE_ID] is
-			--
+	available_locales : LINEAR[I18N_LOCALE_ID] is
+			-- list of available locales
 		do
-
+			Result := host_locale.available_locales
 		end
 
 	has_locale (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is

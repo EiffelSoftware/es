@@ -53,7 +53,7 @@ feature -- Informations
 			Result := True
 		end
 
-	available_locales : LINKED_LIST[STRING_32_32] is
+	available_locales : LINKED_LIST[I18N_LOCALE_ID] is
 			-- get list of available locales
 		obsolete
 			"NOT IMPLEMENTED"
