@@ -5,9 +5,11 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class DATE_TIME_CODE_STRING	inherit
-
-	FIND_SEPARATOR_FACILITY
+class DATE_TIME_CODE_STRING
+	inherit
+		FIND_SEPARATOR_FACILITY
+		DATE_TIME_FORMAT_CONVERTIONS_CODES
+		DATE_TIME_TYPES
 
 create
 
@@ -198,12 +200,16 @@ feature -- Interface
 									substrg.to_integer >= code.value_min
 							end
 						elseif code.is_meridiem (code.value) then
-							Result := Result and (substrg.as_upper.is_equal ("AM") or
-								substrg.as_upper.is_equal ("PM"))
+							Result := Result and (substrg.as_upper.is_equal (am_suffix) or
+								substrg.as_upper.is_equal (pm_suffix))
 						elseif code.is_day_text (code.value) then 
 							Result := Result and days.has (substrg)
+						elseif code.is_full_day_text (code.value) then
+							Result := Result and long_days.has (substrg)
 						elseif code.is_month_text (code.value) then
 							Result := Result and months.has (substrg)
+						elseif code.is_full_month_text (code.value) then
+							Result := Result and long_months.has (substrg)
 						end
 						i := i + 1
 					end
@@ -362,9 +368,9 @@ feature -- Interface
 					-- meridiem
 					int := time.hour
 					if int < 12 then
-						Result.append ("AM")
+						Result.append (am_suffix)
 					else
-						Result.append ("PM")
+						Result.append (pm_suffix)
 					end
 				else
 					Result.append (value.item (i).value)
@@ -550,11 +556,13 @@ feature -- Interface
 				if separators_used then
 					inspect
 						type
-					when 1, 2 then
+					when Day_numeric_type, Day_numeric_on_2_digits_type then
 						has_day := True
-					when 4, 5 then
+					when Year_on_4_digits_type, Year_on_2_digits_type then
 						has_year := True
-					when 6, 7, 8 then
+					when Month_numeric_type,
+						 Month_numeric_on_2_digits_type,
+						 Month_text_type then
 						has_month := True
 					else
 						-- Wrong format
@@ -562,11 +570,11 @@ feature -- Interface
 				else
 					inspect
 						type
-					when 2 then
+					when Day_numeric_on_2_digits_type then
 						has_day := True
-					when 4, 5 then
+					when Year_on_4_digits_type, Year_on_2_digits_type then
 						has_year := True
-					when 7 then
+					when Month_numeric_on_2_digits_type then
 						has_month := True
 					else
 						-- Wrong format
@@ -597,11 +605,13 @@ feature -- Interface
 				if separators_used then
 					inspect
 						type
-					when 9, 10, 11 then
+					when Hour_numeric_type,
+						 Hour_numeric_on_2_digits_type,
+						 Hour_12_clock_scale_type then
 						has_hour := True
-					when 12, 13 then
+					when Minute_numeric_type, Minute_numeric_on_2_digits_type then
 						has_minute := True
-					when 14, 15 then
+					when Second_numeric_type, Second_numeric_on_2_digits_type then
 						has_second := True
 					else
 						-- Wrong format
@@ -609,11 +619,11 @@ feature -- Interface
 				else
 					inspect
 						type
-					when 10 then
+					when Hour_numeric_on_2_digits_type then
 						has_hour := True
-					when 13 then
+					when Minute_numeric_on_2_digits_type then
 						has_minute := True
-					when 15 then
+					when Second_numeric_on_2_digits_type then
 						has_second := True
 					else
 						-- Wrong format

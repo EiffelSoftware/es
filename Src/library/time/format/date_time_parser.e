@@ -17,6 +17,7 @@ class DATE_TIME_PARSER inherit
 		end
 
 	FIND_SEPARATOR_FACILITY
+	DATE_TIME_TYPES
 
 create
 
@@ -46,6 +47,8 @@ feature -- Access
 			value_parsed: parsed
 		do
 			Result := year_val
+		ensure
+			right_result: Result = year_val
 		end
 
 	month: INTEGER is
@@ -54,6 +57,8 @@ feature -- Access
 			value_parsed: parsed
 		do
 			Result := month_val
+		ensure
+			right_result: Result = month_val
 		end
 
 	day: INTEGER is
@@ -62,6 +67,8 @@ feature -- Access
 			value_parsed: parsed
 		do
 			Result := day_val
+		ensure
+			right_result: Result = day_val
 		end
 
 	hour: INTEGER is
@@ -70,6 +77,8 @@ feature -- Access
 			value_parsed: parsed
 		do
 			Result := hour_val
+		ensure
+			right_result: Result = hour_val
 		end
 
 	minute: INTEGER is
@@ -78,6 +87,8 @@ feature -- Access
 			value_parsed: parsed
 		do
 			Result := minute_val
+		ensure
+			right_result: Result = minute_val
 		end
 
 	fine_second: DOUBLE is
@@ -86,6 +97,8 @@ feature -- Access
 			value_parsed: parsed
 		do
 			Result := fine_second_val
+		ensure
+			right_result: Result = fine_second_val
 		end
 
 	day_text: STRING_32 is
@@ -94,6 +107,38 @@ feature -- Access
 			value_parsed: parsed
 		do
 			Result := day_text_val
+		ensure
+			right_result: Result.is_equal (day_text_val)
+		end
+	
+	full_day_text: STRING_32 is
+			-- Full text representation of `day'
+		require
+			value_parsed: parsed
+		do
+			Result := full_day_text_val
+		ensure
+			right_result: Result.is_equal (full_day_text_val)
+		end
+		
+	month_text: STRING_32 is
+			-- abbreviated text representation of day
+		require
+			value_parsed: parsed
+		do
+			result := months.item (month)
+		ensure
+			right_result: Result.is_equal (months.item (month))
+		end
+	
+	full_month_text: STRING_32 is
+			-- abbreviated text representation of day
+		require
+			value_parsed: parsed
+		do
+			result := full_months.item (month)
+		ensure
+			right_result: Result.is_equal (full_months.item (month))
 		end
 
 feature -- Status report
@@ -106,6 +151,9 @@ feature -- Status report
 		do
 			Result := (days /= Void) and (months /= Void) and 
 				(source_string /= Void and then not source_string.is_empty)
+		ensure
+			Correct_result: Result = (days /= Void) and (months /= Void) and 
+				(source_string /= Void and then not source_string.is_empty)
 		end
 		
 	is_date: BOOLEAN is
@@ -114,6 +162,8 @@ feature -- Status report
 			string_parsed: parsed
 		do
 			Result := is_correct_date (year, month, day)
+		ensure
+			Correct_result: Result = is_correct_date (year, month, day)
 		end
 
 	is_time: BOOLEAN is
@@ -122,6 +172,8 @@ feature -- Status report
 			string_parsed: parsed
 		do
 			Result := is_correct_time (hour, minute, fine_second, False)
+		ensure
+			Correct_result: Result = is_correct_time (hour, minute, fine_second, False)
 		end
 
 	is_date_time: BOOLEAN is
@@ -131,12 +183,17 @@ feature -- Status report
 		do
 			Result := is_correct_date_time (year, month, day, hour,
 				minute, fine_second, False)
+		ensure
+			Correct_result: Result = is_correct_date_time (year, month, day, hour,
+				minute, fine_second, False)
 		end
 
 	is_value_valid: BOOLEAN is
 			-- Is parsed value valid?
 		do
 			Result := parsed and then (is_date or is_time or is_date_time)
+		ensure
+			Correct_result: Result = parsed and then (is_date or is_time or is_date_time)
 		end
 
 feature -- Status setting
@@ -228,16 +285,19 @@ feature -- Basic operations
 					type := code.item (i).type
 					inspect
 						type
-					when 1, 2 then
+					when Day_numeric_type, Day_numeric_on_2_digits_type then
 						-- day-numeric or day-numeric-on-2-digits
 						day_val := substrg.to_integer
-					when 3, 25 then
-						-- day-text or full day-text
+					when Day_text_type then
+						-- day-text
 						day_text_val := substrg
-					when 4 then
+					when Full_day_text_type then
+						-- full day-text
+						full_day_text_val := substrg
+					when Year_on_4_digits_type then
 						-- year-on-4-digits"
 						year_val := substrg.to_integer
-					when 5 then 
+					when Year_on_2_digits_type then 
 						-- year-on-2-digits
 						if base_century < 0 then
 							-- A negative value in `base_century' indicates
@@ -258,27 +318,28 @@ feature -- Basic operations
 							-- `base_century' has been set manually.
 							year_val := substrg.to_integer - base_century
 						end
-					when 6, 7 then
+					when Month_numeric_type, Month_numeric_on_2_digits_type then
 						-- month-numeric or month-numeric-on-2-digits
 						month_val := substrg.to_integer
-					when 8, 26 then
+					when Month_text_type, Full_month_text_type then
 						-- month-text or full month text
 						from
 							j := 1
 						until 
 							j > 12
 						loop
-							if months.item (j).is_equal (substrg) then
+							if months.item (j).is_equal (substrg) or
+								full_months.item (j).is_equal (substrg) then
 								month_val := j
 							else
 								-- error
 							end
 							j := j + 1
 						end
-					when 9, 10 then
+					when Hour_numeric_type, Hour_numeric_on_2_digits_type then
 						-- hour-numeric or hour-numeric-on-2-digits
 						hour_val := substrg.to_integer
-					when 11 then
+					when Hour_12_clock_scale_type then
 						-- hour-12-clock-scale
 						hour_val := substrg.to_integer
 						if l_is_pm_computed then
@@ -293,17 +354,17 @@ feature -- Basic operations
 						else
 							l_hour_val_need_computation := True
 						end
-					when 23 then
+					when Meridiem_type then
 						-- meridiem
 						l_is_pm_computed := True
 						l_is_pm := s.as_upper.is_equal ("PM")
-					when 12, 13 then 
+					when Minute_numeric_type, Minute_numeric_on_2_digits_type then 
 						-- minute-numeric or minute-numeric-on-2-digits
 						minute_val := substrg.to_integer
-					when 14, 15 then
+					when Second_numeric_type, Second_numeric_on_2_digits_type then
 						-- second-numeric or second-numeric-on-2-digits
 						second_val := substrg.to_integer
-					when 16 then
+					when Fractional_second_numeric_type then
 						-- fractional-second-numeric
 						fine_second_val := substrg.to_double / 
 							(10 ^ (substrg.count))
@@ -352,15 +413,26 @@ feature {NONE} -- Implementation
 	fine_second_val: DOUBLE
 
 	day_text_val: STRING_32
+	
+	full_day_text_val: STRING_32
+	
+	month_text_val: STRING_32
+	
+	full_month_text_val: STRING_32
 
 	code: HASH_TABLE [DATE_TIME_CODE, INTEGER]
 			-- Hash table containing the parsed date/time code
 
 	months: ARRAY [STRING_32]
-			-- Names of months
-			
+			-- Abbreviated names of months
+	
+	full_months: ARRAY [STRING_32]
+			-- full names of months
 	days: ARRAY [STRING_32]
-			-- Names of days	
+			-- abbreviated names of days
+	
+	full_days: ARRAY [STRING_32]
+			-- full names of days
 
 	base_century: INTEGER
 			-- Base century, used when interpreting 2-digit year
@@ -387,5 +459,3 @@ indexing
 
 
 end -- class DATE_TIME_PARSER
-
-

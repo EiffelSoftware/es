@@ -17,23 +17,27 @@ feature -- Initialization
 
 	make_from_user_locale is
 			-- Creation procedure.
+			-- create locale form the user locale
 		do
 			c_set_default_locale
 		end
 
 	make_from_locale (a_locale_id : I18N_LOCALE_ID) is
-			--
+			-- Creation procedure
+			-- Create locale with a_locale_id
 		local
 			l_c_string : C_STRING
 		do
 			create l_c_string.make (a_locale_id.name)
 			c_set_locale (l_c_string.item)
+		ensure then
+			locale_set: locale_name.is_equal(a_locale_id.name)
 		end
 
 feature -- Informations
 
 	is_available (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
-			-- is 'a_locale' avaiable?
+			-- is 'a_locale' available?
 		local
 			l_c_string: C_STRING
 		do
@@ -53,6 +57,8 @@ feature -- Informations
 			from
 				i := 1
 				create Result.make
+			variant
+				max-i+1
 			until
 				i > max
 			loop
@@ -63,13 +69,22 @@ feature -- Informations
 				end
 				i := i + 1
 			end
+		end
 
+	locale_name : STRING_32 is
+			-- name of current locale
+		do
+			create Result.make_from_c (c_locale_name)
+		ensure
+			Result = c_locale_name
 		end
 
 
 feature -- Date and time formatting
 
 	get_long_date_format: STRING_32 is
+			-- get the long date format string
+			-- according the current locale setting
 		obsolete
 			"UNTIL NOW, SAME RESULT AS%
 			 %get_short_date_format"
@@ -78,12 +93,15 @@ feature -- Date and time formatting
 		end
 
 	get_short_date_format: STRING_32 is
-			--
+			-- get the short date format string
+			-- according the current locale setting
 		do
 			create Result.make_from_c (c_date_pattern)
 		end
 
 	get_long_time_format: STRING_32 is
+			-- get the long time format string
+			-- according the current locale setting
 		obsolete
 			"UNTIL NOW, SAME RESULT AS%
 			 %get_short_time_format"
@@ -92,19 +110,22 @@ feature -- Date and time formatting
 		end
 
 	get_short_time_format: STRING_32 is
-			--
+			-- get the short time format string
+			-- according the current locale setting
 		do
 			create Result.make_from_c (c_time_pattern)
 		end
 
 	get_am_suffix : STRING_32 is
-			--
+			-- get the am suffix
+			-- if the not available: empty_string
 		do
 			create Result.make_from_c (c_am_designator)
 		end
 
 	get_pm_suffix : STRING_32 is
-			--
+			-- get the pm suffix
+			-- if the not available: empty_string
 		do
 			create Result.make_from_c (c_pm_designator)
 		end
@@ -112,7 +133,8 @@ feature -- Date and time formatting
 feature -- day/months names
 
 	get_day_names: ARRAY[STRING_32] is
-			--
+			-- array with the full weekday names
+			-- according the current locale settings
 		local
 			i : INTEGER
 			l_string : STRING_32
@@ -132,7 +154,8 @@ feature -- day/months names
 		end
 
 	get_month_names: ARRAY[STRING_32] is
-			--
+			-- array with the full month names
+			-- according the current locale settings
 		local
 			i : INTEGER
 			l_string : STRING_32
@@ -152,7 +175,8 @@ feature -- day/months names
 		end
 
 	get_abbreviated_day_names: ARRAY[STRING_32] is
-			--
+			-- array with the abbreviated weekday names
+			-- according the current locale settings
 		local
 			i : INTEGER
 			l_string : STRING_32
@@ -172,7 +196,8 @@ feature -- day/months names
 		end
 
 	get_abbreviated_month_names: ARRAY[STRING_32] is
-			--
+			-- array with the abbreviated month names
+			-- according the current locale settings
 		local
 			i : INTEGER
 			l_string : STRING_32
@@ -195,12 +220,15 @@ feature -- day/months names
 feature	-- number formatting
 
 	get_value_decimal_separator: STRING_32 is
+			-- get the decimal separator of numbers
+			-- according the current locales setting
 		do
 			create Result.make_from_c (c_value_decimal_separator)
 		end
 
 	get_value_numbers_after_decimal_separator: INTEGER is
-			--
+			-- get the decimal separator of numbers
+			-- according the current locales setting
 		obsolete
 			"NOT IMPLEMENTED"
 		do
@@ -208,13 +236,15 @@ feature	-- number formatting
 		end
 
 	get_value_group_separator: STRING_32 is
-			--
+			-- get the group separator (the separator thousend sep.)
+			-- according the current locales setting
 		do
 			create Result.make_from_c (c_thousend_sep)
 		end
 
 	get_value_number_list_separator: STRING_32 is
-			--
+			-- get the symbol used to separate values
+			-- according the current locales setting
 		obsolete
 			"NOT IMPLEMENTED"
 		do
@@ -234,7 +264,8 @@ feature	-- number formatting
 feature	-- currency formatting
 
 	get_currency_symbol: STRING_32 is
-			--
+			-- get the currency symbol
+			-- according the current locales setting
 		obsolete
 			"NEED CONVERTIONS...%
 			%Returns the currency symbol, preceded by%
@@ -246,7 +277,8 @@ feature	-- currency formatting
 		end
 
 	get_currency_decimal_separator: STRING_32 is
-			--
+			-- get the decimal separator of currency numbers
+			-- according the current locales setting
 		obsolete
 			"NOT TESTED"
 		do
@@ -254,7 +286,8 @@ feature	-- currency formatting
 		end
 
 	get_currency_numbers_after_decimal_separator: INTEGER is
-			--
+			-- numbers after the decimal separator for currencynumbers
+			-- according the current locales setting
 		obsolete
 			"DOES NOT WORK%
 			% it strangely returns a poiter to the currency symbol"
@@ -264,7 +297,8 @@ feature	-- currency formatting
 		end
 
 	get_currency_group_separator: STRING_32 is
-			--
+			-- get the decimal separator of numbers
+			-- according the current locales setting
 		obsolete
 			"NOT IMPLEMENTED"
 		do
@@ -272,7 +306,9 @@ feature	-- currency formatting
 		end
 
 	get_currency_number_list_separator: STRING_32 is
-			--
+			-- get the symbol used to separate a list
+			-- of currency numbers
+			-- according the current locales setting
 		obsolete
 			"NOT IMPLEMENTED"
 		do
@@ -280,7 +316,7 @@ feature	-- currency formatting
 		end
 
 	get_currency_grouping: ARRAY[STRING_32] is
-			--
+			-- ?
 		obsolete
 			"NOT IMPLEMENTED"
 		do
@@ -290,21 +326,25 @@ feature	-- currency formatting
 feature {NONE} -- C functions
 
 	c_set_locale ( a_pointer : POINTER) is
-			--
+			-- set the locale to the locale
+			-- represented by the string pointed by `a_pointer'
+		require
+			valid_a_pointer: a_pointer /= default_pointer
 		external "C (EIF_POINTER)| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "set_locale"
 		end
 
 	c_set_default_locale is
-			--
+			-- set the locale to the user locale
 		external "C ()| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "set_default_locale"
 		end
 
+
 feature {NONE} -- C Informations
 
 	c_is_available (a_pointer : POINTER) : BOOLEAN is
-			--
+			-- see: `is_available'
 		external "C (EIF_POINTER): EIF_BOOLEAN| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "is_available"
 		end
@@ -322,27 +362,33 @@ feature {NONE} -- C Informations
 		alias "init_available_locales"
 		end
 
+	c_locale_name : POINTER is
+			-- see: `locale_name'
+		external "C (): EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		alias "locale_name"
+		end
+
 
 feature {NONE} -- C date/time formatting
 
 	c_date_pattern : POINTER is
-			--
+			-- see: `get_date_pattern'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		end
 
 	c_time_pattern : POINTER is
-			--
+			-- see: `get_time_pattern'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		end
 
 	c_am_designator : POINTER is
-			-- get the am designator
+			-- see: `get_am_suffix'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "am_designator"
 		end
 
 	c_pm_designator : POINTER is
-			-- get the pm designator
+			-- see: `get_pm_suffix'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "pm_designator"
 		end
@@ -377,19 +423,20 @@ feature {NONE} -- C numbers formatting
 
 	c_value_decimal_separator: POINTER is
 			-- Return radix character (decimal dot, decimal comma, etc.)
+			-- see: `get_value_decimal_separator'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "radix_char"
 		end
 
 	c_value_numbers_after_decimal_separator: POINTER is
-			--
+			-- see: `get_value_numbers_after_decimal_separator'
 		obsolete
 			"NOT IMPLEMENTED"
 		do
 		end
 
 	c_value_group_separator: POINTER is
-			--
+			--see: `get_value_group_separator'
 		obsolete
 			"NOT IMPLEMENTED"
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
@@ -397,7 +444,7 @@ feature {NONE} -- C numbers formatting
 		end
 
 	c_value_number_list_separator: POINTER is
-			--
+			-- see: `get_value_number_list_separator'
 		obsolete
 			"NOT IMPLEMENTED"
 		do
@@ -406,26 +453,26 @@ feature {NONE} -- C numbers formatting
 feature {NONE} -- C currency formatting
 
 	c_currency_decimal_separator : POINTER is
-			--
+			-- see: `get_currency_decimal_separator'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "monetary_dec_point"
 		end
 
 	c_currency_numbers_after_digit_sepatator : POINTER is
-			--
+			-- see: `get_currency_numbers_ager_digit_sepatator'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "currency_numbers_after_dec_sepatator"
 		end
 
 
 	c_thousend_sep: POINTER is
-			-- thousend step separator
+			-- see: `get_thousend_sep'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "thousend_sep"
 		end
 
 	c_currency_symbol : POINTER is
-			--
+			-- see: `get_currency_symbol'
 		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
 		alias "currency_symbol"
 		end

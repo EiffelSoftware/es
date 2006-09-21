@@ -5,9 +5,10 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class DATE_TIME_CODE inherit
-
-	CODE_VALIDITY_CHECKER
+class DATE_TIME_CODE
+		inherit
+			CODE_VALIDITY_CHECKER
+			DATE_TIME_TYPES
 
 create
 
@@ -44,7 +45,7 @@ feature -- Change
 				value_min := 1
 				is_text := False
 				is_numeric := True
-				type := 1	
+				type := Day_numeric_type
 			elseif is_day0 (value) then
 				count_max := 2
 				count_min := 2
@@ -53,7 +54,7 @@ feature -- Change
 				value_min := 1	
 				is_text := False
 				is_numeric := True
-				type := 2			
+				type := Day_numeric_on_2_digits_type
 			elseif is_day_text (value) then
 				count_max := 3
 				count_min := 3
@@ -62,7 +63,7 @@ feature -- Change
 				value_min := 1
 				is_text := True
 				is_numeric := False
-				type := 3
+				type := Day_text_type
 			elseif is_full_day_text (value) then
 				count_max := 2
 				count_min := 2
@@ -71,14 +72,14 @@ feature -- Change
 				value_min := -1
 				is_text := True
 				is_numeric := False
-				type := 25
+				type := Full_day_text_type
 			elseif is_year4 (value) then
 				count_max := 4
 				count_min := 4
 				name := "year-on-4-digits"
 				is_text := False
 				is_numeric := True
-				type := 4
+				type := Year_on_4_digits_type
 				value_max := -1
 				value_min := -1
 			elseif is_year2 (value) then
@@ -87,7 +88,7 @@ feature -- Change
 				name := "year-on-2-digits"
 				is_text := False
 				is_numeric := True
-				type := 5
+				type := Year_on_2_digits_type
 				value_max := -1
 				value_min := -1
 			elseif is_month (value) then
@@ -98,7 +99,7 @@ feature -- Change
 				value_min := 1
 				is_text := False
 				is_numeric := True
-				type := 6
+				type := Month_numeric_type
 			elseif is_month0 (value) then
 				count_max := 2
 				count_min := 2
@@ -107,7 +108,7 @@ feature -- Change
 				value_min := 1
 				is_text := False
 				is_numeric := True
-				type := 7
+				type := Month_numeric_on_2_digits_type
 			elseif is_month_text (value) then
 				count_max := 3
 				count_min := 3
@@ -116,7 +117,7 @@ feature -- Change
 				value_min := 1
 				is_text := True
 				is_numeric := False
-				type := 8
+				type := Month_text_type
 			elseif is_full_month_text (value) then
 				count_max := 2
 				count_min := 2
@@ -125,7 +126,7 @@ feature -- Change
 				value_min := -1
 				is_text := True
 				is_numeric := False
-				type := 26
+				type := Full_month_text_type
 			elseif is_hour (value) then
 				count_max := 2
 				count_min := 1
@@ -134,7 +135,7 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 9
+				type := Hour_numeric_type
 			elseif is_hour0 (value) then
 				count_max := 2
 				count_min := 2
@@ -143,7 +144,7 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 10
+				type := Hour_numeric_on_2_digits_type
 			elseif is_hour12 (value) then
 				count_max := 2
 				count_min := 1
@@ -152,7 +153,7 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 11
+				type := Hour_12_clock_scale_type
 			elseif is_minute (value) then
 				count_max := 2
 				count_min := 1
@@ -161,7 +162,7 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 12
+				type := Minute_numeric_type
 			elseif is_minute0 (value) then
 				count_max := 2
 				count_min := 2
@@ -170,7 +171,7 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 13
+				type := Minute_numeric_on_2_digits_type
 			elseif is_second (value) then
 				count_max := 2
 				count_min := 1
@@ -179,7 +180,7 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 14
+				type := Second_numeric_type
 			elseif is_second0 (value) then
 				count_max := 2
 				count_min := 2
@@ -188,14 +189,14 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 15
+				type := Second_numeric_on_2_digits_type
 			elseif is_fractional_second (value) then
 				count_max := value.substring (3, value.count).to_integer
 				count_min := 1
 				name := "fractional-second-numeric"
 				is_text := False
 				is_numeric := True
-				type := 16
+				type := Fractional_second_numeric_type
 				value_max := -1
 				value_min := -1
 			elseif is_colon (value) then
@@ -204,49 +205,49 @@ feature -- Change
 				name := "colon"
 				is_text := True
 				is_numeric := False
-				type := 17
+				type := Colon_type
 			elseif is_slash (value) then
 				count_max := 1
 				count_min := 1
 				name := "slash"
 				is_text := True
 				is_numeric := False
-				type := 18
+				type := Slash_type
 			elseif is_minus (value) then
 				count_max := 1
 				count_min := 1
 				name := "minus"
 				is_text := True
 				is_numeric := False
-				type := 19
+				type := Minus_type
 			elseif is_comma (value) then
 				count_max := 1
 				count_min := 1
 				name := "comma"
 				is_text := True
 				is_numeric := False
-				type := 20
+				type := Comma_type
 			elseif is_space (value) then
 				count_max := 1
 				count_min := 1
 				name := "space"
 				is_text := True
 				is_numeric := False
-				type := 21
+				type := Space_type
 			elseif is_dot (value) then
 				count_max := 1
 				count_min := 1
 				name := "dot"
 				is_text := True
 				is_numeric := False
-				type := 22
+				type := Dot_type
 			elseif is_meridiem (value) then
 				count_max := 2
 				count_min := 2
 				name := "meridiem"
 				is_text := True
 				is_numeric := False
-				type := 23
+				type := Meridiem_type
 			elseif is_hour12_0 (value) then
 				count_max := 2
 				count_min := 2
@@ -255,7 +256,7 @@ feature -- Change
 				value_min := 0
 				is_text := False
 				is_numeric := True
-				type := 24
+				type := Hour_12_on_2_digits
 			end
 		ensure
 			value_set: value.is_equal (v)

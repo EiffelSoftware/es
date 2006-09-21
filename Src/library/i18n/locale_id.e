@@ -20,6 +20,8 @@ feature
 
 	make (a_string : STRING_32) is
 			--
+		require
+			a_string_exists: a_string /= Void
 		do
 			name := a_string
 		end
@@ -37,5 +39,6 @@ feature	 -- Comparison
 			Result := name.is_equal (other.name)
 		end
 
-
+invariant
+	name_exists: name /= Void
 end

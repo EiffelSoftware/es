@@ -338,10 +338,10 @@ feature -- Preconditions
 			tmp: STRING_32
 		do
 			tmp := s.as_upper
-			Result := tmp.is_equal ("AM") or tmp.is_equal ("PM")
+			Result := tmp.is_equal (am_suffix) or tmp.is_equal (pm_suffix)
 		ensure
-			definition: Result = s.as_upper.is_equal ("AM") or
-								s.as_upper.is_equal ("PM")
+			definition: Result = s.as_upper.is_equal (am_suffix) or
+								s.as_upper.is_equal (pm_suffix)
 		end
 
 indexing
