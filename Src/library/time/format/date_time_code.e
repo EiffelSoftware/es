@@ -20,7 +20,7 @@ feature -- Creation
 			-- Create code.
 		require
 			v_exists: v /= Void
-			v_is_code: is_code (v)
+-- 			v_is_code: is_code (v)
 		do
 			set_value (v)
 		ensure
@@ -34,10 +34,19 @@ feature -- Change
 			-- Value, count_max, etc.
 		require
 			v_exists: v /= Void
-			v_is_code: is_code (v)
+-- 			v_is_code: is_code (v)
 		do
 			value := v.twin
-			if is_day (value) then
+			if not is_code (v) then
+				count_max := 10 --?
+				count_max := 10 --?
+				name := "user-string"
+				value_max := 10 --?
+				value_min := 10 --?
+				is_text := True
+				is_numeric := False
+				type := User_string
+			elseif is_day (value) then
 				count_max := 2
 				count_min := 1
 				name := "day-numeric"
@@ -293,6 +302,9 @@ feature -- Status report
 	is_numeric: BOOLEAN;
 			-- Has the code a numeric value?
 
+invariant
+	text_or_numeric: is_text xor is_numeric
+
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
@@ -303,10 +315,6 @@ indexing
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-
-
-
-
 end -- class DATE_TIME_CODE
 
 

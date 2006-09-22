@@ -240,6 +240,26 @@ feature -- Preconditions
 			definition: Result = ((s.count > 2) and then (s.substring (1, 2).is_equal (seconds_fractional) and
 									(s.substring (3, s.count)).is_integer))
 		end
+		
+	
+	is_fractional_second_padded (s: STRING_32): BOOLEAN is
+			-- Is the code a fractional-second without zeros?
+			-- With precision to n figures?
+		require
+			s_exists: s /= Void
+		local
+			substrg, substrg2: STRING_32
+		do
+			if s.count > 2 then
+				substrg := s.substring (1, 2)
+				substrg2 := s.substring (3, s.count)
+				Result := substrg.is_equal (seconds_fractional_padded) and substrg2.is_integer
+			end
+		ensure
+			definition: Result = ((s.count > 2) and then (s.substring (1, 2).is_equal (seconds_fractional_padded) and
+									(s.substring (3, s.count)).is_integer))
+		end
+		
 
 	is_colon (s: STRING_32): BOOLEAN is
 			-- Is the code a separator-colomn?

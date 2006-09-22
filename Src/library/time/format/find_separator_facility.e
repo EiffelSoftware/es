@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 			until 
 				j > Separator_characters.count
 			loop
-				-- find separator
+				-- find first separator after position i
 				pos := s.index_of (Separator_characters @ j, 1)
 				if pos /= 0 then
 					sep_found := True
@@ -98,15 +98,12 @@ feature {NONE} -- Implementation
 		require
 			string_exists: s /= Void
 			range_correct: pos1 <= abs (pos2)
-		local
-			upper: INTEGER
 		do
 			if pos2 > 0 then
 				substrg := s.substring (pos1, pos2 - 1)
 				substrg2 := s.substring (pos2, pos2)
 			else
-				upper := abs (pos2)
-				substrg := s.substring (pos1, upper)
+				substrg := s.substring (pos1, abs (pos2))
 				create substrg2.make (0)
 			end
 		ensure

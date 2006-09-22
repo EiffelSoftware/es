@@ -115,6 +115,13 @@ feature -- Seconds
 		ensure
 			Definition: Result.is_equal("ff")
 		end
+	
+	seconds_fractional_padded: STRING_32 is
+		once
+			Result := "FF"
+		ensure
+			Definition: Result.is_equal ("FF")
+		end
 
 feature -- Numeric Day
 

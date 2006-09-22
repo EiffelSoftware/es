@@ -248,43 +248,37 @@ feature -- Interface
 				type := value.item (i).type
 				inspect
 					type
-				when 1 then
+				when Day_numeric_type then
 					-- day-numeric
 					Result.append (date.day.out)
-				when 2 then
+				when Day_numeric_on_2_digits_type then
 					-- day-numeric-on-2-digits
 					int := date.day
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
-				when 3 then
+				when Day_text_type then
 					-- day-text
 					int := date.day_of_the_week
 					Result.append (days.item (int))
-				when 25 then
+				when Full_day_text_type then
 					-- full day-text
 					int := date.day_of_the_week
 					Result.append (long_days.item (int))
-				when 4 then
+				when Year_on_4_digits_type then
 					-- year-on-4-digits
 					-- Test if the year has four digits, if not put 0 to fill it
 					l_tmp := date.year.out
-					if l_tmp.count = 4 then
-						Result.append (l_tmp)
-					else
-						if l_tmp.count = 1 then
-							Result.append ("000")
-							Result.append (l_tmp)
-						elseif l_tmp.count = 2 then
-							Result.append ("00")
-							Result.append (l_tmp)
-						elseif l_tmp.count = 3 then
-							Result.append ("0")
-							Result.append (l_tmp)
-						end
+					if l_tmp.count = 1 then
+						Result.append ("000")
+					elseif l_tmp.count = 2 then
+						Result.append ("00")
+					elseif l_tmp.count = 3 then
+						Result.append ("0")
 					end
-				when 5 then 
+					Result.append (l_tmp)
+				when Year_on_2_digits_type then 
 						-- Two digit year, we only keep the last two digits
 					l_tmp := date.year.out
 					if l_tmp.count > 2 then
@@ -293,35 +287,35 @@ feature -- Interface
 						Result.append_character ('0')
 					end
 					Result.append (l_tmp)
-				when 6 then
+				when Month_numeric_type then
 					-- month-numeric
 					Result.append (date.month.out)
-				when 7 then
+				when Month_numeric_on_2_digits_type then
 					-- month-numeric-on-2-digits
 					int := date.month
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
-				when 8 then
+				when Month_text_type then
 					-- month-text
 					int := date.month
 					Result.append (months.item (int))
-				when 26 then
+				when Full_month_text_type then
 					-- full month-text
 					int := date.month
 					Result.append (long_months.item (int))
-				when 9 then
+				when Hour_numeric_type then
 					-- hour-numeric
 					Result.append (time.hour.out)
-				when 10 then
+				when Hour_numeric_on_2_digits_type then
 					-- hour-numeric-on-2-digits
 					int := time.hour
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
-				when 11, 24 then
+				when Hour_12_clock_scale_type, Hour_12_on_2_digits then
 					-- hour-12-clock-scale or hour-numeric
 					int := time.hour
 					if int < 12 then
@@ -333,38 +327,41 @@ feature -- Interface
 							int := int - 12
 						end
 					end
-					if type = 24 and then int < 10 then
+					if type = Hour_12_on_2_digits and then int < 10 then
 							-- Format padded with 0.
 						Result.append ("0")
 					end
 					Result.append (int.out)
-				when 12 then 
+				when Minute_numeric_type then 
 					-- minute-numeric
 					Result.append (time.minute.out)
-				when 13 then
+				when Minute_numeric_on_2_digits_type then
 					-- minute-numeric-on-2-digits
 					int := time.minute
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
-				when 14 then
+				when Second_numeric_type then
 					-- second-numeric
 					Result.append (time.second.out)
-				when 15 then
+				when Second_numeric_on_2_digits_type then
 					-- second-numeric-on-2-digits
 					int := time.second
 					if int < 10 then
 						Result.append ("0")
 					end
 					Result.append (int.out)
-				when 16 then
+				when Fractional_second_numeric_type,
+					 Fractional_second_numeric_type_padded then
 					-- fractional-second-numeric
 					double := time.fractional_second * 
 						10 ^ (value.item (i).count_max)
 					int := double.truncated_to_integer
-					Result.append (int.out)
-				when 23 then
+					if not (int = 0 and type = Fractional_second_numeric_type_padded) then
+						Result.append (int.out)
+					end
+				when Meridiem_type then
 					-- meridiem
 					int := time.hour
 					if int < 12 then
@@ -372,7 +369,7 @@ feature -- Interface
 					else
 						Result.append (pm_suffix)
 					end
-				else
+				else -- a seprator or a user string
 					Result.append (value.item (i).value)
 				end
 				i := i + 1
