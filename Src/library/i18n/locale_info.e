@@ -94,12 +94,25 @@ feature	-- currency formatting
 
 feature	-- modification
 
+		set_id (an_id: I18N_LOCALE_ID) is
+				-- set the locale id to  `an_id'
+			require
+				an_id_exists: an_id /= Void
+			do
+				id := an_id
+			ensure
+				id_set: id = an_id
+			end
+
+
 		set_day_names (a_day_names : ARRAY[STRING_32]) is
 				-- set the day names
 			require
 				a_day_names_exist: day_names /= Void
 			do
 				day_names := a_day_names
+			ensure
+				day_names_set: day_names = a_day_names
 			end
 
 		set_abbreviated_day_names (a_abbreviated_day_names : ARRAY[STRING_32]) is
@@ -108,6 +121,8 @@ feature	-- modification
 				a_abbreviated_day_names_exists: a_abbreviated_day_names /= Void
 			do
 				abbreviated_day_names := a_abbreviated_day_names
+			ensure
+				abbreviated_day_names_set: abbreviated_day_names = a_abbreviated_day_names
 			end
 
 		set_month_names ( a_month_names : ARRAY[STRING_32]) is
@@ -116,6 +131,8 @@ feature	-- modification
 				a_month_names_exists: a_month_names /= Void
 			do
 				month_names := a_month_names
+			ensure
+				minth_names_set: month_names = a_month_names
 			end
 
 		set_abbreviated_month_names (a_abbreviated_month_names : ARRAY[STRING_32]) is
@@ -124,6 +141,8 @@ feature	-- modification
 				a_abbreviated_month_names_exists: a_abbreviated_month_names /= Void
 			do
 				abbreviated_month_names := a_abbreviated_month_names
+			ensure
+				abbreviated_day_names_set: abbreviated_day_names = a_abbreviated_month_names
 			end
 
 

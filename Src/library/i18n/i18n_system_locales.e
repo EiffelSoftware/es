@@ -14,12 +14,16 @@ feature -- Informations
 			-- list of available locales
 		do
 			Result := host_locale.available_locales
+		ensure
+			correct_result: Result = host_locale.available_locales
 		end
 
 	has_locale (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
 			-- is the locale with a_locale_id available?
 		do
 			Result := host_locale.is_available (a_locale_id)
+		ensure
+			correct_result: Result = host_locale.is_available (a_locale_id)
 		end
 
 	get_locale_info (a_locale_id : I18N_LOCALE_ID) : I18N_LOCALE_INFO is
@@ -27,6 +31,8 @@ feature -- Informations
 		do
 			create Result.make
 			host_locale.make_from_locale (a_locale_id)
+			-- Set ID
+			Result.set_id (a_locale_id)
 			-- Set all date/time formatting fields
 			Result.set_long_date_format (host_locale.get_long_date_format)
 			Result.set_short_date_format (host_locale.get_short_date_format)
@@ -52,6 +58,8 @@ feature -- Informations
 			Result.set_currency_group_separator (host_locale.get_currency_group_separator)
 			Result.set_currency_number_list_separator (host_locale.get_currency_number_list_separator)
 				-- TODO: currency Grouping?
+		ensure
+			Result_exists: Result /= Void
 		end
 
 

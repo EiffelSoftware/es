@@ -78,7 +78,7 @@ feature -- Informations
 		do
 			create Result.make_from_c (c_locale_name)
 		ensure
-			Result = c_locale_name
+			correct_result: Result = c_locale_name
 		end
 
 
