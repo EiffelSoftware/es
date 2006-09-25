@@ -33,7 +33,7 @@ feature -- Informations
 		deferred
 		end
 
-	available_locales : LINEAR[I18N_LOCALE_ID]] is
+	available_locales : LINEAR[I18N_LOCALE_ID] is
 			-- list af all available locales
 		deferred
 		ensure
