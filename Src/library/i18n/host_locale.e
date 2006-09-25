@@ -40,6 +40,11 @@ feature -- Informations
 			result_exists: Result /= Void
 		end
 
+	current_locale_id: I18N_LOCALE_ID is
+			-- current locale id
+		deferred
+		end
+
 
 feature -- Date and time formatting
 

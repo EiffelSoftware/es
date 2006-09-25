@@ -47,10 +47,9 @@ feature -- Informations
 
 	is_available (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
 			-- I guess it is always true
-		obsolete
-			"To test if it is always true"
+		local
+			l_culture_type : CULTURE_TYPES
 		do
-			Result := True
 		end
 
 	available_locales : LINKED_LIST[I18N_LOCALE_ID] is
@@ -76,6 +75,13 @@ feature -- Informations
 				i := i + 1
 			end
 		end
+
+	current_locale_id : I18N_LOCALE_ID is
+			-- return the current locale info
+		do
+			create Result.make (culture_info.current_culture.name)
+		end
+
 
 feature -- Date and time formatting
 

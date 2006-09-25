@@ -73,6 +73,13 @@ feature -- Informations
 			end
 		end
 
+
+	current_locale_id : I18N_LOCALE_ID is
+			-- current locale id
+		do
+			create Result.make (locale_name)
+		end
+
 	locale_name : STRING_32 is
 			-- name of current locale
 		do
