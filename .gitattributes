@@ -1872,6 +1872,7 @@ Src/library/editor/bitmaps/left_scroll_arrow.png -text
 Src/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/library/gobo_extension/gobo_extension.ecf -text
 Src/library/i18n/documents/formatting_codes_table -text
+Src/library/i18n/documents/model.xmi -text
 Src/library/i18n/include/Makefile -text
 Src/library/i18n/include/ci18n.a -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
