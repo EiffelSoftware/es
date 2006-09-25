@@ -55,54 +55,71 @@ feature -- Informations
 
 	available_locales : LINKED_LIST[I18N_LOCALE_ID] is
 			-- get list of available locales
-		obsolete
-			"NOT IMPLEMENTED"
+		local
+			l_culture_type : CULTURE_TYPES
+			l_list: NATIVE_ARRAY [CULTURE_INFO]
+			i : INTEGER
+			l_locale_id: I18N_LOCALE_ID
 		do
+			create l_culture_type
+			l_list := culture_info.get_cultures (l_culture_type.specific_cultures)
+			from
+				create Result.make
+				i := l_list.lower
+			variant
+				l_list.count-i+1
+			until
+				i > l_list.upper
+			loop
+				create l_locale_id.make (l_list.item (i).name)
+				Result.extend (l_locale_id.twin)
+				i := i + 1
+			end
 		end
 
 feature -- Date and time formatting
 
-	get_long_date_format: STRING_32_32 is
+	get_long_date_format: STRING_32 is
 		do
-			Result := culture_info.date_time_format.long_date_pattern.to_string_32
+			Result := culture_info.date_time_format.long_date_pattern
 		end
 
 	get_long_time_format : STRING_32 is
 			--
 		do
-			Result := culture_info.date_time_format.long_time_pattern.to_string_32
+			Result := culture_info.date_time_format.long_time_pattern
 		end
 
 	get_short_time_format : STRING_32 is
 			--
 		do
-			Result := culture_info.date_time_format.short_time_pattern.to_string_32
+			Result := culture_info.date_time_format.short_time_pattern
 		end
 
 	get_short_date_format : STRING_32 is
 			--
 		do
-			Result := culture_info.date_time_format.short_date_pattern.to_string_32
+			Result := culture_info.date_time_format.short_date_pattern
 		end
 
 	get_am_suffix  : STRING_32 is
 			--
 		do
-			Result := culture_info.date_time_format.am_designator.to_string_32
+			Result := culture_info.date_time_format.am_designator
 		end
 
 	get_pm_suffix : STRING_32 is
 			-- No description
 		do
-			Result := culture_info.date_time_format.pm_designator.to_string_32
+			Result := culture_info.date_time_format.pm_designator
 		end
 
 feature -- day/months names
 
-	get_day_names: ARRAY[STRING_32_32] is
+	get_day_names: ARRAY[STRING_32] is
 			--
 		local
-			l_array : NATIVE_ARRAY[SYSTEM_STRING_32]
+			l_array : NATIVE_ARRAY[SYSTEM_STRING]
 			i : INTEGER
 		do
 			l_array := culture_info.date_time_format.day_names
@@ -112,7 +129,7 @@ feature -- day/months names
 			until
 				i > l_array.count
 			loop
-				Result.put (l_array.item (i).to_string_32,i)
+				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
 		end
@@ -120,7 +137,7 @@ feature -- day/months names
 	get_month_names: ARRAY[STRING_32] is
 			--
 		local
-			l_array : NATIVE_ARRAY[SYSTEM_STRING_32]
+			l_array : NATIVE_ARRAY[SYSTEM_STRING]
 			i : INTEGER
 		do
 			l_array := culture_info.date_time_format.month_names
@@ -130,7 +147,7 @@ feature -- day/months names
 			until
 				i > l_array.count
 			loop
-				Result.put (l_array.item (i).to_string_32,i)
+				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
 		end
@@ -138,7 +155,7 @@ feature -- day/months names
 	get_abbreviated_day_names: ARRAY[STRING_32] is
 			--
 		local
-			l_array : NATIVE_ARRAY[SYSTEM_STRING_32]
+			l_array : NATIVE_ARRAY[SYSTEM_STRING]
 			i : INTEGER
 		do
 			l_array := culture_info.date_time_format.abbreviated_day_names
@@ -148,7 +165,7 @@ feature -- day/months names
 			until
 				i > l_array.count
 			loop
-				Result.put (l_array.item (i).to_string_32,i)
+				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
 		end
@@ -156,7 +173,7 @@ feature -- day/months names
 	get_abbreviated_month_names: ARRAY[STRING_32] is
 			--
 		local
-			l_array : NATIVE_ARRAY[SYSTEM_STRING_32]
+			l_array : NATIVE_ARRAY[SYSTEM_STRING]
 			i : INTEGER
 		do
 			l_array := culture_info.date_time_format.abbreviated_month_names
@@ -166,7 +183,7 @@ feature -- day/months names
 			until
 				i > l_array.count
 			loop
-				Result.put (l_array.item (i).to_string_32,i)
+				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
 		end
@@ -175,19 +192,19 @@ feature	-- number formatting
 
 	get_value_decimal_separator: STRING_32 is
 		do
-			Result := culture_info.number_format.number_decimal_separator.to_string_32
+			Result := culture_info.number_format.number_decimal_separator
 		end
 
 	get_value_numbers_after_decimal_separator: INTEGER is
 			--
 		do
-			Result := culture_info.number_format.number_decimal_digits.to_string_32
+			Result := culture_info.number_format.number_decimal_digits
 		end
 
 	get_value_group_separator: STRING_32 is
 			--
 		do
-			Result := culture_info.number_format.number_group_separator.to_string_32
+			Result := culture_info.number_format.number_group_separator
 		end
 
 	get_value_number_list_separator: STRING_32 is
@@ -215,25 +232,25 @@ feature	-- currency formatting
 	get_currency_symbol: STRING_32 is
 			--
 		do
-			Result := culture_info.number_format.currency_symbol.to_string_32
+			Result := culture_info.number_format.currency_symbol
 		end
 
 	get_currency_decimal_separator: STRING_32 is
 			--
 		do
-			Result := culture_info.number_format.currency_decimal_separator.to_string_32
+			Result := culture_info.number_format.currency_decimal_separator
 		end
 
 	get_currency_numbers_after_decimal_separator: INTEGER is
 			--
 		do
-			Result := culture_info.number_format.currency_decimal_digits.to_string_32
+			Result := culture_info.number_format.currency_decimal_digits
 		end
 
 	get_currency_group_separator: STRING_32 is
 			--
 		do
-			Result := culture_info.number_format.currency_group_separator.to_string_32
+			Result := culture_info.number_format.currency_group_separator
 		end
 
 	get_currency_number_list_separator: STRING_32 is
@@ -259,25 +276,25 @@ feature {NONE} -- NOT USED Symbols
 	date_separator : STRING_32 is
 			-- separator in the date pattern
 		do
-			Result := culture_info.date_time_format.date_separator.to_string_32
+			Result := culture_info.date_time_format.date_separator
 		end
 
 	time_separator : STRING_32 is
 			-- separator in the time pattern
 		do
-			Result := culture_info.date_time_format.time_separator.to_string_32
+			Result := culture_info.date_time_format.time_separator
 		end
 
 	decimal_separator : STRING_32 is
 			-- decimal point separator
 		do
-			Result := culture_info.number_format.number_decimal_separator.to_string_32
+			Result := culture_info.number_format.number_decimal_separator
 		end
 
 	group_separator : STRING_32 is
 			-- separator between the groups
 		do
-			Result := culture_info.number_format.number_group_separator.to_string_32
+			Result := culture_info.number_format.number_group_separator
 		end
 
 feature {NONE} -- NOT USED Names
@@ -286,26 +303,26 @@ feature {NONE} -- NOT USED Names
 	get_ith_abbreviated_day (a_int : INTEGER) : STRING_32 is
 			-- get the i_th day of the week, abbreviated
 		do
-			Result := culture_info.date_time_format.abbreviated_day_names.item ((first_day+a_int-1) \\ 7).to_string_32
+			Result := culture_info.date_time_format.abbreviated_day_names.item ((first_day+a_int-1) \\ 7)
 		end
 
 	get_ith_day (a_int : INTEGER) : STRING_32 is
 			-- get the i_th day of the week
 		do
-			Result := culture_info.date_time_format.day_names.item ((first_day+a_int-1) \\ 7).to_string_32
+			Result := culture_info.date_time_format.day_names.item ((first_day+a_int-1) \\ 7)
 		end
 
 
 	get_ith_abbreviated_month (a_number : INTEGER) : STRING_32 is
 			-- get the i_th month, abbreviated
 		do
-			Result := culture_info.date_time_format.abbreviated_month_names.item (a_number).to_string_32
+			Result := culture_info.date_time_format.abbreviated_month_names.item (a_number)
 		end
 
 	get_ith_month (a_number : INTEGER) : STRING_32 is
 			-- get the i_th month
 		do
-			Result := culture_info.date_time_format.get_month_name (a_number).to_string_32
+			Result := culture_info.date_time_format.get_month_name (a_number)
 		end
 
 
@@ -314,13 +331,13 @@ feature {NONE} -- NOT USED Short Pattern
 	short_time_pattern : STRING_32 is
 			-- short time pattern
 		do
-			Result := culture_info.date_time_format.short_time_pattern.to_string_32
+			Result := culture_info.date_time_format.short_time_pattern
 		end
 
 	short_date_pattern : STRING_32 is
 			-- short date pattern
 		do
-			Result := culture_info.date_time_format.short_date_pattern.to_string_32
+			Result := culture_info.date_time_format.short_date_pattern
 		end
 
 feature {NONE} -- NOT USED Long Pattern
@@ -328,7 +345,7 @@ feature {NONE} -- NOT USED Long Pattern
 	long_date_pattern : STRING_32 is
 			-- long date pattern
 		do
-			Result := culture_info.date_time_format.long_date_pattern.to_string_32
+			Result := culture_info.date_time_format.long_date_pattern
 		end
 
 feature {NONE} -- NOT USED Other Pattern
@@ -336,39 +353,39 @@ feature {NONE} -- NOT USED Other Pattern
 	full_date_time_pattern : STRING_32 is
 			-- full date time pattern
 		do
-			Result := culture_info.date_time_format.full_date_time_pattern.to_string_32
+			Result := culture_info.date_time_format.full_date_time_pattern
 		end
 
 	month_day_pattern : STRING_32 is
 			-- pattern with month and day
 		do
-			Result := culture_info.date_time_format.month_day_pattern.to_string_32
+			Result := culture_info.date_time_format.month_day_pattern
 		end
 
 	year_month_pattern : STRING_32 is
 			-- pattern with year and month
 		do
-			Result := culture_info.date_time_format.month_day_pattern.to_string_32
+			Result := culture_info.date_time_format.month_day_pattern
 		end
 
 	rfc1123_pattern : STRING_32 is
 			-- rfc1123 is: ddd, dd MMM yyyy HH':'mm':'ss 'GMT'
 		do
-			Result := culture_info.date_time_format.rfc1123_pattern.to_string_32
+			Result := culture_info.date_time_format.rfc1123_pattern
 		end
 
 	sortable_date_time_pattern: STRING_32 is
 			-- a sortable time pattern
 			-- yyyy'-'MM'-'dd'T'HH':'mm':'ss
 		do
-			Result := culture_info.date_time_format.sortable_date_time_pattern.to_string_32
+			Result := culture_info.date_time_format.sortable_date_time_pattern
 		end
 
 	universal_sortable_date_time_pattern: STRING_32 is
 			-- a sortable pattern
 			-- yyyy'-'MM'-'dd HH':'mm':'ss'Z'
 		do
-			Result := culture_info.date_time_format.universal_sortable_date_time_pattern.to_string_32
+			Result := culture_info.date_time_format.universal_sortable_date_time_pattern
 		end
 
 feature {NONE} -- NOT USED Currency information
@@ -376,7 +393,7 @@ feature {NONE} -- NOT USED Currency information
 	currency_symbol : STRING_32 is
 			-- currency symbol of current locale
 		do
-			Result := culture_info.number_format.currency_symbol.to_string_32
+			Result := culture_info.number_format.currency_symbol
 		end
 
 	currency_decimal_digits : INTEGER is
@@ -388,13 +405,13 @@ feature {NONE} -- NOT USED Currency information
 	currency_decimal_separator : STRING_32 is
 			-- decimal separator of current currency
 		do
-			Result := culture_info.number_format.currency_decimal_separator.to_string_32
+			Result := culture_info.number_format.currency_decimal_separator
 		end
 
 	currency_group_separator : STRING_32 is
 			-- group separator of current currency
 		do
-			Result := culture_info.number_format.currency_group_separator.to_string_32
+			Result := culture_info.number_format.currency_group_separator
 		end
 
 	currency_group_sizes : ARRAY[INTEGER] is
@@ -409,7 +426,7 @@ feature -- General Information
 	name : STRING_32 is
 			-- name of current locale
 		do
-			Result := culture_info.name.to_string_32
+			Result := culture_info.name
 		end
 
 

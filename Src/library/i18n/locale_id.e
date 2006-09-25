@@ -23,7 +23,9 @@ feature
 		require
 			a_string_exists: a_string /= Void
 		do
-			name := a_string
+			create name.make_from_string (a_string)
+		ensure
+			name_set: name.is_equal(a_string)
 		end
 
 
