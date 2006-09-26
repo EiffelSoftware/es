@@ -1,11 +1,11 @@
 
 all: ci18n.a
 
-main.o: main.c
-	gcc -Wall -o $@ -c main.c
+ci18n.o: ci18n.c
+	gcc -Wall -o $@ -c ci18n.c
 
-ci18n.a: main.o
+ci18n.a: ci18n.o
 	rm -f $@
-	ar rc $@ main.o
+	ar rc $@ ci18n.o
 	ranlib $@
 

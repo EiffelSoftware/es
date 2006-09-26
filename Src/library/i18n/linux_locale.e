@@ -339,13 +339,13 @@ feature {NONE} -- C functions
 			-- represented by the string pointed by `a_pointer'
 		require
 			valid_a_pointer: a_pointer /= default_pointer
-		external "C (EIF_POINTER)| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (EIF_POINTER)| %"ci18n.h%""
 		alias "set_locale"
 		end
 
 	c_set_default_locale is
 			-- set the locale to the user locale
-		external "C ()| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C ()| %"ci18n.h%""
 		alias "set_default_locale"
 		end
 
@@ -354,26 +354,26 @@ feature {NONE} -- C Informations
 
 	c_is_available (a_pointer : POINTER) : BOOLEAN is
 			-- see: `is_available'
-		external "C (EIF_POINTER): EIF_BOOLEAN| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (EIF_POINTER): EIF_BOOLEAN| %"ci18n.h%""
 		alias "is_available"
 		end
 
 	c_ith_locale (a_integer : INTEGER) : POINTER is
 			-- get i_th available locale name
-		external "C (EIF_INTEGER): EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (EIF_INTEGER): EIF_POINTER| %"ci18n.h%""
 		alias "ith_locale"
 		end
 
 	c_init_available_locales : INTEGER is
 			-- initialize available locales
 			-- and returns the max amount of available locales
-		external "C () : EIF_INTEGER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_INTEGER| %"ci18n.h%""
 		alias "init_available_locales"
 		end
 
 	c_locale_name : POINTER is
 			-- see: `locale_name'
-		external "C (): EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (): EIF_POINTER| %"ci18n.h%""
 		alias "locale_name"
 		end
 
@@ -382,23 +382,23 @@ feature {NONE} -- C date/time formatting
 
 	c_date_pattern : POINTER is
 			-- see: `get_date_pattern'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		end
 
 	c_time_pattern : POINTER is
 			-- see: `get_time_pattern'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		end
 
 	c_am_designator : POINTER is
 			-- see: `get_am_suffix'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "am_designator"
 		end
 
 	c_pm_designator : POINTER is
 			-- see: `get_pm_suffix'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "pm_designator"
 		end
 
@@ -406,25 +406,25 @@ feature {NONE} -- C days/months names
 
 	c_get_abday (i_th : INTEGER) : POINTER is
 			-- get i-th abbreviated day name of week
-		external "C (EIF_INTEGER) : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (EIF_INTEGER) : EIF_POINTER| %"ci18n.h%""
 		alias "get_abday"
 		end
 
 	c_get_day (i_th : INTEGER) : POINTER is
 			-- get i-th day name of week
-		external "C (EIF_INTEGER) : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (EIF_INTEGER) : EIF_POINTER| %"ci18n.h%""
 		alias "get_day"
 		end
 
 	c_get_abmon (i_th : INTEGER) : POINTER is
 			-- get i-th abbreviated month name
-		external "C (EIF_INTEGER) : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (EIF_INTEGER) : EIF_POINTER| %"ci18n.h%""
 		alias "get_abmon"
 		end
 
 	c_get_mon (i_th : INTEGER) : POINTER is
 			-- get i-th abbreviated month name
-		external "C (EIF_INTEGER) : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C (EIF_INTEGER) : EIF_POINTER| %"ci18n.h%""
 		alias "get_mon"
 		end
 
@@ -433,7 +433,7 @@ feature {NONE} -- C numbers formatting
 	c_value_decimal_separator: POINTER is
 			-- Return radix character (decimal dot, decimal comma, etc.)
 			-- see: `get_value_decimal_separator'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "radix_char"
 		end
 
@@ -448,7 +448,7 @@ feature {NONE} -- C numbers formatting
 			--see: `get_value_group_separator'
 		obsolete
 			"NOT IMPLEMENTED"
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "monetary_thousend_sep"
 		end
 
@@ -463,26 +463,26 @@ feature {NONE} -- C currency formatting
 
 	c_currency_decimal_separator : POINTER is
 			-- see: `get_currency_decimal_separator'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "monetary_dec_point"
 		end
 
 	c_currency_numbers_after_digit_sepatator : POINTER is
 			-- see: `get_currency_numbers_ager_digit_sepatator'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "currency_numbers_after_dec_sepatator"
 		end
 
 
 	c_thousend_sep: POINTER is
 			-- see: `get_thousend_sep'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "thousend_sep"
 		end
 
 	c_currency_symbol : POINTER is
 			-- see: `get_currency_symbol'
-		external "C () : EIF_POINTER| %"/home/etienner/Project/es-i18n/Src/library/i18n/include/main.h%""
+		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "currency_symbol"
 		end
 end
