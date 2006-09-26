@@ -7,7 +7,18 @@ indexing
 class
 	I18N_LOCALE
 
+create
+	make
+
+
 feature -- Basic Operations
+
+	make (a_dictionary: I18N_DICTIONARY; a_locale_info: I18N_LOCALE_INFO) is
+			--
+		do
+
+		end
+
 
 	translate (original: STRING_GENERAL): STRING_32 is
 			-- translate `original'
