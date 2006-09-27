@@ -42,6 +42,8 @@ feature -- Utility
 			--
 		require
 			a_string_exists: a_string /= Void
+			args_tuple_exists: args_tuple /= Void
+			valid_arguments: valid_arguments (args_tuple)
 			reasonable_number_of_arguments: args_tuple.count <= {INTEGER_32}.Max_value
 			correct_number_of_arguments: required_arguments (a_string) <= args_tuple.count
 		local
@@ -92,6 +94,26 @@ feature -- Utility
 		end
 
 feature -- Check functions
+
+	valid_arguments (a_tuple: TUPLE) : BOOLEAN is
+			-- are al argument valid (/= Void)?
+		require
+			a_tuple_exists: a_tuple /= Void
+		local
+			i : INTEGER
+		do
+			from
+				Result := True
+				i := 1
+			until
+				i > a_tuple.count or not Result
+			loop
+				Result := Result and a_tuple.item (i) /= Void
+				i := i + 1
+			end
+		end
+
+
 
 	required_arguments (a_string: STRING_32): INTEGER is
 			-- how many argumnents does `a_string' require?
