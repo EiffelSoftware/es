@@ -78,8 +78,10 @@ feature -- Status report
 			until
 				l_list2.after
 			loop
-				l_list.extend (l_list2.item)
-				l_list.forth
+				if l_list.has (l_list2.item) then
+					l_list.extend (l_list2.item)
+					l_list.forth
+				end
 			end
 			Result:=l_list
 
