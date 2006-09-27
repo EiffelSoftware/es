@@ -6,5 +6,135 @@ indexing
 
 class
 	I18N_STRING_FORMATTER
+inherit
+	ANY
+		redefine
+			default_create
+		end
+
+
+create
+	default_create,
+	make_with_escape_character
+
+feature -- Initialization
+
+	default_create is
+			-- Create with default escape character
+		do
+			escape_character := '$'
+		ensure then
+			default_escape_character_set: escape_character = '$'
+		end
+
+	make_with_escape_character (a_escape_character: CHARACTER) is
+			-- Create with `a_escape_character' as escape_character
+		do
+			escape_character := a_escape_character
+		ensure
+			escape_character_set: escape_character = a_escape_character
+		end
+
+
+feature -- Utility
+
+	format_string (a_string: STRING_32; args_tuple: TUPLE): STRING_32 is
+			--
+		require
+			a_string_exists: a_string /= Void
+			reasonable_number_of_arguments: args_tuple.count <= {INTEGER_32}.Max_value
+			correct_number_of_arguments: required_arguments (a_string) <= args_tuple.count
+		local
+			l_list: LIST[STRING_32]
+			i : INTEGER
+			l_string: STRING_32
+		do
+			l_list := a_string.split (escape_character)
+			create Result.make_empty
+			from
+				-- Append first string to Result
+				l_list.start
+				Result.append (l_list.item)
+				l_list.forth
+			until
+				l_list.after
+			loop
+				if l_list.item.is_empty then
+					-- It wasn't a escape_character
+					Result.append(escape_character.out)
+				else
+					-- it's possibly an escape_character
+					from
+						i := 1
+						l_string := l_list.item.substring(i,i)
+					until
+						i > l_list.item.count or not l_string.is_integer
+					loop	--extract the number
+						i := i + 1
+						l_string := l_list.item.substring(i,i)
+					end
+					l_string := l_list.item.substring(1,i-1)
+					if l_string.is_integer then
+							-- It was en escape character
+						Result.append (args_tuple.item(l_string.to_integer).out)
+						Result.append (l_list.item.substring(i,l_list.item.count).twin)
+					else
+							-- It should not be conseidered as escape character
+						Result.append (escape_character.out)
+						Result.append (l_list.item)
+					end
+				end
+				l_list.forth
+			end
+		ensure
+			result_exists: Result /= Void
+			no_more_escape_characters: required_arguments (Result) = 0
+		end
+
+feature -- Check functions
+
+	required_arguments (a_string: STRING_32): INTEGER is
+			-- how many argumnents does `a_string' require?
+		require
+			a_string_exists: a_string /= Void
+		local
+			l_list: LIST[STRING_32]
+			i : INTEGER
+			l_string: STRING_32
+		do
+			l_list := a_string.split (escape_character)
+			Result := 0
+			from
+				l_list.start
+				l_list.forth
+			until
+				l_list.after
+			loop
+				if not l_list.item.is_empty then
+					from
+						i := 1
+						l_string := l_list.item.substring(i,i)
+					until
+						i > l_list.item.count or not l_string.is_integer
+					loop	--extract the number
+						i := i + 1
+						l_string := l_list.item.substring(i,i)
+					end
+					l_string := l_list.item.substring(1,i-1)
+					Result := Result.max (l_string.to_integer)
+				end
+				l_list.forth
+			end
+		ensure
+			Correct_result: a_string.has_substring (Result.out)
+		end
+
+feature -- Values
+
+	escape_character : CHARACTER
+
+invariant
+
+	escape_character_exists: escape_character /= Void
 
 end
