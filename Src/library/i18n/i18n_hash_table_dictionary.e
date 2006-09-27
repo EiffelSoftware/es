@@ -14,6 +14,9 @@ indexing
 		make
 	end
 
+create
+	make
+
 	feature --Creation
 
 		make(a_plural_form:INTEGER) is

@@ -7,6 +7,9 @@ indexing
 class
 	I18N_DICTIONARY_ENTRY
 
+inherit
+	COMPARABLE
+
 	create
 		make,
 		make_with_plural
@@ -50,5 +53,13 @@ class
 		original_plural: STRING_32
 		singular_translation: STRING_32
 		plural_translations: ARRAY[STRING_32]
+
+feature -- Order definition
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is current object less than `other'?
+		do
+			Result := Current.original_singular < other.original_singular
+		end
 
 end

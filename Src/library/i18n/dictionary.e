@@ -25,7 +25,9 @@ feature -- Creation
 
 
 
-feature -- Manipulation
+feature  -- Manipulation
+
+	-- this should be restricted
 
 	extend (a_entry : I18N_DICTIONARY_ENTRY) is
 			-- add a_entry in the datastructure
@@ -71,6 +73,7 @@ feature -- Access
 			original_singular_exists: original_singular /= Void
 			original_plural_exists: original_plural /= Void
 			valid_plural_number: plural_number >= 0
+			translation_exists:has_plural (original_singular, original_plural, plural_number)
 		deferred
 		ensure
 			result_exists: Result /= Void
@@ -95,10 +98,5 @@ feature -- Access
 			do
 				Result := plural_tools.reduce (plural_form, a_plural_form)
 			end
-
-
-
-
-
 
 end
