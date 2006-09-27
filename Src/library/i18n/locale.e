@@ -10,34 +10,46 @@ class
 create
 	make
 
-
 feature -- Basic Operations
 
 	make (a_dictionary: I18N_DICTIONARY; a_locale_info: I18N_LOCALE_INFO) is
-			--
+			--assign info and dictionary with input values
 		do
-
+			info:=a_locale_info
+			dictionary:=a_dictionary
 		end
 
 
 	translate (original: STRING_GENERAL): STRING_32 is
-			-- translate `original'
+			-- translate `original' if it exists
+			-- otherwise `original' is returned
 		require
 			original_exists: original /= Void
+
 		do
-			Result := dictionary.get_singular (original)
+			if dictionary.has (original)then
+				Result := dictionary.get_singular (original)
+			else
+				Result := original
+			end
+
 		ensure
 			result_exists: Result /= Void
 		end
 
 	translate_plural (original_singular, original_plural: STRING_GENERAL; plural_form : INTEGER): STRING_32 is
-			-- translate...
+			-- translate 'original_plural' if it exists
+			-- otherwise 'original_plural' is returned
 		require
 			original_singular_exists: original_singular /= Void
 			original_plural_exists: original_plural /= Void
 			valid_plural_form: plural_form >= 0
 		do
-			Result := dictionary.get_plural (original_singular, original_plural, plural_form)
+			if dictionary.has_plural (original_singular, original_plural, plural_form) then
+				Result := dictionary.get_plural (original_singular, original_plural, plural_form)
+			else
+				Result := original_plural
+			end
 		ensure
 			result_exists: Result /= Void
 		end
