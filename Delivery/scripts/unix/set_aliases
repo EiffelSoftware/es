@@ -14,7 +14,7 @@ DOCUMENT_DIR=`pwd`
 # Where all.tar.gz files should be stored
 EXPORT_DIR=`pwd`/PorterPackage
 # What tag to use to CVS export everything
-DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/trunk
+DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/branches/Eiffel_57
 DEFAULT_ORIGO_SVN=https://eiffelsoftware.origo.ethz.ch/svn/es/branches/Eiffel_57
 SVN_VERSION=`set_version.sh $DEFAULT_ORIGO_SVN`
 # Version of GTK
