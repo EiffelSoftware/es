@@ -818,6 +818,8 @@ feature {NONE} -- grid Layout Implementation
 			-- being rebuilt, unless the timer period has been exceeded.
 
 	current_stack_class_feature_identification: STRING is
+		local
+			cse: CALL_STACK_ELEMENT
 		do
 			cse := current_stack_element
 			if cse /= Void then
