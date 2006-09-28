@@ -39,13 +39,13 @@ feature --creation
 				value_numbers_after_decimal_separator := 2
 				value_group_separator := ","
 				value_number_list_separator := ";"
-				value_grouping := <<>> --need to define a format for this!
+				value_grouping := <<3,3,0>> --need to define a format for this!
 
 				currency_decimal_separator := "."
 				currency_numbers_after_decimal_separator := 2
 				currency_group_separator := ","
 				currency_number_list_separator := ";"
-				currency_grouping := <<>> --need to define a format for this!
+				currency_grouping := <<3,3,0>> --need to define a format for this!
 			end
 
 
@@ -82,7 +82,7 @@ feature	-- number formatting
 		value_numbers_after_decimal_separator: INTEGER
 		value_group_separator: STRING_32
 		value_number_list_separator: STRING_32
-		value_grouping: ARRAY[STRING_32]
+		value_grouping: ARRAY[INTEGER]
 
 feature	-- currency formatting
 		currency_symbol: STRING_32
@@ -90,7 +90,7 @@ feature	-- currency formatting
 		currency_numbers_after_decimal_separator: INTEGER
 		currency_group_separator: STRING_32
 		currency_number_list_separator: STRING_32
-		currency_grouping: ARRAY[STRING_32]
+		currency_grouping: ARRAY[INTEGER]
 
 feature	-- modification
 
