@@ -250,8 +250,8 @@
 			<item>
 				<image>
 					<url>/images/eiffelstudio/icons/icon_super_cluster_color.gif</url>
-				</image>Target to enclosing cluster
-				<line_break/> Re-centers the diagram on the parent cluster.
+				</image>Target to cluster or class
+				<line_break/> Re-centers the diagram to the parent cluster of selected class or to cluster.
 			</item>
 		</list>
 		In addition to these toolbar buttons there is also a drop down list for selecting various zoom percentages on the current view, and a view list for switching between previously saved views/layouts of various parts of the system.
