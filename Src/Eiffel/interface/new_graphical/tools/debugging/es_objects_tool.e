@@ -819,7 +819,10 @@ feature {NONE} -- grid Layout Implementation
 
 	current_stack_class_feature_identification: STRING is
 		do
-			Result := current_stack_element.class_name + "." + current_stack_element.routine_name
+			cse := current_stack_element
+			if cse /= Void then
+				Result := cse.class_name + "." + cse.routine_name
+			end
 		end
 
 feature {NONE} -- Stack grid Layout Implementation
