@@ -86,6 +86,10 @@ feature	-- number formatting
 
 feature	-- currency formatting
 		currency_symbol: STRING_32
+		currency_symbol_location: INTEGER
+		currency_symbol_prefixed: INTEGER is 0
+		currency_symbol_appended: INTEGER is 1
+		currency_symbol_radix: INTEGER is 2
 		currency_decimal_separator: STRING_32
 		currency_numbers_after_decimal_separator: INTEGER
 		currency_group_separator: STRING_32
@@ -249,15 +253,25 @@ feature	-- modification
 				value_number_list_separator_set: value_number_list_separator.is_equal(separator.as_string_32)
 			end
 
-		set_currency_symbol (a_currency_simbol : STRING_GENERAL) is
+		set_currency_symbol (a_currency_symbol : STRING_GENERAL) is
 				--
 			require
-				a_currency_simbol_exists: a_currency_simbol /= Void
+				a_currency_symbol_exists: a_currency_symbol /= Void
 			do
-				currency_symbol := a_currency_simbol
+				currency_symbol := a_currency_symbol
+			ensure
+				symbol_set: currency_symbol = a_currency_symbol
 			end
 
-
+		set_currency_symbol_location(a_location:INTEGER) is
+				--
+			require
+				a_location_valid: (a_location <= 0) and (a_location >= 2)
+			do
+				currency_symbol_location := a_location
+			ensure
+				symbol_location_set: currency_symbol_location = a_location
+			end
 
 		set_currency_decimal_separator(separator:STRING_GENERAL) is
 				-- set the decimal separator for currency values

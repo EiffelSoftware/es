@@ -67,7 +67,6 @@ class
 						Result := 2
 					end
 
-
 				elseif plural_form = three_plural_forms_special_twelve_to_nineteen then
 					-- Three forms, with a special case for numbers ending in 12 to 19.
 					-- This sort of plural is used by Lithuania. Why??
@@ -100,7 +99,6 @@ class
 						Result := 2
 					end
 
-
 				elseif plural_form = three_plural_forms_special_polish then
 					-- Three p
 
@@ -113,8 +111,6 @@ class
 						Result := 2
 					end
 
-
-
 				elseif plural_form = four_plural_forms_special_slovenian then
 					---plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3;
 					if (quantity \\ 100 =1) then
@@ -126,17 +122,36 @@ class
 					else
 						Result := 3
 					end
-
-
 				end
-
-
 			end
 
 		valid_plural_form(i:INTEGER):BOOLEAN is
 				--
 			do
 				Result := i <= max_plural_form and i >= min_plural_form
+			end
+
+		c_conditional_to_plural_form(conditional:STRING_32):INTEGER is
+				-- ugly ugly ugly
+			require
+				argument_not_void: conditional /= Void
+			do
+				--remove all spaces from conditional; remove end ";" if present
+
+				if conditional.is_equal ("0") then
+
+				elseif conditional.is_equal ("n!=1") then
+
+				elseif conditional.is_equal ("n>1") then
+
+				elseif conditional.is_equal ("n%10==1&&n%100!=11?0:n!=0?1:2") then
+
+				elseif conditional.is_equal ("n==1?0:n==2?1:2") then
+
+				elseif conditional.is_equal ("n%10==1&&n%100!=11?0:n%10>=2&&(n%100<10||n%100>=20)?1:2") then
+
+				end
+
 			end
 
 

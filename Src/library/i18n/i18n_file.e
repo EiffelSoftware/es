@@ -7,10 +7,13 @@ indexing
 deferred class
 	I18N_FILE
 
+	inherit
+		SHARED_I18N_PLURAL_TOOLS
+
 feature
 	-- creation
 	make (path: STRING_GENERAL) is
-			-- attempts to open the file at path - if opened or/and valid is not true after make was called something went wrong.
+			-- does not open the file, just sets the path. Call open afterwards!
 		deferred
 		end
 
@@ -45,7 +48,7 @@ feature
 		entry_has_plurals(i: INTEGER): BOOLEAN is
 				-- does this entry have any plurals?
 			require
-				open_and_valid: open and valid
+				file_open: opened
 				i_valid_index: i < 10 and i >= 0
 			deferred
 
@@ -55,7 +58,7 @@ feature
 		original_singular_string(i: INTEGER):STRING_32 is
 				-- Get the original singular string for this entry
 			require
-				open_and_valid: open and valid
+				file_open: opened
 				i_valid_index: i < 10 and i >= 0
 			deferred
 			end
@@ -63,7 +66,7 @@ feature
 		original_plural_string(i:INTEGER):STRING_32 is
 				--  Get the original plural string for this entry. May return Void if there are none!
 			require
-				open_and_valid: open and valid
+				file_open: opened
 				plurals_exist: entry_has_plurals(i)
 			deferred
 			end
@@ -71,7 +74,7 @@ feature
 		translated_plural_strings(i:INTEGER):ARRAY[TUPLE[INTEGER,STRING_32]] is
 				--  get the translated plural string for this entry. May return Void if there are none!
 			require
-				open_and_valid: open and valid
+				file_open: opened
 				plurals_exist: entry_has_plurals(i)
 			deferred
 			end
@@ -79,27 +82,50 @@ feature
 		translated_singular_string(i:INTEGER):STRING_32 is
 				-- get the translated singular string for this entry
 			require
-				open_and_valid: open and valid
+				file_open: opened
 				i_valid_index: i < 10 and i >= 0
 			deferred
 			end
 
+		valid_index(i:INTEGER):BOOLEAN is
+				-- is this a valid index for an entry?
+			require
+				file_open: opened
+			deferred
+			end
+
+
  feature
  	-- mechanics
 
-	open: BOOLEAN -- is the file opened?
-	valid: BOOLEAN -- could the file be parsed correctly?
+	opened: BOOLEAN -- is the file opened?
+	valid: BOOLEAN is
+		-- could the file be parsed correctly?
+		deferred
+		end
 
 	close is
 			-- closes the file
 		require
-			open -- can't close file if not open
+			opened -- can't close file if not open
+		deferred
+		end
+
+	open is
+			-- opens the file
+		require
+			not opened
 		deferred
 		end
 
 
+feature {NONE}
+
+	file: RAW_FILE
+
 invariant
 	plural_form_correct: plural_form < 10 and plural_form >= 0
-	valid_only_if_opened: valid implies open
+	opened_only_if_valid: opened implies valid
+	opened_means_file_exists: opened implies file.exists
 
 end

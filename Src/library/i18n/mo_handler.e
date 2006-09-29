@@ -4,7 +4,7 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	I18N_MO_HANDLER inherit
 
 		I18N_FILE_HANDLER

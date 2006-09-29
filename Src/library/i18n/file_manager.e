@@ -28,5 +28,12 @@ class
 
 				end
 
+		available_locales: LINEAR[I18N_LOCALE_ID] is
+				--
+				do
+
+				end
+
+
 
 end

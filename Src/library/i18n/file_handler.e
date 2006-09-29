@@ -34,7 +34,7 @@ feature -- locale
 			--
 		do
 			if can_handle(a_path.as_string_32) then
-				Result := extract_locale
+				create Result.make (extract_locale)
 				handled := True
 			else
 				if next /= Void then
