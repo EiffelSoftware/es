@@ -5,10 +5,10 @@ indexing
 	revision: "$Revision$"
 
 class
-	SHARED_I18N_NLS_CONSTANTS
+	SHARED_I18N_NLS_LC_CTYPE_CONSTANTS
 
 feature
-	nls_constants: I18N_NLS_CONSTANTS is
+	nls_constants: I18N_NLS_LC_CTYPE_CONSTANTS is
 		once
 			create Result
 		end

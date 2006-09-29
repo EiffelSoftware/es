@@ -8,16 +8,43 @@ class
 	I18N_NLS_LCID_TOOLS
 
 	inherit
-		UC_IMPORTED_UTF16_ROUTINES
+		I18N_NLS_GETLOCALEINFO
 
 
 feature --Access
 
 
+
+	is_supported_locale(lcid:INTEGER):BOOLEAN is
+		-- Is the given LCID supported _and_ installed?
+	do
+		-- Possible flags, from winnls.h :
+		--#define LCID_INSTALLED            0x00000001  // installed locale ids
+		--#define LCID_SUPPORTED            0x00000002  // supported locale ids
+		Result := is_valid_locale(lcid, 2)
+	end
+
+
+
 	lcid_to_name(lcid:INTEGER):STRING_32 is
 			-- Windows can manage this.
+			-- However: only Windows Vista can manage to give you the correct identifier in one query.
+			-- Everyone else needs to take a crash course on how these identifiers are composed:
+			-- Typically we have: ll-RR where ll is a lowercase language code from ISO 639-1 (or 639-2/T)
+			-- and RR is an uppercase region code from ISO 3166-1.
+			-- In older Windows versions (actually current when I am typing this) we need to get each one
+			-- and glue them together. This disregards windows's nice habit of sometimes sticking the encoding
+			-- in the middle, which is an unexplained and unsolved problem for us right now.
+			local
+				iso639: STRING_32
+				iso3166: STRING_32
 			do
+				iso639 := extract_locale_string (lcid, nls_constants.locale_siso639langname,
+													nls_constants.locale_siso639langname_maxlen )
+				iso3166 := extract_locale_string (lcid, nls_constants.locale_siso3166ctryname,
+													nls_constants.locale_siso3166ctryname_maxlen )
 
+				Result := (iso639 + "-" + iso3166)
 			end
 
 
@@ -65,8 +92,6 @@ feature --Access
 						left := left + 1 -- not nice but required to decrease variant
 					end
 				end
-
-
 			end
 
 feature {NONE} -- LCIDS
@@ -297,6 +322,13 @@ feature {NONE} -- LCIDS
 feature {NONE} -- C functions
 
 
+	is_valid_locale(lcid:INTEGER; flags:INTEGER):BOOLEAN is
+			-- encapsulation of IsValidLocaleName
+	external
+		"C (int, int): int| %"nls_locale.h%""
+	alias
+		"IsValidLocale"
+	end
 
 
 

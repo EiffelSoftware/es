@@ -10,9 +10,138 @@ class
 
 	inherit
 
-		UC_IMPORTED_UTF16_ROUTINES
+
 		SHARED_I18N_NLS_LCID_TOOLS
-		SHARED_I18N_NLS_CONSTANTS
+		I18N_HOST_LOCALE
+		I18N_NLS_GETLOCALEINFO
+
+
+	feature -- Creation
+
+		make_from_user_locale is
+				--
+			do
+				current_lcid := user_locale
+			end
+
+		make_from_locale (locale: I18N_LOCALE_ID) is
+				--
+			do
+				current_lcid := lcid_tools.name_to_lcid (locale.name)
+			end
+
+	feature -- Information
+
+		available_locales : LINEAR[I18N_LOCALE_ID] is
+				-- TODO, does not work!
+			local
+				temp : LINKED_LIST[I18N_LOCALE_ID]
+			do
+				create temp.make
+
+				Result := temp
+			end
+
+		current_locale_id: I18N_LOCALE_ID is
+				-- lcid_to_name should be done "properly" (unified name formt!!!!!!!!!!)
+			do
+				create Result.make(lcid_tools.lcid_to_name (current_lcid))
+			end
+
+		is_available (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
+				--
+			do
+				Result := lcid_tools.is_supported_locale (lcid_tools.name_to_lcid (a_locale_id.name))
+			end
+
+
+
+
+	feature -- Value formatting
+
+		get_value_group_separator: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_sthousand,
+												nls_constants.locale_sthousand_maxlen)
+			end
+
+		get_value_grouping: ARRAY[INTEGER] is
+				--
+			do
+				Result := grouping_string_to_integer(extract_locale_string (current_lcid,
+										nls_constants.locale_sgrouping, nls_constants.locale_sgrouping ))
+
+			end
+
+
+		get_value_decimal_separator: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_sdecimal,
+												nls_constants.locale_sdecimal_maxlen)
+			end
+
+
+		get_value_numbers_after_decimal_separator: INTEGER is
+				--
+			do
+				Result := extract_locale_integer(current_lcid, nls_constants.locale_idigits)
+			end
+
+		get_value_number_list_separator: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_slist,
+												nls_constants.locale_slist_maxlen)
+			end
+
+	feature -- Currency formatting
+
+		get_currency_decimal_separator: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_smondecimalsep,
+													nls_constants.locale_smondecimalsep_maxlen )
+			end
+
+		get_currency_grouping: ARRAY[INTEGER] is
+				--
+			do
+				Result := grouping_string_to_integer(extract_locale_string (current_lcid,
+										nls_constants.locale_smongrouping, nls_constants.locale_smongrouping ))
+			end
+
+		get_currency_number_list_separator: STRING_32 is
+				--
+			do
+				Result := get_value_number_list_separator
+			end
+
+		get_currency_symbol: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_scurrency,
+												nls_constants.locale_scurrency_maxlen)
+			end
+
+		get_currency_numbers_after_decimal_separator: INTEGER is
+				--
+			do
+				Result := extract_locale_integer(current_lcid, nls_constants.locale_icurrdigits)
+			end
+
+		get_currency_group_separator: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_smonthousandsep,
+												nls_constants.locale_smonthousandsep_maxlen)
+			end
+
+
+
+
+
 
 
 	feature -- Default locales
@@ -36,259 +165,192 @@ class
 
 	feature -- date and time formatting
 
-		short_date_format: STRING_32 is
+		get_short_date_format: STRING_32 is
 				--
 			do
-				Result:= extract_locale_string (system_locale,nls_constants.locale_sshortdate,
+				Result:= extract_locale_string (current_lcid,nls_constants.locale_sshortdate,
 												nls_constants.locale_sshortdate_maxlen)
 			end
 
-		long_date_format: STRING_32 is
+		get_long_date_format: STRING_32 is
 				--
 			do
-				Result:= extract_locale_string (system_locale,nls_constants.locale_slongdate,
+				Result:= extract_locale_string (current_lcid,nls_constants.locale_slongdate,
 												nls_constants.locale_slongdate_maxlen)
 			end
 
 
-		am_suffix: STRING_32 is
-				--
-			do
-				Result := extract_locale_string (system_locale, nls_constants.locale_s1159,
-												nls_constants.locale_s1159_maxlen)
-			end
 
-		pm_suffix: STRING_32 is
-				--
-			do
-				Result := extract_locale_string (system_locale, nls_constants.locale_s2359,
-												nls_constants.locale_s2359_maxlen)
-			end
 
-		day_names: ARRAY[STRING_32] is
+		get_day_names: ARRAY[STRING_32] is
 				--
 			do
 				Result := <<
-								extract_locale_string (system_locale, nls_constants.locale_sdayname1,
+								extract_locale_string (current_lcid, nls_constants.locale_sdayname1,
 												nls_constants.locale_sdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sdayname2,
+								extract_locale_string (current_lcid, nls_constants.locale_sdayname2,
 												nls_constants.locale_sdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sdayname3,
+								extract_locale_string (current_lcid, nls_constants.locale_sdayname3,
 												nls_constants.locale_sdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sdayname4,
+								extract_locale_string (current_lcid, nls_constants.locale_sdayname4,
 												nls_constants.locale_sdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sdayname5,
+								extract_locale_string (current_lcid, nls_constants.locale_sdayname5,
 												nls_constants.locale_sdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sdayname6,
+								extract_locale_string (current_lcid, nls_constants.locale_sdayname6,
 												nls_constants.locale_sdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sdayname7,
+								extract_locale_string (current_lcid, nls_constants.locale_sdayname7,
 												nls_constants.locale_sdayname_maxlen)
 							>>
 			end
 
-		abbreviated_day_names: ARRAY[STRING_32] is
+		get_abbreviated_day_names: ARRAY[STRING_32] is
 				--
 			do
 				Result := <<
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevdayname1,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevdayname1,
 												nls_constants.locale_sabbrevdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevdayname2,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevdayname2,
 												nls_constants.locale_sabbrevdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevdayname3,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevdayname3,
 												nls_constants.locale_sabbrevdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevdayname4,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevdayname4,
 												nls_constants.locale_sabbrevdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevdayname5,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevdayname5,
 												nls_constants.locale_sabbrevdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevdayname6,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevdayname6,
 												nls_constants.locale_sabbrevdayname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevdayname7,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevdayname7,
 												nls_constants.locale_sabbrevdayname_maxlen)
 							>>
 			end
 
-		month_names: ARRAY[STRING_32] is
+		get_month_names: ARRAY[STRING_32] is
 				--
 			do
 				Result := <<
-								extract_locale_string (system_locale, nls_constants.locale_smonthname1,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname1,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname2,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname2,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname3,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname3,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname4,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname4,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname5,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname5,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname6,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname6,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname7,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname7,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname8,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname8,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname9,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname9,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname10,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname10,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname11,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname11,
 												nls_constants.locale_smonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_smonthname12,
+								extract_locale_string (current_lcid, nls_constants.locale_smonthname12,
 												nls_constants.locale_smonthname_maxlen)
 							>>
 			end
 
 
-	abbreviated_month_names: ARRAY[STRING_32] is
+	get_abbreviated_month_names: ARRAY[STRING_32] is
 				--
 			do
 				Result := <<
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname1,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname1,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname2,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname2,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname3,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname3,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname4,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname4,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname5,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname5,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname6,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname6,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname7,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname7,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname8,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname8,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname9,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname9,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname10,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname10,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname11,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname11,
 												nls_constants.locale_sabbrevmonthname_maxlen),
-								extract_locale_string (system_locale, nls_constants.locale_sabbrevmonthname12,
+								extract_locale_string (current_lcid, nls_constants.locale_sabbrevmonthname12,
 												nls_constants.locale_sabbrevmonthname_maxlen)
 							>>
 			end
 
+	feature -- time formatting
 
-	feature -- number formatting
-
-		value_decimal_separator: STRING_32
-		value_numbers_after_decimnal_separator: STRING_32
-
-
-
-	feature  -- internal LCID handling
-
-		is_valid_locale(lcid:INTEGER; flags:INTEGER):BOOLEAN is
-				-- encapsulation of IsValidLocaleName
-		external
-			"C (int, int): int| %"nls_locale.h%""
-		alias
-			"IsValidLocale"
-		end
-
-		is_supported_locale(lcid:INTEGER):BOOLEAN is
-				-- Is the given LCID supported _and_ installed?
+		get_am_suffix: STRING_32 is
+				--
 			do
-				-- Possible flags, from winnls.h :
-				--#define LCID_INSTALLED            0x00000001  // installed locale ids
-				--#define LCID_SUPPORTED            0x00000002  // supported locale ids
-				Result := is_valid_locale(lcid, 2)
+				Result := extract_locale_string (current_lcid, nls_constants.locale_s1159,
+												nls_constants.locale_s1159_maxlen)
 			end
 
-	feature {NONE} -- wrappers for GetLocaleInfo
+		get_pm_suffix: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_s2359,
+												nls_constants.locale_s2359_maxlen)
+			end
 
-		extract_locale_string(lcid: INTEGER; lc_ctype: INTEGER; bufferlen: INTEGER): STRING_32 is
+		get_short_time_format: STRING_32 is
+				-- TODO: Returns native string, this needs to fixed when we get the time formatter sorted out!
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_stimeformat,
+												nls_constants.locale_stimeformat_maxlen)
+			end
+
+		get_long_time_format: STRING_32 is
+				--
+			do
+				Result := get_short_time_format
+			end
+
+
+
+
+	feature {NONE} -- Current locale
+
+		current_lcid: INTEGER
+
+	feature {NONE} -- Transformation
+
+	grouping_string_to_integer(string: STRING_32): ARRAY[INTEGER] is
 				--
 			local
-				pointer: POINTER
+				temp: LIST[STRING_32]
+				position: INTEGER
 			do
-				pointer := c_extract_locale_string(lcid, lc_ctype, bufferlen)
-				Result := pointer_to_string (pointer)
-				pointer.memory_free
-			end
-
-
-		c_extract_locale_string(lcid: INTEGER; lc_ctype: INTEGER; bufferlen: INTEGER ): POINTER is
-				--
-			external
-				"C(int, int, int): TCHAR * | %"nls_locale.h%""
-			alias
-				"extract_locale_string"
-			end
-
-		c_extract_locale_integer(lcid: INTEGER; lc_ctype: INTEGER): INTEGER is
-				--
-			external
-				"C (int, int): int| %"nls_locale.h%""
-			alias
-				"extract_locale_int"
-			end
-
-
-	feature {NONE} -- utf16-LE (aka "wide string") handling
-
-		pointer_to_string(ptr: POINTER): STRING_32 is
-				-- takes a pointer to a utf16-LE string (the LE is important!)
-				-- and returns the corresponding STRING_32 by means of Horrible Things
-			require
-				--pointer is not null, I suppose
-				ptr_not_null: ptr /= default_pointer
-			local
-				managed_ptr: MANAGED_POINTER
-				length: INTEGER
-				counter: INTEGER
-				a_least, a_most: INTEGER --high byte and low byte of current character
-				a_low_most, a_low_least: INTEGER --high byte and low byte of next character
-			do
-				length := c_wcslen (ptr)
-				create managed_ptr.share_from_pointer (ptr, length*2) --utf16: each character is 2 bytes.
-				create Result.make_empty
-
-				-- This code is based on append_utf16 in UC_STRING - this version is
-				-- needed because strings returned by the Windows  NLS api are UT16-LE
-				-- and therefore do not have a BOM, which append_utf16 requires
-				-- (it will in fact cause an exception if the BOM is absent. is_valid_utf16 should check for it.)
-				-- Also I don't like the idea of reading bytes into a STRING_8, reading the
-				-- STRING_8 into a UC_STRING with append_utf16 and then turning the UC_STRING
-				-- into a STRING_32.  Talk about efficiency...
-
+				temp := string.split (';')
+				create Result.make(1, temp.count)
 				from
-					counter := 0
-					-- counter counts bytes not characters! 0-based as it is the offset from the pointer.
+					temp.start
+					position := 1
 				until
-					counter >= (length*2)
+					temp.after
 				loop
-					a_least := managed_ptr.read_natural_8 (counter)
-					a_most := managed_ptr.read_natural_8 (counter+1)
-					if utf16.is_surrogate (a_most) then
-						-- this is a surrogate, i.e a code point represented with 4 bytes
-						-- we read the next character and glue the two together
-						check utf16.is_high_surrogate (a_most) end
-						check counter+2 < (length*2) end
-						counter := counter + 2
-						a_least := managed_ptr.read_natural_8 (counter)
-						a_most := managed_ptr.read_natural_8 (counter+1)
-						check utf16.is_low_surrogate (a_low_most) end
-						Result.append_character (utf16.surrogate_from_bytes (a_most, a_least, a_low_most, a_low_least).to_character_32)
-					else
-						-- not a surrogate
-						Result.append_character ((a_most*256 + a_least).to_character_32)
-					end
-					counter := counter + 2
+					Result.put(temp.item.to_integer,position)
+					position := position + 1
+					temp.forth
 				end
-
 			end
 
 
 
-		c_wcslen (ptr: POINTER): INTEGER is
-		external
-			"C (void *): EIF_INTEGER| %"nls_locale.h%""
-		alias
-			"wcslen"
-		end
+
+
+
+
 
 
 

@@ -170,7 +170,7 @@ feature	-- number formatting
 			result_exists: Result /= Void
 		end
 
-	get_value_grouping: ARRAY[STRING_32] is
+	get_value_grouping: ARRAY[INTEGER] is
 			-- ?
 		deferred
 		ensure
@@ -221,7 +221,7 @@ feature	-- currency formatting
 			result_exists: Result /= Void
 		end
 
-	get_currency_grouping: ARRAY[STRING_32] is
+	get_currency_grouping: ARRAY[INTEGER] is
 			-- ?
 		deferred
 		ensure

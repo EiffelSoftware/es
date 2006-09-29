@@ -5,9 +5,14 @@ indexing
 	revision: "$Revision$"
 
 class
-	I18N_NLS_CONSTANTS
+	I18N_NLS_LC_CTYPE_CONSTANTS
 
 feature -- LC_CTYPE constants from winnnls.h
+
+	-- Note: maximum lengths of strings can be found under
+	-- http://msdn.microsoft.com/library/default.asp?url=/library/en-us/intl/nls_0m43.asp
+	-- LC_CTYPE constants here do not have the maximum length specified if we don't use them
+	-- (When things calm down I shall prune the list)
 
 	LOCALE_ILANGUAGE: INTEGER is               0x00000001   -- language id
 	LOCALE_SLANGUAGE: INTEGER is               0x00000002   -- localized name of language
@@ -28,21 +33,31 @@ feature -- LC_CTYPE constants from winnnls.h
 	LOCALE_IDEFAULTMACCODEPAGE: INTEGER is     0x00001011   -- default mac code page
 
 	LOCALE_SLIST: INTEGER is                   0x0000000C   -- list item separator
+	locale_slist_maxlen:INTEGER is 4
+
 	LOCALE_IMEASURE: INTEGER is                0x0000000D   -- 0 = metric, 1 = US
 
 	LOCALE_SDECIMAL: INTEGER is                0x0000000E   -- decimal separator
+	locale_sdecimal_maxlen: INTEGER IS 4
 	LOCALE_STHOUSAND: INTEGER is               0x0000000F   -- thousand separator
+	locale_sthousand_maxlen: INTEGER is 4
 	LOCALE_SGROUPING : INTEGER is              0x00000010   -- digit grouping
+	locale_sgrouping_maxlen: INTEGER is 10
 	LOCALE_IDIGITS: INTEGER is                0x00000011   -- number of fractional digits
+	locale_idigits_maxlen: INTEGER is 2 -- not needed really, this can be retrieved as an integer
 	LOCALE_ILZERO: INTEGER is                  0x00000012   -- leading zeros for decimal
 	LOCALE_INEGNUMBER: INTEGER is              0x00001010   -- negative number mode
 	LOCALE_SNATIVEDIGITS: INTEGER is           0x00000013   -- native ascii 0-9
 
 	LOCALE_SCURRENCY: INTEGER is               0x00000014   -- local monetary symbol
+	locale_scurrency_maxlen: INTEGER is 4
 	LOCALE_SINTLSYMBOL: INTEGER is             0x00000015   -- intl monetary symbol
 	LOCALE_SMONDECIMALSEP: INTEGER is          0x00000016   -- monetary decimal separator
+	locale_smondecimalsep_maxlen: INTEGER is 4
 	LOCALE_SMONTHOUSANDSEP: INTEGER is        0x00000017   -- monetary thousand separator
+	locale_smonthousandsep_maxlen: INTEGER is 4
 	LOCALE_SMONGROUPING: INTEGER is           0x00000018   -- monetary grouping
+	locale_smongroupinglen:INTEGER is 10
 	LOCALE_ICURRDIGITS: INTEGER is            0x00000019   -- # local monetary digits
 	LOCALE_IINTLCURRDIGITS: INTEGER is        0x0000001A   -- # intl monetary digits
 	LOCALE_ICURRENCY: INTEGER is              0x0000001B   -- positive currency mode
@@ -57,6 +72,7 @@ feature -- LC_CTYPE constants from winnnls.h
 	locale_slongdate_maxlen: INTEGER is 80
 
 	LOCALE_STIMEFORMAT: INTEGER is            0x00001003   -- time format string
+	locale_stimeformat_maxlen: INTEGER is 80
 	LOCALE_IDATE: INTEGER is                  0x00000021   -- short date format ordering
 	LOCALE_ILDATE : INTEGER is                0x00000022   -- long date format ordering
 	LOCALE_ITIME: INTEGER is                  0x00000023   -- time format specifier
@@ -134,5 +150,9 @@ feature -- LC_CTYPE constants from winnnls.h
 	LOCALE_INEGSYMPRECEDES: INTEGER is        0x00000056   -- mon sym precedes neg amt
 	LOCALE_INEGSEPBYSPACE: INTEGER is         0x00000057   -- mon sym sep by space from neg amt
 
+	LOCALE_SISO639LANGNAME: INTEGER is        0x00000059   -- ISO abbreviated language name
+	locale_siso639langname_maxlen: INTEGER is 9
+	LOCALE_SISO3166CTRYNAME: INTEGER is       0x0000005A   -- ISO abbreviated country name
+	locale_siso3166ctryname_maxlen: INTEGER is 9
 
 end
