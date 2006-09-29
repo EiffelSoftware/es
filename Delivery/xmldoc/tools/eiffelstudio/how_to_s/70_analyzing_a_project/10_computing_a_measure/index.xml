@@ -22,21 +22,9 @@
 			</item>
 			<item>
 				<link>
-					<url>30_deleting_measures.xml</url>
-					<label>Deleting measures</label>
-				</link> 
-			</item>
-			<item>
-				<link>
 					<url>40_viewing_measure_details.xml</url>
 					<label>Detailing a measure</label>
 				</link>   
-			</item>
-			<item>
-				<link>
-					<url>50_updating_recorded_measures.xml</url>
-					<label>Updating measures</label>
-				</link>
 			</item>
 		</list>
 	</paragraph></document>
