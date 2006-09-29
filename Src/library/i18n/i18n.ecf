@@ -28,6 +28,7 @@
 		<cluster name="i18n" location=".">
 			<cluster name="utility" location="./utility"></cluster>
 			<cluster name="locale" location="./locale"></cluster>
+			<cluster name="formatter" location="./formatter"></cluster>
 		</cluster>
 	</target>
 </system>
