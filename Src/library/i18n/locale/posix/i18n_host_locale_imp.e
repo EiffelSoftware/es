@@ -84,8 +84,6 @@ feature -- Informations
 			-- name of current locale
 		do
 			create Result.make_from_c (c_locale_name)
-		ensure
-			correct_result: Result = c_locale_name
 		end
 
 
@@ -261,12 +259,12 @@ feature	-- number formatting
 --			create Result.make_from_c (c_value_number_list_separator)
 		end
 
-	get_value_grouping: ARRAY[STRING_32] is
+	get_value_grouping: ARRAY[INTEGER] is
 			--
 		obsolete
 			"NOT IMPLEMENTED"
 		do
---			Result := to_string (c_thousend_step)
+			Result := <<3,3,0>>
 		end
 
 
@@ -324,12 +322,12 @@ feature	-- currency formatting
 			Result := "."
 		end
 
-	get_currency_grouping: ARRAY[STRING_32] is
+	get_currency_grouping: ARRAY[INTEGER] is
 			-- ?
 		obsolete
 			"NOT IMPLEMENTED"
 		do
-			Result := <<"E","R","R","o","r">>
+			Result := <<3,3,0>>
 		end
 
 feature {NONE} -- C functions

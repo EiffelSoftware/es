@@ -50,16 +50,7 @@ feature {NONE} -- Implementation
 	host_locale : I18N_HOST_LOCALE is
 			--
 		once
---			if {PLATFORM}.is_unix then
---				create {I18N_LINUX_LOCALE} Result.make_from_user_locale
---			elseif {PLATFORM}.is_dotnet then
---				create {I18N_DOTNET_LOCALE} Result.make_from_user_locale
---			elseif {PLATFORM}.is_windows then
---				create {I18N_WINDOWS_LOCALES} Result.make_from_user_locale
---			else
---				-- we do not support VMS
---			end
-			create {I18N_LINUX_LOCALE} Result.make_from_user_locale
+			create {I18N_HOST_LOCALE_IMP} Result.make_from_user_locale
 		end
 
 	initialize_locale (a_locale_info: I18N_LOCALE_INFO) is

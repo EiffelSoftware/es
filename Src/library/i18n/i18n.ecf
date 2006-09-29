@@ -27,6 +27,8 @@
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
 		<cluster name="i18n" location=".">
 			<cluster name="utility" location="./utility"></cluster>
+			<cluster name="datasource" location="./datasource" recursive="true"/>
+			<cluster name="dictionary" location="./dictionary" recursive="true"/>
 			<cluster name="locale" location="./locale">
 				<cluster name="nls_imp" location="./locale/nls">
 					<condition>

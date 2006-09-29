@@ -16,9 +16,7 @@ feature -- Initialization
 			a_uri_exists: a_uri /= Void
 		do
 			uri := a_uri.to_string_32
-			create {LINKED_LIST[I18N_LOCALE_ID]} available_locales.make
 		ensure
-			available_locales_exists: available_locales /= Void
 			uri_set: uri.is_equal(a_uri.as_string_32)
 		end
 
@@ -35,21 +33,25 @@ feature -- Access
 
 feature -- Informations
 
-	available_locales: LINEAR[I18N_LOCALE_ID]
+	available_locales: LINEAR[I18N_LOCALE_ID] is
 			-- list of the available locales
+		deferred
+		end
 
 	has_locale ( a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			-- is `a_locale_id' available?
 		require
 			a_locale_id_exists: a_locale_id /= Void
+		local
+			linear: LINEAR[I18N_LOCALE_ID]
 		do
 			from
-				available_locales.start
+				linear.start
 			until
-				available_locales.after or Result = True
+				linear.after or Result = True
 			loop
-				Result := a_locale_id.is_equal(available_locales.item)
-				available_locales.forth
+				Result := a_locale_id.is_equal(linear.item)
+				linear.forth
 			end
 		ensure
 			correct_result: Result = available_locales.has (a_locale_id)

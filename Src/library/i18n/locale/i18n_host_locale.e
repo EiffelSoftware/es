@@ -151,7 +151,7 @@ feature	-- number formatting
 			-- according the current locales setting
 		deferred
 		ensure
-			result_exists: Result /= Void
+			result_sensible: Result > 0
 		end
 
 	get_value_group_separator: STRING_32 is
