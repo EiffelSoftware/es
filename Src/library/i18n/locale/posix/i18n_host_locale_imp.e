@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 class
-	I18N_LINUX_LOCALE
+	I18N_HOST_LOCALE_IMP
 		inherit
 			I18N_HOST_LOCALE
 
