@@ -27,7 +27,24 @@
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
 		<cluster name="i18n" location=".">
 			<cluster name="utility" location="./utility"></cluster>
-			<cluster name="locale" location="./locale"></cluster>
+			<cluster name="locale" location="./locale">
+				<cluster name="nls_imp" location="./locale/nls">
+					<condition>
+						<platform value="windows"/>
+					</condition>
+				</cluster>
+				<cluster name="posix_imp" location="./locale/posix">
+					<condition>
+						<platform value="unix"/>
+					</condition>
+				</cluster>
+				<cluster name="dotnet_imp" location="dotnet">
+					<condition>
+						<platform value="windows"/>
+						<dotnet value="true"/>
+					</condition>
+				</cluster>
+			</cluster>
 			<cluster name="formatter" location="./formatter"></cluster>
 		</cluster>
 	</target>

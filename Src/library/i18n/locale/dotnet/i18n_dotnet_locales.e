@@ -221,12 +221,16 @@ feature	-- number formatting
 --			Result := culture_info.number_format.
 		end
 
-	get_value_grouping: ARRAY[INTEGER] is
+	get_value_grouping: ARRAY[STRING_32] is
 			--
+		obsolete
+			"NOT IMPLEMENTED"
 		local
 			l_array : ARRAY[INTEGER]
 		do
-			Result := culture_info.number_format.number_group_sizes
+--			l_array := culture_info.number_format.number_group_sizes
+--			l_array.do_all ((?).out)
+--			Result := culture_info.number_format.number_group_sizes
 		end
 
 feature	-- currency formatting
@@ -261,12 +265,15 @@ feature	-- currency formatting
 			"NOT IMPLEMENTED"
 		do
 			Result := ";"
+--			Result := culture_info.number_format.
 		end
 
 	get_currency_grouping: ARRAY[STRING_32] is
 			--
+		obsolete
+			"NOT IMPLEMENTED"
 		do
-			Result := culture_info.number_format.currency_group_sizes
+--			Result := <<
 		end
 
 
@@ -388,6 +395,12 @@ feature {NONE} -- NOT USED Other Pattern
 		end
 
 feature {NONE} -- NOT USED Currency information
+
+	currency_symbol : STRING_32 is
+			-- currency symbol of current locale
+		do
+			Result := culture_info.number_format.currency_symbol
+		end
 
 	currency_decimal_digits : INTEGER is
 			-- number of digits in the current currency

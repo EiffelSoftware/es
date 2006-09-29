@@ -131,26 +131,13 @@ class
 				Result := i <= max_plural_form and i >= min_plural_form
 			end
 
-		c_conditional_to_plural_form(conditional:STRING_32):INTEGER is
-				-- ugly ugly ugly
+		c_conditional_to_plural_form(nplurals:INTEGER; conditional:STRING_32):INTEGER is
 			require
 				argument_not_void: conditional /= Void
+				nplurals <= 4 and nplurals > 0
 			do
-				--remove all spaces from conditional; remove end ";" if present
 
-				if conditional.is_equal ("0") then
 
-				elseif conditional.is_equal ("n!=1") then
-
-				elseif conditional.is_equal ("n>1") then
-
-				elseif conditional.is_equal ("n%10==1&&n%100!=11?0:n!=0?1:2") then
-
-				elseif conditional.is_equal ("n==1?0:n==2?1:2") then
-
-				elseif conditional.is_equal ("n%10==1&&n%100!=11?0:n%10>=2&&(n%100<10||n%100>=20)?1:2") then
-
-				end
 
 			end
 

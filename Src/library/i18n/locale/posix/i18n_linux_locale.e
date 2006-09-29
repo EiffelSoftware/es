@@ -242,7 +242,6 @@ feature	-- number formatting
 			"NOT IMPLEMENTED"
 		do
 			Result := c_value_numbers_after_decimal_separator.to_integer_32
-			Result := 2
 		end
 
 	get_value_group_separator: STRING_32 is
@@ -258,15 +257,16 @@ feature	-- number formatting
 		obsolete
 			"NOT IMPLEMENTED"
 		do
-			Result := ";"
+			Result := "NOT IMPLEMENTED"
+--			create Result.make_from_c (c_value_number_list_separator)
 		end
 
-	get_value_grouping: ARRAY[INTEGER] is
+	get_value_grouping: ARRAY[STRING_32] is
 			--
 		obsolete
 			"NOT IMPLEMENTED"
 		do
-			Result := <<3,3,0>>
+--			Result := to_string (c_thousend_step)
 		end
 
 
@@ -302,7 +302,7 @@ feature	-- currency formatting
 			% it strangely returns a poiter to the currency symbol"
 		do
 			Result := c_currency_numbers_after_digit_sepatator.to_integer_32
-			Result := 2;
+			Result := 0
 		end
 
 	get_currency_group_separator: STRING_32 is
@@ -311,7 +311,7 @@ feature	-- currency formatting
 		obsolete
 			"NOT IMPLEMENTED"
 		do
-			Result := "'"
+			Result := ","
 		end
 
 	get_currency_number_list_separator: STRING_32 is
@@ -321,15 +321,15 @@ feature	-- currency formatting
 		obsolete
 			"NOT IMPLEMENTED"
 		do
-			Result := ";"
+			Result := "."
 		end
 
-	get_currency_grouping: ARRAY[INTEGER] is
+	get_currency_grouping: ARRAY[STRING_32] is
 			-- ?
 		obsolete
 			"NOT IMPLEMENTED"
 		do
-			Result := <<3,3,0>>
+			Result := <<"E","R","R","o","r">>
 		end
 
 feature {NONE} -- C functions
