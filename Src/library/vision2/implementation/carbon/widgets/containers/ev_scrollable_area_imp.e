@@ -228,7 +228,6 @@ feature {NONE} -- Implementation
 					create size.make_shared (rect.size)
 					create point.make_shared (rect.origin)
 					ret := set_event_parameter_external (a_inevent, kEventParamViewSize, {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
-
 					ret := set_event_parameter_external (a_inevent, kEventParamOrigin, {CARBONEVENTS_ANON_ENUMS}.typehipoint, point.sizeof, point.item)
 
 
@@ -236,14 +235,10 @@ feature {NONE} -- Implementation
 				elseif event_kind = kEventScrollableScrollTo then
 					create point.make_new_unshared
 					ret := get_event_parameter_external (a_inevent, kEventParamOrigin, {CARBONEVENTS_ANON_ENUMS}.typehipoint, null, point.sizeof, NULL, point.item );
-					create rect.make_new_unshared
-					ret := hiview_get_frame_external (container, rect.item)
-					create viewport_point.make_shared (rect.origin)
 
-					if ((viewport_point.x /= point.x) or (viewport_point.y /= point.y)) then
-						ret := hiview_set_bounds_origin_external (container, point.x, point.y)
-						ret := hiview_set_needs_display_external (container, 1)
-					end
+					ret := hiview_set_bounds_origin_external (container, point.x, point.y)
+					ret := hiview_set_needs_display_external (container, 1)
+
 					Result := {EV_ANY_IMP}.noErr -- event handled
 				else
 

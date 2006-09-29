@@ -29,7 +29,9 @@ inherit
 	EV_PIXMAPABLE_IMP
 		redefine
 			interface,
-			initialize
+			initialize,
+			internal_set_pixmap,
+			internal_remove_pixmap
 		end
 
 	EV_TEXTABLE_IMP
@@ -156,6 +158,24 @@ feature -- Status Setting
 
 feature {NONE} -- implementation
 
+	internal_set_pixmap (a_pixmap_imp: EV_PIXMAP_IMP; a_width, a_height: INTEGER) is
+			--
+		local
+			ret: INTEGER
+		do
+			ret := set_carbon_button_picture (c_object, a_pixmap_imp.drawable)
+		end
+
+	internal_remove_pixmap is
+			-- Remove pixmap from Current
+		do
+		end
+
+	set_carbon_button_picture (incontrol, inpic: POINTER): INTEGER is
+			-- set a boolean value with set_control_data
+		do
+		end
+		
 	on_focus_changed (a_has_focus: BOOLEAN) is
 			-- Called from focus intermediary agents when focus for `Current' has changed.
 			-- if `a_has_focus' then `Current' has just received focus.

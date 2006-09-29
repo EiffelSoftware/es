@@ -30,6 +30,32 @@ void call_cgdata_provider_release_data_callback (void *a_function, void *info, v
 	((void (*) (void *info, void const *data, size_t size))a_function) (info, data, size);
 }
 
+struct cgpath_applier_function_entry_struct cgpath_applier_function_entry = {NULL, NULL};
+
+void cgpath_applier_function_stub (void *info, CGPathElement const *element)
+{
+	if (cgpath_applier_function_entry.a_class != NULL && cgpath_applier_function_entry.feature != NULL)
+	{
+		cgpath_applier_function_entry.feature (eif_access(cgpath_applier_function_entry.a_class), info, element);
+	}
+}
+
+void set_cgpath_applier_function_entry (void* a_class, void* a_feature)
+{
+	cgpath_applier_function_entry.a_class = eif_adopt(a_class);
+	cgpath_applier_function_entry.feature = (cgpath_applier_function_eiffel_feature) a_feature;
+}
+
+void* get_cgpath_applier_function_stub ()
+{
+	return (void*) cgpath_applier_function_stub;
+}
+
+void call_cgpath_applier_function (void *a_function, void *info, CGPathElement const *element)
+{
+	((void (*) (void *info, CGPathElement const *element))a_function) (info, element);
+}
+
 struct aeremote_process_resolver_callback_entry_struct aeremote_process_resolver_callback_entry = {NULL, NULL};
 
 void aeremote_process_resolver_callback_stub (AERemoteProcessResolverRef ref, void *info)

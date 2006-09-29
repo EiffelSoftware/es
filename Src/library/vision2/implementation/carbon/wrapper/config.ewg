@@ -134,6 +134,18 @@
 			</match>
 			<wrapper type="default" />
 		</rule>
+		<rule>
+			<match>
+				<header name=".*CGPath.h"/>
+			</match>
+			<wrapper type="default" />
+		</rule>
+		<rule>
+			<match>
+				<header name=".*CGAffineTransform.h"/>
+			</match>
+			<wrapper type="default" />
+		</rule>
     	<rule>
 			<match/>
 			<wrapper type="none" />

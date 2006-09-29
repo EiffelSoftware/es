@@ -20,6 +20,23 @@ void call_cgdata_provider_release_data_callback (void *a_function, void *info, v
 
 #include <Carbon/Carbon.h>
 
+typedef void (*cgpath_applier_function_eiffel_feature) (void *a_class, void *info, CGPathElement const *element);
+
+void* get_cgpath_applier_function_stub ();
+
+struct cgpath_applier_function_entry_struct
+{
+	void* a_class;
+	cgpath_applier_function_eiffel_feature feature;
+};
+
+void set_cgpath_applier_function_entry (void* a_class, void* a_feature);
+
+void call_cgpath_applier_function (void *a_function, void *info, CGPathElement const *element);
+
+
+#include <Carbon/Carbon.h>
+
 typedef void (*aeremote_process_resolver_callback_eiffel_feature) (void *a_class, AERemoteProcessResolverRef ref, void *info);
 
 void* get_aeremote_process_resolver_callback_stub ();

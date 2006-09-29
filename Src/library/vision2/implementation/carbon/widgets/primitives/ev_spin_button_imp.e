@@ -35,6 +35,7 @@ inherit
 		end
 
 	EV_TEXT_FIELD_IMP
+
 		rename
 			create_change_actions as create_text_change_actions,
 			change_actions as text_change_actions,
@@ -47,7 +48,8 @@ inherit
 			minimum_height,
 			set_text,
 			dispose,
-			on_event
+			on_event,
+			on_change_actions
 		end
 	EV_CARBON_EVENTABLE
 		redefine
@@ -209,6 +211,25 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
+	on_change_actions is
+			do
+				gauge_change_actions
+			 	precursor {EV_TEXT_FIELD_IMP}
+			end
+
+
+	gauge_change_actions is
+			-- A change action has occurred.
+		local
+			a_data: TUPLE [INTEGER_32]
+		do
+				if change_actions_internal /= Void then
+					create a_data.default_create
+					a_data.put (value, 1)
+					change_actions_internal.call (a_data)
+				end
+		end
+
 	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
 			-- Feature that is called if an event occurs
 		local
@@ -219,17 +240,17 @@ feature {NONE} -- Implementation
 				event_kind := get_event_kind_external (a_inevent)
 
 				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown then
-					on_change_actions
 					ret := get_event_parameter_external (a_inevent, kEventParamControlPart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, null, 32, NULL, $part );
 					if part = kControlUpButtonPart then
 						step_forward
 					elseif part = kControlDownButtonPart then
 						step_backward
 					end
+					gauge_change_actions
 					Result := {EV_ANY_IMP}.noErr -- event handled
 				else
 
-					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
+					Result := precursor {EV_TEXT_FIELD_IMP}(a_inhandlercallref, a_inevent, a_inuserdata)
 				end
 		end
 
@@ -282,6 +303,7 @@ feature {NONE} -- Implementation
 		do
 			precursor {EV_TEXT_FIELD_IMP} (a_text)
 		end
+
 
 feature {EV_ANY_I} -- Implementation
 

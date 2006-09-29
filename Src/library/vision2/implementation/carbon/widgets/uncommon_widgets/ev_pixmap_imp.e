@@ -24,7 +24,6 @@ inherit
 			width,
 			height,
 			destroy,
-			drawable,
 			initialize
 		end
 
@@ -41,7 +40,9 @@ inherit
 			height,
 			destroy,
 			dispose,
-			initialize
+			initialize,
+			minimum_width,
+			minimum_height
 		end
 
 	EV_PIXMAP_ACTION_SEQUENCES_IMP
@@ -50,13 +51,37 @@ inherit
 			destroy
 		end
 	HIVIEW_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CGIMAGE_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CFSTRING_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CFBUNDLE_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CGDATAPROVIDER_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 	CFBASE_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -73,6 +98,7 @@ feature {NONE} -- Initialization
 
 			ret := hiimage_view_create_external (null, $struct_ptr)
 			set_c_object (struct_ptr)
+			ret := hiview_set_visible_external (struct_ptr, 1)
 		end
 
 	initialize is
@@ -86,8 +112,12 @@ feature {NONE} -- Initialization
 			ret := hiview_set_drawing_enabled_external (c_object, 1)
 			event_id := app_implementation.get_id (current)  --getting an id from the application
 			target := get_control_event_target_external(c_object)
-			h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			--h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			expandable := false
+			init_default_values
 		end
+
+
 
 feature -- Drawing operations
 
@@ -159,7 +189,13 @@ feature -- Element change
 			create a_file_name.make (file_name)
 			create a_dir.make("./")
 
-			url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, c_string_to_cfstring_ptr(a_file_name), null, null)
+			url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, c_string_to_cfstring_ptr(a_file_name), null, c_string_to_cfstring_ptr(a_dir))
+			if url = null then
+				create a_dir.make ("./../../../")
+				url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, c_string_to_cfstring_ptr(a_file_name), null, c_string_to_cfstring_ptr(a_dir))
+
+			end
+
 			if url /= null then
 				provider := cgdata_provider_create_with_url_external (url)
 				drawable := cgimage_create_with_pngdata_provider_external (provider, null, 1, kCGRenderingIntentDefault)
@@ -167,7 +203,9 @@ feature -- Element change
 				cgdata_provider_release_external (provider)
 				cfrelease_external (url)
 
+				ret := hiview_set_drawing_enabled_external (c_object, 1)
 				ret := hiimage_view_set_image_external (c_object, drawable)
+
 			end
 
 		end
@@ -221,21 +259,20 @@ feature -- Element change
 			-- Set the size of the pixmap to `a_width' by `a_height'.
 		local
 			ret : INTEGER
-			old_point : CGPOINT_STRUCT
 			size : CGSIZE_STRUCT
-			old_rect, rect : CGRECT_STRUCT
+			rect : CGRECT_STRUCT
 		do
-			create old_rect.make_new_unshared
-			ret := hiview_get_frame_external (c_object, old_rect.item)
-			create old_point.make_shared (old_rect.origin.item)
-
 			create rect.make_new_unshared
-			create size.make_new_unshared
+			create size.make_shared (rect.size)
+
+			ret := hiview_get_frame_external (c_object, rect.item)
+
 			size.set_height(a_height)
 			size.set_width (a_width)
-			rect.set_origin (old_point.item)
-			rect.set_size (size.item)
+
 			ret := hiview_set_frame_external (c_object, rect.item)
+			internal_width := a_width
+			internal_height := a_height
 		end
 
 	reset_for_buffering (a_width, a_height: INTEGER) is
@@ -260,6 +297,18 @@ feature -- Element change
 		end
 
 feature -- Access
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+	do
+		Result := internal_width
+	end
+
+	minimum_height: INTEGER is
+			-- Minimum width that the widget may occupy.
+	do
+		Result := internal_height
+	end
 
 	image_ptr: POINTER
 
@@ -331,6 +380,9 @@ feature {EV_STOCK_PIXMAPS_IMP, EV_PIXMAPABLE_IMP} -- Implementation
 		end
 
 feature {NONE} -- Implementation
+
+	internal_height: INTEGER
+	internal_width: INTEGER
 
 	save_to_named_file (a_format: EV_GRAPHICAL_FORMAT; a_filename: FILE_NAME) is
 			-- Save `Current' in `a_format' to `a_filename'

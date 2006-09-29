@@ -67,7 +67,7 @@ feature
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (QDPictRef):CGRect*"
 		alias
-			"ewg_function_QDPictGetBounds"
+			"ewg_function_QDPictGetBounds()"
 		end
 
 	frozen qdpict_get_bounds_address_external: POINTER is

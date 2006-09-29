@@ -112,6 +112,7 @@ feature {NONE} -- Initialization
 			event_id := app_implementation.get_id (current)
 			target := get_control_event_target_external( entry_widget )
 			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.keventclasstextinput, {CARBONEVENTS_ANON_ENUMS}.keventtextinputunicodeforkeyevent )
+			expandable := false
 		end
 
 feature -- Access
@@ -381,6 +382,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 					-- The text has actually changed
 				in_change_action := True
 				if change_actions_internal /= Void then
+
 					change_actions_internal.call (Void)
 				end
 				in_change_action := False
@@ -430,7 +432,6 @@ on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER
 					on_key_event (a_key, a_string.string.as_string_32, true)
 
 					on_change_actions
-
 					Result := {EV_ANY_IMP}.noErr -- event handled
 				else
 

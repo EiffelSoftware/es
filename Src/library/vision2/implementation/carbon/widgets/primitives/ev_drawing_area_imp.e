@@ -17,7 +17,9 @@ inherit
 	EV_DRAWABLE_IMP
 		redefine
 			interface,
-			on_event
+			make,
+			destroy,
+			initialize
 		end
 
 	EV_PRIMITIVE_IMP
@@ -50,36 +52,42 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Create an empty drawing area.
+			-- Connect interface and initialize `c_object'.
 		local
 			ret: INTEGER
-			rect: RECT_STRUCT
-			ptr: POINTER
-			cfstring: EV_CARBON_CF_STRING
+			struct_ptr: POINTER
 		do
 			base_make (an_interface)
-			create rect.make_new_unshared
-			rect.set_right (200)
-			rect.set_bottom (20)
-			create cfstring.make_unshared_with_eiffel_string ("NOT IMPLEMENTED :D")
-			ret := create_static_text_control_external( null, rect.item, cfstring.item, null, $ptr )
-			set_c_object ( ptr )
 
-			event_id := app_implementation.get_id (current)
+			ret := hiimage_view_create_external (null, $struct_ptr)
+			set_c_object (struct_ptr)
+			ret := hiview_set_visible_external (struct_ptr, 1)
 		end
 
 	initialize is
-			-- Initialize `Current'.
+			-- Initialize `Current'
+		local
+			ret: INTEGER
+			target, h_ret: POINTER
 		do
+
 			Precursor {EV_PRIMITIVE_IMP}
+
+			ret := hiview_set_drawing_enabled_external (c_object, 1)
+			event_id := app_implementation.get_id (current)  --getting an id from the application
+			target := get_control_event_target_external(c_object)
+			--h_ret := app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventMouseDown)
+			expandable := false
+			init_default_values
 		end
+
 
 feature -- Status report
 
@@ -91,10 +99,6 @@ feature -- Status report
 
 feature -- Status setting
 
-	on_event (a_inhandlercallref, a_inevent, a_inuserdata: POINTER): INTEGER_32 is
-		do
-
-		end
 
 
 	enable_double_buffering is

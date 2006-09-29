@@ -24,7 +24,9 @@ inherit
 			interface,
 			make,
 			on_removed_item,
-			replace
+			replace,
+			setup_automatic_layout,
+			setup_layout
 		end
 
 	HIVIEW_FUNCTIONS_EXTERNAL
@@ -155,6 +157,61 @@ feature -- Element change
 				item := v
 			end
 		end
+
+	setup_layout (a_widget: EV_WIDGET_IMP) is
+				-- Sets the child control's size to the container site minus some spacing
+		local
+			a_rect : CGRECT_STRUCT
+			a_size : CGSIZE_STRUCT
+			a_point : CGPOINT_STRUCT
+			ret: INTEGER
+		do
+			-- Get initial positions right
+			--create a_rect.make_new_unshared
+			--create a_size.make_shared ( a_rect.size )
+			--create a_point.make_shared ( a_rect.origin )
+
+			--a_point.set_x (5)
+			--a_point.set_y (child_offset_top)
+			--a_size.set_width (width - 10)
+			--a_size.set_height (height - 8 - child_offset_top)
+			--ret := hiview_set_frame_external (a_widget.c_object, a_rect.item)
+
+			setup_automatic_layout (a_widget.c_object, c_object)
+		end
+
+		setup_automatic_layout (a_control, a_container: POINTER) is
+				-- Make the child follow it's parent when it's reszed
+			external
+				"C inline use <Carbon/Carbon.h>"
+			alias
+				"[
+					{
+						HILayoutInfo LayoutInfo;
+						LayoutInfo.version = kHILayoutInfoVersionZero;
+						HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+						
+						LayoutInfo.binding.left.toView = $a_container;
+						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+						LayoutInfo.binding.left.offset = 20;
+						
+						LayoutInfo.binding.right.toView = $a_container;
+						LayoutInfo.binding.right.kind = kHILayoutBindRight;
+						LayoutInfo.binding.right.offset = 20;
+						
+						LayoutInfo.binding.top.toView = $a_container;
+						LayoutInfo.binding.top.kind = kHILayoutBindTop;
+						LayoutInfo.binding.top.offset = 20;
+						
+						LayoutInfo.binding.bottom.toView = $a_container;
+						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+						LayoutInfo.binding.bottom.offset = 20;
+						
+						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+						HIViewApplyLayout( $a_control );
+					}
+				]"
+			end
 
 
 	block_resize_actions is

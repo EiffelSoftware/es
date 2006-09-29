@@ -48,6 +48,51 @@ feature
 			"(void*) call_cgdata_provider_release_data_callback"
 		end
 
+	frozen get_cgpath_applier_function_stub_external: POINTER is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
+		alias
+			"ewg_function_macro_get_cgpath_applier_function_stub"
+		end
+
+	frozen get_cgpath_applier_function_stub_address_external: POINTER is
+			-- Address of C function `get_cgpath_applier_function_stub'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) get_cgpath_applier_function_stub"
+		end
+
+	frozen set_cgpath_applier_function_entry_external (a_class: CGPATH_APPLIER_FUNCTION_DISPATCHER; a_feature: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
+		alias
+			"ewg_function_macro_set_cgpath_applier_function_entry"
+		end
+
+	frozen set_cgpath_applier_function_entry_address_external: POINTER is
+			-- Address of C function `set_cgpath_applier_function_entry'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) set_cgpath_applier_function_entry"
+		end
+
+	frozen call_cgpath_applier_function_external (a_function: POINTER; info: POINTER; element: POINTER) is
+		external
+			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, CGPathElement const*)"
+		alias
+			"ewg_function_macro_call_cgpath_applier_function"
+		end
+
+	frozen call_cgpath_applier_function_address_external: POINTER is
+			-- Address of C function `call_cgpath_applier_function'
+		external
+			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
+		alias
+			"(void*) call_cgpath_applier_function"
+		end
+
 	frozen get_aeremote_process_resolver_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"

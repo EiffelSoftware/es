@@ -28,6 +28,24 @@ feature
 			call_cgdata_provider_release_data_callback_external (a_function, info, data, size)
 		end
 
+	get_cgpath_applier_function_stub: POINTER is
+		local
+		do
+			Result := get_cgpath_applier_function_stub_external
+		end
+
+	set_cgpath_applier_function_entry (a_class: CGPATH_APPLIER_FUNCTION_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_cgpath_applier_function_entry_external (a_class, a_feature)
+		end
+
+	call_cgpath_applier_function (a_function: POINTER; info: POINTER; element: POINTER) is
+		local
+		do
+			call_cgpath_applier_function_external (a_function, info, element)
+		end
+
 	get_aeremote_process_resolver_callback_stub: POINTER is
 		local
 		do

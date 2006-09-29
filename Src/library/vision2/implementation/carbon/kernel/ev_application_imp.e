@@ -366,7 +366,7 @@ feature -- event handling
 			event_type.set_eventclass (a_event_class)
 			event_type.set_eventkind (a_event_kind)
 			ret := install_event_handler_external (a_target, dispatcher.c_dispatcher, 1, event_type.item, int_to_pointer( a_id ), $handler)
-		--	io.put_string ("handler installed for id: " + a_id.out + " ret: " + ret.out + "%N")
+			--io.put_string ("handler installed for id: " + a_id.out + " ret: " + ret.out + "%N")
 			Result := handler
 		end
 

@@ -40,13 +40,31 @@ inherit
 	CONTROLS_FUNCTIONS_EXTERNAL
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
 	CARBONEVENTSCORE_FUNCTIONS_EXTERNAL
+	CGCONTEXT_FUNCTIONS_EXTERNAL
+	CGGEOMETRY_FUNCTIONS_EXTERNAL
+	CGPATH_FUNCTIONS_EXTERNAL
+	CGAFFINETRANSFORM_FUNCTIONS_EXTERNAL
 
 
 feature {NONE} -- Initialization
 
 	init_default_values is
 			-- Set default values. Call during initialization.
+		local
+			c_imp: EV_WIDGET_IMP
+			target: POINTER
+			ret: INTEGER
 		do
+			c_imp ?= current
+			if c_imp /=void then
+        		target := get_control_event_target_external(c_imp.c_object)
+				ret := hiview_set_drawing_enabled_external (c_imp.c_object, 1)  --enable drawing
+        		event_handler := c_imp.app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventControlDraw)
+				ret := hiview_set_needs_display_external (c_imp.c_object, 1)
+        	end
+        	create internal_background_color.make_with_8_bit_rgb (50, 50, 50)
+        	create internal_foreground_color.make_with_8_bit_rgb (50, 50, 50)
+        	create to_draw.make
 		end
 
 feature {EV_DRAWABLE_IMP, EV_APPLICATION_IMP} -- Implementation
@@ -119,19 +137,20 @@ feature -- Access
 	foreground_color: EV_COLOR is
 			-- Color used to draw primitives.
 		do
-			create Result
+			Result := internal_foreground_color
 		end
 
 	background_color: EV_COLOR is
 			-- Color used for erasing of canvas.
 			-- Default: white.
 		do
-			create Result
+			Result := internal_background_color
 		end
 
 	line_width: INTEGER is
 			-- Line thickness.
 		do
+			Result := internal_line_width
 		end
 
 	drawing_mode: INTEGER is
@@ -152,6 +171,7 @@ feature -- Access
 	dashed_line_style: BOOLEAN is
 			-- Are lines drawn dashed?
 		do
+			Result := internal_dashed_line_style
 		end
 
 feature -- Element change
@@ -159,21 +179,25 @@ feature -- Element change
 	set_font (a_font: EV_FONT) is
 			-- Set `font' to `a_font'.
 		do
+
 		end
 
 	set_background_color (a_color: EV_COLOR) is
 			-- Assign `a_color' to `background_color'.
 		do
+			internal_background_color := a_color
 		end
 
 	set_foreground_color (a_color: EV_COLOR) is
 			-- Assign `a_color' to `foreground_color'
 		do
+			internal_foreground_color := a_color
 		end
 
 	set_line_width (a_width: INTEGER) is
 			-- Assign `a_width' to `line_width'.
 		do
+			internal_line_width := a_width
 		end
 
 	set_drawing_mode (a_mode: INTEGER) is
@@ -205,11 +229,13 @@ feature -- Element change
 	enable_dashed_line_style is
 			-- Draw lines dashed.
 		do
+			internal_dashed_line_style := true
 		end
 
 	disable_dashed_line_style is
 			-- Draw lines solid.
 		do
+			internal_dashed_line_style := false
 		end
 
 feature -- Clearing operations
@@ -217,6 +243,8 @@ feature -- Clearing operations
 	clear is
 			-- Erase `Current' with `background_color'.
 		do
+			internal_clear := true
+			prepare_drawing
 		end
 
 	clear_rectangle (x, y, a_width, a_height: INTEGER) is
@@ -228,12 +256,24 @@ feature -- Drawing operations
 
 	draw_point (x, y: INTEGER) is
 			-- Draw point at (`x', `y').
+		local
+			a_size: INTEGER
 		do
+			a_size := line_width
+			set_line_width (2)
+			draw_segment (x-1, y, x+1, y)
+			set_line_width (a_size)
 		end
 
 	draw_text (x, y: INTEGER; a_text: STRING_GENERAL) is
 			-- Draw `a_text' with left of baseline at (`x', `y') using `font'.
+		local
+			a_drawer: EV_CARBON_DRAWING
 		do
+			create a_drawer
+			a_drawer.set_text (x, y, false, foreground_color, font, 0, a_text)
+			to_draw.force (a_drawer)
+			prepare_drawing
 		end
 
 	draw_rotated_text (x, y: INTEGER; angle: REAL; a_text: STRING_GENERAL) is
@@ -268,7 +308,13 @@ feature -- Drawing operations
 
 	draw_segment (x1, y1, x2, y2: INTEGER) is
 			-- Draw line segment from (`x1', 'y1') to (`x2', 'y2').
+		local
+			a_drawer: EV_CARBON_DRAWING
 		do
+			create a_drawer
+			a_drawer.set_line (x1, y1, x2, y2, internal_line_width, false, internal_dashed_line_style, foreground_color)
+			to_draw.force (a_drawer)
+			prepare_drawing
 		end
 
 	draw_arc (x, y, a_width, a_height: INTEGER; a_start_angle, an_aperture: REAL) is
@@ -277,17 +323,21 @@ feature -- Drawing operations
 			-- Start at `a_start_angle' and stop at `a_start_angle' + `an_aperture'.
 			-- Angles are measured in radians.
 		do
+
 		end
 
 	draw_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP) is
 			-- Draw `a_pixmap' with upper-left corner on (`x', `y').
 		local
 			a_imp: EV_PIXMAP_IMP
+			a_drawer: EV_CARBON_DRAWING
 		do
+			create a_drawer
 			a_imp ?= a_pixmap.implementation
 			if a_imp /= void then
-				pix_to_draw := a_imp
+				a_drawer.set_pixmap (x,y,a_imp)
 			end
+			to_draw.force (a_drawer)
 			prepare_drawing
 		end
 
@@ -300,9 +350,10 @@ feature -- Drawing operations
 		do
         	c_imp ?= current
         	if c_imp /=void then
-        		target := get_control_event_target_external(c_imp.c_object)
-        		ret := hiview_set_drawing_enabled_external (c_imp.c_object, 1)  --enable drawing
-        		event_handler := c_imp.app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventControlDraw)
+        --		target := get_control_event_target_external(c_imp.c_object)
+		--		ret := hiview_set_drawing_enabled_external (c_imp.c_object, 1)  --enable drawing
+        --		event_handler := c_imp.app_implementation.install_event_handler (event_id, target, {carbonevents_anon_enums}.kEventClassControl, {carbonevents_anon_enums}.kEventControlDraw)
+				ret := hiview_set_needs_display_external (c_imp.c_object, 1)
         	end
         end
 
@@ -313,7 +364,23 @@ feature -- Drawing operations
 		"kEventAttributeUserEvent"
 	end
 
-       draw (a_inevent: POINTER) is
+	frozen kCGEncodingMacRoman: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kCGEncodingMacRoman"
+	end
+
+	frozen kCGTextFillStroke: INTEGER is
+	external
+		"C inline use <Carbon/Carbon.h>"
+	alias
+		"kCGTextFillStroke"
+	end
+
+
+
+     draw (a_inevent: POINTER) is
        		-- executet by the eventhandler to draw into context
         local
         	ret: INTEGER
@@ -324,42 +391,152 @@ feature -- Drawing operations
         	size: CGSIZE_STRUCT
 			rect: CGRECT_STRUCT
 			c_imp: EV_WIDGET_IMP
+			font_str: C_STRING
+			transform: CGAFFINE_TRANSFORM_STRUCT
+			o_test: EV_PIXMAP_IMP
         do
 
-
 			c_imp ?= current
-        	if event_handler /= null then
+        	--if event_handler /= null then
         		--handler_ptr.set_item (event_handler.item)
 
-				ret := remove_event_handler_external (event_handler)
-				ret := hiview_set_drawing_enabled_external (c_imp.c_object, 0)  --disable drawing to pixmap
+				--ret := remove_event_handler_external (event_handler)
+				--ret := hiview_set_drawing_enabled_external (c_imp.c_object, 0)  --disable drawing to pixmap
+
 	        	create context.make_new_unshared
 	        	context_ptr.set_item (context.item)
 	        	ret := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamCGContextRef,  {carbonevents_anon_enums}.typeCGContextRef, null, 4, null, $context_ptr)
 
-	       		if  pix_to_draw /= void then
-	       			--draw_pixmap case
-	           			create rect.make_new_unshared
-						create point.make_new_unshared
-						point.set_x (new_x)
-						point.set_y (new_y)
-						create size.make_new_unshared
-						size.set_height (pix_to_draw.height)
-						size.set_width (pix_to_draw.width)
-						rect.set_origin (point.item)
-						rect.set_size (size.item)
-						--	ret := cgcontext_draw_image_external (context_ptr, rect.item, pix_to_draw.drawable)
-			        	ret := hiview_draw_cgimage_external (context_ptr, rect.item, pix_to_draw.drawable)
-	        			event_handler := null
-	        			pix_to_draw := void
-	        	end
-	        end
+				o_test ?= current
+				if o_test = void then
+				--if current is not of type Pixmap, we need to translate the coordinates
+					cgcontext_translate_ctm_external (context_ptr, 0, height)
+					cgcontext_scale_ctm_external (context_ptr, 1.0, -1.0)
+				end
+
+
+				if internal_clear then
+					internal_clear := false
+					create to_draw.make
+				end
+
+
+				from
+					to_draw.start
+				until
+					to_draw.off
+				loop
+
+
+				--	cgcontext_begin_path_external (context_ptr)
+				--	cgcontext_close_path_external (context_ptr)
+
+					if to_draw.item.internal_color /= void then
+						--set color of path
+						if to_draw.item.internal_filled then
+							cgcontext_set_rgbfill_color_external (context_ptr, to_draw.item.internal_color.red, to_draw.item.internal_color.green, to_draw.item.internal_color.blue, to_draw.item.internal_color.lightness )
+						else
+							cgcontext_set_rgbstroke_color_external (context_ptr, to_draw.item.internal_color.red, to_draw.item.internal_color.green, to_draw.item.internal_color.blue, to_draw.item.internal_color.lightness )
+						end
+
+					end
+
+
+
+					if to_draw.item.internal_rectangle then
+						--draw a rectangle
+						cgcontext_move_to_point_external (context_ptr, to_draw.item.internal_x1, to_draw.item.internal_y1)
+						cgcontext_add_line_to_point_external (context_ptr, to_draw.item.internal_x1 , to_draw.item.internal_y1 + to_draw.item.internal_draw_height)
+						cgcontext_add_line_to_point_external (context_ptr, to_draw.item.internal_x1 + to_draw.item.internal_draw_width , to_draw.item.internal_y1 + to_draw.item.internal_draw_height)
+						cgcontext_add_line_to_point_external (context_ptr, to_draw.item.internal_x1 + to_draw.item.internal_draw_width , to_draw.item.internal_y1)
+						cgcontext_add_line_to_point_external (context_ptr, to_draw.item.internal_x1 , to_draw.item.internal_y1)
+					end
+
+		        	if  to_draw.item.internal_line then
+						-- draw line
+						cgcontext_move_to_point_external (context_ptr, to_draw.item.internal_x1.to_real, to_draw.item.internal_y1.to_real)
+						cgcontext_add_line_to_point_external (context_ptr, to_draw.item.internal_x2.to_real , to_draw.item.internal_y2.to_real)
+		        	end
+
+		        	if to_draw.item.internal_elipse then
+		        	--draw an ellipse
+						create rect.make_new_unshared
+						create point.make_shared (rect.origin)
+						create size.make_shared (rect.size)
+						point.set_x (to_draw.item.internal_x1)
+						point.set_y (to_draw.item.internal_y1)
+						size.set_height (to_draw.item.internal_draw_height)
+						size.set_width (to_draw.item.internal_draw_width)
+						cgcontext_add_ellipse_in_rect_external (context_ptr, rect.item)
+		        	end
+
+
+
+					if to_draw.item.internal_filled then
+						cgcontext_fill_path_external (context_ptr)
+					else
+						cgcontext_stroke_path_external (context_ptr)
+					end
+
+
+		        	if  to_draw.item.pix_to_draw /= void then
+		       			--draw_pixmap case
+		           			create rect.make_new_unshared
+							create point.make_new_shared
+							create size.make_new_shared
+							rect.set_origin (point.item)
+
+
+							ret := hiview_get_frame_external (c_imp.c_object, rect.item)
+
+							point.set_x (point.x+to_draw.item.internal_x1)
+							point.set_y (point.y + to_draw.item.internal_y1)
+
+							size.set_height (to_draw.item.pix_to_draw.height)
+							size.set_width (to_draw.item.pix_to_draw.width)
+
+							size.set_height (50)
+							size.set_width (50)
+							rect.set_size (size.item)
+
+							cgcontext_draw_image_external (context_ptr, rect.item, to_draw.item.pix_to_draw.drawable)
+				        	--ret := hiview_draw_cgimage_external (context_ptr, rect.item, pix_to_draw.drawable)
+		        	end
+
+		        	if to_draw.item.internal_text then
+		        		cgcontext_set_rgbfill_color_external (context_ptr, to_draw.item.internal_color.red, to_draw.item.internal_color.green, to_draw.item.internal_color.blue, to_draw.item.internal_color.lightness )
+
+						if to_draw.item.internal_font /= void then
+							create font_str.make (to_draw.item.internal_font.name)
+							cgcontext_select_font_external (context_ptr, font_str.item, to_draw.item.internal_font.height, kCGEncodingMacRoman)
+						else
+							create font_str.make ("Times-Bold")
+							cgcontext_select_font_external (context_ptr, font_str.item, 20, kCGEncodingMacRoman)
+						end
+
+						cgcontext_set_character_spacing_external (context_ptr, 10)
+
+						cgcontext_set_text_drawing_mode_external (context_ptr, kCGTextFillStroke)
+
+						cgcontext_show_text_at_point_external (context_ptr, to_draw.item.internal_x1.to_real, to_draw.item.internal_y1.to_real, to_draw.item.internal_string.item, to_draw.item.internal_string.count)
+
+					end
+
+		        	to_draw.forth
+
+				end
+
+
+	        --end
         end
 
 
 
 	draw_full_pixmap (x, y: INTEGER; a_pixmap: EV_PIXMAP; x_src, y_src, src_width, src_height: INTEGER) is
+		local
+			a_imp: EV_PIXMAP_IMP
 		do
+
 		end
 
 	sub_pixmap (area: EV_RECTANGLE): EV_PIXMAP is
@@ -375,20 +552,48 @@ feature -- Drawing operations
 	draw_rectangle (x, y, a_width, a_height: INTEGER) is
 			-- Draw rectangle with upper-left corner on (`x', `y')
 			-- with size `a_width' and `a_height'.
+		local
+			a_drawer: EV_CARBON_DRAWING
 		do
+			create a_drawer
+			a_drawer.set_rectangle (x, y, a_height, a_width, internal_line_width, false, internal_dashed_line_style, foreground_color)
+			to_draw.force (a_drawer)
+
+			prepare_drawing
 		end
 
 	draw_ellipse (x, y, a_width, a_height: INTEGER) is
 			-- Draw an ellipse bounded by top left (`x', `y') with
 			-- size `a_width' and `a_height'.
+		local
+			a_drawer: EV_CARBON_DRAWING
 		do
+			create a_drawer
+			a_drawer.set_elipse (x, y, a_height, a_width, internal_line_width, false, internal_dashed_line_style, foreground_color)
+			to_draw.force (a_drawer)
+
+			prepare_drawing
 		end
 
 	draw_polyline (points: ARRAY [EV_COORDINATE]; is_closed: BOOLEAN) is
 			-- Draw line segments between subsequent points in
 			-- `points'. If `is_closed' draw line segment between first
 			-- and last point in `points'.
+		local
+			i: INTEGER
 		do
+			from
+				i:=2
+			until
+				i > points.count
+			loop
+				draw_segment (points.item(i-1).x, points.item(i-1).y, points.item(i).x, points.item(i).y)
+				if is_closed then
+			 		draw_segment (points.item(1).x, points.item(1).y, points.item(points.count).x, points.item(points.count).y)
+				end
+				i := i + 1
+			end
+
 		end
 
 	draw_pie_slice (x, y, a_width, a_height: INTEGER; a_start_angle, an_aperture: REAL) is
@@ -405,14 +610,28 @@ feature -- filling operations
 	fill_rectangle (x, y, a_width, a_height: INTEGER) is
 			-- Draw rectangle with upper-left corner on (`x', `y')
 			-- with size `a_width' and `a_height'. Fill with `background_color'.
+		local
+			a_drawer: EV_CARBON_DRAWING
 		do
+			create a_drawer
+			a_drawer.set_rectangle (x, y, a_height, a_width, internal_line_width, true, internal_dashed_line_style, background_color)
+			to_draw.force (a_drawer)
+
+			prepare_drawing
 		end
 
 	fill_ellipse (x, y, a_width, a_height: INTEGER) is
 			-- Draw an ellipse bounded by top left (`x', `y') with
 			-- size `a_width' and `a_height'.
 			-- Fill with `background_color'.
+				local
+			a_drawer: EV_CARBON_DRAWING
 		do
+			create a_drawer
+			a_drawer.set_elipse (x, y, a_height, a_width, internal_line_width, true, internal_dashed_line_style, background_color)
+			to_draw.force (a_drawer)
+
+			prepare_drawing
 		end
 
 	fill_polygon (points: ARRAY [EV_COORDINATE]) is
@@ -461,6 +680,16 @@ feature {EV_GTK_DEPENDENT_APPLICATION_IMP, EV_ANY_I} -- Implementation
 
 feature {NONE} -- Implementation
 
+	path: POINTER
+
+	to_draw: LINKED_LIST [EV_CARBON_DRAWING]
+
+	internal_clear: BOOLEAN
+
+	internal_line_width: INTEGER
+
+	internal_dashed_line_style: BOOLEAN
+
 	draw_mask_on_pixbuf (a_pixbuf_ptr, a_mask_ptr: POINTER) is
 		do
 		end
@@ -501,13 +730,13 @@ feature {NONE} -- Implementation
 			-- Feature that is called if an event occurs
 		local
 			event_class, event_kind : INTEGER
-			err : INTEGER
+			c_imp: EV_WIDGET_IMP
+			ret : INTEGER
 		do
 				event_class := get_event_class_external (a_inevent)
 				event_kind := get_event_kind_external (a_inevent)
-
 				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
-					err := call_next_event_handler_external (a_inhandlercallref, a_inevent)
+					ret := call_next_event_handler_external (a_inhandlercallref, a_inevent)
 					draw ( a_inevent )
 					Result := {EV_ANY_IMP}.noErr -- event handled
 				else

@@ -3236,6 +3236,240 @@ void* ewg_get_function_address_CGRectIntersectsRect (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'CGAffineTransformMake'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformMake (float ewg_a, float ewg_b, float ewg_c, float ewg_d, float ewg_tx, float ewg_ty)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformMake ((float)ewg_a, (float)ewg_b, (float)ewg_c, (float)ewg_d, (float)ewg_tx, (float)ewg_ty);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformMake'
+void* ewg_get_function_address_CGAffineTransformMake (void)
+{
+	return (void*) CGAffineTransformMake;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformMakeTranslation'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformMakeTranslation (float ewg_tx, float ewg_ty)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformMakeTranslation ((float)ewg_tx, (float)ewg_ty);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformMakeTranslation'
+void* ewg_get_function_address_CGAffineTransformMakeTranslation (void)
+{
+	return (void*) CGAffineTransformMakeTranslation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformMakeScale'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformMakeScale (float ewg_sx, float ewg_sy)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformMakeScale ((float)ewg_sx, (float)ewg_sy);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformMakeScale'
+void* ewg_get_function_address_CGAffineTransformMakeScale (void)
+{
+	return (void*) CGAffineTransformMakeScale;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformMakeRotation'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformMakeRotation (float ewg_angle)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformMakeRotation ((float)ewg_angle);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformMakeRotation'
+void* ewg_get_function_address_CGAffineTransformMakeRotation (void)
+{
+	return (void*) CGAffineTransformMakeRotation;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformIsIdentity'
+// For ise
+_Bool  ewg_function_CGAffineTransformIsIdentity (CGAffineTransform *ewg_t)
+{
+	return CGAffineTransformIsIdentity (*(CGAffineTransform*)ewg_t);
+}
+
+// Return address of function 'CGAffineTransformIsIdentity'
+void* ewg_get_function_address_CGAffineTransformIsIdentity (void)
+{
+	return (void*) CGAffineTransformIsIdentity;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformTranslate'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformTranslate (CGAffineTransform *ewg_t, float ewg_tx, float ewg_ty)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformTranslate (*(CGAffineTransform*)ewg_t, (float)ewg_tx, (float)ewg_ty);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformTranslate'
+void* ewg_get_function_address_CGAffineTransformTranslate (void)
+{
+	return (void*) CGAffineTransformTranslate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformScale'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformScale (CGAffineTransform *ewg_t, float ewg_sx, float ewg_sy)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformScale (*(CGAffineTransform*)ewg_t, (float)ewg_sx, (float)ewg_sy);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformScale'
+void* ewg_get_function_address_CGAffineTransformScale (void)
+{
+	return (void*) CGAffineTransformScale;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformRotate'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformRotate (CGAffineTransform *ewg_t, float ewg_angle)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformRotate (*(CGAffineTransform*)ewg_t, (float)ewg_angle);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformRotate'
+void* ewg_get_function_address_CGAffineTransformRotate (void)
+{
+	return (void*) CGAffineTransformRotate;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformInvert'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformInvert (CGAffineTransform *ewg_t)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformInvert (*(CGAffineTransform*)ewg_t);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformInvert'
+void* ewg_get_function_address_CGAffineTransformInvert (void)
+{
+	return (void*) CGAffineTransformInvert;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformConcat'
+// For ise
+CGAffineTransform * ewg_function_CGAffineTransformConcat (CGAffineTransform *ewg_t1, CGAffineTransform *ewg_t2)
+{
+	CGAffineTransform *result = (CGAffineTransform*) malloc (sizeof(CGAffineTransform));
+	*result = CGAffineTransformConcat (*(CGAffineTransform*)ewg_t1, *(CGAffineTransform*)ewg_t2);
+	return result;
+}
+
+// Return address of function 'CGAffineTransformConcat'
+void* ewg_get_function_address_CGAffineTransformConcat (void)
+{
+	return (void*) CGAffineTransformConcat;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGAffineTransformEqualToTransform'
+// For ise
+_Bool  ewg_function_CGAffineTransformEqualToTransform (CGAffineTransform *ewg_t1, CGAffineTransform *ewg_t2)
+{
+	return CGAffineTransformEqualToTransform (*(CGAffineTransform*)ewg_t1, *(CGAffineTransform*)ewg_t2);
+}
+
+// Return address of function 'CGAffineTransformEqualToTransform'
+void* ewg_get_function_address_CGAffineTransformEqualToTransform (void)
+{
+	return (void*) CGAffineTransformEqualToTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPointApplyAffineTransform'
+// For ise
+CGPoint * ewg_function_CGPointApplyAffineTransform (CGPoint *ewg_point, CGAffineTransform *ewg_t)
+{
+	CGPoint *result = (CGPoint*) malloc (sizeof(CGPoint));
+	*result = CGPointApplyAffineTransform (*(CGPoint*)ewg_point, *(CGAffineTransform*)ewg_t);
+	return result;
+}
+
+// Return address of function 'CGPointApplyAffineTransform'
+void* ewg_get_function_address_CGPointApplyAffineTransform (void)
+{
+	return (void*) CGPointApplyAffineTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGSizeApplyAffineTransform'
+// For ise
+CGSize * ewg_function_CGSizeApplyAffineTransform (CGSize *ewg_size, CGAffineTransform *ewg_t)
+{
+	CGSize *result = (CGSize*) malloc (sizeof(CGSize));
+	*result = CGSizeApplyAffineTransform (*(CGSize*)ewg_size, *(CGAffineTransform*)ewg_t);
+	return result;
+}
+
+// Return address of function 'CGSizeApplyAffineTransform'
+void* ewg_get_function_address_CGSizeApplyAffineTransform (void)
+{
+	return (void*) CGSizeApplyAffineTransform;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGRectApplyAffineTransform'
+// For ise
+CGRect * ewg_function_CGRectApplyAffineTransform (CGRect *ewg_rect, CGAffineTransform *ewg_t)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGRectApplyAffineTransform (*(CGRect*)ewg_rect, *(CGAffineTransform*)ewg_t);
+	return result;
+}
+
+// Return address of function 'CGRectApplyAffineTransform'
+void* ewg_get_function_address_CGRectApplyAffineTransform (void)
+{
+	return (void*) CGRectApplyAffineTransform;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'CGDataProviderGetTypeID'
 // For ise
 CFTypeID  ewg_function_CGDataProviderGetTypeID (void)
@@ -3742,6 +3976,385 @@ CGBitmapInfo  ewg_function_CGImageGetBitmapInfo (CGImageRef ewg_image)
 void* ewg_get_function_address_CGImageGetBitmapInfo (void)
 {
 	return (void*) CGImageGetBitmapInfo;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathGetTypeID'
+// For ise
+CFTypeID  ewg_function_CGPathGetTypeID (void)
+{
+	return CGPathGetTypeID ();
+}
+
+// Return address of function 'CGPathGetTypeID'
+void* ewg_get_function_address_CGPathGetTypeID (void)
+{
+	return (void*) CGPathGetTypeID;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathCreateMutable'
+// For ise
+CGMutablePathRef  ewg_function_CGPathCreateMutable (void)
+{
+	return CGPathCreateMutable ();
+}
+
+// Return address of function 'CGPathCreateMutable'
+void* ewg_get_function_address_CGPathCreateMutable (void)
+{
+	return (void*) CGPathCreateMutable;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathCreateCopy'
+// For ise
+CGPathRef  ewg_function_CGPathCreateCopy (CGPathRef ewg_path)
+{
+	return CGPathCreateCopy ((CGPathRef)ewg_path);
+}
+
+// Return address of function 'CGPathCreateCopy'
+void* ewg_get_function_address_CGPathCreateCopy (void)
+{
+	return (void*) CGPathCreateCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathCreateMutableCopy'
+// For ise
+CGMutablePathRef  ewg_function_CGPathCreateMutableCopy (CGPathRef ewg_path)
+{
+	return CGPathCreateMutableCopy ((CGPathRef)ewg_path);
+}
+
+// Return address of function 'CGPathCreateMutableCopy'
+void* ewg_get_function_address_CGPathCreateMutableCopy (void)
+{
+	return (void*) CGPathCreateMutableCopy;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathRetain'
+// For ise
+CGPathRef  ewg_function_CGPathRetain (CGPathRef ewg_path)
+{
+	return CGPathRetain ((CGPathRef)ewg_path);
+}
+
+// Return address of function 'CGPathRetain'
+void* ewg_get_function_address_CGPathRetain (void)
+{
+	return (void*) CGPathRetain;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathRelease'
+// For ise
+void  ewg_function_CGPathRelease (CGPathRef ewg_path)
+{
+	CGPathRelease ((CGPathRef)ewg_path);
+}
+
+// Return address of function 'CGPathRelease'
+void* ewg_get_function_address_CGPathRelease (void)
+{
+	return (void*) CGPathRelease;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathEqualToPath'
+// For ise
+_Bool  ewg_function_CGPathEqualToPath (CGPathRef ewg_path1, CGPathRef ewg_path2)
+{
+	return CGPathEqualToPath ((CGPathRef)ewg_path1, (CGPathRef)ewg_path2);
+}
+
+// Return address of function 'CGPathEqualToPath'
+void* ewg_get_function_address_CGPathEqualToPath (void)
+{
+	return (void*) CGPathEqualToPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathMoveToPoint'
+// For ise
+void  ewg_function_CGPathMoveToPoint (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, float ewg_x, float ewg_y)
+{
+	CGPathMoveToPoint ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGPathMoveToPoint'
+void* ewg_get_function_address_CGPathMoveToPoint (void)
+{
+	return (void*) CGPathMoveToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddLineToPoint'
+// For ise
+void  ewg_function_CGPathAddLineToPoint (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, float ewg_x, float ewg_y)
+{
+	CGPathAddLineToPoint ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGPathAddLineToPoint'
+void* ewg_get_function_address_CGPathAddLineToPoint (void)
+{
+	return (void*) CGPathAddLineToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddQuadCurveToPoint'
+// For ise
+void  ewg_function_CGPathAddQuadCurveToPoint (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, float ewg_cpx, float ewg_cpy, float ewg_x, float ewg_y)
+{
+	CGPathAddQuadCurveToPoint ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, (float)ewg_cpx, (float)ewg_cpy, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGPathAddQuadCurveToPoint'
+void* ewg_get_function_address_CGPathAddQuadCurveToPoint (void)
+{
+	return (void*) CGPathAddQuadCurveToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddCurveToPoint'
+// For ise
+void  ewg_function_CGPathAddCurveToPoint (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, float ewg_cp1x, float ewg_cp1y, float ewg_cp2x, float ewg_cp2y, float ewg_x, float ewg_y)
+{
+	CGPathAddCurveToPoint ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, (float)ewg_cp1x, (float)ewg_cp1y, (float)ewg_cp2x, (float)ewg_cp2y, (float)ewg_x, (float)ewg_y);
+}
+
+// Return address of function 'CGPathAddCurveToPoint'
+void* ewg_get_function_address_CGPathAddCurveToPoint (void)
+{
+	return (void*) CGPathAddCurveToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathCloseSubpath'
+// For ise
+void  ewg_function_CGPathCloseSubpath (CGMutablePathRef ewg_path)
+{
+	CGPathCloseSubpath ((CGMutablePathRef)ewg_path);
+}
+
+// Return address of function 'CGPathCloseSubpath'
+void* ewg_get_function_address_CGPathCloseSubpath (void)
+{
+	return (void*) CGPathCloseSubpath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddRect'
+// For ise
+void  ewg_function_CGPathAddRect (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, CGRect *ewg_rect)
+{
+	CGPathAddRect ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGPathAddRect'
+void* ewg_get_function_address_CGPathAddRect (void)
+{
+	return (void*) CGPathAddRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddRects'
+// For ise
+void  ewg_function_CGPathAddRects (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, void *ewg_rects, size_t ewg_count)
+{
+	CGPathAddRects ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, ewg_rects, (size_t)ewg_count);
+}
+
+// Return address of function 'CGPathAddRects'
+void* ewg_get_function_address_CGPathAddRects (void)
+{
+	return (void*) CGPathAddRects;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddLines'
+// For ise
+void  ewg_function_CGPathAddLines (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, void *ewg_points, size_t ewg_count)
+{
+	CGPathAddLines ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, ewg_points, (size_t)ewg_count);
+}
+
+// Return address of function 'CGPathAddLines'
+void* ewg_get_function_address_CGPathAddLines (void)
+{
+	return (void*) CGPathAddLines;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddEllipseInRect'
+// For ise
+void  ewg_function_CGPathAddEllipseInRect (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, CGRect *ewg_rect)
+{
+	CGPathAddEllipseInRect ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, *(CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGPathAddEllipseInRect'
+void* ewg_get_function_address_CGPathAddEllipseInRect (void)
+{
+	return (void*) CGPathAddEllipseInRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddArc'
+// For ise
+void  ewg_function_CGPathAddArc (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, float ewg_x, float ewg_y, float ewg_radius, float ewg_startAngle, float ewg_endAngle, _Bool ewg_clockwise)
+{
+	CGPathAddArc ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, (float)ewg_x, (float)ewg_y, (float)ewg_radius, (float)ewg_startAngle, (float)ewg_endAngle, (_Bool)ewg_clockwise);
+}
+
+// Return address of function 'CGPathAddArc'
+void* ewg_get_function_address_CGPathAddArc (void)
+{
+	return (void*) CGPathAddArc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddArcToPoint'
+// For ise
+void  ewg_function_CGPathAddArcToPoint (CGMutablePathRef ewg_path, CGAffineTransform const *ewg_m, float ewg_x1, float ewg_y1, float ewg_x2, float ewg_y2, float ewg_radius)
+{
+	CGPathAddArcToPoint ((CGMutablePathRef)ewg_path, (CGAffineTransform const*)ewg_m, (float)ewg_x1, (float)ewg_y1, (float)ewg_x2, (float)ewg_y2, (float)ewg_radius);
+}
+
+// Return address of function 'CGPathAddArcToPoint'
+void* ewg_get_function_address_CGPathAddArcToPoint (void)
+{
+	return (void*) CGPathAddArcToPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathAddPath'
+// For ise
+void  ewg_function_CGPathAddPath (CGMutablePathRef ewg_path1, CGAffineTransform const *ewg_m, CGPathRef ewg_path2)
+{
+	CGPathAddPath ((CGMutablePathRef)ewg_path1, (CGAffineTransform const*)ewg_m, (CGPathRef)ewg_path2);
+}
+
+// Return address of function 'CGPathAddPath'
+void* ewg_get_function_address_CGPathAddPath (void)
+{
+	return (void*) CGPathAddPath;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathIsEmpty'
+// For ise
+_Bool  ewg_function_CGPathIsEmpty (CGPathRef ewg_path)
+{
+	return CGPathIsEmpty ((CGPathRef)ewg_path);
+}
+
+// Return address of function 'CGPathIsEmpty'
+void* ewg_get_function_address_CGPathIsEmpty (void)
+{
+	return (void*) CGPathIsEmpty;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathIsRect'
+// For ise
+_Bool  ewg_function_CGPathIsRect (CGPathRef ewg_path, CGRect *ewg_rect)
+{
+	return CGPathIsRect ((CGPathRef)ewg_path, (CGRect*)ewg_rect);
+}
+
+// Return address of function 'CGPathIsRect'
+void* ewg_get_function_address_CGPathIsRect (void)
+{
+	return (void*) CGPathIsRect;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathGetCurrentPoint'
+// For ise
+CGPoint * ewg_function_CGPathGetCurrentPoint (CGPathRef ewg_path)
+{
+	CGPoint *result = (CGPoint*) malloc (sizeof(CGPoint));
+	*result = CGPathGetCurrentPoint ((CGPathRef)ewg_path);
+	return result;
+}
+
+// Return address of function 'CGPathGetCurrentPoint'
+void* ewg_get_function_address_CGPathGetCurrentPoint (void)
+{
+	return (void*) CGPathGetCurrentPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathGetBoundingBox'
+// For ise
+CGRect * ewg_function_CGPathGetBoundingBox (CGPathRef ewg_path)
+{
+	CGRect *result = (CGRect*) malloc (sizeof(CGRect));
+	*result = CGPathGetBoundingBox ((CGPathRef)ewg_path);
+	return result;
+}
+
+// Return address of function 'CGPathGetBoundingBox'
+void* ewg_get_function_address_CGPathGetBoundingBox (void)
+{
+	return (void*) CGPathGetBoundingBox;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathContainsPoint'
+// For ise
+_Bool  ewg_function_CGPathContainsPoint (CGPathRef ewg_path, CGAffineTransform const *ewg_m, CGPoint *ewg_point, _Bool ewg_eoFill)
+{
+	return CGPathContainsPoint ((CGPathRef)ewg_path, (CGAffineTransform const*)ewg_m, *(CGPoint*)ewg_point, (_Bool)ewg_eoFill);
+}
+
+// Return address of function 'CGPathContainsPoint'
+void* ewg_get_function_address_CGPathContainsPoint (void)
+{
+	return (void*) CGPathContainsPoint;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CGPathApply'
+// For ise
+void  ewg_function_CGPathApply (CGPathRef ewg_path, void *ewg_info, CGPathApplierFunction ewg_function)
+{
+	CGPathApply ((CGPathRef)ewg_path, (void*)ewg_info, (CGPathApplierFunction)ewg_function);
+}
+
+// Return address of function 'CGPathApply'
+void* ewg_get_function_address_CGPathApply (void)
+{
+	return (void*) CGPathApply;
 }
 
 #include <Carbon/Carbon.h>
@@ -24950,6 +25563,51 @@ void  ewg_function_call_cgdata_provider_release_data_callback (void *ewg_a_funct
 void* ewg_get_function_address_call_cgdata_provider_release_data_callback (void)
 {
 	return (void*) call_cgdata_provider_release_data_callback;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_cgpath_applier_function_stub'
+// For ise
+void * ewg_function_get_cgpath_applier_function_stub (void)
+{
+	return get_cgpath_applier_function_stub ();
+}
+
+// Return address of function 'get_cgpath_applier_function_stub'
+void* ewg_get_function_address_get_cgpath_applier_function_stub (void)
+{
+	return (void*) get_cgpath_applier_function_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_cgpath_applier_function_entry'
+// For ise
+void  ewg_function_set_cgpath_applier_function_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_cgpath_applier_function_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_cgpath_applier_function_entry'
+void* ewg_get_function_address_set_cgpath_applier_function_entry (void)
+{
+	return (void*) set_cgpath_applier_function_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_cgpath_applier_function'
+// For ise
+void  ewg_function_call_cgpath_applier_function (void *ewg_a_function, void *ewg_info, CGPathElement const *ewg_element)
+{
+	call_cgpath_applier_function ((void*)ewg_a_function, (void*)ewg_info, (CGPathElement const*)ewg_element);
+}
+
+// Return address of function 'call_cgpath_applier_function'
+void* ewg_get_function_address_call_cgpath_applier_function (void)
+{
+	return (void*) call_cgpath_applier_function;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>

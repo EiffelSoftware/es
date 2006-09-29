@@ -176,6 +176,37 @@
 #define ewg_struct_macro_struct_CGRect_member_set_size(an_item, a_value) ((struct CGRect*)an_item)->size =  *(CGSize*)a_value
 
 
+// glue code macros for struct `struct CGAffineTransform'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CGAffineTransform sizeof (struct CGAffineTransform)
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_get_a(an_item) ((struct CGAffineTransform*)an_item)->a
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_set_a(an_item, a_value) ((struct CGAffineTransform*)an_item)->a =  (float)a_value
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_get_b(an_item) ((struct CGAffineTransform*)an_item)->b
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_set_b(an_item, a_value) ((struct CGAffineTransform*)an_item)->b =  (float)a_value
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_get_c(an_item) ((struct CGAffineTransform*)an_item)->c
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_set_c(an_item, a_value) ((struct CGAffineTransform*)an_item)->c =  (float)a_value
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_get_d(an_item) ((struct CGAffineTransform*)an_item)->d
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_set_d(an_item, a_value) ((struct CGAffineTransform*)an_item)->d =  (float)a_value
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_get_tx(an_item) ((struct CGAffineTransform*)an_item)->tx
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_set_tx(an_item, a_value) ((struct CGAffineTransform*)an_item)->tx =  (float)a_value
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_get_ty(an_item) ((struct CGAffineTransform*)an_item)->ty
+
+#define ewg_struct_macro_struct_CGAffineTransform_member_set_ty(an_item, a_value) ((struct CGAffineTransform*)an_item)->ty =  (float)a_value
+
+
 // glue code macros for struct `struct CGDataProviderCallbacks'
 
 #include<Carbon/Carbon.h>
@@ -243,49 +274,18 @@
 #define ewg_struct_macro_sizeof_struct_CGImage 1
 
 
-// glue code macros for struct `struct CGContext'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CGContext 1
-
-
-// glue code macros for struct `struct CGAffineTransform'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_CGAffineTransform sizeof (struct CGAffineTransform)
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_get_a(an_item) ((struct CGAffineTransform*)an_item)->a
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_set_a(an_item, a_value) ((struct CGAffineTransform*)an_item)->a =  (float)a_value
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_get_b(an_item) ((struct CGAffineTransform*)an_item)->b
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_set_b(an_item, a_value) ((struct CGAffineTransform*)an_item)->b =  (float)a_value
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_get_c(an_item) ((struct CGAffineTransform*)an_item)->c
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_set_c(an_item, a_value) ((struct CGAffineTransform*)an_item)->c =  (float)a_value
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_get_d(an_item) ((struct CGAffineTransform*)an_item)->d
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_set_d(an_item, a_value) ((struct CGAffineTransform*)an_item)->d =  (float)a_value
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_get_tx(an_item) ((struct CGAffineTransform*)an_item)->tx
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_set_tx(an_item, a_value) ((struct CGAffineTransform*)an_item)->tx =  (float)a_value
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_get_ty(an_item) ((struct CGAffineTransform*)an_item)->ty
-
-#define ewg_struct_macro_struct_CGAffineTransform_member_set_ty(an_item, a_value) ((struct CGAffineTransform*)an_item)->ty =  (float)a_value
-
-
 // glue code macros for struct `struct CGPath'
 
 #include<Carbon/Carbon.h>
 
 #define ewg_struct_macro_sizeof_struct_CGPath 1
+
+
+// glue code macros for struct `struct CGContext'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CGContext 1
 
 
 // glue code macros for struct `struct CGColor'
@@ -620,6 +620,17 @@
 #define ewg_struct_macro_struct_Point_member_get_h(an_item) ((struct Point*)an_item)->h
 
 #define ewg_struct_macro_struct_Point_member_set_h(an_item, a_value) ((struct Point*)an_item)->h =  (short)a_value
+
+
+// glue code macros for struct `struct BigEndianLong'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_BigEndianLong sizeof (struct BigEndianLong)
+
+#define ewg_struct_macro_struct_BigEndianLong_member_get_bigEndianValue(an_item) ((struct BigEndianLong*)an_item)->bigEndianValue
+
+#define ewg_struct_macro_struct_BigEndianLong_member_set_bigEndianValue(an_item, a_value) ((struct BigEndianLong*)an_item)->bigEndianValue =  (long)a_value
 
 
 // glue code macros for struct `struct EventRecord'
@@ -1185,13 +1196,7 @@
 
 #define ewg_struct_macro_sizeof_struct_AliasRecord sizeof (struct AliasRecord)
 
-#define ewg_struct_macro_struct_AliasRecord_member_get_userType(an_item) ((struct AliasRecord*)an_item)->userType
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_userType(an_item, a_value) ((struct AliasRecord*)an_item)->userType =  (OSType)a_value
-
-#define ewg_struct_macro_struct_AliasRecord_member_get_aliasSize(an_item) ((struct AliasRecord*)an_item)->aliasSize
-
-#define ewg_struct_macro_struct_AliasRecord_member_set_aliasSize(an_item, a_value) ((struct AliasRecord*)an_item)->aliasSize =  (unsigned short)a_value
+#define ewg_struct_macro_struct_AliasRecord_member_get_hidden(an_item) ((struct AliasRecord*)an_item)->hidden
 
 
 // glue code macros for struct `struct OpaqueIconRef'
@@ -1694,6 +1699,21 @@
 #define ewg_struct_macro_CFStringInlineBuffer_member_get_bufferedRangeEnd(an_item) ((CFStringInlineBuffer*)an_item)->bufferedRangeEnd
 
 #define ewg_struct_macro_CFStringInlineBuffer_member_set_bufferedRangeEnd(an_item, a_value) ((CFStringInlineBuffer*)an_item)->bufferedRangeEnd =  (CFIndex)a_value
+
+
+// glue code macros for struct `struct CGPathElement'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CGPathElement sizeof (struct CGPathElement)
+
+#define ewg_struct_macro_struct_CGPathElement_member_get_type(an_item) ((struct CGPathElement*)an_item)->type
+
+#define ewg_struct_macro_struct_CGPathElement_member_set_type(an_item, a_value) ((struct CGPathElement*)an_item)->type =  (CGPathElementType)a_value
+
+#define ewg_struct_macro_struct_CGPathElement_member_get_points(an_item) ((struct CGPathElement*)an_item)->points
+
+#define ewg_struct_macro_struct_CGPathElement_member_set_points(an_item, a_value) ((struct CGPathElement*)an_item)->points =  (CGPoint*)a_value
 
 
 // glue code macros for struct `struct AppParameters'

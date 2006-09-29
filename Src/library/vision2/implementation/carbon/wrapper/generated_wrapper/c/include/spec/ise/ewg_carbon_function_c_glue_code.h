@@ -1283,6 +1283,90 @@ int  ewg_function_CGRectContainsRect (CGRect *rect1, CGRect *rect2);
 #define ewg_function_macro_CGRectIntersectsRect(ewg_param_rect1, ewg_param_rect2) CGRectIntersectsRect (*(CGRect*)ewg_param_rect1, *(CGRect*)ewg_param_rect2)
 
 int  ewg_function_CGRectIntersectsRect (CGRect *rect1, CGRect *rect2);
+// Wraps call to function 'CGAffineTransformMake' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformMake(ewg_param_a, ewg_param_b, ewg_param_c, ewg_param_d, ewg_param_tx, ewg_param_ty) CGAffineTransformMake ((float)ewg_param_a, (float)ewg_param_b, (float)ewg_param_c, (float)ewg_param_d, (float)ewg_param_tx, (float)ewg_param_ty)
+
+CGAffineTransform * ewg_function_CGAffineTransformMake (float a, float b, float c, float d, float tx, float ty);
+// Wraps call to function 'CGAffineTransformMakeTranslation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformMakeTranslation(ewg_param_tx, ewg_param_ty) CGAffineTransformMakeTranslation ((float)ewg_param_tx, (float)ewg_param_ty)
+
+CGAffineTransform * ewg_function_CGAffineTransformMakeTranslation (float tx, float ty);
+// Wraps call to function 'CGAffineTransformMakeScale' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformMakeScale(ewg_param_sx, ewg_param_sy) CGAffineTransformMakeScale ((float)ewg_param_sx, (float)ewg_param_sy)
+
+CGAffineTransform * ewg_function_CGAffineTransformMakeScale (float sx, float sy);
+// Wraps call to function 'CGAffineTransformMakeRotation' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformMakeRotation(ewg_param_angle) CGAffineTransformMakeRotation ((float)ewg_param_angle)
+
+CGAffineTransform * ewg_function_CGAffineTransformMakeRotation (float angle);
+// Wraps call to function 'CGAffineTransformIsIdentity' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformIsIdentity(ewg_param_t) CGAffineTransformIsIdentity (*(CGAffineTransform*)ewg_param_t)
+
+_Bool  ewg_function_CGAffineTransformIsIdentity (CGAffineTransform *t);
+// Wraps call to function 'CGAffineTransformTranslate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformTranslate(ewg_param_t, ewg_param_tx, ewg_param_ty) CGAffineTransformTranslate (*(CGAffineTransform*)ewg_param_t, (float)ewg_param_tx, (float)ewg_param_ty)
+
+CGAffineTransform * ewg_function_CGAffineTransformTranslate (CGAffineTransform *t, float tx, float ty);
+// Wraps call to function 'CGAffineTransformScale' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformScale(ewg_param_t, ewg_param_sx, ewg_param_sy) CGAffineTransformScale (*(CGAffineTransform*)ewg_param_t, (float)ewg_param_sx, (float)ewg_param_sy)
+
+CGAffineTransform * ewg_function_CGAffineTransformScale (CGAffineTransform *t, float sx, float sy);
+// Wraps call to function 'CGAffineTransformRotate' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformRotate(ewg_param_t, ewg_param_angle) CGAffineTransformRotate (*(CGAffineTransform*)ewg_param_t, (float)ewg_param_angle)
+
+CGAffineTransform * ewg_function_CGAffineTransformRotate (CGAffineTransform *t, float angle);
+// Wraps call to function 'CGAffineTransformInvert' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformInvert(ewg_param_t) CGAffineTransformInvert (*(CGAffineTransform*)ewg_param_t)
+
+CGAffineTransform * ewg_function_CGAffineTransformInvert (CGAffineTransform *t);
+// Wraps call to function 'CGAffineTransformConcat' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformConcat(ewg_param_t1, ewg_param_t2) CGAffineTransformConcat (*(CGAffineTransform*)ewg_param_t1, *(CGAffineTransform*)ewg_param_t2)
+
+CGAffineTransform * ewg_function_CGAffineTransformConcat (CGAffineTransform *t1, CGAffineTransform *t2);
+// Wraps call to function 'CGAffineTransformEqualToTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGAffineTransformEqualToTransform(ewg_param_t1, ewg_param_t2) CGAffineTransformEqualToTransform (*(CGAffineTransform*)ewg_param_t1, *(CGAffineTransform*)ewg_param_t2)
+
+_Bool  ewg_function_CGAffineTransformEqualToTransform (CGAffineTransform *t1, CGAffineTransform *t2);
+// Wraps call to function 'CGPointApplyAffineTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPointApplyAffineTransform(ewg_param_point, ewg_param_t) CGPointApplyAffineTransform (*(CGPoint*)ewg_param_point, *(CGAffineTransform*)ewg_param_t)
+
+CGPoint * ewg_function_CGPointApplyAffineTransform (CGPoint *point, CGAffineTransform *t);
+// Wraps call to function 'CGSizeApplyAffineTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGSizeApplyAffineTransform(ewg_param_size, ewg_param_t) CGSizeApplyAffineTransform (*(CGSize*)ewg_param_size, *(CGAffineTransform*)ewg_param_t)
+
+CGSize * ewg_function_CGSizeApplyAffineTransform (CGSize *size, CGAffineTransform *t);
+// Wraps call to function 'CGRectApplyAffineTransform' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGRectApplyAffineTransform(ewg_param_rect, ewg_param_t) CGRectApplyAffineTransform (*(CGRect*)ewg_param_rect, *(CGAffineTransform*)ewg_param_t)
+
+CGRect * ewg_function_CGRectApplyAffineTransform (CGRect *rect, CGAffineTransform *t);
 // Wraps call to function 'CGDataProviderGetTypeID' in a macro
 #include <Carbon/Carbon.h>
 
@@ -1487,6 +1571,156 @@ CGColorRenderingIntent  ewg_function_CGImageGetRenderingIntent (CGImageRef image
 #define ewg_function_macro_CGImageGetBitmapInfo(ewg_param_image) CGImageGetBitmapInfo ((CGImageRef)ewg_param_image)
 
 CGBitmapInfo  ewg_function_CGImageGetBitmapInfo (CGImageRef image);
+// Wraps call to function 'CGPathGetTypeID' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathGetTypeID CGPathGetTypeID ()
+
+CFTypeID  ewg_function_CGPathGetTypeID (void);
+// Wraps call to function 'CGPathCreateMutable' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathCreateMutable CGPathCreateMutable ()
+
+CGMutablePathRef  ewg_function_CGPathCreateMutable (void);
+// Wraps call to function 'CGPathCreateCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathCreateCopy(ewg_param_path) CGPathCreateCopy ((CGPathRef)ewg_param_path)
+
+CGPathRef  ewg_function_CGPathCreateCopy (CGPathRef path);
+// Wraps call to function 'CGPathCreateMutableCopy' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathCreateMutableCopy(ewg_param_path) CGPathCreateMutableCopy ((CGPathRef)ewg_param_path)
+
+CGMutablePathRef  ewg_function_CGPathCreateMutableCopy (CGPathRef path);
+// Wraps call to function 'CGPathRetain' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathRetain(ewg_param_path) CGPathRetain ((CGPathRef)ewg_param_path)
+
+CGPathRef  ewg_function_CGPathRetain (CGPathRef path);
+// Wraps call to function 'CGPathRelease' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathRelease(ewg_param_path) CGPathRelease ((CGPathRef)ewg_param_path)
+
+void  ewg_function_CGPathRelease (CGPathRef path);
+// Wraps call to function 'CGPathEqualToPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathEqualToPath(ewg_param_path1, ewg_param_path2) CGPathEqualToPath ((CGPathRef)ewg_param_path1, (CGPathRef)ewg_param_path2)
+
+_Bool  ewg_function_CGPathEqualToPath (CGPathRef path1, CGPathRef path2);
+// Wraps call to function 'CGPathMoveToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathMoveToPoint(ewg_param_path, ewg_param_m, ewg_param_x, ewg_param_y) CGPathMoveToPoint ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGPathMoveToPoint (CGMutablePathRef path, CGAffineTransform const *m, float x, float y);
+// Wraps call to function 'CGPathAddLineToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddLineToPoint(ewg_param_path, ewg_param_m, ewg_param_x, ewg_param_y) CGPathAddLineToPoint ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGPathAddLineToPoint (CGMutablePathRef path, CGAffineTransform const *m, float x, float y);
+// Wraps call to function 'CGPathAddQuadCurveToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddQuadCurveToPoint(ewg_param_path, ewg_param_m, ewg_param_cpx, ewg_param_cpy, ewg_param_x, ewg_param_y) CGPathAddQuadCurveToPoint ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, (float)ewg_param_cpx, (float)ewg_param_cpy, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGPathAddQuadCurveToPoint (CGMutablePathRef path, CGAffineTransform const *m, float cpx, float cpy, float x, float y);
+// Wraps call to function 'CGPathAddCurveToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddCurveToPoint(ewg_param_path, ewg_param_m, ewg_param_cp1x, ewg_param_cp1y, ewg_param_cp2x, ewg_param_cp2y, ewg_param_x, ewg_param_y) CGPathAddCurveToPoint ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, (float)ewg_param_cp1x, (float)ewg_param_cp1y, (float)ewg_param_cp2x, (float)ewg_param_cp2y, (float)ewg_param_x, (float)ewg_param_y)
+
+void  ewg_function_CGPathAddCurveToPoint (CGMutablePathRef path, CGAffineTransform const *m, float cp1x, float cp1y, float cp2x, float cp2y, float x, float y);
+// Wraps call to function 'CGPathCloseSubpath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathCloseSubpath(ewg_param_path) CGPathCloseSubpath ((CGMutablePathRef)ewg_param_path)
+
+void  ewg_function_CGPathCloseSubpath (CGMutablePathRef path);
+// Wraps call to function 'CGPathAddRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddRect(ewg_param_path, ewg_param_m, ewg_param_rect) CGPathAddRect ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGPathAddRect (CGMutablePathRef path, CGAffineTransform const *m, CGRect *rect);
+// Wraps call to function 'CGPathAddRects' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddRects(ewg_param_path, ewg_param_m, ewg_param_rects, ewg_param_count) CGPathAddRects ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, ewg_param_rects, (size_t)ewg_param_count)
+
+void  ewg_function_CGPathAddRects (CGMutablePathRef path, CGAffineTransform const *m, void *rects, size_t count);
+// Wraps call to function 'CGPathAddLines' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddLines(ewg_param_path, ewg_param_m, ewg_param_points, ewg_param_count) CGPathAddLines ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, ewg_param_points, (size_t)ewg_param_count)
+
+void  ewg_function_CGPathAddLines (CGMutablePathRef path, CGAffineTransform const *m, void *points, size_t count);
+// Wraps call to function 'CGPathAddEllipseInRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddEllipseInRect(ewg_param_path, ewg_param_m, ewg_param_rect) CGPathAddEllipseInRect ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, *(CGRect*)ewg_param_rect)
+
+void  ewg_function_CGPathAddEllipseInRect (CGMutablePathRef path, CGAffineTransform const *m, CGRect *rect);
+// Wraps call to function 'CGPathAddArc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddArc(ewg_param_path, ewg_param_m, ewg_param_x, ewg_param_y, ewg_param_radius, ewg_param_startAngle, ewg_param_endAngle, ewg_param_clockwise) CGPathAddArc ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, (float)ewg_param_x, (float)ewg_param_y, (float)ewg_param_radius, (float)ewg_param_startAngle, (float)ewg_param_endAngle, (_Bool)ewg_param_clockwise)
+
+void  ewg_function_CGPathAddArc (CGMutablePathRef path, CGAffineTransform const *m, float x, float y, float radius, float startAngle, float endAngle, _Bool clockwise);
+// Wraps call to function 'CGPathAddArcToPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddArcToPoint(ewg_param_path, ewg_param_m, ewg_param_x1, ewg_param_y1, ewg_param_x2, ewg_param_y2, ewg_param_radius) CGPathAddArcToPoint ((CGMutablePathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, (float)ewg_param_x1, (float)ewg_param_y1, (float)ewg_param_x2, (float)ewg_param_y2, (float)ewg_param_radius)
+
+void  ewg_function_CGPathAddArcToPoint (CGMutablePathRef path, CGAffineTransform const *m, float x1, float y1, float x2, float y2, float radius);
+// Wraps call to function 'CGPathAddPath' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathAddPath(ewg_param_path1, ewg_param_m, ewg_param_path2) CGPathAddPath ((CGMutablePathRef)ewg_param_path1, (CGAffineTransform const*)ewg_param_m, (CGPathRef)ewg_param_path2)
+
+void  ewg_function_CGPathAddPath (CGMutablePathRef path1, CGAffineTransform const *m, CGPathRef path2);
+// Wraps call to function 'CGPathIsEmpty' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathIsEmpty(ewg_param_path) CGPathIsEmpty ((CGPathRef)ewg_param_path)
+
+_Bool  ewg_function_CGPathIsEmpty (CGPathRef path);
+// Wraps call to function 'CGPathIsRect' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathIsRect(ewg_param_path, ewg_param_rect) CGPathIsRect ((CGPathRef)ewg_param_path, (CGRect*)ewg_param_rect)
+
+_Bool  ewg_function_CGPathIsRect (CGPathRef path, CGRect *rect);
+// Wraps call to function 'CGPathGetCurrentPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathGetCurrentPoint(ewg_param_path) CGPathGetCurrentPoint ((CGPathRef)ewg_param_path)
+
+CGPoint * ewg_function_CGPathGetCurrentPoint (CGPathRef path);
+// Wraps call to function 'CGPathGetBoundingBox' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathGetBoundingBox(ewg_param_path) CGPathGetBoundingBox ((CGPathRef)ewg_param_path)
+
+CGRect * ewg_function_CGPathGetBoundingBox (CGPathRef path);
+// Wraps call to function 'CGPathContainsPoint' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathContainsPoint(ewg_param_path, ewg_param_m, ewg_param_point, ewg_param_eoFill) CGPathContainsPoint ((CGPathRef)ewg_param_path, (CGAffineTransform const*)ewg_param_m, *(CGPoint*)ewg_param_point, (_Bool)ewg_param_eoFill)
+
+_Bool  ewg_function_CGPathContainsPoint (CGPathRef path, CGAffineTransform const *m, CGPoint *point, _Bool eoFill);
+// Wraps call to function 'CGPathApply' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_CGPathApply(ewg_param_path, ewg_param_info, ewg_param_function) CGPathApply ((CGPathRef)ewg_param_path, (void*)ewg_param_info, (CGPathApplierFunction)ewg_param_function)
+
+void  ewg_function_CGPathApply (CGPathRef path, void *info, CGPathApplierFunction function);
 // Wraps call to function 'CGContextGetTypeID' in a macro
 #include <Carbon/Carbon.h>
 
@@ -9959,6 +10193,24 @@ void  ewg_function_set_cgdata_provider_release_data_callback_entry (void *a_clas
 #define ewg_function_macro_call_cgdata_provider_release_data_callback(ewg_param_a_function, ewg_param_info, ewg_param_data, ewg_param_size) call_cgdata_provider_release_data_callback ((void*)ewg_param_a_function, (void*)ewg_param_info, (void const*)ewg_param_data, (size_t)ewg_param_size)
 
 void  ewg_function_call_cgdata_provider_release_data_callback (void *a_function, void *info, void const *data, size_t size);
+// Wraps call to function 'get_cgpath_applier_function_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_cgpath_applier_function_stub get_cgpath_applier_function_stub ()
+
+void * ewg_function_get_cgpath_applier_function_stub (void);
+// Wraps call to function 'set_cgpath_applier_function_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_cgpath_applier_function_entry(ewg_param_a_class, ewg_param_a_feature) set_cgpath_applier_function_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_cgpath_applier_function_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_cgpath_applier_function' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_cgpath_applier_function(ewg_param_a_function, ewg_param_info, ewg_param_element) call_cgpath_applier_function ((void*)ewg_param_a_function, (void*)ewg_param_info, (CGPathElement const*)ewg_param_element)
+
+void  ewg_function_call_cgpath_applier_function (void *a_function, void *info, CGPathElement const *element);
 // Wraps call to function 'get_aeremote_process_resolver_callback_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 
