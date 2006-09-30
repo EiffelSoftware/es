@@ -1,36 +1,108 @@
-#include <stdio.h>
 #include <langinfo.h>
 #include <locale.h>
 #include <time.h>
 #include <malloc.h>
 #include <string.h>
 #include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h> 
+#include <iconv.h>
+#include <errno.h>
+
+#define BUFSIZE 30
+
+wchar_t outbuf[BUFSIZE];
+
+void convert (char * inbuf, size_t insize, wchar_t **out, size_t *outsize) {
+	iconv_t cd;
+	size_t nconv, avail, alloc;
+	char *res, *tres, *wrptr, *inptr;
+	
+	*out = NULL;
+	*outsize = 0;
+	
+	alloc = avail = insize + insize/4;
+	if (!(res = malloc(alloc)))
+	{
+		perror("malloc");
+		return;
+	}
+
+	wrptr = res;   // duplicate pointers because they
+	inptr = inbuf; // get modified by iconv
+
+	char *charset = nl_langinfo (CODESET);   /*serve a capire che charset
+											   usa il locale attuale*/
+	cd = iconv_open ("UTF-8", charset);    /*qualcosa che serve a dire a iconv
+											 cosa deve converire in cosa*/
+	if (cd == (iconv_t)(-1))
+	{
+		perror("iconv_open");
+		free(res);
+		return;
+	}
+
+	do
+	{
+		nconv = iconv (cd, &inptr, &insize, &wrptr, &avail); //la conversione
+		if (nconv == (size_t)(-1))
+		{
+			if (errno == E2BIG) // need more room for result
+			{
+				tres = realloc(res, alloc += 20);
+				avail += 20;
+				if (!tres)
+				{
+					perror("realloc");
+					break;
+				}
+				wrptr = tres + (wrptr - res);
+				res = tres;
+			}
+			else // something wrong with input
+				break;
+			}
+	} while (insize);
+
+	if (iconv_close(cd))
+		perror("iconv_close");
+
+	*out = (wchar_t*) res;
+	*outsize = wrptr - res; // should be == to (alloc - avail + 1)
+	//TODO: should possibly null-terminate the result
+}
+
+struct lconv * mylocale;
 
 int abday[7] = {ABDAY_1,ABDAY_2,ABDAY_3,ABDAY_4,ABDAY_5,ABDAY_6,ABDAY_7};
 
 // get abbreviated  name of the i-th weekday ( in en_GB for 1: "Mon")
-char * get_abday (int a_int) {
+
+
+wchar_t blah[30];
+
+wchar_t * get_abday (int a_int) {
 	return nl_langinfo(abday[(a_int)%7]);
 };
 
 int day[7] = {DAY_1,DAY_2,DAY_3,DAY_4,DAY_5,DAY_6,DAY_7};
 
 // get name of the i-th weekday ( in en_GB for 1: "Monday")
-char * get_day (int a_int) {
+wchar_t * get_day (int a_int) {
 	return nl_langinfo(day[(a_int)%7]);
 }; 
 
 int abmon[12] = {ABMON_1,ABMON_2,ABMON_3,ABMON_4,ABMON_5,ABMON_6,ABMON_7,ABMON_8,ABMON_9,ABMON_10,ABMON_11,ABMON_12};
 
 // get abbreviated  name of the i-th month ( in en_GB for 1: "Jan")
-char * get_abmon (int a_int) {
+wchar_t * get_abmon (int a_int) {
 	return nl_langinfo(abmon[(a_int-1)%12]);
 };
 
 int mon[12] = {MON_1,MON_2,MON_3,MON_4,MON_5,MON_6,MON_7,MON_8,MON_9,MON_10,MON_11,MON_12};
 
 // get name of the i-th month ( in en_GB for 1: "Januar")
-char * get_mon (int a_int) {
+wchar_t * get_mon (int a_int) {
 	return nl_langinfo(mon[(a_int-1)%12]);
 };
 
@@ -70,10 +142,28 @@ char * c_am_pm_format () {
 	return nl_langinfo(T_FMT_AMPM);
 }
 
+/******************************
+**** NUMERIC INFORMATIONS *****
+******************************/
+
+
 char * numeric_decimal_point () {
-// 	return nl_langinfo(DECIMAL_POINT);
-	return nl_langinfo (__DECIMAL_POINT);
+// 	return nl_langinfo (__DECIMAL_POINT);
+	return mylocale->decimal_point;
 }
+
+char * numeric_group_separator () {
+	return mylocale->thousands_sep;
+}
+
+char * numeric_grouping () {
+	return mylocale->grouping;
+}
+
+/*****************************
+**** CURRENCY INFORMATIONS ***
+******************************/
+
 
 /*Return the currency symbol, preceded by 
 * "-" if the symbol should appear before the value,
@@ -83,30 +173,34 @@ char * currency_symbol () {
 	return nl_langinfo(CRNCYSTR);
 }
 
-char * monetary_dec_point () {
-	return nl_langinfo(__MON_DECIMAL_POINT);
+char * currency_int_symbol () {
+	return mylocale->int_curr_symbol;
 }
 
-char * monetary_thousend_sep () {
-	return nl_langinfo (__MON_THOUSANDS_SEP);
+char * currency_dec_point () {
+	return mylocale->mon_decimal_point;
 }
 
-char * monetary_grouping () {
-	return nl_langinfo (__MON_GROUPING);
+char * currency_thousend_sep () {
+// 	return nl_langinfo (__MON_THOUSANDS_SEP);
+	return mylocale->mon_thousands_sep;
 }
 
-char * currency_numbers_after_dec_sepatator () {
-	return nl_langinfo(__FRAC_DIGITS);
+char currency_numbers_after_dec_sepatator () {
+// 	return nl_langinfo(__FRAC_DIGITS);
+	return mylocale->frac_digits;
 }
 
-char * radix_char () {
-	return nl_langinfo (RADIXCHAR);
+char currency_int_numbers_after_dec_sepatator () {
+// 	return nl_langinfo(__FRAC_DIGITS);
+	return mylocale->int_frac_digits;
 }
 
-//Return separator character for thousands (groups of three digits).
-char *thousend_sep() {
-	return nl_langinfo(THOUSEP);
+char * currency_grouping () {
+// 	return nl_langinfo (__MON_GROUPING);
+	return mylocale->mon_grouping;
 }
+
 
 //String with the name of the current locale name
 char lc_locale_name[20];
@@ -121,6 +215,7 @@ char * locale_name () {
 void set_locale (char *a_locale) {
 	char * t;
 	t = setlocale (LC_ALL, a_locale);
+	mylocale = localeconv();
 	if (t != NULL) {
 		strcpy( lc_locale_name, t);
 	} else { //a_locale is not available
@@ -135,11 +230,12 @@ void set_default_locale () {
 
 
 //is a_locale available?
-int is_available (char * a_locale) {
+int is_available (char *a_locale) {
 	char *prev_locale; //previous locale string
 	char *t;
 	prev_locale = lc_locale_name;
 	t = setlocale (LC_ALL, a_locale); //try to set the locale
+	set_locale (prev_locale);//restore the previous locale
 	if (t != NULL) { //a_locale exists
 		return 1;
 	} else {	/*setlocale returned a NULL
@@ -147,8 +243,6 @@ int is_available (char * a_locale) {
 			is not available*/
 		return 0;
 	}
-	//restore the previous locale
-	set_locale (prev_locale);
 }
 
 // To obtain the list of the available locales
@@ -162,110 +256,11 @@ struct dirent **localelist;
 int init_available_locales () {
 	return scandir("/usr/share/i18n/locales/", &localelist, 0, alphasort);
 }
-
 char * ith_locale (int i) {
 	if (localelist == NULL)
 		init_available_locales ();
 	if (is_available (localelist[i]->d_name))
 // 		check if it is really available
 		return localelist[i]->d_name;
-	else
-		return NULL;
+	return NULL;
 }
-
-//Struct defined in time.h
-struct tm *tmp;
-time_t t;
-
-
-//initialize the tmp struct, in a locale specific way
-//used to avoid Segmentation faults :-)
-void initialize_time_struct () {
-	tmp = malloc(sizeof(struct tm));
-	t = time(NULL);
-   	tmp = localtime(&t);
-}
-
-//Set the time relative fields in the tmp struct
-void set_time (int h, int m, int s) {
-	tmp->tm_hour = h;
-	tmp->tm_min = m;
-	tmp->tm_sec = s;
-}
-
-//Set the date relative fields in the tmp struct
-void set_date (int day, int month, int year) {
-	tmp->tm_mday = day;
-	tmp->tm_mon = month-1;
-	tmp->tm_year = year+1900;
-}
-
-//String that contains locale specific "full date time pattern"
-char full_date_time[300];
-
-//Set the full_date_time string
-void set_full_date_time (int h, int m, int s, int day, int month, int year) {
-	initialize_time_struct ();
-	set_time (h, m, s);
-	set_date (day, month, year);
-	strftime(full_date_time, sizeof(full_date_time), c_full_date_time_pattern(), tmp);
-};
-
-/*Return the pointer to the "full_date_time" string, that is initialized
-*according the arguments*/
-char * get_full_date_time (int h, int m, int s, int day, int month, int year) {
-	set_full_date_time (h, m, s, day, month, year);
-	return full_date_time;
-}
-
-//String that contains locale specific "date pattern"
-char date_pattern[100];
-
-//Set the date_pattern
-void set_date_pattern (int day, int month, int year) {
-	initialize_time_struct ();
-	set_date (day, month, year);
-	strftime(date_pattern, sizeof(date_pattern), c_date_pattern(), tmp);
-} 
-
-/*Return the pointer to the "date_pattern" string, that is initialized
-*according the arguments*/
-char * get_date_pattern (int day, int month, int year) {
-	set_date_pattern (day, month, year);
-	return date_pattern;
-}
-
-//String that contains locale specific "time pattern"
-char time_pattern[100];
-
-//Set the time_pattern
-void set_time_pattern (int h, int m, int s) {
-	initialize_time_struct ();
-	set_time (h, m, s);
-	strftime(time_pattern, sizeof(time_pattern), c_time_pattern(), tmp);
-} 
-
-/*Return the pointer to the "time_pattern" string, that is initialized
-*according the arguments*/
-char * get_time_pattern (int h, int m, int s) {
-	set_time_pattern(h, m, s);
-	return time_pattern;
-}
-
-//String that contains locale specific "am_pm_format"
-char am_pm_format[100];
-
-//Set the am_pm_format
-void set_am_pm_pattern (int h, int m, int s) {
-	initialize_time_struct ();
-	set_time (h, m, s);
-	strftime(am_pm_format, sizeof(am_pm_format), c_am_pm_format (), tmp);
-} 
-
-/*Return the pointer to the "am_pm_patternern" string, that is initialized
-*according the arguments*/
-char * get_am_pm_pattern (int h, int m, int s) {
-	set_am_pm_pattern(h, m, s);
-	return am_pm_format;
-}
-

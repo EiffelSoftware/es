@@ -20,15 +20,25 @@ char * c_time_pattern ();
 
 char * c_am_pm_format ();
 
+char * numeric_decimal_point ();
+
+char * numeric_group_separator ();
+
+char * numeric_grouping ();
+
 char * currency_symbol ();
 
-char * monetary_dec_point ();
+char * currency_int_symbol ();
 
-char * currency_numbers_after_digit_sepatator ();
+char * currency_dec_point ();
 
-char * radix_char ();
+char * currency_thousend_sep ();
 
-char * thousend_sep();
+char * currency_grouping ();
+
+int currency_numbers_after_digit_sepatator ();
+
+int currency_int_numbers_after_digit_sepatator ();
 
 char * locale_name ();
 
@@ -36,10 +46,7 @@ void set_locale (char *a_locale);
 
 void set_default_locale ();
 
-char * get_date_pattern (int day, int month, int year);
+int is_available (char * a_locale);
 
-char * get_full_date_time (int h, int m, int s, int day, int month, int year);
+char * ith_locale (int i);
 
-char * get_time_pattern (int h, int m, int s);
-
-char * get_am_pm_pattern (int h, int m, int s);

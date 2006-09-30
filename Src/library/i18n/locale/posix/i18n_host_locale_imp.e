@@ -246,7 +246,7 @@ feature	-- number formatting
 			-- get the group separator (the separator thousend sep.)
 			-- according the current locales setting
 		do
-			create Result.make_from_c (c_thousend_sep)
+			create Result.make_from_c (c_value_group_separator)
 		end
 
 	get_value_number_list_separator: STRING_32 is
@@ -273,14 +273,28 @@ feature	-- currency formatting
 	get_currency_symbol: STRING_32 is
 			-- get the currency symbol
 			-- according the current locales setting
-		obsolete
-			"NEED CONVERTIONS...%
-			%Returns the currency symbol, preceded by%
-			% '-' if the symbol should appear before the value,%
-			% '+' if the symbol should appear after the value,%
-			% '.' if the symbol should replace the radix character. "
 		do
 			create Result.make_from_c (c_currency_symbol)
+			Result.remove_head (1)
+		end
+
+	get_currency_symbol_location : INTEGER is
+			-- get the integer that represents
+			-- the currency symbol localtion
+		local
+			l_string: STRING_32
+		do
+			create l_string.make_from_c (c_currency_symbol)
+			if	l_string.item (1).is_equal ('-') then
+				Result := {I18N_LOCALE_INFO}.currency_symbol_prefixed
+			elseif l_string.item (1).is_equal ('+') then
+				Result := {I18N_LOCALE_INFO}.currency_symbol_appended
+			elseif l_string.item (1).is_equal ('.') then
+				Result := {I18N_LOCALE_INFO}.currency_symbol_radix
+			else
+				-- Return as default value currency_symbol_prefixed
+				Result := {I18N_LOCALE_INFO}.currency_symbol_prefixed
+			end
 		end
 
 	get_currency_decimal_separator: STRING_32 is
@@ -295,12 +309,8 @@ feature	-- currency formatting
 	get_currency_numbers_after_decimal_separator: INTEGER is
 			-- numbers after the decimal separator for currencynumbers
 			-- according the current locales setting
-		obsolete
-			"DOES NOT WORK%
-			% it strangely returns a poiter to the currency symbol"
 		do
-			Result := c_currency_numbers_after_digit_sepatator.to_integer_32
-			Result := 0
+			Result := c_currency_numbers_after_digit_sepatator.natural_32_code.to_integer_32
 		end
 
 	get_currency_group_separator: STRING_32 is
@@ -432,7 +442,7 @@ feature {NONE} -- C numbers formatting
 			-- Return radix character (decimal dot, decimal comma, etc.)
 			-- see: `get_value_decimal_separator'
 		external "C () : EIF_POINTER| %"ci18n.h%""
-		alias "radix_char"
+		alias "numeric_decimal_point"
 		end
 
 	c_value_numbers_after_decimal_separator: POINTER is
@@ -444,10 +454,8 @@ feature {NONE} -- C numbers formatting
 
 	c_value_group_separator: POINTER is
 			--see: `get_value_group_separator'
-		obsolete
-			"NOT IMPLEMENTED"
 		external "C () : EIF_POINTER| %"ci18n.h%""
-		alias "monetary_thousend_sep"
+		alias "numeric_group_separator"
 		end
 
 	c_value_number_list_separator: POINTER is
@@ -457,30 +465,49 @@ feature {NONE} -- C numbers formatting
 		do
 		end
 
+	c_value_grouping: POINTER is
+			-- see: `get_value_grouping'
+		external "C () : EIF_POINTER| %"ci18n.h%""
+		alias "numeric_grouping"
+		end
+
 feature {NONE} -- C currency formatting
 
-	c_currency_decimal_separator : POINTER is
-			-- see: `get_currency_decimal_separator'
-		external "C () : EIF_POINTER| %"ci18n.h%""
-		alias "monetary_dec_point"
-		end
-
-	c_currency_numbers_after_digit_sepatator : POINTER is
-			-- see: `get_currency_numbers_ager_digit_sepatator'
-		external "C () : EIF_POINTER| %"ci18n.h%""
-		alias "currency_numbers_after_dec_sepatator"
-		end
-
-
-	c_thousend_sep: POINTER is
-			-- see: `get_thousend_sep'
-		external "C () : EIF_POINTER| %"ci18n.h%""
-		alias "thousend_sep"
-		end
-
-	c_currency_symbol : POINTER is
+	c_currency_symbol: POINTER is
 			-- see: `get_currency_symbol'
 		external "C () : EIF_POINTER| %"ci18n.h%""
 		alias "currency_symbol"
 		end
+
+	c_currency_int_symbol: POINTER is
+			-- get the internationa currency representation
+		external "C () : EIF_POINTER| %"ci18n.h%""
+		alias "currency_int_symbol"
+		end
+
+	c_currency_decimal_separator : POINTER is
+			-- see: `get_currency_decimal_separator'
+		external "C () : EIF_POINTER| %"ci18n.h%""
+		alias "currency_dec_point"
+		end
+
+	c_currency_thousend_sep: POINTER is
+			-- see: `get_currency_thousend_sep'
+		external "C () : EIF_POINTER| %"ci18n.h%""
+		alias "currency_thousend_sep"
+		end
+
+	c_currency_numbers_after_digit_sepatator : CHARACTER is
+			-- see: `get_currency_numbers_ager_digit_sepatator'
+		external "C () : EIF_CHARACTER| %"ci18n.h%""
+		alias "currency_numbers_after_dec_sepatator"
+		end
+
+	c_currency_int_numbers_after_digit_sepatator : CHARACTER is
+			-- see: `get_currency_numbers_ager_digit_sepatator'
+			-- (international)
+		external "C () : EIF_CHARACTER| %"ci18n.h%""
+		alias "currency_int_numbers_after_dec_sepatator"
+		end
+
 end
