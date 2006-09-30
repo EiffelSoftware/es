@@ -10,7 +10,11 @@
 		<heading><size>2</size>What's new</heading>
 		<seealso>See also: <link><label>Differences between standard ECMA-367 and Eiffel Software implementation</label><url>../../10_ise_eiffel_specific/ecma.xml</url></link></seealso>
 		<list ordered="false">
-				<item></item>
+				<item>Support for new expanded semantics defined in ECMA-367. The current limitations are: no copy semantics in the .NET code generation, and still no generic conformance.</item>
+				<item>Inline agents as defined in ECMA-367 with the limitation to only accept the do form.</item>
+				<item>Added possibility to define agents on attributes or externals.</item>
+				<item>Named tuples as defined in ECMA-367.</item>
+				<item>Added <class_name>PREDICATE</class_name> class for agent based on boolean queries.</item>
 		</list>
 		<heading><size>2</size>Improvements</heading>
 		<list ordered="false">
@@ -29,10 +33,14 @@
 					<item>Original directory where .melted file was generated the first time.</item>
 				</list>
 			</item>
+			<item>Improved speed of initial compilation of .NET projects as well as the speed for incremental compilation at degree 6 which went from a few seconds to no time if no new assemblies have been added to the system.</item>
+			<item>No freeze is required when adding an agent, saving you time since C compilation can be long for very large project.</item>
+			<item>Reduced the required disk space for a workbench compilation in classic mode (went from 1.8 GB to 1GB for a very large project).</item>
+			<item>Improved speed of agent calls in classic mode.</item>
 		</list>
 		<heading><size>2</size>Changes</heading>
 		<list ordered="false">
-				<item>Implemented the new ECMA-367 specification for expanded. That is to say updated conformance and semantics rules.</item>
+			<item><compiler_error>VWEQ</compiler_error> is not an error, but a warning that can be triggered or not depending on your configuration.</item>
 		</list>
 		<heading><size>2</size>Bug fixes</heading>
 		<list ordered="false">
@@ -48,8 +56,8 @@
 		</list>
 		<heading><size>3</size>Runtime/code generation issues</heading>
 		<list ordered="false">
-				<item>Ensured that our runtime is async-safe for signals for all the runtime routines using some locking mechanisms.</item>
-				<item>Fixed a memory corruption issue in <feature_name>arycpy</feature_name> if a GC cycle was triggered as part of the processus of reallocating the SPECIAL object.</item>
+			<item>Ensured that our runtime is async-safe for signals for all the runtime routines using some locking mechanisms.</item>
+			<item>Fixed a memory corruption issue in <feature_name>arycpy</feature_name> if a GC cycle was triggered as part of the processus of reallocating the SPECIAL object.</item>
 		</list>
 		<heading><size>3</size>.NET issues</heading>
 		<list ordered="false">

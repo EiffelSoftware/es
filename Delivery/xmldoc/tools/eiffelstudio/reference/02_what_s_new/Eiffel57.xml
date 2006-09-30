@@ -4,29 +4,51 @@
 	</meta_data>
 	<paragraph>
 		<heading><size>2</size>Graphical environment</heading>
+			<heading><size>3</size>What's new</heading>
+			<list ordered="false">
+				<item>Dual licensing of eiffelStudio both commercial and open-source.</item>
+				<item>Refactoring facilities: renaming and feature pull-up.</item>
+				<item>Metric engine. It let you define more advanced metrics. This is the first result of our new query engine.</item>
+				<item>UUID library for generating UUID.</item>
+				<item>Process library for launching, waiting, redirecting outputs of processes.</item>
+				<item>Configuration system. It brings a new dimension to the way you manage multiple projects and also simplifying it.</item>
+			</list>		
 			<heading><size>3</size>Improvements</heading>
 			<list ordered="false">
-				<item>New refactoring facilities: renaming and feature pull-up.</item>
 				<item>Output of C compilations now appears within the EiffelStudio environment.</item>
 				<item>Improved tool for launching external commands from within the EiffelStudio environment.</item>
 				<item>Introduced basic support for Unicode in Eiffel libraries, namely EiffelBase, EiffelVision2 and WEL.</item>
-				<item>New library UUID for generating UUID.</item>
-				<item>New library Process for launching, waiting, redirecting outputs of processes.</item>
-				<item>New configuration system. It brings a new dimension to the way you manage multiple projects and also simplifying it.</item>
 				<item>Improved display of clusters, libraries and assemblies.</item>
 				<item>Added ability to see more relations in the diagram tool. For example, you can select a class and choose to see its descendants in the diagram.</item>
 				<item>If a project that needs a precompile is opened and the precompile does not exist it will automatically be compiled.</item>
-				<item>New projects use precompiles by default which speeds up the first compilation a lot.</item>
+				<item>New projects use precompiles by default which speeds up the initial compilation.</item>
+				<item>Improved search facility that has two faces: a quick search bar in the editor for finding text in the current editor, and a search panel to perform exhaustive search over your project.</item>
+				<item>Profiler output is now sortable and can also be represented as a tree.</item>
+				<item>Redesigned completion engine:
+					<list ordered="false">
+						<item>Completion on wild-cards to quickly find a routine in a long list.</item>
+						<item>Completion list is now available anytime a text field accepts a class or an expression (Class creation dialog, debugger evaluation expression, ...)</item>
+						<item>On .NET, overloaded routines are all put together under one name.</item>
+						<item>Hidden option can now be set with a toolbar at its bottom.</item>
+						<item>Completion is available even if you have a syntax error in your class.</item>
+					</list>
+				</item>
+				<item>Formatters are now presenting results in a structured way with sorting capability.</item>
+				<item>Overridden classes are now shown with the list of classes they are overriding.</item>
 			</list>
 			<heading><size>3</size>Changes</heading>
 			<list ordered="false">
 				<item>New configuration system. EiffelStudio will automatically convert your existing ace or epr files to the new format.</item>
 				<item>Compilation progress is now displayed in the status bar and in the output pane, no more dialog box.</item>
-				<item>Display of errors and warnings is now done in different panes, so that you do not lose their content when the output pane was changed.</item>
+				<item>Display of errors and warnings is now done in different panes, so that you do not lose their content when the output pane has changed.</item>
+				<item>Pick and drop is now a dashed line.</item>
+				<item>Redesigned the starting dialog to make it easier to create new projects as well as managing many existing projects.</item>
 			</list>
 			<heading><size>3</size>Bug fixes</heading>
 			<list ordered="false">
 				<item>When in a different format than the editable format, one can now select a feature and it will bring you to the feature in the selected format, rather than going back to the editable format.</item>
+				<item>Fixed various formatting issue for our documentation format.</item>
+				<item>Fixed some memory corruption that could cause EiffelStudio to randomly crash.</item>
 			</list>
 		<heading><size>2</size>Compiler</heading>
 		<list ordered="false">
@@ -41,10 +63,6 @@
 				<item>Click <link><url>../../../eiffelbuild/version_history/index.xml</url><label>here</label></link> for the EiffelBuild release notes.</item>
 			</list>
 		<heading><size>2</size>Libraries</heading>
-		<heading><size>3</size>CECIL</heading>
-		<list ordered="false">
-			<item></item>
-		</list>
 		<heading><size>3</size>EiffelBase</heading>
 		<list ordered="false">
 			<item><class_name>STRING</class_name>, <class_name>STRING_8</class_name>, <class_name>STRING_32</class_name> and <class_name>STRING_GENERAL</class_name>:
@@ -87,6 +105,7 @@
 				<list ordered="false">
 					<item>Fixed an infinite cycle when using <feature_name>replace_key</feature_name> with a key which is not present in the table.</item>
 					<item>Improved correct_mismatch to also retrieve <class_name>HASH_TABLE</class_name>s from version 5.4.</item>
+					<item>Prevented catcalls in <class_name>HASH_TABLE</class_name> when you have keys which have a different type.</item>
 				</list>
 			</item>
 			<item>Added a bracket feature to <feature_name>item</feature_name> from <class_name>ARRAY2</class_name>.</item>
@@ -103,11 +122,7 @@
 		</list>
 		<heading><size>3</size>EiffelThread</heading>
 		<list ordered="false">
-				<item>Refactored the library so that even if you do not have the multithreaded option set, it will be compilable.</item>
-		</list>
-		<heading><size>3</size>EiffelTime</heading>
-		<list ordered="false">
-				<item></item>
+				<item>Refactored the library so that even if you do not have the multithreaded option set, it will compile. However new preconditions have been added so that you know when you are using the library when you cannot.</item>
 		</list>
 		<heading><size>3</size>EiffelVision2</heading>
 		<list ordered="false">
