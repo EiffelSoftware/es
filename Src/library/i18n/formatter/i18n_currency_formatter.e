@@ -1,0 +1,80 @@
+indexing
+	description: "Objects that ..."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	I18N_CURRENCY_FORMATTER
+
+create
+	make
+
+feature -- Initialization
+
+	make (a_locale_info: I18N_LOCALE_INFO) is
+			-- Initialization
+		require
+			a_locale_info_exists: a_locale_info /= Void
+-- 			valid_format_string: is_valid_format_string (a_locale_info.a_format_string)
+		do
+			currency_symbol_location := a_locale_info.currency_symbol_location
+			currency_symbol := a_locale_info.currency_symbol
+			create currency_value_formatter.make (a_locale_info)
+		end
+
+feature -- Utility
+
+	format_currency (a_value: REAL_64): STRING_32 is
+			-- format a_value according the `format_string'
+		do
+			if currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_prefixed then
+				create Result.make_from_string (currency_symbol+" "+
+												  currency_value_formatter.format_real_64 (a_value))
+			elseif currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_appended then
+				create Result.make_from_string (currency_value_formatter.format_real_64 (a_value)+
+												  a_value.out+" "+currency_symbol)
+			elseif currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_radix then
+				create Result.make_from_string (currency_value_formatter.format_real_64 (a_value))
+			else
+				-- default: prefixed
+				create Result.make_from_string (currency_symbol+" "+
+												  currency_value_formatter.format_real_64 (a_value))
+			end
+		ensure
+			result_exists: Result /= Void
+		end
+
+
+feature --Check functions
+
+	is_valid_format_string (a_string: STRING_32):  BOOLEAN is
+			-- is `a_string' a valid format string?
+			-- A valid format is:
+			-- the currency symbol, preceded by
+			-- "-" if the symbol should appear before the value,
+			-- "+" if the symbol should appear after the value,
+			-- "." if the symbol should replace the radix character.
+		require
+			a_string_exists: a_string /= Void
+		do
+			Result := 	a_string.count > 1 and then
+						(a_string.item (1).is_equal ('-') or
+						 a_string.item (1).is_equal ('+') or
+						 a_string.item (1).is_equal ('.'))
+		end
+
+feature -- Implementation
+
+	currency_symbol: STRING_32
+		-- the currency symbol
+	currency_symbol_location: INTEGER
+		-- location of currency_symbol
+
+	currency_value_formatter: I18N_CURRENCY_VALUE_FORMATTER
+
+invariant
+
+	currency_symbol_exist: currency_symbol /= Void
+
+end

@@ -27,17 +27,5 @@ feature -- Initialization
 					-- how the value are grouped
 		end
 
-feature -- Element Change
-
-	set_decimal_separator (a_separator: STRING_32) is
-			-- set decimal_separator to a_separator
-		require
-			a_separator_exists: a_separator /= Void
-		do
-			decimal_separator := a_separator.twin
-		ensure
-			correct_result: decimal_separator.is_equal (a_separator)
-		end
-
 end -- I18N_CURRENCY_VALUE_FORMATTER
 

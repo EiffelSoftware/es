@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 				i > grouping.upper or k < 1
 			loop
 				if not (grouping.item (i) = 0) then
-					if k - grouping.item (i)+1 > 1 then
+					if k - grouping.item (i) > 0 then
 						Result.prepend (a_string.substring (k-grouping.item (i)+1,k))
 						Result.prepend (group_separator)
 						k := k-grouping.item (i)
@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 					from until
 						k < 1
 					loop
-						if k - grouping.item (i-1)+1 > 1then
+						if k - grouping.item (i-1) > 0 then
 							Result.prepend (a_string.substring (k-grouping.item (i-1)+1, k))
 							Result.prepend (group_separator)
 							k := k-grouping.item (i-1)
