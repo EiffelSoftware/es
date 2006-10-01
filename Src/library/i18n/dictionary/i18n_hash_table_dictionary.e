@@ -19,11 +19,11 @@ create
 
 	feature --Creation
 
-		make(a_plural_form:INTEGER) is
+		make(a_plural_form:INTEGER;a_number_of_entries:INTEGER) is
 				-- create the datastructure
 			do
-				Precursor(a_plural_form)
-				create hash.make(50)
+				Precursor(a_plural_form,a_number_of_entries)
+				create hash.make(a_number_of_entries)
 			end
 
 	feature --Insertion
