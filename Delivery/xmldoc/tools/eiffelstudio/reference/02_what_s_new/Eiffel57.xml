@@ -112,6 +112,8 @@
 			<item>In <class_name>ACTIVE_INTEGER_INTERVAL</class_name> the action sequence will only be called if the range actually changes.</item>
 			<item>Fixed <feature_name>launch</feature_name> from <class_name>EXECUTION_ENVIRONMENT</class_name> to not inherit handles on Windows.</item>
 			<item>Moved <cluster_name>list_eiffel3</cluster_name> and <cluster_name>table_eiffel3</cluster_name> to the <cluster_name>obsolete</cluster_name> library.</item>
+			<item>Changed .NET implementation of the feature <class_name>FILE</class_name>.<feature_name>read_line</feature_name> to follow the behavior of the feature in classic mode and to treat either single '%N' or a sequence of '%R' and '%N' as an end of line.</item>
+			<item>Ensured that feature <class_name>POINTER</class_name>.<feature_name>out</feature_name> produces under .NET a hexadecimal number like in classic mode rather than a decimal number preceded by 0x.</item>
 		</list>
 		<heading><size>3</size>EiffelNet</heading>
 		<list ordered="false">
@@ -176,6 +178,7 @@
 				<item>Fixed in <class_name>WEL_LIST_VIEW</class_name> a bug where if the text of the string is too long, it would be displayed but truncated.</item>
 				<item>Fixed incorrect result for <feature_name>title_bar_height</feature_name> in <class_name>WEL_SYSTEM_METRICS</class_name>.</item>
 				<item>Fixed a memory corruption due to Windows not sending a WM_DESTROY or WM_NCDESTROY message in all cases when a window is actually destroyed.</item>
+				<item>Fixed a bug in <class_name>WEL_REGISTRY_KEY_VALUE</class_name>.<feature_name>string_value</feature_name> that might cause assertion violation when a value is an empty string, because a check whether the last character is null was done without checking if string has at least one character.</item>
 		</list>
 	</paragraph>
 </document>
