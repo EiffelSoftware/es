@@ -48,7 +48,7 @@
 				</cluster>
 			</cluster>
 			<cluster name="formatter" location="./formatter"></cluster>
-			<cluster name="formatter" location="./locale_info"></cluster>
+			<cluster name="locale_info" location="./locale_info"></cluster>
 		</cluster>
 	</target>
 </system>
