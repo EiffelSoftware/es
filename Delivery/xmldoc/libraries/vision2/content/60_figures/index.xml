@@ -101,7 +101,7 @@
 				<cell>a string positioned by its top-left point displayed in the specified font</cell>
 			</row>
 		</table>
-		<paragraph>A closed figure is a figure that has some area enclosed when drawn that can optionally be filled with a color. Closed figures inherit <link><url>../../reference/ev_closed_figure_chart.xml</url><label>EV_CLOSED_FIGURE</label></link> which gives them the property fill_color. Open figures inherit <link><url>../../reference/ev_atomic_figure_chart.xml</url><label>EV_ATOMIC_FIGURE</label></link> directly just as <link><url>../../reference/ev_closed_figure_chart.xml</url><label>EV_CLOSED_FIGURE</label></link>. 
+		<paragraph>A closed figure is a figure that has some area enclosed when drawn that can optionally be filled with a color. Closed figures inherit <link><url>../../reference/ev_closed_figure_chart.xml</url><label>EV_CLOSED_FIGURE</label></link> which gives them the property fill_color. Open figures inherit <link><url>../../reference/ev_atomic_figure_chart.xml</url><label>EV_ATOMIC_FIGURE</label></link> directly just as <link><url>../../reference/ev_closed_figure_chart.xml</url><label>EV_CLOSED_FIGURE</label></link>.
 			<heading>
 				<size>3</size>Points
 			</heading>
@@ -114,13 +114,13 @@
 			</list>
 			<paragraph>These classes offer features to handle the given number of points. <link><url>../../reference/ev_single_pointed_figure_chart.xml</url><label>EV_SINGLE_POINTED_FIGURE</label></link> offers the feature:</paragraph>
 			<code_block>	<feature_name>point</feature_name><symbol>:</symbol> <class_name>EV_RELATIVE_POINT</class_name></code_block>
-			<paragraph><link><url>../../reference/ev_double_pointed_figure_chart.xml</url><label>EV_DOUBLE_POINTED_FIGURE</label></link> inherits <link><url>../../reference/ev_single_pointed_figure_chart.xml</url><label>EV_SINGLE_POINTED_FIGURE</label></link> for its first point, which is renamed to 
-				<feature_name>point_a</feature_name>. It adds 
+			<paragraph><link><url>../../reference/ev_double_pointed_figure_chart.xml</url><label>EV_DOUBLE_POINTED_FIGURE</label></link> inherits <link><url>../../reference/ev_single_pointed_figure_chart.xml</url><label>EV_SINGLE_POINTED_FIGURE</label></link> for its first point, which is renamed to
+				<feature_name>point_a</feature_name>. It adds
 				<feature_name>point_b</feature_name>, so it has the features:
 			</paragraph>
 <code_block>
 	<feature_name>point_a</feature_name><symbol>:</symbol> <class_name>EV_RELATIVE_POINT</class_name>
-	<feature_name>point_b</feature_name><symbol>:</symbol> <class_name>EV_RELATIVE_POINT</class_name> 
+	<feature_name>point_b</feature_name><symbol>:</symbol> <class_name>EV_RELATIVE_POINT</class_name>
 </code_block>
 			<paragraph><link><url>../../reference/ev_multi_pointed_figure_chart.xml</url><label>EV_MULTI_POINTED_FIGURE</label></link> internally holds an array of points. Its most important feature is:</paragraph>
 <code_block>
@@ -133,21 +133,21 @@
 			<heading>
 				<size>2</size>Figure worlds
 			</heading>
-			<paragraph>In order to put the figures you want to display in a context, you have to insert them in a figure world object, an instance of <link><url>../../reference/ev_figure_world_chart.xml</url><label>EV_FIGURE_WORLD</label></link>. This is a descendant of <link><url>../../reference/ev_figure_group_chart.xml</url><label>EV_FIGURE_GROUP</label></link> and hence works in the same way. This figure world is later associated with one or more projectors. 
-				<paragraph><link><url>../../reference/ev_figure_world_chart.xml</url><label>EV_FIGURE_WORLD</label></link> adds a number of features to <link><url>../../reference/ev_figure_group_chart.xml</url><label>EV_FIGURE_GROUP</label></link>. These extra features are needed for the representation by a projector. One is the background color. This feature will be used to erase the canvas for a graphical projector in the specified color. The other features are to manage the grid. 
+			<paragraph>In order to put the figures you want to display in a context, you have to insert them in a figure world object, an instance of <link><url>../../reference/ev_figure_world_chart.xml</url><label>EV_FIGURE_WORLD</label></link>. This is a descendant of <link><url>../../reference/ev_figure_group_chart.xml</url><label>EV_FIGURE_GROUP</label></link> and hence works in the same way. This figure world is later associated with one or more projectors.
+				<paragraph><link><url>../../reference/ev_figure_world_chart.xml</url><label>EV_FIGURE_WORLD</label></link> adds a number of features to <link><url>../../reference/ev_figure_group_chart.xml</url><label>EV_FIGURE_GROUP</label></link>. These extra features are needed for the representation by a projector. One is the background color. This feature will be used to erase the canvas for a graphical projector in the specified color. The other features are to manage the grid.
 					<heading>
 						<size>2</size>Projectors
 					</heading>
 					<paragraph>A projector is an object that knows what a figure world should look like. The figure world itself is not more than a hint towards its representation. For example, if a line is "20" long, this unit might mean pixels, miles, centimeters or whatever. It is up to the projector to interpret units. Also, color might be interpreted as gray scale. Typically, a projector will do the best possible job projecting the world to its device.</paragraph>
-					<paragraph>With EiffelVision come these projectors: 
+					<paragraph>With EiffelVision come these projectors:
 						<list ordered="false">
 							<item><link><url>../../reference/ev_postscript_projector_chart.xml</url><label>EV_POSTSCRIPT_PROJECTOR</label></link></item>
 							<item><link><url>../../reference/ev_drawing_area_projector_chart.xml</url><label>EV_DRAWING_AREA_PROJECTOR</label></link></item>
 							<item><link><url>../../reference/ev_pixmap_projector_chart.xml</url><label>EV_PIXMAP_PROJECTOR</label></link></item>
-						</list> The first one maps figure worlds to a postscript file. The other two are descendants of <link><url>../../reference/ev_widget_projector_chart.xml</url><label>EV_WIDGET_PROJECTOR</label></link>, and can project on widgets that inherit <link><url>../../reference/interface/properties/ev_drawable_chart.xml</url><label>EV_DRAWABLE</label></link>: <link><url>../../reference/ev_drawing_area_chart.xml</url><label>EV_DRAWING_AREA</label></link> and <link><url>../../reference/ev_pixmap_chart.xml</url><label>EV_PIXMAP</label></link>, eventually using double-buffering, which results in a more smooth animation but requires fast copying from memory to the video buffer (can be slow for a remote display). 
+						</list> The first one maps figure worlds to a postscript file. The other two are descendants of <link><url>../../reference/ev_widget_projector_chart.xml</url><label>EV_WIDGET_PROJECTOR</label></link>, and can project on widgets that inherit <link><url>../../reference/ev_drawable_chart.xml</url><label>EV_DRAWABLE</label></link>: <link><url>../../reference/ev_drawing_area_chart.xml</url><label>EV_DRAWING_AREA</label></link> and <link><url>../../reference/ev_pixmap_chart.xml</url><label>EV_PIXMAP</label></link>, eventually using double-buffering, which results in a more smooth animation but requires fast copying from memory to the video buffer (can be slow for a remote display).
 						<heading>
 							<size>2</size>Events
-						</heading> The other features of drawing area and widget is that they generate pointer events. These events can be translated by projectors to map the figure world. These projectors send the event to the appropriate figure. Every figure has all common pointer action sequences: 
+						</heading> The other features of drawing area and widget is that they generate pointer events. These events can be translated by projectors to map the figure world. These projectors send the event to the appropriate figure. Every figure has all common pointer action sequences:
 						<list ordered="false">
 							<item><feature_name>pointer_motion_actions</feature_name></item>
 							<item><feature_name>pointer_button_press_actions</feature_name></item>
@@ -160,7 +160,7 @@
 							<item><feature_name>drop_actions</feature_name></item>
 						</list> There are no events for keyboard focus and no key press events. In case you wish to use these events, use the ones of the pixmap or drawing area.
 					</paragraph>
-					<paragraph>When using events, keep the z-order in mind. This is the order in which the figures are stacked in the world. The first item of a figure group is the figure that is the farthest away. This means that the figure is obscured by any figures which are in front of it, and events will also not be propagated to this figure in that case. 
+					<paragraph>When using events, keep the z-order in mind. This is the order in which the figures are stacked in the world. The first item of a figure group is the figure that is the farthest away. This means that the figure is obscured by any figures which are in front of it, and events will also not be propagated to this figure in that case.
 						<heading>
 							<size>2</size>Rotation and scaling
 						</heading>
