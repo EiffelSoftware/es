@@ -170,11 +170,10 @@ feature -- day/months names
 			-- array with the full month names
 			-- according the current locale settings
 		local
-			i,upper : INTEGER
+			i : INTEGER
 			l_string : STRING_32
 		do
-			upper := {DATE_CONSTANTS}.Months_in_year
-			create Result.make(1,upper)
+			create Result.make(1,{DATE_CONSTANTS}.Months_in_year)
 			from
 				i := Result.lower
 			variant
@@ -182,7 +181,7 @@ feature -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (mon_1 +(i\\upper)))
+				create l_string.make_from_c (get_locale_info (mon_1 +i-1))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -215,11 +214,10 @@ feature -- day/months names
 			-- array with the abbreviated month names
 			-- according the current locale settings
 		local
-			i, upper : INTEGER
+			i : INTEGER
 			l_string : STRING_32
 		do
-			upper := {DATE_CONSTANTS}.Months_in_year
-			create Result.make(1,upper)
+			create Result.make(1,{DATE_CONSTANTS}.Months_in_year)
 			from
 				i := Result.lower
 			variant
@@ -227,7 +225,7 @@ feature -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (abmon_1 +(i\\upper)))
+				create l_string.make_from_c (get_locale_info (abmon_1 +i-1))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -240,7 +238,7 @@ feature	-- number formatting
 			-- get the decimal separator of numbers
 			-- according the current locales setting
 		do
-			create Result.make_from_c (mon_grouping (localeconv))
+			create Result.make_from_c (decimal_point (localeconv))
 		end
 
 	get_value_numbers_after_decimal_separator: INTEGER is
@@ -270,14 +268,11 @@ feature	-- number formatting
 
 	get_value_grouping: ARRAY[INTEGER] is
 			--
-		obsolete
-			"NOT IMPLEMENTED"
 		local
-			st: STRING_32
+			l_string: STRING_32
+			i, t: INTEGER
 		do
-			create st.make_from_c (mon_grouping (localeconv))
-			io.put_string ("GET VALE GROUPING: "+st)
---			Result := <<3,3,0>>
+			Result := pointer_to_array (grouping (localeconv))
 		end
 
 
@@ -287,8 +282,15 @@ feature	-- currency formatting
 			-- get the currency symbol
 			-- according the current locales setting
 		do
+			create Result.make_from_c (currency_symbol (localeconv))
+		end
+
+	get_int_currency_symbol: STRING_32 is
+			-- ISO 4217 currency code
+		do
 			create Result.make_from_c (int_curr_symbol (localeconv))
 		end
+
 
 	get_currency_symbol_location : INTEGER is
 			-- get the integer that represents
@@ -298,14 +300,14 @@ feature	-- currency formatting
 		do
 			create l_string.make_from_c (get_locale_info (CRNCYSTR))
 			if	l_string.item (1).is_equal ('-') then
-				Result := {I18N_LOCALE_INFO}.currency_symbol_prefixed
+				Result := {I18N_LOCALE_INFO}.Currency_symbol_prefixed
 			elseif l_string.item (1).is_equal ('+') then
-				Result := {I18N_LOCALE_INFO}.currency_symbol_appended
+				Result := {I18N_LOCALE_INFO}.Currency_symbol_appended
 			elseif l_string.item (1).is_equal ('.') then
-				Result := {I18N_LOCALE_INFO}.currency_symbol_radix
+				Result := {I18N_LOCALE_INFO}.Currency_symbol_radix
 			else
 				-- Return as default value currency_symbol_prefixed
-				Result := {I18N_LOCALE_INFO}.currency_symbol_prefixed
+				Result := {I18N_LOCALE_INFO}.Currency_symbol_prefixed
 			end
 		end
 
@@ -325,7 +327,7 @@ feature	-- currency formatting
 			Result := frac_digits (localeconv).natural_32_code.to_integer_32
 			Result := int_frac_digits (localeconv).natural_32_code.to_integer_32
 			if Result = {CHARACTER_8}.Max_value then
-				Result := {I18N_CURRENCY_INFO}.default_currency_numbers_after_decimal_separator
+				Result := {I18N_CURRENCY_INFO}.Default_currency_numbers_after_decimal_separator
 			end
 		end
 
@@ -337,6 +339,7 @@ feature	-- currency formatting
 		end
 
 	get_currency_number_list_separator: STRING_32 is
+			-- NOT IMPLEMENTED, I did not find this inf. on unix
 			-- get the symbol used to separate a list
 			-- of currency numbers
 			-- according the current locales setting
@@ -350,8 +353,37 @@ feature	-- currency formatting
 		local
 			l_str: STRING_32
 		do
-			create l_str.make_from_c(mon_grouping (localeconv))
-			io.put_string (l_str)
+			Result := pointer_to_array (mon_grouping (localeconv))
 		end
+
+feature {NONE} --Implementation
+
+	pointer_to_array (a_pointer: POINTER): ARRAY[INTEGER] is
+			--
+		local
+			l_string: STRING_32
+			i, t: INTEGER
+		do
+			create l_string.make_from_c (a_pointer)
+			create Result.make (1, l_string.count)
+			from
+				i := 1
+			until
+				i > l_string.count
+			loop
+				t := (l_string.item (i)).natural_32_code.as_integer_32
+				if t = {CHARACTER}.Max_value then
+					-- finished with the string
+					i := l_string.count
+				else
+					Result.put (t, i)
+				end
+				i := i + 1
+			end
+			if t /= {CHARACTER}.Max_value then
+				Result.force (0, i)
+			end
+		end
+
 
 end

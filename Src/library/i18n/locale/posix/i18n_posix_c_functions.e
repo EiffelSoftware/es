@@ -15,21 +15,21 @@ feature {LOCALE} -- Initialization
 			-- to get default locale, give pointer to ""
 		require
 			valid_a_pointer: a_pointer /= default_pointer
-		external "C (EIF_POINTER)| %"main.h%""
+		external "C (EIF_POINTER)| %"posix_locales.h%""
 		end
 
 feature -- nl_langinfo
 
 	get_locale_info (a_int: INTEGER): POINTER is
 			--
-		external "C (EIF_INTEGER): EIF_POINTER| %"main.h%""
+		external "C (EIF_INTEGER): EIF_POINTER| %"posix_locales.h%""
 		end
 
 feature -- Available locales
 
 	c_is_available (a_pointer : POINTER) : BOOLEAN is
 			-- see: `is_available'
-		external "C (EIF_POINTER): EIF_BOOLEAN| %"main.h%""
+		external "C (EIF_POINTER): EIF_BOOLEAN| %"posix_locales.h%""
 		alias "is_available"
 		end
 
@@ -37,7 +37,8 @@ feature -- Informations
 
 	c_locale_name : POINTER is
 			-- see: `locale_name'
-		external "C (): EIF_POINTER| %"main.h%""
+		external "C (): EIF_POINTER| %"posix_locales.h%""
 		alias "locale_name"
 		end
+
 end

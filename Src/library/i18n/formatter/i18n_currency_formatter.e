@@ -16,7 +16,6 @@ feature -- Initialization
 			-- Initialization
 		require
 			a_locale_info_exists: a_locale_info /= Void
--- 			valid_format_string: is_valid_format_string (a_locale_info.a_format_string)
 		do
 			currency_symbol_location := a_locale_info.currency_symbol_location
 			currency_symbol := a_locale_info.currency_symbol
@@ -46,24 +45,6 @@ feature -- Utility
 		end
 
 
-feature --Check functions
-
-	is_valid_format_string (a_string: STRING_32):  BOOLEAN is
-			-- is `a_string' a valid format string?
-			-- A valid format is:
-			-- the currency symbol, preceded by
-			-- "-" if the symbol should appear before the value,
-			-- "+" if the symbol should appear after the value,
-			-- "." if the symbol should replace the radix character.
-		require
-			a_string_exists: a_string /= Void
-		do
-			Result := 	a_string.count > 1 and then
-						(a_string.item (1).is_equal ('-') or
-						 a_string.item (1).is_equal ('+') or
-						 a_string.item (1).is_equal ('.'))
-		end
-
 feature -- Implementation
 
 	currency_symbol: STRING_32
@@ -76,5 +57,6 @@ feature -- Implementation
 invariant
 
 	currency_symbol_exist: currency_symbol /= Void
+	currency_value_formatter_exists: currency_value_formatter /= Void
 
 end
