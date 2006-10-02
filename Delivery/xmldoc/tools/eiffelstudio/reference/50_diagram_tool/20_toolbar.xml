@@ -82,16 +82,6 @@
 			</item>
 			<item>
 				<image>
-					<url>/images/eiffelstudio/icons/icon_class_header_color.gif</url>
-				</image>
-				<link>
-					<url>../../how_to_s/60_designing_a_project/20_altering_the_system/30_class_header.xml</url>
-					<label>Change class name and generics</label>
-				</link>
-				<line_break/> Drop class bubbles in this hole if you want to change a name and/or formal generics.
-			</item>
-			<item>
-				<image>
 					<url>/images/eiffelstudio/icons/icon_fill_cluster_color.gif</url>
 				</image>
 				<link>

@@ -2,14 +2,14 @@
 	<meta_data/>
 	<paragraph>
 		<paragraph>Basically, once the Eiffel definition file is created, the compiler will generate a set of files and will compile them to generate the Dynamic library into the 
-			<italic>EIFGEN/W_code</italic> or 
-			<italic>EIFGEN/F_code</italic> directory.
+			<italic>EIFGENs/target_name/W_code</italic> or 
+			<italic>EIFGENs/target_name/F_code</italic> directory.
 		</paragraph>
 		<note>
 			<bold>Note</bold>: To generate and compile these files, you have to indicate the definition file that should be used in the 
 			<link>
-				<url>/tools/eiffelstudio/reference/25_project_settings/60_advanced.xml</url>
-				<label>advanced tab of the project settings</label>
+				<url>../../25_project_settings/050_advanced_general.xml</url>
+				<label>advanced node of the project settings</label>
 			</link> of your system. This way EiffelStudio will know which one to use. If you do not specify any definition file, nothing will be generated.
 		</note>
 		<paragraph>The set of files is composed of:</paragraph>

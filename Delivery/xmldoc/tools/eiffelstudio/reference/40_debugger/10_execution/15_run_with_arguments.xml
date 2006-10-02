@@ -37,8 +37,8 @@
 		<list ordered="false">
 			<item>From the 
 				<link>
-					<url>../../25_project_settings/20_debug.xml</url>
-					<label>Debug tab</label>
+					<url>../../25_project_settings/070_advanced_debug.xml</url>
+					<label>Advanced Debug node</label>
 				</link> in the Project Settings window.
 			</item>
 			<item>By right-clicking any of the buttons on the debugging toolbar and using the argument dialog.</item>
