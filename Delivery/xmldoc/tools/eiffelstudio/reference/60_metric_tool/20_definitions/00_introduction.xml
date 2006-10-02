@@ -1,9 +1,6 @@
 <document output="studio" title="Definitions">
 	<meta_data/>
 	<paragraph>
-		<heading>
-			<size>1</size>Definitions
-		</heading>
 		<paragraph>The metric tool needs a consistent metric theory to rely on. Indeed,        metrics are notoriously subject to abuse and we must be really accurate when defining metrics and related notions.</paragraph>
 		<paragraph>This section introduces a set of definitions essential to handle the        metric tool.</paragraph>
 		<list ordered="false">
