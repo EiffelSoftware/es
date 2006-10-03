@@ -16,19 +16,19 @@
 		</paragraph>
 		<paragraph>  The EiffelBase library includes:</paragraph>
 		<list ordered="false">
-			<item>A
+			<item>A 
 				<link>
 					<url>10_kernel/index.xml</url>
 					<label>Kernel</label>
 				</link> that defines the core  classes of all Eiffel systems.
 			</item>
-			<item>A
+			<item>A 
 				<link>
 					<url>20_structures/index.xml</url>
 					<label>Data Structures</label>
 				</link> cluster including classes for all the major data structures (sets, lists, tables etc...)
 			</item>
-			<item>A
+			<item>A 
 				<link>
 					<url>30_support/index.xml</url>
 					<label>Support</label>
