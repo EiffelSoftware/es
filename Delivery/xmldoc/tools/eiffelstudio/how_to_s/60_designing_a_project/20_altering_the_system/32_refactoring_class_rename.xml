@@ -8,6 +8,7 @@
 			<item>Drop it in the 
 				<bold>Rename Feature/Class</bold> hole.				
 				<image>
+					<url>/images/eiffelstudio/icons/16x16/refactor_rename_icon.png</url>
 				</image>
 			</item>
 			<item>After a compilation the 
