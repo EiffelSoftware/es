@@ -568,12 +568,15 @@ Delivery/xmldoc/images/eiffelstudio/debugger/call_stack_tool_with_threads.png -t
 Delivery/xmldoc/images/eiffelstudio/debugger/cond_breakpoint_context_menu.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/debugging_tools_preferences.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/exception_dialog.png -text
+Delivery/xmldoc/images/eiffelstudio/debugger/exceptions_handling_classic.png -text
+Delivery/xmldoc/images/eiffelstudio/debugger/exceptions_handling_dotnet.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/expanded_display_default.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/expression_evaluation_tool.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/locals_tree.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/locals_tree_dotnet_exception.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/object_tool.png -text
 Delivery/xmldoc/images/eiffelstudio/debugger/object_tree.png -text
+Delivery/xmldoc/images/eiffelstudio/debugger/threads_tool.png -text
 Delivery/xmldoc/images/eiffelstudio/diagram/bon-agg-client.png -text
 Delivery/xmldoc/images/eiffelstudio/diagram/bon-calculator-inheritance.png -text
 Delivery/xmldoc/images/eiffelstudio/diagram/bon-class-deferred.png -text
@@ -1290,6 +1293,8 @@ Delivery/xmldoc/tools/eiffelstudio/reference/25_project_settings/080_advanced_ex
 Delivery/xmldoc/tools/eiffelstudio/reference/25_project_settings/090_advanced_tasks.xml -text
 Delivery/xmldoc/tools/eiffelstudio/reference/25_project_settings/100_advanced_variables.xml -text
 Delivery/xmldoc/tools/eiffelstudio/reference/25_project_settings/110_advanced_mapping.xml -text
+Delivery/xmldoc/tools/eiffelstudio/reference/40_debugger/55_threads_tool.xml -text
+Delivery/xmldoc/tools/eiffelstudio/reference/40_debugger/57_exception_handling_tool.xml -text
 Delivery/xmldoc/tools/wizards/com/images/client_inheritance.png -text
 Delivery/xmldoc/tools/wizards/com/images/com_image14.jpg -text
 Delivery/xmldoc/tools/wizards/com/images/com_image15.gif -text
