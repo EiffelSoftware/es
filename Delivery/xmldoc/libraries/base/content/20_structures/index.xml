@@ -8,7 +8,7 @@
 		</help>
 	</meta_data>
 	<paragraph>
-		<paragraph>  The data structures cluster of EiffelBase includes classes that cover a wide  range of data structures classes for you to reuse in your systems. The cluster  is divided into a number of subclusters. Each subcluster contains one or more
+		<paragraph>  The data structures cluster of EiffelBase includes classes that cover a wide  range of data structures classes for you to reuse in your systems. The cluster  is divided into a number of subclusters. Each subcluster contains one or more 
 			<bold>deferred</bold> classes, which provide the general high-level abstractions;  other classes in the cluster inherit from the deferred ones.
 		</paragraph>
 		<paragraph>  The highest-level class is
@@ -39,43 +39,43 @@
 		</list>
 		<paragraph>  The documentation further discusses:</paragraph>
 		<list ordered="false">
-			<item>The
+			<item>The 
 				<link>
 					<url>10_taxonomy.xml</url>
 					<label>taxonomy</label>
 				</link> of the  abstract container structures.
 			</item>
-			<item>The
+			<item>The 
 				<link>
 					<url>20_list.xml</url>
 					<label>list-based structures hierarchy</label>
 				</link>.
 			</item>
-			<item>The
+			<item>The 
 				<link>
 					<url>30_dispenser.xml</url>
 					<label>dispenser-based structures hierarchy</label>
 				</link>.
 			</item>
-			<item>The
+			<item>The 
 				<link>
 					<url>40_tree.xml</url>
 					<label>tree-based structures hierarchy</label>
 				</link>.
 			</item>
-			<item>The
+			<item>The 
 				<link>
 					<url>50_set.xml</url>
 					<label>set-based structures hierarchy</label>
 				</link>.
 			</item>
-			<item>The
+			<item>The 
 				<link>
 					<url>60_table.xml</url>
 					<label>table-based structures hierarchy</label>
 				</link>.
 			</item>
-			<item>The
+			<item>The 
 				<link>
 					<url>70_iteration.xml</url>
 					<label>iteration mechanisms</label>
