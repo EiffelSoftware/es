@@ -14,7 +14,7 @@
 			<label>search tool</label>
 		</link>. If it is not displayed, you can make it appear by clicking on its icon
 		<image>
-			<url>/images/eiffelstudio/icons/16x16/search_icon.png</url>
+			<url>/images/eiffelstudio/icons/16x16/tool_search_icon.png</url>
 		</image> in the tool bar. This tool will allow you to search a word or a regular expression and to replace it if you want to. It can be case sensitive and look for isolated words.
 		<paragraph>
 			<bold>Note</bold>: The 
