@@ -78,7 +78,7 @@ feature -- Access
 			result_exists: Result /= Void
 		end
 
-	feature --Information
+feature --Information
 
 		plural_form: INTEGER --valid constant from I18N_PLURAL_TOOLS
 
@@ -89,7 +89,7 @@ feature -- Access
 				 end
 			-- number of entries in the dictionary
 
-	feature {NONE} --Helpers
+feature {NONE} --Helpers
 		reduce(a_plural_form:INTEGER):INTEGER is
 				-- reduce a given plural forms to a smallest one
 			require
