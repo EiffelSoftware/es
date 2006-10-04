@@ -12,7 +12,7 @@ deferred class
 
 feature -- Creation
 
-	make(a_plural_form:INTEGER;a_number_of_entries:INTEGER) is
+	make(a_plural_form:INTEGER) is
 			-- Create an empty dictionary with the given plural form
 			require
 				valid_plural_form: plural_tools.valid_plural_form (plural_form)

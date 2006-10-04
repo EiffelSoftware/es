@@ -8,8 +8,9 @@ class
 	I18N_BINARY_SEARCH_ARRAY_DICTIONAY
 			--	the 'array' should be sorted
 			--  the 'size' of 'array' should be given by its client
-			--  the index of 'array' arranges from 1 to max_index
+			--  the index of 'array' arranges from 1 to max_index, but which could also be resible
 			--  max_index should be >=1
+			--  I think there is something wrong with 'array.full' in class ARRAY
 
 
 	inherit
@@ -27,12 +28,12 @@ create
 
 feature --Creation
 
-	make(a_plural_form:INTEGER;a_number_of_entries:INTEGER) is
+	make(a_plural_form:INTEGER) is
 			-- create the datastructure
 			do
-				Precursor(a_plural_form,a_number_of_entries)
-				max_index:=a_number_of_entries
-				create array.make (min_index, max_index)
+				Precursor(a_plural_form)
+				max_index:=default_number_of_entries
+				create array.make (min_index, default_number_of_entries)
 				current_index:=1
 			end
 
@@ -40,13 +41,12 @@ feature --Insertion
 
 	insert(a_entry: I18N_DICTIONARY_ENTRY) is
 			-- add an entry to 'array' without sorting it
+			-- auto resize when the capacity of 'array' is filled
+			-- without duplicate check, let insertion_sort do it
 		do
-			if (current_index>=max_index) then
-				io.put_string ("ARRAY IS FULL!%N")
-			else
-				array.put (a_entry, current_index)
+				array.put(a_entry, current_index)
 				current_index:=current_index+1
-			end
+				insertion_sort_1
 		end
 
 feature --Access
@@ -64,6 +64,85 @@ feature --Access
 				Result:=True
 			end
 		end
+
+feature	{NONE}--help functions
+
+	insertion_sort_1 is
+		-- 'array' is sorted except the last inserted element
+		-- after every 'insert' is insertion_sort is called
+		-- check whether the last element is duplicate first
+		-- check the last inserted element, compare it with the one before it, whether it is greater, then the
+		-- the loop is ended, or make a exchange with the former one if it is smaller,
+		-- do it recursively
+
+	local
+		i:INTEGER
+		entry: I18N_DICTIONARY_ENTRY
+		sorted: BOOLEAN
+	do
+		if has (array.item (current_index-1).original_singular) then
+			sorted:=True
+		end
+		if (current_index=2) then
+			-- one element case
+			sorted:=True
+		end
+		from
+			i:=current_index-1
+		until
+			i<2 or sorted
+		loop
+			if array.item (i)>array.item (i-1) then
+				sorted:=True
+			else
+				entry:=array.item (i)
+				array.force (array.item (i-1), i)
+				array.force (entry, i-1)
+				i:= i-1
+			end
+		end
+	end
+
+	insertion_sort_2 is
+			-- 'array' is sorted except the last  inserted element
+			-- after every 'insert' is insertion_sort is called
+			-- compare with its neighbour recursively until the right_index for it is found
+			-- subcopy  'array' from the right_index to current_index-2  to position from right_index-1
+			-- put the last_input in 'array' with right_index
+	local
+		i,right_index:INTEGER
+		entry: I18N_DICTIONARY_ENTRY
+		sorted,duplicate: BOOLEAN
+	do
+		if (current_index=2) then
+			-- one element case
+			sorted:=True
+		end
+		entry:= array.item (current_index-1)
+		from
+			i:=current_index-2
+		until
+			i<1 or sorted
+		loop
+			if entry > array.item (i) then
+				sorted:=True
+			elseif entry = array.item (i) then
+				-- ignore duplicate entry
+				-- set current-index as the one to filled next
+				current_index:=current_index-1
+				sorted:=True
+				duplicate:=True
+			else
+				i:= i-1
+			end
+		end
+		if (not duplicate) then
+			right_index:=i+1
+			array.subcopy (array, right_index, current_index-2, right_index+1)
+			array.put (entry, right_index)
+		end
+
+	end
 
 	has_index(original:STRING_GENERAL):INTEGER is
 			-- does the dictionary have this entry?
@@ -106,6 +185,7 @@ feature --Access
 			Result:=-1
 		end
 
+feature	-- Access
 
 	has_plural(original_singular, original_plural: STRING_GENERAL; plural_number:INTEGER):BOOLEAN is
 			--
@@ -149,7 +229,6 @@ feature --Access
 		end
 
 
-
 feature --Information
 
 	count:INTEGER is
@@ -163,10 +242,13 @@ feature {NONE} --Implementation
 	array: ARRAY[I18N_DICTIONARY_ENTRY]
 	min_index: INTEGER is 1
 	max_index: INTEGER
-	current_index:INTEGER
+		-- the index which is to be filled next
+	current_index: INTEGER
+	default_number_of_entries: INTEGER is 50
 
 invariant
-		current_index_is_larger: array.full implies current_index=max_index
+
+	count_equal_current_index: count=current_index
 
 end
 

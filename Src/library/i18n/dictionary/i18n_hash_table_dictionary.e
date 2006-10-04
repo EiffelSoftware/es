@@ -19,11 +19,11 @@ create
 
 	feature --Creation
 
-		make(a_plural_form:INTEGER;a_number_of_entries:INTEGER) is
+		make(a_plural_form:INTEGER) is
 				-- create the datastructure
 			do
-				Precursor(a_plural_form,a_number_of_entries)
-				create hash.make(a_number_of_entries)
+				Precursor(a_plural_form)
+				create hash.make(default_number_of_entries)
 			end
 
 	feature --Insertion
@@ -78,9 +78,7 @@ create
 
 
 	feature {NONE} --Implementation
-			hash: HASH_TABLE[I18N_DICTIONARY_ENTRY, STRING_32]
-
-
-
+		hash: HASH_TABLE[I18N_DICTIONARY_ENTRY, STRING_32]
+		default_number_of_entries: INTEGER is 50
 
 end
