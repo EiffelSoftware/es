@@ -35,12 +35,11 @@
 					<italic>ln data.sql.odbc data.sql</italic>
 				</paragraph>
 				<warning>
-					<bold>Caution:</bold> the
-					<italic>data.sql</italic> file must be        available in the sample application current directory. If you run the        sample from EiffelStudio, this directory should be the
-					<italic>EIFGEN/W_CODE/</italic>        directory of your project.
+					<bold>Caution:</bold> the <italic>data.sql</italic> file must be available in the sample application current directory. If you run the sample from EiffelStudio, this directory should be the 
+					<italic>EIFGENs/target/W_CODE/</italic> directory of your project (where target is one of the installed DBMS).
 				</warning>
 				<paragraph>This sample lets you interact with your database through a console. </paragraph>
-				<paragraph>            First you have to enter the database            connection information: </paragraph>
+				<paragraph>First you have to enter the database connection information: </paragraph>
 				<list ordered="false">
 					<item>For ODBC:
 					<code_block>
@@ -51,13 +50,8 @@ Password: mypass
 					</code_block>
 					<note>
 						<bold>Note:</bold>
-						<italic> Name</italic> and
-						<italic>Password</italic> are no required with          ODBC. If you don't need
-						<italic>Name</italic> and
-						<italic>Password</italic>,
-						<italic/>you          can simply hit
-						<bold>Return</bold> when prompted
-						<italic>.</italic>
+						<italic> Name</italic> and <italic>Password</italic> are no required with ODBC. If you don't need <italic>Name</italic> and <italic>Password</italic>, 
+						you can simply hit <bold>Return</bold> when prompted.
 					</note></item>
 				</list>
 				<list ordered="false">
@@ -99,30 +93,25 @@ First publication:07/01/1992 12:00:00.0 AM
 Author? ('exit' to terminate):
 				</code_block>
 				<note>
-					<bold>Note:</bold>   enter
-					<italic>exit</italic> to quit the application.
+					<bold>Note:</bold> enter <italic>exit</italic> to quit the application.
 				</note>
 				<heading>
 					<size>2</size>Under the Hood
 				</heading>
-				<paragraph>            This sample showcases the use of the
-					<link>
-						<url>../../reference/db_selection_chart.xml</url>
-						<label>DB_SELECTION</label>
-					</link>            class to perform smart
+				<paragraph>This sample showcases the use of the <link><url>../../reference/db_selection_chart.xml</url><label>DB_SELECTION</label></link> class to perform smart
 					<italic>select</italic> queries, using:
 				</paragraph>
 				<list ordered="false">
 					<item>
 						<link>
 							<url>../../content/10_interface_layer/50_data_object_coupling/index.xml</url>
-							<label>Database            data and Eiffel objects Coupling</label>
+							<label>Database data and Eiffel objects Coupling</label>
 						</link>.
 					</item>
 					<item>
 						<link>
 							<url>../../content/10_interface_layer/60_query_variables/index.xml</url>
-							<label>Variables            Binding</label>
+							<label>Variables Binding</label>
 						</link>.
 					</item>
 				</list>

@@ -266,7 +266,7 @@
 			<item>Put Windows and Unix version to the same version number.</item>
 			<item>Fixed EiffelWeb documentation and example.</item>
 			<item>Fixed minor issues found with EiffelVision2 on Unix and Windows which were affecting EiffelBuild.</item>
-			<item>Fixed incorrect Ace file specification for EiffelVision2 examples and wizards on Unix platforms where application could be linked dynamically with `libpng' but should not.</item>
+			<item>Fixed incorrect configuration file specification for EiffelVision2 examples and wizards on Unix platforms where application could be linked dynamically with `libpng' but should not.</item>
 			<item>Fixed EiffelStore handle for Oracle so that it works fine when compiled with the Borland C compiler.</item>
 			<item>Fixed incorrect version number in VERSION file on Unix platforms.</item>
 		</list>

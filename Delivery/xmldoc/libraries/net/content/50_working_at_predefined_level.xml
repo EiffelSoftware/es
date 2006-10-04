@@ -48,7 +48,7 @@
 				<size>3</size>Application classes and system structure
 			</heading>
 			<paragraph>The client and server mechanisms will be described by instances of    two classes that make up the example, called<code><class_name> OUR_CLIENT</class_name></code> and <code><class_name>OUR_SERVER</class_name></code>.</paragraph>
-			<paragraph>We want to have the two communicating systems be two different    systems (compiled separately, with two separate Ace files).<code><class_name> OUR_CLIENT</class_name></code>
+			<paragraph>We want to have the two communicating systems be two different systems (compiled separately, with two separate configuration files).<code><class_name> OUR_CLIENT</class_name></code>
 				<italic/>will be part of one of these systems; <code><class_name>OUR_SERVER</class_name></code>
 				<italic/>will be part    of the other.
 			</paragraph>

@@ -16,14 +16,14 @@
 		<div>
 			<list ordered="false">
 				<item>
-					EIFGEN/W_code/<bold>system.def</bold> (or F_code)
+					EIFGENs/target_name/W_code/<bold>system.def</bold> (or F_code)
 				</item>
 				<item>
-					EIFGEN/W_code/<bold>edynlib.c</bold> (or F_code)
+					EIFGENs/target_name/W_code/<bold>edynlib.c</bold> (or F_code)
 				</item>
 				<item>
 					$(ISE_EIFFEL)/studio/spec/$(ISE_PLATFORM)/templates/<bold>egc_dynlib.template</bold>
-					<line_break/>this file will be copied during the compilation into the EIFGEN/W_code/E1 directory as 
+					<line_break/>this file will be copied during the compilation into the EIFGENs/target_name/W_code/E1 directory as 
 					<bold>egc_dynlib.c</bold>
 				</item>
 				<item>
