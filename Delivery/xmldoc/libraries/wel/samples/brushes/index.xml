@@ -27,18 +27,18 @@
 				</list>
 			</output>
 			<output output="studio">
-			<list ordered="false">
-				<item>Launch EiffelStudio. </item>
-				<item>Click <bold>Add project</bold></item>
-				<item>Browse to 
-					<italic>$ISE_EIFFEL\examples\wel\brushes\</italic>.
-				</item>
-				<item>Choose <italic>brushes.ecf</italic></item>
-				<item>Choose the location where the project will be compiled, by default the same directory containing the configuration file. </item>
-				<item>Click 
-					<bold>OK</bold>.
-				</item>
-			</list>
+				<list ordered="false">
+					<item>Launch EiffelStudio. </item>
+					<item>Click <bold>Add project</bold></item>
+					<item>Browse to 
+						<italic>$ISE_EIFFEL\examples\wel\brushes\</italic>.
+					</item>
+					<item>Choose <italic>brushes.ecf</italic></item>
+					<item>Choose the location where the project will be compiled, by default the same directory containing the configuration file. </item>
+					<item>Click 
+						<bold>OK</bold>.
+					</item>
+				</list>
 			</output>
 		<heading>
 			<size>2</size>Running
