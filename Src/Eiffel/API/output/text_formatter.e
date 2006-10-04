@@ -26,9 +26,13 @@ feature -- Element change
 	set_context_group (a_group: like context_group) is
 			-- Set `context_group' with `a_group'.
 		do
-			internal_context_group := a_group
+			if a_group /= Void and then not a_group.is_assembly then
+				internal_context_group := a_group
+			else
+				internal_context_group := Void
+			end
 		ensure
-			internal_context_group_set: internal_context_group = a_group
+			internal_context_group_set: internal_context_group = a_group or internal_context_group = Void
 		end
 
 feature -- Operation
