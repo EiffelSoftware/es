@@ -343,15 +343,6 @@
 			<item>First initial release of EiffelStudio 5.2</item>
 		</list>
 		<paragraph>
-			<link>
-				<url>Eiffel51.xml</url>
-				<label>Click here to check out what was new in Eiffel 5.1</label>
-			</link>
-		</paragraph>
-		<paragraph>
-			<link>
-				<url>Eiffel50.xml</url>
-				<label>Click here to check out what was new in Eiffel 5.0</label>
-			</link>
+			<link><url>index.xml</url><label>Click here to check out what was new in other versions</label></link>
 		</paragraph>
 	</paragraph></document>

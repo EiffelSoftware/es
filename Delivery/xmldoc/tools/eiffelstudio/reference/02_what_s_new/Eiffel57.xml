@@ -180,5 +180,8 @@
 				<item>Fixed a memory corruption due to Windows not sending a WM_DESTROY or WM_NCDESTROY message in all cases when a window is actually destroyed.</item>
 				<item>Fixed a bug in <class_name>WEL_REGISTRY_KEY_VALUE</class_name>.<feature_name>string_value</feature_name> that might cause assertion violation when a value is an empty string, because a check whether the last character is null was done without checking if string has at least one character.</item>
 		</list>
+		<paragraph>
+			<link><url>index.xml</url><label>Click here to check out what was new in other versions</label></link>
+		</paragraph>
 	</paragraph>
 </document>

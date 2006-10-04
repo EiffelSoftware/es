@@ -78,30 +78,24 @@
 		<list ordered="false">
 			<item>The minimize button
 				<image>
-					<height>8</height>
-					<width>8</width>
-					<url>/images/eiffelstudio/icons/icon_minimize_color.gif</url>
+					<url>/images/eiffelstudio/icons/10x10/toolbar_minimize_icon.png</url>
 				</image>
 			</item>
 			<item>The maximize button
 				<image>
-					<height>8</height>
-					<width>8</width>
-					<url>/images/eiffelstudio/icons/icon_maximize_color.gif</url>
+					<url>/images/eiffelstudio/icons/10x10/toolbar_maximize_icon.png</url>
 				</image>
 			</item>
 			<item>The restore button
 				<image>
-					<height>8</height>
-					<width>8</width>
-					<url>/images/eiffelstudio/icons/icon_restore_color.gif</url>
+					<url>/images/eiffelstudio/icons/10x10/toolbar_restore_icon.png</url>
 				</image>
 			</item>
 			<item>The close button
 				<image>
 					<height>8</height>
 					<width>8</width>
-					<url>/images/eiffelstudio/icons/icon_close_color.gif</url>
+					<url>/images/eiffelstudio/icons/10x10/toolbar_close_icon.png</url>
 				</image>
 			</item>
 		</list>

@@ -237,23 +237,7 @@
 		<list ordered="false">
 			<item>Removed inheritance to <code><class_name>WEL_STRUCTURE</class_name></code> in <code><class_name>WEL_STRING</class_name></code>, it now inherits from new <code><class_name>C_STRING</class_name></code> class. In the process removed the following features which were inherited from <code><class_name>WEL_STRUCTURE</class_name></code> and did not make sense to <code><class_name>WEL_STRING</class_name></code> <code><feature_name>memory_copy</feature_name></code>, <code><feature_name>structure_size</feature_name></code>, <code><feature_name>dispose</feature_name></code>, <code><feature_name>set_item</feature_name></code>, <code><feature_name>set_shared</feature_name></code>, <code><feature_name>set_unshared</feature_name></code>, <code><feature_name>shared</feature_name></code>, <code><feature_name>to_integer</feature_name></code>. No replacements have been provided for those features. Made <code><feature_name>initialize</feature_name></code> and <code><feature_name>initialize_with_character</feature_name></code> obsolete, instead we now provide two features inherited from <code><class_name>C_STRING</class_name></code> <code><feature_name>fill_blank</feature_name></code> and <code><feature_name>fill_value</feature_name></code>.</item>
 		</list>
-		<paragraph> </paragraph>
 		<paragraph>
-			<link>
-				<url>Eiffel52.xml</url>
-				<label>Click here to check out what was new in Eiffel 5.2</label>
-			</link>
-		</paragraph>
-		<paragraph>
-			<link>
-				<url>Eiffel51.xml</url>
-				<label>Click here to check out what was new in Eiffel 5.1</label>
-			</link>
-		</paragraph>
-		<paragraph>
-			<link>
-				<url>Eiffel50.xml</url>
-				<label>Click here to check out what was new in Eiffel 5.0</label>
-			</link>
+			<link><url>index.xml</url><label>Click here to check out what was new in other versions</label></link>
 		</paragraph>
 	</paragraph></document>

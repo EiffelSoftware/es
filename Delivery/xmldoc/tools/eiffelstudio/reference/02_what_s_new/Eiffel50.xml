@@ -81,4 +81,7 @@
 		<paragraph>
 			Modified classes relative to the use of registry keys to be written only using Eiffel and externals to Win32 API (no more C intermediates). In the process <code><feature_name>close_key</feature_name></code> and <code><feature_name>delete_key</feature_name></code> are now commands and not queries. To find out if it their call was successful, you can query <code><feature_name>last_call_successful</feature_name></code>.
 		</paragraph>
+		<paragraph>
+			<link><url>index.xml</url><label>Click here to check out what was new in other versions</label></link>
+		</paragraph>
 	</paragraph></document>
