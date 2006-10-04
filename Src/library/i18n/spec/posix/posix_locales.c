@@ -9,62 +9,68 @@
 #include <errno.h>
 #include <wchar.h> 
 
+#define BUFSIZE 30
+
 /***********************************
  *  CHARACTER CONVERTION FUNCTION  *
 ************************************/
 
 void convert (char * inbuf, size_t insize, wchar_t **out, size_t *outsize) {
-	iconv_t cd;
-	size_t nconv, avail, alloc;
-	char *res, *tres, *wrptr, *inptr;
-	
-	*out = NULL;
-	*outsize = 0;
-	
-	alloc = avail = insize + insize/4;
-	if (!(res = malloc(alloc)))
-	{
-		perror("malloc");
-		return;
-	}
+        iconv_t cd;
+        size_t nconv, avail, alloc;
+        char *res, *tres, *wrptr, *inptr;
 
-	wrptr = res;   // duplicate pointers because they
-	inptr = inbuf; // get modified by iconv
+        *out = NULL;
+        *outsize = 0;
+        alloc = avail = insize + insize/4;
+        if (!(res = malloc(alloc)))
+        {
+          perror("malloc");
+          return;
+        }
 
-	char *charset = nl_langinfo (CODESET);   //serve a capire che charset
-	cd = iconv_open ("UTF-8", charset);    //qualcosa che serve a dire a iconv
-	if (cd == (iconv_t)(-1))
-	{
-		perror("iconv_open");
-		free(res);
-		return;
-	}
-	do
-	{
-		nconv = iconv (cd, &inptr, &insize, &wrptr, &avail); //la conversione
-		if (nconv == (size_t)(-1))
-		{
-			if (errno == E2BIG) // need more room for result
-			{
-				tres = realloc(res, alloc += 20);
-				avail += 20;
-				if (!tres)
-				{
-					perror("realloc");
-					break;
-				}
-				wrptr = tres + (wrptr - res);
-				res = tres;
-			}
-			else // something wrong with input
-				break;
-			}
-	} while (insize);
-	if (iconv_close(cd))
-		perror("iconv_close");
-	*out = (wchar_t*) res;
-	*outsize = wrptr - res; // should be == to (alloc - avail + 1)
-	//TODO: should possibly null-terminate the result
+        wrptr = res;   // duplicate pointers because they
+        inptr = inbuf; // get modified by iconv
+
+        char *charset = nl_langinfo (CODESET);   /*serve a capire che charset
+                                                                                           usa il locale attuale*/
+        cd = iconv_open ("UTF-8", charset);    /*qualcosa che serve a dire a iconv
+                                                                                   cosa deve converire in cosa*/
+        if (cd == (iconv_t)(-1))
+        {
+                perror("iconv_open");
+                free(res);
+                return;
+        }
+
+        do
+        {
+                nconv = iconv (cd, &inptr, &insize, &wrptr, &avail); //la conversione
+                if (nconv == (size_t)(-1))
+                {
+                        if (errno == E2BIG) // need more room for result
+                        {
+                                tres = realloc(res, alloc += 20);
+                                avail += 20;
+                                if (!tres)
+                                {
+                                        perror("realloc");
+                                        break;
+                                }
+                                wrptr = tres + (wrptr - res);
+                                res = tres;
+                        }
+                        else // something wrong with input
+                                break;
+                }
+        } while (insize);
+
+        if (iconv_close(cd))
+                perror("iconv_close");
+       
+        *out = (wchar_t*) res;
+        *outsize = wrptr - res; // should be == to (alloc - avail + 1)
+        // TODO: should possibly null-terminate the result
 }
 
 
@@ -73,7 +79,7 @@ void convert (char * inbuf, size_t insize, wchar_t **out, size_t *outsize) {
 *********************************/
 
 //String with the name of the current locale name
-char lc_locale_name[20];
+char lc_locale_name[BUFSIZE];
 
 //Retuns pointer to current locale name
 char * locale_name () {
@@ -86,12 +92,11 @@ void set_locale (char *a_locale) {
 	char * t;
 	t = setlocale (LC_ALL, a_locale);
 	if (t != NULL) {
-// 		lc_locale_name = malloc (strlen (t)+1);
-		strcpy( lc_locale_name, t);
+		strncpy( lc_locale_name, t, BUFSIZE-1);
 	} else { //a_locale is not available
-// 		lc_locale_name = malloc (6);
 		strcpy(lc_locale_name,"POSIX");
 	}
+	lc_locale_name[BUFSIZE-1] = '\0'
 }
 
 /*****************************

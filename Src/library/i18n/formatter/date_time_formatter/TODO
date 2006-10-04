@@ -1,0 +1,13 @@
+TODO TIME:
+
+week_number_monday_as_first: CHARACTER_8 is 'W'
+			--  The week number of the current year as a decimal number, range 00 to 53, starting with the first Monday as the first day of week 01
+			-- (from I18N_FORMATTING_CHARACTERS)
+			-- (export status {NONE})
+			
+century_number_iso{_2}: CHARACTER_8 is 'G'
+			--  The ISO 8601 year with century as a decimal number.
+			-- (from I18N_FORMATTING_CHARACTERS)
+			-- (export status {NONE})
+			
+Date and Time together?
