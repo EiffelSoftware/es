@@ -1,0 +1,11 @@
+Global TODO list for the i18n project:
+
+* finish formatters
+* write file_manager
+* change locale_info to have separate language/region/script fields
+* convert all locales to use new locale_info
+* convert dictionary to use agents
+* make sure all functions in all locales are implemented (we added some currency fields)
+* Write documentation!
+* Testing
+
