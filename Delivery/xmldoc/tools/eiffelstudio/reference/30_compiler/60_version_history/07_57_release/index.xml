@@ -47,7 +47,7 @@
 		<heading><size>2</size>Changes</heading>
 		<list ordered="false">
 			<item><compiler_error>VWEQ</compiler_error> is not an error, but a warning that can be triggered or not depending on your configuration.</item>
-			<item>Inherited assertions are rechecked</item>
+			<item>Inherited assertions are rechecked each time that a feature is redefined, meaning that some errors that were not previously detected by the compiler can now be found.</item>
 		</list>
 		<heading><size>2</size>Bug fixes</heading>
 		<list ordered="false">
