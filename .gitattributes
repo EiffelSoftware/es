@@ -1872,7 +1872,6 @@ Src/library/editor/bitmaps/left_scroll_arrow.png -text
 Src/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/library/gobo_extension/gobo_extension.ecf -text
 Src/library/i18n/TODO -text
-Src/library/i18n/formatter/date_time_formatter/TODO -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/library/process/classic/unix/process_error_listener_thread.e -text
 Src/library/process/classic/unix/process_output_listener_thread.e -text
