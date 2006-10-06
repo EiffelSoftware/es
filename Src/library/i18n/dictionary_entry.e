@@ -53,6 +53,7 @@ inherit
 		original_plural: STRING_32
 		singular_translation: STRING_32
 		plural_translations: ARRAY[STRING_32]
+		has_plural: BOOLEAN
 
 feature -- Order definition
 

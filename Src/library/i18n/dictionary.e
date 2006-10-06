@@ -18,11 +18,15 @@ feature -- Creation
 				valid_plural_form: plural_tools.valid_plural_form (plural_form)
 			do
 				plural_form := a_plural_form
+				--populate agent & nplural_max
+				reduction_agent := plural_tools.get_reduction_agent (a_plural_form)
+				nplural_max := plural_tools.get_nplural (a_plural_form)
+
 			ensure
 				plural_form_set: a_plural_form = plural_form
+				reduction_agent_set: reduction_agent /= Void
 			end
 
---	make(a_plural_form:
 
 feature  -- Manipulation
 
@@ -95,7 +99,14 @@ feature {NONE} --Helpers
 			require
 				a_plural_form >= 0
 			do
-				Result := plural_tools.reduce (plural_form, a_plural_form)
+				Result := reduction_agent.item([a_plural_form])
+			ensure
+				well_formed_result: Result < 4 and Result >= 0
 			end
+
+		reduction_agent: FUNCTION[ANY, TUPLE[INTEGER], INTEGER]
+		
+		nplural_max: INTEGER
+		nplural_lower: INTEGER is 0
 
 end

@@ -6,8 +6,8 @@ indexing
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
-deferred
- class
+
+class
 	I18N_MO_FILE inherit
 
   		I18N_FILE
@@ -15,6 +15,8 @@ deferred
   				valid
   			end
 		IMPORTED_UTF8_READER_WRITER
+create
+	make
 
 feature
 
@@ -63,9 +65,7 @@ feature
 			opened := False
 		end
 
-
-
-feature --Entries
+feature -- Access
 
 	valid_index(i:INTEGER):BOOLEAN is
 			-- is this index valid?
@@ -73,16 +73,109 @@ feature --Entries
 			Result := (i >= 1) and (i <= entry_count)
 		end
 
-	get_original (i_th: INTEGER): LIST[STRING_32] is
-			-- get `i_th' original string in the file
+	entry_has_plurals(i:INTEGER):BOOLEAN is
+			--
 		do
-			Result := extract_string(original_table_offset, i_th).split('%U')
+			get_original_entries (i)
+			Result := last_original.list.count > 1
 		end
 
-	get_translated (i_th: INTEGER): LIST[STRING_32] is
-			-- What's the `i-th' translated string?
+
+	original_singular_string(i:INTEGER):STRING_32 is
+			--
 		do
-			Result := extract_string(translated_table_offset, i_th).split('%U')
+			get_original_entries (i)
+			Result := last_original.list.i_th (1)
+		end
+
+	original_plural_string(i:INTEGER):STRING_32 is
+			--
+		do
+			get_original_entries (i)
+			Result := last_original.list.i_th(2)
+		end
+
+	translated_singular_string (i: INTEGER):STRING_32 is
+			--
+		local
+			red: INTEGER
+		do
+			get_translated_entries (i)
+			red := plural_tools.get_reduction_agent (plural_form).item ([1])
+			Result := last_translated.list.i_th(red)
+		end
+
+	translated_plural_strings (i: INTEGER):ARRAY[STRING_32] is
+			--
+		local
+			counter: INTEGER
+		do
+			create Result.make (0, 3)
+			get_translated_entries (i)
+			from
+				last_translated.list.start
+				counter := 0
+			until
+				last_translated.list.after
+				or
+				counter > 3
+			loop
+				Result.put (last_translated.list.item, counter)
+				counter := counter + 1
+			end
+		end
+
+
+	locale:STRING_32 is
+			-- TODO!
+		local
+			file_name: STRING_32
+			ending: STRING_32
+			index:INTEGER
+			possible: STRING_32
+		do
+			Result := Void
+			-- The only inherent locale identifier in a .mo file is the name.
+			-- Any other way to identify it is project dependant, see FILE_MANAGER for more details
+			file_name := file.name.as_string_32
+			index := file_name.index_of('.',1)
+			ending := file_name.substring (index, file_name.count)
+			possible := file_name.substring(1, index)
+
+			if ending.is_equal (".mo") then
+				if possible.count = 2 or
+					possible.count = 6 and (possible.item (3) = '_' or possible.item (3) = '-')
+				then
+					Result := possible
+				end
+			end
+		end
+
+
+
+
+
+feature --Entries
+
+	last_original: TUPLE[i:INTEGER; list:LIST[STRING_32]]
+	last_translated: TUPLE[i:INTEGER; list:LIST[STRING_32]]
+
+	get_original_entries (i_th: INTEGER) is
+			-- get `i_th' original entry in the file
+		do
+			if last_original /= Void and then last_original.i /= i_th then
+				last_original.i := i_th
+				last_original.list := extract_string(original_table_offset, i_th).split('%U')
+			end
+		end
+
+	get_translated_entries (i_th: INTEGER) is
+			-- What's the `i-th' translated entry?
+		do
+			if last_translated /= Void and then last_translated.i /= i_th then
+				last_translated.i := i_th
+				last_translated.list := extract_string(translated_table_offset, i_th).split('%U')
+			end
 		end
 
 
@@ -140,11 +233,14 @@ feature {NONE} -- Implementation
 				index : INTEGER
 				char0: WIDE_CHARACTER
 				code0: INTEGER
+				conditional: STRING_32
+				nplurals: INTEGER
 			do
 				char0 := '0'
 				code0 := char0.code
-				-- Get the translated strings of the first entry in the .mo file - this is the headers entry (the empty string)
-				t_list := get_translated(1).i_th(1).split('%N')
+				-- Get the first translated string of the first entry in the .mo file - this is the headers entry (the empty string)
+				get_translated_entries (1)
+				t_list := last_translated.list.i_th(1).split('%N')
 			 	-- Search the headers
 				from
 					t_list.start
@@ -161,14 +257,15 @@ feature {NONE} -- Implementation
 				if t_string /= Void then
 					-- There is a Plural-Forms header. This should have the form: 	
 					-- Plural-Forms: nplurals=x; plural=y;
-					-- x being a number, y a C conditional. We're really interested in y.
+					-- x being a number, y a C conditional.
 					-- The following code is not very nice.
 					index := t_string.index_of (';', 1)
 					if index > 1 and t_string.has_substring ("nplurals=") then
-					--	plural_forms := (t_string.item_code(index-1) - code0)
+						nplurals := (t_string.item_code(index-1) - code0)
 					--		-- ?????? Does this find out the integer value of the represented character???
 						index := t_string.index_of ('=', index)+1
-					--	plural_form_identifier := t_string.substring (index, t_string.count)
+					    conditional := t_string.substring (index, t_string.count)
+					    plural_form := plural_tools.mo_header_to_plural_form (nplurals, conditional)
 					end
 				end
 				if t_string = Void or plural_form = plural_tools.unknown_plural_form then

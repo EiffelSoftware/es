@@ -34,7 +34,7 @@ feature -- locale
 			--
 		do
 			if can_handle(a_path.as_string_32) then
-				create Result.make (extract_locale)
+				Result := extract_locale(a_path)
 				handled := True
 			else
 				if next /= Void then
@@ -50,8 +50,10 @@ feature -- locale
 			not (can_handle(a_path) and then next = Void) implies not handled
 		end
 
-	extract_locale:STRING_32 is
+	extract_locale(a_path: STRING_32):I18N_LOCALE_ID is
 			--
+		require
+			can_handle(a_path)
 		deferred
 		end
 
@@ -63,7 +65,7 @@ feature -- dictionary
 			--
 		do
 			if can_handle(a_path.as_string_32) then
-				Result := extract_dictionary
+				Result := extract_dictionary(a_path)
 				handled := True
 			else
 				if next /= Void then
@@ -80,8 +82,10 @@ feature -- dictionary
 		end
 
 
-	extract_dictionary:I18N_DICTIONARY is
+	extract_dictionary(a_path: STRING_32):I18N_DICTIONARY is
 			--
+		require
+			can_handle(a_path)
 		deferred
 		end
 

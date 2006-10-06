@@ -2,10 +2,17 @@ Global TODO list for the i18n project:
 
 * finish formatters
 * write file_manager
-* change locale_info to have separate language/region/script fields
-* convert all locales to use new locale_info
-* convert dictionary to use agents
+! finish mo handler -- Done (leo)
+! change locale_id to have separate language/region/script fields  -- done (Leo)
+* rewrite dictionary_string class, as it is stupid.
+* convert nls locales and .net locale to use new locale_id
+! convert dictionary to use agents -- Done (leo)
 * make sure all functions in all locales are implemented (we added some currency fields)
 * Write documentation!
 * Testing
+
+General things:
+
+* check and strengthen contracts when possible
+* make sure every class has a sensible description in the headers
 

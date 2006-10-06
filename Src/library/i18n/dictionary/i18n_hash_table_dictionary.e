@@ -81,4 +81,5 @@ create
 		hash: HASH_TABLE[I18N_DICTIONARY_ENTRY, STRING_32]
 		default_number_of_entries: INTEGER is 50
 
+
 end

@@ -38,10 +38,10 @@ feature -- Initialization
 		local
 			l_c_string : C_STRING
 		do
-			create l_c_string.make (a_locale_id.name)
+			create l_c_string.make (a_locale_id.language + "_" + a_locale_id.region)
 			set_locale (l_c_string.item)
 		ensure then
-			locale_set: locale_name.is_equal(a_locale_id.name)
+			locale_set: locale_name.is_equal(a_locale_id.language + "_" + a_locale_id.region)
 		end
 
 feature -- Informations
@@ -51,7 +51,7 @@ feature -- Informations
 		local
 			l_c_string: C_STRING
 		do
-			create l_c_string.make (a_locale_id.name)
+			create l_c_string.make (a_locale_id.language + "_" + a_locale_id.region)
 			Result := c_is_available (l_c_string.item)
 		end
 
@@ -70,7 +70,7 @@ feature -- Informations
 			until
 				dir_entries.after
 			loop
-				create l_locale_id.make (dir_entries.item)
+				create l_locale_id.make_from_string (dir_entries.item)
 				if is_available (l_locale_id) then
 					Result.extend (l_locale_id)
 				end
@@ -82,7 +82,7 @@ feature -- Informations
 	current_locale_id : I18N_LOCALE_ID is
 			-- current locale id
 		do
-			create Result.make (locale_name)
+			create Result.make_from_string (locale_name)
 		end
 
 	locale_name : STRING_32 is

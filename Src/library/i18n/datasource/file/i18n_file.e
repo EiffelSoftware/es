@@ -71,12 +71,16 @@ feature
 			deferred
 			end
 
-		translated_plural_strings(i:INTEGER):ARRAY[TUPLE[INTEGER,STRING_32]] is
-				--  get the translated plural string for this entry. May return Void if there are none!
+		translated_plural_strings(i:INTEGER):ARRAY[STRING_32] is
+				--  get the translated plural strings for this entry. May return Void if there are none!
+				-- array indexes should be 0 t0 3
 			require
 				file_open: opened
 				plurals_exist: entry_has_plurals(i)
 			deferred
+			ensure
+				Result.lower = 0
+				Result.upper = 3
 			end
 
 		translated_singular_string(i:INTEGER):STRING_32 is
