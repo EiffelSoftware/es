@@ -84,7 +84,7 @@
 			</item>
 			<item><class_name>REAL_32</class_name> and <class_name>REAL_64</class_name>:
 				<list ordered="false">
-					<item>Renamed REAL into <class_name>REAL_32</class_name>, and <class_name>DOUBLE</class_name> into <class_name>REAL_64</class_name>. <class_name>REAL</class_name> can be either <class_name>REAL_32</class_name> or <class_name>REAL_64</class_name> depending on your configuration. Default is <class_name>REAL_32</class_name>.</item>
+					<item>Renamed <class_name>REAL</class_name> into <class_name>REAL_32</class_name>, and <class_name>DOUBLE</class_name> into <class_name>REAL_64</class_name>. <class_name>REAL</class_name> can be either <class_name>REAL_32</class_name> or <class_name>REAL_64</class_name> depending on your configuration. Default is <class_name>REAL_32</class_name>.</item>
 					<item>Added <feature_name>rounded_xxx</feature_name>, <feature_name>floor_xxx</feature_name> and <feature_name>ceiling_xxx</feature_name> where xxx is the current floating point type, as the version returning an <class_name>INTEGER</class_name> are definitely not precise for large numbers.</item>
 				</list>
 			</item>
@@ -118,9 +118,10 @@
 		<heading><size>3</size>EiffelNet</heading>
 		<list ordered="false">
 			<item>Added in <class_name>SOCKET</class_name> <feature_name>read_integer_XX</feature_name>, <feature_name>put_integer_XX</feature_name>, <feature_name>last_integer_xx</feature_name> and <feature_name>read_natural_XX</feature_name>, <feature_name>put_natural_XX</feature_name>, <feature_name>last_natural_XX</feature_name> where XX stands for 8, 16, 32, 64.</item>
-			<item>Modified <feature_name>read_to_managed_pointer</feature_name> in <class_name>SOCKET</class_name> so that it reads the specified number of bytes. Therefore now it might pause in this routine if it does not receive enough data.</item>
 			<item>Modified <feature_name>put</feature_name> and <feature_name>read</feature_name> in <class_name>NETWORK_RESOURCE</class_name>, <class_name>FTP_PROTOCOL</class_name>, <class_name>HTTP_PROTOCOL</class_name>, <class_name>FILE_PROTOCOL</class_name> so that the error checking code is not using <feature_name>socket_ok</feature_name> which might triggers error when there are none.</item>
 			<item>Improved handling of <feature_name>recipients</feature_name> and <feature_name>header_from</feature_name> in <class_name>SMTP_PROTOCOL</class_name> so that you can provide a nice `From' or `To' in the message since they are different from the addresses you have to pass from MAIL FROM and RCPT TO.</item>
+			<item>Improved error handling in EiffelNet. Now each time an error occurs you get an exception and the operating system error code is preserved.</item>
+			<item>Added ability to get the number of bytes read for all the read operation through the <feature_name>bytes_read</feature_name> query. This is useful to detect graceful shutdown of sockets.</item>
 		</list>
 		<heading><size>3</size>EiffelThread</heading>
 		<list ordered="false">
@@ -143,17 +144,17 @@
 		<list ordered="false">
 				<item>Added Unicode support:
 					<list ordered="false">
-						<item>All routines taking an argument of type <class_name>STRING</class_name> or a generic type with <class_name>STRING</class_name> in one of the actual generic parameter
-							have been changed to take an argument of type <class_name>STRING_GENERAL</class_name> which should not impact you at all, however make sure
-							that if your redefine such a routine, you need to change the signature to <class_name>STRING_GENERAL</class_name>, otherwise you may
+						<item>All routines taking an argument of type <class_name>STRING</class_name> or a generic type with <class_name>STRING</class_name> in one of the actual generic parameter 
+							have been changed to take an argument of type <class_name>STRING_GENERAL</class_name> which should not impact you at all, however make sure 
+							that if your redefine such a routine, you need to change the signature to <class_name>STRING_GENERAL</class_name>, otherwise you may 
 							introduce a CATCALL.
 						</item>
-						<item>All queries of type <class_name>STRING</class_name> have been changed to <class_name>STRING_32</class_name>. Because <class_name>STRING_32</class_name> should not be convertible to <class_name>STRING</class_name>, it
-							would break a lot of existing code, as a result and only for a transition period, we made <class_name>STRING_32</class_name> convert to <class_name>STRING</class_name>.
+						<item>All queries of type <class_name>STRING</class_name> have been changed to <class_name>STRING_32</class_name>. Because <class_name>STRING_32</class_name> should not be convertible to <class_name>STRING</class_name>, it 
+							would break a lot of existing code, as a result and only for a transition period, we made <class_name>STRING_32</class_name> convert to <class_name>STRING</class_name>. 
 							In the next release this conversion will be marked obsolete, and in the release after the next it will be removed.
 						</item>
-						<item>For queries whose type is a generic with <class_name>STRING</class_name> as one of the actual generic parameter, we changed <class_name>STRING</class_name> into
-							<class_name>STRING_32</class_name>. Because no automatic conversion can be done in this case, we have introduced for a routine nnnnn following
+						<item>For queries whose type is a generic with <class_name>STRING</class_name> as one of the actual generic parameter, we changed <class_name>STRING</class_name> into 
+							<class_name>STRING_32</class_name>. Because no automatic conversion can be done in this case, we have introduced for a routine nnnnn following 
 							this pattern a new routine nnnnn_8 whose actual generic parameter is still <class_name>STRING</class_name>.
 						</item>
 					</list>
@@ -164,7 +165,7 @@
 						<item>Added <feature_name>get_item_text_rect</feature_name> which returns a rect only for the text of the items.</item>
 					</list>
 				</item>
-				<item>WEL_WINDOWS_ROUTINES:
+				<item><class_name>WEL_WINDOWS_ROUTINES</class_name>:
 					<list ordered="false">
 						<item>Improved <feature_name>window_of_item</feature_name> to reduce the number of cases where we might get an exception. This makes debugging easier.</item>
 						<item>Fixed <feature_name>resource_string_id</feature_name> which generated a call on Void target exception.</item>
@@ -172,7 +173,7 @@
 				</item>
 				<item>Added ability to have drop down menus in <class_name>WEL_TOOL_BAR_BUTTON</class_name>.</item>
 				<item>Added the ability to add an icon to the SystemTray.</item>
-				<item>Added ability to drop files to WEL_WINDOW components.</item>
+				<item>Added ability to drop files to <class_name>WEL_WINDOW</class_name> components.</item>
 				<item>Made all contextual menus being selectable from both left and right click (formerly it was only left click).</item>
 				<item>Fixed issue with contextual menus which might not appear correctly, nor respond to click or Esc key properly because the menu is not at the front.</item>
 				<item>Fixed in <class_name>WEL_LIST_VIEW</class_name> a bug where if the text of the string is too long, it would be displayed but truncated.</item>

@@ -59,10 +59,6 @@
 			<item>Fixed a bug in incremental recompilation of queries with assigner commands.</item>
 			<item>Added detection of a <compiler_error>VUEX</compiler_error> error for static feature calls used in intervals of a multibranch instruction.</item>
 		</list>
-		<heading><size>3</size>Language issues</heading>
-		<list ordered="false">
-				<item></item>
-		</list>
 		<heading><size>3</size>Compiler issues</heading>
 		<list ordered="false">
 			<item>Added a new validity error <compiler_error>VTEC(3)</compiler_error> to report unsupported inheritance hierarchy under .NET when an expanded type is based on a class with an external ancestor.</item>
