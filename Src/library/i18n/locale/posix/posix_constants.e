@@ -9,49 +9,49 @@ class
 
 feature -- Constants
 
-	ABDAY_1: INTEGER is 0x20000
-	ABDAY_2: INTEGER is 0x20001
-	ABDAY_3: INTEGER is 0x20002
-	ABDAY_4: INTEGER is 0x20003
-	ABDAY_5: INTEGER is 0x20004
-	ABDAY_6: INTEGER is 0x20005
-	ABDAY_7: INTEGER is 0x20006
-	DAY_1: INTEGER is 0x20007
-	DAY_2: INTEGER is 0x20008
-	DAY_3: INTEGER is 0x20009
-	DAY_4: INTEGER is 0x2000A
-	DAY_5: INTEGER is 0x2000B
-	DAY_6: INTEGER is 0x2000C
-	DAY_7: INTEGER is 0x2000D
-	ABMON_1: INTEGER is 0x2000E
-	ABMON_2: INTEGER is 0x2000F
-	ABMON_3: INTEGER is 0x20010
-	ABMON_4: INTEGER is 0x20011
-	ABMON_5: INTEGER is 0x20012
-	ABMON_6: INTEGER is 0x20013
-	ABMON_7: INTEGER is 0x20014
-	ABMON_8: INTEGER is 0x20015
-	ABMON_9: INTEGER is 0x20016
-	ABMON_10: INTEGER is 0x20017
-	ABMON_11: INTEGER is 0x20018
-	ABMON_12: INTEGER is 0x20019
-	MON_1: INTEGER is 0x2001A
-	MON_2: INTEGER is 0x2001B
-	MON_3: INTEGER is 0x2001C
-	MON_4: INTEGER is 0x2001D
-	MON_5: INTEGER is 0x2001E
-	MON_6: INTEGER is 0x2001F
-	MON_7: INTEGER is 0x20020
-	MON_8: INTEGER is 0x20021
-	MON_9: INTEGER is 0x20022
-	MON_10: INTEGER is 0x20023
-	MON_11: INTEGER is 0x20024
-	MON_12: INTEGER is 0x20025
-	AM_STR: INTEGER is 0x20026
-	PM_STR: INTEGER is 0x20027
-	D_T_FMT: INTEGER is 0x20028
-	D_FMT: INTEGER is 0x20029
-	T_FMT: INTEGER is 0x2002A
-	T_FMT_AMPM: INTEGER is 0x2002B
-	CRNCYSTR: INTEGER is 0x4000F
+	Abday_1: INTEGER is 0x20000	-- 1st day of the week (US convention ABDAY_1 = Sunday)
+	Abday_2: INTEGER is 0x20001	-- 2nd day of the week (US convention ABDAY_2 = Monday)
+	Abday_3: INTEGER is 0x20002 -- 3rd day of the week (US convention ABDAY_3 = Tuesday)
+	Abday_4: INTEGER is 0x20003 -- 4th day of the week (US convention ABDAY_4 = Wednesday)
+	Abday_5: INTEGER is 0x20004 -- 5th day of the week (US convention ABDAY_5 = Thursday)
+	Abday_6: INTEGER is 0x20005 -- 6th day of the week (US convention ABDAY_6 = Friday)
+	Abday_7: INTEGER is 0x20006 -- 7th day of the week (US convention ABDAY_7 = Saturday)
+	Day_1: INTEGER is 0x20007	-- 1st day of the week (US convention ABDAY_1 = Sunday)
+	Day_2: INTEGER is 0x20008	-- 2nd day of the week (US convention ABDAY_2 = Monday)
+	Day_3: INTEGER is 0x20009 -- 3rd day of the week (US convention ABDAY_3 = Tuesday)
+	Day_4: INTEGER is 0x2000A -- 4th day of the week (US convention ABDAY_4 = Wednesday)
+	Day_5: INTEGER is 0x2000B -- 5th day of the week (US convention ABDAY_5 = Thursday)
+	Day_6: INTEGER is 0x2000C -- 6th day of the week (US convention ABDAY_6 = Friday)
+	Day_7: INTEGER is 0x2000D -- 7th day of the week (US convention ABDAY_7 = Saturday)
+	Abmon_1: INTEGER is 0x2000E -- 1st abbreviated month name of year
+	Abmon_2: INTEGER is 0x2000F -- 2nd abbreviated month name of year
+	Abmon_3: INTEGER is 0x20010 -- 3rd abbreviated month name of year
+	Abmon_4: INTEGER is 0x20011 -- 4th abbreviated month name of year
+	Abmon_5: INTEGER is 0x20012 -- 5th abbreviated month name of year
+	Abmon_6: INTEGER is 0x20013 -- 6th abbreviated month name of year
+	Abmon_7: INTEGER is 0x20014 -- 7th abbreviated month name of year
+	Abmon_8: INTEGER is 0x20015 -- 8th abbreviated month name of year
+	Abmon_9: INTEGER is 0x20016 -- 9th abbreviated month name of year
+	Abmon_10: INTEGER is 0x20017 -- 10th abbreviated month name of year
+	Abmon_11: INTEGER is 0x20018 -- 11th abbreviated month name of year
+	Abmon_12: INTEGER is 0x20019 -- 12th abbreviated month name of year
+	Mon_1: INTEGER is 0x2001A -- 1st month of year
+	Mon_2: INTEGER is 0x2001B -- 2nd month of year
+	Mon_3: INTEGER is 0x2001C -- 3rd month of year
+	Mon_4: INTEGER is 0x2001D -- 4th month of year
+	Mon_5: INTEGER is 0x2001E -- 5th month of year
+	Mon_6: INTEGER is 0x2001F -- 6th month of year
+	Mon_7: INTEGER is 0x20020 -- 7th month of year
+	Mon_8: INTEGER is 0x20021 -- 8th month of year
+	Mon_9: INTEGER is 0x20022 -- 9th month of year
+	Mon_10: INTEGER is 0x20023 -- 10th month of year
+	Mon_11: INTEGER is 0x20024 -- 11th month of year
+	Mon_12: INTEGER is 0x20025 -- 12th month of year
+	Am_str: INTEGER is 0x20026 -- am suffix
+	Pm_str: INTEGER is 0x20027 -- pm suffix
+	D_t_fmt: INTEGER is 0x20028 -- time and date in a locale-specific way.
+	D_fmt: INTEGER is 0x20029	-- date in a locale-specific way.
+	T_fmt: INTEGER is 0x2002A	-- time in a locale-specific way.
+	T_fmt_ampm: INTEGER is 0x2002B -- time in US method
+	Crncystr: INTEGER is 0x4000F	-- currency symbol
 end

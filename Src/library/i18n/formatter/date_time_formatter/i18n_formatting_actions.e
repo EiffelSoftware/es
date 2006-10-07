@@ -128,14 +128,14 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := a_locale_info.abbreviated_day_names.item (a_date.day)
+			Result := a_locale_info.abbreviated_day_names.item (a_date.day_of_the_week)
 		end
 
 	day_name_action (a_date: DATE; a_locale_info: I18N_LOCALE_INFO): STRING_32 is
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := a_locale_info.day_names.item (a_date.day)
+			Result := a_locale_info.day_names.item (a_date.day_of_the_week)
 		end
 
 	day_of_year_action (a_date: DATE): STRING_32 is

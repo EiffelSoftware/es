@@ -36,6 +36,7 @@ feature  -- Manipulation
 			-- add a_entry in the datastructure
 		require
 			a_entry_exists: a_entry /= Void
+			no_duplicate: not has (a_entry.original_singular)
 			-- not already in datastructure
 		deferred
 		end
@@ -105,7 +106,7 @@ feature {NONE} --Helpers
 			end
 
 		reduction_agent: FUNCTION[ANY, TUPLE[INTEGER], INTEGER]
-		
+
 		nplural_max: INTEGER
 		nplural_lower: INTEGER is 0
 

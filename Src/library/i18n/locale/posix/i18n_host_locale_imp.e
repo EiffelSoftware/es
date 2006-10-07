@@ -44,6 +44,8 @@ feature -- Initialization
 			locale_set: locale_name.is_equal(a_locale_id.language + "_" + a_locale_id.region)
 		end
 
+
+
 feature -- Informations
 
 	is_available (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
@@ -94,6 +96,7 @@ feature -- Informations
 
 feature -- Date and time formatting
 
+
 	get_long_date_format: STRING_32 is
 			-- get the long date format string
 			-- according the current locale setting
@@ -101,14 +104,16 @@ feature -- Date and time formatting
 			"UNTIL NOW, SAME RESULT AS%
 			 %get_short_date_format"
 		do
-			create Result.make_from_c (get_locale_info (d_fmt))
+			create Result.make_from_c (get_locale_info (D_fmt))
+			Result.replace_substring_all ("%%","&")
 		end
 
 	get_short_date_format: STRING_32 is
 			-- get the short date format string
 			-- according the current locale setting
 		do
-			create Result.make_from_c (get_locale_info (d_fmt))
+			create Result.make_from_c (get_locale_info (D_fmt))
+			Result.replace_substring_all ("%%","&")
 		end
 
 	get_long_time_format: STRING_32 is
@@ -118,29 +123,38 @@ feature -- Date and time formatting
 			"UNTIL NOW, SAME RESULT AS%
 			 %get_short_time_format"
 		do
-			create Result.make_from_c (get_locale_info (t_fmt))
+			create Result.make_from_c (get_locale_info (T_fmt))
+			Result.replace_substring_all ("%%","&")
 		end
 
 	get_short_time_format: STRING_32 is
 			-- get the short time format string
 			-- according the current locale setting
 		do
-			create Result.make_from_c (get_locale_info (t_fmt))
+			create Result.make_from_c (get_locale_info (T_fmt))
+			Result.replace_substring_all ("%%","&")
 		end
 
 	get_am_suffix : STRING_32 is
 			-- get the am suffix
 			-- if the not available: empty_string
 		do
-			create Result.make_from_c (get_locale_info (am_str))
+			create Result.make_from_c (get_locale_info (Am_str))
 		end
 
 	get_pm_suffix : STRING_32 is
 			-- get the pm suffix
 			-- if the not available: empty_string
 		do
-			create Result.make_from_c (get_locale_info (pm_str))
+			create Result.make_from_c (get_locale_info (Pm_str))
 		end
+
+	get_date_time_format: STRING_32 is
+			-- time and date in a locale-specific way.
+		do
+			create Result.make_from_c (get_locale_info (D_t_fmt))
+		end
+
 
 feature -- day/months names
 
@@ -160,7 +174,7 @@ feature -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (day_1 +(i\\upper)))
+				create l_string.make_from_c (get_locale_info (Day_1 +((i-1)\\upper)))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -181,7 +195,7 @@ feature -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (mon_1 +i-1))
+				create l_string.make_from_c (get_locale_info (Mon_1 +i-1))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -204,7 +218,7 @@ feature -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (abday_1 +(i\\upper)))
+				create l_string.make_from_c (get_locale_info (Abday_1 +((i-1)\\upper)))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -225,7 +239,7 @@ feature -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (abmon_1 +i-1))
+				create l_string.make_from_c (get_locale_info (Abmon_1 +i-1))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -282,7 +296,11 @@ feature	-- currency formatting
 			-- get the currency symbol
 			-- according the current locales setting
 		do
-			create Result.make_from_c (currency_symbol (localeconv))
+			create Result.make_from_c (get_locale_info (Crncystr))
+			Result.remove_head (1)
+				-- could use:
+				-- create Result.make_from_c (currency_symbol (localeconv))
+				-- but it would need a character set convertion...
 		end
 
 	get_int_currency_symbol: STRING_32 is

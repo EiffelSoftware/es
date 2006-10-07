@@ -15,10 +15,10 @@ inherit
 
 feature -- Initialization
 
-	make(a_plural_form:INTEGER;a_number_of_entries:INTEGER) is
+	make(a_plural_form:INTEGER) is
 			-- create the datastructure
 		do
-			Precursor(a_plural_form,a_number_of_entries)
+			Precursor(a_plural_form)
 			create singular_char_tree
 			create plural_char_tree
 		end
@@ -30,7 +30,7 @@ feature  -- Manipulation
 	extend (a_entry : I18N_DICTIONARY_ENTRY) is
 			-- add a_entry in the datastructure
 		do
-			if a_entry.original_plural /= Void then
+			if not a_entry.has_plural then
 				-- entry has no plurals
 				singular_char_tree.insert (a_entry, a_entry.original_singular)
 			else

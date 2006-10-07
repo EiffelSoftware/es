@@ -39,11 +39,13 @@ inherit
 				do
 					make(an_original_singular, a_translated_singular)
 					original_plural := an_original_plural.to_string_32
+					has_plural := True
 				ensure
 					original_singular_set: original_singular.is_equal (an_original_singular.as_string_32)
 					singular_translation_set: singular_translation.is_equal (a_translated_singular.as_string_32)
 					original_plural_set: original_plural.is_equal (an_original_plural.as_string_32)
 					plural_translations_array_exists: plural_translations /= Void
+					has_plural: has_plural
 				end
 
 

@@ -188,6 +188,18 @@ feature	-- currency formatting
 			result_exists: Result /= Void
 		end
 
+	get_currency_symbol_location : INTEGER is
+			-- get integer that represents the
+			-- location of the currency symbol
+		deferred
+		ensure
+			Result_correct: Result = {I18N_LOCALE_INFO}.currency_symbol_prefixed or
+							Result = {I18N_LOCALE_INFO}.currency_symbol_appended or
+							Result = {I18N_LOCALE_INFO}.currency_symbol_radix
+		end
+
+
+
 	get_currency_decimal_separator: STRING_32 is
 			-- get the decimal separator of currency numbers
 			-- according the current locales setting
