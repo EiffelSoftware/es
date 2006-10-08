@@ -282,9 +282,6 @@ feature	-- number formatting
 
 	get_value_grouping: ARRAY[INTEGER] is
 			--
-		local
-			l_string: STRING_32
-			i, t: INTEGER
 		do
 			Result := pointer_to_array (grouping (localeconv))
 		end
@@ -333,7 +330,7 @@ feature	-- currency formatting
 			-- get the decimal separator of currency numbers
 			-- according the current locales setting
 		do
-			create Result.make_from_c (currency_symbol (localeconv))
+			create Result.make_from_c (mon_decimal_point (localeconv))
 		end
 
 	get_currency_numbers_after_decimal_separator: INTEGER is
@@ -368,8 +365,6 @@ feature	-- currency formatting
 
 	get_currency_grouping: ARRAY[INTEGER] is
 			-- ?
-		local
-			l_str: STRING_32
 		do
 			Result := pointer_to_array (mon_grouping (localeconv))
 		end

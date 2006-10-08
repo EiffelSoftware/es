@@ -49,7 +49,7 @@ inherit
 				end
 
 
-	feature
+feature
 		-- Contents
 		original_singular: STRING_32
 		original_plural: STRING_32

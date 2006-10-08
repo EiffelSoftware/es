@@ -22,10 +22,19 @@ feature -- Initialization
 			set_currency_group_separator (default_currency_group_separator)
 			set_currency_number_list_separator (default_currency_number_list_separator)
 			set_currency_grouping (default_currency_grouping)
+
+			set_international_currency_symbol (default_currency_symbol)
+			set_international_currency_symbol_location (default_currency_symbol_location)
+			set_international_currency_decimal_separator (default_currency_decimal_separator)
+			set_international_currency_numbers_after_decimal_separator (default_currency_numbers_after_decimal_separator)
+			set_international_currency_group_separator (default_currency_group_separator)
+			set_international_currency_number_list_separator (default_currency_number_list_separator)
+			set_international_currency_grouping (default_currency_grouping)
+
 		end
 
 
-feature	-- currency formatting
+feature	-- Normal currency Informations
 
 	currency_symbol: STRING_32
 	currency_symbol_location: INTEGER
@@ -37,6 +46,26 @@ feature	-- currency formatting
 	currency_group_separator: STRING_32
 	currency_number_list_separator: STRING_32
 	currency_grouping: ARRAY[INTEGER]
+
+
+feature -- International currency Informations
+
+
+	currency_international_symbol: STRING_32
+	currency_international_symbol_location: INTEGER
+	currency_international_symbol_prefixed: INTEGER is 0
+	currency_international_symbol_appended: INTEGER is 1
+	currency_international_symbol_radix: INTEGER is 2
+	currency_international_decimal_separator: STRING_32
+	currency_international_numbers_after_decimal_separator: INTEGER
+	currency_international_group_separator: STRING_32
+	currency_international_number_list_separator: STRING_32
+	currency_international_grouping: ARRAY[INTEGER]
+
+
+
+
+
 
 feature -- Default values
 
@@ -69,7 +98,7 @@ feature -- Default values
 			Result := <<3,3,0>>
 		end
 
-feature -- Element change
+feature -- Normal Element change
 
 	set_currency_symbol (a_currency_symbol : STRING_GENERAL) is
 			--
@@ -137,6 +166,76 @@ feature -- Element change
 			a_array_exists: a_array /= Void
 		do
 			currency_grouping := a_array
+		end
+
+feature -- International Element change
+
+	set_international_currency_symbol (a_currency_symbol : STRING_GENERAL) is
+			--
+		require
+			a_currency_symbol_exists: a_currency_symbol /= Void
+		do
+			currency_international_symbol := a_currency_symbol
+		ensure
+			symbol_set: currency_international_symbol = a_currency_symbol
+		end
+
+	set_international_currency_symbol_location(a_location:INTEGER) is
+			--
+		require
+			a_location_valid: (a_location >= 0) and (a_location <= 2)
+		do
+			currency_international_symbol_location := a_location
+		ensure
+			symbol_location_set: currency_international_symbol_location = a_location
+		end
+
+	set_international_currency_decimal_separator(separator:STRING_GENERAL) is
+			-- set the decimal separator for currency values
+		require
+			argument_not_void: separator /= Void
+		do
+			currency_international_decimal_separator := separator.to_string_32
+		ensure
+			currency_decimal_separator_set: currency_international_decimal_separator.is_equal(separator.as_string_32)
+		end
+
+	set_international_currency_numbers_after_decimal_separator(numbers:INTEGER) is
+			-- set the amount of numbers after a decimal separator in a currency value
+		require
+			numbers_positive: numbers >= 0
+		do
+			currency_international_numbers_after_decimal_separator := numbers
+		ensure
+			currency_international_numbers_after_decimal_separator_set: currency_numbers_after_decimal_separator = numbers
+		end
+
+	set_international_currency_group_separator(separator:STRING_GENERAL) is
+			-- set the group separator for curency values - sometimes called "thousands separator"
+		require
+			argument_not_void: separator /= Void
+		do
+			currency_international_group_separator := separator.to_string_32
+		ensure
+			currency_group_separator_set: currency_international_group_separator.is_equal(separator.as_string_32)
+		end
+
+	set_international_currency_number_list_separator(separator:STRING_GENERAL) is
+			-- set the  separator for lists of currency values
+		require
+			argument_not_void: separator /= Void
+		do
+			currency_international_number_list_separator := separator.to_string_32
+		ensure
+			currency_number_list_separator_set: currency_international_number_list_separator.is_equal(separator.as_string_32)
+		end
+
+	set_international_currency_grouping (a_array: ARRAY[INTEGER]) is
+			-- set the grouping rules
+		require
+			a_array_exists: a_array /= Void
+		do
+			currency_international_grouping := a_array
 		end
 
 

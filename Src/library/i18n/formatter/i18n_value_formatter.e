@@ -4,15 +4,22 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	I18N_VALUE_FORMATTER
+
+create
+	make
 
 feature -- Initialization
 
 	make (a_locale_info: I18N_LOCALE_INFO) is
 			-- create value formatter according
 			-- values in `a_locale_info'
-		deferred
+		do
+			decimal_separator := a_locale_info.value_decimal_separator
+			numbers_after_decimal_separator := a_locale_info.value_numbers_after_decimal_separator
+			group_separator := a_locale_info.value_group_separator
+			grouping := a_locale_info.value_grouping
 		end
 
 feature -- Formatting functions
@@ -148,5 +155,5 @@ invariant
 	decimal_separator_exists: decimal_separator /= Void
 	reasonable_numbers_after_decimal_separator: numbers_after_decimal_separator >= 0
 	group_separator_exists: group_separator  /= Void
-	valid_grouping: grouping /= Void and then grouping.count > 0	
+	valid_grouping: grouping /= Void and then grouping.count > 0
 end

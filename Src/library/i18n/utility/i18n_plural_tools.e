@@ -52,10 +52,11 @@ feature -- Validation and parsing
 			end
 
 
-	feature
+feature
 		-- plural form constants
 		max_plural_form: INTEGER is 9
 		min_plural_form: INTEGER is 0
+		
 		unknown_plural_form: INTEGER is 0
 		one_plural_form:INTEGER is 1
 		two_plural_forms_singular_one:INTEGER is 2
@@ -67,11 +68,11 @@ feature -- Validation and parsing
 		three_plural_forms_special_polish:INTEGER is 8 -- I give up on the naming. It's only so we don't have magic numbers.
 		four_plural_forms_special_slovenian:INTEGER is 9
 
-	feature -- nplurals constants
+feature -- nplurals constants
 		min_plural_index: INTEGER is 0
 		max_plural_index: INTEGER is 1
 
-	feature
+feature
 
 		get_reduction_agent(form: INTEGER):FUNCTION[ANY, TUPLE[INTEGER], INTEGER] is
 				--

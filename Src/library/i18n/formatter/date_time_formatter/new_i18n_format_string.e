@@ -11,7 +11,6 @@ feature -- Initialization
 		local
 			parser: I18N_FORMAT_STRING_PARSER
 		do
-
 			create parser.make (a_locale_info)
 			elements_list := parser.parse (a_format_string)
 		end

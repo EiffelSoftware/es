@@ -77,14 +77,14 @@ feature {NONE} -- Implementation
 			a_locale_info.set_value_group_separator (host_locale.get_value_group_separator)
 			a_locale_info.set_value_number_list_separator (host_locale.get_value_number_list_separator)
 			a_locale_info.set_value_numbers_after_decimal_separator (host_locale.get_value_numbers_after_decimal_separator)
-				-- TODO: value Grouping?
+			a_locale_info.set_value_grouping (host_locale.get_value_grouping)
 			-- Set currency formatting fields
 			a_locale_info.set_currency_symbol (host_locale.get_currency_symbol)
 			a_locale_info.set_currency_decimal_separator (host_locale.get_currency_decimal_separator)
 			a_locale_info.set_currency_numbers_after_decimal_separator (host_locale.get_currency_numbers_after_decimal_separator)
 			a_locale_info.set_currency_group_separator (host_locale.get_currency_group_separator)
 			a_locale_info.set_currency_number_list_separator (host_locale.get_currency_number_list_separator)
-				-- TODO: currency Grouping?
+			a_locale_info.set_currency_grouping (host_locale.get_currency_grouping)
 		end
 
 

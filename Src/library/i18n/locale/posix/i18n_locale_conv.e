@@ -238,7 +238,7 @@ feature -- Access
 --		end
 
 --	int_n_sign_posn (p: POINTER): CHARACTER is
-			-- Get `p->int_n_sign_posn'
+--			-- Get `p->int_n_sign_posn'
 --			-- Set to a value indicating the positioning of the negative_sign
 --			--for a negative internationally formatted monetary quantity.
 --		external

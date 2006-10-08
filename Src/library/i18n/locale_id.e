@@ -30,6 +30,7 @@ feature -- Creation
 			if a_script /= Void then
 				create script.make_from_string(a_script)
 			end
+			name := a_language+"_"+a_region+"@"+a_script
 		ensure
 			language_set: language.is_equal(a_language)
 			region_set: region.is_equal(a_region)
@@ -59,6 +60,7 @@ feature -- Creation
 			--  ('@euro' variants seem to have no difference)
 
 			-- first throw away everything after and with a dot
+			name := identifier
 			create temp.make_from_string(identifier)
 			index :=  temp.index_of ('.', 1)
 			if index > 0 then
@@ -107,6 +109,8 @@ feature  -- Informations
 	language:STRING_32
 	region: STRING_32
 	script: STRING_32
+
+	name: STRING_32
 
 feature	 -- Comparison
 

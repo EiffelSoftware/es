@@ -7,6 +7,9 @@ indexing
 class I18N_CURRENCY_VALUE_FORMATTER
 
 inherit I18N_VALUE_FORMATTER
+	redefine
+		make
+	end
 
 create make
 

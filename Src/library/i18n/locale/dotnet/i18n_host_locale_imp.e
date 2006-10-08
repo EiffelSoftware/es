@@ -71,7 +71,6 @@ feature -- Informations
 			until
 				i > l_list.upper
 			loop
-				io.put_string (l_list.item (i).name+"%N")
 				create l_locale_id.make_from_string (l_list.item (i).name)
 				Result.extend (l_locale_id.twin)
 				i := i + 1
