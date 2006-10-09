@@ -15,7 +15,7 @@ feature -- Creation
 	make(a_plural_form:INTEGER) is
 			-- Create an empty dictionary with the given plural form
 			require
-				valid_plural_form: plural_tools.valid_plural_form (plural_form)
+				valid_plural_form: plural_tools.valid_plural_form (a_plural_form)
 			do
 				plural_form := a_plural_form
 				--populate agent & nplural_max
@@ -95,12 +95,12 @@ feature --Information
 			-- number of entries in the dictionary
 
 feature {NONE} --Helpers
-		reduce(a_plural_form:INTEGER):INTEGER is
+		reduce(quantity: INTEGER):INTEGER is
 				-- reduce a given plural forms to a smallest one
 			require
-				a_plural_form >= 0
+				quantity >= 0
 			do
-				Result := reduction_agent.item([a_plural_form])
+				Result := reduction_agent.item([quantity])
 			ensure
 				well_formed_result: Result < 4 and Result >= 0
 			end

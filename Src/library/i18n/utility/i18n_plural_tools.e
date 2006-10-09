@@ -56,7 +56,7 @@ feature
 		-- plural form constants
 		max_plural_form: INTEGER is 9
 		min_plural_form: INTEGER is 0
-		
+
 		unknown_plural_form: INTEGER is 0
 		one_plural_form:INTEGER is 1
 		two_plural_forms_singular_one:INTEGER is 2
@@ -74,11 +74,11 @@ feature -- nplurals constants
 
 feature
 
-		get_reduction_agent(form: INTEGER):FUNCTION[ANY, TUPLE[INTEGER], INTEGER] is
+		get_reduction_agent(quantity: INTEGER):FUNCTION[ANY, TUPLE[INTEGER], INTEGER] is
 				--
 			do
 				inspect
-					form
+					quantity
 				when one_plural_form then
 					Result := agent reduce_one_plural_form
 				when two_plural_forms_singular_one then
@@ -111,7 +111,7 @@ feature
 		 		elseif form <= 8 then
 		 			Result := 3
 		 		else
-		 			Result := 9
+		 			Result := 4
 		 		end
 		 	end
 
