@@ -12,6 +12,8 @@ inherit
 			make
 		end
 
+create
+	make
 
 feature -- Initialization
 
@@ -35,7 +37,7 @@ feature  -- Manipulation
 				singular_char_tree.insert (a_entry, a_entry.original_singular)
 			else
 				-- entry has plurasl
-				plural_char_tree.insert (a_entry, a_entry.original_plural)
+				plural_char_tree.insert (a_entry, a_entry.original_singular)
 			end
 			count := count + 1
 		end
@@ -56,8 +58,8 @@ feature -- Access
 		local
 			entry: I18N_DICTIONARY_ENTRY
 		do
-			if singular_char_tree.has_key (original_singular.as_string_32) then
-				entry := plural_char_tree.get (original_plural.as_string_32)
+			if plural_char_tree.has_key (original_singular.as_string_32) then
+				entry := plural_char_tree.get (original_singular.as_string_32)
 				if entry.plural_translations.item(reduce (plural_number)) /= Void then
 					Result := True
 				end
@@ -68,14 +70,18 @@ feature -- Access
 			-- get the translation of `original'
 			-- in the singular form
 		do
-			Result := singular_char_tree.get (original.as_string_32).singular_translation
+			if singular_char_tree.has_key (original.as_string_32) then
+				Result := singular_char_tree.get (original.as_string_32).singular_translation
+			else
+				Result := plural_char_tree.get (original.as_string_32).singular_translation
+			end
 		end
 
 	get_plural (original_singular, original_plural : STRING_GENERAL; plural_number : INTEGER) : STRING_32 is
 			-- get the translation of `original_singular'
 			-- in the given plural form
 		do
-			Result := plural_char_tree.get(original_plural.as_string_32).plural_translations.item(reduce (plural_number))
+			Result := plural_char_tree.get(original_singular.as_string_32).plural_translations.item(reduce (plural_number))
 		end
 
 feature --Information
