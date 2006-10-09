@@ -141,12 +141,12 @@ feature--{NONE}
 		do
 			from
 				left:=min_index
-				right:=current_index-1
+				right:=last_index
 			invariant
-				right < current_index-1
-						implies array.item(right + 1)<= array.item(current_index-1)
-				left <= current_index-1 and left > min_index
-						implies array.item(left - 1) <= array.item(current_index-1)
+				right < last_index
+						implies array.item(right + 1)<= array.item(last_index)
+				left <= last_index and left > min_index
+						implies array.item(left - 1) <= array.item(last_index)
 			variant
 				right - left + 1
 			until
@@ -247,6 +247,7 @@ feature {NONE} --Implementation
 invariant
 
 	count_equal_current_index: count=current_index-1
+	count_equal_last_index: count=last_index
 
 end
 
