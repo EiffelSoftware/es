@@ -6,21 +6,18 @@ indexing
 
 class
 	I18N_BINARY_SEARCH_ARRAY_DICTIONAY
-			--	the 'array' should be sorted
-			--  the 'size' of 'array' should be given by its client
-			--  the index of 'array' arranges from 1 to max_index, but which could also be resible
+			--	the `array' should be sorted
+			--  the `size' of `array' should be given by its client,which is not the case any more
+			--  the index of `array' arranges from 1 to max_index, but which could also be resible
 			--  max_index should be >=1
-			--  I think there is something wrong with 'array.full' in class ARRAY
+			--  I think there is something wrong with `array.full' in class ARRAY, that is implemation from Eiffel
 
 
 	inherit
 		I18N_DICTIONARY
-
-	rename
-		extend as insert
-	redefine
-		make
-	end
+			redefine
+				make
+			end
 
 
 create
@@ -32,21 +29,27 @@ feature --Creation
 			-- create the datastructure
 			do
 				Precursor(a_plural_form)
-				max_index:=default_number_of_entries
 				create array.make (min_index, default_number_of_entries)
-				current_index:=1
+				current_index :=1
+				max_index :=default_number_of_entries
 			end
 
 feature --Insertion
 
-	insert(a_entry: I18N_DICTIONARY_ENTRY) is
-			-- add an entry to 'array' without sorting it
-			-- auto resize when the capacity of 'array' is filled
+	extend (a_entry: I18N_DICTIONARY_ENTRY) is
+			-- a_entry is not duplicated, duplicate is precondition
+			-- add an entry to `array' without sorting it
+			-- auto resize when the capacity of `array' is filled
 			-- without duplicate check, let insertion_sort do it
 		do
-				array.put(a_entry, current_index)
-				current_index:=current_index+1
-				insertion_sort_1
+				if last_index < default_number_of_entries then
+					array.put (a_entry, current_index)
+				else
+					array.force (a_entry, current_index)
+					max_index :=max_index+1
+				end
+				current_index :=current_index+1
+				search_index_and_insert
 		end
 
 feature --Access
@@ -54,8 +57,9 @@ feature --Access
 	has(original:STRING_GENERAL):BOOLEAN is
 			-- does the dictionary have this entry?
 			-- use binary search algorithm
-			-- require 'array'is sorted
+			-- require `array'is sorted
 			-- use has_index has a help function
+
 		local
 			index:INTEGER
 		do
@@ -65,108 +69,88 @@ feature --Access
 			end
 		end
 
-feature	{NONE}--help functions
+feature--{NONE}
+	--help functions
 
-	insertion_sort_1 is
-		-- 'array' is sorted except the last inserted element
-		-- after every 'insert' is insertion_sort is called
-		-- check whether the last element is duplicate first
-		-- check the last inserted element, compare it with the one before it, whether it is greater, then the
-		-- the loop is ended, or make a exchange with the former one if it is smaller,
-		-- do it recursively
-
-	local
-		i:INTEGER
-		entry: I18N_DICTIONARY_ENTRY
-		sorted: BOOLEAN
-	do
-		if has (array.item (current_index-1).original_singular) then
-			sorted:=True
-		end
-		if (current_index=2) then
-			-- one element case
-			sorted:=True
-		end
-		from
-			i:=current_index-1
-		until
-			i<2 or sorted
-		loop
-			if array.item (i)>array.item (i-1) then
-				sorted:=True
-			else
-				entry:=array.item (i)
-				array.force (array.item (i-1), i)
-				array.force (entry, i-1)
-				i:= i-1
-			end
-		end
-	end
-
-	insertion_sort_2 is
-			-- 'array' is sorted except the last  inserted element
-			-- after every 'insert' is insertion_sort is called
+	search_index_and_insert is
+			-- `array' is sorted except the last  inserted element
+			-- after every `insert' is insertion_sort is called
 			-- compare with its neighbour recursively until the right_index for it is found
-			-- subcopy  'array' from the right_index to current_index-2  to position from right_index-1
-			-- put the last_input in 'array' with right_index
-	local
-		i,right_index:INTEGER
-		entry: I18N_DICTIONARY_ENTRY
-		sorted,duplicate: BOOLEAN
-	do
-		if (current_index=2) then
-			-- one element case
-			sorted:=True
-		end
-		entry:= array.item (current_index-1)
-		from
-			i:=current_index-2
-		until
-			i<1 or sorted
-		loop
-			if entry > array.item (i) then
-				sorted:=True
-			elseif entry = array.item (i) then
-				-- ignore duplicate entry
-				-- set current-index as the one to filled next
-				current_index:=current_index-1
-				sorted:=True
-				duplicate:=True
-			else
-				i:= i-1
-			end
-		end
-		if (not duplicate) then
-			right_index:=i+1
-			array.subcopy (array, right_index, current_index-2, right_index+1)
-			array.put (entry, right_index)
-		end
+			-- subcopy  `array' from the right_index to current_index-2  to position from right_index-1
+			-- put the last_input in `array' with right_index
 
+	local
+		left, right, middle: INTEGER
+		cur_entry: I18N_DICTIONARY_ENTRY
+		mid_entry: I18N_DICTIONARY_ENTRY
+		t_string: STRING_32
+		right_index: INTEGER
+
+	do
+		-- one element case will do nothing
+		if (last_index >1) then
+
+			cur_entry:= array.item (last_index)
+
+			if cur_entry < array.item(1) then
+				right_index := 1
+			elseif cur_entry > array.item(last_index-1) then
+				right_index := last_index
+			else
+				--cur_entry < array.item (last_index-1) and cur_entry > array.item(1)
+				-- search the right index for the last inserted elem
+				-- with binary search
+				from
+					left := 2
+					right := last_index-2
+				until
+					left > right
+				loop
+					middle := ((left + right).as_natural_32 |>> 1).as_integer_32
+					mid_entry := array.item(middle)
+					if cur_entry < mid_entry then
+						right := middle - 1
+					else
+						left := middle + 1
+					end
+				end
+					right_index := left
+			end
+
+			-- put the last inserted elem in the right index	
+			 if right_index /= last_index then
+			 	array.subcopy (array, right_index, last_index-1, right_index+1)
+			 	array.put (cur_entry, right_index)
+			 end
+
+		end
 	end
+
 
 	has_index(original:STRING_GENERAL):INTEGER is
 			-- does the dictionary have this entry?
 			-- use binary search algorithm
-			-- require 'array'is sorted
+			-- require `array'is sorted
 			-- return the Index of the found item
 			-- return -1 if not found
+			-- based only on the  `key item', no info about translation items
 		local
 			left,right,middle: INTEGER
 			m_string: STRING_32
+			found: BOOLEAN
 		do
 			from
 				left:=min_index
-				right:=current_index
-
+				right:=current_index-1
 			invariant
-				right < current_index
-						implies array.item(right + 1)<= array.item(current_index)
-				left <= current_index and left > min_index
-						implies array.item(left - 1) <= array.item(current_index)
+				right < current_index-1
+						implies array.item(right + 1)<= array.item(current_index-1)
+				left <= current_index-1 and left > min_index
+						implies array.item(left - 1) <= array.item(current_index-1)
 			variant
 				right - left + 1
 			until
-				left>right or (result=middle)
+				left>right or found
 			loop
 				middle := ((left + right).as_natural_32 |>> 1).as_integer_32
 				m_string := array.item(middle).original_singular.as_string_32
@@ -178,11 +162,14 @@ feature	{NONE}--help functions
 			---?? i do not know whether original could be used or not
 				else
 					--Found
+					found := True
 					Result := middle
 					left := left + 1 -- not nice but required to decrease variant
 				end
 			end
-			Result:=-1
+			if found = False then
+				Result:=-1
+			end
 		end
 
 feature	-- Access
@@ -222,6 +209,10 @@ feature	-- Access
 			index: INTEGER
 		do
 			index:=has_index(original_singular.as_string_32)
+
+			-- i do not know whether it is necessary to check `index /= -1'
+			-- because `has_plural' has checked it already
+
 			if index /= -1 then
 				entry := array.item (index)
 				Result := entry.plural_translations.item (reduce (plural_number))
@@ -233,7 +224,7 @@ feature --Information
 
 	count:INTEGER is
 		do
-			Result := current_index
+			Result := current_index-1
 		end
 
 
@@ -242,13 +233,20 @@ feature {NONE} --Implementation
 	array: ARRAY[I18N_DICTIONARY_ENTRY]
 	min_index: INTEGER is 1
 	max_index: INTEGER
-		-- the index which is to be filled next
+		-- should be updated after it is equal to `default_number_of_entries'
+	last_index: INTEGER is
+			--actually last_index is equal to `count'
+		do
+			Result :=current_index-1
+		end
+
 	current_index: INTEGER
+		 -- the index which is to be filled next
 	default_number_of_entries: INTEGER is 50
 
 invariant
 
-	count_equal_current_index: count=current_index
+	count_equal_current_index: count=current_index-1
 
 end
 
