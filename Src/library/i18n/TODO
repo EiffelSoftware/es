@@ -1,18 +1,27 @@
 Global TODO list for the i18n project:
 
-* finish formatters
-* write file_manager
-! finish mo handler -- Done (leo)
-! change locale_id to have separate language/region/script fields  -- done (Leo)
-* rewrite dictionary_string class, as it is stupid.
-* convert nls locales and .net locale to use new locale_id
-! convert dictionary to use agents -- Done (leo)
-* make sure all functions in all locales are implemented (we added some currency fields)
-* Write documentation!
-* Testing
+Urgent (13 october):
 
-General things:
+* time formatter
+* CONTACT TROSIM with chili pepper
+* redesign locale interface
+* fix locales
+* fix makefiles
+* testing of basic functionality
+* port test application
+* summary of who did what
+* user documentation
 
-* check and strengthen contracts when possible
-* make sure every class has a sensible description in the headers
+Not so urgent (20 october):
+
+* port Eiffel GUI changes from old project
+* in-depth testing
+* dev documentation
+* finish ES changes so we can build ES w/ i18n support [TROSIM]
+* merge from 57 branch
+* code cleanup (+ review contracts)
+* fix headers (use Eiffel Forum license)
+* update translations
+
+
 
