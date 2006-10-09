@@ -1,0 +1,64 @@
+Table of features that are supported by all operating systems.
+
+Information			NLS	Posix	.Net
+
+Name of language	
+...	Localised		x
+...	English			x
+...	Abbreviated	 	x
+...	Native 			x
+Country code - check what iso	x
+Name of country	
+... 	Localised		x
+... 	English			x
+... 	Abbreviated		x
+... 	Native			x
+
+List item separator		x
+System of measure (US or SI)	x
+Positive sign			x
+Negative sign			x
+Positive sign position		x
+Negative sign position		x
+
+Number list item separator	n
+Decimal separator		x
+Thousands separator		x
+Digit grouping			x
+Number of fractional digits	x
+Number of leading zeros 	x
+Negative number formatting	x
+
+Localised currency symbol	x
+ISO currency designator		x
+Monetary decimal separator	x
+Monetary thousands separator	x
+Monetary digit grouping		x
+Number of digits in currency	x
+ISO nbr. of digits in currency	x
+Currency symbol placement (pos) x
+Currency symbol placement (neg) x
+
+Date separator	(don't need)	x
+Time separator	(don't need)	x
+
+Short date format string	x
+Long date format string		x
+
+Short time format string	n
+Long time format string		x
+Long date format ordering	x
+Short date format ordering	x
+
+
+AM designator			x	x
+PM designator			x	x
+24-hour or 12 hour time		x
+Type of calendar		x
+First day of week		x
+First day of year		x
+Names of weekday		x	x
+Abbreviated names of weekdays	x	x
+Names of months			x	x
+Abbreviated names of months	x	x
+

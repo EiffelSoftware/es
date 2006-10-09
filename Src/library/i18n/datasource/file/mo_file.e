@@ -30,7 +30,7 @@ feature
 	open is
 			-- opens file and intialises parser
 		do
-			if file.exists then
+			if file.exists and file.is_plain then
 				file.open_read
 				if file.is_open_read then
 					read_magic_number

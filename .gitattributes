@@ -1872,6 +1872,7 @@ Src/library/editor/bitmaps/left_scroll_arrow.png -text
 Src/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/library/gobo_extension/gobo_extension.ecf -text
 Src/library/i18n/TODO -text
+Src/library/i18n/documents/locale_info_features -text
 Src/library/i18n/test_files/Dictionary/I18N_BINARY_SEARCH_ARRAY_DICTIONARY/with_two_plural_forms_singular_one/data_file -text
 Src/library/i18n/test_files/Dictionary/I18N_BINARY_SEARCH_ARRAY_DICTIONARY/with_two_plural_forms_singular_one/get_data_file -text
 Src/library/i18n/test_files/Dictionary/I18N_BINARY_SEARCH_ARRAY_DICTIONARY/with_two_plural_forms_singular_one/get_data_non_file -text

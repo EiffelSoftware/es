@@ -12,6 +12,10 @@ class
 	redefine
 		is_equal
 	end
+	HASHABLE
+	undefine
+		is_equal
+	end
 
 create
 	make,
@@ -110,7 +114,6 @@ feature  -- Informations
 	region: STRING_32
 	script: STRING_32
 
-	name: STRING_32
 
 feature	 -- Comparison
 
@@ -120,6 +123,18 @@ feature	 -- Comparison
 			Result := language.is_equal (other.language) and region.is_equal(other.region) and
 						( (script /= Void and other.script /= Void) implies script.is_equal(other.script))
 		end
+
+ feature -- Hashing
+
+ 	hash_code:INTEGER is
+ 		do
+ 			Result := name.hash_code
+ 		end
+
+ feature  -- Name for hashing
+
+	name: STRING_32
+
 
 invariant
 	language_exists: language /= Void

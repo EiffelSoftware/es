@@ -58,6 +58,7 @@ class
 
 		extract_locale(a_path:STRING_32):I18N_LOCALE_ID is
 				-- TODO: update this
+				-- NOTE: Void indicates unknown locale, not a bug
 				do
 					create file.make (a_path)
 					file.open
@@ -65,8 +66,6 @@ class
 						file.opened
 					then
 						create Result.make_from_string(file.locale)
-					else
-						create Result.make_from_string("")
 					end
 				end
 
