@@ -15,12 +15,11 @@ feature -- Initialization
 	make(t:I18N_DICTIONARY; plural_form,datalength,seed:INTEGER) is
 			-- Creation procedure.
 		do
-
 			data_generation(t,datalength,seed)
 			data_query(t,datalength,seed)
 			data_get(t,datalength,seed)
-		end
 
+		end
 
 feature	-- Data generation
 
@@ -33,15 +32,12 @@ feature	-- Data generation
 			i:INTEGER
 			singular:STRING_GENERAL
 			translated_singular, original_plural: STRING_GENERAL
-			plural_translation_0: STRING_GENERAL
-			plural_translation_1: STRING_GENERAL
-			plural_translation_2: STRING_GENERAL
-			plural_translation_3: STRING_GENERAL
 
 			file: PLAIN_TEXT_FILE
 		do
 			create random.set_seed (seed)
-			create file.make_create_read_write ("C:\i18n_SVN\Src\library\i18n\test_files\data_file")
+			create file.make_create_read_write (Operating_environment.Current_directory_name_representation+
+												Operating_environment.Directory_separator.out+"data_file")
 			from
 				i:=1
 				random.start
@@ -60,45 +56,27 @@ feature	-- Data generation
 				-- are added by hand!
 
 				random.forth
-				plural_translation_0:=random.item.out
+				entry.plural_translations.enter (random.item.out, 0) -- plural translation 0
 				random.forth
-				plural_translation_1:=random.item.out
+				entry.plural_translations.enter (random.item.out, 1) -- plural translation 1
 				random.forth
-				plural_translation_2:=random.item.out
+				entry.plural_translations.enter (random.item.out, 2) -- plural translation 2
 				random.forth
-				plural_translation_3:=random.item.out
-
-				entry.plural_translations.enter (plural_translation_0, 0)
-				entry.plural_translations.enter (plural_translation_1, 1)
-				entry.plural_translations.enter (plural_translation_2, 2)
-				entry.plural_translations.enter (plural_translation_3, 3)
+				entry.plural_translations.enter (random.item.out, 3) -- plural translation 3
 
 
 				--put `entry' in datastructure
 				t.extend (entry)
 
 				-- fill the `file' with the entry
-				file.put_string ("entry ")
-				file.put_integer (i)
-				file.put_string (": %N")
-				file.put_string ("original_singular: ")
-				file.put_string (entry.original_singular.to_string_8)
-				file.put_new_line
-				file.put_string ("original_plural: ")
-				file.put_string (entry.original_plural.to_string_8)
-				file.put_new_line
-				file.put_string ("singular_translation: ")
-				file.put_string(entry.singular_translation.to_string_8)
-				file.put_new_line
-				file.put_string("plural_translations: (0) ")
-				file.put_string (entry.plural_translations.item (0))
-				file.put_string(" (1) ")
-				file.put_string (entry.plural_translations.item (1))
-				file.put_string(" (2) ")
-				file.put_string (entry.plural_translations.item (2))
-				file.put_string(" (3) ")
-				file.put_string (entry.plural_translations.item (3))
-				file.put_new_line
+				file.put_string ("entry "+i.out+": %N%
+								 %original_singular: "+entry.original_singular.out+"%N%
+								 %original_plural: "+entry.original_plural.out+"%N%
+								 %singular_translation: "+entry.singular_translation.out+"%N%
+								 %plural_translations: (0) "+entry.plural_translations.item (0)+
+								 " (1) "+entry.plural_translations.item (1)+
+								 " (2) "+entry.plural_translations.item (2)+
+								 " (3) "+entry.plural_translations.item (3)+"%N")
 
 				-- to continue the loop
 				i:=i+1
@@ -126,7 +104,8 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 		do
 			-- query with its existent elems
 			create random.set_seed (seed)
-			create output_file.make_create_read_write ("C:\i18n_SVN\Src\library\i18n\test_files\query_yes_file")
+			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
+												Operating_environment.Directory_separator.out+"query_yes_file")
 			from
 				i:=1
 				random.start
@@ -138,37 +117,24 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 				translated_singular:=random.item.out
 				random.forth
 				original_plural:=random.item.out
-				output_file.put_string ("query ")
-				output_file.put_integer (i)
-				output_file.put_string (": ")
-				output_file.put_new_line
+				output_file.put_string ("query "+i.out+": %N")
 				if t.has (singular) then
-					output_file.put_string ("data structure has(")
-					output_file.put_string (singular.to_string_8)
-					output_file.put_string (")")
-					output_file.put_new_line
+					output_file.put_string ("data structure has("+singular.out+")%N")
 				else
-					output_file.put_string ("data structure do not has(")
-					output_file.put_string (singular.to_string_8)
-					output_file.put_string (")")
-					output_file.put_new_line
+					output_file.put_string ("data structure do not has("+singular.out+")%N")
 				end
-
-				-- i think plural_number could be 0,1,2,3
-				-- or 1 2 3 4, i do not know, try them all
+				
+				-- `plural_number'>=0
+				
 				from
 					j:=0
 				until
 					j>10
 				loop
 					if t.has_plural (singular,original_plural, j.as_integer_32) then
-						output_file.put_string ("data structure has_plural with plural_number: ")
-						output_file.put_integer (j)
-						output_file.put_new_line
+						output_file.put_string ("data structure has_plural with plural_number: "+j.out+"%N")
 					else
-						output_file.put_string ("data structure do not has_plural with plural_number: ")
-						output_file.put_integer (j)
-						output_file.put_new_line
+						output_file.put_string ("data structure do not has_plural with plural_number: "+j.out+"%N")
 					end
 					j:=j+1
 				end
@@ -188,7 +154,8 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 			-- query with its non-existent elems
 
 			create random.set_seed (seed+1)
-			create output_file.make_create_read_write ("C:\i18n_SVN\Src\library\i18n\test_files\query_non_file")
+			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
+												Operating_environment.Directory_separator.out+"query_non_file")
 			from
 				i:=1
 				random.start
@@ -200,25 +167,14 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 				translated_singular:=random.item.out
 				random.forth
 				original_plural:=random.item.out
-				output_file.put_string ("query ")
-				output_file.put_integer (i)
-				output_file.put_string (": ")
-			--	output_file.put_string ("query "+i.out+": %N")
-				output_file.put_new_line
+				output_file.put_string ("query "+i.out+": %N")
 				if t.has (singular) then
-					output_file.put_string ("data structure has(")
-					output_file.put_string (singular.to_string_8)
-					output_file.put_string (")")
-					output_file.put_new_line
+					output_file.put_string ("data structure has("+singular.out+")%N")
 				else
-					output_file.put_string ("data structure do not has(")
-					output_file.put_string (singular.to_string_8)
-					output_file.put_string (")")
-					output_file.put_new_line
+					output_file.put_string ("data structure do not has("+singular.out+")%N")
 				end
 
-				-- i think `plural_number' could be 0,1,2,3
-				-- or 1 2 3 4, i do not know, try them all
+				
 				-- `plural_number'>=0
 
 				from
@@ -227,13 +183,9 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 					j>10
 				loop
 					if t.has_plural (singular,original_plural, j.as_integer_32) then
-						output_file.put_string ("data structure has_plural with plural_number: ")
-						output_file.put_integer (j)
-						output_file.put_new_line
+						output_file.put_string ("data structure has_plural with plural_number: "+j.out+"%N")
 					else
-						output_file.put_string ("data structure do not has_plural with plural_number: ")
-						output_file.put_integer (j)
-						output_file.put_new_line
+						output_file.put_string ("data structure do not has_plural with plural_number: "+j.out+"%N")
 					end
 					j:=j+1
 				end
@@ -264,7 +216,8 @@ feature -- Data access
 
 			-- get data with its existent elems
 			create random.set_seed (seed)
-			create output_file.make_create_read_write ("C:\i18n_SVN\Src\library\i18n\test_files\get_data_file")
+			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
+												Operating_environment.Directory_separator.out+"get_data_file")
 			from
 				i:=1
 				random.start
@@ -294,14 +247,14 @@ feature -- Data access
 					j>10
 				loop
 					if t.has_plural (singular,original_plural, j.as_integer_32) then
-						output_file.put_string ("get_plural (" + singular.as_string_8 + "," + original_plural.as_string_8 + "," + j.out +"): "
-						+ t.get_plural (singular, original_plural, j.as_integer_32)+"%N")
+						output_file.put_string ("get_plural (" + singular.as_string_8 + ","
+												+ original_plural.as_string_8 + "," + j.out +"): "
+												+ t.get_plural (singular, original_plural, j.as_integer_32)+"%N")
 
 					else
 
-						output_file.put_string (" not has_plural (" + singular.as_string_8 + "," + original_plural.as_string_8 + "," + j.out +") %N "
-					)
-
+						output_file.put_string (" not has_plural (" + singular.as_string_8 + ","
+												+ original_plural.as_string_8 + "," + j.out +") %N ")
 					end
 					j:=j+1
 				end
@@ -322,7 +275,8 @@ feature -- Data access
 			-- actually we could only get data with its existence
 
 			create random.set_seed (seed+1)
-			create output_file.make_create_read_write ("C:\i18n_SVN\Src\library\i18n\test_files\get_data_non_file")
+			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
+												Operating_environment.Directory_separator.out+"get_data_non_file")
 			from
 				i:=1
 				random.start
@@ -373,9 +327,4 @@ feature -- Data access
 
 
 
-
-
-
-
-
-end -- class ROOT_CLASS
+end -- class DICTIONARY_TEST
