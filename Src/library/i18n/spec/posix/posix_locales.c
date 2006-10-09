@@ -2,12 +2,9 @@
 #include <locale.h>
 #include <malloc.h>
 #include <string.h>
-#include <dirent.h>
 #include <stdio.h>
-#include <stdlib.h> 
 #include <iconv.h>
 #include <errno.h>
-#include <wchar.h> 
 
 #define BUFSIZE 30
 
@@ -23,8 +20,7 @@ void convert (char * inbuf, size_t insize, wchar_t **out, size_t *outsize) {
         *out = NULL;
         *outsize = 0;
         alloc = avail = insize + insize/4;
-        if (!(res = malloc(alloc)))
-        {
+        if (!(res = malloc(alloc))) {
           perror("malloc");
           return;
         }
@@ -32,28 +28,21 @@ void convert (char * inbuf, size_t insize, wchar_t **out, size_t *outsize) {
         wrptr = res;   // duplicate pointers because they
         inptr = inbuf; // get modified by iconv
 
-        char *charset = nl_langinfo (CODESET);   /*serve a capire che charset
-                                                                                           usa il locale attuale*/
-        cd = iconv_open ("UTF-8", charset);    /*qualcosa che serve a dire a iconv
-                                                                                   cosa deve converire in cosa*/
-        if (cd == (iconv_t)(-1))
-        {
+        char *charset = nl_langinfo (CODESET);   //get charset used by current locale
+        cd = iconv_open ("UTF-8", charset);
+        if (cd == (iconv_t)(-1)) {
                 perror("iconv_open");
                 free(res);
                 return;
         }
 
-        do
-        {
-                nconv = iconv (cd, &inptr, &insize, &wrptr, &avail); //la conversione
-                if (nconv == (size_t)(-1))
-                {
-                        if (errno == E2BIG) // need more room for result
-                        {
+        do {
+                nconv = iconv (cd, &inptr, &insize, &wrptr, &avail); //convertions
+                if (nconv == (size_t)(-1)) {
+                        if (errno == E2BIG) { // need more room for result
                                 tres = realloc(res, alloc += 20);
                                 avail += 20;
-                                if (!tres)
-                                {
+                                if (!tres) {
                                         perror("realloc");
                                         break;
                                 }
@@ -96,7 +85,7 @@ void set_locale (char *a_locale) {
 	} else { //a_locale is not available
 		strcpy(lc_locale_name,"POSIX");
 	}
-	lc_locale_name[BUFSIZE-1] = '\0'
+	lc_locale_name[BUFSIZE-1] = '\0';
 }
 
 /*****************************
@@ -134,4 +123,3 @@ int is_available (char *a_locale) {
 		return 0;
 	}
 }
-
