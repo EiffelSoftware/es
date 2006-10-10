@@ -1399,8 +1399,6 @@ Delivery/xmldoc/tools/wizards/com/images/interface_inheritance.png -text
 Delivery/xmldoc/tools/wizards/com/images/interface_inheritance_server.png -text
 Delivery/xmldoc/tools/wizards/com/images/introduction.png -text
 Src/C/CONFIGS/openbsd-x86 -text
-Src/C/ipc/daemon/ecdbgd.ico -text
-Src/C/ipc/daemon/ecdbgd.rc -text
 Src/C/rt_converter.exe -text
 Src/C/run-time/include/gc_pthread_redirects.h -text
 Src/C_library/libpng/contrib/visupng/VisualPng.ico svneol=native#unset
