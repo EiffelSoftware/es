@@ -11,7 +11,7 @@ class
 		lcid_tools: I18N_NLS_LCID_TOOLS is
 				--
 			once
-				create Result
+				create Result.initialize_locales
 			end
 
 

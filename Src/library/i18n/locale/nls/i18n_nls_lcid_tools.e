@@ -10,6 +10,8 @@ class
 	inherit
 		I18N_NLS_GETLOCALEINFO
 
+create
+	initialize_locales
 
 feature --Access
 
@@ -24,46 +26,79 @@ feature --Access
 		Result := is_valid_locale(lcid, 2)
 	end
 
+	supported_locales: LIST[I18N_LOCALE_ID] is
+			--  List all installed locales
+		local
+			i: INTEGER
+		do
+			create {LINKED_LIST[I18N_LOCALE_ID]} Result.make
+			from
+				i := 1
+			until
+				i > locales.upper
+			loop
+				if is_supported_locale (locales.item (i).lcid) then
+					Result.extend (lcid_to_locale_id (locales.item (i).lcid))
+				end
+				i := i + 1
+			end
+		end
 
 
-	lcid_to_name(lcid:INTEGER):STRING_32 is
-			-- Windows can manage this.
-			-- However: only Windows Vista can manage to give you the correct identifier in one query.
+
+
+	lcid_to_locale_id(lcid: INTEGER):I18N_LOCALE_ID is
+			-- Only Windows Vista can manage to give you the correct identifier in one query.
 			-- Everyone else needs to take a crash course on how these identifiers are composed:
 			-- Typically we have: ll-RR where ll is a lowercase language code from ISO 639-1 (or 639-2/T)
 			-- and RR is an uppercase region code from ISO 3166-1.
 			-- In older Windows versions (actually current when I am typing this) we need to get each one
-			-- and glue them together. This disregards windows's nice habit of sometimes sticking the encoding
-			-- in the middle, which is an unexplained and unsolved problem for us right now.
+			-- and glue them together.
+			-- We still need to refer to a table to find out if there is a script, sadly
+
 			local
 				iso639: STRING_32
 				iso3166: STRING_32
+				script: STRING_32
+				i: INTEGER
 			do
 				iso639 := extract_locale_string (lcid, nls_constants.locale_siso639langname,
 													nls_constants.locale_siso639langname_maxlen )
 				iso3166 := extract_locale_string (lcid, nls_constants.locale_siso3166ctryname,
 													nls_constants.locale_siso3166ctryname_maxlen )
-
-				Result := (iso639 + "-" + iso3166)
+				-- We can get away with this because we know scripts is a small array
+				from
+					i := 0
+				until
+					i > scripts.upper
+				loop
+					if scripts.item (i).lcid = lcid then
+						script := scripts.item (i).script
+						i := scripts.upper
+					end
+					i := i + 1
+				end
+				create Result.make (iso639, iso639, script)
 			end
 
 
-	name_to_lcid(name:STRING_32):INTEGER is
-			-- takes an locale name (eg. de_CH, zh-CN) and returns the LCID
-			-- note: converting between different possible formats for the names is required!
-			-- big problem: codes like "az-Cyrl-AZ" where encoding is in middle.
-			-- possibly put it at end for sorting purposes?
+	locale_id_to_lcid(id: I18N_LOCALE_ID):INTEGER is
+			-- takes an locale id and returns corresponding LCID
+			-- if it returns 0 Something Is Wrong
+
 			require
-				argument_not_void: name /= Void
+				argument_not_void: id /= Void
 			local
 				left, right, middle: INTEGER
 				found: BOOLEAN
-				t_string: STRING_32
+				name, t_string: STRING_32
 			do
 
-				if locales = Void then
-					initialize_locales
+				name := id.language
+				if (id.script /= Void and then not id.script.is_equal ("euro")) then
+					name.append_string("-"+id.script)
 				end
+				name.append_string ("-"+id.region)
 				-- locales is sorted by iso_code, so we can use etienne's well-contracted binary search
 
 				from
@@ -94,7 +129,7 @@ feature --Access
 				end
 			end
 
-feature {NONE} -- LCIDS
+feature {NONE}  -- LCIDS
 
 -- Explanation: Windows identifies each locale with a number called an LCID
 -- (actually they designate locale+sort order, but that's what things use in windows-land)
@@ -103,10 +138,13 @@ feature {NONE} -- LCIDS
 -- unless you have "Windows Vista or later". So we do it by hand with this thing.
 -- full_name isn't used but is potentially useful.
 
-	locales: ARRAY[TUPLE[full_name:STRING_32; iso_code:STRING_32; lcid:INTEGER]]
+	locales: ARRAY[TUPLE[full_name:STRING_8; iso_code:STRING_8; lcid:INTEGER]]
+	scripts: ARRAY[TUPLE[script: STRING_8; lcid:INTEGER]]
+
+feature -- Initialisation
 
 	initialize_locales is
-			-- populate locales array
+			-- populate locales array and scripts array
 		do
 			locales := <<
 				["Afrikaans (South Africa)",	"af-ZA",	0x0436],
@@ -317,6 +355,25 @@ feature {NONE} -- LCIDS
 				["Chinese (Taiwan)",		"zh-TW",	0x0404],
 				["Zulu/isiZulu (South Africa)",		"zu-ZA",	0x0435]
 			>>
+			scripts := <<
+				["Cyrl", 0x0428],
+				["Latn", 0x042c],
+				["Latn", 0x0443],
+				["Cyrl", 0x0450],
+				["Cans", 0x045d],
+				["Latn", 0x0468],
+				["Latn", 0x081a],
+				["Cyrl", 0x082c],
+				["Cyrl", 0x0843],
+				["Mong", 0x0850],
+				["Latn", 0x085d],
+				["Latn", 0x085f],
+				["Cyrl", 0x0c1a],
+				["Latn", 0x141a],
+				["Latn", 0x181a],
+				["Cyrl", 0x1c1a],
+				["Cyrl", 0x201a]
+				 >>
 		end
 
 feature {NONE} -- C functions
@@ -331,5 +388,6 @@ feature {NONE} -- C functions
 	end
 
 
-
+invariant
+	locales /= Void
 end

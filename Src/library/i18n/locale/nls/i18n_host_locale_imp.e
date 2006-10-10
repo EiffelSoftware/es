@@ -18,46 +18,82 @@ class
 
 	feature -- Creation
 
-		make_from_user_locale is
-				--
+		make_from_user_locale: I18N_LOCALE_INFO is
+				-- fill in
 			do
 				current_lcid := user_locale
+				Result := fill
+				Result.set_id (lcid_tools.lcid_to_locale_id (current_lcid))
 			end
 
-		make_from_locale (locale: I18N_LOCALE_ID) is
-				--
+		make_from_locale (locale: I18N_LOCALE_ID):I18N_LOCALE_INFO is
+				-- fill in
 			do
-				current_lcid := lcid_tools.name_to_lcid (locale.name)
+				current_lcid := lcid_tools.locale_id_to_lcid (locale)
+				Result := fill
+				Result.set_id (locale)
 			end
 
 	feature -- Information
 
 		available_locales : LINEAR[I18N_LOCALE_ID] is
-				-- TODO, does not work!
-			local
-				temp : LINKED_LIST[I18N_LOCALE_ID]
+				-- All supported locales on the system
 			do
-				create temp.make
-
-				Result := temp
+				Result := lcid_tools.supported_locales
 			end
 
 		current_locale_id: I18N_LOCALE_ID is
-				-- lcid_to_name should be done "properly" (unified name formt!!!!!!!!!!)
+				--
 			do
-				create Result.make(lcid_tools.lcid_to_name (current_lcid))
+				Result := lcid_tools.lcid_to_locale_id (user_locale)
 			end
 
 		is_available (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
 				--
 			do
-				Result := lcid_tools.is_supported_locale (lcid_tools.name_to_lcid (a_locale_id.name))
+				Result := lcid_tools.is_supported_locale (lcid_tools.locale_id_to_lcid (a_locale_id))
 			end
 
 
 
+ feature {NONE} -- fill
 
-	feature -- Value formatting
+ 		fill: I18N_LOCALE_INFO is
+ 				-- fills an locale_info
+ 			do
+ 				create Result.make
+ 				Result.set_abbreviated_day_names (get_abbreviated_day_names)
+ 				Result.set_abbreviated_month_names (get_abbreviated_month_names)
+ 				Result.set_am_suffix (get_am_suffix)
+ 				Result.set_currency_decimal_separator (get_currency_decimal_separator)
+ 				Result.set_currency_group_separator (get_currency_group_separator)
+ 				Result.set_currency_grouping (get_currency_grouping)
+ 				Result.set_currency_number_list_separator (get_value_number_list_separator)
+ 				Result.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
+				Result.set_currency_symbol (get_currency_symbol)
+			--	Result.set_currency_symbol_location ()
+				Result.set_day_names (get_day_names)
+			--	Result.set_international_currency_decimal_separator ()
+			--	Result.set_international_currency_group_separator  ()
+			--	Result.set_international_currency_grouping ()
+			--	Result.set_international_currency_number_list_separator ()
+			--	Result.set_international_currency_numbers_after_decimal_separator ()
+			--	Result.set_international_currency_symbol ()
+			--	Result.set_international_currency_symbol_location ()
+				Result.set_long_date_format (get_long_date_format)
+				Result.set_long_time_format (get_long_time_format)
+				Result.set_month_names (get_month_names)
+				Result.set_pm_suffix (get_pm_suffix)
+				Result.set_short_date_format (get_short_date_format)
+				Result.set_short_time_format (get_short_time_format)
+				Result.set_value_decimal_separator (get_value_decimal_separator)
+				Result.set_value_group_separator (get_value_group_separator)
+				Result.set_value_number_list_separator (get_value_number_list_separator)
+				Result.set_value_numbers_after_decimal_separator (get_value_numbers_after_decimal_separator)
+ 			end
+
+
+	feature {NONE} -- Value formatting
 
 		get_value_group_separator: STRING_32 is
 				--
@@ -96,7 +132,7 @@ class
 												nls_constants.locale_slist_maxlen)
 			end
 
-	feature -- Currency formatting
+	feature {NONE} -- Currency formatting
 
 		get_currency_decimal_separator: STRING_32 is
 				--
@@ -141,10 +177,7 @@ class
 
 
 
-
-
-
-	feature -- Default locales
+	feature {NONE}  -- Default locales
 
 		system_locale: INTEGER is
 			-- Encapsulation of GetSystemDefaultLCID
@@ -163,7 +196,7 @@ class
 		end
 
 
-	feature -- date and time formatting
+	feature {NONE} -- date and time formatting
 
 		get_short_date_format: STRING_32 is
 				--
@@ -287,7 +320,7 @@ class
 							>>
 			end
 
-	feature -- time formatting
+	feature {NONE} -- time formatting
 
 		get_am_suffix: STRING_32 is
 				--
@@ -316,9 +349,6 @@ class
 				Result := get_short_time_format
 			end
 
-
-
-
 	feature {NONE} -- Current locale
 
 		current_lcid: INTEGER
@@ -344,15 +374,4 @@ class
 					temp.forth
 				end
 			end
-
-
-
-
-
-
-
-
-
-
-
 end

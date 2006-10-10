@@ -33,6 +33,7 @@
 				<cluster name="nls_imp" location="./locale/nls">
 					<condition>
 						<platform value="windows"/>
+						<dotnet value="false"/>
 					</condition>
 				</cluster>
 				<cluster name="posix_imp" location="./locale/posix">
