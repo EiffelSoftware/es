@@ -1898,6 +1898,8 @@ Src/library/i18n/test_files/Dictionary/I18N_HASH_TABLE_DICTIONARY/with_two_plura
 Src/library/i18n/test_files/Dictionary/I18N_HASH_TABLE_DICTIONARY/with_two_plural_forms_singular_one_zero/query_non_file -text
 Src/library/i18n/test_files/Dictionary/I18N_HASH_TABLE_DICTIONARY/with_two_plural_forms_singular_one_zero/query_yes_file -text
 Src/library/i18n/test_files/Dictionary/I18N_HASH_TABLE_DICTIONARY/with_two_plural_forms_singular_one_zero/readme.text.txt -text
+Src/library/i18n/test_files/mo/ar.mo -text
+Src/library/i18n/test_files/mo/zh_CN.mo -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/library/process/classic/unix/process_error_listener_thread.e -text
 Src/library/process/classic/unix/process_output_listener_thread.e -text
