@@ -119,7 +119,7 @@ feature -- Parser
 					when am_pm_uppercase then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent am_pm_uppercase_action (?, locale_info))
 					when local_date_time then
-						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.long_date_format, locale_info)
+						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.date_time_format, locale_info)
 					when usa_date then
 						create {I18N_FORMAT_STRING} l_format_code.make ("&m/&d/&y", locale_info)
 					when iso_date then
@@ -136,13 +136,12 @@ feature -- Parser
 						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.long_time_format, locale_info)
 					when escape_character then
 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (escape_character.out)
-					when era then
---						Not yet
-					when time_zone_offset then
---						Not yet
-					when time_zone_name then
---						Not yet
-						-- special character
+--					when era then
+----						Not yet
+--					when time_zone_offset then
+----						Not yet
+--					when time_zone_name then
+----						Not yet
 					when modifier_character_1 then
  						l_format_code := parse_modified_1 (t_char)
 						i := next_escape_char + 2
@@ -150,7 +149,7 @@ feature -- Parser
  						l_format_code := parse_modified_2 (t_char)
 						i := next_escape_char + 2
 					else
- 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (t_char.out)
+ 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (escape_character.out + t_char.out)
 						i := next_escape_char + 1
 					end
 					i := next_escape_char + 2
