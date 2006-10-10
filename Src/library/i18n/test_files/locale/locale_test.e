@@ -24,7 +24,7 @@ feature -- Initialization
 		do
 			io.put_string ("%N###############%N")
 			io.put_string ("%NTest:%N")
---			interactive
+			interactive
 --			test_all_locales
 			io.put_string ("%N###############%N")
 		end
@@ -83,12 +83,12 @@ feature --Tests
 				elseif not io.last_string.is_equal ("q") then
 					create t
 					if t.has_locale (l) then
---						test_day_months_names (t.get_locale_info (l))
---						test_date_time_formatter ("local_date_time: &c, day: &A%N", t.get_locale_info (l))
---						test_currency_info (t.get_locale_info (l))
---						test_currency_formatter (9.234, t.get_locale_info (l))
---						test_value_info (t.get_locale_info (l))
---						test_value_formatter (9.234, t.get_locale_info (l))
+						test_day_months_names (t.get_locale_info (l))
+						test_date_time_formatter ("local_date_time: &c, day: &A%N", t.get_locale_info (l))
+						test_currency_info (t.get_locale_info (l))
+						test_currency_formatter (9.234, t.get_locale_info (l))
+						test_value_info (t.get_locale_info (l))
+						test_value_formatter (9.234, t.get_locale_info (l))
 					else
 						io.put_string ("%NNot available%N")
 					end
@@ -105,7 +105,7 @@ feature --Tests
 			t_l : LINEAR[I18N_LOCALE_ID]
 		do
 			create l
-			t_l := l. available_locales
+			t_l := l.available_locales
 			from
 				t_l.start
 			until

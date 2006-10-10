@@ -128,7 +128,7 @@ feature {NONE} -- Implementation
 			until
 				i > grouping.upper or pos < 1
 			loop
-				if not (grouping.item (i) = 0) then
+				if grouping.item (i) > 0 then
 					-- Current item is the number of digits that comprise the current group.
 					if pos - grouping.item (i) > 0 then
 						-- there are enougth elements for a new group

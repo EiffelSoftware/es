@@ -15,7 +15,7 @@ feature -- Informations
 		do
 			Result := host_locale.available_locales
 		ensure
-			correct_result: Result = host_locale.available_locales
+--			correct_result: Result = host_locale.available_locales
 		end
 
 	has_locale (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is

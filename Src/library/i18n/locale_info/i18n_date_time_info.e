@@ -87,7 +87,7 @@ feature -- Element change
 		do
 			abbreviated_month_names := a_abbreviated_month_names
 		ensure
-			abbreviated_day_names_set: abbreviated_day_names = a_abbreviated_month_names
+			abbreviated_month_names_set: abbreviated_month_names = a_abbreviated_month_names
 		end
 
 	set_date_time_format(format:STRING_GENERAL) is
@@ -158,7 +158,7 @@ feature -- Element change
 		do
 			pm_suffix := suffix.to_string_32
 		ensure
-			pm_suffix_set: am_suffix.is_equal(suffix.as_string_32)
+			pm_suffix_set: pm_suffix.is_equal(suffix.as_string_32)
 		end
 
 feature -- Default Values
