@@ -1411,7 +1411,6 @@ Src/C_library/zlib/contrib/blast/test.pk svneol=native#unset
 Src/C_library/zlib/contrib/puff/zeros.raw svneol=native#unset
 Src/Eiffel/API/output/comment_scanner.l -text
 Src/Eiffel/Ace/ec.ico -text
-Src/Eiffel/Ace/ecdoc.ico -text
 Src/Eiffel/com/ace_file/cec.ico -text
 Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/diamond_inheritance.png -text
 Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/method1/diamond_inheritance_on_dotnet-method1.png -text
