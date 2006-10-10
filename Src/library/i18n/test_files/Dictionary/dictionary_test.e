@@ -13,13 +13,48 @@ create
 feature -- Initialization
 
 	make(t:I18N_DICTIONARY; plural_form,datalength,seed:INTEGER) is
+
 			-- Creation procedure.
 		do
+			set_current_folder(t,plural_form,datalength,seed)
 			data_generation(t,datalength,seed)
 			data_query(t,datalength,seed)
 			data_get(t,datalength,seed)
-
+			if not current_folder.is_closed then
+				current_folder.close
+			end
 		end
+feature -- set current_folder
+	set_current_folder (t:I18N_DICTIONARY;plural_form,datalength,seed:INTEGER) is
+			-- check the type of t and create new folder in the relevant folder
+			-- this class could be extended when a new dictionary structure is added
+			-- need plural_form, datalength and seed to make directory uniq
+		local
+			t_b: I18N_BINARY_SEARCH_ARRAY_DICTIONAY
+			t_h: I18N_HASH_TABLE_DICTIONARY
+		do
+			t_b	?= t
+			t_h ?= t
+
+
+			if t_h /= Void then
+
+					create current_folder.make(current_folder_string
+					+"I18N_HASH_TABLE_DICTIONARY_TEST_WITH_PLURAL_FORM"+plural_form.out+"WITH_DATALENGTH_"+datalength.out+"WITH_SEED_"+seed.out)
+
+			elseif t_b /= Void then
+					create current_folder.make(current_folder_string
+					+"I18N_BINARY_SEARCH_ARRAY_DICTIONARY_TEST_WITH_PLURAL_FORM"+plural_form.out+"WITH_DATALENGTH_"+datalength.out+"WITH_SEED_"+seed.out)
+			else
+					create current_folder.make(current_folder_string
+					+"NEW_DICTIONARY_TEST_WITH_PLURAL_FORM"+plural_form.out+"WITH_DATALENGTH_"+datalength.out+"WITH_SEED_"+seed.out)
+			end
+
+			if not current_folder.exists then
+				current_folder.create_dir
+			end
+	end
+
 
 feature	-- Data generation
 
@@ -32,12 +67,10 @@ feature	-- Data generation
 			i:INTEGER
 			singular:STRING_GENERAL
 			translated_singular, original_plural: STRING_GENERAL
-
 			file: PLAIN_TEXT_FILE
 		do
 			create random.set_seed (seed)
-			create file.make_create_read_write (Operating_environment.Current_directory_name_representation+
-												Operating_environment.Directory_separator.out+"data_file")
+			create file.make_create_read_write (current_folder.name+Operating_environment.Directory_separator.out+"data_file")
 			from
 				i:=1
 				random.start
@@ -104,8 +137,7 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 		do
 			-- query with its existent elems
 			create random.set_seed (seed)
-			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
-												Operating_environment.Directory_separator.out+"query_yes_file")
+			create output_file.make_create_read_write (current_folder.name+Operating_environment.Directory_separator.out+"query_yes_file")
 			from
 				i:=1
 				random.start
@@ -123,9 +155,9 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 				else
 					output_file.put_string ("data structure do not has("+singular.out+")%N")
 				end
-				
+
 				-- `plural_number'>=0
-				
+
 				from
 					j:=0
 				until
@@ -154,8 +186,7 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 			-- query with its non-existent elems
 
 			create random.set_seed (seed+1)
-			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
-												Operating_environment.Directory_separator.out+"query_non_file")
+			create output_file.make_create_read_write (current_folder.name+Operating_environment.Directory_separator.out+"query_non_file")
 			from
 				i:=1
 				random.start
@@ -174,7 +205,7 @@ data_query(t:I18N_DICTIONARY; datalength,seed:INTEGER) is
 					output_file.put_string ("data structure do not has("+singular.out+")%N")
 				end
 
-				
+
 				-- `plural_number'>=0
 
 				from
@@ -216,8 +247,7 @@ feature -- Data access
 
 			-- get data with its existent elems
 			create random.set_seed (seed)
-			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
-												Operating_environment.Directory_separator.out+"get_data_file")
+			create output_file.make_create_read_write (current_folder.name+Operating_environment.Directory_separator.out+"get_data_file")
 			from
 				i:=1
 				random.start
@@ -275,8 +305,7 @@ feature -- Data access
 			-- actually we could only get data with its existence
 
 			create random.set_seed (seed+1)
-			create output_file.make_create_read_write (Operating_environment.Current_directory_name_representation+
-												Operating_environment.Directory_separator.out+"get_data_non_file")
+			create output_file.make_create_read_write (current_folder.name+Operating_environment.Directory_separator.out+"get_data_non_file")
 			from
 				i:=1
 				random.start
@@ -324,7 +353,13 @@ feature -- Data access
 			output_file.close
 			io.put_string ("data_get is finished")
 		end
-
+feature -- access
+	current_folder: DIRECTORY
+	current_folder_string: STRING_8 is
+		do
+			result :=Operating_environment.Current_directory_name_representation+
+												Operating_environment.Directory_separator.out
+		end
 
 
 end -- class DICTIONARY_TEST
