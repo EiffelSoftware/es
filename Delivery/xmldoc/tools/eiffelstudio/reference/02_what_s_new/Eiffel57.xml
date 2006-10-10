@@ -73,8 +73,10 @@
 					</item>
 					<item><class_name>STRING</class_name> can be either <class_name>STRING_8</class_name> or <class_name>STRING_32</class_name> depending on your configuration. Default is <class_name>STRING_8</class_name>.</item>
 					<item>Added <feature_name>is_integer_xx</feature_name>, <feature_name>is_natural_xx</feature_name>, <feature_name>to_integer_xx</feature_name> and <feature_name>to_natural_xx</feature_name> where xx stands for 8, 16, 32 or 64.</item>
+					<item>Added <feature_name>is_number_sequence</feature_name> which is semantically identical to the behavior of <feature_name>is_integer</feature_name> in 5.6. Changed behavior of <feature_name>is_integer</feature_name> to check that it fits into a 32-bit integer value.</item>
 					<item>Updated <feature_name>is_double</feature_name>, <feature_name>is_real</feature_name>, <feature_name>is_real_32</feature_name>, <feature_name>is_real_64</feature_name> so that the specification allow optional integral part or decimal part, but not both (as per the ECMA specification of a real constant). This fixes the bug where <code>1.e-4</code> was not considered a valid floating point value.</item>
 					<item>Changed behavior of <feature_name>is_boolean</feature_name>  to match the ELKS specification which says the lower case version of the string should either be true or false.</item>
+					<item>Fixed issue in <feature_name>from_c_substring</feature_name> which would not properly if argument <code>start_pos</code> was greater than 1.</item>
 				</list>
 			</item>
 			<item><class_name>CHARACTER</class_name>, <class_name>CHARACTER_8</class_name> and <class_name>CHARACTER_32</class_name>:
