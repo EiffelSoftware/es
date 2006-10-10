@@ -75,9 +75,9 @@ feature -- Creation
 			if index > 0 then
 				-- split at first @, store in script, throw away if it is "euro"
 				script := temp.substring(index+1, temp.count)
-				if script.is_equal("euro") then
-					script := Void
-				end
+--				if script.is_equal("euro") then		-- @euro -> not currency_symbol.is_equal ("EUR")
+--					script := Void
+--				end
 				temp.keep_head(index-1)
 			end
 			-- So - do we have case 1,2 or 3 now?

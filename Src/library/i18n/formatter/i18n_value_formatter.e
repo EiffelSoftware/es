@@ -22,7 +22,27 @@ feature -- Initialization
 			grouping := a_locale_info.value_grouping
 		end
 
-feature -- Formatting functions
+feature -- Integer Formatting functions
+
+	format_integer_8 (a_integer_8: INTEGER_8): STRING_32 is
+		local
+		do
+			create Result.make_from_string (format_integer_part (a_integer_8.out) +
+											decimal_separator +
+											format_real_part ((10^numbers_after_decimal_separator).out))
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	format_integer_16 (a_integer_16: INTEGER_16): STRING_32 is
+		local
+		do
+			create Result.make_from_string (format_integer_part (a_integer_16.out) +
+											decimal_separator +
+											format_real_part ((10^numbers_after_decimal_separator).out))
+		ensure
+			Result_exists: Result /= Void
+		end
 
 	format_integer_32 (a_integer_32: INTEGER_32): STRING_32 is
 		local
@@ -33,6 +53,18 @@ feature -- Formatting functions
 		ensure
 			Result_exists: Result /= Void
 		end
+
+	format_integer_64 (a_integer_64: INTEGER_64): STRING_32 is
+		local
+		do
+			create Result.make_from_string (format_integer_part (a_integer_64.out) +
+											decimal_separator +
+											format_real_part ((10^numbers_after_decimal_separator).out))
+		ensure
+			Result_exists: Result /= Void
+		end
+
+feature -- Real formatting functions		
 
 	format_real_32 (a_real_32: REAL_32): STRING_32 is
 		local
@@ -63,7 +95,7 @@ feature -- Formatting functions
 		end
 
 
-feature -- Informations
+feature {NONE} -- Informations
 
 	decimal_separator: STRING_32
 

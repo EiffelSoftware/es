@@ -16,13 +16,9 @@ class
 			I18N_LOCALE_CONV
 			IMPORTED_UTF8_READER_WRITER
 
-create
-	make_from_user_locale,
-	make_from_locale
-
 feature -- Initialization
 
-	make_from_user_locale is
+	make_from_user_locale: I18N_LOCALE_INFO is
 			-- Creation procedure.
 			-- create locale form the user locale
 		local
@@ -32,16 +28,16 @@ feature -- Initialization
 			set_locale (l_c_string.item)
 		end
 
-	make_from_locale (a_locale_id : I18N_LOCALE_ID) is
+	make_from_locale (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
 			-- Creation procedure
 			-- Create locale with a_locale_id
 		local
 			l_c_string : C_STRING
 		do
-			create l_c_string.make (a_locale_id.language + "_" + a_locale_id.region)
+			create l_c_string.make (a_locale_id.name)
 			set_locale (l_c_string.item)
 		ensure then
-			locale_set: locale_name.is_equal(a_locale_id.language + "_" + a_locale_id.region)
+			locale_set: locale_name.is_equal(a_locale_id.name)
 		end
 
 
@@ -53,7 +49,7 @@ feature -- Informations
 		local
 			l_c_string: C_STRING
 		do
-			create l_c_string.make (a_locale_id.language + "_" + a_locale_id.region)
+			create l_c_string.make (a_locale_id.name)
 			Result := c_is_available (l_c_string.item)
 		end
 
@@ -93,6 +89,38 @@ feature -- Informations
 			create Result.make_from_c (c_locale_name)
 		end
 
+ feature {NONE} -- fill
+
+ 		fill: I18N_LOCALE_INFO is
+ 				-- fills an locale_info
+ 			do
+ 				create Result.make
+ 				-- set date time formatting
+ 				Result.set_date_time_format (get_date_time_format)
+				Result.set_long_date_format (get_long_date_format)
+				Result.set_long_time_format (get_long_time_format)
+ 				Result.set_am_suffix (get_am_suffix)
+				Result.set_pm_suffix (get_pm_suffix)
+				-- set day/month names
+				Result.set_day_names (get_day_names)
+				Result.set_month_names (get_month_names)
+ 				Result.set_abbreviated_day_names (get_abbreviated_day_names)
+ 				Result.set_abbreviated_month_names (get_abbreviated_month_names)
+ 				-- set number formatting
+				Result.set_value_decimal_separator (get_value_decimal_separator)
+				Result.set_value_group_separator (get_value_group_separator)
+				Result.set_value_grouping (get_value_grouping)
+ 				-- set currency formatting
+				Result.set_currency_symbol (get_currency_symbol)
+				Result.set_currency_symbol_location (get_currency_symbol_location)
+ 				Result.set_currency_decimal_separator (get_currency_decimal_separator)
+ 				Result.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
+ 				Result.set_currency_group_separator (get_currency_group_separator)
+ 				Result.set_currency_grouping (get_currency_grouping)
+				-- set international currency formatting
+				Result.set_international_currency_symbol (get_int_currency_symbol)
+				Result.set_international_currency_decimal_separator (get_int_currency_symbol)
+ 			end
 
 feature -- Date and time formatting
 
@@ -100,39 +128,21 @@ feature -- Date and time formatting
 	get_long_date_format: STRING_32 is
 			-- get the long date format string
 			-- according the current locale setting
-		obsolete
-			"UNTIL NOW, SAME RESULT AS%
-			 %get_short_date_format"
 		do
 			create Result.make_from_c (get_locale_info (D_fmt))
 			Result.replace_substring_all ("%%","&")
-		end
-
-	get_short_date_format: STRING_32 is
-			-- get the short date format string
-			-- according the current locale setting
-		do
-			create Result.make_from_c (get_locale_info (D_fmt))
-			Result.replace_substring_all ("%%","&")
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_long_time_format: STRING_32 is
 			-- get the long time format string
 			-- according the current locale setting
-		obsolete
-			"UNTIL NOW, SAME RESULT AS%
-			 %get_short_time_format"
 		do
 			create Result.make_from_c (get_locale_info (T_fmt))
 			Result.replace_substring_all ("%%","&")
-		end
-
-	get_short_time_format: STRING_32 is
-			-- get the short time format string
-			-- according the current locale setting
-		do
-			create Result.make_from_c (get_locale_info (T_fmt))
-			Result.replace_substring_all ("%%","&")
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_am_suffix : STRING_32 is
@@ -140,6 +150,8 @@ feature -- Date and time formatting
 			-- if the not available: empty_string
 		do
 			create Result.make_from_c (get_locale_info (Am_str))
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_pm_suffix : STRING_32 is
@@ -147,12 +159,17 @@ feature -- Date and time formatting
 			-- if the not available: empty_string
 		do
 			create Result.make_from_c (get_locale_info (Pm_str))
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_date_time_format: STRING_32 is
 			-- time and date in a locale-specific way.
 		do
 			create Result.make_from_c (get_locale_info (D_t_fmt))
+			Result.replace_substring_all ("%%","&")
+		ensure
+			result_exists: Result /= Void
 		end
 
 
@@ -178,6 +195,9 @@ feature -- day/months names
 				Result.put (l_string, i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Days_in_week
 		end
 
 	get_month_names: ARRAY[STRING_32] is
@@ -199,6 +219,9 @@ feature -- day/months names
 				Result.put (l_string, i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Months_in_year
 		end
 
 	get_abbreviated_day_names: ARRAY[STRING_32] is
@@ -222,6 +245,9 @@ feature -- day/months names
 				Result.put (l_string, i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Days_in_week
 		end
 
 	get_abbreviated_month_names: ARRAY[STRING_32] is
@@ -243,6 +269,9 @@ feature -- day/months names
 				Result.put (l_string, i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Months_in_year
 		end
 
 
@@ -253,15 +282,8 @@ feature	-- number formatting
 			-- according the current locales setting
 		do
 			create Result.make_from_c (decimal_point (localeconv))
-		end
-
-	get_value_numbers_after_decimal_separator: INTEGER is
-			-- get the decimal separator of numbers
-			-- according the current locales setting
-		obsolete
-			"NOT IMPLEMENTED"
-		do
-			Result := 2
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_value_group_separator: STRING_32 is
@@ -269,21 +291,16 @@ feature	-- number formatting
 			-- according the current locales setting
 		do
 			create Result.make_from_c (thousands_sep (localeconv))
-		end
-
-	get_value_number_list_separator: STRING_32 is
-			-- get the symbol used to separate values
-			-- according the current locales setting
-		obsolete
-			"NOT IMPLEMENTED"
-		do
-			 Result := ";"
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_value_grouping: ARRAY[INTEGER] is
 			--
 		do
 			Result := pointer_to_array (grouping (localeconv))
+		ensure
+			result_exists: Result /= Void
 		end
 
 
@@ -298,14 +315,9 @@ feature	-- currency formatting
 				-- could use:
 				-- create Result.make_from_c (currency_symbol (localeconv))
 				-- but it would need a character set convertion...
+		ensure
+			result_exists: Result /= Void
 		end
-
-	get_int_currency_symbol: STRING_32 is
-			-- ISO 4217 currency code
-		do
-			create Result.make_from_c (int_curr_symbol (localeconv))
-		end
-
 
 	get_currency_symbol_location : INTEGER is
 			-- get the integer that represents
@@ -313,7 +325,7 @@ feature	-- currency formatting
 		local
 			l_string: STRING_32
 		do
-			create l_string.make_from_c (get_locale_info (CRNCYSTR))
+			create l_string.make_from_c (get_locale_info (Crncystr))
 			if	l_string.item (1).is_equal ('-') then
 				Result := {I18N_LOCALE_INFO}.Currency_symbol_prefixed
 			elseif l_string.item (1).is_equal ('+') then
@@ -324,6 +336,10 @@ feature	-- currency formatting
 				-- Return as default value currency_symbol_prefixed
 				Result := {I18N_LOCALE_INFO}.Currency_symbol_prefixed
 			end
+		ensure
+			Result_correct: Result = {I18N_LOCALE_INFO}.currency_symbol_prefixed or
+							Result = {I18N_LOCALE_INFO}.currency_symbol_appended or
+							Result = {I18N_LOCALE_INFO}.currency_symbol_radix
 		end
 
 	get_currency_decimal_separator: STRING_32 is
@@ -331,19 +347,20 @@ feature	-- currency formatting
 			-- according the current locales setting
 		do
 			create Result.make_from_c (mon_decimal_point (localeconv))
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_currency_numbers_after_decimal_separator: INTEGER is
 			-- numbers after the decimal separator for currencynumbers
 			-- according the current locales setting
-		obsolete
-			"TO CHOOSE WHICH"
 		do
 			Result := frac_digits (localeconv).natural_32_code.to_integer_32
-			Result := int_frac_digits (localeconv).natural_32_code.to_integer_32
 			if Result = {CHARACTER_8}.Max_value then
 				Result := {I18N_CURRENCY_INFO}.Default_currency_numbers_after_decimal_separator
 			end
+		ensure
+			non_negative: Result >= 0
 		end
 
 	get_currency_group_separator: STRING_32 is
@@ -351,22 +368,37 @@ feature	-- currency formatting
 			-- according the current locales setting
 		do
 			create Result.make_from_c(mon_decimal_point (localeconv))
-		end
-
-	get_currency_number_list_separator: STRING_32 is
-			-- NOT IMPLEMENTED, I did not find this inf. on unix
-			-- get the symbol used to separate a list
-			-- of currency numbers
-			-- according the current locales setting
-		do
-			Result := ","
---			Result := {I18N_CURRENCY_INFO}.Default_currency_number_list_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_currency_grouping: ARRAY[INTEGER] is
 			-- ?
 		do
 			Result := pointer_to_array (mon_grouping (localeconv))
+		ensure
+			result_exists: Result /= Void
+		end
+
+feature -- International currency formatting
+
+	get_int_currency_symbol: STRING_32 is
+			-- ISO 4217 currency code
+		do
+			create Result.make_from_c (int_curr_symbol (localeconv))
+		end
+
+
+	get_int_currency_numbers_after_decimal_separator: INTEGER is
+			-- numbers after the decimal separator for currencynumbers
+			-- according the current locales setting
+		do
+			Result := int_frac_digits (localeconv).natural_32_code.to_integer_32
+			if Result = {CHARACTER_8}.Max_value then
+				Result := {I18N_CURRENCY_INFO}.Default_currency_numbers_after_decimal_separator
+			end
+		ensure
+			non_negative: Result >= 0
 		end
 
 feature {NONE} --Implementation

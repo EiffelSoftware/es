@@ -28,6 +28,8 @@ feature -- Initialization
 
 feature -- Date and time formatting
 
+	date_time_format: STRING_32
+
 	long_date_format: STRING_32
 	short_date_format: STRING_32
 
@@ -88,6 +90,15 @@ feature -- Element change
 			abbreviated_day_names_set: abbreviated_day_names = a_abbreviated_month_names
 		end
 
+	set_date_time_format(format:STRING_GENERAL) is
+			-- set the long date format string
+		require
+			argument_not_void: format /= Void
+		do
+			date_time_format := format.to_string_32
+		ensure
+			long_date_format_set: date_time_format.is_equal(format.as_string_32)
+		end
 
 
 	set_long_date_format(format:STRING_GENERAL) is
@@ -151,6 +162,11 @@ feature -- Element change
 		end
 
 feature -- Default Values
+
+	default_date_time_format: STRING_32 is
+		once
+			Result := "hh:[0]mi:[0]ss yyyy-[0]mm-dd"
+		end
 
 	default_long_date_format: STRING_32 is
 		once

@@ -205,28 +205,29 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.week_of_year+1, 2)
+			Result := fu.padd_with_0_left (a_date.week_of_year, 2)
 		end
 
 	week_number_monday_as_first_action (a_date: DATE): STRING_32 is
+		-- Not supported, result is the same as `week_number_sunday_as_first_action'
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := a_date.day_of_the_week.out
+			Result := fu.padd_with_0_left (a_date.week_of_year, 2)
 		end
 
-	century_number_iso_action (a_date: DATE): STRING_32 is
+	iso_year_with_century_action (a_date: DATE): STRING_32 is
 		require
 			a_date_exists: a_date /= Void
 		do
 			Result := a_date.year.out
 		end
 
-	century_number_iso_2_action (a_date: DATE): STRING_32 is
+	iso_year_without_century_action (a_date: DATE): STRING_32 is
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := a_date.year.out
+			Result := fu.padd_with_0_left (a_date.year \\ 100,2)
 		end
 
 	year_1_action (a_date: DATE): STRING_32 is

@@ -76,10 +76,10 @@ feature -- Parser
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent month_name_action (?, locale_info))
 					when century_number then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent century_number_action)
-					when century_number_iso then
-						create {I18N_DATE_ELEMENT} l_format_code.make (agent century_number_iso_action)
-					when century_number_iso_2 then
-						create {I18N_DATE_ELEMENT} l_format_code.make (agent century_number_iso_2_action)
+					when iso_year_with_century then
+						create {I18N_DATE_ELEMENT} l_format_code.make (agent iso_year_with_century_action)
+					when iso_year_without_century then
+						create {I18N_DATE_ELEMENT} l_format_code.make (agent iso_year_without_century_action)
 					when week_number_iso then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent week_number_iso_action)
 					when week_number_sunday_as_first then
@@ -108,10 +108,6 @@ feature -- Parser
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent seconds_action)
 					when seconds_padded then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent seconds_padded_action)
--- 					when second_fraction_padded then
--- 						l_format_code.make_time_related (agent second_fraction_padded_action)
--- 					when second_fraction then
--- 						l_format_code.make_time_related (agent second_fraction_action)
 					when am_pm_1 then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent am_pm_1_action)
 					when am_pm_lowercase then
@@ -121,27 +117,32 @@ feature -- Parser
 					when local_date_time then
 						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.date_time_format, locale_info)
 					when usa_date then
-						create {I18N_FORMAT_STRING} l_format_code.make ("&m/&d/&y", locale_info)
+						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+month_padded.out+"/"+
+																		escape_character.out+day_of_month_padded.out+"/"+
+																		escape_character.out+year_2.out, locale_info)
 					when iso_date then
-						create {I18N_FORMAT_STRING} l_format_code.make ("&Y-&m-&d", locale_info)
+						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+year_4.out+"-"+
+																		escape_character.out+month_padded.out+"-"+
+																		escape_character.out+day_of_month_padded.out, locale_info)
 					when am_pm_time then
-						create {I18N_FORMAT_STRING} l_format_code.make ("&I:&M:&S &p", locale_info)
+						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+hour_12.out+":"+
+																		escape_character.out+minutes_padded.out+":"+
+																		escape_character.out+seconds.out+" "+
+																		escape_character.out+am_pm_lowercase.out, locale_info)
 					when short_time_24h then
-						create {I18N_FORMAT_STRING} l_format_code.make ("&H:&M", locale_info)
+						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+hour_24_padded.out+":"+
+																		escape_character.out+minutes_padded.out, locale_info)
 					when time_24h then
-						create {I18N_FORMAT_STRING} l_format_code.make ("&H:&M:&S", locale_info)
+						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+hour_24_padded.out+":"+
+																		escape_character.out+minutes_padded.out+":"+
+																		escape_character.out+seconds.out, locale_info)
 					when local_date then
 						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.long_date_format, locale_info)
 					when locale_time then
 						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.long_time_format, locale_info)
 					when escape_character then
+						-- `t_char' was not an escape character
 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (escape_character.out)
---					when era then
-----						Not yet
---					when time_zone_offset then
-----						Not yet
---					when time_zone_name then
-----						Not yet
 					when modifier_character_1 then
  						l_format_code := parse_modified_1 (t_char)
 						i := next_escape_char + 2
@@ -149,7 +150,11 @@ feature -- Parser
  						l_format_code := parse_modified_2 (t_char)
 						i := next_escape_char + 2
 					else
- 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (escape_character.out + t_char.out)
+						-- It isn't a supported character code, may bee one of the following:
+						--		. `era'
+						--		. `time_zone_offset'
+						--		. `time_zone_name'
+-- 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (escape_character.out + t_char.out)
 						i := next_escape_char + 1
 					end
 					i := next_escape_char + 2
@@ -170,10 +175,11 @@ feature -- Parser
  			when modified_time then
  				create {I18N_FORMAT_STRING} Result.make (locale_info.long_time_format,locale_info)
  			else
---				modified_base_year_name,
---				modified_date,
---				modified_base_year_offset,
---				modified_year
+ 				-- not supported, it may be one of:
+				--		. `modified_base_year_name'
+				--		. `modified_date'
+				--		. `modified_base_year_offset'
+				--		. `modified_year'
 				create {I18N_USERSTRING_ELEMENT} Result.make (escape_character.out+modifier_character_1.out+a_char.out)
  			end
  		end
@@ -184,37 +190,31 @@ feature -- Parser
  			inspect
  				a_char
  			when modified_time_24h then
-				create {I18N_FORMAT_STRING} Result.make ("&H:&M:&S", locale_info)
+ 				create {I18N_FORMAT_STRING} Result.make (escape_character.out+hour_24_padded.out+":"+
+																escape_character.out+minutes_padded.out+":"+
+																escape_character.out+seconds.out, locale_info)
  			when modified_time_12h then
-				create {I18N_FORMAT_STRING} Result.make ("&I", locale_info)
+				create {I18N_FORMAT_STRING} Result.make (escape_character.out+hour_12.out+":"+
+																escape_character.out+minutes_padded.out+":"+
+																escape_character.out+seconds.out+" "+
+																escape_character.out+am_pm_lowercase.out, locale_info)
  			when modified_minutes then
-				create {I18N_FORMAT_STRING} Result.make ("&M", locale_info)
+				create {I18N_FORMAT_STRING} Result.make (escape_character.out+minutes.out, locale_info)
  			when modified_seconds then
- 				create {I18N_FORMAT_STRING} Result.make ("&S", locale_info)
--- 			when modified_day_of_month_0_padded then
---				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_day_of_month_space_padded then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_month then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_weekday then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_week_number then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_week_number_monday_as_first_1 then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_week_number_sunday_as_first then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_week_number_monday_as_first_2 then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when modified_era then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when time_separator then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
--- 			when hour_separator then
--- 				create {NEW_I18N_FORMAT_STRING} Result.make ("", locale_info)
+ 				create {I18N_FORMAT_STRING} Result.make (escape_character.out+seconds.out, locale_info)
  			else
- 				create {I18N_USERSTRING_ELEMENT} Result.make (escape_character.out+modifier_character_2.out+a_char.out)
+ 				-- not supported, it may be one of:
+ 				--		. `modified_day_of_month_0_padded'
+ 				--		. `modified_day_of_month_space_padded'
+ 				--		. `modified_month'
+ 				--		. `modified_weekday'
+ 				--		. `modified_week_number'
+ 				--		. `modified_week_number_monday_as_first_1'
+ 				--		. `modified_week_number_sunday_as_first'
+ 				--		. `modified_week_number_monday_as_first_2'
+ 				--		. `modified_era'
+ 				--		. `time_separator'
+ 				--		. `hour_separator'
  			end
  		end
 

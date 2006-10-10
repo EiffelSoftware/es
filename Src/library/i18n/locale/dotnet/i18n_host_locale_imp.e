@@ -1,6 +1,5 @@
 indexing
 	description: "Objects that..."
-	author: "Etienne"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -28,6 +27,9 @@ feature -- Initialization
 	make_from_locale (a_locale_id : I18N_LOCALE_ID) is
 			-- Creation procedure
 			-- create from name
+		require
+			a_locale_not_void: a_locale_id /= Void
+			a_locale_exists: is_available(a_locale_id)
 		do
 			create culture_info.make_from_name (a_locale_id.language+"-"+a_locale_id.region)
 		ensure then
@@ -47,6 +49,8 @@ feature -- Informations
 
 	is_available (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
 			-- I guess it is always true
+		require
+			a_locale_id_exists: a_locale_id /= Void
 		local
 			l_culture_type : CULTURE_TYPES
 		do
@@ -75,12 +79,16 @@ feature -- Informations
 				Result.extend (l_locale_id.twin)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
 		end
 
 	current_locale_id : I18N_LOCALE_ID is
 			-- return the current locale info
 		do
 			create Result.make_from_string (culture_info.current_culture.name)
+		ensure
+			result_exists: Result /= Void
 		end
 
 
@@ -89,36 +97,48 @@ feature -- Date and time formatting
 	get_long_date_format: STRING_32 is
 		do
 			Result := culture_info.date_time_format.long_date_pattern
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_long_time_format : STRING_32 is
 			--
 		do
 			Result := culture_info.date_time_format.long_time_pattern
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_short_time_format : STRING_32 is
 			--
 		do
 			Result := culture_info.date_time_format.short_time_pattern
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_short_date_format : STRING_32 is
 			--
 		do
 			Result := culture_info.date_time_format.short_date_pattern
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_am_suffix  : STRING_32 is
 			--
 		do
 			Result := culture_info.date_time_format.am_designator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_pm_suffix : STRING_32 is
 			-- No description
 		do
 			Result := culture_info.date_time_format.pm_designator
+		ensure
+			result_exists: Result /= Void
 		end
 
 feature -- day/months names
@@ -139,6 +159,9 @@ feature -- day/months names
 				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Days_in_week
 		end
 
 	get_month_names: ARRAY[STRING_32] is
@@ -157,6 +180,9 @@ feature -- day/months names
 				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Months_in_year
 		end
 
 	get_abbreviated_day_names: ARRAY[STRING_32] is
@@ -175,6 +201,9 @@ feature -- day/months names
 				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Days_in_week
 		end
 
 	get_abbreviated_month_names: ARRAY[STRING_32] is
@@ -193,6 +222,9 @@ feature -- day/months names
 				Result.put (l_array.item (i),i)
 				i := i + 1
 			end
+		ensure
+			result_exists: Result /= Void
+			correct_size: Result.count = {DATE_CONSTANTS}.Months_in_year
 		end
 
 feature	-- number formatting
@@ -200,18 +232,24 @@ feature	-- number formatting
 	get_value_decimal_separator: STRING_32 is
 		do
 			Result := culture_info.number_format.number_decimal_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_value_numbers_after_decimal_separator: INTEGER is
 			--
 		do
 			Result := culture_info.number_format.number_decimal_digits
+		ensure
+			result_sensible: Result > 0
 		end
 
 	get_value_group_separator: STRING_32 is
 			--
 		do
 			Result := culture_info.number_format.number_group_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_value_number_list_separator: STRING_32 is
@@ -220,6 +258,8 @@ feature	-- number formatting
 			"NOT IMPLEMENTED"
 		do
 --			Result := culture_info.number_format.
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_value_grouping: ARRAY[INTEGER_32] is
@@ -228,6 +268,8 @@ feature	-- number formatting
 			l_array : ARRAY[INTEGER]
 		do
 --			Result := culture_info.number_format.number_group_sizes
+		ensure
+			result_exists: Result /= Void
 		end
 
 feature	-- currency formatting
@@ -236,30 +278,40 @@ feature	-- currency formatting
 			--
 		do
 			Result := culture_info.number_format.currency_symbol
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_int_currency_symbol: STRING_32 is
 			--
 		do
 			Result := culture_info.invariant_culture.number_format.currency_symbol
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_currency_decimal_separator: STRING_32 is
 			--
 		do
 			Result := culture_info.number_format.currency_decimal_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_currency_numbers_after_decimal_separator: INTEGER is
 			--
 		do
 			Result := culture_info.number_format.currency_decimal_digits
+		ensure
+			result_sensible: Result > 0
 		end
 
 	get_currency_group_separator: STRING_32 is
 			--
 		do
 			Result := culture_info.number_format.currency_group_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_currency_number_list_separator: STRING_32 is
@@ -268,12 +320,16 @@ feature	-- currency formatting
 			"NOT IMPLEMENTED"
 		do
 			Result := ";"
+		ensure
+			result_exists: Result /= Void
 		end
 
 	get_currency_grouping: ARRAY[INTEGER_32] is
 			--
 		do
 			Result := culture_info.number_format.currency_group_sizes
+		ensure
+			result_exists: Result /= Void
 		end
 
 
@@ -283,12 +339,16 @@ feature {NONE} -- NOT USED Symbols
 			-- separator in the date pattern
 		do
 			Result := culture_info.date_time_format.date_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	time_separator : STRING_32 is
 			-- separator in the time pattern
 		do
 			Result := culture_info.date_time_format.time_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 	decimal_separator : STRING_32 is
@@ -301,6 +361,8 @@ feature {NONE} -- NOT USED Symbols
 			-- separator between the groups
 		do
 			Result := culture_info.number_format.number_group_separator
+		ensure
+			result_exists: Result /= Void
 		end
 
 feature {NONE} -- NOT USED Short Pattern
