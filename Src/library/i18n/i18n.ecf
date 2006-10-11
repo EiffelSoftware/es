@@ -9,17 +9,31 @@
 			<warning name="vjrv" enabled="false"/>
 			<warning name="vweq" enabled="false"/>
 		</option>
-		<!-- all header files in the include directory -->
-		<external_include location="./include"/>
-		<!-- to be uncommented when the nls stuff is commited -->
-		<!-- <external_object location="./obj/nls.obj"/>-->
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 			<exclude>/documents$</exclude>
                         <exclude>/EIFGENs$</exclude>
-			<exclude>/include$</exclude> <!-- hahaha -->
+			<exclude>/include$</exclude> 
 			<!-- add further excludes as needed -->
 		</file_rule>
+
+		<!-- header files for c-code -->
+		<external_include location="./include/"/>
+
+		<!-- object files -->
+		<external_object location="./spec/$(ISE_PLATFORM)/lib/posix_locale.a">
+			<condition>
+				<platform value="unix"/>
+			</condition>
+		</external_object>
+		<external_object location"./spec/$(ISE_PLATFORM)/lib/$(ISE_COMPILER)/">
+			<condition>
+				<platform value="windows"/>
+				<dotnet value="false"/>
+			</condition>
+		</external_object>
+
+		
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="True"/>
 		
 		
