@@ -28,12 +28,8 @@ RANLIB = $ranlib
 MKDIR = $mkdir -p
 MV = $mv
 RM = $rm -f
-########################################################################
-# Automatically generated parameters -- do not edit
 
-SOURCES =  \$(LSRCS)
-
-LOCALE_LIBS = posix_locale.a posix_locale.so
+LOCALE_LIBS = posix_locale.a
 ########################################################################
 # New suffixes and associated building rules -- edit with care
 
@@ -46,24 +42,15 @@ all: $(LOCALE_LIBS)
 	$(MV) $? ../spec/$(ISE_PLATFORM)/lib
 	$(MAKE) clobber
 
-SMODE = posix_locale.c
 
-LSRCS = $(SMODE)
-
-OBJECTS = \
-	  posix_locale.o \
-
-posix_locale.a: $(OBJECTS)
+posix_locale.a: posix_locale.o 
 	$(RM) $@
-	$(AR) $@ $(OBJECTS)
+	$(AR) $@ posix_locale.o 
 	$(RANLIB) $@
 
 posix_locale.o: posix_locale.c
-	$(CC) -c $(CFLAGS) $? -p $@
+	$(CC) -c $(CFLAGS) $?  -o $@
 
-posix_locale.so: $(OBJECTS)
-	$(RM) $@
-	$(SHAREDLINK) $(LDSHAREDFLAGS) $@ $(OBJECTS)
 
 local_realclean::
 	$(RM) $(LOCALE_LIBS) $(OBJECTS)
