@@ -163,7 +163,7 @@ feature --Entries
 	get_original_entries (i_th: INTEGER) is
 			-- get `i_th' original entry in the file
 		do
-			if last_original /= Void and then last_original.i /= i_th then
+			if (last_original = Void or else  last_original.i /= i_th) then
 				last_original.i := i_th
 				last_original.list := extract_string(original_table_offset, i_th).split('%U')
 			end
@@ -172,9 +172,11 @@ feature --Entries
 	get_translated_entries (i_th: INTEGER) is
 			-- What's the `i-th' translated entry?
 		do
-			if last_translated /= Void and then last_translated.i /= i_th then
+			if (last_translated /= Void or else last_translated.i /= i_th) then
 				last_translated.i := i_th
 				last_translated.list := extract_string(translated_table_offset, i_th).split('%U')
+			else
+
 			end
 		end
 
