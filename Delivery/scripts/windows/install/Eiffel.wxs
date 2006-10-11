@@ -11,7 +11,7 @@
 		<?define MSI_version = "200" ?>
 		<?define MSI_platform = "Intel" ?>
 	<?endif?>
-	<Product Name="EiffelStudio 5.7" Id="$(var.P_GUID)" Language="1033" Codepage="1252" Version="5.7" Manufacturer="Eiffel Software">
+	<Product Name="EiffelStudio 5.7" Id="$(var.P_GUID)" Language="1033" Codepage="1252" Version="5.7" Manufacturer="Eiffel Software" UpgradeCode="505E76B8-BA4F-4e2e-8685-83A5C61A091A">
 
 		<Package Id="????????-????-????-????-????????????" Keywords="Installer" Description="EiffelStudio 5.7 Installer"
 			Comments="EiffelStudio is a registered trademark of Eiffel Software" Manufacturer="Eiffel Software"
