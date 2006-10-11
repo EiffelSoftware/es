@@ -1,9 +1,11 @@
 indexing
-	description: "Class that represents a .mo file. %
-				 %The description of this file format can be found here: %
-				 %http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html"
-
-	author: ""
+	description: "[
+				Class that represents a .mo file. 
+				The description of this file format can be found here: 
+					http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html
+				]"
+	license: "Eiffel Forum License v2 (see forum.txt)"
+	author: "leof@ethz.ch"
 	date: "$Date$"
 	revision: "$Revision$"
 

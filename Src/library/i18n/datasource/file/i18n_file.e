@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Abstract representation of a dictionary file"
+	author: "leof@ethz.ch"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -49,7 +50,7 @@ feature
 				-- does this entry have any plurals?
 			require
 				file_open: opened
-				i_valid_index: i < 10 and i >= 0
+				i_valid_index: valid_index (i)
 			deferred
 
 			end
@@ -59,7 +60,7 @@ feature
 				-- Get the original singular string for this entry
 			require
 				file_open: opened
-				i_valid_index: i < 10 and i >= 0
+				i_valid_index: valid_index (i)
 			deferred
 			end
 
@@ -67,6 +68,7 @@ feature
 				--  Get the original plural string for this entry. May return Void if there are none!
 			require
 				file_open: opened
+				i_valid_index: valid_index (i)
 				plurals_exist: entry_has_plurals(i)
 			deferred
 			end
@@ -76,6 +78,7 @@ feature
 				-- array indexes should be 0 t0 3
 			require
 				file_open: opened
+				i_valid_index: valid_index (i)
 				plurals_exist: entry_has_plurals(i)
 			deferred
 			ensure
@@ -87,7 +90,7 @@ feature
 				-- get the translated singular string for this entry
 			require
 				file_open: opened
-				i_valid_index: i < 10 and i >= 0
+				i_valid_index: valid_index (i)
 			deferred
 			end
 

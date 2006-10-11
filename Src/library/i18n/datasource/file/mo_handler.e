@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Implementation of I18N_FILE_HANDLER that knows how to handle .mo files"
+	author: "leof@ethz.ch"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
