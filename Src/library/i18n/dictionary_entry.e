@@ -23,11 +23,9 @@ inherit
 				do
 					original_singular := an_original_singular.to_string_32
 					singular_translation := a_translated_singular.to_string_32
-					create plural_translations.make (0,3) -- there are at most 4 forms, INDEX IS 0-BASED!!!!!!!!!!!!
 				ensure
 					original_singular_set: original_singular.is_equal (an_original_singular.as_string_32)
 					singular_translation_set: singular_translation.is_equal (a_translated_singular.as_string_32)
-					plural_translations_array_exists: plural_translations /= Void
 				end
 
 		make_with_plural(an_original_singular, a_translated_singular, an_original_plural: STRING_GENERAL) is
@@ -39,6 +37,7 @@ inherit
 				do
 					make(an_original_singular, a_translated_singular)
 					original_plural := an_original_plural.to_string_32
+					create plural_translations.make (0,3) -- there are at most 4 forms, INDEX IS 0-BASED!!!!!!!!!!!!
 					has_plural := True
 				ensure
 					original_singular_set: original_singular.is_equal (an_original_singular.as_string_32)
@@ -64,5 +63,7 @@ feature -- Order definition
 		do
 			Result := Current.original_singular < other.original_singular
 		end
+invariant
+	no_plural_translations_if_no_plural: not has_plural implies plural_translations /= Void
 
 end
