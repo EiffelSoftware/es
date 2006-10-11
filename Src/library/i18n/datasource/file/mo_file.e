@@ -21,10 +21,14 @@ create
 feature
 
 	make(a_path: STRING_GENERAL) is
-			-- tries to open the file and initialise it.
+
 		do
 			create file.make (a_path.to_string_8)
-
+			last_translated := [0, Void]
+			last_original := [0, Void]
+		ensure then
+			last_translated /= Void
+			last_original /= Void
 		end
 
 	open is
@@ -163,21 +167,23 @@ feature --Entries
 	get_original_entries (i_th: INTEGER) is
 			-- get `i_th' original entry in the file
 		do
-			if (last_original = Void or else  last_original.i /= i_th) then
+			if (last_original.i /= i_th) then
 				last_original.i := i_th
 				last_original.list := extract_string(original_table_offset, i_th).split('%U')
 			end
+		ensure
+			last_original.list /= Void
 		end
 
 	get_translated_entries (i_th: INTEGER) is
 			-- What's the `i-th' translated entry?
 		do
-			if (last_translated /= Void or else last_translated.i /= i_th) then
+			if (last_translated.i /= i_th) then
 				last_translated.i := i_th
 				last_translated.list := extract_string(translated_table_offset, i_th).split('%U')
-			else
-
 			end
+		ensure
+			last_translated.list /= Void
 		end
 
 
@@ -391,6 +397,9 @@ feature {NONE} -- Implementation (parameters)
 
 
 invariant
-
+	last_translated /= Void
+	last_original /= Void
+	last_translated.i > 0 implies last_translated.list /= Void
+	last_original.i > 0 implies last_original.list /= Void
 
 end
