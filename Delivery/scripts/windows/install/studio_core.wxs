@@ -4,7 +4,6 @@
 		<Package Id="4A841F9A-85D3-4E04-8E5E-FF7153737FDC" Keywords="MergeModule, MSI, Database" Description="EiffelCompilerFiles" Manufacturer="ISE Inc." InstallerVersion="200" Languages="1033" Compressed="yes" />
 		<IgnoreModularization Name="PROJECTDIR" Type="Property" />
 		<IgnoreModularization Name="SELECTEDCCOMPILER" Type="Property" />
-		<Icon Id="estudio_icon" src="$(env.INSTALL_DIR)\studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe" />
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Component Id="LocalMachineRegistry" Guid="E4C043A0-6236-4A40-A532-2F5EE81F5BDF" Win64="$(var.IsWin64)">
 				<Registry Root="HKLM" Key="Software\ISE\Eiffel57" Name="ISE_EIFFEL" Value="[Application]" Id="registry44" Type="string" />
@@ -692,16 +691,21 @@
 										<Shortcut Id="estudio.exe" Directory="EiffelStudio" Name="EIFFEL~1.2" LongName="EiffelStudio 5.7" Description="EiffelStudio development environment" Hotkey="0"	Show="normal" />
 										<Shortcut Id="estudio.exe1" Directory="DesktopFolder" Name="ISEEIF~1.2" LongName="EiffelStudio 5.7" Description="EiffelStudio development environment" Hotkey="0" Show="normal" />
 									</File>
-									<ProgId Id="estudio_ecf.project" Description="EiffelStudio Project" Icon="estudio_icon" IconIndex="2" >
+									<ProgId Id="estudio_ecf.project" Description="EiffelStudio Project" Icon="[#estudio.exe]" IconIndex="1" >
 										<Extension Id="ecf">
-											<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" Target="&quot;[Application]studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe&quot;" />
-											<Verb Id="compile" Argument="-config &quot;%1&quot; -melt" Command="Compile" Target="&quot;[Application]studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe&quot;" />
-											<Verb Id="precompile" Argument="-config &quot;%1&quot; -precompile" Command="Precompile" Target="&quot;[Application]studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe&quot;" />
-											<Verb Id="freeze" Argument="-config &quot;%1&quot; -freeze" Command="Freeze" Target="&quot;[Application]studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe&quot;" />
-											<Verb Id="finalize" Argument="-config &quot;%1&quot; -finalize" Command="Finalize" Target="&quot;[Application]studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe&quot;" />
+											<MIME ContentType="text/xml" />
+											<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="compile" Argument="-config &quot;%1&quot; -melt" Command="Compile" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="precompile" Argument="-config &quot;%1&quot; -precompile" Command="Precompile" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="freeze" Argument="-config &quot;%1&quot; -freeze" Command="Freeze" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="finalize" Argument="-config &quot;%1&quot; -finalize" Command="Finalize" Target="&quot;[#estudio.exe]&quot;" />
 										</Extension>
 									</ProgId>
-									<ProgId Id="estudio_e.class" Description="Eiffel Classes" Icon="estudio_icon" IconIndex="3" />
+									<ProgId Id="estudio_e.class" Description="Eiffel Classes" Icon="[#estudio.exe]" IconIndex="2" >
+										<Extension Id="e" >
+											<MIME ContentType="text/plain" />
+										</Extension>
+									</ProgId>
 								</Component>
 								<Component Id="ecdbgd.exe" Guid="31E9AD81-C4F7-47c9-B6CA-369C6D9B6533">
 									<File Id="ecdbgd.exe" Name="ecdbgd.exe" />
