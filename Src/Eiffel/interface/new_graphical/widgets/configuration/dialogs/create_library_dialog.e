@@ -254,6 +254,9 @@ feature {NONE} -- Actions
 				else
 					l_loc := factory.new_location_from_full_path (location.text, target)
 					last_group := factory.new_library (name.text, l_loc, target)
+						-- add an empty classes list that it get's displayed in the classes tree
+					last_group.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
+					last_group.set_library_target (factory.new_target ("dummy", factory.new_system_generate_uuid ("dummy")))
 					target.add_library (last_group)
 					is_ok := True
 					destroy

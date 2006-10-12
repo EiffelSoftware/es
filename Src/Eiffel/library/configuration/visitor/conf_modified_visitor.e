@@ -53,7 +53,7 @@ feature -- Visit nodes
 	process_library (a_library: CONF_LIBRARY) is
 			-- Process `a_library'.
 		do
-			if not is_override_only and then not processed_libraries.has (a_library.uuid) then
+			if not is_override_only and then not a_library.is_readonly and then not processed_libraries.has (a_library.uuid) then
 				on_process_group (a_library)
 				processed_libraries.force (a_library.uuid)
 				a_library.library_target.process (Current)
@@ -63,7 +63,7 @@ feature -- Visit nodes
 	process_precompile (a_precompile: CONF_PRECOMPILE) is
 			-- Process `a_precompile'.
 		do
-			if not is_override_only then
+			if not is_override_only and then not a_precompile.is_readonly then
 				process_library (a_precompile)
 			end
 		end
@@ -71,7 +71,7 @@ feature -- Visit nodes
 	process_cluster (a_cluster: CONF_CLUSTER) is
 			-- Process `a_cluster'.
 		do
-			if not is_override_only then
+			if not is_override_only and then not a_cluster.is_readonly then
 				on_process_group (a_cluster)
 				find_modified (a_cluster)
 			end
@@ -80,10 +80,12 @@ feature -- Visit nodes
 	process_override (an_override: CONF_OVERRIDE) is
 			-- Process `an_override'.
 		do
-			on_process_group (an_override)
-				-- check if any classes have been added and force a rebuild if this is the case
-			process_cluster_recursive ("", an_override, an_override.active_file_rule (state))
-			find_modified (an_override)
+			if not an_override.is_readonly then
+				on_process_group (an_override)
+					-- check if any classes have been added and force a rebuild if this is the case
+				process_cluster_recursive ("", an_override, an_override.active_file_rule (state))
+				find_modified (an_override)
+			end
 		end
 
 feature -- Status
@@ -153,51 +155,34 @@ feature {NONE} -- Implementation
 			a_group_not_void: a_group /= Void
 		local
 			l_class: CONF_CLASS
-			l_new_classes, l_classes: HASH_TABLE [CONF_CLASS, STRING]
-			l_name: STRING
-			l_err: CONF_ERROR
+			l_classes: HASH_TABLE [CONF_CLASS, STRING]
 		do
 			l_classes := a_group.classes
 			if l_classes /= Void then
-				create l_new_classes.make (l_classes.count)
 				from
 					l_classes.start
 				until
-					l_classes.after or is_force_rebuild
+					is_force_rebuild or l_classes.after
 				loop
 					l_class := l_classes.item_for_iteration
 						-- check for changes
 					l_class.check_changed
-					if l_class.is_renamed or l_class.is_removed then
+					if l_class.is_error or else l_class.is_renamed or l_class.is_removed then
+						l_class.reset_error
 						is_force_rebuild := True
 					else
-						if l_class.is_compiled then
-								-- Invariant of CONF_CLASS tell us that it cannot be an override class.
-							if l_class.is_error then
-								l_err := l_class.last_error
-								l_class.reset_error
-								add_and_raise_error (l_err)
-							end
-							if l_class.is_overriden then
-								l_class.actual_class.check_changed
-								if l_class.actual_class.is_modified then
+						if l_class.is_modified then
+							if l_class.is_compiled then
+									-- Invariant of CONF_CLASS tell us that it cannot be an override class.
+								if not l_class.is_overriden then
 									modified_classes.extend (l_class)
 								end
-							elseif l_class.is_modified then
-								modified_classes.extend (l_class)
+							elseif l_class.does_override then
+								l_class.overrides.do_if (agent modified_classes.extend, agent {CONF_CLASS}.is_compiled)
 							end
-						end
-						l_name := l_class.renamed_name
-						if not l_new_classes.has (l_name) then
-							l_new_classes.force (l_class, l_name)
-						else
-							add_and_raise_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_new_classes.found_item.full_file_name, l_class.full_file_name, a_group.target.system.file_name))
 						end
 					end
 					l_classes.forth
-				end
-				if not is_force_rebuild then
-					a_group.set_classes (l_new_classes)
 				end
 			end
 		end

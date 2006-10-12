@@ -38,14 +38,6 @@ feature -- Initialization
 			initialize;
 		end;
 
-	initialize_creators is
-			-- Initialize `creators'.
-		require
-			valid_target: target_class /= Void
-		do
-			creators := target_class.creators;
-		end;
-
 	initialize is
 			-- Initialize Current structures.
 		do
@@ -63,9 +55,6 @@ feature -- Properties
 
 	target_feature_table: FEATURE_TABLE;
 			-- Feature table for target_class
-
-	creators: HASH_TABLE [EXPORT_I, STRING]
-			-- Creators of `target_class'
 
 	current_class: CLASS_C;
 			-- Class being analyzed
@@ -240,15 +229,11 @@ end;
 		require
 			valid_feat_adapter: feat_adapter /= Void
 		local
-			target_feature: FEATURE_I;
-			tmp_creators: like creators
+			l_target_feature: FEATURE_I;
 		do
-			tmp_creators := creators;
-			if tmp_creators /= Void then
-				target_feature := feat_adapter.target_feature;
-				if tmp_creators.has (target_feature.feature_name) then
-					creation_table.put (feat_adapter, target_feature.feature_name)
-				end
+			l_target_feature := feat_adapter.target_feature
+			if target_class.valid_creation_procedure (l_target_feature.feature_name) then
+				creation_table.put (feat_adapter, l_target_feature.feature_name)
 			end
 		end;
 
@@ -315,7 +300,7 @@ end;
 
 				-- Then the inherited invariants.
 			from
-				record_ancestors_of_class (target_class)
+				record_ancestors_of_class (target_class, Void)
 				ancestors.start
 			until
 				ancestors.after
@@ -334,7 +319,6 @@ feature -- Removal
 	wipe_out is
 			-- Wipe out Current structure.
 		do
-			creators := Void;
 			target_ast := Void;
 			target_feature_table := Void;
 			current_class := Void;
@@ -440,7 +424,7 @@ end;
 			class_id: INTEGER
 		do
 			from
-				record_ancestors_of_class (current_class)
+				record_ancestors_of_class (current_class, Void)
 				ancestors.start
 			until
 				ancestors.after
@@ -528,25 +512,37 @@ end
 			register_class (current_ast)
 		end;
 
-	record_ancestors_of_class (a_class: CLASS_C) is
+	record_ancestors_of_class (a_class: CLASS_C; a_processed: SEARCH_TABLE [INTEGER]) is
 			-- Record all ancestores of `a_class' in `ancestors' .
+			-- Add processed class to `a_processed' if not Void.
 		require
 			class_not_void: a_class /= Void
 			ancestors_parents_not_void: ancestors /= Void
 		local
 			parents: FIXED_LIST [CL_TYPE_A];
 			a_parent: CLASS_C
+			l_processed: SEARCH_TABLE [INTEGER]
 		do
 			from
+				l_processed := a_processed
+				if l_processed = Void then
+					create l_processed.make (5)
+				end
 				parents := a_class.parents;
 				parents.start
+					-- Add `a_class' to list of processed class, to avoid a crash
+					-- when a class inherits itself. Of course this is not valid, but
+					-- the current system could be in a compilation error state.
+					-- Fixes bug#11292.
+				l_processed.put (a_class.class_id)
 			until
 				parents.after
 			loop
 				a_parent := parents.item.associated_class;
-				if not ancestors.has (a_parent) then
+				if not l_processed.has (a_parent.class_id) then
+					l_processed.put (a_parent.class_id)
 					ancestors.extend (a_parent);
-					record_ancestors_of_class (a_parent)
+					record_ancestors_of_class (a_parent, l_processed)
 				end;
 				parents.forth
 			end

@@ -1396,8 +1396,6 @@ Delivery/xmldoc/tools/wizards/com/images/wizard-12.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-13.gif -text
 Delivery/xmldoc/tools/wizards/com/images/wizard-8.gif -text
 Src/C/CONFIGS/openbsd-x86 -text
-Src/C/ipc/daemon/ecdbgd.ico -text
-Src/C/ipc/daemon/ecdbgd.rc -text
 Src/C/rt_converter.exe -text
 Src/C/run-time/include/gc_pthread_redirects.h -text
 Src/C_library/libpng/contrib/visupng/VisualPng.ico svneol=native#unset
@@ -1408,7 +1406,6 @@ Src/C_library/zlib/contrib/blast/test.pk svneol=native#unset
 Src/C_library/zlib/contrib/puff/zeros.raw svneol=native#unset
 Src/Eiffel/API/output/comment_scanner.l -text
 Src/Eiffel/Ace/ec.ico -text
-Src/Eiffel/Ace/ecdoc.ico -text
 Src/Eiffel/com/ace_file/cec.ico -text
 Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/diamond_inheritance.png -text
 Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/method1/diamond_inheritance_on_dotnet-method1.png -text
@@ -1431,6 +1428,7 @@ Src/Eiffel/interface/new_graphical/multi_search_tool/eb_search_report_grid.e -te
 Src/Eiffel/interface/new_graphical/multi_search_tool/system_interface.xml -text
 Src/Eiffel/interface/new_graphical/preference_tool/parameters/eb_search_tool_data.e -text
 Src/Eiffel/interface/new_graphical/process_launcher/eb_process_manager.e -text
+Src/Eiffel/interface/new_graphical/shared/build_pixmaps.cmd -text
 Src/Eiffel/interface/new_graphical/text_window/text/autocomplete/eb_code_completable_grid_editable_item.e -text
 Src/Eiffel/interface/new_graphical/text_window/text/autocomplete/eb_code_completable_text_field.e -text
 Src/Eiffel/interface/new_graphical/text_window/text/autocomplete/eb_code_completion_window.e -text
@@ -1813,7 +1811,7 @@ Src/help/wizards/estore2/src/odbc_primary_key_result.e -text
 Src/help/wizards/eweb/pixmaps/Eiffel_wizard_new.bmp -text
 Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/wizard.ico -text
-Src/library/Eiffel2Java/README -text
+Src/library/Eiffel2Java/README.txt -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/library/base_extension/base_extension.ecf -text
 Src/library/diff/diff.e -text
@@ -2069,6 +2067,8 @@ Src/tools/eiffel_matrix_code_generator/frames/studio.e.frame -text
 Src/tools/eiffel_matrix_code_generator/readme.txt -text
 Src/tools/estudio/config/estudio.ico -text
 Src/tools/estudio/config/estudio.rc -text
+Src/tools/estudio/config/estudio_e.ico -text
+Src/tools/estudio/config/estudio_ecf.ico -text
 Src/tools/finish_freezing/appl.ico -text
 Src/tools/partial_classes_merger/src/ace.ace -text
 Src/tools/partial_classes_merger/tests/howto.txt -text

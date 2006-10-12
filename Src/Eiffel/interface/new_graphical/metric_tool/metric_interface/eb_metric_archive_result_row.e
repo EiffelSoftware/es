@@ -14,11 +14,12 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_metric_name: like metric_name; a_type: like type; a_reference_value: DOUBLE; a_is_ref_set: BOOLEAN; a_current_value: DOUBLE; a_is_cur_set: BOOLEAN) is
+	make (a_metric_name: like metric_name; a_type: like type; a_reference_value: DOUBLE; a_is_ref_set: BOOLEAN; a_current_value: DOUBLE; a_is_cur_set: BOOLEAN; a_time: DATE_TIME) is
 			-- Initialize.
 		require
 			a_metric_name_attached: a_metric_name /= Void
 			a_type_attached: a_type /= Void
+			a_time_attached: a_time /= Void
 		do
 			create metric_name.make_from_string (a_metric_name)
 			create type.make_from_string (a_type)
@@ -52,6 +53,9 @@ feature -- Access
 	ratio: DOUBLE
 			-- Ratio of `current_value' and `reference_value'
 
+	time: DATE_TIME
+			-- Time when current metric archive is calculated
+
 feature -- Status report
 
 	is_reference_value_set: BOOLEAN
@@ -75,6 +79,7 @@ feature -- Status report
 invariant
 	metric_name_attached: metric_name /= Void
 	type_attached: type /= Void
+	time_attached: time /= Void
 
 indexing
         copyright:	"Copyright (c) 1984-2006, Eiffel Software"

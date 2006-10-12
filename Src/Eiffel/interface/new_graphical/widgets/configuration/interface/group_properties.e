@@ -130,7 +130,7 @@ feature {NONE} -- Implementation
 				l_dir_prop.set_target (a_target)
 				l_dir_prop.set_description (conf_interface_names.group_location_description)
 				l_dir_prop.set_value (a_group.location.original_path)
-				l_dir_prop.validate_value_actions.extend (agent is_not_void_or_empty ({STRING_32}?))
+				l_dir_prop.validate_value_actions.extend (agent is_not_void ({STRING_32}?))
 				l_dir_prop.change_value_actions.extend (agent update_group_location (a_group, ?, a_target))
 				l_dir_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent handle_value_changes (True)))
 				properties.add_property (l_dir_prop)
@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 				l_file_prop.set_target (a_target)
 				l_file_prop.set_description (conf_interface_names.group_location_description)
 				l_file_prop.set_value (a_group.location.original_path)
-				l_file_prop.validate_value_actions.extend (agent is_not_void_or_empty ({STRING_32}?))
+				l_file_prop.validate_value_actions.extend (agent is_not_void ({STRING_32}?))
 				l_file_prop.change_value_actions.extend (agent update_group_location (a_group, ?, a_target))
 				l_file_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent handle_value_changes (True)))
 				if a_group.is_assembly then
@@ -154,7 +154,7 @@ feature {NONE} -- Implementation
 
 				-- options
 			if not a_group.is_assembly then
-				add_misc_option_properties (a_group.changeable_internal_options, a_group.options, True)
+				add_misc_option_properties (a_group.changeable_internal_options, a_group.options, True, a_group.target.setting_msil_generation)
 				add_assertion_option_properties (a_group.changeable_internal_options, a_group.options, True)
 				add_warning_option_properties (a_group.changeable_internal_options, a_group.options, True)
 				add_debug_option_properties (a_group.changeable_internal_options, a_group.options, True)
@@ -172,28 +172,30 @@ feature {NONE} -- Implementation
 			l_dial.change_value_actions.extend (agent change_no_argument_wrapper ({CONF_CONDITION_LIST}?, agent handle_value_changes (True)))
 			properties.add_property (l_dial)
 
-				-- prefix
-			create l_text_prop.make (conf_interface_names.group_prefix_name)
-			l_text_prop.set_description (conf_interface_names.group_prefix_description)
-			l_text_prop.set_value (a_group.name_prefix)
-			l_text_prop.validate_value_actions.extend (agent (a_name: STRING): BOOLEAN
-				do
-					Result := a_name = Void or a_name.is_empty or (create {EIFFEL_SYNTAX_CHECKER}).is_valid_class_name (a_name)
-				end)
-			l_text_prop.change_value_actions.extend (agent a_group.set_name_prefix)
-			l_text_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING}?, agent handle_value_changes (True)))
-			properties.add_property (l_text_prop)
+			if not a_group.is_cluster then
+					-- prefix
+				create l_text_prop.make (conf_interface_names.group_prefix_name)
+				l_text_prop.set_description (conf_interface_names.group_prefix_description)
+				l_text_prop.set_value (a_group.name_prefix)
+				l_text_prop.validate_value_actions.extend (agent (a_name: STRING): BOOLEAN
+					do
+						Result := a_name = Void or a_name.is_empty or (create {EIFFEL_SYNTAX_CHECKER}).is_valid_class_name (a_name)
+					end)
+				l_text_prop.change_value_actions.extend (agent a_group.set_name_prefix)
+				l_text_prop.change_value_actions.extend (agent change_no_argument_wrapper ({STRING}?, agent handle_value_changes (True)))
+				properties.add_property (l_text_prop)
 
-				-- renaming
-			create l_rename_prop.make_with_dialog (conf_interface_names.group_renaming_name, create {RENAMING_DIALOG})
-			l_rename_prop.set_description (conf_interface_names.group_renaming_description)
-			l_rename_prop.set_display_agent (agent output_renaming)
-			if a_group.renaming /= Void then
-				l_rename_prop.set_value (a_group.renaming)
+					-- renaming
+				create l_rename_prop.make_with_dialog (conf_interface_names.group_renaming_name, create {RENAMING_DIALOG})
+				l_rename_prop.set_description (conf_interface_names.group_renaming_description)
+				l_rename_prop.set_display_agent (agent output_renaming)
+				if a_group.renaming /= Void then
+					l_rename_prop.set_value (a_group.renaming)
+				end
+				l_rename_prop.change_value_actions.extend (agent a_group.set_renaming)
+				l_rename_prop.change_value_actions.extend (agent change_no_argument_wrapper ({EQUALITY_HASH_TABLE [STRING, STRING]}?, agent handle_value_changes (True)))
+				properties.add_property (l_rename_prop)
 			end
-			l_rename_prop.change_value_actions.extend (agent a_group.set_renaming)
-			l_rename_prop.change_value_actions.extend (agent change_no_argument_wrapper ({EQUALITY_HASH_TABLE [STRING, STRING]}?, agent handle_value_changes (True)))
-			properties.add_property (l_rename_prop)
 
 				-- class options
 			if not a_group.is_assembly then
@@ -355,7 +357,7 @@ feature {NONE} -- Configuration settings
 		local
 			l_location: CONF_LOCATION
 		do
-			if a_location /= Void and then not a_location.is_empty then
+			if a_location /= Void then
 				if a_group.is_cluster then
 					create {CONF_DIRECTORY_LOCATION}l_location.make (a_location, a_target)
 				elseif a_group.is_assembly then
@@ -375,7 +377,7 @@ feature {NONE} -- Configuration settings
 		local
 			l_location: CONF_DIRECTORY_LOCATION
 		do
-			if a_location /= Void and then not a_location.is_empty then
+			if a_location /= Void then
 				create l_location.make (a_location, a_target)
 				a_precompile.set_eifgens_location (l_location)
 			else

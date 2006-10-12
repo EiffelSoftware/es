@@ -163,9 +163,8 @@ feature -- Output
 					a_text_formatter.add_string (once "...")
 				else
 					l_type := constraint_type (a_context_class)
-					if l_type /= Void and then l_type.has_associated_class then
-						a_text_formatter.process_class_name_text (l_type.associated_class.name,
-																	l_type.associated_class.lace_class, False)
+					if l_type /= Void then
+						type_output_strategy.process (l_type, a_text_formatter, a_context_class, Void)
 					else
 						a_text_formatter.add_string (constraint.dump)
 					end
@@ -179,7 +178,11 @@ feature -- Output
 						loop
 							a_text_formatter.add_space
 							eiffel_name := creation_feature_list.item.internal_name
-							a_text_formatter.add_feature_name (eiffel_name, a_context_class)
+							if l_type /= Void then
+								a_text_formatter.add_feature_name (eiffel_name, l_type.associated_class)
+							else
+								a_text_formatter.add_feature_name (eiffel_name, a_context_class)
+							end
 							creation_feature_list.forth
 							if not creation_feature_list.after then
 								a_text_formatter.process_symbol_text (ti_Comma)

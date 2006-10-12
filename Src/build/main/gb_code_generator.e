@@ -29,11 +29,6 @@ inherit
 			{NONE} all
 		end
 
-	GB_EIFFEL_ENV
-		export
-			{NONE} all
-		end
-
 	GB_FILE_CONSTANTS
 		export
 			{NONE} all
@@ -752,8 +747,6 @@ feature {NONE} -- Implementation
 					-- Now add the application class name. 0ne at start
 					-- and one at end of file, so do this twice.
 				application_class_name := project_settings.application_class_name.as_upper
-				change_pos := application_text.substring_index (application_tag, 1)
-				application_text.replace_substring (application_class_name, change_pos, change_pos + application_tag.count - 1)
 				change_pos := application_text.substring_index (application_tag, 1)
 				application_text.replace_substring (application_class_name, change_pos, change_pos + application_tag.count - 1)
 

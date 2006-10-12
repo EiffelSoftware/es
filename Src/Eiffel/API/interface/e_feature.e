@@ -70,6 +70,12 @@ feature -- Properties
 	has_convert_mark: BOOLEAN
 			-- Is convert mark specified for an operator alias?
 
+	has_alias_name: BOOLEAN is
+			-- Does current routine represent a routine with an alias?
+		do
+			Result := alias_name /= Void
+		end
+
 	assigner_name: STRING is
 			-- Name of the assigner procedure (if any)
 		do
@@ -162,6 +168,14 @@ feature -- Properties
 		do
 			-- Do nothing
 		end;
+
+	has_return_value: BOOLEAN is
+			-- Does current return a value?
+		do
+			Result := is_constant or is_attribute or is_function
+		ensure
+			validity: Result implies (is_constant or is_attribute or is_function)
+		end
 
 	is_il_external: BOOLEAN
 			-- Is current feature an IL external one?
@@ -259,20 +273,22 @@ feature -- Access
 			rout_id: INTEGER
 		do
 			ris := rout_id_set
-			from
-				n := ris.lower
-				nb := ris.count
-			until
-				n > nb or else Result /= Void
-			loop
-				rout_id := ris.item (n)
-				if
-					rout_id /= 0 and then an_ancestor.is_valid
-					and then an_ancestor.has_feature_table
-				then
-					Result := an_ancestor.feature_with_rout_id (rout_id)
+			if ris /= Void then
+				from
+					n := ris.lower
+					nb := ris.count
+				until
+					n > nb or else Result /= Void
+				loop
+					rout_id := ris.item (n)
+					if
+						rout_id /= 0 and then an_ancestor.is_valid
+						and then an_ancestor.has_feature_table
+					then
+						Result := an_ancestor.feature_with_rout_id (rout_id)
+					end
+					n := n + 1
 				end
-				n := n + 1
 			end
 		end
 
@@ -287,26 +303,25 @@ feature -- Access
 			e_class: CLASS_C
 		do
 			f := associated_feature_i;
-			check
-				feature_upto_date: f /= Void
-			end;
-			assert_id_set := f.assert_id_set;
-			if assert_id_set /= Void then
-				nb := assert_id_set.count;
-				create Result.make (nb);
-				from
-					i := 1
-				until
-					i > nb
-				loop
-					inh_info := assert_id_set.item (i);
-					e_class := Eiffel_system.class_of_id (inh_info.written_in);
-					if e_class /= Void then
-						--| On the off chance that this information
-						--| is not upto date hence the check with void
-						Result.extend (e_class)
-					end;
-					i := i + 1
+			if f /= Void then
+				assert_id_set := f.assert_id_set;
+				if assert_id_set /= Void then
+					nb := assert_id_set.count;
+					create Result.make (nb);
+					from
+						i := 1
+					until
+						i > nb
+					loop
+						inh_info := assert_id_set.item (i);
+						e_class := Eiffel_system.class_of_id (inh_info.written_in);
+						if e_class /= Void then
+							--| On the off chance that this information
+							--| is not upto date hence the check with void
+							Result.extend (e_class)
+						end;
+						i := i + 1
+					end
 				end
 			end
 		end;
@@ -464,6 +479,7 @@ feature -- Access
 			l_depend_unit: DEPEND_UNIT
 			l_system: like eiffel_system
 			l_class_c: CLASS_C
+			l_e_feature: E_FEATURE
 		do
 			create Result.make
 			l_system := eiffel_system
@@ -476,9 +492,16 @@ feature -- Access
 					fdep.after
 				loop
 					l_depend_unit := fdep.item
-					if a_flag = 0 or else l_depend_unit.internal_flags.bit_xor (a_flag) = 0 then
-						l_class_c := l_system.class_of_id (l_depend_unit.class_id)
-						Result.extend ([l_class_c, l_class_c.feature_with_rout_id (l_depend_unit.rout_id).name])
+					if l_depend_unit.rout_id /= 0 then
+						if a_flag = 0 or else l_depend_unit.internal_flags.bit_xor (a_flag) = 0 then
+							l_class_c := l_system.class_of_id (l_depend_unit.class_id)
+							if l_class_c /= Void then
+								l_e_feature := l_class_c.feature_with_rout_id (l_depend_unit.rout_id)
+								if l_e_feature /= Void then
+									Result.extend ([l_class_c, l_e_feature.name])
+								end
+							end
+						end
 					end
 					fdep.forth
 				end
@@ -575,10 +598,9 @@ feature -- Access
 			f: FEATURE_I
 		do
 			f := associated_feature_i
-			check
-				feature_upto_date: f /= Void
+			if f /= Void then
+				Result := f.number_of_breakpoint_slots
 			end
-			Result := f.number_of_breakpoint_slots
 		end
 
 	first_breakpoint_slot_index: INTEGER is
@@ -587,10 +609,9 @@ feature -- Access
 			f: FEATURE_I
 		do
 			f := associated_feature_i
-			check
-				feature_upto_date: f /= Void
+			if f /= Void then
+				Result := f.first_breakpoint_slot_index
 			end
-			Result := f.first_breakpoint_slot_index
 		end
 
 feature -- Comparison
@@ -749,7 +770,7 @@ feature -- Output
 		do
 			Result := extract_symbol_from_infix (name)
 		ensure
-			infix_symbol_not_void: infix_symbol /= Void
+			infix_symbol_not_void: Result /= Void
 		end
 
 	prefix_symbol : STRING is
@@ -759,7 +780,16 @@ feature -- Output
 		do
 			Result := extract_symbol_from_prefix (name)
 		ensure
-			prefix_symbol_not_void: prefix_symbol /= Void
+			prefix_symbol_not_void: Result /= Void
+		end
+
+	alias_symbol: STRING is
+		require
+			is_alias: has_alias_name
+		do
+			Result := extract_alias_name (alias_name)
+		ensure
+			alias_symbol_not_void: Result /= Void
 		end
 
 feature -- Output

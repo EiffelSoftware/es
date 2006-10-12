@@ -18,6 +18,7 @@ inherit
 		redefine
 			interface,
 			drop_actions,
+			set_default_key_processing_handler,
 			has_focus,
 			set_focus,
 			set_pebble,
@@ -557,6 +558,13 @@ feature -- Access
 			else
 				Result := internal_tooltip.twin
 			end
+		end
+
+	set_default_key_processing_handler (a_handler: like default_key_processing_handler) is
+			-- Assign `default_key_processing_handler' to `a_handler'.
+		do
+			default_key_processing_handler := a_handler
+			drawable.default_key_processing_handler := a_handler
 		end
 
 	has_capture: BOOLEAN is
@@ -2425,29 +2433,19 @@ feature -- Removal
 		local
 			a_col_i: EV_GRID_COLUMN_I
 		do
+			hide_column (a_column)
 			a_col_i := columns @ a_column
 
 				-- Remove association of column with `Current'
 			a_col_i.update_for_removal
-
 			columns.go_i_th (a_column)
 			columns.remove
 
 			update_grid_column_indices (a_column)
-
-			if a_col_i.is_displayed then
-				displayed_column_count := displayed_column_count - 1
-				header.go_i_th (a_column)
-				header.remove
-			end
-
 			update_index_of_first_item_dirty_row_flags (a_column)
 
 				-- Flag `physical_column_indexes' for recalculation
 			physical_column_indexes_dirty := True
-
-			set_horizontal_computation_required (a_column)
-			redraw_client_area
 		ensure
 			column_count_updated: column_count = old column_count - 1
 			old_column_removed: (old column (a_column)).parent = Void
@@ -2463,31 +2461,12 @@ feature -- Removal
 		local
 			a_row_i: EV_GRID_ROW_I
 			subrow_count_recursive: INTEGER
-			l_row_index: INTEGER
 		do
 				-- Retrieve row from the grid
 			a_row_i := row_internal (a_row)
-
-				-- Firstly handle subnode removal recursively
+				-- Remove row and its subrows
 			subrow_count_recursive := a_row_i.subrow_count_recursive
-			from
-				l_row_index := a_row + subrow_count_recursive
-			until
-				l_row_index = a_row
-			loop
-				set_vertical_computation_required ((l_row_index - 1).max (1))
-				internal_remove_row (row_internal (l_row_index))
-				l_row_index := l_row_index - 1
-			end
-
-
-				-- Note that the recomputation is performed from the row before `lower_index'.
-				-- This is to handle the case where you remove all of the subrows of a row that
-				-- is collapsed. If you do not start the recompute from the parent row, `row_offsets'
-				-- may not be computed correctly and the grid drawing will be incorrect.
-			set_vertical_computation_required ((a_row - 1).max (1))
-			internal_remove_row (a_row_i)
-			redraw_client_area
+			remove_rows (a_row, a_row + subrow_count_recursive)
 		ensure
 			row_count_updated: row_count = old row_count - (old row (a_row).subrow_count_recursive + 1)
 			old_row_removed: (old row (a_row)).parent = Void
@@ -2571,37 +2550,14 @@ feature -- Removal
 				-- is collapsed. If you do not start the recompute from the parent row, `row_offsets'
 				-- may not be computed correctly and the grid drawing will be incorrect.
 			set_vertical_computation_required ((lower_index - 1).max (1))
-			recompute_vertical_scroll_bar
 			unlock_update
-			last_vertical_scroll_bar_value := 0
 			reset_internal_grid_attributes
+			recompute_vertical_scroll_bar
 		ensure
 			row_count_consistent: row_count = (old row_count) - (upper_index - lower_index + 1)
 			lower_row_removed: (old row (lower_index)).parent = Void
 			upper_row_removed: (old row (upper_index)).parent = Void
 			to_implement_assertion (once "middle_rows_removed from lower to upper all old rows parent = Void")
-		end
-
-	internal_remove_row (a_row: EV_GRID_ROW_I) is
-			-- Perform internal settings required for removal of `a_row'.
-		require
-			a_row_not_void: a_row /= Void
-		local
-			l_row_index: INTEGER
-		do
-				-- Remove row and its corresponding data from `rows' and `internal_row_data'				
-			l_row_index := a_row.index
-
-				-- Unset internal data.
-			a_row.update_for_removal
-			rows.go_i_th (l_row_index)
-			rows.remove
-			internal_row_data.go_i_th (l_row_index)
-			internal_row_data.remove
-
-			update_grid_row_indices (l_row_index)
-		ensure
-			node_counts_correct_in_parent: old (a_row.parent_row_i) /= Void implies (old a_row.parent_row_i).node_counts_correct
 		end
 
 	clear is
@@ -2640,6 +2596,9 @@ feature -- Removal
 			current_column_count: INTEGER
 			l_selected_rows: ARRAYED_LIST [EV_GRID_ROW]
 		do
+			if currently_active_item /= Void and then currently_active_item.parent = interface then
+				currently_active_item.deactivate
+			end
 			if is_row_selection_enabled then
 					-- In this case, it is possible that an empty row is selected
 					-- so just by iterating the items, the row is not unselected
@@ -3067,12 +3026,14 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 					current_row_offset := row_offsets @ (index)
 					rows.go_i_th (index)
 					if index > 1 then
-						if index < row_count then
+						if index < last_row_count_in_recompute_row_offsets then
 							visible_count := row_indexes_to_visible_indexes.i_th (index)
 						else
-							check
-								index_is_row_count: index = row_count
-							end
+							--| FIXME This check no longer holds in all circumstances due to
+							--| `last_row_count_in_recompute_row_offsets' change.
+--							check
+--								index_is_row_count: index = row_count
+--							end
 								-- In this situation, we are adding a new row that has not already
 								-- been computed. Now we set the visible count to the previous (and last)
 								-- item and add one. Without this, we are unable to determine the
@@ -3166,10 +3127,15 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 				virtual_size_changed_actions_internal.call ([virtual_width, virtual_height])
 			end
 			rows.go_i_th (original_row_index)
+
+			last_row_count_in_recompute_row_offsets := l_row_count
 		ensure
 			offsets_consistent_when_not_fixed: not is_row_height_fixed implies row_offsets.count >= rows.count + 1
 			row_index_not_changed: old rows.index = rows.index
 		end
+
+ 	last_row_count_in_recompute_row_offsets: INTEGER
+ 		-- The row count of `Current' last time `recompute_row_offsets' was called.
 
 	restrict_virtual_y_position_to_maximum is
 			-- Ensure `virtual_y_position' is within the maximum permitted.
@@ -3375,8 +3341,8 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 			if is_displayed then
 				if not is_locked then
 					drawable.redraw
+					redraw_locked
 				end
-				redraw_locked
 			end
 		end
 
@@ -4059,10 +4025,17 @@ feature {EV_GRID_LOCKED_I} -- Drawing implementation
 			header_viewport.set_minimum_height (header.height)
 			header.set_minimum_width (maximum_header_width)
 			header_viewport.set_item_size (maximum_header_width, header.height)
-			create fixed
-			fixed.set_minimum_size (buffered_drawable_size, buffered_drawable_size)
-			viewport.extend (fixed)
-			fixed.extend (drawable)
+
+			if {PLATFORM}.is_windows then
+					-- Needed for custom widget insertion implementation.
+				create fixed
+				fixed.set_minimum_size (buffered_drawable_size, buffered_drawable_size)
+				viewport.extend (fixed)
+				fixed.extend (drawable)
+			else
+				viewport.extend (drawable)
+			end
+
 			extend (horizontal_box)
 
 				-- Now connect all of the events to `drawable' which will be used to propagate events to the `interface'.
@@ -4520,7 +4493,8 @@ feature {EV_GRID_LOCKED_I} -- Drawing implementation
 		-- A spacer to separate the corners of the scroll bars.
 
 	fixed: EV_FIXED
-		-- Main widget contained in `Current' used to manipulate the individual widgets required.
+		-- Main widget contained in `Current' used for custom widget insertion for descendent implementations.
+		-- Currently MSWin only.
 
 	default_header_height: INTEGER is 16
 		-- Default height applied to `header'.
@@ -4625,6 +4599,11 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 			item_coordinates: EV_COORDINATE
 		do
 			pointed_item := drawer.item_at_position_strict (a_x, a_y)
+
+				-- Clear any previously activated items.
+			if currently_active_item /= Void and then currently_active_item.parent = interface then
+				currently_active_item.deactivate
+			end
 
 				-- We fire the pointer button press actions before the node or selection actions which may occur
 				-- as a result of this press.
@@ -5140,8 +5119,10 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 			a_sel_row: EV_GRID_ROW
 			items_spanning: ARRAYED_LIST [INTEGER]
 			l_index_of_first_item: INTEGER
-			l_previously_expanded, l_ignore_column_navigation: BOOLEAN
+			l_previously_expanded, l_expansion_status_changed: BOOLEAN
+			l_make_item_visible: BOOLEAN
 		do
+
 			if is_selection_keyboard_handling_enabled then
 					-- Handle the selection events
 				if is_row_selection_enabled then
@@ -5167,21 +5148,24 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 					-- Check to see if column navigation should be ignored if selected row expansion status has changed during the key actions.
 				if prev_sel_item /= Void and then prev_sel_item.is_parented then
 					if l_previously_expanded then
-						l_ignore_column_navigation := not prev_sel_item.row.is_expanded
+						l_expansion_status_changed := not prev_sel_item.row.is_expanded
 					else
-						l_ignore_column_navigation := prev_sel_item.row.is_expanded
+						l_expansion_status_changed := prev_sel_item.row.is_expanded
 					end
 				end
 						-- We always want to find an item above or below for row selection
-				if prev_sel_item /= Void and then prev_sel_item.is_parented then
+				if not l_expansion_status_changed and then prev_sel_item /= Void and then prev_sel_item.is_parented then
 					a_sel_row := prev_sel_item.row
 					inspect
 						a_key.code
 					when {EV_KEY_CONSTANTS}.Key_down then
 						a_sel_item := find_next_item_in_column (prev_sel_item.column, prev_sel_item.row.index, True, is_row_selection_enabled or else ((a_sel_row.subrow_count > 0 or else a_sel_row.parent_row /= Void) and then a_sel_row.index_of_first_item = prev_sel_item.column.index))
+						l_make_item_visible := vertical_scroll_bar.is_displayed
 					when {EV_KEY_CONSTANTS}.Key_up then
 						a_sel_item := find_next_item_in_column (prev_sel_item.column, prev_sel_item.row.index, False, is_row_selection_enabled or else ((a_sel_row.subrow_count > 0 or else a_sel_row.parent_row /= Void) and then a_sel_row.index_of_first_item = prev_sel_item.column.index))
+						l_make_item_visible := vertical_scroll_bar.is_displayed
 					when {EV_KEY_CONSTANTS}.Key_right then
+						l_make_item_visible := horizontal_scroll_bar.is_displayed
 						if not is_row_selection_enabled then
 								-- Key right shouldn't affect row selection
 							if prev_sel_item /= Void and then not is_item_navigatable_to (prev_sel_item) then
@@ -5189,13 +5173,14 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 							else
 								a_sel_item := find_next_item_in_row (prev_sel_item.row, prev_sel_item.column.index, True)
 							end
-						elseif not l_ignore_column_navigation then
+						elseif l_make_item_visible then
 							items_spanning := drawer.items_spanning_horizontal_span (virtual_x_position + width, 0)
 							if not items_spanning.is_empty then
 								(columns @ (items_spanning @ 1)).ensure_visible
 							end
 						end
 					when {EV_KEY_CONSTANTS}.Key_left then
+						l_make_item_visible := horizontal_scroll_bar.is_displayed
 						if not is_row_selection_enabled then
 								-- Key left shouldn't affect row selection
 							if prev_sel_item /= Void and then not is_item_navigatable_to (prev_sel_item) then
@@ -5203,7 +5188,7 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 							else
 								a_sel_item := find_next_item_in_row (prev_sel_item.row, prev_sel_item.column.index, False)
 							end
-						elseif not l_ignore_column_navigation then
+						elseif l_make_item_visible then
 								-- If the row has children then
 							if virtual_x_position > 0 then
 								items_spanning := drawer.items_spanning_horizontal_span (virtual_x_position - 1, 0)
@@ -5216,6 +5201,7 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 						-- Do nothing
 					end
 				elseif a_key.code = {EV_KEY_CONSTANTS}.Key_down then
+					l_make_item_visible := vertical_scroll_bar.is_displayed
 					if column_count >= 1 then
 						a_sel_item := find_next_item_in_column (column (1), 0, True, True)
 					end
@@ -5230,6 +5216,33 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 						last_selected_item.disable_select
 					end
 					handle_newly_selected_item (a_sel_item, 0, True)
+
+					if a_sel_item /= currently_active_item and then l_make_item_visible then
+							-- We don't want to scroll the grid if an item is being activated.
+						if is_row_selection_enabled then
+							a_sel_item.row.ensure_visible
+						else
+								-- We must be careful to only scroll the grid in a single direction if the column
+								-- or row of an item is locked
+							if a_sel_item.row.is_locked then
+								if a_sel_item.column.is_locked and a_sel_item.column.implementation.locked_column.locked_index > a_sel_item.row.implementation.locked_row.locked_index then
+									a_sel_item.row.ensure_visible
+								else
+									a_sel_item.column.ensure_visible
+								end
+							elseif a_sel_item.column.is_locked then
+								if a_sel_item.row.is_locked and a_sel_item.row.implementation.locked_row.locked_index > a_sel_item.column.implementation.locked_column.locked_index then
+									a_sel_item.column.ensure_visible
+								else
+									a_sel_item.row.ensure_visible
+								end
+							else
+									-- Here, the column or row is not locked, so scroll in both directions
+								a_sel_item.ensure_visible
+							end
+						end
+					end
+
 					if is_row_selection_enabled then
 						last_selected_row := a_sel_item.row.implementation
 					end
@@ -5268,6 +5281,17 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 			is_ctrl_pressed := a_application.ctrl_pressed
 			is_shift_pressed := a_application.shift_pressed
 
+				-- Clear up previous values in case they have been removed from the grid.
+			if last_selected_item /= Void and then last_selected_item.parent_i /= Current then
+				last_selected_item := Void
+			end
+			if last_selected_row /= Void and then last_selected_row.parent_i /= Current then
+				last_selected_row := Void
+			end
+			if shift_key_start_item /= Void and then shift_key_start_item.implementation.parent_i /= Current then
+				shift_key_start_item := Void
+			end
+
 			if not (a_item = Void and is_always_selected) then
 					-- If we are `is_item_always_selected' mode then clicking on Void items should have no effect
 				l_remove_selection := True
@@ -5294,8 +5318,8 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 							-- The previous shift selection key has been removed from the grid so set existing one to Void.
 						shift_key_start_item := Void
 					end
-					-- Clear previous multiple selection
 
+						-- Clear previous multiple selection
 					if a_item /= Void and then shift_key_start_item /= Void then
 
 						shift_key_start_item_column_index := shift_key_start_item.column.index
@@ -5391,32 +5415,6 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 			if
 				a_item /= Void
 			then
-				if a_item /= currently_active_item and then from_key_press then
-						-- We don't want to scroll the grid if an item is being activated.
-						-- or via mouse click.
-					if is_row_selection_enabled then
-						a_item.row.ensure_visible
-					else
-							-- We must be careful to only scroll the grid in a single direction if the column
-							-- or row of an item is locked
-						if a_item.row.is_locked then
-							if a_item.column.is_locked and a_item.column.implementation.locked_column.locked_index > a_item.row.implementation.locked_row.locked_index then
-								a_item.row.ensure_visible
-							else
-								a_item.column.ensure_visible
-							end
-						elseif a_item.column.is_locked then
-							if a_item.row.is_locked and a_item.row.implementation.locked_row.locked_index > a_item.column.implementation.locked_column.locked_index then
-								a_item.column.ensure_visible
-							else
-								a_item.row.ensure_visible
-							end
-						else
-								-- Here, the column or row is not locked, so scroll in both directions
-							a_item.ensure_visible
-						end
-					end
-				end
 				a_item.enable_select
 					-- Reset the last selected item so that multiple selection works from previous position.
 				if last_selected_row /= Void then
@@ -6038,12 +6036,12 @@ invariant
 	internal_client_y_valid_while_vertical_scrollbar_shown: is_initialized and then vertical_scroll_bar.is_show_requested implies internal_client_y >= 0
 	internal_client_x_valid_while_horizontal_scrollbar_hidden: is_initialized and then is_horizontal_scroll_bar_show_requested and then not horizontal_scroll_bar.is_show_requested implies internal_client_x = 0
 	internal_client_x_valid_while_horizontal_scrollbar_shown: is_initialized and then horizontal_scroll_bar.is_show_requested implies internal_client_x >= 0
-	row_heights_fixed_implies_row_offsets_void: is_initialized and then is_row_height_fixed and not is_tree_enabled implies row_offsets = Void
+	row_heights_fixed_implies_row_offsets_void: is_initialized and then not uses_row_offsets implies row_offsets = Void
 	row_lists_count_equal: is_initialized implies internal_row_data.count = rows.count
 	displayed_column_count_not_greater_than_column_count: is_initialized implies displayed_column_count <= column_count
 	computed_visible_row_count_equals_row_when_not_users_row_offsets: is_initialized and then not uses_row_offsets implies visible_row_count = row_count
 	computed_visible_row_count_no_greater_than_rows: is_initialized implies visible_row_count <= row_count
-	tree_disabled_implies_visible_rows_equal_hidden_rows: is_initialized and then not is_tree_enabled implies row_count = visible_row_count
+	tree_disabled_implies_visible_rows_equal_hidden_rows: is_initialized and then not is_tree_enabled implies row_count - non_displayed_row_count = visible_row_count
 	internal_viewport_positions_equal_to_viewports: is_initialized implies (viewport.x_offset = viewport_x_offset and viewport.y_offset = viewport_y_offset)
 	tree_node_connector_color_not_void: is_initialized implies tree_node_connector_color /= Void
 

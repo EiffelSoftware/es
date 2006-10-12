@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 	cache_modified_date: INTEGER
 		-- Modification date of the information about one assembly, set by `is_cache_up_to_date'.
 
-	dependencies: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+	dependencies: HASH_TABLE [ARRAYED_LIST [TUPLE [guid: STRING; assembly_id: INTEGER]], STRING]
 		-- List of dependencies (guids) of assemblies that have been reused.
 
 	old_assemblies: HASH_TABLE [CONF_ASSEMBLY, STRING]
@@ -210,7 +210,7 @@ feature {NONE} -- Implementation
 			dependencies_ok: dependencies /= Void
 		local
 			l_dep_as: CONF_ASSEMBLY
-			l_deps: ARRAYED_LIST [STRING]
+			l_deps: ARRAYED_LIST [TUPLE [guid: STRING; assembly_id: INTEGER]]
 			l_guid, l_dep_guid: STRING
 			l_reader: EIFFEL_DESERIALIZER
 			l_reference_file: FILE_NAME
@@ -219,7 +219,6 @@ feature {NONE} -- Implementation
 			i, cnt: INTEGER
 			l_cons_ass: CONSUMED_ASSEMBLY
 		do
-			create l_reader
 
 			l_guid := an_assembly.guid
 			l_deps := dependencies.item (l_guid)
@@ -227,6 +226,7 @@ feature {NONE} -- Implementation
 				-- do we already have information about the dependencies?
 			if l_deps = Void then
 					-- we have to get the dependencies from the reference file
+				create l_reader
 				create l_reference_file.make_from_string (an_assembly.consumed_path)
 				l_reference_file.set_file_name (referenced_assemblies_info_file)
 				l_reader.deserialize (l_reference_file, 0)
@@ -259,7 +259,7 @@ feature {NONE} -- Implementation
 								build_assembly (l_dep_as)
 								build_dependencies (l_dep_as)
 							end
-							an_assembly.add_dependency (l_dep_as)
+							an_assembly.add_dependency (l_dep_as, i)
 						end
 						i := i + 1
 					end
@@ -271,11 +271,11 @@ feature {NONE} -- Implementation
 				until
 					l_deps.after
 				loop
-					l_dep_as := assemblies.item (l_deps.item)
+					l_dep_as := assemblies.item (l_deps.item.guid)
 					check
 						assembly_built: l_dep_as /= Void and then l_dep_as.classes_set
 					end
-					an_assembly.add_dependency (l_dep_as)
+					an_assembly.add_dependency (l_dep_as, l_deps.item.assembly_id)
 
 					l_deps.forth
 				end
@@ -289,8 +289,8 @@ feature {NONE} -- Implementation
 		local
 			l_guid: STRING
 			l_other_assembly: CONF_ASSEMBLY
-			l_deps: ARRAYED_LIST [STRING]
-			l_as_deps: DS_HASH_SET [CONF_ASSEMBLY]
+			l_deps: ARRAYED_LIST [TUPLE [guid: STRING; assembly_id: INTEGER]]
+			l_as_deps: HASH_TABLE [CONF_ASSEMBLY, INTEGER]
 			l_as: CONF_ASSEMBLY
 		do
 			update_assembly_information (an_assembly)
@@ -304,6 +304,7 @@ feature {NONE} -- Implementation
 				end
 				an_assembly.set_dotnet_classes (l_other_assembly.dotnet_classes)
 				set_renamed_classes (an_assembly, l_other_assembly)
+				an_assembly.set_date (l_other_assembly.date)
 			else
 					-- see if we have information about this assembly from a previous compilation
 				l_other_assembly := old_assemblies.item (l_guid)
@@ -327,39 +328,96 @@ feature {NONE} -- Implementation
 						assemblies.force (an_assembly, l_guid)
 						old_assemblies.remove (l_guid)
 
-							-- get guids of referenced assemblies
+							-- get guids of referenced assemblies and reset the dependencies, they will get added later on
 						l_as_deps := l_other_assembly.dependencies
+						l_other_assembly.set_dependencies (Void)
 						if l_as_deps = Void then
-							create l_as_deps.make (0)
-						end
-						create l_deps.make (l_as_deps.count)
-						dependencies.force (l_deps, l_guid)
-						from
-							l_as_deps.start
-						until
-							l_as_deps.after
-						loop
-							l_as := l_as_deps.item_for_iteration
-							l_deps.force (l_as.guid)
-								-- add dependencies to the set of new classes if they are not yet there
-							if not new_assemblies.has (l_as) then
-								l_as.revalidate
-								l_as.set_target (an_assembly.target)
-								new_assemblies.force_last (l_as)
+							create l_deps.make (0)
+							dependencies.force (l_deps, l_guid)
+						else
+							create l_deps.make (l_as_deps.count)
+							dependencies.force (l_deps, l_guid)
+							from
+								l_as_deps.start
+							until
+								l_as_deps.after
+							loop
+								l_as := l_as_deps.item_for_iteration
+								l_deps.force ([l_as.guid, l_as_deps.key_for_iteration])
+									-- Add dependencies to the set of new classes if they are not yet there
+								if not new_assemblies.has (l_as) then
+									l_as.revalidate
+									l_as.set_target (an_assembly.target)
+									new_assemblies.force_last (l_as)
+								end
+								l_as_deps.forth
 							end
-							l_as_deps.forth
 						end
+						an_assembly.set_date (l_other_assembly.date)
 					end
 				else
 					rebuild_classes (an_assembly, Void)
 					assemblies.force (an_assembly, l_guid)
 				end
-				an_assembly.set_date (cache_modified_date)
 			end
 		ensure
+			an_assmebly_date_valid: an_assembly.date > 0
 			an_assembly_valid: an_assembly.is_valid
 			an_assembly_classes_set: an_assembly.classes_set
 		end
+
+	set_renamed_classes (an_assembly, an_other_assembly: CONF_ASSEMBLY) is
+			-- Set classes on `an_assembly' taking them from `an_other_assembly' and applying renamings if necessary.
+		require
+			an_assembly_ok: an_assembly /= Void and then an_assembly.is_valid
+			an_other_assembly_ok: an_other_assembly /= Void and then an_other_assembly.classes_set
+		local
+			l_classes, l_new_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_class: CONF_CLASS_ASSEMBLY
+			l_renamings: HASH_TABLE [STRING, STRING]
+			l_prefix: STRING
+			l_name: STRING
+			l_other_invalid: BOOLEAN
+		do
+			l_other_invalid := not an_other_assembly.is_valid
+			if not l_other_invalid and then an_assembly.is_group_equivalent (an_other_assembly) then
+				an_assembly.set_classes (an_other_assembly.classes)
+			else
+				from
+					l_renamings := an_assembly.renaming
+					l_prefix := an_assembly.name_prefix
+					l_classes := an_other_assembly.classes
+					create l_new_classes.make (l_classes.count)
+					l_classes.start
+				until
+					l_classes.after
+				loop
+					l_class ?= l_classes.item_for_iteration
+					check
+						assembly_class: l_class /= Void
+					end
+					l_name := l_class.name.twin
+					if l_renamings /= Void and then l_renamings.has (l_name) then
+						l_name := l_renamings.found_item
+					end
+					if l_prefix /= Void then
+						l_name.prepend (l_prefix)
+					end
+						-- if the other assembly is not valid, we have the classes point to us.
+					if l_other_invalid then
+						l_class.set_group (an_assembly)
+					end
+					l_new_classes.force (l_class, l_name)
+					l_classes.forth
+				end
+				an_assembly.set_classes (l_new_classes)
+			end
+			an_assembly.set_dotnet_classes (an_other_assembly.dotnet_classes)
+		ensure
+			classes_set: an_assembly.classes_set
+		end
+
+feature {EXTERNAL_CLASS_C} -- Information building
 
 	rebuild_classes (an_assembly: CONF_ASSEMBLY; an_old_dotnet_classes: HASH_TABLE [CONF_CLASS, STRING]) is
 			-- (Re)build the list of classes in `an_assembly'.
@@ -396,6 +454,7 @@ feature {NONE} -- Implementation
 			check
 				consumed_assembly_types: l_types /= Void
 			end
+			an_assembly.set_date (file_modified_date (l_types_file))
 
 				-- add classes
 			if l_old_dotnet_classes /= Void then
@@ -456,57 +515,8 @@ feature {NONE} -- Implementation
 
 			an_assembly.set_classes (l_new_classes)
 			an_assembly.set_dotnet_classes (l_new_dotnet_classes)
-		end
-
-	set_renamed_classes (an_assembly, an_other_assembly: CONF_ASSEMBLY) is
-			-- Set classes on `an_assembly' taking them from `an_other_assembly' and applying renamings if necessary.
-		require
-			an_assembly_ok: an_assembly /= Void and then an_assembly.is_valid
-			an_other_assembly_ok: an_other_assembly /= Void and then an_other_assembly.classes_set
-		local
-			l_classes, l_new_classes: HASH_TABLE [CONF_CLASS, STRING]
-			l_class: CONF_CLASS_ASSEMBLY
-			l_renamings: HASH_TABLE [STRING, STRING]
-			l_prefix: STRING
-			l_name: STRING
-			l_other_invalid: BOOLEAN
-		do
-			l_other_invalid := not an_other_assembly.is_valid
-			if not l_other_invalid and then an_assembly.is_group_equivalent (an_other_assembly) then
-				an_assembly.set_classes (an_other_assembly.classes)
-			else
-				from
-					l_renamings := an_assembly.renaming
-					l_prefix := an_assembly.name_prefix
-					l_classes := an_other_assembly.classes
-					create l_new_classes.make (l_classes.count)
-					l_classes.start
-				until
-					l_classes.after
-				loop
-					l_class ?= l_classes.item_for_iteration
-					check
-						assembly_class: l_class /= Void
-					end
-					l_name := l_class.name.twin
-					if l_renamings /= Void and then l_renamings.has (l_name) then
-						l_name := l_renamings.found_item
-					end
-					if l_prefix /= Void then
-						l_name.prepend (l_prefix)
-					end
-						-- if the other assembly is not valid, we have the classes point to us.
-					if l_other_invalid then
-						l_class.set_group (an_assembly)
-					end
-					l_new_classes.force (l_class, l_name)
-					l_classes.forth
-				end
-				an_assembly.set_classes (l_new_classes)
-			end
-			an_assembly.set_dotnet_classes (an_other_assembly.dotnet_classes)
 		ensure
-			classes_set: an_assembly.classes_set
+			date_set: an_assembly.date > 0
 		end
 
 feature {NONE} -- retrieving information from cache
@@ -659,7 +669,7 @@ feature {NONE} -- Consuming
 			loop
 				l_a := l_cursor.item
 				if l_a.is_non_local_assembly then
-					l_emitter.consume_assembly (l_a.assembly_name, l_a.assembly_version, l_a.assembly_culture, l_a.assembly_public_key_token)
+					l_emitter.consume_assembly (l_a.assembly_name, l_a.assembly_version, l_a.assembly_culture, l_a.assembly_public_key_token, True)
 				else
 					if not l_a.is_dependency then
 						l_path := l_a.location.evaluated_path.as_lower
@@ -673,7 +683,7 @@ feature {NONE} -- Consuming
 			end
 			if not l_paths.is_empty then
 				l_paths.remove_tail (1)
-				l_emitter.consume_assembly_from_path (l_paths)
+				l_emitter.consume_assembly_from_path (l_paths, True, Void)
 			end
 			retrieve_cache
 			if cache_content = Void then
@@ -721,7 +731,7 @@ feature {NONE} -- Consuming
 			if not l_paths.is_empty then
 				l_paths.remove_tail (1)
 				l_emitter := il_emitter
-				l_emitter.consume_assembly_from_path (l_paths)
+				l_emitter.consume_assembly_from_path (l_paths, True, Void)
 			end
 			retrieve_cache
 			if cache_content = Void then
@@ -740,7 +750,7 @@ feature {NONE} -- Consuming
 		do
 			on_consume_assemblies
 			l_emitter := il_emitter
-			l_emitter.consume_assembly (an_assembly.assembly_name, an_assembly.assembly_version, an_assembly.assembly_culture, an_assembly.assembly_public_key_token)
+			l_emitter.consume_assembly (an_assembly.assembly_name, an_assembly.assembly_version, an_assembly.assembly_culture, an_assembly.assembly_public_key_token, True)
 			retrieve_cache
 			if cache_content = Void then
 				add_error (create {CONF_METADATA_CORRUPT})
@@ -909,6 +919,7 @@ feature {NONE} -- helpers
 				end
 				an_assembly.set_is_in_gac (l_cons_as.is_in_gac)
 			end
+			an_assembly.set_is_partially_consumed (l_cons_as.has_info_only)
 		end
 
 	get_class_assembly_name (a_name: STRING; an_assembly: CONF_ASSEMBLY): STRING is

@@ -23,7 +23,7 @@ feature -- Access
 	features_position: ARRAYED_LIST [TUPLE [start_pos: INTEGER; end_pos:INTEGER]]
 			-- array of features position in class text
 
-	features_ast: ARRAYED_LIST [FEATURE_AS]
+	features_ast: ARRAYED_LIST [TUPLE [feat_as: FEATURE_AS; name: FEATURE_NAME]]
 			-- array of feature_as corresponding to positions in `features_position'
 
 feature -- Completion access
@@ -75,135 +75,135 @@ feature -- Basic operations
 			show_any_features	: BOOLEAN
 			l_current_class_c	: CLASS_C
 			l_class_as          : CLASS_AS
-			l_feature_as        : FEATURE_AS
 			l_named_tuple_type	: NAMED_TUPLE_TYPE_A
 		do
-			create insertion
-			insertion.put ("")
-			is_create := False
-			is_static := False
-			last_was_constrained := False
-			last_type := Void
-			create completion_possibilities.make (1, 30)
-			create inserted_feature_table.make (30)
-			cp_index := 1
-			initialize_context
-			token_writer.set_context_group (group)
-			if current_class_i /= Void and then current_class_c /= Void then
-				l_current_class_c := current_class_c
-				token := cursor_token
-				if token /= Void then
-					cls_c := class_c_to_complete_from (token, current_line, l_current_class_c, False, False)
+			if is_ok_for_completion then
+				create insertion
+				insertion.put ("")
+				is_create := False
+				is_static := False
+				last_was_constrained := False
+				last_type := Void
+				create completion_possibilities.make (1, 30)
+				create inserted_feature_table.make (30)
+				cp_index := 1
+				initialize_context
+				token_writer.set_context_group (group)
+				if current_class_i /= Void and then current_class_c /= Void then
+					l_current_class_c := current_class_c
+					token := cursor_token
+					if token /= Void then
+						cls_c := class_c_to_complete_from (token, current_line, l_current_class_c, False, False)
 
-					if exploring_current_class then
-						set_up_local_analyzer (current_line, token, l_current_class_c)
-						add_names_to_completion_list (Local_analyzer, l_current_class_c)
+						if exploring_current_class then
+							set_up_local_analyzer (current_line, token, l_current_class_c)
+							add_names_to_completion_list (Local_analyzer, l_current_class_c)
 
-							-- Add precursors
-						l_class_as := l_current_class_c.ast
-						l_feature_as := current_feature_as
-						if l_class_as /= Void and l_feature_as /= Void  then
-							add_precursor_possibilities (l_class_as, l_feature_as)
+								-- Add precursors
+							l_class_as := l_current_class_c.ast
+							if l_class_as /= Void and current_feature_as /= Void  then
+								add_precursor_possibilities (l_class_as, current_feature_as.feat_as)
+							end
+							local_analyzer.reset
 						end
-						local_analyzer.reset
-					end
-				end
-
-					-- Build the completion list based on data mined from
-				if cls_c /= Void and then cls_c.has_feature_table then
-
-						-- Add named tuple generics.
-						-- A class c should have been found.
-					l_named_tuple_type ?= last_type
-					if l_named_tuple_type /= Void then
-						add_named_tuple_generics (l_named_tuple_type)
 					end
 
-					feat_table := cls_c.api_feature_table
-					feat_i_table := cls_c.feature_table
-					if feat_i_table.overloaded_names /= Void then
-						build_overload_list := True
-					else
-						build_overload_list := False
-					end
+						-- Build the completion list based on data mined from
+					if cls_c /= Void and then cls_c.has_feature_table then
 
-					if is_create then
-						if last_was_constrained then
-							add_generics_creation_list (cls_c)
+							-- Add named tuple generics.
+							-- A class c should have been found.
+						l_named_tuple_type ?= last_type
+						if l_named_tuple_type /= Void then
+							add_named_tuple_generics (l_named_tuple_type)
+						end
+
+						feat_table := cls_c.api_feature_table
+						feat_i_table := cls_c.feature_table
+						if feat_i_table.overloaded_names /= Void then
+							build_overload_list := True
 						else
-								-- Creators
-							crtrs := cls_c.creators
-							if crtrs /= Void then
-								from
-									crtrs.start
-								until
-									crtrs.after
-								loop
-									if
-										feat_table.has (crtrs.key_for_iteration) and then
-										crtrs.item_for_iteration.is_exported_to (l_current_class_c)
-									then
-										add_feature_to_completion_possibilities	(feat_table.item (crtrs.key_for_iteration))
+							build_overload_list := False
+						end
+
+						if is_create then
+							if last_was_constrained then
+								add_generics_creation_list (cls_c)
+							else
+									-- Creators
+								crtrs := cls_c.creators
+								if crtrs /= Void then
+									from
+										crtrs.start
+									until
+										crtrs.after
+									loop
+										if
+											feat_table.has (crtrs.key_for_iteration) and then
+											crtrs.item_for_iteration.is_exported_to (l_current_class_c)
+										then
+											add_feature_to_completion_possibilities	(feat_table.item (crtrs.key_for_iteration))
+										end
+										crtrs.forth
 									end
-									crtrs.forth
 								end
 							end
-						end
-					elseif is_static then
-							-- Externals
-						externals := external_features (cls_c)
-						show_any_features := 	preferences.editor_data.show_any_features
-													or else
-												cls_c.name_in_upper.is_equal (Any_name)
-						if externals /= Void then
+						elseif is_static then
+								-- Externals
+							externals := external_features (cls_c)
+							show_any_features := 	preferences.editor_data.show_any_features
+														or else
+													cls_c.name_in_upper.is_equal (Any_name)
+							if externals /= Void then
+								from
+									externals.start
+								 until
+									externals.after
+								loop
+								feat := externals.item
+								if
+									(exploring_current_class or else feat.is_exported_to (l_current_class_c)) and then
+									(show_any_features or else not feat.written_class.name_in_upper.is_equal (Any_name))
+								then
+									add_feature_to_completion_possibilities (feat)
+								end
+									externals.forth
+								end
+							end
+						else
+							show_any_features := preferences.editor_data.show_any_features or else cls_c.name_in_upper.is_equal (Any_name)
 							from
-								externals.start
-							 until
-								externals.after
+								feat_table.start
+							until
+								feat_table.after
 							loop
-							feat := externals.item
-							if
-								(exploring_current_class or else feat.is_exported_to (l_current_class_c)) and then
-								(show_any_features or else not feat.written_class.name_in_upper.is_equal (Any_name))
-							then
-								add_feature_to_completion_possibilities (feat)
+								feat := feat_table.item_for_iteration
+								if
+									(exploring_current_class or else feat.is_exported_to (l_current_class_c)) and then
+									(show_any_features or else not feat.written_class.name_in_upper.is_equal (Any_name)) and then
+									(not feat.is_infix and not feat.is_prefix)
+								then
+									add_feature_to_completion_possibilities (feat)
+								end
+								feat_table.forth
 							end
-								externals.forth
-							end
-						end
-					else
-						show_any_features := preferences.editor_data.show_any_features or else cls_c.name_in_upper.is_equal (Any_name)
-						from
-							feat_table.start
-						until
-							feat_table.after
-						loop
-							feat := feat_table.item_for_iteration
-							if
-								(exploring_current_class or else feat.is_exported_to (l_current_class_c)) and then
-								(show_any_features or else not feat.written_class.name_in_upper.is_equal (Any_name)) and then
-								(not feat.is_infix and not feat.is_prefix)
-							then
-								add_feature_to_completion_possibilities (feat)
-							end
-							feat_table.forth
 						end
 					end
-				end
 
-					-- Reset and sort matches
+						-- Reset and sort matches
 
-				if build_overload_list and then cls_c /= Void then
-					build_in_overload_feature (cls_c)
-				end
-				if cp_index = 1 then
-					completion_possibilities := Void
-				else
-					completion_possibilities := completion_possibilities.subarray (1, cp_index - 1)
-					completion_possibilities.sort
-				end
+					if build_overload_list and then cls_c /= Void then
+						build_in_overload_feature (cls_c)
+					end
+					if cp_index = 1 then
+						completion_possibilities := Void
+					else
+						completion_possibilities := completion_possibilities.subarray (1, cp_index - 1)
+						completion_possibilities.sort
+					end
 
-				reset_after_search
+					reset_after_search
+				end
 			end
 		end
 
@@ -427,7 +427,7 @@ feature {NONE} -- Implementation
 						Result := type.associated_class
 					end
 					last_type := type
-				elseif is_create then
+				elseif prev_token /= Void and is_create then
 					if found_class /= Void then
 							-- Looks like it was a creation expression since `found_class' was computed.
 						Result := found_class
@@ -650,36 +650,76 @@ feature {NONE} -- Implementation
 			cp_index := cp_index + 1
 		end
 
-	feature_containing (a_token: EDITOR_TOKEN; a_line: EDITOR_LINE): FEATURE_AS is
+	feature_containing (a_token: EDITOR_TOKEN; a_line: EDITOR_LINE): TUPLE [feat_as: FEATURE_AS; name: FEATURE_NAME] is
 			-- Feature containing `a_token' in class text.  If token is not in a feature return Void.
 		require
-			features_position_not_void: features_position /= Void
+			a_token_not_void: a_token /= Void
 			features_ast_not_void: features_ast /= Void
 		local
 			token: EDITOR_TOKEN
 			line: EDITOR_LINE
-			tfs: EDITOR_TOKEN_FEATURE_START
+			tfs, tfs2: EDITOR_TOKEN_FEATURE_START
 			index: INTEGER
+			l_done: BOOLEAN
+			l_end_position: INTEGER
 		do
 			token := current_token
 			line := current_line
+			current_line := a_line
+			current_token := a_token
+			from
+			until
+				current_token = Void or l_done
+			loop
+				go_to_previous_token
+				tfs ?= current_token
+				if tfs /= Void then
+					if tfs.start_position < a_token.pos_in_text and a_token.pos_in_text < tfs.end_position then
+						l_done := True
+					else
+						if l_end_position = 0 then
+							l_end_position := tfs.end_position
+						elseif l_end_position /= tfs.end_position then
+							l_done := True
+							tfs := Void
+						end
+					end
+				end
+			end
+
+				-- Let's try to find a feature forward. For example we could be on the `frozen' keyword
+				-- of a feature declaration with synonym but the feature start token is on the name not
+				-- the `frozen' keyword (see bug#11173).
 			from
 				current_line := a_line
 				current_token := a_token
+				l_done := False
 			until
-				current_token = Void or else current_token.is_feature_start
+				(current_token = Void or else current_token.next = Void) or l_done
 			loop
-				go_to_previous_token
+				if current_token.is_feature_start then
+					tfs2 ?= current_token
+					check tfs2_not_void : tfs2 /= Void end
+						-- If we are completely out of the current feature start, then no need to look further,
+						-- the `tfs' we found earlier is the right one.
+					l_done := (tfs2.start_position > a_token.pos_in_text or a_token.pos_in_text > tfs2.end_position)
+					if not l_done then
+						tfs := tfs2
+					end
+				end
+				go_to_next_token
 			end
-			tfs ?= current_token
+
 			if tfs /= Void then
 				index := tfs.feature_index_in_table
-				if features_ast.valid_cursor_index (index) and index > 0 then
+				if features_ast.valid_index (index) then
 					Result := features_ast @ index
 				end
 			end
 			current_token := token
 			current_line := line
+		ensure
+			valid_result: Result /= Void implies (Result.feat_as /= Void and Result.name /= Void)
 		end
 
 	create_before_position (a_line: EDITOR_LINE; a_token: EDITOR_TOKEN): BOOLEAN is
@@ -1104,7 +1144,7 @@ feature {NONE} -- Implementation
 								skip_parenthesis ('{', '}')
 								if Result /= Void and then Result.associated_class /= Void then
 									if Result.associated_class.has_feature_table then
-										feat := Result.associated_class.feature_with_name (current_feature_as.feature_name)
+										feat := Result.associated_class.feature_with_name (current_feature_as.name.internal_name)
 									end
 								end
 							end
@@ -1118,7 +1158,7 @@ feature {NONE} -- Implementation
 								loop
 									type := l_current_class_c.parents.item
 									if type.associated_class /= Void and then type.associated_class.has_feature_table then
-										feat := type.associated_class.feature_with_name (current_feature_as.feature_name)
+										feat := type.associated_class.feature_with_name (current_feature_as.name.internal_name)
 									end
 									l_current_class_c.parents.forth
 								end

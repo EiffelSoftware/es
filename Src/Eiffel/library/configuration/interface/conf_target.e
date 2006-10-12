@@ -37,6 +37,7 @@ feature {NONE} -- Initialization
 			create internal_assemblies.make (0)
 
 			create internal_file_rule.make (0)
+			internal_file_rule.compare_objects
 
 			create internal_external_include.make (1)
 			create internal_external_object.make (1)
@@ -648,6 +649,12 @@ feature -- Access queries for settings
 			end
 		ensure
 			Result_not_void: Result /= Void
+		end
+
+	setting_enforce_unique_class_names: BOOLEAN
+			-- Valeu for the enforce_unique_class_names setting.
+		do
+			Result := setting_boolean (s_enforce_unique_class_names)
 		end
 
 	setting_exception_trace: BOOLEAN is
@@ -1456,7 +1463,8 @@ feature -- Equality
 						equal (variables, other.variables) and then
 						equal (root, other.root) and then
 						equal (file_rule, other.file_rule) and then
-						equal (mapping, other.mapping)
+						equal (mapping, other.mapping) and then
+						other.setting_enforce_unique_class_names = setting_enforce_unique_class_names
 			if Result then
 				if precompile = Void then
 					Result := other.precompile = Void

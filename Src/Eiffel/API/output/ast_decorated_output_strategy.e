@@ -251,44 +251,53 @@ feature -- Roundtrip
 			l_old_e_feature: E_FEATURE
 			l_old_breakpoint_index: INTEGER
 			l_feat: FEATURE_I
+			l_leaf_list: LEAF_AS_LIST
 		do
 			if not expr_type_visiting then
-				text_formatter_decorator.process_keyword_text (ti_agent_keyword, Void)
+				if l_as.inl_rout_id > 0 then
+					text_formatter_decorator.process_keyword_text (ti_agent_keyword, Void)
 
-				create l_strategy.make_for_inline_agent (Current, l_as)
+					create l_strategy.make_for_inline_agent (Current, l_as)
 
-				l_old_feature_comments := text_formatter_decorator.feature_comments
-				l_old_arguments := text_formatter_decorator.arguments
-				l_old_target_feature := text_formatter_decorator.target_feature
-				l_old_source_feature := text_formatter_decorator.source_feature
-				l_old_e_feature := text_formatter_decorator.e_feature
-				l_old_breakpoint_index := text_formatter_decorator.breakpoint_index
+					l_old_feature_comments := text_formatter_decorator.feature_comments
+					l_old_arguments := text_formatter_decorator.arguments
+					l_old_target_feature := text_formatter_decorator.target_feature
+					l_old_source_feature := text_formatter_decorator.source_feature
+					l_old_e_feature := text_formatter_decorator.e_feature
+					l_old_breakpoint_index := text_formatter_decorator.breakpoint_index
 
-				l_feat := l_strategy.current_feature
+					l_feat := l_strategy.current_feature
 
-				text_formatter_decorator.restore_attributes ( Void, l_as.body.arguments, l_feat,
-															  l_strategy.source_feature, l_strategy, 0,
-															  l_feat.api_feature (l_feat.written_in))
+					text_formatter_decorator.restore_attributes ( Void, l_as.body.arguments, l_feat,
+																  l_strategy.source_feature, l_strategy, 0,
+																  l_feat.api_feature (l_feat.written_in))
 
-				l_as.body.process (l_strategy)
+					l_as.body.process (l_strategy)
 
-				text_formatter_decorator.restore_attributes ( l_old_feature_comments, l_old_arguments,
-															  l_old_target_feature, l_old_source_feature, Current,
-															  l_old_breakpoint_index, l_old_e_feature)
+					text_formatter_decorator.restore_attributes ( l_old_feature_comments, l_old_arguments,
+																  l_old_target_feature, l_old_source_feature, Current,
+																  l_old_breakpoint_index, l_old_e_feature)
 
-				if l_as.operands /= Void then
-					reset_last_class_and_type
-					text_formatter_decorator.process_symbol_text (ti_space)
-					text_formatter_decorator.begin
-					text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
-					text_formatter_decorator.set_separator (ti_comma)
-					text_formatter_decorator.set_space_between_tokens
-					l_as.operands.process (Current)
-					text_formatter_decorator.process_symbol_text (ti_r_parenthesis)
-					text_formatter_decorator.commit
-				end
-				if not has_error_internal then
+					if l_as.operands /= Void then
+						reset_last_class_and_type
+						text_formatter_decorator.process_symbol_text (ti_space)
+						text_formatter_decorator.begin
+						text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
+						text_formatter_decorator.set_separator (ti_comma)
+						text_formatter_decorator.set_space_between_tokens
+						l_as.operands.process (Current)
+						text_formatter_decorator.process_symbol_text (ti_r_parenthesis)
+						text_formatter_decorator.commit
+					end
 					last_type := expr_type (l_as)
+				else
+					has_error_internal := True
+					l_leaf_list	:= match_list_server.item (current_class.class_id)
+					if l_leaf_list /= Void and then l_as.is_text_available (l_leaf_list) then
+						text_formatter_decorator.add (l_as.text (l_leaf_list))
+					else
+						text_formatter_decorator.add ("unable_to_show_inline_agent")
+					end
 				end
 			else
 				if not has_error_internal then
@@ -478,6 +487,7 @@ feature {NONE} -- Implementation
 			end
 			text_formatter_decorator.put_new_line
 			text_formatter_decorator.indent
+			text_formatter_decorator.put_new_line
 			text_formatter_decorator.set_new_line_between_tokens
 			text_formatter_decorator.set_separator (ti_empty)
 			f := l_as.features
@@ -1088,11 +1098,12 @@ feature {NONE} -- Implementation
 			check
 				not_expr_type_visiting: not expr_type_visiting
 			end
+
+			is_inline_agent := current_feature.is_inline_agent
+
 			locals_for_current_feature.wipe_out
-			if text_formatter_decorator.is_feature_short then
-				text_formatter_decorator.put_new_line
-			else
-				text_formatter_decorator.put_new_line
+			text_formatter_decorator.put_new_line
+			if not text_formatter_decorator.is_feature_short then
 				if l_as.obsolete_message /= Void then
 					text_formatter_decorator.indent
 					text_formatter_decorator.process_keyword_text (ti_obsolete_keyword, Void)
@@ -1103,16 +1114,17 @@ feature {NONE} -- Implementation
 				end
 			end
 			text_formatter_decorator.indent
-			text_formatter_decorator.indent
-			comments := text_formatter_decorator.feature_comments
-			if comments /= Void then
-				text_formatter_decorator.put_comments (comments)
-			end
-			text_formatter_decorator.put_origin_comment
-			text_formatter_decorator.exdent
-			text_formatter_decorator.set_first_assertion (True)
 
-			is_inline_agent := current_feature.is_inline_agent
+			if not is_inline_agent then
+				text_formatter_decorator.indent
+				comments := text_formatter_decorator.feature_comments
+				if comments /= Void then
+					text_formatter_decorator.put_comments (comments)
+				end
+				text_formatter_decorator.put_origin_comment
+				text_formatter_decorator.exdent
+			end
+			text_formatter_decorator.set_first_assertion (True)
 
 			if is_inline_agent then
 				create inline_agent_assertion.make_for_inline_agent (current_feature, l_as)
@@ -1497,9 +1509,13 @@ feature {NONE} -- Implementation
 				l_feat := feature_in_class (l_expr_type.actual_type.associated_class, l_as.routine_ids)
 			end
 			if not has_error_internal then
-				if l_feat.is_prefix then
+				if l_feat.is_prefix or l_feat.has_alias_name then
 					if not expr_type_visiting then
-						l_name := l_feat.prefix_symbol
+						if l_feat.is_prefix then
+							l_name := l_feat.prefix_symbol
+						else
+							l_name := l_feat.alias_symbol
+						end
 						if in_bench_mode then
 							text_formatter_decorator.process_operator_text (l_name, l_feat)
 						elseif (l_name @ 1).is_alpha then
@@ -1645,8 +1661,12 @@ feature {NONE} -- Implementation
 			if not expr_type_visiting then
 				if not has_error_internal then
 					check l_feat_not_void: l_feat /= Void end
-					if l_feat.is_infix then
-						l_name := l_feat.infix_symbol
+					if l_feat.is_infix or l_feat.has_alias_name then
+						if l_feat.is_infix then
+							l_name := l_feat.infix_symbol
+						else
+							l_name := l_feat.alias_symbol
+						end
 						text_formatter_decorator.put_space
 						if in_bench_mode then
 							text_formatter_decorator.process_operator_text (l_name, l_feat)
@@ -1888,7 +1908,6 @@ feature {NONE} -- Implementation
 				current_class /= Void
 			end
 			text_formatter_decorator.begin
-			text_formatter_decorator.put_new_line
 			text_formatter_decorator.set_separator (ti_comma)
 			text_formatter_decorator.set_space_between_tokens
 			text_formatter_decorator.process_feature_dec_item (l_as.feature_names.first.internal_name, True)
@@ -2587,7 +2606,6 @@ feature {NONE} -- Implementation
 				text_formatter_decorator.set_new_line_between_tokens
 				l_creators.process (Current)
 				text_formatter_decorator.process_filter_item (f_creators, False)
-				text_formatter_decorator.put_new_line
 			end
 			format_convert_clause (l_as.convertors)
 			processing_none_feature_part := False
@@ -2656,8 +2674,7 @@ feature {NONE} -- Implementation
 			end
 			if not expr_type_visiting then
 				if last_type /= Void then
-					initialize_type_output_strategy
-					last_type.process (type_output_strategy)
+					type_output_strategy.process (last_type, text_formatter_decorator, current_class, current_feature)
 				else
 					text_formatter_decorator.process_local_text (l_as.dump)
 				end
@@ -2672,8 +2689,7 @@ feature {NONE} -- Implementation
 			end
 			if not expr_type_visiting then
 				if last_type /= Void then
-					initialize_type_output_strategy
-					last_type.process (type_output_strategy)
+					type_output_strategy.process (last_type, text_formatter_decorator, current_class, current_feature)
 				else
 					text_formatter_decorator.process_keyword_text (ti_like_keyword, Void)
 					text_formatter_decorator.add_space
@@ -2689,8 +2705,7 @@ feature {NONE} -- Implementation
 				last_actual_local_type := last_type
 			end
 			if not expr_type_visiting then
-				initialize_type_output_strategy
-				like_current_type.process (type_output_strategy)
+				type_output_strategy.process (like_current_type, text_formatter_decorator, current_class, current_feature)
 			end
 		end
 
@@ -2719,7 +2734,6 @@ feature {NONE} -- Implementation
 				not_expr_type_visiting: not expr_type_visiting
 				not_processing_locals: not processing_locals
 			end
-			initialize_type_output_strategy
 			if l_as.is_reference then
 				text_formatter_decorator.process_keyword_text (ti_reference_keyword, Void)
 				text_formatter_decorator.put_space
@@ -2738,9 +2752,6 @@ feature {NONE} -- Implementation
 				l_formal_dec ?= l_as
 				check l_formal_dec_not_void: l_formal_dec /= Void end
 				l_type := l_formal_dec.constraint_type (current_class)
-				check
-					l_type_is_not_formal: not l_type.is_formal
-				end
 				if l_as.has_creation_constraint then
 					from
 						l_as.creation_feature_list.start
@@ -2748,16 +2759,25 @@ feature {NONE} -- Implementation
 						text_formatter_decorator.process_keyword_text (ti_create_keyword, Void)
 						text_formatter_decorator.put_space
 						feature_name ?= l_as.creation_feature_list.item
-						l_feat := l_type.associated_class.feature_with_name (feature_name.visual_name)
-						text_formatter_decorator.process_feature_text (feature_name.visual_name, l_feat, False)
+						if not l_type.is_formal then
+							l_feat := l_type.associated_class.feature_with_name (feature_name.visual_name)
+							text_formatter_decorator.process_feature_text (feature_name.visual_name, l_feat, False)
+						else
+							text_formatter_decorator.process_local_text (feature_name.visual_name)
+						end
 						l_as.creation_feature_list.forth
 					until
 						l_as.creation_feature_list.after
 					loop
 						text_formatter_decorator.process_symbol_text (ti_comma)
 						text_formatter_decorator.put_space
-						l_feat := l_type.associated_class.feature_with_name (feature_name.visual_name)
-						text_formatter_decorator.process_feature_text (feature_name.visual_name, l_feat, False)
+						feature_name ?= l_as.creation_feature_list.item
+						if not l_type.is_formal then
+							l_feat := l_type.associated_class.feature_with_name (feature_name.visual_name)
+							text_formatter_decorator.process_feature_text (feature_name.visual_name, l_feat, False)
+						else
+							text_formatter_decorator.process_local_text (feature_name.visual_name)
+						end
 						l_as.creation_feature_list.forth
 					end
 					text_formatter_decorator.put_space
@@ -2903,12 +2923,13 @@ feature {NONE} -- Implementation
 			text_formatter_decorator.put_new_line
 			if l_as.feature_list /= Void then
 				text_formatter_decorator.indent
-				text_formatter_decorator.set_new_line_between_tokens
 				if text_formatter_decorator.is_flat_short then
 					format_creation_features (l_as.feature_list)
 				else
+					text_formatter_decorator.set_new_line_between_tokens
 					text_formatter_decorator.set_separator (ti_comma)
 					l_as.feature_list.process (Current)
+					text_formatter_decorator.put_new_line
 					text_formatter_decorator.put_new_line
 				end
 			end
@@ -3601,6 +3622,7 @@ feature {NONE} -- Implementation: helpers
 				feat_adapter := creators.item (item.internal_name)
 				if feat_adapter /= Void then
 					feat_adapter.format (text_formatter_decorator)
+					text_formatter_decorator.put_new_line
 				end
 				i := i + 1
 			end
@@ -3704,20 +3726,6 @@ feature {NONE} -- Implementation: helpers
 			end
 		end
 
-	initialize_type_output_strategy is
-			-- Reinitialize with current class and feature.
-		require
-			current_class_not_void: current_class /= Void
-		do
-			type_output_strategy.initialize (text_formatter_decorator, current_class, source_class, current_feature)
-		end
-
-	type_output_strategy: AST_TYPE_OUTPUT_STRATEGY is
-			-- Visitor for type output.
-		once
-			create Result.make (text_formatter_decorator, current_class, source_class, current_feature)
-		end
-
 	strip_type: GEN_TYPE_A is
 			-- Strip type
 		require
@@ -3800,7 +3808,7 @@ feature {NONE} -- Implementation: helpers
 		do
 			l_feat := feature_in_class (system.class_of_id (l_as.class_id), l_as.routine_ids)
 			if not has_error_internal then
-				if l_feat.is_function then
+				if l_feat.has_return_value then
 						-- generics are: base_type, open_types, result_type
 					create l_generics.make (1, 3)
 					l_generics.put (l_feat.type.actual_type, 3)

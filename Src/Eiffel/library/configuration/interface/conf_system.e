@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 			create target_order.make (1)
 			name := a_name.as_lower
 			uuid := an_uuid
+			is_readonly := True
 		ensure
 			name_set: name /= Void and then name.is_equal (a_name.as_lower)
 			uuid_set: uuid = an_uuid
@@ -39,6 +40,7 @@ feature -- Status
 			-- Was the last `store' operation successful?
 
 	date_has_changed: BOOLEAN is
+			-- Did the file modification date of the configuration file change?
 		do
 			Result := file_modified_date (file_name) /= file_date
 		end
@@ -53,6 +55,9 @@ feature -- Access, stored in configuration file
 
 	uuid: UUID
 			-- Universal unique identifier that identifies this system.
+
+	is_readonly: BOOLEAN
+			-- Is this system readonly per default if it is used as a library?
 
 	targets: HASH_TABLE [CONF_TARGET, STRING]
 			-- The configuration targets.
@@ -182,6 +187,14 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			name_set: name.is_case_insensitive_equal (a_name)
 		end
 
+	set_readonly (a_readonly: like is_readonly) is
+			-- Set `is_readonly' to `a_readonly'.
+		do
+			is_readonly := a_readonly
+		ensure
+			is_readonly_set: is_readonly = a_readonly
+		end
+
 	set_description (a_description: like description) is
 			-- Set `description' to `a_description'.
 		do
@@ -279,10 +292,6 @@ feature -- Visit
 		do
 			a_visitor.process_system (Current)
 		end
-
-feature -- Dummy
-
-	compile_all_classes: BOOLEAN
 
 feature {CONF_VISITOR, CONF_ACCESS} -- Implementation
 

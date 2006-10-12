@@ -5,10 +5,12 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+frozen class
 	CACHE_WRITER
 
 inherit
+	SYSTEM_OBJECT
+	
 	CALLBACK_INTERFACE
 
 	CACHE_ERRORS
@@ -240,7 +242,7 @@ feature -- Basic Operations
 					l_consumer.set_destination_path (l_dir.name)
 
 					if notifier /= Void then
-						notifier.notify_consume (create {NOTIFY_MESSAGE}.make (l_ca, a_path, l_reason, cache_reader.eiffel_assembly_cache_path))
+						notifier.notify_consume (create {NOTIFY_MESSAGE}.make (l_ca, a_path, l_reason, cache_reader.absolute_consume_path))
 					end
 
 						-- Load assembly from path, so path assembly is consumed.
@@ -281,14 +283,14 @@ feature -- Basic Operations
 						l_assembly := assembly_loader.load (l_name)
 						if l_assembly /= Void and then not a_processed.has (l_assembly.location) and then not (l_reader.is_assembly_in_cache (l_assembly.location, True) or else cache_reader.is_assembly_stale (l_assembly.location)) then
 								-- Adds only lookup info
-							add_assembly_ex (l_assembly.location, a_other_assemblies = Void or else not a_other_assemblies.has (l_assembly.location.to_lower), a_other_assemblies, a_processed)
+							add_assembly_ex (l_assembly.location, a_info_only or else (a_other_assemblies = Void or else not a_other_assemblies.has (l_assembly.location.to_lower)), a_other_assemblies, a_processed)
 							l_assembly_info_updated := True
 						end
 						i := i + 1
 					end
 					if l_assembly_info_updated then
 						if notifier /= Void then
-							notifier.notify_info ({SYSTEM_STRING}.format ("Synchronizing cache...%N%NLocation: {0}", cache_reader.eiffel_assembly_cache_path))
+							notifier.notify_info ({SYSTEM_STRING}.format ("Synchronizing cache...%N%NLocation: {0}", cache_reader.absolute_consume_path))
 						end
 						update_assembly_mappings (l_ca)
 						update_client_assembly_mappings (l_ca)

@@ -1087,6 +1087,7 @@ feature -- Implementation
 						context.init_error (l_vuar1)
 						l_vuar1.set_called_feature (l_feature, l_last_id)
 						l_vuar1.set_argument_count (l_actual_count)
+						l_vuar1.set_formal_count (l_feature.argument_count)
 						l_vuar1.set_location (l_feature_name)
 						error_handler.insert_error (l_vuar1)
 							-- Cannot go on here: too dangerous
@@ -3339,6 +3340,8 @@ feature -- Implementation
 			l_vweq: VWEQ
 			l_needs_byte_node: BOOLEAN
 			l_type_a: TYPE_A
+			l_is_byte_node_simplified: BOOLEAN
+			l_ne_as: BIN_NE_AS
 		do
 			l_needs_byte_node := is_byte_node_enabled
 
@@ -3388,22 +3391,37 @@ feature -- Implementation
 						if l_needs_byte_node then
 							l_left_expr := l_conv_info.byte_node (l_left_expr)
 						end
-					elseif not is_inherited and context.current_class.is_warning_enabled (w_vweq) then
-						create l_vweq
-						context.init_error (l_vweq)
-						l_vweq.set_left_type (l_left_type)
-						l_vweq.set_right_type (l_right_type)
-						l_vweq.set_location (l_as.operator_location)
-						error_handler.insert_warning (l_vweq)
+					elseif not is_inherited then
+						if context.current_class.is_warning_enabled (w_vweq) then
+							create l_vweq
+							context.init_error (l_vweq)
+							l_vweq.set_left_type (l_left_type)
+							l_vweq.set_right_type (l_right_type)
+							l_vweq.set_location (l_as.operator_location)
+							error_handler.insert_warning (l_vweq)
+						end
+						if l_left_type.is_basic and l_right_type.is_basic then
+								-- Non-compatible basic type always implies a False/true comparison.
+							l_is_byte_node_simplified := True
+						end
 					end
 				end
 			end
 
 			if l_needs_byte_node then
-				l_binary := byte_anchor.binary_node (l_as)
-				l_binary.set_left (l_left_expr)
-				l_binary.set_right (l_right_expr)
-				last_byte_node := l_binary
+				if l_is_byte_node_simplified then
+					l_ne_as ?= l_as
+					if l_ne_as /= Void then
+						create {BOOL_CONST_B} last_byte_node.make (True)
+					else
+						create {BOOL_CONST_B} last_byte_node.make (False)
+					end
+				else
+					l_binary := byte_anchor.binary_node (l_as)
+					l_binary.set_left (l_left_expr)
+					l_binary.set_right (l_right_expr)
+					last_byte_node := l_binary
+				end
 			end
 
 			last_type := boolean_type
@@ -6571,16 +6589,16 @@ feature {NONE} -- Agents
 
 			a_feat.set_inline_agent (l_enclosing_feature.body_index, l_number)
 			if l_is_fake then
-				l_name := "fake inline-agent of "
-				l_name.append (l_enclosing_feature.feature_name)
+				l_name := "fake inline-agent"
 				l_name.append_character ('#')
 				l_name.append_integer (a_feat.body_index)
 			else
-				l_name := "inline-agent of "
-				l_name.append (l_enclosing_feature.feature_name)
+				l_name := "inline-agent"
 				l_name.append_character ('#')
 				l_name.append_integer (a_feat.inline_agent_nr)
 			end
+			l_name.append_string (" of ")
+			l_name.append (l_enclosing_feature.feature_name)
 			a_feat.set_feature_name (l_name)
 
 			if is_byte_node_enabled then

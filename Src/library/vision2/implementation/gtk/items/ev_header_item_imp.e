@@ -51,19 +51,20 @@ feature -- Initialization
 
 	initialize is
 			-- Initialize the header item.
+		local
+			l_label_ellipsize_symbol: POINTER
 		do
 			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_column_set_resizable (c_object, True)
-
-				-- Allow the column to be shrank to nothing
-			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_column_set_min_width (c_object, 0)
 			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_column_set_sizing (c_object, {EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_column_fixed_enum)
 			{EV_GTK_EXTERNALS}.gtk_tree_view_column_set_clickable (c_object, True)
-
 			pixmapable_imp_initialize
 			textable_imp_initialize
-
-			{EV_GTK_EXTERNALS}.gtk_label_set_ellipsize (text_label, 3)
-
+			l_label_ellipsize_symbol := gtk_label_set_ellipsize_symbol
+			if l_label_ellipsize_symbol /= default_pointer then
+				gtk_label_set_ellipsize_call (l_label_ellipsize_symbol, text_label, 3)
+			else
+				{EV_GTK_EXTERNALS}.gtk_label_set_ellipsize (text_label, 3)
+			end
 			box := {EV_GTK_EXTERNALS}.gtk_hbox_new (False, 0)
 			{EV_GTK_EXTERNALS}.gtk_widget_show (box)
 			{EV_GTK_EXTERNALS}.gtk_box_pack_start (box, pixmap_box, False, False, 0)
@@ -71,14 +72,26 @@ feature -- Initialization
 			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_tree_view_column_set_widget (c_object, box)
 
 			set_minimum_width (0)
-			set_maximum_width (32000)
-
+			maximum_width := 32000
 			align_text_left
 			enable_user_resize
 
 				-- Set the default width to 80 pixels wide
 			set_width (80)
 			set_is_initialized (True)
+		end
+
+	gtk_label_set_ellipsize_symbol: POINTER
+			-- Symbol for `gtk_label_set_ellipsize'.
+		once
+			Result := app_implementation.symbol_from_symbol_name ("gtk_label_set_ellipsize")
+		end
+
+	gtk_label_set_ellipsize_call (a_function: POINTER; a_label: POINTER; a_ellipsize_mode: INTEGER)
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"(FUNCTION_CAST(void, (GtkLabel*, gint)) $a_function)((GtkLabel*) $a_label, (gint) $a_ellipsize_mode);"
 		end
 
 	handle_resize is

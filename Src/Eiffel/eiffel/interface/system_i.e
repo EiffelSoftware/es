@@ -1023,7 +1023,44 @@ end
 				-- update/check root class
 			update_root_class
 
+				-- if enabled, check system wide uniqueness of class names
+			if l_target.setting_enforce_unique_class_names then
+				check_unique_class_names
+			end
+
 			is_force_rebuild := False
+		end
+
+	check_unique_class_names is
+			-- Check if all the classes in the system have unique names.
+		local
+			l_table: HASH_TABLE [CLASS_I, STRING]
+			l_classes: DS_HASH_SET [CLASS_I]
+			l_class: CLASS_I
+			l_name: STRING
+			l_vd87: VD87
+		do
+			from
+				l_classes := universe.all_classes
+				create l_table.make (l_classes.count)
+				l_classes.start
+			until
+				l_classes.after
+			loop
+				l_class := l_classes.item_for_iteration
+				l_name := l_class.name
+				if not l_class.config_class.does_override then
+					if not l_table.has (l_name) then
+						l_table.force (l_class, l_name)
+					else
+						is_force_rebuild := True
+						create l_vd87.make (l_table.found_item, l_class)
+						error_handler.insert_error (l_vd87)
+						error_handler.checksum
+					end
+				end
+				l_classes.forth
+			end
 		end
 
 	recheck_partly_removed (a_classes: ARRAYED_LIST [TUPLE [conf_class: CONF_CLASS; system: CONF_SYSTEM]] ) is
@@ -1148,13 +1185,10 @@ end
 			l_classes: ARRAYED_LIST [CONF_CLASS]
 			l_class: CLASS_I
 			l_conf_class: CONF_CLASS
-			l_rebuild: BOOLEAN
 			l_grp: CONF_GROUP
 			l_vis_check: CONF_CHECKER_VISITOR
 			l_errors: LIST [CONF_ERROR]
 			vd80: VD80
-			vd71: VD71
-			l_classdbl: CONF_ERROR_CLASSDBL
 		do
 			degree_output.put_start_degree_6
 
@@ -1191,34 +1225,12 @@ end
 					l_vis_modified.process_group_observer.extend (agent degree_output.put_process_group)
 					universe.target.process (l_vis_modified)
 
-					if l_vis_modified.is_error then
-						if l_vis_modified.last_errors.count = 1 then
-							l_classdbl ?= l_vis_modified.last_errors.first
-							if l_classdbl /= Void then
-								l_rebuild := True
-							end
-						end
-						if not l_rebuild then
-							from
-								l_errors := l_vis_modified.last_errors
-								l_errors.start
-							until
-								l_errors.after
-							loop
-								create vd71.make (l_errors.item)
-								Error_handler.insert_error (vd71)
-								l_errors.forth
-							end
-							Error_handler.checksum
-						end
-					end
-
-					if not (l_vis_modified.is_force_rebuild or l_rebuild) then
+					if not l_vis_modified.is_error and then not l_vis_modified.is_force_rebuild then
 						from
 							l_classes := l_vis_modified.modified_classes
 							l_classes.start
 						until
-							l_rebuild or l_classes.after
+							l_classes.after
 						loop
 							l_conf_class := l_classes.item
 							l_grp := l_conf_class.group
@@ -2810,8 +2822,10 @@ feature -- Final mode generation
 		do
 			eiffel_project.terminate_c_compilation
 			if not retried and is_finalization_needed then
-				create l_type_id_mapping.make (0, static_type_id_counter.count)
-				process_dynamic_types (False, l_type_id_mapping)
+				if not il_generation then
+					create l_type_id_mapping.make (0, static_type_id_counter.count)
+					process_dynamic_types (False, l_type_id_mapping)
+				end
 					-- Reset `disposable_descendants' since they can have changed
 					--| Note: That is important to recompute it, as this is a once
 					--| which is not stored in the project file, therefore if we
@@ -2828,7 +2842,7 @@ feature -- Final mode generation
 				byte_context.set_final_mode
 				l_assertions := universe.target.options.assertions
 				keep_assertions := keep_assert and then l_assertions /= Void and then l_assertions.has_assertions
-				set_is_precompile_finalized (True)
+				set_is_precompile_finalized (is_precompiled)
 
 				if il_generation then
 						-- Build conformance table for CLASS_TYPE instances. This is
@@ -2954,7 +2968,9 @@ feature -- Final mode generation
 
 					-- Clean `finalization_needed' tag from all CLASS_C
 				clean_finalization_tag
-				process_dynamic_types (True, l_type_id_mapping)
+				if l_type_id_mapping /= Void then
+					process_dynamic_types (True, l_type_id_mapping)
+				end
 				private_finalize := False
 			end
 		rescue

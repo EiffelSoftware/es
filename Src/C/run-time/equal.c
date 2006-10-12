@@ -89,10 +89,10 @@ rt_public EIF_BOOLEAN eif_xequal(EIF_REFERENCE ref1, EIF_REFERENCE ref2)
 		return EIF_TRUE;
 
 	if (ref1 != (EIF_REFERENCE) 0 && ref2 != (EIF_REFERENCE) 0) {
-			/* We don't care anymore about conformance, eequal expect
+			/* We don't care anymore about conformance, egc_equal expect
 			 * type to be equal, otherwise it returns False.
 			 */
-		return eequal(ref1, ref2);
+		return egc_equal(ref1, ref1, ref2);
 	}
 
 	return EIF_FALSE;
@@ -260,7 +260,7 @@ rt_public EIF_BOOLEAN spiso(register EIF_REFERENCE target, register EIF_REFERENC
 	count = RT_SPECIAL_COUNT_WITH_INFO(s_ref);
 	if (count != RT_SPECIAL_COUNT_WITH_INFO(t_ref))
 		return EIF_FALSE;
-   
+
 	/* Second condition: same element size */
 	elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO (s_ref);
 	if (elem_size != RT_SPECIAL_ELEM_SIZE_WITH_INFO(t_ref))

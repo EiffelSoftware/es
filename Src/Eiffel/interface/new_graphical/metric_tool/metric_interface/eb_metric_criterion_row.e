@@ -152,7 +152,6 @@ feature -- Loading
 			property_manager.load_properties (a_criterion)
 			property_item := property_manager.property_item
 			bind (a_row)
-
 				-- Load subrows.
 			l_nary_cri ?= a_criterion
 			if l_nary_cri /= Void then
@@ -163,7 +162,7 @@ feature -- Loading
 					l_nary_cri.operands.after
 				loop
 					a_row.insert_subrow (a_row.subrow_count + 1)
- 					create l_row.make (l_nary_cri.operands.item, a_row.subrow (a_row.subrow_count), grid, is_read_only, scope)
+ 					create l_row.make (l_nary_cri.operands.item, a_row.subrow (a_row.subrow_count), grid, is_read_only, l_nary_cri.operands.item.scope)
 					register_subrow (l_row)
 					l_nary_cri.operands.forth
 				end
@@ -549,14 +548,17 @@ feature{NONE} -- Implementation
 			a_row_parented: a_row.parent /= Void
 		do
 			subrows.wipe_out
-			from
-			until
-				a_row.subrow_count = 0
-			loop
-				a_row.parent.remove_row (a_row.subrow (a_row.subrow_count).index)
+			if a_row.subrow_count_recursive > 0 then
+				grid.remove_rows (a_row.index + 1, a_row.index + a_row.subrow_count_recursive)
 			end
+--			from
+--			until
+--				a_row.subrow_count = 0
+--			loop
+--				a_row.parent.remove_row (a_row.subrow (a_row.subrow_count).index)
+--			end
 		ensure
-			no_subrow_exists: a_row.subrow_count = 0
+			no_subrow_exists: a_row.subrow_count_recursive = 0
 		end
 
 	name_from_text_field (a_name_str: STRING): TUPLE [name: STRING; negation: BOOLEAN]

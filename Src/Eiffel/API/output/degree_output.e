@@ -197,6 +197,7 @@ feature -- Start output features
 			display_message ("Generating " + type);
 			display_new_line;
 			processed := 0;
+			current_degree := 0
 		end;
 
 	put_string (a_message: STRING) is
@@ -561,7 +562,7 @@ feature {NONE} -- Constants
 	Case_class_message: STRING is "Analyzing Class ";
 	Case_cluster_message: STRING is "Analyzing Cluster ";
 	Document_class_message: STRING is "Generating Class ";
-	Consume_assemblies_message: STRING is "Consuming Assemblies";
+	Consume_assemblies_message: STRING is "Pre-consuming Assembly Types";
 	Degree_output_string: STRING is "Degree ";
 	Cluster_output_string: STRING is " group ";
 	Class_output_string: STRING is " class ";

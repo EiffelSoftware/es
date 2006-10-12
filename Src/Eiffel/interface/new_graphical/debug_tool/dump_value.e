@@ -222,17 +222,17 @@ feature -- Initialization
 			type /= Type_unknown
 		end
 
-	make_expanded_object (dtype: CLASS_C) is
+	make_expanded_object (addr: STRING; dtype: CLASS_C) is
 			-- Make an expanded object item of type `dtype'.
 		require
 			dtype_not_void: dtype /= Void
 		do
 			init
-			value_address := Void
+			value_address := addr
 			type := Type_expanded_object
 			dynamic_class := dtype
 		ensure
-			value_address_set: value_address = Void
+			value_address_set: value_address = addr
 			type_set: type = type_expanded_object
 			dynamic_class_set: dynamic_class = dtype
 		end
@@ -1223,7 +1223,7 @@ feature -- Access
 			Result := not is_type_object and type /= Type_string and type /= Type_string_dotnet
 		end
 
-feature {DUMP_VALUE, ES_OBJECTS_GRID_LINE, EIFNET_EXPORTER, DBG_EXPRESSION_EVALUATOR} -- Internal data
+feature {DUMP_VALUE, ES_OBJECTS_GRID_LINE, DBG_EXPRESSION_EVALUATOR, DBG_EVALUATOR_IMP} -- Internal data
 
 	value_boolean	: BOOLEAN
 	value_character	: CHARACTER

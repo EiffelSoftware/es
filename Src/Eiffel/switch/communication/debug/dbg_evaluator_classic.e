@@ -58,29 +58,29 @@ feature {DBG_EVALUATOR} -- Interface
 			fi := f
 			Init_recv_c
 
-			if
-				a_target /= Void
-				and then not a_target.dynamic_class.is_basic
-				and then a_target.dynamic_class.is_expanded
-			then
-				fixme ("must change the runtime to allow expression evaluation on expanded object !")
-				notify_error_evaluation ("Current restriction: unable to evaluate expression on expanded object")
-			else
-				if params /= Void and then not params.is_empty then
-					prepare_parameters (ctype, realf, params)
-					parameters_reset
-				end
-					-- Send the target object.
-				if a_target = Void then
+			if params /= Void and then not params.is_empty then
+				prepare_parameters (ctype, realf, params)
+				parameters_reset
+			end
+				-- Send the target object.
+			if a_target = Void then
+				if a_addr /= Void then
 					send_ref_value (hex_to_pointer (a_addr))
 				else
-					dmp := a_target
-					if dmp.is_basic then
-						fi := realf
-						par := par + 4
-					end
-					dmp.classic_send_value
+					notify_error_evaluation ("Can not evaluate (non once) function %"{"
+							+ fi.written_class.name_in_upper + "}." + fi.feature_name
+							+ "%" on Void object or Class name")
 				end
+			else
+				dmp := a_target
+				if dmp.is_basic then
+					fi := realf
+					par := par + 4
+				end
+				dmp.classic_send_value
+			end
+
+			if not error_occurred then
 					-- Send the final request.
 				if fi.is_external then
 					par := par + 1

@@ -72,18 +72,18 @@ feature {EV_ANY_I} -- Implementation
 	grab_keyboard_and_mouse is
 			-- Perform a global mouse and keyboard grab.
 		do
-			if not has_fake_focus then
+			if not is_disconnected_from_window_manager then
+				Precursor;
 				{EV_GTK_EXTERNALS}.gtk_grab_add (c_object)
-				Precursor
 			end
 		end
 
 	release_keyboard_and_mouse is
 			-- Release mouse and keyboard grab.
 		do
-			if not has_fake_focus then
+			if not is_disconnected_from_window_manager then
+				Precursor;
 				{EV_GTK_EXTERNALS}.gtk_grab_remove (c_object)
-				Precursor
 			end
 		end
 
@@ -110,7 +110,9 @@ feature {NONE} -- implementation
 					grab_keyboard_and_mouse
 				else
 						-- Emulate WM handling when clicking off window.
-					release_keyboard_and_mouse
+					if has_focus then
+						release_keyboard_and_mouse
+					end
 					{EV_GTK_EXTERNALS}.gtk_window_set_focus (c_object, default_pointer)
 				end
 			end
@@ -142,29 +144,22 @@ feature {NONE} -- implementation
 	hide is
 			-- Unmap the Window from the screen.
 		do
-			release_keyboard_and_mouse
+			if has_focus then
+				release_keyboard_and_mouse
+			end
 			Precursor;
 			{EV_GTK_EXTERNALS}.gtk_widget_set_minimum_size (c_object, internal_minimum_width, internal_minimum_height)
 		end
 
 	has_focus: BOOLEAN is
 			-- Does Current have the keyboard focus?
-		local
-			l_fake_focus_parent: EV_FAKE_FOCUS_POPUP_WINDOW
 		do
-			if not has_fake_focus then
+			if not is_disconnected_from_window_manager then
 				Result := {EV_GTK_EXTERNALS}.gtk_grab_get_current = c_object
 			end
 		end
 
-	has_fake_focus: BOOLEAN
-			-- Is current a fake focus popup?
-		local
-			l_fake_focus_parent: EV_FAKE_FOCUS_POPUP_WINDOW
-		do
-			l_fake_focus_parent ?= interface
-			Result := l_fake_focus_parent /= Void
-		end
+feature {NONE} -- Implementation
 
 	default_wm_decorations: INTEGER is
 			-- Default Window Manager decorations of `Current'.
@@ -173,8 +168,7 @@ feature {NONE} -- implementation
 		end
 
 	client_area: POINTER
-
-feature {NONE} -- Implementation
+		-- Container area of `Current'.
 
 feature {EV_ANY_I} -- Implementation
 

@@ -912,6 +912,7 @@ feature {NONE} -- Implementation
 			build_flat
 			update_status_bar
 			view_toggle_button.set_text (once "Tree View")
+			view_toggle_button.set_tooltip (once "Switch to Tree View")
 		end
 
 	enable_tree_view is
@@ -925,6 +926,7 @@ feature {NONE} -- Implementation
 			build_structured
 			update_status_bar
 			view_toggle_button.set_text (once "Flat View")
+			view_toggle_button.set_tooltip (once "Switch to Flat View")
 		end
 
 	update_status_bar is
@@ -933,7 +935,7 @@ feature {NONE} -- Implementation
 			if not grid.is_tree_enabled and matches /= Void then
 				status_label.set_text (matches.count.out + " matches of " + preferences.preferences.count.out + " total preferences")
 			else
-				status_label.set_text (grid.row_count.out + " preferences")
+				status_label.set_text (preferences.preferences.count.out + " preferences")
 			end
 		end
 
@@ -1155,7 +1157,7 @@ feature {NONE} -- Filtering
 			a_row.select_actions.extend (agent show_preference_description (a_preference))
 			a_row.deselect_actions.extend (agent description_text.remove_text)
 			if a_preference.is_hidden then
-				a_row.item (1).set_foreground_color (hidden_fg_color)
+				a_row.set_foreground_color (hidden_fg_color)
 			end
 		end
 

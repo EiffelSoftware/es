@@ -43,6 +43,7 @@ feature {NONE}-- Initialization
 			create l_ev_cell_4
 			create unit_pixmap
 			create unit_text
+			create name_empty_area
 			create description_area
 			create description_lbl
 			create description_text
@@ -66,6 +67,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_2.extend (l_ev_cell_4)
 			l_ev_horizontal_box_2.extend (unit_pixmap)
 			l_ev_horizontal_box_2.extend (unit_text)
+			name_area.extend (name_empty_area)
 			extend (description_area)
 			description_area.extend (description_lbl)
 			description_area.extend (description_text)
@@ -150,10 +152,11 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
+	name_empty_area: EV_CELL
 	type_pixmap, unit_pixmap: EV_PIXMAP
 	name_area, type_area, description_area: EV_HORIZONTAL_BOX
-	name_lbl, type_lbl,
-	type_text, unit_lbl, unit_text, description_lbl: EV_LABEL
+	name_lbl,
+	type_lbl, type_text, unit_lbl, unit_text, description_lbl: EV_LABEL
 	name_text, name_text_read_only,
 	description_text, description_text_read_only: EV_TEXT_FIELD
 
@@ -183,7 +186,7 @@ feature {NONE} -- Constant setting
 			-- Set all attributes relying on string constants to the current
 			-- value of the associated constant.
 		local
-			s: STRING_32
+			s: STRING_GENERAL
 		do
 			from
 				string_constant_set_procedures.start
@@ -299,7 +302,7 @@ feature {NONE} -- Constant setting
 		end
 					
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
-	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_32]]
+	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
 	integer_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], INTEGER]]
 	pixmap_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_PIXMAP]]]
@@ -318,4 +321,4 @@ feature {NONE} -- Constant setting
 			Result := an_integer
 		end
 
-end -- class EB_METRIC_NAME_AREA_IMP
+end

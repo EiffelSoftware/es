@@ -1400,6 +1400,8 @@ feature {NONE} -- Class initialization
 				elseif ast_b.bottom_indexes /= Void then
 					private_external_name := ast_b.bottom_indexes.external_name
 					set_is_enum (ast_b.bottom_indexes.enum_type /= Void)
+				else
+					private_external_name := Void
 				end
 				if private_external_name = Void then
 					if ast_b.external_class_name /= Void then
@@ -2104,6 +2106,7 @@ feature {NONE} -- Backup implementation
 			l_fact: CONF_COMP_FACTORY
 			l_system: CONF_SYSTEM
 			l_vis: CONF_BACKUP_VISITOR
+			l_targets: HASH_TABLE [CONF_TARGET, STRING]
 		do
 				-- copy original configuration file
 			create l_file_name.make_from_string (a_location)
@@ -2117,6 +2120,9 @@ feature {NONE} -- Backup implementation
 			l_load.retrieve_configuration (l_file_name)
 			if not l_load.is_error then
 				l_system := l_load.last_system
+				l_targets:= l_system.targets
+				l_targets.start
+				l_system.set_application_target (l_targets.item_for_iteration)
 				create l_vis
 				l_vis.set_backup_directory (create {DIRECTORY_NAME}.make_from_string (a_location))
 				l_system.process (l_vis)

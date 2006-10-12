@@ -106,6 +106,8 @@ feature -- Target names and descriptions
 	target_dotnet_naming_convention_description: STRING is "Should names follow the .NET naming convention?"
 	target_dynamic_runtime_name: STRING is "Dynamic Runtime"
 	target_dynamic_runtime_description: STRING is "Should the generated executable use a shared library of the runtime?"
+	target_enforce_unique_class_names_name: STRING is "Enforce unique class names"
+	target_enforce_unique_class_names_description: STRING is "Enforce all class names to be system wide unique?"
 	target_exception_trace_name: STRING is "Exception Trace"
 	target_exception_trace_description: STRING is "Should a complete exception trace be generated in the finalized version?"
 	target_il_verifiable_name: STRING is "IL Verifiable"
@@ -337,11 +339,7 @@ feature -- Misc
 
 	target_remove_group (a_group: STRING): STRING is
 		do
-			Result := "Are you sure you want to remove "+a_group+"?"
-		end
-	target_remove_group_children (a_group: STRING): STRING is
-		do
-			Result := a_group+" cannot be removed because it has sub clusters."
+			Result := "Are you sure you want to remove "+a_group+" and any children of it?"
 		end
 	target_remove_external (a_external: STRING): STRING is
 		do
@@ -499,7 +497,7 @@ feature -- Parse errors
 		end
 	e_parse_invalid_value (an_attribute: STRING): STRING is
 		do
-			Result := "Invalid (empty) value for '"+an_attribute+"'"
+			Result := "Invalid or empty value for '"+an_attribute+"'"
 		end
 	e_parse_invalid_attribute (an_attribute: STRING): STRING is
 		do
@@ -546,6 +544,10 @@ feature -- Parse errors
 	e_parse_incorrect_setting (a_setting: STRING): STRING is
 		do
 			Result := "Invalid setting tag "+a_setting
+		end
+	e_parse_incorrect_setting_value	(a_setting: STRING): STRING is
+		do
+			Result := "Invalid value for setting "+a_setting
 		end
 
 	e_parse_incorrect_file_rule: STRING is "Invalid file_rule tag."

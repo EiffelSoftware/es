@@ -132,7 +132,6 @@ feature {NONE} -- Initialization
 			end
 			notebook.set_tab_position (notebook.tab_bottom)
 			notebook.selection_actions.extend (agent on_tab_changed)
-			notebook.set_minimum_size (400, 50)
 
 			class_view.set_parent_notebook (notebook)
 			feature_view.set_parent_notebook (notebook)
@@ -214,7 +213,7 @@ feature -- Access
 			-- Compilation warning output display.
 
 	metrics: EB_METRIC_TOOL
-			--
+			-- Metric tool
 
 	address_manager: EB_ADDRESS_MANAGER
 			-- Manager for the header info.
@@ -457,7 +456,7 @@ feature -- Stone management
 		local
 			conv_dev: EB_DEVELOPMENT_WINDOW
 		do
-			if st.is_valid then
+			if st /= Void and then st.is_valid then
 				conv_dev ?= manager
 				if conv_dev /= Void then
 					if conv_dev.unified_stone then

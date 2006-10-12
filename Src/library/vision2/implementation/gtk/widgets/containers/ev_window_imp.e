@@ -17,9 +17,8 @@ inherit
 			interface
 		end
 
-	EV_CONTAINER_IMP
+	EV_CELL_IMP
 		undefine
-			replace,
 			x_position,
 			y_position,
 			screen_x,
@@ -40,7 +39,8 @@ inherit
 			on_widget_mapped,
 			destroy,
 			has_focus,
-			on_focus_changed
+			on_focus_changed,
+			container_widget
 		end
 
 	EV_GTK_WINDOW_IMP
@@ -52,7 +52,8 @@ inherit
 			interface,
 			on_key_event,
 			has_focus,
-			show
+			show,
+			hide
 		end
 
 	EV_WINDOW_ACTION_SEQUENCES_IMP
@@ -73,11 +74,11 @@ feature {NONE} -- Initialization
 		end
 
 	initialize is
-			-- Create the vertical box `vbox' and horizontal box `hbox'
+			-- Create the vertical box `vbox' and horizontal box `container_widget'
 			-- to put in the window.
-			-- The `vbox' will be able to contain the menu bar, the `hbox'
+			-- The `vbox' will be able to contain the menu bar, the `container_widget'
 			-- and the status bar.
-			-- The `hbox' will contain the child of the window.
+			-- The `container_widget' will contain the child of the window.
 		local
 			on_key_event_intermediary_agent: PROCEDURE [EV_GTK_CALLBACK_MARSHAL, TUPLE [EV_KEY, STRING_32, BOOLEAN]]
 			app_imp: like app_implementation
@@ -124,7 +125,7 @@ feature {NONE} -- Initialization
 			{EV_GTK_EXTERNALS}.gtk_window_add_accel_group (l_c_object, accel_group)
 
 			{EV_GTK_EXTERNALS}.gtk_window_set_default_size (l_c_object, 1, 1)
-			Precursor {EV_CONTAINER_IMP}
+			Precursor {EV_CELL_IMP}
 				-- Need to set decorations after window is realized.
 			{EV_GTK_EXTERNALS}.gdk_window_set_decorations ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (l_c_object), default_wm_decorations)
 			internal_is_border_enabled := True
@@ -139,9 +140,6 @@ feature  -- Access
 		do
 			Result := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_window_is_active (c_object)
 		end
-
-	item: EV_WIDGET
-			-- Current item.
 
  	maximum_width: INTEGER
 			-- Maximum width that application wishes widget
@@ -228,34 +226,13 @@ feature -- Status setting
 				a_x_pos := x_position
 				a_y_pos := y_position
 				disable_capture
-				set_blocking_window (Void)
-				Precursor {EV_CONTAINER_IMP}
+				Precursor {EV_GTK_WINDOW_IMP}
 					-- Setting positions so that if `Current' is reshown then it reappears in the same place, as on Windows.
 				set_position (a_x_pos, a_y_pos)
 			end
 		end
 
 feature -- Element change
-
-	replace (v: like item) is
-			-- Replace `item' with `v'.
-		local
-			w: EV_WIDGET_IMP
-			i: EV_WIDGET
-		do
-			i := item
-			if i /= Void then
-				w ?= i.implementation
-				on_removed_item (w)
-				{EV_GTK_EXTERNALS}.gtk_container_remove (hbox, w.c_object)
-			end
-			if v /= Void then
-				w ?= v.implementation
-				{EV_GTK_EXTERNALS}.gtk_box_pack_end (hbox, w.c_object, True, True, 0)
-				on_new_item (w)
-			end
-			item := v
-		end
 
 	set_maximum_width (max_width: INTEGER) is
 			-- Set `maximum_width' to `max_width'.
@@ -360,7 +337,7 @@ feature {EV_ANY_IMP} -- Implementation
 		do
 			disable_capture
 			hide
-			Precursor {EV_CONTAINER_IMP}
+			Precursor {EV_CELL_IMP}
 		end
 
 feature {NONE} -- Implementation
@@ -379,7 +356,7 @@ feature {NONE} -- Implementation
 			-- Set the minimum vertical size to `a_minimum_height'.
 		do
 			{EV_GTK_EXTERNALS}.gtk_widget_set_usize (c_object, -1, -1)
-			Precursor {EV_CONTAINER_IMP} (a_minimum_width, a_minimum_height)
+			Precursor (a_minimum_width, a_minimum_height)
 		end
 
 	on_size_allocate (a_x, a_y, a_width, a_height: INTEGER) is
@@ -425,7 +402,7 @@ feature {NONE} -- Implementation
 			else
 				on_set_focus_event (default_pointer)
 			end
-			Precursor {EV_CONTAINER_IMP} (a_has_focus)
+			Precursor {EV_CELL_IMP} (a_has_focus)
 		end
 
 	previous_x_position, previous_y_position: INTEGER
@@ -441,7 +418,7 @@ feature {NONE} -- Implementation
 			l_tab_controlable: EV_TAB_CONTROLABLE_I
 		do
 			l_app_imp := app_implementation
-			Precursor {EV_CONTAINER_IMP} (a_key, a_key_string, a_key_press, True)
+			Precursor {EV_CELL_IMP} (a_key, a_key_string, a_key_press, True)
 				-- Fire the widget events.
 			a_focus_widget ?= l_app_imp.eif_object_from_gtk_object ({EV_GTK_EXTERNALS}.gtk_window_struct_focus_widget (c_object))
 
@@ -492,19 +469,26 @@ feature {NONE} -- Implementation
 
 			{EV_GTK_EXTERNALS}.gtk_widget_show (vbox)
 			{EV_GTK_EXTERNALS}.gtk_container_add (client_area, vbox)
-			hbox := {EV_GTK_EXTERNALS}.gtk_hbox_new (False, 0)
-			{EV_GTK_EXTERNALS}.gtk_widget_show (hbox)
+			container_widget := {EV_GTK_EXTERNALS}.gtk_hbox_new (False, 0)
+			{EV_GTK_EXTERNALS}.gtk_widget_show (container_widget)
 
 			bar_imp ?= upper_bar.implementation
 
 			{EV_GTK_EXTERNALS}.gtk_box_pack_start (vbox, bar_imp.c_object, False, True, 0)
-			{EV_GTK_EXTERNALS}.gtk_box_pack_start (vbox, hbox, True, True, 0)
+			{EV_GTK_EXTERNALS}.gtk_box_pack_start (vbox, container_widget, True, True, 0)
 
 			bar_imp ?= lower_bar.implementation
 
 			{EV_GTK_EXTERNALS}.gtk_box_pack_start (vbox, bar_imp.c_object, False, True, 0)
 
 			app_implementation.window_oids.extend (internal_id)
+
+				-- Initialize accelerators box.
+			accel_box := {EV_GTK_EXTERNALS}.gtk_menu_item_new
+			{EV_GTK_EXTERNALS}.gtk_container_add (accel_box, {EV_GTK_EXTERNALS}.gtk_label_new (NULL))
+			{EV_GTK_EXTERNALS}.gtk_widget_show (accel_box)
+			{EV_GTK_EXTERNALS}.gtk_widget_set_minimum_size (accel_box, 0, 0)
+			{EV_GTK_EXTERNALS}.gtk_box_pack_start (vbox, accel_box, False, False, 0)
 		end
 
 feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
@@ -529,15 +513,33 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 
 feature {EV_GTK_WINDOW_IMP, EV_PICK_AND_DROPABLE_IMP, EV_APPLICATION_IMP} -- Implementation
 
+	modal_window_count: INTEGER
+		-- Number of windows modal to current.
+
+	increase_modal_window_count
+			-- Increase modal window count.
+		do
+			if modal_window_count = 0 then
+				disallow_window_manager_focus
+			end
+			modal_window_count := modal_window_count + 1
+		end
+
+	decrease_modal_window_count
+			-- Decrease modal window count.
+		require
+			modal_window_count_decreasable: modal_window_count > 0
+		do
+			modal_window_count := modal_window_count - 1
+			if modal_window_count = 0 then
+				allow_window_manager_focus
+			end
+		end
+
 	has_modal_window: BOOLEAN
 			-- Does `Current' have a transient window that is modal to `Current'.
-
-	set_has_modal_window (a_bool: BOOLEAN) is
-			-- Set `has_modal_window' to `a_bool'.
-		require
-		--	not_set: a_bool = not has_modal_window
 		do
-			has_modal_window := a_bool
+			Result := modal_window_count > 0
 		end
 
 	allow_window_manager_focus is
@@ -607,8 +609,8 @@ feature {EV_INTERMEDIARY_ROUTINES}
 
 feature {EV_CLIPBOARD_IMP} -- Implementation
 
-	hbox: POINTER
-			-- Horizontal box for the child.
+	container_widget: POINTER
+			-- Horizontal box container for the child.
 
 feature {EV_ANY_I} -- Implementation
 

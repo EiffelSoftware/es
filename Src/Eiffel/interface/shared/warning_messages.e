@@ -120,7 +120,7 @@ feature -- Project file/directory warnings
 
 	w_project_build_precompile: STRING is "Project needs a precompile, should the precompile be built?"
 
-	w_project_build_precompile_error: STRING is "Could not generated needed precompile."
+	w_project_build_precompile_error: STRING is "Could not generate needed precompile."
 
 	w_Project_interrupted (dir_name: STRING): STRING is
 		require
@@ -813,11 +813,8 @@ feature -- Dynamic library warnings
 
 feature -- Ace/Project settings warnings
 
-	w_Could_not_parse_ace: STRING is "An error occurred while parsing the Ace file.%N%
-									%Please try using the system configuration tool."
-
-	w_Incorrect_ace_configuration: STRING is "Some values are invalid, %
-									%please correct the corresponding entries"
+	w_Could_not_parse_ace: STRING is "An error occurred while parsing the configuration file.%N%
+									%Please try using the project settings tool."
 
 feature -- Profiler messages
 
@@ -876,11 +873,11 @@ feature -- Refactoring
 feature -- Warning messages
 
 	w_Assertion_warning: STRING is
-		"By default assertions enabled in the Ace file are kept%N%
+		"By default assertions enabled in the configuration file are kept%N%
 		%in final mode.%N%
 		%%N%
 		%Keeping assertion checking inhibits any optimization%N%
-		%specified in the Ace (inlining, array optimization,%N%
+		%specified in the configuration (inlining, array optimization,%N%
 		%dead-code removal) and will produce a final executable%N%
 		%that is not optimal in speed and size.%N%
 		%%N%

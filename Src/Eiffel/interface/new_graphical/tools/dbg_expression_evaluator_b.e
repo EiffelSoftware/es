@@ -245,7 +245,7 @@ feature {NONE} -- EXPR_B evaluation
 					end
 				end
 			else
-				evaluate_value_i (l_value_i)
+				evaluate_value_i (l_value_i, Void)
 			end
 		end
 
@@ -298,47 +298,92 @@ feature {NONE} -- EXPR_B evaluation
 			end
 		end
 
-	evaluate_value_i (a_value_i: VALUE_I) is
+	evaluate_value_i (a_value_i: VALUE_I; cl: CLASS_C) is
+		require
+			a_value_i_not_void: a_value_i /= Void
 		local
 			l_integer: INTEGER_CONSTANT
+			l_bit: BIT_VALUE_I
 			l_char: CHAR_VALUE_I
 			l_real: REAL_VALUE_I
 			l_string: STRING_VALUE_I
+			l_type: TYPE_I
+			l_cl: CLASS_C
 			-- ...
 		do
+			l_cl := cl
 			if a_value_i.is_integer then
 				l_integer ?= a_value_i
-				if l_integer.has_integer (32) then
-					create tmp_result_value.make_integer_32 (l_integer.integer_32_value,
-						system.integer_32_class.compiled_class)
+				l_type := l_integer.type
+				if
+					l_cl = Void
+					and then l_type.type_a /= Void
+					and then l_type.type_a.has_associated_class
+				then
+					l_cl := l_type.type_a.associated_class
+				end
+				if l_cl /= Void then
+					if l_type.is_natural then
+						if l_integer.has_natural (32) then
+							create tmp_result_value.make_natural_32 (l_integer.natural_32_value, l_cl)
+						else
+							create tmp_result_value.make_natural_64 (l_integer.natural_64_value, l_cl)
+						end
+					else
+						if l_integer.has_integer (32) then
+							create tmp_result_value.make_integer_32 (l_integer.integer_32_value, l_cl)
+						else
+							create tmp_result_value.make_integer_64 (l_integer.integer_64_value, l_cl)
+						end
+					end
 				else
-					create tmp_result_value.make_integer_64 (l_integer.integer_64_value,
-						system.integer_64_class.compiled_class)
+						--| This should not occur, but in case it does
+						--| let's display it as INTEGER_64
+					l_cl := System.integer_64_class.compiled_class
+					create tmp_result_value.make_integer_64 (l_integer.integer_64_value, l_cl)
 				end
 			elseif a_value_i.is_string then
 				l_string ?= a_value_i
-				create tmp_result_value.make_manifest_string (l_string.string_value,
-					system.string_8_class.compiled_class)
+				if l_cl = Void then
+					l_cl := System.string_8_class.compiled_class
+				end
+				create tmp_result_value.make_manifest_string (l_string.string_value, l_cl)
 			elseif a_value_i.is_boolean then
-				create tmp_result_value.make_boolean (a_value_i.boolean_value,
-					system.boolean_class.compiled_class)
+				if l_cl = Void then
+					l_cl := System.boolean_class.compiled_class
+				end
+				create tmp_result_value.make_boolean (a_value_i.boolean_value, l_cl)
 			elseif a_value_i.is_character then
 				l_char ?= a_value_i
-				if l_char.is_character_8 then
-					create tmp_result_value.make_character (l_char.character_value.to_character_8,
-						system.character_8_class.compiled_class)
+				if l_char.is_character_32 then
+					if l_cl = Void then
+						l_cl := System.Character_32_class.compiled_class
+					end
+					create tmp_result_value.make_wide_character (l_char.character_value, l_cl)
 				else
-					create tmp_result_value.make_wide_character (l_char.character_value,
-						system.character_32_class.compiled_class)
+					if l_cl = Void then
+						l_cl := System.Character_8_class.compiled_class
+					end
+					create tmp_result_value.make_character (l_char.character_value.to_character_8, l_cl)
 				end
-			elseif a_value_i.is_real then
+			elseif a_value_i.is_real_32 then
 				l_real ?= a_value_i
-				if l_real.is_real_32 then
-					create tmp_result_value.make_real (l_real.real_32_value, system.real_32_class.compiled_class)
-				else
-					create tmp_result_value.make_double (l_real.real_64_value, system.real_64_class.compiled_class)
+				if l_cl = Void then
+					l_cl := System.real_32_class.compiled_class
 				end
---			elseif a_value_i.is_bit then
+				create tmp_result_value.make_real (l_real.real_32_value, l_cl)
+			elseif a_value_i.is_real_64 then
+				l_real ?= a_value_i
+				if l_cl = Void then
+					l_cl := System.real_64_class.compiled_class
+				end
+				create tmp_result_value.make_double (l_real.real_32_value, l_cl)
+			elseif a_value_i.is_bit then
+				l_bit ?= a_value_i
+				if l_cl = Void then
+					l_cl := System.bit_class.compiled_class
+				end
+				create tmp_result_value.make_bits (l_bit.bit_value, l_cl.class_signature, l_cl);
 			else
 				notify_error_not_implemented (a_value_i.generator + Cst_error_not_yet_ready)
 			end
@@ -533,7 +578,7 @@ feature {NONE} -- EXPR_B evaluation
 									l_v_i := l_e_b.evaluate
 									if l_v_i /= Void then
 										l_supported	:= True
-										evaluate_value_i (l_v_i)
+										evaluate_value_i (l_v_i, Void)
 									end
 								end
 							end
@@ -962,11 +1007,9 @@ feature {NONE} -- Concrete evaluation
 		do
 			cv_cst_i ?= f
 			if cv_cst_i /= Void then
-				evaluate_value_i (cv_cst_i.value)
+				evaluate_value_i (cv_cst_i.value, cv_cst_i.type.associated_class)
 			else
-				prepare_evaluation
-				Dbg_evaluator.evaluate_constant (f)
-				retrieve_evaluation
+				notify_error_evaluation ("Unknown constant type for " + Cst_feature_name_left_limit + f.feature_name + Cst_feature_name_right_limit)
 			end
 		end
 
@@ -1208,6 +1251,22 @@ feature {NONE} -- Implementation
 			Result := dbg_evaluator.dump_value_at_address (addr)
 		end
 
+	prepare_contexts (cl: CLASS_C; ct: CLASS_TYPE) is
+		require
+			cl_not_void: cl /= Void
+			ct_associated_to_cl: ct /= Void implies ct.associated_class.is_equal (cl)
+		local
+			l_ta: CL_TYPE_A
+		do
+			if ct /= Void then
+				l_ta := ct.type.type_a
+			else
+				l_ta := cl.actual_type
+			end
+			Ast_context.initialize (cl, l_ta, cl.feature_table)
+			Inst_context.set_group (cl.group)
+		end
+
 	get_expression_byte_node is
 			-- get expression byte node depending of the context
 		require
@@ -1217,11 +1276,10 @@ feature {NONE} -- Implementation
 			retried: BOOLEAN
 
 			l_ct_locals: HASH_TABLE [LOCAL_INFO, STRING]
-			f_as: FEATURE_AS
+			f_as: BODY_AS
 			l_byte_code: BYTE_CODE
-			l_ta: CL_TYPE_A
 			bak_byte_code: BYTE_CODE
-			bak_cc: CLASS_C
+			bak_cc, l_cl: CLASS_C
 		do
 			expression_byte_node_computed := True
 			if not retried then
@@ -1249,13 +1307,7 @@ feature {NONE} -- Implementation
 					if context_class /= Void then
 						ast_context.clear_all
 							--| Prepare Compiler context
-						if context_class_type /= Void then
-							l_ta := context_class_type.type.type_a
-						else
-							l_ta := context_class.actual_type
-						end
-						ast_context.initialize (context_class, l_ta, context_class.feature_table)
-						Inst_context.set_group (context_class.group)
+						prepare_contexts (context_class, context_class_type)
 
 						bak_cc := System.current_class
 						System.set_current_class (context_class)
@@ -1263,22 +1315,39 @@ feature {NONE} -- Implementation
 						bak_byte_code := Byte_context.byte_code
 
 						if on_context and then context_feature /= Void then
-								--| Locals
-							f_as := context_feature.body
-
+							if not context_class.conform_to (context_feature.written_class) then
+								debug ("debugger_trace_eval_data")
+									print ("Context class {"+ context_class.name_in_upper
+											+"} does not has context feature %""+context_feature.feature_name+"%"%N")
+								end
+								--| This issue occurs for instance in {TEST}.twin 
+								--| where {ISE_RUNTIME}check_assert (boolean) is called
+								--| at this point the context class is TEST, 
+								--| and the context feature is `check_assert (BOOLEAN)'
+								--| but TEST doesn't conform to ISE_RUNTIME.
+								l_cl := context_feature.written_class
+								prepare_contexts (l_cl, Void)
+								System.set_current_class (l_cl)
+							else
+								l_cl := context_class
+							end
 							Ast_context.set_current_feature (context_feature)
 
 							fixme ("jfiat [2004/10/16] : Seems pretty heavy computing ..")
 							l_byte_code := context_feature.byte_server.item (context_feature.body_index)
 							Byte_context.set_byte_code (l_byte_code)
 
-							l_ct_locals := locals_builder.local_table (context_class, context_feature, f_as)
-							if l_ct_locals /= Void then
-									--| if it failed .. let's continue anyway for now
+								--| Locals
+							f_as := context_feature.real_body
+							if f_as /= Void or True then
+								l_ct_locals := locals_builder.local_table (l_cl, context_feature, f_as)
+								if l_ct_locals /= Void then
+										--| if it failed .. let's continue anyway for now
 
-									--| Last local return a new object
-									--| so there is no need to "twin" it
-								Ast_context.set_locals (l_ct_locals)
+										--| Last local return a new object
+										--| so there is no need to "twin" it
+									Ast_context.set_locals (l_ct_locals)
+								end
 							end
 						end
 							--| Compute and get `expression_byte_node'
@@ -1307,11 +1376,6 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	dbg_expression_checker: AST_DEBUGGER_EXPRESSION_CHECKER_GENERATOR is
-		once
-			create Result
-		end
-
 	expression_byte_node_from_ast (exp: EXPR_AS): like expression_byte_node is
 			-- compute expression_byte_node from EXPR_AS `exp'
 		require
@@ -1326,6 +1390,13 @@ feature {NONE} -- Implementation
 				error_handler.wipe_out
 				Ast_context.set_is_ignoring_export (True)
 				dbg_expression_checker.init (ast_context)
+				debug ("debugger_trace_eval_data")
+					print (generator + ".expression_byte_node_from_ast (..) %N")
+					print ("   Ast_context -> {"
+							+ ast_context.current_class.name_in_upper
+							+ "}." + ast_context.current_feature.feature_name
+							+ "%N")
+				end
 				dbg_expression_checker.expression_type_check_and_code (context_feature, exp)
 				Ast_context.set_is_ignoring_export (False)
 
@@ -1364,6 +1435,11 @@ feature {NONE} -- Implementation
 
 	internal_expression_byte_node: like expression_byte_node
 
+	dbg_expression_checker: AST_DEBUGGER_EXPRESSION_CHECKER_GENERATOR is
+		once
+			create Result
+		end
+
 feature {NONE} -- Compiler helpers
 
 	feature_i_from_call_access_b_in_context (cl: CLASS_C; a_call_access_b: CALL_ACCESS_B): FEATURE_I is
@@ -1380,7 +1456,6 @@ feature {NONE} -- Compiler helpers
 			else
 				wcl := system.class_of_id (a_call_access_b.written_in)
 				Result := wcl.feature_of_rout_id (a_call_access_b.routine_id)
---				Result := wcl.feature_named (a_call_access_b.feature_name)
 				if Result = Void then
 						--| Better try to find the feature by any way
 					fixme ("We should redesign this part to do exactly what should be done")

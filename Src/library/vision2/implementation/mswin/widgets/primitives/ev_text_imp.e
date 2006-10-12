@@ -336,7 +336,7 @@ feature -- Status Settings
 			cwin_send_message (wel_item, Em_limittext, to_wparam (0), to_lparam (0))
 			show_vertical_scroll_bar
 			if parent_imp /= Void then
-				parent_imp.notify_change (2 + 1, Current)
+				parent_imp.notify_change (nc_minsize, Current)
 			end
 		end
 
@@ -353,7 +353,7 @@ feature -- Status Settings
 			cwin_send_message (wel_item, Em_limittext, to_wparam (0), to_lparam (0))
 			show_vertical_scroll_bar
 			if parent_imp /= Void then
-				parent_imp.notify_change (2 + 1, Current)
+				parent_imp.notify_change (nc_minsize, Current)
 			end
 		end
 
@@ -437,6 +437,12 @@ feature -- Basic operation
 			-- Ensure that line `i' is visible in `Current'.
 		do
 			scroll (0, i - first_visible_line - 1)
+		end
+
+	scroll_to_end is
+			-- Ensure that the last line is visible in `Current'.
+		do
+			scroll_to_line (line_count)
 		end
 
 feature {NONE} -- Implementation

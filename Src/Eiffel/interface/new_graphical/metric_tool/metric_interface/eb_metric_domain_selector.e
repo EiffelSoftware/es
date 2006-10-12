@@ -125,8 +125,12 @@ feature {NONE} -- Initialization
 			l_border.set_background_color (l_colors.black)
 			create grid
 			grid.set_column_count_to (1)
-			grid.set_minimum_width (200)
+			grid.set_minimum_width (100)
 			grid.enable_multiple_row_selection
+
+			create grid_support.make_with_grid (grid)
+			grid_support.enable_ctrl_right_click_to_open_new_window
+			grid_support.enable_editor_token_pnd
 
 			create scope_grid.make (grid)
 			scope_grid.disable_search
@@ -142,18 +146,14 @@ feature {NONE} -- Initialization
 
 				-- Setup agents
 			grid.drop_actions.extend (agent on_drop (?))
-			grid.set_pebble_function (agent pebble_function)
 			add_item_btn.select_actions.extend (agent on_add_scope_from_dialog)
 			remove_item_btn.select_actions.extend (agent on_remove_selected_scopes)
 			remove_item_btn.drop_actions.extend (agent on_item_drop_on_remove_button)
 			remove_all_btn.select_actions.extend (agent on_remove_all_scopes)
-			grid.set_item_pebble_function (agent grid_item_pebble)
 			remove_item_btn.drop_actions.extend (agent on_item_dropped_on_remove_button)
 			remove_all_btn.drop_actions.extend (agent on_item_dropped_on_remove_button)
 			add_item_btn.drop_actions.extend (agent on_drop)
 			grid.key_press_actions.extend (agent on_key_pressed)
-			grid.pick_ended_actions.force_extend (agent on_pick_ended)
-			grid.set_item_pebble_function (agent on_pick)
 			grid.enable_selection_on_single_button_click
 			remove_all_btn.drop_actions.extend (agent on_item_drop_on_remove_button)
 		end
@@ -207,6 +207,9 @@ feature -- Access
 
 	address_manager: EB_ADDRESS_MANAGER
 			-- Address manager
+
+	grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT
+			-- Grid support
 
 feature -- Element change
 
@@ -297,6 +300,36 @@ feature -- Status report
 			result := a_domain.has (a_item)
 		end
 
+feature -- Actions
+
+	on_drop (a_any: ANY) is
+			-- Invoke when dropping a pebble to add an item to the scope.
+		local
+			l_classi_stone: CLASSI_STONE
+			l_cluster_stone: CLUSTER_STONE
+			l_feature_stone: FEATURE_STONE
+			l_target_stone: TARGET_STONE
+			l_stone: STONE
+			l_domain: like domain
+		do
+			l_stone ?= a_any
+			l_domain := domain
+			if
+				l_stone /= Void and then
+				not l_domain.has_delayed_domain_item and then
+				not domain_has (l_domain, domain_item_from_stone (l_stone))
+			then
+				l_classi_stone ?= a_any
+				l_cluster_stone ?= a_any
+				l_feature_stone ?= a_any
+				l_target_stone ?= a_any
+				if l_classi_stone /= Void or l_cluster_stone /= Void or l_feature_stone /= Void or l_target_stone /= Void then
+					insert_domain_item (domain_item_from_stone (l_stone))
+					on_domain_change
+				end
+			end
+		end
+
 feature{NONE} -- Actions
 
 	on_remove_selected_scopes is
@@ -350,34 +383,6 @@ feature{NONE} -- Actions
 			end
 		end
 
-	on_drop (a_any: ANY) is
-			-- Invoke when dropping a pebble to add an item to the scope.
-		local
-			l_classi_stone: CLASSI_STONE
-			l_cluster_stone: CLUSTER_STONE
-			l_feature_stone: FEATURE_STONE
-			l_target_stone: TARGET_STONE
-			l_stone: STONE
-			l_domain: like domain
-		do
-			l_stone ?= a_any
-			l_domain := domain
-			if
-				l_stone /= Void and then
-				not l_domain.has_delayed_domain_item and then
-				not domain_has (l_domain, domain_item_from_stone (l_stone))
-			then
-				l_classi_stone ?= a_any
-				l_cluster_stone ?= a_any
-				l_feature_stone ?= a_any
-				l_target_stone ?= a_any
-				if l_classi_stone /= Void or l_cluster_stone /= Void or l_feature_stone /= Void or l_target_stone /= Void then
-					insert_domain_item (domain_item_from_stone (l_stone))
-					on_domain_change
-				end
-			end
-		end
-
 	on_delayed_scope_added is
 			-- Action to be performed when a delayed scope is added
 		local
@@ -415,7 +420,7 @@ feature{NONE} -- Actions
 			l_row: EB_METRIC_DOMAIN_ITEM_ROW
 			l_stone: STONE
 		do
-			if a_item /= Void then
+			if not ev_application.ctrl_pressed and then a_item /= Void then
 				l_row ?= a_item.data
 				if l_row /= Void and then l_row.is_valid then
 					l_stone := l_row.stone
@@ -463,61 +468,13 @@ feature{NONE} -- Actions
 
 	on_item_drop_on_remove_button (a_pebble: ANY) is
 			-- Action to be performed when `a_pebble' is dropped on `remove_item_btn'
+		local
+			l_last_picked_item: EV_GRID_ITEM
 		do
-			if last_picked_item /= Void then
-				grid.remove_row (last_picked_item.row.index)
+			l_last_picked_item := grid_support.last_picked_item
+			if l_last_picked_item /= Void then
+				grid.remove_row (l_last_picked_item.row.index)
 				on_domain_change
-			end
-		end
-
-feature{NONE} -- Implementation/Pick and drop
-
-	last_picked_item: EV_GRID_ITEM
-			-- Last picked item	
-
-	on_pick_ended (a_item: EV_ABSTRACT_PICK_AND_DROPABLE) is
-			-- Action performed when pick ends
-		local
-			l_item: EB_GRID_EDITOR_TOKEN_ITEM
-		do
-			l_item ?= last_picked_item
-			if l_item /= Void then
-				l_item.set_last_picked_token (0)
-				if l_item.is_parented and then l_item.is_selectable then
-					l_item.enable_select
-				end
-				if l_item.is_parented then
-					l_item.redraw
-				end
-			end
-			last_picked_item := Void
-		ensure
-			last_picked_item_not_attached: last_picked_item = Void
-		end
-
-	on_pick (a_item: EV_GRID_ITEM): ANY is
-			-- Action performed when pick on `a_item'.
-		local
-			l_item: EB_GRID_EDITOR_TOKEN_ITEM
-			l_stone: STONE
-			l_index: INTEGER
-		do
-			last_picked_item := Void
-			l_item ?= a_item
-			if l_item /= Void then
-				l_index := l_item.token_index_at_current_position
-				if l_index > 0 then
-					Result := l_item.editor_token_pebble (l_index)
-					l_stone ?= Result
-					if l_stone /= Void then
-						grid.remove_selection
-						grid.set_accept_cursor (l_stone.stone_cursor)
-						grid.set_deny_cursor (l_stone.x_stone_cursor)
-						l_item.set_last_picked_token (l_index)
-						l_item.redraw
-						last_picked_item := l_item
-					end
-				end
 			end
 		end
 
@@ -703,6 +660,8 @@ feature{NONE} -- Implementation/Sorting
 
 invariant
 	domain_change_actions_attached: domain_change_actions /= Void
+	grid_attached: grid /= Void
+	grid_support_attached: grid_support /= Void
 
 indexing
         copyright:	"Copyright (c) 1984-2006, Eiffel Software"

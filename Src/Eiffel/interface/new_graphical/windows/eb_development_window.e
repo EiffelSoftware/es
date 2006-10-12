@@ -905,22 +905,6 @@ feature -- Pulldown Menus
 	debugging_tools_menu: EV_MENU
 			-- Debugging tools menu item
 
-	active_menus (erase: BOOLEAN) is
-			-- Enable all the menus and if `erase' clean
-			-- the content of the Project tool.
-		do
-			compile_menu.enable_sensitive
-			if erase then
-				output_manager.clear
-			end
-		end
-
-	disable_menus is
-			-- Disable all the menus.
-		do
-			compile_menu.disable_sensitive
-		end
-
 	update_debug_menu is
 			-- Update debug menu
 		do
@@ -947,6 +931,26 @@ feature -- Update
 			l_text_area: EB_SMART_EDITOR
 		do
 			during_synchronization := True
+			if
+				stone = Void and then
+				eiffel_project.system_defined and then
+				eiffel_project.initialized and then
+				eiffel_system.workbench.is_already_compiled and then
+				eiffel_system.workbench.last_reached_degree <= 5 and then
+				eiffel_system.root_cluster /= Void and then
+				eiffel_system.root_class_name /= Void
+			then
+				if eiffel_system.root_class.is_compiled then
+					stone := create {CLASSC_STONE}.make (eiffel_system.system.root_class.compiled_class)
+				else
+					stone := create {CLASSI_STONE}.make (eiffel_system.system.root_class)
+				end
+				if
+					eiffel_system.universe.target.clusters.count = 1
+				then
+					cluster_tool.show_current_class_cluster_cmd.execute
+				end
+			end
 			favorites_manager.refresh
 			context_tool.synchronize
 			cluster_tool.synchronize
@@ -1504,7 +1508,7 @@ feature {NONE} -- Menu Building
 			create cmd.make
 			cmd.set_menu_name (Interface_names.m_go_to)
 			cmd.add_agent (agent goto)
-			cmd.set_needs_editable (True)
+			cmd.set_needs_editable (False)
 			command_menu_item := cmd.new_menu_item
 			command_controller.add_edition_command (cmd)
 			add_recyclable (command_menu_item)
@@ -1759,6 +1763,11 @@ feature {NONE} -- Menu Building
 			add_recyclable (command_menu_item)
 			project_menu.extend (command_menu_item)
 
+				-- Discover melt
+			command_menu_item := discover_melt_cmd.new_menu_item
+			add_recyclable (command_menu_item)
+			project_menu.extend (command_menu_item)
+
 				-- Override scan
 			command_menu_item := override_scan_cmd.new_menu_item
 			add_recyclable (command_menu_item)
@@ -1957,7 +1966,9 @@ feature {NONE} -- Menu Building
 				-- New Assembly command.
 			command_menu_item := new_assembly_cmd.new_menu_item
 			add_recyclable (command_menu_item)
-			tools_menu.extend (command_menu_item)
+			if eiffel_layout.default_il_environment.is_dotnet_installed then
+				tools_menu.extend (command_menu_item)
+			end
 
 				-- New Class command.
 			command_menu_item := new_class_cmd.new_menu_item
@@ -2156,7 +2167,7 @@ feature -- Stone process
 						-- we attempt to scroll to the feature without asking to save the file
 						-- except if it is during a resynchronization, in which case we do not scroll at all.
 					if editor_tool.text_area.text_is_fully_loaded then
-						if not during_synchronization then
+						if not during_synchronization and then feature_stone.e_feature /= Void then
 							scroll_to_feature (feature_stone.e_feature, new_class_stone.class_i)
 							feature_stone_already_processed := True
 						else
@@ -2831,16 +2842,24 @@ feature -- Multiple editor management
 	update_paste_cmd is
 			-- Update `editor_paste_cmd'. To be performed when an editor grabs the focus.
 		do
-			if
-				not current_editor.is_empty and then
-				current_editor.is_editable and then
-				current_editor.clipboard.has_text
-			then
-				editor_paste_cmd.enable_sensitive
-			else
-				editor_paste_cmd.disable_sensitive
+			if update_paste_cmd_agent = Void then
+				update_paste_cmd_agent := agent do
+					if
+						not current_editor.is_empty and then
+						current_editor.is_editable and then
+						current_editor.clipboard.has_text
+					then
+						editor_paste_cmd.enable_sensitive
+					else
+						editor_paste_cmd.disable_sensitive
+					end
+				end
 			end
+			ev_application.do_once_on_idle (update_paste_cmd_agent)
 		end
+
+	update_paste_cmd_agent: PROCEDURE [ANY, TUPLE]
+		-- Agent used for updating the paste command.
 
 feature {NONE} -- Multiple editor management
 
@@ -3258,7 +3277,7 @@ feature {NONE} -- Implementation
 						else
 								-- if a feature_stone has been dropped
 								-- scroll to the corresponding feature in the basic text format
-							if not during_synchronization then
+							if not during_synchronization and then feature_stone.e_feature /= Void then
 								scroll_to_feature (feature_stone.e_feature, new_class_stone.class_i)
 							end
 						end
@@ -3671,6 +3690,9 @@ feature {NONE} -- Implementation
 		local
 			begin_index, offset: INTEGER
 			tmp_text: STRING
+			l_feat_as: FEATURE_AS
+			l_feature: E_FEATURE
+			l_names: EIFFEL_LIST [FEATURE_NAME]
 		do
 			if not feat_as.is_il_external then
 				if not managed_main_formatters.first.selected then
@@ -3678,8 +3700,37 @@ feature {NONE} -- Implementation
 						editor_tool.text_area.find_feature_named (feat_as.name)
 					end
 				else
-					if feat_as.ast /= Void then
-						begin_index := feat_as.ast.start_position
+					if displayed_class.is_compiled then
+							-- We need to adapt E_FEATURE to the current displayed class
+							-- since we could manipulate the E_FEATURE of a descendant class
+							-- whose name is different from its definition in the displayed_class.
+							-- Fixes bug#11330.
+						l_feature := feat_as.ancestor_version (displayed_class.compiled_class)
+						if l_feature = Void then
+								-- It should not happen, but maybe the system is in a very unstable state.
+							l_feature := feat_as
+						end
+					else
+						l_feature := feat_as
+					end
+					l_feat_as := l_feature.ast
+					if l_feat_as /= Void then
+						from
+							l_names := l_feat_as.feature_names
+							l_names.start
+						until
+							l_names.after or else
+							l_feature.name.is_case_insensitive_equal (l_names.item.internal_name)
+						loop
+							l_names.forth
+						end
+						if not l_names.after then
+							begin_index := l_names.item.start_position
+						else
+								-- Something wrong happened, the feature does not exist anymore.
+								-- We simply take the position of the first one.
+							begin_index := l_names.start_position
+						end
 						tmp_text := displayed_class.text
 						if tmp_text /= Void then
 							tmp_text := tmp_text.substring (1, begin_index)
@@ -4245,38 +4296,41 @@ feature {NONE} -- Implementation: Editor commands
 			-- Refresh address bar and features tool to relect
 			-- where in the code the cursor is located.
 		local
-			l_feature: FEATURE_AS
+			l_feature: TUPLE [feat_as: FEATURE_AS; name: FEATURE_NAME]
 			l_classc_stone: CLASSC_STONE
 		do
 				-- we may have been called from a timer and have to deactivate the timer
 			if context_refreshing_timer /= Void then
 				context_refreshing_timer.set_interval (0)
 			end
-			l_classc_stone ?= stone
-			if l_classc_stone /= Void then
-				l_feature := editor_tool.text_area.text_displayed.current_feature_containing
-				if l_feature /= Void then
-					set_editing_location_by_feature (l_feature)
-				else
-					set_editing_location_by_feature (Void)
+			if managed_main_formatters.first.selected then
+					-- We only do that for the clickable view
+				l_classc_stone ?= stone
+				if l_classc_stone /= Void then
+					l_feature := editor_tool.text_area.text_displayed.current_feature_containing
+					if l_feature /= Void then
+						set_editing_location_by_feature (l_feature.name)
+					else
+						set_editing_location_by_feature (Void)
+					end
 				end
 			end
 		end
 
-	set_editing_location_by_feature (a_feature: FEATURE_AS) is
-			-- Set editing location, feature tool and combo box changes according to `a_feature'.
+	set_editing_location_by_feature (a_feature_name: FEATURE_NAME) is
+			-- Set editing location, feature tool and combo box changes according to `a_feature_name'.
 		local
 			l_efeature: E_FEATURE
 			l_class_i: CLASS_I
 			l_classc: CLASS_C
 		do
-			if a_feature /= Void then
-				address_manager.set_feature_text_simply (a_feature.feature_names.first.internal_name)
+			if a_feature_name /= Void then
+				address_manager.set_feature_text_simply (a_feature_name.internal_name)
 				l_class_i := eiffel_universe.safe_class_named (class_name, group)
 				if l_class_i /= Void and then l_class_i.is_compiled then
 					l_classc := l_class_i.compiled_class
 					if l_classc.has_feature_table then
-						l_efeature := l_classc.feature_with_name (a_feature.feature_names.first.internal_name)
+						l_efeature := l_classc.feature_with_name (a_feature_name.internal_name)
 						if l_efeature /= Void and then l_efeature.written_in /= l_classc.class_id then
 							l_efeature := Void
 						end
@@ -4285,7 +4339,7 @@ feature {NONE} -- Implementation: Editor commands
 				if l_efeature /= Void then
 					seek_item_in_feature_tool (l_efeature)
 				else
-					features_tool.seek_ast_item_in_feature_tool (a_feature.feature_names.first.internal_name)
+					features_tool.seek_ast_item_in_feature_tool (a_feature_name.internal_name)
 				end
 			else
 				address_manager.set_feature_text_simply (once "")

@@ -45,6 +45,13 @@ feature -- Status report
 			good_result: Result = show_tooltip_checkbox.is_selected
 		end
 
+	is_last_sorted_column_valid (a_column_index: INTEGER): BOOLEAN is
+			-- Is last sorted column valid?
+			-- Last sorted column may become invalid because columns in grid changes.
+		do
+			Result := a_column_index >= 1 and then a_column_index <= grid_column_count
+		end
+
 feature -- Setting
 
 	set_is_written_class_used (b: BOOLEAN) is
@@ -383,7 +390,7 @@ feature{NONE} -- Initialization
 			if drop_actions /= Void then
 				grid.drop_actions.fill (drop_actions)
 			end
-			grid.pointer_button_press_actions.extend (agent on_pointer_right_click)
+			enable_ctrl_right_click_to_open_new_window
 			show_tooltip_checkbox.select_actions.extend (agent on_show_tooltip_changed)
 			on_show_tooltip_changed_from_outside_agent := agent on_show_tooltip_changed_from_outside
 			preferences.class_browser_data.show_tooltip_preference.change_actions.extend (on_show_tooltip_changed_from_outside_agent)
@@ -435,7 +442,7 @@ feature -- Notification
 					end
 					disable_auto_sort_order_change
 					enable_force_multi_column_sorting
-					if not sorted_columns.is_empty then
+					if not sorted_columns.is_empty and then is_last_sorted_column_valid (sorted_columns.last) then
 						sort (0, 0, 1, 0, 0, 0, 0, 0, sorted_columns.last)
 					else
 						sort (0, 0, 1, 0, 0, 0, 0, 0, class_column)
@@ -445,7 +452,7 @@ feature -- Notification
 				else
 					component_widget.hide
 					text.show
-					l_msg := Warning_messages.w_Formatter_failed
+					l_msg := Warning_messages.w_Formatter_failed.twin
 					if trace /= Void then
 						l_msg.append ("%N")
 						l_msg.append (trace)

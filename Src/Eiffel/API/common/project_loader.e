@@ -59,6 +59,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_OVERRIDDEN_METADATA_CACHE_PATH
+		export
+			{NONE} all
+		end
+
 feature -- Loading
 
 	open_project_file (a_file_name: STRING; a_target_name: STRING; a_project_path: STRING; from_scratch: BOOLEAN) is
@@ -183,6 +188,7 @@ feature -- Loading
 							retrieve_or_create_project (a_project_path)
 							if not has_error and then is_recompile_from_scrach then
 									-- check if precompiles are ok, otherwise (re)create them
+								eiffel_layout.set_precompile (lace.target.setting_msil_generation)
 								lace.check_precompile
 								if lace.is_precompile_invalid then
 -- print error message									
@@ -613,27 +619,43 @@ feature {NONE} -- Settings
 		require
 			a_precompile_not_void: a_precompile /= Void
 		local
-			l_prc_factory: PROCESS_FACTORY
-			l_prc_launcher: PROCESS
-			l_cmd: STRING
+			l_mdcp: STRING
+			l_target: CONF_TARGET
+			l_args: ARRAYED_LIST [STRING]
 		do
-			create l_cmd.make (50)
-			l_cmd.append (eiffel_layout.ec_command_name)
-			l_cmd.append (" -config ")
-			l_cmd.append (a_precompile.location.evaluated_path)
-			l_cmd.append (" -precompile -clean -c_compile -batch")
+			l_target := a_precompile.target
+			create l_args.make (10)
+			l_args.extend ("-config")
+			l_args.extend (a_precompile.location.evaluated_path)
+			l_args.extend ("-precompile")
+			l_args.extend ("-clean")
+			l_args.extend ("-c_compile")
+			l_args.extend ("-batch")
+			if l_target.setting_msil_generation then
+				if l_target.setting_msil_use_optimized_precompile then
+					l_args.extend ("-finalize")
+				end
+				l_mdcp := overridden_metadata_cache_path
+				if l_mdcp = Void then
+					l_mdcp := l_target.setting_metadata_cache_path
+				end
+				if l_mdcp /= Void and then not l_mdcp.is_empty then
+					l_args.extend ("-metadata_cache_path")
+					l_args.extend (l_mdcp)
+				end
+			end
 			if a_precompile.eifgens_location /= Void then
-				l_cmd.append (" -project_path "+a_precompile.eifgens_location.evaluated_path)
+				l_args.extend ("-project_path")
+				l_args.extend (a_precompile.eifgens_location.evaluated_path)
 			end
+			launch_precompile_process (l_args)
+		end
 
-			create l_prc_factory
-			l_prc_launcher := l_prc_factory.process_launcher_with_command_line (l_cmd, Void)
-			l_prc_launcher.set_separate_console (is_gui)
-			l_prc_launcher.launch
-			if l_prc_launcher.launched then
-				l_prc_launcher.wait_for_exit
-				is_precompilation_error := l_prc_launcher.exit_code /= 0
-			end
+	launch_precompile_process (a_arguments: LIST [STRING]) is
+			-- Launch precompile process `a_command'.
+		require
+			a_arguments_ok: a_arguments /= Void
+		deferred
 		end
 
 	find_target_name (a_proposed_target: STRING; a_targets: HASH_TABLE [CONF_TARGET, STRING]) is

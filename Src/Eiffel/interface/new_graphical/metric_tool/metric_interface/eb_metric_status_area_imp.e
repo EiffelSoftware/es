@@ -30,12 +30,16 @@ feature {NONE}-- Initialization
 			create status_pixmap
 			create status_lbl
 			create status_text
+			create show_to_do_message_toolbar
+			create show_to_do_message_btn
 			
 				-- Build widget structure.
 			extend (l_ev_horizontal_box_1)
 			l_ev_horizontal_box_1.extend (status_pixmap)
 			l_ev_horizontal_box_1.extend (status_lbl)
 			l_ev_horizontal_box_1.extend (status_text)
+			l_ev_horizontal_box_1.extend (show_to_do_message_toolbar)
+			show_to_do_message_toolbar.extend (show_to_do_message_btn)
 			
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -53,11 +57,13 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_1.set_padding (5)
 			l_ev_horizontal_box_1.disable_item_expand (status_pixmap)
 			l_ev_horizontal_box_1.disable_item_expand (status_lbl)
+			l_ev_horizontal_box_1.disable_item_expand (show_to_do_message_toolbar)
 			status_pixmap.set_minimum_width (16)
 			status_pixmap.set_minimum_height (16)
 			status_lbl.set_text ("Status:")
 			status_lbl.align_text_left
 			status_text.disable_edit
+			show_to_do_message_toolbar.disable_vertical_button_style
 			set_padding (3)
 			
 			set_all_attributes_using_constants
@@ -73,6 +79,8 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
+	show_to_do_message_toolbar: EV_TOOL_BAR
+	show_to_do_message_btn: EV_TOOL_BAR_BUTTON
 	status_pixmap: EV_PIXMAP
 	status_lbl: EV_LABEL
 	status_text: EV_TEXT_FIELD
@@ -102,7 +110,7 @@ feature {NONE} -- Constant setting
 			-- Set all attributes relying on string constants to the current
 			-- value of the associated constant.
 		local
-			s: STRING_32
+			s: STRING_GENERAL
 		do
 			from
 				string_constant_set_procedures.start
@@ -218,7 +226,7 @@ feature {NONE} -- Constant setting
 		end
 					
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
-	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_32]]
+	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
 	integer_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], INTEGER]]
 	pixmap_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_PIXMAP]]]
@@ -237,4 +245,4 @@ feature {NONE} -- Constant setting
 			Result := an_integer
 		end
 
-end -- class EB_METRIC_STATUS_AREA_IMP
+end

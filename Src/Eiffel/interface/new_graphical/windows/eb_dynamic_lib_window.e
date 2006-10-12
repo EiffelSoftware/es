@@ -37,6 +37,11 @@ inherit
 			{NONE} all
 		end
 
+	EIFFEL_LAYOUT
+		export
+			{NONE} all
+		end
+
 create {EB_WINDOW_MANAGER}
 	make
 
@@ -864,7 +869,7 @@ feature {NONE} -- Implementation: Creation routine selection
 				if feature_names.count = 1 then
 					process_creation_routine_callback (1)
 				else
-					create choice.make_default (agent process_creation_routine_callback (?))
+					create choice.make_default (window, agent process_creation_routine_callback (?))
 					choice.set_title (Interface_names.t_Select_feature)
 					choice.set_list (feature_names, feature_pixmaps)
 					choice.set_position (window.screen_x + window.width // 3, window.screen_y + window.height // 3)
@@ -1027,12 +1032,21 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 			-- If `load' then we assume we want to open a file. Otherwise we want to save it.
 		local
 			dd: EB_FILE_DIALOG
+			l_pref: STRING_PREFERENCE
 		do
 			file_call_back := next_action
 			if load then
-				create {EB_FILE_OPEN_DIALOG} dd.make_with_preference (preferences.dialog_data.last_opened_dynamic_lib_directory_preference)
+				l_pref := preferences.dialog_data.last_opened_dynamic_lib_directory_preference
+				if l_pref.value = Void or else l_pref.value.is_empty then
+					l_pref.set_value (eiffel_layout.eiffel_projects_directory)
+				end
+				create {EB_FILE_OPEN_DIALOG} dd.make_with_preference (l_pref)
 			else
-				create {EB_FILE_SAVE_DIALOG} dd.make_with_preference (preferences.dialog_data.last_saved_dynamic_lib_directory_preference)
+				l_pref := preferences.dialog_data.last_saved_dynamic_lib_directory_preference
+				if l_pref.value = Void or else l_pref.value.is_empty then
+					l_pref.set_value (eiffel_layout.eiffel_projects_directory)
+				end
+				create {EB_FILE_SAVE_DIALOG} dd.make_with_preference (l_pref)
 			end
 			dd.set_start_directory (Eiffel_project.name)
 			set_dialog_filters_and_add_all (dd, <<definition_files_filter>>)

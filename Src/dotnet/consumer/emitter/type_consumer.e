@@ -55,8 +55,8 @@ feature {NONE} -- Initialization
 			l_force_sealed: BOOLEAN
 		do
 			create dotnet_name.make_from_cil (t.full_name)
-			parent_type := t.base_type
-			if parent_type /= Void and then is_consumed_type (parent_type) then
+			parent_type := consumed_parent (t)
+			if parent_type /= Void then
 				parent := referenced_type_from_type (parent_type)
 			end
 			from
@@ -438,8 +438,12 @@ feature {NONE} -- Implementation
 						l_value := {SYSTEM_CONVERT}.to_double (l_value)
 					when {TYPE_CODE}.single then
 						l_value := {SYSTEM_CONVERT}.to_single (l_value)
+					when {TYPE_CODE}.char then
+						l_value := {SYSTEM_CONVERT}.to_char (l_value)
+					when {TYPE_CODE}.boolean then
+						l_value := {SYSTEM_CONVERT}.to_boolean (l_value)
 					else
-						l_value := {SYSTEM_CONVERT}.to_int_16 (l_value)
+						l_value := {SYSTEM_CONVERT}.to_int_32 (l_value)
 					end
 				end
 				create {CONSUMED_LITERAL_FIELD} Result.make (
@@ -595,6 +599,23 @@ feature {NONE} -- Implementation
 					l_adder,
 					l_remover
 					)
+			end
+		end
+
+	consumed_parent (a_type: SYSTEM_TYPE): SYSTEM_TYPE is
+			-- Retrieves a consume parent of `a_type'.
+		require
+			a_type_attached: a_type /= Void
+		local
+			l_base: SYSTEM_TYPE
+		do
+			l_base := a_type.base_type
+			if l_base /= Void then
+				if is_consumed_type (l_base) then
+					Result := l_base
+				else
+					Result := consumed_parent (l_base)
+				end
 			end
 		end
 

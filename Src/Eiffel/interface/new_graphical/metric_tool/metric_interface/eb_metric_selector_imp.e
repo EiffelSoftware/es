@@ -34,7 +34,11 @@ feature {NONE}-- Initialization
 			create select_predefined_btn
 			create select_userdefined_btn
 			create l_ev_tool_bar_separator_1
-			create l_ev_tool_bar_2
+			create move_unit_toolbar
+			create move_unit_up_btn
+			create move_unit_down_btn
+			create l_ev_tool_bar_separator_2
+			create l_ev_tool_bar_3
 			create tree_view_checkbox
 			
 				-- Build widget structure.
@@ -46,8 +50,12 @@ feature {NONE}-- Initialization
 			metric_selection_toolbar.extend (select_predefined_btn)
 			metric_selection_toolbar.extend (select_userdefined_btn)
 			metric_selection_toolbar.extend (l_ev_tool_bar_separator_1)
-			l_ev_horizontal_box_1.extend (l_ev_tool_bar_2)
-			l_ev_tool_bar_2.extend (tree_view_checkbox)
+			l_ev_horizontal_box_1.extend (move_unit_toolbar)
+			move_unit_toolbar.extend (move_unit_up_btn)
+			move_unit_toolbar.extend (move_unit_down_btn)
+			move_unit_toolbar.extend (l_ev_tool_bar_separator_2)
+			l_ev_horizontal_box_1.extend (l_ev_tool_bar_3)
+			l_ev_tool_bar_3.extend (tree_view_checkbox)
 			
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -66,9 +74,11 @@ feature {NONE}-- Initialization
 			metric_grid_area.set_border_width (1)
 			l_ev_horizontal_box_1.disable_item_expand (cached_key_field)
 			l_ev_horizontal_box_1.disable_item_expand (metric_selection_toolbar)
-			l_ev_horizontal_box_1.disable_item_expand (l_ev_tool_bar_2)
+			l_ev_horizontal_box_1.disable_item_expand (move_unit_toolbar)
+			l_ev_horizontal_box_1.disable_item_expand (l_ev_tool_bar_3)
 			cached_key_field.set_minimum_width (80)
-			l_ev_tool_bar_2.disable_vertical_button_style
+			move_unit_toolbar.disable_vertical_button_style
+			l_ev_tool_bar_3.disable_vertical_button_style
 			disable_item_expand (l_ev_horizontal_box_1)
 			
 			set_all_attributes_using_constants
@@ -84,16 +94,18 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	metric_selection_toolbar: EV_TOOL_BAR
-	select_predefined_btn, select_userdefined_btn, tree_view_checkbox: EV_TOOL_BAR_TOGGLE_BUTTON
+	metric_selection_toolbar, move_unit_toolbar: EV_TOOL_BAR
+	select_predefined_btn, select_userdefined_btn,
+	tree_view_checkbox: EV_TOOL_BAR_TOGGLE_BUTTON
+	move_unit_up_btn, move_unit_down_btn: EV_TOOL_BAR_BUTTON
 	metric_grid_area: EV_VERTICAL_BOX
 	cached_key_field: EV_TEXT_FIELD
 
 feature {NONE} -- Implementation
 
-	l_ev_tool_bar_separator_1: EV_TOOL_BAR_SEPARATOR
+	l_ev_tool_bar_separator_1, l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
 	l_ev_cell_1: EV_CELL
-	l_ev_tool_bar_2: EV_TOOL_BAR
+	l_ev_tool_bar_3: EV_TOOL_BAR
 	l_ev_horizontal_box_1: EV_HORIZONTAL_BOX
 
 feature {NONE} -- Implementation
@@ -117,7 +129,7 @@ feature {NONE} -- Constant setting
 			-- Set all attributes relying on string constants to the current
 			-- value of the associated constant.
 		local
-			s: STRING_32
+			s: STRING_GENERAL
 		do
 			from
 				string_constant_set_procedures.start
@@ -233,7 +245,7 @@ feature {NONE} -- Constant setting
 		end
 					
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
-	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_32]]
+	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
 	integer_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], INTEGER]]
 	pixmap_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_PIXMAP]]]
@@ -252,4 +264,4 @@ feature {NONE} -- Constant setting
 			Result := an_integer
 		end
 
-end -- class EB_METRIC_SELECTOR_IMP
+end

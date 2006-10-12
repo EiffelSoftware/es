@@ -43,7 +43,7 @@ feature -- Titles
 	t_group: STRING is "Group"
 	t_metrics: STRING is "Metrics"
 	t_coefficient: STRING is "Coefficient"
-	t_metric_valid: STRING is "Metric is valid"
+	t_metric_valid: STRING is "Metric is valid."
 	t_save_metric: STRING is "Current metric has been modified, save it?"
 	t_discard_remove_prompt: STRING is "Do not ask me again and always remove selected metric"
 	t_discard_save_prompt: STRING is "Do not ask me again and always save modified metric"
@@ -61,13 +61,13 @@ feature -- Titles
 	t_metric_name_can_not_be_empty: STRING is "Metric name cannot be empty"
 	t_remove_metric: STRING is "Remove metric "
 	t_no_archive_selected: STRING is "No metric archive is selected."
-	t_archive_management: STRING is "Archive management"
-	t_archive_comparison: STRING is "Archive comparison"
+	t_archive_management: STRING is "Archive Management"
+	t_archive_comparison: STRING is "Archive Comparison"
 	t_location: STRING is "Location:"
 	t_select_source_domain: STRING is "Select input domain:"
 	t_select_metric: STRING is "Select metric:"
-	t_select_reference_archive: STRING is "Select reference archive:"
-	t_select_current_archive: STRING is "Select current archive:"
+	t_select_reference_archive: STRING is "Select reference archive (URL acceptable):"
+	t_select_current_archive: STRING is "Select current archive (URL acceptable):"
 	t_archive_comparison_result: STRING is "Archive comparison result:"
 	t_clean: STRING is "Clean"
 	t_compare: STRING is "Compare"
@@ -79,15 +79,19 @@ feature -- Titles
 	t_predefined_text_not_editable: STRING is "Text not editable because current metric is predefined."
 	t_text_not_editable: STRING is "Text not editable."
 	t_metric_definition: STRING is "Metric definition"
-	t_checking_metric_vadility: STRING is "Checking metric vadility"
+	t_checking_metric_vadility: STRING is "Checking metric validity"
 	t_loading_metrics: STRING is "Loading metrics..."
-	t_analysing_archive: STRING is "Analysing metric archive(s)..."
+	t_analysing_archive: STRING is "Analyzing metric archive(s)..."
 	t_saving_metrics: STRING is "Saving metrics..."
 	t_removing_metrics: STRING is "Removing metrics..."
 	t_result_not_up_to_date: STRING is "Current metric result may not be up-to-date"
 	t_feature_version_setting: STRING is "Feature version setting:"
 	t_only_current_version: STRING is "Only current version"
 	t_descendant_version: STRING is "Current version and all its descendant versions"
+	t_to_do: STRING is "To do:"
+	t_close: STRING is "Close"
+	t_metric_definition_error_wizard: STRING is "Metric definition error wizard"
+	t_metric_archive_calculation_finished: STRING is "Metric archive calculation finished."
 
 feature -- Labels
 
@@ -111,7 +115,7 @@ feature -- Tooltip
 	f_reload_metrics: STRING is "Reload metrics"
 
 	f_start_archive: STRING is "Start metric archive evaluation"
-	f_stop_archive: STRING is "Stope metric archive evaluation"
+	f_stop_archive: STRING is "Stop metric archive evaluation"
 	f_select_exist_archive_file: STRING is "Select an existing metric archive file"
 	f_clean_archive: STRING is "Clean archive?"
 
@@ -147,7 +151,11 @@ feature -- Tooltip
 	f_add_linear_variable_metric: STRING is "Add selected metric"
 	f_run_metric_again: STRING is "Evaluate metric again to get up-to-date result"
 	f_auto_go_to_result: STRING is "Automatically go to result panel after metric evaluation?"
-	f_press_esc_to_wipe_out: STRING is "Press ESC to wipe out";
+	f_press_esc_to_wipe_out: STRING is "Press ESC to wipe out"
+	f_move_unit_up: STRING is "Move metric unit up.%N"
+	f_move_unit_down: STRING is "Move metric unit down.%N"
+	f_rearrange_unit: STRING is "Or you can pick a metric unit and drop it on another metric to rearrange their order."
+	f_show_to_do_message: STRING is "Display a message about how to deal with the metric definition error";
 
 indexing
         copyright:	"Copyright (c) 1984-2006, Eiffel Software"

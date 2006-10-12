@@ -112,7 +112,7 @@ feature {NONE} -- Implementation
 	blocking_condition: BOOLEAN is
 			-- Condition which causes blocking to cease if enabled.
 		do
-			Result := is_destroyed or else selected_button /= Void
+			Result := is_destroyed or else selected_button /= Void or else app_implementation.is_destroyed
 		end
 
 	enable_closeable is
@@ -153,14 +153,14 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 			user_clicked_ok := True
 			selected_button := internal_accept
-			{EV_GTK_EXTERNALS}.gtk_widget_hide (c_object)
+			hide
 		end
 
 	on_cancel is
 			-- Close window and call action sequence.
 		do
 			selected_button := ev_cancel
-			{EV_GTK_EXTERNALS}.gtk_widget_hide (c_object)
+			hide
 		end
 
 indexing

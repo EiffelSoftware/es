@@ -151,6 +151,7 @@ feature {NONE} -- Initialization
 			editor_token_grid_support.color_or_font_change_actions.extend (agent on_color_or_font_changed)
 			editor_token_grid_support.synchronize_color_or_font_change_with_editor
 			editor_token_grid_support.synchronize_scroll_behavior_with_editor
+			editor_token_grid_support.enable_ctrl_right_click_to_open_new_window
 
 			create l_item_sort_info.make (agent item_order_tester, ascending_order)
 			create l_path_sort_info.make (agent path_order_tester, ascending_order)
@@ -178,9 +179,16 @@ feature {NONE} -- Initialization
 			grid_wrapper.set_select_all_action (agent select_all_action)
 			grid_wrapper.enable_copy
 
+				-- Delete following in docking EiffelStudio.
 			result_grid.drop_actions.extend (agent metric_panel.drop_cluster)
 			result_grid.drop_actions.extend (agent metric_panel.drop_class)
 			result_grid.drop_actions.extend (agent metric_panel.drop_feature)
+			information_bar_empty_area.drop_actions.extend (agent metric_panel.drop_cluster)
+			information_bar_empty_area.drop_actions.extend (agent metric_panel.drop_class)
+			information_bar_empty_area.drop_actions.extend (agent metric_panel.drop_feature)
+			input_grid.drop_actions.extend (agent metric_panel.drop_cluster)
+			input_grid.drop_actions.extend (agent metric_panel.drop_class)
+			input_grid.drop_actions.extend (agent metric_panel.drop_feature)
 
 			create l_text
 			metric_name_text.set_background_color (l_text.background_color)

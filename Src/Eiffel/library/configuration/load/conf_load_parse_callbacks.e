@@ -346,11 +346,12 @@ feature {NONE} -- Implementation attribute processing
 	process_system_attributes is
 			-- Process attributes of a system tag.
 		local
-			l_name, l_uuid: STRING
+			l_name, l_uuid, l_readonly: STRING
 			l_uu: UUID
 		do
 			l_name := current_attributes.item (at_name)
 			l_uuid := current_attributes.item (at_uuid)
+			l_readonly := current_attributes.item (at_readonly)
 			current_library_target := current_attributes.item (at_library_target)
 			if current_library_target /= Void then
 				current_library_target.to_lower
@@ -358,6 +359,13 @@ feature {NONE} -- Implementation attribute processing
 			if is_valid_system_name (l_name) and then l_uuid /= Void and then check_uuid (l_uuid) then
 				create l_uu.make_from_string (l_uuid)
 				last_system := factory.new_system (l_name.as_lower, l_uu)
+				if l_readonly /= Void then
+					if l_readonly.is_boolean then
+						last_system.set_readonly (l_readonly.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("readonly"))
+					end
+				end
 			elseif l_name = Void then
 				set_parse_error_message (conf_interface_names.e_parse_incorrect_system_no_name)
 			elseif not is_valid_system_name (l_name) then
@@ -390,8 +398,12 @@ feature {NONE} -- Implementation attribute processing
 					set_parse_error_message (conf_interface_names.e_parse_multiple_target_with_name (l_name))
 				end
 				current_target := factory.new_target (l_name, last_system)
-				if l_abstract /= Void and then l_abstract.is_boolean then
-					current_target.set_abstract (l_abstract.to_boolean)
+				if l_abstract /= Void then
+					if l_abstract.is_boolean then
+						current_target.set_abstract (l_abstract.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("abstract"))
+					end
 				end
 				if current_library_target /= Void and then l_name.is_equal (current_library_target) then
 					last_system.set_library_target (current_target)
@@ -511,7 +523,10 @@ feature {NONE} -- Implementation attribute processing
 		local
 			l_name, l_value: STRING
 		do
-			l_name := current_attributes.item (at_name).as_lower
+			l_name := current_attributes.item (at_name)
+			if l_name /= Void then
+				l_name.to_lower
+			end
 			l_value := current_attributes.item (at_value)
 			if l_name /= Void and l_value /= Void then
 				if valid_setting (l_name) then
@@ -522,7 +537,7 @@ feature {NONE} -- Implementation attribute processing
 			elseif l_name = Void then
 				set_parse_error_message (conf_interface_names.e_parse_incorrect_setting_no_name)
 			else
-				set_parse_error_message (conf_interface_names.e_parse_incorrect_setting (l_name))
+				set_parse_error_message (conf_interface_names.e_parse_incorrect_setting_value (l_name))
 			end
 		end
 
@@ -664,10 +679,12 @@ feature {NONE} -- Implementation attribute processing
 			if is_valid_group_name (l_name) and l_location /= Void and not group_list.has (l_name) then
 				current_library := factory.new_library (l_name, factory.new_location_from_full_path (l_location, current_target), current_target)
 				current_group := current_library
-				if l_readonly /= Void and then l_readonly.is_boolean then
-					current_library.set_readonly (l_readonly.to_boolean)
-				else
-					current_library.set_readonly (True)
+				if l_readonly /= Void then
+					if l_readonly.is_boolean then
+						current_library.set_readonly (l_readonly.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("readonly"))
+					end
 				end
 				if l_prefix /= Void then
 					current_library.set_name_prefix (l_prefix)
@@ -709,10 +726,12 @@ feature {NONE} -- Implementation attribute processing
 				l_pre := factory.new_precompile (l_name, l_location, current_target)
 				current_library := l_pre
 				current_group := current_library
-				if l_readonly /= Void and then l_readonly.is_boolean then
-					current_library.set_readonly (l_readonly.to_boolean)
-				else
-					current_library.set_readonly (True)
+				if l_readonly /= Void then
+					if l_readonly.is_boolean then
+						current_library.set_readonly (l_readonly.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("readonly"))
+					end
 				end
 				if l_prefix /= Void then
 					current_library.set_name_prefix (l_prefix)
@@ -765,9 +784,11 @@ feature {NONE} -- Implementation attribute processing
 					current_assembly := factory.new_assembly (l_name, l_location, current_target)
 				end
 				current_group := current_assembly
-				if l_readonly /= Void and then l_readonly.is_boolean then
-					if l_readonly.to_boolean then
-						current_assembly.enable_readonly
+				if l_readonly /= Void then
+					if l_readonly.is_boolean then
+						current_assembly.set_readonly (l_readonly.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("readonly"))
 					end
 				end
 				if l_prefix /= Void then
@@ -812,17 +833,21 @@ feature {NONE} -- Implementation attribute processing
 				l_loc := factory.new_location_from_path (l_location, current_target)
 				current_cluster := factory.new_cluster (l_name.as_lower, l_loc, current_target)
 				current_group := current_cluster
-				if l_readonly /= Void and then l_readonly.is_boolean then
-					if l_readonly.to_boolean then
-						current_cluster.enable_readonly
+				if l_readonly /= Void then
+					if l_readonly.is_boolean then
+						current_cluster.set_readonly (l_readonly.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("readonly"))
 					end
 				end
 				if l_prefix /= Void then
 					current_cluster.set_name_prefix (l_prefix)
 				end
-				if l_recursive /= Void and then l_recursive.is_boolean then
-					if l_recursive.to_boolean then
-						current_cluster.enable_recursive
+				if l_recursive /= Void then
+					if l_recursive.is_boolean then
+						current_cluster.set_recursive (l_recursive.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("recursive"))
 					end
 				end
 				if l_parent /= Void then
@@ -867,17 +892,21 @@ feature {NONE} -- Implementation attribute processing
 				current_override := factory.new_override (l_name, factory.new_location_from_path (l_location, current_target), current_target)
 				current_cluster := current_override
 				current_group := current_cluster
-				if l_readonly /= Void and then l_readonly.is_boolean then
-					if l_readonly.to_boolean then
-						current_cluster.enable_readonly
+				if l_readonly /= Void then
+					if l_readonly.is_boolean then
+						current_cluster.set_readonly (l_readonly.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("readonly"))
 					end
 				end
 				if l_prefix /= Void then
 					current_cluster.set_name_prefix (l_prefix)
 				end
-				if l_recursive /= Void and then l_recursive.is_boolean then
-					if l_recursive.to_boolean then
-						current_cluster.enable_recursive
+				if l_recursive /= Void then
+					if l_recursive.is_boolean then
+						current_cluster.set_recursive (l_recursive.to_boolean)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("recursive"))
 					end
 				end
 				if l_parent /= Void then
@@ -911,6 +940,8 @@ feature {NONE} -- Implementation attribute processing
 				current_option.add_debug (l_name.as_lower, l_enabled.to_boolean)
 			elseif l_name = Void then
 				set_parse_error_message (conf_interface_names.e_parse_incorrect_debug_no_name)
+			elseif l_enabled /= Void and then not l_enabled.is_boolean then
+				set_parse_error_message (conf_interface_names.e_parse_invalid_value ("enabled"))
 			else
 				set_parse_error_message (conf_interface_names.e_parse_incorrect_debug (l_name))
 			end
@@ -925,7 +956,7 @@ feature {NONE} -- Implementation attribute processing
 		do
 			l_name := current_attributes.item (at_name)
 			l_enabled := current_attributes.item (at_enabled)
-			if l_name /= Void and l_enabled /= Void and then l_enabled.is_boolean then
+			if l_name /= Void and then l_enabled /= Void and then l_enabled.is_boolean then
 				if valid_warning (l_name) then
 					current_option.add_warning (l_name, l_enabled.to_boolean)
 				else
@@ -933,6 +964,8 @@ feature {NONE} -- Implementation attribute processing
 				end
 			elseif l_name = Void then
 				set_parse_error_message (conf_interface_names.e_parse_incorrect_warning_no_name)
+			elseif l_enabled /= Void and then not l_enabled.is_boolean then
+				set_parse_error_message (conf_interface_names.e_parse_invalid_value ("enabled"))
 			else
 				set_parse_error_message (conf_interface_names.e_parse_incorrect_warning (l_name))
 			end
@@ -952,20 +985,50 @@ feature {NONE} -- Implementation attribute processing
 			l_inv := current_attributes.item (at_invariant)
 			l_loop := current_attributes.item (at_loop)
 			l_assert := factory.new_assertions
-			if l_pre /= Void and then l_pre.is_boolean and then l_pre.to_boolean then
-				l_assert.enable_precondition
+			if l_pre /= Void then
+				if l_pre.is_boolean then
+					if l_pre.to_boolean then
+						l_assert.enable_precondition
+					end
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("precondition"))
+				end
 			end
-			if l_post /= Void and then l_post.is_boolean and then l_post.to_boolean then
-				l_assert.enable_postcondition
+			if l_post /= Void then
+				if l_post.is_boolean then
+					if l_post.to_boolean then
+						l_assert.enable_postcondition
+					end
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("postcondition"))
+				end
 			end
-			if l_chk /= Void and then l_chk.is_boolean and then l_chk.to_boolean then
-				l_assert.enable_check
+			if l_chk /= Void then
+				if l_chk.is_boolean then
+					if l_chk.to_boolean then
+						l_assert.enable_check
+					end
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("check"))
+				end
 			end
-			if l_inv /= Void and then l_inv.is_boolean and then l_inv.to_boolean then
-				l_assert.enable_invariant
+			if l_inv /= Void then
+				if l_inv.is_boolean then
+					if l_inv.to_boolean then
+						l_assert.enable_invariant
+					end
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("invariant"))
+				end
 			end
-			if l_loop /= Void and then l_loop.is_boolean and then l_loop.to_boolean then
-				l_assert.enable_loop
+			if l_loop /= Void then
+				if l_loop.is_boolean then
+					if l_loop.to_boolean then
+						l_assert.enable_loop
+					end
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("loop"))
+				end
 			end
 			current_option.set_assertions (l_assert)
 		end
@@ -1007,20 +1070,40 @@ feature {NONE} -- Implementation attribute processing
 			l_class := current_attributes.item (at_class)
 
 			current_option := factory.new_option
-			if l_trace /= Void and then l_trace.is_boolean then
-				current_option.set_trace (l_trace.to_boolean)
+			if l_trace /= Void then
+				if l_trace.is_boolean then
+					current_option.set_trace (l_trace.to_boolean)
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("trace"))
+				end
 			end
-			if l_profile /= Void and then l_profile.is_boolean then
-				current_option.set_profile (l_profile.to_boolean)
+			if l_profile /= Void then
+				if l_profile.is_boolean then
+					current_option.set_profile (l_profile.to_boolean)
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("profile"))
+				end
 			end
-			if l_optimize /= Void and then l_optimize.is_boolean then
-				current_option.set_optimize (l_optimize.to_boolean)
+			if l_optimize /= Void then
+				if l_optimize.is_boolean then
+					current_option.set_optimize (l_optimize.to_boolean)
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("optimize"))
+				end
 			end
-			if l_debug /= Void and then l_debug.is_boolean then
-				current_option.set_debug (l_debug.to_boolean)
+			if l_debug /= Void then
+				if l_debug.is_boolean then
+					current_option.set_debug (l_debug.to_boolean)
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("debug"))
+				end
 			end
-			if l_warning /= Void and then l_warning.is_boolean then
-				current_option.set_warning (l_warning.to_boolean)
+			if l_warning /= Void then
+				if l_warning.is_boolean then
+					current_option.set_warning (l_warning.to_boolean)
+				else
+					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("warning"))
+				end
 			end
 			if l_namespace /= Void then
 				current_option.set_namespace (l_namespace)
@@ -1648,10 +1731,12 @@ feature {NONE} -- Implementation state transitions
 				-- system
 				-- * name
 				-- * uuid
+				-- * readonly
 				-- * library_target
-			create l_attr.make (3)
+			create l_attr.make (4)
 			l_attr.force (at_name, "name")
 			l_attr.force (at_uuid, "uuid")
+			l_attr.force (at_readonly, "readonly")
 			l_attr.force (at_library_target, "library_target")
 			Result.force (l_attr, t_system)
 

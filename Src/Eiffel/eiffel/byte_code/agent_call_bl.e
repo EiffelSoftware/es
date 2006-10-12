@@ -57,7 +57,11 @@ feature -- Code generation
 
 	generate_on (reg: REGISTRABLE) is
 			-- Generate access call of feature in current on `current_register'
+		local
+			l_class_type: CLASS_TYPE
 		do
+			l_class_type := cl_type.associated_class_type
+			context.change_class_type_context (l_class_type, l_class_type)
 			if is_function then
 				register.print_register
 				buffer.put_string (" = ")
@@ -95,14 +99,20 @@ feature -- Code generation
 					buffer.put_new_line
 				end
 			end
+
+			context.restore_class_type_context
 		end
 
 	analyze_on (reg: REGISTRABLE) is
 			-- Analyze agent call on `reg'
 		local
 			tmp_register: REGISTER
+			l_class_type: CLASS_TYPE
 		do
 			Precursor{FEATURE_BL}(reg)
+
+			l_class_type := cl_type.associated_class_type
+			context.change_class_type_context (l_class_type, l_class_type)
 
 			if is_manifest_optimizable then
 				rout_disp_b := init_attribute ({PREDEFINED_NAMES}.rout_disp_name_id, reg)
@@ -124,6 +134,8 @@ feature -- Code generation
 					set_register (tmp_register)
 				end
 			end
+
+			context.restore_class_type_context
 		end
 
 	check_dt_current (reg: REGISTRABLE) is
@@ -164,11 +176,21 @@ feature -- Code generation
 			Precursor (a)
 
 			cl_type ?= a.context_type
+
 			rout_class := cl_type.associated_class_type.associated_class.eiffel_class_c
 			is_function := rout_class.class_id = system.function_class_id or else
 						   rout_class.class_id = system.predicate_class_id
-
 			is_predicate := rout_class.class_id = system.predicate_class_id
+
+			if is_function then
+				if is_predicate then
+					type := create {BOOLEAN_I}
+				else
+					type := cl_type.true_generics.item (3)
+				end
+			else
+				type := create {VOID_I}
+			end
 
 			a_bl ?= a
 			if a_bl /= Void then
@@ -200,7 +222,7 @@ feature {NONE}--Access
 	is_predicate: BOOLEAN
 		-- Is this a call to an agent of type PREDICATE?
 
-	cl_type: CL_TYPE_I
+	cl_type: GEN_TYPE_I
 		-- Exact type of the agent reference used for the call.
 
 feature {AGENT_CALL_BL}--Optimized parameters

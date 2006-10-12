@@ -66,6 +66,11 @@ inherit
 			{NONE} all
 		end
 
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -82,6 +87,7 @@ feature {NONE} -- Initialization
 			deletion_agent := agent on_delete_directory
 			cancel_agent := agent on_cancel_operation
 			is_project_location_requested := True
+			has_library_conversion := True
 		ensure
 			parent_window_set: parent_window = a_parent
 			is_project_location_requested_set: is_project_location_requested
@@ -113,6 +119,30 @@ feature -- Settings
 		do
 			ev_application.do_once_on_idle (
 				agent (window_manager.last_focused_development_window.melt_project_cmd).execute)
+		end
+
+	launch_precompile_process (a_arguments: LIST [STRING]) is
+			-- Launch precompile process `a_command'.
+		local
+			l_prc_factory: PROCESS_FACTORY
+			l_prc_launcher: PROCESS
+			l_dialog: EB_EXTERNAL_OUTPUT_DIALOG
+		do
+			create l_prc_factory
+			l_prc_launcher := l_prc_factory.process_launcher (eiffel_layout.ec_command_name, a_arguments, Void)
+			l_prc_launcher.set_separate_console (False)
+			l_prc_launcher.set_hidden (True)
+			create l_dialog
+			l_dialog.set_title ("Precompilation Progress")
+			l_prc_launcher.redirect_output_to_agent (agent l_dialog.append_in_gui_thread)
+			l_prc_launcher.redirect_error_to_same_as_output
+			l_prc_launcher.set_on_exit_handler (agent l_dialog.hide_in_gui_thread)
+			l_prc_launcher.set_on_terminate_handler (agent l_dialog.hide_in_gui_thread)
+			l_prc_launcher.launch
+			if l_prc_launcher.launched then
+				l_dialog.show_modal_to_window (parent_window)
+				is_precompilation_error := l_prc_launcher.exit_code /= 0
+			end
 		end
 
 	open_project (in_new_studio: BOOLEAN) is
@@ -407,6 +437,8 @@ feature {NONE} -- Error reporting
 				-- because we were successful retrieving the project without
 				-- errors or conversion.
 			output_manager.display_system_info
+
+			window_manager.last_focused_development_window.synchronize
 		end
 
 	report_precompilation_error is
@@ -575,6 +607,12 @@ feature {NONE} -- User interaction
 				l_dialog.set_default_cancel_button (l_button)
 				l_dialog.set_default_push_button (l_select_button)
 
+				l_dialog.show_actions.extend (agent (a_list: EV_LIST)
+					require
+						a_list_not_void: a_list /= Void
+					do
+						a_list.set_focus
+					end (l_list))
 				l_dialog.show_modal_to_window (parent_window)
 			end
 		end

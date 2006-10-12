@@ -138,10 +138,12 @@ feature -- Setting
 
 	set_trace (a_msg: STRING) is
 			-- Set `trace' with `a_msg'.
-		require
-			a_msg_attached: a_msg /= Void
 		do
-			create trace.make_from_string (a_msg)
+			if a_msg = Void or else a_msg.is_empty then
+				trace := Void
+			else
+				create trace.make_from_string (a_msg)
+			end
 		end
 
 	set_focus is
@@ -457,24 +459,6 @@ feature{NONE} -- Actions
 				elseif a_key.code = {EV_KEY_CONSTANTS}.key_c then
 					if text.has_selection then
 						ev_application.clipboard.set_text (text.selected_text)
-					end
-				end
-			end
-		end
-
-	on_pointer_right_click (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Action to be performed when pointer right click on `grid'
-		local
-			l_editor_token: EDITOR_TOKEN
-			l_stone: STONE
-		do
-			-- Uncomment the following code
-			if a_button = 3 and then ev_application.ctrl_pressed then
-				l_editor_token := editor_token_at_position (a_x, a_y)
-				if l_editor_token /= Void then
-					l_stone ?= l_editor_token.pebble
-					if l_stone /= Void and then l_stone.is_valid then
-						(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
 					end
 				end
 			end

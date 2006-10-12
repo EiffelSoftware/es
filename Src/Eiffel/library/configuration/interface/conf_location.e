@@ -75,6 +75,11 @@ feature -- Access queries
 			-- The directory part of `evaluated_path' (without trailing '\' or '/').
 		do
 			Result := file_system.pathname_from_file_system(directory (internal_evaluated_path), windows_file_system)
+				-- if we have an empty result that means we only got a '\' or '/' which got removed because we remove
+				-- trailing separators
+			if Result.is_empty then
+				Result := operating_environment.directory_separator.out
+			end
 		ensure
 			Result_not_void: Result /= Void
 		end
@@ -169,7 +174,7 @@ feature {NONE} -- Implementation, attributes stored in configuration file
 
 feature {NONE} -- Implementation
 
-	--| The internal format uses the windows format (because we would otherwise loos the drive letter)
+	--| The internal format uses the windows format (because we would otherwise lose the drive letter)
 	--| directories are always terminated by a \
 
 	to_internal (a_path: STRING): STRING is
@@ -179,6 +184,8 @@ feature {NONE} -- Implementation
 		local
 			l_net_share: BOOLEAN
 		do
+			a_path.left_adjust
+			a_path.right_adjust
 			l_net_share := a_path.count >= 2 and then (a_path.item (1) = '/' and a_path.item (2) = '/')
 				-- always works, even if a_path is already in windows file format
 			Result := windows_file_system.pathname_from_file_system (a_path, unix_file_system)
@@ -243,14 +250,11 @@ feature {NONE} -- Implementation
 				if l_key /= Void then
 					l_value := target.variables.item (l_key.as_lower)
 					if l_value = Void then
-						l_value := target.environ_variables.item (l_key.as_lower)
+						l_value := execution_environment.variable_value (l_key)
 						if l_value = Void then
-							l_value := execution_environment.variable_value (l_key)
-							if l_value = Void then
-								l_value := ""
-							end
-							target.environ_variables.force (l_value, l_key.as_lower)
+							l_value := ""
 						end
+						target.environ_variables.force (l_value, l_key.as_lower)
 					end
 					Result.replace_substring (to_internal (l_value), i, j)
 				end

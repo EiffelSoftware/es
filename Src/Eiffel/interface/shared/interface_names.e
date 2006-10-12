@@ -27,988 +27,989 @@ class
 
 inherit
 	PRODUCT_NAMES
---i18n
-	SHARED_I18N_LOCALIZATOR
 
 feature -- Button texts
 
-	b_Abort: STRING_32 is do Result := i18n("Abort") end
-	b_Add: STRING_32 is do Result := i18n("Add") end
-	b_Add_text: STRING_32 is do Result := i18n("Add ->") end
-	b_And: STRING_32 is do Result := i18n("And") end
-	b_Apply: STRING_32 is do Result := i18n("Apply") end
-	b_Browse: STRING_32 is do Result := i18n("Browse...") end
-	b_Cancel: STRING_32 is do Result := i18n("Cancel") end
-	b_C_functions: STRING_32 is do Result := i18n("C Functions") end
-	b_Close: STRING_32 is do Result := i18n("Close") end
-	b_Continue_anyway: STRING_32 is do Result := i18n("Continue Anyway") end
-	b_Create: STRING_32 is do Result := i18n("Create") end
-	b_Create_folder: STRING_32 is do Result := i18n("Create Folder...") end
-	b_Delete_command: STRING_32 is do Result := i18n("Delete") end
-	b_Descendant_time: STRING_32 is do Result := i18n("Descendant Time") end
-	b_Discard_assertions: STRING_32 is do Result := i18n("Discard Assertions") end
-	b_Display_Exception_Trace: STRING_32 is do Result := i18n("Display Exception Trace") end
-	b_Down_text: STRING_32 is do Result := i18n("Down") end
-	b_Edit_ace: STRING_32 is do Result := i18n("Edit") end
-	b_Edit_command: STRING_32 is do Result := i18n("Edit...") end
-	b_Eiffel_features: STRING_32 is do Result := i18n("Eiffel Features") end
-	b_Feature_name: STRING_32 is do Result := i18n("Feature Name") end
-	b_Finish: STRING_32 is do Result := i18n("Finish") end
-	b_Function_time: STRING_32 is do Result := i18n("Function Time") end
-	b_Keep_assertions: STRING_32 is do Result := i18n("Keep Assertions") end
-	b_Load_ace: STRING_32 is do Result := i18n("Load From...") end
-	b_Move_to_folder: STRING_32 is do Result := i18n("Move to Folder...") end
-	b_New_ace: STRING_32 is do Result := i18n("Reset") end
-	b_New_command: STRING_32 is do Result := i18n("Add...") end
-	b_New_favorite_class: STRING_32 is do Result := i18n("New Favorite Class...") end
-	b_New_tab: STRING_32 is do Result := i18n("New Tab") end
-	b_Next: STRING_32 is do Result := i18n("Next") end
-	b_Number_of_calls: STRING_32 is do Result := i18n("Number of Calls") end
-	b_Ok: STRING_32 is do Result := i18n("OK") end
-	b_Open_original: STRING_32 is do Result := i18n("Open Original File") end
-	b_Open_backup: STRING_32 is do Result := i18n("Open Backup File") end
-	b_Or: STRING_32 is do Result := i18n("Or") end
-	b_Percentage: STRING_32 is do Result := i18n("Percentage") end
-	b_Replace: STRING_32 is do Result := i18n("Replace") end
-	b_Replace_all: STRING_32 is do Result := i18n("Replace all") end
-	b_Recursive_functions: STRING_32 is do Result := i18n("Recursive Functions") end
-	b_Reload: STRING_32 is do Result := i18n("Reload") end
-	b_Remove: STRING_32 is do Result := i18n("Remove") end
-	b_Remove_all: STRING_32 is do Result := i18n("Remove all") end
-	b_Remove_text: STRING_32 is do Result := i18n("<- Remove") end
-	b_Retry: STRING_32 is do Result := i18n("Retry") end
-	b_Search: STRING_32 is do Result := i18n("Search") end
-	b_New_search: STRING_32 is do Result := i18n("New Search?") end
-	b_Save: STRING_32 is do Result := i18n("Save") end
-	b_Save_all: STRING_32 is do Result := i18n("Save All") end
-	b_Total_time: STRING_32 is do Result := i18n("Total Time") end
-	b_Up_text: STRING_32 is do Result := i18n("Up") end
-	b_Update: STRING_32 is do Result := i18n("Update") end
-	b_Compile: STRING_32 is do Result := i18n("Compile") end
-	b_Launch: STRING_32 is do Result := i18n("Start") end
-	b_Continue: STRING_32 is do Result := i18n("Continue") end
-	b_Finalize: STRING_32 is do Result := i18n("Finalize") end
-	b_Freeze: STRING_32 is do Result := i18n("Freeze") end
-	b_Precompile: STRING_32 is do Result := i18n("Precompile") end
-	b_override_scan: STRING_32 is do Result := i18n("Recompile Overrides") end
-	b_Cut: STRING_32 is do Result := i18n("Cut") end
-	b_Copy: STRING_32 is do Result := i18n("Copy") end
-	b_Paste: STRING_32 is do Result := i18n("Paste") end
-	b_New_editor: STRING_32 is do Result := i18n("New Editor") end
-	b_New_context: STRING_32 is do Result := i18n("New Context") end
-	b_New_window: STRING_32 is do Result := i18n("New Window") end
-	b_Open: STRING_32 is do Result := i18n("Open") end
-	b_Save_as: STRING_32 is do Result := i18n("Save As") end
-	b_Shell: STRING_32 is do Result := i18n("External Editor") end
-	b_Print: STRING_32 is do Result := i18n("Print") end
-	b_Undo: STRING_32 is do Result := i18n("Undo") end
-	b_Redo: STRING_32 is do Result := i18n("Redo") end
-	b_Create_new_cluster: STRING_32 is do Result := i18n("Add Cluster") end
-	b_Create_new_library: STRING_32 is do Result := i18n("Add Library") end
-	b_Create_new_assembly: STRING_32 is do Result := i18n("Add Assembly") end
-	b_Create_new_precompile: STRING_32 is do Result := i18n("Add Precompile") end
-	b_Create_new_class: STRING_32 is do Result := i18n("New Class") end
-	b_Create_new_feature: STRING_32 is do Result := i18n("New Feature") end
-	b_Send_stone_to_context: STRING_32 is do Result := i18n("Synchronize") end
-	b_Display_error_help: STRING_32 is do Result := i18n("Help Tool") end
-	b_Project_settings: STRING_32 is do Result := i18n("Project Settings") end
-	b_System_info: STRING_32 is do Result := i18n("System Info") end
-	b_Bkpt_info: STRING_32 is do Result := i18n("Breakpoint Info") end
-	b_Bkpt_enable: STRING_32 is do Result := i18n("Enable Breakpoints") end
-	b_Bkpt_disable: STRING_32 is do Result := i18n("Disable Breakpoints") end
-	b_Bkpt_remove: STRING_32 is do Result := i18n("Remove Breakpoints") end
-	b_Bkpt_stop_in_hole: STRING_32 is do Result := i18n("Pause") end
-	b_Exec_kill: STRING_32 is do Result := i18n("Stop Application") end
-	b_Exec_into: STRING_32 is do Result := i18n("Step Into") end
-	b_Exec_no_stop: STRING_32 is do Result := i18n("Launch Without Stopping") end
-	b_Exec_out: STRING_32 is do Result := i18n("Step Out") end
-	b_Exec_step: STRING_32 is do Result := i18n("Step") end
-	b_Exec_stop: STRING_32 is do Result := i18n("Pause") end
-	b_Run_finalized: STRING_32 is do Result := i18n("Run Finalized") end
-	b_Toggle_stone_management: STRING_32 is do Result := i18n("Link Context") end
-	b_Raise_all: STRING_32 is do Result := i18n("Raise Windows") end
-	b_Remove_class_cluster: STRING_32 is do Result := i18n("Remove Class/Cluster") end
-	b_Minimize_all: STRING_32 is do Result := i18n("Minimize All") end
-	b_Terminate_c_compilation: STRING_32 is do Result := i18n("Terminate C Compilation") end
-	b_Expand_all: STRING_32 is do Result := i18n("Expand All") end
-	b_Collapse_all: STRING_32 is do Result := i18n("Collapse All") end
-	b_Dbg_exception_handler: STRING_32 is do Result := i18n("Exceptions") end
-	b_Dbg_assertion_checking_disable: STRING_32 is do Result := i18n("Disable assertion checking") end
-	b_Dbg_assertion_checking_restore: STRING_32 is do Result := i18n("Restore assertion checking") end
+	b_Abort: STRING is							"Abort"
+	b_Add: STRING is 							"Add"
+	b_Add_text: STRING is 						"Add ->"
+	b_And: STRING is							"And"
+	b_Apply: STRING is							"Apply"
+	b_Browse: STRING is							"Browse..."
+	b_Cancel: STRING is							"Cancel"
+	b_C_functions: STRING is					"C Functions"
+	b_Close: STRING is							"Close"
+	b_Continue_anyway: STRING is				"Continue Anyway"
+	b_Create: STRING is							"Create"
+	b_Create_folder: STRING is					"Create Folder..."
+	b_Delete_command: STRING is					"Delete"
+	b_Descendant_time: STRING is					"Descendant Time"
+	b_Discard_assertions: STRING is				"Discard Assertions"
+	b_Display_Exception_Trace: STRING is		"Display Exception Trace"
+	b_Down_text: STRING is 						"Down"
+	b_Edit_ace: STRING is						"Edit"
+	b_Edit_command: STRING is					"Edit..."
+	b_Eiffel_features: STRING is				"Eiffel Features"
+	b_Feature_name: STRING is					"Feature Name"
+	b_Finish: STRING is							"Finish"
+	b_Function_time: STRING is					"Function Time"
+	b_Keep_assertions: STRING is				"Keep Assertions"
+	b_Load_ace: STRING is						"Load From..."
+	b_Move_to_folder: STRING is					"Move to Folder..."
+	b_New_ace: STRING is						"Reset"
+	b_New_command: STRING is						"Add..."
+	b_New_favorite_class: STRING is				"New Favorite Class..."
+	b_New_tab: STRING is 						"New Tab"
+	b_Next: STRING is							"Next"
+	b_Number_of_calls: STRING is					"Number of Calls"
+	b_Ok: STRING is								"OK"
+	b_Open_original: STRING is					"Open Original File"
+	b_Open_backup: STRING is					"Open Backup File"
+	b_Or: STRING is								"Or"
+	b_Percentage: STRING is						"Percentage"
+	b_Replace: STRING is						"Replace"
+	b_Replace_all: STRING is					"Replace all"
+	b_Recursive_functions: STRING is			"Recursive Functions"
+	b_Reload: STRING is							"Reload"
+	b_Remove: STRING is							"Remove"
+	b_Remove_all: STRING is						"Remove all"
+	b_Remove_text: STRING is 					"<- Remove"
+	b_Retry: STRING is							"Retry"
+	b_Search: STRING is							"Search"
+	b_New_search: STRING is 					"New Search?"
+	b_Save: STRING is							"Save"
+	b_Save_all: STRING is 						"Save All"
+	b_Total_time: STRING is						"Total Time"
+	b_Up_text: STRING is 						"Up"
+	b_Update: STRING is 						"Update"
+	b_Compile: STRING is						"Compile"
+	b_Launch: STRING is							"Start"
+	b_Continue: STRING is						"Continue"
+	b_Finalize: STRING is						"Finalize"
+	b_Freeze: STRING is							"Freeze"
+	b_Precompile: STRING is						"Precompile"
+	b_override_scan: STRING is					"Recompile Overrides"
+	b_discover_melt: STRING is					"Find Added Classes & Recompile"
+	b_Cut: STRING is							"Cut"
+	b_Copy: STRING is							"Copy"
+	b_Paste: STRING is							"Paste"
+	b_New_editor: STRING is						"New Editor"
+	b_New_context: STRING is					"New Context"
+	b_New_window: STRING is						"New Window"
+	b_Open: STRING is							"Open"
+	b_Save_as: STRING is						"Save As"
+	b_Shell: STRING is							"External Editor"
+	b_Print: STRING is							"Print"
+	b_Undo: STRING is							"Undo"
+	b_Redo: STRING is							"Redo"
+	b_Create_new_cluster: STRING is				"Add Cluster"
+	b_Create_new_library: STRING is				"Add Library"
+	b_Create_new_assembly: STRING is			"Add Assembly"
+	b_Create_new_precompile: STRING is			"Add Precompile"
+	b_Create_new_class: STRING is				"New Class"
+	b_Create_new_feature: STRING is				"New Feature"
+	b_Send_stone_to_context: STRING is			"Synchronize"
+	b_Display_error_help: STRING is				"Help Tool"
+	b_Project_settings: STRING is				"Project Settings"
+	b_System_info: STRING is						"System Info"
+	b_Bkpt_info: STRING is						"Breakpoint Info"
+	b_Bkpt_enable: STRING is					"Enable Breakpoints"
+	b_Bkpt_disable: STRING is					"Disable Breakpoints"
+	b_Bkpt_remove: STRING is						"Remove Breakpoints"
+	b_Bkpt_stop_in_hole: STRING is				"Pause"
+	b_Exec_kill: STRING is						"Stop Application"
+	b_Exec_into: STRING is						"Step Into"
+	b_Exec_no_stop: STRING is					"Launch Without Stopping"
+	b_Exec_out: STRING is						"Step Out"
+	b_Exec_step: STRING is						"Step"
+	b_Exec_stop: STRING is						"Pause"
+	b_Run_finalized: STRING is					"Run Finalized"
+	b_Toggle_stone_management: STRING is 		"Link Context"
+	b_Raise_all: STRING is						"Raise Windows"
+	b_Remove_class_cluster: STRING is			"Remove Class/Cluster"
+	b_Minimize_all: STRING is					"Minimize All"
+	b_Terminate_c_compilation: STRING is 		"Terminate C Compilation"
+	b_Expand_all: STRING is 					"Expand All"
+	b_Collapse_all: STRING is 					"Collapse All"
+	b_Dbg_exception_handler: STRING is			"Exceptions"
+	b_Dbg_assertion_checking_disable: STRING is	"Disable assertion checking"
+	b_Dbg_assertion_checking_restore: STRING is	"Restore assertion checking"
 
 feature -- Graphical degree output
 
-	d_Classes_to_go: STRING_32 is do Result := i18n("Classes to Go:") end
-	d_Clusters_to_go: STRING_32 is do Result := i18n("Clusters to Go:") end
-	d_Compilation_class: STRING_32 is do Result := i18n("Class:") end
-	d_Compilation_cluster: STRING_32 is do Result := i18n("Cluster:") end
-	d_Compilation_progress: STRING_32 is do Result := i18n("Compilation Progress for ") end
-	d_Degree: STRING_32 is do Result := i18n("Degree:") end
-	d_Documentation: STRING_32 is do Result := i18n("Documentation") end
-	d_Features_processed: STRING_32 is do Result := i18n("Completed: ") end
-	d_Features_to_go: STRING_32 is do Result := i18n("Remaining: ") end
-	d_Generating: STRING_32 is do Result := i18n("Generating: ") end
-	d_Resynchronizing_breakpoints: STRING_32 is do Result := i18n("Resynchronizing Breakpoints") end
-	d_Resynchronizing_tools: STRING_32 is do Result := i18n("Resynchronizing Tools") end
-	d_Reverse_engineering: STRING_32 is do Result := i18n("Reverse Engineering Project") end
-	d_Finished_removing_dead_code: STRING_32 is do Result := i18n("Dead Code Removal Completed") end
+	d_Classes_to_go: STRING is					"Classes to Go:"
+	d_Clusters_to_go: STRING is					"Clusters to Go:"
+	d_Compilation_class: STRING is				"Class:"
+	d_Compilation_cluster: STRING is				"Cluster:"
+	d_Compilation_progress: STRING is			"Compilation Progress for "
+	d_Degree: STRING is							"Degree:"
+	d_Documentation: STRING is					"Documentation"
+	d_Features_processed: STRING is				"Completed: "
+	d_Features_to_go: STRING is					"Remaining: "
+	d_Generating: STRING is						"Generating: "
+	d_Resynchronizing_breakpoints: STRING is 	"Resynchronizing Breakpoints"
+	d_Resynchronizing_tools: STRING is			"Resynchronizing Tools"
+	d_Reverse_engineering: STRING is			"Reverse Engineering Project"
+	d_Finished_removing_dead_code: STRING is		"Dead Code Removal Completed"
 
 feature -- Help text
 
-	h_No_help_available: STRING_32 is do Result := i18n("No help available for this element") end
-	h_refactoring_compiled: STRING_32 is do Result := i18n("Renames only occurances of the class name in compiled classes.") end
-	h_refactoring_all_classes: STRING_32 is do Result := i18n("Renames occurances of the class name in any class. (Slow)") end
+	h_No_help_available: STRING is				"No help available for this element"
+	h_refactoring_compiled: STRING is			"Renames only occurances of the class name in compiled classes."
+	h_refactoring_all_classes: STRING is		"Renames occurances of the class name in any class. (Slow)"
 
 feature -- File names
 
-	default_stack_file_name: STRING_32 is do Result := i18n("stack") end
+	default_stack_file_name: STRING is			"stack"
 
 feature -- Accelerator, focus label and menu name
 
-	m_About: STRING_32 is
+	m_About: STRING is
 		once
-			Result := i18n("&About ") + Workbench_name + i18n("...")
+			Result := "&About " + Workbench_name + "..."
 		end
-	m_Advanced: STRING_32 is do Result := i18n("Ad&vanced") end
-	m_Add_to_favorites: STRING_32 is do Result := i18n("&Add to Favorites") end
-	m_Address_toolbar: STRING_32 is do Result := i18n("&Address Bar") end
-	m_Apply: STRING_32 is do Result := i18n("&Apply") end
-	l_all_classes: STRING_32 is do Result := i18n("All Classes") end
-	m_Breakpoints_tool: STRING_32 is do Result := i18n("Breakpoints") end
+	m_Advanced: STRING is				"Ad&vanced"
+	m_Add_to_favorites: STRING is		"&Add to Favorites"
+	m_Address_toolbar: STRING is			"&Address Bar"
+	m_Apply: STRING is					"&Apply"
+	l_all_classes: STRING is			"All Classes"
+	m_Breakpoints_tool: STRING is		"Breakpoints"
 
-	l_class_tree_assemblies: STRING_32 is do Result := i18n("Assemblies") end
-	l_class_tree_clusters: STRING_32 is do Result := i18n("Clusters") end
-	l_class_tree_libraries: STRING_32 is do Result := i18n("Libraries") end
-	l_class_tree_overrides: STRING_32 is do Result := i18n("Overrides") end
+	l_class_tree_assemblies: STRING is	"Assemblies"
+	l_class_tree_clusters: STRING is	"Clusters"
+	l_class_tree_libraries: STRING is	"Libraries"
+	l_class_tree_overrides: STRING is	"Overrides"
 
-	f_Clear_breakpoints: STRING_32 is do Result := i18n("Remove all breakpoints") end
-	m_Clear_breakpoints: STRING_32 is do Result := i18n("Re&move All Breakpoints") end
-	m_Comment: STRING_32 is do Result := i18n("&Comment%TCtrl+K") end
-	m_Compilation_C_Workbench: STRING_32 is do Result := i18n("Compile W&orkbench C Code") end
-	m_Compilation_C_Final: STRING_32 is do Result := i18n("Compile F&inalized C Code") end
-	m_Contents: STRING_32 is do Result := i18n("&Contents") end
-	m_Customize_general: STRING_32 is do Result := i18n("&Customize Standard Toolbar...") end
-	m_Customize_project: STRING_32 is do Result := i18n("Customize P&roject Toolbar...") end
-	m_Customize_refactoring: STRING_32 is do Result := i18n("Customize Re&factoring Toolbar...") end
-	m_Cut: STRING_32 is do Result := i18n("Cu&t%TCtrl+X") end
-	f_Cut: STRING_32 is do Result := i18n("Cut (Ctrl+X)") end
-	m_Call_stack_tool: STRING_32 is do Result := i18n("Call stack") end
-	m_Cluster_tool: STRING_32 is do Result := i18n("&Clusters") end
-	l_compiled_classes: STRING_32 is do Result := i18n("Compiled Classes") end
-	m_Complete_word: STRING_32 is do Result := i18n("Complete &Word") end
-	m_Complete_class_name: STRING_32 is do Result := i18n("Complete Class &Name") end
-	m_Context_tool: STRING_32 is do Result := i18n("Conte&xt") end
-	m_Copy: STRING_32 is do Result := i18n("&Copy%TCtrl+C") end
-	f_Copy: STRING_32 is do Result := i18n("Copy (Ctrl+C)") end
-	m_Close: STRING_32 is do Result := i18n("&Close Window%TAlt+F4") end
-	m_Close_short: STRING_32 is do Result := i18n("&Close") end
-	f_Create_new_cluster: STRING_32 is do Result := i18n("Add a cluster") end
-	f_Create_new_library: STRING_32 is do Result := i18n("Add a library") end
-	f_Create_new_assembly: STRING_32 is do Result := i18n("Add an assembly") end
-	f_Create_new_precompile: STRING_32 is do Result := i18n("Add a precompile") end
-	f_Create_new_class: STRING_32 is do Result := i18n("Create a new class") end
-	f_Create_new_feature: STRING_32 is do Result := i18n("Create a new feature") end
+	f_Clear_breakpoints: STRING is		"Remove all breakpoints"
+	m_Clear_breakpoints: STRING is		"Re&move All Breakpoints"
+	m_Comment: STRING is					"&Comment%TCtrl+K"
+	m_Compilation_C_Workbench: STRING is	"Compile W&orkbench C Code"
+	m_Compilation_C_Final: STRING is		"Compile F&inalized C Code"
+	m_Contents: STRING is				"&Contents"
+	m_Customize_general: STRING is		"&Customize Standard Toolbar..."
+	m_Customize_project: STRING is		"Customize P&roject Toolbar..."
+	m_Customize_refactoring: STRING is	"Customize Re&factoring Toolbar..."
+	m_Cut: STRING is						"Cu&t%TCtrl+X"
+	f_Cut: STRING is					"Cut (Ctrl+X)"
+	m_Call_stack_tool: STRING is			"Call stack"
+	m_Cluster_tool: STRING is			"&Clusters"
+	l_compiled_classes: STRING is		"Compiled Classes"
+	m_Complete_word: STRING is			"Complete &Word"
+	m_Complete_class_name: STRING is		"Complete Class &Name"
+	m_Context_tool: STRING is			"Conte&xt"
+	m_Copy: STRING is					"&Copy%TCtrl+C"
+	f_Copy: STRING is					"Copy (Ctrl+C)"
+	m_Close: STRING is					"&Close Window%TAlt+F4"
+	m_Close_short: STRING is				"&Close"
+	f_Create_new_cluster: STRING is		"Add a cluster"
+	f_Create_new_library: STRING is		"Add a library"
+	f_Create_new_assembly: STRING is	"Add an assembly"
+	f_Create_new_precompile: STRING is 	"Add a precompile"
+	f_Create_new_class: STRING is		"Create a new class"
+	f_Create_new_feature: STRING is		"Create a new feature"
 
-	m_Dbg_assertion_checking_disable: STRING_32 is do Result := i18n("Disable Assertion Checking") end
-	m_Dbg_assertion_checking_restore: STRING_32 is do Result := i18n("Restore Assertion Checking") end
-	m_Dbg_exception_handler: STRING_32 is do Result := i18n("Exception Handling") end
-	m_Debug_interrupt_new: STRING_32 is do Result := i18n("I&nterrupt Application") end
-	f_Debug_edit_object: STRING_32 is do Result := i18n("Edit Object content") end
-	m_Debug_edit_object: STRING_32 is do Result := i18n("Edit Object Content") end
-	f_Debug_dynamic_eval: STRING_32 is do Result := i18n("Dynamic feature evaluation") end
-	m_Debug_dynamic_eval: STRING_32 is do Result := i18n("Dynamic Feature Evaluation") end
-	m_Debug_kill: STRING_32 is do Result := i18n("&Stop Application") end
-	f_Debug_run: STRING_32 is do Result := i18n("Run") end
-	m_Debug_run: STRING_32 is do Result := i18n("&Run%TCtrl+R") end
-	m_Debug_run_new: STRING_32 is do Result := i18n("St&art") end
-	m_Launch_With_Arguments: STRING_32 is do Result := i18n("Start With Arguments") end
-	f_diagram_delete: STRING_32 is do Result := i18n("Delete") end
-	l_diagram_delete: STRING_32 is do Result := i18n("Delete graphical items, remove code from system") end
-	f_diagram_crop: STRING_32 is do Result := i18n("Crop diagram") end
-	m_diagram_crop: STRING_32 is do Result := i18n("&Crop Diagram") end
-	f_diagram_zoom_out: STRING_32 is do Result := i18n("Zoom out") end
-	f_diagram_put_right_angles: STRING_32 is do Result := i18n("Force right angles") end
-	f_diagram_remove_right_angles: STRING_32 is do Result := i18n("Remove right angles") end
-	m_diagram_link_tool: STRING_32 is do Result := i18n("&Put Right Angles") end
-	f_diagram_to_png: STRING_32 is do Result := i18n("Export diagram to PNG") end
-	m_diagram_to_png: STRING_32 is do Result := i18n("&Export Diagram to PNG") end
-	f_diagram_context_depth: STRING_32 is do Result := i18n("Select depth of relations") end
-	m_diagram_context_depth: STRING_32 is do Result := i18n("&Select Depth of Relations") end
-	f_diagram_delete_view: STRING_32 is do Result := i18n("Delete current view") end
-	f_diagram_reset_view: STRING_32 is do Result := i18n("Reset current view") end
-	m_diagram_delete_view: STRING_32 is do Result := i18n("&Delete Current View") end
-	m_diagram_reset_view: STRING_32 is do Result := i18n("&Reset Current View") end
-	f_diagram_zoom_in: STRING_32 is do Result := i18n("Zoom in") end
-	f_diagram_fit_to_screen: STRING_32 is do Result := i18n("Fit to screen") end
-	f_diagram_undo: STRING_32 is do Result := i18n("Undo last action") end
-	f_diagram_hide_supplier: STRING_32 is do Result := i18n("Hide supplier links") end
-	f_diagram_show_supplier: STRING_32 is do Result := i18n("Show supplier links") end
+	m_Dbg_assertion_checking_disable: STRING is	"Disable Assertion Checking"
+	m_Dbg_assertion_checking_restore: STRING is	"Restore Assertion Checking"
+	m_Dbg_exception_handler: STRING is	"Exception Handling"
+	m_Debug_interrupt_new: STRING is		"I&nterrupt Application"
+	f_Debug_edit_object: STRING is		"Edit Object content"
+	m_Debug_edit_object: STRING is		"Edit Object Content"
+	f_Debug_dynamic_eval: STRING is		"Dynamic feature evaluation"
+	m_Debug_dynamic_eval: STRING is		"Dynamic Feature Evaluation"
+	m_Debug_kill: STRING is				"&Stop Application"
+	f_Debug_run: STRING is				"Run"
+	m_Debug_run: STRING is				"&Run%TCtrl+R"
+	m_Debug_run_new: STRING is			"St&art"
+	m_Launch_With_Arguments: STRING is	"Start With Arguments"
+	f_diagram_delete: STRING is			"Delete"
+	l_diagram_delete: STRING is			"Delete graphical items, remove code from system"
+	f_diagram_crop: STRING is			"Crop diagram"
+	m_diagram_crop: STRING is			"&Crop Diagram"
+	f_diagram_zoom_out: STRING is		"Zoom out"
+	f_diagram_put_right_angles: STRING is		"Force right angles"
+	f_diagram_remove_right_angles: STRING is	"Remove right angles"
+	m_diagram_link_tool: STRING is		"&Put Right Angles"
+	f_diagram_to_png: STRING is			"Export diagram to PNG"
+	m_diagram_to_png: STRING is			"&Export Diagram to PNG"
+	f_diagram_context_depth: STRING is  "Select depth of relations"
+	m_diagram_context_depth: STRING is  "&Select Depth of Relations"
+	f_diagram_delete_view: STRING is		"Delete current view"
+	f_diagram_reset_view: STRING is 		"Reset current view"
+	m_diagram_delete_view: STRING is		"&Delete Current View"
+	m_diagram_reset_view: STRING is		"&Reset Current View"
+	f_diagram_zoom_in: STRING is			"Zoom in"
+	f_diagram_fit_to_screen: STRING is	"Fit to screen"
+	f_diagram_undo: STRING is			"Undo last action"
+	f_diagram_hide_supplier: STRING is	"Hide supplier links"
+	f_diagram_show_supplier: STRING is	"Show supplier links"
 
-	l_diagram_supplier_visibility: STRING_32 is do Result := i18n("Toggle visibility of supplier links") end
+	l_diagram_supplier_visibility: STRING is "Toggle visibility of supplier links"
 
-	l_diagram_add_ancestors: STRING_32 is do Result := i18n("Add class ancestors to diagram") end
-	l_diagram_add_descendents: STRING_32 is do Result := i18n("Add class descendants to diagram") end
-	l_diagram_add_suppliers: STRING_32 is do Result := i18n("Add class suppliers to diagram") end
-	l_diagram_add_clients: STRING_32 is do Result := i18n("Add class clients to diagram") end
+	l_diagram_add_ancestors: STRING is "Add class ancestors to diagram"
+	l_diagram_add_descendents: STRING is "Add class descendants to diagram"
+	l_diagram_add_suppliers: STRING is "Add class suppliers to diagram"
+	l_diagram_add_clients: STRING is "Add class clients to diagram"
 
-	f_diagram_hide_labels: STRING_32 is do Result := i18n("Hide labels") end
-	f_diagram_show_labels: STRING_32 is do Result := i18n("Show labels") end
-	f_diagram_show_uml: STRING_32 is do Result := i18n("Show UML") end
-	f_diagram_show_bon: STRING_32 is do Result := i18n("Show BON") end
-	f_diagram_hide_clusters: STRING_32 is do Result := i18n("Hide clusters") end
-	f_diagram_show_clusters: STRING_32 is do Result := i18n("Show clusters") end
-	f_diagram_show_legend: STRING_32 is do Result := i18n("Show cluster legend") end
-	f_diagram_hide_legend: STRING_32 is do Result := i18n("Hide cluster legend") end
-	f_diagram_remove_anchor: STRING_32 is do Result := i18n("Remove anchor") end
-	l_diagram_labels_visibility: STRING_32 is do Result := i18n("Toggle visibility of client link labels") end
-	l_diagram_uml_visibility: STRING_32 is do Result := i18n("Toggle between UML and BON view") end
-	l_diagram_clusters_visibility: STRING_32 is do Result := i18n("Toggle visibility of clusters") end
-	l_diagram_legend_visibility: STRING_32 is do Result := i18n("Toggle visibility of cluster legend") end
-	l_diagram_remove_anchor: STRING_32 is do Result := i18n("Remove anchor") end
-	l_diagram_force_directed: STRING_32 is do Result := i18n("Turn on/off physics") end
-	l_diagram_toggle_quality: STRING_32 is do Result := i18n("Toggle quality level") end
-	f_diagram_high_quality: STRING_32 is do Result := i18n("Switch to high quality") end
-	f_diagram_low_quality: STRING_32 is do Result := i18n("Switch to low quality") end
-	f_diagram_hide_inheritance: STRING_32 is do Result := i18n("Hide inheritance links") end
-	f_diagram_show_inheritance: STRING_32 is do Result := i18n("Show inheritance links") end
-	l_diagram_inheritance_visibility: STRING_32 is do Result := i18n("Toggle visibility of inheritance links") end
-	f_diagram_redo: STRING_32 is do Result := i18n("Redo last action") end
-	f_diagram_fill_cluster: STRING_32 is do Result := i18n("Include all classes of cluster") end
-	f_diagram_history: STRING_32 is do Result := i18n("History tool") end
-	f_diagram_remove: STRING_32 is do Result := i18n("Hide figure") end
-	l_diagram_remove: STRING_32 is do Result := i18n("Delete graphical items") end
-	f_diagram_create_supplier_links: STRING_32 is do Result := i18n("Create new client-supplier links") end
-	f_diagram_create_aggregate_supplier_links: STRING_32 is do Result := i18n("Create new aggregate client-supplier links") end
-	f_diagram_create_inheritance_links: STRING_32 is do Result := i18n("Create new inheritance links") end
-	l_diagram_create_links: STRING_32 is do Result := i18n("Select type of new links") end
-	f_diagram_new_class: STRING_32 is do Result := i18n("Create a new class") end
-	f_diagram_change_header: STRING_32 is do Result := i18n("Change class name and generics") end
-	f_diagram_change_color: STRING_32 is do Result := i18n("Change color") end
-	f_diagram_force_directed_on: STRING_32 is do Result := i18n("Turn on physics") end
-	f_diagram_force_directed_off: STRING_32 is do Result := i18n("Turn off physics") end
-	f_diagram_force_settings: STRING_32 is do Result := i18n("Show physics settings dialog") end
-	f_Disable_stop_points: STRING_32 is do Result := i18n("Disable all breakpoints") end
-	m_Disable_stop_points: STRING_32 is do Result := i18n("&Disable All Breakpoints") end
-	m_Debug_block: STRING_32 is do Result := i18n("E&mbed in %"Debug...%"%TCtrl+D") end
-	m_Editor: STRING_32 is do Result := i18n("&Editor") end
-	m_Eiffel_introduction: STRING_32 is do Result := i18n("&Introduction to Eiffel") end
-	f_Enable_stop_points: STRING_32 is do Result := i18n("Enable all breakpoints") end
-	m_Enable_stop_points: STRING_32 is do Result := i18n("&Enable All Breakpoints") end
-	m_Exec_last: STRING_32 is do Result := i18n("&Out of Routine") end
-	m_Exec_nostop: STRING_32 is do Result := i18n("&Ignore Breakpoints") end
-	m_Exec_step: STRING_32 is do Result := i18n("&Step-by-Step") end
-	m_Exec_into: STRING_32 is do Result := i18n("Step In&to") end
-	m_Exit_project: STRING_32 is do Result := i18n("E&xit") end
-	m_Explorer_bar: STRING_32 is do Result := i18n("&Tools") end
-	m_Export_to: STRING_32 is do Result := i18n("Save Cop&y As...") end
-	m_Export_XMI: STRING_32 is do Result := i18n("E&xport XMI...") end
-	m_Expression_evaluation: STRING_32 is do Result := i18n("Expression Evaluation") end
-	m_External_editor: STRING_32 is do Result := i18n("External E&ditor") end
-	m_Favorites_tool: STRING_32 is do Result := i18n("F&avorites") end
-	m_Features_tool: STRING_32 is do Result := i18n("&Features") end
-	f_Finalize: STRING_32 is do Result := i18n("Finalize...") end
-	m_Finalize_new: STRING_32 is do Result := i18n("Finali&ze...") end
-	m_Find: STRING_32 is do Result := i18n("&Search") end
-	m_Find_next: STRING_32 is do Result := i18n("Find &Next") end
-	m_Find_previous: STRING_32 is do Result := i18n("Find &Previous") end
-	m_Find_next_selection: STRING_32 is do Result := i18n("Find Next &Selection") end
-	m_Find_previous_selection: STRING_32 is do Result := i18n("Find P&revious Selection") end
-	f_Freeze: STRING_32 is do Result := i18n("Freeze...") end
-	m_Freeze_new: STRING_32 is do Result := i18n("&Freeze...") end
-	m_General_toolbar: STRING_32 is do Result := i18n("&Standard Buttons") end
-	m_Generate_documentation: STRING_32 is do Result := i18n("Generate &Documentation...") end
-	m_Go_to: STRING_32 is do Result := i18n("&Go to...") end
-	m_Guided_tour: STRING_32 is do Result := i18n("&Guided Tour") end
-	m_Help: STRING_32 is do Result := i18n("&Help") end
-	m_Hide_favorites: STRING_32 is do Result := i18n("&Hide Favorites") end
-	m_Hide_formatting_marks: STRING_32 is do Result := i18n("&Hide Formatting Marks") end
-	m_History_forth: STRING_32 is do Result := i18n("&Forward") end
-	m_History_back: STRING_32 is do Result := i18n("&Back") end
-	f_History_forth: STRING_32 is do Result := i18n("Go forth") end
-	f_History_back: STRING_32 is do Result := i18n("Go back") end
-	m_How_to_s: STRING_32 is do Result := i18n("&How to's") end
-	m_If_block: STRING_32 is do Result := i18n("&Embed in %"if...%"%TCtrl+I") end
-	m_Indent: STRING_32 is do Result := i18n("&Indent Selection%TTab") end
-	m_Line_numbers: STRING_32 is do Result := i18n("Toggle &Line Numbers") end
-	f_Melt: STRING_32 is do Result := i18n("Compile current project") end
-	m_Melt_new: STRING_32 is do Result := i18n("&Compile") end
-	m_New: STRING_32 is do Result := i18n("&New") end
-	l_new_name: STRING_32 is do Result := i18n("New Name:") end
-	f_New_window: STRING_32 is do Result := i18n("Create a new window") end
-	m_New_window: STRING_32 is do Result := i18n("New &Window") end
-	m_New_dynamic_lib: STRING_32 is do Result := i18n("&Dynamic Library Builder...") end
-	m_New_project: STRING_32 is do Result := i18n("&New Project...") end
-	m_Ok: STRING_32 is do Result := i18n("&OK") end
-	m_Open: STRING_32 is do Result := i18n("&Open...%TCtrl+O") end
-	m_Open_new: STRING_32 is do Result := i18n("Op&en...") end
-	m_Open_project: STRING_32 is do Result := i18n("&Open Project...") end
-	m_Organize_favorites: STRING_32 is do Result := i18n("&Organize Favorites...") end
-	m_Output: STRING_32 is do Result := i18n("&Output") end
-	f_Paste: STRING_32 is do Result := i18n("Paste (Ctrl+V)") end
-	m_Paste: STRING_32 is do Result := i18n("&Paste%TCtrl+V") end
-	m_Precompile_new: STRING_32 is do Result := i18n("&Precompile") end
-	f_Print: STRING_32 is do Result := i18n("Print") end
-	m_Print: STRING_32 is do Result := i18n("&Print") end
-	f_preferences: STRING_32 is do Result := i18n("Preferences") end
-	m_Preferences: STRING_32 is do Result := i18n("&Preferences...") end
-	m_Properties_tool: STRING_32 is do Result := i18n("Pr&operties") end
-	m_Profile_tool: STRING_32 is do Result := i18n("Pro&filer...") end
-	m_Project_toolbar: STRING_32 is do Result := i18n("&Project Bar") end
-	m_Refactoring_toolbar: STRING_32 is do Result := i18n("Re&factoring Bar") end
-	f_refactoring_pull: STRING_32 is do Result := i18n("Pull up Feature") end
-	f_refactoring_rename: STRING_32 is do Result := i18n("Rename Feature/Class") end
-	f_refactoring_undo: STRING_32 is do Result := i18n("Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)") end
-	f_refactoring_redo: STRING_32 is do Result := i18n("Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)") end
-	b_refactoring_pull: STRING_32 is do Result := i18n("Pull Up") end
-	b_refactoring_rename: STRING_32 is do Result := i18n("Rename") end
-	b_refactoring_undo: STRING_32 is do Result := i18n("Undo Refactoring") end
-	b_refactoring_redo: STRING_32 is do Result := i18n("Redo Refactoring") end
-	l_rename_file: STRING_32 is do Result := i18n("Rename File") end
-	l_replace_comments: STRING_32 is do Result := i18n("Replace Name in Comments") end
-	l_replace_strings: STRING_32 is do Result := i18n("Replace Name in Strings") end
-	m_Recent_project: STRING_32 is do Result := i18n("&Recent Projects") end
-	m_Redo: STRING_32 is do Result := i18n("Re&do%TCtrl+Y") end
-	f_Redo: STRING_32 is do Result := i18n("Redo (Ctrl+Y)") end
-	m_Replace: STRING_32 is do Result := i18n("&Replace...") end
-	f_Retarget_diagram: STRING_32 is do Result := i18n("Target to cluster or class") end
-	f_Run_finalized: STRING_32 is do Result := i18n("Run finalized system") end
-	m_Run_finalized: STRING_32 is do Result := i18n("&Run Finalized System") end
-	f_Save: STRING_32 is do Result := i18n("Save") end
-	m_Save_new: STRING_32 is do Result := i18n("&Save") end
-	m_Save_As: STRING_32 is do Result := i18n("S&ave As...") end
-	f_Save_all: STRING_32 is do Result := i18n("Save All") end
-	m_Save_All: STRING_32 is do Result := i18n("Save &All") end
-	m_Search: STRING_32 is do Result := i18n("&Find...") end
-	m_Search_tool: STRING_32 is do Result := i18n("&Search") end
-	m_Select_all: STRING_32 is do Result := i18n("Select &All%TCtrl+A") end
-	m_Send_to: STRING_32 is do Result := i18n("Sen&d to") end
-	m_show_assigners: STRING_32 is do Result := i18n("A&ssigners") end
-	m_Show_class_cluster: STRING_32 is do Result := i18n("Find in Cluster Tree") end
-	m_show_creators: STRING_32 is do Result := i18n("C&reators") end
-	m_Show_favorites: STRING_32 is do Result := i18n("&Show Favorites") end
-	m_Show_formatting_marks: STRING_32 is do Result := i18n("&Show Formatting Marks") end
-	m_Showancestors: STRING_32 is do Result := i18n("&Ancestors") end
-	m_Showattributes: STRING_32 is do Result := i18n("A&ttributes") end
-	m_Showcallers: STRING_32 is do Result := i18n("&Callers") end
-	m_Showcallees: STRING_32 is do Result := i18n("Call&ees") end
-	m_Show_creation: STRING_32 is do Result := i18n("Creat&ions") end
-	m_Show_assignees: STRING_32 is do Result := i18n("&Assignees") end
-	m_Showclick: STRING_32 is do Result := i18n("C&lickable") end
-	m_Showclients: STRING_32 is do Result := i18n("Cli&ents") end
-	m_showcreators: STRING_32 is do Result := i18n("&Creators") end
-	m_Showdeferreds: STRING_32 is do Result := i18n("&Deferred") end
-	m_Showdescendants: STRING_32 is do Result := i18n("De&scendants") end
-	m_Showexported: STRING_32 is do Result := i18n("Ex&ported") end
-	m_Showexternals: STRING_32 is do Result := i18n("E&xternals") end
-	m_Showflat: STRING_32 is do Result := i18n("&Flat") end
-	m_Showfs: STRING_32 is do Result := i18n("&Interface") end
-	m_Showfuture: STRING_32 is do Result := i18n("&Descendant Versions") end
-	m_Showhistory: STRING_32 is do Result := i18n("&Implementers") end
-	m_Showindexing: STRING_32 is do Result := i18n("&Indexing clauses") end
-	m_show_invariants: STRING_32 is do Result := i18n("In&variants") end
-	m_Showonces: STRING_32 is do Result := i18n("O&nce/Constants") end
-	m_Showpast: STRING_32 is do Result := i18n("&Ancestor Versions") end
-	m_Showroutines: STRING_32 is do Result := i18n("&Routines") end
-	m_Showshort: STRING_32 is do Result := i18n("C&ontract") end
-	m_Showhomonyms: STRING_32 is do Result := i18n("&Homonyms") end
-	m_Showsuppliers: STRING_32 is do Result := i18n("S&uppliers") end
-	m_Showtext_new: STRING_32 is do Result := i18n("Te&xt") end
-	m_System_new: STRING_32 is do Result := i18n("Project &Settings...") end
-	m_Toolbars: STRING_32 is do Result := i18n("Tool&bars") end
-	m_To_lower: STRING_32 is do Result := i18n("Set to &Lowercase%TCtrl+Shift+U") end
-	m_To_upper: STRING_32 is do Result := i18n("Set to U&ppercase%TCtrl+U") end
-	m_Uncomment: STRING_32 is do Result := i18n("U&ncomment%TCtrl+Shift+K") end
-	f_Uncomment: STRING_32 is do Result := i18n("Uncomment selected lines") end
-	m_Undo: STRING_32 is do Result := i18n("&Undo%TCtrl+Z") end
-	f_Undo: STRING_32 is do Result := i18n("Undo (Ctrl+Z)") end
-	m_Unindent: STRING_32 is do Result := i18n("&Unindent Selection%TShift+Tab") end
-	m_Windows_tool: STRING_32 is do Result := i18n("&Windows") end
-	m_Watch_tool: STRING_32 is do Result := i18n("Watch Tool") end
-	m_Wizard_precompile: STRING_32 is do Result := i18n("Precompilation &Wizard...") end
-	f_Wizard_precompile: STRING_32 is do Result := i18n("Wizard to precompile libraries") end
-	f_go_to_first_occurrence: STRING_32 is do Result := i18n("Double click to go to first occurrence") end
+	f_diagram_hide_labels: STRING is		"Hide labels"
+	f_diagram_show_labels: STRING is		"Show labels"
+	f_diagram_show_uml: STRING is		"Show UML"
+	f_diagram_show_bon: STRING is 		"Show BON"
+	f_diagram_hide_clusters: STRING is	"Hide clusters"
+	f_diagram_show_clusters: STRING is	"Show clusters"
+	f_diagram_show_legend: STRING is		"Show cluster legend"
+	f_diagram_hide_legend: STRING is		"Hide cluster legend"
+	f_diagram_remove_anchor: STRING is	"Remove anchor"
+	l_diagram_labels_visibility: STRING is	"Toggle visibility of client link labels"
+	l_diagram_uml_visibility: STRING is	"Toggle between UML and BON view"
+	l_diagram_clusters_visibility: STRING is	"Toggle visibility of clusters"
+	l_diagram_legend_visibility: STRING is	"Toggle visibility of cluster legend"
+	l_diagram_remove_anchor: STRING is	"Remove anchor"
+	l_diagram_force_directed: STRING is	"Turn on/off physics"
+	l_diagram_toggle_quality: STRING is	"Toggle quality level"
+	f_diagram_high_quality: STRING is 	"Switch to high quality"
+	f_diagram_low_quality: STRING is 	"Switch to low quality"
+	f_diagram_hide_inheritance: STRING is	"Hide inheritance links"
+	f_diagram_show_inheritance: STRING is	"Show inheritance links"
+	l_diagram_inheritance_visibility: STRING is "Toggle visibility of inheritance links"
+	f_diagram_redo: STRING is			"Redo last action"
+	f_diagram_fill_cluster: STRING is	"Include all classes of cluster"
+	f_diagram_history: STRING is		"History tool"
+	f_diagram_remove: STRING is			"Hide figure"
+	l_diagram_remove: STRING is			"Delete graphical items"
+	f_diagram_create_supplier_links: STRING is	"Create new client-supplier links"
+	f_diagram_create_aggregate_supplier_links: STRING is "Create new aggregate client-supplier links"
+	f_diagram_create_inheritance_links: STRING is "Create new inheritance links"
+	l_diagram_create_links: STRING is	"Select type of new links"
+	f_diagram_new_class: STRING is		"Create a new class"
+	f_diagram_change_header: STRING is	"Change class name and generics"
+	f_diagram_change_color: STRING is	"Change color"
+	f_diagram_force_directed_on: STRING is	"Turn on physics"
+	f_diagram_force_directed_off: STRING is	"Turn off physics"
+	f_diagram_force_settings: STRING is	"Show physics settings dialog"
+	f_Disable_stop_points: STRING is	"Disable all breakpoints"
+	m_Disable_stop_points: STRING is	"&Disable All Breakpoints"
+	m_Debug_block: STRING is			"E&mbed in %"Debug...%"%TCtrl+D"
+	m_Editor: STRING is					"&Editor"
+	m_Eiffel_introduction: STRING is	"&Introduction to Eiffel"
+	f_Enable_stop_points: STRING is		"Enable all breakpoints"
+	m_Enable_stop_points: STRING is		"&Enable All Breakpoints"
+	m_Exec_last: STRING is				"&Out of Routine"
+	m_Exec_nostop: STRING is			"&Ignore Breakpoints"
+	m_Exec_step: STRING is				"&Step-by-Step"
+	m_Exec_into: STRING is				"Step In&to"
+	m_Exit_project: STRING is			"E&xit"
+	m_Explorer_bar: STRING is			"&Tools"
+	m_Export_to: STRING is				"Save Cop&y As..."
+	m_Export_XMI: STRING is 			"E&xport XMI..."
+	m_Expression_evaluation: STRING is	"Expression Evaluation"
+	m_External_editor: STRING is		"External E&ditor"
+	m_Favorites_tool: STRING is			"F&avorites"
+	m_Features_tool: STRING is			"&Features"
+	f_Finalize: STRING is				"Finalize..."
+	m_Finalize_new: STRING is			"Finali&ze..."
+	m_Find: STRING is					"&Search"
+	m_Find_next: STRING is				"Find &Next"
+	m_Find_previous: STRING is			"Find &Previous"
+	m_Find_next_selection: STRING is	"Find Next &Selection"
+	m_Find_previous_selection: STRING is "Find P&revious Selection"
+	f_Freeze: STRING is					"Freeze..."
+	m_Freeze_new: STRING is				"&Freeze..."
+	m_General_toolbar: STRING is		"&Standard Buttons"
+	m_Generate_documentation: STRING is "Generate &Documentation..."
+	m_Go_to: STRING is					"&Go to..."
+	m_Guided_tour: STRING is			"&Guided Tour"
+	m_Help: STRING is					"&Help"
+	m_Hide_favorites: STRING is			"&Hide Favorites"
+	m_Hide_formatting_marks: STRING is	"&Hide Formatting Marks"
+	m_History_forth: STRING is			"&Forward"
+	m_History_back: STRING is			"&Back"
+	f_History_forth: STRING is			"Go forth"
+	f_History_back: STRING is			"Go back"
+	m_How_to_s: STRING is				"&How to's"
+	m_If_block: STRING is				"&Embed in %"if...%"%TCtrl+I"
+	m_Indent: STRING is					"&Indent Selection%TTab"
+	m_Line_numbers: STRING is			"Toggle &Line Numbers"
+	f_Melt: STRING is					"Compile current project"
+	m_Melt_new: STRING is				"&Compile"
+	m_New: STRING is					"&New"
+	l_new_name: STRING is				"New Name:"
+	f_New_window: STRING is				"Create a new window"
+	m_New_window: STRING is				"New &Window"
+	m_New_dynamic_lib: STRING is		"&Dynamic Library Builder..."
+	m_New_project: STRING is			"&New Project..."
+	m_Ok: STRING is						"&OK"
+	m_Open: STRING is					"&Open...%TCtrl+O"
+	m_Open_new: STRING is				"Op&en..."
+	m_Open_project: STRING is			"&Open Project..."
+	m_Organize_favorites: STRING is		"&Organize Favorites..."
+	m_Output: STRING is					"&Output"
+	f_Paste: STRING is					"Paste (Ctrl+V)"
+	m_Paste: STRING is					"&Paste%TCtrl+V"
+	m_Precompile_new: STRING is			"&Precompile"
+	f_Print: STRING is					"Print"
+	m_Print: STRING is					"&Print"
+	f_preferences: STRING is			"Preferences"
+	m_Preferences: STRING is			"&Preferences..."
+	m_Properties_tool: STRING is		"Pr&operties"
+	m_Profile_tool: STRING is			"Pro&filer..."
+	m_Project_toolbar: STRING is		"&Project Bar"
+	m_Refactoring_toolbar: STRING is	"Re&factoring Bar"
+	f_refactoring_pull: STRING is		"Pull up Feature"
+	f_refactoring_rename: STRING is		"Rename Feature/Class"
+	f_refactoring_undo: STRING is		"Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)"
+	f_refactoring_redo: STRING is		"Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)"
+	b_refactoring_pull: STRING is		"Pull Up"
+	b_refactoring_rename: STRING is		"Rename"
+	b_refactoring_undo: STRING is		"Undo Refactoring"
+	b_refactoring_redo: STRING is		"Redo Refactoring"
+	l_rename_file: STRING is			"Rename File"
+	l_replace_comments: STRING is		"Replace Name in Comments"
+	l_replace_strings: STRING is		"Replace Name in Strings"
+	m_Recent_project: STRING is			"&Recent Projects"
+	m_Redo: STRING is					"Re&do%TCtrl+Y"
+	f_Redo: STRING is					"Redo (Ctrl+Y)"
+	m_Replace: STRING is				"&Replace..."
+	f_Retarget_diagram: STRING is		"Target to cluster or class"
+	f_Run_finalized: STRING is			"Run finalized system"
+	m_Run_finalized: STRING is			"&Run Finalized System"
+	f_Save: STRING is					"Save"
+	m_Save_new: STRING is				"&Save"
+	m_Save_As: STRING is				"S&ave As..."
+	f_Save_all: STRING is 				"Save All"
+	m_Save_All: STRING is 				"Save &All"
+	m_Search: STRING is					"&Find..."
+	m_Search_tool: STRING is			"&Search"
+	m_Select_all: STRING is				"Select &All%TCtrl+A"
+	m_Send_to: STRING is				"Sen&d to"
+	m_show_assigners: STRING is			"A&ssigners"
+	m_Show_class_cluster: STRING is		"Find in Cluster Tree"
+	m_show_creators: STRING is			"C&reators"
+	m_Show_favorites: STRING is			"&Show Favorites"
+	m_Show_formatting_marks: STRING is		"&Show Formatting Marks"
+	m_Showancestors: STRING is			"&Ancestors"
+	m_Showattributes: STRING is			"A&ttributes"
+	m_Showcallers: STRING is			"&Callers"
+	m_Showcallees: STRING is 		"Call&ees"
+	m_Show_creation: STRING is 		"Creat&ions"
+	m_Show_assignees: STRING is 		"&Assignees"
+	m_Showclick: STRING is				"C&lickable"
+	m_Showclients: STRING is			"Cli&ents"
+	m_showcreators: STRING is			"&Creators"
+	m_Showdeferreds: STRING is			"&Deferred"
+	m_Showdescendants: STRING is		"De&scendants"
+	m_Showexported: STRING is			"Ex&ported"
+	m_Showexternals: STRING is			"E&xternals"
+	m_Showflat: STRING is				"&Flat"
+	m_Showfs: STRING is					"&Interface"
+	m_Showfuture: STRING is				"&Descendant Versions"
+	m_Showhistory: STRING is			"&Implementers"
+	m_Showindexing: STRING is			"&Indexing clauses"
+	m_show_invariants: STRING is		"In&variants"
+	m_Showonces: STRING is				"O&nce/Constants"
+	m_Showpast: STRING is				"&Ancestor Versions"
+	m_Showroutines: STRING is			"&Routines"
+	m_Showshort: STRING is				"C&ontract"
+	m_Showhomonyms: STRING is			"&Homonyms"
+	m_Showsuppliers: STRING is			"S&uppliers"
+	m_Showtext_new: STRING is			"Te&xt"
+	m_System_new: STRING is				"Project &Settings..."
+	m_Toolbars: STRING is				"Tool&bars"
+	m_To_lower: STRING is				"Set to &Lowercase%TCtrl+Shift+U"
+	m_To_upper: STRING is				"Set to U&ppercase%TCtrl+U"
+	m_Uncomment: STRING is				"U&ncomment%TCtrl+Shift+K"
+	f_Uncomment: STRING is				"Uncomment selected lines"
+	m_Undo: STRING is					"&Undo%TCtrl+Z"
+	f_Undo: STRING is					"Undo (Ctrl+Z)"
+	m_Unindent: STRING is				"&Unindent Selection%TShift+Tab"
+	m_Windows_tool: STRING is			"&Windows"
+	m_Watch_tool: STRING is				"Watch Tool"
+	m_Wizard_precompile: STRING is 		"Precompilation &Wizard..."
+	f_Wizard_precompile: STRING is		"Wizard to precompile libraries"
+	f_go_to_first_occurrence: STRING is "Double click to go to first occurrence"
 
 feature -- Toggles
 
-	f_hide_alias: STRING_32 is do Result := i18n("Hide Alias Name") end
-	f_hide_assigner: STRING_32 is do Result := i18n("Hide Assigner Command Name") end
-	f_hide_signature: STRING_32 is do Result := i18n("Hide Signature") end
-	f_show_alias: STRING_32 is do Result := i18n("Show Alias Name") end
-	f_show_assigner: STRING_32 is do Result := i18n("Show Assigner Command Name") end
-	f_show_signature: STRING_32 is do Result := i18n("Show Signature") end
-	l_toggle_alias: STRING_32 is do Result := i18n("Toggle visibility of feature alias name") end
-	l_toggle_assigner: STRING_32 is do Result := i18n("Toggle visibility of assigner command name") end
-	l_toggle_signature: STRING_32 is do Result := i18n("Toggle visibility of feature signature") end
+	f_hide_alias: STRING is			"Hide Alias Name"
+	f_hide_assigner: STRING is		"Hide Assigner Command Name"
+	f_hide_signature: STRING is		"Hide Signature"
+	f_show_alias: STRING is			"Show Alias Name"
+	f_show_assigner: STRING is		"Show Assigner Command Name"
+	f_show_signature: STRING is		"Show Signature"
+	l_toggle_alias: STRING is		"Toggle visibility of feature alias name"
+	l_toggle_assigner: STRING is	"Toggle visibility of assigner command name"
+	l_toggle_signature: STRING is	"Toggle visibility of feature signature"
 
 feature -- Menu mnenomics
 
-	m_Add_exported_feature: STRING_32 is do Result := i18n("&Add...") end
-	m_Bkpt_info: STRING_32 is do Result := i18n("Brea&kpoint Information") end
-	m_Class_info: STRING_32 is do Result := i18n("Cla&ss Views") end
-	m_Check_exports: STRING_32 is do Result := i18n("Chec&k Export Clauses") end
-	m_Create_new_cluster: STRING_32 is do Result := i18n("Add C&luster...") end
-	m_Create_new_library: STRING_32 is do Result := i18n("Add L&ibrary...") end
-	m_Create_new_precompile: STRING_32 is do Result := i18n("Add &Precompile") end
-	m_Create_new_assembly: STRING_32 is do Result := i18n("Add &Assembly...") end
-	m_Create_new_class: STRING_32 is do Result := i18n("&New Class...") end
-	m_Create_new_feature: STRING_32 is do Result := i18n("New Fea&ture...") end
-	m_Debug: STRING_32 is do Result := i18n("&Debug") end
-	m_Debugging_tool: STRING_32 is do Result := i18n("&Debugging Tools") end
-	m_Disable_this_bkpt: STRING_32 is do Result := i18n("&Disable This Breakpoint") end
-	m_Display_error_help: STRING_32 is do Result := i18n("Compilation Error &Wizard...") end
-	m_Display_system_info: STRING_32 is do Result := i18n("S&ystem Info") end
-	m_Edit: STRING_32 is do Result := i18n("&Edit") end
-	m_Edit_condition: STRING_32 is do Result := i18n("E&dit Condition") end
-	m_Edit_exported_feature: STRING_32 is do Result := i18n("&Edit...") end
-	m_Edit_external_commands: STRING_32 is do Result := i18n("&External Commands...") end
-	m_Enable_this_bkpt: STRING_32 is do Result := i18n("&Enable This Breakpoint") end
-	m_Favorites: STRING_32 is do Result := i18n("Fav&orites") end
-	m_Feature_info: STRING_32 is do Result := i18n("Feat&ure Views") end
-	m_File: STRING_32 is do Result := i18n("&File") end
-	m_Formats: STRING_32 is do Result := i18n("F&ormat") end
-	m_Formatter_separators: ARRAY [STRING_32] is
+	m_Add_exported_feature: STRING is	"&Add..."
+	m_Bkpt_info: STRING is				"Brea&kpoint Information"
+	m_Class_info: STRING is				"Cla&ss Views"
+	m_Check_exports: STRING is			"Chec&k Export Clauses"
+	m_Create_new_cluster: STRING is		"Add C&luster..."
+	m_Create_new_library: STRING is		"Add L&ibrary..."
+	m_Create_new_precompile: STRING is	"Add &Precompile"
+	m_Create_new_assembly: STRING is	"Add &Assembly..."
+	m_Create_new_class: STRING is		"&New Class..."
+	m_Create_new_feature: STRING is		"New Fea&ture..."
+	m_Debug: STRING is					"&Debug"
+	m_Debugging_tool: STRING is			"&Debugging Tools"
+	m_Disable_this_bkpt: STRING is		"&Disable This Breakpoint"
+	m_Display_error_help: STRING is		"Compilation Error &Wizard..."
+	m_Display_system_info: STRING is	"S&ystem Info"
+	m_Edit: STRING is					"&Edit"
+	m_Edit_condition: STRING is			"E&dit Condition"
+	m_Edit_exported_feature: STRING is	"&Edit..."
+	m_Edit_external_commands: STRING is	"&External Commands..."
+	m_Enable_this_bkpt: STRING is		"&Enable This Breakpoint"
+	m_Favorites: STRING is				"Fav&orites"
+	m_Feature_info: STRING is			"Feat&ure Views"
+	m_File: STRING is					"&File"
+	m_Formats: STRING is				"F&ormat"
+	m_Formatter_separators: ARRAY [STRING] is
 		once
 			Result := <<"Text Generators", "Class Relations", "Restrictors", "Main Editor Views">>
 		end
-	m_History: STRING_32 is do Result := i18n("&Go to") end
-	m_Maximize: STRING_32 is do Result := i18n("Ma&ximize") end
-	m_Minimize: STRING_32 is do Result := i18n("Mi&nimize") end
-	m_Minimize_all: STRING_32 is do Result := i18n("&Minimize All") end
-	f_New_tab: STRING_32 is do Result := i18n("New Tab") end
-	m_New_tab: STRING_32 is do Result := i18n("New Ta&b") end
-	m_New_editor: STRING_32 is do Result := i18n("New Ed&itor Window") end
-	m_New_context_tool: STRING_32 is do Result := i18n("New Con&text Window") end
-	m_Object: STRING_32 is do Result := i18n("&Object") end
-	m_Object_tools: STRING_32 is do Result := i18n("&Object Tools") end
-	m_Open_eac_browser: STRING_32 is do Result := i18n("EAC Browser") end
-	m_Pretty_print: STRING_32 is do Result := i18n("Expand an Object") end
-	m_Project: STRING_32 is do Result := i18n("&Project") end
-	m_Override_scan: STRING_32 is do Result := i18n("Recompile &Overrides") end
-	m_Raise: STRING_32 is do Result := i18n("&Raise") end
-	m_Raise_all: STRING_32 is do Result := i18n("&Raise All") end
-	m_Raise_all_unsaved: STRING_32 is do Result := i18n("Raise &Unsaved Windows") end
-	m_Remove_class_cluster: STRING_32 is do Result := i18n("&Remove Current Item") end
-	m_Remove_exported_feature: STRING_32 is do Result := i18n("&Remove") end
-	m_Remove_condition: STRING_32 is do Result := i18n("Remove Condition") end
-	m_Remove_this_bkpt: STRING_32 is do Result := i18n("&Remove This Breakpoint") end
-	m_Run_to_this_point: STRING_32 is do Result := i18n("&Run to This Point") end
-	m_Send_stone_to_context: STRING_32 is do Result := i18n("S&ynchronize Context Tool") end
-	m_Set_conditional_breakpoint: STRING_32 is do Result := i18n("Set &Conditional Breakpoint") end
-	m_Set_critical_stack_depth: STRING_32 is do Result := i18n("Overflow &Prevention...") end
-	m_Set_slice_size: STRING_32 is do Result := i18n("&Alter size") end
-	m_Special: STRING_32 is do Result := i18n("&Special") end
-	m_Separate_stone: STRING_32 is do Result := i18n("Unlin&k Context Tool") end
-	m_Tools: STRING_32 is do Result := i18n("&Tools") end
-	m_Unify_stone: STRING_32 is do Result := i18n("Lin&k Context Tool") end
-	m_View: STRING_32 is do Result := i18n("&View") end
-	m_Window: STRING_32 is do Result := i18n("&Window") end
-	m_Refactoring: STRING_32 is do Result := i18n("&Refactoring") end
+	m_History: STRING is				"&Go to"
+	m_Maximize: STRING is				"Ma&ximize"
+	m_Minimize: STRING is				"Mi&nimize"
+	m_Minimize_all: STRING is			"&Minimize All"
+	f_New_tab: STRING is 				"New Tab"
+	m_New_tab: STRING is				"New Ta&b"
+	m_New_editor: STRING is				"New Ed&itor Window"
+	m_New_context_tool: STRING is		"New Con&text Window"
+	m_Object: STRING is					"&Object"
+	m_Object_tools: STRING is			"&Object Tools"
+	m_Open_eac_browser: STRING is		"EAC Browser"
+	m_Pretty_print: STRING is			"Expand an Object"
+	m_Project: STRING is				"&Project"
+	m_Override_scan: STRING is			"Recompile &Overrides"
+	m_Discover_melt: STRING is			"Find &Added Classes && Recompile"
+	m_Raise: STRING is					"&Raise"
+	m_Raise_all: STRING is				"&Raise All"
+	m_Raise_all_unsaved: STRING is		"Raise &Unsaved Windows"
+	m_Remove_class_cluster: STRING is	"&Remove Current Item"
+	m_Remove_exported_feature: STRING is	"&Remove"
+	m_Remove_condition: STRING is		"Remove Condition"
+	m_Remove_this_bkpt: STRING is		"&Remove This Breakpoint"
+	m_Run_to_this_point: STRING is		"&Run to This Point"
+	m_Send_stone_to_context: STRING is	"S&ynchronize Context Tool"
+	m_Set_conditional_breakpoint: STRING is "Set &Conditional Breakpoint"
+	m_Set_critical_stack_depth: STRING is "Overflow &Prevention..."
+	m_Set_slice_size: STRING is			"&Alter size"
+	m_Special: STRING is				"&Special"
+	m_Separate_stone: STRING is			"Unlin&k Context Tool"
+	m_Tools: STRING is					"&Tools"
+	m_Unify_stone: STRING is			"Lin&k Context Tool"
+	m_View: STRING is					"&View"
+	m_Window: STRING is					"&Window"
+	m_Refactoring: STRING is			"&Refactoring"
 
 feature -- Label texts
 
-	l_Ace_file_for_frame: STRING_32 is do Result := i18n("Ace file") end
-	l_action_colon: STRING_32 is do Result := i18n("Action:") end
-	l_Active_query: STRING_32 is do Result := i18n("Active query") end
-	l_Address: STRING_32 is do Result := i18n("Address:") end
-	l_add_project_config_file: STRING_32 is do Result := i18n("Add Project...") end
-	l_All: STRING_32 is do Result := i18n("recursive") end
-	l_Alias_name: STRING_32 is do Result := i18n("Alias:") end
-	l_Ancestors: STRING_32 is do Result := i18n("ancestors") end
-	l_Arguments: STRING_32 is do Result := i18n("Arguments") end
-	l_assigners: STRING_32 is do Result := i18n("assigners") end
-	l_Attributes: STRING_32 is do Result := i18n("attributes") end
-	l_Available_buttons_text: STRING_32 is do Result := i18n("Available buttons") end
-	l_Basic_application: STRING_32 is do Result := i18n("Basic application (no graphics library included)") end
-	l_Basic_text: STRING_32 is do Result := i18n("basic text view") end
-	l_Callers: STRING_32 is do Result := i18n("callers") end
-	l_Calling_convention: STRING_32 is do Result := i18n("Calling convention:") end
-	l_Choose_folder: STRING_32 is do Result := i18n("Select the destination folder ") end
-	l_Class: STRING_32 is do Result := i18n("Class:") end
-	l_class_name: STRING_32 is do Result := i18n("Class name:") end
-	l_clean: STRING_32 is do Result := i18n("Clean") end
-	l_clean_user_file: STRING_32 is do Result := i18n("Reset user settings") end
-	l_Clients: STRING_32 is do Result := i18n("clients") end
-	l_Clickable: STRING_32 is do Result := i18n("clickable view") end
-	l_Cluster: STRING_32 is do Result := i18n("Cluster:") end
-	l_Cluster_name: STRING_32 is do Result := i18n("Cluster name ") end
-	l_Cluster_options: STRING_32 is do Result := i18n("Cluster options ") end
-	l_Command_error_output: STRING_32 is do Result := i18n("Command error output:%N") end
-	l_Command_line: STRING_32 is do Result := i18n("Command line:") end
-	l_Command_normal_output: STRING_32 is do Result := i18n("Command output:%N") end
-	l_Compiled_class: STRING_32 is do Result := i18n("Only compiled classes") end
-	l_compile: STRING_32 is do Result := i18n("Compile") end
-	l_Compile_first: STRING_32 is do Result := i18n("Compile to have information") end
-	l_Compile_project: STRING_32 is do Result := i18n("Compile project") end
-	l_Condition: STRING_32 is do Result := i18n("Condition") end
-	l_Confirm_kill: STRING_32 is do Result := i18n("Stop the application?") end
-	l_Context: STRING_32 is do Result := i18n("Context") end
-	l_Creation: STRING_32 is do Result := i18n("Creation procedure:") end
-	l_creators: STRING_32 is do Result := i18n("creators") end
-	l_Current_context: STRING_32 is do Result := i18n("Current feature") end
-	l_Current_editor: STRING_32 is do Result := i18n("Current editor") end
-	l_Current_object: STRING_32 is do Result := i18n("Current object") end
-	l_Custom: STRING_32 is do Result := i18n("Custom") end
-	l_Deferred: STRING_32 is do Result := i18n("deferred") end
-	l_Deferreds: STRING_32 is do Result := i18n("deferred features") end
-	l_Deleting_dialog_default: STRING_32 is do Result := i18n("Creating new project, please wait...") end
-	l_Descendants: STRING_32 is do Result := i18n("descendants") end
-	l_Diagram_delete_view_cmd: STRING_32 is do Result := i18n("Do you really want to delete current view?") end
-	l_Diagram_reset_view_cmd: STRING_32 is do Result := i18n("Do you really want to reset current view?") end
-	l_Discard_convert_project_dialog: STRING_32 is do Result := i18n("Do not ask again, and always convert old projects") end
-	l_Discard_build_precompile_dialog: STRING_32 is do Result := i18n("Do not ask again, and always build precompile") end
-	l_Discard_finalize_assertions: STRING_32 is do Result := i18n("Do not ask again, and always discard assertions when finalizing") end
-	l_Discard_finalize_precompile_dialog: STRING_32 is do Result := i18n("Don't ask me again and always finalize.") end
-	l_Discard_freeze_dialog: STRING_32 is do Result := i18n("Do not ask again, and always compile C code") end
-	l_Discard_save_before_compile_dialog: STRING_32 is do Result := i18n("Do not ask again, and always save files before compiling") end
-	l_Discard_starting_dialog: STRING_32 is do Result := i18n("Don't show this dialog at startup") end
-	l_Discard_replace_all_warning_dialog: STRING_32 is do Result := i18n("Don't ask me again and always replace all") end
-	l_Discard_terminate_freezing: STRING_32 is do Result := i18n("Do not ask again, and always terminate freezing when needed.") end
-	l_Discard_terminate_external_command: STRING_32 is do Result := i18n("Do not ask again, and always terminate running external command.") end
-	l_Discard_terminate_finalizing: STRING_32 is do Result := i18n("Do not ask again, and always terminate finalizing when needed.") end
-	l_Display_call_stack_warning: STRING_32 is do Result := i18n("Display a warning when the call stack depth reaches:") end
-	l_Displayed_buttons_text: STRING_32 is do Result := i18n("Displayed buttons") end
-	l_Dont_ask_me_again: STRING_32 is do Result := i18n("Do not ask me again") end
-	l_Do_not_detect_stack_overflows: STRING_32 is do Result := i18n("Do not detect stack overflows") end
-	l_Do_not_show_again: STRING_32 is do Result := i18n("Do not show again") end
-	l_Dropped_references: STRING_32 is do Result := i18n("Dropped references") end
-	l_Dummy: STRING_32 is do Result := i18n("Should not be read") end
-	l_Not_empty: STRING_32 is do Result := i18n("Generate default feature clauses") end
-	l_Elements: STRING_32 is do Result := i18n("elements.") end
-	l_Enter_folder_name: STRING_32 is do Result := i18n("Enter the name of the new folder: ") end
-	l_error: STRING_32 is do Result := i18n("Error") end
-	l_Executing_command: STRING_32 is do Result := i18n("Command is currently executing.%NPress OK to ignore the output.") end
-	l_Execution_interrupted: STRING_32 is do Result := i18n("Execution interrupted") end
-	l_Exit_application: STRING_32 is
+	l_Ace_file_for_frame: STRING is		"Ace file"
+	l_action_colon: STRING is			"Action:"
+	l_Active_query: STRING is			"Active query"
+	l_Address: STRING is				"Address:"
+	l_add_project_config_file: STRING is	"Add Project..."
+	l_All: STRING is					"recursive"
+	l_Alias_name: STRING is				"Alias:"
+	l_Ancestors: STRING is				"ancestors"
+	l_Arguments: STRING is				"Arguments"
+	l_assigners: STRING is				"assigners"
+	l_Attributes: STRING is				"attributes"
+	l_Available_buttons_text: STRING is "Available buttons"
+	l_Basic_application: STRING is		"Basic application (no graphics library included)"
+	l_Basic_text: STRING is				"basic text view"
+	l_Callers: STRING is				"callers"
+	l_Calling_convention: STRING is		"Calling convention:"
+	l_Choose_folder: STRING is			"Select the destination folder "
+	l_Class: STRING is					"Class:"
+	l_class_name: STRING is				"Class name:"
+	l_clean: STRING is					"Clean"
+	l_clean_user_file: STRING is		"Reset user settings"
+	l_Clients: STRING is				"clients"
+	l_Clickable: STRING is				"clickable view"
+	l_Cluster: STRING is				"Cluster:"
+	l_Cluster_name: STRING is			"Cluster name "
+	l_Cluster_options: STRING is		"Cluster options "
+	l_Command_error_output: STRING is	"Command error output:%N"
+	l_Command_line: STRING is			"Command line:"
+	l_Command_normal_output: STRING is	"Command output:%N"
+	l_Compiled_class: STRING is			"Only compiled classes"
+	l_compile: STRING is				"Compile"
+	l_Compile_first: STRING is			"Compile to have information"
+	l_Compile_project: STRING is		"Compile project"
+	l_Condition: STRING is				"Condition"
+	l_Confirm_kill: STRING is			"Stop the application?"
+	l_Context: STRING is				"Context"
+	l_Creation: STRING is				"Creation procedure:"
+	l_creators: STRING is				"creators"
+	l_Current_context: STRING is		"Current feature"
+	l_Current_editor: STRING is			"Current editor"
+	l_Current_object: STRING is			"Current object"
+	l_Custom: STRING is 				"Custom"
+	l_Deferred: STRING is				"deferred"
+	l_Deferreds: STRING is				"deferred features"
+	l_Deleting_dialog_default: STRING is "Creating new project, please wait..."
+	l_Descendants: STRING is			"descendants"
+	l_Diagram_delete_view_cmd: STRING is	"Do you really want to delete current view?"
+	l_Diagram_reset_view_cmd: STRING is		"Do you really want to reset current view?"
+	l_Discard_convert_project_dialog: STRING is	"Do not ask again, and always convert old projects"
+	l_Discard_build_precompile_dialog: STRING is "Do not ask again, and always build precompile"
+	l_Discard_finalize_assertions: STRING is "Do not ask again, and always discard assertions when finalizing"
+	l_Discard_finalize_precompile_dialog: STRING is "Don't ask me again and always finalize."
+	l_Discard_freeze_dialog: STRING is	"Do not ask again, and always compile C code"
+	l_Discard_save_before_compile_dialog: STRING is	"Do not ask again, and always save files before compiling"
+	l_Discard_starting_dialog: STRING is "Don't show this dialog at startup"
+	l_Discard_replace_all_warning_dialog: STRING is "Don't ask me again and always replace all"
+	l_Discard_terminate_freezing: STRING is "Do not ask again, and always terminate freezing when needed."
+	l_Discard_terminate_external_command: STRING is "Do not ask again, and always terminate running external command."
+	l_Discard_terminate_finalizing: STRING is "Do not ask again, and always terminate finalizing when needed."
+	l_Display_call_stack_warning: STRING is	"Display a warning when the call stack depth reaches:"
+	l_Displayed_buttons_text: STRING is "Displayed buttons"
+	l_Dont_ask_me_again: STRING is		"Do not ask me again"
+	l_Do_not_detect_stack_overflows: STRING is "Do not detect stack overflows"
+	l_Do_not_show_again: STRING is		"Do not show again"
+	l_Dropped_references: STRING is		"Dropped references"
+	l_Dummy: STRING is					"Should not be read"
+	l_Not_empty: STRING is				"Generate default feature clauses"
+	l_edit_project: STRING is			"Edit Project"
+	l_Elements: STRING is				"elements."
+	l_Enter_folder_name: STRING is		"Enter the name of the new folder: "
+	l_error: STRING is					"Error"
+	l_Executing_command: STRING is		"Command is currently executing.%NPress OK to ignore the output."
+	l_Execution_interrupted: STRING is	"Execution interrupted"
+	l_Exit_application: STRING is
 		once
-			Result := i18n_comp("Are you sure you want to quit $1?", [Workbench_name])
+			Result := "Are you sure you want to quit "+Workbench_name+"?"
 		end
-	l_Exit_warning: STRING_32 is do Result := i18n("Some files have not been saved.%NDo you want to save them before exiting?") end
-	l_Expanded: STRING_32 is do Result := i18n("expanded") end
-	l_Explicit_exception_pending: STRING_32 is do Result := i18n("Explicit exception pending") end
-	l_Exported: STRING_32 is do Result := i18n("exported features") end
-	l_Expression: STRING_32 is do Result := i18n("Expression") end
-	l_External: STRING_32 is do Result := i18n("external features") end
-	l_Feature: STRING_32 is do Result := i18n("Feature:") end
-	l_Feature_properties: STRING_32 is do Result := i18n("Feature properties") end
-	l_File_name: STRING_32 is do Result := i18n("File name:") end
-	l_finalize: STRING_32 is do Result := i18n("Finalize") end
-	l_Finalized_mode: STRING_32 is do Result := i18n("Finalized mode") end
-	l_Flat: STRING_32 is do Result := i18n("flat view") end
-	l_Flatshort: STRING_32 is do Result := i18n("interface view") end
-	l_freeze: STRING_32 is do Result := i18n("Freeze") end
-	l_fresh_compilation: STRING_32 is do Result := i18n("Recompile project") end
-	l_general: STRING_32 is do Result := i18n("General") end
-	l_Generate_profile_from_rtir: STRING_32 is do Result := i18n("Generate profile from Run-time information record") end
-	l_Generate_creation: STRING_32 is do Result := i18n("Generate creation procedure") end
-	l_Homonyms: STRING_32 is do Result := i18n("homonyms") end
-	l_Homonym_confirmation: STRING_32 is do Result := i18n("Extracting the homonyms%Nmay take a long time.") end
-	l_Identification: STRING_32 is do Result := i18n("Identification") end
-	l_Implicit_exception_pending: STRING_32 is do Result := i18n("Implicit exception pending") end
-	l_Implementers: STRING_32 is do Result := i18n("implementers") end
-	l_Inactive_subqueries: STRING_32 is do Result := i18n("Inactive subqueries") end
-	l_Index: STRING_32 is do Result := i18n("Index:") end
-	l_invariants: STRING_32 is do Result := i18n("invariants") end
-	l_Language_type: STRING_32 is do Result := i18n("Language type") end
-	l_Library: STRING_32 is do Result := i18n("library") end
-	l_Literal_value: STRING_32 is do Result := i18n("Literal Value") end
-	l_Loaded_project: STRING_32 is do Result := i18n("Loaded project: ") end
-	l_Located_in: STRING_32 is do Result := i18n(" located in ") end
-	l_Location_colon: STRING_32 is do Result := i18n("Location: ") end
-	l_Locals: STRING_32 is do Result := i18n("Locals") end
-	l_Min_index: STRING_32 is do Result := i18n("Minimum index displayed") end
-	l_Match_case: STRING_32 is do Result := i18n("Match case") end
-	l_Max_index: STRING_32 is do Result := i18n("Maximum index displayed") end
-	l_Max_displayed_string_size: STRING_32 is do Result := i18n("Maximum displayed string size") end
-	l_More_items: STRING_32 is do Result := i18n("Display limit reached") end
-	l_Name: STRING_32 is do Result := i18n("Name") end
-	l_Name_colon: STRING_32 is do Result := i18n("Name:") end
-	l_New_breakpoint: STRING_32 is do Result := i18n("New breakpoint(s) to commit") end
-	l_No_feature: STRING_32 is do Result := i18n("Select a fully compiled feature to have information about it.") end
-	l_No_feature_group_clause: STRING_32 is do Result := i18n("[Unnamed feature clause]") end
-	l_No_text_text: STRING_32 is do Result := i18n("No text labels") end
-	l_Not_in_system_no_info: STRING_32 is do Result := i18n("Select a class which is fully compiled to have information about it.") end
-	l_Not_yet_called: STRING_32 is do Result := i18n("Not yet called") end
-	l_Object_attributes: STRING_32 is do Result := i18n("Attributes") end
-	l_On_object: STRING_32 is do Result := i18n("On object") end
-	l_As_object: STRING_32 is do Result := i18n("As object") end
-	l_Of_class: STRING_32 is do Result := i18n(" of class ") end
-	l_Of_feature: STRING_32 is do Result := i18n(" of feature ") end
-	l_Onces: STRING_32 is do Result := i18n("once routines and constants") end
-	l_Once_functions: STRING_32 is do Result := i18n("Once routines") end
-	l_open: STRING_32 is do Result := i18n("Open") end
-	l_Open_a_project: STRING_32 is do Result := i18n("Open a project") end
-	l_Open_project: STRING_32 is do Result := i18n("Open project") end
-	l_Options: STRING_32 is do Result := i18n("Options") end
-	l_Output_switches: STRING_32 is do Result := i18n("Output switches") end
-	l_Parent_cluster: STRING_32 is do Result := i18n("Parent cluster") end
-	l_parents: STRING_32 is do Result := i18n("Parents:") end
-	l_Path: STRING_32 is do Result := i18n("Path") end
-	l_Possible_overflow: STRING_32 is do Result := i18n("Possible stack overflow") end
-	l_precompile: STRING_32 is do Result := i18n("Precompile") end
-	l_Profiler_used: STRING_32 is do Result := i18n("Profiler used to produce the above record: ") end
-	l_Project_location: STRING_32 is do Result := i18n("The project location is the place where compilation%Nfiles will be generated by the compiler") end
-	l_Put_text_right_text: STRING_32 is do Result := i18n("Show selective text on the right of buttons") end
-	l_Show_all_text: STRING_32 is do Result := i18n("Show text labels") end
-	l_Query: STRING_32 is do Result := i18n("Query") end
-	l_remove_project: STRING_32 is do Result := i18n("Remove Project") end
-	l_Remove_object: STRING_32 is do Result := i18n("Remove") end
-	l_Remove_object_desc: STRING_32 is do Result := i18n("Remove an object from the tree") end
-	l_Replace_with: STRING_32 is do Result := i18n("Replace with:") end
-	l_Replace_with_ellipsis: STRING_32 is do Result := i18n("Replace with...") end
-	l_Replace_all: STRING_32 is do Result := i18n("Replace all") end
-	l_Result: STRING_32 is do Result := i18n("Result") end
-	l_Root_class: STRING_32 is do Result := i18n("Root class name: ") end
-	l_Root_class_name: STRING_32 is do Result := i18n("Root class: ") end
-	l_Root_cluster_name: STRING_32 is do Result := i18n("Root cluster: ") end
-	l_Root_feature_name: STRING_32 is do Result := i18n("Root feature: ") end
-	l_Routine_ancestors: STRING_32 is do Result := i18n("ancestor versions") end
-	l_Routine_descendants: STRING_32 is do Result := i18n("descendant versions") end
-	l_Routine_flat: STRING_32 is do Result := i18n("flat view") end
-	l_Routines: STRING_32 is do Result := i18n("routines") end
-	l_Runtime_information_record: STRING_32 is do Result := i18n("Run-time information record") end
-	l_Same_class_name: STRING_32 is do Result := i18n("---") end
-	l_Scope: STRING_32 is do Result := i18n("Scope") end
-	l_Search_backward: STRING_32 is do Result := i18n("Search backwards") end
-	l_Search_for: STRING_32 is do Result := i18n("Search for:") end
-	l_Search_options_show: STRING_32 is do Result := i18n("Scope >>") end
-	l_Search_options_hide: STRING_32 is do Result := i18n("Scope <<") end
-	l_Search_report_show: STRING_32 is do Result := i18n("Report >>") end
-	l_Search_report_hide: STRING_32 is do Result := i18n("Report <<") end
-	l_Set_as_default: STRING_32 is do Result := i18n("Set as default") end
-	l_Set_slice_limits: STRING_32 is do Result := i18n("Slice limits") end
-	l_Set_slice_limits_desc: STRING_32 is do Result := i18n("Set which values are shown in special objects") end
-	l_Short: STRING_32 is do Result := i18n("contract view") end
-	l_Short_name: STRING_32 is do Result := i18n("Short Name") end
-	l_Show_all_call_stack: STRING_32 is do Result := i18n("Show all stack elements") end
-	l_Show_only_n_elements: STRING_32 is do Result := i18n("Show only:") end
-	l_Showallcallers: STRING_32 is do Result := i18n("Show all callers") end
-	l_Showcallers: STRING_32 is do Result := i18n("Show static callers") end
-	l_Showstops: STRING_32 is do Result := i18n("Show stop points") end
-	l_Slice_taken_into_account1: STRING_32 is do Result := i18n("Warning: Modifications will be taken into account") end
-	l_Slice_taken_into_account2: STRING_32 is do Result := i18n("for the next objects you will add in the object tree.") end
-	l_Specify_arguments: STRING_32 is do Result := i18n("Specify arguments") end
-	l_Stack_information: STRING_32 is do Result := i18n("Stack information") end
-	l_Stepped: STRING_32 is do Result := i18n("Step completed") end
-	l_Stop_point_reached: STRING_32 is do Result := i18n("Breakpoint reached") end
-	l_Sub_cluster: STRING_32 is do Result := i18n("Subcluster") end
-	l_Sub_clusters: STRING_32 is do Result := i18n("Recursive") end
-	l_Subquery: STRING_32 is do Result := i18n("Define new subquery") end
-	l_Suppliers: STRING_32 is do Result := i18n("suppliers") end
-	l_Switch_num_format: STRING_32 is do Result := i18n("Switch numerical formating") end
-	l_Switch_num_format_desc: STRING_32 is do Result := i18n("Display numerical value as Hexadecimal or Decimal formating") end
-	l_Syntax_error: STRING_32 is do Result := i18n("Class text has syntax error") end
-	l_System_name: STRING_32 is do Result := i18n("System name: ") end
-	l_System_properties: STRING_32 is do Result := i18n("System properties") end
-	l_System_running: STRING_32 is do Result := i18n("System running") end
-	l_System_launched: STRING_32 is do Result := i18n("System launched") end
-	l_System_not_running: STRING_32 is do Result := i18n("System not running") end
-	l_Tab_output: STRING_32 is do Result := i18n("Output") end
-	l_Tab_class_info: STRING_32 is do Result := i18n("Class") end
-	l_Tab_feature_info: STRING_32 is do Result := i18n("Feature") end
-	l_Tab_diagram: STRING_32 is do Result := i18n("Diagram") end
-	l_target: STRING_32 is do Result := i18n("Target") end
-	l_Text_loaded: STRING_32 is do Result := i18n("Text finished loading") end
-	l_Text_saved: STRING_32 is do Result := i18n("Text was saved") end
-	l_Three_dots: STRING_32 is do Result := i18n("...") end
-	l_Text_loading: STRING_32 is do Result := i18n("Current text is being loaded. It is therefore%Nnot editable nor pickable.") end
-	l_Toolbar_select_text_position: STRING_32 is do Result := i18n("Text option: ") end
-	l_Toolbar_select_has_gray_icons: STRING_32 is do Result := i18n("Icon option: ") end
-	l_Top_level: STRING_32 is do Result := i18n("Top-level") end
-	l_Type: STRING_32 is do Result := i18n("Type") end
-	l_Unknown_status: STRING_32 is do Result := i18n("Unknown application status") end
-	l_Unknown_class_name: STRING_32 is do Result := i18n("Unknown class name") end
-	l_Use_existing_ace: STRING_32 is do Result := i18n("Open existing Ace (control file)") end
-	l_Use_existing_profile: STRING_32 is do Result := i18n("Use existing profile: ") end
-	l_Use_regular_expression: STRING_32 is do Result := i18n("Use regular expression") end
-	l_Use_wildcards: STRING_32 is do Result := i18n("Use wildcards") end
-	l_Use_wizard: STRING_32 is do Result := i18n("Create project") end
-	l_Value: STRING_32 is do Result := i18n("Value") end
-	l_Whole_project: STRING_32 is do Result := i18n("Whole project") end
-	l_Whole_word: STRING_32 is do Result := i18n("Whole word") end
-	l_Windows_only: STRING_32 is do Result := i18n("(Windows only)") end
-	l_Workbench_mode: STRING_32 is do Result := i18n("Workbench mode") end
-	l_Working_formatter: STRING_32 is do Result := i18n("Extracting ") end
-	l_Tab_external_output: STRING_32 is do Result := i18n("External Output") end
-	l_Tab_C_output: STRING_32 is do Result := i18n("C Output") end
-	l_Tab_warning_output: STRING_32 is do Result := i18n("Warnings") end
-	l_Tab_error_output: STRING_32 is do Result := i18n("Errors") end
-	l_show_feature_from_any: STRING_32 is do Result := i18n("Features from ANY") end
-	l_show_tooltip: STRING_32 is do Result := i18n("Tooltip") end
-	h_show_feature_from_any: STRING_32 is do Result := i18n("Show unchanged features from class ANY?") end
-	h_show_tooltip: STRING_32 is do Result := i18n("Show tooltips?") end
-	l_class_browser_classes: STRING_32 is do Result := i18n("Class") end
-	l_class_browser_features: STRING_32 is do Result := i18n("Feature") end
-	l_version_from: STRING_32 is do Result := i18n("Declared in class") end
-	l_version_in: STRING_32 is do Result := i18n("Version from class") end
-	l_branch: STRING_32 is do Result := i18n("Branch #") end
-	l_version_from_message: STRING_32 is do Result := i18n(" (version from)") end
-	l_expand_layer: STRING_32 is do Result := i18n("Expand selected level(s)") end
-	l_collapse_layer: STRING_32 is do Result := i18n("Collapse selected level(s)") end
-	l_collapse_all_layers: STRING_32 is do Result := i18n("Collapse all selected level(s)") end
-	l_searching_selected_file: STRING_32 is do Result := i18n("Searching selected file...") end
-	l_selected_file_not_found: STRING_32 is do Result := i18n("Selected text is not a valid file name or the file cannot be found") end
-	l_manage_external_commands: STRING_32 is do Result := i18n("Add, remove or edit external commands") end
-	l_callees: STRING_32 is do Result := i18n("callees") end
-	l_assignees: STRING_32 is do Result := i18n("assignees") end
-	l_created: STRING_32 is do Result := i18n("creations") end
-	l_filter: STRING_32 is do Result := i18n("Filter: ") end
-	l_viewpoints: STRING_32 is do Result := i18n("Viewpoints: ") end
-	l_Tab_metrics: STRING_32 is do Result := i18n("Metric") end
+	l_Exit_warning: STRING is			"Some files have not been saved.%NDo you want to save them before exiting?"
+	l_Expanded: STRING is				"expanded"
+	l_Explicit_exception_pending: STRING is "Explicit exception pending"
+	l_Exported: STRING is				"exported features"
+	l_Expression: STRING is				"Expression"
+	l_External: STRING is				"external features"
+	l_Feature: STRING is				"Feature:"
+	l_Feature_properties: STRING is		"Feature properties"
+	l_File_name: STRING is				"File name:"
+	l_finalize: STRING is				"Finalize"
+	l_Finalized_mode: STRING is 		"Finalized mode"
+	l_Flat: STRING is					"flat view"
+	l_Flatshort: STRING is				"interface view"
+	l_freeze: STRING is					"Freeze"
+	l_fresh_compilation: STRING is		"Recompile project"
+	l_general: STRING is				"General"
+	l_Generate_profile_from_rtir: STRING is "Generate profile from Run-time information record"
+	l_Generate_creation: STRING is		"Generate creation procedure"
+	l_Homonyms: STRING is				"homonyms"
+	l_Homonym_confirmation: STRING is	"Extracting the homonyms%Nmay take a long time."
+	l_Identification: STRING is			"Identification"
+	l_Implicit_exception_pending: STRING is "Implicit exception pending"
+	l_Implementers: STRING is			"implementers"
+	l_Inactive_subqueries: STRING is	"Inactive subqueries"
+	l_Index: STRING is					"Index:"
+	l_invariants: STRING is				"invariants"
+	l_Language_type: STRING is			"Language type"
+	l_Library: STRING is				"library"
+	l_Literal_value: STRING is			"Literal Value"
+	l_Loaded_project: STRING is			"Loaded project: "
+	l_Located_in: STRING is				" located in "
+	l_Location_colon: STRING is 				"Location: "
+	l_Locals: STRING is					"Locals"
+	l_Min_index: STRING is				"Minimum index displayed"
+	l_Match_case: STRING is				"Match case"
+	l_Max_index: STRING is				"Maximum index displayed"
+	l_Max_displayed_string_size: STRING is "Maximum displayed string size"
+	l_More_items: STRING is				"Display limit reached"
+	l_Name: STRING is					"Name"
+	l_Name_colon: STRING is				"Name:"
+	l_New_breakpoint: STRING is			"New breakpoint(s) to commit"
+	l_No_feature: STRING is				"Select a fully compiled feature to have information about it."
+	l_No_feature_group_clause: STRING is "[Unnamed feature clause]"
+	l_No_text_text: STRING is 			"No text labels"
+	l_Not_in_system_no_info: STRING is	"Select a class which is fully compiled to have information about it."
+	l_Not_yet_called: STRING is			"Not yet called"
+	l_Object_attributes: STRING is		"Attributes"
+	l_On_object: STRING is				"On object"
+	l_As_object: STRING is				"As object"
+	l_Of_class: STRING is				" of class "
+	l_Of_feature: STRING is				" of feature "
+	l_Onces: STRING is					"once routines and constants"
+	l_Once_functions: STRING is			"Once routines"
+	l_open: STRING is					"Open"
+	l_Open_a_project: STRING is			"Open a project"
+	l_Open_project: STRING is 			"Open project"
+	l_Options: STRING is 				"Options"
+	l_Output_switches: STRING is		"Output switches"
+	l_Parent_cluster: STRING is			"Parent cluster"
+	l_parents: STRING is				"Parents:"
+	l_Path: STRING is					"Path"
+	l_Possible_overflow: STRING is		"Possible stack overflow"
+	l_precompile: STRING is				"Precompile"
+	l_Profiler_used: STRING is			"Profiler used to produce the above record: "
+	l_Project_location: STRING is		"The project location is the place where compilation%Nfiles will be generated by the compiler"
+	l_Put_text_right_text: STRING is 	"Show selective text on the right of buttons"
+	l_Show_all_text: STRING is			"Show text labels"
+	l_Query: STRING is					"Query"
+	l_remove_project: STRING is			"Remove Project"
+	l_Remove_object: STRING is			"Remove"
+	l_Remove_object_desc:STRING is		"Remove an object from the tree"
+	l_Replace_with: STRING is			"Replace with:"
+	l_Replace_with_ellipsis: STRING is	"Replace with..."
+	l_Replace_all: STRING is			"Replace all"
+	l_Result: STRING is					"Result"
+	l_Root_class: STRING is				"Root class name: "
+	l_Root_class_name: STRING is		"Root class: "
+	l_Root_cluster_name: STRING is		"Root cluster: "
+	l_Root_feature_name: STRING is		"Root feature: "
+	l_Routine_ancestors: STRING is		"ancestor versions"
+	l_Routine_descendants: STRING is	"descendant versions"
+	l_Routine_flat: STRING is			"flat view"
+	l_Routines: STRING is				"routines"
+	l_Runtime_information_record: STRING is "Run-time information record"
+	l_Same_class_name: STRING is		"---"
+	l_Scope: STRING is 					"Scope"
+	l_Search_backward: STRING is		"Search backwards"
+	l_Search_for: STRING is				"Search for:"
+	l_Search_options_show: STRING is	"Scope >>"
+	l_Search_options_hide: STRING is	"Scope <<"
+	l_Search_report_show: STRING is		"Report >>"
+	l_Search_report_hide: STRING is 	"Report <<"
+	l_Set_as_default: STRING is			"Set as default"
+	l_Set_slice_limits: STRING is		"Slice limits"
+	l_Set_slice_limits_desc: STRING is	"Set which values are shown in special objects"
+	l_Short: STRING is					"contract view"
+	l_Short_name: STRING is				"Short Name"
+	l_Show_all_call_stack: STRING is	"Show all stack elements"
+	l_Show_only_n_elements: STRING is	"Show only:"
+	l_Showallcallers: STRING is			"Show all callers"
+	l_Showcallers: STRING is			"Show static callers"
+	l_Showstops: STRING is				"Show stop points"
+	l_Slice_taken_into_account1: STRING is "Warning: Modifications will be taken into account"
+	l_Slice_taken_into_account2: STRING is "for the next objects you will add in the object tree."
+	l_Specify_arguments: STRING is		"Specify arguments"
+	l_Stack_information: STRING is		"Stack information"
+	l_Stepped: STRING is				"Step completed"
+	l_Stop_point_reached: STRING is		"Breakpoint reached"
+	l_Sub_cluster: STRING is			"Subcluster"
+	l_Sub_clusters: STRING is			"Recursive"
+	l_Subquery: STRING is				"Define new subquery"
+	l_Suppliers: STRING is				"suppliers"
+	l_Switch_num_format: STRING is 		"Switch numerical formating"
+	l_Switch_num_format_desc: STRING is "Display numerical value as Hexadecimal or Decimal formating"
+	l_Syntax_error: STRING is			"Class text has syntax error"
+	l_System_name: STRING is			"System name: "
+	l_System_properties: STRING is		"System properties"
+	l_System_running: STRING is			"System running"
+	l_System_launched: STRING is		"System launched"
+	l_System_not_running: STRING is		"System not running"
+	l_Tab_output: STRING is 			"Output"
+	l_Tab_class_info: STRING is 		"Class"
+	l_Tab_feature_info: STRING is 		"Feature"
+	l_Tab_diagram: STRING is 			"Diagram"
+	l_target: STRING is					"Target"
+	l_Text_loaded: STRING is			"Text finished loading"
+	l_Text_saved: STRING is				"Text was saved"
+	l_Three_dots: STRING is				"..."
+	l_Text_loading: STRING is		"Current text is being loaded. It is therefore%Nnot editable nor pickable."
+	l_Toolbar_select_text_position: STRING is "Text option: "
+	l_Toolbar_select_has_gray_icons: STRING is "Icon option: "
+	l_Top_level: STRING is				"Top-level"
+	l_Type: STRING is					"Type"
+	l_Unknown_status: STRING is			"Unknown application status"
+	l_Unknown_class_name: STRING is		"Unknown class name"
+	l_Use_existing_ace: STRING is		"Open existing Ace (control file)"
+	l_Use_existing_profile: STRING is	"Use existing profile: "
+	l_Use_regular_expression: STRING is "Use regular expression"
+	l_Use_wildcards: STRING is			"Use wildcards"
+	l_Use_wizard: STRING is 			"Create project"
+	l_Value: STRING is					"Value"
+	l_Whole_project: STRING is			"Whole project"
+	l_Whole_word: STRING is				"Whole word"
+	l_Windows_only: STRING is			"(Windows only)"
+	l_Workbench_mode: STRING is 		"Workbench mode"
+	l_Working_formatter: STRING is		"Extracting "
+	l_Tab_external_output: STRING is    "External Output"
+	l_Tab_C_output: STRING is    		"C Output"
+	l_Tab_warning_output: STRING is    	"Warnings"
+	l_Tab_error_output: STRING is    	"Errors"
+	l_show_feature_from_any: STRING is  "Features from ANY"
+	l_show_tooltip: STRING is "Tooltip"
+	h_show_feature_from_any: STRING is  "Show unchanged features from class ANY?"
+	h_show_tooltip: STRING is "Show tooltips?"
+	l_class_browser_classes: STRING is "Class"
+	l_class_browser_features: STRING is "Feature"
+	l_version_from: STRING is "Declared in class"
+	l_version_in: STRING is "Version from class"
+	l_branch: STRING is "Branch #"
+	l_version_from_message: STRING is " (version from)"
+	l_expand_layer: STRING is "Expand selected level(s)"
+	l_collapse_layer: STRING is "Collapse selected level(s)"
+	l_collapse_all_layers: STRING is "Collapse all selected level(s)"
+	l_searching_selected_file: STRING is "Searching selected file..."
+	l_selected_file_not_found: STRING is "Selected text is not a valid file name or the file cannot be found"
+	l_manage_external_commands: STRING is "Add, remove or edit external commands"
+	l_callees: STRING is "callees"
+	l_assignees: STRING is "assignees"
+	l_created: STRING is "creations"
+	l_filter: STRING is "Filter: "
+	l_viewpoints: STRING is "Viewpoints: "
+	l_Tab_metrics: STRING is "Metric"
 
 feature -- Stone names
 
-	s_Class_stone: STRING_32 is do Result := i18n("Class ") end
-	s_Cluster_stone: STRING_32 is do Result := i18n("Cluster ") end
-	s_Feature_stone: STRING_32 is do Result := i18n("Feature ") end
+	s_Class_stone: STRING is			"Class "
+	s_Cluster_stone: STRING is			"Cluster "
+	s_Feature_stone: STRING is			"Feature "
 
 feature -- Title part
 
-	t_About: STRING_32 is
+	t_About: STRING is
 		once
-			Result := i18n_comp("About $1", [Workbench_name])
+			Result := "About " + Workbench_name
 		end
-	t_Add_search_scope: STRING_32 is do Result := i18n("Add Search Scope") end
-	t_Alias: STRING_32 is do Result := i18n("Alias") end
-	t_Breakpoints_tool: STRING_32 is do Result := i18n("Breakpoints") end
-	t_Call_stack_tool: STRING_32 is do Result := i18n("Call Stack") end
-	t_Calling_convention: STRING_32 is do Result := i18n("Calling Convention") end
-	t_Choose_ace_file: STRING_32 is do Result := i18n("Choose an Ace File") end
-	t_Choose_ace_and_directory: STRING_32 is do Result := i18n("Choose Your Ace File and Directory") end
-	t_Choose_class: STRING_32 is do Result := i18n("Choose a Class") end
-	t_Choose_directory: STRING_32 is do Result := i18n("Choose Your Directory") end
-	t_Choose_folder_name: STRING_32 is do Result := i18n("Choose a Folder Name") end
-	t_Choose_project_and_directory: STRING_32 is do Result := i18n("Choose Your Project Name and Directory") end
-	t_Class: STRING_32 is do Result := i18n("Class") end
-	t_Clients_of: STRING_32 is do Result := i18n("Clients of Class ") end
-	t_Cluster_tool: STRING_32 is do Result := i18n("Clusters") end
-	t_Context_tool: STRING_32 is do Result := i18n("Context") end
-	t_Creation_routine: STRING_32 is do Result := i18n("Creation Procedure") end
-	t_Customize_toolbar_text: STRING_32 is do Result := i18n("Customize Toolbar") end
-	t_Debugging_tool: STRING_32 is do Result := i18n("Debugging") end
-	t_Default_print_job_name: STRING_32 is
+	t_Add_search_scope: STRING is				"Add Search Scope"
+	t_Alias: STRING is							"Alias"
+	t_Breakpoints_tool: STRING is				"Breakpoints"
+	t_Call_stack_tool: STRING is				"Call Stack"
+	t_Calling_convention: STRING is				"Calling Convention"
+	t_Choose_ace_file: STRING is 				"Choose an Ace File"
+	t_Choose_ace_and_directory: STRING is		"Choose Your Ace File and Directory"
+	t_Choose_class: STRING is					"Choose a Class"
+	t_Choose_directory: STRING is 				"Choose Your Directory"
+	t_Choose_folder_name: STRING is				"Choose a Folder Name"
+	t_Choose_project_and_directory: STRING is 	"Choose Your Project Name and Directory"
+	t_Class: STRING is							"Class"
+	t_Clients_of: STRING is						"Clients of Class "
+	t_Cluster_tool: STRING is					"Clusters"
+	t_Context_tool: STRING is					"Context"
+	t_Creation_routine: STRING is				"Creation Procedure"
+	t_Customize_toolbar_text: STRING is 		"Customize Toolbar"
+	t_Debugging_tool: STRING is					"Debugging"
+	t_Default_print_job_name: STRING is
 		once
-			Result := i18n_comp("From $1", [Workbench_name])
+			Result := "From " + Workbench_name
 		end
-	t_Deleting_files: STRING_32 is do Result := i18n("Deleting Files") end
-	t_Dummy: STRING_32 is do Result := i18n("Dummy") end
-	t_Dynamic_lib_window: STRING_32 is do Result := i18n("Dynamic Library Builder") end
-	t_Dynamic_type: STRING_32 is do Result := i18n("In Class") end
-	t_Editor: STRING_32 is do Result := i18n("Editor") end
-	t_Enter_condition: STRING_32 is do Result := i18n("Enter Condition") end
-	t_Exported_feature: STRING_32 is do Result := i18n("Feature") end
-	t_Expression_evaluation: STRING_32 is do Result := i18n("Evaluation") end
-	t_Extended_explanation: STRING_32 is do Result := i18n("Compilation Error Wizard") end
-	t_external_command: STRING_32 is do Result := i18n("External Command") end
-	t_external_commands: STRING_32 is do Result := i18n("External Commands") end
-	t_External_edition: STRING_32 is do Result := i18n("External Edition") end
-	t_Favorites_tool: STRING_32 is do Result := i18n("Favorites") end
-	t_metric_tool: STRING_32 is do Result := i18n("Metrics") end
-	t_Feature: STRING_32 is do Result := i18n("In Feature") end
-	t_Feature_properties: STRING_32 is do Result := i18n("Feature Properties") end
-	t_File_selection: STRING_32 is do Result := i18n("File Selection") end
-	t_Find: STRING_32 is do Result := i18n("Find") end
-	t_Index: STRING_32 is do Result := i18n("Index") end
-	t_New_class: STRING_32 is do Result := i18n("New Class") end
-	t_New_cluster: STRING_32 is do Result := i18n("Add Cluster") end
-	t_New_expression: STRING_32 is do Result := i18n("New Expression") end
-	t_New_project: STRING_32 is do Result := i18n("New Project") end
-	t_Object_tool: STRING_32 is do Result := i18n("Objects") end
-	t_Open_backup: STRING_32 is do Result := i18n("Backup Found") end
-	t_Organize_favorites: STRING_32 is do Result := i18n("Organize Favorites") end
-	t_Properties_tool: STRING_32 is do Result := i18n("Properties") end
-	t_Profile_query_window: STRING_32 is do Result := i18n("Profile Query Window") end
-	t_Profiler_wizard: STRING_32 is do Result := i18n("Profiler Wizard") end
-	t_Project: STRING_32 is
-		once
-			Result := Workbench_name
-		end
-	t_Preference_window: STRING_32 is do Result := i18n("Preferences") end
-	t_Select_class: STRING_32 is do Result := i18n("Select Class") end
-	t_Select_cluster: STRING_32 is do Result := i18n("Select Cluster") end
-	t_Select_feature: STRING_32 is do Result := i18n("Select Feature") end
-	t_Search_tool: STRING_32 is do Result := i18n("Search") end
-	t_Select_a_file: STRING_32 is do Result := i18n("Select a File") end
-	t_Select_a_directory: STRING_32 is do Result := i18n("Select a Directory") end
-	t_Set_stack_depth: STRING_32 is do Result := i18n("Maximum Call Stack Depth") end
-	t_Set_critical_stack_depth: STRING_32 is do Result := i18n("Overflow Prevention") end
-	t_Static_type: STRING_32 is do Result := i18n("From Class") end
-	t_Starting_dialog: STRING_32 is
+	t_Deleting_files: STRING is					"Deleting Files"
+	t_Dummy: STRING is							"Dummy"
+	t_Dynamic_lib_window: STRING is 			"Dynamic Library Builder"
+	t_Dynamic_type: STRING is					"In Class"
+	t_Editor: STRING is							"Editor"
+	t_Enter_condition: STRING is				"Enter Condition"
+	t_Exported_feature: STRING is				"Feature"
+	t_Expression_evaluation: STRING is			"Evaluation"
+	t_Extended_explanation: STRING is			"Compilation Error Wizard"
+	t_external_command: STRING is				"External Command"
+	t_external_commands: STRING is				"External Commands"
+	t_External_edition: STRING is				"External Edition"
+	t_Favorites_tool: STRING is					"Favorites"
+	t_metric_tool: STRING is 					"Metrics"
+	t_Feature: STRING is						"In Feature"
+	t_Feature_properties: STRING is				"Feature Properties"
+	t_File_selection: STRING is					"File Selection"
+	t_Find: STRING is							"Find"
+	t_Index: STRING is							"Index"
+	t_New_class: STRING is						"New Class"
+	t_New_cluster: STRING is					"Add Cluster"
+	t_New_expression: STRING is					"New Expression"
+	t_New_project: STRING is					"New Project"
+	t_Object_tool: STRING is					"Objects"
+	t_Open_backup: STRING is					"Backup Found"
+	t_Organize_favorites: STRING is				"Organize Favorites"
+	t_Properties_tool: STRING is				"Properties"
+	t_Profile_query_window: STRING is			"Profile Query Window"
+	t_Profiler_wizard: STRING is				"Profiler Wizard"
+	t_Project: STRING is
 		once
 			Result := Workbench_name
 		end
-	t_Slice_limits: STRING_32 is do Result := i18n("Choose New Slice Limits for Special Objects") end
-	t_System: STRING_32 is do Result := i18n("Project Settings") end
-	t_Windows_tool: STRING_32 is do Result := i18n("Windows") end
-	t_Watch_tool: STRING_32 is do Result := i18n("Watch") end
-	t_Features_tool: STRING_32 is do Result := i18n("Features") end
-	t_Empty_development_window: STRING_32 is do Result := i18n("Empty Development Tool") end
-	t_Autocomplete_window: STRING_32 is do Result := i18n("Auto-Complete") end
-	t_Diagram_class_header: STRING_32 is do Result := i18n("Class Header") end
-	t_Diagram_set_center_class: STRING_32 is do Result := i18n("Set Center Class") end
-	t_Diagram_context_depth: STRING_32 is do Result := i18n("Select Depths") end
-	t_Diagram_link_tool: STRING_32 is do Result := i18n("Link Tool") end
-	t_Diagram_delete_client_link: STRING_32 is do Result := i18n("Choose Feature(s) to Delete") end
-	t_Diagram_history_tool: STRING_32 is do Result := i18n("History Tool") end
+	t_Preference_window: STRING is				"Preferences"
+	t_Select_class: STRING is					"Select Class"
+	t_Select_cluster: STRING is					"Select Cluster"
+	t_Select_feature: STRING is					"Select Feature"
+	t_Search_tool: STRING is					"Search"
+	t_Select_a_file: STRING is					"Select a File"
+	t_Select_a_directory: STRING is				"Select a Directory"
+	t_Set_stack_depth: STRING is				"Maximum Call Stack Depth"
+	t_Set_critical_stack_depth: STRING is		"Overflow Prevention"
+	t_Static_type: STRING is					"From Class"
+	t_Starting_dialog: STRING is
+		once
+			Result := Workbench_name
+		end
+	t_Slice_limits: STRING is					"Choose New Slice Limits for Special Objects"
+	t_System: STRING is							"Project Settings"
+	t_Windows_tool: STRING is					"Windows"
+	t_Watch_tool: STRING is						"Watch"
+	t_Features_tool: STRING is					"Features"
+	t_Empty_development_window: STRING is 		"Empty Development Tool"
+	t_Autocomplete_window: STRING is			"Auto-Complete"
+	t_Diagram_class_header: STRING is			"Class Header"
+	t_Diagram_set_center_class: STRING is		"Set Center Class"
+	t_Diagram_context_depth: STRING is			"Select Depths"
+	t_Diagram_link_tool: STRING is				"Link Tool"
+	t_Diagram_delete_client_link: STRING is 	"Choose Feature(s) to Delete"
+	t_Diagram_history_tool: STRING is			"History Tool"
 
-	t_Diagram_move_class_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_move_class_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Move Class '$1'", [a_name])
+			Result := "Move Class '" + a_name + "'"
 		end
 
-	t_Diagram_move_cluster_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_move_cluster_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Move Cluster '$1'", [a_name])
+			Result := "Move Cluster '" + a_name + "'"
 		end
 
-	t_Diagram_move_midpoint_cmd: STRING_32 is do Result := i18n("Move Midpoint") end
+	t_Diagram_move_midpoint_cmd: STRING is		"Move Midpoint"
 
-	t_Diagram_add_cs_link_cmd (client_name, supplier_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_add_cs_link_cmd (client_name, supplier_name: STRING): STRING is
 		require
 			exists: client_name /= Void	and supplier_name /= Void
 		do
-			Result := i18n_comp("Add Client-Supplier Relation Between '$1' and '$2'", [client_name, supplier_name])
+			Result := "Add Client-Supplier Relation Between '" + client_name + "' and '" + supplier_name  + "'"
 		end
 
-	t_Diagram_add_inh_link_cmd (ancestor_name, descendant_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_add_inh_link_cmd (ancestor_name, descendant_name: STRING): STRING is
 		require
 			exists: ancestor_name /= Void and descendant_name /= Void
 		do
-			Result := i18n_comp("Add Inheritance Relation Between '$1' and '$2'", [ancestor_name, descendant_name])
+			Result := "Add Inheritance Relation Between '" + ancestor_name + "' and '" + descendant_name + "'"
 		end
 
-	t_Diagram_include_class_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_include_class_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Include Class '$1'", [a_name])
+			Result := "Include Class '" + a_name + "'"
 		end
 
-	t_Diagram_include_cluster_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_include_cluster_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Include Cluster '$1'", [a_name])
+			Result := "Include Cluster '" + a_name + "'"
 		end
 
-	t_Diagram_include_library_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_include_library_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Include Library '$1'", [a_name])
+			Result := "Include Library '" + a_name + "'"
 		end
 
-	t_Diagram_insert_midpoint_cmd: STRING_32 is do Result := i18n("Insert Midpoint") end
-	t_Diagram_change_color_cmd: STRING_32 is do Result := i18n("Change Class Color") end
+	t_Diagram_insert_midpoint_cmd: STRING is	"Insert Midpoint"
+	t_Diagram_change_color_cmd: STRING is		"Change Class Color"
 
-	t_Diagram_rename_class_locally_cmd (old_name, new_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_rename_class_locally_cmd (old_name, new_name: STRING): STRING is
 		require
 			exists: old_name /= Void and new_name /= Void
 		do
-			Result := i18n_comp("Rename Class '$1' Locally to '$2'", [old_name, new_name])
+			Result := "Rename Class '" + old_name + "' Locally to '" + new_name + "'"
 		end
 
-	t_Diagram_rename_class_globally_cmd (old_name, new_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_rename_class_globally_cmd (old_name, new_name: STRING): STRING is
 		require
 			exists: old_name /= Void and new_name /= Void
 		do
-			Result := i18n_comp("Rename Class '$1' Globally to '$2'", [old_name, new_name])
+			Result := "Rename Class '" + old_name + "' Globally to '" + new_name + "'"
 		end
 
-	t_Diagram_delete_client_link_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_delete_client_link_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Delete Client Link '$1'", [a_name])
+			Result := "Delete Client Link '" + a_name + "'"
 		end
 
-	t_Diagram_delete_inheritance_link_cmd (an_ancestor, a_descendant: STRING_GENERAL): STRING_32 is
+	t_Diagram_delete_inheritance_link_cmd (an_ancestor, a_descendant: STRING): STRING is
 		require
 			exists: an_ancestor /= Void and a_descendant /= Void
 		do
-			Result := i18n_comp("Delete Inheritance Link Between '$1' and '$2'", [an_ancestor, a_descendant])
+			Result := "Delete Inheritance Link Between '" + an_ancestor + "' and '" + a_descendant + "'"
 		end
 
-	t_Diagram_erase_cluster_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_erase_cluster_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Erase Cluster '$1'", [a_name])
+			Result := "Erase Cluster '" + a_name + "'"
 		end
 
-	t_Diagram_delete_midpoint_cmd: STRING_32 is do Result := i18n("Erase Midpoint") end
+	t_Diagram_delete_midpoint_cmd: STRING is	"Erase Midpoint"
 
-	t_Diagram_erase_class_cmd (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_erase_class_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Erase Class '$1'", [a_name])
+			Result := "Erase Class '" + a_name + "'"
 		end
 
-	t_Diagram_erase_classes_cmd: STRING_32 is do Result := i18n("Erase Classes") end
-	t_Diagram_put_right_angles_cmd: STRING_32 is do Result := i18n("Put Right Angles") end
-	t_Diagram_remove_right_angles_cmd: STRING_32 is do Result := i18n("Remove Right Angles") end
-	t_Diagram_put_one_handle_left_cmd: STRING_32 is do Result := i18n("Put Handle Left") end
-	t_Diagram_put_one_handle_right_cmd: STRING_32 is do Result := i18n("Put Handle Right") end
-	t_Diagram_put_two_handles_left_cmd: STRING_32 is do Result := i18n("Put Two Handles Left") end
-	t_Diagram_put_two_handles_right_cmd: STRING_32 is do Result := i18n("Put Two Handles Right") end
-	t_Diagram_remove_handles_cmd: STRING_32 is do Result := i18n("Remove Handles") end
-	t_Diagram_zoom_in_cmd: STRING_32 is do Result := i18n("Zoom In") end
-	t_Diagram_zoom_out_cmd: STRING_32 is do Result := i18n("Zoom Out") end
-	t_Diagram_zoom_cmd: STRING_32 is do Result := i18n("Zoom") end
+	t_Diagram_erase_classes_cmd: STRING is		"Erase Classes"
+	t_Diagram_put_right_angles_cmd: STRING is	"Put Right Angles"
+	t_Diagram_remove_right_angles_cmd: STRING is	"Remove Right Angles"
+	t_Diagram_put_one_handle_left_cmd: STRING is	"Put Handle Left"
+	t_Diagram_put_one_handle_right_cmd: STRING is	"Put Handle Right"
+	t_Diagram_put_two_handles_left_cmd: STRING is	"Put Two Handles Left"
+	t_Diagram_put_two_handles_right_cmd: STRING is	"Put Two Handles Right"
+	t_Diagram_remove_handles_cmd: STRING is		"Remove Handles"
+	t_Diagram_zoom_in_cmd: STRING is			"Zoom In"
+	t_Diagram_zoom_out_cmd: STRING is			"Zoom Out"
+	t_Diagram_zoom_cmd: STRING is				"Zoom"
 
-	t_Diagram_cluster_expand (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_cluster_expand (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Expand cluster '$1'", [a_name])
+			Result := "Expand cluster '" + a_name + "'"
 		end
 
-	t_Diagram_cluster_collapse (a_name: STRING_GENERAL): STRING_32 is
+	t_Diagram_cluster_collapse (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := i18n_comp("Collapse Cluster '$1'", [a_name])
+			Result := "Collapse Cluster '" + a_name + "'"
 		end
 
-	t_Diagram_disable_high_quality: STRING_32 is do Result := i18n("Disable High Quality") end
-	t_Diagram_enable_high_quality: STRING_32 is do Result := i18n("Enable High Quality") end
+	t_Diagram_disable_high_quality: STRING is	"Disable High Quality"
+	t_Diagram_enable_high_quality: STRING is	"Enable High Quality"
 
-	t_first_match_reached: STRING_32 is do Result := i18n("Initial match reached.") end
-	t_bottom_reached: STRING_32 is do Result := i18n("Bottom reached.") end
-	t_refactoring_feature_rename: STRING_32 is do Result := i18n("Refactoring: Feature Rename (Compiled Classes)") end
-	t_refactoring_class_select: STRING_32 is do Result := i18n("Select Class") end
-	t_refactoring_class_rename: STRING_32 is do Result := i18n("Refactoring: Class Rename") end
+	t_first_match_reached: STRING is	"Initial match reached."
+	t_bottom_reached: STRING is 	"Bottom reached."
+	t_refactoring_feature_rename: STRING is	"Refactoring: Feature Rename (Compiled Classes)"
+	t_refactoring_class_select: STRING is "Select Class"
+	t_refactoring_class_rename: STRING is "Refactoring: Class Rename"
 
 feature -- Description texts
 
-	e_Add_exported_feature: STRING_32 is do Result := i18n("Add a new feature to this dynamic library definition") end
-	e_Bkpt_info: STRING_32 is do Result := i18n("Show/Hide information about breakpoints") end
-	e_Check_exports: STRING_32 is do Result := i18n("Check the validity of the library definition") end
-	e_Compilation_failed: STRING_32 is do Result := i18n("Eiffel Compilation Failed") end
-	e_Compilation_succeeded: STRING_32 is do Result := i18n("Eiffel Compilation Succeeded") end
-	e_freezing_failed: STRING_32 is do Result := i18n("Background Workbench C Compilation Failed") end
-	e_finalizing_failed: STRING_32 is do Result := i18n("Background Finalized C compilation Failed") end
-	e_freezing_launch_failed: STRING_32 is do Result := i18n("Background Workbench C Compilation Launch Failed") end
-	e_finalizing_launch_failed: STRING_32 is do Result := i18n("Background Finalized C Compilation Launch Failed") end
-	e_freezing_launched: STRING_32 is do Result := i18n("Background Workbench C Compilation Launched") end
-	e_finalizing_launched: STRING_32 is do Result := i18n("Background Finalized C Compilation Launched") end
-	e_freezing_succeeded: STRING_32 is do Result := i18n("Background Workbench C Compilation Succeeded") end
-	e_finalizing_succeeded: STRING_32 is do Result := i18n("Background Finalized C Compilation Succeeded") end
-	e_freezing_terminated: STRING_32 is do Result := i18n("Background Workbench C Compilation Terminated") end
-	e_finalizing_terminated: STRING_32 is do Result := i18n("Background Finalized C Compilation Terminated") end
-	e_C_compilation_failed: STRING_32 is do Result := i18n("Background C Compilation Failed") end
-	e_C_compilation_launch_failed: STRING_32 is do Result := i18n("Background C Compilation Launch Failed") end
-	e_C_compilation_terminated: STRING_32 is do Result := i18n("Background C Compilation Terminated") end
-	e_C_compilication_launched: STRING_32 is do Result := i18n("Background C Compilation Launched") end
-	e_C_compilation_succeeded: STRING_32 is do Result := i18n("Background C Compilation Succeeded") end
-	e_C_compilation_running: STRING_32 is do Result := i18n("Background C Compilation in Progress") end
-	e_Compiling: STRING_32 is do Result := i18n("System is being compiled") end
-	e_Copy_call_stack_to_clipboard: STRING_32 is do Result := i18n("Copy call stack to clipboard") end
-	e_Cursor_position: STRING_32 is do Result := i18n("Cursor position (line:column)") end
+	e_Add_exported_feature: STRING is	"Add a new feature to this dynamic library definition"
+	e_Bkpt_info: STRING is				"Show/Hide information about breakpoints"
+	e_Check_exports: STRING is			"Check the validity of the library definition"
+	e_Compilation_failed: STRING is		"Eiffel Compilation Failed"
+	e_Compilation_succeeded: STRING is	"Eiffel Compilation Succeeded"
+	e_freezing_failed: STRING is 		"Background Workbench C Compilation Failed"
+	e_finalizing_failed: STRING is		"Background Finalized C compilation Failed"
+	e_freezing_launch_failed: STRING is 		"Background Workbench C Compilation Launch Failed"
+	e_finalizing_launch_failed: STRING is		"Background Finalized C Compilation Launch Failed"
+	e_freezing_launched: STRING is 		"Background Workbench C Compilation Launched"
+	e_finalizing_launched: STRING is 	"Background Finalized C Compilation Launched"
+	e_freezing_succeeded: STRING is 		"Background Workbench C Compilation Succeeded"
+	e_finalizing_succeeded: STRING is 	"Background Finalized C Compilation Succeeded"
+	e_freezing_terminated: STRING is 		"Background Workbench C Compilation Terminated"
+	e_finalizing_terminated: STRING is 	"Background Finalized C Compilation Terminated"
+	e_C_compilation_failed: STRING is 	"Background C Compilation Failed"
+	e_C_compilation_launch_failed: STRING is "Background C Compilation Launch Failed"
+	e_C_compilation_terminated: STRING is "Background C Compilation Terminated"
+	e_C_compilication_launched: STRING is "Background C Compilation Launched"
+	e_C_compilation_succeeded: STRING is "Background C Compilation Succeeded"
+	e_C_compilation_running: STRING is  "Background C Compilation in Progress"
+	e_Compiling: STRING is				"System is being compiled"
+	e_Copy_call_stack_to_clipboard: STRING is "Copy call stack to clipboard"
+	e_Cursor_position: STRING is		"Cursor position (line:column)"
 	e_Diagram_hole: STRING is			"Please drop a class or a cluster on this button %N%
 										%to view its diagram.%N%
 										%Use right click for both pick and drop actions."
@@ -1024,85 +1025,86 @@ feature -- Description texts
 										%or dropped on this button via right clicking."
 	e_Diagram_delete_item: STRING is	"Please drop a class, a cluster or a link%N%
 										%on this button. Use right click for both%Npick and drop actions."
-	e_Display_error_help: STRING_32 is do Result := i18n("Give help on compilation errors") end
-	e_Display_system_info: STRING_32 is do Result := i18n("Display information concerning current system") end
+	e_Display_error_help: STRING is		"Give help on compilation errors"
+	e_Display_system_info: STRING is	"Display information concerning current system"
 	e_Drop_an_error_stone: STRING is	"Pick the code of a compilation error (such as VEEN, VTCT,...)%N%
 										%and drop it here to have extended information about it."
-	e_Edit_exported_feature: STRING_32 is do Result := i18n("Edit the properties of the selected feature") end
-	e_Edit_expression: STRING_32 is do Result := i18n("Edit an expression") end
-	e_Edited: STRING_32 is do Result := i18n("Some classes were edited since last compilation") end
-	e_Exec_debug: STRING_32 is do Result := i18n("Start application and stop at breakpoints") end
-	e_Exec_kill: STRING_32 is do Result := i18n("Stop application") end
-	e_Exec_into: STRING_32 is do Result := i18n("Step into a routine") end
-	e_Exec_no_stop: STRING_32 is do Result := i18n("Start application without stopping at breakpoints") end
-	e_Exec_out: STRING_32 is do Result := i18n("Step out of a routine") end
-	e_Exec_step: STRING_32 is do Result := i18n("Execute the application one line at a time") end
-	e_Exec_stop: STRING_32 is do Result := i18n("Pause application at current point") end
-	e_History_back: STRING_32 is do Result := i18n("Back") end
-	e_History_forth: STRING_32 is do Result := i18n("Forward") end
-	e_Minimize_all: STRING_32 is do Result := i18n("Minimize all windows") end
-	e_New_context_tool: STRING_32 is do Result := i18n("Open a new context window") end
-	e_New_dynamic_lib_definition: STRING_32 is do Result := i18n("Create a new dynamic library definition") end
-	e_New_editor: STRING_32 is do Result := i18n("Open a new editor window") end
-	e_New_expression: STRING_32 is do Result := i18n("Create a new expression") end
-	e_Not_running: STRING_32 is do Result := i18n("Application is not running") end
-	e_Open_dynamic_lib_definition: STRING_32 is do Result := i18n("Open a dynamic library definition") end
-	e_Open_file: STRING_32 is do Result := i18n("Open a file") end
-	e_Open_eac_browser: STRING_32 is do Result := i18n("Open the Eiffel Assembly Cache browser tool") end
-	e_Paste: STRING_32 is do Result := i18n("Paste") end
-	e_Paused: STRING_32 is do Result := i18n("Application is paused") end
-	e_Pretty_print: STRING_32 is do Result := i18n("Display an expanded view of objects") end
-	e_Print: STRING_32 is do Result := i18n("Print the currently edited text") end
-	e_Project_name: STRING_32 is do Result := i18n("Name of the current project") end
-	e_Project_settings: STRING_32 is do Result := i18n("Change project settings, right click to open external editor") end
-	e_override_scan: STRING_32 is do Result := i18n("Recompile override clusters") end
-	e_Raise_all: STRING_32 is do Result := i18n("Raise all windows") end
-	e_Raise_all_unsaved: STRING_32 is do Result := i18n("Raise all unsaved windows") end
-	e_Redo: STRING_32 is do Result := i18n("Redo") end
-	e_Remove_class_cluster: STRING_32 is do Result := i18n("Remove a class or a cluster from the system") end
-	e_Remove_exported_feature: STRING_32 is do Result := i18n("Remove the selected feature from this dynamic library definition") end
-	e_Remove_expressions: STRING_32 is do Result := i18n("Remove selected expressions") end
-	e_Remove_object: STRING_32 is do Result := i18n("Remove currently selected object") end
-	e_Running: STRING_32 is do Result := i18n("Application is running") end
-	e_Running_no_stop_points: STRING_32 is do Result := i18n("Application is running (ignoring breakpoints)") end
-	e_Save_call_stack: STRING_32 is do Result := i18n("Save call stack to a text file") end
-	e_Save_dynamic_lib_definition: STRING_32 is do Result := i18n("Save this dynamic library definition") end
-	e_Show_class_cluster: STRING_32 is do Result := i18n("Locate currently edited class or cluster") end
-	e_Send_stone_to_context: STRING_32 is do Result := i18n("Synchronize context") end
-	e_Separate_stone: STRING_32 is do Result := i18n("Unlink the context tool from the other components") end
-	e_Set_stack_depth: STRING_32 is do Result := i18n("Set maximum call stack depth") end
-	e_Shell: STRING_32 is do Result := i18n("Send to external editor") end
-	e_Switch_num_format_to_hex: STRING_32 is do Result := i18n("Switch to hexadecimal format") end
-	e_Switch_num_format_to_dec: STRING_32 is do Result := i18n("Switch to decimal format") end
-	e_Switch_num_formating: STRING_32 is do Result := i18n("Hexadecimal/Decimal formating") end
-	e_Toggle_state_of_expressions: STRING_32 is do Result := i18n("Enable/Disable expressions") end
-	e_Toggle_stone_management: STRING_32 is do Result := i18n("Link or not the context tool to other components") end
-	e_Undo: STRING_32 is do Result := i18n("Undo") end
-	e_Up_to_date: STRING_32 is do Result := i18n("Executable is up-to-date") end
-	e_Unify_stone: STRING_32 is do Result := i18n("Link the context tool to the other components") end
-	e_Terminate_c_compilation: STRING_32 is do Result := i18n("Terminate current C compilation in progress") end
+	e_Edit_exported_feature: STRING is	"Edit the properties of the selected feature"
+	e_Edit_expression: STRING is		"Edit an expression"
+	e_Edited: STRING is					"Some classes were edited since last compilation"
+	e_Exec_debug: STRING is				"Start application and stop at breakpoints"
+	e_Exec_kill: STRING is				"Stop application"
+	e_Exec_into: STRING is				"Step into a routine"
+	e_Exec_no_stop: STRING is			"Start application without stopping at breakpoints"
+	e_Exec_out: STRING is				"Step out of a routine"
+	e_Exec_step: STRING is				"Execute the application one line at a time"
+	e_Exec_stop: STRING is				"Pause application at current point"
+	e_History_back: STRING is			"Back"
+	e_History_forth: STRING is			"Forward"
+	e_Minimize_all: STRING is			"Minimize all windows"
+	e_New_context_tool: STRING is		"Open a new context window"
+	e_New_dynamic_lib_definition: STRING is	"Create a new dynamic library definition"
+	e_New_editor: STRING is				"Open a new editor window"
+	e_New_expression: STRING is			"Create a new expression"
+	e_Not_running: STRING is			"Application is not running"
+	e_Open_dynamic_lib_definition: STRING is "Open a dynamic library definition"
+	e_Open_file: STRING is				"Open a file"
+	e_Open_eac_browser: STRING is		"Open the Eiffel Assembly Cache browser tool"
+	e_Paste: STRING is					"Paste"
+	e_Paused: STRING is					"Application is paused"
+	e_Pretty_print: STRING is			"Display an expanded view of objects"
+	e_Print: STRING is					"Print the currently edited text"
+	e_Project_name: STRING is			"Name of the current project"
+	e_Project_settings: STRING is		"Change project settings, right click to open external editor"
+	e_override_scan: STRING is			"Recompile override clusters"
+	e_discover_melt: STRING is			"Discover unreferenced externally added classes and recompile."
+	e_Raise_all: STRING is				"Raise all windows"
+	e_Raise_all_unsaved: STRING is		"Raise all unsaved windows"
+	e_Redo: STRING is					"Redo"
+	e_Remove_class_cluster: STRING is	"Remove a class or a cluster from the system"
+	e_Remove_exported_feature: STRING is	"Remove the selected feature from this dynamic library definition"
+	e_Remove_expressions: STRING is		"Remove selected expressions"
+	e_Remove_object: STRING is			"Remove currently selected object"
+	e_Running: STRING is				"Application is running"
+	e_Running_no_stop_points: STRING is	"Application is running (ignoring breakpoints)"
+	e_Save_call_stack: STRING is		"Save call stack to a text file"
+	e_Save_dynamic_lib_definition: STRING is "Save this dynamic library definition"
+	e_Show_class_cluster: STRING is		"Locate currently edited class or cluster"
+	e_Send_stone_to_context: STRING is	"Synchronize context"
+	e_Separate_stone: STRING is			"Unlink the context tool from the other components"
+	e_Set_stack_depth: STRING is		"Set maximum call stack depth"
+	e_Shell: STRING is					"Send to external editor"
+	e_Switch_num_format_to_hex: STRING is "Switch to hexadecimal format"
+	e_Switch_num_format_to_dec: STRING is "Switch to decimal format"
+	e_Switch_num_formating: STRING is "Hexadecimal/Decimal formating"
+	e_Toggle_state_of_expressions: STRING is		"Enable/Disable expressions"
+	e_Toggle_stone_management: STRING is "Link or not the context tool to other components"
+	e_Undo: STRING is					"Undo"
+	e_Up_to_date: STRING is				"Executable is up-to-date"
+	e_Unify_stone: STRING is			"Link the context tool to the other components"
+	e_Terminate_c_compilation: STRING is "Terminate current C compilation in progress"
 
-	e_Dbg_exception_handler: STRING_32 is do Result := i18n("Exception handling") end
-	e_Dbg_assertion_checking: STRING_32 is do Result := i18n("Disable or restore Assertion checking handling during debugging") end
+	e_Dbg_exception_handler: STRING is "Exception handling"
+	e_Dbg_assertion_checking: STRING is "Disable or restore Assertion checking handling during debugging"
 
-	e_open_selection_in_editor: STRING_32 is do Result := i18n("Open selected file name in specified external editor") end
-	e_save_c_compilation_output: STRING_32 is do Result := i18n("Save C Compilation output to file") end
-	e_go_to_w_code_dir: STRING_32 is do Result := i18n("Go to W_code directory of this system, or right click to open W_code in specified file browser") end
-	e_go_to_f_code_dir: STRING_32 is do Result := i18n("Go to F_code directory of this system, or right click to open F_code in specified file browser") end
-	e_f_code: STRING_32 is do Result := i18n("F_code") end
-	e_w_code: STRING_32 is do Result := i18n("W_code") end
-	e_no_text_is_selected: STRING_32 is do Result := i18n("No file name is selected.") end
-	e_selected_text_is_not_file: STRING_32 is do Result := i18n("Selected text is not a correct file name.") end
-	e_external_editor_not_defined: STRING_32 is do Result := i18n("External editor not defined") end
-	e_external_command_is_running: STRING_32 is do Result := i18n("An external command is running now. %NPlease wait until it exits.") end
-	e_external_command_list_full: STRING_32 is do Result := i18n("Your external command list is full.%NUse Tools->External Command... to delete one.") end
-	e_working_directory_invalid: STRING_32 is do Result := i18n("Cannot change to directory ") end
-	e_external_command_not_launched: STRING_32 is do Result := i18n("External command not launched.") end
-	e_refactoring_undo_sure: STRING_32 is do Result := i18n("Are you sure you want to undo the refactoring?%N If classes have been modified since the refactoring this can lead to corrupt classes and lost information!") end
-	e_refactoring_redo_sure: STRING_32 is do Result := i18n("Are you sure you want to redo the refactoring?%N If classes have been modified since the undo of the refactoring this can lead to corrupt classes and lost information!") end
+	e_open_selection_in_editor: STRING is "Open selected file name in specified external editor"
+	e_save_c_compilation_output: STRING is "Save C Compilation output to file"
+	e_go_to_w_code_dir: STRING is "Go to W_code directory of this system, or right click to open W_code in specified file browser"
+	e_go_to_f_code_dir: STRING is "Go to F_code directory of this system, or right click to open F_code in specified file browser"
+	e_f_code: STRING is "F_code"
+	e_w_code: STRING is "W_code"
+	e_no_text_is_selected: STRING is "No file name is selected."
+	e_selected_text_is_not_file: STRING is "Selected text is not a correct file name."
+	e_external_editor_not_defined: STRING is "External editor not defined"
+	e_external_command_is_running: STRING is "An external command is running now. %NPlease wait until it exits."
+	e_external_command_list_full: STRING is "Your external command list is full.%NUse Tools->External Command... to delete one."
+	e_working_directory_invalid: STRING is "Cannot change to directory "
+	e_external_command_not_launched: STRING is "External command not launched."
+	e_refactoring_undo_sure: STRING is "Are you sure you want to undo the refactoring?%N If classes have been modified since the refactoring this can lead to corrupt classes and lost information!"
+	e_refactoring_redo_sure: STRING is "Are you sure you want to redo the refactoring?%N If classes have been modified since the undo of the refactoring this can lead to corrupt classes and lost information!"
 feature -- Wizard texts
 
-	wt_Profiler_welcome: STRING_32 is do Result := i18n("Welcome to the Profiler Wizard") end
+	wt_Profiler_welcome: STRING is "Welcome to the Profiler Wizard"
 	wb_Profiler_welcome: STRING is
 				"Using this wizard you can analyze the result of a profiling.%N%
 				%%N%
@@ -1118,18 +1120,18 @@ feature -- Wizard texts
 				%%N%
 				%To continue, click Next."
 
-	wt_Compilation_mode: STRING_32 is do Result := i18n("Compilation mode") end
-	ws_Compilation_mode: STRING_32 is do Result := i18n("Select the Compilation mode.") end
+	wt_Compilation_mode: STRING is "Compilation mode"
+	ws_Compilation_mode: STRING is "Select the Compilation mode."
 
-	wt_Execution_Profile: STRING_32 is do Result := i18n("Execution Profile") end
-	ws_Execution_Profile: STRING_32 is do Result := i18n("Reuse or Generate an Execution Profile.") end
+	wt_Execution_Profile: STRING is "Execution Profile"
+	ws_Execution_Profile: STRING is "Reuse or Generate an Execution Profile."
 	wb_Execution_Profile: STRING is
 			"You can generate the Execution Profile from a Run-time Information Record%N%
 			%created by a profiler, or you can reuse an existing Execution Profile if you%N%
 			%have already generated one for this system."
 
-	wt_Execution_Profile_Generation: STRING_32 is do Result := i18n("Execution Profile Generation") end
-	ws_Execution_Profile_Generation: STRING_32 is do Result := i18n("Select a Run-time information record to generate the Execution profile") end
+	wt_Execution_Profile_Generation: STRING is "Execution Profile Generation"
+	ws_Execution_Profile_Generation: STRING is "Select a Run-time information record to generate the Execution profile"
 	wb_Execution_Profile_Generation: STRING is
 				"Once an execution of an instrumented system has generated the proper file,%N%
 				%you must process it through a profile converter to produce the Execution%N%
@@ -1141,13 +1143,13 @@ feature -- Wizard texts
 				%%N%
 				%The Execution Profile will be generated under the file %"profinfo.pfi%"."
 
-	wt_Switches_and_query: STRING_32 is do Result := i18n("Switches and Query") end
-	ws_Switches_and_query: STRING_32 is do Result := i18n("Select the information you need and formulate your query.") end
+	wt_Switches_and_query: STRING is "Switches and Query"
+	ws_Switches_and_query: STRING is "Select the information you need and formulate your query."
 
-	wt_Generation_error: STRING_32 is do Result := i18n("Generation Error") end
-	wb_Click_back_and_correct_error: STRING_32 is do Result := i18n("Click Back if you can correct the problem or Click Abort.") end
+	wt_Generation_error: STRING is "Generation Error"
+	wb_Click_back_and_correct_error: STRING is "Click Back if you can correct the problem or Click Abort."
 
-	wt_Runtime_information_record_error: STRING_32 is do Result := i18n("Runtime Information Record Error") end
+	wt_Runtime_information_record_error: STRING is "Runtime Information Record Error"
 	wb_Runtime_information_record_error (generation_path: STRING): STRING is
 		do
 			Result :=
@@ -1163,7 +1165,7 @@ feature -- Wizard texts
 				%Click Back and select a valid file or Click Abort."
 		end
 
-	wt_Execution_profile_error: STRING_32 is do Result := i18n("Execution Profile Error") end
+	wt_Execution_profile_error: STRING is "Execution Profile Error"
 	wb_Execution_profile_error: STRING is
 				"The file you have supplied as existring Execution Provide does%N%
 				%not exist or is not valid. Please provide a valid file or generate%N%
@@ -1217,3 +1219,5 @@ indexing
 		]"
 
 end -- class INTERFACE_NAMES
+
+

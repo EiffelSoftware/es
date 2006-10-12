@@ -35,6 +35,22 @@ feature {NONE} -- Settings
 			-- Nothing to be done, as it is handled later in batch mode.
 		end
 
+	launch_precompile_process (a_arguments: LIST [STRING]) is
+			-- Launch precompile process `a_command'.
+		local
+			l_prc_factory: PROCESS_FACTORY
+			l_prc_launcher: PROCESS
+		do
+			create l_prc_factory
+			l_prc_launcher := l_prc_factory.process_launcher (eiffel_layout.ec_command_name, a_arguments, Void)
+			l_prc_launcher.set_separate_console (False)
+			l_prc_launcher.launch
+			if l_prc_launcher.launched then
+				l_prc_launcher.wait_for_exit
+				is_precompilation_error := l_prc_launcher.exit_code /= 0
+			end
+		end
+
 feature {NONE} -- Error reporting
 
 	report_non_readable_configuration_file (a_file_name: STRING) is

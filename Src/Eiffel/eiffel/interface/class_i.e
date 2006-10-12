@@ -338,13 +338,22 @@ feature -- Status report
 					if l_namespace /= Void then
 						Result := l_namespace
 					else
-						Result := group.name.twin
+						Result := ""
+					end
+					if system.use_cluster_as_namespace then
+						if not Result.is_empty then
+							Result.append_character ('.')
+						end
+						Result.append (group.name)
 					end
 
 					if System.use_all_cluster_as_namespace then
 						l_path := path.twin
 						l_path.replace_substring_all ("/", ".")
 						Result.append (l_path)
+						if Result.item (1) = '.' then
+							Result.remove_head (1)
+						end
 					end
 				end
 

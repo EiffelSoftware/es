@@ -872,7 +872,7 @@ feature -- Debugging events
 
 			Application.status.set_max_depth (maximum_stack_depth)
 				-- Test whether application was really launched.
-			output_manager.clear
+			output_manager.clear_general
 			output_manager.display_application_status
 
 				-- Modify the debugging window display.
@@ -1376,6 +1376,7 @@ feature {NONE} -- Implementation
 			run_finalized_cmd.enable_sensitive
 			toolbarable_commands.extend (run_finalized_cmd)
 			toolbarable_commands.extend (override_scan_cmd)
+			toolbarable_commands.extend (discover_melt_cmd)
 
 				-- Disable commands if no project is loaded
 			if not Eiffel_project.manager.is_project_loaded then
