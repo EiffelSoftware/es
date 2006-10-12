@@ -93,7 +93,7 @@ feature -- Status report
 			Result:=datasource_manager.has_locale (a_locale_id)
 		end
 
-	has_locale_info (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
+	has_formatting_info (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			--
 		do
 			Result:=system_locales.has_locale (a_locale_id)
