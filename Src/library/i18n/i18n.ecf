@@ -62,7 +62,7 @@
 					</condition>
 				</cluster>
 			</cluster>
-			<cluster name="formatter" location="./formatter"></cluster>
+			<cluster name="formatter" location="./formatter" recursive="true"></cluster>
 			<cluster name="locale_info" location="./locale_info"></cluster>
 		</cluster>
 	</target>

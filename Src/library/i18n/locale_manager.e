@@ -101,8 +101,10 @@ feature -- Status report
 
 	has_locale (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			--
+		local
+			generic_script: I18N_LOCALE_ID
 		do
-			Result := system_locales.has_locale(a_locale_id) or datasource_manager.has_locale (a_locale_id)
+			Result := system_locales.has_locale(a_locale_id) or datasource_manager.has_locale (a_locale_id) 
 		end
 
 feature -- Implementation

@@ -17,6 +17,9 @@ feature -- Basic Operations
 		do
 			info:=a_locale_info
 			dictionary:=a_dictionary
+			create date_formatter
+			create string_formatter.default_create
+			create value_formatter.make (a_locale_info)
 		end
 
 
@@ -48,7 +51,11 @@ feature -- Basic Operations
 			if dictionary.has_plural (original_singular, original_plural, plural_form) then
 				Result := dictionary.get_plural (original_singular, original_plural, plural_form)
 			else
-				Result := original_plural
+				if plural_form = 1 then
+					Result := original_singular
+				else
+					Result := original_plural
+				end
 			end
 		ensure
 			result_exists: Result /= Void
@@ -80,6 +87,7 @@ feature -- Basic Operations
 		require
 			original_exists: original /= Void
 		do
+			Result := string_formatter.format_string (original, token_values)
 		ensure
 			result_exists: Result /= Void
 		end

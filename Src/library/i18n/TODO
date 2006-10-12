@@ -2,7 +2,7 @@ Global TODO list for the i18n project:
 
 Urgent (13 october):
 
-* time formatter
+~ time formatter
 ! CONTACT TROSIM with chili pepper 
 ! redesign locale interface
 ~ fix locales	(nls needs the ISO currency stuff finishing, and the format string conversion)

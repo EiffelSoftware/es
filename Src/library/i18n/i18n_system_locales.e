@@ -22,6 +22,7 @@ feature -- Informations
 			-- is the locale with a_locale_id available?
 		do
 			Result := host_locale.is_available (a_locale_id)
+					-- or host_locale.is_available (create {I18N_LOCALE_ID}.make(a_locale_id.language, a_locale_id.region, Void))
 		ensure
 			correct_result: Result = host_locale.is_available (a_locale_id)
 		end
