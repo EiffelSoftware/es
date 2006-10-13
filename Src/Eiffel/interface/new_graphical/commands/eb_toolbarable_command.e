@@ -28,7 +28,6 @@ feature -- Access
 		do
 		end
 
---i18n
 	tooltip: STRING_32 is
 			-- Tooltip for the toolbar button.
 		deferred
@@ -36,7 +35,6 @@ feature -- Access
 			valid_result: Result /= Void
 		end
 
---i18n
 	tooltext: STRING_32 is
 			-- Text displayed on the toolbar button.
 		do

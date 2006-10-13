@@ -77,8 +77,8 @@ feature {NONE} -- Implementation
 			parent_notebook_attached: parent_notebook /= Void
 			widget_attached: widget /= Void
 		local
-			l_name: STRING
-			l_title: STRING
+			l_name: STRING_32
+			l_title: STRING_32
 		do
 			l_name := interface_names.l_tab_warning_output
 			if a_count > 0 then

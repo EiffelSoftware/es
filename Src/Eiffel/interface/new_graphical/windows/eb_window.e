@@ -152,11 +152,9 @@ feature -- Access
 
 feature -- Status report
 
---i18n
 	title: STRING_32
 			-- Title of the window
 
---i18n
 	minimized_title: STRING_32
 			-- Title of the window in minimized state
 
@@ -167,7 +165,6 @@ feature -- Status report
 
 feature -- Status setting
 
---i18n
 	set_title (a_title: STRING_GENERAL) is
 			-- Set `title' to `a_title'.
 		require
@@ -184,24 +181,7 @@ feature -- Status setting
 				window_manager.record_window_change (Current)
 			end
 		end
---	set_title (a_title: STRING) is
---			-- Set `title' to `a_title'.
---		require
---			valid_title: a_title /= Void
---		do
---			if not equal (title, a_title) then
---				title := a_title
---				window.set_title (a_title)
 
---					-- By default, the minimized title is the title.
---				set_minimized_title (a_title)
-
---					-- Notify the window manager of a change in this window.
---				window_manager.record_window_change (Current)
---			end
---		end
-
---i18n
 	set_minimized_title (a_title: STRING_GENERAL) is
 			-- Set `minimized_title' to `a_title'.
 		do
@@ -213,17 +193,6 @@ feature -- Status setting
 				window_manager.record_window_change (Current)
 			end
 		end
---	set_minimized_title (a_title: STRING) is
---			-- Set `minimized_title' to `a_title'.
---		do
---			if not equal (minimized_title, a_title) then
---				minimized_title := a_title
---				window.set_icon_name (a_title)
-
---					-- Notify the window manager of a change in this window.
---				window_manager.record_window_change (Current)
---			end
---		end
 
 	lock_update is
 			-- Lock updates for this window on certain platforms until
