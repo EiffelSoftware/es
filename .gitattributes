@@ -630,7 +630,6 @@ Delivery/xmldoc/images/eiffelstudio/diagram/link-tool-right.png -text
 Delivery/xmldoc/images/eiffelstudio/diagram/link-tool-two-left.png -text
 Delivery/xmldoc/images/eiffelstudio/diagram/link-tool-two-right.png -text
 Delivery/xmldoc/images/eiffelstudio/diagram/link-tool.png -text
-Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/choose_existing_ace.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/color-dialog-windows.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/context-dialog-class.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/context-dialog-cluster.png -text
@@ -677,6 +676,7 @@ Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/new_cluster_dialog.png -
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/new_exported_feature.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/new_expression_as_object_definition_dlg.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/new_expression_definition_dlg.png -text
+Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/new_library_dialog.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/preferences_dialog.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/profiler_process.png -text
 Delivery/xmldoc/images/eiffelstudio/dialogs_and_wizards/profiler_query_window.png -text
