@@ -39,4 +39,4 @@ invariant
 
 correct_element_list: elements_list /= Void
 
-end -- Class NEW_I18N_FORMATTING_ELEMENT
+end -- Class I18N_FORMATTING_ELEMENT

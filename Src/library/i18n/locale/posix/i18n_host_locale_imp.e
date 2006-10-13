@@ -26,6 +26,7 @@ feature -- Initialization
 			create l_c_string.make ("")
 			set_locale (l_c_string.item)
 			Result := fill
+			Result.set_id(current_locale_id)
 		end
 
 	make_from_locale (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is

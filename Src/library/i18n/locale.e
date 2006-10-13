@@ -20,6 +20,7 @@ feature -- Basic Operations
 			create date_formatter
 			create string_formatter.default_create
 			create value_formatter.make (a_locale_info)
+			create currency_formatter.make (a_locale_info)
 		end
 
 
@@ -61,25 +62,6 @@ feature -- Basic Operations
 			result_exists: Result /= Void
 		end
 
-	format_date (a_date: DATE): STRING_32 is
-			-- returns the date formatting
-			-- according to the current locale
-		require
-			a_date_exists: a_date /= Void
-		do
-		ensure
-			result_exists: Result /= Void
-		end
-
-	format_value (a_value: NUMERIC): STRING_32 is
-			-- returns the value formatting
-			-- according to the current locale
-		require
-			a_value_exists: a_value /= Void
-		do
-		ensure
-			result_exists: Result /= Void
-		end
 
 	format_string (original: STRING_GENERAL; token_values: TUPLE[STRING_GENERAL]): STRING_32 is
 			-- replace tokens in the result of
@@ -92,6 +74,11 @@ feature -- Basic Operations
 			result_exists: Result /= Void
 		end
 
+feature -- Formatters
+
+	date_formatter:		I18N_DATE_FORMATTER
+	value_formatter:	I18N_VALUE_FORMATTER
+	currency_formatter: I18N_CURRENCY_FORMATTER
 
 feature {NONE} -- Implementation
 
@@ -99,9 +86,9 @@ feature {NONE} -- Implementation
 		-- specific information about the locale
 
 	dictionary:		I18N_DICTIONARY
-	date_formatter:		I18N_DATE_FORMATTER
-	value_formatter:	I18N_VALUE_FORMATTER
+
 	string_formatter:	I18N_STRING_FORMATTER
+
 
 
 

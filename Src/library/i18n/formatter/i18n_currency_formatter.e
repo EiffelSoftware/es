@@ -10,7 +10,7 @@ class
 create
 	make
 
-feature -- Initialization
+feature  -- Initialization
 
 	make (a_locale_info: I18N_LOCALE_INFO) is
 			-- Initialization
@@ -45,7 +45,7 @@ feature -- Utility
 		end
 
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	currency_symbol: STRING_32
 		-- the currency symbol
