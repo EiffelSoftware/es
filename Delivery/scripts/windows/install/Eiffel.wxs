@@ -11,7 +11,7 @@
 		<?define MSI_version = "200" ?>
 		<?define MSI_platform = "Intel" ?>
 	<?endif?>
-	<Product Name="EiffelStudio 5.7" Id="$(var.P_GUID)" Language="1033" Codepage="1252" Version="5.7" Manufacturer="Eiffel Software">
+	<Product Name="EiffelStudio 5.7" Id="$(var.P_GUID)" Language="1033" Codepage="1252" Version="5.7" Manufacturer="Eiffel Software" UpgradeCode="505E76B8-BA4F-4e2e-8685-83A5C61A091A">
 
 		<Package Id="????????-????-????-????-????????????" Keywords="Installer" Description="EiffelStudio 5.7 Installer"
 			Comments="EiffelStudio is a registered trademark of Eiffel Software" Manufacturer="Eiffel Software"
@@ -21,7 +21,7 @@
 		<Property Id="SELECTEDCCOMPILER">bcb<RegistrySearch Id="AppReg" Root="HKLM" Key="SOFTWARE\ISE\Eiffel57\ec" Name="ISE_C_COMPILER" Type="raw" Win64="$(var.IsWin64)" /></Property>
 		<Condition Message="This installation can only run in full UI mode.">Installed OR UILevel = 5</Condition>
 
-		<Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
+		<Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" CompressionLevel="high" />
 		<Property Id='DiskPrompt' Value="EiffelStudio 5.7 Installation [1]" />
 
 		<Directory Id="TARGETDIR" Name="SourceDir">
@@ -114,11 +114,11 @@
 			</Feature>
 		</Feature>
 		
-		<CustomAction Id="is_gdi_plus_installed" BinaryKey="setup_dll" DllEntry="is_gdi_plus_installed" Win64="$(var.IsWin64)" />
-		<CustomAction Id="is_cd_key_valid" BinaryKey="setup_dll" DllEntry="is_cd_key_valid" Win64="$(var.IsWin64)" />
-		<CustomAction Id="retrieve_cd_key" BinaryKey="setup_dll" DllEntry="retrieve_cd_key" Win64="$(var.IsWin64)" />
-		<CustomAction Id="prepare_finalize_setup" BinaryKey="setup_dll" DllEntry="prepare_finalize_setup" Win64="$(var.IsWin64)" />
-		<CustomAction Id="finalize_setup" BinaryKey="setup_dll" DllEntry="finalize_setup" Execute="deferred" Win64="$(var.IsWin64)" />
+		<CustomAction Id="is_gdi_plus_installed" BinaryKey="setup_dll" DllEntry="is_gdi_plus_installed" />
+		<CustomAction Id="is_cd_key_valid" BinaryKey="setup_dll" DllEntry="is_cd_key_valid" />
+		<CustomAction Id="retrieve_cd_key" BinaryKey="setup_dll" DllEntry="retrieve_cd_key" />
+		<CustomAction Id="prepare_finalize_setup" BinaryKey="setup_dll" DllEntry="prepare_finalize_setup" />
+		<CustomAction Id="finalize_setup" BinaryKey="setup_dll" DllEntry="finalize_setup" Impersonate="no" Execute="deferred" />
 
 		<UI>
 			<Property Id="DefaultUIFont">DlgFont8</Property>

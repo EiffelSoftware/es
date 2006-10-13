@@ -20,7 +20,7 @@
 			<link>
 				<url>/libraries/wel/samples/tutorial/step3/index.xml</url>
 				<label>3</label>
-			</link>) and again demonstrates the use of a <link><url>../../../reference/gdi/wel_client_dc_chart.xml</url><label>WEL_CLIENT_DC</label></link>. 
+			</link>) and again demonstrates the use of a <link><url>../../../reference/wel_client_dc_chart.xml</url><label>WEL_CLIENT_DC</label></link>. 
 		</paragraph>
 		<image> 
 			<url>step4.png</url> 
@@ -41,19 +41,23 @@
 				</list>
 			</output>
 			<output output="studio">
-				<list ordered="true">
-					<item>Launch EiffelStudio.</item>
-					<item>Select <bold>Use existing Ace (control file)</bold> and click <bold>OK</bold></item>
-					<item>Browse to <italic>$ISE_EIFFEL\examples\wel\tutorial\step4\</italic></item>
-					<item>Choose the Ace file</item>
-					<item>Choose the directory where the project will be compiled, by default the same directory containing the Ace file.</item>
-					<item>Click <bold>OK</bold>.</item>
-				</list>
+			<list ordered="false">
+				<item>Launch EiffelStudio. </item>
+				<item>Click <bold>Add project</bold></item>
+				<item>Browse to 
+					<italic>$ISE_EIFFEL\examples\wel\tutorial\step4\</italic>.
+				</item>
+				<item>Choose <italic>tutorial_step4.ecf</italic></item>
+				<item>Choose the location where the project will be compiled, by default the same directory containing the configuration file. </item>
+				<item>Click 
+					<bold>OK</bold>.
+				</item>
+			</list>
 			</output>		
 		</paragraph>
 		<heading>
 			<size>2</size>Running
-		</heading> After launching the sample, you will see a <link><url>../../../reference/windows/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link> displayed. By holding down the left mouse button, and moving the mouse (Within the client area of the window), you will be able to draw on the client area of the window. Pressing the right mouse button within the window will clear the client area of the window. 
+		</heading> After launching the sample, you will see a <link><url>../../../reference/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link> displayed. By holding down the left mouse button, and moving the mouse (Within the client area of the window), you will be able to draw on the client area of the window. Pressing the right mouse button within the window will clear the client area of the window. 
 		<heading>
 			<size>2</size>Under the Hood
 		</heading>

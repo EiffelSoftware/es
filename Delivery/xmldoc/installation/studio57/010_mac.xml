@@ -9,16 +9,15 @@
 				<row><cell>Memory</cell><cell>512MB of RAM (1GB recommended)</cell></row>
 				<row><cell>Hard Disk</cell><cell>400MB of hard disk space (1GB recommended) </cell></row>
 				<row><cell>Drive</cell><cell>CD-ROM or DVD drive (not required when downloading EiffelStudio)</cell></row>
-				<row><cell>Display</cell><cell>Super VGA (800 x 600) or higher resolution video adapter and monitor</cell></row>
+				<row><cell>Display</cell><cell>1024 x 768 or higher resolution video adapter and monitor</cell></row>
 				<row><cell>Peripherals</cell><cell>Keyboard and mouse or compatible pointing device</cell></row>
 				<row><cell><bold>ISE_PLATFORM</bold></cell><cell><bold>macosx-ppc</bold> or <bold>macosx-x86</bold>.</cell></row>
 			</table>
 		</paragraph>
 		<heading><size>2</size>Prerequisites</heading>
-		<paragraph>Before installing EiffelStudio 5.7, it is necessary to install X11 for Mac OS X and the X11 SDK. Both are available with the OS X CD or from the Apple web site at:
+		<paragraph>Before installing EiffelStudio 5.7, it is necessary to install X11 for Mac OS X and the X11 SDK. They are available with the OS X CD. For more details check the Apple web site at:
 			<list ordered="false">
-				<item><link><url>http://www.apple.com/macosx/x11/</url><label>http://www.apple.com/macosx/x11/</label></link></item>
-				<item><link><url> http://www.apple.com/macosx/x11/download/</url><label>http://www.apple.com/macosx/x11/download/</label></link></item>
+				<item><link><url>http://www.apple.com/macosx/features/x11/</url><label>http://www.apple.com/macosx/features/x11/</label></link></item>
 			</list>
 			<paragraph>You also need to install the latest Apple Developer Tools (XCode) available as part of Mac OS X (Tiger or above)</paragraph>
 		</paragraph>

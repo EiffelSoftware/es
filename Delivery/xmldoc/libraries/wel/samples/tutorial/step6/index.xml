@@ -12,7 +12,7 @@
 			<link>
 				<url>/libraries/wel/samples/tutorial/step5/index.xml</url>
 				<label>step 5</label>
-			</link> by preventing the loss of the drawing when Windows re-draws the client area of the <link><url>../../../reference/windows/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link>. The output is shown below: 
+			</link> by preventing the loss of the drawing when Windows re-draws the client area of the <link><url>../../../reference/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link>. The output is shown below: 
 		</paragraph>
 		<image> 
 			<url>step6.png</url> 
@@ -33,20 +33,24 @@
 				</list>
 			</output>
 			<output output="studio">
-				<list ordered="true">
-					<item>Launch EiffelStudio.</item>
-					<item>Select <bold>Use existing Ace (control file)</bold> and click <bold>OK</bold></item>
-					<item>Browse to <italic>$ISE_EIFFEL\examples\wel\tutorial\step6\</italic></item>
-					<item>Choose the Ace</item>
-					<item>Choose the directory where the project will be compiled, by default the same directory containing the Ace file.</item>
-					<item>Click <bold>OK</bold>.</item>
-				</list>
+			<list ordered="false">
+				<item>Launch EiffelStudio. </item>
+				<item>Click <bold>Add project</bold></item>
+				<item>Browse to 
+					<italic>$ISE_EIFFEL\examples\wel\tutorial\step6\</italic>.
+				</item>
+				<item>Choose <italic>tutorial_step6.ecf</italic></item>
+				<item>Choose the location where the project will be compiled, by default the same directory containing the configuration file. </item>
+				<item>Click 
+					<bold>OK</bold>.
+				</item>
+			</list>
 			</output>
 		</paragraph>
 		<heading>
 			<size>2</size>Running
 		</heading>
-		<paragraph>After launching the sample, you will see a <link><url>../../../reference/windows/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link> displayed. By holding down the left mouse button, and moving the mouse (Within the client area of the window), you will be able to draw on the client are of the window. If you press the right mouse button, a <link><url>../../../reference/windows/wel_modal_dialog_chart.xml</url><label>WEL_MODAL_DIALOG</label></link> will pop up which allows you to enter the thickness of the line that is drawn. If you re-size the window, then the drawing will be re-drawn.</paragraph>
+		<paragraph>After launching the sample, you will see a <link><url>../../../reference/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link> displayed. By holding down the left mouse button, and moving the mouse (Within the client area of the window), you will be able to draw on the client are of the window. If you press the right mouse button, a <link><url>../../../reference/wel_modal_dialog_chart.xml</url><label>WEL_MODAL_DIALOG</label></link> will pop up which allows you to enter the thickness of the line that is drawn. If you re-size the window, then the drawing will be re-drawn.</paragraph>
 		<heading>
 			<size>2</size>Under the Hood
 		</heading>

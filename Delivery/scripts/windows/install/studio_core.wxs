@@ -2,8 +2,8 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
 	<Module Id="studio_core" Guid="4A841F9A-85D3-4E04-8E5E-FF7153737FDC" Language="0" Version="5.7">
 		<Package Id="4A841F9A-85D3-4E04-8E5E-FF7153737FDC" Keywords="MergeModule, MSI, Database" Description="EiffelCompilerFiles" Manufacturer="ISE Inc." InstallerVersion="200" Languages="1033" Compressed="yes" />
-	<IgnoreModularization Name="PROJECTDIR" Type="Property" />
-	<IgnoreModularization Name="SELECTEDCCOMPILER" Type="Property" />
+		<IgnoreModularization Name="PROJECTDIR" Type="Property" />
+		<IgnoreModularization Name="SELECTEDCCOMPILER" Type="Property" />
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Component Id="LocalMachineRegistry" Guid="E4C043A0-6236-4A40-A532-2F5EE81F5BDF" Win64="$(var.IsWin64)">
 				<Registry Root="HKLM" Key="Software\ISE\Eiffel57" Name="ISE_EIFFEL" Value="[Application]" Id="registry44" Type="string" />
@@ -495,6 +495,7 @@
 									<File Id="VD84" Name="VD84" />
 									<File Id="VD85" Name="VD85" />
 									<File Id="VD86" Name="VD86" />
+									<File Id="VD87" Name="VD87" />
 									<File Id="VDJR71" Name="VDJR" />
 									<File Id="VDOC65" Name="VDOC" />
 									<File Id="VDRD1" Name="VDRD1" />
@@ -687,15 +688,22 @@
 							<Directory Id="bin8" Name="bin">
 								<Component Id="estudio.exe" Guid="80B6C77B-41F5-4346-B02F-E00153176E46">
 									<File Id="estudio.exe" Name="estudio.exe" KeyPath="yes">
-										<Shortcut Id="estudio.exe" Directory="EiffelStudio" Name="EIFFEL~1.2" LongName="EiffelStudio 5.7" Description="EiffelStudio development environment" Hotkey="0"	Show="normal">
-											<Icon Id="ecf_icon" src="$(env.INSTALL_DIR)\studio\spec\$(env.ISE_PLATFORM)\bin\ecdbgd.exe" />
-										</Shortcut>
+										<Shortcut Id="estudio.exe" Directory="EiffelStudio" Name="EIFFEL~1.2" LongName="EiffelStudio 5.7" Description="EiffelStudio development environment" Hotkey="0"	Show="normal" />
 										<Shortcut Id="estudio.exe1" Directory="DesktopFolder" Name="ISEEIF~1.2" LongName="EiffelStudio 5.7" Description="EiffelStudio development environment" Hotkey="0" Show="normal" />
 									</File>
-									<ProgId Id="estudio_ecf.project" Description="EiffelStudio project" Icon="ecf_icon" IconIndex="1" >
+									<ProgId Id="estudio_ecf.project" Description="EiffelStudio Project" Icon="[#estudio.exe]" IconIndex="1" >
 										<Extension Id="ecf">
-											<Verb Id="open" Argument="&quot;%1&quot;" Command="open" Target="&quot;[Application]studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe&quot;" />
-											<Verb Id="compile" Argument="-config &quot;%1&quot; -melt" Command="compile" Target="&quot;[Application]studio\spec\$(env.ISE_PLATFORM)\bin\estudio.exe&quot;" />
+											<MIME ContentType="text/xml" />
+											<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="compile" Argument="-config &quot;%1&quot; -melt" Command="Compile" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="precompile" Argument="-config &quot;%1&quot; -precompile" Command="Precompile" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="freeze" Argument="-config &quot;%1&quot; -freeze" Command="Freeze" Target="&quot;[#estudio.exe]&quot;" />
+											<Verb Id="finalize" Argument="-config &quot;%1&quot; -finalize" Command="Finalize" Target="&quot;[#estudio.exe]&quot;" />
+										</Extension>
+									</ProgId>
+									<ProgId Id="estudio_e.class" Description="Eiffel Classes" Icon="[#estudio.exe]" IconIndex="2" >
+										<Extension Id="e" >
+											<MIME ContentType="text/plain" />
 										</Extension>
 									</ProgId>
 								</Component>
@@ -710,7 +718,7 @@
 								</Component>
 								<Component Id="h2e.exe" Guid="70827559-3A13-4F64-9E8E-6A9462E31FDC">
 									<File Id="h2e.exe" Name="h2e.exe" KeyPath="yes">
-										<Shortcut Id="h2e.exe" Directory="Tools9" Name="h2e.exe" Description="A tool to extract constant definitions into Eiffel classes" Hotkey="0" Show="normal" />
+										<Shortcut Id="he2.exe" Directory="Tools9" Name="h2e.exe" LongName="C constants to Eiffel class generator" Description="A tool to extract constant definitions into Eiffel classes" Hotkey="0" Show="normal" />
 									</File>
 								</Component>
 								<Component Id="legacy.exe" Guid="B3A1D6E5-0085-42BB-817F-BF1B315BE839">
@@ -838,6 +846,7 @@
 							<Shortcut Id="eiffel.chm1" Directory="Documentation" Name="EIFFEL~1" LongName="Eiffel Developer Help Center" Description="Main documentation, covering Eiffel, ISE libraries and ISE tools" Hotkey="0" Show="normal" />
 						</File>
 						<Shortcut Id="ResourceBench_Documentation" Directory="Documentation" Name="RESOUR~1" LongName="ResourceBench Documentation" Target="[SHORTCUTPATH]" Arguments="mk:@MSITStore:[#eiffel.chm]::/tools/resource_bench/index.html" Hotkey="0" Show="normal" />
+						<Shortcut Id="EiffelCOM_Wizard" Directory="Documentation" Name="EIFFEL~2" LongName="EiffelCOM Wizard Documentation" Target="[SHORTCUTPATH]" Arguments="mk:@MSITStore:[#eiffel.chm]::/tools/wizards/com/index.html" Hotkey="0" Show="normal" />
 					</Component>
 				</Directory>
 			</Directory>

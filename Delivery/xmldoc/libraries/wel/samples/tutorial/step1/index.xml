@@ -10,11 +10,11 @@
 	<paragraph>
 		<paragraph> This sample shows you how to set up your first 
 			<link>
-				<url>/libraries/wel/reference/support/wel_application_chart.xml</url>
+				<url>/libraries/wel/reference/wel_application_chart.xml</url>
 				<label>WEL_APPLICATION</label>
 			</link> consisting of a single 
 			<link>
-				<url>/libraries/wel/reference/windows/wel_frame_window_chart.xml</url>
+				<url>/libraries/wel/reference/wel_frame_window_chart.xml</url>
 				<label>WEL_FRAME_WINDOW</label>
 			</link>. This is one of the simplest WEL applications you can write, and the output is shown below: 
 		</paragraph>
@@ -37,14 +37,18 @@
 				</list>
 			</output>
 			<output output="studio">
-				<list ordered="true">
-					<item>Launch EiffelStudio.</item>
-					<item>Select <bold>Use existing Ace (control file)</bold> and click <bold>OK</bold></item>
-					<item>Browse to <italic>$ISE_EIFFEL\examples\wel\tutorial\step1\</italic></item>
-					<item>Choose the Ace file</item>
-					<item>Choose the directory where the project will be compiled, by default the same directory containing the Ace file.</item>
-					<item>Click <bold>OK</bold>.</item>
-				</list>
+			<list ordered="false">
+				<item>Launch EiffelStudio. </item>
+				<item>Click <bold>Add project</bold></item>
+				<item>Browse to 
+					<italic>$ISE_EIFFEL\examples\wel\tutorial\step1\</italic>.
+				</item>
+				<item>Choose <italic>tutorial_step1.ecf</italic></item>
+				<item>Choose the location where the project will be compiled, by default the same directory containing the configuration file. </item>
+				<item>Click 
+					<bold>OK</bold>.
+				</item>
+			</list>
 			</output>		
 		</paragraph>
 		<heading>
@@ -59,11 +63,11 @@
 		</heading>
 		<paragraph>Although this system does nothing except create and display a 
 			<link>
-				<url>/libraries/wel/reference/windows/wel_frame_window_chart.xml</url>
+				<url>/libraries/wel/reference/wel_frame_window_chart.xml</url>
 				<label>WEL_FRAME_WINDOW</label>
 			</link>, it shows how to set up your first 
 			<link>
-				<url>/libraries/wel/reference/support/wel_application_chart.xml</url>
+				<url>/libraries/wel/reference/wel_application_chart.xml</url>
 				<label>WEL_APPLICATION</label>
 			</link>. 
 		</paragraph>
@@ -72,7 +76,7 @@
 				<label>TUTORIAL_STEP1</label>
 			</link> which inherits 
 			<link>
-				<url>/libraries/wel/reference/support/wel_application_chart.xml</url>
+				<url>/libraries/wel/reference/wel_application_chart.xml</url>
 				<label>WEL_APPLICATION</label>
 			</link> and redefines <code><feature_name>main_window</feature_name></code>
 		</paragraph>

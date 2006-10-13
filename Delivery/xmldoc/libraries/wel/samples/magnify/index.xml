@@ -27,23 +27,18 @@
 				</list>
 			</output>
 			<output output="studio">
-				<list ordered="false">
-					<item>Launch EiffelStudio. </item>
-					<item>Select 
-						<bold>Use existing Ace (control file)</bold> and click 
-						<bold>OK</bold>. 
-					</item>
-					<item>Browse to 
-						<italic>$ISE_EIFFEL\examples\wel\magnify\</italic>. 
-					</item>
-					<item>Choose 
-						<italic>Ace.ace</italic>
-					</item>
-					<item>Choose the directory where the project will be compiled, by default the same directory containing the Ace file.              If you select another directory than the default one, please copy icons (*.ico) and resource files (*.rc) from the              default directory (the one containing the Ace file) to the new              one. </item>
-					<item>Click 
-						<bold>OK</bold>.
-					</item>
-				</list>
+			<list ordered="false">
+				<item>Launch EiffelStudio. </item>
+				<item>Click <bold>Add project</bold></item>
+				<item>Browse to 
+					<italic>$ISE_EIFFEL\examples\wel\magnify\</italic>.
+				</item>
+				<item>Choose <italic>magnify.ecf</italic></item>
+				<item>Choose the location where the project will be compiled, by default the same directory containing the configuration file. </item>
+				<item>Click 
+					<bold>OK</bold>.
+				</item>
+			</list>
 			</output>
 		<heading>
 			<size>2</size>Running
@@ -51,7 +46,7 @@
 		<heading>
 			<size>2</size>Under the Hood
 		</heading>
-		<paragraph>In order to be able to control the output of the sample, <code><class_name>MAIN_WINDOW</class_name></code> redefines many features from <link><url>../../reference/windows/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link>. The feature <code><feature_name>draw_zoom_rectangle</feature_name></code> is used to display the output and <code><feature_name>on_menu_command</feature_name></code> handles the notifications sent to the window when a <code><feature_name>menu_selection</feature_name></code> has been made.</paragraph>
+		<paragraph>In order to be able to control the output of the sample, <code><class_name>MAIN_WINDOW</class_name></code> redefines many features from <link><url>../../reference/wel_frame_window_chart.xml</url><label>WEL_FRAME_WINDOW</label></link>. The feature <code><feature_name>draw_zoom_rectangle</feature_name></code> is used to display the output and <code><feature_name>on_menu_command</feature_name></code> handles the notifications sent to the window when a <code><feature_name>menu_selection</feature_name></code> has been made.</paragraph>
 		<paragraph>This sample contains the following classes: 
 			<list ordered="false">
 				<item><code><class_name>APPLICATION_IDS</class_name></code></item>

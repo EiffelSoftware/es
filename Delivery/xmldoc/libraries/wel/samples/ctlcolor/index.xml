@@ -27,23 +27,18 @@
 				</list>
 			</output>
 			<output output="studio">
-				<list ordered="false">
-					<item>Launch EiffelStudio. </item>
-					<item>Select 
-						<bold>Use existing Ace (control file)</bold> and click 
-						<bold>OK</bold>. 
-					</item>
-					<item>Browse to 
-						<italic>$ISE_EIFFEL\examples\wel\ctlcolor\</italic>. 
-					</item>
-					<item>Choose 
-						<italic>Ace.ace</italic>
-					</item>
-					<item>Choose the directory where the project will be compiled, by default the same directory containing the Ace file.              If you select another directory than the default one, please copy icons (*.ico) and resource files (*.rc) from the              default directory (the one containing the Ace file) to the new              one. </item>
-					<item>Click 
-						<bold>OK</bold>.
-					</item>
-				</list>
+			<list ordered="false">
+				<item>Launch EiffelStudio. </item>
+				<item>Click <bold>Add project</bold></item>
+				<item>Browse to 
+					<italic>$ISE_EIFFEL\examples\wel\ctlcolor\</italic>.
+				</item>
+				<item>Choose <italic>ctlcolor.ecf</italic></item>
+				<item>Choose the location where the project will be compiled, by default the same directory containing the configuration file. </item>
+				<item>Click 
+					<bold>OK</bold>.
+				</item>
+			</list>
 			</output>
 		<heading>
 			<size>2</size>Running
@@ -52,7 +47,7 @@
 		<heading>
 			<size>2</size>Under the Hood
 		</heading>
-		<paragraph>A <link><url>../../reference/support/wel_color_control_chart.xml</url><label>WEL_COLOR_CONTROL</label></link> is used to retrieve the color selection of the user through the feature rgb_result which returns an object of type <link><url>../../reference/gdi/wel_color_ref_chart.xml</url><label>WEL_COLOR_REF</label></link>. </paragraph>
+		<paragraph>A <link><url>../../reference/wel_color_control_chart.xml</url><label>WEL_COLOR_CONTROL</label></link> is used to retrieve the color selection of the user through the feature rgb_result which returns an object of type <link><url>../../reference/wel_color_ref_chart.xml</url><label>WEL_COLOR_REF</label></link>. </paragraph>
 		<paragraph>This sample contains the following classes: 
 			<list ordered="false">
 				<item><code><class_name>CTLCOLOR_DEMO</class_name></code></item>
