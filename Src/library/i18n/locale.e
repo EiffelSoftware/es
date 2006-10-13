@@ -17,7 +17,7 @@ feature -- Basic Operations
 		do
 			info:=a_locale_info
 			dictionary:=a_dictionary
-			create date_formatter
+			create date_formatter.make (a_locale_info)
 			create string_formatter.default_create
 			create value_formatter.make (a_locale_info)
 			create currency_formatter.make (a_locale_info)

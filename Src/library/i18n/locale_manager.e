@@ -30,27 +30,26 @@ feature -- Access
 		require
 			a_locale_id_exists: a_locale_id /= Void
 		local
-			l_local_info: I18N_LOCALE_INFO
+			l_locale_info: I18N_LOCALE_INFO
 			l_dictionary: I18N_DICTIONARY
-			l_locale: I18N_LOCALE
 		do
-			l_local_info := system_locales.get_locale_info (a_locale_id)
-			l_dictionary := datasource_manager.get_dictionary (a_locale_id)
-			create l_locale.make(l_dictionary,l_local_info)
-			Result := l_locale
+			if has_translations (a_locale_id) then
+				l_dictionary := datasource_manager.get_dictionary (a_locale_id)
+			else
+				create {I18N_DUMMY_DICTIONARY}	l_dictionary
+			end
+			if has_formatting_info (a_locale_id) then
+				l_locale_info := system_locales.get_locale_info (a_locale_id)
+			else
+				create l_locale_info.make -- will have default values	
+			end
+			create Result.make (l_dictionary, l_locale_info)
 		end
 
 	get_system_locale : I18N_LOCALE is
-		--
-		local
-			l_local_info: I18N_LOCALE_INFO
-			l_dictionary: I18N_DICTIONARY
-			l_locale: I18N_LOCALE
+			--
 		do
-			l_local_info := system_locales.get_user_locale_info
-			l_dictionary := datasource_manager.get_dictionary (l_local_info.id)
-			create l_locale.make(l_dictionary,l_local_info)
-			Result := l_locale
+			Result := get_locale(system_locales.get_user_locale_info.id)
 		end
 
 
@@ -104,7 +103,7 @@ feature -- Status report
 		local
 			generic_script: I18N_LOCALE_ID
 		do
-			Result := system_locales.has_locale(a_locale_id) or datasource_manager.has_locale (a_locale_id) 
+			Result := system_locales.has_locale(a_locale_id) or datasource_manager.has_locale (a_locale_id)
 		end
 
 feature -- Implementation

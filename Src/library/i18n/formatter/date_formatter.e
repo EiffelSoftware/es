@@ -7,6 +7,9 @@ indexing
 class
 	I18N_DATE_FORMATTER
 
+	create
+		make
+
 	feature
 		-- Creation
 		make (locale_info: I18N_LOCALE_INFO) is

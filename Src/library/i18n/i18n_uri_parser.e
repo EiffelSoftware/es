@@ -13,7 +13,7 @@ class
 			do
 				-- for now we only know about directories, so we always return
 				-- a I18N_FILE_MANAGER
-				create {I18N_FILE_MANAGER} Result
+				create {I18N_FILE_MANAGER} Result.make(uri)
 
 			end
 

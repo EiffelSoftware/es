@@ -38,6 +38,7 @@ feature -- Initialization
 			create l_c_string.make (a_locale_id.name)
 			set_locale (l_c_string.item)
 			Result := fill
+			Result.set_id(a_locale_id)
 		ensure then
 			locale_set: locale_name.is_equal(a_locale_id.name)
 		end

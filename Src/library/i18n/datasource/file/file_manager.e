@@ -11,6 +11,9 @@ class
 		redefine
 			make
 		end
+		
+	create
+		make
 
 	feature
 		-- Creation

@@ -45,6 +45,7 @@ feature -- Informations
 		local
 			linear: LINEAR[I18N_LOCALE_ID]
 		do
+			linear := available_locales
 			from
 				linear.start
 			until
