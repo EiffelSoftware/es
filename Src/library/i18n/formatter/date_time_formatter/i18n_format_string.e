@@ -17,7 +17,7 @@ feature -- Initialization
 
 feature --Output
 
- 	filled (a_date: DATE; a_time: TIME; a_locale_info: I18N_LOCALE_INFO): STRING_32 is
+ 	filled (a_date: DATE; a_time: TIME): STRING_32 is
  			--
  		do
  			create Result.make_empty
@@ -26,7 +26,7 @@ feature --Output
 			until
 				elements_list.after
 			loop
-				Result.append (elements_list.item.filled (a_date, a_time, a_locale_info))
+				Result.append (elements_list.item.filled (a_date, a_time))
 				elements_list.forth
 			end
  		end

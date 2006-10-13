@@ -14,7 +14,7 @@ feature {I18N_FORMAT_STRING_PARSER} -- Initialization
 
 feature -- Output
 
-	filled (a_date: DATE; a_time: TIME; a_locale_info: I18N_LOCALE_INFO): STRING_32 is
+	filled (a_date: DATE; a_time: TIME): STRING_32 is
  			--
  		do
 			Result := user_string

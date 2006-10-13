@@ -10,7 +10,7 @@ create
 feature {CHARACTER_TREE} -- Init
 
 	make (a_key: STRING_32; a_character_list: LINKED_LIST[CHARACTER_TREE[G]]) is
-			--
+			-- Make a tree with `a_key' as key and `a_character_list' as character list
 		require
 			a_key_not_exists: a_key /= Void
 			a_character_list_exists: a_character_list /= Void
@@ -50,10 +50,10 @@ feature -- Interface
 		end
 
 	get (a_key: STRING_32): G is
-			--
+			-- get item with `a_key' as key
 		require
 			a_key_exists: a_key /= Void
-			a_key_in_tree: has_key (a_key)
+			a_key_in_tree: get_item_with_key (a_key) /= Void
 		local
 			tree_el: CHARACTER_TREE[G]
 		do
@@ -79,8 +79,9 @@ feature -- Interface
 			end
 		end
 
-	has_key (s: STRING_32): BOOLEAN is
-			--
+	get_item_with_key (s: STRING_32): G is
+			-- get the item in the tree that has as key `s'
+			-- if no item with this porperty, Result is void
 		require
 			a_key_exists: s /= Void
 		local
@@ -88,11 +89,12 @@ feature -- Interface
 		do
 			if not is_leaf then
 				tree_el := search_character_tree (s.substring (key.count +1, s.count))
-				Result := tree_el /= Void and then tree_el.has_key (s.substring (key.count +1, s.count))
-			else
-				Result := key /= Void and then key.is_equal (s)
+				if tree_el /= Void then
+					Result := tree_el.get_item_with_key (s.substring (key.count +1, s.count))
+				end
+			elseif key /= Void and then key.is_equal (s) then
+				Result := item
 			end
-
 		end
 
 
@@ -148,6 +150,7 @@ feature {CHARACTER_TREE} -- character_trees_list
 		end
 
 	split (a_item: G; a_string: STRING_32) is
+			-- split leaf in a node with a character tree list
 		require
 			is_leaf: is_leaf
 		local
@@ -167,6 +170,9 @@ feature {CHARACTER_TREE} -- character_trees_list
 			character_trees_list.put_front (r_tree)
 			key := key.substring (1, distance)
 			item := Void
+		ensure
+			two_elements: character_trees_list.count = 2
+			no_item: item = Void
 		end
 
 feature {CHARACTER_TREE} -- Information
@@ -212,35 +218,32 @@ feature {CHARACTER_TREE} -- Implementation
 			Result := Result - 1
 		end
 
-feature --Debug
+feature --display
 
 	print_tree (t: INTEGER): STRING_32 is
-			--
+			-- display current tree,
+			-- `t' is the depth, of current item
 		local
 			i : INTEGER
+			spaces: STRING_32
 		do
+			create spaces.make_filled (' ',t*2)
 			if is_leaf then
-				Result := spaces (t)+"LEAF with item: "+item.out+" ("+key.out+")%N"
+				Result := spaces+"LEAF with item: "+item.out+" ("+key.out+")%N"
 			else
-				Result := spaces (t)+"NODE with key: "+key.out+"%N"
+				Result := spaces+"NODE with key: "+key.out+"%N"
 				from
 					character_trees_list.start
 					i := 1
 				until
 					character_trees_list.after
 				loop
-					Result.append (spaces (t+1)+i.out+"th child%N"+character_trees_list.item.print_tree (t+2))
+					spaces.make_filled (' ',(t+1)*2)
+					Result.append (spaces+i.out+"th child%N"+character_trees_list.item.print_tree (t+2))
 					character_trees_list.forth
 					i := i + 1
 				end
 			end
-		end
-feature {NONE} --Debug
-
-	spaces (n: INTEGER): STRING_32 is
-			--
-		do
-			create Result.make_filled (' ',n*2)
 		end
 
 

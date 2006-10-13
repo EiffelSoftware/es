@@ -47,9 +47,9 @@ feature -- Access
 	has (original : STRING_GENERAL) : BOOLEAN is
 			-- is there an entry with original?
 		do
-			Result := singular_char_tree.has_key (original.as_string_32)
+			Result := singular_char_tree.get_item_with_key (original.as_string_32) /= Void
 			if not Result then
-				Result := plural_char_tree.has_key (original.as_string_32)
+				Result := plural_char_tree.get_item_with_key (original.as_string_32) /= Void
 			end
 		end
 
@@ -58,21 +58,23 @@ feature -- Access
 		local
 			entry: I18N_DICTIONARY_ENTRY
 		do
-			if plural_char_tree.has_key (original_singular.as_string_32) then
-				entry := plural_char_tree.get (original_singular.as_string_32)
-				if entry.plural_translations.item(reduce (plural_number)) /= Void then
-					Result := True
-				end
+			entry := plural_char_tree.get_item_with_key (original_singular.as_string_32)
+			if entry /= Void and then
+			   entry.plural_translations.item(reduce (plural_number)) /= Void  then
+				Result := True
 			end
 		end
 
 	get_singular ( original : STRING_GENERAL) : STRING_32 is
 			-- get the translation of `original'
 			-- in the singular form
+		local
+			t_entry: I18N_DICTIONARY_ENTRY
 		do
-			if singular_char_tree.has_key (original.as_string_32) then
-				Result := singular_char_tree.get (original.as_string_32).singular_translation
-			else
+			t_entry := singular_char_tree.get_item_with_key (original.as_string_32)
+			if t_entry /= Void then
+				Result := t_entry.singular_translation
+			else -- because of the precondition it has to be in the plural_char_tree
 				Result := plural_char_tree.get (original.as_string_32).singular_translation
 			end
 		end

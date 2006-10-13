@@ -14,7 +14,6 @@ class
 				end
 			I18N_UNIX_C_FUNCTIONS
 			I18N_LOCALE_CONV
-			IMPORTED_UTF8_READER_WRITER
 
 feature -- Initialization
 
@@ -26,6 +25,7 @@ feature -- Initialization
 		do
 			create l_c_string.make ("")
 			set_locale (l_c_string.item)
+			Result := fill
 		end
 
 	make_from_locale (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
@@ -36,6 +36,7 @@ feature -- Initialization
 		do
 			create l_c_string.make (a_locale_id.name)
 			set_locale (l_c_string.item)
+			Result := fill
 		ensure then
 			locale_set: locale_name.is_equal(a_locale_id.name)
 		end
@@ -60,19 +61,23 @@ feature -- Informations
 			directory: DIRECTORY
 			dir_entries: ARRAYED_LIST[STRING]
 		do
+			create Result.make
 			create directory.make_open_read ("/usr/share/i18n/locales/")
-			dir_entries := directory.linear_representation
-			from
-				create Result.make
-				dir_entries.start
-			until
-				dir_entries.after
-			loop
-				create l_locale_id.make_from_string (dir_entries.item)
-				if is_available (l_locale_id) then
-					Result.extend (l_locale_id)
+			if directory.exists then
+					-- if it does not exist, unfortunately the system
+					-- dos not follow POSIX
+				dir_entries := directory.linear_representation
+				from
+					dir_entries.start
+				until
+					dir_entries.after
+				loop
+					create l_locale_id.make_from_string (dir_entries.item)
+					if is_available (l_locale_id) then
+						Result.extend (l_locale_id)
+					end
+					dir_entries.forth
 				end
-				dir_entries.forth
 			end
 		end
 
