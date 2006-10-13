@@ -7,7 +7,9 @@ create
 feature -- Initialization
 
 	make (a_format_string: STRING_32; a_locale_info: I18N_LOCALE_INFO) is
-			--
+			-- parse `a_format_string' and put parsed data
+			-- in `element_list', this can than be filled
+			-- with `filled()'
 		local
 			parser: I18N_FORMAT_STRING_PARSER
 		do
@@ -18,7 +20,8 @@ feature -- Initialization
 feature --Output
 
  	filled (a_date: DATE; a_time: TIME): STRING_32 is
- 			--
+ 			-- fill `elemets_list' with the data in `a_date'
+ 			-- and `a_time'
  		do
  			create Result.make_empty
 			from
@@ -34,6 +37,8 @@ feature --Output
 feature -- Actions
 
 	elements_list: LINKED_LIST[I18N_FORMATTING_ELEMENT]
+		-- list that contains all formatting elements
+		-- extracted by a format string
 
 invariant
 

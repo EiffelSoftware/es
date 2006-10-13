@@ -15,7 +15,7 @@ create make
 feature -- Parser
 
 	make (a_locale_info: I18N_LOCALE_INFO) is
-			--
+			-- Creation procedure
 		do
 			locale_info := a_locale_info
 		end
@@ -24,7 +24,9 @@ feature -- Parser
 
 
 	parse (a_string: STRING_32): LINKED_LIST[I18N_FORMATTING_ELEMENT] is
-			--
+			-- parse `a_string', for every format character, create
+			-- appropriate formatting_element and put it in the list
+			-- returned as result
 		local
 			i : INTEGER
 			next_escape_char: INTEGER
@@ -166,7 +168,11 @@ feature -- Parser
  feature {NONE} -- Implementation
 
  	parse_modified_1 (a_char: CHARACTER): I18N_FORMATTING_ELEMENT is
- 			--
+ 			-- this function is called when the escape character
+ 			-- was followed my the `modifier_character_1' = 'E'
+ 			-- NOTE: the formatting element produced, does not
+ 			-- correspond to the Value POSIX defined, because they are
+ 			-- still not implemented
  		do
  			inspect
  				a_char
@@ -174,18 +180,25 @@ feature -- Parser
  				create {I18N_FORMAT_STRING} Result.make (locale_info.long_time_format+" "+locale_info.long_date_format, locale_info)
  			when modified_time then
  				create {I18N_FORMAT_STRING} Result.make (locale_info.long_time_format,locale_info)
+ 			when modified_date then
+				create {I18N_FORMAT_STRING} Result.make (locale_info.long_date_format, locale_info)
+ 			when modified_year then
+				create {I18N_DATE_ELEMENT} Result.make (agent year_4_action (?))
  			else
  				-- not supported, it may be one of:
-				--		. `modified_base_year_name'
-				--		. `modified_date'
-				--		. `modified_base_year_offset'
-				--		. `modified_year'
-				create {I18N_USERSTRING_ELEMENT} Result.make (escape_character.out+modifier_character_1.out+a_char.out)
+ 				--		. `modified_base_year_name'
+ 				--		. `modified_base_year_offset'
+ 				-- Insert a space
+				create {I18N_USERSTRING_ELEMENT} Result.make (" ")
  			end
  		end
 
  	parse_modified_2 (a_char: CHARACTER): I18N_FORMATTING_ELEMENT is
- 			--
+ 			-- this function is called when the escape character
+ 			-- was followed my the `modifier_character_1' = 'O'
+ 			-- NOTE: the formatting element produced, does not
+ 			-- correspond to the Value POSIX defined, because they are
+ 			-- still not implemented
  		do
  			inspect
  				a_char
@@ -202,19 +215,23 @@ feature -- Parser
 				create {I18N_FORMAT_STRING} Result.make (escape_character.out+minutes.out, locale_info)
  			when modified_seconds then
  				create {I18N_FORMAT_STRING} Result.make (escape_character.out+seconds.out, locale_info)
+ 			when modified_day_of_month_0_padded then
+ 				create {I18N_DATE_ELEMENT} Result.make (agent day_of_month_action (?))
+ 			when modified_day_of_month_space_padded then
+ 				create {I18N_DATE_ELEMENT} Result.make (agent day_of_month_padded_action (?))
+ 			when modified_month then
+				create {I18N_DATE_ELEMENT} Result.make (agent month_action (?))
+			when modified_weekday then
+				create {I18N_DATE_ELEMENT} Result.make (agent day_name_action (?, locale_info))
+			when modified_week_number, modified_week_number_sunday_as_first then
+				create {I18N_DATE_ELEMENT} Result.make (agent week_number_sunday_as_first_action (?))
+			when modified_week_number_monday_as_first_2, modified_week_number_monday_as_first_1 then
+				create {I18N_DATE_ELEMENT} Result.make (agent week_number_sunday_as_first_action (?))
  			else
  				-- not supported, it may be one of:
- 				--		. `modified_day_of_month_0_padded'
- 				--		. `modified_day_of_month_space_padded'
- 				--		. `modified_month'
- 				--		. `modified_weekday'
- 				--		. `modified_week_number'
- 				--		. `modified_week_number_monday_as_first_1'
- 				--		. `modified_week_number_sunday_as_first'
- 				--		. `modified_week_number_monday_as_first_2'
  				--		. `modified_era'
- 				--		. `time_separator'
- 				--		. `hour_separator'
+ 				-- Insert a space
+				create {I18N_USERSTRING_ELEMENT} Result.make (" ")
  			end
  		end
 

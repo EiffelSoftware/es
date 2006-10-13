@@ -2,57 +2,70 @@ class I18N_FORMATTING_UTILITY
 
 feature -- Padd
 
-	padd_with_space_left (a_integer, length: INTEGER): STRING_32 is
-			--
+	padd_with_0_left (a_integer, length: INTEGER_32): STRING_32
+			-- add `0' on the left of `a_integer', so that it has
+			-- a lenght of `length'
 		require
 			valid_length: length > 0
-			a_integer_not_to_large: a_integer < (10^(length+1)-1)
-		local
-			l_string: STRING_32
-		do
-			Result := padd_left (a_integer, length, ' ')
-		end
-	
-	padd_with_space_right (a_integer, length: INTEGER): STRING_32 is
-			--
-		require
-			valid_length: length > 0
-			a_integer_not_to_large: a_integer < (10^(length+1)-1)
-		local
-			l_string: STRING_32
-		do
-			Result := padd_right (a_integer, length, ' ')
-		end
-		
-	padd_with_0_left (a_integer, length: INTEGER): STRING_32 is
-			--
-		require
-			valid_length: length > 0
-			a_integer_not_to_large: a_integer < (10^(length+1)-1)
+			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
 		local
 			l_string: STRING_32
 		do
 			Result := padd_left (a_integer, length, '0')
+		ensure
+			correct_lenght: Result.count = length
 		end
-	
-	padd_with_0_right (a_integer, length: INTEGER): STRING_32 is
-			--
+
+	padd_with_0_right (a_integer, length: INTEGER_32): STRING_32
+			-- add `0' on the right of `a_integer', so that it has
+			-- a lenght of `length'
 		require
 			valid_length: length > 0
-			a_integer_not_to_large: a_integer < (10^(length+1)-1)
+			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
 		local
 			l_string: STRING_32
 		do
 			Result := padd_right (a_integer, length, '0')
+		ensure
+			correct_lenght: Result.count = length
 		end
-		
-feature {NONE} -- Implementation
 
-	padd_left (a_integer, length: INTEGER; padder: CHARACTER): STRING_32 is
-			--
+	padd_with_space_left (a_integer, length: INTEGER_32): STRING_32
+			-- add spaces on the right of `a_integer', so that it has
+			-- a lenght of `length'
 		require
 			valid_length: length > 0
-			a_integer_not_to_large: a_integer < (10^(length+1)-1)
+			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
+		local
+			l_string: STRING_32
+		do
+			Result := padd_left (a_integer, length, ' ')
+		ensure
+			correct_lenght: Result.count = length
+		end
+
+	padd_with_space_right (a_integer, length: INTEGER_32): STRING_32
+			-- add spaces on the left of `a_integer', so that it has
+			-- a lenght of `length'
+		require
+			valid_length: length > 0
+			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
+		local
+			l_string: STRING_32
+		do
+			Result := padd_right (a_integer, length, ' ')
+		ensure
+			correct_lenght: Result.count = length
+		end
+
+feature {NONE} -- Implementation
+
+	padd_left (a_integer, length: INTEGER_32; padder: CHARACTER_8): STRING_32
+			-- Add `padder' to the left of `a_integer' to that the result has
+			-- a lenght of `lenght'
+		require
+			valid_length: length > 0
+			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
 		local
 			l_string: STRING_32
 		do
@@ -61,13 +74,16 @@ feature {NONE} -- Implementation
 				create l_string.make_filled (padder, length - Result.count)
 				Result.prepend (l_string)
 			end
+		ensure
+			correct_lenght: Result.count = length
 		end
-		
-	padd_right (a_integer, length: INTEGER; padder: CHARACTER): STRING_32 is
-			--
+
+	padd_right (a_integer, length: INTEGER_32; padder: CHARACTER_8): STRING_32
+			-- Add `padder' to the right of `a_integer' to that the result has
+			-- a lenght of `lenght'
 		require
 			valid_length: length > 0
-			a_integer_not_to_large: a_integer < (10^(length+1)-1)
+			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
 		local
 			l_string: STRING_32
 		do
@@ -76,6 +92,8 @@ feature {NONE} -- Implementation
 				create l_string.make_filled (padder, length - Result.count)
 				Result.append (l_string)
 			end
+		ensure
+			correct_lenght: Result.count = length
 		end
 
 end

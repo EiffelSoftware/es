@@ -30,9 +30,12 @@ feature -- Initialization
 			-- uses user defined locale
 		local
 			t_culture_info : CULTURE_INFO
+			l_locale_id: I18N_LOCALE_ID
 		do
 			create culture_info.make_from_name (t_culture_info.current_culture.name)
+			create l_locale_id.make_from_string (culture_info.name)
 			Result := fill
+			Result.set_id (l_locale_id)
 		ensure then
 			culture_info_exists: culture_info /= Void
 		end
@@ -43,6 +46,7 @@ feature -- Initialization
 		do
 			create culture_info.make_from_name (a_locale_id.language+"-"+a_locale_id.region)
 			Result := fill
+			Result.set_id (a_locale_id)
 		ensure then
 			culture_info_exists : culture_info /= Void
 		end
@@ -484,7 +488,7 @@ feature {NONE} -- Help fuction
 			end
 		end
 
-feature {NONE} -- Convertion functions
+feature {CALCULATOR} -- Convertion functions
 
 	convert_format_string (s: STRING_32): STRING_32 is
 			-- convert a .NET format string

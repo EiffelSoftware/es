@@ -1,3 +1,8 @@
+indexing
+	description: "Actions used by the various 'formatting' elements"
+	date: "$Date$"
+	revision: "$Revision$"
+
 class I18N_FORMATTING_ACTIONS
 
 inherit SHARED_I18N_FORMATTING_UTILITY
