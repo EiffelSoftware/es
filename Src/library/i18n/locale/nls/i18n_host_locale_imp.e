@@ -42,7 +42,7 @@ class
 				Result := lcid_tools.supported_locales
 			end
 
-		current_locale_id: I18N_LOCALE_ID is
+		default_locale_id: I18N_LOCALE_ID is
 				--
 			do
 				Result := lcid_tools.lcid_to_locale_id (user_locale)
