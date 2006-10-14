@@ -71,7 +71,7 @@ class
 					until
 						temp.after
 					loop
-						locale := chain.get_file_locale (directory.name+
+						locale := chain.get_file_locale (uri+
 														 Operating_environment.directory_separator.out+
 														 temp.item)
 						if locale /= Void then
@@ -79,10 +79,7 @@ class
 							--policy on duplicate locales: ignore the second one.
 
 							--TODO!!!!!!!!!!
-							-- I don't like this, but for mo files, the .mo has
-							-- to be removed!
-					--		file_list.put (temp.item.substring (1, temp.item.count-3), locale)
-						file_list.put(temp.item,locale)
+							file_list.put(uri+Operating_environment.directory_separator.out+temp.item,locale)
 							if  file_list.inserted then
 								locale_list.extend(locale)
 							end

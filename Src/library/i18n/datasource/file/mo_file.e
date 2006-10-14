@@ -108,7 +108,7 @@ feature -- Access
 		do
 			get_translated_entries (i)
 			red := plural_tools.get_reduction_agent (plural_form).item ([1])
-			Result := last_translated.list.i_th(red)
+			Result := last_translated.list.i_th(red+1)
 		end
 
 	translated_plural_strings (i: INTEGER):ARRAY[STRING_32] is
