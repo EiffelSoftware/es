@@ -1879,6 +1879,14 @@ Src/library/i18n/Clib/makefile.b -text
 Src/library/i18n/Clib/makefile.m -text
 Src/library/i18n/TODO -text
 Src/library/i18n/documents/locale_info_features -text
+Src/library/i18n/example_application/logo.png -text
+Src/library/i18n/example_application/mo_files/ar.mo -text
+Src/library/i18n/example_application/mo_files/gr.mo -text
+Src/library/i18n/example_application/mo_files/he.mo -text
+Src/library/i18n/example_application/mo_files/it_IT.mo -text
+Src/library/i18n/example_application/mo_files/ja.mo -text
+Src/library/i18n/example_application/mo_files/ru.mo -text
+Src/library/i18n/example_application/mo_files/zh_CN.mo -text
 Src/library/i18n/forum.txt -text
 Src/library/i18n/test_files/Dictionary/I18N_BINARY_SEARCH_ARRAY_DICTIONARY/with_two_plural_forms_singular_one/data_file -text
 Src/library/i18n/test_files/Dictionary/I18N_BINARY_SEARCH_ARRAY_DICTIONARY/with_two_plural_forms_singular_one/get_data_file -text
