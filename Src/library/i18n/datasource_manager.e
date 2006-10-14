@@ -26,7 +26,7 @@ feature -- Access
 			-- get dictionary datastructure for the locale `a_locale'
 		require
 			a_locale_exists: a_locale /= Void
-			a_locale_present: available_locales.has (a_locale)
+			a_locale_present: has_locale(a_locale)
 		deferred
 		ensure
 			result_exists: Result /= Void

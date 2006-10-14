@@ -31,10 +31,11 @@ feature -- Creation
 		do
 			create language.make_from_string(a_language)
 			create region.make_from_string(a_region)
+			name := a_language+"_"+a_region
 			if a_script /= Void then
 				create script.make_from_string(a_script)
+				name.append("@"+a_script)
 			end
-			name := a_language+"_"+a_region+"@"+a_script
 		ensure
 			language_set: language.is_equal(a_language)
 			region_set: region.is_equal(a_region)
