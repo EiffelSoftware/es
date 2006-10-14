@@ -20,13 +20,8 @@ feature -- Initialization
 	make_from_user_locale: I18N_LOCALE_INFO is
 			-- Creation procedure.
 			-- create locale form the user locale
-		local
-			l_c_string : C_STRING
 		do
-			create l_c_string.make ("")
-			set_locale (l_c_string.item)
-			Result := fill
-			Result.set_id(current_locale_id)
+			Result := make_from_locale (default_locale_id)
 		end
 
 	make_from_locale (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
@@ -83,6 +78,15 @@ feature -- Informations
 			end
 		end
 
+	default_locale_id: I18N_LOCALE_ID is
+			--
+		local
+			l_c_string : C_STRING
+		do
+			create l_c_string.make ("")
+			set_locale (l_c_string.item)
+			Result := current_locale_id
+		end
 
 	current_locale_id : I18N_LOCALE_ID is
 			-- current locale id
@@ -129,7 +133,7 @@ feature -- Informations
 				Result.set_international_currency_decimal_separator (get_int_currency_symbol)
  			end
 
-feature -- Date and time formatting
+feature {NONE} -- Date and time formatting
 
 
 	get_long_date_format: STRING_32 is
@@ -180,7 +184,7 @@ feature -- Date and time formatting
 		end
 
 
-feature -- day/months names
+feature {NONE} -- day/months names
 
 	get_day_names: ARRAY[STRING_32] is
 			-- array with the full weekday names
@@ -282,7 +286,7 @@ feature -- day/months names
 		end
 
 
-feature	-- number formatting
+feature	{NONE} -- number formatting
 
 	get_value_decimal_separator: STRING_32 is
 			-- get the decimal separator of numbers
@@ -311,7 +315,7 @@ feature	-- number formatting
 		end
 
 
-feature	-- currency formatting
+feature	{NONE} -- currency formatting
 
 	get_currency_symbol: STRING_32 is
 			-- get the currency symbol
@@ -387,7 +391,7 @@ feature	-- currency formatting
 			result_exists: Result /= Void
 		end
 
-feature -- International currency formatting
+feature {NONE} -- International currency formatting
 
 	get_int_currency_symbol: STRING_32 is
 			-- ISO 4217 currency code

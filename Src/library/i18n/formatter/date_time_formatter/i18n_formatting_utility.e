@@ -2,7 +2,7 @@ class I18N_FORMATTING_UTILITY
 
 feature -- Padd
 
-	padd_with_0_left (a_integer, length: INTEGER_32): STRING_32
+	pad_with_0_left (a_integer, length: INTEGER_32): STRING_32
 			-- add `0' on the left of `a_integer', so that it has
 			-- a lenght of `length'
 		require
@@ -11,12 +11,12 @@ feature -- Padd
 		local
 			l_string: STRING_32
 		do
-			Result := padd_left (a_integer, length, '0')
+			Result := pad_left (a_integer, length, '0')
 		ensure
 			correct_lenght: Result.count = length
 		end
 
-	padd_with_0_right (a_integer, length: INTEGER_32): STRING_32
+	pad_with_0_right (a_integer, length: INTEGER_32): STRING_32
 			-- add `0' on the right of `a_integer', so that it has
 			-- a lenght of `length'
 		require
@@ -25,12 +25,12 @@ feature -- Padd
 		local
 			l_string: STRING_32
 		do
-			Result := padd_right (a_integer, length, '0')
+			Result := pad_right (a_integer, length, '0')
 		ensure
 			correct_lenght: Result.count = length
 		end
 
-	padd_with_space_left (a_integer, length: INTEGER_32): STRING_32
+	pad_with_space_left (a_integer, length: INTEGER_32): STRING_32
 			-- add spaces on the right of `a_integer', so that it has
 			-- a lenght of `length'
 		require
@@ -39,12 +39,12 @@ feature -- Padd
 		local
 			l_string: STRING_32
 		do
-			Result := padd_left (a_integer, length, ' ')
+			Result := pad_left (a_integer, length, ' ')
 		ensure
 			correct_lenght: Result.count = length
 		end
 
-	padd_with_space_right (a_integer, length: INTEGER_32): STRING_32
+	pad_with_space_right (a_integer, length: INTEGER_32): STRING_32
 			-- add spaces on the left of `a_integer', so that it has
 			-- a lenght of `length'
 		require
@@ -53,14 +53,14 @@ feature -- Padd
 		local
 			l_string: STRING_32
 		do
-			Result := padd_right (a_integer, length, ' ')
+			Result := pad_right (a_integer, length, ' ')
 		ensure
-			correct_lenght: Result.count = length
+			correct_length: Result.count = length
 		end
 
 feature {NONE} -- Implementation
 
-	padd_left (a_integer, length: INTEGER_32; padder: CHARACTER_8): STRING_32
+	pad_left (a_integer, length: INTEGER_32; padder: CHARACTER_8): STRING_32
 			-- Add `padder' to the left of `a_integer' to that the result has
 			-- a lenght of `lenght'
 		require
@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 			correct_lenght: Result.count = length
 		end
 
-	padd_right (a_integer, length: INTEGER_32; padder: CHARACTER_8): STRING_32
+	pad_right (a_integer, length: INTEGER_32; padder: CHARACTER_8): STRING_32
 			-- Add `padder' to the right of `a_integer' to that the result has
 			-- a lenght of `lenght'
 		require
@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 				Result.append (l_string)
 			end
 		ensure
-			correct_lenght: Result.count = length
+			correct_length: Result.count = length
 		end
 
 end

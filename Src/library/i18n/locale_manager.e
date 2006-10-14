@@ -55,34 +55,24 @@ feature -- Access
 
 feature -- Status report
 
-	available_locales : LINEAR[I18N_LOCALE_ID] is
+	available_locales : LIST[I18N_LOCALE_ID] is
 			-- list of available locales
 		local
-			l_list:LINKED_LIST[I18N_LOCALE_ID]
-			l_list2:LINEAR[I18N_LOCALE_ID]
+			temp: LINEAR[I18N_LOCALE_ID]
 		do
-			create l_list.make
-			l_list2 := system_locales.available_locales
+			create {LINKED_LIST[I18N_LOCALE_ID]} Result.make
+			Result.fill(system_locales.available_locales)
+			temp := datasource_manager.available_locales
 			from
-				l_list2.start
+				temp.start
 			until
-				l_list2.after
+				temp.after
 			loop
-				l_list.extend (l_list2.item)
-				l_list2.forth
-			end
-			l_list2 := datasource_manager.available_locales
-			from
-				l_list2.start
-			until
-				l_list2.after
-			loop
-				if l_list.has (l_list2.item) then
-					l_list.extend (l_list2.item)
-					l_list.forth
+				if not Result.has (temp.item) then
+					Result.extend (temp.item)
 				end
+				temp.forth
 			end
-			Result:=l_list
 
 		end
 

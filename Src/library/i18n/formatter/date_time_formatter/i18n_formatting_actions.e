@@ -15,9 +15,9 @@ feature -- Time related actions
 			a_time_exists: a_time /= Void
 		do
 			if a_time.hour > 12 then
-				Result :=  fu.padd_with_0_left (a_time.hour-12, 2)
+				Result :=  fu.pad_with_0_left (a_time.hour-12, 2)
 			else
-				Result :=  fu.padd_with_0_left (a_time.hour, 2)
+				Result :=  fu.pad_with_0_left (a_time.hour, 2)
 			end
 		end
 
@@ -43,7 +43,7 @@ feature -- Time related actions
 		require
 			a_time_exists: a_time /= Void
 		do
-			Result :=  fu.padd_with_0_left (a_time.hour, 2)
+			Result :=  fu.pad_with_0_left (a_time.hour, 2)
 		end
 
 	minutes_action (a_time: TIME): STRING_32 is
@@ -57,7 +57,7 @@ feature -- Time related actions
 		require
 			a_time_exists: a_time /= Void
 		do
-			Result :=  fu.padd_with_0_left (a_time.minute, 2)
+			Result :=  fu.pad_with_0_left (a_time.minute, 2)
 		end
 
 	seconds_action (a_time: TIME): STRING_32 is
@@ -71,7 +71,7 @@ feature -- Time related actions
 		require
 			a_time_exists: a_time /= Void
 		do
-			Result :=  fu.padd_with_0_left (a_time.second, 2)
+			Result :=  fu.pad_with_0_left (a_time.second, 2)
 		end
 
 	am_pm_1_action (a_time: TIME): STRING_32 is
@@ -126,7 +126,7 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.day, 2)
+			Result := fu.pad_with_0_left (a_date.day, 2)
 		end
 
 	abbreviated_day_name_action (a_date: DATE; a_locale_info: I18N_LOCALE_INFO): STRING_32 is
@@ -147,7 +147,7 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left(a_date.year_day,3)
+			Result := fu.pad_with_0_left(a_date.year_day,3)
 		end
 
 	day_of_week_action (a_date: DATE): STRING_32 is
@@ -175,7 +175,7 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left(a_date.month,2)
+			Result := fu.pad_with_0_left(a_date.month,2)
 		end
 
 	abbreviated_month_name_action (a_date: DATE; a_locale_info: I18N_LOCALE_INFO): STRING_32 is
@@ -203,14 +203,14 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.week_of_year+1, 2)
+			Result := fu.pad_with_0_left (a_date.week_of_year+1, 2)
 		end
 
 	week_number_sunday_as_first_action (a_date: DATE): STRING_32 is
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.week_of_year, 2)
+			Result := fu.pad_with_0_left (a_date.week_of_year, 2)
 		end
 
 	week_number_monday_as_first_action (a_date: DATE): STRING_32 is
@@ -218,7 +218,7 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.week_of_year, 2)
+			Result := fu.pad_with_0_left (a_date.week_of_year, 2)
 		end
 
 	iso_year_with_century_action (a_date: DATE): STRING_32 is
@@ -232,21 +232,21 @@ feature -- Date related actions
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.year \\ 100,2)
+			Result := fu.pad_with_0_left (a_date.year \\ 100,2)
 		end
 
 	year_1_action (a_date: DATE): STRING_32 is
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.year \\ 10,1)
+			Result := fu.pad_with_0_left (a_date.year \\ 10,1)
 		end
 
 	year_2_action (a_date: DATE): STRING_32 is
 		require
 			a_date_exists: a_date /= Void
 		do
-			Result := fu.padd_with_0_left (a_date.year \\ 100,2)
+			Result := fu.pad_with_0_left (a_date.year \\ 100,2)
 		end
 
 	year_4_action (a_date: DATE): STRING_32 is

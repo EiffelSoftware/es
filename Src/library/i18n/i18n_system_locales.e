@@ -18,6 +18,13 @@ feature -- Informations
 --			correct_result: Result = host_locale.available_locales
 		end
 
+	default_locale: I18N_LOCALE_ID is
+			-- The locale set as default in the host OS
+		do
+			Result := host_locale.default_locale_id
+		end
+
+
 	has_locale (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
 			-- is the locale with a_locale_id available?
 		do

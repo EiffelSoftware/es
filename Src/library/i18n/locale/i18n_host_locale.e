@@ -40,8 +40,8 @@ feature -- Informations
 			result_exists: Result /= Void
 		end
 
-	current_locale_id: I18N_LOCALE_ID is
-			-- current locale id
+	default_locale_id: I18N_LOCALE_ID is
+			-- default locale id
 		deferred
 		end
 end
