@@ -137,20 +137,21 @@ feature -- Access
 		local
 			file_name: STRING_32
 			ending: STRING_32
-			index:INTEGER
 			possible: STRING_32
+			separator_index: INTEGER
 		do
 			Result := Void
 			-- The only inherent locale identifier in a .mo file is the name.
 			-- Any other way to identify it is project dependant, see FILE_MANAGER for more details
 			file_name := file.name.as_string_32
-			index := file_name.index_of('.',1)
-			ending := file_name.substring (index, file_name.count)
-			possible := file_name.substring(1, index)
+			ending := file_name.twin
+			ending.keep_tail (3)
+			separator_index := file_name.last_index_of (Operating_environment.Directory_separator, file_name.count)
+			possible := file_name.substring(separator_index+1, file_name.count-3)
 
 			if ending.is_equal (".mo") then
 				if possible.count = 2 or
-					possible.count = 6 and (possible.item (3) = '_' or possible.item (3) = '-')
+					possible.count = 5 and (possible.item (3) = '_' or possible.item (3) = '-')
 				then
 					Result := possible
 				end

@@ -20,7 +20,7 @@ class
 					-- extend later, maybe, to check the magic number.
 				do
 					-- Check file  name
-					if a_path.substring (a_path.count-3, a_path.count).is_equal (".mo") then
+					if a_path.substring (a_path.count-2, a_path.count).is_equal (".mo") then
 						Result := True
 					end
 				end

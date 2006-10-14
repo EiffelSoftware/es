@@ -11,7 +11,7 @@ class
 		redefine
 			make
 		end
-		
+
 	create
 		make
 
@@ -71,11 +71,17 @@ class
 					until
 						temp.after
 					loop
-						locale := chain.get_file_locale (temp.item)
+						locale := chain.get_file_locale (directory.name+
+														 Operating_environment.directory_separator.out+
+														 temp.item)
 						if locale /= Void then
 							--have we already encountered this locale?
 							--policy on duplicate locales: ignore the second one.
-							file_list.put (temp.item, locale)
+
+							--TODO!!!!!!!!!!
+							-- I don't like this, but for mo files, the .mo has
+							-- to be removed!
+							file_list.put (temp.item.substring (1, temp.item.count-3), locale)
 							if  file_list.inserted then
 								locale_list.extend(locale)
 							end

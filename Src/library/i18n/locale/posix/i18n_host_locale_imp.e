@@ -96,8 +96,21 @@ feature -- Informations
 
 	locale_name : STRING_32 is
 			-- name of current locale
+		local
+			dot_index,
+			at_index: INTEGER
 		do
 			create Result.make_from_c (c_locale_name)
+			-- remove codeset from name
+			dot_index := Result.index_of ('.', 1)
+			at_index := Result.index_of ('@', 1)
+			if dot_index > 0 then
+					-- there is a codeset but not a skript
+				Result.remove_substring (dot_index, Result.count)
+			elseif dot_index > 0 and at_index > 0 then
+
+				Result.remove_substring (dot_index, at_index)
+			end
 		end
 
  feature {NONE} -- fill

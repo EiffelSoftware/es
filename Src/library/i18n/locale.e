@@ -63,7 +63,7 @@ feature -- Basic Operations
 		end
 
 
-	format_string (original: STRING_GENERAL; token_values: TUPLE[STRING_GENERAL]): STRING_32 is
+	format_string (original: STRING_GENERAL; token_values: TUPLE[ANY]): STRING_32 is
 			-- replace tokens in the result of
 			-- translate_plural (original)
 		require
