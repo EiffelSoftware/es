@@ -37,7 +37,7 @@ class
 			require
 				time_not_void: time /= Void
 			do
-				Result := long_date_format.filled (create {DATE}.make_now, time)
+				Result := long_time_format.filled (create {DATE}.make_now, time)
 			end
 
 		format_date_time(date_time:DATE_TIME):STRING_32 is

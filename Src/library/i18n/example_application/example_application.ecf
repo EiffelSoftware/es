@@ -8,6 +8,7 @@
 		<precompile name="vision2_pre" location="$ISE_PRECOMP\vision2.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf" readonly="false"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="root_cluster" location=".\" recursive="true">
 			<file_rule>

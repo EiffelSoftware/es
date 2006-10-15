@@ -36,7 +36,26 @@ feature -- text
 		do
 			Result := locale.translate("Simple label")
 		end
+	time: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Time: $1")
+			Result := locale.format_string (Result, [locale.date_formatter.format_time (create {TIME}.make_now)])
+		end
 
+	date: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Date: $1")
+			Result := locale.format_string (Result, [locale.date_formatter.format_date (create {DATE}.make_now)])
+		end
+
+	date_time: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Full date-time: $1")
+			Result := locale.format_string (Result, [locale.date_formatter.format_date_time (create {DATE_TIME}.make_now)])
+		end
 
 	now_equal (n: INTEGER): STRING_32 is
 		do

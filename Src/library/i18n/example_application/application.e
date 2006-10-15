@@ -141,6 +141,14 @@ feature -- Create window elements
 			vertical_box.extend (simple_label)
 			vertical_box.extend (simple_comp_label)
 			vertical_box.extend (plural_comp_label)
+
+			create date_label
+			create time_label
+			create date_time_label
+			update_date_time_labels
+			vertical_box.extend (date_label)
+			vertical_box.extend (time_label)
+			vertical_box.extend (date_time_label)
 		end
 
 	update_labels is
@@ -152,6 +160,15 @@ feature -- Create window elements
 			plural_comp_label.set_text (names.there_are_n_files (n))
 			first_window.refresh_now
 		end
+
+	update_date_time_labels is
+			--
+		do
+			date_label.set_text (names.date)
+			time_label.set_text (names.time)
+			date_time_label.set_text (names.date_time)
+		end
+
 
 	increment is
 			--
@@ -170,14 +187,11 @@ feature -- Create window elements
 	update_language (a_lang: STRING) is
 			-- Reload strings in a new language
 		do
---			names.i18n_set_language (a_lang)
---			names.i18n_use_mo_file
---			names.i18n_use_binary_search
---			names.i18n_load
 			names.set_locale (a_lang)
 			first_window.set_title (names.application)
 			update_menu_bar
 			update_labels
+			update_date_time_labels
 		end
 
 	update_menu (a_menu: EV_MENU_ITEM) is
@@ -229,7 +243,10 @@ feature {NONE} -- Implementation
 	label,
 	simple_label,
 	simple_comp_label,
-	plural_comp_label  : EV_LABEL
+	plural_comp_label,
+	date_label,
+	time_label,
+	date_time_label  : EV_LABEL
 
 --	formatter: I18N_TEMPLATE_FORMATTER is
 --		once
