@@ -22,6 +22,7 @@ feature -- Initialization
 		local
 			t_culture_info : CULTURE_INFO
 		do
+			create t_culture_info.make_from_name ("en-US")
 			create culture_info.make_from_name (t_culture_info.current_culture.name)
 		end
 
@@ -458,6 +459,15 @@ feature -- General Information
 			-- name of current locale
 		do
 			Result := culture_info.name
+		end
+
+	default_locale_id: I18N_LOCALE_ID is
+			-- default locale id
+		local
+			t_culture_info : CULTURE_INFO
+		do
+			create t_culture_info.make_from_name ("en-US")
+			create Result.make_from_string (t_culture_info.current_culture.name)
 		end
 
 feature {NONE} -- Implementation

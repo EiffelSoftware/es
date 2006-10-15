@@ -153,7 +153,7 @@ feature --Tests
 			create date.make_now
 			create ll.make (a_format_string,locale)
 			io.put_string ("    Original string: "+a_format_string+"%N")
-			io.put_string ("    formatted string: "+ll.filled (date,time,locale)+"%N")
+			io.put_string ("    formatted string: "+ll.filled (date,time)+"%N")
 		end
 
 
