@@ -31,8 +31,8 @@ feature -- Utility
 				create Result.make_from_string (currency_symbol+" "+
 												  currency_value_formatter.format_real_64 (a_value))
 			elseif currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_appended then
-				create Result.make_from_string (currency_value_formatter.format_real_64 (a_value)+
-												  a_value.out+" "+currency_symbol)
+				create Result.make_from_string (currency_value_formatter.format_real_64 (a_value)
+												+" "+currency_symbol)
 			elseif currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_radix then
 				create Result.make_from_string (currency_value_formatter.format_real_64 (a_value))
 			else

@@ -156,7 +156,8 @@ feature -- Parser
 						--		. `era'
 						--		. `time_zone_offset'
 						--		. `time_zone_name'
--- 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (escape_character.out + t_char.out)
+		 				-- Insert a space
+						create {I18N_USERSTRING_ELEMENT} l_format_code.make (" ")
 						i := next_escape_char + 1
 					end
 					i := next_escape_char + 2

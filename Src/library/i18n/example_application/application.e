@@ -93,28 +93,28 @@ feature -- Create window elements
 
 			create arabic.make_with_text (names.arabic)
 			arabic.set_data (agent names.arabic)
-			arabic.select_actions.extend (agent update_language ("ar"))
+			arabic.select_actions.extend (agent update_language ("ar_SA"))
 			create chinese.make_with_text (names.chinese)
 			chinese.set_data (agent names.chinese)
 			chinese.select_actions.extend (agent update_language ("zh_CN"))
 			create english.make_with_text (names.english)
 			english.set_data (agent names.english)
-			english.select_actions.extend (agent update_language ("en"))
+			english.select_actions.extend (agent update_language ("en_GB"))
 			create greek.make_with_text (names.greek)
 			greek.set_data (agent names.greek)
-			greek.select_actions.extend (agent update_language ("gr"))
+			greek.select_actions.extend (agent update_language ("el_GR"))
 			create hebrew.make_with_text (names.hebrew)
 			hebrew.set_data (agent names.hebrew)
-			hebrew.select_actions.extend (agent update_language ("he"))
+			hebrew.select_actions.extend (agent update_language ("he_IL"))
 			create italian.make_with_text (names.italian)
 			italian.set_data (agent names.italian)
-			italian.select_actions.extend (agent update_language ("it"))
+			italian.select_actions.extend (agent update_language ("it_IT"))
 			create japanese.make_with_text (names.japanese)
 			japanese.set_data (agent names.japanese)
-			japanese.select_actions.extend (agent update_language ("ja"))
+			japanese.select_actions.extend (agent update_language ("ja_JP"))
 			create russian.make_with_text (names.russian)
 			russian.set_data (agent names.russian)
-			russian.select_actions.extend (agent update_language ("ru"))
+			russian.select_actions.extend (agent update_language ("ru_RU"))
 
 			language_selection.extend (arabic)
 			language_selection.extend (chinese)
@@ -174,6 +174,7 @@ feature -- Create window elements
 --			names.i18n_use_mo_file
 --			names.i18n_use_binary_search
 --			names.i18n_load
+			names.set_locale (a_lang)
 			first_window.set_title (names.application)
 			update_menu_bar
 			update_labels

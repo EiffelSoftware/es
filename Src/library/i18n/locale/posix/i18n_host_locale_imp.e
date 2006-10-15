@@ -35,7 +35,8 @@ feature -- Initialization
 			Result := fill
 			Result.set_id(a_locale_id)
 		ensure then
-			locale_set: locale_name.is_equal(a_locale_id.name)
+			locale_set: locale_name.is_equal(a_locale_id.name) or
+						locale_name.is_equal ("C") and a_locale_id.name.is_equal ("POSIX")
 		end
 
 
@@ -391,13 +392,13 @@ feature	{NONE} -- currency formatting
 			-- get the decimal separator of numbers
 			-- according the current locales setting
 		do
-			create Result.make_from_c(mon_decimal_point (localeconv))
+			create Result.make_from_c(mon_thousands_sep (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
 
 	get_currency_grouping: ARRAY[INTEGER] is
-			-- ?
+			-- get grouping rules for currency values
 		do
 			Result := pointer_to_array (mon_grouping (localeconv))
 		ensure
