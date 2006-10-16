@@ -19,6 +19,8 @@ feature -- Initialization
 			set_value_group_separator (default_value_group_separator)
 			set_value_number_list_separator (default_value_number_list_separator)
 			set_value_grouping (default_value_grouping)
+			set_value_positive_sign (default_positive_sign)
+			set_value_negative_sign (default_negative_sign)
 		end
 
 
@@ -28,6 +30,8 @@ feature	-- number formatting
 	value_numbers_after_decimal_separator: INTEGER
 	value_group_separator: STRING_32
 	value_number_list_separator: STRING_32
+	value_positive_sign: STRING_32
+	value_negative_sign: STRING_32
 	value_grouping: ARRAY[INTEGER]
 
 feature -- Default values
@@ -48,6 +52,18 @@ feature -- Default values
 		once
 			Result := ";"
 		end
+
+	default_positive_sign: STRING_32 is
+		once
+			Result := ""
+		end
+
+	default_negative_sign: STRING_32 is
+			--
+		once
+			Result := "-"
+		end
+
 
 	default_value_grouping: ARRAY[INTEGER] is
 		once
@@ -95,6 +111,27 @@ feature -- Element change
 		ensure
 			value_number_list_separator_set: value_number_list_separator.is_equal(separator.as_string_32)
 		end
+
+	set_value_positive_sign (a_string: STRING_GENERAL) is
+			--
+		require
+			argument_not_void: a_string /= Void
+		do
+			value_positive_sign := a_string
+		ensure
+			value_positive_sign_set: value_positive_sign.is_equal (a_string)
+		end
+
+	set_value_negative_sign (a_string: STRING_GENERAL) is
+			--
+		require
+			argument_not_void: a_string /= Void
+		do
+			value_negative_sign := a_string
+		ensure
+			value_negative_sign_set: value_negative_sign.is_equal (a_string)
+		end
+
 
 	set_value_grouping (a_array: ARRAY[INTEGER]) is
 			-- set the grouping rules

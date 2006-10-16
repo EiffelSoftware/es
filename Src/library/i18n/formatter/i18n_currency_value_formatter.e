@@ -28,6 +28,8 @@ feature -- Initialization
 					-- separator character for thousands (groups of three digits)
  			grouping := a_locale_info.currency_grouping
 					-- how the value are grouped
+			positive_sign := a_locale_info.currency_positive_sign
+			negative_sign := a_locale_info.currency_negative_sign
 		end
 
 end -- I18N_CURRENCY_VALUE_FORMATTER

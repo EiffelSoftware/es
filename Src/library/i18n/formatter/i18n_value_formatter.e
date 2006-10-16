@@ -20,46 +20,52 @@ feature -- Initialization
 			numbers_after_decimal_separator := a_locale_info.value_numbers_after_decimal_separator
 			group_separator := a_locale_info.value_group_separator
 			grouping := a_locale_info.value_grouping
+			positive_sign := a_locale_info.value_positive_sign
+			negative_sign := a_locale_info.value_negative_sign
 		end
 
 feature -- Integer Formatting functions
 
 	format_integer_8 (a_integer_8: INTEGER_8): STRING_32 is
-		local
 		do
-			create Result.make_from_string (format_integer_part (a_integer_8.out) +
-											decimal_separator +
-											format_real_part ((10^numbers_after_decimal_separator).out))
+			if a_integer_8 < 0 then
+				create Result.make_from_string (negative_sign+format_integer_part (a_integer_8.abs.out))
+			else
+				create Result.make_from_string (positive_sign+format_integer_part (a_integer_8.abs.out))
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
 
 	format_integer_16 (a_integer_16: INTEGER_16): STRING_32 is
-		local
 		do
-			create Result.make_from_string (format_integer_part (a_integer_16.out) +
-											decimal_separator +
-											format_real_part ((10^numbers_after_decimal_separator).out))
+			if a_integer_16 < 0 then
+				create Result.make_from_string (negative_sign+format_integer_part (a_integer_16.abs.out))
+			else
+				create Result.make_from_string (positive_sign+format_integer_part (a_integer_16.abs.out))
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
 
 	format_integer_32 (a_integer_32: INTEGER_32): STRING_32 is
-		local
 		do
-			create Result.make_from_string (format_integer_part (a_integer_32.out) +
-											decimal_separator +
-											format_real_part ((10^numbers_after_decimal_separator).out))
+			if a_integer_32 < 0 then
+				create Result.make_from_string (negative_sign+format_integer_part (a_integer_32.abs.out))
+			else
+				create Result.make_from_string (positive_sign+format_integer_part (a_integer_32.abs.out))
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
 
 	format_integer_64 (a_integer_64: INTEGER_64): STRING_32 is
-		local
 		do
-			create Result.make_from_string (format_integer_part (a_integer_64.out) +
-											decimal_separator +
-											format_real_part ((10^numbers_after_decimal_separator).out))
+			if a_integer_64 < 0 then
+				create Result.make_from_string (negative_sign+format_integer_part (a_integer_64.abs.out))
+			else
+				create Result.make_from_string (positive_sign+format_integer_part (a_integer_64.abs.out))
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -68,28 +74,42 @@ feature -- Real formatting functions
 
 	format_real_32 (a_real_32: REAL_32): STRING_32 is
 		local
+			sign: STRING_32
 			integer_part,
 			fractional_part: INTEGER
 		do
+			if a_real_32.sign < 0 then
+				sign := negative_sign
+			else
+				sign := positive_sign
+			end
 			integer_part := a_real_32.truncated_to_integer
 			fractional_part := ((a_real_32 - integer_part)*10^numbers_after_decimal_separator).rounded
-			create Result.make_from_string (format_integer_part (integer_part.out) +
+			create Result.make_from_string (sign +
+											format_integer_part (integer_part.abs.out) +
 											decimal_separator +
-											format_real_part (fractional_part.out))
+											format_real_part (fractional_part.abs.out))
 		ensure
 			Result_exists: Result /= Void
 		end
 
 	format_real_64 (a_real_64: REAL_64): STRING_32 is
 		local
+			sign: STRING_32
 			integer_part,
 			fractional_part: INTEGER
 		do
+			if a_real_64.sign < 0 then
+				sign := negative_sign
+			else
+				sign := positive_sign
+			end
 			integer_part := a_real_64.truncated_to_integer
 			fractional_part := ((a_real_64 - integer_part)*10^numbers_after_decimal_separator).rounded
-			create Result.make_from_string (format_integer_part (integer_part.out) +
+			create Result.make_from_string (sign +
+											format_integer_part (integer_part.abs.out) +
 											decimal_separator +
-											format_real_part (fractional_part.out))
+											format_real_part (fractional_part.abs.out))
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -104,6 +124,9 @@ feature {NONE} -- Informations
 	group_separator: STRING_32
 			-- separator character for thousands
 			--(groups of three digits)
+
+	positive_sign: STRING_32
+	negative_sign: STRING_32
 
 	grouping: ARRAY[INTEGER]
 			-- how the value are grouped
@@ -177,8 +200,12 @@ feature {NONE} -- Implementation
 			a_string_exists: a_string /= Void
 			is_integer: a_string.is_integer
 		do
-			create Result.make_empty
-			Result := a_string.substring (1,numbers_after_decimal_separator)
+
+			if a_string.is_equal ("0") then
+				create Result.make_filled ('0',numbers_after_decimal_separator)
+			else
+				create Result.make_from_string (a_string.substring (1,numbers_after_decimal_separator))
+			end
 		ensure
 			Result_exists: Result /= Void
 		end

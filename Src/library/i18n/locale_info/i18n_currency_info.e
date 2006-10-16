@@ -21,6 +21,8 @@ feature -- Initialization
 			set_currency_numbers_after_decimal_separator (default_currency_numbers_after_decimal_separator)
 			set_currency_group_separator (default_currency_group_separator)
 			set_currency_number_list_separator (default_currency_number_list_separator)
+			set_currency_positive_sign (default_currency_positive_sign)
+			set_currency_negative_sign (default_currency_negative_sign)
 			set_currency_grouping (default_currency_grouping)
 
 			set_international_currency_symbol (default_currency_symbol)
@@ -45,6 +47,8 @@ feature	-- Normal currency Informations
 	currency_numbers_after_decimal_separator: INTEGER
 	currency_group_separator: STRING_32
 	currency_number_list_separator: STRING_32
+	currency_positive_sign: STRING_32
+	currency_negative_sign: STRING_32
 	currency_grouping: ARRAY[INTEGER]
 
 
@@ -92,6 +96,18 @@ feature -- Default values
 		once
 			Result := ";"
 		end
+
+	default_currency_positive_sign: STRING_32 is
+		once
+			Result := ""
+		end
+
+
+	default_currency_negative_sign: STRING_32 is
+		once
+			Result := "-"
+		end
+
 
 	default_currency_grouping: ARRAY[INTEGER] is
 		once
@@ -158,6 +174,26 @@ feature -- Normal Element change
 			currency_number_list_separator := separator.to_string_32
 		ensure
 			currency_number_list_separator_set: currency_number_list_separator.is_equal(separator.as_string_32)
+		end
+
+	set_currency_positive_sign (a_string: STRING_GENERAL) is
+			--
+		require
+			argument_not_void: a_string/= Void
+		do
+			currency_positive_sign :=	a_string.to_string_32
+		ensure
+			currency_positive_sign_set: currency_positive_sign.is_equal (a_string.as_string_32)
+		end
+
+	set_currency_negative_sign (a_string: STRING_GENERAL) is
+			--
+		require
+			argument_not_void: a_string/= Void
+		do
+			currency_negative_sign :=	a_string.to_string_32
+		ensure
+			currency_negative_sign_set: currency_negative_sign.is_equal (a_string.as_string_32)
 		end
 
 	set_currency_grouping (a_array: ARRAY[INTEGER]) is

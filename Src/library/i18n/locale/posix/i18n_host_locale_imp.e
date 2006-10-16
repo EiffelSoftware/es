@@ -141,6 +141,8 @@ feature -- Informations
  				Result.set_currency_decimal_separator (get_currency_decimal_separator)
  				Result.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
  				Result.set_currency_group_separator (get_currency_group_separator)
+ 				Result.set_currency_positive_sign (get_currency_positive_sign)
+ 				Result.set_currency_negative_sign (get_currency_negative_sign)
  				Result.set_currency_grouping (get_currency_grouping)
 				-- set international currency formatting
 				Result.set_international_currency_symbol (get_int_currency_symbol)
@@ -393,6 +395,22 @@ feature	{NONE} -- currency formatting
 			-- according the current locales setting
 		do
 			create Result.make_from_c(mon_thousands_sep (localeconv))
+		ensure
+			result_exists: Result /= Void
+		end
+
+	get_currency_positive_sign: STRING_32 is
+			-- positive sign according the current locales setting
+		do
+			create Result.make_from_c (positive_sign (localeconv))
+		ensure
+			result_exists: Result /= Void
+		end
+
+	get_currency_negative_sign: STRING_32 is
+			-- positive sign according the current locales setting
+		do
+			create Result.make_from_c (negative_sign (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
