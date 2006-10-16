@@ -169,6 +169,7 @@ feature {NONE} -- Date and time formatting
 		do
 			Result := utf8_pointer_to_string (get_locale_info (T_fmt))
 			Result.replace_substring_all ("%%","&")
+		--	io.put_string(Result)
 		ensure
 			result_exists: Result /= Void
 		end
@@ -474,21 +475,29 @@ feature {NONE} --Implementation
 			end
 		end
 
-		c_wcslen(ptr:POINTER):INTEGER is
+
+		c_strlen(ptr:POINTER):INTEGER is
 				--
 		external
-			"C (void *): EIF_INTEGER| %"wchar.h%""
+			"C (void *): EIF_INTEGER| %"string.h%""
 		alias
-			"wcslen"
+			"strlen"
 		end
+
 
 		utf8_pointer_to_string(ptr:POINTER):STRING_32 is
 				--
 			local
 				managed: MANAGED_POINTER
 			do
-				create managed.share_from_pointer (ptr, c_wcslen (ptr))
-				create Result.make_from_string (utf8_rw.array_natural_8_to_string_32 (managed.read_array (0, managed.count)))
+				create managed.make_from_pointer (ptr,c_strlen(ptr))
+				if managed.count > 0 then
+					create Result.make_from_string (
+						utf8_rw.array_natural_8_to_string_32 (managed.read_array (0, managed.count)))
+				-- FIXME: eventually this should go!
+				else
+					Result := "Null pointer returned by nl_locale"
+				end
 			end
 
 
