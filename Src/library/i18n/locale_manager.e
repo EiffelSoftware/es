@@ -20,7 +20,7 @@ feature -- Initialization
 			a_uri_exists: a_uri /= Void
 		do
 			datasource_manager := Parser.parse_uri (a_uri)
-			create system_locales
+			create {I18N_HOST_LOCALE_IMP} host_locale
 		end
 
 feature -- Access
@@ -39,7 +39,7 @@ feature -- Access
 				create {I18N_DUMMY_DICTIONARY}	l_dictionary
 			end
 			if has_formatting_info (a_locale_id) then
-				l_locale_info := system_locales.get_locale_info (a_locale_id)
+				l_locale_info := host_locale.make_from_locale (a_locale_id)
 			else
 				create l_locale_info.make -- will have default values	
 			end
@@ -49,7 +49,7 @@ feature -- Access
 	get_system_locale : I18N_LOCALE is
 			--
 		do
-			Result := get_locale(system_locales.get_user_locale_info.id)
+			Result := get_locale(host_locale.default_locale_id)
 		end
 
 
@@ -61,7 +61,7 @@ feature -- Status report
 			temp: LINEAR[I18N_LOCALE_ID]
 		do
 			create {LINKED_LIST[I18N_LOCALE_ID]} Result.make
-			Result.fill(system_locales.available_locales)
+			Result.fill(host_locale.available_locales)
 			temp := datasource_manager.available_locales
 			from
 				temp.start
@@ -85,7 +85,7 @@ feature -- Status report
 	has_formatting_info (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			--
 		do
-			Result:=system_locales.has_locale (a_locale_id)
+			Result:= host_locale.is_available (a_locale_id)
 		end
 
 	has_locale (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
@@ -93,12 +93,12 @@ feature -- Status report
 		local
 			generic_script: I18N_LOCALE_ID
 		do
-			Result := system_locales.has_locale(a_locale_id) or datasource_manager.has_locale (a_locale_id)
+			Result := host_locale.is_available(a_locale_id) or datasource_manager.has_locale (a_locale_id)
 		end
 
 feature -- Implementation
 
 	datasource_manager: I18N_DATASOURCE_MANAGER
-	system_locales:I18N_SYSTEM_LOCALES
+	host_locale: I18N_HOST_LOCALE
 
 end
