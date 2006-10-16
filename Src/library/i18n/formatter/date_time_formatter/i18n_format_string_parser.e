@@ -1,3 +1,11 @@
+indexing
+	description: "[
+		Object that allows parsing formatting strings,
+		as defined in the POSIX standard
+		]"
+	date: "$Date$"
+	revision: "$Revision$"
+
 class I18N_FORMAT_STRING_PARSER
 
 inherit
@@ -23,15 +31,15 @@ feature -- Parser
 	locale_info: I18N_LOCALE_INFO
 
 
-	parse (a_string: STRING_32): LINKED_LIST[I18N_FORMATTING_ELEMENT] is
+	parse (a_string: STRING_32): LINKED_LIST [I18N_FORMATTING_ELEMENT]
 			-- parse `a_string', for every format character, create
 			-- appropriate formatting_element and put it in the list
 			-- returned as result
 		local
-			i : INTEGER
-			next_escape_char: INTEGER
+			i: INTEGER_32
+			next_escape_char: INTEGER_32
 			l_format_code: I18N_FORMATTING_ELEMENT
-			t_char: CHARACTER
+			t_char: CHARACTER_8
 		do
 			create Result.make
 			from
@@ -39,124 +47,123 @@ feature -- Parser
 			until
 				i > a_string.count
 			loop
-				next_escape_char := a_string.index_of (escape_character,i)
+				next_escape_char := a_string.index_of (Escape_character, i)
 				if next_escape_char = 0 or next_escape_char = a_string.count then
-					-- no more escape_character's
 					create {I18N_USERSTRING_ELEMENT} l_format_code.make (a_string.substring (i, a_string.count))
-					i := a_string.count +1
+					i := a_string.count + 1
 					Result.extend (l_format_code.twin)
 				else
-					if (next_escape_char-i) > 0 then
-						-- there was a user string inbetween
-						create {I18N_USERSTRING_ELEMENT} l_format_code.make (a_string.substring (i,next_escape_char-1))
+					if (next_escape_char - i) > 0 then
+						create {I18N_USERSTRING_ELEMENT} l_format_code.make (a_string.substring (i, next_escape_char - 1))
 						Result.extend (l_format_code.twin)
 					end
-					t_char := a_string.item (next_escape_char+1).to_character_8
-					inspect
-						t_char
-					when day_of_month then
+					t_char := a_string.item (next_escape_char + 1).to_character_8
+					inspect t_char
+					when Day_of_month then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent day_of_month_action)
-					when day_of_month_padded then
+					when Day_of_month_padded then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent day_of_month_padded_action)
-					when abbreviated_day_name then
+					when Abbreviated_day_name then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent abbreviated_day_name_action (?, locale_info))
-					when day_name then
+					when Day_name then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent day_name_action (?, locale_info))
-					when day_of_year then
+					when Day_of_year then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent day_of_year_action)
-					when day_of_week then
+					when Day_of_week then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent day_of_week_action)
-					when day_of_week_0 then
+					when Day_of_week_0 then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent day_of_week_0_action)
-					when month then
+					when Month then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent month_action)
-					when month_padded then
+					when Month_padded then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent month_padded_action)
-					when abbreviated_month_name1, abbreviated_month_name2 then
+					when Abbreviated_month_name1, Abbreviated_month_name2 then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent abbreviated_month_name_action (?, locale_info))
-					when month_name then
+					when Month_name then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent month_name_action (?, locale_info))
-					when century_number then
+					when Century_number then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent century_number_action)
-					when iso_year_with_century then
+					when Iso_year_with_century then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent iso_year_with_century_action)
-					when iso_year_without_century then
+					when Iso_year_without_century then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent iso_year_without_century_action)
-					when week_number_iso then
+					when Week_number_iso then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent week_number_iso_action)
-					when week_number_sunday_as_first then
+					when Week_number_sunday_as_first then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent week_number_sunday_as_first_action)
-					when week_number_monday_as_first then
+					when Week_number_monday_as_first then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent week_number_monday_as_first_action)
-					when year_1 then
+					when Year_1 then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent year_1_action)
-					when year_2 then
+					when Year_2 then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent year_2_action)
-					when year_4 then
+					when Year_4 then
 						create {I18N_DATE_ELEMENT} l_format_code.make (agent year_4_action)
-					when hour_12_padded then
+					when Hour_12_padded then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent hour_12_padded_action)
-					when hour_12 then
+					when Hour_12 then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent hour_12_action)
-					when hour_24 then
+					when Hour_24 then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent hour_24_action)
-					when hour_24_padded then
+					when Hour_24_padded then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent hour_24_action)
-					when minutes then
+					when Minutes then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent minutes_action)
-					when minutes_padded then
+					when Minutes_padded then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent minutes_padded_action)
-					when seconds then
+					when Seconds then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent seconds_action)
-					when seconds_padded then
+					when Seconds_padded then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent seconds_padded_action)
-					when am_pm_1 then
+					when Am_pm_1 then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent am_pm_1_action)
-					when am_pm_lowercase then
+					when Am_pm_lowercase then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent am_pm_lowercase_action (?, locale_info))
-					when am_pm_uppercase then
+					when Am_pm_uppercase then
 						create {I18N_TIME_ELEMENT} l_format_code.make (agent am_pm_uppercase_action (?, locale_info))
-					when local_date_time then
+					when Time_separator then
+						create {I18N_USERSTRING_ELEMENT} l_format_code.make (locale_info.time_separator)
+					when Date_separator then
+						create {I18N_USERSTRING_ELEMENT} l_format_code.make (locale_info.date_separator)
+					when Local_date_time then
 						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.date_time_format, locale_info)
-					when usa_date then
-						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+month_padded.out+"/"+
-																		escape_character.out+day_of_month_padded.out+"/"+
-																		escape_character.out+year_2.out, locale_info)
-					when iso_date then
-						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+year_4.out+"-"+
-																		escape_character.out+month_padded.out+"-"+
-																		escape_character.out+day_of_month_padded.out, locale_info)
-					when am_pm_time then
-						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+hour_12.out+":"+
-																		escape_character.out+minutes_padded.out+":"+
-																		escape_character.out+seconds.out+" "+
-																		escape_character.out+am_pm_lowercase.out, locale_info)
-					when short_time_24h then
-						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+hour_24_padded.out+":"+
-																		escape_character.out+minutes_padded.out, locale_info)
-					when time_24h then
-						create {I18N_FORMAT_STRING} l_format_code.make (escape_character.out+hour_24_padded.out+":"+
-																		escape_character.out+minutes_padded.out+":"+
-																		escape_character.out+seconds.out, locale_info)
-					when local_date then
+					when Usa_date then
+						create {I18N_FORMAT_STRING} l_format_code.make (Escape_character.out + Month_padded.out + "/" +
+																		Escape_character.out + Day_of_month_padded.out + "/" +
+																		Escape_character.out + Year_2.out, locale_info)
+					when Iso_date then
+						create {I18N_FORMAT_STRING} l_format_code.make (Escape_character.out + Year_4.out + "-" +
+																		Escape_character.out + Month_padded.out + "-" +
+																		Escape_character.out + Day_of_month_padded.out, locale_info)
+					when Am_pm_time then
+						create {I18N_FORMAT_STRING} l_format_code.make (Escape_character.out + Hour_12.out + ":" +
+																		Escape_character.out + Minutes_padded.out + ":" +
+																		Escape_character.out + Seconds.out + " " +
+																		Escape_character.out + Am_pm_lowercase.out, locale_info)
+					when Short_time_24h then
+						create {I18N_FORMAT_STRING} l_format_code.make (Escape_character.out + Hour_24_padded.out + ":" +
+																		Escape_character.out + Minutes_padded.out, locale_info)
+					when Time_24h then
+						create {I18N_FORMAT_STRING} l_format_code.make (Escape_character.out + Hour_24_padded.out + ":" +
+																		Escape_character.out + Minutes_padded.out + ":" +
+																		Escape_character.out + seconds.out, locale_info)
+					when Local_date then
 						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.long_date_format, locale_info)
-					when locale_time then
+					when Locale_time then
 						create {I18N_FORMAT_STRING} l_format_code.make (locale_info.long_time_format, locale_info)
-					when escape_character then
-						-- `t_char' was not an escape character
-						create {I18N_USERSTRING_ELEMENT} l_format_code.make (escape_character.out)
-					when modifier_character_1 then
- 						l_format_code := parse_modified_1 (t_char)
+					when Escape_character then
+						create {I18N_USERSTRING_ELEMENT} l_format_code.make (Escape_character.out)
+					when Tab then
+						create {I18N_USERSTRING_ELEMENT} l_format_code.make ("%T")
+					when New_line then
+						create {I18N_USERSTRING_ELEMENT} l_format_code.make ("%N")
+					when Modifier_character_1 then
+						l_format_code := parse_modified_1 (t_char)
 						i := next_escape_char + 2
-					when modifier_character_2 then
- 						l_format_code := parse_modified_2 (t_char)
+					when Modifier_character_2 then
+						l_format_code := parse_modified_2 (t_char)
 						i := next_escape_char + 2
 					else
-						-- It isn't a supported character code, may bee one of the following:
-						--		. `era'
-						--		. `time_zone_offset'
-						--		. `time_zone_name'
-		 				-- Insert a space
 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (" ")
 						i := next_escape_char + 1
 					end
@@ -204,18 +211,18 @@ feature -- Parser
  			inspect
  				a_char
  			when modified_time_24h then
- 				create {I18N_FORMAT_STRING} Result.make (escape_character.out+hour_24_padded.out+":"+
-																escape_character.out+minutes_padded.out+":"+
-																escape_character.out+seconds.out, locale_info)
+ 				create {I18N_FORMAT_STRING} Result.make (Escape_character.out+hour_24_padded.out+":"+
+																Escape_character.out+minutes_padded.out+":"+
+																Escape_character.out+seconds.out, locale_info)
  			when modified_time_12h then
-				create {I18N_FORMAT_STRING} Result.make (escape_character.out+hour_12.out+":"+
-																escape_character.out+minutes_padded.out+":"+
-																escape_character.out+seconds.out+" "+
-																escape_character.out+am_pm_lowercase.out, locale_info)
+				create {I18N_FORMAT_STRING} Result.make (Escape_character.out+hour_12.out+":"+
+																Escape_character.out+minutes_padded.out+":"+
+																Escape_character.out+seconds.out+" "+
+																Escape_character.out+am_pm_lowercase.out, locale_info)
  			when modified_minutes then
-				create {I18N_FORMAT_STRING} Result.make (escape_character.out+minutes.out, locale_info)
+				create {I18N_FORMAT_STRING} Result.make (Escape_character.out+minutes.out, locale_info)
  			when modified_seconds then
- 				create {I18N_FORMAT_STRING} Result.make (escape_character.out+seconds.out, locale_info)
+ 				create {I18N_FORMAT_STRING} Result.make (Escape_character.out+seconds.out, locale_info)
  			when modified_day_of_month_0_padded then
  				create {I18N_DATE_ELEMENT} Result.make (agent day_of_month_action (?))
  			when modified_day_of_month_space_padded then

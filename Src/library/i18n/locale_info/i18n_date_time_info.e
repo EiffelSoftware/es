@@ -13,16 +13,18 @@ feature -- Initialization
 	make is
 			-- initialize all attributes
 		do
-			set_long_date_format (default_long_time_format)
-			set_short_date_format (default_short_date_format)
-			set_long_time_format (default_long_time_format)
-			set_short_time_format (default_short_time_format)
-			set_am_suffix (default_am_suffix)
-			set_pm_suffix (default_pm_suffix)
-			set_day_names (default_day_names)
-			set_month_names (default_month_names)
-			set_abbreviated_day_names (default_abbreviated_day_names)
-			set_abbreviated_month_names (default_abbreviated_month_names)
+			set_long_date_format (Default_long_time_format)
+			set_short_date_format (Default_short_date_format)
+			set_long_time_format (Default_long_time_format)
+			set_short_time_format (Default_short_time_format)
+			set_am_suffix (Default_am_suffix)
+			set_pm_suffix (Default_pm_suffix)
+			set_time_separator (Default_time_separator)
+			set_date_separator (Default_date_separator)
+			set_day_names (Default_day_names)
+			set_month_names (Default_month_names)
+			set_abbreviated_day_names (Default_abbreviated_day_names)
+			set_abbreviated_month_names (Default_abbreviated_month_names)
 		end
 
 
@@ -38,6 +40,9 @@ feature -- Date and time formatting
 
 	am_suffix: STRING_32
 	pm_suffix: STRING_32
+
+	time_separator,
+	date_separator: STRING_32
 
 feature	-- day and month names
 
@@ -161,41 +166,63 @@ feature -- Element change
 			pm_suffix_set: pm_suffix.is_equal(suffix.as_string_32)
 		end
 
+	set_time_separator(sep:STRING_GENERAL) is
+			-- set the pm suffix
+		require
+			argument_not_void: sep /= Void
+		do
+			time_separator := sep.to_string_32
+		ensure
+			separator_set: time_separator.is_equal(sep.as_string_32)
+		end
+
+	set_date_separator(sep:STRING_GENERAL) is
+			-- set the pm suffix
+		require
+			argument_not_void: sep /= Void
+		do
+			date_separator := sep.to_string_32
+		ensure
+			separator_set: date_separator.is_equal(sep.as_string_32)
+		end
+
+
+
 feature -- Default Values
 
-	default_date_time_format: STRING_32 is
+	Default_date_time_format: STRING_32 is
 		once
 			Result := "hh:[0]mi:[0]ss yyyy-[0]mm-dd"
 		end
 
-	default_long_date_format: STRING_32 is
+	Default_long_date_format: STRING_32 is
 		once
 			Result := "yyyy-[0]mm-dd"
 		end
 
-	default_short_date_format: STRING_32 is
+	Default_short_date_format: STRING_32 is
 		once
 			Result := "yy-[0]mm-dd"
 		end
-	default_long_time_format: STRING_32 is
+	Default_long_time_format: STRING_32 is
 		once
 			Result := "hh:[0]mi:[0]ss"
 		end
-	default_short_time_format: STRING_32 is
+	Default_short_time_format: STRING_32 is
 		once
 			Result := "hh:[0]mi"
 		end
 
-	default_am_suffix: STRING_32 is
+	Default_am_suffix: STRING_32 is
 		once
 			Result := "am"
 		end
-	default_pm_suffix: STRING_32 is
+	Default_pm_suffix: STRING_32 is
 		once
 			Result := "pm"
 		end
 
-	default_day_names: ARRAY[STRING_32] is
+	Default_day_names: ARRAY[STRING_32] is
 		once
 			Result := <<("Monday").to_string_32,
 						("Tuesday").to_string_32,
@@ -206,7 +233,7 @@ feature -- Default Values
 						("Sunday").to_string_32>>
 		end
 
-	default_month_names: ARRAY[STRING_32] is
+	Default_month_names: ARRAY[STRING_32] is
 		once
 			Result := <<("January").to_string_32,
 						("February").to_string_32,
@@ -221,7 +248,8 @@ feature -- Default Values
 						("November").to_string_32,
 						("December").to_string_32 >>
 		end
-	default_abbreviated_day_names: ARRAY[STRING_32] is
+
+	Default_abbreviated_day_names: ARRAY[STRING_32] is
 		once
 			Result := <<("Mon").to_string_32,
 						("Tue").to_string_32,
@@ -232,7 +260,7 @@ feature -- Default Values
 						("Sun").to_string_32 >>
 		end
 
-	default_abbreviated_month_names: ARRAY[STRING_32] is
+	Default_abbreviated_month_names: ARRAY[STRING_32] is
 		once
 			Result := <<("Jan").to_string_32,
 						("Feb").to_string_32,
@@ -247,4 +275,15 @@ feature -- Default Values
 						("Nov").to_string_32,
 						("Dec").to_string_32>>
 		end
+
+	Default_date_separator: STRING_32 is
+		once
+			Result := "/"
+		end
+
+	Default_time_separator: STRING_32 is
+		once
+			Result := ":"
+		end
+
 end
