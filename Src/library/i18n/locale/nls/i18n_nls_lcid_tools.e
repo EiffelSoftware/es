@@ -68,7 +68,7 @@ feature --Access
 													nls_constants.locale_siso3166ctryname_maxlen )
 				-- We can get away with this because we know scripts is a small array
 				from
-					i := 0
+					i := 1
 				until
 					i > scripts.upper
 				loop
@@ -78,7 +78,7 @@ feature --Access
 					end
 					i := i + 1
 				end
-				create Result.make (iso639, iso639, script)
+				create Result.make (iso639, iso3166, script)
 			end
 
 
@@ -94,7 +94,7 @@ feature --Access
 				name, t_string: STRING_32
 			do
 
-				name := id.language
+				create name.make_from_string(id.language)
 				if (id.script /= Void and then not id.script.is_equal ("euro")) then
 					name.append_string("-"+id.script)
 				end

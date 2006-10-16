@@ -86,6 +86,7 @@ class
 				Result.set_pm_suffix (get_pm_suffix)
 				Result.set_short_date_format (get_short_date_format)
 				Result.set_short_time_format (get_short_time_format)
+				Result.set_date_time_format (get_date_time_format)
 				Result.set_value_decimal_separator (get_value_decimal_separator)
 				Result.set_value_group_separator (get_value_group_separator)
 				Result.set_value_number_list_separator (get_value_number_list_separator)
@@ -211,6 +212,14 @@ class
 				Result:= extract_locale_string (current_lcid,nls_constants.locale_slongdate,
 												nls_constants.locale_slongdate_maxlen)
 			end
+
+		get_date_time_format: STRING_32 is
+				--
+			do
+				--NLS doesn't support this. I'll just concatenate date and time.
+				Result := get_long_date_format + " " + get_short_time_format
+			end
+
 
 
 
