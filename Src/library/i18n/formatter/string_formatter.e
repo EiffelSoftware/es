@@ -50,6 +50,7 @@ feature -- Utility
 			l_list: LIST[STRING_32]
 			i : INTEGER
 			l_string: STRING_32
+			test: STRING_GENERAL
 		do
 			l_list := a_string.split (escape_character)
 			create Result.make_empty
@@ -77,8 +78,16 @@ feature -- Utility
 					end
 					l_string := l_list.item.substring(1,i-1)
 					if l_string.is_integer then
-							-- It was en escape character
-						Result.append (args_tuple.item(l_string.to_integer).out)
+						-- It was en escape character
+
+						--FIXME!!! HACK because 'out' in ANY possibly gives a STRING_8 and this is not so good for STRING_32
+						test ?= args_tuple.item(l_string.to_integer)
+						if test /= Void then
+							Result.append (test.as_string_32)
+						else
+							Result.append (args_tuple.item(l_string.to_integer).out)
+						end
+
 						Result.append (l_list.item.substring(i,l_list.item.count).twin)
 					else
 							-- It should not be conseidered as escape character

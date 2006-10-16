@@ -7,6 +7,7 @@ indexing
 class
 	I18N_HOST_LOCALE_IMP
 		inherit
+			IMPORTED_UTF8_READER_WRITER
 			I18N_HOST_LOCALE
 			I18N_POSIX_CONSTANTS
 				export
@@ -156,7 +157,7 @@ feature {NONE} -- Date and time formatting
 			-- get the long date format string
 			-- according the current locale setting
 		do
-			create Result.make_from_c (get_locale_info (D_fmt))
+			Result := utf8_pointer_to_string (get_locale_info (D_fmt))
 			Result.replace_substring_all ("%%","&")
 		ensure
 			result_exists: Result /= Void
@@ -166,7 +167,7 @@ feature {NONE} -- Date and time formatting
 			-- get the long time format string
 			-- according the current locale setting
 		do
-			create Result.make_from_c (get_locale_info (T_fmt))
+			Result := utf8_pointer_to_string (get_locale_info (T_fmt))
 			Result.replace_substring_all ("%%","&")
 		ensure
 			result_exists: Result /= Void
@@ -176,7 +177,7 @@ feature {NONE} -- Date and time formatting
 			-- get the am suffix
 			-- if the not available: empty_string
 		do
-			create Result.make_from_c (get_locale_info (Am_str))
+			Result := utf8_pointer_to_string (get_locale_info (Am_str))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -185,7 +186,7 @@ feature {NONE} -- Date and time formatting
 			-- get the pm suffix
 			-- if the not available: empty_string
 		do
-			create Result.make_from_c (get_locale_info (Pm_str))
+			Result := utf8_pointer_to_string (get_locale_info (Pm_str))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -193,7 +194,7 @@ feature {NONE} -- Date and time formatting
 	get_date_time_format: STRING_32 is
 			-- time and date in a locale-specific way.
 		do
-			create Result.make_from_c (get_locale_info (D_t_fmt))
+			Result := utf8_pointer_to_string (get_locale_info (D_t_fmt))
 			Result.replace_substring_all ("%%","&")
 		ensure
 			result_exists: Result /= Void
@@ -218,7 +219,7 @@ feature {NONE} -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (Day_1 +((i-1)\\upper)))
+				create l_string.make_from_string( utf8_pointer_to_string (get_locale_info (Day_1 +((i-1)\\upper))))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -242,7 +243,7 @@ feature {NONE} -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (Mon_1 +i-1))
+				create l_string.make_from_string( utf8_pointer_to_string  (get_locale_info (Mon_1 +i-1)))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -268,7 +269,7 @@ feature {NONE} -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (Abday_1 +((i-1)\\upper)))
+				create l_string.make_from_string (utf8_pointer_to_string (get_locale_info (Abday_1 +((i-1)\\upper))))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -292,7 +293,7 @@ feature {NONE} -- day/months names
 			until
 				i > Result.upper
 			loop
-				create l_string.make_from_c (get_locale_info (Abmon_1 +i-1))
+				create l_string.make_from_string (utf8_pointer_to_string  (get_locale_info (Abmon_1 +i-1)))
 				Result.put (l_string, i)
 				i := i + 1
 			end
@@ -308,7 +309,7 @@ feature	{NONE} -- number formatting
 			-- get the decimal separator of numbers
 			-- according the current locales setting
 		do
-			create Result.make_from_c (decimal_point (localeconv))
+			Result := utf8_pointer_to_string (decimal_point (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -317,7 +318,7 @@ feature	{NONE} -- number formatting
 			-- get the group separator (the separator thousend sep.)
 			-- according the current locales setting
 		do
-			create Result.make_from_c (thousands_sep (localeconv))
+			Result := utf8_pointer_to_string (thousands_sep (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -337,7 +338,7 @@ feature	{NONE} -- currency formatting
 			-- get the currency symbol
 			-- according the current locales setting
 		do
-			create Result.make_from_c (get_locale_info (Crncystr))
+			Result := utf8_pointer_to_string (get_locale_info (Crncystr))
 			Result.remove_head (1)
 				-- could use:
 				-- create Result.make_from_c (currency_symbol (localeconv))
@@ -352,7 +353,7 @@ feature	{NONE} -- currency formatting
 		local
 			l_string: STRING_32
 		do
-			create l_string.make_from_c (get_locale_info (Crncystr))
+			create l_string.make_from_string(utf8_pointer_to_string (get_locale_info (Crncystr)))
 			if	l_string.item (1).is_equal ('-') then
 				Result := {I18N_LOCALE_INFO}.Currency_symbol_prefixed
 			elseif l_string.item (1).is_equal ('+') then
@@ -373,7 +374,7 @@ feature	{NONE} -- currency formatting
 			-- get the decimal separator of currency numbers
 			-- according the current locales setting
 		do
-			create Result.make_from_c (mon_decimal_point (localeconv))
+			Result := utf8_pointer_to_string (mon_decimal_point (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -394,7 +395,7 @@ feature	{NONE} -- currency formatting
 			-- get the decimal separator of numbers
 			-- according the current locales setting
 		do
-			create Result.make_from_c(mon_thousands_sep (localeconv))
+			Result := utf8_pointer_to_string (mon_thousands_sep (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -402,7 +403,7 @@ feature	{NONE} -- currency formatting
 	get_currency_positive_sign: STRING_32 is
 			-- positive sign according the current locales setting
 		do
-			create Result.make_from_c (positive_sign (localeconv))
+			Result := utf8_pointer_to_string (positive_sign (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -410,7 +411,7 @@ feature	{NONE} -- currency formatting
 	get_currency_negative_sign: STRING_32 is
 			-- positive sign according the current locales setting
 		do
-			create Result.make_from_c (negative_sign (localeconv))
+			Result := utf8_pointer_to_string (negative_sign (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -428,7 +429,7 @@ feature {NONE} -- International currency formatting
 	get_int_currency_symbol: STRING_32 is
 			-- ISO 4217 currency code
 		do
-			create Result.make_from_c (int_curr_symbol (localeconv))
+			Result := utf8_pointer_to_string (int_curr_symbol (localeconv))
 		end
 
 
@@ -447,7 +448,7 @@ feature {NONE} -- International currency formatting
 feature {NONE} --Implementation
 
 	pointer_to_array (a_pointer: POINTER): ARRAY[INTEGER] is
-			--
+			-- ARRRGGH! Etienne - ever heard of MANAGED_POINTER?
 		local
 			l_string: STRING_32
 			i, t: INTEGER
@@ -472,6 +473,25 @@ feature {NONE} --Implementation
 				Result.force (0, i)
 			end
 		end
+
+		c_wcslen(ptr:POINTER):INTEGER is
+				--
+		external
+			"C (void *): EIF_INTEGER| %"wchar.h%""
+		alias
+			"wcslen"
+		end
+
+		utf8_pointer_to_string(ptr:POINTER):STRING_32 is
+				--
+			local
+				managed: MANAGED_POINTER
+			do
+				create managed.share_from_pointer (ptr, c_wcslen (ptr))
+				create Result.make_from_string (utf8_rw.array_natural_8_to_string_32 (managed.read_array (0, managed.count)))
+			end
+
+
 
 
 end
