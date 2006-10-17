@@ -1,6 +1,6 @@
 AR = lib 
 CC = cl
-CFLAGS= -W3 -nologo -MT -Ox -I$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include -I..\include
+CFLAGS= -W3 -nologo -MT -Ox -I$(ISE_EIFFEL)\studio\spec\windows\include -I..\include
 LN = copy
 MAKE = make
 RANLIB = echo
@@ -29,7 +29,7 @@ net.lib: $(OBJS)
 	$(AR) -OUT:$@ $(OBJS)
 	$(RANLIB) $@
 	if not exist ..\spec mkdir ..\spec
-	if not exist ..\spec\$(ISE_PLATFORM) mkdir ..\spec\$(ISE_PLATFORM)
-	if not exist ..\spec\$(ISE_PLATFORM)\lib mkdir ..\spec\$(ISE_PLATFORM)\lib
-	if not exist ..\spec\$(ISE_PLATFORM)\lib\msc mkdir ..\spec\$(ISE_PLATFORM)\lib\msc
-	copy $@ ..\spec\$(ISE_PLATFORM)\lib\bcb\$@
+	if not exist ..\spec\windows mkdir ..\spec\windows
+	if not exist ..\spec\windows\lib mkdir ..\spec\windows\lib
+	if not exist ..\spec\windows\lib\msc mkdir ..\spec\windows\lib\msc
+	copy $@ ..\spec\windows\lib\msc\$@
