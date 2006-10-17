@@ -1,6 +1,6 @@
 AR = $(ISE_EIFFEL)\BCC55\bin\tlib 
 CC = $(ISE_EIFFEL)\BCC55\bin\bcc32
-CFLAGS = -O2 -I$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include -I$(ISE_EIFFEL)\BCC55\include -I..\include -L$(ISE_EIFFEL)\BCC55\lib 
+CFLAGS = -O2 -I$(ISE_EIFFEL)\studio\spec\windows\include -I$(ISE_EIFFEL)\BCC55\include -I..\include -L$(ISE_EIFFEL)\BCC55\lib 
 LN = copy
 MAKE = make
 RANLIB = echo
@@ -29,7 +29,7 @@ nls_locale.lib: $(OBJS)
 	$(AR) $@ +nls_locale.obj
 	$(RANLIB) $@
 	if not exist ..\spec mkdir ..\spec
-	if not exist ..\spec\$(ISE_PLATFORM) mkdir ..\spec\$(ISE_PLATFORM)
-	if not exist ..\spec\$(ISE_PLATFORM)\lib mkdir ..\spec\$(ISE_PLATFORM)\lib
-	if not exist ..\spec\$(ISE_PLATFORM)\lib\bcb mkdir ..\spec\$(ISE_PLATFORM)\lib\bcb
-	copy nls_locale.lib ..\spec\$(ISE_PLATFORM)\lib\bcb\nls_locale.lib
+	if not exist ..\spec\windows mkdir ..\spec\windows
+	if not exist ..\spec\windows\lib mkdir ..\spec\windows\lib
+	if not exist ..\spec\windows\lib\bcb mkdir ..\spec\windows\lib\bcb
+	copy nls_locale.lib ..\spec\windows\lib\bcb\nls_locale.lib
