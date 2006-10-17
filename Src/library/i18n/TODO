@@ -2,26 +2,24 @@ Global TODO list for the i18n project:
 
 Urgent (13 october):
 
-! time formatter
-! CONTACT TROSIM with chili pepper 
-! redesign locale interface
 ~ fix locales	(nls needs the ISO currency stuff finishing, and the format string conversion)
 ~ fix makefiles (linux working)
-~ testing of basic functionality (some bugs !)
-~ port test application (hong working on it)
-* summary of who did what
-~ user documentation (formatters and installation missing)
 
 Not so urgent (20 october):
 
 * port Eiffel GUI changes from old project
-* in-depth testing
-* dev documentation
-x finish ES changes so we can build ES w/ i18n support [TROSIM] (DEAD)
-! merge from 57 branch (done by etienner)
-* code cleanup (+ review contracts)
+~ in-depth testing  (leo+etienne)
+~ code cleanup (+ review contracts) (in progress, leo)
 * fix headers (use Eiffel Forum license)
 * update translations
+* Check naming consistency of HOST_LOCALE notably user/default stuff
 
+Medium/long-term:
+
+* Support for language-specific translations
+* Support for independant formatters
+* Support for multi-file translations
+* Some system similar to gettext domains?
+* OS X support
 
 

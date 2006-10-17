@@ -26,7 +26,7 @@
 				<platform value="unix"/>
 			</condition>
 		</external_object>
-		<external_object location="$(EIFFEL_I18N)/spec/$(ISE_PLATFORM)/lib/$(ISE_COMPILER)/">
+		<external_object location="$(EIFFEL_I18N)/spec/windows/lib/$(ISE_COMPILER)/nls_locale.lib">
 			<condition>
 				<platform value="windows"/>
 				<dotnet value="false"/>
