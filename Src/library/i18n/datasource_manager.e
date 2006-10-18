@@ -41,26 +41,34 @@ feature -- Informations
 		ensure
 			result_exists: Result /= Void
 		end
+	available_languages: LINEAR[I18N_LANGUAGE_ID] is
+			-- list of the available languages
+		deferred
+		ensure
+			result_exists: Result /= Void
+		end
+
 
 	has_locale ( a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			-- is `a_locale_id' available?
 		require
 			a_locale_id_exists: a_locale_id /= Void
-		local
-			linear: LINEAR[I18N_LOCALE_ID]
 		do
-			linear := available_locales
-			from
-				linear.start
-			until
-				linear.after or Result = True
-			loop
-				Result := a_locale_id.is_equal(linear.item)
-				linear.forth
-			end
+			Result := available_locales.has (a_locale_id)
 		ensure
 			correct_result: Result = available_locales.has (a_locale_id)
 		end
+
+	has_language ( a_language_id: I18N_LANGUAGE_ID): BOOLEAN is
+			-- is `a_language_id' available?
+		require
+			a_language_id_exists: a_language_id /= Void
+		do
+			Result := available_languages.has (a_language_id)
+		ensure
+			correct_result: Result = available_languages.has (a_language_id)
+		end
+
 
 feature {NONE}
 

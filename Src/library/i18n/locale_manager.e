@@ -37,7 +37,7 @@ feature -- Access
 			if has_translations (a_locale_id) then
 				l_dictionary := datasource_manager.get_dictionary (a_locale_id)
 			else
-				create {I18N_DUMMY_DICTIONARY}	l_dictionary
+				create {I18N_DUMMY_DICTIONARY}	l_dictionary.make(0)
 			end
 			if has_formatting_info (a_locale_id) then
 				l_locale_info := host_locale.make_from_locale (a_locale_id)
@@ -74,10 +74,16 @@ feature -- Status report
 				end
 				temp.forth
 			end
-
 		end
 
 	has_translations (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
+			--
+		do
+			Result:=datasource_manager.has_locale (a_locale_id) or
+					datasource_manager.has_language (a_locale_id.language_id)
+		end
+
+	has_localised_translations (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			--
 		do
 			Result:=datasource_manager.has_locale (a_locale_id)

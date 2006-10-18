@@ -134,7 +134,7 @@ feature -- Access
 
 
 	locale:STRING_32 is
-			-- TODO!
+			-- Best guess at locale of the file. This could also be a language.
 		local
 			file_name: STRING_32
 			ending: STRING_32

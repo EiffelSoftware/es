@@ -11,6 +11,10 @@ class
 	inherit
 		I18N_DICTIONARY
 
+create
+	make
+
+
 feature -- Reporting
 
 	count: INTEGER is 0

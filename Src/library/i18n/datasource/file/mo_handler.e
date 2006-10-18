@@ -58,16 +58,24 @@ feature -- Interface
 				end
 			end
 
-	extract_locale (a_path:STRING_32): I18N_LOCALE_ID is
-			-- TODO: update this
-			-- NOTE: Void indicates unknown locale, not a bug
+	extract_scope (a_path:STRING_32): I18N_FILE_SCOPE_INFORMATION is
+			-- Not much scope information we can extract from the file itself. All we have to go on is the name.
+			-- NOTE: Void indicates unknown scope, not a bug
+			local
+				locale: I18N_LOCALE_ID
 			do
 				create file.make (a_path)
 				file.open
 				if
 					file.opened
 				then
-					create Result.make_from_string(file.locale)
+					-- let a locale object do the parsing for us
+					create locale.make_from_string (file.locale)
+					if locale.region.count > 0 then
+						create Result.make_with_locale (locale)
+					elseif locale.language.count > 0 then
+						create Result.make_with_language (locale.language_id)
+					end
 				end
 			end
 

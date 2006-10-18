@@ -37,16 +37,16 @@ feature -- chain-of-responsability
 
 feature -- locale
 
-	get_file_locale (a_path: STRING_GENERAL): I18N_LOCALE_ID is
-			-- get the locale id file at `a_path'
-			-- NOTE: Void if locale unkown locale
+	get_file_scope (a_path: STRING_GENERAL): I18N_FILE_SCOPE_INFORMATION is
+			-- get the scope of the file at `a_path'
+			-- NOTE: Void if scope cannot be determined from file contents.
 		do
 			if can_handle(a_path.as_string_32) then
-				Result := extract_locale(a_path)
+				Result := extract_scope(a_path)
 				handled := True
 			else
 				if next /= Void then
-					Result := next.get_file_locale(a_path)
+					Result := next.get_file_scope(a_path)
 					handled := next.handled
 				else
 					handled := False
@@ -58,9 +58,9 @@ feature -- locale
 			not (can_handle(a_path) and then next = Void) implies not handled
 		end
 
-	extract_locale (a_path: STRING_32): I18N_LOCALE_ID is
-			-- extract the locale id from file at `a_path'
-			-- NOTE: Void if unknown locale
+	extract_scope (a_path: STRING_32): I18N_FILE_SCOPE_INFORMATION is
+			-- extract the scope of file at `a_path'
+			-- NOTE: Void if scope cannot be determined from file contents
 		require
 			a_path_exists: a_path /= Void
 			can_handle(a_path)

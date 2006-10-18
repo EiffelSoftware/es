@@ -25,11 +25,11 @@ feature	-- Creation
 				create {I18N_MO_HANDLER} chain
 				-- There is no next element for now
 				create directory.make (an_uri.to_string_8)
-				populate_file_list
+				populate_file_lists
 			ensure then
 				at_least_one_handler: chain /= Void
 				directory_created: directory /= Void
-				file_list_created: file_list /= Void
+				file_lists_created: locale_file_list /= Void and language_file_list /= Void
 			end
 
 
@@ -38,33 +38,56 @@ feature	-- Access
 		get_dictionary (a_locale: I18N_LOCALE_ID): I18N_DICTIONARY is
 				-- return appropriate dictionary
 				do
-					Result := chain.extract_dictionary (file_list.item (a_locale))
+					if available_locales.has (a_locale) then
+						Result := chain.extract_dictionary (locale_file_list.item (a_locale))
+					elseif available_languages.has (create {I18N_LANGUAGE_ID}.make (a_locale.language)) then
+						Result := chain.extract_dictionary (
+							language_file_list.item (create {I18N_LANGUAGE_ID}.make (a_locale.language)))
+					else
+						create {I18N_DUMMY_DICTIONARY} Result.make(0)
+					end
 				end
 
 		available_locales: LINEAR[I18N_LOCALE_ID] is
-				-- return available locales
+				-- return locales for which there is a locale-specific translation
 				do
 					create {ARRAYED_LIST[I18N_LOCALE_ID]} Result.make_from_array (locale_list)
 				end
 
-feature {NONE} -- Implementation
+		available_languages: LINEAR[I18N_LANGUAGE_ID] is
+				-- return languages for which there is a generic translation
+				do
+					create {ARRAYED_LIST[I18N_LANGUAGE_ID]} Result.make_from_array (language_list)
+				end
 
-		chain: I18N_FILE_HANDLER
-		directory: DIRECTORY
-		file_list: HASH_TABLE[STRING_8, I18N_LOCALE_ID]
+
+feature {NONE} -- Internal data
+
+		locale_file_list: HASH_TABLE[STRING_8, I18N_LOCALE_ID]
 		locale_list: ARRAYED_LIST[I18N_LOCALE_ID]
+		language_file_list: HASH_TABLE[STRING_8, I18N_LANGUAGE_ID]
+		language_list: ARRAYED_LIST[I18N_LANGUAGE_ID]
 
-		populate_file_list is
-				-- add to `file_list' all locales
+
+feature {NONE} --Implementation
+
+		directory: DIRECTORY
+		chain: I18N_FILE_HANDLER
+
+		populate_file_lists is
+				-- add to file lists all locales and langugaes
 				-- that are available in `directory'
 			require
 				directory_not_void: directory /= Void
 			local
 				temp: LIST[STRING_8]
-				locale: I18N_LOCALE_ID
+				scope: I18N_FILE_SCOPE_INFORMATION
 			do
-				create file_list.make(16)
+				create locale_file_list.make(16)
 				create locale_list.make(16)
+				create language_file_list.make(16)
+				create language_list.make(16)
+
 				if directory.is_readable then
 					directory.open_read
 					temp := directory.linear_representation
@@ -73,28 +96,40 @@ feature {NONE} -- Implementation
 					until
 						temp.after
 					loop
-						locale := chain.get_file_locale (uri+
-														 Operating_environment.directory_separator.out+
-														 temp.item)
-						if locale /= Void then
-							--have we already encountered this locale?
-							--policy on duplicate locales: ignore the second one.
+						scope := chain.get_file_scope (
+								uri + Operating_environment.directory_separator.out + temp.item)
 
-							--TODO!!!!!!!!!!
-							file_list.put(uri+Operating_environment.directory_separator.out+temp.item,locale)
-							if  file_list.inserted then
-								locale_list.extend(locale)
+						if scope /= Void then
+							if scope.scope = scope.scope_locale_specific then
+								--have we already encountered this locale?
+								--policy on duplicate locales: ignore the second one.
+								locale_file_list.put(
+										uri+Operating_environment.directory_separator.out+
+										temp.item,scope.get_locale)
+								if  locale_file_list.inserted then
+									locale_list.extend(scope.get_locale)
+								end
+							elseif scope.scope = scope.scope_language_specific then
+								-- policy on duplicate languages: ignore
+								language_file_list.put (
+										uri+Operating_environment.directory_separator.out+
+										temp.item,scope.get_language)
+								if language_file_list.inserted then
+									language_list.extend(scope.get_language)
+								end
 							end
-						end
+						end -- end scope /= void
 						temp.forth
-					end
-				end
+					end -- end loop
+				end -- end directory.is_readable
 			end
 
 
 
 invariant
-	--directory /= Void
-	--file_list /= Void
-	--locale_list /= Void
+	directory /= Void
+	locale_file_list /= Void
+	locale_list /= Void
+	language_file_list /= Void
+	language_list /= Void
 end

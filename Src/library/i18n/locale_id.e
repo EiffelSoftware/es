@@ -138,6 +138,16 @@ feature	 -- Comparison
 	name: STRING_32
 
 
+ feature -- Conversion
+
+ 	language_id: I18N_LANGUAGE_ID is
+ 			-- Get corresponding language id
+ 		do
+ 			create Result.make(language)
+ 		end
+
+
+
 invariant
 	language_exists: language /= Void
 	region_exists: region /= Void

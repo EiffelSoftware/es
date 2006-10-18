@@ -23,8 +23,9 @@ feature
 
  feature
  	-- information
+
  	locale: STRING_32 is
- 			-- target locale of the file, possibly derived from the file name
+ 			-- best guess at locale of the file
  		deferred
  		end
 
