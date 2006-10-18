@@ -1,7 +1,7 @@
 indexing
 	description: "Facilities to read and write UTF-8 encoded strings"
 	status: "testing"
-	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"

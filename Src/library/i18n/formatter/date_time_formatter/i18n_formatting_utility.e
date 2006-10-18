@@ -1,6 +1,6 @@
 indexing
 	description: "Class that provides some common padding features for formatting"
-	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -16,8 +16,6 @@ feature -- Pad
 		require
 			valid_length: length > 0
 			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
-		local
-			l_string: STRING_32
 		do
 			Result := pad_left (a_integer, length, '0')
 		ensure
@@ -30,8 +28,6 @@ feature -- Pad
 		require
 			valid_length: length > 0
 			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
-		local
-			l_string: STRING_32
 		do
 			Result := pad_right (a_integer, length, '0')
 		ensure
@@ -44,8 +40,6 @@ feature -- Pad
 		require
 			valid_length: length > 0
 			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
-		local
-			l_string: STRING_32
 		do
 			Result := pad_left (a_integer, length, ' ')
 		ensure
@@ -58,8 +52,7 @@ feature -- Pad
 		require
 			valid_length: length > 0
 			a_integer_not_to_large: a_integer < (10 ^ (length + 1) - 1)
-		local
-			l_string: STRING_32
+
 		do
 			Result := pad_right (a_integer, length, ' ')
 		ensure

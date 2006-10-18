@@ -5,7 +5,7 @@ indexing
 					http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html
 				]"
 	license: "Eiffel Forum License v2 (see forum.txt)"
-	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	date: "$Date$"
 	revision: "$Revision$"
 

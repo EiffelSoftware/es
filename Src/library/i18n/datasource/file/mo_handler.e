@@ -1,6 +1,6 @@
 indexing
 	description: "Implementation of I18N_FILE_HANDLER that knows how to handle .mo files"
-	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"

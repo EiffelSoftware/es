@@ -1,6 +1,6 @@
 indexing
 	description: "Imported routines for reading and writing STRING_32 objects using UTF-8 encoding"
-	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"

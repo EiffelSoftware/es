@@ -1,6 +1,6 @@
 indexing
 	description: "External C functions used by the POSIX implementation of I18N_HOST_LOCALE"
-	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"

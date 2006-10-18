@@ -1,6 +1,6 @@
 indexing
 	description: "Class that shares a I18N_PLURAL_TOOLS object"
-	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
