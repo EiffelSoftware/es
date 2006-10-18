@@ -40,7 +40,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_I18N_LOCALIZATOR
 
 create
 	make
@@ -53,7 +52,7 @@ feature {NONE} -- Initialization
 			an_app_not_void: an_app /= Void
 		do
 			an_app.post_launch_actions.extend (agent prepare (an_app))
-				-- Make sure any uncaught exceptions are handled
+			-- Make sure any uncaught exceptions are handled
 			an_app.uncaught_exception_actions.extend (agent handle_exception)
 		end
 
@@ -91,9 +90,6 @@ feature {NONE} -- Implementation (preparation of all widgets)
 				<<eiffel_layout.general_preferences, eiffel_layout.platform_preferences>>, eiffel_layout.eiffel_preferences)
 			initialize_preferences (preference_access, True)
 
-			i18n_use_mo_file_with_name ("/home/marti/Desktop/zh.mo", "zh")
-			i18n_use_heap
-			i18n_load
 
 				-- Create and setup the output manager / Error displayer
 			create an_output_manager

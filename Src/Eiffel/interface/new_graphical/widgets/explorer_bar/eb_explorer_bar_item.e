@@ -24,7 +24,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET; a_title: STRING_GENERAL; closeable: BOOLEAN) is
+	make (a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET; a_title: STRING; closeable: BOOLEAN) is
 			-- Initialization
 		require
 			parent_not_void: a_parent /= Void
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 
 	make_with_mini_toolbar (
 		a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET;
-		a_title: STRING_GENERAL; closeable: BOOLEAN;
+		a_title: STRING; closeable: BOOLEAN;
 		a_mini_toolbar: EV_TOOL_BAR) is
 			-- Initialization
 		require
@@ -57,7 +57,7 @@ feature {NONE} -- Initialization
 
 	make_with_info (
 			a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET;
-			a_title: STRING_GENERAL; closeable: BOOLEAN;
+			a_title: STRING; closeable: BOOLEAN;
 			info: EV_HORIZONTAL_BOX; a_mini_toolbar: EV_TOOL_BAR)
 		is
 				-- Initialization
@@ -72,7 +72,7 @@ feature {NONE} -- Initialization
 			make (a_parent, a_widget, a_title, closeable)
 		end
 
-	generic_make (a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET; a_title: STRING_GENERAL) is
+	generic_make (a_parent: EB_EXPLORER_BAR; a_widget: EV_WIDGET; a_title: STRING) is
 			-- Generic Initialization
 		require
 			a_parent_not_void: a_parent /= Void
