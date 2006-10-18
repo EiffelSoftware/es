@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Constants for NLS locale information"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -52,6 +53,7 @@ feature -- LC_CTYPE constants from winnnls.h
 	LOCALE_SCURRENCY: INTEGER is               0x00000014   -- local monetary symbol
 	locale_scurrency_maxlen: INTEGER is 4
 	LOCALE_SINTLSYMBOL: INTEGER is             0x00000015   -- intl monetary symbol
+	locale_sintlsymbol_maxlen: INTEGER is 9
 	LOCALE_SMONDECIMALSEP: INTEGER is          0x00000016   -- monetary decimal separator
 	locale_smondecimalsep_maxlen: INTEGER is 4
 	LOCALE_SMONTHOUSANDSEP: INTEGER is        0x00000017   -- monetary thousand separator
@@ -142,7 +144,9 @@ feature -- LC_CTYPE constants from winnnls.h
 	locale_sabbrevmonthname_maxlen: INTEGER is 80
 
 	LOCALE_SPOSITIVESIGN: INTEGER is          0x00000050   -- positive sign
+	locale_spositivesign_maxlen: INTEGER is 5
 	LOCALE_SNEGATIVESIGN: INTEGER is          0x00000051   -- negative sign
+	locale_snegativesign_maxlen: INTEGER is 5
 	LOCALE_IPOSSIGNPOSN: INTEGER is           0x00000052   -- positive sign position
 	LOCALE_INEGSIGNPOSN: INTEGER is           0x00000053   -- negative sign position
 	LOCALE_IPOSSYMPRECEDES: INTEGER is        0x00000054   -- mon sym precedes pos amt

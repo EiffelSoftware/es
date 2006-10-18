@@ -1,6 +1,7 @@
 indexing
-	description: "Constants for NLS locale information"
-	author: "leo (leof@student.ethz.ch)"
+	description: "Constants and conversion functions for NLS LCIDS"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 

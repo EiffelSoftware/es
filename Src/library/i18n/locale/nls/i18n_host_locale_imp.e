@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Implementation of HOST_LOCALE using the Windows NLS API. Does not require Windows Vista."
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -14,6 +15,7 @@ class
 		SHARED_I18N_NLS_LCID_TOOLS
 		I18N_HOST_LOCALE
 		I18N_NLS_GETLOCALEINFO
+		I18N_NLS_PICTURE_TOOLS
 
 
 	feature -- Creation
@@ -71,14 +73,17 @@ class
  				Result.set_currency_number_list_separator (get_value_number_list_separator)
  				Result.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
 				Result.set_currency_symbol (get_currency_symbol)
-			--	Result.set_currency_symbol_location ()
+				Result.set_currency_symbol_location (get_currency_symbol_location)
+				Result.set_currency_positive_sign (get_currency_positive_sign)
+				Result.set_currency_negative_sign (get_currency_negative_sign)
 				Result.set_day_names (get_day_names)
 			--	Result.set_international_currency_decimal_separator ()
 			--	Result.set_international_currency_group_separator  ()
 			--	Result.set_international_currency_grouping ()
 			--	Result.set_international_currency_number_list_separator ()
-			--	Result.set_international_currency_numbers_after_decimal_separator ()
-			--	Result.set_international_currency_symbol ()
+				Result.set_international_currency_numbers_after_decimal_separator (
+										get_international_currency_numbers_after_decimal_separator)
+				Result.set_international_currency_symbol (get_international_currency_symbol)
 			--	Result.set_international_currency_symbol_location ()
 				Result.set_long_date_format (get_long_date_format)
 				Result.set_long_time_format (get_long_time_format)
@@ -133,6 +138,7 @@ class
 												nls_constants.locale_slist_maxlen)
 			end
 
+
 	feature {NONE} -- Currency formatting
 
 		get_currency_decimal_separator: STRING_32 is
@@ -162,6 +168,20 @@ class
 												nls_constants.locale_scurrency_maxlen)
 			end
 
+		get_currency_symbol_location: INTEGER is
+				--
+			local
+				i: INTEGER
+			do
+				i := extract_locale_integer (current_lcid, nls_constants.locale_icurrency)
+				if i=1 or i=3  then
+					Result := {I18N_CURRENCY_INFO}.currency_symbol_appended
+				else
+					Result := {I18N_CURRENCY_INFO}.currency_symbol_prefixed
+				end
+			end
+
+
 		get_currency_numbers_after_decimal_separator: INTEGER is
 				--
 			do
@@ -171,9 +191,40 @@ class
 		get_currency_group_separator: STRING_32 is
 				--
 			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_spositivesign,
+												nls_constants.locale_spositivesign_maxlen)
+			end
+
+		get_currency_positive_sign: STRING_32 is
+				--
+			do
+			--	Result := extract_locale_string (current_lcid, nls_constants.locale_snegativesign,
+			--									nls_constants.locale_snegativesign_maxlen)
+				Result := ""
+			end
+
+		get_currency_negative_sign: STRING_32 is
+				--
+			do
 				Result := extract_locale_string (current_lcid, nls_constants.locale_smonthousandsep,
 												nls_constants.locale_smonthousandsep_maxlen)
 			end
+
+		get_international_currency_symbol: STRING_32 is
+				--
+			do
+				Result := extract_locale_string (current_lcid, nls_constants.locale_sintlsymbol,
+												nls_constants.locale_sintlsymbol_maxlen)
+			end
+
+		get_international_currency_numbers_after_decimal_separator: INTEGER is
+				--
+			do
+				Result := extract_locale_integer (current_lcid, nls_constants.locale_iintlcurrdigits)
+			end
+
+
+
 
 
 
@@ -202,22 +253,24 @@ class
 		get_short_date_format: STRING_32 is
 				--
 			do
-				Result:= extract_locale_string (current_lcid,nls_constants.locale_sshortdate,
-												nls_constants.locale_sshortdate_maxlen)
+				Result:= translate_date_format (
+					extract_locale_string (current_lcid,nls_constants.locale_sshortdate,
+												nls_constants.locale_sshortdate_maxlen))
 			end
 
 		get_long_date_format: STRING_32 is
 				--
 			do
-				Result:= extract_locale_string (current_lcid,nls_constants.locale_slongdate,
-												nls_constants.locale_slongdate_maxlen)
+				Result:= translate_date_format (
+					extract_locale_string (current_lcid,nls_constants.locale_slongdate,
+												nls_constants.locale_slongdate_maxlen))
 			end
 
 		get_date_time_format: STRING_32 is
 				--
 			do
 				--NLS doesn't support this. I'll just concatenate date and time.
-				Result := get_long_date_format + " " + get_short_time_format
+				Result:=  get_long_date_format + " " + get_short_time_format
 			end
 
 
@@ -341,15 +394,16 @@ class
 		get_pm_suffix: STRING_32 is
 				--
 			do
-				Result := extract_locale_string (current_lcid, nls_constants.locale_s2359,
+				Result:= extract_locale_string (current_lcid, nls_constants.locale_s2359,
 												nls_constants.locale_s2359_maxlen)
 			end
 
 		get_short_time_format: STRING_32 is
 				-- TODO: Returns native string, this needs to fixed when we get the time formatter sorted out!
 			do
-				Result := extract_locale_string (current_lcid, nls_constants.locale_stimeformat,
-												nls_constants.locale_stimeformat_maxlen)
+				Result:= translate_time_format (
+						extract_locale_string (current_lcid, nls_constants.locale_stimeformat,
+												nls_constants.locale_stimeformat_maxlen))
 			end
 
 		get_long_time_format: STRING_32 is
