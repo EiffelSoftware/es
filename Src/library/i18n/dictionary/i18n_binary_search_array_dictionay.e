@@ -84,7 +84,6 @@ feature--{NONE}
 		left, right, middle: INTEGER
 		cur_entry: I18N_DICTIONARY_ENTRY
 		mid_entry: I18N_DICTIONARY_ENTRY
-		t_string: STRING_32
 		right_index: INTEGER
 
 	do

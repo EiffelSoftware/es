@@ -1,0 +1,110 @@
+# translation of test application to Greek
+# Etienne Reichenbach
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;"
+
+#: str1
+msgid "Application"
+msgstr "Εφαρμογή"
+
+#: str2
+msgid "File"
+msgstr "αρχείο"
+
+
+#: str3
+msgid "Increase n"
+msgstr "αύξηση n"
+
+
+#: str4
+msgid "Decrease n"
+msgstr "μείωση n"
+
+
+#: str5
+msgid "Save"
+msgstr "εκτός από"
+
+
+#: str6
+msgid "n is now equal $1"
+msgstr "το ν είναι τώρα ίσα $1"
+
+#: str7
+msgid "Simple label"
+msgstr "Απλός lable"
+
+#: str8
+msgid "This is singular"
+msgid_plural "This is plural"
+msgstr[0] "Αυτό είναι μοναδικό"
+msgstr[1] "Αυτό είναι πληθυντικός"
+
+#: str9
+msgid "There is 1 file"
+msgid_plural "There are $1 files"
+msgstr[0] "Υπάρχει 1 αρχείο"
+msgstr[1] "Υπάρχουν $1 αρχεία"
+
+#: str10
+msgid "singular"
+msgid_plural "plural"
+msgstr[0] "ενικός αριθμός"
+msgstr[1] "πληθυντικός"
+
+#: str11
+msgid "Select language"
+msgstr "Επιλέξτε τη γλώσσα"
+
+#: str12
+msgid "arabic"
+msgstr "αραβικά [ar]"
+
+#: str13
+msgid "italian"
+msgstr "ιταλικά [it]"
+
+#: str14
+msgid "greek"
+msgstr "ελληνικά [gr]"
+
+#: str15
+msgid "hebrew"
+msgstr "εβραϊκά [he]"
+
+#: str16
+msgid "japanese"
+msgstr "ιαπωνικά [ja]"
+
+#: str17
+msgid "russian"
+msgstr "ρωσικά [ru]"
+
+#: str18
+msgid "chinese"
+msgstr "κινεζικά [zh_CN"
+
+#: str19
+msgid "english"
+msgstr "αγγλικά [en]"
+
+#: str21
+msgid "OK"
+msgstr "εντάξει"
+
+#: str22
+msgid "Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, please write a mail to: es-i18n@origo.ethz.ch%N%N"
+msgstr "Αίτηση επίδειξης που υποβάλλεται από i18n την ομάδα ETHZ%N%NΦορ bugs, σuγγεστηονς ορ other, please write α mail to: es-i18n@origo.ethz.ch%N%N"
+
+#: str23
+msgid "Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgstr "Μέλη της ομάδας:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+
+#: str24
+msgid "About Dialog"
+msgstr "Περίπου διάλογος"

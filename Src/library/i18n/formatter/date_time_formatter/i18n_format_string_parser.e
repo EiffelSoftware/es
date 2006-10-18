@@ -166,6 +166,11 @@ feature -- Parser
 						l_format_code := parse_modified_2 (t_char)
 						i := next_escape_char + 2
 					else
+						-- It isn't a supported character code, may be one of the following:
+						--	. `era'
+						--	. `time_zone_offset'
+						--	. `time_zone_name'
+						-- Ignore them and insert a space
 						create {I18N_USERSTRING_ELEMENT} l_format_code.make (" ")
 						i := next_escape_char + 1
 					end

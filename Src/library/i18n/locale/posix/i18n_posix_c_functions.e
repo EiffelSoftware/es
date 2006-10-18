@@ -8,7 +8,7 @@ indexing
 class
 	I18N_UNIX_C_FUNCTIONS
 
-feature {LOCALE} -- Initialization
+feature {I18N_LOCALE} -- Initialization
 
 	set_locale ( a_pointer : POINTER) is
 			-- set the locale to the locale

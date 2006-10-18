@@ -1,0 +1,110 @@
+# translation of test application to Japanese
+# Etienne Reichenbach
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;"
+
+#: str1
+msgid "Application"
+msgstr "適用"
+
+#: str2
+msgid "File"
+msgstr "ファイル"
+
+
+#: str3
+msgid "Increase n"
+msgstr "増加 n"
+
+
+#: str4
+msgid "Decrease n"
+msgstr "減少 n"
+
+
+#: str5
+msgid "Save"
+msgstr "を除けば"
+
+
+#: str6
+msgid "n is now equal $1"
+msgstr "同輩 $1 は今ある"
+
+#: str7
+msgid "Simple label"
+msgstr "簡単なラベル"
+
+#: str8
+msgid "This is singular"
+msgid_plural "This is plural"
+msgstr[0] "これは単一である"
+msgstr[1] "これは複数である"
+
+#: str9
+msgid "There is 1 file"
+msgid_plural "There are $1 files"
+msgstr[0] "$1 つのファイルがある"
+msgstr[1] "$1 のファイルがある"
+
+#: str10
+msgid "singular"
+msgid_plural "plural"
+msgstr[0] "複数"
+msgstr[1] "単一"
+
+#: str11
+msgid "Select language"
+msgstr "言語を選びなさい"
+
+#: str12
+msgid "arabic"
+msgstr "アラビア [ar]"
+
+#: str13
+msgid "italian"
+msgstr "イタリア語 [it]"
+
+#: str14
+msgid "greek"
+msgstr "ギリシャ語 [gr]"
+
+#: str15
+msgid "hebrew"
+msgstr "ヘブライ[he]"
+
+#: str16
+msgid "japanese"
+msgstr "日本語 [ja]"
+
+#: str17
+msgid "russian"
+msgstr "ロシア語 [ru]"
+
+#: str18
+msgid "chinese"
+msgstr "中国語 [zh_CN]"
+
+#: str19
+msgid "english"
+msgstr "英語 [en]"
+
+#: str21
+msgid "OK"
+msgstr ""
+
+#: str22
+msgid "Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, please write a mail to: es-i18n@origo.ethz.ch%N%N"
+msgstr "i18n のチームETHZ がなすデモの塗布%N%N虫のために、提案か他は、郵便をに書く: es-i18n@origo.ethz.ch%N%N"
+
+#: str23
+msgid "Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgstr "チームのメンバー:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+
+#: str24
+msgid "About Dialog"
+msgstr "ダイアログについて"

@@ -1,0 +1,95 @@
+# translation of test application to Hebrew
+# Etienne Reichenbach
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;"
+
+#: str1
+msgid "Application"
+msgstr "יצאה מהייש"
+
+#: str2
+msgid "File"
+msgstr "קוב"
+
+
+#: str3
+msgid "Increase n"
+msgstr ""
+
+
+#: str4
+msgid "Decrease n"
+msgstr ""
+
+
+#: str5
+msgid "Save"
+msgstr "&שמור"
+
+
+#: str6
+msgid "n is now equal $1"
+msgstr ""
+
+#: str7
+msgid "Simple label"
+msgstr ""
+
+#: str8
+msgid "This is singular"
+msgid_plural "This is plural"
+msgstr[0] ""
+msgstr[1] ""
+
+#: str9
+msgid "There is 1 file"
+msgid_plural "There are $1 files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: str10
+msgid "singular"
+msgid_plural "plural"
+msgstr[0] ""
+msgstr[1] ""
+
+
+#: str11
+msgid "Select language"
+msgstr ""
+
+#: str12
+msgid "arabic"
+msgstr ""
+
+#: str13
+msgid "italian"
+msgstr ""
+
+#: str14
+msgid "greek"
+msgstr ""
+
+#: str15
+msgid "hebrew"
+msgstr ""
+
+#: str16
+msgid "japanese"
+msgstr ""
+
+#: str17
+msgid "russian"
+msgstr ""
+
+#: str18
+msgid "chinese"
+msgstr ""
+
+#: str19
+msgid "english"
+msgstr ""

@@ -1,0 +1,116 @@
+
+
+msgid ""
+msgstr ""
+"Language-Team: YOUR TEAM HERE\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"MIME-Version: 1.0\n"
+"Last-Translator: YOUR NAME HERE\n"
+
+
+
+msgid "arabic"
+msgstr "阿拉伯语"
+
+
+msgid "File"
+msgstr "文件"
+
+
+msgid "hebrew"
+msgstr "希伯莱 "
+
+
+msgid "english"
+msgstr "英文"
+
+
+msgid "Decrease n"
+msgstr "缩小 n"
+
+
+msgid "Select language"
+msgstr "选择语言"
+
+
+msgid "This is singular"
+msgid_plural "This is plural"
+msgstr[0] "这是单数"
+msgstr[1] "这是单数"
+msgstr[2] "这是复数"
+
+
+
+
+
+msgid "Increase n"
+msgstr "提高 n"
+
+
+msgid "About Dialog"
+msgstr "关于 Dialog"
+
+
+msgid "Application"
+msgstr "应用程序"
+
+
+msgid "japanese"
+msgstr "日语"
+
+
+msgid "n is now equal $1"
+msgstr "n等于$1"
+
+
+msgid "chinese"
+msgstr "中文"
+
+
+msgid "italian"
+msgstr "意大利语"
+
+
+msgid ""
+"Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas M"
+"urbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N "
+"  - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgstr ""
+"项目参与：Christian Conti%N   - Leo Fellmann%N   - Andreas M"
+"urbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N "
+"  - Martino Trosi%N   - Carlo Vanini%N   -张红（Hong Zhang)"
+
+
+msgid "There is 1 file"
+msgid_plural "There are $1 files"
+msgstr[0] "这是$1个文件"
+	
+
+
+msgid "OK"
+msgstr "OK"
+
+
+msgid ""
+"Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, pl"
+"ease write a mail to: es-i18n@origo.ethz.ch%N%N"
+msgstr ""
+"演示程序由诉历史工学院i18n组制作%N%N"
+"，如果有任何建议及不妥之处，请发信至 es-i18n@origo.ethz.ch"
+
+
+msgid "greek"
+msgstr "希腊语"
+
+
+msgid "About"
+msgstr "关于"
+
+
+msgid "Simple label"
+msgstr "简单标志"
+
+
+msgid "russian"
+msgstr "俄罗斯语"

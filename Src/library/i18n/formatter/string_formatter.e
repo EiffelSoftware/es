@@ -165,8 +165,4 @@ feature -- Values
 
 	escape_character : CHARACTER
 
-invariant
-
-	escape_character_exists: escape_character /= Void
-
 end

@@ -143,7 +143,6 @@ feature {NONE} -- Implementation
 			is_integer: a_string.is_integer
 		local
 			i,pos: INTEGER
-			l_string: STRING_32
 		do
 			create Result.make_empty
 			from

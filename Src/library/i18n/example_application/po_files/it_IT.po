@@ -1,0 +1,109 @@
+# translation of test application to Italian
+# Etienne Reichenbach
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: str1
+msgid "Application"
+msgstr "Applicazione"
+
+#: str2
+msgid "File"
+msgstr "File"
+
+
+#: str3
+msgid "Increase n"
+msgstr "Incrementa n"
+
+
+#: str4
+msgid "Decrease n"
+msgstr "Decrementa n"
+
+
+#: str5
+msgid "About"
+msgstr "About"
+
+
+#: str6
+msgid "n is now equal $1"
+msgstr "n è uguale a $1"
+
+#: str7
+msgid "Simple label"
+msgstr "etichetta semplice"
+
+#: str8
+msgid "This is singular"
+msgid_plural "This is plural"
+msgstr[0] "Questo è singolare"
+msgstr[1] "Questo è plurale"
+
+#: str9
+msgid "There is 1 file"
+msgid_plural "There are $1 files"
+msgstr[0] "C'è un file"
+msgstr[1] "Ci sono $1 file"
+
+#: str10
+msgid "singular"
+msgid_plural "plural"
+msgstr[0] "singolare"
+msgstr[1] "plurale"
+
+#: str11
+msgid "Select language"
+msgstr "Seleziona lingua"
+
+#: str12
+msgid "arabic"
+msgstr "arabo [ar]"
+
+#: str13
+msgid "italian"
+msgstr "italiano [it]"
+
+#: str14
+msgid "greek"
+msgstr "greco [gr]"
+
+#: str15
+msgid "hebrew"
+msgstr "ebraico [he]"
+
+#: str16
+msgid "japanese"
+msgstr "giapponese [ja]"
+
+#: str17
+msgid "russian"
+msgstr "russo [ru]"
+
+#: str18
+msgid "chinese"
+msgstr "cinese [zh_CN]"
+
+#: str19
+msgid "english"
+msgstr "inglese [en]"
+
+#: str21
+msgid "OK"
+msgstr "OK"
+
+#: str22
+msgid "Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, please write a mail to: es-i18n@origo.ethz.ch%N%N"
+msgstr "Applicazione progettata dal Team i18n ETHZ%N%NPer errori, proposte o latri, scrivi una mail a: es-i18n@origo.ethz.ch%N%N"
+
+#: str23
+msgid "Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgstr "Membri del team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+
+#: str24
+msgid "About Dialog"
+msgstr "About Dialog"
