@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Main interface to the i18n library. Provides access to translations and formatting objects for a given locale."
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 

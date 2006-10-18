@@ -1,7 +1,8 @@
 indexing
-	description: "Facilities to convert, read and write STRING_32 objects."
+	description: "Facilities to read and write UTF-8 encoded strings"
 	status: "testing"
-	author: "i18n Team, ETH Zurich"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 

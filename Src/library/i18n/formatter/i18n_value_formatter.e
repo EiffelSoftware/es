@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Class that provides functions to format a number according to information in an I18N_NUMERIC_INFO"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,8 +14,10 @@ create
 feature -- Initialization
 
 	make (a_locale_info: I18N_LOCALE_INFO) is
-			-- create value formatter according
+			-- create value formatter according to
 			-- values in `a_locale_info'
+		require
+			a_locale_info /= Void
 		do
 			decimal_separator := a_locale_info.value_decimal_separator
 			numbers_after_decimal_separator := a_locale_info.value_numbers_after_decimal_separator

@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Identifies a given locale and optionally it's script (sometimes a locale has multiple scripts)."
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 

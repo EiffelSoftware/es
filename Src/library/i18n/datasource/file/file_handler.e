@@ -3,7 +3,7 @@ indexing
 				Abstract representation of a link in a chain-of-responsability 
 				pattern that knows how to handle one particular type of dictionary file
 					]"
-	author: "leof@ethz.ch"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"

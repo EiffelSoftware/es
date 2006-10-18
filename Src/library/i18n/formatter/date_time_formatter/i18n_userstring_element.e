@@ -1,5 +1,14 @@
+indexing
+	description: "Formatting element that consists of a constant string"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
+	date: "$Date$"
+	revision: "$Revision$"
+
 class I18N_USERSTRING_ELEMENT
-inherit I18N_FORMATTING_ELEMENT
+
+inherit
+	I18N_FORMATTING_ELEMENT
 
 create
 	make

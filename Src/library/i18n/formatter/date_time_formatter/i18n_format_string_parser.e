@@ -3,6 +3,8 @@ indexing
 		Object that allows parsing formatting strings,
 		as defined in the POSIX standard
 		]"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 

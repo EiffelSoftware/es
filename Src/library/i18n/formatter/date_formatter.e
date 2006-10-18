@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Class that allows formatting of a DATE, TIME, or DATE_TIME according to the information in a I18N_DATE_TIME_INFO"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,10 +17,9 @@ class
 				-- do
 
 				do
-					info := locale_info
-					create long_date_format.make (info.long_date_format, info)
-					create long_time_format.make (info.long_time_format, info)
-					create date_time_format.make (info.date_time_format, info)
+					create long_date_format.make (locale_info.long_date_format, locale_info)
+					create long_time_format.make (locale_info.long_time_format, locale_info)
+					create date_time_format.make (locale_info.date_time_format, locale_info)
 				end
 
 	feature
@@ -51,7 +51,6 @@ class
 
 	feature {NONE}
 		-- Implementation
-			info: I18N_LOCALE_INFO
 			long_date_format: I18N_FORMAT_STRING
 			long_time_format: I18N_FORMAT_STRING
 			date_time_format: I18N_FORMAT_STRING

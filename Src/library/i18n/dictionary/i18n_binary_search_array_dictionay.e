@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: "Hong Zhang"
+	description: "Implementation of DICTIONARY that stores entries in a sorted array and uses binary search to retrieve them"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date: 2006-10-02 09:59:08  (Mon, 02 Oct 2006)$"
 	revision: "$Revision$"
 

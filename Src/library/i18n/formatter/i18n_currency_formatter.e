@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Class that can format a currency value according to the rules in a CURRENCY_INFO"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -27,13 +28,13 @@ feature -- Utility
 	format_currency (a_value: REAL_64): STRING_32 is
 			-- format a_value according the `format_string'
 		do
-			if currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_prefixed then
+			if currency_symbol_location= {I18N_CURRENCY_INFO}.currency_symbol_prefixed then
 				create Result.make_from_string (currency_symbol+" "+
 												  currency_value_formatter.format_real_64 (a_value))
-			elseif currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_appended then
+			elseif currency_symbol_location= {I18N_CURRENCY_INFO}.currency_symbol_appended then
 				create Result.make_from_string (currency_value_formatter.format_real_64 (a_value)
 												+" "+currency_symbol)
-			elseif currency_symbol_location= {I18N_LOCALE_INFO}.currency_symbol_radix then
+			elseif currency_symbol_location= {I18N_CURRENCY_INFO}.currency_symbol_radix then
 				create Result.make_from_string (currency_value_formatter.format_real_64 (a_value))
 			else
 				-- default: prefixed

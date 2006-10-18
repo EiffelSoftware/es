@@ -1,5 +1,16 @@
+indexing
+	description: "String of formatting elements that can be filled at any time."
+	author: "Etienne Reichenbach (etienner@ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
+	date: "$Date$"
+	revision: "$Revision$"
+
+
 class I18N_FORMAT_STRING
-inherit I18N_FORMATTING_ELEMENT
+
+
+inherit
+	I18N_FORMATTING_ELEMENT
 
 create
 	make

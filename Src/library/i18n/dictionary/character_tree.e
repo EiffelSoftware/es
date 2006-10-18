@@ -1,3 +1,10 @@
+indexing
+	description: "Datastructure that indexes items with a string_32 key by constructing a tree of characters"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
+	date: "$Date$"
+	revision: "$Revision$"
+
 class
 	CHARACTER_TREE[G]
 inherit

@@ -1,6 +1,7 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Singleton that provides an I18N_URI_PARSER"
+	author: "ES-i18n team (es-18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,8 +9,7 @@ class
 	SHARED_I18N_URI_PARSER
 
 	feature
-		-- Access
-
+		-- Shared object
 		parser: I18N_URI_PARSER is
 				-- shared I18N_URI_PARSER
 			once
