@@ -10,7 +10,8 @@ class
 feature -- Initialization
 
 	locale: I18N_LOCALE is
-			--
+			-- return current locale
+			-- if void create
 		do
 			if current_locale /= Void then
 				Result := current_locale
@@ -24,7 +25,8 @@ feature -- Initialization
 		end
 
 	set_locale (a_locale: STRING_32) is
-			--
+			-- set current localeto a_locale if available
+			-- else live it unchanged
 		local
 			l_locale_id: I18N_LOCALE_ID
 		do
@@ -37,7 +39,9 @@ feature -- Initialization
 			loop
 				available_locales.forth
 			end
-			current_locale := locale_manager.get_locale (available_locales.item)
+			if not available_locales.after then
+				current_locale := locale_manager.get_locale (available_locales.item)
+			end
 		end
 
 
