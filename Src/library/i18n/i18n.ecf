@@ -32,7 +32,19 @@
 				<dotnet value="false"/>
 			</condition>
 		</external_object>
-
+		<!-- Assembly for .NET -->
+		<assembly name="a_ise_dotnet_framework_mscorlib.dll" location="$ISE_DOTNET_FRAMEWORK\mscorlib.dll">
+			<condition>
+				<platform value="windows"/>
+				<dotnet value="true"/>
+			</condition>
+		</assembly>
+		<assembly name="a_ise_dotnet_framework_system.dll" location="$ISE_DOTNET_FRAMEWORK\System.dll">
+			<condition>
+				<platform value="windows"/>
+				<dotnet value="true"/>
+			</condition>
+		</assembly>
 		
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="True"/>
 		
@@ -55,7 +67,7 @@
 						<platform value="unix"/>
 					</condition>
 				</cluster>
-				<cluster name="dotnet_imp" location="dotnet">
+				<cluster name="dotnet_imp" location="./locale/dotnet">
 					<condition>
 						<platform value="windows"/>
 						<dotnet value="true"/>
