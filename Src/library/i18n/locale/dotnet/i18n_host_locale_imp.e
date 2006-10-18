@@ -1,5 +1,7 @@
 indexing
-	description: "Objects that..."
+	description: "Implementation of I18N_HOST_LOCALE for .NET"
+	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
+	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,7 +20,7 @@ class
 feature -- Initialization
 
 	default_create is
-			--
+			-- Create culture info with "en-US" as locale
 		local
 			t_culture_info : CULTURE_INFO
 		do
@@ -35,7 +37,8 @@ feature -- Initialization
 		do
 			create culture_info.make_from_name (t_culture_info.current_culture.name)
 			create l_locale_id.make_from_string (culture_info.name)
-			Result := fill
+			create Result.make
+			fill (Result)
 			Result.set_id (l_locale_id)
 		ensure then
 			culture_info_exists: culture_info /= Void
@@ -45,8 +48,9 @@ feature -- Initialization
 			-- Creation procedure
 			-- create from name
 		do
-			create culture_info.make_from_name (a_locale_id.language+"-"+a_locale_id.region)
-			Result := fill
+			create culture_info.make_from_name (a_locale_id.name)
+			create Result.make
+			fill (Result)
 			Result.set_id (a_locale_id)
 		ensure then
 			culture_info_exists : culture_info /= Void
@@ -54,41 +58,60 @@ feature -- Initialization
 
 feature {NONE} -- Fill
 
-	fill: I18N_LOCALE_INFO is
- 				-- fills a locale_info
- 			do
- 				create Result.make
- 				-- set date time formatting
- 				Result.set_date_time_format (get_date_time_format)
-				Result.set_long_date_format (get_long_date_format)
-				Result.set_long_time_format (get_long_time_format)
-				Result.set_short_date_format (get_short_date_format)
-				Result.set_short_time_format (get_short_time_format)
- 				Result.set_am_suffix (get_am_suffix)
-				Result.set_pm_suffix (get_pm_suffix)
-				-- set day/month names
-				Result.set_day_names (get_day_names)
-				Result.set_month_names (get_month_names)
- 				Result.set_abbreviated_day_names (get_abbreviated_day_names)
- 				Result.set_abbreviated_month_names (get_abbreviated_month_names)
- 				-- set number formatting
-				Result.set_value_decimal_separator (get_value_decimal_separator)
-				Result.set_value_numbers_after_decimal_separator (get_value_numbers_after_decimal_separator)
-				Result.set_value_group_separator (get_value_group_separator)
-				Result.set_value_grouping (get_value_grouping)
- 				-- set currency formatting
-				Result.set_currency_symbol (get_currency_symbol)
- 				Result.set_currency_decimal_separator (get_currency_decimal_separator)
- 				Result.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
- 				Result.set_currency_group_separator (get_currency_group_separator)
- 				Result.set_currency_grouping (get_currency_grouping)
-				-- set international currency formatting
-				Result.set_international_currency_symbol (get_int_currency_symbol)
-				Result.set_international_currency_decimal_separator (get_int_currency_decimal_separator)
- 				Result.set_international_currency_numbers_after_decimal_separator (get_int_currency_numbers_after_decimal_separator)
- 				Result.set_international_currency_group_separator (get_int_currency_group_separator)
+	fill (a_locale_info: I18N_LOCALE_INFO)
+			-- fill `a_locale_info' with all available informations
+		require
+			a_locale_info_exists: a_locale_info /= Void
+		do
+			fill_date_time_info (a_locale_info)
+			fill_numeric_info (a_locale_info)
+			fill_currency_info (a_locale_info)
+		end
 
- 			end
+	fill_currency_info (a_currency_info: I18N_CURRENCY_INFO)
+			-- fill a `a_currency_info' with currency infomation
+		require
+			a_currency_info_exists: a_currency_info /= Void
+		do
+			a_currency_info.set_currency_symbol (get_currency_symbol)
+			a_currency_info.set_currency_decimal_separator (get_currency_decimal_separator)
+			a_currency_info.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
+			a_currency_info.set_currency_group_separator (get_currency_group_separator)
+			a_currency_info.set_currency_grouping (get_currency_grouping)
+			a_currency_info.set_international_currency_symbol (get_int_currency_symbol)
+			a_currency_info.set_international_currency_decimal_separator (get_int_currency_decimal_separator)
+			a_currency_info.set_international_currency_numbers_after_decimal_separator (get_int_currency_numbers_after_decimal_separator)
+			a_currency_info.set_international_currency_group_separator (get_int_currency_group_separator)
+		end
+
+	fill_date_time_info (a_date_time_info: I18N_DATE_TIME_INFO)
+			-- fill `a_date_time_info' with date/time informations
+		require
+			a_date_time_info_exists: a_date_time_info /= Void
+		do
+			a_date_time_info.set_date_time_format (get_date_time_format)
+			a_date_time_info.set_long_date_format (get_long_date_format)
+			a_date_time_info.set_long_time_format (get_long_time_format)
+			a_date_time_info.set_short_date_format (get_short_date_format)
+			a_date_time_info.set_short_time_format (get_short_time_format)
+			a_date_time_info.set_am_suffix (get_am_suffix)
+			a_date_time_info.set_pm_suffix (get_pm_suffix)
+			a_date_time_info.set_day_names (get_day_names)
+			a_date_time_info.set_month_names (get_month_names)
+			a_date_time_info.set_abbreviated_day_names (get_abbreviated_day_names)
+			a_date_time_info.set_abbreviated_month_names (get_abbreviated_month_names)
+		end
+
+	fill_numeric_info (a_numeric_info: I18N_NUMERIC_INFO)
+			-- fill `a_date_time_info' with numeric informations
+		require
+			a_date_time_info_exists: a_numeric_info /= Void
+		do
+			a_numeric_info.set_value_decimal_separator (get_value_decimal_separator)
+			a_numeric_info.set_value_numbers_after_decimal_separator (get_value_numbers_after_decimal_separator)
+			a_numeric_info.set_value_group_separator (get_value_group_separator)
+			a_numeric_info.set_value_grouping (get_value_grouping)
+		end
 
 
 
@@ -105,9 +128,17 @@ feature -- Informations
 	is_available (a_locale_id : I18N_LOCALE_ID) : BOOLEAN is
 			-- I guess it is always true
 		local
-			l_culture_type : CULTURE_TYPES
+			l_list: LINKED_LIST[I18N_LOCALE_ID]
 		do
-			Result := True
+			l_list := available_locales
+			from
+				l_list.start
+			until
+				l_list.after or else Result
+			loop
+				Result := l_list.item.is_equal (a_locale_id)
+				l_list.forth
+			end
 		end
 
 	available_locales : LINKED_LIST[I18N_LOCALE_ID] is
@@ -402,8 +433,6 @@ feature	-- currency formatting
 
 	get_currency_grouping: ARRAY[INTEGER_32] is
 			-- Gropuing rules for currency
-		local
-			l_array: NATIVE_ARRAY[INTEGER_32]
 		do
 			Result := native_array_to_array (culture_info.number_format.currency_group_sizes)
 		ensure
