@@ -13,18 +13,18 @@ create
 
 feature -- Initialization
 
-	make (a_locale_info: I18N_LOCALE_INFO) is
+	make (a_numeric_info: I18N_NUMERIC_INFO) is
 			-- create value formatter according to
-			-- values in `a_locale_info'
+			-- values in `a_numeric_info'
 		require
-			a_locale_info /= Void
+			a_numeric_info_exists: a_numeric_info /= Void
 		do
-			decimal_separator := a_locale_info.value_decimal_separator
-			numbers_after_decimal_separator := a_locale_info.value_numbers_after_decimal_separator
-			group_separator := a_locale_info.value_group_separator
-			grouping := a_locale_info.value_grouping
-			positive_sign := a_locale_info.value_positive_sign
-			negative_sign := a_locale_info.value_negative_sign
+			decimal_separator := a_numeric_info.value_decimal_separator
+			numbers_after_decimal_separator := a_numeric_info.value_numbers_after_decimal_separator
+			group_separator := a_numeric_info.value_group_separator
+			grouping := a_numeric_info.value_grouping
+			positive_sign := a_numeric_info.value_positive_sign
+			negative_sign := a_numeric_info.value_negative_sign
 		end
 
 feature -- Integer Formatting functions
@@ -185,7 +185,7 @@ feature {NONE} -- Implementation
 						end
 					end
 					i := grouping.upper -- to terminate loop
-				else	-- grouping.item (i) = 0 and i-1 < grouping.lower
+				else	-- grouping.item (i) <= 0 and i-1 < grouping.lower
 						-- i.e. no valid grouping array. Append rest to result and finish
 					Result.prepend (a_string.substring (1,pos))
 					i := grouping.upper -- to terminate loop
@@ -204,6 +204,7 @@ feature {NONE} -- Implementation
 		do
 
 			if a_string.is_equal ("0") then
+					-- real part is equal 0
 				create Result.make_filled ('0',numbers_after_decimal_separator)
 			else
 				create Result.make_from_string (a_string.substring (1,numbers_after_decimal_separator))

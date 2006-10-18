@@ -34,7 +34,8 @@ feature -- Initialization
 		do
 			create l_c_string.make (a_locale_id.name)
 			set_locale (l_c_string.item)
-			Result := fill
+			create Result.make
+			fill (Result)
 			Result.set_id(a_locale_id)
 		ensure then
 			locale_set: locale_name.is_equal(a_locale_id.name) or
@@ -118,37 +119,62 @@ feature -- Informations
 
  feature {NONE} -- fill
 
- 		fill: I18N_LOCALE_INFO is
- 				-- fills an locale_info
+ 		fill (a_locale_info: I18N_LOCALE_INFO) is
+ 				-- fill `a_locale_info' with all available informations
+ 			require
+ 				a_locale_info_exists: a_locale_info /= Void
  			do
- 				create Result.make
+				fill_date_time_info (a_locale_info)
+				fill_numeric_info (a_locale_info)
+				fill_currency_info (a_locale_info)
+ 			end
+
+ 		fill_date_time_info (a_date_time_info: I18N_DATE_TIME_INFO) is
+ 				-- fill `a_date_time_info' with the available informations
+ 			require
+ 				a_date_time_info_exists: a_date_time_info /= Void
+ 			do
  				-- set date time formatting
- 				Result.set_date_time_format (get_date_time_format)
-				Result.set_long_date_format (get_long_date_format)
-				Result.set_long_time_format (get_long_time_format)
- 				Result.set_am_suffix (get_am_suffix)
-				Result.set_pm_suffix (get_pm_suffix)
+ 				a_date_time_info.set_date_time_format (get_date_time_format)
+				a_date_time_info.set_long_date_format (get_long_date_format)
+				a_date_time_info.set_long_time_format (get_long_time_format)
+ 				a_date_time_info.set_am_suffix (get_am_suffix)
+				a_date_time_info.set_pm_suffix (get_pm_suffix)
 				-- set day/month names
-				Result.set_day_names (get_day_names)
-				Result.set_month_names (get_month_names)
- 				Result.set_abbreviated_day_names (get_abbreviated_day_names)
- 				Result.set_abbreviated_month_names (get_abbreviated_month_names)
+				a_date_time_info.set_day_names (get_day_names)
+				a_date_time_info.set_month_names (get_month_names)
+ 				a_date_time_info.set_abbreviated_day_names (get_abbreviated_day_names)
+ 				a_date_time_info.set_abbreviated_month_names (get_abbreviated_month_names)
+ 			end
+
+ 		fill_numeric_info (a_numeric_info: I18N_NUMERIC_INFO) is
+ 				-- fill `a_numeric_info' with the available informations
+ 			require
+ 				a_numeric_info_exists: a_numeric_info /= Void
+ 			do
  				-- set number formatting
-				Result.set_value_decimal_separator (get_value_decimal_separator)
-				Result.set_value_group_separator (get_value_group_separator)
-				Result.set_value_grouping (get_value_grouping)
+				a_numeric_info.set_value_decimal_separator (get_value_decimal_separator)
+				a_numeric_info.set_value_group_separator (get_value_group_separator)
+				a_numeric_info.set_value_grouping (get_value_grouping)
+			end
+
+		fill_currency_info (a_currency_info: I18N_CURRENCY_INFO) is
+ 				-- fill `a_currency_info' with the available informations
+ 			require
+ 				a_currency_info_exists: a_currency_info /= Void
+ 			do
  				-- set currency formatting
-				Result.set_currency_symbol (get_currency_symbol)
-				Result.set_currency_symbol_location (get_currency_symbol_location)
- 				Result.set_currency_decimal_separator (get_currency_decimal_separator)
- 				Result.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
- 				Result.set_currency_group_separator (get_currency_group_separator)
- 				Result.set_currency_positive_sign (get_currency_positive_sign)
- 				Result.set_currency_negative_sign (get_currency_negative_sign)
- 				Result.set_currency_grouping (get_currency_grouping)
+				a_currency_info.set_currency_symbol (get_currency_symbol)
+				a_currency_info.set_currency_symbol_location (get_currency_symbol_location)
+ 				a_currency_info.set_currency_decimal_separator (get_currency_decimal_separator)
+ 				a_currency_info.set_currency_numbers_after_decimal_separator (get_currency_numbers_after_decimal_separator)
+ 				a_currency_info.set_currency_group_separator (get_currency_group_separator)
+ 				a_currency_info.set_currency_positive_sign (get_currency_positive_sign)
+ 				a_currency_info.set_currency_negative_sign (get_currency_negative_sign)
+ 				a_currency_info.set_currency_grouping (get_currency_grouping)
 				-- set international currency formatting
-				Result.set_international_currency_symbol (get_int_currency_symbol)
-				Result.set_international_currency_decimal_separator (get_int_currency_symbol)
+				a_currency_info.set_international_currency_symbol (get_int_currency_symbol)
+				a_currency_info.set_international_currency_numbers_after_decimal_separator (get_int_currency_numbers_after_decimal_separator)
  			end
 
 feature {NONE} -- Date and time formatting
@@ -311,7 +337,7 @@ feature	{NONE} -- number formatting
 			-- get the decimal separator of numbers
 			-- according the current locales setting
 		do
-			Result := utf8_pointer_to_string (decimal_point (localeconv))
+			create Result.make_from_c (decimal_point (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -320,7 +346,7 @@ feature	{NONE} -- number formatting
 			-- get the group separator (the separator thousend sep.)
 			-- according the current locales setting
 		do
-			Result := utf8_pointer_to_string (thousands_sep (localeconv))
+			create Result.make_from_c (thousands_sep (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -376,7 +402,7 @@ feature	{NONE} -- currency formatting
 			-- get the decimal separator of currency numbers
 			-- according the current locales setting
 		do
-			Result := utf8_pointer_to_string (mon_decimal_point (localeconv))
+			create Result.make_from_c (mon_decimal_point (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -397,7 +423,7 @@ feature	{NONE} -- currency formatting
 			-- get the decimal separator of numbers
 			-- according the current locales setting
 		do
-			Result := utf8_pointer_to_string (mon_thousands_sep (localeconv))
+			create Result.make_from_c (mon_thousands_sep (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -405,7 +431,7 @@ feature	{NONE} -- currency formatting
 	get_currency_positive_sign: STRING_32 is
 			-- positive sign according the current locales setting
 		do
-			Result := utf8_pointer_to_string (positive_sign (localeconv))
+			create Result.make_from_c (positive_sign (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -413,7 +439,7 @@ feature	{NONE} -- currency formatting
 	get_currency_negative_sign: STRING_32 is
 			-- positive sign according the current locales setting
 		do
-			Result := utf8_pointer_to_string (negative_sign (localeconv))
+			create Result.make_from_c (negative_sign (localeconv))
 		ensure
 			result_exists: Result /= Void
 		end
@@ -431,7 +457,7 @@ feature {NONE} -- International currency formatting
 	get_int_currency_symbol: STRING_32 is
 			-- ISO 4217 currency code
 		do
-			Result := utf8_pointer_to_string (int_curr_symbol (localeconv))
+			create Result.make_from_c (int_curr_symbol (localeconv))
 		end
 
 
@@ -450,7 +476,6 @@ feature {NONE} -- International currency formatting
 feature {NONE} --Implementation
 
 	pointer_to_array (a_pointer: POINTER): ARRAY[INTEGER] is
-			-- ARRRGGH! Etienne - ever heard of MANAGED_POINTER?
 		local
 			l_string: STRING_32
 			i, t: INTEGER
@@ -477,7 +502,7 @@ feature {NONE} --Implementation
 		end
 
 
-		c_strlen(ptr:POINTER):INTEGER is
+	c_strlen(ptr:POINTER):INTEGER is
 				--
 		external
 			"C (void *): EIF_INTEGER| %"string.h%""

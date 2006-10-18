@@ -26,6 +26,8 @@ feature -- Parser
 
 	make (a_locale_info: I18N_LOCALE_INFO) is
 			-- Creation procedure
+		require
+			a_locale_info_exists: a_locale_info /= Void
 		do
 			locale_info := a_locale_info
 		end
@@ -37,6 +39,8 @@ feature -- Parser
 			-- parse `a_string', for every format character, create
 			-- appropriate formatting_element and put it in the list
 			-- returned as result
+		require
+			a_string_exists: a_string /= Void
 		local
 			i: INTEGER_32
 			next_escape_char: INTEGER_32
@@ -178,6 +182,8 @@ feature -- Parser
 					Result.extend (l_format_code)
 				end
 			end
+		ensure
+			Result_exists: Result /= Void
 		end
 
  feature {NONE} -- Implementation
@@ -206,6 +212,8 @@ feature -- Parser
  				-- Insert a space
 				create {I18N_USERSTRING_ELEMENT} Result.make (" ")
  			end
+ 		ensure
+ 			Result_exists: Result /= Void
  		end
 
  	parse_modified_2 (a_char: CHARACTER): I18N_FORMATTING_ELEMENT is
@@ -248,6 +256,10 @@ feature -- Parser
  				-- Insert a space
 				create {I18N_USERSTRING_ELEMENT} Result.make (" ")
  			end
+ 		ensure
+ 			Result_exists: Result /= Void
  		end
 
+invariant
+	locale_info_exists: locale_info /= Void
 end

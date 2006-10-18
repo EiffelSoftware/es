@@ -13,14 +13,14 @@ create
 
 feature  -- Initialization
 
-	make (a_locale_info: I18N_LOCALE_INFO) is
+	make (a_currency_info: I18N_CURRENCY_INFO) is
 			-- Initialization
 		require
-			a_locale_info_exists: a_locale_info /= Void
+			a_currency_info_exists: a_currency_info /= Void
 		do
-			currency_symbol_location := a_locale_info.currency_symbol_location
-			currency_symbol := a_locale_info.currency_symbol
-			create currency_value_formatter.make (a_locale_info)
+			currency_symbol_location := a_currency_info.currency_symbol_location
+			currency_symbol := a_currency_info.currency_symbol
+			create currency_value_formatter.make_from_currency_info (a_currency_info)
 		end
 
 feature -- Utility
