@@ -118,7 +118,7 @@ feature -- Default values
 feature -- Normal Element change
 
 	set_currency_symbol (a_currency_symbol : STRING_GENERAL) is
-			--
+			-- set the currency symbol
 		require
 			a_currency_symbol_exists: a_currency_symbol /= Void
 		do
@@ -128,7 +128,7 @@ feature -- Normal Element change
 		end
 
 	set_currency_symbol_location(a_location:INTEGER) is
-			--
+			-- set the currency symbol location
 		require
 			a_location_valid: (a_location >= 0) and (a_location <= 2)
 		do
@@ -178,7 +178,7 @@ feature -- Normal Element change
 		end
 
 	set_currency_positive_sign (a_string: STRING_GENERAL) is
-			--
+			-- set positive sign used
 		require
 			argument_not_void: a_string/= Void
 		do
@@ -188,7 +188,7 @@ feature -- Normal Element change
 		end
 
 	set_currency_negative_sign (a_string: STRING_GENERAL) is
-			--
+			-- set negative sign used
 		require
 			argument_not_void: a_string/= Void
 		do
@@ -208,7 +208,7 @@ feature -- Normal Element change
 feature -- International Element change
 
 	set_international_currency_symbol (a_currency_symbol : STRING_GENERAL) is
-			--
+			-- set the international currency symbol
 		require
 			a_currency_symbol_exists: a_currency_symbol /= Void
 		do
@@ -218,7 +218,7 @@ feature -- International Element change
 		end
 
 	set_international_currency_symbol_location(a_location:INTEGER) is
-			--
+			-- set the international currency symbol location
 		require
 			a_location_valid: (a_location >= 0) and (a_location <= 2)
 		do

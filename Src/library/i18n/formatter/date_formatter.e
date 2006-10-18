@@ -11,50 +11,55 @@ class
 	create
 		make
 
-	feature
-		-- Creation
-		make (locale_info: I18N_LOCALE_INFO) is
-				-- do
+feature	-- Creation
 
-				do
-					create long_date_format.make (locale_info.long_date_format, locale_info)
-					create long_time_format.make (locale_info.long_time_format, locale_info)
-					create date_time_format.make (locale_info.date_time_format, locale_info)
-				end
+	make (locale_info: I18N_LOCALE_INFO) is
+			-- Initialize with informations  in `locale_info'
+		require
+			locale_info_exists: locale_info /= Void
+		do
+			create long_date_format.make (locale_info.long_date_format, locale_info)
+			create long_time_format.make (locale_info.long_time_format, locale_info)
+			create date_time_format.make (locale_info.date_time_format, locale_info)
+		end
 
-	feature
-		-- Access
-		format_date(date:DATE):STRING_32 is
-				-- formats an EiffelTime date according to the long date format
-				require
-					date_not_void: date /= Void
-				do
-					Result := long_date_format.filled (DATE,create {TIME}.make_now)
-				end
+feature	-- Access
 
-		format_time(time: TIME): STRING_32 is
-				-- formats an EiffelTime time according to the long time format
-			require
-				time_not_void: time /= Void
-			do
-				Result := long_time_format.filled (create {DATE}.make_now, time)
-			end
+	format_date (date:DATE): STRING_32 is
+			-- formats an EiffelTime date according to the long date format
+		require
+			date_not_void: date /= Void
+		do
+			Result := long_date_format.filled (DATE,create {TIME}.make_now)
+		end
 
-		format_date_time(date_time:DATE_TIME):STRING_32 is
-				--
-			require
-				date_time_not_void: date_time /= Void
-			do
-				Result := date_time_format.filled(date_time.date, date_time.time)
-			end
+	format_time (time: TIME): STRING_32 is
+		-- formats an EiffelTime time according to the long time format
+		require
+			time_not_void: time /= Void
+		do
+			Result := long_time_format.filled (create {DATE}.make_now, time)
+		end
 
-
-	feature {NONE}
-		-- Implementation
-			long_date_format: I18N_FORMAT_STRING
-			long_time_format: I18N_FORMAT_STRING
-			date_time_format: I18N_FORMAT_STRING
+	format_date_time (date_time: DATE_TIME): STRING_32 is
+			--
+		require
+			date_time_not_void: date_time /= Void
+		do
+			Result := date_time_format.filled(date_time.date, date_time.time)
+		end
 
 
+feature {NONE} -- Implementation
 
-end
+		long_date_format: I18N_FORMAT_STRING
+		long_time_format: I18N_FORMAT_STRING
+		date_time_format: I18N_FORMAT_STRING
+
+invariant
+
+	long_date_format_exists: long_date_format /= Void
+	long_time_format_exists: long_time_format /= Void
+	date_time_format_exists: date_time_format /= VOid
+
+end -- class I18N_DATE_FORMATTER

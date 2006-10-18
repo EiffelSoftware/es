@@ -16,7 +16,7 @@ create
 feature {I18N_FORMAT_STRING_PARSER} -- Initialization
 
 	make (a_string: STRING_32) is
-			--
+			-- set the `user_string'
 		do
 			user_string := a_string
 		end
@@ -24,12 +24,12 @@ feature {I18N_FORMAT_STRING_PARSER} -- Initialization
 feature -- Output
 
 	filled (a_date: DATE; a_time: TIME): STRING_32 is
- 			--
+ 			-- Return the `user_string'
  		do
 			Result := user_string
  		end
 
-feature {NONE}-- Implementation
+feature {NONE} -- Implementation
 
 	user_string: STRING_32
 

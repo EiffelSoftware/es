@@ -137,7 +137,7 @@ feature {NONE} -- Informations
 feature {NONE} -- Implementation
 
 	format_integer_part (a_string: STRING_32): STRING_32 is
-			--
+			-- group the `a_string' according the rules in `grouping'
 		require
 			a_string_exists: a_string /= Void
 			is_integer: a_string.is_integer

@@ -30,14 +30,17 @@ feature -- Access
 			a_locale_present: has_locale(a_locale)
 		deferred
 		ensure
-			result_exists: Result /= Void
+			dictionary_exists: Result /= Void
 		end
 
 feature -- Informations
 
-	 available_locales: LINEAR[I18N_LOCALE_ID] is deferred end
+	 available_locales: LINEAR[I18N_LOCALE_ID] is
 			-- list of the available locales
-
+		deferred
+		ensure
+			result_exists: Result /= Void
+		end
 
 	has_locale ( a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			-- is `a_locale_id' available?

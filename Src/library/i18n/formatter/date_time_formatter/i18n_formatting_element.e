@@ -11,8 +11,14 @@ deferred class I18N_FORMATTING_ELEMENT
 feature -- Output
 
 	filled (a_date: DATE; a_time: TIME): STRING_32 is
- 			--
+ 			-- fill `Current' with informations
+ 			-- in `a_date' and `a_time'
+ 		require
+ 			a_date_exists: a_date /= Void
+ 			a_time_exists: a_time /= Void
  		deferred
+		ensure
+			result_exists: Result /= Void
  		end
 
 end -- Class NEW_I18N_FORMATTING_ELEMENT

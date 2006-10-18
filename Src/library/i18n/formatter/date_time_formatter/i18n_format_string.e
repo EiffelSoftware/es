@@ -53,6 +53,6 @@ feature -- Actions
 
 invariant
 
-correct_element_list: elements_list /= Void
+	correct_element_list: elements_list /= Void
 
 end -- Class I18N_FORMATTING_ELEMENT

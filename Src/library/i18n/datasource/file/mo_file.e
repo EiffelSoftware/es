@@ -22,10 +22,9 @@ create
 
 feature
 
-	make(a_path: STRING_GENERAL) is
-
+	make (a_path: STRING_GENERAL) is
 		do
-			create file.make (a_path.to_string_8)
+			create {RAW_FILE} file.make (a_path.to_string_8)
 			last_translated := [0, Void]
 			last_original := [0, Void]
 		ensure then
@@ -73,36 +72,38 @@ feature
 
 feature -- Access
 
-	valid_index(i:INTEGER):BOOLEAN is
+	valid_index (i:INTEGER): BOOLEAN is
 			-- is this index valid?
 		do
 			Result := (i >= 1) and (i <= entry_count)
+		ensure then
+			correct_result: Result = (i >= 1) and (i <= entry_count)
 		end
 
-	entry_has_plurals(i:INTEGER):BOOLEAN is
-			--
+	entry_has_plurals (i:INTEGER): BOOLEAN is
+			-- does `i'-th entry have a plural?
 		do
 			get_original_entries (i)
 			Result := last_original.list.count > 1
 		end
 
 
-	original_singular_string(i:INTEGER):STRING_32 is
-			--
+	original_singular_string (i:INTEGER): STRING_32 is
+			-- `i'-th original string
 		do
 			get_original_entries (i)
 			Result := last_original.list.i_th (1)
 		end
 
-	original_plural_string(i:INTEGER):STRING_32 is
-			--
+	original_plural_string (i:INTEGER): STRING_32 is
+			-- `i'-th original plural
 		do
 			get_original_entries (i)
 			Result := last_original.list.i_th(2)
 		end
 
-	translated_singular_string (i: INTEGER):STRING_32 is
-			--
+	translated_singular_string (i: INTEGER): STRING_32 is
+			-- singular translation of `i'-th entry
 		local
 			red: INTEGER
 		do
@@ -111,8 +112,8 @@ feature -- Access
 			Result := last_translated.list.i_th(red+1)
 		end
 
-	translated_plural_strings (i: INTEGER):ARRAY[STRING_32] is
-			--
+	translated_plural_strings (i: INTEGER): ARRAY[STRING_32] is
+			-- plural translations of `i'-th entry
 		local
 			counter: INTEGER
 		do

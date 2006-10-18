@@ -15,6 +15,9 @@ feature
 	-- creation
 	make (path: STRING_GENERAL) is
 			-- does not open the file, just sets the path. Call open afterwards!
+		require
+			string_exists: path /= Void
+			string_not_empty: not path.is_empty
 		deferred
 		end
 
@@ -43,20 +46,18 @@ feature
 	entry_count: INTEGER
 				-- Number of entries in the file.
 
-	feature
-		--entry access
+feature -- entry access
 
-		entry_has_plurals(i: INTEGER): BOOLEAN is
+		entry_has_plurals (i: INTEGER): BOOLEAN is
 				-- does this entry have any plurals?
 			require
 				file_open: opened
 				i_valid_index: valid_index (i)
 			deferred
-
 			end
 
 
-		original_singular_string(i: INTEGER):STRING_32 is
+		original_singular_string (i: INTEGER): STRING_32 is
 				-- Get the original singular string for this entry
 			require
 				file_open: opened
@@ -64,7 +65,7 @@ feature
 			deferred
 			end
 
-		original_plural_string(i:INTEGER):STRING_32 is
+		original_plural_string (i:INTEGER): STRING_32 is
 				--  Get the original plural string for this entry. May return Void if there are none!
 			require
 				file_open: opened
@@ -73,7 +74,7 @@ feature
 			deferred
 			end
 
-		translated_plural_strings(i:INTEGER):ARRAY[STRING_32] is
+		translated_plural_strings (i:INTEGER): ARRAY[STRING_32] is
 				--  get the translated plural strings for this entry. May return Void if there are none!
 				-- array indexes should be 0 t0 3
 			require
@@ -82,11 +83,12 @@ feature
 				plurals_exist: entry_has_plurals(i)
 			deferred
 			ensure
-				Result.lower = 0
-				Result.upper = 3
+				result_exists: Result /= Void
+				correct_lower_index: Result.lower = 0
+				correct_upper_index: Result.upper = 3
 			end
 
-		translated_singular_string(i:INTEGER):STRING_32 is
+		translated_singular_string (i:INTEGER): STRING_32 is
 				-- get the translated singular string for this entry
 			require
 				file_open: opened
@@ -102,8 +104,7 @@ feature
 			end
 
 
- feature
- 	-- mechanics
+feature -- mechanics
 
 	opened: BOOLEAN -- is the file opened?
 	valid: BOOLEAN is
@@ -116,6 +117,8 @@ feature
 		require
 			opened -- can't close file if not open
 		deferred
+		ensure
+			closed: not opened
 		end
 
 	open is
@@ -128,11 +131,10 @@ feature
 
 feature {NONE}
 
-	file: RAW_FILE
+	file: FILE
 
 invariant
 	plural_form_correct: plural_form < 10 and plural_form >= 0
 	opened_only_if_valid: opened implies valid
 	opened_means_file_exists: opened implies file.exists
-
 end

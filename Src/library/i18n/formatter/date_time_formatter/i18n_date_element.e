@@ -25,6 +25,7 @@ feature {I18N_FORMAT_STRING_PARSER} -- Initialization
 feature -- Action
 
 	date_action: FUNCTION[ANY,TUPLE[DATE],STRING_32]
+		-- action to apply
 
 feature --Output
 

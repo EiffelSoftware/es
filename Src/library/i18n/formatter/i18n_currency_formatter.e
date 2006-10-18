@@ -27,6 +27,7 @@ feature -- Utility
 
 	format_currency (a_value: REAL_64): STRING_32 is
 			-- format a_value according the `format_string'
+			--if unknoen location, result done with Prefix rules
 		do
 			if currency_symbol_location= {I18N_CURRENCY_INFO}.currency_symbol_prefixed then
 				create Result.make_from_string (currency_symbol+" "+

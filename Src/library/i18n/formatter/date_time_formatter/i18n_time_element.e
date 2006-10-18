@@ -17,9 +17,11 @@ create
 feature {I18N_FORMAT_STRING_PARSER}  -- Initialization
 
 	make (a_time_action: FUNCTION[ANY,TUPLE[TIME],STRING_32]) is
-			--
+			-- Creation procedure, set `time_action'
 		do
 			time_action := a_time_action
+		ensure
+			time_action_set: time_action = a_time_action
 		end
 
 feature -- Action

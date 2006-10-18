@@ -10,7 +10,7 @@ class SHARED_I18N_FORMATTING_UTILITY
 feature -- Shared object
 
 	fu: I18N_FORMATTING_UTILITY is
-			--
+			-- fu: formatting utility
 		once
 			create Result
 		end

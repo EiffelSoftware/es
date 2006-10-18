@@ -27,14 +27,14 @@ feature -- Constants
 			--  One-character time marker string. (Am/pm -> a/p)
 
 	Am_pm_lowercase: CHARACTER_8 is '9'
-			--  Multi-character time marker string  Lowercase
+			--  Multi-character time marker string Lowercase
 
 	Am_pm_time: CHARACTER_8 is 'r'
 			--  The time in a.m. or p.m. notation.
 			-- In the POSIX locale this is equivalent to `&I:&M:&S &p'
 
 	Am_pm_uppercase: CHARACTER_8 is 'P'
-			--  Multi-character time marker string     Uppercase
+			--  Multi-character time marker string Uppercase
 
 	Century_number: CHARACTER_8 is 'C'
 			--  The century number (year/100) as a 2-digit integer

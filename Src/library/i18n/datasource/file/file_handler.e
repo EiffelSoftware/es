@@ -16,7 +16,7 @@ feature -- chain-of-responsability
 
 		next: I18N_FILE_HANDLER
 
-		set_next(next_handler: I18N_FILE_HANDLER) is
+		set_next (next_handler: I18N_FILE_HANDLER) is
 				-- set next handler in chain
 				do
 					next := next_handler
@@ -24,8 +24,11 @@ feature -- chain-of-responsability
 					next_set: next = next_handler
 				end
 
-		can_handle(a_path:STRING_32):BOOLEAN is
-				-- can this class handle the file pointed to? Check extension, magic number, doctype or whatever you have to.
+		can_handle (a_path:STRING_32): BOOLEAN is
+				-- can this class handle the file pointed to?
+				-- Check extension, magic number, doctype or whatever you have to.
+			require
+				a_path_exists: a_path /= Void
 			deferred
 			end
 
@@ -35,7 +38,8 @@ feature -- chain-of-responsability
 feature -- locale
 
 	get_file_locale (a_path: STRING_GENERAL): I18N_LOCALE_ID is
-			--
+			-- get the locale id file at `a_path'
+			-- NOTE: Void if locale unkown locale
 		do
 			if can_handle(a_path.as_string_32) then
 				Result := extract_locale(a_path)
@@ -54,9 +58,11 @@ feature -- locale
 			not (can_handle(a_path) and then next = Void) implies not handled
 		end
 
-	extract_locale(a_path: STRING_32):I18N_LOCALE_ID is
-			--
+	extract_locale (a_path: STRING_32): I18N_LOCALE_ID is
+			-- extract the locale id from file at `a_path'
+			-- NOTE: Void if unknown locale
 		require
+			a_path_exists: a_path /= Void
 			can_handle(a_path)
 		deferred
 		end
@@ -66,7 +72,9 @@ feature -- locale
 feature -- dictionary
 
 	get_file_dictionary (a_path: STRING_32): I18N_DICTIONARY is
-			--
+			-- get appropriate dictionary for the file at `a_path'
+		require
+			a_path_exists: a_path /= Void
 		do
 			if can_handle(a_path.as_string_32) then
 				Result := extract_dictionary(a_path)
@@ -86,11 +94,15 @@ feature -- dictionary
 		end
 
 
-	extract_dictionary(a_path: STRING_32):I18N_DICTIONARY is
-			--
+	extract_dictionary (a_path: STRING_32): I18N_DICTIONARY is
+			-- Current handler can handle the file at `a_path',
+			-- get appropriate dictionary
 		require
+			a_path_exists: a_path /= Void
 			can_handle(a_path)
 		deferred
+		ensure
+			result_exists: Result /= Void
 		end
 
 

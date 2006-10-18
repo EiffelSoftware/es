@@ -47,6 +47,7 @@ feature --creation
 feature	--identification
 
 		id: I18N_LOCALE_ID
+			-- id of `Current'
 
 feature	-- modification
 

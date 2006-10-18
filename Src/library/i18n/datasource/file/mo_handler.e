@@ -14,63 +14,65 @@ class
 		end
 
 
-		feature
-			can_handle(a_path:STRING_32):BOOLEAN is
-					-- will handle this _if_  it has a file name ending in .mo
-					-- extend later, maybe, to check the magic number.
-				do
-					-- Check file  name
-					if a_path.substring (a_path.count-2, a_path.count).is_equal (".mo") then
-						Result := True
-					end
-				end
+feature -- Interface
 
-			extract_dictionary(a_path:STRING_32): I18N_DICTIONARY is
-				local
-					i: INTEGER
-					temp: I18N_DICTIONARY_ENTRY
-					original_singular, translated_singular, original_plural: STRING_32
-					translated_plurals: ARRAY[STRING_32]
-				do
-					create {I18N_HASH_TABLE_DICTIONARY} Result.make(file.plural_form)
-					create file.make (a_path)
-					file.open
-					if file.opened then
-						from
-							i := 1
-						until
-							i > file.entry_count
-						loop
-							original_singular := file.original_singular_string (i)
-							translated_singular := file.translated_singular_string (i)
-							if file.entry_has_plurals (i) then
-								original_plural := file.original_plural_string (i)
-								translated_plurals := file.translated_plural_strings (i)
-								create temp.make_with_plural(original_singular, original_plural, translated_singular)
-								temp.plural_translations.copy (translated_plurals)
-							else
-								create temp.make (original_singular, translated_singular)
-							end
-							Result.extend (temp)
-							i := i + 1
+		can_handle (a_path:STRING_32) :BOOLEAN is
+				-- will handle this _if_  it has a file name ending in .mo
+				-- extend later, maybe, to check the magic number.
+			do
+				-- Check file  name
+				if a_path.substring (a_path.count-2, a_path.count).is_equal (".mo") then
+					Result := True
+				end
+			end
+
+		extract_dictionary (a_path:STRING_32): I18N_DICTIONARY is
+			local
+				i: INTEGER
+				temp: I18N_DICTIONARY_ENTRY
+				original_singular, translated_singular, original_plural: STRING_32
+				translated_plurals: ARRAY[STRING_32]
+			do
+				create {I18N_HASH_TABLE_DICTIONARY} Result.make(file.plural_form)
+				create file.make (a_path)
+				file.open
+				if file.opened then
+					from
+						i := 1
+					until
+						i > file.entry_count
+					loop
+						original_singular := file.original_singular_string (i)
+						translated_singular := file.translated_singular_string (i)
+						if file.entry_has_plurals (i) then
+							original_plural := file.original_plural_string (i)
+							translated_plurals := file.translated_plural_strings (i)
+							create temp.make_with_plural(original_singular, original_plural, translated_singular)
+							temp.plural_translations.copy (translated_plurals)
+						else
+							create temp.make (original_singular, translated_singular)
 						end
+						Result.extend (temp)
+						i := i + 1
 					end
 				end
+			end
 
-		extract_locale(a_path:STRING_32):I18N_LOCALE_ID is
-				-- TODO: update this
-				-- NOTE: Void indicates unknown locale, not a bug
-				do
-					create file.make (a_path)
-					file.open
-					if
-						file.opened
-					then
-						create Result.make_from_string(file.locale)
-					end
+	extract_locale (a_path:STRING_32): I18N_LOCALE_ID is
+			-- TODO: update this
+			-- NOTE: Void indicates unknown locale, not a bug
+			do
+				create file.make (a_path)
+				file.open
+				if
+					file.opened
+				then
+					create Result.make_from_string(file.locale)
 				end
+			end
 
-		feature
-			file: I18N_MO_FILE
+feature -- File
+
+		file: I18N_MO_FILE
 
 end

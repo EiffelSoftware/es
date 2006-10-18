@@ -13,14 +13,14 @@ class
 			make
 		end
 
-	create
-		make
+create
+	make
 
-	feature
-		-- Creation
+feature	-- Creation
+
 		make (an_uri: STRING_GENERAL) is
 			do
-				Precursor(an_uri)
+				Precursor (an_uri)
 				-- Initialize chain-of-responsability
 				create {I18N_MO_HANDLER} chain
 				-- There is no next element for now
@@ -33,9 +33,9 @@ class
 			end
 
 
-	feature
-		-- Access
-		get_dictionary(a_locale: I18N_LOCALE_ID): I18N_DICTIONARY is
+feature	-- Access
+
+		get_dictionary (a_locale: I18N_LOCALE_ID): I18N_DICTIONARY is
 				-- return appropriate dictionary
 				do
 					Result := chain.extract_dictionary (file_list.item (a_locale))
@@ -47,7 +47,7 @@ class
 					create {ARRAYED_LIST[I18N_LOCALE_ID]} Result.make_from_array (locale_list)
 				end
 
-	feature {NONE} -- Implementation
+feature {NONE} -- Implementation
 
 		chain: I18N_FILE_HANDLER
 		directory: DIRECTORY
@@ -55,7 +55,8 @@ class
 		locale_list: ARRAYED_LIST[I18N_LOCALE_ID]
 
 		populate_file_list is
-				--
+				-- add to `file_list' all locales
+				-- that are available in `directory'
 			require
 				directory_not_void: directory /= Void
 			local

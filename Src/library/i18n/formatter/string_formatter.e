@@ -40,7 +40,7 @@ feature -- Initialization
 feature -- Utility
 
 	format_string (a_string: STRING_32; args_tuple: TUPLE): STRING_32 is
-			--
+			-- sobstiture in `a_string' items in `args_tuple'
 		require
 			a_string_exists: a_string /= Void
 			args_tuple_exists: args_tuple /= Void
