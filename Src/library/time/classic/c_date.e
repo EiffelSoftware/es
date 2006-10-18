@@ -232,8 +232,6 @@ feature {NONE} -- `struct tm' encapsulation
 		external
 			"C struct struct tm access tm_sec use <time.h>"
 		end	
-	
-	get_tm_
 		
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
