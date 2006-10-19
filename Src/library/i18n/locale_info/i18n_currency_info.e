@@ -203,6 +203,8 @@ feature -- Normal Element change
 			a_array_exists: a_array /= Void
 		do
 			currency_grouping := a_array
+		ensure
+			grouping_set: currency_grouping = a_array
 		end
 
 feature -- International Element change
@@ -273,6 +275,8 @@ feature -- International Element change
 			a_array_exists: a_array /= Void
 		do
 			currency_international_grouping := a_array
+		ensure
+			grouping_set: currency_international_grouping = a_array
 		end
 
 

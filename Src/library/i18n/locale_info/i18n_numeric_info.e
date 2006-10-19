@@ -60,7 +60,6 @@ feature -- Default values
 		end
 
 	default_negative_sign: STRING_32 is
-			--
 		once
 			Result := "-"
 		end
@@ -114,7 +113,7 @@ feature -- Element change
 		end
 
 	set_value_positive_sign (a_string: STRING_GENERAL) is
-			--
+			-- set the positive sign to use
 		require
 			argument_not_void: a_string /= Void
 		do
@@ -124,7 +123,7 @@ feature -- Element change
 		end
 
 	set_value_negative_sign (a_string: STRING_GENERAL) is
-			--
+			-- set the negative sign to use
 		require
 			argument_not_void: a_string /= Void
 		do
@@ -140,6 +139,8 @@ feature -- Element change
 			a_array_exists: a_array /= Void
 		do
 			value_grouping := a_array
+		ensure
+			result_exists: Result /= Void
 		end
 
 

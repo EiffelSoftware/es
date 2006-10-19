@@ -192,35 +192,86 @@ feature -- Element change
 feature -- Default Values
 
 	Default_date_time_format: STRING_32 is
+			-- The ISO 8601 complete date plus hours, minutes and seconds format
+			-- without timezone information
+			-- YYYY-MM-DDThh:mm:ss (eg 1997-07-16T19:20:30)
 		once
-			Result := "hh:[0]mi:[0]ss yyyy-[0]mm-dd"
+			create Result.make_empty
+			Result.append (Default_long_date_format)
+			Result.extend ('T')
+			Result.append (Default_long_time_format)
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_long_date_format: STRING_32 is
+			-- The ISO 8601 Complete date:
+      		-- YYYY-MM-DD (eg 1997-07-16)
 		once
-			Result := "yyyy-[0]mm-dd"
+			create Result.make_empty
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Year_4)
+			Result.extend ('-')
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Month_padded)
+			Result.extend ('-')
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Day_of_month)
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_short_date_format: STRING_32 is
+			-- The ISO 8601 Year and month:
+      		-- YYYY-MM (eg 1997-07)
 		once
-			Result := "yy-[0]mm-dd"
+			create Result.make_empty
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Year_4)
+			Result.extend ('-')
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Month_padded)
+		ensure
+			result_exists: Result /= Void
 		end
+
 	Default_long_time_format: STRING_32 is
+			-- hh:mm:ss (eg 19:20:30)
 		once
-			Result := "hh:[0]mi:[0]ss"
+			create Result.make_empty
+			Result.append (Default_short_time_format)
+			Result.extend (':')
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Seconds_padded)
+		ensure
+			result_exists: Result /= Void
 		end
+
 	Default_short_time_format: STRING_32 is
+			-- hh:mm (eg 19:20)
 		once
-			Result := "hh:[0]mi"
+			create Result.make_empty
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Hout_24)
+			Result.extend (':')
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Minutes_padded)
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_am_suffix: STRING_32 is
 		once
 			Result := "am"
+		ensure
+			result_exists: Result /= Void
 		end
+
 	Default_pm_suffix: STRING_32 is
 		once
 			Result := "pm"
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_day_names: ARRAY[STRING_32] is
@@ -232,6 +283,8 @@ feature -- Default Values
 						("Friday").to_string_32,
 						("Saturday").to_string_32,
 						("Sunday").to_string_32>>
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_month_names: ARRAY[STRING_32] is
@@ -248,6 +301,8 @@ feature -- Default Values
 						("October").to_string_32,
 						("November").to_string_32,
 						("December").to_string_32 >>
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_abbreviated_day_names: ARRAY[STRING_32] is
@@ -259,6 +314,8 @@ feature -- Default Values
 						("Fri").to_string_32,
 						("Sat").to_string_32,
 						("Sun").to_string_32 >>
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_abbreviated_month_names: ARRAY[STRING_32] is
@@ -275,16 +332,22 @@ feature -- Default Values
 						("Oct").to_string_32,
 						("Nov").to_string_32,
 						("Dec").to_string_32>>
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_date_separator: STRING_32 is
 		once
 			Result := "/"
+		ensure
+			result_exists: Result /= Void
 		end
 
 	Default_time_separator: STRING_32 is
 		once
 			Result := ":"
+		ensure
+			result_exists: Result /= Void
 		end
 
 end

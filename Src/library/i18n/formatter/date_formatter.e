@@ -42,7 +42,7 @@ feature	-- Access
 		end
 
 	format_date_time (date_time: DATE_TIME): STRING_32 is
-			--
+			--formats an EiffelTime time according to the date time format
 		require
 			date_time_not_void: date_time /= Void
 		do

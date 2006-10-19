@@ -103,7 +103,7 @@ feature -- Status report
 					datasource_manager.has_language(a_locale_id.language_id) )
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	datasource_manager: I18N_DATASOURCE_MANAGER
 	host_locale: I18N_HOST_LOCALE

@@ -33,7 +33,6 @@ feature --creation
 			-- initialise to arbitrary default values so we can ensure
 			-- that all fields will have valid/non-void contents
 
-
 			--use iso 8601 date / time formats
 			initialize_date_time_info
 
