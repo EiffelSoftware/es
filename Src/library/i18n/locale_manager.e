@@ -98,7 +98,9 @@ feature -- Status report
 	has_locale (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
 			--
 		do
-			Result := host_locale.is_available(a_locale_id) or datasource_manager.has_locale (a_locale_id)
+			Result := host_locale.is_available(a_locale_id) or
+					( datasource_manager.has_locale (a_locale_id) or
+					datasource_manager.has_language(a_locale_id.language_id) )
 		end
 
 feature -- Implementation

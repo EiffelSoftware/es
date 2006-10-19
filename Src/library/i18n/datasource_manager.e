@@ -27,7 +27,7 @@ feature -- Access
 			-- get dictionary datastructure for the locale `a_locale'
 		require
 			a_locale_exists: a_locale /= Void
-			a_locale_present: has_locale(a_locale)
+			a_locale_present: has_locale(a_locale) or has_language(a_locale.language_id)
 		deferred
 		ensure
 			dictionary_exists: Result /= Void
@@ -50,7 +50,7 @@ feature -- Informations
 
 
 	has_locale ( a_locale_id: I18N_LOCALE_ID): BOOLEAN is
-			-- is `a_locale_id' available?
+			-- is `a_locale_id'  available?
 		require
 			a_locale_id_exists: a_locale_id /= Void
 		do
