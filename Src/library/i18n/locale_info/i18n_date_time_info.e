@@ -252,7 +252,7 @@ feature -- Default Values
 		once
 			create Result.make_empty
 			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
-			Result.extend ({I18N_FORMATTING_CHARACTERS}.Hout_24)
+			Result.extend ({I18N_FORMATTING_CHARACTERS}.Hour_24)
 			Result.extend (':')
 			Result.extend ({I18N_FORMATTING_CHARACTERS}.Escape_character)
 			Result.extend ({I18N_FORMATTING_CHARACTERS}.Minutes_padded)

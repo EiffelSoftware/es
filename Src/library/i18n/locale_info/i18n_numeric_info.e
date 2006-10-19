@@ -140,7 +140,7 @@ feature -- Element change
 		do
 			value_grouping := a_array
 		ensure
-			result_exists: Result /= Void
+			groiping_set: value_grouping = a_array
 		end
 
 

@@ -1,6 +1,6 @@
 indexing
 	description: "Objects that ..."
-	author: ""
+	author		: "i18n-team (es-i18n@origo.ethz.ch)"
 	date: "$Date$"
 	revision: "$Revision$"
 

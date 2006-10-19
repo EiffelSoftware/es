@@ -1,6 +1,6 @@
 indexing
 	description: "Strings used in the interface"
-	author: "i18n Team, ETH Zurich"
+	author		: "i18n-team (es-i18n@origo.ethz.ch)"
 	date: "$Date$"
 	revision: "$Revision$"
 
