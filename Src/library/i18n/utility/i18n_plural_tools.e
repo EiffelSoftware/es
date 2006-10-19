@@ -10,13 +10,14 @@ class
 
 feature -- Validation and parsing
 
-		valid_plural_form(i:INTEGER):BOOLEAN is
-				--
+		valid_plural_form (i:INTEGER): BOOLEAN is
+				-- is `i' a valid plural form?
 			do
 				Result := i <= max_plural_form and i >= min_plural_form
 			end
 
-		mo_header_to_plural_form(nplurals:INTEGER; conditional:STRING_32):INTEGER is
+		mo_header_to_plural_form (nplurals: INTEGER; conditional: STRING_32): INTEGER is
+				-- extract from a mo file header the "plural form rules"
 			require
 				conditional_not_void: conditional /= Void
 			do
@@ -75,8 +76,8 @@ feature -- nplurals constants
 
 feature
 
-		get_reduction_agent(quantity: INTEGER):FUNCTION[ANY, TUPLE[INTEGER], INTEGER] is
-				--
+		get_reduction_agent(quantity: INTEGER): FUNCTION[ANY, TUPLE[INTEGER], INTEGER] is
+				-- get from `quantity'  the appropriate reduction function
 			do
 				inspect
 					quantity
@@ -102,7 +103,7 @@ feature
 
 			end
 
-		 get_nplural(form: INTEGER):INTEGER is
+		 get_nplural (form: INTEGER): INTEGER is
 		 		--
 		 	do
 		 		if form <= 3 then
@@ -118,8 +119,7 @@ feature
 
 
 
-	feature
-		-- agents
+feature	-- agents
 
 		reduce_one_plural_form(quantity: INTEGER):INTEGER is
 			--

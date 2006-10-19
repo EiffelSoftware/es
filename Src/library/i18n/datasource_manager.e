@@ -41,6 +41,7 @@ feature -- Informations
 		ensure
 			result_exists: Result /= Void
 		end
+		
 	available_languages: LINEAR[I18N_LANGUAGE_ID] is
 			-- list of the available languages
 		deferred

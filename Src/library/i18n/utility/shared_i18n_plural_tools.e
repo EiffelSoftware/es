@@ -8,11 +8,13 @@ indexing
 class
 	SHARED_I18N_PLURAL_TOOLS
 
-	feature -- Shared object
+feature -- Shared object
+
 		plural_tools: I18N_PLURAL_TOOLS is
-				--
 			once
 				create Result
+			ensure
+				result_exists: Result /= Void
 			end
 
 

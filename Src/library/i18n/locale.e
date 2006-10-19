@@ -90,7 +90,4 @@ feature {NONE} -- Implementation
 
 	string_formatter:	I18N_STRING_FORMATTER
 
-
-
-
 end

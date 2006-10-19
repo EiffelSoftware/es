@@ -8,15 +8,15 @@ indexing
 class
 	I18N_LOCALE_ID
 
-	inherit
-		ANY
-	redefine
-		is_equal
-	end
+inherit
+	ANY
+		redefine
+			is_equal
+		end
 	HASHABLE
-	undefine
-		is_equal
-	end
+		undefine
+			is_equal
+		end
 
 create
 	make,
@@ -43,8 +43,8 @@ feature -- Creation
 			script_set: (script /= Void) implies script.is_equal(a_script)
 		end
 
-	make_from_string(identifier: STRING_32) is
-			--
+	make_from_string (identifier: STRING_32) is
+			-- Initialize with data in `identifier'
 		require
 			identifier_not_void: identifier /= Void
 		local
@@ -120,7 +120,7 @@ feature  -- Informations
 feature	 -- Comparison
 
 	is_equal (other: like Current): BOOLEAN is
-			--
+			-- is `other' equal `Current'
 		do
 			Result := language.is_equal (other.language) and region.is_equal(other.region) and
 						( (script /= Void and other.script /= Void) implies script.is_equal(other.script))
@@ -128,7 +128,7 @@ feature	 -- Comparison
 
  feature -- Hashing
 
- 	hash_code:INTEGER is
+ 	hash_code: INTEGER is
  		do
  			Result := name.hash_code
  		end

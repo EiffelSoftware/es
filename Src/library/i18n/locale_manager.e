@@ -8,14 +8,14 @@ indexing
 class
 	I18N_LOCALE_MANAGER
 
-	inherit
-		SHARED_I18N_URI_PARSER
+inherit
+	SHARED_I18N_URI_PARSER
 
 create make
 
 feature -- Initialization
 
-	make (a_uri : STRING_GENERAL) is
+	make (a_uri: STRING_GENERAL) is
 			-- Creation procedure
 		require
 			a_uri_exists: a_uri /= Void
@@ -26,8 +26,8 @@ feature -- Initialization
 
 feature -- Access
 
-	get_locale ( a_locale_id : I18N_LOCALE_ID): I18N_LOCALE is
-			--
+	get_locale (a_locale_id: I18N_LOCALE_ID): I18N_LOCALE is
+			-- Get locale object that corresponds to `a_locale_id'
 		require
 			a_locale_id_exists: a_locale_id /= Void
 		local
@@ -48,7 +48,7 @@ feature -- Access
 		end
 
 	get_system_locale : I18N_LOCALE is
-			--
+			-- Get the default locale in the system
 		do
 			Result := get_locale(host_locale.default_locale_id)
 		end
@@ -77,20 +77,20 @@ feature -- Status report
 		end
 
 	has_translations (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
-			--
+			-- Are there translations for locale `a_locale_id'?
 		do
-			Result:=datasource_manager.has_locale (a_locale_id) or
-					datasource_manager.has_language (a_locale_id.language_id)
+			Result := datasource_manager.has_locale (a_locale_id) or
+					 datasource_manager.has_language (a_locale_id.language_id)
 		end
 
 	has_localised_translations (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
-			--
+			-- Are there localized translations for locale `a_locale_id'?
 		do
-			Result:=datasource_manager.has_locale (a_locale_id)
+			Result := datasource_manager.has_locale (a_locale_id)
 		end
 
 	has_formatting_info (a_locale_id: I18N_LOCALE_ID): BOOLEAN is
-			--
+			-- Are there informations on formatting for locale `a_locale_id'
 		do
 			Result:= host_locale.is_available (a_locale_id)
 		end

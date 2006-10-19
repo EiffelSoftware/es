@@ -8,8 +8,7 @@ indexing
 class
 	SHARED_I18N_URI_PARSER
 
-	feature
-		-- Shared object
+feature	-- Shared object
 		parser: I18N_URI_PARSER is
 				-- shared I18N_URI_PARSER
 			once
