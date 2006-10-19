@@ -58,7 +58,7 @@ feature -- Interface
 				end
 			end
 
-	extract_scope (a_path:STRING_32): I18N_FILE_SCOPE_INFORMATION is
+	extract_scope (a_path: STRING_32): I18N_FILE_SCOPE_INFORMATION is
 			-- Not much scope information we can extract from the file itself. All we have to go on is the name.
 			-- NOTE: Void indicates unknown scope, not a bug
 			local
@@ -66,15 +66,13 @@ feature -- Interface
 			do
 				create file.make (a_path)
 				file.open
-				if
-					file.opened
-				then
+				if file.opened then
 					-- let a locale object do the parsing for us
-					create locale.make_from_string (file.locale)
-					if locale.region.count > 0 then
+					if file.locale.has ('_') or file.locale.has('-') then
+						create locale.make_from_string (file.locale)
 						create Result.make_with_locale (locale)
-					elseif locale.language.count > 0 then
-						create Result.make_with_language (locale.language_id)
+					else
+						create Result.make_with_language (create {I18N_LANGUAGE_ID}.make (file.locale))
 					end
 				end
 			end

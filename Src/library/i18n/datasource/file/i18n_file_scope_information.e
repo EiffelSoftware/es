@@ -15,7 +15,8 @@ create
 	make_with_locale,
 	make_with_language
 
-feature
+feature -- Initialization
+
 		make_with_locale (a_locale: I18N_LOCALE_ID ) is
 				--
 			require

@@ -11,8 +11,8 @@ deferred class
 	inherit
 		SHARED_I18N_PLURAL_TOOLS
 
-feature
-	-- creation
+feature	-- creation
+
 	make (path: STRING_GENERAL) is
 			-- does not open the file, just sets the path. Call open afterwards!
 		require
@@ -21,8 +21,7 @@ feature
 		deferred
 		end
 
- feature
- 	-- information
+feature	-- information
 
  	locale: STRING_32 is
  			-- best guess at locale of the file

@@ -104,12 +104,12 @@ feature -- Access
 
 feature -- Element change
 
-	set_message (a_message: STRING) is
+	set_message (a_message: STRING_GENERAL) is
 		do
 			message_label.set_text (a_message)
 		end
 
-	set_team (a_team : STRING) is
+	set_team (a_team : STRING_GENERAL) is
 			--
 		do
 			team_label.set_text (a_team)

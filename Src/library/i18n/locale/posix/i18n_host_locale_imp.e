@@ -7,15 +7,15 @@ indexing
 
 class
 	I18N_HOST_LOCALE_IMP
-		inherit
-			IMPORTED_UTF8_READER_WRITER
-			I18N_HOST_LOCALE
-			I18N_POSIX_CONSTANTS
-				export
-					{NONE} all
-				end
-			I18N_UNIX_C_FUNCTIONS
-			I18N_LOCALE_CONV
+inherit
+		IMPORTED_UTF8_READER_WRITER
+		I18N_HOST_LOCALE
+		I18N_POSIX_CONSTANTS
+			export
+				{NONE} all
+			end
+		I18N_UNIX_C_FUNCTIONS
+		I18N_LOCALE_CONV
 
 feature -- Initialization
 
@@ -502,8 +502,8 @@ feature {NONE} --Implementation
 		end
 
 
-	c_strlen(ptr:POINTER):INTEGER is
-				--
+	c_strlen (ptr: POINTER): INTEGER is
+				-- length of a c string
 		external
 			"C (void *): EIF_INTEGER| %"string.h%""
 		alias
@@ -511,22 +511,18 @@ feature {NONE} --Implementation
 		end
 
 
-		utf8_pointer_to_string(ptr:POINTER):STRING_32 is
-				--
-			local
-				managed: MANAGED_POINTER
-			do
-				create managed.make_from_pointer (ptr,c_strlen(ptr))
-				if managed.count > 0 then
-					create Result.make_from_string (
-						utf8_rw.array_natural_8_to_string_32 (managed.read_array (0, managed.count)))
-				-- FIXME: eventually this should go!
-				else
-					Result := "Null pointer returned by nl_locale"
-				end
+	utf8_pointer_to_string (ptr:POINTER): STRING_32 is
+			-- convert a C UTF-8 string
+		local
+			managed: MANAGED_POINTER
+		do
+			create managed.make_from_pointer (ptr,c_strlen(ptr))
+			if managed.count > 0 then
+				create Result.make_from_string (
+					utf8_rw.array_natural_8_to_string_32 (managed.read_array (0, managed.count)))
+			else
+				create Result.make_empty
 			end
-
-
-
+		end
 
 end

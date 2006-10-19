@@ -40,9 +40,9 @@ feature	-- Access
 				do
 					if available_locales.has (a_locale) then
 						Result := chain.extract_dictionary (locale_file_list.item (a_locale))
-					elseif available_languages.has (create {I18N_LANGUAGE_ID}.make (a_locale.language)) then
+					elseif available_languages.has (a_locale.language_id) then
 						Result := chain.extract_dictionary (
-							language_file_list.item (create {I18N_LANGUAGE_ID}.make (a_locale.language)))
+							language_file_list.item (a_locale.language_id))
 					else
 						create {I18N_DUMMY_DICTIONARY} Result.make(0)
 					end
@@ -52,12 +52,14 @@ feature	-- Access
 				-- return locales for which there is a locale-specific translation
 				do
 					create {ARRAYED_LIST[I18N_LOCALE_ID]} Result.make_from_array (locale_list)
+					Result.compare_objects
 				end
 
 		available_languages: LINEAR[I18N_LANGUAGE_ID] is
 				-- return languages for which there is a generic translation
 				do
 					create {ARRAYED_LIST[I18N_LANGUAGE_ID]} Result.make_from_array (language_list)
+					Result.compare_objects
 				end
 
 
@@ -87,7 +89,10 @@ feature {NONE} --Implementation
 				create locale_list.make(16)
 				create language_file_list.make(16)
 				create language_list.make(16)
-
+				locale_file_list.compare_objects
+				locale_list.compare_objects
+				language_file_list.compare_objects
+				language_list.compare_objects
 				if directory.is_readable then
 					directory.open_read
 					temp := directory.linear_representation

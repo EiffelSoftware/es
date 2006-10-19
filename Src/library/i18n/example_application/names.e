@@ -57,6 +57,21 @@ feature -- text
 			Result := locale.format_string (Result, [locale.date_formatter.format_date_time (create {DATE_TIME}.make_now)])
 		end
 
+	currency: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Currency: $1")
+			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (-12323.543)])
+		end
+
+	value: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Value: $1")
+			Result := locale.format_string (Result, [locale.value_formatter.format_real_32 (-12323.544)])
+		end
+
+
 	now_equal (n: INTEGER): STRING_32 is
 		do
 			Result := locale.translate("n is now equal $1")

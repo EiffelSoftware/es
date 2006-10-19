@@ -143,6 +143,12 @@ feature -- Create window elements
 			vertical_box.extend (date_label)
 			vertical_box.extend (time_label)
 			vertical_box.extend (date_time_label)
+
+			create currency_label
+			create value_label
+			update_numeric_labels
+			vertical_box.extend (currency_label)
+			vertical_box.extend (value_label)
 		end
 
 	update_labels is
@@ -161,6 +167,13 @@ feature -- Create window elements
 			date_label.set_text (names.date)
 			time_label.set_text (names.time)
 			date_time_label.set_text (names.date_time)
+		end
+
+	update_numeric_labels is
+			--
+		do
+			currency_label.set_text (names.currency)
+			value_label.set_text (names.value)
 		end
 
 
@@ -186,6 +199,7 @@ feature -- Create window elements
 			update_menu_bar
 			update_labels
 			update_date_time_labels
+			update_numeric_labels
 		end
 
 	update_menu (a_menu: EV_MENU_ITEM) is
@@ -240,7 +254,9 @@ feature {NONE} -- Implementation
 	plural_comp_label,
 	date_label,
 	time_label,
-	date_time_label  : EV_LABEL
+	date_time_label,
+	currency_label,
+	value_label  : EV_LABEL
 
 
 end -- class APPLICATION
