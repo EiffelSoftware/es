@@ -2010,6 +2010,13 @@ feature {NONE} -- Menu Building
 				-- Separator -------------------------------------------------
 			tools_menu.extend (create {EV_MENU_SEPARATOR})
 
+			--PO generation
+			command_menu_item := create_po_cmd.new_menu_item
+			add_recyclable(command_menu_item)
+			tools_menu.extend(command_menu_item)
+
+			tools_menu.extend(create {EV_MENU_SEPARATOR})
+
 					-- Preferences
 			command_menu_item := Show_preferences_cmd.new_menu_item
 			add_recyclable (command_menu_item)
@@ -4751,6 +4758,7 @@ feature {NONE} -- Execution
 			c_workbench_compilation_cmd.enable_sensitive
 			c_finalized_compilation_cmd.enable_sensitive
 			refactoring_manager.enable_sensitive
+			create_po_cmd.enable_sensitive
 		end
 
 	disable_commands_on_project_unloaded is
@@ -4775,6 +4783,7 @@ feature {NONE} -- Execution
 			c_finalized_compilation_cmd.disable_sensitive
 			refactoring_manager.disable_sensitive
 			refactoring_manager.forget_undo_redo
+			create_po_cmd.disable_sensitive
 		end
 
 	save_and_switch_formatter (a_formatter: EB_FORMATTER) is

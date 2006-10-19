@@ -592,7 +592,7 @@ feature -- Actions on all windows
 			else
 				for_all (agent for_all (agent c_compilation_stop_action))
 			end
-
+			create_po_cmd.enable_sensitive
 			for_all (agent synchronize_action)
 		end
 
@@ -974,6 +974,7 @@ feature -- Events
 			override_scan_cmd.disable_sensitive
 			discover_melt_cmd.disable_sensitive
 			refactoring_manager.disable_sensitive
+			create_po_cmd.disable_sensitive
 			for_all (agent c_compilation_start_action)
 			compile_start_actions.call ([])
 		end

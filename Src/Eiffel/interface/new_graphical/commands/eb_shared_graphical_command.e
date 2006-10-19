@@ -151,6 +151,12 @@ feature -- Commands
 		once
 			create Result.make
 		end
+       create_po_cmd: EB_CREATE_PO_COMMAND is
+ 	  	                         -- Command that generates a .po file for localisation
+                once
+                         create Result
+                         Result.disable_sensitive
+                end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
