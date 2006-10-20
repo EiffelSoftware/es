@@ -23,9 +23,14 @@ feature {NONE} -- Initialization
 			-- Initialize and launch application
 		do
 			n := 1
+			amount_of_money := 200000.0
+			hovercraft_buy_cost := 54199.95
+			hovercraft_sell_cost := 44020.30
+			mortgage_rate := 5.31
 			default_create
 			prepare
 			launch
+
 		end
 
 	prepare is
@@ -40,9 +45,11 @@ feature {NONE} -- Initialization
 					+ Operating_environment.directory_separator.out + "logo.png")
 			first_window.set_icon_pixmap (pixmap)
 			build_menu_bar
-			build_lables
+			build_main_box
 			first_window.set_menu_bar (standard_menu_bar)
-			first_window.extend (vertical_box)
+			first_window.extend (main_box)
+			first_window.set_height (170)
+			first_window.set_width (500)
 			first_window.show
 		end
 
@@ -62,22 +69,22 @@ feature -- Create window elements
 			create file.make_with_text (names.file)
 			file.set_data (agent names.file)
 
-			create increase.make_with_text (names.increase)
-			increase.set_data (agent names.increase)
-			increase.select_actions.extend (agent increment)
-			increase.select_actions.extend (agent update_labels)
+--			create increase.make_with_text (names.increase)
+--			increase.set_data (agent names.increase)
+--			increase.select_actions.extend (agent increment)
+--			increase.select_actions.extend (agent update_labels)
 
-			create decrease.make_with_text (names.decrease)
-			decrease.set_data (agent names.decrease)
-			decrease.select_actions.extend (agent decrement)
-			decrease.select_actions.extend (agent update_labels)
+--			create decrease.make_with_text (names.decrease)
+--			decrease.set_data (agent names.decrease)
+--			decrease.select_actions.extend (agent decrement)
+--			decrease.select_actions.extend (agent update_labels)
 
 			create about.make_with_text (names.about)
 			about.set_data (agent names.about)
 			about.select_actions.extend (agent on_about)
 
-			file.extend (increase)
-			file.extend (decrease)
+--			file.extend (increase)
+--			file.extend (decrease)
 			file.extend (about)
 			standard_menu_bar.extend (file)
 
@@ -122,74 +129,87 @@ feature -- Create window elements
 
 		end
 
-	build_lables is
+	build_main_box is
 			-- create, initialize and add the labels
+		local
+			separator: EV_HORIZONTAL_SEPARATOR
 		do
-			create vertical_box
-			create label
-			create simple_label
-			create simple_comp_label
-			create plural_comp_label
-			update_labels
-			vertical_box.extend (label)
-			vertical_box.extend (simple_label)
-			vertical_box.extend (simple_comp_label)
-			vertical_box.extend (plural_comp_label)
+			create main_box
+			build_buttons_box
+			main_box.extend (buttons_box)
+			build_info_box
+			main_box.extend (info_box)
+			create separator
+			main_box.extend (separator)
 
-			create date_label
-			create time_label
-			create date_time_label
-			update_date_time_labels
-			vertical_box.extend (date_label)
-			vertical_box.extend (time_label)
-			vertical_box.extend (date_time_label)
-
-			create currency_label
-			create value_label
-			update_numeric_labels
-			vertical_box.extend (currency_label)
-			vertical_box.extend (value_label)
+			create hovercraft_info.make_with_text (names.hovercraft_sentence (n)+"%N%N"+
+									  			   names.number_of_hovercraft (n))
+			main_box.extend (hovercraft_info)
 		end
 
-	update_labels is
-			-- update all labels
-		do
-			label.set_text (names.now_equal (n))
-			simple_label.set_text (names.simple)
-			simple_comp_label.set_text (names.this_singular_plural (n))
-			plural_comp_label.set_text (names.there_are_n_files (n))
-			first_window.refresh_now
-		end
-
-	update_date_time_labels is
-			-- update the date/time labels
-		do
-			date_label.set_text (names.date)
-			time_label.set_text (names.time)
-			date_time_label.set_text (names.date_time)
-		end
-
-	update_numeric_labels is
+	build_buttons_box is
 			--
 		do
-			currency_label.set_text (names.currency)
-			value_label.set_text (names.value)
+			create buttons_box
+			create buy_button.make_with_text (names.buy)
+			buy_button.select_actions.extend (agent buy)
+			buy_button.select_actions.extend (agent update_money_labels)
+			buy_button.select_actions.extend (agent update_hovercraft_info_label)
+			buttons_box.extend (buy_button)
+
+			create sell_button.make_with_text (names.sell)
+			sell_button.select_actions.extend (agent sell)
+			sell_button.select_actions.extend (agent update_money_labels)
+			sell_button.select_actions.extend (agent update_hovercraft_info_label)
+			buttons_box.extend (sell_button)
+
+			create update_time_button.make_with_text_and_action (names.update_date_time, agent update_date_time_labels)
+			buttons_box.extend (update_time_button)
+		end
+
+	build_info_box is
+			--
+		local
+			separator: EV_VERTICAL_SEPARATOR
+		do
+			create info_box
+
+			create date_time_info.make_with_text (names.time+"%N"+names.date+"%N"+names.date_time)
+			date_time_info.align_text_left
+			info_box.extend (date_time_info)
+
+			create separator
+			info_box.extend (separator)
+
+			create money_label.make_with_text (names.amount_of_money (amount_of_money)+"%N"+
+											   names.hovercraft_cost (hovercraft_buy_cost)+"%N"+
+											   names.hovercraft_sell_cost (hovercraft_sell_cost)+"%N"+
+											   names.mortage_rate (mortgage_rate))
+			info_box.extend (money_label)
+			money_label.align_text_left
+
 		end
 
 
-	increment is
+feature -- Actions
+
+	buy is
 			-- increment `n'
 		do
 			n := n + 1
+			amount_of_money := amount_of_money - hovercraft_buy_cost
 		end
 
-	decrement is
+	sell is
 			-- decrement `n'
 		do
-			if n > 1 then
+			if n > 0 then
 				n := n - 1
+				amount_of_money := amount_of_money + hovercraft_sell_cost
 			end
 		end
+
+feature -- Update features
 
 	update_language (a_lang: STRING) is
 			-- Reload strings in a new language
@@ -197,9 +217,8 @@ feature -- Create window elements
 			names.set_locale (a_lang)
 			first_window.set_title (names.application)
 			update_menu_bar
-			update_labels
+			update_money_labels
 			update_date_time_labels
-			update_numeric_labels
 		end
 
 	update_menu (a_menu: EV_MENU_ITEM) is
@@ -226,7 +245,36 @@ feature -- Create window elements
 		end
 
 
+
+	update_money_labels is
+			-- update all labels
+		do
+			money_label.set_text (names.amount_of_money (amount_of_money)+"%N"+
+								  names.hovercraft_cost (hovercraft_buy_cost)+"%N"+
+								  names.hovercraft_sell_cost (hovercraft_sell_cost)+"%N"+
+								  names.mortage_rate (mortgage_rate))
+			first_window.refresh_now
+		end
+
+	update_date_time_labels is
+			-- update the date/time labels
+		do
+			date_time_info.set_text (names.time+"%N"+names.date+"%N"+names.date_time)
+		end
+
+	update_hovercraft_info_label is
+			--
+		do
+			hovercraft_info.set_text (names.hovercraft_sentence (n)+"%N%N"+
+									  names.number_of_hovercraft (n))
+		end
+
+
 	n : INTEGER
+	amount_of_money: REAL_32
+	hovercraft_buy_cost: REAL_32
+	hovercraft_sell_cost: REAL_32
+	mortgage_rate: REAL_32
 
 feature {NONE} -- About Dialog Implementation
 
@@ -246,17 +294,22 @@ feature {NONE} -- Implementation
 	standard_menu_bar: EV_MENU_BAR
 			-- Menu bar
 
-	vertical_box : EV_VERTICAL_BOX
+	main_box : EV_VERTICAL_BOX
+	buttons_box: EV_HORIZONTAL_BOX
+	info_box: EV_HORIZONTAL_BOX
 
-	label,
-	simple_label,
-	simple_comp_label,
-	plural_comp_label,
-	date_label,
-	time_label,
-	date_time_label,
-	currency_label,
-	value_label  : EV_LABEL
+	buy_button: EV_BUTTON
+	sell_button: EV_BUTTON
+	update_time_button: EV_BUTTON
+
+	hovercraft_sentence: EV_LABEL
+	number_of_hovercraft: EV_LABEL
+
+	date_time_info: EV_LABEL
+
+	money_label: EV_LABEL
+
+	hovercraft_info: EV_LABEL
 
 
 end -- class APPLICATION

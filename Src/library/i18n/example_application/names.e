@@ -7,89 +7,29 @@ indexing
 class
 	NAMES
 inherit
-		SHARED_LOCALE
+		I18N_TOOLS
 
 
-feature -- text
+feature -- Application
 
 	application: STRING_32 is
 		do
 			Result := locale.translate("Application")
 		end
+
+feature -- Menu Bar
+
 	file: STRING_32 is
 		do
 			Result := locale.translate("File")
 		end
-	increase: STRING_32 is
-		do
-			Result := locale.translate("Increase n")
-		end
-	decrease: STRING_32 is
-		do
-			Result := locale.translate("Decrease n")
-		end
+
 	about: STRING_32 is
 		do
 			Result := locale.translate("About")
 		end
-	simple: STRING_32 is
-		do
-			Result := locale.translate("Simple label")
-		end
-	time: STRING_32 is
-			--
-		do
-			Result := locale.translate ("Time: $1")
-			Result := locale.format_string (Result, [locale.date_formatter.format_time (create {TIME}.make_now)])
-		end
 
-	date: STRING_32 is
-			--
-		do
-			Result := locale.translate ("Date: $1")
-			Result := locale.format_string (Result, [locale.date_formatter.format_date (create {DATE}.make_now)])
-		end
-
-	date_time: STRING_32 is
-			--
-		do
-			Result := locale.translate ("Full date-time: $1")
-			Result := locale.format_string (Result, [locale.date_formatter.format_date_time (create {DATE_TIME}.make_now)])
-		end
-
-	currency: STRING_32 is
-			--
-		do
-			Result := locale.translate ("Currency: $1")
-			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (-12323.543)])
-		end
-
-	value: STRING_32 is
-			--
-		do
-			Result := locale.translate ("Value: $1")
-			Result := locale.format_string (Result, [locale.value_formatter.format_real_32 (-12323.544)])
-		end
-
-
-	now_equal (n: INTEGER): STRING_32 is
-		do
-			Result := locale.translate("n is now equal $1")
-			Result := locale.format_string (Result, [n])
-		end
-
-	this_singular_plural (n: INTEGER): STRING_32 is
-		do
-			Result := locale.translate_plural ("This is singular","This is plural", n)
-		end
-
-	there_are_n_files (n: INTEGER): STRING_32 is
-		do
-			Result := locale.translate_plural ("There is 1 file","There are $1 files", n)
-			Result := locale.format_string (Result, [n])
-		end
-
-	language : STRING_32 is
+		language : STRING_32 is
 		do
 			Result := locale.translate("Select language")
 		end
@@ -134,6 +74,92 @@ feature -- text
 		do
 			Result := locale.translate("english")
 		end
+
+feature -- Buttons
+
+
+	buy: STRING_32 is
+		do
+			Result := locale.translate("Buy a hovercraft")
+		end
+	sell: STRING_32 is
+		do
+			Result := locale.translate("sell hovercraft")
+		end
+
+	update_date_time: STRING_32 is
+		do
+			Result := locale.translate ("Update date and time")
+		end
+
+
+feature -- Labels
+
+	hovercraft_sentence (n: INTEGER): STRING_32 is
+		do
+			Result := locale.translate_plural("My hovercraft is full of eels","My hovercraft are full of eels",n)
+		end
+
+	number_of_hovercraft (n: INTEGER): STRING_32 is
+		do
+			Result := locale.translate_plural ("My hovercraft is full of eels","My $1 hovercraft are full of eels",n)
+			Result := locale.format_string (Result, [n])
+		end
+
+
+feature -- Time Information
+
+	time: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Time: $1")
+			Result := locale.format_string (Result, [locale.date_formatter.format_time (create {TIME}.make_now)])
+		end
+
+	date: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Date: $1")
+			Result := locale.format_string (Result, [locale.date_formatter.format_date (create {DATE}.make_now)])
+		end
+
+	date_time: STRING_32 is
+			--
+		do
+			Result := locale.translate ("Full date-time: $1")
+			Result := locale.format_string (Result, [locale.date_formatter.format_date_time (create {DATE_TIME}.make_now)])
+		end
+
+feature -- Currency/value formatter
+
+	hovercraft_cost (n: REAL_32): STRING_32 is
+			--
+		do
+			Result := locale.translate ("A hovercraft costs you: $1")
+			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (n)])
+		end
+
+	hovercraft_sell_cost (n: REAL_32): STRING_32 is
+			--
+		do
+			Result := locale.translate ("Your can sell a hovercraft for $1")
+			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (n)])
+		end
+
+	amount_of_money (n: REAL_32): STRING_32 is
+			--
+		do
+			Result := locale.translate ("Your have $1 on your bank conto")
+			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (n)])
+		end
+
+	mortage_rate (n: REAL_32): STRING_32 is
+			--
+		do
+			Result := locale.translate ("The mortage rate is $1%%")
+			Result := locale.format_string (Result, [locale.value_formatter.format_real_32 (n)])
+		end
+
 
 feature -- about dialog
 

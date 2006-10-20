@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 class
-	SHARED_LOCALE
+	I18N_TOOLS
 
 feature -- Initialization
 
