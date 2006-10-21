@@ -14,6 +14,7 @@ feature -- Initialization
 	make is
 			-- initialize all attributes
 		do
+			set_date_time_format (Default_date_time_format)
 			set_long_date_format (Default_long_time_format)
 			set_short_date_format (Default_short_date_format)
 			set_long_time_format (Default_long_time_format)

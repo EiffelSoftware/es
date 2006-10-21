@@ -39,6 +39,9 @@ feature --creation
 			initialize_numeric_info
 
 			initialize_currency_info
+
+			-- Set an empty id
+			create id.make_from_string ("")
 		end
 
 

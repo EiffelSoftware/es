@@ -6,9 +6,11 @@ indexing
 	revision: "$Revision$"
 
 class
-	I18N_FILE_MANAGER inherit
+	I18N_FILE_MANAGER
 
-		I18N_DATASOURCE_MANAGER
+inherit
+
+I18N_DATASOURCE_MANAGER
 		redefine
 			make
 		end
@@ -93,7 +95,7 @@ feature {NONE} --Implementation
 				locale_list.compare_objects
 				language_file_list.compare_objects
 				language_list.compare_objects
-				if directory.is_readable then
+				if directory.exists and then directory.is_readable then
 					directory.open_read
 					temp := directory.linear_representation
 					from
@@ -126,15 +128,15 @@ feature {NONE} --Implementation
 						end -- end scope /= void
 						temp.forth
 					end -- end loop
-				end -- end directory.is_readable
+				end -- end directory.exists and directory.is_readable
 			end
 
 
 
 invariant
-	directory /= Void
-	locale_file_list /= Void
-	locale_list /= Void
-	language_file_list /= Void
-	language_list /= Void
+	directory_exists: directory /= Void
+	locale_file_list_exists: locale_file_list /= Void
+	locale_list_exists: locale_list /= Void
+	language_file_list_exists: language_file_list /= Void
+	language_list_exists: language_list /= Void
 end
