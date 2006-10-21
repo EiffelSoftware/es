@@ -142,7 +142,7 @@ feature -- Currency/value formatter
 	hovercraft_sell_cost (n: REAL_32): STRING_32 is
 			--
 		do
-			Result := locale.translate ("Your can sell a hovercraft for $1")
+			Result := locale.translate ("You can sell a hovercraft for $1")
 			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (n)])
 		end
 

@@ -21,11 +21,8 @@ feature {NONE} -- Initialization
 
 	make_and_launch is
 			-- Initialize and launch application
-		local
-			t1: LOCALE_TEST
-			t2: DICTIONARY_TEST
 		do
---			create t1.make
+
 			n := 1
 			amount_of_money := 200000.0
 			hovercraft_buy_cost := 54199.95
