@@ -1882,6 +1882,7 @@ Src/library/i18n/documents/locale_info_features -text
 Src/library/i18n/example_application/logo.png -text
 Src/library/i18n/example_application/mo_files/ar_SA.mo -text
 Src/library/i18n/example_application/mo_files/el_GR.mo -text
+Src/library/i18n/example_application/mo_files/fr.mo -text
 Src/library/i18n/example_application/mo_files/he_IL.mo -text
 Src/library/i18n/example_application/mo_files/it_IT.mo -text
 Src/library/i18n/example_application/mo_files/ja_JP.mo -text
@@ -1890,11 +1891,11 @@ Src/library/i18n/example_application/mo_files/zh_CN.mo -text
 Src/library/i18n/example_application/po_files/ar_SA.po -text
 Src/library/i18n/example_application/po_files/el_GR.po -text
 Src/library/i18n/example_application/po_files/example.pot -text
+Src/library/i18n/example_application/po_files/fr.po -text
 Src/library/i18n/example_application/po_files/he_IL.po -text
 Src/library/i18n/example_application/po_files/it_IT.po -text
 Src/library/i18n/example_application/po_files/ja_JP.po -text
 Src/library/i18n/example_application/po_files/ru_RU.po -text
-Src/library/i18n/example_application/po_files/template.pot -text
 Src/library/i18n/example_application/po_files/zh_CN.po -text
 Src/library/i18n/forum.txt -text
 Src/library/i18n/test_files/Dictionary/I18N_BINARY_SEARCH_ARRAY_DICTIONARY/with_two_plural_forms_singular_one/data_file -text
