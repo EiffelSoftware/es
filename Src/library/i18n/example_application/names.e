@@ -75,6 +75,11 @@ feature -- Menu Bar
 			Result := locale.translate("english")
 		end
 
+	french : STRING_32 is
+		do
+			Result := locale.translate("french")
+		end
+
 feature -- Buttons
 
 

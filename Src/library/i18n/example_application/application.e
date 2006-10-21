@@ -21,7 +21,11 @@ feature {NONE} -- Initialization
 
 	make_and_launch is
 			-- Initialize and launch application
+		local
+			t1: LOCALE_TEST
+			t2: DICTIONARY_TEST
 		do
+--			create t1.make
 			n := 1
 			amount_of_money := 200000.0
 			hovercraft_buy_cost := 54199.95
@@ -61,7 +65,7 @@ feature -- Create window elements
 			-- build the menu bar
 		local
 			increase,decrease,about,
-			italian, arabic, greek, hebrew, japanese, russian, chinese, english : EV_MENU_ITEM
+			italian, arabic, greek, hebrew, japanese, russian, chinese, english, french : EV_MENU_ITEM
 			file, language_selection: EV_MENU
 		do
 			create standard_menu_bar.default_create
@@ -69,22 +73,10 @@ feature -- Create window elements
 			create file.make_with_text (names.file)
 			file.set_data (agent names.file)
 
---			create increase.make_with_text (names.increase)
---			increase.set_data (agent names.increase)
---			increase.select_actions.extend (agent increment)
---			increase.select_actions.extend (agent update_labels)
-
---			create decrease.make_with_text (names.decrease)
---			decrease.set_data (agent names.decrease)
---			decrease.select_actions.extend (agent decrement)
---			decrease.select_actions.extend (agent update_labels)
-
 			create about.make_with_text (names.about)
 			about.set_data (agent names.about)
 			about.select_actions.extend (agent on_about)
 
---			file.extend (increase)
---			file.extend (decrease)
 			file.extend (about)
 			standard_menu_bar.extend (file)
 
@@ -116,6 +108,10 @@ feature -- Create window elements
 			create russian.make_with_text (names.russian)
 			russian.set_data (agent names.russian)
 			russian.select_actions.extend (agent update_language ("ru_RU"))
+			create french.make_with_text (names.french)
+			french.set_data (agent names.french)
+			french.select_actions.extend (agent update_language ("fr_FR"))
+
 
 			language_selection.extend (arabic)
 			language_selection.extend (chinese)
@@ -125,6 +121,7 @@ feature -- Create window elements
 			language_selection.extend (italian)
 			language_selection.extend (japanese)
 			language_selection.extend (russian)
+			language_selection.extend (french)
 			standard_menu_bar.extend (language_selection)
 
 		end
