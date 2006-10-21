@@ -28,14 +28,14 @@ inherit
 
 feature -- Initialization
 
-	make_from_user_locale: I18N_LOCALE_INFO is
+	create_locale_info_from_user_locale: I18N_LOCALE_INFO is
 			-- Creation procedure.
 			-- create locale form the user locale
 		do
-			Result := make_from_locale (default_locale_id)
+			Result := create_locale_info (default_locale_id)
 		end
 
-	make_from_locale (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
+	create_locale_info (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
 			-- Creation procedure
 			-- Create locale with a_locale_id
 		local

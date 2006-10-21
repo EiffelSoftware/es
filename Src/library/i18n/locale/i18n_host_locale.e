@@ -13,14 +13,12 @@ deferred class
 
 feature -- Initialization
 
-	make_from_user_locale: I18N_LOCALE_INFO is
-			-- Creation procedure.
+	create_locale_info_from_user_locale: I18N_LOCALE_INFO is
 			-- create locale form the user locale
 		deferred
 		end
 
-	make_from_locale (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
-			-- Creation procedure
+	create_locale_info (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
 			-- Create locale with a_locale_id
 		require
 			a_locale_not_void: a_locale_id /= Void

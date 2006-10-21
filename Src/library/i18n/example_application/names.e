@@ -100,11 +100,6 @@ feature -- Buttons
 
 feature -- Labels
 
-	hovercraft_sentence (n: INTEGER): STRING_32 is
-		do
-			Result := locale.translate_plural("My hovercraft is full of eels","My hovercraft are full of eels",n)
-		end
-
 	number_of_hovercraft (n: INTEGER): STRING_32 is
 		do
 			Result := locale.translate_plural ("My hovercraft is full of eels","My $1 hovercraft are full of eels",n)

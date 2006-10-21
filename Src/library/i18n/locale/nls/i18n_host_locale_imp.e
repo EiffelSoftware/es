@@ -18,9 +18,9 @@ class
 		I18N_NLS_PICTURE_TOOLS
 
 
-	feature -- Creation
+feature -- Creation
 
-		make_from_user_locale: I18N_LOCALE_INFO is
+		create_locale_info_from_user_locale: I18N_LOCALE_INFO is
 				-- fill in
 			do
 				current_lcid := user_locale
@@ -28,7 +28,7 @@ class
 				Result.set_id (lcid_tools.lcid_to_locale_id (current_lcid))
 			end
 
-		make_from_locale (locale: I18N_LOCALE_ID):I18N_LOCALE_INFO is
+		create_locale_info (locale: I18N_LOCALE_ID):I18N_LOCALE_INFO is
 				-- fill in
 			do
 				current_lcid := lcid_tools.locale_id_to_lcid (locale)
@@ -36,7 +36,7 @@ class
 				Result.set_id (locale)
 			end
 
-	feature -- Information
+feature -- Information
 
 		available_locales : LINEAR[I18N_LOCALE_ID] is
 				-- All supported locales on the system

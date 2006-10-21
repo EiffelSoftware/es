@@ -73,13 +73,10 @@ msgstr "意大利语"
 
 
 msgid ""
-"Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas M"
-"urbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N "
-"  - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+"Members of the team:\n   - Leo Fellmann\n   - Etienne Reichenbach\n"
+"   - Bernd Schoeller\n   - Martino Trosi\n   - Hong Zhang"
 msgstr ""
-"项目参与：Christian Conti%N   - Leo Fellmann%N   - Andreas M"
-"urbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N "
-"  - Martino Trosi%N   - Carlo Vanini%N   -张红（Hong Zhang)"
+"项目参与：	\n	- Leo Fellmann\n	- Etienne Reichenbach\n	- Bernd Schoeller\n	- Martino Trosi\n	-张红（Hong Zhang)"
 
 
 msgid "There is 1 file"
@@ -93,11 +90,11 @@ msgstr "OK"
 
 
 msgid ""
-"Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, pl"
-"ease write a mail to: es-i18n@origo.ethz.ch%N%N"
+"Demo application made by i18n Team ETHZ\n\nFor bugs, suggestions or other, pl"
+"ease write a mail to: es-i18n@origo.ethz.ch\n\n"
 msgstr ""
-"演示程序由诉历史工学院i18n组制作%N%N"
-"，如果有任何建议及不妥之处，请发信至 es-i18n@origo.ethz.ch"
+"演示程序由诉历史工学院i18n组制作，\n\n"
+"如果有任何建议及不妥之处，请发信至 es-i18n@origo.ethz.ch\n\n"
 
 
 msgid "greek"

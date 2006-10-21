@@ -28,9 +28,8 @@ feature -- Initialization
 			create culture_info.make_from_name (t_culture_info.current_culture.name)
 		end
 
-	make_from_user_locale: I18N_LOCALE_INFO is
-			-- Creation procedure,
-			-- uses user defined locale
+	create_locale_info_from_user_locale: I18N_LOCALE_INFO is
+			-- create locale form the user locale
 		local
 			t_culture_info : CULTURE_INFO
 			l_locale_id: I18N_LOCALE_ID
@@ -44,9 +43,8 @@ feature -- Initialization
 			culture_info_exists: culture_info /= Void
 		end
 
-	make_from_locale (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
-			-- Creation procedure
-			-- create from name
+	create_locale_info (a_locale_id : I18N_LOCALE_ID): I18N_LOCALE_INFO is
+			-- Create locale with a_locale_id
 		do
 			create culture_info.make_from_name (a_locale_id.name)
 			create Result.make

@@ -139,8 +139,7 @@ feature -- Create window elements
 			create separator
 			main_box.extend (separator)
 
-			create hovercraft_info.make_with_text (names.hovercraft_sentence (n)+"%N%N"+
-									  			   names.number_of_hovercraft (n))
+			create hovercraft_info.make_with_text (names.number_of_hovercraft (n))
 			main_box.extend (hovercraft_info)
 		end
 
@@ -262,8 +261,7 @@ feature -- Update features
 	update_hovercraft_info_label is
 			--
 		do
-			hovercraft_info.set_text (names.hovercraft_sentence (n)+"%N%N"+
-									  names.number_of_hovercraft (n))
+			hovercraft_info.set_text (names.number_of_hovercraft (n))
 		end
 
 

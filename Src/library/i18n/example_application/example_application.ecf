@@ -16,6 +16,7 @@
 				<exclude>CVS</exclude>
 			</file_rule>
 		</cluster>
+		<cluster name="tests" location="\home\etienner\Project\es-i18n\Src\library\i18n\test_files\" recursive="true"/>
 	</target>
 	<target name="dotnet" extends="classic">
 		<setting name="msil_generation" value="true"/>
