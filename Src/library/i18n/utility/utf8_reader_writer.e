@@ -11,6 +11,9 @@ class
 
 inherit
 	UC_IMPORTED_UTF8_ROUTINES
+		export
+			{NONE} all
+		end
 
 feature -- Reading Wrappers
 

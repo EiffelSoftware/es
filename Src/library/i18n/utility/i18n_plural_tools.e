@@ -8,13 +8,15 @@ indexing
 class
 	I18N_PLURAL_TOOLS
 
-feature -- Validation and parsing
+feature -- Validation
 
-		valid_plural_form (i:INTEGER): BOOLEAN is
+		valid_plural_form (i: INTEGER): BOOLEAN is
 				-- is `i' a valid plural form?
 			do
 				Result := i <= max_plural_form and i >= min_plural_form
 			end
+
+feature {I18N_MO_FILE} -- parsing
 
 		mo_header_to_plural_form (nplurals: INTEGER; conditional: STRING_32): INTEGER is
 				-- extract from a mo file header the "plural form rules"
@@ -54,8 +56,7 @@ feature -- Validation and parsing
 			end
 
 
-feature
-		-- plural form constants
+feature {I18N_FILE} -- plural form constants
 		max_plural_form: INTEGER is 9
 		min_plural_form: INTEGER is 0
 
@@ -74,7 +75,7 @@ feature -- nplurals constants
 		min_plural_index: INTEGER is 0
 		max_plural_index: INTEGER is 1
 
-feature
+feature -- Reduction
 
 		get_reduction_agent(quantity: INTEGER): FUNCTION[ANY, TUPLE[INTEGER], INTEGER] is
 				-- get from `quantity'  the appropriate reduction function
@@ -119,14 +120,15 @@ feature
 
 
 
-feature	-- agents
+feature {I18N_PLURAL_TOOLS}	-- agents
 
-		reduce_one_plural_form(quantity: INTEGER):INTEGER is
+		reduce_one_plural_form (quantity: INTEGER): INTEGER is
 			--
 			do
 				Result := 0
 			end
-		reduce_two_plural_forms_singular_one(quantity: INTEGER):INTEGER is
+
+		reduce_two_plural_forms_singular_one (quantity: INTEGER): INTEGER is
 			--
 			do
 				if  quantity = 1 then
@@ -135,7 +137,8 @@ feature	-- agents
 					Result := 1
 				end
 			end
-		reduce_two_plural_forms_singular_one_zero(quantity: INTEGER):INTEGER is
+
+		reduce_two_plural_forms_singular_one_zero (quantity: INTEGER): INTEGER is
 			--
 			do
 				if quantity > 1 then
@@ -144,7 +147,8 @@ feature	-- agents
 					Result := 0
 				end
 			end
-		reduce_three_plural_forms_special_zero(quantity: INTEGER):INTEGER is
+
+		reduce_three_plural_forms_special_zero (quantity: INTEGER): INTEGER is
 			--
 			do
 				if  (quantity \\ 10 = 1) and (quantity \\ 100 /= 11) then
@@ -155,7 +159,8 @@ feature	-- agents
 					Result := 2
 				end
 			end
-		reduce_three_plural_forms_special_one_two(quantity: INTEGER):INTEGER is
+
+		reduce_three_plural_forms_special_one_two (quantity: INTEGER): INTEGER is
 			--
 			do
 				if quantity = 1 then
@@ -166,7 +171,8 @@ feature	-- agents
 					Result := 2
 				end
 			end
-		reduce_three_plural_forms_special_twelve_to_nineteen(quantity: INTEGER):INTEGER is
+
+		reduce_three_plural_forms_special_twelve_to_nineteen (quantity: INTEGER): INTEGER is
 			--
 			do
 				if  (quantity \\ 10 = 1) and (quantity \\ 100 /= 11) then
@@ -177,7 +183,8 @@ feature	-- agents
 					Result := 2
 				end
 			end
-		reduce_three_plural_forms_special_slavic(quantity: INTEGER):INTEGER is
+
+		reduce_three_plural_forms_special_slavic (quantity: INTEGER): INTEGER is
 			--
 			do
 				if  (quantity \\ 10 = 1) and (quantity \\ 100 /= 11) then
@@ -191,7 +198,8 @@ feature	-- agents
 					Result := 2
 				end
 			end
-		reduce_three_plural_forms_special_polish(quantity: INTEGER):INTEGER is
+
+		reduce_three_plural_forms_special_polish (quantity: INTEGER): INTEGER is
 			--
 			do
 				if quantity = 1 then
@@ -202,7 +210,8 @@ feature	-- agents
 					Result := 2
 				end
 			end
-		reduce_four_plural_forms_special_slovenian(quantity: INTEGER):INTEGER is
+
+		reduce_four_plural_forms_special_slovenian (quantity: INTEGER): INTEGER is
 			--
 			do
 				if (quantity \\ 100 =1) then
@@ -216,7 +225,4 @@ feature	-- agents
 				end
 			end
 
-
-
-
-end
+end -- Class I18N_PLURAL_TOOLS

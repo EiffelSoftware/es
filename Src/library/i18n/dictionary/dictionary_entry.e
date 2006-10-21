@@ -67,6 +67,7 @@ feature -- Order definition
 		end
 
 invariant
-	no_plural_translations_if_no_plural: not has_plural implies plural_translations /= Void
+	no_plural_translations_if_no_plural: not has_plural implies plural_translations = Void
+	plural_translations_if_plural: has_plural implies plural_translations /= Void
 
 end

@@ -24,7 +24,7 @@ feature {I18N_FORMAT_STRING_PARSER}  -- Initialization
 			time_action_set: time_action = a_time_action
 		end
 
-feature -- Action
+feature {NONE} -- Action
 
 	time_action: FUNCTION[ANY,TUPLE[TIME],STRING_32]
 

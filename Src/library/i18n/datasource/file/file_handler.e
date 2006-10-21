@@ -12,7 +12,7 @@ deferred class
 	I18N_FILE_HANDLER
 
 
-feature -- chain-of-responsability
+feature  -- chain-of-responsability
 
 		next: I18N_FILE_HANDLER
 
@@ -53,9 +53,9 @@ feature -- locale
 				end
 			end
 		ensure
-			can_handle(a_path) implies handled
-			not (can_handle(a_path) and then next /= Void) implies handled = next.handled
-			not (can_handle(a_path) and then next = Void) implies not handled
+			handled_if_can_handle: can_handle(a_path) implies handled
+			next_handeld: (not can_handle(a_path)) and then next /= Void implies handled = next.handled
+			not_handeled: (not can_handle(a_path)) and then next = Void implies not handled
 		end
 
 	extract_scope (a_path: STRING_32): I18N_FILE_SCOPE_INFORMATION is

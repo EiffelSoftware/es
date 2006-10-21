@@ -8,8 +8,8 @@ indexing
 deferred class
 	I18N_DICTIONARY
 
-	inherit
-		SHARED_I18N_PLURAL_TOOLS
+inherit
+	SHARED_I18N_PLURAL_TOOLS
 
 feature -- Creation
 

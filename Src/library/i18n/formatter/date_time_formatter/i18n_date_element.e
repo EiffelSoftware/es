@@ -22,7 +22,7 @@ feature {I18N_FORMAT_STRING_PARSER} -- Initialization
 			date_action := a_date_action
 		end
 
-feature -- Action
+feature {NONE} -- Action
 
 	date_action: FUNCTION[ANY,TUPLE[DATE],STRING_32]
 		-- action to apply

@@ -3,7 +3,7 @@
 		<description>This ace file has been generated for you by &quot;The Vision2 Application Wizard&quot;.</description>
 		<root cluster="root_cluster" class="APPLICATION" feature="make_and_launch"/>
 		<option warning="true">
-			<assertions precondition="true" postcondition="false" check="false" invariant="false" loop="false"/>
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true"/>
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="i18n" location="$EIFFEL_I18N\i18n.ecf" readonly="false"/>

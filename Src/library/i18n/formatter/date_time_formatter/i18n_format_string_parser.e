@@ -32,8 +32,6 @@ feature -- Parser
 			locale_info := a_locale_info
 		end
 
-	locale_info: I18N_LOCALE_INFO
-
 
 	parse (a_string: STRING_32): LINKED_LIST [I18N_FORMATTING_ELEMENT]
 			-- parse `a_string', for every format character, create
@@ -187,6 +185,8 @@ feature -- Parser
 		end
 
  feature {NONE} -- Implementation
+
+ 	locale_info: I18N_LOCALE_INFO
 
  	parse_modified_1 (a_char: CHARACTER): I18N_FORMATTING_ELEMENT is
  			-- this function is called when the escape character

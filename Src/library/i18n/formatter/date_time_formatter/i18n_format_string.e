@@ -45,7 +45,7 @@ feature --Output
 			end
  		end
 
-feature -- Actions
+feature {NONE} -- Actions
 
 	elements_list: LINKED_LIST[I18N_FORMATTING_ELEMENT]
 		-- list that contains all formatting elements

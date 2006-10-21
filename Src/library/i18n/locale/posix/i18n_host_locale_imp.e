@@ -9,13 +9,22 @@ class
 	I18N_HOST_LOCALE_IMP
 inherit
 		IMPORTED_UTF8_READER_WRITER
+			export
+				{NONE} all
+			end
 		I18N_HOST_LOCALE
 		I18N_POSIX_CONSTANTS
 			export
 				{NONE} all
 			end
 		I18N_UNIX_C_FUNCTIONS
+			export
+				{NONE} all
+			end
 		I18N_LOCALE_CONV
+			export
+				{NONE} all
+			end
 
 feature -- Initialization
 
@@ -66,7 +75,7 @@ feature -- Informations
 			create directory.make_open_read ("/usr/share/i18n/locales/")
 			if directory.exists then
 					-- if it does not exist, unfortunately the system
-					-- dos not follow POSIX
+					-- does not follow POSIX
 				dir_entries := directory.linear_representation
 				from
 					dir_entries.start

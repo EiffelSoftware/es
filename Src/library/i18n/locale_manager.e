@@ -10,6 +10,9 @@ class
 
 inherit
 	SHARED_I18N_URI_PARSER
+		export
+			{NONE} all
+		end
 
 create make
 
