@@ -1,22 +1,13 @@
 Global TODO list for the i18n project:
 
-Urgent (13 october):
-
-~ fix locales	(nls needs the ISO currency stuff finishing, and the format string conversion)
 ~ fix makefiles (linux working)
 
-Not so urgent (20 october):
-
-* port Eiffel GUI changes from old project
-~ in-depth testing  (leo+etienne)
-~ code cleanup (+ review contracts) (in progress, leo)
-* fix headers (use Eiffel Forum license)
+~ port Eiffel GUI changes from old project
 * update translations
 * Check naming consistency of HOST_LOCALE notably user/default stuff
 
 Medium/long-term:
 
-* Support for language-specific translations
 * Support for independant formatters
 * Support for multi-file translations
 * Some system similar to gettext domains?

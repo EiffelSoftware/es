@@ -1889,6 +1889,7 @@ Src/library/i18n/example_application/mo_files/ru_RU.mo -text
 Src/library/i18n/example_application/mo_files/zh_CN.mo -text
 Src/library/i18n/example_application/po_files/ar_SA.po -text
 Src/library/i18n/example_application/po_files/el_GR.po -text
+Src/library/i18n/example_application/po_files/example.pot -text
 Src/library/i18n/example_application/po_files/he_IL.po -text
 Src/library/i18n/example_application/po_files/it_IT.po -text
 Src/library/i18n/example_application/po_files/ja_JP.po -text
