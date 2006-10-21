@@ -43,7 +43,7 @@ feature -- Access
 				create {I18N_DUMMY_DICTIONARY}	l_dictionary.make(0)
 			end
 			if has_formatting_info (a_locale_id) then
-				l_locale_info := host_locale.make_from_locale (a_locale_id)
+				l_locale_info := host_locale.create_locale_info (a_locale_id)
 			else
 				create l_locale_info.make -- will have default values	
 			end
