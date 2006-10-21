@@ -6,7 +6,7 @@ indexing
 	revision: "$Revision$"
 
 class
-	I18N_BINARY_SEARCH_ARRAY_DICTIONAY
+	I18N_BINARY_SEARCH_ARRAY_DICTIONARY
 			--	the `array' should be sorted
 			--  the `size' of `array' should be given by its client,which is not the case any more
 			--  the index of `array' arranges from 1 to max_index, but which could also be resible
