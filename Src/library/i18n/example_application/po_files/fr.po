@@ -8,7 +8,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2006-10-21 23:19+0100\n"
+"PO-Revision-Date: 2006-10-22 00:13+0100\n"
 
 msgid ""
 "Members of the team:\n"
@@ -62,8 +62,8 @@ msgstr "Vous avez $1 sur votre compte bancaire"
 msgid "chinese"
 msgstr "chinois [zh_CN]"
 
-msgid "The mortage rate is $1%%"
-msgstr "Le taux d'hypothèquage est d'$1%%"
+msgid "The mortage rate is $1%"
+msgstr "Le taux d'hypothèquage est d'$1%"
 
 msgid "File"
 msgstr "Fichier"
@@ -90,7 +90,7 @@ msgid "sell hovercraft"
 msgstr "Vendre aéroglisseur"
 
 msgid "Date: $1"
-msgstr "DAte: $1"
+msgstr "Date: $1"
 
 msgid "japanese"
 msgstr "japonais [ja_JA]"

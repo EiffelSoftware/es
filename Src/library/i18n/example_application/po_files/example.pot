@@ -56,7 +56,7 @@ msgid "chinese"
 msgstr ""
 
 
-msgid "The mortage rate is $1%%"
+msgid "The mortage rate is $1%"
 msgstr ""
 
 

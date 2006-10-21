@@ -212,6 +212,8 @@ feature -- Update features
 			update_menu_bar
 			update_money_labels
 			update_date_time_labels
+			update_hovercraft_info_label
+			update_buttons
 		end
 
 	update_menu (a_menu: EV_MENU_ITEM) is
@@ -260,6 +262,16 @@ feature -- Update features
 		do
 			hovercraft_info.set_text (names.number_of_hovercraft (n))
 		end
+
+	update_buttons is
+			--
+		do
+			buy_button.set_text (names.buy)
+			sell_button.set_text (names.sell)
+			update_time_button.set_text (names.update_date_time)
+
+		end
+
 
 
 	n : INTEGER
