@@ -1894,7 +1894,6 @@ Src/library/i18n/example_application/po_files/el_GR.po -text
 Src/library/i18n/example_application/po_files/en.po -text
 Src/library/i18n/example_application/po_files/example.pot -text
 Src/library/i18n/example_application/po_files/fr.po -text
-Src/library/i18n/example_application/po_files/he_IL.po -text
 Src/library/i18n/example_application/po_files/it_IT.po -text
 Src/library/i18n/example_application/po_files/ja_JP.po -text
 Src/library/i18n/example_application/po_files/ru_RU.po -text

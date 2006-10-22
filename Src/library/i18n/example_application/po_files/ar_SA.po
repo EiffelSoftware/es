@@ -1,96 +1,125 @@
-# translation of test application to Arabic
-# Etienne Reichenbach
-#
 msgid ""
 msgstr ""
+"Language-Team: YOUR TEAM HERE\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n==2 ? 1 : 2;"
+"MIME-Version: 1.0\n"
+"Last-Translator: YOUR NAME HERE\n"
+"Plural-Forms:plural=n==1 ? 0 : n==2 ? 1 : 2;\n"
 
-#: str1
+
+msgid ""
+"Members of the team:\n   - Leo Fellmann\n   - Etienne Reichenbach\n   - Bernd "
+"Schoeller\n   - Martino Trosi\n   - Hong Zhang"
+msgstr ""
+
+
 msgid "Application"
 msgstr "إنهاء التطبيق"
 
-#: str2
+
+msgid ""
+"Demo application made by i18n Team ETHZ\n\nFor bugs, suggestions or other, ple"
+"ase write a mail to: es-i18n@origo.ethz.ch\n\n"
+msgstr ""
+
+
+msgid "french"
+msgstr ""
+
+
+msgid "Full date-time: $1"
+msgstr ""
+
+
+msgid "Update date and time"
+msgstr ""
+
+
+msgid "A hovercraft costs you: $1"
+msgstr ""
+
+
+msgid "Buy a hovercraft"
+msgstr ""
+
+
+msgid "english"
+msgstr "الإنكليزي [en]ة"
+
+
+msgid "Your have $1 on your bank conto"
+msgstr ""
+
+
+msgid "chinese"
+msgstr "الصينية [zh]"
+
+
+msgid "The mortage rate is $1%"
+msgstr ""
+
+
 msgid "File"
 msgstr "ملف"
 
 
-#: str3
-msgid "Increase n"
-msgstr ""
-
-
-#: str4
-msgid "Decrease n"
-msgstr ""
-
-
-#: str5
-msgid "Save"
-msgstr "&حفظ"
-
-
-#: str6
-msgid "n is now equal $1"
-msgstr ""
-
-#: str7
-msgid "Simple label"
-msgstr ""
-
-#: str8
-msgid "This is singular"
-msgid_plural "This is plural"
-msgstr[0] ""
-msgstr[1] ""
-
-#: str9
-msgid "There is 1 file"
-msgid_plural "There are $1 files"
-msgstr[0] "هناك طالب"
-msgstr[1] "هناك طالبان"
-msgstr[2] "هناك $1 طلاب"
-
-#: str10
-msgid "singular"
-msgid_plural "plural"
-msgstr[0] ""
-msgstr[1] ""
-
-
-#: str11
-msgid "Select language"
-msgstr "اللغة"
-
-#: str12
-msgid "arabic"
-msgstr "العربية"
-
-#: str13
-msgid "italian"
-msgstr "الإيطالية"
-
-#: str14
 msgid "greek"
 msgstr ""
 
-#: str15
+
+msgid "Select language"
+msgstr "اللغة"
+
+
+msgid "arabic"
+msgstr "العربية [ar]"
+
+
 msgid "hebrew"
 msgstr ""
 
-#: str16
+
+msgid "Time: $1"
+msgstr ""
+
+
+msgid "italian"
+msgstr "الإيطالي [it]ة"
+
+
+msgid "sell hovercraft"
+msgstr ""
+
+
+msgid "Date: $1"
+msgstr ""
+
+
 msgid "japanese"
-msgstr "اليابانية"
+msgstr "اليابانية [jp]"
 
-#: str17
+
 msgid "russian"
-msgstr "الروسية"
+msgstr "الروسية [ru]"
 
-#: str18
-msgid "chinese"
-msgstr "الصينية"
 
-#: str19
-msgid "english"
-msgstr "الإنكليزية"
+msgid "About Dialog"
+msgstr ""
+
+
+msgid "OK"
+msgstr ""
+
+
+msgid "My hovercraft is full of eels"
+msgid_plural "My $1 hovercraft are full of eels"
+msgstr[0] ""
+
+
+msgid "About"
+msgstr ""
+
+
+msgid "You can sell a hovercraft for $1"
+msgstr ""

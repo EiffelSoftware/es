@@ -51,9 +51,9 @@ feature -- Menu Bar
 			Result := locale.translate("greek")
 		end
 
-	hebrew : STRING_32 is
+	unknown : STRING_32 is
 		do
-			Result := locale.translate("hebrew")
+			Result := locale.translate("Unknown")
 		end
 
 	japanese : STRING_32 is
@@ -80,6 +80,12 @@ feature -- Menu Bar
 		do
 			Result := locale.translate("french")
 		end
+
+	hungarian: STRING_32 is
+		do
+			Result := locale.translate ("hungarian")
+		end
+
 
 feature -- Buttons
 
