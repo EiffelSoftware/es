@@ -48,7 +48,7 @@ feature -- Interface
 						if file.entry_has_plurals (i) then
 							original_plural := file.original_plural_string (i)
 							translated_plurals := file.translated_plural_strings (i)
-							create temp.make_with_plural(original_singular, original_plural, translated_singular)
+							create temp.make_with_plural(original_singular, translated_singular, original_plural)
 							temp.plural_translations.copy(translated_plurals)
 						else
 							create temp.make (original_singular, translated_singular)
