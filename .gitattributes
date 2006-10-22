@@ -1882,6 +1882,7 @@ Src/library/i18n/documents/locale_info_features -text
 Src/library/i18n/example_application/logo.png -text
 Src/library/i18n/example_application/mo_files/ar_SA.mo -text
 Src/library/i18n/example_application/mo_files/el_GR.mo -text
+Src/library/i18n/example_application/mo_files/en.mo -text
 Src/library/i18n/example_application/mo_files/fr.mo -text
 Src/library/i18n/example_application/mo_files/he_IL.mo -text
 Src/library/i18n/example_application/mo_files/it_IT.mo -text
@@ -1890,6 +1891,7 @@ Src/library/i18n/example_application/mo_files/ru_RU.mo -text
 Src/library/i18n/example_application/mo_files/zh_CN.mo -text
 Src/library/i18n/example_application/po_files/ar_SA.po -text
 Src/library/i18n/example_application/po_files/el_GR.po -text
+Src/library/i18n/example_application/po_files/en.po -text
 Src/library/i18n/example_application/po_files/example.pot -text
 Src/library/i18n/example_application/po_files/fr.po -text
 Src/library/i18n/example_application/po_files/he_IL.po -text
