@@ -4,6 +4,7 @@ indexing
 		defined in the POSIX standard, plus others that are
 		date_separator, time_separator, Month, Year_1, Era,
 		Minutes and Seconds_padded
+		you can find them on:
 		]"
 	author: "ES-i18n team (es-i18n@origo.ethz.ch)"
 	license: "Eiffel Forum License v2 (see forum.txt)"

@@ -57,7 +57,6 @@ feature -- Access
 		require
 			original_singular_exists: original_singular /= Void
 			original_plural_exists: original_plural /= Void
-			valid_plural_number: plural_number >= 0
 		deferred
 		end
 
@@ -78,8 +77,7 @@ feature -- Access
 		require
 			original_singular_exists: original_singular /= Void
 			original_plural_exists: original_plural /= Void
-			valid_plural_number: plural_number >= 0
-			translation_exists:has_plural (original_singular, original_plural, plural_number)
+			translation_exists: has_plural (original_singular, original_plural, plural_number)
 		deferred
 		ensure
 			result_exists: Result /= Void
@@ -100,10 +98,8 @@ feature {NONE} --Helpers
 
 		reduce (quantity: INTEGER): INTEGER is
 				-- reduce a given plural forms to a smallest one
-			require
-				quantity >= 0
 			do
-				Result := reduction_agent.item([quantity])
+				Result := reduction_agent.item([quantity.abs])
 			ensure
 				well_formed_result: Result < 4 and Result >= 0
 			end

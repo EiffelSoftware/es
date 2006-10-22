@@ -13,6 +13,7 @@ inherit
 feature -- Application
 
 	application: STRING_32 is
+			-- Example with the simplest translation functio
 		do
 			Result := locale.translate("Application")
 		end
@@ -101,6 +102,7 @@ feature -- Buttons
 feature -- Labels
 
 	number_of_hovercraft (n: INTEGER): STRING_32 is
+			-- Example with a plural form and a string formatter.
 		do
 			Result := locale.translate_plural ("My hovercraft is full of eels","My $1 hovercraft are full of eels",n)
 			Result := locale.format_string (Result, [n])
@@ -110,21 +112,21 @@ feature -- Labels
 feature -- Time Information
 
 	time: STRING_32 is
-			--
+			-- Example where a time formatter is needed
 		do
 			Result := locale.translate ("Time: $1")
 			Result := locale.format_string (Result, [locale.date_formatter.format_time (create {TIME}.make_now)])
 		end
 
 	date: STRING_32 is
-			--
+			-- Example where a Date formatter is needed
 		do
 			Result := locale.translate ("Date: $1")
 			Result := locale.format_string (Result, [locale.date_formatter.format_date (create {DATE}.make_now)])
 		end
 
 	date_time: STRING_32 is
-			--
+			-- Example where a date-time formatter is needed
 		do
 			Result := locale.translate ("Full date-time: $1")
 			Result := locale.format_string (Result, [locale.date_formatter.format_date_time (create {DATE_TIME}.make_now)])
@@ -133,28 +135,26 @@ feature -- Time Information
 feature -- Currency/value formatter
 
 	hovercraft_cost (n: REAL_32): STRING_32 is
-			--
+			-- Example where a currency formatter is needed
 		do
 			Result := locale.translate ("A hovercraft costs you: $1")
 			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (n)])
 		end
 
 	hovercraft_sell_cost (n: REAL_32): STRING_32 is
-			--
 		do
 			Result := locale.translate ("You can sell a hovercraft for $1")
 			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (n)])
 		end
 
 	amount_of_money (n: REAL_32): STRING_32 is
-			--
 		do
 			Result := locale.translate ("Your have $1 on your bank conto")
 			Result := locale.format_string (Result, [locale.currency_formatter.format_currency (n)])
 		end
 
 	mortage_rate (n: REAL_32): STRING_32 is
-			--
+			-- Example where a value formatter is needed
 		do
 			Result := locale.translate ("The mortage rate is $1%%")
 			Result := locale.format_string (Result, [locale.value_formatter.format_real_32 (n)])

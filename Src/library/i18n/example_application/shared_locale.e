@@ -34,8 +34,8 @@ feature -- Initialization
 			from
 				available_locales.start
 			until
-				available_locales.after or else
-				available_locales.item.is_equal (l_locale_id)
+				available_locales.after or else available_locales.item.name.is_equal (l_locale_id.name)
+--				available_locales.item.is_equal (l_locale_id)
 			loop
 				available_locales.forth
 			end

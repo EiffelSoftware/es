@@ -32,11 +32,10 @@ feature -- Creation
 		do
 			create language.make_from_string(a_language)
 			create region.make_from_string(a_region)
-			name := a_language+"_"+a_region
 			if a_script /= Void then
 				create script.make_from_string(a_script)
-				name.append("@"+a_script)
 			end
+			set_name
 		ensure
 			language_set: language.is_equal(a_language)
 			region_set: region.is_equal(a_region)
@@ -66,7 +65,6 @@ feature -- Creation
 			--  ('@euro' variants seem to have no difference)
 
 			-- first throw away everything after and with a dot
-			name := identifier
 			create temp.make_from_string(identifier)
 			index :=  temp.index_of ('.', 1)
 			if index > 0 then
@@ -104,10 +102,25 @@ feature -- Creation
 					region := ""
 				end
 			end
+			set_name
 		ensure
 			language_set: language /= Void
 			region_set: region /= Void
 		end
+
+feature {NONE} -- Helper function
+
+	set_name is
+			-- ensure platform-independant name
+		do
+			name := language+"_"+region
+			if script /= Void then
+				name.append("@"+script)
+			end
+		ensure
+			name_not_void: name /= Void
+		end
+
 
 
 feature  -- Informations

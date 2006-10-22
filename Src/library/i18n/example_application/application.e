@@ -22,7 +22,6 @@ feature {NONE} -- Initialization
 	make_and_launch is
 			-- Initialize and launch application
 		do
-
 			n := 1
 			amount_of_money := 200000.0
 			hovercraft_buy_cost := 54199.95
@@ -53,6 +52,15 @@ feature {NONE} -- Initialization
 			first_window.set_width (500)
 			first_window.show
 		end
+
+feature -- Informations
+
+
+	n : INTEGER
+	amount_of_money: REAL_32
+	hovercraft_buy_cost: REAL_32
+	hovercraft_sell_cost: REAL_32
+	mortgage_rate: REAL_32
 
 
 feature -- Create window elements
@@ -95,7 +103,7 @@ feature -- Create window elements
 			greek.select_actions.extend (agent update_language ("el_GR"))
 			create hebrew.make_with_text (names.hebrew)
 			hebrew.set_data (agent names.hebrew)
-			hebrew.select_actions.extend (agent update_language ("he_IL"))
+			hebrew.select_actions.extend (agent update_language ("pt_PT"))
 			create italian.make_with_text (names.italian)
 			italian.set_data (agent names.italian)
 			italian.select_actions.extend (agent update_language ("it_IT"))
@@ -107,7 +115,7 @@ feature -- Create window elements
 			russian.select_actions.extend (agent update_language ("ru_RU"))
 			create french.make_with_text (names.french)
 			french.set_data (agent names.french)
-			french.select_actions.extend (agent update_language ("fr_FR"))
+			french.select_actions.extend (agent update_language ("fr_FR@euro"))
 
 
 			language_selection.extend (arabic)
@@ -141,7 +149,6 @@ feature -- Create window elements
 		end
 
 	build_buttons_box is
-			--
 		do
 			create buttons_box
 			create buy_button.make_with_text (names.buy)
@@ -161,7 +168,6 @@ feature -- Create window elements
 		end
 
 	build_info_box is
-			--
 		local
 			separator: EV_VERTICAL_SEPARATOR
 		do
@@ -196,10 +202,8 @@ feature -- Actions
 	sell is
 			-- decrement `n'
 		do
-			if n > 0 then
-				n := n - 1
-				amount_of_money := amount_of_money + hovercraft_sell_cost
-			end
+			n := n - 1
+			amount_of_money := amount_of_money + hovercraft_sell_cost
 		end
 
 feature -- Update features
@@ -214,6 +218,7 @@ feature -- Update features
 			update_date_time_labels
 			update_hovercraft_info_label
 			update_buttons
+			first_window.refresh_now
 		end
 
 	update_menu (a_menu: EV_MENU_ITEM) is
@@ -234,7 +239,7 @@ feature -- Update features
 		end
 
 	update_menu_bar is
-			-- uprate the menu bar
+			-- update the menu bar
 		do
 			standard_menu_bar.do_all (agent update_menu(?))
 		end
@@ -248,7 +253,6 @@ feature -- Update features
 								  names.hovercraft_cost (hovercraft_buy_cost)+"%N"+
 								  names.hovercraft_sell_cost (hovercraft_sell_cost)+"%N"+
 								  names.mortage_rate (mortgage_rate))
-			first_window.refresh_now
 		end
 
 	update_date_time_labels is
@@ -258,27 +262,17 @@ feature -- Update features
 		end
 
 	update_hovercraft_info_label is
-			--
 		do
 			hovercraft_info.set_text (names.number_of_hovercraft (n))
 		end
 
+
 	update_buttons is
-			--
 		do
 			buy_button.set_text (names.buy)
 			sell_button.set_text (names.sell)
 			update_time_button.set_text (names.update_date_time)
-
 		end
-
-
-
-	n : INTEGER
-	amount_of_money: REAL_32
-	hovercraft_buy_cost: REAL_32
-	hovercraft_sell_cost: REAL_32
-	mortgage_rate: REAL_32
 
 feature {NONE} -- About Dialog Implementation
 
@@ -305,9 +299,6 @@ feature {NONE} -- Implementation
 	buy_button: EV_BUTTON
 	sell_button: EV_BUTTON
 	update_time_button: EV_BUTTON
-
-	hovercraft_sentence: EV_LABEL
-	number_of_hovercraft: EV_LABEL
 
 	date_time_info: EV_LABEL
 

@@ -166,7 +166,7 @@ feature {NONE} -- Implementation
 						pos := 0
 					end
 				elseif i-1 >= grouping.lower then
-					-- The previous element is to be repeatedly used for the remainder of the digits.
+					-- The previous element has to be repeatedly used for the remainder of the digits.
 					from
 					variant
 						pos

@@ -1,109 +1,128 @@
-# translation of test application to Italian
-# Etienne Reichenbach
-#
 msgid ""
 msgstr ""
+"Language-Team: es-i18n@origo.ethz.ch\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"MIME-Version: 1.0\n"
+"Last-Translator: YOUR NAME HERE\n"
 
-#: str1
+
+
+msgid ""
+"Members of the team:\n   - Leo Fellmann\n   - Etienne Reichenbach\n   - Bernd "
+"Schoeller\n   - Martino Trosi\n   - Hong Zhang"
+msgstr "Membri del team:\n	- Leo Fellmann\n	- Etienne Reichenbach\n	- Bernd Schoeller\n"
+"	- Martino Trosi\n	- Hong Zhang"
+
+
 msgid "Application"
 msgstr "Applicazione"
 
-#: str2
+
+msgid ""
+"Demo application made by i18n Team ETHZ\n\nFor bugs, suggestions or other, ple"
+"ase write a mail to: es-i18n@origo.ethz.ch\n\n"
+msgstr "Applicazione di dimostrazione creata dal team per l'internazionalizzazione"
+"del EHT\n\n Per segnalare errori, o per dare consigli, puoi scrivere una mail a: es-i18n@origo.ethz.ch\n\n"
+
+
+msgid "french"
+msgstr "francese [fr]"
+
+
+msgid "Full date-time: $1"
+msgstr "Data e ora: $1"
+
+
+msgid "Update date and time"
+msgstr "Aggiorna data e ora"
+
+
+msgid "A hovercraft costs you: $1"
+msgstr "Un hovercraft costa: $1"
+
+
+msgid "Buy a hovercraft"
+msgstr "Compra un hovercraft"
+
+
+msgid "english"
+msgstr "inglese [en]"
+
+
+msgid "Your have $1 on your bank conto"
+msgstr "Hai $1 sul tuo conto bancario"
+
+
+msgid "chinese"
+msgstr "cinese [zh]"
+
+
+msgid "The mortage rate is $1%"
+msgstr "Il tasso ipotecario è $1%"
+
+
 msgid "File"
 msgstr "File"
 
 
-#: str3
-msgid "Increase n"
-msgstr "Incrementa n"
+msgid "greek"
+msgstr "greco [el]"
 
 
-#: str4
-msgid "Decrease n"
-msgstr "Decrementa n"
-
-
-#: str5
-msgid "About"
-msgstr "About"
-
-
-#: str6
-msgid "n is now equal $1"
-msgstr "n è uguale a $1"
-
-#: str7
-msgid "Simple label"
-msgstr "etichetta semplice"
-
-#: str8
-msgid "This is singular"
-msgid_plural "This is plural"
-msgstr[0] "Questo è singolare"
-msgstr[1] "Questo è plurale"
-
-#: str9
-msgid "There is 1 file"
-msgid_plural "There are $1 files"
-msgstr[0] "C'è un file"
-msgstr[1] "Ci sono $1 file"
-
-#: str10
-msgid "singular"
-msgid_plural "plural"
-msgstr[0] "singolare"
-msgstr[1] "plurale"
-
-#: str11
 msgid "Select language"
-msgstr "Seleziona lingua"
+msgstr "Seleziona la lingua"
 
-#: str12
+
 msgid "arabic"
 msgstr "arabo [ar]"
 
-#: str13
-msgid "italian"
-msgstr "italiano [it]"
 
-#: str14
-msgid "greek"
-msgstr "greco [gr]"
-
-#: str15
 msgid "hebrew"
-msgstr "ebraico [he]"
+msgstr "israeliano [he]"
 
-#: str16
+
+msgid "Time: $1"
+msgstr "Ora: $1"
+
+
+msgid "italian"
+msgstr "italiano"
+
+
+msgid "sell hovercraft"
+msgstr "vendi un hovercraft"
+
+
+msgid "Date: $1"
+msgstr "Data: $1"
+
+
 msgid "japanese"
-msgstr "giapponese [ja]"
+msgstr "Giapponese [jp]"
 
-#: str17
+
 msgid "russian"
 msgstr "russo [ru]"
 
-#: str18
-msgid "chinese"
-msgstr "cinese [zh_CN]"
 
-#: str19
-msgid "english"
-msgstr "inglese [en]"
+msgid "About Dialog"
+msgstr "Dialogo di informazioni"
 
-#: str21
+
 msgid "OK"
 msgstr "OK"
 
-#: str22
-msgid "Demo application made by i18n Team ETHZ%N%NFor bugs, suggestions or other, please write a mail to: es-i18n@origo.ethz.ch%N%N"
-msgstr "Applicazione progettata dal Team i18n ETHZ%N%NPer errori, proposte o latri, scrivi una mail a: es-i18n@origo.ethz.ch%N%N"
 
-#: str23
-msgid "Members of the team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
-msgstr "Membri del team:%N   - Christian Conti%N   - Leo Fellmann%N   - Andreas Murbach%N   - Etienne Reichenbach%N   - Bernd Schoeller%N   - Ivano Somaini%N   - Martino Trosi%N   - Carlo Vanini%N   - Hong Zhang"
+msgid "My hovercraft is full of eels"
+msgid_plural "My $1 hovercraft are full of eels"
+msgstr[0] "Il mio hovercraft è pieno di anguille"
+msgstr[1] "I miei $1 hovercraft sono pieni di anguille"
 
-#: str24
-msgid "About Dialog"
-msgstr "About Dialog"
+
+msgid "About"
+msgstr "Informazioni"
+
+
+msgid "You can sell a hovercraft for $1"
+msgstr "Puoi vendere un hovercraft per $1"

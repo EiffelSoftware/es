@@ -100,7 +100,7 @@ feature -- Utility
 			end
 		ensure
 			result_exists: Result /= Void
-			no_more_escape_characters: required_arguments (Result) = 0
+--			no_more_escape_characters: required_arguments (Result) = 0
 		end
 
 feature -- Check functions

@@ -48,7 +48,6 @@ feature -- Basic Operations
 		require
 			original_singular_exists: original_singular /= Void
 			original_plural_exists: original_plural /= Void
-			valid_plural_form: plural_form >= 0
 		do
 			if dictionary.has_plural (original_singular, original_plural, plural_form) then
 				Result := dictionary.get_plural (original_singular, original_plural, plural_form)
@@ -81,7 +80,7 @@ feature -- Formatters
 	value_formatter:	I18N_VALUE_FORMATTER
 	currency_formatter: I18N_CURRENCY_FORMATTER
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
 	info : I18N_LOCALE_INFO
 		-- specific information about the locale

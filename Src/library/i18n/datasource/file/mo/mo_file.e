@@ -129,6 +129,7 @@ feature -- Access
 			loop
 				Result.put (last_translated.list.item, counter)
 				counter := counter + 1
+				last_translated.list.forth
 			end
 		end
 
