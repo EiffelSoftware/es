@@ -66,6 +66,12 @@ msgstr "китайско [zh]"
 msgid "english"
 msgstr "английско [en]"
 
+msgid "hungarian"
+msgstr "венгерско [hu]"
+
+msgid "Unknown"
+msgstr "Неизвестно"
+
 
 msgid "Your have $1 on your bank conto"
 msgstr "ваш имейте $1 на вашем conto крена"

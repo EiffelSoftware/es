@@ -99,6 +99,12 @@ msgstr "日语"
 msgid "russian"
 msgstr "俄罗斯语"
 
+msgid "hungarian"
+msgstr "匈牙利語 [hu]"
+
+msgid "Unknown"
+msgstr "未知"
+
 msgid "About Dialog"
 msgstr "相关信息"
 

@@ -98,6 +98,12 @@ msgstr "japonais [ja_JA]"
 msgid "russian"
 msgstr "russe [ru_RU]"
 
+msgid "hungarian"
+msgstr "hongrois [hu]"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
 msgid "About Dialog"
 msgstr "Dialogue d'informations"
 

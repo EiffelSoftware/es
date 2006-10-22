@@ -89,33 +89,51 @@ feature -- Create window elements
 			create language_selection.make_with_text (names.language)
 			language_selection.set_data (agent names.language)
 
+			-- The arabic mo file is an example
+			-- of datasource that does not have a lot of translations
 			create arabic.make_with_text (names.arabic)
 			arabic.set_data (agent names.arabic)
 			arabic.select_actions.extend (agent update_language ("ar_SA"))
+
+			-- The chinese is an example of language
+			-- with no distinction between the singular and plural form.
 			create chinese.make_with_text (names.chinese)
 			chinese.set_data (agent names.chinese)
 			chinese.select_actions.extend (agent update_language ("zh_CN"))
+
+			-- The following language are examples
+			-- of completely translated language
 			create english.make_with_text (names.english)
 			english.set_data (agent names.english)
 			english.select_actions.extend (agent update_language ("en_GB"))
 			create greek.make_with_text (names.greek)
 			greek.set_data (agent names.greek)
 			greek.select_actions.extend (agent update_language ("el_GR"))
-			create unknown.make_with_text (names.unknown)
-			unknown.set_data (agent names.unknown)
-			unknown.select_actions.extend (agent update_language ("xx_XX"))
 			create italian.make_with_text (names.italian)
 			italian.set_data (agent names.italian)
 			italian.select_actions.extend (agent update_language ("it_IT"))
-			create russian.make_with_text (names.russian)
-			russian.set_data (agent names.russian)
-			russian.select_actions.extend (agent update_language ("ru_RU"))
-			create french.make_with_text (names.french)
-			french.set_data (agent names.french)
-			french.select_actions.extend (agent update_language ("fr_FR@euro"))
 			create hungarian.make_with_text (names.hungarian)
 			hungarian.set_data (agent names.hungarian)
 			hungarian.select_actions.extend (agent update_language ("hu_HU"))
+
+			-- An example of locale with a skript
+			-- in this case the file "fr.mo" will be used
+			create french.make_with_text (names.french)
+			french.set_data (agent names.french)
+			french.select_actions.extend (agent update_language ("fr_FR@euro"))
+
+			-- Russian is a language that has 4 different pluralforms			
+			create russian.make_with_text (names.russian)
+			russian.set_data (agent names.russian)
+			russian.select_actions.extend (agent update_language ("ru_RU"))
+
+
+			-- This is an example of locale that is (probably) not on the system
+			-- in this case the translation will come from mo file "xx_XX.mo"
+			-- and the formattings rules used are the predefined of the library
+			create unknown.make_with_text (names.unknown)
+			unknown.set_data (agent names.unknown)
+			unknown.select_actions.extend (agent update_language ("xx_XX"))
 
 
 			language_selection.extend (arabic)

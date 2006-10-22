@@ -53,6 +53,12 @@ msgstr "αγγλικά [en]"
 msgid "french"
 msgstr "γαλλικά [fr]"
 
+msgid "hungarian"
+msgstr "ουγγρικά [hu]"
+
+msgid "Unknown"
+msgstr "Αγνωστος"
+
 
 msgid "Full date-time: $1"
 msgstr "Πλήρης χρόνος ημερομηνίας: $1"

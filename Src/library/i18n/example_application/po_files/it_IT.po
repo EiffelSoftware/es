@@ -105,6 +105,11 @@ msgstr "Giapponese [jp]"
 msgid "russian"
 msgstr "russo [ru]"
 
+msgid "hungarian"
+msgstr "ungherese [hu]"
+
+msgid "Unknown"
+msgstr "Sconosciuta"
 
 msgid "About Dialog"
 msgstr "Dialogo di informazioni"
