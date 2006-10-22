@@ -103,7 +103,7 @@ feature -- Create window elements
 			greek.select_actions.extend (agent update_language ("el_GR"))
 			create unknown.make_with_text (names.unknown)
 			unknown.set_data (agent names.unknown)
-			unknown.select_actions.extend (agent update_language ("xx_xx"))
+			unknown.select_actions.extend (agent update_language ("xx_XX"))
 			create italian.make_with_text (names.italian)
 			italian.set_data (agent names.italian)
 			italian.select_actions.extend (agent update_language ("it_IT"))
