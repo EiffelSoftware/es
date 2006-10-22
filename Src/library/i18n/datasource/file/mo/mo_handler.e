@@ -34,10 +34,10 @@ feature -- Interface
 				original_singular, translated_singular, original_plural: STRING_32
 				translated_plurals: ARRAY[STRING_32]
 			do
-				create {I18N_HASH_TABLE_DICTIONARY} Result.make(file.plural_form)
 				create file.make (a_path)
 				file.open
 				if file.opened then
+					create {I18N_BINARY_SEARCH_ARRAY_DICTIONARY} Result.make(file.plural_form)
 					from
 						i := 1
 					until
@@ -56,6 +56,8 @@ feature -- Interface
 						Result.extend (temp)
 						i := i + 1
 					end
+				else
+					create {I18N_DUMMY_DICTIONARY} Result.make (0)
 				end
 			end
 
