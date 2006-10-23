@@ -123,3 +123,6 @@ msgstr "о"
 
 msgid "You can sell a hovercraft for $1"
 msgstr "вы можете продать ховеркрафт для $1"
+
+msgid "This string is written in the application's sourcecode"
+msgstr "Russian is a language that has 4 different pluralforms"

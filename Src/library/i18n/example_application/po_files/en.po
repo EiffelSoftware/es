@@ -116,3 +116,6 @@ msgstr "About"
 msgid "You can sell a hovercraft for $1"
 msgstr "You can sell a hovercraft for $1"
 
+msgid "This string is written in the application's sourcecode"
+msgstr "English translation :-)"
+

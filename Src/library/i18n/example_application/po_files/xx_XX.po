@@ -123,3 +123,8 @@ msgstr ""
 
 msgid "You can sell a hovercraft for $1"
 msgstr ""
+
+msgid "This string is written in the application's sourcecode"
+msgstr "This is an example of locale that is (probably) not on the system\n"
+"in this case the translation will come from mo file \"xx_XX.mo\" "
+"and the formattings rules used are the predefined of the library"

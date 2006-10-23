@@ -114,6 +114,12 @@ feature -- Labels
 			Result := locale.format_string (Result, [n])
 		end
 
+	explanation: STRING_32 is
+		do
+			create Result.make_from_string ("Locale name: "+locale.info.id.name+"%NInformations:%N")
+			Result := locale.translate ("This string is written in the application's sourcecode")
+		end
+
 
 feature -- Time Information
 

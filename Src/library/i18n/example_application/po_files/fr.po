@@ -121,3 +121,5 @@ msgstr "Informations"
 msgid "You can sell a hovercraft for $1"
 msgstr "Vous pouvez vendre un aéroglisseur pour $1"
 
+msgid "This string is written in the application's sourcecode"
+msgstr "full french translation"

@@ -121,3 +121,6 @@ msgstr "关于"
 msgid "You can sell a hovercraft for $1"
 msgstr "一艘气垫船可卖$1"
 
+msgid "This string is written in the application's sourcecode"
+msgstr "The chinese is an example of language "
+"with no distinction between the singular and plural form"

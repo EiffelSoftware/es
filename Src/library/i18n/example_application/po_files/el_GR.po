@@ -122,3 +122,7 @@ msgstr "Περίπου"
 
 msgid "You can sell a hovercraft for $1"
 msgstr "Μπορείτε να πωλήσετε ένα hovercraft για $1"
+
+msgid "This string is written in the application's sourcecode"
+msgstr "Greek translation"
+

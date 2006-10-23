@@ -152,18 +152,22 @@ feature -- Create window elements
 	build_main_box is
 			-- create, initialize and add the labels
 		local
-			separator: EV_HORIZONTAL_SEPARATOR
+			separator1, separator2: EV_HORIZONTAL_SEPARATOR
 		do
 			create main_box
 			build_buttons_box
 			main_box.extend (buttons_box)
 			build_info_box
 			main_box.extend (info_box)
-			create separator
-			main_box.extend (separator)
+			create separator1
+			main_box.extend (separator1)
 
 			create hovercraft_info.make_with_text (names.number_of_hovercraft (n))
 			main_box.extend (hovercraft_info)
+			create separator2
+			main_box.extend (separator2)
+			create explanation.make_with_text (names.explanation)
+			main_box.extend (explanation)
 		end
 
 	build_buttons_box is
@@ -172,13 +176,13 @@ feature -- Create window elements
 			create buy_button.make_with_text (names.buy)
 			buy_button.select_actions.extend (agent buy)
 			buy_button.select_actions.extend (agent update_money_labels)
-			buy_button.select_actions.extend (agent update_hovercraft_info_label)
+			buy_button.select_actions.extend (agent update_labels)
 			buttons_box.extend (buy_button)
 
 			create sell_button.make_with_text (names.sell)
 			sell_button.select_actions.extend (agent sell)
 			sell_button.select_actions.extend (agent update_money_labels)
-			sell_button.select_actions.extend (agent update_hovercraft_info_label)
+			sell_button.select_actions.extend (agent update_labels)
 			buttons_box.extend (sell_button)
 
 			create update_time_button.make_with_text_and_action (names.update_date_time, agent update_date_time_labels)
@@ -234,7 +238,7 @@ feature -- Update features
 			update_menu_bar
 			update_money_labels
 			update_date_time_labels
-			update_hovercraft_info_label
+			update_labels
 			update_buttons
 			first_window.refresh_now
 		end
@@ -279,9 +283,10 @@ feature -- Update features
 			date_time_info.set_text (names.time+"%N"+names.date+"%N"+names.date_time)
 		end
 
-	update_hovercraft_info_label is
+	update_labels is
 		do
 			hovercraft_info.set_text (names.number_of_hovercraft (n))
+			explanation.set_text (names.explanation)
 		end
 
 
@@ -323,6 +328,8 @@ feature {NONE} -- Implementation
 	money_label: EV_LABEL
 
 	hovercraft_info: EV_LABEL
+
+	explanation: EV_LABEL
 
 
 end -- class APPLICATION

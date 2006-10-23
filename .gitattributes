@@ -1884,8 +1884,8 @@ Src/library/i18n/example_application/mo_files/ar_SA.mo -text
 Src/library/i18n/example_application/mo_files/el_GR.mo -text
 Src/library/i18n/example_application/mo_files/en.mo -text
 Src/library/i18n/example_application/mo_files/fr.mo -text
+Src/library/i18n/example_application/mo_files/hu.mo -text
 Src/library/i18n/example_application/mo_files/it_IT.mo -text
-Src/library/i18n/example_application/mo_files/ja_JP.mo -text
 Src/library/i18n/example_application/mo_files/ru_RU.mo -text
 Src/library/i18n/example_application/mo_files/xx_XX.mo -text
 Src/library/i18n/example_application/mo_files/zh_CN.mo -text
@@ -1894,8 +1894,8 @@ Src/library/i18n/example_application/po_files/el_GR.po -text
 Src/library/i18n/example_application/po_files/en.po -text
 Src/library/i18n/example_application/po_files/example.pot -text
 Src/library/i18n/example_application/po_files/fr.po -text
+Src/library/i18n/example_application/po_files/hu.po -text
 Src/library/i18n/example_application/po_files/it_IT.po -text
-Src/library/i18n/example_application/po_files/ja_JP.po -text
 Src/library/i18n/example_application/po_files/ru_RU.po -text
 Src/library/i18n/example_application/po_files/xx_XX.po -text
 Src/library/i18n/example_application/po_files/zh_CN.po -text

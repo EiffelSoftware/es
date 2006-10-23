@@ -1,130 +1,95 @@
+# translation of hu.po to
 msgid ""
 msgstr ""
-"Language-Team: YOUR TEAM HERE\n"
+"Language-Team:  <it@li.org>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "MIME-Version: 1.0\n"
-"Last-Translator: YOUR NAME HERE\n"
-"Plural-Forms:plural=n==1 ? 0 : n==2 ? 1 : 2;\n"
-
+"Last-Translator: Etienne Reichenbach\n"
+"PO-Revision-Date: 2006-10-23 00:14+0200\n"
+"Project-Id-Version: hu\n"
+"X-Generator: KBabel 1.11.2\n"
 
 msgid ""
 "Members of the team:\n   - Leo Fellmann\n   - Etienne Reichenbach\n   - Bernd "
 "Schoeller\n   - Martino Trosi\n   - Hong Zhang"
 msgstr ""
 
-
 msgid "Application"
-msgstr "إنهاء التطبيق"
-
+msgstr "programok"
 
 msgid ""
 "Demo application made by i18n Team ETHZ\n\nFor bugs, suggestions or other, ple"
 "ase write a mail to: es-i18n@origo.ethz.ch\n\n"
-msgstr ""
-
+msgstr "demonstràcio programok\n\n a hibàknak ajànlatok irjàl neki es-i18n@origo.ethz.ch\n\n"
 
 msgid "french"
-msgstr ""
-
+msgstr "francia [fr]"
 
 msgid "Full date-time: $1"
-msgstr ""
-
+msgstr "idö és dàtum"
 
 msgid "Update date and time"
-msgstr ""
-
+msgstr "ujitani idö és dàtum"
 
 msgid "A hovercraft costs you: $1"
-msgstr ""
-
+msgstr "a hovercraft enyibe kerül: $1"
 
 msgid "Buy a hovercraft"
-msgstr ""
-
+msgstr "vegyél egy hovercraft"
 
 msgid "english"
-msgstr "الإنكليزي [en]ة"
-
+msgstr "angol [en]"
 
 msgid "Your have $1 on your bank conto"
-msgstr ""
-
+msgstr "neked $1 van bank kontodon"
 
 msgid "chinese"
-msgstr "الصينية [zh]"
-
-
-msgid "The mortage rate is $1%"
-msgstr ""
-
-
-msgid "File"
-msgstr "ملف"
-
+msgstr "kinaiul [zh]"
 
 msgid "greek"
-msgstr ""
-
+msgstr "görögül"
 
 msgid "Select language"
-msgstr "اللغة"
-
+msgstr "vàlasz egy nyelvet"
 
 msgid "arabic"
-msgstr "العربية [ar]"
-
-
-msgid "hebrew"
-msgstr ""
-
+msgstr "arabul [ar]"
 
 msgid "Time: $1"
-msgstr ""
-
+msgstr "idö: $1"
 
 msgid "italian"
-msgstr "الإيطالي [it]ة"
-
+msgstr "olaszul [it]"
 
 msgid "sell hovercraft"
-msgstr ""
-
+msgstr "eladok egy hovercraft"
 
 msgid "Date: $1"
-msgstr ""
-
+msgstr "dàtum"
 
 msgid "japanese"
-msgstr "اليابانية [jp]"
-
+msgstr "japànul [jp]"
 
 msgid "russian"
-msgstr "الروسية [ru]"
+msgstr "oroszul [ru]"
 
+msgid "hungarian"
+msgstr "magyarul [hu]"
 
 msgid "About Dialog"
-msgstr ""
-
-
-msgid "OK"
-msgstr ""
-
+msgstr "informàciok"
 
 msgid "My hovercraft is full of eels"
 msgid_plural "My $1 hovercraft are full of eels"
-msgstr[0] ""
-
+msgstr[0] "az én hovercraftom tele van eels"
+msgstr[1] "az én $1 hovercraftom tele vannak eels"
 
 msgid "About"
-msgstr ""
-
+msgstr "informàciok"
 
 msgid "You can sell a hovercraft for $1"
-msgstr ""
+msgstr "el tudsz adni eyg hovercraftot enyiér"
 
 msgid "This string is written in the application's sourcecode"
-msgstr ""
-"The arabic mo file is an example of datasource that does not have a lot of translations"
-
+msgstr "Not completely translated"
