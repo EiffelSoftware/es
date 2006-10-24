@@ -144,7 +144,6 @@ Delivery/scripts/windows/install/Binary/New.ico -text
 Delivery/scripts/windows/install/Binary/Remove.ico -text
 Delivery/scripts/windows/install/Binary/Repair.ico -text
 Delivery/scripts/windows/install/Binary/Up.ico -text
-Delivery/scripts/windows/install/Binary/gpl_license.rtf svneol=native#unset
 Delivery/scripts/windows/install/Binary/university_license.rtf svneol=native#unset
 Delivery/scripts/windows/install/gdiplus.wxs -text
 Delivery/scripts/windows/wix/Bitmaps/New.ico -text
