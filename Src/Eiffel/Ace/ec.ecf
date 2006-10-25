@@ -204,6 +204,7 @@
 	</target>
 	<target name="ecdpc" extends="batch">
 		<setting name="executable_name" value="ecdpc"/>
+		<override name="ecdpc" location="$EIFFEL_SRC\Eiffel\interface\ecdpc\"/>
 	</target>
 	<target name="bench" extends="common">
 		<description>Eiffel Studio</description>
