@@ -10,6 +10,9 @@ class
 
 inherit
 	EXECUTION_ENVIRONMENT
+		redefine
+			eif_getenv
+		end
 
 feature -- Access
 
@@ -45,6 +48,16 @@ feature -- Access
 					end
 				end
 			end
+		end
+
+feature {NONE} -- Implementation
+
+	eif_getenv (s: POINTER): POINTER is
+			-- Value of environment variable `s'
+		external
+			"C use <stdlib.h>"
+		alias
+			"getenv"
 		end
 
 indexing
