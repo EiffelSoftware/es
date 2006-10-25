@@ -16,10 +16,22 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</cluster>
-		<cluster name="windows" location="spec\windows\">
+		<cluster name="windows" location="spec\windows\" recursive="true">
 			<condition>
 				<platform value="windows"/>
 			</condition>
+			<file_rule>
+				<exclude>/dotnet$</exclude>
+				<condition>
+					<dotnet value="false"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/classic$</exclude>
+				<condition>
+					<dotnet value="true"/>
+				</condition>
+			</file_rule>
 		</cluster>
 	</target>
 </system>
