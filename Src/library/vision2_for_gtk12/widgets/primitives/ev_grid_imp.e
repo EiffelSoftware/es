@@ -18,7 +18,9 @@ inherit
 			propagate_foreground_color
 		redefine
 			interface,
-			initialize
+			initialize,
+			static_fixed_x_offset,
+			static_fixed_y_offset
 		end
 
 	EV_CELL_IMP
@@ -38,7 +40,8 @@ inherit
 			disable_capture,
 			enable_capture,
 			has_capture,
-			set_default_colors
+			set_default_colors,
+			set_default_key_processing_handler
 		redefine
 			interface,
 			initialize,
@@ -62,6 +65,10 @@ feature {NONE} -- Initialization
 			base_make (an_interface)
 			set_c_object ({EV_GTK_EXTERNALS}.gtk_event_box_new)
 		end
+
+	static_fixed_x_offset: INTEGER is 0
+	static_fixed_y_offset: INTEGER is 0
+		-- Redefined due to bug in viewport when contained in a fixed.
 
 	initialize is
 			-- Initialize `Current'
@@ -158,7 +165,7 @@ feature {EV_ANY_I} -- Implementation
 	extra_text_spacing: INTEGER is
 			-- Extra spacing for rows that is added to the height of a row text to make up `default_row_height'.
 		do
-			Result := 6
+			Result := 3
 		end
 
 	interface: EV_GRID;
