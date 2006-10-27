@@ -41,25 +41,22 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Attributes
 
-	name: STRING_32 is 
-		do
-			create Result.make_from_string("Discover_melt")
+	name: STRING is "Discover_melt"
 			-- Name of the command.
-		end
 
-	tooltext: STRING_32 is
+	tooltext: STRING is
 			-- Text for the toolbar button.
 		do
 			Result := Interface_names.b_discover_melt
 		end
 
-	menu_name: STRING_32 is
+	menu_name: STRING is
 			-- Name used in menu entry
 		do
 			Result := Interface_names.m_discover_melt
 		end
 
-	description, tooltip: STRING_32 is
+	description, tooltip: STRING is
 			-- String displayed as a tooltip and in the toolbar customization dialog.
 		do
 			Result := Interface_names.e_discover_melt

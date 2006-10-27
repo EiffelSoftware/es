@@ -312,7 +312,10 @@ feature -- Generation
 				class_id := key_for_iteration
 				a_class := System.class_of_id (class_id)
 				System.set_current_class (a_class)
-				if a_class /= Void then
+				if
+					a_class /= Void and then
+					(final_mode implies (not a_class.is_precompiled or else a_class.is_in_system))
+				then
 					l_table_of_class := item_for_iteration
 					from
 						l_table_of_class.start
@@ -657,8 +660,10 @@ feature {NONE} -- Generation
 						(return_type_string, function_name, True, buffer,
 						arg_names (args_count), a_types)
 				end
-				if is_for_agent and (not final_mode or else system.keep_assertions) then
+				if is_for_agent and not final_mode then
 						-- We need to check the invariant in an agent call, thus `nstcall' needs to be set.
+						-- We do not do it in final mode, because invariants are not checked in finalized
+						-- mode in general, except after a creation.
 					buffer.put_string ("{%N%TGTCX%N%Tnstcall = 1;%N%T")
 				else
 					buffer.put_string ("{%N%T")
