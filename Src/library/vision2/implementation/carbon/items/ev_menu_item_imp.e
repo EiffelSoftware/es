@@ -84,8 +84,9 @@ feature -- Element change
 			ptr: POINTER
 			ret: INTEGER
 			t: STRING
-			i: INTEGER
+			i, pos: INTEGER
 			cfstring: EV_CARBON_CF_STRING
+			a_menu: EV_MENU_IMP
 		do
 			-- Get rid of the & sign which denotes a shortcut key
 			t := a_text.as_string_8
@@ -98,8 +99,12 @@ feature -- Element change
 			create cfstring.make_unshared_with_eiffel_string (t)
 			ret := set_menu_title_with_cfstring_external (ptr, cfstring.item)
 
-			-- TODO: The text of menu-items is currently not changeable (i.e. after they are attached)
-			-- ret := set_menu_item_text_with_cfstring_external (parent_imp.c_object, pos, cfstring.item)
+			-- If this is a menu item we have to change the text through associated parent menu reference and this item's index
+			a_menu ?= parent_imp
+			if a_menu /= Void then
+				pos := a_menu.index_of (current.interface, 1)
+				ret := set_menu_item_text_with_cfstring_external (a_menu.c_object, pos, cfstring.item)
+			end
 
 			text := a_text
 		end
