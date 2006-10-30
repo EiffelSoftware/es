@@ -58,7 +58,7 @@ feature {NONE} -- Initialization
 
 
 
-			io.put_string ("create:" +ret.out)
+			--io.put_string ("create:" +ret.out)
 
 			ret := hiview_set_visible_external (c_object, 1)
 			ret := hiview_set_frame_external (c_object, rect.item)

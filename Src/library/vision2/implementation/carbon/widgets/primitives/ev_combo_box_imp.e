@@ -33,7 +33,9 @@ inherit
 			interface,
 			has_focus,
 			on_focus_changed,
-			dispose
+			dispose,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_LIST_ITEM_LIST_IMP
@@ -88,12 +90,25 @@ feature {NONE} -- Initialization
 			create cfs.make_new_unshared
 
 			base_make (an_interface)
-			ret := hicombo_box_create_external ( rect.item, null, cfs.item, null, {HIVIEW_ANON_ENUMS}.kHIComboBoxStandardAttributes, $ptr )
+			ret := hicombo_box_create_external ( rect.item, null, null, null, {HIVIEW_ANON_ENUMS}.kHIComboBoxStandardAttributes, $ptr )
 			set_c_object ( ptr )
 
 			show
 
 			event_id := app_implementation.get_id ( current )
+		end
+
+	minimum_height: INTEGER is
+			--
+		do
+			Result := Precursor {EV_TEXT_FIELD_IMP}
+		end
+
+
+	minimum_width: INTEGER is
+			-- Strangely GetOptimalBounds doesn't seem to work here
+		do
+			Result := 40
 		end
 
 feature {NONE} -- Initialization
