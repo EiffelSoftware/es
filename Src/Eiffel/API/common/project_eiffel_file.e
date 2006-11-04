@@ -90,6 +90,11 @@ feature -- Store/Retrieval
 				l_writer.write_header
 				l_writer.write_string_8 (a_version)
 				l_writer.write_integer_32 (a_precompilation_id)
+					-- The following information is not used on retrieval, but may help
+					-- users finding out which version of the Eiffel compiler and from where
+					-- this Eiffel compiler was coming from.
+				l_writer.write_string_8 (eiffel_layout.eiffel_installation_dir_name)
+				l_writer.write_string_8 (compiler_version_number.version.out)
 
 				if is_c_storable then
 					l_writer.write_footer
@@ -323,11 +328,14 @@ feature {NONE} -- Implementation
 			no_error: not has_error
 		local
 			retried: BOOLEAN
+			l_str: STRING
 		do
 			if not retried then
 				a_reader.read_header
 				project_version_number := a_reader.read_string_8
 				precompilation_id := a_reader.read_integer_32
+				l_str := a_reader.read_string_8
+				l_str := a_reader.read_string_8
 			else
 				error_value := corrupt_value
 			end
