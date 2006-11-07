@@ -23,7 +23,7 @@
 			<item>
 				<image><url>/images/eiffelstudio/icons/16x16/folder_cluster_icon.png</url></image>,
 				<image><url>/images/eiffelstudio/icons/16x16/folder_cluster_readonly_icon.png</url></image>, 
-				<image><url>/images/eiffelstudio/icons/16x16/folder_blank_icon.png </url>	</image>, 
+				<image><url>/images/eiffelstudio/icons/16x16/folder_blank_icon.png</url>	</image>, 
 				<image><url>/images/eiffelstudio/icons/16x16/folder_override_cluster_icon.png</url></image>  
 				are clusters (normal, readonly, subfolder in a recursive cluster, override cluster)
 			</item>
