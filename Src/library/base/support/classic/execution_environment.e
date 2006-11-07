@@ -104,11 +104,12 @@ feature -- Status setting
 			l_env.append_character ('=')
 			l_env.append (value)
 			create l_c_env.make (l_env)
-			
+
 			environ.force (l_c_env, key)
 			return_code := eif_putenv (l_c_env.item)
 		ensure
-			variable_set: (return_code = 0) implies (value.is_equal (get (key)))
+			variable_set: (return_code = 0) implies
+				(equal (value, get (key)) or else (value.is_empty and then (get (key) = Void)))
 		end
 
 	system (s: STRING) is
