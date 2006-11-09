@@ -27,1150 +27,1184 @@ class
 
 inherit
 	PRODUCT_NAMES
+	EB_SHARED_LOCALE
 
 feature -- Button texts
 
-	b_Abort: STRING is							"Abort"
-	b_Add: STRING is 							"Add"
-	b_Add_text: STRING is 						"Add ->"
-	b_And: STRING is							"And"
-	b_Apply: STRING is							"Apply"
-	b_Browse: STRING is							"Browse..."
-	b_Cancel: STRING is							"Cancel"
-	b_C_functions: STRING is					"C Functions"
-	b_Close: STRING is							"Close"
-	b_Continue_anyway: STRING is				"Continue Anyway"
-	b_Create: STRING is							"Create"
-	b_Create_folder: STRING is					"Create Folder..."
-	b_Delete_command: STRING is					"Delete"
-	b_Descendant_time: STRING is					"Descendant Time"
-	b_Discard_assertions: STRING is				"Discard Assertions"
-	b_Display_Exception_Trace: STRING is		"Display Exception Trace"
-	b_Down_text: STRING is 						"Down"
-	b_Edit_ace: STRING is						"Edit"
-	b_Edit_command: STRING is					"Edit..."
-	b_Eiffel_features: STRING is				"Eiffel Features"
-	b_Feature_name: STRING is					"Feature Name"
-	b_Finish: STRING is							"Finish"
-	b_Function_time: STRING is					"Function Time"
-	b_Keep_assertions: STRING is				"Keep Assertions"
-	b_Load_ace: STRING is						"Load From..."
-	b_Move_to_folder: STRING is					"Move to Folder..."
-	b_New_ace: STRING is						"Reset"
-	b_New_command: STRING is						"Add..."
-	b_New_favorite_class: STRING is				"New Favorite Class..."
-	b_New_tab: STRING is 						"New Tab"
-	b_Next: STRING is							"Next"
-	b_Number_of_calls: STRING is					"Number of Calls"
-	b_Ok: STRING is								"OK"
-	b_Open_original: STRING is					"Open Original File"
-	b_Open_backup: STRING is					"Open Backup File"
-	b_Or: STRING is								"Or"
-	b_Percentage: STRING is						"Percentage"
-	b_Replace: STRING is						"Replace"
-	b_Replace_all: STRING is					"Replace all"
-	b_Recursive_functions: STRING is			"Recursive Functions"
-	b_Reload: STRING is							"Reload"
-	b_Remove: STRING is							"Remove"
-	b_Remove_all: STRING is						"Remove all"
-	b_Remove_text: STRING is 					"<- Remove"
-	b_Retry: STRING is							"Retry"
-	b_Search: STRING is							"Search"
-	b_New_search: STRING is 					"New Search?"
-	b_Save: STRING is							"Save"
-	b_Save_all: STRING is 						"Save All"
-	b_Total_time: STRING is						"Total Time"
-	b_Up_text: STRING is 						"Up"
-	b_Update: STRING is 						"Update"
-	b_Compile: STRING is						"Compile"
-	b_Launch: STRING is							"Start"
-	b_Continue: STRING is						"Continue"
-	b_Finalize: STRING is						"Finalize"
-	b_Freeze: STRING is							"Freeze"
-	b_Precompile: STRING is						"Precompile"
-	b_override_scan: STRING is					"Recompile Overrides"
-	b_discover_melt: STRING is					"Find Added Classes & Recompile"
-	b_Cut: STRING is							"Cut"
-	b_Copy: STRING is							"Copy"
-	b_Paste: STRING is							"Paste"
-	b_New_editor: STRING is						"New Editor"
-	b_New_context: STRING is					"New Context"
-	b_New_window: STRING is						"New Window"
-	b_Open: STRING is							"Open"
-	b_Save_as: STRING is						"Save As"
-	b_Shell: STRING is							"External Editor"
-	b_Print: STRING is							"Print"
-	b_Undo: STRING is							"Undo"
-	b_Redo: STRING is							"Redo"
-	b_Create_new_cluster: STRING is				"Add Cluster"
-	b_Create_new_library: STRING is				"Add Library"
-	b_Create_new_assembly: STRING is			"Add Assembly"
-	b_Create_new_precompile: STRING is			"Add Precompile"
-	b_Create_new_class: STRING is				"New Class"
-	b_Create_new_feature: STRING is				"New Feature"
-	b_Send_stone_to_context: STRING is			"Synchronize"
-	b_Display_error_help: STRING is				"Help Tool"
-	b_Project_settings: STRING is				"Project Settings"
-	b_System_info: STRING is						"System Info"
-	b_Bkpt_info: STRING is						"Breakpoint Info"
-	b_Bkpt_enable: STRING is					"Enable Breakpoints"
-	b_Bkpt_disable: STRING is					"Disable Breakpoints"
-	b_Bkpt_remove: STRING is						"Remove Breakpoints"
-	b_Bkpt_stop_in_hole: STRING is				"Pause"
-	b_Exec_kill: STRING is						"Stop Application"
-	b_Exec_into: STRING is						"Step Into"
-	b_Exec_no_stop: STRING is					"Launch Without Stopping"
-	b_Exec_out: STRING is						"Step Out"
-	b_Exec_step: STRING is						"Step"
-	b_Exec_stop: STRING is						"Pause"
-	b_Run_finalized: STRING is					"Run Finalized"
-	b_Toggle_stone_management: STRING is 		"Link Context"
-	b_Raise_all: STRING is						"Raise Windows"
-	b_Remove_class_cluster: STRING is			"Remove Class/Cluster"
-	b_Minimize_all: STRING is					"Minimize All"
-	b_Terminate_c_compilation: STRING is 		"Terminate C Compilation"
-	b_Expand_all: STRING is 					"Expand All"
-	b_Collapse_all: STRING is 					"Collapse All"
-	b_Dbg_exception_handler: STRING is			"Exceptions"
-	b_Dbg_assertion_checking_disable: STRING is	"Disable assertion checking"
-	b_Dbg_assertion_checking_restore: STRING is	"Restore assertion checking"
+	b_Abort: STRING is						do	Result := locale.translate("Abort").out 			end
+	b_Add: STRING is 						do	Result := locale.translate("Add").out				end
+	b_Add_text: STRING is 					do	Result := locale.translate("Add ->").out			end
+	b_And: STRING is						do	Result := locale.translate("And").out				end
+	b_Apply: STRING is						do	Result := locale.translate("Apply").out				end
+	b_Browse: STRING is						do	Result := locale.translate("Browse...").out			end
+	b_Cancel: STRING is						do	Result := locale.translate("Cancel").out			end
+	b_C_functions: STRING is				do	Result := locale.translate("C Functions").out			end
+	b_Close: STRING is						do	Result := locale.translate("Close").out				end
+	b_Continue_anyway: STRING is			do	Result := locale.translate("Continue Anyway").out		end
+	b_Create: STRING is						do	Result := locale.translate("Create").out			end
+	b_Create_folder: STRING is				do	Result := locale.translate("Create Folder...").out		end
+	b_Delete_command: STRING is				do	Result := locale.translate("Delete").out			end
+	b_Descendant_time: STRING is			do	Result := locale.translate("Descendant Time").out		end
+	b_Discard_assertions: STRING is			do	Result := locale.translate("Discard Assertions").out		end
+	b_Display_Exception_Trace: STRING is	do	Result := locale.translate("Display Exception Trace").out	end
+	b_Down_text: STRING is 					do	Result := locale.translate("Down").out				end
+	b_Edit_ace: STRING is					do	Result := locale.translate("Edit").out				end
+	b_Edit_command: STRING is				do	Result := locale.translate("Edit...").out			end
+	b_Eiffel_features: STRING is 			do	Result := locale.translate("Eiffel Features").out	end
+	b_Feature_name: STRING is 				do	Result := locale.translate("Feature Name").out	end
+	b_Finish: STRING is 					do	Result := locale.translate("Finish").out	end
+	b_Function_time: STRING is 				do	Result := locale.translate("Function Time").out	end
+	b_Keep_assertions: STRING is 			do	Result := locale.translate("Keep Assertions").out	end
+	b_Load_ace: STRING is 					do	Result := locale.translate("Load From...").out	end
+	b_Move_to_folder: STRING is 			do	Result := locale.translate("Move to Folder...").out	end
+	b_New_ace: STRING is 					do	Result := locale.translate("Reset").out	end
+	b_New_command: STRING is 				do	Result := locale.translate("Add...").out	end
+	b_New_favorite_class: STRING is 		do	Result := locale.translate("New Favorite Class...").out	end
+	b_New_tab: STRING is 					do	Result := locale.translate("New Tab").out	end
+	b_Next: STRING is 						do	Result := locale.translate("Next").out	end
+	b_Number_of_calls: STRING is 			do	Result := locale.translate("Number of Calls").out	end
+	b_Ok: STRING is 						do	Result := locale.translate("OK").out	end
+	b_Open_original: STRING is 				do	Result := locale.translate("Open Original File").out	end
+	b_Open_backup: STRING is 				do	Result := locale.translate("Open Backup File").out	end
+	b_Or: STRING is 						do	Result := locale.translate("Or").out	end
+	b_Percentage: STRING is 				do	Result := locale.translate("Percentage").out	end
+	b_Replace: STRING is 					do	Result := locale.translate("Replace").out	end
+	b_Replace_all: STRING is 				do	Result := locale.translate("Replace all").out	end
+	b_Recursive_functions: STRING is 		do	Result := locale.translate("Recursive Functions").out	end
+	b_Reload: STRING is 					do	Result := locale.translate("Reload").out	end
+	b_Remove: STRING is 					do	Result := locale.translate("Remove").out	end
+	b_Remove_all: STRING is 				do	Result := locale.translate("Remove all").out	end
+	b_Remove_text: STRING is 				do	Result := locale.translate("<- Remove").out	end
+	b_Retry: STRING is 						do	Result := locale.translate("Retry").out	end
+	b_Search: STRING is 					do	Result := locale.translate("Search").out	end
+	b_New_search: STRING is 				do	Result := locale.translate("New Search?").out	end
+	b_Save: STRING is 						do	Result := locale.translate("Save").out	end
+	b_Save_all: STRING is 					do	Result := locale.translate("Save All").out	end
+	b_Total_time: STRING is 				do	Result := locale.translate("Total Time").out	end
+	b_Up_text: STRING is 					do	Result := locale.translate("Up").out	end
+	b_Update: STRING is 					do	Result := locale.translate("Update").out	end
+	b_Compile: STRING is 					do	Result := locale.translate("Compile").out	end
+	b_Launch: STRING is 					do	Result := locale.translate("Start").out	end
+	b_Continue: STRING is 					do	Result := locale.translate("Continue").out	end
+	b_Finalize: STRING is 					do	Result := locale.translate("Finalize").out	end
+	b_Freeze: STRING is 					do	Result := locale.translate("Freeze").out	end
+	b_Precompile: STRING is 				do	Result := locale.translate("Precompile").out	end
+	b_override_scan: STRING is 				do	Result := locale.translate("Recompile Overrides").out	end
+	b_discover_melt: STRING is 				do	Result := locale.translate("Find Added Classes & Recompile").out	end
+	b_Cut: STRING is			 			do	Result := locale.translate("Cut").out	end
+	b_Copy: STRING is 						do	Result := locale.translate("Copy").out	end
+	b_Paste: STRING is			 			do	Result := locale.translate("Paste").out	end
+	b_New_editor: STRING is 				do	Result := locale.translate("New Editor").out	end
+	b_New_context: STRING is 				do	Result := locale.translate("New Context").out	end
+	b_New_window: STRING is 				do	Result := locale.translate("New Window").out	end
+	b_Open: STRING is 						do	Result := locale.translate("Open").out	end
+	b_Save_as: STRING is 					do	Result := locale.translate("Save As").out	end
+	b_Shell: STRING is 						do	Result := locale.translate("External Editor").out	end
+	b_Print: STRING is 						do	Result := locale.translate("Print").out	end
+	b_Undo: STRING is 						do	Result := locale.translate("Undo").out	end
+	b_Redo: STRING is 						do	Result := locale.translate("Redo").out	end
+	b_Create_new_cluster: STRING is 		do	Result := locale.translate("Add Cluster").out	end
+	b_Create_new_library: STRING is 		do	Result := locale.translate("Add Library").out	end
+	b_Create_new_assembly: STRING is 		do	Result := locale.translate("Add Assembly").out	end
+	b_Create_new_precompile: STRING is 		do	Result := locale.translate("Add Precompile").out	end
+	b_Create_new_class: STRING is 			do	Result := locale.translate("New Class").out	end
+	b_Create_new_feature: STRING is 		do	Result := locale.translate("New Feature").out	end
+	b_Send_stone_to_context: STRING is 		do	Result := locale.translate("Synchronize").out	end
+	b_Display_error_help: STRING is 		do	Result := locale.translate("Help Tool").out	end
+	b_Project_settings: STRING is 			do	Result := locale.translate("Project Settings").out	end
+	b_System_info: STRING is 				do	Result := locale.translate("System Info").out	end
+	b_Bkpt_info: STRING is 					do	Result := locale.translate("Breakpoint Info").out	end
+	b_Bkpt_enable: STRING is 				do	Result := locale.translate("Enable Breakpoints").out	end
+	b_Bkpt_disable: STRING is 				do	Result := locale.translate("Disable Breakpoints").out	end
+	b_Bkpt_remove: STRING is 				do	Result := locale.translate("Remove Breakpoints").out	end
+	b_Bkpt_stop_in_hole: STRING is 			do	Result := locale.translate("Pause").out	end
+	b_Exec_kill: STRING is 					do	Result := locale.translate("Stop Application").out	end
+	b_Exec_into: STRING is 					do	Result := locale.translate("Step Into").out	end
+	b_Exec_no_stop: STRING is 				do	Result := locale.translate("Launch Without Stopping").out	end
+	b_Exec_out: STRING is 					do	Result := locale.translate("Step Out").out	end
+	b_Exec_step: STRING is 					do	Result := locale.translate("Step").out	end
+	b_Exec_stop: STRING is 					do	Result := locale.translate("Pause").out	end
+	b_Run_finalized: STRING is 				do	Result := locale.translate("Run Finalized").out	end
+	b_Toggle_stone_management: STRING is 	do	Result := locale.translate("Link Context").out	end
+	b_Raise_all: STRING is 					do	Result := locale.translate("Raise Windows").out	end
+	b_Remove_class_cluster: STRING is 		do	Result := locale.translate("Remove Class/Cluster").out	end
+	b_Minimize_all: STRING is 				do	Result := locale.translate("Minimize All").out	end
+	b_Terminate_c_compilation: STRING is 	do	Result := locale.translate("Terminate C Compilation").out	end
+	b_Expand_all: STRING is 				do	Result := locale.translate("Expand All").out	end
+	b_Collapse_all: STRING is 				do	Result := locale.translate("Collapse All").out	end
+	b_Dbg_exception_handler: STRING is 		do	Result := locale.translate("Exceptions").out	end
+	b_Dbg_assertion_checking_disable: STRING is		do	Result := locale.translate("Disable assertion checking").out	end
+	b_Dbg_assertion_checking_restore: STRING is 	do	Result := locale.translate("Restore assertion checking").out	end
 
 feature -- Graphical degree output
 
-	d_Classes_to_go: STRING is					"Classes to Go:"
-	d_Clusters_to_go: STRING is					"Clusters to Go:"
-	d_Compilation_class: STRING is				"Class:"
-	d_Compilation_cluster: STRING is				"Cluster:"
-	d_Compilation_progress: STRING is			"Compilation Progress for "
-	d_Degree: STRING is							"Degree:"
-	d_Documentation: STRING is					"Documentation"
-	d_Features_processed: STRING is				"Completed: "
-	d_Features_to_go: STRING is					"Remaining: "
-	d_Generating: STRING is						"Generating: "
-	d_Resynchronizing_breakpoints: STRING is 	"Resynchronizing Breakpoints"
-	d_Resynchronizing_tools: STRING is			"Resynchronizing Tools"
-	d_Reverse_engineering: STRING is			"Reverse Engineering Project"
-	d_Finished_removing_dead_code: STRING is		"Dead Code Removal Completed"
+	d_Classes_to_go: STRING is 					do	Result := locale.translate("Classes to Go:").out	end
+	d_Clusters_to_go: STRING is 				do	Result := locale.translate("Clusters to Go:").out	end
+	d_Compilation_class: STRING is 				do	Result := locale.translate("Class:").out	end
+	d_Compilation_cluster: STRING is 			do	Result := locale.translate("Cluster:").out	end
+	d_Compilation_progress: STRING is 			do	Result := locale.translate("Compilation Progress for ").out	end
+	d_Degree: STRING is 						do	Result := locale.translate("Degree:").out	end
+	d_Documentation: STRING is 					do	Result := locale.translate("Documentation").out	end
+	d_Features_processed: STRING is	 			do	Result := locale.translate("Completed: ").out	end
+	d_Features_to_go: STRING is 				do	Result := locale.translate("Remaining: ").out	end
+	d_Generating: STRING is 					do	Result := locale.translate("Generating: ").out	end
+	d_Resynchronizing_breakpoints: STRING is	do	Result := locale.translate("Resynchronizing Breakpoints").out	end
+	d_Resynchronizing_tools: STRING is 			do	Result := locale.translate("Resynchronizing Tools").out	end
+	d_Reverse_engineering: STRING is 			do	Result := locale.translate("Reverse Engineering Project").out	end
+	d_Finished_removing_dead_code: STRING is 	do	Result := locale.translate("Dead Code Removal Completed").out	end
 
 feature -- Help text
 
-	h_No_help_available: STRING is				"No help available for this element"
-	h_refactoring_compiled: STRING is			"Renames only occurances of the class name in compiled classes."
-	h_refactoring_all_classes: STRING is		"Renames occurances of the class name in any class. (Slow)"
+	h_No_help_available: STRING is 				do	Result := locale.translate("No help available for this element").out	end
+	h_refactoring_compiled: STRING is 			do	Result := locale.translate("Renames only occurances of the class name in compiled classes.").out	end
+	h_refactoring_all_classes: STRING is 		do	Result := locale.translate("Renames occurances of the class name in any class. (Slow)").out	end
 
 feature -- File names
 
-	default_stack_file_name: STRING is			"stack"
+	default_stack_file_name: STRING is 			do	Result := locale.translate("stack").out	end
 
 feature -- Accelerator, focus label and menu name
 
 	m_About: STRING is
 		once
-			Result := "&About " + Workbench_name + "..."
+			Result := locale.format_string (locale.translate("&About $1..."), [Workbench_name])
 		end
-	m_Advanced: STRING is				"Ad&vanced"
-	m_Add_to_favorites: STRING is		"&Add to Favorites"
-	m_Address_toolbar: STRING is			"&Address Bar"
-	m_Apply: STRING is					"&Apply"
-	l_all_classes: STRING is			"All Classes"
-	m_Breakpoints_tool: STRING is		"Breakpoints"
+	m_Advanced: STRING is 						do	Result := locale.translate("Ad&vanced").out	end
+	m_Add_to_favorites: STRING is 				do	Result := locale.translate("&Add to Favorites").out	end
+	m_Address_toolbar: STRING is 				do	Result := locale.translate("&Address Bar").out	end
+	m_Apply: STRING is 							do	Result := locale.translate("&Apply").out	end
+	l_all_classes: STRING is 					do	Result := locale.translate("All Classes").out	end
+	m_Breakpoints_tool: STRING is 				do	Result := locale.translate("Breakpoints").out	end
 
-	l_class_tree_assemblies: STRING is	"Assemblies"
-	l_class_tree_clusters: STRING is	"Clusters"
-	l_class_tree_libraries: STRING is	"Libraries"
-	l_class_tree_overrides: STRING is	"Overrides"
+	l_class_tree_assemblies: STRING is 			do	Result := locale.translate("Assemblies").out	end
+	l_class_tree_clusters: STRING is 			do	Result := locale.translate("Clusters").out	end
+	l_class_tree_libraries: STRING is 			do	Result := locale.translate("Libraries").out	end
+	l_class_tree_overrides: STRING is 			do	Result := locale.translate("Overrides").out	end
 
-	f_Clear_breakpoints: STRING is		"Remove all breakpoints"
-	m_Clear_breakpoints: STRING is		"Re&move All Breakpoints"
-	m_Comment: STRING is					"&Comment%TCtrl+K"
-	m_Compilation_C_Workbench: STRING is	"Compile W&orkbench C Code"
-	m_Compilation_C_Final: STRING is		"Compile F&inalized C Code"
-	m_Contents: STRING is				"&Contents"
-	m_Customize_general: STRING is		"&Customize Standard Toolbar..."
-	m_Customize_project: STRING is		"Customize P&roject Toolbar..."
-	m_Customize_refactoring: STRING is	"Customize Re&factoring Toolbar..."
-	m_Cut: STRING is						"Cu&t%TCtrl+X"
-	f_Cut: STRING is					"Cut (Ctrl+X)"
-	m_Call_stack_tool: STRING is			"Call stack"
-	m_Cluster_tool: STRING is			"&Clusters"
-	l_compiled_classes: STRING is		"Compiled Classes"
-	m_Complete_word: STRING is			"Complete &Word"
-	m_Complete_class_name: STRING is		"Complete Class &Name"
-	m_Context_tool: STRING is			"Conte&xt"
-	m_Copy: STRING is					"&Copy%TCtrl+C"
-	f_Copy: STRING is					"Copy (Ctrl+C)"
-	m_Close: STRING is					"&Close Window%TAlt+F4"
-	m_Close_short: STRING is				"&Close"
-	f_Create_new_cluster: STRING is		"Add a cluster"
-	f_Create_new_library: STRING is		"Add a library"
-	f_Create_new_assembly: STRING is	"Add an assembly"
-	f_Create_new_precompile: STRING is 	"Add a precompile"
-	f_Create_new_class: STRING is		"Create a new class"
-	f_Create_new_feature: STRING is		"Create a new feature"
+	f_Clear_breakpoints: STRING is 				do	Result := locale.translate("Remove all breakpoints").out	end
+	m_Clear_breakpoints: STRING is 				do	Result := locale.translate("Re&move All Breakpoints").out	end
+	m_Comment: STRING is 						do	Result := locale.translate("&Comment%TCtrl+K").out	end
+	m_Compilation_C_Workbench: STRING is 		do	Result := locale.translate("Compile W&orkbench C Code").out	end
+	m_Compilation_C_Final: STRING is 			do	Result := locale.translate("Compile F&inalized C Code").out	end
+	m_Contents: STRING is 						do	Result := locale.translate("&Contents").out	end
+	m_Customize_general: STRING is 				do	Result := locale.translate("&Customize Standard Toolbar...").out	end
+	m_Customize_project: STRING is 				do	Result := locale.translate("Customize P&roject Toolbar...").out	end
+	m_Customize_refactoring: STRING is 			do	Result := locale.translate("Customize Re&factoring Toolbar...").out	end
+	m_Cut: STRING is 							do	Result := locale.translate("Cu&t%TCtrl+X").out	end
+	f_Cut: STRING is 							do	Result := locale.translate("Cut (Ctrl+X)").out	end
+	m_Call_stack_tool: STRING is 				do	Result := locale.translate("Call stack").out	end
+	m_Cluster_tool: STRING is 					do	Result := locale.translate("&Clusters").out	end
+	l_compiled_classes: STRING is 				do	Result := locale.translate("Compiled Classes").out	end
+	m_Complete_word: STRING is 					do	Result := locale.translate("Complete &Word").out	end
+	m_Complete_class_name: STRING is 			do	Result := locale.translate("Complete Class &Name").out	end
+	m_Context_tool: STRING is 					do	Result := locale.translate("Conte&xt").out	end
+	m_Copy: STRING is 							do	Result := locale.translate("&Copy%TCtrl+C").out	end
+	f_Copy: STRING is				 			do	Result := locale.translate("Copy (Ctrl+C)").out	end
+	m_Close: STRING is 							do	Result := locale.translate("&Close Window%TAlt+F4").out	end
+	m_Close_short: STRING is 					do	Result := locale.translate("&Close").out	end
+	f_Create_new_cluster: STRING is 			do	Result := locale.translate("Add a cluster").out	end
+	f_Create_new_library: STRING is 			do	Result := locale.translate("Add a library").out	end
+	f_Create_new_assembly: STRING is 			do	Result := locale.translate("Add an assembly").out	end
+	f_Create_new_precompile: STRING is 			do	Result := locale.translate("Add a precompile").out	end
+	f_Create_new_class: STRING is 				do	Result := locale.translate("Create a new class").out	end
+	f_Create_new_feature: STRING is 			do	Result := locale.translate("Create a new feature").out	end
 
-	m_Dbg_assertion_checking_disable: STRING is	"Disable Assertion Checking"
-	m_Dbg_assertion_checking_restore: STRING is	"Restore Assertion Checking"
-	m_Dbg_exception_handler: STRING is	"Exception Handling"
-	m_Debug_interrupt_new: STRING is		"I&nterrupt Application"
-	f_Debug_edit_object: STRING is		"Edit Object content"
-	m_Debug_edit_object: STRING is		"Edit Object Content"
-	f_Debug_dynamic_eval: STRING is		"Dynamic feature evaluation"
-	m_Debug_dynamic_eval: STRING is		"Dynamic Feature Evaluation"
-	m_Debug_kill: STRING is				"&Stop Application"
-	f_Debug_run: STRING is				"Run"
-	m_Debug_run: STRING is				"&Run%TCtrl+R"
-	m_Debug_run_new: STRING is			"St&art"
-	m_Launch_With_Arguments: STRING is	"Start With Arguments"
-	f_diagram_delete: STRING is			"Delete"
-	l_diagram_delete: STRING is			"Delete graphical items, remove code from system"
-	f_diagram_crop: STRING is			"Crop diagram"
-	m_diagram_crop: STRING is			"&Crop Diagram"
-	f_diagram_zoom_out: STRING is		"Zoom out"
-	f_diagram_put_right_angles: STRING is		"Force right angles"
-	f_diagram_remove_right_angles: STRING is	"Remove right angles"
-	m_diagram_link_tool: STRING is		"&Put Right Angles"
-	f_diagram_to_png: STRING is			"Export diagram to PNG"
-	m_diagram_to_png: STRING is			"&Export Diagram to PNG"
-	f_diagram_context_depth: STRING is  "Select depth of relations"
-	m_diagram_context_depth: STRING is  "&Select Depth of Relations"
-	f_diagram_delete_view: STRING is		"Delete current view"
-	f_diagram_reset_view: STRING is 		"Reset current view"
-	m_diagram_delete_view: STRING is		"&Delete Current View"
-	m_diagram_reset_view: STRING is		"&Reset Current View"
-	f_diagram_zoom_in: STRING is			"Zoom in"
-	f_diagram_fit_to_screen: STRING is	"Fit to screen"
-	f_diagram_undo: STRING is			"Undo last action"
-	f_diagram_hide_supplier: STRING is	"Hide supplier links"
-	f_diagram_show_supplier: STRING is	"Show supplier links"
+	m_Dbg_assertion_checking_disable: STRING is 	do	Result := locale.translate("Disable Assertion Checking").out	end
+	m_Dbg_assertion_checking_restore: STRING is		do	Result := locale.translate("Restore Assertion Checking").out	end
+	m_Dbg_exception_handler: STRING is 			do	Result := locale.translate("Exception Handling").out	end
+	m_Debug_interrupt_new: STRING is 			do	Result := locale.translate("I&nterrupt Application").out	end
+	f_Debug_edit_object: STRING is 				do	Result := locale.translate("Edit Object content").out	end
+	m_Debug_edit_object: STRING is 				do	Result := locale.translate("Edit Object Content").out	end
+	f_Debug_dynamic_eval: STRING is 			do	Result := locale.translate("Dynamic feature evaluation").out	end
+	m_Debug_dynamic_eval: STRING is 			do	Result := locale.translate("Dynamic Feature Evaluation").out	end
+	m_Debug_kill: STRING is 					do	Result := locale.translate("&Stop Application").out	end
+	f_Debug_run: STRING is 						do	Result := locale.translate("Run").out	end
+	m_Debug_run: STRING is 						do	Result := locale.translate("&Run%TCtrl+R").out	end
+	m_Debug_run_new: STRING is 					do	Result := locale.translate("St&art").out	end
+	m_Launch_With_Arguments: STRING is 			do	Result := locale.translate("Start With Arguments").out	end
+	f_diagram_delete: STRING is 				do	Result := locale.translate("Delete").out	end
+	l_diagram_delete: STRING is 				do	Result := locale.translate("Delete graphical items, remove code from system").out	end
+	f_diagram_crop: STRING is 					do	Result := locale.translate("Crop diagram").out	end
+	m_diagram_crop: STRING is		 			do	Result := locale.translate("&Crop Diagram").out	end
+	f_diagram_zoom_out: STRING is 				do	Result := locale.translate("Zoom out").out	end
+	f_diagram_put_right_angles: STRING is 		do	Result := locale.translate("Force right angles").out	end
+	f_diagram_remove_right_angles: STRING is	do	Result := locale.translate("Remove right angles").out	end
+	m_diagram_link_tool: STRING is 				do	Result := locale.translate("&Put Right Angles").out	end
+	f_diagram_to_png: STRING is 				do	Result := locale.translate("Export diagram to PNG").out	end
+	m_diagram_to_png: STRING is 				do	Result := locale.translate("&Export Diagram to PNG").out	end
+	f_diagram_context_depth: STRING is 			do	Result := locale.translate("Select depth of relations").out	end
+	m_diagram_context_depth: STRING is 			do	Result := locale.translate("&Select Depth of Relations").out	end
+	f_diagram_delete_view: STRING is 			do	Result := locale.translate("Delete current view").out	end
+	f_diagram_reset_view: STRING is 			do	Result := locale.translate("Reset current view").out	end
+	m_diagram_delete_view: STRING is 			do	Result := locale.translate("&Delete Current View").out	end
+	m_diagram_reset_view: STRING is 			do	Result := locale.translate("&Reset Current View").out	end
+	f_diagram_zoom_in: STRING is 				do	Result := locale.translate("Zoom in").out	end
+	f_diagram_fit_to_screen: STRING is 			do	Result := locale.translate("Fit to screen").out	end
+	f_diagram_undo: STRING is 					do	Result := locale.translate("Undo last action").out	end
+	f_diagram_hide_supplier: STRING is 			do	Result := locale.translate("Hide supplier links").out	end
+	f_diagram_show_supplier: STRING is 			do	Result := locale.translate("Show supplier links").out	end
 
-	l_diagram_supplier_visibility: STRING is "Toggle visibility of supplier links"
+	l_diagram_supplier_visibility: STRING is 	do	Result := locale.translate("Toggle visibility of supplier links").out	end
 
-	l_diagram_add_ancestors: STRING is "Add class ancestors to diagram"
-	l_diagram_add_descendents: STRING is "Add class descendants to diagram"
-	l_diagram_add_suppliers: STRING is "Add class suppliers to diagram"
-	l_diagram_add_clients: STRING is "Add class clients to diagram"
+	l_diagram_add_ancestors: STRING is 			do	Result := locale.translate("Add class ancestors to diagram").out	end
+	l_diagram_add_descendents: STRING is 		do	Result := locale.translate("Add class descendants to diagram").out	end
+	l_diagram_add_suppliers: STRING is 			do	Result := locale.translate("Add class suppliers to diagram").out	end
+	l_diagram_add_clients: STRING is 			do	Result := locale.translate("Add class clients to diagram").out	end
 
-	f_diagram_hide_labels: STRING is		"Hide labels"
-	f_diagram_show_labels: STRING is		"Show labels"
-	f_diagram_show_uml: STRING is		"Show UML"
-	f_diagram_show_bon: STRING is 		"Show BON"
-	f_diagram_hide_clusters: STRING is	"Hide clusters"
-	f_diagram_show_clusters: STRING is	"Show clusters"
-	f_diagram_show_legend: STRING is		"Show cluster legend"
-	f_diagram_hide_legend: STRING is		"Hide cluster legend"
-	f_diagram_remove_anchor: STRING is	"Remove anchor"
-	l_diagram_labels_visibility: STRING is	"Toggle visibility of client link labels"
-	l_diagram_uml_visibility: STRING is	"Toggle between UML and BON view"
-	l_diagram_clusters_visibility: STRING is	"Toggle visibility of clusters"
-	l_diagram_legend_visibility: STRING is	"Toggle visibility of cluster legend"
-	l_diagram_remove_anchor: STRING is	"Remove anchor"
-	l_diagram_force_directed: STRING is	"Turn on/off physics"
-	l_diagram_toggle_quality: STRING is	"Toggle quality level"
-	f_diagram_high_quality: STRING is 	"Switch to high quality"
-	f_diagram_low_quality: STRING is 	"Switch to low quality"
-	f_diagram_hide_inheritance: STRING is	"Hide inheritance links"
-	f_diagram_show_inheritance: STRING is	"Show inheritance links"
-	l_diagram_inheritance_visibility: STRING is "Toggle visibility of inheritance links"
-	f_diagram_redo: STRING is			"Redo last action"
-	f_diagram_fill_cluster: STRING is	"Include all classes of cluster"
-	f_diagram_history: STRING is		"History tool"
-	f_diagram_remove: STRING is			"Hide figure"
-	l_diagram_remove: STRING is			"Delete graphical items"
-	f_diagram_create_supplier_links: STRING is	"Create new client-supplier links"
-	f_diagram_create_aggregate_supplier_links: STRING is "Create new aggregate client-supplier links"
-	f_diagram_create_inheritance_links: STRING is "Create new inheritance links"
-	l_diagram_create_links: STRING is	"Select type of new links"
-	f_diagram_new_class: STRING is		"Create a new class"
-	f_diagram_change_header: STRING is	"Change class name and generics"
-	f_diagram_change_color: STRING is	"Change color"
-	f_diagram_force_directed_on: STRING is	"Turn on physics"
-	f_diagram_force_directed_off: STRING is	"Turn off physics"
-	f_diagram_force_settings: STRING is	"Show physics settings dialog"
-	f_Disable_stop_points: STRING is	"Disable all breakpoints"
-	m_Disable_stop_points: STRING is	"&Disable All Breakpoints"
-	m_Debug_block: STRING is			"E&mbed in %"Debug...%"%TCtrl+D"
-	m_Editor: STRING is					"&Editor"
-	m_Eiffel_introduction: STRING is	"&Introduction to Eiffel"
-	f_Enable_stop_points: STRING is		"Enable all breakpoints"
-	m_Enable_stop_points: STRING is		"&Enable All Breakpoints"
-	m_Exec_last: STRING is				"&Out of Routine"
-	m_Exec_nostop: STRING is			"&Ignore Breakpoints"
-	m_Exec_step: STRING is				"&Step-by-Step"
-	m_Exec_into: STRING is				"Step In&to"
-	m_Exit_project: STRING is			"E&xit"
-	m_Explorer_bar: STRING is			"&Tools"
-	m_Export_to: STRING is				"Save Cop&y As..."
-	m_Export_XMI: STRING is 			"E&xport XMI..."
-	m_Expression_evaluation: STRING is	"Expression Evaluation"
-	m_External_editor: STRING is		"External E&ditor"
-	m_Favorites_tool: STRING is			"F&avorites"
-	m_Features_tool: STRING is			"&Features"
-	f_Finalize: STRING is				"Finalize..."
-	m_Finalize_new: STRING is			"Finali&ze..."
-	m_Find: STRING is					"&Search"
-	m_Find_next: STRING is				"Find &Next"
-	m_Find_previous: STRING is			"Find &Previous"
-	m_Find_next_selection: STRING is	"Find Next &Selection"
-	m_Find_previous_selection: STRING is "Find P&revious Selection"
-	f_Freeze: STRING is					"Freeze..."
-	m_Freeze_new: STRING is				"&Freeze..."
-	m_General_toolbar: STRING is		"&Standard Buttons"
-	m_Generate_documentation: STRING is "Generate &Documentation..."
-	m_Go_to: STRING is					"&Go to..."
-	m_Guided_tour: STRING is			"&Guided Tour"
-	m_Help: STRING is					"&Help"
-	m_Hide_favorites: STRING is			"&Hide Favorites"
-	m_Hide_formatting_marks: STRING is	"&Hide Formatting Marks"
-	m_History_forth: STRING is			"&Forward"
-	m_History_back: STRING is			"&Back"
-	f_History_forth: STRING is			"Go forth"
-	f_History_back: STRING is			"Go back"
-	m_How_to_s: STRING is				"&How to's"
-	m_If_block: STRING is				"&Embed in %"if...%"%TCtrl+I"
-	m_Indent: STRING is					"&Indent Selection%TTab"
-	m_Line_numbers: STRING is			"Toggle &Line Numbers"
-	f_Melt: STRING is					"Compile current project"
-	m_Melt_new: STRING is				"&Compile"
-	m_New: STRING is					"&New"
-	l_new_name: STRING is				"New Name:"
-	f_New_window: STRING is				"Create a new window"
-	m_New_window: STRING is				"New &Window"
-	m_New_dynamic_lib: STRING is		"&Dynamic Library Builder..."
-	m_New_project: STRING is			"&New Project..."
-	m_Ok: STRING is						"&OK"
-	m_Open: STRING is					"&Open...%TCtrl+O"
-	m_Open_new: STRING is				"Op&en..."
-	m_Open_project: STRING is			"&Open Project..."
-	m_Organize_favorites: STRING is		"&Organize Favorites..."
-	m_Output: STRING is					"&Output"
-	f_Paste: STRING is					"Paste (Ctrl+V)"
-	m_Paste: STRING is					"&Paste%TCtrl+V"
-	m_Precompile_new: STRING is			"&Precompile"
-	f_Print: STRING is					"Print"
-	m_Print: STRING is					"&Print"
-	f_preferences: STRING is			"Preferences"
-	m_Preferences: STRING is			"&Preferences..."
-	m_Properties_tool: STRING is		"Pr&operties"
-	m_Profile_tool: STRING is			"Pro&filer..."
-	m_Project_toolbar: STRING is		"&Project Bar"
-	m_Refactoring_toolbar: STRING is	"Re&factoring Bar"
-	f_refactoring_pull: STRING is		"Pull up Feature"
-	f_refactoring_rename: STRING is		"Rename Feature/Class"
-	f_refactoring_undo: STRING is		"Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)"
-	f_refactoring_redo: STRING is		"Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)"
-	b_refactoring_pull: STRING is		"Pull Up"
-	b_refactoring_rename: STRING is		"Rename"
-	b_refactoring_undo: STRING is		"Undo Refactoring"
-	b_refactoring_redo: STRING is		"Redo Refactoring"
-	l_rename_file: STRING is			"Rename File"
-	l_replace_comments: STRING is		"Replace Name in Comments"
-	l_replace_strings: STRING is		"Replace Name in Strings"
-	m_Recent_project: STRING is			"&Recent Projects"
-	m_Redo: STRING is					"Re&do%TCtrl+Y"
-	f_Redo: STRING is					"Redo (Ctrl+Y)"
-	m_Replace: STRING is				"&Replace..."
-	f_Retarget_diagram: STRING is		"Target to cluster or class"
-	f_Run_finalized: STRING is			"Run finalized system"
-	m_Run_finalized: STRING is			"&Run Finalized System"
-	f_Save: STRING is					"Save"
-	m_Save_new: STRING is				"&Save"
-	m_Save_As: STRING is				"S&ave As..."
-	f_Save_all: STRING is 				"Save All"
-	m_Save_All: STRING is 				"Save &All"
-	m_Search: STRING is					"&Find..."
-	m_Search_tool: STRING is			"&Search"
-	m_Select_all: STRING is				"Select &All%TCtrl+A"
-	m_Send_to: STRING is				"Sen&d to"
-	m_show_assigners: STRING is			"A&ssigners"
-	m_Show_class_cluster: STRING is		"Find in Cluster Tree"
-	m_show_creators: STRING is			"C&reators"
-	m_Show_favorites: STRING is			"&Show Favorites"
-	m_Show_formatting_marks: STRING is		"&Show Formatting Marks"
-	m_Showancestors: STRING is			"&Ancestors"
-	m_Showattributes: STRING is			"A&ttributes"
-	m_Showcallers: STRING is			"&Callers"
-	m_Showcallees: STRING is 		"Call&ees"
-	m_Show_creation: STRING is 		"Creat&ions"
-	m_Show_assignees: STRING is 		"&Assignees"
-	m_Showclick: STRING is				"C&lickable"
-	m_Showclients: STRING is			"Cli&ents"
-	m_showcreators: STRING is			"&Creators"
-	m_Showdeferreds: STRING is			"&Deferred"
-	m_Showdescendants: STRING is		"De&scendants"
-	m_Showexported: STRING is			"Ex&ported"
-	m_Showexternals: STRING is			"E&xternals"
-	m_Showflat: STRING is				"&Flat"
-	m_Showfs: STRING is					"&Interface"
-	m_Showfuture: STRING is				"&Descendant Versions"
-	m_Showhistory: STRING is			"&Implementers"
-	m_Showindexing: STRING is			"&Indexing clauses"
-	m_show_invariants: STRING is		"In&variants"
-	m_Showonces: STRING is				"O&nce/Constants"
-	m_Showpast: STRING is				"&Ancestor Versions"
-	m_Showroutines: STRING is			"&Routines"
-	m_Showshort: STRING is				"C&ontract"
-	m_Showhomonyms: STRING is			"&Homonyms"
-	m_Showsuppliers: STRING is			"S&uppliers"
-	m_Showtext_new: STRING is			"Te&xt"
-	m_System_new: STRING is				"Project &Settings..."
-	m_Toolbars: STRING is				"Tool&bars"
-	m_To_lower: STRING is				"Set to &Lowercase%TCtrl+Shift+U"
-	m_To_upper: STRING is				"Set to U&ppercase%TCtrl+U"
-	m_Uncomment: STRING is				"U&ncomment%TCtrl+Shift+K"
-	f_Uncomment: STRING is				"Uncomment selected lines"
-	m_Undo: STRING is					"&Undo%TCtrl+Z"
-	f_Undo: STRING is					"Undo (Ctrl+Z)"
-	m_Unindent: STRING is				"&Unindent Selection%TShift+Tab"
-	m_Windows_tool: STRING is			"&Windows"
-	m_Watch_tool: STRING is				"Watch Tool"
-	m_Wizard_precompile: STRING is 		"Precompilation &Wizard..."
-	f_Wizard_precompile: STRING is		"Wizard to precompile libraries"
-	f_go_to_first_occurrence: STRING is "Double click to go to first occurrence"
+	f_diagram_hide_labels: STRING is 			do	Result := locale.translate("Hide labels").out	end
+	f_diagram_show_labels: STRING is 			do	Result := locale.translate("Show labels").out	end
+	f_diagram_show_uml: STRING is 				do	Result := locale.translate("Show UML").out	end
+	f_diagram_show_bon: STRING is 				do	Result := locale.translate("Show BON").out	end
+	f_diagram_hide_clusters: STRING is 			do	Result := locale.translate("Hide clusters").out	end
+	f_diagram_show_clusters: STRING is 			do	Result := locale.translate("Show clusters").out	end
+	f_diagram_show_legend: STRING is 			do	Result := locale.translate("Show cluster legend").out	end
+	f_diagram_hide_legend: STRING is 			do	Result := locale.translate("Hide cluster legend").out	end
+	f_diagram_remove_anchor: STRING is 			do	Result := locale.translate("Remove anchor").out	end
+	l_diagram_labels_visibility: STRING is 		do	Result := locale.translate("Toggle visibility of client link labels").out	end
+	l_diagram_uml_visibility: STRING is 		do	Result := locale.translate("Toggle between UML and BON view").out	end
+	l_diagram_clusters_visibility: STRING is 	do	Result := locale.translate("Toggle visibility of clusters").out	end
+	l_diagram_legend_visibility: STRING is 		do	Result := locale.translate("Toggle visibility of cluster legend").out	end
+	l_diagram_remove_anchor: STRING is 			do	Result := locale.translate("Remove anchor").out	end
+	l_diagram_force_directed: STRING is 		do	Result := locale.translate("Turn on/off physics").out	end
+	l_diagram_toggle_quality: STRING is 		do	Result := locale.translate("Toggle quality level").out	end
+	f_diagram_high_quality: STRING is 			do	Result := locale.translate("Switch to high quality").out	end
+	f_diagram_low_quality: STRING is 			do	Result := locale.translate("Switch to low quality").out	end
+	f_diagram_hide_inheritance: STRING is 		do	Result := locale.translate("Hide inheritance links").out	end
+	f_diagram_show_inheritance: STRING is 		do	Result := locale.translate("Show inheritance links").out	end
+	l_diagram_inheritance_visibility: STRING is		do	Result := locale.translate("Toggle visibility of inheritance links").out	end
+	f_diagram_redo: STRING is 					do	Result := locale.translate("Redo last action").out	end
+	f_diagram_fill_cluster: STRING is 			do	Result := locale.translate("Include all classes of cluster").out	end
+	f_diagram_history: STRING is 				do	Result := locale.translate("History tool").out	end
+	f_diagram_remove: STRING is 				do	Result := locale.translate("Hide figure").out	end
+	l_diagram_remove: STRING is 				do	Result := locale.translate("Delete graphical items").out	end
+	f_diagram_create_supplier_links: STRING is 				do	Result := locale.translate("Create new client-supplier links").out	end
+	f_diagram_create_aggregate_supplier_links: STRING is 	do	Result := locale.translate("Create new aggregate client-supplier links").out	end
+	f_diagram_create_inheritance_links: STRING is 			do	Result := locale.translate("Create new inheritance links").out	end
+	l_diagram_create_links: STRING is 			do	Result := locale.translate("Select type of new links").out	end
+	f_diagram_new_class: STRING is 				do	Result := locale.translate("Create a new class").out	end
+	f_diagram_change_header: STRING is 			do	Result := locale.translate("Change class name and generics").out	end
+	f_diagram_change_color: STRING is 			do	Result := locale.translate("Change color").out	end
+	f_diagram_force_directed_on: STRING is 		do	Result := locale.translate("Turn on physics").out	end
+	f_diagram_force_directed_off: STRING is 	do	Result := locale.translate("Turn off physics").out	end
+	f_diagram_force_settings: STRING is 		do	Result := locale.translate("Show physics settings dialog").out	end
+	f_Disable_stop_points: STRING is 			do	Result := locale.translate("Disable all breakpoints").out	end
+	m_Disable_stop_points: STRING is 			do	Result := locale.translate("&Disable All Breakpoints").out	end
+	m_Debug_block: STRING is 					do	Result := locale.translate("E&mbed in %"Debug...%"%TCtrl+D").out	end
+	m_Editor: STRING is 						do	Result := locale.translate("&Editor").out	end
+	m_Eiffel_introduction: STRING is 			do	Result := locale.translate("&Introduction to Eiffel").out	end
+	f_Enable_stop_points: STRING is 			do	Result := locale.translate("Enable all breakpoints").out	end
+	m_Enable_stop_points: STRING is 			do	Result := locale.translate("&Enable All Breakpoints").out	end
+	m_Exec_last: STRING is 						do	Result := locale.translate("&Out of Routine").out	end
+	m_Exec_nostop: STRING is 					do	Result := locale.translate("&Ignore Breakpoints").out	end
+	m_Exec_step: STRING is 						do	Result := locale.translate("&Step-by-Step").out	end
+	m_Exec_into: STRING is 						do	Result := locale.translate("Step In&to").out	end
+	m_Exit_project: STRING is 					do	Result := locale.translate("E&xit").out	end
+	m_Explorer_bar: STRING is 			do	Result := locale.translate("&Tools").out	end
+	m_Export_to: STRING is 			do	Result := locale.translate("Save Cop&y As...").out	end
+	m_Export_XMI: STRING is 			do	Result := locale.translate("E&xport XMI...").out	end
+	m_Expression_evaluation: STRING is 			do	Result := locale.translate("Expression Evaluation").out	end
+	m_External_editor: STRING is 			do	Result := locale.translate("External E&ditor").out	end
+	m_Favorites_tool: STRING is 			do	Result := locale.translate("F&avorites").out	end
+	m_Features_tool: STRING is 			do	Result := locale.translate("&Features").out	end
+	f_Finalize: STRING is 			do	Result := locale.translate("Finalize...").out	end
+	m_Finalize_new: STRING is 			do	Result := locale.translate("Finali&ze...").out	end
+	m_Find: STRING is 			do	Result := locale.translate("&Search").out	end
+	m_Find_next: STRING is 			do	Result := locale.translate("Find &Next").out	end
+	m_Find_previous: STRING is 			do	Result := locale.translate("Find &Previous").out	end
+	m_Find_next_selection: STRING is 			do	Result := locale.translate("Find Next &Selection").out	end
+	m_Find_previous_selection: STRING is 			do	Result := locale.translate("Find P&revious Selection").out	end
+	f_Freeze: STRING is 			do	Result := locale.translate("Freeze...").out	end
+	m_Freeze_new: STRING is 			do	Result := locale.translate("&Freeze...").out	end
+	m_General_toolbar: STRING is 			do	Result := locale.translate("&Standard Buttons").out	end
+	m_Generate_documentation: STRING is 			do	Result := locale.translate("Generate &Documentation...").out	end
+	m_Go_to: STRING is 			do	Result := locale.translate("&Go to...").out	end
+	m_Guided_tour: STRING is 			do	Result := locale.translate("&Guided Tour").out	end
+	m_Help: STRING is 			do	Result := locale.translate("&Help").out	end
+	m_Hide_favorites: STRING is 			do	Result := locale.translate("&Hide Favorites").out	end
+	m_Hide_formatting_marks: STRING is 			do	Result := locale.translate("&Hide Formatting Marks").out	end
+	m_History_forth: STRING is 			do	Result := locale.translate("&Forward").out	end
+	m_History_back: STRING is 			do	Result := locale.translate("&Back").out	end
+	f_History_forth: STRING is 			do	Result := locale.translate("Go forth").out	end
+	f_History_back: STRING is 			do	Result := locale.translate("Go back").out	end
+	m_How_to_s: STRING is 			do	Result := locale.translate("&How to's").out	end
+	m_If_block: STRING is 			do	Result := locale.translate("&Embed in %"if...%"%TCtrl+I").out	end
+	m_Indent: STRING is 			do	Result := locale.translate("&Indent Selection%TTab").out	end
+	m_Line_numbers: STRING is 			do	Result := locale.translate("Toggle &Line Numbers").out	end
+	f_Melt: STRING is 			do	Result := locale.translate("Compile current project").out	end
+	m_Melt_new: STRING is 			do	Result := locale.translate("&Compile").out	end
+	m_New: STRING is 			do	Result := locale.translate("&New").out	end
+	l_new_name: STRING is 			do	Result := locale.translate("New Name:").out	end
+	f_New_window: STRING is 			do	Result := locale.translate("Create a new window").out	end
+	m_New_window: STRING is 			do	Result := locale.translate("New &Window").out	end
+	m_New_dynamic_lib: STRING is 			do	Result := locale.translate("&Dynamic Library Builder...").out	end
+	m_New_project: STRING is 			do	Result := locale.translate("&New Project...").out	end
+	m_Ok: STRING is 			do	Result := locale.translate("&OK").out	end
+	m_Open: STRING is 			do	Result := locale.translate("&Open...%TCtrl+O").out	end
+	m_Open_new: STRING is 			do	Result := locale.translate("Op&en...").out	end
+	m_Open_project: STRING is 			do	Result := locale.translate("&Open Project...").out	end
+	m_Organize_favorites: STRING is 			do	Result := locale.translate("&Organize Favorites...").out	end
+	m_Output: STRING is 			do	Result := locale.translate("&Output").out	end
+	f_Paste: STRING is 			do	Result := locale.translate("Paste (Ctrl+V)").out	end
+	m_Paste: STRING is 			do	Result := locale.translate("&Paste%TCtrl+V").out	end
+	m_Precompile_new: STRING is 			do	Result := locale.translate("&Precompile").out	end
+	f_Print: STRING is 			do	Result := locale.translate("Print").out	end
+	m_Print: STRING is 			do	Result := locale.translate("&Print").out	end
+	f_preferences: STRING is 			do	Result := locale.translate("Preferences").out	end
+	m_Preferences: STRING is 			do	Result := locale.translate("&Preferences...").out	end
+	m_Properties_tool: STRING is 			do	Result := locale.translate("Pr&operties").out	end
+	m_Profile_tool: STRING is 			do	Result := locale.translate("Pro&filer...").out	end
+	m_Project_toolbar: STRING is 			do	Result := locale.translate("&Project Bar").out	end
+	m_Refactoring_toolbar: STRING is 			do	Result := locale.translate("Re&factoring Bar").out	end
+	f_refactoring_pull: STRING is 			do	Result := locale.translate("Pull up Feature").out	end
+	f_refactoring_rename: STRING is 			do	Result := locale.translate("Rename Feature/Class").out	end
+	f_refactoring_undo: STRING is 			do	Result := locale.translate("Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)").out	end
+	f_refactoring_redo: STRING is 			do	Result := locale.translate("Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)").out	end
+	b_refactoring_pull: STRING is 			do	Result := locale.translate("Pull Up").out	end
+	b_refactoring_rename: STRING is 			do	Result := locale.translate("Rename").out	end
+	b_refactoring_undo: STRING is 			do	Result := locale.translate("Undo Refactoring").out	end
+	b_refactoring_redo: STRING is 			do	Result := locale.translate("Redo Refactoring").out	end
+	l_rename_file: STRING is 			do	Result := locale.translate("Rename File").out	end
+	l_replace_comments: STRING is 			do	Result := locale.translate("Replace Name in Comments").out	end
+	l_replace_strings: STRING is 			do	Result := locale.translate("Replace Name in Strings").out	end
+	m_Recent_project: STRING is 			do	Result := locale.translate("&Recent Projects").out	end
+	m_Redo: STRING is 			do	Result := locale.translate("Re&do%TCtrl+Y").out	end
+	f_Redo: STRING is 			do	Result := locale.translate("Redo (Ctrl+Y)").out	end
+	m_Replace: STRING is 			do	Result := locale.translate("&Replace...").out	end
+	f_Retarget_diagram: STRING is 			do	Result := locale.translate("Target to cluster or class").out	end
+	f_Run_finalized: STRING is 			do	Result := locale.translate("Run finalized system").out	end
+	m_Run_finalized: STRING is 			do	Result := locale.translate("&Run Finalized System").out	end
+	f_Save: STRING is 			do	Result := locale.translate("Save").out	end
+	m_Save_new: STRING is 			do	Result := locale.translate("&Save").out	end
+	m_Save_As: STRING is 			do	Result := locale.translate("S&ave As...").out	end
+	f_Save_all: STRING is 			do	Result := locale.translate("Save All").out	end
+	m_Save_All: STRING is 			do	Result := locale.translate("Save &All").out	end
+	m_Search: STRING is 			do	Result := locale.translate("&Find...").out	end
+	m_Search_tool: STRING is 			do	Result := locale.translate("&Search").out	end
+	m_Select_all: STRING is 			do	Result := locale.translate("Select &All%TCtrl+A").out	end
+	m_Send_to: STRING is 			do	Result := locale.translate("Sen&d to").out	end
+	m_show_assigners: STRING is 			do	Result := locale.translate("A&ssigners").out	end
+	m_Show_class_cluster: STRING is 			do	Result := locale.translate("Find in Cluster Tree").out	end
+	m_show_creators: STRING is 			do	Result := locale.translate("C&reators").out	end
+	m_Show_favorites: STRING is 			do	Result := locale.translate("&Show Favorites").out	end
+	m_Show_formatting_marks: STRING is 			do	Result := locale.translate("&Show Formatting Marks").out	end
+	m_Showancestors: STRING is 			do	Result := locale.translate("&Ancestors").out	end
+	m_Showattributes: STRING is 			do	Result := locale.translate("A&ttributes").out	end
+	m_Showcallers: STRING is 			do	Result := locale.translate("&Callers").out	end
+	m_Showcallees: STRING is 			do	Result := locale.translate("Call&ees").out	end
+	m_Show_creation: STRING is 			do	Result := locale.translate("Creat&ions").out	end
+	m_Show_assignees: STRING is 			do	Result := locale.translate("&Assignees").out	end
+	m_Showclick: STRING is 			do	Result := locale.translate("C&lickable").out	end
+	m_Showclients: STRING is 			do	Result := locale.translate("Cli&ents").out	end
+	m_showcreators: STRING is 			do	Result := locale.translate("&Creators").out	end
+	m_Showdeferreds: STRING is 			do	Result := locale.translate("&Deferred").out	end
+	m_Showdescendants: STRING is 			do	Result := locale.translate("De&scendants").out	end
+	m_Showexported: STRING is 			do	Result := locale.translate("Ex&ported").out	end
+	m_Showexternals: STRING is 			do	Result := locale.translate("E&xternals").out	end
+	m_Showflat: STRING is 			do	Result := locale.translate("&Flat").out	end
+	m_Showfs: STRING is 			do	Result := locale.translate("&Interface").out	end
+	m_Showfuture: STRING is 			do	Result := locale.translate("&Descendant Versions").out	end
+	m_Showhistory: STRING is 			do	Result := locale.translate("&Implementers").out	end
+	m_Showindexing: STRING is 			do	Result := locale.translate("&Indexing clauses").out	end
+	m_show_invariants: STRING is 			do	Result := locale.translate("In&variants").out	end
+	m_Showonces: STRING is 			do	Result := locale.translate("O&nce/Constants").out	end
+	m_Showpast: STRING is 			do	Result := locale.translate("&Ancestor Versions").out	end
+	m_Showroutines: STRING is 			do	Result := locale.translate("&Routines").out	end
+	m_Showshort: STRING is 			do	Result := locale.translate("C&ontract").out	end
+	m_Showhomonyms: STRING is 			do	Result := locale.translate("&Homonyms").out	end
+	m_Showsuppliers: STRING is 			do	Result := locale.translate("S&uppliers").out	end
+	m_Showtext_new: STRING is 			do	Result := locale.translate("Te&xt").out	end
+	m_System_new: STRING is 			do	Result := locale.translate("Project &Settings...").out	end
+	m_Toolbars: STRING is 			do	Result := locale.translate("Tool&bars").out	end
+	m_To_lower: STRING is 			do	Result := locale.translate("Set to &Lowercase%TCtrl+Shift+U").out	end
+	m_To_upper: STRING is 			do	Result := locale.translate("Set to U&ppercase%TCtrl+U").out	end
+	m_Uncomment: STRING is 			do	Result := locale.translate("U&ncomment%TCtrl+Shift+K").out	end
+	f_Uncomment: STRING is 			do	Result := locale.translate("Uncomment selected lines").out	end
+	m_Undo: STRING is 			do	Result := locale.translate("&Undo%TCtrl+Z").out	end
+	f_Undo: STRING is 			do	Result := locale.translate("Undo (Ctrl+Z)").out	end
+	m_Unindent: STRING is 			do	Result := locale.translate("&Unindent Selection%TShift+Tab").out	end
+	m_Windows_tool: STRING is 			do	Result := locale.translate("&Windows").out	end
+	m_Watch_tool: STRING is 			do	Result := locale.translate("Watch Tool").out	end
+	m_Wizard_precompile: STRING is 			do	Result := locale.translate("Precompilation &Wizard...").out	end
+	f_Wizard_precompile: STRING is 			do	Result := locale.translate("Wizard to precompile libraries").out	end
+	f_go_to_first_occurrence: STRING is 			do	Result := locale.translate("Double click to go to first occurrence").out	end
 
 feature -- Toggles
 
-	f_hide_alias: STRING is			"Hide Alias Name"
-	f_hide_assigner: STRING is		"Hide Assigner Command Name"
-	f_hide_signature: STRING is		"Hide Signature"
-	f_show_alias: STRING is			"Show Alias Name"
-	f_show_assigner: STRING is		"Show Assigner Command Name"
-	f_show_signature: STRING is		"Show Signature"
-	l_toggle_alias: STRING is		"Toggle visibility of feature alias name"
-	l_toggle_assigner: STRING is	"Toggle visibility of assigner command name"
-	l_toggle_signature: STRING is	"Toggle visibility of feature signature"
+	f_hide_alias: STRING is 				do	Result := locale.translate("Hide Alias Name").out	end
+	f_hide_assigner: STRING is 				do	Result := locale.translate("Hide Assigner Command Name").out	end
+	f_hide_signature: STRING is 			do	Result := locale.translate("Hide Signature").out	end
+	f_show_alias: STRING is 				do	Result := locale.translate("Show Alias Name").out	end
+	f_show_assigner: STRING is 				do	Result := locale.translate("Show Assigner Command Name").out	end
+	f_show_signature: STRING is 			do	Result := locale.translate("Show Signature").out	end
+	l_toggle_alias: STRING is 				do	Result := locale.translate("Toggle visibility of feature alias name").out	end
+	l_toggle_assigner: STRING is 			do	Result := locale.translate("Toggle visibility of assigner command name").out	end
+	l_toggle_signature: STRING is 			do	Result := locale.translate("Toggle visibility of feature signature").out	end
 
 feature -- Menu mnenomics
 
-	m_Add_exported_feature: STRING is	"&Add..."
-	m_Bkpt_info: STRING is				"Brea&kpoint Information"
-	m_Class_info: STRING is				"Cla&ss Views"
-	m_Check_exports: STRING is			"Chec&k Export Clauses"
-	m_Create_new_cluster: STRING is		"Add C&luster..."
-	m_Create_new_library: STRING is		"Add L&ibrary..."
-	m_Create_new_precompile: STRING is	"Add &Precompile"
-	m_Create_new_assembly: STRING is	"Add &Assembly..."
-	m_Create_new_class: STRING is		"&New Class..."
-	m_Create_new_feature: STRING is		"New Fea&ture..."
-	m_Debug: STRING is					"&Debug"
-	m_Debugging_tool: STRING is			"&Debugging Tools"
-	m_Disable_this_bkpt: STRING is		"&Disable This Breakpoint"
-	m_Display_error_help: STRING is		"Compilation Error &Wizard..."
-	m_Display_system_info: STRING is	"S&ystem Info"
-	m_Edit: STRING is					"&Edit"
-	m_Edit_condition: STRING is			"E&dit Condition"
-	m_Edit_exported_feature: STRING is	"&Edit..."
-	m_Edit_external_commands: STRING is	"&External Commands..."
-	m_Enable_this_bkpt: STRING is		"&Enable This Breakpoint"
-	m_Favorites: STRING is				"Fav&orites"
-	m_Feature_info: STRING is			"Feat&ure Views"
-	m_File: STRING is					"&File"
-	m_Formats: STRING is				"F&ormat"
+	m_Add_exported_feature: STRING is 			do	Result := locale.translate("&Add...").out	end
+	m_Bkpt_info: STRING is 			do	Result := locale.translate("Brea&kpoint Information").out	end
+	m_Class_info: STRING is 			do	Result := locale.translate("Cla&ss Views").out	end
+	m_Check_exports: STRING is 			do	Result := locale.translate("Chec&k Export Clauses").out	end
+	m_Create_new_cluster: STRING is 			do	Result := locale.translate("Add C&luster...").out	end
+	m_Create_new_library: STRING is 			do	Result := locale.translate("Add L&ibrary...").out	end
+	m_Create_new_precompile: STRING is 			do	Result := locale.translate("Add &Precompile").out	end
+	m_Create_new_assembly: STRING is 			do	Result := locale.translate("Add &Assembly...").out	end
+	m_Create_new_class: STRING is 			do	Result := locale.translate("&New Class...").out	end
+	m_Create_new_feature: STRING is 			do	Result := locale.translate("New Fea&ture...").out	end
+	m_Debug: STRING is 			do	Result := locale.translate("&Debug").out	end
+	m_Debugging_tool: STRING is 			do	Result := locale.translate("&Debugging Tools").out	end
+	m_Disable_this_bkpt: STRING is 			do	Result := locale.translate("&Disable This Breakpoint").out	end
+	m_Display_error_help: STRING is 			do	Result := locale.translate("Compilation Error &Wizard...").out	end
+	m_Display_system_info: STRING is 			do	Result := locale.translate("S&ystem Info").out	end
+	m_Edit: STRING is 			do	Result := locale.translate("&Edit").out	end
+	m_Edit_condition: STRING is 			do	Result := locale.translate("E&dit Condition").out	end
+	m_Edit_exported_feature: STRING is 			do	Result := locale.translate("&Edit...").out	end
+	m_Edit_external_commands: STRING is 			do	Result := locale.translate("&External Commands...").out	end
+	m_Enable_this_bkpt: STRING is 			do	Result := locale.translate("&Enable This Breakpoint").out	end
+	m_Favorites: STRING is 			do	Result := locale.translate("Fav&orites").out	end
+	m_Feature_info: STRING is 			do	Result := locale.translate("Feat&ure Views").out	end
+	m_File: STRING is 			do	Result := locale.translate("&File").out	end
+	m_Formats: STRING is 			do	Result := locale.translate("F&ormat").out	end
 	m_Formatter_separators: ARRAY [STRING] is
 		once
-			Result := <<"Text Generators", "Class Relations", "Restrictors", "Main Editor Views">>
+			Result := << locale.translate("Text Generators"), locale.translate("Class Relations"),
+				     locale.translate("Restrictors"), locale.translate("Main Editor Views")>>
 		end
-	m_History: STRING is				"&Go to"
-	m_Maximize: STRING is				"Ma&ximize"
-	m_Minimize: STRING is				"Mi&nimize"
-	m_Minimize_all: STRING is			"&Minimize All"
-	f_New_tab: STRING is 				"New Tab"
-	m_New_tab: STRING is				"New Ta&b"
-	m_New_editor: STRING is				"New Ed&itor Window"
-	m_New_context_tool: STRING is		"New Con&text Window"
-	m_Object: STRING is					"&Object"
-	m_Object_tools: STRING is			"&Object Tools"
-	m_Open_eac_browser: STRING is		"EAC Browser"
-	m_Pretty_print: STRING is			"Expand an Object"
-	m_Project: STRING is				"&Project"
-	m_Override_scan: STRING is			"Recompile &Overrides"
-	m_Discover_melt: STRING is			"Find &Added Classes && Recompile"
-	m_Raise: STRING is					"&Raise"
-	m_Raise_all: STRING is				"&Raise All"
-	m_Raise_all_unsaved: STRING is		"Raise &Unsaved Windows"
-	m_Remove_class_cluster: STRING is	"&Remove Current Item"
-	m_Remove_exported_feature: STRING is	"&Remove"
-	m_Remove_condition: STRING is		"Remove Condition"
-	m_Remove_this_bkpt: STRING is		"&Remove This Breakpoint"
-	m_Run_to_this_point: STRING is		"&Run to This Point"
-	m_Send_stone_to_context: STRING is	"S&ynchronize Context Tool"
-	m_Set_conditional_breakpoint: STRING is "Set &Conditional Breakpoint"
-	m_Set_critical_stack_depth: STRING is "Overflow &Prevention..."
-	m_Set_slice_size: STRING is			"&Alter size"
-	m_Special: STRING is				"&Special"
-	m_Separate_stone: STRING is			"Unlin&k Context Tool"
-	m_Tools: STRING is					"&Tools"
-	m_Unify_stone: STRING is			"Lin&k Context Tool"
-	m_View: STRING is					"&View"
-	m_Window: STRING is					"&Window"
-	m_Refactoring: STRING is			"&Refactoring"
+	m_History: STRING is 			do	Result := locale.translate("&Go to").out	end
+	m_Maximize: STRING is 			do	Result := locale.translate("Ma&ximize").out	end
+	m_Minimize: STRING is 			do	Result := locale.translate("Mi&nimize").out	end
+	m_Minimize_all: STRING is 			do	Result := locale.translate("&Minimize All").out	end
+	f_New_tab: STRING is 			do	Result := locale.translate("New Tab").out	end
+	m_New_tab: STRING is 			do	Result := locale.translate("New Ta&b").out	end
+	m_New_editor: STRING is 			do	Result := locale.translate("New Ed&itor Window").out	end
+	m_New_context_tool: STRING is 			do	Result := locale.translate("New Con&text Window").out	end
+	m_Object: STRING is 			do	Result := locale.translate("&Object").out	end
+	m_Object_tools: STRING is 			do	Result := locale.translate("&Object Tools").out	end
+	m_Open_eac_browser: STRING is 			do	Result := locale.translate("EAC Browser").out	end
+	m_Pretty_print: STRING is 			do	Result := locale.translate("Expand an Object").out	end
+	m_Project: STRING is 			do	Result := locale.translate("&Project").out	end
+	m_Override_scan: STRING is 			do	Result := locale.translate("Recompile &Overrides").out	end
+	m_Discover_melt: STRING is 			do	Result := locale.translate("Find &Added Classes && Recompile").out	end
+	m_Raise: STRING is 			do	Result := locale.translate("&Raise").out	end
+	m_Raise_all: STRING is 			do	Result := locale.translate("&Raise All").out	end
+	m_Raise_all_unsaved: STRING is 			do	Result := locale.translate("Raise &Unsaved Windows").out	end
+	m_Remove_class_cluster: STRING is 			do	Result := locale.translate("&Remove Current Item").out	end
+	m_Remove_exported_feature: STRING is 			do	Result := locale.translate("&Remove").out	end
+	m_Remove_condition: STRING is 			do	Result := locale.translate("Remove Condition").out	end
+	m_Remove_this_bkpt: STRING is 			do	Result := locale.translate("&Remove This Breakpoint").out	end
+	m_Run_to_this_point: STRING is 			do	Result := locale.translate("&Run to This Point").out	end
+	m_Send_stone_to_context: STRING is 			do	Result := locale.translate("S&ynchronize Context Tool").out	end
+	m_Set_conditional_breakpoint: STRING is 			do	Result := locale.translate("Set &Conditional Breakpoint").out	end
+	m_Set_critical_stack_depth: STRING is 			do	Result := locale.translate("Overflow &Prevention...").out	end
+	m_Set_slice_size: STRING is 			do	Result := locale.translate("&Alter size").out	end
+	m_Special: STRING is 			do	Result := locale.translate("&Special").out	end
+	m_Separate_stone: STRING is 			do	Result := locale.translate("Unlin&k Context Tool").out	end
+	m_Tools: STRING is 			do	Result := locale.translate("&Tools").out	end
+	m_Unify_stone: STRING is 			do	Result := locale.translate("Lin&k Context Tool").out	end
+	m_View: STRING is 			do	Result := locale.translate("&View").out	end
+	m_Window: STRING is 			do	Result := locale.translate("&Window").out	end
+	m_Refactoring: STRING is 			do	Result := locale.translate("&Refactoring").out	end
 
 feature -- Label texts
 
-	l_Ace_file_for_frame: STRING is		"Ace file"
-	l_action_colon: STRING is			"Action:"
-	l_Active_query: STRING is			"Active query"
-	l_Address: STRING is				"Address:"
-	l_add_project_config_file: STRING is	"Add Project..."
-	l_All: STRING is					"recursive"
-	l_Alias_name: STRING is				"Alias:"
-	l_Ancestors: STRING is				"ancestors"
-	l_Arguments: STRING is				"Arguments"
-	l_assigners: STRING is				"assigners"
-	l_Attributes: STRING is				"attributes"
-	l_Available_buttons_text: STRING is "Available buttons"
-	l_Basic_application: STRING is		"Basic application (no graphics library included)"
-	l_Basic_text: STRING is				"basic text view"
-	l_Callers: STRING is				"callers"
-	l_Calling_convention: STRING is		"Calling convention:"
-	l_Choose_folder: STRING is			"Select the destination folder "
-	l_Class: STRING is					"Class:"
-	l_class_name: STRING is				"Class name:"
-	l_clean: STRING is					"Clean"
-	l_clean_user_file: STRING is		"Reset user settings"
-	l_Clients: STRING is				"clients"
-	l_Clickable: STRING is				"clickable view"
-	l_Cluster: STRING is				"Cluster:"
-	l_Cluster_name: STRING is			"Cluster name "
-	l_Cluster_options: STRING is		"Cluster options "
-	l_Command_error_output: STRING is	"Command error output:%N"
-	l_Command_line: STRING is			"Command line:"
-	l_Command_normal_output: STRING is	"Command output:%N"
-	l_Compiled_class: STRING is			"Only compiled classes"
-	l_compile: STRING is				"Compile"
-	l_Compile_first: STRING is			"Compile to have information"
-	l_Compile_project: STRING is		"Compile project"
-	l_Condition: STRING is				"Condition"
-	l_Confirm_kill: STRING is			"Stop the application?"
-	l_Context: STRING is				"Context"
-	l_Creation: STRING is				"Creation procedure:"
-	l_creators: STRING is				"creators"
-	l_Current_context: STRING is		"Current feature"
-	l_Current_editor: STRING is			"Current editor"
-	l_Current_object: STRING is			"Current object"
-	l_Custom: STRING is 				"Custom"
-	l_Deferred: STRING is				"deferred"
-	l_Deferreds: STRING is				"deferred features"
-	l_Deleting_dialog_default: STRING is "Creating new project, please wait..."
-	l_Descendants: STRING is			"descendants"
-	l_Diagram_delete_view_cmd: STRING is	"Do you really want to delete current view?"
-	l_Diagram_reset_view_cmd: STRING is		"Do you really want to reset current view?"
-	l_Discard_convert_project_dialog: STRING is	"Do not ask again, and always convert old projects"
-	l_Discard_build_precompile_dialog: STRING is "Do not ask again, and always build precompile"
-	l_Discard_finalize_assertions: STRING is "Do not ask again, and always discard assertions when finalizing"
-	l_Discard_finalize_precompile_dialog: STRING is "Don't ask me again and always finalize."
-	l_Discard_freeze_dialog: STRING is	"Do not ask again, and always compile C code"
-	l_Discard_save_before_compile_dialog: STRING is	"Do not ask again, and always save files before compiling"
-	l_Discard_starting_dialog: STRING is "Don't show this dialog at startup"
-	l_Discard_replace_all_warning_dialog: STRING is "Don't ask me again and always replace all"
-	l_Discard_terminate_freezing: STRING is "Do not ask again, and always terminate freezing when needed."
-	l_Discard_terminate_external_command: STRING is "Do not ask again, and always terminate running external command."
-	l_Discard_terminate_finalizing: STRING is "Do not ask again, and always terminate finalizing when needed."
-	l_Display_call_stack_warning: STRING is	"Display a warning when the call stack depth reaches:"
-	l_Displayed_buttons_text: STRING is "Displayed buttons"
-	l_Dont_ask_me_again: STRING is		"Do not ask me again"
-	l_Do_not_detect_stack_overflows: STRING is "Do not detect stack overflows"
-	l_Do_not_show_again: STRING is		"Do not show again"
-	l_Dropped_references: STRING is		"Dropped references"
-	l_Dummy: STRING is					"Should not be read"
-	l_Not_empty: STRING is				"Generate default feature clauses"
-	l_edit_project: STRING is			"Edit Project"
-	l_Elements: STRING is				"elements."
-	l_Enter_folder_name: STRING is		"Enter the name of the new folder: "
-	l_error: STRING is					"Error"
-	l_Executing_command: STRING is		"Command is currently executing.%NPress OK to ignore the output."
-	l_Execution_interrupted: STRING is	"Execution interrupted"
+	l_Ace_file_for_frame: STRING is 			do	Result := locale.translate("Ace file").out	end
+	l_action_colon: STRING is 			do	Result := locale.translate("Action:").out	end
+	l_Active_query: STRING is 			do	Result := locale.translate("Active query").out	end
+	l_Address: STRING is 			do	Result := locale.translate("Address:").out	end
+	l_add_project_config_file: STRING is 			do	Result := locale.translate("Add Project...").out	end
+	l_All: STRING is 			do	Result := locale.translate("recursive").out	end
+	l_Alias_name: STRING is 			do	Result := locale.translate("Alias:").out	end
+	l_Ancestors: STRING is 			do	Result := locale.translate("ancestors").out	end
+	l_Arguments: STRING is 			do	Result := locale.translate("Arguments").out	end
+	l_assigners: STRING is 			do	Result := locale.translate("assigners").out	end
+	l_Attributes: STRING is 			do	Result := locale.translate("attributes").out	end
+	l_Available_buttons_text: STRING is 			do	Result := locale.translate("Available buttons").out	end
+	l_Basic_application: STRING is 			do	Result := locale.translate("Basic application (no graphics library included)").out	end
+	l_Basic_text: STRING is 			do	Result := locale.translate("basic text view").out	end
+	l_Callers: STRING is 			do	Result := locale.translate("callers").out	end
+	l_Calling_convention: STRING is 			do	Result := locale.translate("Calling convention:").out	end
+	l_Choose_folder: STRING is 			do	Result := locale.translate("Select the destination folder ").out	end
+	l_Class: STRING is 			do	Result := locale.translate("Class:").out	end
+	l_class_name: STRING is 			do	Result := locale.translate("Class name:").out	end
+	l_clean: STRING is 			do	Result := locale.translate("Clean").out	end
+	l_clean_user_file: STRING is 			do	Result := locale.translate("Reset user settings").out	end
+	l_Clients: STRING is 			do	Result := locale.translate("clients").out	end
+	l_Clickable: STRING is 			do	Result := locale.translate("clickable view").out	end
+	l_Cluster: STRING is 			do	Result := locale.translate("Cluster:").out	end
+	l_Cluster_name: STRING is 			do	Result := locale.translate("Cluster name ").out	end
+	l_Cluster_options: STRING is 			do	Result := locale.translate("Cluster options ").out	end
+	l_Command_error_output: STRING is		do		Result := locale.translate("Command error output:%N").out end
+	l_Command_line: STRING is 			do	Result := locale.translate("Command line:").out	end
+	l_Command_normal_output: STRING is 			do	Result := locale.translate("Command output:%N").out	end
+	l_Compiled_class: STRING is 			do	Result := locale.translate("Only compiled classes").out	end
+	l_compile: STRING is 			do	Result := locale.translate("Compile").out	end
+	l_Compile_first: STRING is 			do	Result := locale.translate("Compile to have information").out	end
+	l_Compile_project: STRING is 			do	Result := locale.translate("Compile project").out	end
+	l_Condition: STRING is 			do	Result := locale.translate("Condition").out	end
+	l_Confirm_kill: STRING is 			do	Result := locale.translate("Stop the application?").out	end
+	l_Context: STRING is 			do	Result := locale.translate("Context").out	end
+	l_Creation: STRING is 			do	Result := locale.translate("Creation procedure:").out	end
+	l_creators: STRING is 			do	Result := locale.translate("creators").out	end
+	l_Current_context: STRING is 			do	Result := locale.translate("Current feature").out	end
+	l_Current_editor: STRING is 			do	Result := locale.translate("Current editor").out	end
+	l_Current_object: STRING is 			do	Result := locale.translate("Current object").out	end
+	l_Custom: STRING is 			do	Result := locale.translate("Custom").out	end
+	l_Deferred: STRING is 			do	Result := locale.translate("deferred").out	end
+	l_Deferreds: STRING is 			do	Result := locale.translate("deferred features").out	end
+	l_Deleting_dialog_default: STRING is 			do	Result := locale.translate("Creating new project, please wait...").out	end
+	l_Descendants: STRING is 			do	Result := locale.translate("descendants").out	end
+	l_Diagram_delete_view_cmd: STRING is 			do	Result := locale.translate("Do you really want to delete current view?").out	end
+	l_Diagram_reset_view_cmd: STRING is 			do	Result := locale.translate("Do you really want to reset current view?").out	end
+	l_Discard_convert_project_dialog: STRING is 			do	Result := locale.translate("Do not ask again, and always convert old projects").out	end
+	l_Discard_build_precompile_dialog: STRING is 			do	Result := locale.translate("Do not ask again, and always build precompile").out	end
+	l_Discard_finalize_assertions: STRING is 			do	Result := locale.translate("Do not ask again, and always discard assertions when finalizing").out	end
+	l_Discard_finalize_precompile_dialog: STRING is 			do	Result := locale.translate("Don't ask me again and always finalize.").out	end
+	l_Discard_freeze_dialog: STRING is 			do	Result := locale.translate("Do not ask again, and always compile C code").out	end
+	l_Discard_save_before_compile_dialog: STRING is 			do	Result := locale.translate("Do not ask again, and always save files before compiling").out	end
+	l_Discard_starting_dialog: STRING is 			do	Result := locale.translate("Don't show this dialog at startup").out	end
+	l_Discard_replace_all_warning_dialog: STRING is 			do	Result := locale.translate("Don't ask me again and always replace all").out	end
+	l_Discard_terminate_freezing: STRING is 			do	Result := locale.translate("Do not ask again, and always terminate freezing when needed.").out	end
+	l_Discard_terminate_external_command: STRING is 			do	Result := locale.translate("Do not ask again, and always terminate running external command.").out	end
+	l_Discard_terminate_finalizing: STRING is 			do	Result := locale.translate("Do not ask again, and always terminate finalizing when needed.").out	end
+	l_Display_call_stack_warning: STRING is 			do	Result := locale.translate("Display a warning when the call stack depth reaches:").out	end
+	l_Displayed_buttons_text: STRING is 			do	Result := locale.translate("Displayed buttons").out	end
+	l_Dont_ask_me_again: STRING is 			do	Result := locale.translate("Do not ask me again").out	end
+	l_Do_not_detect_stack_overflows: STRING is 			do	Result := locale.translate("Do not detect stack overflows").out	end
+	l_Do_not_show_again: STRING is 			do	Result := locale.translate("Do not show again").out	end
+	l_Dropped_references: STRING is 			do	Result := locale.translate("Dropped references").out	end
+	l_Dummy: STRING is 			do	Result := locale.translate("Should not be read").out	end
+	l_Not_empty: STRING is 			do	Result := locale.translate("Generate default feature clauses").out	end
+	l_edit_project: STRING is 			do	Result := locale.translate("Edit Project").out	end
+	l_Elements: STRING is 			do	Result := locale.translate("elements.").out	end
+	l_Enter_folder_name: STRING is 			do	Result := locale.translate("Enter the name of the new folder: ").out	end
+	l_error: STRING is 			do	Result := locale.translate("Error").out	end
+	l_Executing_command: STRING is 			do	Result := locale.translate("Command is currently executing.%NPress OK to ignore the output.").out	end
+	l_Execution_interrupted: STRING is 			do	Result := locale.translate("Execution interrupted").out	end
 	l_Exit_application: STRING is
 		once
-			Result := "Are you sure you want to quit "+Workbench_name+"?"
+			Result := locale.format_string(locale.translate("Are you sure you want to quit $1?"), [Workbench_name])
 		end
-	l_Exit_warning: STRING is			"Some files have not been saved.%NDo you want to save them before exiting?"
-	l_Expanded: STRING is				"expanded"
-	l_Explicit_exception_pending: STRING is "Explicit exception pending"
-	l_Exported: STRING is				"exported features"
-	l_Expression: STRING is				"Expression"
-	l_External: STRING is				"external features"
-	l_Feature: STRING is				"Feature:"
-	l_Feature_properties: STRING is		"Feature properties"
-	l_File_name: STRING is				"File name:"
-	l_finalize: STRING is				"Finalize"
-	l_Finalized_mode: STRING is 		"Finalized mode"
-	l_Flat: STRING is					"flat view"
-	l_Flatshort: STRING is				"interface view"
-	l_freeze: STRING is					"Freeze"
-	l_fresh_compilation: STRING is		"Recompile project"
-	l_general: STRING is				"General"
-	l_Generate_profile_from_rtir: STRING is "Generate profile from Run-time information record"
-	l_Generate_creation: STRING is		"Generate creation procedure"
-	l_Homonyms: STRING is				"homonyms"
-	l_Homonym_confirmation: STRING is	"Extracting the homonyms%Nmay take a long time."
-	l_Identification: STRING is			"Identification"
-	l_Implicit_exception_pending: STRING is "Implicit exception pending"
-	l_Implementers: STRING is			"implementers"
-	l_Inactive_subqueries: STRING is	"Inactive subqueries"
-	l_Index: STRING is					"Index:"
-	l_invariants: STRING is				"invariants"
-	l_Language_type: STRING is			"Language type"
-	l_Library: STRING is				"library"
-	l_Literal_value: STRING is			"Literal Value"
-	l_Loaded_project: STRING is			"Loaded project: "
-	l_Located_in: STRING is				" located in "
-	l_Location_colon: STRING is 				"Location: "
-	l_Locals: STRING is					"Locals"
-	l_Min_index: STRING is				"Minimum index displayed"
-	l_Match_case: STRING is				"Match case"
-	l_Max_index: STRING is				"Maximum index displayed"
-	l_Max_displayed_string_size: STRING is "Maximum displayed string size"
-	l_More_items: STRING is				"Display limit reached"
-	l_Name: STRING is					"Name"
-	l_Name_colon: STRING is				"Name:"
-	l_New_breakpoint: STRING is			"New breakpoint(s) to commit"
-	l_No_feature: STRING is				"Select a fully compiled feature to have information about it."
-	l_No_feature_group_clause: STRING is "[Unnamed feature clause]"
-	l_No_text_text: STRING is 			"No text labels"
-	l_Not_in_system_no_info: STRING is	"Select a class which is fully compiled to have information about it."
-	l_Not_yet_called: STRING is			"Not yet called"
-	l_Object_attributes: STRING is		"Attributes"
-	l_On_object: STRING is				"On object"
-	l_As_object: STRING is				"As object"
-	l_Of_class: STRING is				" of class "
-	l_Of_feature: STRING is				" of feature "
-	l_Onces: STRING is					"once routines and constants"
-	l_Once_functions: STRING is			"Once routines"
-	l_open: STRING is					"Open"
-	l_Open_a_project: STRING is			"Open a project"
-	l_Open_project: STRING is 			"Open project"
-	l_Options: STRING is 				"Options"
-	l_Output_switches: STRING is		"Output switches"
-	l_Parent_cluster: STRING is			"Parent cluster"
-	l_parents: STRING is				"Parents:"
-	l_Path: STRING is					"Path"
-	l_Possible_overflow: STRING is		"Possible stack overflow"
-	l_precompile: STRING is				"Precompile"
-	l_Profiler_used: STRING is			"Profiler used to produce the above record: "
-	l_Project_location: STRING is		"The project location is the place where compilation%Nfiles will be generated by the compiler"
-	l_Put_text_right_text: STRING is 	"Show selective text on the right of buttons"
-	l_Show_all_text: STRING is			"Show text labels"
-	l_Query: STRING is					"Query"
-	l_remove_project: STRING is			"Remove Project"
-	l_Remove_object: STRING is			"Remove"
-	l_Remove_object_desc:STRING is		"Remove an object from the tree"
-	l_Replace_with: STRING is			"Replace with:"
-	l_Replace_with_ellipsis: STRING is	"Replace with..."
-	l_Replace_all: STRING is			"Replace all"
-	l_Result: STRING is					"Result"
-	l_Root_class: STRING is				"Root class name: "
-	l_Root_class_name: STRING is		"Root class: "
-	l_Root_cluster_name: STRING is		"Root cluster: "
-	l_Root_feature_name: STRING is		"Root feature: "
-	l_Routine_ancestors: STRING is		"ancestor versions"
-	l_Routine_descendants: STRING is	"descendant versions"
-	l_Routine_flat: STRING is			"flat view"
-	l_Routines: STRING is				"routines"
-	l_Runtime_information_record: STRING is "Run-time information record"
-	l_Same_class_name: STRING is		"---"
-	l_Scope: STRING is 					"Scope"
-	l_Search_backward: STRING is		"Search backwards"
-	l_Search_for: STRING is				"Search for:"
-	l_Search_options_show: STRING is	"Scope >>"
-	l_Search_options_hide: STRING is	"Scope <<"
-	l_Search_report_show: STRING is		"Report >>"
-	l_Search_report_hide: STRING is 	"Report <<"
-	l_Set_as_default: STRING is			"Set as default"
-	l_Set_slice_limits: STRING is		"Slice limits"
-	l_Set_slice_limits_desc: STRING is	"Set which values are shown in special objects"
-	l_Short: STRING is					"contract view"
-	l_Short_name: STRING is				"Short Name"
-	l_Show_all_call_stack: STRING is	"Show all stack elements"
-	l_Show_only_n_elements: STRING is	"Show only:"
-	l_Showallcallers: STRING is			"Show all callers"
-	l_Showcallers: STRING is			"Show static callers"
-	l_Showstops: STRING is				"Show stop points"
-	l_Slice_taken_into_account1: STRING is "Warning: Modifications will be taken into account"
-	l_Slice_taken_into_account2: STRING is "for the next objects you will add in the object tree."
-	l_Specify_arguments: STRING is		"Specify arguments"
-	l_Stack_information: STRING is		"Stack information"
-	l_Stepped: STRING is				"Step completed"
-	l_Stop_point_reached: STRING is		"Breakpoint reached"
-	l_Sub_cluster: STRING is			"Subcluster"
-	l_Sub_clusters: STRING is			"Recursive"
-	l_Subquery: STRING is				"Define new subquery"
-	l_Suppliers: STRING is				"suppliers"
-	l_Switch_num_format: STRING is 		"Switch numerical formating"
-	l_Switch_num_format_desc: STRING is "Display numerical value as Hexadecimal or Decimal formating"
-	l_Syntax_error: STRING is			"Class text has syntax error"
-	l_System_name: STRING is			"System name: "
-	l_System_properties: STRING is		"System properties"
-	l_System_running: STRING is			"System running"
-	l_System_launched: STRING is		"System launched"
-	l_System_not_running: STRING is		"System not running"
-	l_Tab_output: STRING is 			"Output"
-	l_Tab_class_info: STRING is 		"Class"
-	l_Tab_feature_info: STRING is 		"Feature"
-	l_Tab_diagram: STRING is 			"Diagram"
-	l_target: STRING is					"Target"
-	l_Text_loaded: STRING is			"Text finished loading"
-	l_Text_saved: STRING is				"Text was saved"
-	l_Three_dots: STRING is				"..."
-	l_Text_loading: STRING is		"Current text is being loaded. It is therefore%Nnot editable nor pickable."
-	l_Toolbar_select_text_position: STRING is "Text option: "
-	l_Toolbar_select_has_gray_icons: STRING is "Icon option: "
-	l_Top_level: STRING is				"Top-level"
-	l_Type: STRING is					"Type"
-	l_Unknown_status: STRING is			"Unknown application status"
-	l_Unknown_class_name: STRING is		"Unknown class name"
-	l_Use_existing_ace: STRING is		"Open existing Ace (control file)"
-	l_Use_existing_profile: STRING is	"Use existing profile: "
-	l_Use_regular_expression: STRING is "Use regular expression"
-	l_Use_wildcards: STRING is			"Use wildcards"
-	l_Use_wizard: STRING is 			"Create project"
-	l_Value: STRING is					"Value"
-	l_Whole_project: STRING is			"Whole project"
-	l_Whole_word: STRING is				"Whole word"
-	l_Windows_only: STRING is			"(Windows only)"
-	l_Workbench_mode: STRING is 		"Workbench mode"
-	l_Working_formatter: STRING is		"Extracting "
-	l_Tab_external_output: STRING is    "External Output"
-	l_Tab_C_output: STRING is    		"C Output"
-	l_Tab_warning_output: STRING is    	"Warnings"
-	l_Tab_error_output: STRING is    	"Errors"
-	l_show_feature_from_any: STRING is  "Features from ANY"
-	l_show_tooltip: STRING is "Tooltip"
-	h_show_feature_from_any: STRING is  "Show unchanged features from class ANY?"
-	h_show_tooltip: STRING is "Show tooltips?"
-	l_class_browser_classes: STRING is "Class"
-	l_class_browser_features: STRING is "Feature"
-	l_version_from: STRING is "Declared in class"
-	l_version_in: STRING is "Version from class"
-	l_branch: STRING is "Branch #"
-	l_version_from_message: STRING is " (version from)"
-	l_expand_layer: STRING is "Expand selected level(s)"
-	l_collapse_layer: STRING is "Collapse selected level(s)"
-	l_collapse_all_layers: STRING is "Collapse all selected level(s)"
-	l_searching_selected_file: STRING is "Searching selected file..."
-	l_selected_file_not_found: STRING is "Selected text is not a valid file name or the file cannot be found"
-	l_manage_external_commands: STRING is "Add, remove or edit external commands"
-	l_callees: STRING is "callees"
-	l_assignees: STRING is "assignees"
-	l_created: STRING is "creations"
-	l_filter: STRING is "Filter: "
-	l_viewpoints: STRING is "Viewpoints: "
-	l_Tab_metrics: STRING is "Metric"
+	l_Exit_warning: STRING is 			do	Result := locale.translate("Some files have not been saved.%NDo you want to save them before exiting?").out	end
+	l_Expanded: STRING is 			do	Result := locale.translate("expanded").out	end
+	l_Explicit_exception_pending: STRING is 			do	Result := locale.translate("Explicit exception pending").out	end
+	l_Exported: STRING is 			do	Result := locale.translate("exported features").out	end
+	l_Expression: STRING is 			do	Result := locale.translate("Expression").out	end
+	l_External: STRING is 			do	Result := locale.translate("external features").out	end
+	l_Feature: STRING is 			do	Result := locale.translate("Feature:").out	end
+	l_Feature_properties: STRING is 			do	Result := locale.translate("Feature properties").out	end
+	l_File_name: STRING is 			do	Result := locale.translate("File name:").out	end
+	l_finalize: STRING is 			do	Result := locale.translate("Finalize").out	end
+	l_Finalized_mode: STRING is 			do	Result := locale.translate("Finalized mode").out	end
+	l_Flat: STRING is 			do	Result := locale.translate("flat view").out	end
+	l_Flatshort: STRING is 			do	Result := locale.translate("interface view").out	end
+	l_freeze: STRING is 			do	Result := locale.translate("Freeze").out	end
+	l_fresh_compilation: STRING is 			do	Result := locale.translate("Recompile project").out	end
+	l_general: STRING is 			do	Result := locale.translate("General").out	end
+	l_Generate_profile_from_rtir: STRING is 			do	Result := locale.translate("Generate profile from Run-time information record").out	end
+	l_Generate_creation: STRING is 			do	Result := locale.translate("Generate creation procedure").out	end
+	l_Homonyms: STRING is 			do	Result := locale.translate("homonyms").out	end
+	l_Homonym_confirmation: STRING is 			do	Result := locale.translate("Extracting the homonyms%Nmay take a long time.").out	end
+	l_Identification: STRING is 			do	Result := locale.translate("Identification").out	end
+	l_Implicit_exception_pending: STRING is 			do	Result := locale.translate("Implicit exception pending").out	end
+	l_Implementers: STRING is 			do	Result := locale.translate("implementers").out	end
+	l_Inactive_subqueries: STRING is 			do	Result := locale.translate("Inactive subqueries").out	end
+	l_Index: STRING is 			do	Result := locale.translate("Index:").out	end
+	l_invariants: STRING is 			do	Result := locale.translate("invariants").out	end
+	l_Language_type: STRING is 			do	Result := locale.translate("Language type").out	end
+	l_Library: STRING is 			do	Result := locale.translate("library").out	end
+	l_Literal_value: STRING is 			do	Result := locale.translate("Literal Value").out	end
+	l_Loaded_project: STRING is 			do	Result := locale.translate("Loaded project: ").out	end
+	l_Located_in: STRING is 			do	Result := locale.translate(" located in ").out	end
+	l_Location_colon: STRING is 			do	Result := locale.translate("Location: ").out	end
+	l_Locals: STRING is 			do	Result := locale.translate("Locals").out	end
+	l_Min_index: STRING is 			do	Result := locale.translate("Minimum index displayed").out	end
+	l_Match_case: STRING is 			do	Result := locale.translate("Match case").out	end
+	l_Max_index: STRING is 			do	Result := locale.translate("Maximum index displayed").out	end
+	l_Max_displayed_string_size: STRING is 			do	Result := locale.translate("Maximum displayed string size").out	end
+	l_More_items: STRING is 			do	Result := locale.translate("Display limit reached").out	end
+	l_Name: STRING is 			do	Result := locale.translate("Name").out	end
+	l_Name_colon: STRING is 			do	Result := locale.translate("Name:").out	end
+	l_New_breakpoint: STRING is 			do	Result := locale.translate("New breakpoint(s) to commit").out	end
+	l_No_feature: STRING is 			do	Result := locale.translate("Select a fully compiled feature to have information about it.").out	end
+	l_No_feature_group_clause: STRING is 			do	Result := locale.translate("[Unnamed feature clause]").out	end
+	l_No_text_text: STRING is 			do	Result := locale.translate("No text labels").out	end
+	l_Not_in_system_no_info: STRING is 			do	Result := locale.translate("Select a class which is fully compiled to have information about it.").out	end
+	l_Not_yet_called: STRING is 			do	Result := locale.translate("Not yet called").out	end
+	l_Object_attributes: STRING is 			do	Result := locale.translate("Attributes").out	end
+	l_On_object: STRING is 			do	Result := locale.translate("On object").out	end
+	l_As_object: STRING is 			do	Result := locale.translate("As object").out	end
+	l_Of_class: STRING is 			do	Result := locale.translate(" of class ").out	end
+	l_Of_feature: STRING is 			do	Result := locale.translate(" of feature ").out	end
+	l_Onces: STRING is 			do	Result := locale.translate("once routines and constants").out	end
+	l_Once_functions: STRING is 			do	Result := locale.translate("Once routines").out	end
+	l_open: STRING is 			do	Result := locale.translate("Open").out	end
+	l_Open_a_project: STRING is 			do	Result := locale.translate("Open a project").out	end
+	l_Open_project: STRING is 			do	Result := locale.translate("Open project").out	end
+	l_Options: STRING is 			do	Result := locale.translate("Options").out	end
+	l_Output_switches: STRING is 			do	Result := locale.translate("Output switches").out	end
+	l_Parent_cluster: STRING is 			do	Result := locale.translate("Parent cluster").out	end
+	l_parents: STRING is 			do	Result := locale.translate("Parents:").out	end
+	l_Path: STRING is 			do	Result := locale.translate("Path").out	end
+	l_Possible_overflow: STRING is 			do	Result := locale.translate("Possible stack overflow").out	end
+	l_precompile: STRING is 			do	Result := locale.translate("Precompile").out	end
+	l_Profiler_used: STRING is 			do	Result := locale.translate("Profiler used to produce the above record: ").out	end
+	l_Project_location: STRING is 			do	Result := locale.translate("The project location is the place where compilation%Nfiles will be generated by the compiler").out	end
+	l_Put_text_right_text: STRING is 			do	Result := locale.translate("Show selective text on the right of buttons").out	end
+	l_Show_all_text: STRING is 			do	Result := locale.translate("Show text labels").out	end
+	l_Query: STRING is 			do	Result := locale.translate("Query").out	end
+	l_remove_project: STRING is 			do	Result := locale.translate("Remove Project").out	end
+	l_Remove_object: STRING is 			do	Result := locale.translate("Remove").out	end
+	l_Remove_object_desc:STRING is 			do	Result := locale.translate("Remove an object from the tree").out	end
+	l_Replace_with: STRING is 			do	Result := locale.translate("Replace with:").out	end
+	l_Replace_with_ellipsis: STRING is 			do	Result := locale.translate("Replace with...").out	end
+	l_Replace_all: STRING is 			do	Result := locale.translate("Replace all").out	end
+	l_Result: STRING is 			do	Result := locale.translate("Result").out	end
+	l_Root_class: STRING is 			do	Result := locale.translate("Root class name: ").out	end
+	l_Root_class_name: STRING is 			do	Result := locale.translate("Root class: ").out	end
+	l_Root_cluster_name: STRING is 			do	Result := locale.translate("Root cluster: ").out	end
+	l_Root_feature_name: STRING is 			do	Result := locale.translate("Root feature: ").out	end
+	l_Routine_ancestors: STRING is 			do	Result := locale.translate("ancestor versions").out	end
+	l_Routine_descendants: STRING is 			do	Result := locale.translate("descendant versions").out	end
+	l_Routine_flat: STRING is 			do	Result := locale.translate("flat view").out	end
+	l_Routines: STRING is 			do	Result := locale.translate("routines").out	end
+	l_Runtime_information_record: STRING is 			do	Result := locale.translate("Run-time information record").out	end
+	l_Same_class_name: STRING is 			do	Result := locale.translate("---").out	end
+	l_Scope: STRING is 			do	Result := locale.translate("Scope").out	end
+	l_Search_backward: STRING is 			do	Result := locale.translate("Search backwards").out	end
+	l_Search_for: STRING is 			do	Result := locale.translate("Search for:").out	end
+	l_Search_options_show: STRING is 			do	Result := locale.translate("Scope >>").out	end
+	l_Search_options_hide: STRING is 			do	Result := locale.translate("Scope <<").out	end
+	l_Search_report_show: STRING is 			do	Result := locale.translate("Report >>").out	end
+	l_Search_report_hide: STRING is 			do	Result := locale.translate("Report <<").out	end
+	l_Set_as_default: STRING is 			do	Result := locale.translate("Set as default").out	end
+	l_Set_slice_limits: STRING is 			do	Result := locale.translate("Slice limits").out	end
+	l_Set_slice_limits_desc: STRING is 			do	Result := locale.translate("Set which values are shown in special objects").out	end
+	l_Short: STRING is 			do	Result := locale.translate("contract view").out	end
+	l_Short_name: STRING is 			do	Result := locale.translate("Short Name").out	end
+	l_Show_all_call_stack: STRING is 			do	Result := locale.translate("Show all stack elements").out	end
+	l_Show_only_n_elements: STRING is 			do	Result := locale.translate("Show only:").out	end
+	l_Showallcallers: STRING is 			do	Result := locale.translate("Show all callers").out	end
+	l_Showcallers: STRING is 			do	Result := locale.translate("Show static callers").out	end
+	l_Showstops: STRING is 			do	Result := locale.translate("Show stop points").out	end
+	l_Slice_taken_into_account1: STRING is 			do	Result := locale.translate("Warning: Modifications will be taken into account").out	end
+	l_Slice_taken_into_account2: STRING is 			do	Result := locale.translate("for the next objects you will add in the object tree.").out	end
+	l_Specify_arguments: STRING is 			do	Result := locale.translate("Specify arguments").out	end
+	l_Stack_information: STRING is 			do	Result := locale.translate("Stack information").out	end
+	l_Stepped: STRING is 			do	Result := locale.translate("Step completed").out	end
+	l_Stop_point_reached: STRING is 			do	Result := locale.translate("Breakpoint reached").out	end
+	l_Sub_cluster: STRING is 			do	Result := locale.translate("Subcluster").out	end
+	l_Sub_clusters: STRING is 			do	Result := locale.translate("Recursive").out	end
+	l_Subquery: STRING is 			do	Result := locale.translate("Define new subquery").out	end
+	l_Suppliers: STRING is 			do	Result := locale.translate("suppliers").out	end
+	l_Switch_num_format: STRING is 			do	Result := locale.translate("Switch numerical formating").out	end
+	l_Switch_num_format_desc: STRING is 			do	Result := locale.translate("Display numerical value as Hexadecimal or Decimal formating").out	end
+	l_Syntax_error: STRING is 			do	Result := locale.translate("Class text has syntax error").out	end
+	l_System_name: STRING is 			do	Result := locale.translate("System name: ").out	end
+	l_System_properties: STRING is 			do	Result := locale.translate("System properties").out	end
+	l_System_running: STRING is 			do	Result := locale.translate("System running").out	end
+	l_System_launched: STRING is 			do	Result := locale.translate("System launched").out	end
+	l_System_not_running: STRING is 			do	Result := locale.translate("System not running").out	end
+	l_Tab_output: STRING is 			do	Result := locale.translate("Output").out	end
+	l_Tab_class_info: STRING is 			do	Result := locale.translate("Class").out	end
+	l_Tab_feature_info: STRING is 			do	Result := locale.translate("Feature").out	end
+	l_Tab_diagram: STRING is 			do	Result := locale.translate("Diagram").out	end
+	l_target: STRING is 			do	Result := locale.translate("Target").out	end
+	l_Text_loaded: STRING is 			do	Result := locale.translate("Text finished loading").out	end
+	l_Text_saved: STRING is 			do	Result := locale.translate("Text was saved").out	end
+	l_Three_dots: STRING is 			do	Result := locale.translate("...").out	end
+	l_Text_loading: STRING is 			do	Result := locale.translate("Current text is being loaded. It is therefore%Nnot editable nor pickable.").out	end
+	l_Toolbar_select_text_position: STRING is 			do	Result := locale.translate("Text option: ").out	end
+	l_Toolbar_select_has_gray_icons: STRING is 			do	Result := locale.translate("Icon option: ").out	end
+	l_Top_level: STRING is 			do	Result := locale.translate("Top-level").out	end
+	l_Type: STRING is 			do	Result := locale.translate("Type").out	end
+	l_Unknown_status: STRING is 			do	Result := locale.translate("Unknown application status").out	end
+	l_Unknown_class_name: STRING is 			do	Result := locale.translate("Unknown class name").out	end
+	l_Use_existing_ace: STRING is 			do	Result := locale.translate("Open existing Ace (control file)").out	end
+	l_Use_existing_profile: STRING is 			do	Result := locale.translate("Use existing profile: ").out	end
+	l_Use_regular_expression: STRING is 			do	Result := locale.translate("Use regular expression").out	end
+	l_Use_wildcards: STRING is 			do	Result := locale.translate("Use wildcards").out	end
+	l_Use_wizard: STRING is 			do	Result := locale.translate("Create project").out	end
+	l_Value: STRING is 			do	Result := locale.translate("Value").out	end
+	l_Whole_project: STRING is 			do	Result := locale.translate("Whole project").out	end
+	l_Whole_word: STRING is 			do	Result := locale.translate("Whole word").out	end
+	l_Windows_only: STRING is 			do	Result := locale.translate("(Windows only)").out	end
+	l_Workbench_mode: STRING is 			do	Result := locale.translate("Workbench mode").out	end
+	l_Working_formatter: STRING is 			do	Result := locale.translate("Extracting ").out	end
+	l_Tab_external_output: STRING is 			do	Result := locale.translate("External Output").out	end
+	l_Tab_C_output: STRING is 			do	Result := locale.translate("C Output").out	end
+	l_Tab_warning_output: STRING is 			do	Result := locale.translate("Warnings").out	end
+	l_Tab_error_output: STRING is 			do	Result := locale.translate("Errors").out	end
+	l_show_feature_from_any: STRING is 			do	Result := locale.translate("Features from ANY").out	end
+	l_show_tooltip: STRING is 			do	Result := locale.translate("Tooltip").out	end
+	h_show_feature_from_any: STRING is 			do	Result := locale.translate("Show unchanged features from class ANY?").out	end
+	h_show_tooltip: STRING is 			do	Result := locale.translate("Show tooltips?").out	end
+	l_class_browser_classes: STRING is 			do	Result := locale.translate("Class").out	end
+	l_class_browser_features: STRING is 			do	Result := locale.translate("Feature").out	end
+	l_version_from: STRING is 			do	Result := locale.translate("Declared in class").out	end
+	l_version_in: STRING is 			do	Result := locale.translate("Version from class").out	end
+	l_branch: STRING is 			do	Result := locale.translate("Branch #").out	end
+	l_version_from_message: STRING is 			do	Result := locale.translate(" (version from)").out	end
+	l_expand_layer: STRING is 			do	Result := locale.translate("Expand selected level(s)").out	end
+	l_collapse_layer: STRING is 			do	Result := locale.translate("Collapse selected level(s)").out	end
+	l_collapse_all_layers: STRING is 			do	Result := locale.translate("Collapse all selected level(s)").out	end
+	l_searching_selected_file: STRING is 			do	Result := locale.translate("Searching selected file...").out	end
+	l_selected_file_not_found: STRING is 			do	Result := locale.translate("Selected text is not a valid file name or the file cannot be found").out	end
+	l_manage_external_commands: STRING is 			do	Result := locale.translate("Add, remove or edit external commands").out	end
+	l_callees: STRING is 			do	Result := locale.translate("callees").out	end
+	l_assignees: STRING is 			do	Result := locale.translate("assignees").out	end
+	l_created: STRING is 			do	Result := locale.translate("creations").out	end
+	l_filter: STRING is 			do	Result := locale.translate("Filter: ").out	end
+	l_viewpoints: STRING is 			do	Result := locale.translate("Viewpoints: ").out	end
+	l_Tab_metrics: STRING is 			do	Result := locale.translate("Metric").out	end
 
 feature -- Stone names
 
-	s_Class_stone: STRING is			"Class "
-	s_Cluster_stone: STRING is			"Cluster "
-	s_Feature_stone: STRING is			"Feature "
+	s_Class_stone: STRING is 			do	Result := locale.translate("Class ").out	end
+	s_Cluster_stone: STRING is 			do	Result := locale.translate("Cluster ").out	end
+	s_Feature_stone: STRING is 			do	Result := locale.translate("Feature ").out	end
 
 feature -- Title part
 
 	t_About: STRING is
 		once
-			Result := "About " + Workbench_name
+			Result := locale.format_string(locale.translate("About $1"), [ Workbench_name])
 		end
-	t_Add_search_scope: STRING is				"Add Search Scope"
-	t_Alias: STRING is							"Alias"
-	t_Breakpoints_tool: STRING is				"Breakpoints"
-	t_Call_stack_tool: STRING is				"Call Stack"
-	t_Calling_convention: STRING is				"Calling Convention"
-	t_Choose_ace_file: STRING is 				"Choose an Ace File"
-	t_Choose_ace_and_directory: STRING is		"Choose Your Ace File and Directory"
-	t_Choose_class: STRING is					"Choose a Class"
-	t_Choose_directory: STRING is 				"Choose Your Directory"
-	t_Choose_folder_name: STRING is				"Choose a Folder Name"
-	t_Choose_project_and_directory: STRING is 	"Choose Your Project Name and Directory"
-	t_Class: STRING is							"Class"
-	t_Clients_of: STRING is						"Clients of Class "
-	t_Cluster_tool: STRING is					"Clusters"
-	t_Context_tool: STRING is					"Context"
-	t_Creation_routine: STRING is				"Creation Procedure"
-	t_Customize_toolbar_text: STRING is 		"Customize Toolbar"
-	t_Debugging_tool: STRING is					"Debugging"
+	t_Add_search_scope: STRING is 			do	Result := locale.translate("Add Search Scope").out	end
+	t_Alias: STRING is 			do	Result := locale.translate("Alias").out	end
+	t_Breakpoints_tool: STRING is 			do	Result := locale.translate("Breakpoints").out	end
+	t_Call_stack_tool: STRING is 			do	Result := locale.translate("Call Stack").out	end
+	t_Calling_convention: STRING is 			do	Result := locale.translate("Calling Convention").out	end
+	t_Choose_ace_file: STRING is 			do	Result := locale.translate("Choose an Ace File").out	end
+	t_Choose_ace_and_directory: STRING is 			do	Result := locale.translate("Choose Your Ace File and Directory").out	end
+	t_Choose_class: STRING is 			do	Result := locale.translate("Choose a Class").out	end
+	t_Choose_directory: STRING is 			do	Result := locale.translate("Choose Your Directory").out	end
+	t_Choose_folder_name: STRING is 			do	Result := locale.translate("Choose a Folder Name").out	end
+	t_Choose_project_and_directory: STRING is 			do	Result := locale.translate("Choose Your Project Name and Directory").out	end
+	t_Class: STRING is 			do	Result := locale.translate("Class").out	end
+	t_Clients_of: STRING is 			do	Result := locale.translate("Clients of Class ").out	end
+	t_Cluster_tool: STRING is 			do	Result := locale.translate("Clusters").out	end
+	t_Context_tool: STRING is 			do	Result := locale.translate("Context").out	end
+	t_Creation_routine: STRING is 			do	Result := locale.translate("Creation Procedure").out	end
+	t_Customize_toolbar_text: STRING is 			do	Result := locale.translate("Customize Toolbar").out	end
+	t_Debugging_tool: STRING is 			do	Result := locale.translate("Debugging").out	end
 	t_Default_print_job_name: STRING is
 		once
-			Result := "From " + Workbench_name
+			Result := locale.format_string(locale.translate("From $1"), [Workbench_name])
 		end
-	t_Deleting_files: STRING is					"Deleting Files"
-	t_Dummy: STRING is							"Dummy"
-	t_Dynamic_lib_window: STRING is 			"Dynamic Library Builder"
-	t_Dynamic_type: STRING is					"In Class"
-	t_Editor: STRING is							"Editor"
-	t_Enter_condition: STRING is				"Enter Condition"
-	t_Exported_feature: STRING is				"Feature"
-	t_Expression_evaluation: STRING is			"Evaluation"
-	t_Extended_explanation: STRING is			"Compilation Error Wizard"
-	t_external_command: STRING is				"External Command"
-	t_external_commands: STRING is				"External Commands"
-	t_External_edition: STRING is				"External Edition"
-	t_Favorites_tool: STRING is					"Favorites"
-	t_metric_tool: STRING is 					"Metrics"
-	t_Feature: STRING is						"In Feature"
-	t_Feature_properties: STRING is				"Feature Properties"
-	t_File_selection: STRING is					"File Selection"
-	t_Find: STRING is							"Find"
-	t_Index: STRING is							"Index"
-	t_New_class: STRING is						"New Class"
-	t_New_cluster: STRING is					"Add Cluster"
-	t_New_expression: STRING is					"New Expression"
-	t_New_project: STRING is					"New Project"
-	t_Object_tool: STRING is					"Objects"
-	t_Open_backup: STRING is					"Backup Found"
-	t_Organize_favorites: STRING is				"Organize Favorites"
-	t_Properties_tool: STRING is				"Properties"
-	t_Profile_query_window: STRING is			"Profile Query Window"
-	t_Profiler_wizard: STRING is				"Profiler Wizard"
+	t_Deleting_files: STRING is 			do	Result := locale.translate("Deleting Files").out	end
+	t_Dummy: STRING is 			do	Result := locale.translate("Dummy").out	end
+	t_Dynamic_lib_window: STRING is 			do	Result := locale.translate("Dynamic Library Builder").out	end
+	t_Dynamic_type: STRING is 			do	Result := locale.translate("In Class").out	end
+	t_Editor: STRING is 			do	Result := locale.translate("Editor").out	end
+	t_Enter_condition: STRING is 			do	Result := locale.translate("Enter Condition").out	end
+	t_Exported_feature: STRING is 			do	Result := locale.translate("Feature").out	end
+	t_Expression_evaluation: STRING is 			do	Result := locale.translate("Evaluation").out	end
+	t_Extended_explanation: STRING is 			do	Result := locale.translate("Compilation Error Wizard").out	end
+	t_external_command: STRING is 			do	Result := locale.translate("External Command").out	end
+	t_external_commands: STRING is 			do	Result := locale.translate("External Commands").out	end
+	t_External_edition: STRING is 			do	Result := locale.translate("External Edition").out	end
+	t_Favorites_tool: STRING is 			do	Result := locale.translate("Favorites").out	end
+	t_metric_tool: STRING is 			do	Result := locale.translate("Metrics").out	end
+	t_Feature: STRING is 			do	Result := locale.translate("In Feature").out	end
+	t_Feature_properties: STRING is 			do	Result := locale.translate("Feature Properties").out	end
+	t_File_selection: STRING is 			do	Result := locale.translate("File Selection").out	end
+	t_Find: STRING is 			do	Result := locale.translate("Find").out	end
+	t_Index: STRING is 			do	Result := locale.translate("Index").out	end
+	t_New_class: STRING is 			do	Result := locale.translate("New Class").out	end
+	t_New_cluster: STRING is 			do	Result := locale.translate("Add Cluster").out	end
+	t_New_expression: STRING is 			do	Result := locale.translate("New Expression").out	end
+	t_New_project: STRING is 			do	Result := locale.translate("New Project").out	end
+	t_Object_tool: STRING is 			do	Result := locale.translate("Objects").out	end
+	t_Open_backup: STRING is 			do	Result := locale.translate("Backup Found").out	end
+	t_Organize_favorites: STRING is 			do	Result := locale.translate("Organize Favorites").out	end
+	t_Properties_tool: STRING is 			do	Result := locale.translate("Properties").out	end
+	t_Profile_query_window: STRING is 			do	Result := locale.translate("Profile Query Window").out	end
+	t_Profiler_wizard: STRING is 			do	Result := locale.translate("Profiler Wizard").out	end
 	t_Project: STRING is
 		once
 			Result := Workbench_name
 		end
-	t_Preference_window: STRING is				"Preferences"
-	t_Select_class: STRING is					"Select Class"
-	t_Select_cluster: STRING is					"Select Cluster"
-	t_Select_feature: STRING is					"Select Feature"
-	t_Search_tool: STRING is					"Search"
-	t_Select_a_file: STRING is					"Select a File"
-	t_Select_a_directory: STRING is				"Select a Directory"
-	t_Set_stack_depth: STRING is				"Maximum Call Stack Depth"
-	t_Set_critical_stack_depth: STRING is		"Overflow Prevention"
-	t_Static_type: STRING is					"From Class"
+	t_Preference_window: STRING is 			do	Result := locale.translate("Preferences").out	end
+	t_Select_class: STRING is 			do	Result := locale.translate("Select Class").out	end
+	t_Select_cluster: STRING is 			do	Result := locale.translate("Select Cluster").out	end
+	t_Select_feature: STRING is 			do	Result := locale.translate("Select Feature").out	end
+	t_Search_tool: STRING is 			do	Result := locale.translate("Search").out	end
+	t_Select_a_file: STRING is 			do	Result := locale.translate("Select a File").out	end
+	t_Select_a_directory: STRING is 			do	Result := locale.translate("Select a Directory").out	end
+	t_Set_stack_depth: STRING is 			do	Result := locale.translate("Maximum Call Stack Depth").out	end
+	t_Set_critical_stack_depth: STRING is 			do	Result := locale.translate("Overflow Prevention").out	end
+	t_Static_type: STRING is 			do	Result := locale.translate("From Class").out	end
 	t_Starting_dialog: STRING is
 		once
 			Result := Workbench_name
 		end
-	t_Slice_limits: STRING is					"Choose New Slice Limits for Special Objects"
-	t_System: STRING is							"Project Settings"
-	t_Windows_tool: STRING is					"Windows"
-	t_Watch_tool: STRING is						"Watch"
-	t_Features_tool: STRING is					"Features"
-	t_Empty_development_window: STRING is 		"Empty Development Tool"
-	t_Autocomplete_window: STRING is			"Auto-Complete"
-	t_Diagram_class_header: STRING is			"Class Header"
-	t_Diagram_set_center_class: STRING is		"Set Center Class"
-	t_Diagram_context_depth: STRING is			"Select Depths"
-	t_Diagram_link_tool: STRING is				"Link Tool"
-	t_Diagram_delete_client_link: STRING is 	"Choose Feature(s) to Delete"
-	t_Diagram_history_tool: STRING is			"History Tool"
+	t_Slice_limits: STRING is 			do	Result := locale.translate("Choose New Slice Limits for Special Objects").out	end
+	t_System: STRING is 			do	Result := locale.translate("Project Settings").out	end
+	t_Windows_tool: STRING is 			do	Result := locale.translate("Windows").out	end
+	t_Watch_tool: STRING is 			do	Result := locale.translate("Watch").out	end
+	t_Features_tool: STRING is 			do	Result := locale.translate("Features").out	end
+	t_Empty_development_window: STRING is 			do	Result := locale.translate("Empty Development Tool").out	end
+	t_Autocomplete_window: STRING is 			do	Result := locale.translate("Auto-Complete").out	end
+	t_Diagram_class_header: STRING is 			do	Result := locale.translate("Class Header").out	end
+	t_Diagram_set_center_class: STRING is 			do	Result := locale.translate("Set Center Class").out	end
+	t_Diagram_context_depth: STRING is 			do	Result := locale.translate("Select Depths").out	end
+	t_Diagram_link_tool: STRING is 			do	Result := locale.translate("Link Tool").out	end
+	t_Diagram_delete_client_link: STRING is 			do	Result := locale.translate("Choose Feature(s) to Delete").out	end
+	t_Diagram_history_tool: STRING is 			do	Result := locale.translate("History Tool").out	end
 
 	t_Diagram_move_class_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Move Class '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Move Class '$1'"), [a_name])
 		end
 
 	t_Diagram_move_cluster_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Move Cluster '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Move Cluster '$1'"),[a_name])
 		end
 
-	t_Diagram_move_midpoint_cmd: STRING is		"Move Midpoint"
+	t_Diagram_move_midpoint_cmd: STRING is 			do	Result := locale.translate("Move Midpoint").out	end
 
 	t_Diagram_add_cs_link_cmd (client_name, supplier_name: STRING): STRING is
 		require
 			exists: client_name /= Void	and supplier_name /= Void
 		do
-			Result := "Add Client-Supplier Relation Between '" + client_name + "' and '" + supplier_name  + "'"
+			Result := locale.format_string(locale.translate("Add Client-Supplier Relation Between '$1' and '$2'"), [client_name, supplier_name])
 		end
 
 	t_Diagram_add_inh_link_cmd (ancestor_name, descendant_name: STRING): STRING is
 		require
 			exists: ancestor_name /= Void and descendant_name /= Void
 		do
-			Result := "Add Inheritance Relation Between '" + ancestor_name + "' and '" + descendant_name + "'"
+			Result := locale.format_string(locale.translate("Add Inheritance Relation Between '$1' and '$2'"), [ancestor_name, descendant_name])
 		end
 
 	t_Diagram_include_class_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Include Class '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Include Class '$1'"), [a_name])
 		end
 
 	t_Diagram_include_cluster_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Include Cluster '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Include Cluster '$1'"), [a_name])
 		end
 
 	t_Diagram_include_library_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Include Library '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Include Library '$1'"),[a_name])
 		end
 
-	t_Diagram_insert_midpoint_cmd: STRING is	"Insert Midpoint"
-	t_Diagram_change_color_cmd: STRING is		"Change Class Color"
+	t_Diagram_insert_midpoint_cmd: STRING is 			do	Result := locale.translate("Insert Midpoint").out	end
+	t_Diagram_change_color_cmd: STRING is 			do	Result := locale.translate("Change Class Color").out	end
 
 	t_Diagram_rename_class_locally_cmd (old_name, new_name: STRING): STRING is
 		require
 			exists: old_name /= Void and new_name /= Void
 		do
-			Result := "Rename Class '" + old_name + "' Locally to '" + new_name + "'"
+			Result := locale.format_string(locale.translate("Rename Class '$1' Locally to '$2'"), [old_name,new_name])
 		end
 
 	t_Diagram_rename_class_globally_cmd (old_name, new_name: STRING): STRING is
 		require
 			exists: old_name /= Void and new_name /= Void
 		do
-			Result := "Rename Class '" + old_name + "' Globally to '" + new_name + "'"
+			Result := locale.format_string(locale.translate("Rename Class '$1' Globally to '$2'"), [old_name, new_name])
 		end
 
 	t_Diagram_delete_client_link_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Delete Client Link '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Delete Client Link '$1'") , [a_name])
 		end
 
 	t_Diagram_delete_inheritance_link_cmd (an_ancestor, a_descendant: STRING): STRING is
 		require
 			exists: an_ancestor /= Void and a_descendant /= Void
 		do
-			Result := "Delete Inheritance Link Between '" + an_ancestor + "' and '" + a_descendant + "'"
+			Result := locale.format_string(locale.translate("Delete Inheritance Link Between '$1' and '$2'"), [an_ancestor,a_descendant])
 		end
 
 	t_Diagram_erase_cluster_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Erase Cluster '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Erase Cluster '$1'"), [a_name])
 		end
 
-	t_Diagram_delete_midpoint_cmd: STRING is	"Erase Midpoint"
+	t_Diagram_delete_midpoint_cmd: STRING is 			do	Result := locale.translate("Erase Midpoint").out	end
 
 	t_Diagram_erase_class_cmd (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Erase Class '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Erase Class '$1'"), [a_name])
 		end
 
-	t_Diagram_erase_classes_cmd: STRING is		"Erase Classes"
-	t_Diagram_put_right_angles_cmd: STRING is	"Put Right Angles"
-	t_Diagram_remove_right_angles_cmd: STRING is	"Remove Right Angles"
-	t_Diagram_put_one_handle_left_cmd: STRING is	"Put Handle Left"
-	t_Diagram_put_one_handle_right_cmd: STRING is	"Put Handle Right"
-	t_Diagram_put_two_handles_left_cmd: STRING is	"Put Two Handles Left"
-	t_Diagram_put_two_handles_right_cmd: STRING is	"Put Two Handles Right"
-	t_Diagram_remove_handles_cmd: STRING is		"Remove Handles"
-	t_Diagram_zoom_in_cmd: STRING is			"Zoom In"
-	t_Diagram_zoom_out_cmd: STRING is			"Zoom Out"
-	t_Diagram_zoom_cmd: STRING is				"Zoom"
+	t_Diagram_erase_classes_cmd: STRING is 			do	Result := locale.translate("Erase Classes").out	end
+	t_Diagram_put_right_angles_cmd: STRING is 			do	Result := locale.translate("Put Right Angles").out	end
+	t_Diagram_remove_right_angles_cmd: STRING is 			do	Result := locale.translate("Remove Right Angles").out	end
+	t_Diagram_put_one_handle_left_cmd: STRING is 			do	Result := locale.translate("Put Handle Left").out	end
+	t_Diagram_put_one_handle_right_cmd: STRING is 			do	Result := locale.translate("Put Handle Right").out	end
+	t_Diagram_put_two_handles_left_cmd: STRING is 			do	Result := locale.translate("Put Two Handles Left").out	end
+	t_Diagram_put_two_handles_right_cmd: STRING is 			do	Result := locale.translate("Put Two Handles Right").out	end
+	t_Diagram_remove_handles_cmd: STRING is 			do	Result := locale.translate("Remove Handles").out	end
+	t_Diagram_zoom_in_cmd: STRING is 			do	Result := locale.translate("Zoom In").out	end
+	t_Diagram_zoom_out_cmd: STRING is 			do	Result := locale.translate("Zoom Out").out	end
+	t_Diagram_zoom_cmd: STRING is 			do	Result := locale.translate("Zoom").out	end
 
 	t_Diagram_cluster_expand (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Expand cluster '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Expand cluster '$1'"), [ a_name])
 		end
 
 	t_Diagram_cluster_collapse (a_name: STRING): STRING is
 		require
 			exists: a_name /= Void
 		do
-			Result := "Collapse Cluster '" + a_name + "'"
+			Result := locale.format_string(locale.translate("Collapse Cluster '$1'"), [a_name])
 		end
 
-	t_Diagram_disable_high_quality: STRING is	"Disable High Quality"
-	t_Diagram_enable_high_quality: STRING is	"Enable High Quality"
+	t_Diagram_disable_high_quality: STRING is 			do	Result := locale.translate("Disable High Quality").out	end
+	t_Diagram_enable_high_quality: STRING is 			do	Result := locale.translate("Enable High Quality").out	end
 
-	t_first_match_reached: STRING is	"Initial match reached."
-	t_bottom_reached: STRING is 	"Bottom reached."
-	t_refactoring_feature_rename: STRING is	"Refactoring: Feature Rename (Compiled Classes)"
-	t_refactoring_class_select: STRING is "Select Class"
-	t_refactoring_class_rename: STRING is "Refactoring: Class Rename"
+	t_first_match_reached: STRING is 			do	Result := locale.translate("Initial match reached.").out	end
+	t_bottom_reached: STRING is 			do	Result := locale.translate("Bottom reached.").out	end
+	t_refactoring_feature_rename: STRING is 			do	Result := locale.translate("Refactoring: Feature Rename (Compiled Classes)").out	end
+	t_refactoring_class_select: STRING is 			do	Result := locale.translate("Select Class").out	end
+	t_refactoring_class_rename: STRING is 			do	Result := locale.translate("Refactoring: Class Rename").out	end
 
 feature -- Description texts
 
-	e_Add_exported_feature: STRING is	"Add a new feature to this dynamic library definition"
-	e_Bkpt_info: STRING is				"Show/Hide information about breakpoints"
-	e_Check_exports: STRING is			"Check the validity of the library definition"
-	e_Compilation_failed: STRING is		"Eiffel Compilation Failed"
-	e_Compilation_succeeded: STRING is	"Eiffel Compilation Succeeded"
-	e_freezing_failed: STRING is 		"Background Workbench C Compilation Failed"
-	e_finalizing_failed: STRING is		"Background Finalized C compilation Failed"
-	e_freezing_launch_failed: STRING is 		"Background Workbench C Compilation Launch Failed"
-	e_finalizing_launch_failed: STRING is		"Background Finalized C Compilation Launch Failed"
-	e_freezing_launched: STRING is 		"Background Workbench C Compilation Launched"
-	e_finalizing_launched: STRING is 	"Background Finalized C Compilation Launched"
-	e_freezing_succeeded: STRING is 		"Background Workbench C Compilation Succeeded"
-	e_finalizing_succeeded: STRING is 	"Background Finalized C Compilation Succeeded"
-	e_freezing_terminated: STRING is 		"Background Workbench C Compilation Terminated"
-	e_finalizing_terminated: STRING is 	"Background Finalized C Compilation Terminated"
-	e_C_compilation_failed: STRING is 	"Background C Compilation Failed"
-	e_C_compilation_launch_failed: STRING is "Background C Compilation Launch Failed"
-	e_C_compilation_terminated: STRING is "Background C Compilation Terminated"
-	e_C_compilication_launched: STRING is "Background C Compilation Launched"
-	e_C_compilation_succeeded: STRING is "Background C Compilation Succeeded"
-	e_C_compilation_running: STRING is  "Background C Compilation in Progress"
-	e_Compiling: STRING is				"System is being compiled"
-	e_Copy_call_stack_to_clipboard: STRING is "Copy call stack to clipboard"
-	e_Cursor_position: STRING is		"Cursor position (line:column)"
-	e_Diagram_hole: STRING is			"Please drop a class or a cluster on this button %N%
-										%to view its diagram.%N%
-										%Use right click for both pick and drop actions."
-	e_Diagram_class_header: STRING is 	"Please drop a class on this button.%NUse right click for both%N%
-										%pick and drop actions."
-	e_Diagram_remove_anchor: STRING is	"Please drop a class or a cluster with an%Nanchor on this button.%NUse right click for both%N%
-										%pick and drop actions."
-	e_Diagram_create_class: STRING is	"Please drop this button on the diagram.%N%
-										%Use right click for both%Npick and drop actions."
-	e_Diagram_delete_figure: STRING is	"Please drop a class, a cluster or a midpoint%N%
-										%on this button. Use right click for both%Npick and drop actions."
-	e_Diagram_add_class_figure_relations: STRING is "A class figure(s) must either be selected%N%
-										%or dropped on this button via right clicking."
-	e_Diagram_delete_item: STRING is	"Please drop a class, a cluster or a link%N%
-										%on this button. Use right click for both%Npick and drop actions."
-	e_Display_error_help: STRING is		"Give help on compilation errors"
-	e_Display_system_info: STRING is	"Display information concerning current system"
-	e_Drop_an_error_stone: STRING is	"Pick the code of a compilation error (such as VEEN, VTCT,...)%N%
-										%and drop it here to have extended information about it."
-	e_Edit_exported_feature: STRING is	"Edit the properties of the selected feature"
-	e_Edit_expression: STRING is		"Edit an expression"
-	e_Edited: STRING is					"Some classes were edited since last compilation"
-	e_Exec_debug: STRING is				"Start application and stop at breakpoints"
-	e_Exec_kill: STRING is				"Stop application"
-	e_Exec_into: STRING is				"Step into a routine"
-	e_Exec_no_stop: STRING is			"Start application without stopping at breakpoints"
-	e_Exec_out: STRING is				"Step out of a routine"
-	e_Exec_step: STRING is				"Execute the application one line at a time"
-	e_Exec_stop: STRING is				"Pause application at current point"
-	e_History_back: STRING is			"Back"
-	e_History_forth: STRING is			"Forward"
-	e_Minimize_all: STRING is			"Minimize all windows"
-	e_New_context_tool: STRING is		"Open a new context window"
-	e_New_dynamic_lib_definition: STRING is	"Create a new dynamic library definition"
-	e_New_editor: STRING is				"Open a new editor window"
-	e_New_expression: STRING is			"Create a new expression"
-	e_Not_running: STRING is			"Application is not running"
-	e_Open_dynamic_lib_definition: STRING is "Open a dynamic library definition"
-	e_Open_file: STRING is				"Open a file"
-	e_Open_eac_browser: STRING is		"Open the Eiffel Assembly Cache browser tool"
-	e_Paste: STRING is					"Paste"
-	e_Paused: STRING is					"Application is paused"
-	e_Pretty_print: STRING is			"Display an expanded view of objects"
-	e_Print: STRING is					"Print the currently edited text"
-	e_Project_name: STRING is			"Name of the current project"
-	e_Project_settings: STRING is		"Change project settings, right click to open external editor"
-	e_override_scan: STRING is			"Recompile override clusters"
-	e_discover_melt: STRING is			"Discover unreferenced externally added classes and recompile."
-	e_Raise_all: STRING is				"Raise all windows"
-	e_Raise_all_unsaved: STRING is		"Raise all unsaved windows"
-	e_Redo: STRING is					"Redo"
-	e_Remove_class_cluster: STRING is	"Remove a class or a cluster from the system"
-	e_Remove_exported_feature: STRING is	"Remove the selected feature from this dynamic library definition"
-	e_Remove_expressions: STRING is		"Remove selected expressions"
-	e_Remove_object: STRING is			"Remove currently selected object"
-	e_Running: STRING is				"Application is running"
-	e_Running_no_stop_points: STRING is	"Application is running (ignoring breakpoints)"
-	e_Save_call_stack: STRING is		"Save call stack to a text file"
-	e_Save_dynamic_lib_definition: STRING is "Save this dynamic library definition"
-	e_Show_class_cluster: STRING is		"Locate currently edited class or cluster"
-	e_Send_stone_to_context: STRING is	"Synchronize context"
-	e_Separate_stone: STRING is			"Unlink the context tool from the other components"
-	e_Set_stack_depth: STRING is		"Set maximum call stack depth"
-	e_Shell: STRING is					"Send to external editor"
-	e_Switch_num_format_to_hex: STRING is "Switch to hexadecimal format"
-	e_Switch_num_format_to_dec: STRING is "Switch to decimal format"
-	e_Switch_num_formating: STRING is "Hexadecimal/Decimal formating"
-	e_Toggle_state_of_expressions: STRING is		"Enable/Disable expressions"
-	e_Toggle_stone_management: STRING is "Link or not the context tool to other components"
-	e_Undo: STRING is					"Undo"
-	e_Up_to_date: STRING is				"Executable is up-to-date"
-	e_Unify_stone: STRING is			"Link the context tool to the other components"
-	e_Terminate_c_compilation: STRING is "Terminate current C compilation in progress"
+	e_Add_exported_feature: STRING is 			do	Result := locale.translate("Add a new feature to this dynamic library definition").out	end
+	e_Bkpt_info: STRING is 			do	Result := locale.translate("Show/Hide information about breakpoints").out	end
+	e_Check_exports: STRING is 			do	Result := locale.translate("Check the validity of the library definition").out	end
+	e_Compilation_failed: STRING is 			do	Result := locale.translate("Eiffel Compilation Failed").out	end
+	e_Compilation_succeeded: STRING is 			do	Result := locale.translate("Eiffel Compilation Succeeded").out	end
+	e_freezing_failed: STRING is 			do	Result := locale.translate("Background Workbench C Compilation Failed").out	end
+	e_finalizing_failed: STRING is 			do	Result := locale.translate("Background Finalized C compilation Failed").out	end
+	e_freezing_launch_failed: STRING is 			do	Result := locale.translate("Background Workbench C Compilation Launch Failed").out	end
+	e_finalizing_launch_failed: STRING is 			do	Result := locale.translate("Background Finalized C Compilation Launch Failed").out	end
+	e_freezing_launched: STRING is 			do	Result := locale.translate("Background Workbench C Compilation Launched").out	end
+	e_finalizing_launched: STRING is 			do	Result := locale.translate("Background Finalized C Compilation Launched").out	end
+	e_freezing_succeeded: STRING is 			do	Result := locale.translate("Background Workbench C Compilation Succeeded").out	end
+	e_finalizing_succeeded: STRING is 			do	Result := locale.translate("Background Finalized C Compilation Succeeded").out	end
+	e_freezing_terminated: STRING is 			do	Result := locale.translate("Background Workbench C Compilation Terminated").out	end
+	e_finalizing_terminated: STRING is 			do	Result := locale.translate("Background Finalized C Compilation Terminated").out	end
+	e_C_compilation_failed: STRING is 			do	Result := locale.translate("Background C Compilation Failed").out	end
+	e_C_compilation_launch_failed: STRING is 			do	Result := locale.translate("Background C Compilation Launch Failed").out	end
+	e_C_compilation_terminated: STRING is 			do	Result := locale.translate("Background C Compilation Terminated").out	end
+	e_C_compilication_launched: STRING is 			do	Result := locale.translate("Background C Compilation Launched").out	end
+	e_C_compilation_succeeded: STRING is 			do	Result := locale.translate("Background C Compilation Succeeded").out	end
+	e_C_compilation_running: STRING is 			do	Result := locale.translate("Background C Compilation in Progress").out	end
+	e_Compiling: STRING is 			do	Result := locale.translate("System is being compiled").out	end
+	e_Copy_call_stack_to_clipboard: STRING is 			do	Result := locale.translate("Copy call stack to clipboard").out	end
+	e_Cursor_position: STRING is 			do	Result := locale.translate("Cursor position (line:column)").out	end
+	e_Diagram_hole: STRING is	
+		do 
+			Result := locale.translate ("Please drop a class or a cluster on this button %N%
+							%to view its diagram.%N%
+							%Use right click for both pick and drop actions.") 
+		end
+	e_Diagram_class_header: STRING is 
+		do 
+			Result := locale.translate("Please drop a class on this button.%NUse right click for both%N%
+						%pick and drop actions.")
+		end
+	e_Diagram_remove_anchor: STRING is 
+		do
+			Result := locale.translate("Please drop a class or a cluster with an%Nanchor on this button.%NUse right click for both%N%
+						 %pick and drop actions.")
+		end
+	e_Diagram_create_class: STRING is 
+		do 
+			Result := locale.translate("Please drop this button on the diagram.%N%
+						%Use right click for both%Npick and drop actions.")
+		end
+	e_Diagram_delete_figure: STRING is 
+		do 
+			Result := locale.translate("Please drop a class, a cluster or a midpoint%N%
+						%on this button. Use right click for both%Npick and drop actions.")
 
-	e_Dbg_exception_handler: STRING is "Exception handling"
-	e_Dbg_assertion_checking: STRING is "Disable or restore Assertion checking handling during debugging"
+		end
+	e_Diagram_add_class_figure_relations: STRING is
+		do 
+			Result := locale.translate("A class figure(s) must either be selected%N%
+						%or dropped on this button via right clicking.")
+		end
+	e_Diagram_delete_item: STRING is
+		do 
+			Result := locale.translate("Please drop a class, a cluster or a link%N%
+						%on this button. Use right click for both%Npick and drop actions.")
+		end
+	e_Display_error_help: STRING is 			do	Result := locale.translate("Give help on compilation errors").out	end
+	e_Display_system_info: STRING is 			do	Result := locale.translate("Display information concerning current system").out	end
+	e_Drop_an_error_stone: STRING is 
+		do
+			Result := locale.translate("Pick the code of a compilation error (such as VEEN, VTCT,...)%N%
+						%and drop it here to have extended information about it.")
+		end
+	e_Edit_exported_feature: STRING is 			do	Result := locale.translate("Edit the properties of the selected feature").out	end
+	e_Edit_expression: STRING is 			do	Result := locale.translate("Edit an expression").out	end
+	e_Edited: STRING is 			do	Result := locale.translate("Some classes were edited since last compilation").out	end
+	e_Exec_debug: STRING is 			do	Result := locale.translate("Start application and stop at breakpoints").out	end
+	e_Exec_kill: STRING is 			do	Result := locale.translate("Stop application").out	end
+	e_Exec_into: STRING is 			do	Result := locale.translate("Step into a routine").out	end
+	e_Exec_no_stop: STRING is 			do	Result := locale.translate("Start application without stopping at breakpoints").out	end
+	e_Exec_out: STRING is 			do	Result := locale.translate("Step out of a routine").out	end
+	e_Exec_step: STRING is 			do	Result := locale.translate("Execute the application one line at a time").out	end
+	e_Exec_stop: STRING is 			do	Result := locale.translate("Pause application at current point").out	end
+	e_History_back: STRING is 			do	Result := locale.translate("Back").out	end
+	e_History_forth: STRING is 			do	Result := locale.translate("Forward").out	end
+	e_Minimize_all: STRING is 			do	Result := locale.translate("Minimize all windows").out	end
+	e_New_context_tool: STRING is 			do	Result := locale.translate("Open a new context window").out	end
+	e_New_dynamic_lib_definition: STRING is 			do	Result := locale.translate("Create a new dynamic library definition").out	end
+	e_New_editor: STRING is 			do	Result := locale.translate("Open a new editor window").out	end
+	e_New_expression: STRING is 			do	Result := locale.translate("Create a new expression").out	end
+	e_Not_running: STRING is 			do	Result := locale.translate("Application is not running").out	end
+	e_Open_dynamic_lib_definition: STRING is 			do	Result := locale.translate("Open a dynamic library definition").out	end
+	e_Open_file: STRING is 			do	Result := locale.translate("Open a file").out	end
+	e_Open_eac_browser: STRING is 			do	Result := locale.translate("Open the Eiffel Assembly Cache browser tool").out	end
+	e_Paste: STRING is 			do	Result := locale.translate("Paste").out	end
+	e_Paused: STRING is 			do	Result := locale.translate("Application is paused").out	end
+	e_Pretty_print: STRING is 			do	Result := locale.translate("Display an expanded view of objects").out	end
+	e_Print: STRING is 			do	Result := locale.translate("Print the currently edited text").out	end
+	e_Project_name: STRING is 			do	Result := locale.translate("Name of the current project").out	end
+	e_Project_settings: STRING is 			do	Result := locale.translate("Change project settings, right click to open external editor").out	end
+	e_override_scan: STRING is 			do	Result := locale.translate("Recompile override clusters").out	end
+	e_discover_melt: STRING is 			do	Result := locale.translate("Discover unreferenced externally added classes and recompile.").out	end
+	e_Raise_all: STRING is 			do	Result := locale.translate("Raise all windows").out	end
+	e_Raise_all_unsaved: STRING is 			do	Result := locale.translate("Raise all unsaved windows").out	end
+	e_Redo: STRING is 			do	Result := locale.translate("Redo").out	end
+	e_Remove_class_cluster: STRING is 			do	Result := locale.translate("Remove a class or a cluster from the system").out	end
+	e_Remove_exported_feature: STRING is 			do	Result := locale.translate("Remove the selected feature from this dynamic library definition").out	end
+	e_Remove_expressions: STRING is 			do	Result := locale.translate("Remove selected expressions").out	end
+	e_Remove_object: STRING is 			do	Result := locale.translate("Remove currently selected object").out	end
+	e_Running: STRING is 			do	Result := locale.translate("Application is running").out	end
+	e_Running_no_stop_points: STRING is 			do	Result := locale.translate("Application is running (ignoring breakpoints)").out	end
+	e_Save_call_stack: STRING is 			do	Result := locale.translate("Save call stack to a text file").out	end
+	e_Save_dynamic_lib_definition: STRING is 			do	Result := locale.translate("Save this dynamic library definition").out	end
+	e_Show_class_cluster: STRING is 			do	Result := locale.translate("Locate currently edited class or cluster").out	end
+	e_Send_stone_to_context: STRING is 			do	Result := locale.translate("Synchronize context").out	end
+	e_Separate_stone: STRING is 			do	Result := locale.translate("Unlink the context tool from the other components").out	end
+	e_Set_stack_depth: STRING is 			do	Result := locale.translate("Set maximum call stack depth").out	end
+	e_Shell: STRING is 			do	Result := locale.translate("Send to external editor").out	end
+	e_Switch_num_format_to_hex: STRING is 			do	Result := locale.translate("Switch to hexadecimal format").out	end
+	e_Switch_num_format_to_dec: STRING is 			do	Result := locale.translate("Switch to decimal format").out	end
+	e_Switch_num_formating: STRING is 			do	Result := locale.translate("Hexadecimal/Decimal formating").out	end
+	e_Toggle_state_of_expressions: STRING is 			do	Result := locale.translate("Enable/Disable expressions").out	end
+	e_Toggle_stone_management: STRING is 			do	Result := locale.translate("Link or not the context tool to other components").out	end
+	e_Undo: STRING is 			do	Result := locale.translate("Undo").out	end
+	e_Up_to_date: STRING is 			do	Result := locale.translate("Executable is up-to-date").out	end
+	e_Unify_stone: STRING is 			do	Result := locale.translate("Link the context tool to the other components").out	end
+	e_Terminate_c_compilation: STRING is 			do	Result := locale.translate("Terminate current C compilation in progress").out	end
 
-	e_open_selection_in_editor: STRING is "Open selected file name in specified external editor"
-	e_save_c_compilation_output: STRING is "Save C Compilation output to file"
-	e_go_to_w_code_dir: STRING is "Go to W_code directory of this system, or right click to open W_code in specified file browser"
-	e_go_to_f_code_dir: STRING is "Go to F_code directory of this system, or right click to open F_code in specified file browser"
-	e_f_code: STRING is "F_code"
-	e_w_code: STRING is "W_code"
-	e_no_text_is_selected: STRING is "No file name is selected."
-	e_selected_text_is_not_file: STRING is "Selected text is not a correct file name."
-	e_external_editor_not_defined: STRING is "External editor not defined"
-	e_external_command_is_running: STRING is "An external command is running now. %NPlease wait until it exits."
-	e_external_command_list_full: STRING is "Your external command list is full.%NUse Tools->External Command... to delete one."
-	e_working_directory_invalid: STRING is "Cannot change to directory "
-	e_external_command_not_launched: STRING is "External command not launched."
-	e_refactoring_undo_sure: STRING is "Are you sure you want to undo the refactoring?%N If classes have been modified since the refactoring this can lead to corrupt classes and lost information!"
-	e_refactoring_redo_sure: STRING is "Are you sure you want to redo the refactoring?%N If classes have been modified since the undo of the refactoring this can lead to corrupt classes and lost information!"
+	e_Dbg_exception_handler: STRING is 			do	Result := locale.translate("Exception handling").out	end
+	e_Dbg_assertion_checking: STRING is 			do	Result := locale.translate("Disable or restore Assertion checking handling during debugging").out	end
+
+	e_open_selection_in_editor: STRING is 			do	Result := locale.translate("Open selected file name in specified external editor").out	end
+	e_save_c_compilation_output: STRING is 			do	Result := locale.translate("Save C Compilation output to file").out	end
+	e_go_to_w_code_dir: STRING is 			do	Result := locale.translate("Go to W_code directory of this system, or right click to open W_code in specified file browser").out	end
+	e_go_to_f_code_dir: STRING is 			do	Result := locale.translate("Go to F_code directory of this system, or right click to open F_code in specified file browser").out	end
+	e_f_code: STRING is 			do	Result := locale.translate("F_code").out	end
+	e_w_code: STRING is 			do	Result := locale.translate("W_code").out	end
+	e_no_text_is_selected: STRING is 			do	Result := locale.translate("No file name is selected.").out	end
+	e_selected_text_is_not_file: STRING is 			do	Result := locale.translate("Selected text is not a correct file name.").out	end
+	e_external_editor_not_defined: STRING is 			do	Result := locale.translate("External editor not defined").out	end
+	e_external_command_is_running: STRING is 			do	Result := locale.translate("An external command is running now. %NPlease wait until it exits.").out	end
+	e_external_command_list_full: STRING is 			do	Result := locale.translate("Your external command list is full.%NUse Tools->External Command... to delete one.").out	end
+	e_working_directory_invalid: STRING is 			do	Result := locale.translate("Cannot change to directory ").out	end
+	e_external_command_not_launched: STRING is 			do	Result := locale.translate("External command not launched.").out	end
+	e_refactoring_undo_sure: STRING is 			do	Result := locale.translate("Are you sure you want to undo the refactoring?%N If classes have been modified since the refactoring this can lead to corrupt classes and lost information!").out	end
+	e_refactoring_redo_sure: STRING is 			do	Result := locale.translate("Are you sure you want to redo the refactoring?%N If classes have been modified since the undo of the refactoring this can lead to corrupt classes and lost information!").out	end
 feature -- Wizard texts
 
-	wt_Profiler_welcome: STRING is "Welcome to the Profiler Wizard"
-	wb_Profiler_welcome: STRING is
-				"Using this wizard you can analyze the result of a profiling.%N%
-				%%N%
-				%Profiling a system is used to analyze its run-time properties%N%
-				%and in particular the cost of each routine: number of calls,%N%
-				%time spent, etc. The profiler is a precious tool to understand%N%
-				%and optimize a system.%N%
-				%%N%
-				%To continue you need to have already executed your system%N%
-				%with the profiler activated. If this is not the case, please%N%
-				%refer to the documentation on how to profile a system.%N%
-				%%N%
-				%%N%
-				%To continue, click Next."
+	wt_Profiler_welcome: STRING is 			do	Result := locale.translate("Welcome to the Profiler Wizard").out	end
+	wb_Profiler_welcome: STRING is 
+			do
+				Result := locale.translate( "Using this wizard you can analyze the result of a profiling.%N%
+								%%N%
+								%Profiling a system is used to analyze its run-time properties%N%
+								%and in particular the cost of each routine: number of calls,%N%
+								%time spent, etc. The profiler is a precious tool to understand%N%
+								%and optimize a system.%N%
+								%%N%
+								%To continue you need to have already executed your system%N%
+								%with the profiler activated. If this is not the case, please%N%
+								%refer to the documentation on how to profile a system.%N%
+								%%N%
+								%%N%
+								%To continue, click Next.") 
+			end
 
-	wt_Compilation_mode: STRING is "Compilation mode"
-	ws_Compilation_mode: STRING is "Select the Compilation mode."
+	wt_Compilation_mode: STRING is 			do	Result := locale.translate("Compilation mode").out	end
+	ws_Compilation_mode: STRING is 			do	Result := locale.translate("Select the Compilation mode.").out	end
 
-	wt_Execution_Profile: STRING is "Execution Profile"
-	ws_Execution_Profile: STRING is "Reuse or Generate an Execution Profile."
+	wt_Execution_Profile: STRING is 			do	Result := locale.translate("Execution Profile").out	end
+	ws_Execution_Profile: STRING is 			do	Result := locale.translate("Reuse or Generate an Execution Profile.").out	end
 	wb_Execution_Profile: STRING is
-			"You can generate the Execution Profile from a Run-time Information Record%N%
-			%created by a profiler, or you can reuse an existing Execution Profile if you%N%
-			%have already generated one for this system."
-
-	wt_Execution_Profile_Generation: STRING is "Execution Profile Generation"
-	ws_Execution_Profile_Generation: STRING is "Select a Run-time information record to generate the Execution profile"
-	wb_Execution_Profile_Generation: STRING is
-				"Once an execution of an instrumented system has generated the proper file,%N%
-				%you must process it through a profile converter to produce the Execution%N%
-				%Profile. The need for the converter comes from the various formats that%N%
-				%profilers use to record run-time information during an execution.%N%
-				%%N%
-				%Provide the Run-time information record produced by the profiler and%N%
-				%select the profiler used to create this record.%
-				%%N%
-				%The Execution Profile will be generated under the file %"profinfo.pfi%"."
-
-	wt_Switches_and_query: STRING is "Switches and Query"
-	ws_Switches_and_query: STRING is "Select the information you need and formulate your query."
-
-	wt_Generation_error: STRING is "Generation Error"
-	wb_Click_back_and_correct_error: STRING is "Click Back if you can correct the problem or Click Abort."
-
-	wt_Runtime_information_record_error: STRING is "Runtime Information Record Error"
-	wb_Runtime_information_record_error (generation_path: STRING): STRING is
 		do
-			Result :=
-				"The file you have supplied as Runtime Information Record%N%
-				%does not exist or is not valid.%N%
-				%Do not forget that the Runtime Information Record has to%N%
-				%be located in the project directory:%N"
-				+ generation_path +
-				"%N%N%
-				%Please provide a valid file or execute your profiler again to%N%
-				%generate a valid Runtime Information Record.%N%
-				%%N%
-				%Click Back and select a valid file or Click Abort."
+			Result := locale.translate("You can generate the Execution Profile from a Run-time Information Record%N%
+						%created by a profiler, or you can reuse an existing Execution Profile if you%N%
+						%have already generated one for this system.")
 		end
 
-	wt_Execution_profile_error: STRING is "Execution Profile Error"
+	wt_Execution_Profile_Generation: STRING is 			do	Result := locale.translate("Execution Profile Generation").out	end
+	ws_Execution_Profile_Generation: STRING is 			do	Result := locale.translate("Select a Run-time information record to generate the Execution profile").out	end
+	wb_Execution_Profile_Generation: STRING is
+		do
+			Result := locale.translate("Once an execution of an instrumented system has generated the proper file,%N%
+					%you must process it through a profile converter to produce the Execution%N%
+					%Profile. The need for the converter comes from the various formats that%N%
+					%profilers use to record run-time information during an execution.%N%
+					%%N%
+					%Provide the Run-time information record produced by the profiler and%N%
+					%select the profiler used to create this record.%
+					%%N%
+					%The Execution Profile will be generated under the file %"profinfo.pfi%".")
+		end
+
+	wt_Switches_and_query: STRING is 			do	Result := locale.translate("Switches and Query").out	end
+	ws_Switches_and_query: STRING is 			do	Result := locale.translate("Select the information you need and formulate your query.").out	end
+
+	wt_Generation_error: STRING is 			do	Result := locale.translate("Generation Error").out	end
+	wb_Click_back_and_correct_error: STRING is 			do	Result := locale.translate("Click Back if you can correct the problem or Click Abort.").out	end
+
+	wt_Runtime_information_record_error: STRING is 			do	Result := locale.translate("Runtime Information Record Error").out	end
+	wb_Runtime_information_record_error (generation_path: STRING): STRING is
+		do
+			Result := locale.format_string( 
+					locale.translate("The file you have supplied as Runtime Information Record%N%
+							%does not exist or is not valid.%N%
+							%Do not forget that the Runtime Information Record has to%N%
+							%be located in the project directory:%N$1%
+							%%N%N%
+							%Please provide a valid file or execute your profiler again to%N%
+							%generate a valid Runtime Information Record.%N%
+							%%N%
+							%Click Back and select a valid file or Click Abort."), [generation_path])
+		end
+
+	wt_Execution_profile_error: STRING is 			do	Result := locale.translate("Execution Profile Error").out	end
 	wb_Execution_profile_error: STRING is
-				"The file you have supplied as existring Execution Provide does%N%
-				%not exist or is not valid. Please provide a valid file or generate%N%
-				%a new one.%N%
-				%Click Back and select a valid file or choose the generate option.";
+		do
+			Result := locale.translate("The file you have supplied as existring Execution Provide does%N%
+					%not exist or is not valid. Please provide a valid file or generate%N%
+					%a new one.%N%
+					%Click Back and select a valid file or choose the generate option.");
+		end
 
 feature -- String escape
 
@@ -1219,5 +1253,6 @@ indexing
 		]"
 
 end -- class INTERFACE_NAMES
+
 
 

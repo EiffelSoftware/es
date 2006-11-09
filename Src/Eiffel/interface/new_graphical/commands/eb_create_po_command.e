@@ -38,7 +38,6 @@ feature --Access
 					translator: CLASS_I
 					compiled_translator: CLASS_C
 					list: LIST[CLASS_I]
-					classes_to_examine: ARRAYED_LIST[CLASS_C]
 					annoying_popup: EV_WARNING_DIALOG
 					file_dialog: EB_FILE_SAVE_DIALOG
 				do
@@ -94,25 +93,29 @@ feature --Access
 			local
 				parser: I18N_AST_ITERATOR
 				list: LEAF_AS_LIST
+				seen: LINKED_LIST[CLASS_C]
 			do
 				create Result.make_empty
 				create parser
+				create seen.make
 				from
 					clients.start
 				until
 					clients.after
 				loop
+					-- FIXME: debug --
 					io.put_string ("client: "+clients.item.name+"%N")
-					if clients.item.has_ast then
-							list := match_list_server.item (clients.item.class_id)
-							parser.set_translator (translation_function)
-							parser.set_plural_translator (plural_form_translation_function)
-							parser.set_po_file (Result)
-							parser.setup (clients.item.ast, list, False, False)
-							parser.process_ast_node (clients.item.ast)
+					if clients.item.has_ast and then not seen.has(clients.item) then
+						list := match_list_server.item (clients.item.class_id)
+						parser.set_translator (translation_function)
+						parser.set_plural_translator (plural_form_translation_function)
+						parser.set_po_file (Result)
+						parser.setup (clients.item.ast, list, False, False)
+						parser.process_ast_node (clients.item.ast)
 					else
-						io.put_string("No AST%N")
+						io.put_string("No AST for class: "+clients.item.name+"%N")
 					end
+					seen.extend(clients.item)
 					clients.forth
 				end
 			end
@@ -130,12 +133,7 @@ feature --Access
 				file_opener: EB_FILE_OPENER
 			do
 						location_32 := location.as_string_32
-						--DEbugging
---						io.put_string ("you wanted to write this to: %N")
---						io.put_string (location_32+"%N")
---						io.put_string (po_file.to_string)
-
-						create file_name.make_from_string (location_32)
+						create file_name.make_from_string(location_32.out)
 						if file_name.is_valid then
 							create file_opener.make_with_parent (Current, file_name.out, window_manager.last_focused_development_window.window)
 						end
@@ -152,7 +150,6 @@ feature --Access
 		do
 			file.create_read_write
 			utf8_rw.file_write_string_32 (file, po_file.to_string)
-		--	file.put_string (po_file.to_string)
 			file.close
 		end
 

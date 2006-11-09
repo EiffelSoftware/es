@@ -42,7 +42,7 @@ feature {NONE} -- Properties
 	command_name: STRING is
 			-- Name of the command.
 		do
-			Result := Interface_names.l_Clients
+			Result := Interface_names.l_Clients.as_lower
 		end
 
 	post_fix: STRING is "cli"

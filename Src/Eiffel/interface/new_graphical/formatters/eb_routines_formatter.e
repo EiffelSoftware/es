@@ -38,7 +38,7 @@ feature {NONE} -- Properties
 	command_name: STRING is
 			-- Name of the command.
 		do
-			Result := Interface_names.l_Routines
+			Result := Interface_names.l_Routines.as_lower
 		end
 
 	post_fix: STRING is "rou"

@@ -98,6 +98,7 @@
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
+		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf" readonly="false"/>
 	</target>
 	<target name="batch" extends="common">
 		<root class="ES" feature="make"/>

@@ -41,7 +41,7 @@ feature {NONE} -- Properties
 	command_name: STRING is
 			-- Name of the command.
 		do
-			Result := Interface_names.l_Suppliers
+			Result := Interface_names.l_Suppliers.as_lower
 		end
 
 	post_fix: STRING is "sup"

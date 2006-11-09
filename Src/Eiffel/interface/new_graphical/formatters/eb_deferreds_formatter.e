@@ -35,7 +35,7 @@ feature {NONE} -- Properties
 	command_name: STRING is
 			-- Name of the command.
 		do
-			Result := Interface_names.l_Deferreds
+			Result := Interface_names.l_Deferreds.as_lower
 		end
 
 	post_fix: STRING is "def"

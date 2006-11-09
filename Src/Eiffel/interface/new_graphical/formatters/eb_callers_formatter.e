@@ -91,11 +91,11 @@ feature {NONE} -- Properties
 		do
 			inspect flag
 			when {DEPEND_UNIT}.is_in_assignment_flag then
-				Result := interface_names.l_assigners
+				Result := interface_names.l_assigners.as_lower
 			when {DEPEND_UNIT}.is_in_creation_flag then
-				Result := interface_names.l_creators
+				Result := interface_names.l_creators.as_lower
 			else
-				Result := Interface_names.l_callers
+				Result := Interface_names.l_callers.as_lower
 			end
 		end
 

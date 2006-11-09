@@ -39,7 +39,7 @@ feature {NONE} -- Properties
 	command_name: STRING is
 			-- Name of the command.
 		do
-			Result := Interface_names.l_Routine_ancestors
+			Result := Interface_names.l_Routine_ancestors.as_lower
 		end
 
 	post_fix: STRING is "ran"

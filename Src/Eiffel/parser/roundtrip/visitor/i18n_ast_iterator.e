@@ -1,7 +1,7 @@
 indexing
 	description: "[
 				This class iterates over asts of classes, extracts the arguments to the translation functions from the i18n 
-				library, genrerates appropriate PO_ENTRYs for them and adds them to a PO_FILE.
+				library, generates appropriate PO_ENTRYs for them and adds them to a PO_FILE.
 				To use it one should call set_po_file, set_translator, set_plural_translator and setup first.
 				Then it is sufficient to do an process_node_as on the ast in question.
 		]"
@@ -63,25 +63,34 @@ feature
 	analyse_call(node: ACCESS_FEAT_AS) is
 		local
 			called_id: ID_SET
-			linear : ARRAYED_LIST[INTEGER]
 			param1: STRING_AS
 			param2: STRING_AS
 			plural_entry: PO_FILE_ENTRY_PLURAL
-
+			temp:  STRING_32
 		do
 			called_id := node.routine_ids
 			if called_id /= Void and then called_id.same_as (translator) then
 				param1 ?= node.parameters.first
 				if param1 /= Void then
-					po_file.add_entry (create {PO_FILE_ENTRY_SINGULAR}.make (eiffel_string (param1.value)))
+					temp := eiffel_string_32(param1.value.as_string_32)
+					temp.replace_substring_all("%%N", "\n")
+					if (not po_file.has_entry(temp)) then
+						po_file.add_entry (create {PO_FILE_ENTRY_SINGULAR}.make (temp))
+					end
 				end
 			elseif called_id /= Void and then called_id.same_as (plural) then
 				param1 ?= node.parameters.first
 				param2 ?= node.parameters.i_th (node.parameters.index_set.lower+1) --should be 2d item :)
 				if param1 /= Void and then param2 /= Void then
-					create plural_entry.make (eiffel_string (param1.value))
-					plural_entry.set_msgid_plural (eiffel_string (param2.value))
-					po_file.add_entry (plural_entry)
+					temp := eiffel_string_32(param1.value.as_string_32)
+					temp.replace_substring_all("%%N", "\n")
+					if (not po_file.has_entry(temp)) then
+						create plural_entry.make (temp)
+						temp := eiffel_string_32(param2.value.as_string_32)
+						temp.replace_substring_all("%%N","\n")
+						plural_entry.set_msgid_plural (temp)
+						po_file.add_entry (plural_entry)
+					end
 				end
 			end
 		end
@@ -98,7 +107,7 @@ feature
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS) is
 			-- process a feature
-			--what do we want from a feature
+			--what do we want from a feature?
 			--it must be a feature call to feature i18n of SHARED_I18N_LOCALIZATOR
 			--(check others later)
 	do

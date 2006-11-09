@@ -63,11 +63,11 @@ feature -- Access
 		do
 			inspect flag
 			when {DEPEND_UNIT}.is_in_assignment_flag then
-				Result := interface_names.l_assignees
+				Result := interface_names.l_assignees.as_lower
 			when {DEPEND_UNIT}.is_in_creation_flag then
-				Result := interface_names.l_created
+				Result := interface_names.l_created.as_lower
 			else
-				Result := Interface_names.l_callees
+				Result := Interface_names.l_callees.as_lower
 			end
 		end
 

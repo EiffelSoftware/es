@@ -306,6 +306,8 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 	open_project_dialog_width_preference: INTEGER_PREFERENCE
 	open_project_dialog_height_preference: INTEGER_PREFERENCE
 
+	dialog_locale_preference: STRING_PREFERENCE
+
 feature -- Preference strings
 
 	confirm_on_terminate_freezing_string: STRING is "interface.dialogs.confirm_on_terminate_freezing"
@@ -359,6 +361,7 @@ feature -- Preference strings
 	starting_dialog_height_preference_string: STRING is "interface.dialogs.starting_dialog_height"
 	open_project_dialog_width_preference_string: STRING is "interface.dialogs.open_project_dialog_width"
 	open_project_dialog_height_preference_string: STRING is "interface.dialogs.open_project_dialog_height"
+	dialog_locale_preference_string: STRING is "interface.dialogs.locale"
 
 feature {NONE} -- Implementation
 
@@ -416,6 +419,7 @@ feature {NONE} -- Implementation
 			starting_dialog_height_preference := l_manager.new_integer_preference_value (l_manager, starting_dialog_height_preference_string, 500)
 			open_project_dialog_width_preference := l_manager.new_integer_preference_value (l_manager, open_project_dialog_width_preference_string, 500)
 			open_project_dialog_height_preference := l_manager.new_integer_preference_value (l_manager, open_project_dialog_height_preference_string, 300)
+			dialog_locale_preference := l_manager.new_string_preference_value(l_manager, dialog_locale_preference_string, "en-US")
 		end
 
 	preferences: PREFERENCES
