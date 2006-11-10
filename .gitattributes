@@ -1,1 +1,4 @@
 * text=auto !eol
+Src/C/CONFIGS/openbsd-x86 -text
+Src/C/rt_converter.exe -text
+Src/C/run-time/include/gc_pthread_redirects.h -text
