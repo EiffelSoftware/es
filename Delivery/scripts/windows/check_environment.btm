@@ -94,3 +94,4 @@ echo Type a key to continue, Ctrl-C or Esc to abort
 pause
 echo Installation parameters are %ISE_EIFFEL, %ISE_PLATFORM, %INSTALL_DIR, %DOCUMENT_DIR >> %INSTALL_LOG
 echo -------------------------------- >> %INSTALL_LOG
+
