@@ -1,11 +1,5 @@
 Global TODO list for the i18n project:
 
-~ fix makefiles (linux working)
-
-~ port Eiffel GUI changes from old project
-* update translations
-* Check naming consistency of HOST_LOCALE notably user/default stuff
-
 Medium/long-term:
 
 * Support for independant formatters
