@@ -24,7 +24,7 @@ OBJS = \
 clean:
 	-del *.obj
 
-net.lib: $(OBJS)
+nls_locale.lib: $(OBJS)
 	$(RM) $@
 	$(AR) -OUT:$@ $(OBJS)
 	$(RANLIB) $@

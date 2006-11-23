@@ -18,9 +18,25 @@ Linux:
 	
 Under Windows for use without .NET:
 
-	Please make sure you have the environment variable ISE_EIFFEL defined.
-	This should have been done during installation of EiffelStudio; if not please refer to it's documentation.  ISE_EIFFEL should point to your EiffelStudio installation.
-	Then, depending on which compiler you have, run either \Clib\make_bcb.bat (for the Borland compiler) or \Clib\make_msc.bat (for Microsoft Visual Studio)
+	Please make sure you have the environment variables ISE_EIFFEL and ISE_C_COMPILER defined.
+	This should have been done during installation of EiffelStudio; if not please refer to it's documentation.  ISE_EIFFEL should point to your EiffelStudio installation and ISE_C_COMPILER should indicate your C compiler ('msc' or 'bcb').
+	If you are using the Borland compiler, you just need to run the 'make_bcb.bat' file in the Clib\ directory.
+	
+	If you are using Microsoft Visual Studio, you'll have to play with environment variables for a bit longer.
+	You can follow the instructions given at http://eiffelsoftware.origo.ethz.ch/index.php/Windows_32-bit_C_compiler , or you can try doing it yourself.
+	In our case this involved:
+		1. Making sure ISE_EIFFEL, ISE_C_COMPILER and ISE_PLATFORM were set.
+		2. Changing the INCLUDE variable to contain something like
+			C:\Program Files\Microsoft Visual Studio .NET 2003\SDK\v1.1\include\;
+			C:\Program Files\Microsoft Visual Studio .NET 2003\Vc7\PlatformSDK\Include;
+			C:\Program Files\Microsoft Visual Studio .NET 2003\Vc7\include;
+		3. Changing the PATH variable to contain something like
+			C:\Program Files\Microsoft Visual Studio .NET 2003\SDK\v1.1\Bin\;
+			C:\Program Files\Microsoft Visual Studio .NET 2003\Vc7\bin;
+			C:\Program Files\Microsoft Visual Studio .NET 2003\Common7\IDE;
+	Once the enviroment variables are set correctly you should be able to run 'make_msc.bat'.
+	Alternatively I suggest using the Borland compiler, as it does not require making sure utilities dispersed across half your hard drive are pointer to in $PATH.
+		
 	
 Under Windows with .NET:
 
