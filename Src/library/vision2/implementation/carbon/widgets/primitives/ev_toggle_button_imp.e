@@ -21,7 +21,9 @@ inherit
 			interface,
 			align_text_center,
 			align_text_left,
-			align_text_right
+			align_text_right,
+			set_pixmap,
+			remove_pixmap
 		end
 
 create
@@ -57,18 +59,27 @@ feature -- Status setting
 		local
 			ret: INTEGER
 		do
-			ret := set_bevel_button_text_alignment_external ( c_object, 1, 20 )
-			-- .. doesn't seem to work - why??
+			ret := set_bevel_button_text_alignment_external ( c_object, 1, 0 )
+			ret := hiview_set_needs_display_external (c_object, 1)
+
 		end
 
 	align_text_left is
 			-- Display `text' left aligned.
+		local
+			ret: INTEGER
 		do
+			ret := set_bevel_button_text_alignment_external ( c_object, -2, 0 )
+			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
 	align_text_right is
 			-- Display `text' right aligned.
+		local
+			ret: INTEGER
 		do
+			ret := set_bevel_button_text_alignment_external ( c_object, -1, 0 )
+			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
 feature -- Status setting
@@ -88,6 +99,25 @@ feature -- Status report
 
 	is_selected: BOOLEAN is
 			-- Is toggle button pressed?
+		do
+		end
+
+
+feature -- Element change
+
+	set_pixmap (a_pixmap: EV_PIXMAP) is
+
+			-- Display image of `a_pixmap' on `Current'.
+			-- Image of `pixmap' will be a copy of `a_pixmap'.
+			-- Image may be scaled in some descendents, i.e EV_TREE_ITEM
+			-- See EV_TREE.set_pixmaps_size.
+
+		do
+		end
+
+	remove_pixmap is
+			-- Remove image displayed on `Current'.
+
 		do
 		end
 
