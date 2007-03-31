@@ -15,6 +15,9 @@ inherit
 		end
 
 	EV_GAUGE_IMP
+		undefine
+			minimum_height,
+			minimum_width
 		redefine
 			interface,
 			make
@@ -59,6 +62,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_SCROLL_BAR;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_SCROLL_BAR_IMP
 

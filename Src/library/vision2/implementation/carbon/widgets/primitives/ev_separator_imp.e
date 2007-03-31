@@ -18,7 +18,9 @@ inherit
 	EV_PRIMITIVE_IMP
 		redefine
 			make,
-			interface
+			interface,
+			minimum_height,
+			minimum_width
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -55,11 +57,17 @@ feature -- Layout handling
 		deferred
 		end
 
+	minimum_height, minimum_width: INTEGER is
+			-- Minimum height/width that the widget may occupy.
+		do
+			Result := 1 -- Hardcoded value
+		end
+
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_SEPARATOR;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_SEPARATOR_IMP
 

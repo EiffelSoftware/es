@@ -91,14 +91,10 @@ feature
 			end
 
 	minimum_width: INTEGER is
-			local
-				a_rect: CGRECT_STRUCT
-				a_size: CGSIZE_STRUCT
-				ret: INTEGER
 			do
 				--Result:= text.count * font.width
 				Result:= text.count * 10 +5
-				io.put_string ("width" + REsult.out + "  ")
+				io.put_string ("width" + Result.out + "  ")
 			end
 
 
@@ -107,6 +103,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_LABEL;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end --class LABEL_IMP
 

@@ -20,9 +20,10 @@ inherit
 			default_alignment
 		redefine
 			make,
-			set_text,
 			interface,
-			initialize
+			initialize,
+			minimum_height,
+			minimum_width
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -36,7 +37,7 @@ create
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
-			-- Create a gtk check button.
+			-- Create a Carbon check button.
 		local
 			ret: INTEGER
 			rect: RECT_STRUCT
@@ -44,8 +45,7 @@ feature {NONE} -- Initialization
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
-			ret := create_check_box_control_external ( null, rect.item, null, 0, 1, $ptr )
-			set_c_object ( ptr )
+			ret := create_check_box_control_external ( null, rect.item, null, 0, 1, $c_object )
 
 			event_id := app_implementation.get_id (current)
 		end
@@ -57,13 +57,30 @@ feature {NONE} -- Initialization
 			align_text_left
 		end
 
-feature -- Element change
+feature -- Minimum Size
 
-	set_text (txt: STRING_GENERAL) is
-			-- Set current button text to `txt'.
-			-- Redefined because we want the text to be left-aligned.
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		local
+			err : INTEGER
+			y: INTEGER
+			rect: RECT_STRUCT
 		do
-			precursor {EV_TOGGLE_BUTTON_IMP}(txt)
+			create rect.make_new_unshared
+			err := get_best_control_rect_external ( c_object, rect.item, $y )
+			Result := rect.bottom - rect.top
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		local
+			err : INTEGER
+			y: INTEGER
+			rect: RECT_STRUCT
+		do
+			create rect.make_new_unshared
+			err := get_best_control_rect_external ( c_object, rect.item, $y )
+			Result := rect.right - rect.left
 		end
 
 feature {EV_ANY_I}
@@ -71,6 +88,6 @@ feature {EV_ANY_I}
 	interface: EV_CHECK_BUTTON;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_CHECK_BUTTON_IMP
 

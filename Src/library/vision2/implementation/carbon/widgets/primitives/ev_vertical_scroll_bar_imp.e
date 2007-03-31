@@ -22,6 +22,26 @@ inherit
 create
 	make
 
+feature -- Minimum size
+
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		do
+			Result := 50
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		local
+			err : INTEGER
+			y: INTEGER
+			rect: RECT_STRUCT
+		do
+			create rect.make_new_unshared
+			err := get_best_control_rect_external ( gauge_ptr, rect.item, $y )
+			Result := rect.right - rect.left
+		end
+
 feature {NONE} -- Layout
 
 	setup_binding ( user_pane, progress_bar : POINTER ) is
@@ -54,6 +74,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_VERTICAL_SCROLL_BAR;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_VERTICAL_SCROLL_BAR_IMP
 

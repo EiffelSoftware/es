@@ -16,7 +16,9 @@ inherit
 
 	EV_PROGRESS_BAR_IMP
 		redefine
-			interface
+			interface,
+			minimum_height,
+			minimum_width
 		end
 
 create
@@ -62,23 +64,23 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		do
+			Result := 15 -- Hardcode, same value as in GTK+
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		do
+			Result := 150 -- Hardcode, same value as in GTK+
+		end
+
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_HORIZONTAL_PROGRESS_BAR;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2007, The Eiffel.Mac Team"
 end -- class EV_HORIZONTAL_PROGRESS_BAR_IMP
 

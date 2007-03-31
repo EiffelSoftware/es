@@ -32,7 +32,9 @@ inherit
 			pre_pick_steps,
 			post_drop_steps,
 			call_pebble_function,
-			on_pointer_motion
+			on_pointer_motion,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_ITEM_LIST_IMP [EV_TREE_NODE]
@@ -194,6 +196,20 @@ feature -- Implementation
 	post_drop_steps (a_button: INTEGER)  is
 			-- Steps to perform once an attempted drop has happened.
 		do
+		end
+
+feature -- Minimum size
+
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		do
+			Result := 74
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		do
+			Result := 55
 		end
 
 feature {EV_TREE_NODE_IMP}

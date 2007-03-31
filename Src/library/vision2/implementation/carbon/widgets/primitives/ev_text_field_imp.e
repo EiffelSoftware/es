@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelVision text field. GTK+ implementation."
+	description: "EiffelVision text field. Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -229,8 +229,8 @@ feature
 				create a_size.make_shared (a_rect.size)
 				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
 				Result := a_size.width.rounded
-				if Result < 0 then
-					Result := 0
+				if Result <= 0 then
+					Result := 50
 				end
 			end
 
@@ -506,6 +506,6 @@ feature {EV_TEXT_FIELD_I} -- Implementation
 			-- functionality implemented by `Current'
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_TEXT_FIELD_IMP
 

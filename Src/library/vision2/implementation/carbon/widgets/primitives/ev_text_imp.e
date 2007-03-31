@@ -1,7 +1,7 @@
 indexing
 
 	description:
-		"EiffelVision text area, gtk implementation."
+		"EiffelVision text area, Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	id: "$Id$"
@@ -26,7 +26,9 @@ inherit
 			create_change_actions,
 			dispose,
 			text_length,
-			default_key_processing_blocked
+			default_key_processing_blocked,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_FONTABLE_IMP
@@ -41,9 +43,11 @@ inherit
 			interface,
 			initialize,
 			default_key_processing_blocked,
-			dispose
+			dispose,
+			minimum_height,
+			minimum_width
 		end
-		
+
 	MACTEXTEDITOR_FUNCTIONS_EXTERNAL
 	HIVIEW_FUNCTIONS_EXTERNAL
 
@@ -189,6 +193,20 @@ feature -- Basic operation
 
 		end
 
+feature -- Minimum size
+
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		do
+			Result := 1 -- Hardcoded, TODO calculate a meaningful height depending on the content
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		do
+			Result := 40 -- Hardcoded, TODO calculate a meaningful width depending on the content
+		end
+
 feature {NONE} -- Implementation
 
 	default_key_processing_blocked (a_key: EV_KEY): BOOLEAN is
@@ -232,18 +250,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_TEXT;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2007, The Eiffel.Mac Team"
 end -- class EV_TEXT_IMP
 

@@ -77,10 +77,10 @@ feature {NONE} -- Initialization
 			base_make (an_interface)
 			create rect.make_new_unshared
 
-			rect.set_right(100)
-			rect.set_left (0)
-			rect.set_top (0)
-			rect.set_bottom(20)
+			--rect.set_right(100)
+			--rect.set_left (0)
+			--rect.set_top (0)
+			--rect.set_bottom(20)
 			ret := create_push_button_control_external( null, rect.item, null, $c_object )
 		end
 
@@ -175,7 +175,7 @@ feature {NONE} -- implementation
 			-- set a boolean value with set_control_data
 		do
 		end
-		
+
 	on_focus_changed (a_has_focus: BOOLEAN) is
 			-- Called from focus intermediary agents when focus for `Current' has changed.
 			-- if `a_has_focus' then `Current' has just received focus.

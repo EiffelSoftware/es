@@ -16,7 +16,9 @@ inherit
 
 	EV_RANGE_IMP
 		redefine
-			interface
+			interface,
+			minimum_height,
+			minimum_width
 		end
 
 create
@@ -49,11 +51,29 @@ feature {NONE} -- Layout
 			]"
 		end
 
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		do
+			Result := 37 -- Hardcoded value, same as GTK+
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		local
+			err : INTEGER
+			y: INTEGER
+			rect: RECT_STRUCT
+		do
+			create rect.make_new_unshared
+			err := get_best_control_rect_external ( gauge_ptr, rect.item, $y )
+			Result := rect.right - rect.left
+		end
+
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_VERTICAL_RANGE;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
-end -- class EV_HORIZONTAL_RANGE_IMP
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
+end -- class EV_VERTICAL_RANGE_IMP
 

@@ -55,6 +55,8 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		local
 			minimum_size : CGSIZE_STRUCT
 			maximum_size : CGSIZE_STRUCT
+			rect : RECT_STRUCT
+			y : INTEGER
 			err : INTEGER
 		do
 			create maximum_size.make_new_unshared
@@ -68,6 +70,8 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		local
 			minimum_size : CGSIZE_STRUCT
 			maximum_size : CGSIZE_STRUCT
+			rect : RECT_STRUCT
+			y : INTEGER
 			err : INTEGER
 		do
 			create maximum_size.make_new_unshared

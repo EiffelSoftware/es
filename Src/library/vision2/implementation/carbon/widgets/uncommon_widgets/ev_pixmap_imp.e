@@ -99,6 +99,8 @@ feature {NONE} -- Initialization
 			ret := hiimage_view_create_external (null, $struct_ptr)
 			set_c_object (struct_ptr)
 			ret := hiview_set_visible_external (struct_ptr, 1)
+			internal_height := 1
+			internal_width := 1
 		end
 
 	initialize is

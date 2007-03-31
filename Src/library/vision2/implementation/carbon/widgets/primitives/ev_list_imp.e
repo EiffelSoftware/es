@@ -26,7 +26,9 @@ inherit
 			row_from_y_coord,
 			on_mouse_button_event,
 			row_height,
-			insert_i_th
+			insert_i_th,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_CARBON_DATABROWSER
@@ -186,7 +188,20 @@ feature {NONE} -- Implementation
 		do
 		end
 
+
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		do
+			Result := 74 -- Hardcoded, TODO calculate a meaningful height depending on the content.
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		do
+			Result := 55 -- Hardcoded, TODO calculate a meaningful width depending on the content
+		end
+
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_LIST_IMP
 

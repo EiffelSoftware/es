@@ -1,6 +1,6 @@
 indexing
 	description:
-		"EiffelVision multi-column-list, implementation interface."
+		"EiffelVision multi-column-list, Carbon implementation."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -34,7 +34,9 @@ inherit
 			ready_for_pnd_menu,
 			set_to_drag_and_drop,
 			create_pointer_motion_actions,
-			on_pointer_motion
+			on_pointer_motion,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_ITEM_LIST_IMP [EV_MULTI_COLUMN_LIST_ROW]
@@ -320,6 +322,20 @@ feature -- Element change
 			item_imp: EV_MULTI_COLUMN_LIST_ROW_IMP
 		do
 
+		end
+
+feature -- Minimum size
+
+	minimum_height: INTEGER is
+			-- Minimum height that the widget may occupy.
+		do
+			Result := 74 -- Hardcoded, TODO calculate a meaningful height depending on the content
+		end
+
+	minimum_width: INTEGER is
+			-- Minimum width that the widget may occupy.
+		do
+			Result := 55 -- Hardcoded, TODO calculate a meaningful width depending on the content
 		end
 
 feature -- Implementation
@@ -707,23 +723,11 @@ feature {EV_ANY_I} -- Implementation
 		end
 
 	scrollable_area: POINTER
-		-- Gtk widget used to scroll tree view
+		-- widget used to scroll tree view
 
 	interface: EV_MULTI_COLUMN_LIST;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2007, The Eiffel.Mac Team"
 end -- class EV_MULTI_COLUMN_LIST_IMP
 
