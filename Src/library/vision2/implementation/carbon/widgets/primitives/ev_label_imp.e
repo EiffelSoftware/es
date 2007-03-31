@@ -84,15 +84,10 @@ feature
 			local
 				a_rect: CGRECT_STRUCT
 				a_size: CGSIZE_STRUCT
-				ret: INTEGER
+				ret, size: INTEGER
 			do
-				create a_rect.make_new_unshared
-				create a_size.make_shared (a_rect.size)
-				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
-				Result := a_size.height.rounded
-				if Result < 0 then
-					Result := 0
-				end
+				ret := get_control_data_size_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolstatictexttextheighttag, $size)
+				ret := get_control_data_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolstatictexttextheighttag, size, $Result, $size)
 			end
 
 	minimum_width: INTEGER is
@@ -101,13 +96,9 @@ feature
 				a_size: CGSIZE_STRUCT
 				ret: INTEGER
 			do
-				create a_rect.make_new_unshared
-				create a_size.make_shared (a_rect.size)
-				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
-				Result := a_size.width.rounded
-				if Result < 0 then
-					Result := 0
-				end
+				--Result:= text.count * font.width
+				Result:= text.count * 10 +5
+				io.put_string ("width" + REsult.out + "  ")
 			end
 
 

@@ -298,17 +298,51 @@ feature -- Element change
 
 feature -- Access
 
+--	minimum_width: INTEGER is
+--			-- Minimum width that the widget may occupy.
+--	do
+--		Result := width
+--		if Result < 1 then
+--			Result := 1
+--		end
+--	end
+
+--	minimum_height: INTEGER is
+--			-- Minimum width that the widget may occupy.
+--	do
+--		Result := width
+--		if Result < 1 then
+--			Result := 1
+--		end
+--	end
+
 	minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
-	do
-		Result := internal_width
-	end
+		local
+			minimum_size : CGSIZE_STRUCT
+			maximum_size : CGSIZE_STRUCT
+			err : INTEGER
+		do
+			create maximum_size.make_new_unshared
+			create minimum_size.make_new_unshared
+			err := hiview_get_size_constraints_external ( c_object, minimum_size.item, maximum_size.item )
+			Result := minimum_size.width.rounded
+
+			io.put_string ("min wid: " + Result.out + " %N")
+		end
 
 	minimum_height: INTEGER is
 			-- Minimum width that the widget may occupy.
-	do
-		Result := internal_height
-	end
+		local
+			minimum_size : CGSIZE_STRUCT
+			maximum_size : CGSIZE_STRUCT
+			err : INTEGER
+		do
+			create maximum_size.make_new_unshared
+			create minimum_size.make_new_unshared
+			err := hiview_get_size_constraints_external ( c_object, minimum_size.item, maximum_size.item )
+			Result := minimum_size.height.rounded
+		end
 
 	image_ptr: POINTER
 
