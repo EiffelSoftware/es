@@ -146,7 +146,8 @@ feature -- Element change
 				ret := hiview_set_frame_external (container, rect.item)
 				ret := hiview_add_subview_external ( container, w.c_object )
 
-				get_child_size (w.c_object, container )
+				alligne_to_child_size (w.c_object, container )
+
 				check
 					view_added: ret = 0
 				end
@@ -159,23 +160,32 @@ feature -- Element change
 		end
 
 	setup_layout (a_widget: EV_WIDGET_IMP) is
+
+				-- set the container size to at least the size of the viewport
 				-- Sets the child control's size to the container site minus some spacing
 		local
-			a_rect : CGRECT_STRUCT
-			a_size : CGSIZE_STRUCT
+			v_rect, c_rect : CGRECT_STRUCT
+			v_size, c_size : CGSIZE_STRUCT
 			a_point : CGPOINT_STRUCT
 			ret: INTEGER
 		do
 			-- Get initial positions right
-			--create a_rect.make_new_unshared
-			--create a_size.make_shared ( a_rect.size )
-			--create a_point.make_shared ( a_rect.origin )
+			create v_rect.make_new_unshared
+			create c_rect.make_new_unshared
+			create v_size.make_shared ( v_rect.size )
+			create c_size.make_shared ( c_rect.size )
 
-			--a_point.set_x (5)
-			--a_point.set_y (child_offset_top)
-			--a_size.set_width (width - 10)
-			--a_size.set_height (height - 8 - child_offset_top)
-			--ret := hiview_set_frame_external (a_widget.c_object, a_rect.item)
+			ret := hiview_get_frame_external (viewport, v_rect.item)
+			ret := hiview_get_frame_external (viewport, c_rect.item)
+
+			if v_size.height > c_size.height then
+				c_size.set_height (v_size.height)
+			end
+			if v_size.width > c_size.width then
+				c_size.set_width (v_size.width)
+			end
+
+			ret := hiview_set_frame_external (container, c_rect.item)
 
 			setup_automatic_layout (a_widget.c_object, c_object)
 		end
@@ -257,8 +267,8 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	get_child_size (a_control, a_child : POINTER) is
-			-- What does this do?
+	alligne_to_child_size (a_child ,a_control : POINTER) is
+			-- Auto allignes the child to its control
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -266,19 +276,19 @@ feature {NONE} -- Implementation
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
+					HIViewGetLayoutInfo ($a_child, &LayoutInfo);
 					
-					LayoutInfo.scale.x.toView = $a_child;
+					LayoutInfo.scale.x.toView = $a_control;
 					LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
 					LayoutInfo.scale.x.ratio = 1;
 					
-					LayoutInfo.scale.y.toView = $a_child;
+					LayoutInfo.scale.y.toView = $a_control;
 					LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
 					LayoutInfo.scale.y.ratio = 1;
 
 
-					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
-					HIViewApplyLayout( $a_control );
+					HIViewSetLayoutInfo( $a_child, &LayoutInfo );
+					HIViewApplyLayout( $a_child );
 				}
 			]"
 		end
