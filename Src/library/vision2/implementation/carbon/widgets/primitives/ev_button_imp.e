@@ -38,9 +38,6 @@ inherit
 		redefine
 			interface,
 			initialize,
-			align_text_left,
-			align_text_center,
-			align_text_right,
 			set_text
 		end
 
@@ -71,7 +68,7 @@ feature {NONE} -- Initialization
 			-- Connect interface and initialize `c_object'.
 		local
 			ret: INTEGER
-			rect: RECT_STRUCT
+			rect: RECT_STRUCT;
 			ptr: POINTER
 		do
 			base_make (an_interface)
@@ -107,17 +104,8 @@ feature -- Access
 
 feature -- Status Setting
 
-	align_text_center is
-			-- Display `text' centered.
-		do		end
 
-	align_text_left is
-			-- Display `text' left aligned.
-		do		end
 
-	align_text_right is
-			-- Display `text' right aligned.
-		do		end
 
 	enable_default_push_button is
 			-- Set the style of the button corresponding
@@ -156,6 +144,7 @@ feature -- Status Setting
 			end
 
 
+
 feature {NONE} -- implementation
 
 	internal_set_pixmap (a_pixmap_imp: EV_PIXMAP_IMP; a_width, a_height: INTEGER) is
@@ -163,7 +152,8 @@ feature {NONE} -- implementation
 		local
 			ret: INTEGER
 		do
-			ret := set_carbon_button_picture (c_object, a_pixmap_imp.drawable)
+
+
 		end
 
 	internal_remove_pixmap is
@@ -204,6 +194,7 @@ feature {EV_ANY_I} -- implementation
 	interface: EV_BUTTON;
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'
+
 
 
 indexing

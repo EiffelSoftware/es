@@ -96,6 +96,10 @@ feature
 				Result:= text.count * 10 +5
 				io.put_string ("width" + Result.out + "  ")
 			end
+feature -- status setting
+
+
+
 
 
 feature {EV_ANY_I} -- Implementation

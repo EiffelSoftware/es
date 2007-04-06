@@ -72,21 +72,39 @@ feature -- Status setting
 			cfs: CONTROL_FONT_STYLE_REC_STRUCT
 		do
 			create cfs.make_new_unshared
-			cfs.set_just (-1)
+			cfs.set_flags (64)
+			cfs.set_just (1)
 			ret := set_control_font_style_external (c_object, cfs.item)
 			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center
+			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
 	align_text_left is
 			-- Display `text' left aligned.
+		local
+			ret: INTEGER
+			cfs: CONTROL_FONT_STYLE_REC_STRUCT
 		do
-			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_left
+			create cfs.make_new_unshared
+			cfs.set_flags (64)
+			cfs.set_just (-2)
+			ret := set_control_font_style_external (c_object, cfs.item)
+			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center
+			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
 	align_text_right is
 			-- Display `text' right aligned.
+				local
+			ret: INTEGER
+			cfs: CONTROL_FONT_STYLE_REC_STRUCT
 		do
-			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_right
+			create cfs.make_new_unshared
+			cfs.set_flags (64)
+			cfs.set_just (-1)
+			ret := set_control_font_style_external (c_object, cfs.item)
+			is_aligned := {EV_TEXT_ALIGNMENT_CONSTANTS}.ev_text_alignment_center
+			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
 feature -- Element change	
