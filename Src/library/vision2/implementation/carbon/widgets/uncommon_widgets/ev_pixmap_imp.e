@@ -329,8 +329,6 @@ feature -- Access
 			create minimum_size.make_new_unshared
 			err := hiview_get_size_constraints_external ( c_object, minimum_size.item, maximum_size.item )
 			Result := minimum_size.width.rounded
-
-			io.put_string ("min wid: " + Result.out + " %N")
 		end
 
 	minimum_height: INTEGER is

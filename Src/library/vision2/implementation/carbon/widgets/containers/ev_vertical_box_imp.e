@@ -169,11 +169,13 @@ feature -- Implementation
 					a_point.set_x ( 0 )
 					a_point.set_y ( last_y + padding )
 					a_size.set_width ( width )
+
 					if w1.expandable or is_homogeneous then
 						a_size.set_height ( control_height )
 					else
 						a_size.set_height ( w1.minimum_height )
 					end
+
 
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
 					last_y := (a_point.y + a_size.height).rounded
@@ -252,6 +254,7 @@ feature {NONE} -- Events
 			w_imp : EV_WIDGET_IMP
 			control_width, control_height :INTEGER
 			expandable_height, non_expandable_height : INTEGER
+			but : EV_BUTTON_IMP
 		do
 			-- Calculate height of all controls
 			from
@@ -259,6 +262,16 @@ feature {NONE} -- Events
 			until
 				off
 			loop
+				--but ?= item.implementation
+				--if but /=void then
+				--	but.set_expandable (false)
+				--	if but.expandable then
+				--		io.put_string ("button is expa           ")
+				--	else
+				--		io.put_string ("button is not expa         ")
+				--	end
+				--end
+
 				w_imp ?= item.implementation
 				check
 					w_imp_not_void : w_imp /= Void
@@ -287,7 +300,7 @@ feature {NONE} -- Events
 					forth
 				end
 			else
-				control_height := ( (height - non_expandable_height - expandable_height) / expandable_item_count ).rounded
+				control_height := ( (height - non_expandable_height - expandable_height - 5) / expandable_item_count ).rounded
 				if control_height < 0 then
 					control_height := 0
 				end

@@ -24,7 +24,9 @@ inherit
 		redefine
 			interface,
 			initialize,
-			child_offset_top
+			child_offset_top,
+			minimum_height,
+			minimum_width
 		end
 
 	EV_FONTABLE_IMP
@@ -71,6 +73,7 @@ feature {NONE} -- Initialization
 		do
 		--	set_style (Ev_frame_etched_in)
 			align_text_left
+			font.set_height (12)
 			Precursor {EV_CELL_IMP}
 		end
 
@@ -99,6 +102,35 @@ feature -- Element change
 	set_style (a_style: INTEGER) is
 			-- Assign `a_style' to `style'.
 		do
+		end
+
+	minimum_width: INTEGER is
+		local
+			a,b: INTEGER
+		do
+			a := internal_minimum_width
+			if item /= void then
+				b := item.minimum_width.max (font.width * text.count)
+			else
+				b := (Precursor {EV_CELL_IMP}).max(font.width * text.count)
+			end
+			Result := a.max (b)
+
+		end
+
+	minimum_height: INTEGER is
+		local
+			a,b: INTEGER
+		do
+			a := internal_minimum_height
+			if item /= void then
+				b := item.minimum_height + font.width * text.count + 3
+			else
+				b := (Precursor {EV_CELL_IMP})
+			end
+			Result := a.max (b)
+
+
 		end
 
 feature {EV_ANY_I} -- Implementation

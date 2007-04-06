@@ -142,7 +142,12 @@ feature -- Element change
 				w ?= v.implementation
 
 				ret := hiview_get_frame_external (w.c_object, v_rect.item)
-				rect.set_size (v_rect.size.item)
+
+				--rect.set_size (v_rect.size.item)
+				size.set_height (w.minimum_height)
+				size.set_width (w.minimum_width)
+
+
 				ret := hiview_set_frame_external (container, rect.item)
 				ret := hiview_add_subview_external ( container, w.c_object )
 

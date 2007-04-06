@@ -146,16 +146,20 @@ feature -- Implementation
 				size_control_external ( c_object, expandable_width + non_expandable_width + (count-1)*padding, height )
 			end
 
-			if is_homogeneous then
-				control_width := ( width - (count-1)*padding ) / count
-			end
 
-			from
-				start
-				last_x := -padding
-			until
-				off
-			loop
+
+
+			-- I don't understand why the wontrol_width calculation is different then by bounds_changed. I did it now the same way.
+				control_width := ( (width - non_expandable_width - expandable_width) / expandable_item_count ).rounded
+				if control_width < 0 then
+					control_width := 0
+				end
+				from
+					start
+					last_x := -padding
+				until
+					off
+				loop
 					w1 ?= item.implementation
 					check
 						w1_not_void : w1 /= Void
@@ -163,17 +167,49 @@ feature -- Implementation
 
 					a_point.set_x ( last_x + padding )
 					a_point.set_y ( 0 )
+
+					a_size.set_height ( height )
 					if w1.expandable or is_homogeneous then
-						a_size.set_width ( control_width )
+						a_size.set_width ( w1.minimum_width + control_width)
 					else
 						a_size.set_width ( w1.minimum_width )
 					end
-					a_size.set_height ( height )
 
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
 					last_x := (a_point.x + a_size.width).rounded
+
+
 					forth
-			end
+				end
+
+--			if is_homogeneous then
+--				control_width := ( width - (count-1)*padding ) / count
+--			end
+
+--			from
+--				start
+--				last_x := -padding
+--			until
+--				off
+--			loop
+--					w1 ?= item.implementation
+--					check
+--						w1_not_void : w1 /= Void
+--					end
+
+--					a_point.set_x ( last_x + padding )
+--					a_point.set_y ( 0 )
+--					if w1.expandable or is_homogeneous then
+--						a_size.set_width ( control_width )
+--					else
+--						a_size.set_width ( w1.minimum_width )
+--					end
+--					a_size.set_height ( height )
+
+--					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
+--					last_x := (a_point.x + a_size.width).rounded
+--					forth
+--			end
 
 			-- Bind control positions
 			w2 ?= i_th ( 1 ).implementation

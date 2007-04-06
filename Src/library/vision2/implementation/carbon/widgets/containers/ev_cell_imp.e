@@ -74,22 +74,31 @@ feature -- Element change
 feature -- Measurement
 
 	minimum_width: INTEGER is
+		local
+			a,b: INTEGER
 		do
+			a := internal_minimum_width
 			if item /= void then
-				Result := item.minimum_width + 20
+				b := item.minimum_width +20
 			else
-				Result := Precursor {EV_CONTAINER_IMP} +20
+				b := (Precursor {EV_CONTAINER_IMP} +20)
 			end
+			Result := a.max (b)
 
 		end
 
 	minimum_height: INTEGER is
+		local
+			a,b: INTEGER
 		do
+			a := internal_minimum_height
 			if item /= void then
-				Result := item.minimum_height + 40
+				b := item.minimum_height + 20
 			else
-				Result := Precursor {EV_CONTAINER_IMP} + 20
+				b := (Precursor {EV_CONTAINER_IMP} +20)
 			end
+			Result := a.max (b)
+
 		end
 
 feature {EV_ANY_I} -- Implementation
