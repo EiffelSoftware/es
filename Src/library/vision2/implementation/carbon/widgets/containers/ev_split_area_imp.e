@@ -150,6 +150,7 @@ set_second (an_item: like item) is
 			-- Remove `an_item' if present from `Current'.
 		local
 			item_imp: EV_WIDGET_IMP
+			ret : INTEGER
 		do
 			if has (an_item) and then an_item /= Void then
 				item_imp ?= an_item.implementation
@@ -170,6 +171,7 @@ set_second (an_item: like item) is
 						set_item_resize (first, True)
 					end
 				end
+				ret := hiview_remove_from_superview_external (item_imp.c_object)
 			end
 		end
 

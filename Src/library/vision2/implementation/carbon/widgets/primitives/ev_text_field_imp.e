@@ -228,7 +228,7 @@ feature
 				create a_rect.make_new_unshared
 				create a_size.make_shared (a_rect.size)
 				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
-				Result := a_size.width.rounded
+				Result := a_size.width.rounded + 10
 				if Result <= 0 then
 					Result := 50
 				end

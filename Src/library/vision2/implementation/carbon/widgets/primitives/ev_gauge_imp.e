@@ -58,7 +58,7 @@ feature {NONE} -- Initialization
 			value_range.change_actions.extend (agent set_range)
 			set_range
 		end
-	
+
 
 feature -- Access
 

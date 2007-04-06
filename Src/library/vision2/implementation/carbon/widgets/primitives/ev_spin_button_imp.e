@@ -94,7 +94,7 @@ feature {NONE} -- Implementation
 
 			rect.set_left (4)
 			rect.set_right (82)
-			rect.set_bottom (24)
+			rect.set_bottom (20)
 			rect.set_top (4)
 			ret := create_edit_unicode_text_control_external (null,rect.item, null,0, NULL, $entry_widget)
 			ret := set_control_data_boolean (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroledittextsinglelinetag, true)
@@ -106,6 +106,7 @@ feature {NONE} -- Implementation
 			text_binding (entry_widget)
 			ret := hiview_add_subview_external (c_object, gauge_ptr)
 			gauge_binding (gauge_ptr)
+			setup_binding (entry_widget, gauge_ptr)
 
 
 			event_id := app_implementation.get_id (current)
@@ -115,21 +116,25 @@ feature {NONE} -- Implementation
 		local
 			target, h_ret: POINTER
 		do
+
 			Precursor {EV_TEXT_FIELD_IMP}
 			ev_gauge_imp_initialize --| {EV_GAUGE} Precursor
 			target := get_control_event_target_external( gauge_ptr )
 			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown )
+			set_text (internal_value.out)
 
 		end
 
 	value: INTEGER is
 			-- Current value of the gauge.
 		do
-			if text /= void and then text.is_integer_32 then
-				Result := text.to_integer
-			else
-				Result := ((value_range.upper + value_range.lower) /2).rounded
-			end
+			--if text /= void and then text.is_integer_32 then
+			--	Result := text.to_integer
+			--else
+			--	Result := ((value_range.upper + value_range.lower) /2).rounded
+			--end
+
+			Result := internal_value
 		end
 
 feature {NONE}--binding
@@ -149,9 +154,13 @@ feature {NONE}--binding
 					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
 					LayoutInfo.binding.left.offset = 4;
 					
-					LayoutInfo.binding.right.toView = NULL;
-					LayoutInfo.binding.right.kind = kHILayoutBindRight;
-					LayoutInfo.binding.right.offset = 24;
+			//		LayoutInfo.binding.right.toView = NULL;
+			//		LayoutInfo.binding.right.kind = kHILayoutBindRight;
+			//		LayoutInfo.binding.right.offset = 24;
+					
+					LayoutInfo.binding.top.toView = NULL;
+					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+					LayoutInfo.binding.top.offset = 0;
 					
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 					HIViewApplyLayout( $a_control );
@@ -167,15 +176,54 @@ feature {NONE}--binding
 				{
 					HILayoutInfo LayoutInfo;
 					LayoutInfo.version = kHILayoutInfoVersionZero;
-					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
-										
+					HIViewGetLayoutInfo ($a_control, &LayoutInfo);									
 					
 					LayoutInfo.binding.right.toView = NULL;
 					LayoutInfo.binding.right.kind = kHILayoutBindRight;
 					LayoutInfo.binding.right.offset = 2;
 					
+					LayoutInfo.binding.top.toView = NULL;
+					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+					LayoutInfo.binding.top.offset = 0;
+					
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 					HIViewApplyLayout( $a_control );
+				}
+			]"
+		end
+
+		setup_binding ( left_control, right_control : POINTER ) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo( $left_control, &LayoutInfo );
+					
+					
+					// always allign to the box in y-direction
+		//			LayoutInfo.position.y.toView = NULL;
+		//			LayoutInfo.position.y.kind = kHILayoutPositionTop;
+		//			LayoutInfo.position.y.offset = 0.0;	
+					
+					if ( $right_control != NULL )
+					{
+						// Bind to right control (maintain padding)
+						LayoutInfo.binding.right.toView = $right_control;
+						LayoutInfo.binding.right.kind = kHILayoutBindLeft;
+						LayoutInfo.binding.right.offset = 0;
+					}
+					else
+					{
+						// for leftmost control
+						LayoutInfo.position.x.toView = NULL;
+						LayoutInfo.position.x.kind = kHILayoutPositionLeft;
+						LayoutInfo.position.x.offset = 0.0;
+					}
+					HIViewSetLayoutInfo( $left_control, &LayoutInfo );
+					HIViewApplyLayout( $left_control );
 				}
 			]"
 		end
@@ -186,6 +234,7 @@ feature -- Element change
 	set_value (a_value: INTEGER) is
 			-- Set `value' to `a_value'.
 		do
+			internal_value := a_value
 			set_text (a_value.out)
 		ensure then
 			step_same: step = old step
@@ -285,8 +334,9 @@ feature {NONE} -- Implementation
 
 	minimum_width: INTEGER_32 is
 			do
-				--Result := 106
-				Result := Precursor {EV_GAUGE_IMP} + Precursor {EV_TEXT_FIELD_IMP}
+				--Ueli: Hardcoded for Widgets Example
+				Result := 50
+				--Result := Precursor {EV_GAUGE_IMP} + Precursor {EV_TEXT_FIELD_IMP}
 			end
 
 
@@ -303,6 +353,8 @@ feature {NONE} -- Implementation
 		do
 			precursor {EV_TEXT_FIELD_IMP} (a_text)
 		end
+
+	internal_value : INTEGER
 
 
 feature {EV_ANY_I} -- Implementation
