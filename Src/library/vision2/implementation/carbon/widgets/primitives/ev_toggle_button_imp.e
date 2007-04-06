@@ -69,7 +69,7 @@ feature -- Status setting
 		local
 			ret: INTEGER
 		do
-			ret := set_bevel_button_text_alignment_external ( c_object, -2, 0 )
+			ret := set_bevel_button_text_alignment_external ( c_object, -2, 20 )
 			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
@@ -78,7 +78,7 @@ feature -- Status setting
 		local
 			ret: INTEGER
 		do
-			ret := set_bevel_button_text_alignment_external ( c_object, -1, 0 )
+			ret := set_bevel_button_text_alignment_external ( c_object, -1, 20 )
 			ret := hiview_set_needs_display_external (c_object, 1)
 		end
 
@@ -116,6 +116,8 @@ feature -- Element change
 			ret: INTEGER
 			pixmap_imp: EV_PIXMAP_IMP
 		do
+
+			-- First load the pixmap into the button
 			pixmap_imp ?= a_pixmap.implementation
 
 			if
@@ -125,17 +127,35 @@ feature -- Element change
 													{CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolbuttonpart,
 													{CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolbevelbuttoncontenttag,
 													pixmap_imp.drawable)
-
+				ret := set_bevel_button_graphic_alignment_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolbevelbuttonalignleft, 0, 0)
 				ret := hiview_set_needs_display_external (c_object, 1)
 			end
 
+			-- Then move the text to the right
+			align_text_right
 
 		end
 
 	remove_pixmap is
 			-- Remove image displayed on `Current'.
 
+			local
+			ret: INTEGER
+			pixmap_imp: EV_PIXMAP_IMP
 		do
+
+			-- First remove the pixmap from the button
+
+			ret := set_control_data_picture		(c_object,
+												{CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolbuttonpart,
+												{CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolbevelbuttoncontenttag,
+												NULL)
+
+			ret := hiview_set_needs_display_external (c_object, 1)
+
+
+			-- Then put the text into the center
+			align_text_center
 		end
 
 
