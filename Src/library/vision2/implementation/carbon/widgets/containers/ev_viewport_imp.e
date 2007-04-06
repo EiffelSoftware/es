@@ -191,12 +191,13 @@ feature -- Element change
 			end
 
 			ret := hiview_set_frame_external (container, c_rect.item)
-
-			setup_automatic_layout (a_widget.c_object, c_object)
 		end
 
+
+
 		setup_automatic_layout (a_control, a_container: POINTER) is
-				-- Make the child follow it's parent when it's reszed
+				-- Make the child follow it's parent when it's resized
+				-- we dont use this feature yet!!
 			external
 				"C inline use <Carbon/Carbon.h>"
 			alias
