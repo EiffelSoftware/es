@@ -379,7 +379,7 @@ feature {EV_ANY_I, EV_GTK_DEPENDENT_APPLICATION_IMP} -- Implementation
 		do
 		end
 
-feature {EV_ANY_I} -- Implementation
+feature {EV_ANY_I, EV_ANY_IMP} -- Implementation
 
 	drawable: POINTER
 			-- Pointer to the GdkPixmap image data.

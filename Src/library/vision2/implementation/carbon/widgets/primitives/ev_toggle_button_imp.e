@@ -112,13 +112,50 @@ feature -- Element change
 			-- Image may be scaled in some descendents, i.e EV_TREE_ITEM
 			-- See EV_TREE.set_pixmaps_size.
 
+		local
+			ret: INTEGER
+			pixmap_imp: EV_PIXMAP_IMP
 		do
+			pixmap_imp ?= a_pixmap.implementation
+
+			if
+				pixmap_imp /= Void
+			then
+				ret := set_control_data_picture 	(c_object,
+													{CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolbuttonpart,
+													{CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolbevelbuttoncontenttag,
+													pixmap_imp.drawable)
+
+				ret := hiview_set_needs_display_external (c_object, 1)
+			end
+
+
 		end
 
 	remove_pixmap is
 			-- Remove image displayed on `Current'.
 
 		do
+		end
+
+
+--feature -- Helper features
+
+	set_control_data_picture (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; inpixmap: POINTER): INTEGER is
+			-- set a boolean value with set_control_data
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					
+				 	ControlButtonContentInfo contentinfo;
+				 	contentinfo.contentType = kControlContentCGImageRef;
+				 	contentinfo.u.imageRef = $inpixmap;
+				 	
+					return SetControlData( $incontrol, $inpart, $intagname, sizeof(contentinfo), &contentinfo);
+				}
+			]"
 		end
 
 feature {EV_ANY_I}
