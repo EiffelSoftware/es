@@ -66,6 +66,9 @@ feature {NONE} -- Initialization
 			align_text_center
 
 			event_id := app_implementation.get_id (current)
+
+			expandable := false
+
 		end
 
 feature -- Access

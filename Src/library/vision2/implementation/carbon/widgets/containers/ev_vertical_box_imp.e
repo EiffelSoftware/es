@@ -74,7 +74,8 @@ feature -- Measturement
 			b := b.max(item.minimum_width)
 			forth
 		end
-		Result := a.max (b) + 20
+		b := b + (count-1)*padding
+		Result := a.max (b) + 5
 	end
 
 	minimum_height: INTEGER is
