@@ -49,7 +49,8 @@ inherit
 			set_text,
 			dispose,
 			on_event,
-			on_change_actions
+			on_change_actions,
+			text_binding
 		end
 	EV_CARBON_EVENTABLE
 		redefine

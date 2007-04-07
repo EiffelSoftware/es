@@ -66,41 +66,73 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_interface: like interface) is
+--	make (an_interface: like interface) is
 			-- Create a gtk entry.
+--		local
+--			ret: INTEGER
+--			struct_ptr: POINTER
+--			buffer: C_STRING
+--			point : CGPOINT_STRUCT
+--			size : CGSIZE_STRUCT
+--			rect : CGRECT_STRUCT
+--			a_string: C_STRING
+--			ptr: POINTER
+--			p_rect: RECT_STRUCT
+--		do
+--			base_make (an_interface)
+
+--			create point.make_new_unshared
+--			create rect.make_new_unshared
+--			create size.make_new_unshared
+
+--			size.set_height(18)
+--			size.set_width (100)
+--			point.set_x (0)
+--			point.set_y (0)
+--			rect.set_origin (point.item)
+--			rect.set_size (size.item)
+
+--			ret := create_edit_unicode_text_control_external (null,rect.item, null,0, NULL, $c_object)
+--			ret := set_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroledittextsinglelinetag, true)
+
+--			ret := hiview_set_visible_external (c_object, 1)
+--			ret := hiview_set_frame_external (c_object, rect.item)
+
+--			event_id := app_implementation.get_id (current)  --getting an id from the application
+
+--			entry_widget := c_object
+
+--		end
+
+		make (an_interface: like interface) is
+			-- Create Textfield on a user_pane
 		local
 			ret: INTEGER
-			struct_ptr: POINTER
-			buffer: C_STRING
-			point : CGPOINT_STRUCT
-			size : CGSIZE_STRUCT
-			rect : CGRECT_STRUCT
-			a_string: C_STRING
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
 			base_make (an_interface)
-
-			create point.make_new_unshared
 			create rect.make_new_unshared
-			create size.make_new_unshared
+			rect.set_left (0)
+			rect.set_right (106)
+			rect.set_bottom (26)
+			rect.set_top (0)
+			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $c_object )
 
-			size.set_height(18)
-			size.set_width (100)
-			point.set_x (0)
-			point.set_y (0)
-			rect.set_origin (point.item)
-			rect.set_size (size.item)
+			rect.set_left (4)
+			rect.set_right (102)
+			rect.set_bottom (20)
+			rect.set_top (4)
+			ret := create_edit_unicode_text_control_external (null,rect.item, null,0, NULL, $entry_widget)
+			ret := set_control_data_boolean (entry_widget, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroledittextsinglelinetag, true)
 
-			ret := create_edit_unicode_text_control_external (null,rect.item, null,0, NULL, $c_object)
-			ret := set_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroledittextsinglelinetag, true)
+			ret := hiview_set_visible_external (entry_widget, 1)
+			ret := hiview_add_subview_external (c_object, entry_widget)
+			text_binding (entry_widget)
 
-			ret := hiview_set_visible_external (c_object, 1)
-			ret := hiview_set_frame_external (c_object, rect.item)
-
-			event_id := app_implementation.get_id (current)  --getting an id from the application
-
-			entry_widget := c_object
-
+			event_id := app_implementation.get_id (current)
 		end
+
 
 	initialize is
 			-- `Precursor' initialization,
@@ -113,6 +145,41 @@ feature {NONE} -- Initialization
 			target := get_control_event_target_external( entry_widget )
 			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.keventclasstextinput, {CARBONEVENTS_ANON_ENUMS}.keventtextinputunicodeforkeyevent )
 			expandable := false
+		end
+
+feature {NONE}--binding
+
+		text_binding (a_control : POINTER) is
+			-- What does this do?
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo ($a_control, &LayoutInfo);
+										
+					LayoutInfo.binding.left.toView = NULL;
+					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+					LayoutInfo.binding.left.offset = 4;
+					
+					LayoutInfo.binding.right.toView = NULL;
+					LayoutInfo.binding.right.kind = kHILayoutBindRight;
+					LayoutInfo.binding.right.offset = 4;
+					
+					LayoutInfo.binding.top.toView = NULL;
+					LayoutInfo.binding.top.kind = kHILayoutBindTop;
+					LayoutInfo.binding.top.offset = 4;
+					
+				//	LayoutInfo.binding.bottom.toView = NULL;
+				//	LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+				//	LayoutInfo.binding.bottom.offset = 4;
+					
+					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+					HIViewApplyLayout( $a_control );
+				}
+			]"
 		end
 
 feature -- Access
@@ -212,8 +279,8 @@ feature
 			do
 				create a_rect.make_new_unshared
 				create a_size.make_shared (a_rect.size)
-				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
-				Result := a_size.height.rounded
+				ret := hiview_get_optimal_bounds_external (entry_widget, a_rect.item, null)
+				Result := a_size.height.rounded + 8
 				if Result < 0 then
 					Result := 0
 				end
@@ -227,12 +294,13 @@ feature
 			do
 				create a_rect.make_new_unshared
 				create a_size.make_shared (a_rect.size)
-				ret := hiview_get_optimal_bounds_external (c_object, a_rect.item, null)
-				Result := a_size.width.rounded + 10
+				ret := hiview_get_optimal_bounds_external (entry_widget, a_rect.item, null)
+				Result := a_size.width.rounded + 8
 				if Result <= 0 then
 					Result := 50
 				end
 			end
+
 
 feature -- Status report
 
@@ -458,45 +526,13 @@ on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER
 	end
 
 
---		get_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER): INTEGER is
---			-- get a boolean value with get_control_data
---			-- Resturns >0 if result was true, =0 if false, <0 if an error occured
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp;
---				 	Size ActualSize;
---					OSErr res = GetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp, &ActualSize );
---					if ( ActualSize == sizeof(temp) )
---						return temp;
---					else
---						return res;
---				}
---			]"
---		end
-
---		set_control_data_boolean (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER;  value : BOOLEAN): INTEGER is
---			-- set a boolean value with set_control_data
---		external
---			"C inline use <Carbon/Carbon.h>"
---		alias
---			"[
---				{
---				 	Boolean temp = $value;
---					return SetControlData( $incontrol, $inpart, $intagname, sizeof(temp), &temp );
---				}
---			]"
---		end
-
 	entry_widget: POINTER
 		-- A pointer on the text field
 
 	visual_widget: POINTER is
 			-- Pointer to the widget shown on screen.
 		do
-			Result := entry_widget
+			Result := c_object
 		end
 
 feature {EV_TEXT_FIELD_I} -- Implementation

@@ -74,7 +74,7 @@ feature -- Measturement
 			b := b.max(item.minimum_width)
 			forth
 		end
-		Result := a.max (b)
+		Result := a.max (b) + 20
 	end
 
 	minimum_height: INTEGER is
@@ -92,6 +92,7 @@ feature -- Measturement
 			b := b + item.minimum_height
 			forth
 		end
+		b := b + (count-1) * padding
 		Result := a.max (b) + 20
 	end
 

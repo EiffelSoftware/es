@@ -124,7 +124,7 @@ feature -- Element change
 		do
 			a := internal_minimum_height
 			if item /= void then
-				b := item.minimum_height + font.width * text.count + 3
+				b := item.minimum_height + font.width * text.count + 5
 			else
 				b := (Precursor {EV_CELL_IMP})
 			end
