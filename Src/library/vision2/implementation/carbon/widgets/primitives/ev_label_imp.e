@@ -63,6 +63,7 @@ feature {NONE} -- Initialization
 
 			ret := create_static_text_control_external( null, rect.item, null, null, $ptr )
 			set_c_object ( ptr )
+			align_text_center
 
 			event_id := app_implementation.get_id (current)
 		end
