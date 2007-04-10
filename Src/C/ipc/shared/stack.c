@@ -333,7 +333,8 @@ rt_private void init_var_dump(struct dcall *call)
  * Go down the stack. This is done before dumping the locals and the      *
  * arguments of a feature located on level `level' down the stack         *
  **************************************************************************/
-rt_private uint32 go_ith_stack_level(int level)
+//rt_private uint32 go_ith_stack_level(int level)
+rt_public uint32 go_ith_stack_level(int level) //SIES
 	{
 	EIF_GET_CONTEXT
 
