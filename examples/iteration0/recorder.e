@@ -26,14 +26,14 @@ feature -- Duplication
 
 feature -- Miscellaneous
 
-	capturearguments (first_argument: POINTER; argument_count: INTEGER_32)
+	capture_arguments (argument_count: INTEGER_32)
 			--captures all 'argument_count' arguments of a method call, where
 			--'first_argument' points to the first (i.e leftmost) of them.
 		require
-			first_argument_not_void: first_argument /= Void
-			argument_count_valid: argument_count > 0
+			argument_count_valid: argument_count >= 0
 		local
 			i: INTEGER_32
+			offset: INTEGER_32
 		do
 			from
 				i := 0
@@ -41,21 +41,22 @@ feature -- Miscellaneous
 				i >= argument_count
 			loop
 				print ("Capture Arguments:" + i.out + "%N")
-				captureobject (get_argument (first_argument, i))
+				--1== 'get_argument'
+				--2 == 'capture_arguments'
+				--3 == 'methodbodystart' YES!!!
+				--4 == observed method.
+				capture_object (get_argument (4, i))--methodbodystart, this method  and get_argument down the stack...
 				i := i + 1
 			end
 		end
 
-	captureobject (obj: ANY)
+	capture_object (obj: ANY)
 			--captures one object.
 		require
 		local
 			test: INTERNAL
 			id: IDENTIFIED
 		do
-			--create test.make
-
-			--test.
 
 			if obj = Void then
 				print("Void")
@@ -70,12 +71,12 @@ feature -- Miscellaneous
 			end
 		end
 
-	get_argument (first_argument: POINTER; i: INTEGER_32): ANY
-			--Returns the 'i'th argument of a feature call or void if the Argument is an
-			--expanded type.'first_argument' points to
-			--the first argument of the feature call.
+	get_argument (stack_level: INTEGER_32; i: INTEGER_32): ANY
+			--Returns the 'i'th argument of the feature call on level
+			--'stack_level'. Returns void if the Argument is an
+			--expanded type.
 		external
-			"C signature (EIF_POINTER,EIF_INTEGER):EIF_REFERENCE use recorder.h"
+			"C signature (EIF_INTEGER,EIF_INTEGER):EIF_REFERENCE use recorder.h"
 		alias
 			"c_extract_argument"
 		end
@@ -86,7 +87,7 @@ feature -- Miscellaneous
 		local
 			current_observed: BOOLEAN
 		do
---			print ("$$MethodBodyEnd")
+			print ("$$MethodBodyEnd%N")
 			current_observed := is_observed.item
 			is_observed.remove
 			if current_observed /= is_observed.item then
@@ -95,29 +96,23 @@ feature -- Miscellaneous
 				else
 					print ("OUTCALLRET")
 				end
-				captureobject (res)
+				capture_object (res)
 			end
 			print("%N")
 		end
 
-	methodbodystart (method_name: STRING_8; first_argument: POINTER; argument_count: INTEGER_32)
+	methodbodystart (method_name: STRING_8; target: OBSERVABLE; argument_count: INTEGER_32)
 			-- Hook for recording. Is to be placed before the methodbody is evaluated
 			-- 'first_argument' points to the first argument (on the stack) of the routine
 			-- argument_count is the number of arguments of the routine
 		require
 			method_name_not_void: method_name /= Void
-		--	first_argument_not_void: first_argument /= Void
-			argument_count_valid: argument_count > 0
+			argument_count_valid: argument_count >= 0
 		local
 			obj: ANY
-			target: OBSERVABLE
 		do
---			print ("$$MethodBodyStart: " + method_name + "%N")
-			obj := get_argument (first_argument, 0)
-			target ?= obj
-			check
-				target_not_void: target /= Void
-			end
+
+			print ("$$MethodBodyStart: " + method_name + "%N")
 			if (target.is_observed /= is_observed.item) then
 				if target.is_observed then
 					print ("INCALL: "+ method_name + "%N" )
@@ -125,18 +120,26 @@ feature -- Miscellaneous
 					print ("OUTCALL" + method_name + "$N")
 				end
 				print ("%TArguments:%N")
-				capturearguments (first_argument, argument_count)
+				capture_arguments (argument_count -1) --XXX change argument count in the hooks...
 			end
 			is_observed.put (target.is_observed)
 		end
 
-	object_from_pointer (p: POINTER): ANY
-			--returns the Eiffel object that 'p' points to.
-		external
-			"C inline use %"eif_eiffel.h%""
-		alias
-			"return (EIF_REFERENCE) $p;"
-		end
+--	object_from_pointer (p: POINTER): ANY
+--			--returns the Eiffel object that 'p' points to.
+--		external
+--			"C inline use %"eif_eiffel.h%""
+--		alias
+--			"return (EIF_REFERENCE) $p;"
+--		end
+
+-- Not needed: for he prototype implemented in stack.c...
+--	stack_offset(depth: INTEGER_32): INTEGER_32
+--		external
+--			"C signature(EIF_INTEGER):EIF_REFERENCE"
+--		alias
+--			"c_get_stack_offset"
+--		end
 
 feature -- Basic operations
 

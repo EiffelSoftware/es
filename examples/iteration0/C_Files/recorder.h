@@ -1,4 +1,4 @@
-#include "/home/stefan/estudio/EiffelXX/studio/spec/linux-x86/include/eif_cecil.h"
+#include "/home/stefan/ETH/Masterarbeit/capture_replay/EiffelXX/studio/spec/linux-x86/include/eif_cecil.h"
 
 #define reference(p)(&p)
 

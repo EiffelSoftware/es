@@ -25,7 +25,7 @@ feature -- Access
 	ui:ATM_UI is
 			--create a new ui to the ATM.
 		do
-			get_recorder.methodbodystart ("ui", $Current, 1)
+			get_recorder.methodbodystart ("ui", Current, 1)
 			Result:=the_ui
 			get_recorder.methodbodyend (Result)
 		end
@@ -33,7 +33,7 @@ feature -- Access
 	last_operation_succeeded:BOOLEAN is
 			--
 		do
-			get_recorder.methodbodystart("last_operation_succeeded", $Current,1)
+			get_recorder.methodbodystart("last_operation_succeeded", Current,1)
 			Result:=success
 			get_recorder.methodbodyend (Result)
 		end
@@ -59,7 +59,7 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			get_recorder.methodbodystart ("deposit", $Current, 3)
+			get_recorder.methodbodystart ("deposit", Current, 3)
 			an_account := the_bank.get_account (account_name)
 
 			if an_account /= Void then
@@ -78,7 +78,7 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			get_recorder.methodbodystart ("withdraw", $Current, 3)
+			get_recorder.methodbodystart ("withdraw", Current, 3)
 			an_account := the_bank.get_account (account_name)
 
 			if an_account /= Void then
@@ -93,7 +93,7 @@ feature -- Element change
 	account_exists(account_name:STRING):BOOLEAN is
 			-- is there an account with name 'account_name'?
 		do
-			get_recorder.methodbodystart ("account_exists", $Current, 2)
+			get_recorder.methodbodystart ("account_exists", Current, 2)
 			Result:=(the_bank.get_account (account_name)/= Void)
 			get_recorder.methodbodyend (Result)
 		end
@@ -105,7 +105,7 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			get_recorder.methodbodystart ("get_balance", $Current, 2)
+			get_recorder.methodbodystart ("get_balance", Current, 2)
 			ui.ping
 			an_account:=the_bank.get_account (account_name)
 			Result:=an_account.get_balance
@@ -115,7 +115,7 @@ feature -- Element change
 	authorization_key: STRING is
 			--
 		do
-			get_recorder.methodbodystart ("account_exists", $Current, 1)
+			get_recorder.methodbodystart ("account_exists", Current, 1)
 			Result:= "100%% trustworthy"
 			get_recorder.methodbodyend (Result)
 		end

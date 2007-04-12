@@ -81,7 +81,6 @@ extern void send_stack(EIF_PSTREAM s, uint32 nb_elems);	/* Send a stack dump to 
 extern void send_stack_variables(EIF_PSTREAM s, int where); /* dump the locals/arguments for a given feature on stack */
 extern void send_once_result(EIF_PSTREAM s, MTOT OResult, int otype); /* Send result of once function to ewb */
 
-//provide this function to be able to read out arguments at runtime...
-rt_public uint32 go_ith_stack_level(int level) //SIES
+extern uint32 get_argument(int stack_level,uint32 argument_no); //SIES
 
 #endif /* _stack_h_ */

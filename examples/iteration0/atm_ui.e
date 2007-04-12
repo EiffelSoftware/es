@@ -29,7 +29,7 @@ feature
 		local
 			exit: BOOLEAN
 		do
-			get_recorder.methodbodystart ("run", $Current, 1)
+			get_recorder.methodbodystart ("run", Current, 1)
 
 			from
 				exit := False

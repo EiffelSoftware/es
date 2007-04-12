@@ -33,7 +33,7 @@ get_Account(account_name: STRING):BANK_ACCOUNT is
 		--returns the account with name 'account_name
 		--or Void if the account does not exist
 	do
-		get_recorder.methodbodystart ("get_Account", $Current, 2)
+		get_recorder.methodbodystart ("get_Account", Current, 2)
 		if account_name.is_equal("test") then
 			Result:=the_account
 		end
@@ -45,7 +45,7 @@ atm():ATM is
 		--returns a new ATM that is connected to this
 		--bank
 	do
-		get_recorder.methodbodystart ("atm", $Current, 1)
+		get_recorder.methodbodystart ("atm", Current, 1)
 		Result := the_atm
 		get_recorder.methodbodyend (Result)
 	end
@@ -53,7 +53,7 @@ atm():ATM is
 withdraw(an_account: BANK_ACCOUNT; amount: REAL) is
 		--withdraw 'amount' from 'an_account'
 	do
-		get_recorder.methodbodystart ("withdraw", $Current, 2)
+		get_recorder.methodbodystart ("withdraw", Current, 2)
 		an_account.withdraw(amount)
 		print (the_atm.authorization_key) -- to test outcalls ;)
 		get_recorder.methodbodyend (Void)
@@ -62,7 +62,7 @@ withdraw(an_account: BANK_ACCOUNT; amount: REAL) is
 deposit(an_account: BANK_ACCOUNT; amount: REAL) is
 		-- deposit 'amount' on 'an_account'
 	do
-		get_recorder.methodbodystart ("deposit", $Current, 3)
+		get_recorder.methodbodystart ("deposit", Current, 3)
 		an_account.deposit (amount)
 		print(the_atm.authorization_key) -- test outcalls...
 		get_recorder.methodbodyend (Void)

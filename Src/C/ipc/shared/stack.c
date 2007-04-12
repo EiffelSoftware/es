@@ -78,6 +78,7 @@ rt_private struct dump	*get_next_variable(uint32 start);			/* Dump the locals an
 rt_private struct dcall *safe_dtop(void);							/* Perform a safe dtop() without eif_panic */
 rt_private void 		init_var_dump(struct dcall *call);			/* Initialize register context */
 rt_private uint32		go_ith_stack_level(int level);				/* Go to the i-th level down the stack */
+
 rt_private struct dump 	*variable_item(int variable_type, uint32 n, uint32 start); /* Dump a local or an argument of active feature */
 
 /* Public Routines declarations */
@@ -89,6 +90,30 @@ rt_public void 			send_once_result(EIF_PSTREAM s, MTOT OResult, int otype); /* d
 
 /* extern Routines used */
 extern struct item 	*c_oitem(uint32 n); /* from debug.c - Returns a pointer to the item at position `n' down the stack */
+
+
+
+//<ADDED BY SIES>
+/*************************************************************************
+ *NAME: get_argument(int stack_level, uint argument_no)                  *
+ *----------------------------------------                               *
+ * returns the 'argument_no'th argument of the method that lies          *
+ * 'stack_level' methods below the current method.                       *
+ * ATTENTION: the implementation is 100% inefficient and only for the    *
+ * prototype Application.                                                *
+ * **********************************************************************/
+rt_public uint32 get_argument(int level, uint32 argument_no)
+	{
+	save_stacks();
+	uint32 offset = go_ith_stack_level(level);
+	struct item *argument = ivalue(IV_ARG, argument_no, offset);
+	restore_stacks();
+	return argument;
+	}
+
+//</ADDED BY SIES>
+
+
 
 /*-------------------------
  - Routine implementation -
@@ -333,8 +358,7 @@ rt_private void init_var_dump(struct dcall *call)
  * Go down the stack. This is done before dumping the locals and the      *
  * arguments of a feature located on level `level' down the stack         *
  **************************************************************************/
-//rt_private uint32 go_ith_stack_level(int level)
-rt_public uint32 go_ith_stack_level(int level) //SIES
+rt_private uint32 go_ith_stack_level(int level)
 	{
 	EIF_GET_CONTEXT
 
