@@ -11,14 +11,14 @@ deferred class
 
 feature -- Access
 	is_observed: BOOLEAN is
-			--does this object belong to the observed set?
+			-- Does this object belong to the observed set?
 		deferred
 		end
 
-	get_recorder: RECORDER is
-			--Returns the global recorder that is used for all objects
-			--in a multi threading environment this would need to be replaced
-			--by a recorder per thread.
+	the_recorder: RECORDER is
+			--XXX Returns the global recorder that is used for all objects
+			-- in a multi threading environment this would need to be replaced
+			-- by a recorder per thread.
 		once
 			create Result.make
 		end

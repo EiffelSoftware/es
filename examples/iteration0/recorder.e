@@ -18,13 +18,7 @@ feature -- Access
 	is_observed: LINKED_STACK [BOOLEAN]
 			--Stack of the is_observed Values (TODO find a better description...)
 
-feature -- Comparison
-
-feature -- Status report
-
-feature -- Duplication
-
-feature -- Miscellaneous
+feature -- Basic Operations
 
 	capture_arguments (argument_count: INTEGER_32)
 			--captures all 'argument_count' arguments of a method call, where
@@ -45,7 +39,7 @@ feature -- Miscellaneous
 				--2 == 'capture_arguments'
 				--3 == 'methodbodystart' YES!!!
 				--4 == observed method.
-				capture_object (get_argument (4, i))--methodbodystart, this method  and get_argument down the stack...
+				capture_object (argument_for_position (4, i))--methodbodystart, this method  and get_argument down the stack...
 				i := i + 1
 			end
 		end
@@ -71,7 +65,7 @@ feature -- Miscellaneous
 			end
 		end
 
-	get_argument (stack_level: INTEGER_32; i: INTEGER_32): ANY
+	argument_for_position (stack_level: INTEGER_32; i: INTEGER_32): ANY
 			--Returns the 'i'th argument of the feature call on level
 			--'stack_level'. Returns void if the Argument is an
 			--expanded type.
@@ -81,7 +75,7 @@ feature -- Miscellaneous
 			"c_extract_argument"
 		end
 
-	methodbodyend (res: ANY)
+	capture_methodbody_end (res: ANY)
 			--Hook for recording. Is to be placed at the end of a MethodBody
 			--'res' is the Result of the Method that should be instrumented.
 		local
@@ -101,7 +95,7 @@ feature -- Miscellaneous
 			print("%N")
 		end
 
-	methodbodystart (method_name: STRING_8; target: OBSERVABLE; argument_count: INTEGER_32)
+	capture_methodbody_start (method_name: STRING_8; target: OBSERVABLE; argument_count: INTEGER_32)
 			-- Hook for recording. Is to be placed before the methodbody is evaluated
 			-- 'first_argument' points to the first argument (on the stack) of the routine
 			-- argument_count is the number of arguments of the routine
@@ -111,7 +105,6 @@ feature -- Miscellaneous
 		local
 			obj: ANY
 		do
-
 			print ("$$MethodBodyStart: " + method_name + "%N")
 			if (target.is_observed /= is_observed.item) then
 				if target.is_observed then
@@ -120,10 +113,17 @@ feature -- Miscellaneous
 					print ("OUTCALL" + method_name + "$N")
 				end
 				print ("%TArguments:%N")
-				capture_arguments (argument_count -1) --XXX change argument count in the hooks...
+				capture_arguments (argument_count)
 			end
 			is_observed.put (target.is_observed)
 		end
+
+
+feature {NONE} -- Retrieval
+
+feature --test
+
+feature --RUBBISH
 
 --	object_from_pointer (p: POINTER): ANY
 --			--returns the Eiffel object that 'p' points to.
@@ -141,62 +141,10 @@ feature -- Miscellaneous
 --			"c_get_stack_offset"
 --		end
 
-feature -- Basic operations
-
-feature -- Access bits size
-
-
-feature -- Access bytes size
-
-
-feature -- Access min max values
-
-
-feature -- Output
-
-
-
-feature {NONE} -- Retrieval
-
-feature --test
-
-feature --RUBBISH
-
-	bar
-			--
-		local
-			exc: EXCEPTIONS
-		do
-			create exc
-			exc.raise ("Hello World")
-		end
-
-	c_getcaller: ANY
-		external
-			"C signature ():EIF_OBJECT use recorder.h"
-		alias
-			"getCaller"
-		end
-
-	foo: ANY
-			--
-		local
-			second_run: BOOLEAN
-		do
-			if not second_run then
-				bar
-			end
-			Result := Current
-		rescue
-			print ("exception caught...")
-			second_run := True
-			retry
-		end
-
 feature --creation
 
 	make
-			--
+			-- Create the recorder.
 		do
 			create is_observed.make
 			is_observed.put (False)
@@ -204,10 +152,6 @@ feature --creation
 
 invariant
 	invariant_clause: True
-
-		-- from ANY
-	reflexive_equality: standard_is_equal (Current)
-	reflexive_conformance: conforms_to (Current)
 
 end -- class RECORDER
 

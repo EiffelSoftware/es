@@ -39,7 +39,7 @@ feature -- Initialization
 		end
 
 
-	expanded_test():ANY
+	expanded_test: ANY
 			--test to see how eiffel converts an expanded type to any.
 		local
 			da_real: REAL

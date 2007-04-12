@@ -13,7 +13,7 @@ create
 
 feature --creation
 	make(a_bank: BANK) is
-			--creates a new ATM that is connected to
+			-- create a new ATM that is connected to
 			--'a_bank'.
 		do
 			the_bank:=a_bank
@@ -23,44 +23,36 @@ feature --creation
 feature -- Access
 
 	ui:ATM_UI is
-			--create a new ui to the ATM.
+			--the UI of the ATM.
 		do
-			get_recorder.methodbodystart ("ui", Current, 1)
+			the_recorder.capture_methodbody_start ("ui", Current, 0)
 			Result:=the_ui
-			get_recorder.methodbodyend (Result)
+			the_recorder.capture_methodbody_end (Result)
 		end
 
 	last_operation_succeeded:BOOLEAN is
-			--
+			-- Did the last operation succeed?
 		do
-			get_recorder.methodbodystart("last_operation_succeeded", Current,1)
+			the_recorder.capture_methodbody_start("last_operation_succeeded", Current,0)
 			Result:=success
-			get_recorder.methodbodyend (Result)
+			the_recorder.capture_methodbody_end (Result)
 		end
 
 	is_observed: BOOLEAN is
-			--
 		once
 			Result:=False
 		end
 
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
 
 feature -- Element change
 
 	deposit(account_name: STRING; amount: REAL) is
-			--deposit 'amount' on the account with name 'account_name'
+			-- deposit 'amount' on the account with name 'account_name'
 		local
 			an_account: BANK_ACCOUNT
 		do
-			get_recorder.methodbodystart ("deposit", Current, 3)
-			an_account := the_bank.get_account (account_name)
+			the_recorder.capture_methodbody_start ("deposit", Current, 2)
+			an_account := the_bank.account_for_name (account_name)
 
 			if an_account /= Void then
 				the_bank.deposit (an_account, amount)
@@ -68,75 +60,55 @@ feature -- Element change
 			else
 				success:=false
 			end
-			get_recorder.methodbodyend (Void)
+			the_recorder.capture_methodbody_end (Void)
 		end
 
-	withdraw(account_name:STRING;amount:REAL) is
-			--withdraw 'amount' on the account with name 'account_name'
-			--the Result signals if the operation was successful
-			--('code_success' or 'code_failure')
+	withdraw(account_name:STRING; amount:REAL) is
+			-- Withdraw 'amount' on the account with name 'account_name'
 		local
 			an_account: BANK_ACCOUNT
 		do
-			get_recorder.methodbodystart ("withdraw", Current, 3)
-			an_account := the_bank.get_account (account_name)
+			the_recorder.capture_methodbody_start ("withdraw", Current, 2)
+			an_account := the_bank.account_for_name (account_name)
 
 			if an_account /= Void then
 				the_bank.withdraw (an_account, amount)
-				success := true
+				success := True
 			else
-				success := false
+				success := False
 			end
-			get_recorder.methodbodyend (Void)
+			the_recorder.capture_methodbody_end (Void)
 		end
 
 	account_exists(account_name:STRING):BOOLEAN is
-			-- is there an account with name 'account_name'?
+			-- Is there an account with name 'account_name'?
 		do
-			get_recorder.methodbodystart ("account_exists", Current, 2)
-			Result:=(the_bank.get_account (account_name)/= Void)
-			get_recorder.methodbodyend (Result)
+			the_recorder.capture_methodbody_start ("account_exists", Current, 1)
+			Result:=(the_bank.account_for_name (account_name)/= Void)
+			the_recorder.capture_methodbody_end (Result)
 		end
 
-	get_balance(account_name: STRING): REAL is
-			--
-		--require
-		-- account_exists: account_exists(account_name)
+	balance_for_account_name(account_name: STRING): REAL is
+			-- balance of the account with name 'account_name'
+		require
+		 account_exists: account_exists(account_name)
 		local
 			an_account: BANK_ACCOUNT
 		do
-			get_recorder.methodbodystart ("get_balance", Current, 2)
+			the_recorder.capture_methodbody_start ("balance_for_account_name", Current, 1)
 			ui.ping
-			an_account:=the_bank.get_account (account_name)
-			Result:=an_account.get_balance
-			get_recorder.methodbodyend (Result)
+			an_account:=the_bank.account_for_name (account_name)
+			Result:=an_account.balance
+			the_recorder.capture_methodbody_end (Result)
 		end
 
 	authorization_key: STRING is
-			--
+			--the (fake) authorization key
 		do
-			get_recorder.methodbodystart ("account_exists", Current, 1)
-			Result:= "100%% trustworthy"
-			get_recorder.methodbodyend (Result)
+			the_recorder.capture_methodbody_start ("account_exists", Current, 0)
+			Result:= "100%% trustworthy%N"
+			the_recorder.capture_methodbody_end (Result)
 		end
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 

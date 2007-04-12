@@ -11,25 +11,27 @@ inherit
 
 create
 	make
+
 feature -- Access
-	make(an_atm: ATM) is
-			--creates a new ATM_UI for 'an_atm'
+
+	make (an_atm: ATM) is
+			-- Create a new ATM_UI for 'an_atm'
 		do
 			atm := an_atm
 		end
 
 	is_observed: BOOLEAN is
-			--
 		once
-			Result:=False
+			Result := False
 		end
-feature
-	run is
+feature --Basic Operations
 
+	run is
+			-- run the UI.
 		local
 			exit: BOOLEAN
 		do
-			get_recorder.methodbodystart ("run", Current, 1)
+			the_recorder.capture_methodbody_start ("run", Current, 0)
 
 			from
 				exit := False
@@ -41,7 +43,6 @@ feature
 				print("w withdraw %N")
 				print("q quit %N")
 
-				io.
 				io.read_character
 
 				inspect
@@ -57,97 +58,64 @@ feature
 					print("command not recognized")
 				end
 			end
-
-			get_recorder.methodbodyend (Void)
+			the_recorder.capture_methodbody_end (Void)
 		end
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-	ref (p: POINTER;): POINTER is
-			-- returns the reference (i.e. Address) of 'p'
-		external
-			"C [macro %"recorder.h%"]" -- (EIF_POINTER): EIF_POINTER"
-		alias
-			"reference"
-		end
-
 
 feature -- Basic operations
 
 	ping is
-			-- dummy operation.
+			-- dummy operation without arguments and results (testing).
 		do
-
+			the_recorder.capture_methodbody_start ("ping", Current, 0)
+			the_recorder.capture_methodbody_end(Void)
 		end
 
-feature -- Obsolete
-
-feature -- Inapplicable
-
 feature {NONE} -- Implementation
-	atm: ATM
+	-- These features won't be captured, as they can't be
+	-- executed from other classes.
 
+	atm: ATM  --the ATM the UI is connected to.
 
 	deposit is
-			--deposit menu	
+			-- go to deposit menu	
 		local
 			account_name: STRING
 			amount: REAL
 		do
 			print("Deposit - Menu %N")
-			account_name:=get_account_name
-			amount:=get_amount
+			account_name:=prompt_account_name
+			amount:=prompt_amount
 			atm.deposit (account_name, amount)
 			if atm.last_operation_succeeded then
 				print("operation succeded!%N")
-				print_balance(account_name)
+				print_balance_for_account_name(account_name)
 			else
 				print("operation failed! %N")
 			end
 		end
 
 	withdraw is
-			--withdraw menu
+			-- go to the withdraw menu
 		local
 			account_name: STRING
 			amount: REAL
 		do
 			print("withdraw-Menu %N")
-			account_name:=get_account_name
-			amount:=get_amount
+			account_name:=prompt_account_name
+			amount:=prompt_amount
 			atm.withdraw(account_name,amount)
 			if atm.last_operation_succeeded then
 				print("operation succeded!%N")
-				print_balance(account_name)
+				print_balance_for_account_name(account_name)
 			else
 				print("operation failed! %N")
 			end
 		end
 
-	get_account_name: STRING
-		--asks the user for the account name.
-		--only accepts a valid account
+	prompt_account_name: STRING
+		-- Ask the user for the account name,
+		-- only accept a valid account
 		do
-
 			from
 				Result := ""
 			until
@@ -163,21 +131,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_amount:REAL
-			--
+	prompt_amount:REAL
+			-- Prompt the user for the Amount.
 		do
 			print("please enter amount")
 			io.read_real
 			Result:=io.last_real
 		end
 
-	print_balance(account_name: STRING) is
-			--
+	print_balance_for_account_name(account_name: STRING) is
+			-- Print the balance for the Account with name 'account_name'.
 		do
 			print ("Account " + account_name + "%N")
-			print ("balance: " + atm.get_balance (account_name).out + "%N")
+			print ("balance: " + atm.balance_for_account_name (account_name).out + "%N")
 		end
+
 invariant
 	invariant_clause: True -- Your invariant here
-
 end
