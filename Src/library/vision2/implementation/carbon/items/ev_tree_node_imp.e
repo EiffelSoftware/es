@@ -279,7 +279,16 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 
 	set_pixmap (a_pixmap: EV_PIXMAP) is
 			-- Set the pixmap for 'Current'.
+		local
+			ret: INTEGER
+			pixmap_imp: EV_PIXMAP_IMP
 		do
+			-- First load the pixmap into the button
+			pixmap_imp ?= a_pixmap.implementation
+
+			icon_ref := pixmap_imp.drawable
+
+			io.output.put_string ("PIXMAP for tree item%N")
 		end
 
 	pix_width, pix_height: INTEGER

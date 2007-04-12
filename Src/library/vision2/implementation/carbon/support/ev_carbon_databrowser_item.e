@@ -12,6 +12,8 @@ inherit
 
 feature -- Databrowser item features
 
+	icon_ref: POINTER
+
 	text: STRING_32 is
 			--
 		do

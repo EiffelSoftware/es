@@ -154,7 +154,6 @@ feature -- Measurement
 			ret : INTEGER
 			size : CGSIZE_STRUCT
 			rect : CGRECT_STRUCT
-			rect_ptr : POINTER
 		do
 			create rect.make_new_unshared
 			ret := hiview_get_frame_external (c_object, rect.item)
@@ -168,7 +167,6 @@ feature -- Measurement
 			ret : INTEGER
 			size : CGSIZE_STRUCT
 			rect : CGRECT_STRUCT
-			rect_ptr : POINTER
 		do
 			create rect.make_new_unshared
 			ret := hiview_get_frame_external (c_object, rect.item)
@@ -182,19 +180,16 @@ feature -- Element change
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
 			url, provider : POINTER
-			a_file_name, a_dir : C_STRING
 			ret : INTEGER
-			point : CGPOINT_STRUCT
-			size : CGSIZE_STRUCT
-			rect : CGRECT_STRUCT
+			cf_filename, cf_dir: EV_CARBON_CF_STRING
 		do
-			create a_file_name.make (file_name)
-			create a_dir.make("./")
+			create cf_filename.make_unshared_with_eiffel_string (file_name)
+			create cf_dir.make_unshared_with_eiffel_string ("./")
 
-			url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, c_string_to_cfstring_ptr(a_file_name), null, c_string_to_cfstring_ptr(a_dir))
+			url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, cf_filename.item, null, cf_dir.item)
 			if url = null then
-				create a_dir.make ("./../../../")
-				url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, c_string_to_cfstring_ptr(a_file_name), null, c_string_to_cfstring_ptr(a_dir))
+				create cf_dir.make_unshared_with_eiffel_string ("./../../../")
+				url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, cf_filename.item, null, cf_dir.item)
 
 			end
 
@@ -207,18 +202,9 @@ feature -- Element change
 
 				ret := hiview_set_drawing_enabled_external (c_object, 1)
 				ret := hiimage_view_set_image_external (c_object, drawable)
-
 			end
 
 		end
-
-
-	c_string_to_cfstring_ptr(c_str: C_STRING):POINTER is
-			local
-				null_ptr:POINTER
-			do
-				Result:= cfstring_create_with_cstring_external(null_ptr, c_str.item,  kCFStringEncodingASCII)
-			end
 
 	frozen kCGRenderingIntentDefault: INTEGER is
 	external
@@ -382,7 +368,7 @@ feature {EV_ANY_I, EV_GTK_DEPENDENT_APPLICATION_IMP} -- Implementation
 feature {EV_ANY_I, EV_ANY_IMP} -- Implementation
 
 	drawable: POINTER
-			-- Pointer to the GdkPixmap image data.
+			-- Pointer to the Carbon Pixmap image data.
 
 	mask: POINTER
 			-- Pointer to the GdkBitmap used for masking.

@@ -65,7 +65,6 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 2006, Eiffel.Mac Team"
-
+	copyright:	"Copyright (c) 2006-2007, Eiffel.Mac Team"
 end -- class EV_MENU_IMP
 

@@ -198,6 +198,11 @@ feature -- internals
 					node := db.item_list.item (a_item)
 					create cfstring.make_unshared_with_eiffel_string (node.text)
 					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
+					if node.icon_ref /= Void then
+						Result := set_data_browser_item_data_icon_external (a_itemdata, node.icon_ref)
+						io.output.put_string(Result.out + "%N")
+					--Result := set_data_browser_item_data_rgbcolor_external (a_itemdata, node.icon_ref)
+					end
 				end
 			end
 --			print ("on_callback for item: " + a_item.out + "%N")
@@ -261,6 +266,8 @@ feature -- internals
 			-- We have found the object for a_browser. It is in 'tree_list.item.item (1)'
 			Result ?= tree_list.item.item (1)
 		end
+
+	icon_ref: POINTER
 
 feature {EV_CARBON_DATABROWSER, EV_CARBON_DATABROWSER_ITEM} -- Implementation
 
