@@ -11,11 +11,6 @@ class
 
 inherit
 	IDENTIFIED
-		undefine
-			copy, is_equal
-		end
-
-	EV_GTK_KEY_CONVERSION
 
 feature {EV_ANY_I} -- Implementation
 
@@ -86,7 +81,6 @@ feature {EV_ANY_I} -- Implementation
 	boolean_cell_renderer_toggle_intermediary (a_object_id: INTEGER; nargs: INTEGER; args: POINTER) is
 			-- Called when a cell renderer is toggled (EV_CHECKABLE_LIST)
 		local
-			a_list_imp: EV_GTK_TREE_VIEW
 			a_tree_path_str: POINTER
 		do
 

@@ -20,7 +20,7 @@ feature {NONE}
 			a_callback_not_void: a_callback /= Void
 		do
 			callback := a_callback
-			set_device_loop_drawing_proc_ptr_entry_external (Current, $on_callback)
+			--set_device_loop_drawing_proc_ptr_entry_external (Current, $on_callback)
 		end
 
 feature {ANY}
@@ -29,7 +29,7 @@ feature {ANY}
 
 	c_dispatcher: POINTER is
 		do
-			Result := get_device_loop_drawing_proc_ptr_stub_external
+			--Result := get_device_loop_drawing_proc_ptr_stub_external
 		end
 
 feature {NONE} -- Implementation
