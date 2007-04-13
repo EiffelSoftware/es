@@ -55,7 +55,7 @@ inherit
 
 	EV_PND_DEFERRED_ITEM_PARENT
 
-	EV_CARBON_DATABROWSER
+	EV_CARBON_DATABROWSER-- [EV_MULTI_COLUMN_LIST_ROW]
 		undefine
 			destroy
 		redefine
@@ -213,7 +213,7 @@ feature -- Access
 	selected_item: EV_MULTI_COLUMN_LIST_ROW is
 			-- Item which is currently selected
 		do
-
+			Result ?= selected_item_imp.interface
 		end
 
 	selected_items: ARRAYED_LIST [EV_MULTI_COLUMN_LIST_ROW] is

@@ -53,7 +53,7 @@ inherit
 
 	EV_PND_DEFERRED_ITEM_PARENT
 
-	EV_CARBON_DATABROWSER
+	EV_CARBON_DATABROWSER-- [EV_TREE_NODE]
 		undefine
 			destroy
 		redefine
@@ -84,6 +84,7 @@ feature {NONE} -- Initialization
 	call_selection_action_sequences is
 			-- Call the appropriate selection action sequences
 		do
+			select_actions.call ([])
 		end
 
 	initialize is
@@ -117,8 +118,12 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	selected_item: EV_TREE_NODE
+	selected_item: EV_TREE_NODE is
 			-- Item which is currently selected
+		do
+			Result ?= selected_item_imp.interface
+		end
+
 
 	selected: BOOLEAN
 			-- Is one item selected?

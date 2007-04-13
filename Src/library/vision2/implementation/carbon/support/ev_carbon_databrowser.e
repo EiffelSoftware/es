@@ -6,8 +6,8 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	EV_CARBON_DATABROWSER
+deferred class
+	EV_CARBON_DATABROWSER-- [G]-- -> EV_CARBON_DATABROWSER_ITEM]
 
 inherit
 	EV_ANY_IMP
@@ -27,8 +27,8 @@ inherit
 			{NONE} all
 		end
 
-create
-	make
+--create
+--	make
 
 feature -- Creation
 
@@ -101,7 +101,7 @@ feature -- Creation
 		end
 
 
---	selected_item: like db_item
+	selected_item_imp: like db_item
 
 feature -- settings
 
@@ -339,12 +339,14 @@ feature -- internals
 				tree := get_object_from_pointer (a_browser)
 				node := tree.item_list.item (a_item)
 				node.select_actions.call ([])
---				selected_item := node.interface
+				selected_item_imp := node
+				call_selection_action_sequences
 --				selected := true
 			end
 		end
 
-	get_object_from_pointer (a_pointer: POINTER): EV_CARBON_DATABROWSER is -- Doesn't work with 'like Current' since the instance of the class could be of another type,... callback confusion
+	get_object_from_pointer (a_pointer: POINTER): EV_CARBON_DATABROWSER is
+	-- Doesn't work with 'like Current' since the instance of the class could be of another type,... callback confusion
 			-- Takes a c-pointer to the associated c_object of a object of type EV_TREE_IMP and returns a handle to that.
 		do
 			-- Okay, this is really ugly now: Since there is only one callback function
@@ -363,6 +365,10 @@ feature -- internals
 			end
 			-- We have found the object for a_browser. It is in 'tree_list.item.item (1)'
 			Result ?= tree_list.item.item (1)
+		end
+
+	call_selection_action_sequences is
+		deferred
 		end
 
 	icon_ref: POINTER
@@ -406,5 +412,5 @@ feature {EV_CARBON_DATABROWSER, EV_CARBON_DATABROWSER_ITEM} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_CARBON_DATABROWSER

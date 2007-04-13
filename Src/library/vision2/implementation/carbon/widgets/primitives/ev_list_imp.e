@@ -32,7 +32,7 @@ inherit
 			minimum_width
 		end
 
-	EV_CARBON_DATABROWSER
+	EV_CARBON_DATABROWSER-- [EV_LIST_ITEM]
 		undefine
 			destroy
 		redefine
@@ -85,6 +85,7 @@ feature -- Access
 			-- Item which is currently selected, for a multiple
 			-- selection.
 		do
+			Result ?= selected_item_imp.interface
 		end
 
 	selected_items: ARRAYED_LIST [EV_LIST_ITEM] is

@@ -149,6 +149,7 @@ feature -- Implementation
 	create_drop_actions: EV_PND_ACTION_SEQUENCE is
 			-- Create and initialize `drop_actions' for `Current'
 		do
+			create Result
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -156,7 +157,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_PICK_AND_DROPABLE;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
-
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_PICK_AND_DROPABLE_IMP
 
