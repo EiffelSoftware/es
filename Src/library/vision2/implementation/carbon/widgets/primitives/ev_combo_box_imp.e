@@ -35,7 +35,10 @@ inherit
 			on_focus_changed,
 			dispose,
 			minimum_height,
-			minimum_width
+			minimum_width,
+			set_text,
+			prepend_text,
+			append_text
 		end
 
 	EV_LIST_ITEM_LIST_IMP
@@ -183,6 +186,48 @@ feature -- Status setting
 	set_maximum_text_length (len: INTEGER) is
 			-- Set the length of the longest text size in characters that `Current' can display.
 		do
+
+		end
+
+	set_text (a_text: STRING_GENERAL) is
+			-- Assign `a_text' to `text'.
+		local
+			str: EV_CARBON_CF_STRING
+			ret: INTEGER
+		do
+			create str.make_unshared_with_eiffel_string (a_text)
+			ret := hiview_set_text_external (c_object, str.item)
+		end
+
+	append_text (a_text: STRING_GENERAL) is
+			-- Append `a_text' to the end of the text.
+		local
+			ptr: POINTER
+			str: EV_CARBON_CF_STRING
+			total_text:STRING_GENERAL
+			ret: INTEGER
+		do
+			ptr := hiview_copy_text_external (c_object)
+			create str.make_unshared (ptr)
+			total_text := str.string + a_text
+
+			set_text (total_text)
+
+		end
+
+	prepend_text (a_text: STRING_GENERAL) is
+			-- Prepend `a_text' to the end of the text.
+		local
+			ptr: POINTER
+			str: EV_CARBON_CF_STRING
+			total_text:STRING_GENERAL
+			ret: INTEGER
+		do
+			ptr := hiview_copy_text_external (c_object)
+			create str.make_unshared (ptr)
+			total_text := a_text + str.string
+
+			set_text (total_text)
 
 		end
 

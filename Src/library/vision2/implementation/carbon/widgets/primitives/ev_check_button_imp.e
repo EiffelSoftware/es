@@ -87,6 +87,7 @@ feature {EV_ANY_I}
 
 	interface: EV_CHECK_BUTTON;
 
+
 indexing
 	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_CHECK_BUTTON_IMP
