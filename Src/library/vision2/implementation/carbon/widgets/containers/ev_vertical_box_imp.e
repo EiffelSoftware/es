@@ -62,17 +62,17 @@ feature -- Measturement
 	minimum_width: INTEGER is
 			-- The minimum width of a vertical box is the maximum of the minimum_width's of its children
 	local
-		a, b: INTEGER
+		a, b, i: INTEGER
 	do
 		a := internal_minimum_width
 		from
 			b := 0
-			start
+			i := 1
 		until
-			off
+			(i = 0) or (i = count + 1)
 		loop
-			b := b.max(item.minimum_width)
-			forth
+			b := b.max(i_th(i).minimum_width)
+			i := i + 1
 		end
 		b := b + (count-1)*padding
 		Result := a.max (b) + 5
@@ -81,17 +81,17 @@ feature -- Measturement
 	minimum_height: INTEGER is
 			-- The minimum height of a horizontal box is the sum of the minimum_width's of its children
 	local
-		a, b: INTEGER
+		a, b, i: INTEGER
 	do
 		a := internal_minimum_height
 		from
 			b := 0
-			start
+			i := 1
 		until
-			off
+			(i = 0) or (i = count + 1)
 		loop
-			b := b + item.minimum_height
-			forth
+			b := b + i_th(i).minimum_height
+			i := i + 1
 		end
 		b := b + (count-1) * padding
 		Result := a.max (b) + 20
@@ -116,6 +116,7 @@ feature -- Implementation
 			non_expandable_height : INTEGER
 			expandable_height : INTEGER
 			last_y : INTEGER
+			i: INTEGER
 		do
 			-- Setup
 			create a_rect.make_new_unshared
@@ -124,11 +125,11 @@ feature -- Implementation
 
 			-- Calculate height of all controls
 			from
-				start
+				i := 1
 			until
-				off
+				(i = 0) or (i = count + 1)
 			loop
-				w1 ?= item.implementation
+				w1 ?= i_th (i).implementation
 				check
 					w1_not_void : w1 /= Void
 				end
@@ -139,7 +140,7 @@ feature -- Implementation
 					non_expandable_height := non_expandable_height + w1.minimum_height
 					size_control_external ( w1.c_object, width, w1.minimum_height ) -- Set optimal size here, we need it later
 				end
-				forth
+				i := i + 1
 			end
 
 			-- Set height of userpane so that it can accomodate all widgets + padding
@@ -158,12 +159,12 @@ feature -- Implementation
 			end
 
 			from
-				start
+				i := 1
 				last_y := -padding
 			until
-				off
+				(i = 0) or (i = count + 1)
 			loop
-					w1 ?= item.implementation
+					w1 ?= i_th (i).implementation
 					check
 						w1_not_void : w1 /= Void
 					end
@@ -181,7 +182,7 @@ feature -- Implementation
 
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
 					last_y := (a_point.y + a_size.height).rounded
-					forth
+					i := i + 1
 			end
 
 			-- Bind control positions
@@ -257,12 +258,13 @@ feature {NONE} -- Events
 			control_width, control_height :INTEGER
 			expandable_height, non_expandable_height : INTEGER
 			but : EV_BUTTON_IMP
+			i : INTEGER
 		do
 			-- Calculate height of all controls
 			from
-				start
+				i := 1
 			until
-				off
+				(i = 0) or (i = count + 1)
 			loop
 				--but ?= item.implementation
 				--if but /=void then
@@ -274,7 +276,7 @@ feature {NONE} -- Events
 				--	end
 				--end
 
-				w_imp ?= item.implementation
+				w_imp ?= i_th(i).implementation
 				check
 					w_imp_not_void : w_imp /= Void
 				end
@@ -283,23 +285,23 @@ feature {NONE} -- Events
 				else
 					non_expandable_height := non_expandable_height + w_imp.minimum_height
 				end
-				forth
+				i := i + 1
 			end
 
 			control_width := width
 			if is_homogeneous then -- Make all control equally high
 				control_height := (height / count).rounded
 				from
-					start
+					i := 1
 				until
-					off
+					(i = 0) or (i = count + 1)
 				loop
-					w_imp ?= item.implementation
+					w_imp ?= i_th(i).implementation
 					check
 						w_imp_not_void : w_imp /= Void
 					end
 					size_control_external (	w_imp.c_object, control_width, control_height )
-					forth
+					i := i + 1
 				end
 			else
 				control_height := ( (height - non_expandable_height - expandable_height - 5) / expandable_item_count ).rounded
@@ -307,11 +309,11 @@ feature {NONE} -- Events
 					control_height := 0
 				end
 				from
-					start
+					i := 1
 				until
-					off
+					(i = 0) or (i = count + 1)
 				loop
-					w_imp ?= item.implementation
+					w_imp ?= i_th(i).implementation
 					check
 						w_imp_not_void : w_imp /= Void
 					end
@@ -320,7 +322,7 @@ feature {NONE} -- Events
 					else
 						size_control_external ( w_imp.c_object, control_width, w_imp.minimum_height )
 					end
-					forth
+					i := i + 1
 				end
 			end
 		end
