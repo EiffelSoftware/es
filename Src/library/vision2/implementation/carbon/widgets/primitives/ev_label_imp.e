@@ -97,7 +97,7 @@ feature
 	minimum_width: INTEGER is
 			do
 				--Result:= text.count * font.width
-				Result:= text.count * 10 +5
+				Result:= text.count * 2 +5
 				io.put_string ("width" + Result.out + "  ")
 			end
 feature -- status setting
