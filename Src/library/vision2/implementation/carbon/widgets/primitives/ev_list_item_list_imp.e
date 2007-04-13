@@ -147,8 +147,16 @@ feature {EV_LIST_ITEM_LIST_IMP, EV_LIST_ITEM_IMP} -- Implementation
 feature {NONE} -- Implementation
 
 	remove_i_th (an_index: INTEGER) is
+		local
+			item_imp: EV_LIST_ITEM_IMP
 		do
-
+			clear_selection
+			item_imp ?= (child_array @ (an_index)).implementation
+			item_imp.set_parent_imp (Void)
+			-- remove the row from the `ev_children'
+			child_array.go_i_th (an_index)
+			child_array.remove
+			--update_pnd_status
 		end
 
 indexing

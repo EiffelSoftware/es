@@ -58,7 +58,8 @@ inherit
 			initialize,
 			make,
 			interface,
-			insert_i_th
+			insert_i_th,
+			remove_i_th
 		end
 
 	EV_COMBO_BOX_ACTION_SEQUENCES_IMP
@@ -141,6 +142,17 @@ feature {NONE} -- Initialization
 			create cfstring.make_unshared_with_eiffel_string ( v.text )
 			ret := hicombo_box_append_text_item_external ( c_object, cfstring.item, null )
 		end
+
+	remove_i_th (an_index: INTEGER) is
+		local
+			ret: INTEGER
+		do
+			Precursor {EV_LIST_ITEM_LIST_IMP} (an_index)
+			ret := hicombo_box_remove_item_at_index_external (c_object, (an_index -1))
+		end
+
+
+
 
 feature -- Status report
 
