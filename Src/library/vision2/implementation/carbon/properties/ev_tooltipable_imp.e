@@ -28,6 +28,9 @@ feature -- Initialization
 	tooltip: STRING_32 is
 			-- Tooltip that has been set.
 		do
+			if tooltip_text = void then
+					create tooltip_text.make_unshared_with_eiffel_string ("")
+			end
 			Result := tooltip_text.string
 		end
 
@@ -82,7 +85,8 @@ feature {NONE} -- Implementation
 				}
 			]"
 		end
-	tooltip_text: EV_CARBON_CF_STRING
+
+	tooltip_text : EV_CARBON_CF_STRING
 
 feature {EV_ANY_I} -- Implementation
 
