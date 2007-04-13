@@ -91,7 +91,7 @@ feature {NONE} -- Initialization
 	create_change_actions: EV_NOTIFY_ACTION_SEQUENCE is
 			-- Hook up the change actions for the text widget
 		do
-
+			create Result.default_create
 		end
 
 	initialize is
