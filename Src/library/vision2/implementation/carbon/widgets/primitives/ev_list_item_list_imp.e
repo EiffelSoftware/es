@@ -135,7 +135,12 @@ feature -- Insertion
 
 	insert_i_th (v: like item; i: INTEGER) is
 			-- Insert `v' at position `i'.
+		local
+			item_imp: EV_LIST_ITEM_IMP
 		do
+			item_imp ?= v.implementation
+			item_imp.set_parent_imp (Current)
+
 			child_array.go_i_th (i)
 			child_array.put_left (v)
 		end

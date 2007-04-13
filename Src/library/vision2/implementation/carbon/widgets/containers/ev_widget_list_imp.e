@@ -98,6 +98,6 @@ feature {NONE} -- Implementation
 			-- functionality implemented by `Current'
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_WIDGET_LIST_IMP
 
