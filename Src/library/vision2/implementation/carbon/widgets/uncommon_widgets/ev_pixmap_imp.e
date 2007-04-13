@@ -150,28 +150,14 @@ feature -- Measurement
 
 	width: INTEGER is
 			-- Width of the pixmap in pixels.
-		local
-			ret : INTEGER
-			size : CGSIZE_STRUCT
-			rect : CGRECT_STRUCT
 		do
-			create rect.make_new_unshared
-			ret := hiview_get_frame_external (c_object, rect.item)
-			create size.make_shared (rect.size.item)
-			Result := size.width.rounded
+			Result := cgimage_get_width_external (drawable)
 		end
 
 	height: INTEGER is
 			-- height of the pixmap.
-		local
-			ret : INTEGER
-			size : CGSIZE_STRUCT
-			rect : CGRECT_STRUCT
 		do
-			create rect.make_new_unshared
-			ret := hiview_get_frame_external (c_object, rect.item)
-			create size.make_shared (rect.size.item)
-			Result := size.height.rounded
+			Result := cgimage_get_height_external (drawable)
 		end
 
 feature -- Element change
@@ -286,30 +272,34 @@ feature -- Element change
 
 feature -- Access
 
+--	minimum_width: INTEGER is
+--			-- Minimum width that the widget may occupy.
+--	do
+--		Result := width
+--		if Result < 1 then
+--			Result := 1
+--		end
+--	end
+
+--	minimum_height: INTEGER is
+--			-- Minimum width that the widget may occupy.
+--	do
+--		Result := width
+--		if Result < 1 then
+--			Result := 1
+--		end
+--	end
+
 	minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
-		local
-			minimum_size : CGSIZE_STRUCT
-			maximum_size : CGSIZE_STRUCT
-			err : INTEGER
 		do
-			create maximum_size.make_new_unshared
-			create minimum_size.make_new_unshared
-			err := hiview_get_size_constraints_external ( c_object, minimum_size.item, maximum_size.item )
-			Result := minimum_size.width.rounded
+			Result := internal_minimum_width.min (width)
 		end
 
 	minimum_height: INTEGER is
 			-- Minimum width that the widget may occupy.
-		local
-			minimum_size : CGSIZE_STRUCT
-			maximum_size : CGSIZE_STRUCT
-			err : INTEGER
 		do
-			create maximum_size.make_new_unshared
-			create minimum_size.make_new_unshared
-			err := hiview_get_size_constraints_external ( c_object, minimum_size.item, maximum_size.item )
-			Result := minimum_size.height.rounded
+			Result := internal_minimum_height.min (height)
 		end
 
 	image_ptr: POINTER
@@ -330,12 +320,12 @@ feature -- Duplication
 			other_imp ?= other.implementation
 			drawable := other_imp.drawable
 			mask := other_imp.mask
+			internal_xpm_data := other_imp.internal_xpm_data
 
 			ret := hiimage_view_set_image_external (c_object, drawable)
 		end
 
-
-feature {EV_ANY_I} -- Implementation
+feature {EV_ANY_I, EV_GTK_DEPENDENT_APPLICATION_IMP} -- Implementation
 
 	set_pixmap_from_pixbuf (a_pixbuf: POINTER) is
 			-- Construct `Current' from GdkPixbuf `a_pixbuf'
@@ -354,6 +344,11 @@ feature {EV_ANY_I, EV_ANY_IMP} -- Implementation
 
 	mask: POINTER
 			-- Pointer to the GdkBitmap used for masking.
+
+feature {EV_GTK_DEPENDENT_APPLICATION_IMP, EV_ANY_I} -- Implementation
+
+	internal_xpm_data: POINTER
+		-- Pointer to the appropriate XPM image used for the default stock cursor if any
 
 feature {EV_STOCK_PIXMAPS_IMP, EV_PIXMAPABLE_IMP} -- Implementation
 
@@ -396,6 +391,12 @@ feature {NONE} -- Implementation
 		do
 		end
 
+feature {NONE} -- Externals
+
+	default_pixmap_xpm: POINTER is
+		do
+		end
+
 feature {NONE} -- Constants
 
 	Default_color_depth: INTEGER is -1
@@ -409,6 +410,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_PIXMAP;
 
 indexing
-	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
 end -- EV_PIXMAP_IMP
 
