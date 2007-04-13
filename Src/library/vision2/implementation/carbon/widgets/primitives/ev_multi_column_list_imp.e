@@ -74,8 +74,11 @@ feature {NONE} -- Initialization
 			-- Create a list widget with `par' as
 			-- parent and `col_nb' columns.
 			-- By default, a list allow only one selection.
+		local
+			ret: INTEGER
 		do
 			Precursor {EV_CARBON_DATABROWSER} (an_interface)
+
 
 			create ev_children.make (0)
 		end
@@ -153,8 +156,17 @@ feature {NONE} -- Implementation
 			-- Create the clist with `a_columns' columns.
 		require
 			a_columns_positive: a_columns > 0
+		local
+			i, ret: INTEGER
 		do
-
+			from
+				i := 0
+			until
+				i >= a_columns
+			loop
+				ret := add_list_view_column (i, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowsertexttype, 8, 20, 10, "")
+				i := i + 1
+			end
 		end
 
 	on_pointer_motion (a_motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]) is
@@ -290,6 +302,57 @@ feature -- Status setting
 			-- Resize column `a_column' to width of its widest text.
 		do
 		end
+
+	add_list_view_column (an_identity: INTEGER; a_type: INTEGER; a_flag: INTEGER; a_minwidth: INTEGER; a_maxwidth: INTEGER; a_title_string: STRING): INTEGER is
+			-- Add a column to the list view of the data browser
+		local
+			ret: INTEGER
+			listviewcolumndesc: DATA_BROWSER_LIST_VIEW_COLUMN_DESC_STRUCT
+			listviewheaderdesc: DATA_BROWSER_LIST_VIEW_HEADER_DESC_STRUCT
+			tableviewcolumndesc: DATA_BROWSER_PROPERTY_DESC_STRUCT
+			cfstring: EV_CARBON_CF_STRING
+			fontstyle: CONTROL_FONT_STYLE_REC_STRUCT
+			fontinfo: CONTROL_BUTTON_CONTENT_INFO_STRUCT
+
+
+		do
+
+			create listviewcolumndesc.make_new_unshared
+
+			create tableviewcolumndesc.make_new_unshared
+			tableviewcolumndesc.set_propertyid (an_identity)
+			tableviewcolumndesc.set_propertytype (a_type)
+			tableviewcolumndesc.set_propertyflags (a_flag)
+
+			listviewcolumndesc.set_propertydesc (tableviewcolumndesc.item)
+
+			create cfstring.make_unshared_with_eiffel_string (a_title_string)
+
+			create listviewheaderdesc.make_new_unshared
+			listviewheaderdesc.set_version ({CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowserlistviewlatestheaderdesc)
+			listviewheaderdesc.set_minimumwidth (a_minwidth)
+			listviewheaderdesc.set_maximumwidth (a_maxwidth)
+			listviewheaderdesc.set_titleoffset (0)
+			listviewheaderdesc.set_titlestring (cfstring.item)
+			listviewheaderdesc.set_initialorder (0)
+
+			create fontstyle.make_new_unshared
+			fontstyle.set_flags (64)
+			fontstyle.set_just (0)
+
+			listviewheaderdesc.set_btnfontstyle (fontstyle.item)
+
+
+			create fontinfo.make_new_unshared
+			fontinfo.set_contenttype (0)
+
+			listviewheaderdesc.set_btncontentinfo (fontinfo.item)
+
+			listviewcolumndesc.set_headerbtndesc (listviewheaderdesc.item)
+
+			ret := add_data_browser_list_view_column_external (c_object, listviewcolumndesc.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowserlistviewappendcolumn)
+		end
+
 
 feature -- Element change
 

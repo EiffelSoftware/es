@@ -1,3 +1,4 @@
+
 indexing
 	description: "Objects that makes Carbon's DataBrowser control easily accessible"
 	legal: "See notice at end of class."
@@ -161,7 +162,7 @@ feature -- internals
 
 					columnDesc.headerBtnDesc.version = kDataBrowserListViewLatestHeaderDesc;
 					columnDesc.headerBtnDesc.minimumWidth = 100;
-					columnDesc.headerBtnDesc.maximumWidth = 3000;
+					columnDesc.headerBtnDesc.maximumWidth = 200;
 					columnDesc.headerBtnDesc.titleOffset = 0;
 					columnDesc.headerBtnDesc.titleString = CFSTR("");
 
