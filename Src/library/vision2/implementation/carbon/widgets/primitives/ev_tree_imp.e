@@ -258,11 +258,7 @@ feature {NONE} -- Implementation
 			child_array.go_i_th (a_position)
 			child_array.remove
 
-			-- carbon specifics:
-			-- TODO: remove the id (and those of children) from the 'item_list'
-			id := item_imp.item_id
-			ret := remove_data_browser_items_external (c_object, 0, 1, $id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
-			-- 2nd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
+			remove_id (item_imp.item_id)
 		end
 
 

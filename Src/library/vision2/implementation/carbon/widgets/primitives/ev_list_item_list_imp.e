@@ -160,6 +160,6 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_LIST_ITEM_LIST_IMP
 

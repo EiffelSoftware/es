@@ -27,6 +27,7 @@ inherit
 			on_mouse_button_event,
 			row_height,
 			insert_i_th,
+			remove_i_th,
 			minimum_height,
 			minimum_width
 		end
@@ -66,6 +67,16 @@ feature -- Initialize
 		do
 			Precursor {EV_LIST_ITEM_LIST_IMP} (v, i)
 			Precursor {EV_CARBON_DATABROWSER} (v, i)
+		end
+
+	remove_i_th (i: INTEGER) is
+			-- Remove at position `i'.
+		local
+			item_imp: EV_LIST_ITEM_IMP
+		do
+			item_imp ?= child_array.i_th (i).implementation
+			remove_id (item_imp.item_id)
+			Precursor {EV_LIST_ITEM_LIST_IMP} (i)
 		end
 
 feature -- Access

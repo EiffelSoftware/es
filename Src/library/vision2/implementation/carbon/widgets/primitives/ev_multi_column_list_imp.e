@@ -321,7 +321,22 @@ feature -- Element change
 		local
 			item_imp: EV_MULTI_COLUMN_LIST_ROW_IMP
 		do
-
+			clear_selection
+			from
+				ev_children.start
+			until
+				ev_children.after
+			loop
+				item_imp := ev_children.item
+				item_imp.set_parent_imp (Void)
+				remove_id (item_imp.item_id)
+				ev_children.forth
+			end
+			-- Renew storage containers.
+			ev_children.wipe_out
+			child_array.wipe_out
+			index := 0
+			update_pnd_status
 		end
 
 feature -- Minimum size
@@ -675,19 +690,21 @@ feature {NONE} -- Implementation
 			Precursor {EV_CARBON_DATABROWSER} (v, i)
 		end
 
+
 	remove_i_th (a_position: INTEGER) is
-			-- Remove item from list at `a_position'.
-			-- Set the items parent to void.
+			-- Remove at position `i'.
 		local
 			item_imp: EV_MULTI_COLUMN_LIST_ROW_IMP
 		do
 			item_imp := (ev_children @ (a_position))
 			item_imp.set_parent_imp (Void)
 
+			remove_id (item_imp.item_id)
 			-- remove the row from the `ev_children'
 			ev_children.go_i_th (a_position)
 			ev_children.remove
 			child_array.go_i_th (a_position)
+
 			child_array.remove
 			update_pnd_status
 		end
@@ -709,17 +726,11 @@ feature {EV_MULTI_COLUMN_LIST_ROW_IMP} -- Implementation
 			create_list (a_columns)
 		end
 
-feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
-
-	tree_view: POINTER
-		-- Pointer to the View
-
 feature {EV_ANY_I} -- Implementation
 
 	visual_widget: POINTER is
 			-- Pointer to on-screen interactive widget
 		do
-			Result := tree_view
 		end
 
 	scrollable_area: POINTER

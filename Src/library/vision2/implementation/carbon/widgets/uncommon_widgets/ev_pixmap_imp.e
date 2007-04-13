@@ -286,24 +286,6 @@ feature -- Element change
 
 feature -- Access
 
---	minimum_width: INTEGER is
---			-- Minimum width that the widget may occupy.
---	do
---		Result := width
---		if Result < 1 then
---			Result := 1
---		end
---	end
-
---	minimum_height: INTEGER is
---			-- Minimum width that the widget may occupy.
---	do
---		Result := width
---		if Result < 1 then
---			Result := 1
---		end
---	end
-
 	minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
 		local
@@ -348,12 +330,12 @@ feature -- Duplication
 			other_imp ?= other.implementation
 			drawable := other_imp.drawable
 			mask := other_imp.mask
-			internal_xpm_data := other_imp.internal_xpm_data
 
 			ret := hiimage_view_set_image_external (c_object, drawable)
 		end
 
-feature {EV_ANY_I, EV_GTK_DEPENDENT_APPLICATION_IMP} -- Implementation
+
+feature {EV_ANY_I} -- Implementation
 
 	set_pixmap_from_pixbuf (a_pixbuf: POINTER) is
 			-- Construct `Current' from GdkPixbuf `a_pixbuf'
@@ -372,11 +354,6 @@ feature {EV_ANY_I, EV_ANY_IMP} -- Implementation
 
 	mask: POINTER
 			-- Pointer to the GdkBitmap used for masking.
-
-feature {EV_GTK_DEPENDENT_APPLICATION_IMP, EV_ANY_I} -- Implementation
-
-	internal_xpm_data: POINTER
-		-- Pointer to the appropriate XPM image used for the default stock cursor if any
 
 feature {EV_STOCK_PIXMAPS_IMP, EV_PIXMAPABLE_IMP} -- Implementation
 
@@ -419,12 +396,6 @@ feature {NONE} -- Implementation
 		do
 		end
 
-feature {NONE} -- Externals
-
-	default_pixmap_xpm: POINTER is
-		do
-		end
-
 feature {NONE} -- Constants
 
 	Default_color_depth: INTEGER is -1
@@ -438,6 +409,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_PIXMAP;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- EV_PIXMAP_IMP
 

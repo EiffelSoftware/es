@@ -90,6 +90,17 @@ feature -- Creation
 			-- 2nd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
 		end
 
+	remove_id (a_id: INTEGER) is
+			-- Remove item at `a_position'
+		local
+			ret: INTEGER
+		do
+			-- TODO: remove the id (and those of children) from the 'item_list'
+			ret := remove_data_browser_items_external (c_object, 0, 1, $a_id, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemNoProperty);
+			-- 2nd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
+		end
+
+
 --	selected_item: like db_item
 
 feature -- settings
@@ -199,13 +210,100 @@ feature -- internals
 					create cfstring.make_unshared_with_eiffel_string (node.text)
 					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
 					if node.icon_ref /= Void then
-						Result := set_data_browser_item_data_icon_external (a_itemdata, node.icon_ref)
-						io.output.put_string(Result.out + "%N")
+						Result := set_data_browser_item_data_icon_external (a_itemdata, get_icon_ref(node.icon_ref))
+						io.output.put_string(Result.out + "  " + get_icon_ref(node.icon_ref).out + "%N")
 					--Result := set_data_browser_item_data_rgbcolor_external (a_itemdata, node.icon_ref)
 					end
 				end
 			end
 --			print ("on_callback for item: " + a_item.out + "%N")
+		end
+
+	get_icon_ref (img: POINTER) : POINTER is
+			--
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					UInt32              dataRGB[128 * 128] = { 0 };
+					UInt8               dataA[  128 * 128] = { 0 };
+					CGContextRef        cgContextRGB, cgContextA;
+					CGColorSpaceRef     cgColourSpace;
+					SInt32              theSize;
+					IconRef             iconRef;
+					IconFamilyHandle    iconHnd;
+					Handle              tmpHnd;
+					OSStatus            theErr;
+					CGImageRef			cgImage = $img;
+					
+					// Initialise ourselves
+					theErr  = noErr;
+					iconRef = NULL;
+					// Draw the image
+					//
+					// Since 128x128-sized IconRefs are constructed from two blocks of data,
+					// we render the image twice to obtain the image data and the mask data.
+					//
+					// If we could require 10.4 we could use kIconServices256PixelDataARGB
+					// and create a 256x256 icon directly from the ARGB data, but for now we
+					// use kCGImageAlphaOnly to support 10.3.
+					cgColourSpace = CGColorSpaceCreateDeviceRGB();
+					if (cgColourSpace == NULL)
+					    return(NULL);
+					cgContextRGB  = CGBitmapContextCreate(dataRGB, 128, 128, 8, 128 * 4, cgColourSpace, kCGImageAlphaNoneSkipFirst);
+					cgContextA    = CGBitmapContextCreate(dataA,   128, 128, 8, 128 * 1, NULL,          kCGImageAlphaOnly);
+					if (cgContextRGB != NULL && cgContextA != NULL)
+					    {
+					        CGContextDrawImage(cgContextRGB, CGRectMake(0, 0, 128, 128), cgImage);
+					        CGContextDrawImage(cgContextA,   CGRectMake(0, 0, 128, 128), cgImage);
+					    }
+				    //CFSafeRelease(cgColourSpace);
+				    //CFSafeRelease(cgContextRGB);
+				    //CFSafeRelease(cgContextA);
+				    // Create the icon family handle
+				    //
+				    // An icon family handle is just a fixed (big-endian) header, and tagged data.
+				    theSize = sizeof(OSType) + sizeof(OSType);
+				    iconHnd = (IconFamilyHandle) NewHandle(theSize);
+				    if (iconHnd == NULL)
+				        theErr = memFullErr;
+				    if (theErr == noErr)
+				        {
+				            (*iconHnd)->resourceType = EndianU32_NtoB(kIconFamilyType);
+				            (*iconHnd)->resourceSize = EndianU32_NtoB(theSize);
+				        }
+				    if (theErr == noErr)
+				        {
+				            theErr = PtrToHand(dataRGB, &tmpHnd, sizeof(dataRGB));
+				            if (theErr == noErr)
+				                {
+				                    theErr = SetIconFamilyData(iconHnd, kThumbnail32BitData, tmpHnd);
+				                    DisposeHandle(tmpHnd);
+				                }
+				        }
+				        
+				   if (theErr == noErr)
+				        {
+				            theErr = PtrToHand(dataA, &tmpHnd, sizeof(dataA));
+				            if (theErr == noErr)
+				               {
+				                   theErr = SetIconFamilyData(iconHnd, kThumbnail8BitMask, tmpHnd);
+				                   DisposeHandle(tmpHnd);
+				               }
+				        }
+				                
+				    // Create the IconRef
+				    if (theErr == noErr)
+				        theErr = GetIconRefFromIconFamilyPtr(*iconHnd, GetHandleSize((Handle) iconHnd), &iconRef);
+				    
+				    // Clean up
+				    if (iconHnd != NULL)
+				        DisposeHandle((Handle) iconHnd);
+				    
+				    return(iconRef);
+				}
+			]"
 		end
 
 	item_notification_dispatcher: DATA_BROWSER_ITEM_NOTIFICATION_PROC_PTR_DISPATCHER
