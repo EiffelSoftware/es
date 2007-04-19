@@ -6,32 +6,30 @@ indexing
 
 class
 	ATM_UI
-inherit
-	OBSERVABLE
 
 create
 	make
 
 feature -- Access
 
-	make (an_atm: ATM) is
-			-- Create a new ATM_UI for 'an_atm'
+	make (an_atm: ATM)
+			-- Create a new ATM_UI for 'an_atm'.
+		require
+			an_atm_not_void: an_atm /= Void
 		do
+			recorder.capture_methodbody_start ("make", Current, [an_atm])
 			atm := an_atm
+			recorder.capture_methodbody_end (Void)
 		end
 
-	is_observed: BOOLEAN is
-		once
-			Result := False
-		end
 feature --Basic Operations
 
-	run is
-			-- run the UI.
+	run
+			-- Run the UI.
 		local
 			exit: BOOLEAN
 		do
-			the_recorder.capture_methodbody_start ("run", Current, 0)
+			recorder.capture_methodbody_start ("run", Current, [])
 
 			from
 				exit := False
@@ -52,63 +50,63 @@ feature --Basic Operations
 				when 'w' then
 					withdraw
 				when 'q' then
-					print("exiting application")
+					print ("exiting application")
 					exit := True
 				else
 					print("command not recognized")
 				end
 			end
-			the_recorder.capture_methodbody_end (Void)
+			recorder.capture_methodbody_end (Void)
 		end
 
 feature -- Basic operations
 
-	ping is
-			-- dummy operation without arguments and results (testing).
+	ping
+			-- Dummy feature without arguments and results (testing).
 		do
-			the_recorder.capture_methodbody_start ("ping", Current, 0)
-			the_recorder.capture_methodbody_end(Void)
+			recorder.capture_methodbody_start ("ping", Current, [])
+			recorder.capture_methodbody_end (Void)
 		end
 
 feature {NONE} -- Implementation
 	-- These features won't be captured, as they can't be
 	-- executed from other classes.
 
-	atm: ATM  --the ATM the UI is connected to.
+	atm: ATM  -- ATM the UI is connected to
 
-	deposit is
-			-- go to deposit menu	
+	deposit
+			-- Go to the deposit menu	
 		local
 			account_name: STRING
 			amount: REAL
 		do
-			print("Deposit - Menu %N")
-			account_name:=prompt_account_name
-			amount:=prompt_amount
+			print ("Deposit - Menu %N")
+			account_name := prompt_account_name
+			amount := prompt_amount
 			atm.deposit (account_name, amount)
 			if atm.last_operation_succeeded then
-				print("operation succeded!%N")
-				print_balance_for_account_name(account_name)
+				print ("operation succeded!%N")
+				print_balance_for_account_name (account_name)
 			else
-				print("operation failed! %N")
+				print ("operation failed! %N")
 			end
 		end
 
-	withdraw is
-			-- go to the withdraw menu
+	withdraw
+			-- Go to the withdraw menu
 		local
 			account_name: STRING
 			amount: REAL
 		do
-			print("withdraw-Menu %N")
-			account_name:=prompt_account_name
-			amount:=prompt_amount
-			atm.withdraw(account_name,amount)
+			print ("withdraw-Menu %N")
+			account_name := prompt_account_name
+			amount := prompt_amount
+			atm.withdraw (account_name,amount)
 			if atm.last_operation_succeeded then
-				print("operation succeded!%N")
-				print_balance_for_account_name(account_name)
+				print ("operation succeded!%N")
+				print_balance_for_account_name (account_name)
 			else
-				print("operation failed! %N")
+				print ("operation failed! %N")
 			end
 		end
 
@@ -121,25 +119,25 @@ feature {NONE} -- Implementation
 			until
 				atm.account_exists (Result)
 			loop
-				print("please enter the name of your account %N")
+				print ("please enter the name of your account %N")
 				io.readline
-				Result:= io.last_string
+				Result := io.last_string
 
 				if not atm.account_exists (Result) then
-					print("unknown account. hint: 'test' %N")
+					print ("unknown account. hint: 'test' %N")
 				end
 			end
 		end
 
 	prompt_amount:REAL
-			-- Prompt the user for the Amount.
+			-- Prompt the user for the Amount
 		do
-			print("please enter amount")
+			print ("please enter amount")
 			io.read_real
-			Result:=io.last_real
+			Result := io.last_real
 		end
 
-	print_balance_for_account_name(account_name: STRING) is
+	print_balance_for_account_name (account_name: STRING)
 			-- Print the balance for the Account with name 'account_name'.
 		do
 			print ("Account " + account_name + "%N")

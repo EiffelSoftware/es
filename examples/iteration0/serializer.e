@@ -67,6 +67,15 @@ do
 end
 
 
+open_file(file_name: STRING)
+require
+	file_closed: not file_open
+do
+
+ensure
+	file_open: file_open
+end
+
 close_file
 require
 	file_open: file_open

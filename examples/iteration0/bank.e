@@ -7,66 +7,77 @@ indexing
 class
 	BANK
 inherit
-	OBSERVABLE
-
+	ANY
+		redefine
+			is_observed
+		end
 create
 	make
 
 --artificial example where withdrawal happens through the bank and not directly on the account.
 
 feature --creation
-	make is
-		-- create a bank
+	make
+		-- Create a bank
 		do
-			create the_account.make("test")
-			create the_atm.make(Current)
+			recorder.capture_methodbody_start ("make", Current, [])
+			create the_account.make ("test")
+			create the_atm.make (Current)
+			recorder.capture_methodbody_end (Void)
 		end
 
-	is_observed: BOOLEAN is
-		once
-			Result:=True
-		end
+	is_observed: BOOLEAN is True
 
 feature -- Access
-account_for_name(name: STRING):BANK_ACCOUNT is
-		-- the account with 'name'
-		-- or Void if the account does not exist
-	do
-		the_recorder.capture_methodbody_start ("get_Account", Current, 1)
-		if name.is_equal("test") then
-			Result:=the_account
-		end
-		the_recorder.capture_methodbody_end (Result)
 
+account_for_name (name: STRING): BANK_ACCOUNT
+		-- The account with 'name'
+		-- or Void if the account does not exist
+	require
+		name_not_void: name /= Void
+	do
+		recorder.capture_methodbody_start ("account_for_name", Current, [name])
+		if name.is_equal ("test") then
+			Result := the_account
+		end
+		recorder.capture_methodbody_end (Result)
 	end
 
-atm:ATM is
-		--the ATM that is connected to this
-		--bank
+atm:ATM
+		-- ATM that is connected to this
+		-- bank
 	do
-		the_recorder.capture_methodbody_start ("atm", Current, 0)
+		recorder.capture_methodbody_start ("atm", Current, [])
 		Result := the_atm
-		the_recorder.capture_methodbody_end (Result)
+		recorder.capture_methodbody_end (Result)
+	ensure
+		result_not_void: Result /= Void
 	end
 
 feature -- Basic Operations
 
-withdraw(an_account: BANK_ACCOUNT; amount: REAL) is
-		-- withdraw 'amount' from 'an_account'
+withdraw (an_account: BANK_ACCOUNT; amount: REAL)
+		-- Withdraw 'amount' from 'an_account'
+	require
+		an_account_not_void: an_account /= Void
+		amount_not_negative: amount >= 0
 	do
-		the_recorder.capture_methodbody_start ("withdraw", Current, 2)
-		an_account.withdraw(amount)
+		recorder.capture_methodbody_start ("withdraw", Current, [an_account, amount])
+		an_account.withdraw (amount)
 		print (the_atm.authorization_key) -- to test outcalls ;)
-		the_recorder.capture_methodbody_end (Void)
+		recorder.capture_methodbody_end (Void)
 	end
 
-deposit(an_account: BANK_ACCOUNT; amount: REAL) is
-		-- deposit 'amount' on 'an_account'
+deposit(an_account: BANK_ACCOUNT; amount: REAL)
+		-- Deposit 'amount' on 'an_account'
+	require
+		an_account_not_void: an_account /= Void
+		amount_not_negative: amount >= 0
 	do
-		the_recorder.capture_methodbody_start ("deposit", Current, 2)
+		recorder.capture_methodbody_start ("deposit", Current, [an_account, amount])
 		an_account.deposit (amount)
-		print(the_atm.authorization_key) -- test outcalls...
-		the_recorder.capture_methodbody_end (Void)
+		print (the_atm.authorization_key) -- test outcalls...
+		recorder.capture_methodbody_end (Void)
 	end
 
 feature {NONE} -- Implementation
