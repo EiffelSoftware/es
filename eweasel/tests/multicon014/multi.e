@@ -5,20 +5,20 @@ indexing
 	revision: "$Revision$"
 
 class
-		MULTI[G->{COMPARABLE, NUMERIC}]
+		MULTI[G -> {COMPARABLE rename internal_correct_mismatch as blubb, default_create as default_create2 end, NUMERIC} create default_create end]
 
 create
 	default_create
 
 feature -- do compuations
 
-		abs_diff ( a_g1, a_g2: G): G is
+		test: G is
 			-- for testing
 		do
-			if a_g1 > a_g2 then
-				Result := a_g1 - a_g2
-			else
-				Result := a_g2 - a_g1
-			end
+			create Result
+			$COMMENT_LINE_1 Result.foo -- VTMC(1) (does not exist)
+			$COMMENT_LINE_2 Result.internal_correct_mismatch -- VTMC(1) (export status)
+			$COMMENT_LINE_3 Result.is_equal (Result) -- VTMC(2)
+			
 		end
 end

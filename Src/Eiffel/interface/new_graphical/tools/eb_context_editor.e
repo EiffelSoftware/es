@@ -21,6 +21,7 @@ inherit
 			mini_toolbar,
 			build_mini_toolbar,
 			build_docking_content,
+			internal_recycle,
 			force_last_stone
 		end
 
@@ -39,8 +40,6 @@ inherit
 		end
 
 	SHARED_ERROR_HANDLER
-
-	EB_RECYCLABLE
 
 	EB_RECYCLER
 		select
@@ -1328,7 +1327,7 @@ feature {NONE} -- Memory management
 			recycle_commands
 			world_cell.recycle
 			world_cell := Void
-			develop_window := Void
+			Precursor {EB_STONABLE_TOOL}
 		end
 
 	recycle_commands is
@@ -1471,6 +1470,8 @@ feature {EB_DEVELOPMENT_WINDOW_TOOLS, EB_STONE_CHECKER} -- Context tool
 			else
 				set_last_stone (new_stone)
 			end
+
+			develop_window.tools.set_last_stone (last_stone)
 
 			if widget.is_displayed or else is_auto_hide then
 				force_last_stone

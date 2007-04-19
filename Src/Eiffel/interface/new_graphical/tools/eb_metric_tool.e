@@ -16,6 +16,7 @@ inherit
 			pixmap,
 			pixel_buffer,
 			show,
+			internal_recycle,
 			close
 		end
 
@@ -303,15 +304,17 @@ feature {NONE} -- Memory management
 			new_metric_panel.recycle
 			metric_archive_panel.recycle
 			detail_result_panel.recycle
+			metric_history_panel.recycle
 
 			metric_evaluation_panel := Void
 			new_metric_panel := Void
 			metric_archive_panel := Void
 			detail_result_panel := Void
-			develop_window := Void
+			metric_history_panel := Void
 			uninstall_agents (metric_manager)
 			eiffel_project.manager.load_agents.prune_all (notify_project_loaded_agent)
 			eiffel_project.manager.close_agents.prune_all (notify_project_unloaded_agent)
+			Precursor {EB_TOOL}
 		end
 
 feature -- Status report

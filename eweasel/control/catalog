@@ -324,6 +324,10 @@ test	inherit-from-expanded				valid203 tcf pass validity frozen expanded
 test	recheck-assertion-feature-renamed	valid204 tcf pass validity assertion renaming
 test	recursive-generic-constraint-with-creation	valid205 tcf pass validity
 test	named-tuple-in-parent-constraint-clauses	valid206 tcf pass validity
+test	valid-generic-derivation	valid207 tcf pass validity
+test	creation-constraint-like-current-deferred	valid208 tcf pass validity
+test	creation-constraint-like-current-deferred2	valid209 tcf pass validity
+test	vtgc-expanded	valid210 tcf pass validity
 
 
 -- System validity tests
@@ -531,7 +535,7 @@ test	create-sub-cluster-bogus-vd30	incr197  tcf fail incrementality
 test	vgcc-weasel			incr198  tcf fail incrementality
 test	add-vuar-remove-finalize	incr199  tcf pass incrementality
 test	vtec-weasel			incr200  tcf fail incrementality
-test	vtcg-then-syntax-error		incr201  tcf pass incrementality
+test	vtcg-then-syntax-error-then-ok		incr201  tcf pass incrementality
 test	implicit-def-create-finalize	incr202  tcf pass incrementality
 test	remove-syntax-warning-yes	incr203  tcf pass incrementality
 test	bogus-vtec			incr204  tcf pass incrementality
@@ -612,6 +616,7 @@ test	changing-formals-precursor-crash	incr279 tcf pass incrementality
 test	console-setting-change		incr280 tcf pass incrementality
 test	vtcg-add-remove-missing-error	incr281 tcf pass incrementality
 test	funky-removal-of-type			incr282 tcf pass incrementality
+test	multi-constraint-incremental-crash		incr283 tcf pass incrementality
 
 
 -- Melting
@@ -1625,6 +1630,11 @@ test	multi-constraint-check-constraints				multicon024 tcf pass multiconstraint
 test	multi-constraint-actual-type					multicon025 tcf pass multiconstraint
 test	multi-constraint-rename-formal					multicon026 tcf pass multiconstraint
 test	multi-constraint-creation-through-formal		multicon027 tcf pass multiconstraint
+test	multi-constraint-abstract-creation				multicon028 tcf pass multiconstraint
+test	multi-constraint-creation-crash01				multicon029 tcf pass multiconstraint
+test	multi-constraint-code-generation-crash01		multicon030 tcf pass multiconstraint
+test	multi-constraint-renamed-creation-feature		multicon031 tcf pass multiconstraint
+test	multi-constraint-single-constraint-renaming		multicon032 tcf pass multiconstraint
 
 -- .NET specific test
 if DOTNET test expanded-object-conversion	dotnet001	tcf pass dotnet

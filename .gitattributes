@@ -154,8 +154,7 @@ Delivery/scripts/windows/install/content/eiffelenvision/EiffelProjects.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Examples.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Libraries.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Libraries64.wxs -text
-Delivery/scripts/windows/install/content/eiffelenvision/Redist.wxi -text
-Delivery/scripts/windows/install/content/eiffelenvision/Redist64.wxi -text
+Delivery/scripts/windows/install/content/eiffelenvision/Redist.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Schema.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Snippets.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Specifications.wxs -text
@@ -2889,6 +2888,7 @@ eweasel/tests/incr255/liba -text
 eweasel/tests/incr255/libb -text
 eweasel/tests/incr256/liba -text
 eweasel/tests/incr276/Ace -text
+eweasel/tests/incr283/Ace -text
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
@@ -3028,6 +3028,11 @@ eweasel/tests/multicon024/Ace -text
 eweasel/tests/multicon025/Ace -text
 eweasel/tests/multicon026/Ace -text
 eweasel/tests/multicon027/Ace -text
+eweasel/tests/multicon028/Ace -text
+eweasel/tests/multicon029/Ace -text
+eweasel/tests/multicon030/Ace -text
+eweasel/tests/multicon031/Ace -text
+eweasel/tests/multicon032/Ace -text
 eweasel/tests/rdtp002/test -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
@@ -3369,6 +3374,10 @@ eweasel/tests/valid201/Ace -text
 eweasel/tests/valid202/Ace -text
 eweasel/tests/valid203/Ace -text
 eweasel/tests/valid204/Ace -text
+eweasel/tests/valid207/Ace -text
+eweasel/tests/valid208/Ace -text
+eweasel/tests/valid209/Ace -text
+eweasel/tests/valid210/Ace -text
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text

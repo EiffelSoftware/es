@@ -185,9 +185,13 @@ feature -- Status setting
 			{EV_GTK_EXTERNALS}.gdk_window_set_decorations ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object), l_decor)
 		end
 
+	disable_user_resize_called: BOOLEAN
+		-- Has `disable_user_resize' been called?
+
 	disable_user_resize is
 			-- Forbid the resize of the window.
 		do
+			disable_user_resize_called := True
 			user_can_resize := False
 			if is_displayed then
 				forbid_resize
@@ -223,11 +227,13 @@ feature -- Status setting
 		do
 			if not is_show_requested then
 				call_show_actions := True
-				if user_can_resize then
-					allow_resize
-				else
-						-- Forbid the window manager from resizing window.
-					forbid_resize
+				if disable_user_resize_called then
+					if not user_can_resize then
+						forbid_resize
+					else
+							-- Forbid the window manager from resizing window.
+						allow_resize
+					end
 				end
 				Precursor {EV_GTK_WINDOW_IMP}
 			end
@@ -467,13 +473,13 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP} -- Implementation
 		do
 			a_widget ?= app_implementation.eif_object_from_gtk_object (a_widget_ptr)
 			l_previously_focused_widget ?= app_implementation.eif_object_from_gtk_object (previously_focused_widget)
-			if l_previously_focused_widget /= Void and then l_previously_focused_widget /= a_widget then
-				set_focused_widget (Void)
-				l_previously_focused_widget.on_focus_changed (False)
-			end
 			if a_widget /= Void then
 				set_focused_widget (a_widget)
 				a_widget.on_focus_changed (True)
+			end
+			if l_previously_focused_widget /= Void and then l_previously_focused_widget /= a_widget then
+				set_focused_widget (Void)
+				l_previously_focused_widget.on_focus_changed (False)
 			end
 		end
 

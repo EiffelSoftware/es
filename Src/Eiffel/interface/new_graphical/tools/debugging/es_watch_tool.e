@@ -20,6 +20,7 @@ inherit
 			pixmap,
 			show,
 			close,
+			internal_recycle,
 			mini_toolbar,
 			build_mini_toolbar,
 			build_docking_content
@@ -1049,19 +1050,13 @@ feature {NONE} -- Event handling
 		local
 			expr_item: like watched_item_from
 		do
-			if expr.evaluation_disabled then
-				-- Nothing special
-			else
-				if debugger_manager.safe_application_is_stopped then
-					expr.evaluate
-				else
-					expr.set_unevaluated
-				end
-			end
 			if auto_expression_enabled and expr.error_occurred then
 				-- Do not display it
 			else
 				expr_item := new_watched_item_from_expression (expr, watches_grid)
+				if debugger_manager.safe_application_is_stopped then
+					expr_item.request_evaluation (True)
+				end
 				watched_items.extend (expr_item)
 
 				if expr_item /= Void and then expr_item.row /= Void then
@@ -1195,7 +1190,7 @@ feature -- Access
 			l_row := a_item.row
 			l_expr := a_item.expression
 			if l_expr.evaluation_disabled then
-				-- nothing special
+				--| nothing special
 			else
 				if debugger_manager.safe_application_is_stopped then
 					l_expr.evaluate
@@ -1417,11 +1412,6 @@ feature {NONE} -- Implementation
 						if l_item /= Void then
 							expr ?= l_item.expression
 							if expr.on_context then
-								if expr.evaluation_disabled then
-									expr.set_unevaluated
-								else
-									expr.evaluate
-								end
 								refresh_watched_item (l_item)
 							end
 						end

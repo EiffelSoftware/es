@@ -20,6 +20,7 @@ inherit
 			pixel_buffer,
 			build_docking_content,
 			show,
+			internal_recycle,
 			is_stone_valid
 		end
 
@@ -155,8 +156,7 @@ feature -- Memory management
 			-- so that we know whether we're still referenced or not.
 		do
 			cluster_manager.remove_observer (Current)
-			develop_window := Void
-			content := Void
+			Precursor {EB_STONABLE_TOOL}
 		end
 
 feature {NONE} -- External changes to classes/clusters
@@ -235,7 +235,7 @@ feature {EB_STONE_CHECKER} -- Actions
 						l_group := l_group.target.system.lowest_used_in_library
 					end
 					current_system := l_group.target.system
-					l_class_options := l_group.changeable_class_options (l_cs.class_name)
+					l_class_options := l_group.changeable_class_options (l_cs.class_i.config_class)
 					create l_inh_options
 					l_inh_options.merge (l_class_options)
 					l_inh_options.merge (l_group.options)

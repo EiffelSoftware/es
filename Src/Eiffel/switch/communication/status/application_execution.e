@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 		do
 			debugger_manager := dbg
 			current_execution_stack_number := 1
+			create last_assertion_check_stack.make
 		ensure
 			current_execution_stack_number_is_one: current_execution_stack_number = 1
 		end
@@ -237,11 +238,13 @@ feature -- Execution
 		local
 			l_envstr: STRING_32
 			app: STRING
+			ctlr: DEBUGGER_CONTROLLER
 		do
 			param_arguments := args
 			param_execution_directory := cwd
 			param_environment := env
-			l_envstr := environment_variables_to_string (environment_variables_updated_with (env))
+			ctlr := debugger_manager.controller
+			l_envstr := environment_variables_to_string (env)
 			app := Eiffel_system.application_name (True)
 			run_with_env_string (app, args, cwd, l_envstr)
 		ensure
@@ -301,20 +304,6 @@ feature -- Execution
 		deferred
 		end
 
-	disable_assertion_check is
-			-- Send a message to the application to disable assertion checking
-		require
-			app_is_running: is_running
-		deferred
-		end
-
-	restore_assertion_check is
-			-- Send a message to the application to restore the previous assertion check status
-		require
-			app_is_running: is_running
-		deferred
-		end
-
 	notify_newbreakpoint is
 			-- Send an interrupt to the application
 			-- which will stop at the next breakable line number
@@ -330,6 +319,39 @@ feature -- Execution
 			-- Ask the application to terminate itself.
 		require
 			app_is_running: is_running
+		deferred
+		end
+
+feature -- Assertion change
+
+	disable_assertion_check is
+			-- Send a message to the application to disable assertion checking
+		local
+			b: BOOLEAN
+		do
+			b := impl_check_assert (False)
+			last_assertion_check_stack.extend (b)
+		end
+
+	restore_assertion_check is
+			-- Send a message to the application to restore the previous assertion check status
+		require
+			last_assertion_check_stack_not_empty: not last_assertion_check_stack.is_empty
+		local
+			b: BOOLEAN
+		do
+			b := last_assertion_check_stack.item
+			last_assertion_check_stack.remove
+			b := impl_check_assert (b)
+		end
+
+	last_assertion_check_stack: LINKED_STACK [BOOLEAN]
+			-- Last assertion check value when it had been disabled by `disable_assertion_check'.
+
+feature {NONE} -- Assertion change Implementation
+
+	impl_check_assert (b: BOOLEAN): BOOLEAN is
+			-- `check_assert (b)' on debuggee
 		deferred
 		end
 
@@ -403,35 +425,6 @@ feature -- Setting
 
 feature -- Environment related
 
-	environment_variables_updated_with (env: HASH_TABLE [STRING_32, STRING_32]): HASH_TABLE [STRING_32, STRING_32] is
-			-- String representation of the Environment variables
-		local
-			k,v: STRING_32
-		do
-			if env /= Void and then not env.is_empty then
-				Result := debugger_manager.environment_variables_table
-				if Result = Void then
-					fixme ("Environment_variables table should not be Void")
-					create Result.make (env.count)
-				end
-
-				from
-					env.start
-				until
-					env.after
-				loop
-					k := env.key_for_iteration
-					v := env.item_for_iteration
-					if k /= Void and then v /= Void then
-						Result.force (v, k)
-					end
-					env.forth
-				end
-			end
-		ensure
-			Result = Void implies (env = Void or else env.is_empty)
-		end
-
 	environment_variables_to_string (env: HASH_TABLE [STRING_32, STRING_32]): STRING_32 is
 			-- String representation of the Environment variables
 		local
@@ -489,7 +482,8 @@ feature {NONE} -- fake
 			-- application. Also execute the `termination_command'.
 		require
 			is_running: is_running
-		deferred
+		do
+			last_assertion_check_stack.wipe_out
 		end
 
 	run_with_env_string (app, args, cwd: STRING; env: STRING_GENERAL) is

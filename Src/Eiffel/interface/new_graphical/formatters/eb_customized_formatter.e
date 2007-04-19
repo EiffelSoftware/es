@@ -31,8 +31,6 @@ inherit
 
 	EXCEPTIONS
 
---	EB_METRIC_INTERFACE_PROVIDER
-
 	EB_METRIC_TOOL_HELPER
 
 create
@@ -75,10 +73,10 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	command_name: STRING_GENERAL is
+	capital_command_name: STRING_GENERAL is
 			-- Name of current command throughout the interface (in lower case).
 		do
-			Result := Interface_names.string_general_as_lower (command_name_internal)
+			Result := command_name_internal
 		end
 
 	element_name: STRING is

@@ -171,11 +171,13 @@ feature -- Status
 		end
 
 	has_default_create: BOOLEAN
-			-- Does the construct list `default_create' has creation procedure?
+			-- Has the construct list a version of `default_create' as a creation procedure?
 			-- Set after a call to `constraint_creation_list'.
 
-	has_creation_feature_name (feature_name: STRING): BOOLEAN is
-			-- Check in `creation_feature_list' if it contains `feature_name'.
+	has_creation_feature_id (a_feature_id: ID_AS): BOOLEAN is
+			-- Check in `creation_feature_list' if it contains a feature with id `a_feature_id'.
+			--
+			-- `a_feature_name_id' is the names heap id of the feature.
 		local
 			creation_list: EIFFEL_LIST [FEATURE_NAME]
 		do
@@ -185,7 +187,26 @@ feature -- Status
 			until
 				Result or else creation_list.after
 			loop
-				Result := creation_list.item.internal_name.name.is_equal (feature_name)
+				Result := creation_list.item.internal_name.name_id = a_feature_id.name_id
+				creation_list.forth
+			end
+		end
+
+	has_creation_feature_name_id (a_feature_name_id: INTEGER): BOOLEAN is
+			-- Check in `creation_feature_list' if it contains a feature with id `a_feature_name_id'.
+			--
+			-- `a_feature_name_id' is the names heap id of the feature.
+		local
+			creation_list: EIFFEL_LIST [FEATURE_NAME]
+		do
+			from
+				creation_list := creation_feature_list
+				creation_list.start
+			until
+				Result or else creation_list.after
+			loop
+				Result := creation_list.item.internal_name.name_id = a_feature_name_id
+
 				creation_list.forth
 			end
 		end
@@ -211,7 +232,7 @@ feature {NONE} -- Status implementation
 					l_count := constraints.count
 					Result := l_count > 1
 					if l_count = 1 and then not Result then
-							-- Maybe we our constraint is a formal which itself has multi constraints?
+							-- Maybe our constraint is a formal which itself has multi constraints?
 						l_next_formal ?= constraints.first
 						if l_next_formal /= Void and then l_next_formal.position /= a_formal.position then
 							a_recursion_break.force (a_formal.position)

@@ -322,6 +322,16 @@ feature -- Set
 			end
 		end
 
+	set_focus_no_maximzied (a_zone: EV_WIDGET) is
+			-- Same as `set_focus', but only do things when no maximized zone in dock area which has `a_zone'
+		do
+			if docking_manager.property.last_focus_content /= Current and not docking_manager.property.is_opening_config then
+				if docking_manager.query.maximized_inner_container (a_zone) = Void then
+					set_focus
+				end
+			end
+		end
+
 	set_user_widget (a_widget: EV_WIDGET) is
 			-- Set `user_widget' with `a_widget'.
 		require
@@ -434,6 +444,7 @@ feature -- Set Position
 		require
 			manager_has_content: manager_has_content (Current)
 			editor_place_holder_in: manager_has_place_holder
+			is_editor: type = {SD_ENUMERATION}.editor
 		do
 			set_visible (True)
 			set_relative (docking_manager.zones.place_holder_content, {SD_ENUMERATION}.top)
@@ -505,7 +516,6 @@ feature -- Command
 	show is
 			-- Show zone which has `Current'.
 		do
-			docking_manager.command.recover_normal_state
 			state.show
 			is_visible := True
 		end
@@ -640,7 +650,7 @@ feature {SD_STATE, SD_OPEN_CONFIG_MEDIATOR}
 				internal_user_widget.show
 			end
 			l_zone := state.zone
-			if l_zone /= Void and then not l_zone.is_displayed then
+			if l_zone /= Void and then not l_zone.is_destroyed and then not l_zone.is_displayed then
 				l_zone.show
 			end
 		ensure

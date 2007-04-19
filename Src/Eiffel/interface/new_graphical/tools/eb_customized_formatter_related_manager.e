@@ -5,12 +5,16 @@ indexing
 	revision: "$Revision$"
 
 deferred class
-	EB_CUSTOMIZED_FORMATTER_RELATED_MANAGER
+	EB_CUSTOMIZED_FORMATTER_RELATED_MANAGER [G]
 
 inherit
-	EB_CUSTOMIZED_FORMATTER_UTILITY
+	EB_XML_DOCUMENT_HELPER [G]
 
 	EC_EIFFEL_LAYOUT
+
+	SHARED_WORKBENCH
+
+	EB_CUSTOMIZED_FORMATTER_XML_CONSTANTS
 
 feature -- Access
 
@@ -101,9 +105,10 @@ feature{NONE} -- Implementation
 			retry
 		end
 
-	store_in_file (a_descriptors: LIST [like item_anchor]; a_root_name: STRING; a_xml_generator: FUNCTION [ANY, TUPLE [a_item: like item_anchor; a_parent: XM_COMPOSITE], XM_ELEMENT]; a_path: FILE_NAME; a_file_name: STRING) is
+	store_in_file (a_descriptors: LIST [G]; a_root_name: STRING; a_xml_generator: FUNCTION [ANY, TUPLE [a_item: G; a_parent: XM_COMPOSITE], XM_ELEMENT]; a_path: FILE_NAME; a_file_name: STRING) is
 			-- Store `a_descritpors' in formatter descriptor `a_file_name' in `a_path'.
 			-- If `a_descriptors' doesn't contain any formatter descriptor but formatter file in `a_path exists, remove that file.
+			-- `a_error_agent' will be invoked when error occurs.
 		require
 			a_descriptors_attached: a_descriptors /= Void
 			a_descriptors_valid: not a_descriptors.has (Void)
@@ -114,16 +119,18 @@ feature{NONE} -- Implementation
 		local
 			l_file: RAW_FILE
 			l_retried: BOOLEAN
+			l_file_name: STRING
 		do
 			if not l_retried then
+				l_file_name := absolute_file_name (a_path, a_file_name)
 				if a_descriptors.is_empty then
-					create l_file.make (absolute_file_name (a_path, a_file_name))
+					create l_file.make (l_file_name)
 					if l_file.exists then
 						l_file.delete
 					end
 				else
 					create_formatter_file_dir (a_path)
-					store_xml (xml_document_for_items (a_root_name, a_descriptors, a_xml_generator), absolute_file_name (a_path, a_file_name))
+					store_xml (xml_document_for_items (a_root_name, a_descriptors, a_xml_generator), l_file_name, agent set_last_error (create {EB_METRIC_ERROR}.make (metric_names.err_file_not_writable (l_file_name))))
 				end
 			end
 		rescue

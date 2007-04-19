@@ -10,14 +10,9 @@ class
 	EB_CUSTOMIZED_FORMATTER_MANAGER
 
 inherit
-	EB_CUSTOMIZED_FORMATTER_RELATED_MANAGER
-		redefine
-			item_anchor
-		end
+	EB_CUSTOMIZED_FORMATTER_RELATED_MANAGER [EB_CUSTOMIZED_FORMATTER_DESP]
 
 	EB_SHARED_METRIC_MANAGER
-
-	SHARED_WORKBENCH
 
 	PROJECT_CONTEXT
 
@@ -43,7 +38,7 @@ feature -- Access
 			-- Always create new formatter instances from `formatter_descriptors'.
 		local
 			l_formatters: LINKED_LIST [EB_CUSTOMIZED_FORMATTER]
-			l_fmt_desp: like item_anchor
+			l_fmt_desp: EB_CUSTOMIZED_FORMATTER_DESP
 			l_desp: like formatter_descriptors
 			l_cursor: CURSOR
 		do
@@ -76,26 +71,7 @@ feature -- Access
 			Result := formatter_descriptors_internal
 		end
 
-	global_formatter_descriptors: LIST [like item_anchor] is
-			-- Global formatter descriptors
-		do
-			Result := satisfied_items (formatter_descriptors, agent is_formatter_global_scope)
-		ensure
-			result_attached: Result /= Void
-		end
-
-	target_formatter_descriptors: LIST [like item_anchor] is
-			-- Target formatter descriptors
-		do
-			Result := satisfied_items (formatter_descriptors, agent is_formatter_target_scope)
-		ensure
-			result_attached: Result /= Void
-		end
-
-	item_anchor: EB_CUSTOMIZED_FORMATTER_DESP
-			-- Anchor of items
-
-	xml_for_descriptor (a_descriptor: like item_anchor; a_parent: XM_COMPOSITE): XM_ELEMENT is
+	xml_for_descriptor (a_descriptor: EB_CUSTOMIZED_FORMATTER_DESP; a_parent: XM_COMPOSITE): XM_ELEMENT is
 			-- Xml element for `a_descriptor'
 		require
 			a_descriptor_attached: a_descriptor /= Void
@@ -161,25 +137,7 @@ feature -- Status report
 			Result := not formatter_descriptors.is_empty
 		end
 
-	has_target_descriptors (a_descriptors: LIST [like item_anchor]): BOOLEAN is
-			-- Does `a_descriptors' contain target descriptors?
-		require
-			a_descriptors_attached: a_descriptors /= Void
-			a_descriptors_valid: not a_descriptors.has (Void)
-		do
-			Result := a_descriptors.there_exists (agent is_formatter_target_scope)
-		end
-
-	has_global_descriptors (a_descriptors: LIST [like item_anchor]): BOOLEAN is
-			-- Does `a_descriptors' contain global descriptors?
-		require
-			a_descriptors_attached: a_descriptors /= Void
-			a_descriptors_valid: not a_descriptors.has (Void)
-		do
-			Result := a_descriptors.there_exists (agent is_formatter_global_scope)
-		end
-
-	is_formatter_global_scope (a_descriptor: like item_anchor): BOOLEAN is
+	is_formatter_global_scope (a_descriptor: EB_CUSTOMIZED_FORMATTER_DESP): BOOLEAN is
 			-- Is formatter defined by `a_descriptor' of global scope?
 		require
 			a_descriptor_attached: a_descriptor /= Void
@@ -187,7 +145,7 @@ feature -- Status report
 			Result := a_descriptor.is_global_scope
 		end
 
-	is_formatter_target_scope (a_descriptor: like item_anchor): BOOLEAN is
+	is_formatter_target_scope (a_descriptor: EB_CUSTOMIZED_FORMATTER_DESP): BOOLEAN is
 			-- Is formatter defined by `a_descriptor' of target scope?
 		require
 			a_descriptor_attached: a_descriptor /= Void
@@ -218,12 +176,13 @@ feature -- Setting
 			end
 		end
 
-	store_descriptors (a_descriptors: LIST [like item_anchor]) is
+	store_descriptors (a_descriptors: LIST [EB_CUSTOMIZED_FORMATTER_DESP]) is
 			-- Store `a_descriptors' in global or target scope xml files.
 		require
 			a_descriptors_attached: a_descriptors /= Void
 			a_descriptors_valid: not a_descriptors.has (Void)
 		do
+			workbench.create_data_directory
 			store_in_file (satisfied_items (a_descriptors, agent is_formatter_global_scope), n_formatters, agent xml_for_descriptor, global_file_path, formatter_file_name)
 			store_in_file (satisfied_items (a_descriptors, agent is_formatter_target_scope), n_formatters, agent xml_for_descriptor, target_formatter_file_path, formatter_file_name)
 		end
@@ -243,9 +202,12 @@ feature{NONE} -- Implementation
 		do
 			create l_callback.make
 			set_is_file_readable (True)
-			l_desp_tuple := items_from_file (a_file, l_callback, agent l_callback.formatters, agent l_callback.last_error, agent set_is_file_readable (False))
+			clear_last_error
+			l_desp_tuple := items_from_file (a_file, l_callback, agent l_callback.formatters, agent l_callback.last_error, agent set_last_error (create{EB_METRIC_ERROR}.make (metric_names.err_file_not_readable (a_file))))
 			l_descriptors := l_desp_tuple.items
-			set_last_error (l_desp_tuple.error)
+			if not has_error then
+				set_last_error (l_desp_tuple.error)
+			end
 			if a_error_agent /= Void and then has_error then
 				a_error_agent.call (Void)
 				clear_last_error
@@ -254,7 +216,7 @@ feature{NONE} -- Implementation
 			formatter_descriptors.append (l_descriptors)
 		end
 
-	mark_descriptors (a_descriptors: LIST [like item_anchor]; a_global: BOOLEAN) is
+	mark_descriptors (a_descriptors: LIST [EB_CUSTOMIZED_FORMATTER_DESP]; a_global: BOOLEAN) is
 			-- Mark descriptors given by `a_descriptors' as of global scope if `a_global' is True,
 			-- otherwise as of target scope.
 		require
@@ -262,9 +224,9 @@ feature{NONE} -- Implementation
 			a_descriptors_valid: not a_descriptors.has (Void)
 		do
 			if a_global then
-				a_descriptors.do_all (agent (a_descriptor: like item_anchor) do a_descriptor.enable_global_scope end)
+				a_descriptors.do_all (agent (a_descriptor: EB_CUSTOMIZED_FORMATTER_DESP) do a_descriptor.enable_global_scope end)
 			else
-				a_descriptors.do_all (agent (a_descriptor: like item_anchor) do a_descriptor.enable_target_scope end)
+				a_descriptors.do_all (agent (a_descriptor: EB_CUSTOMIZED_FORMATTER_DESP) do a_descriptor.enable_target_scope end)
 			end
 		end
 
@@ -281,7 +243,7 @@ feature{NONE} -- Implementation/Data
 		require
 			system_defined: workbench.system_defined and then workbench.is_already_compiled
 		do
-			Result := formatter_file_path (project_location.target_path)
+			Result := formatter_file_path (project_location.data_path)
 		ensure
 			result_attached: Result /= Void
 		end

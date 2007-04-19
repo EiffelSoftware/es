@@ -223,7 +223,7 @@ feature -- Status setting
 			-- Set focus to main current editor.
 		do
 			if editors_manager.current_editor /= Void then
-				editors_manager.select_editor (editors_manager.current_editor)
+				editors_manager.select_editor (editors_manager.current_editor, True)
 			end
 		end
 
@@ -356,11 +356,18 @@ feature -- Update
 			history_manager.synchronize
 			tools.features_tool.synchronize
 			tools.breakpoints_tool.synchronize
+
 				-- Update main views
-			managed_main_formatters.i_th (2).invalidate
-			managed_main_formatters.i_th (3).invalidate
-			managed_main_formatters.i_th (4).invalidate
-			managed_main_formatters.i_th (5).invalidate
+			from
+				managed_main_formatters.go_i_th (2)
+			until
+				managed_main_formatters.after
+			loop
+				managed_main_formatters.item.invalidate
+				managed_main_formatters.item.format
+				managed_main_formatters.forth
+			end
+
 			if stone /= Void then
 				st := stone.synchronized_stone
 			end
@@ -891,7 +898,12 @@ feature -- Window management
 			end
 			if a_class_stone /= Void or else a_cluster_stone /= Void then
 				if editors_manager.current_editor /= Void then
-					a_window_data.save_editor_position (editors_manager.current_editor.text_displayed.current_line_number)
+					if not editors_manager.current_editor.text_displayed.is_empty then
+						a_window_data.save_editor_position (
+							editors_manager.current_editor.text_displayed.current_line_number)
+					else
+						a_window_data.save_editor_position (1)
+					end
 				else
 					a_window_data.save_editor_position (1)
 				end
@@ -1301,7 +1313,7 @@ feature {EB_WINDOW_MANAGER, EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Window manage
 				address_manager.recycle
 				favorites_manager.recycle
 				cluster_manager.recycle
-				menus.recycle_menus
+				menus.recycle
 				history_manager.recycle
 
 				Precursor {EB_TOOL_MANAGER}
@@ -1569,14 +1581,23 @@ feature {EB_STONE_CHECKER, EB_STONE_FIRST_CHECKER, EB_DEVELOPMENT_WINDOW_PART} -
 			-- Scroll to `a_ast' in `displayed_class'.
 			-- If `a_selected' is True, select region of `a_ast'.
 		local
-			begin_index: INTEGER
+			begin_index, end_index: INTEGER
 			offset: TUPLE [start_offset: INTEGER; end_offset: INTEGER]
+			match_list: LEAF_AS_LIST
 		do
-			begin_index := a_ast.start_position
-			offset := relative_location_offset ([begin_index, a_ast.end_position], displayed_class)
-
+			if displayed_class.is_compiled then
+				match_list := system.match_list_server.item (displayed_class.compiled_class.class_id)
+			end
+			if match_list /= Void then
+				begin_index := a_ast.complete_start_position (match_list)
+				end_index := a_ast.complete_end_position (match_list)
+			else
+				begin_index := a_ast.start_position
+				end_index := a_ast.end_position
+			end
+			offset := relative_location_offset ([begin_index, end_index], displayed_class)
 			if a_selected then
-				editors_manager.current_editor.select_region_when_ready (begin_index - offset.start_offset, a_ast.end_position - offset.end_offset + 1)
+				editors_manager.current_editor.select_region_when_ready (begin_index - offset.start_offset, end_index - offset.end_offset + 1)
 			else
 				editors_manager.current_editor.scroll_to_when_ready (begin_index - offset.start_offset)
 			end
@@ -1743,12 +1764,15 @@ feature {NONE} -- Recycle
 			recycle_command
 			recycle_formatters
 			recycle_menu
+			recycle_agents
+			recycle_ui
+
 			Precursor {EB_TOOL_MANAGER}
-			if commands.save_as_cmd /= Void then
-				commands.save_as_cmd.recycle
-			end
 			if save_cmd /= Void then
 				save_cmd.recycle
+			end
+			if save_all_cmd /= Void then
+				save_all_cmd.recycle
 			end
 			commands.set_save_as_cmd (Void)
 			save_cmd := Void
@@ -1756,14 +1780,12 @@ feature {NONE} -- Recycle
 			if refactoring_manager /= Void then
 				refactoring_manager.destroy
 			end
-			tools.set_windows_tool (Void)
-			tools.set_favorites_tool (Void)
+
+			recycle_tools
 			history_manager := Void
-			tools.set_features_tool (Void)
-			tools.set_breakpoints_tool (Void)
 			favorites_manager := Void
 			cluster_manager := Void
-			tools.set_search_tool (Void)
+
 
 			if editors_manager /= Void then
 				editors_manager.recycle
@@ -1771,7 +1793,11 @@ feature {NONE} -- Recycle
 			end
 			agents.manager.remove_observer (agents)
 			customized_tool_manager.change_actions.prune_all (agents.on_customized_tools_changed_agent)
-			docking_manager.destroy
+
+			if docking_manager /= Void then
+				docking_manager.destroy
+				docking_manager := Void
+			end
 		end
 
 	recycle_command is
@@ -1820,7 +1846,25 @@ feature {NONE} -- Recycle
 	recycle_menu is
 			-- Recycle menus.
 		do
-			menus.recycle_menus
+			menus.recycle
+		end
+
+	recycle_agents is
+			-- Recycle agents.
+		do
+			agents.recycle
+		end
+
+	recycle_tools is
+			-- Recycle tools.
+		do
+			tools.recycle
+		end
+
+	recycle_ui is
+			--
+		do
+			ui.recycle
 		end
 
 feature {EB_DEVELOPMENT_WINDOW_BUILDER} -- Initliazed by EB_DEVELOPMENT_WINDOW_BUILDER
@@ -2340,10 +2384,12 @@ feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Execution
 		require
 			a_formatter_not_void: a_formatter /= Void
 		do
-			if changed then
-				save_and (agent a_formatter.execute)
-			else
-				a_formatter.execute
+			if a_formatter.is_button_sensitive then
+				if changed then
+					save_and (agent a_formatter.execute)
+				else
+					a_formatter.execute
+				end
 			end
 		end
 

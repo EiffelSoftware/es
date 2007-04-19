@@ -33,10 +33,9 @@ feature -- Initialization
 			-- Create a formatter associated with `a_manager'.
 		do
 			manager := a_manager
-			capital_command_name := command_name.twin
-			capital_command_name := interface_names.string_general_as_left_adjusted (capital_command_name)
-				-- Set the first character to upper case.
-			capital_command_name := interface_names.first_character_as_upper (capital_command_name)
+			command_name := capital_command_name.twin
+			command_name := interface_names.string_general_as_left_adjusted (command_name)
+			command_name := interface_names.string_general_as_lower (command_name)
 			create post_execution_action
 		ensure
 			valid_capital_command_name: valid_string (capital_command_name)
@@ -72,6 +71,9 @@ feature -- Properties
 			end
 			Result := internal_empty_widget
 		end
+
+	command_name: STRING_GENERAL
+			-- Command name
 
 	element_name: STRING is
 			-- name of associated element in current formatter.
@@ -140,6 +142,16 @@ feature -- Status report
 		do
 		end
 
+	is_editor_formatter: BOOLEAN is
+			-- Is Current formatter based on an editor?
+		do
+		end
+
+	is_browser_formatter: BOOLEAN is
+			-- Is Current formatter based on a browser?
+		do
+		end
+		
 feature -- Setting
 
 	invalidate is
@@ -205,11 +217,6 @@ feature -- Setting
 				disable_sensitive
 				widget.disable_sensitive
 			end
-		end
-
-	set_displayer (a_displayer: like displayer) is
-			-- Set `a_displayer' into Current.
-		deferred
 		end
 
 	update (a_window: EV_WINDOW) is

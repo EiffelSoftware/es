@@ -11,7 +11,8 @@ inherit
 	EB_FORMATTER
 		redefine
 			retrieve_sorting_order,
-			internal_recycle
+			internal_recycle,
+			is_browser_formatter
 		end
 
 	EB_SHARED_PREFERENCES
@@ -63,10 +64,18 @@ feature -- Access
 			end
 		end
 
+feature -- status report
+
+	is_browser_formatter: BOOLEAN is
+			-- Is Current formatter based on a browser?
+		do
+			Result := True
+		end
+
 feature -- Setting
 
-	set_displayer (a_displayer: like displayer) is
-			-- Set `a_displayer' into Current.
+	set_browser_displayer (a_displayer: like displayer) is
+			-- Set `a_displayer' with `a_displayer'.
 		do
 			displayer := a_displayer
 			browser := displayer.browser
@@ -108,9 +117,11 @@ feature{NONE} -- Recycle
 	internal_recycle is
 			-- Recycle
 		do
-			if not is_recycled then
-				displayer := Void
+			Precursor {EB_FORMATTER}
+			if displayer /= Void then
+				displayer.recycle
 			end
+			displayer := Void
 		end
 
 end

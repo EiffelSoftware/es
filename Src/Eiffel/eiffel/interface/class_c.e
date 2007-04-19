@@ -361,7 +361,6 @@ feature -- Action
 		do
 		end
 
-
 feature -- Conformance dependencies
 
 	conf_dep_table: PACKED_BOOLEANS
@@ -666,7 +665,6 @@ feature -- Setting
 		ensure
 			assembly_info_set: assembly_info = a
 		end
-
 
 feature -- Melting
 
@@ -1791,6 +1789,12 @@ feature -- Convenience features
 			Result := lace_class.is_full_class_checking
 		end
 
+	is_cat_call_detection: BOOLEAN is
+			-- Do we perform cat-call detection on all feature calls?
+		do
+			Result := lace_class.is_cat_call_detection
+		end
+
 feature -- Actual class type
 
 	constraint_actual_type: CL_TYPE_A is
@@ -2735,7 +2739,6 @@ feature -- Access
 			Result := l_formal_dec.has_multi_constraints
 		end
 
-
 	is_fully_deferred: BOOLEAN is
 			-- Are parents of current class either ANY or a fully deferred class?
 			-- Does current class contain only deferred features?
@@ -2822,7 +2825,6 @@ feature -- Access
 			Result := obsolete_message /= Void
 		end
 
-
 	feature_with_name_id (a_feature_name_id: INTEGER): E_FEATURE is
 			-- Feature whose internal name is `n'
 		require
@@ -2836,7 +2838,6 @@ feature -- Access
 				Result := f.api_feature (class_id)
 			end
 		end
-
 
 	feature_with_id (a_feature_id: ID_AS): E_FEATURE is
 			-- Feature whose internal name is `n'

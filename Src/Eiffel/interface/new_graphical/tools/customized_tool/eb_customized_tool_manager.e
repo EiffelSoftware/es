@@ -8,10 +8,7 @@ class
 	EB_CUSTOMIZED_TOOL_MANAGER
 
 inherit
-	EB_CUSTOMIZED_FORMATTER_RELATED_MANAGER
-		redefine
-			item_anchor
-		end
+	EB_CUSTOMIZED_FORMATTER_RELATED_MANAGER [EB_CUSTOMIZED_TOOL_DESP]
 
 feature -- Access
 
@@ -27,9 +24,6 @@ feature -- Access
 			end
 			Result := change_actions_internal
 		end
-
-	item_anchor: EB_CUSTOMIZED_TOOL_DESP
-			-- Anchor type of items
 
 	tool_descriptors: LIST [EB_CUSTOMIZED_TOOL_DESP] is
 			-- List of loaded descriptors for customized tool
@@ -144,7 +138,7 @@ feature -- Access
 			Result := a_id.is_equal (b_id)
 		end
 
-	xml_for_descriptor (a_descriptor: like item_anchor; a_parent: XM_COMPOSITE): XM_ELEMENT is
+	xml_for_descriptor (a_descriptor: EB_CUSTOMIZED_TOOL_DESP; a_parent: XM_COMPOSITE): XM_ELEMENT is
 			-- Xml element for `a_descriptor'
 		require
 			a_descriptor_attached: a_descriptor /= Void
@@ -207,8 +201,11 @@ feature -- Storage
 			l_id_set := tool_id_set
 			tool_descriptors.wipe_out
 			create l_callback.make
-			l_desp_tuple := items_from_file (tool_file, l_callback, agent l_callback.tools, agent l_callback.last_error, agent set_is_file_readable (False))
-			set_last_error (l_desp_tuple.error)
+			clear_last_error
+			l_desp_tuple := items_from_file (tool_file, l_callback, agent l_callback.tools, agent l_callback.last_error, agent set_last_error (create{EB_METRIC_ERROR}.make (metric_names.err_file_not_readable (tool_file))))
+			if last_error = Void then
+				set_last_error (l_desp_tuple.error)
+			end
 			if a_error_agent /= Void then
 				a_error_agent.call (Void)
 				clear_last_error

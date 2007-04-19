@@ -77,6 +77,9 @@ feature -- Access
 	row_count: INTEGER
 			-- Number of rows in Current view
 
+	flag: INTEGER_8
+			-- Flag to distinguish different accessors such as assigners, creators
+
 feature -- Status report
 
 	should_tooltip_be_displayed: BOOLEAN
@@ -121,6 +124,14 @@ feature -- Setting
 			row_count := a_row_count
 		ensure
 			row_count_set: row_count = a_row_count
+		end
+
+	set_flag (a_flag: like flag) is
+			-- Set `flag' with `a_flag'.
+		do
+			flag := a_flag
+		ensure
+			flag_set: flag = a_flag
 		end
 
 feature -- Grind binding
@@ -245,7 +256,6 @@ feature -- Grind binding
 		local
 			l_cursor: DS_ARRAYED_LIST_CURSOR [EB_TREE_NODE [like row_type]]
 			l_grid_row: EV_GRID_ROW
-			l_width: INTEGER
 		do
 			required_width_of_first_column := 0
 			row_table.wipe_out
@@ -277,9 +287,7 @@ feature -- Grind binding
 			end
 			if grid.row_count > 0 then
 				calculate_required_width_of_first_column
-				l_width := required_width_of_first_column.max (100)
-				l_width := l_width.min (800)
-				grid.column (level_starting_column_index.i_th (1)).set_width (l_width)
+				grid.column (level_starting_column_index.i_th (1)).set_width (required_width_of_first_column.max (100).min (800))
 			end
 		end
 
@@ -289,21 +297,46 @@ feature -- Grind binding
 			l_row_count: INTEGER
 			l_row: INTEGER
 			l_grid_item: EV_GRID_ITEM
+			l_grid_row: EV_GRID_ROW
 			l_item_function: FUNCTION [ANY, TUPLE [INTEGER, INTEGER], EV_GRID_ITEM]
 			l_width: INTEGER
+			l_subrow_depth: INTEGER
+			l_parent_row: EV_GRID_ROW
+			l_expand_pixmap_width: INTEGER
+			l_subrow_indent: INTEGER
+			l_grid: like grid
 		do
+			l_grid := grid
+			l_expand_pixmap_width := l_grid.expand_node_pixmap.width
+			l_subrow_indent := l_grid.subrow_indent
 			from
-				l_row_count := grid.row_count
+				l_row_count := l_grid.row_count
 				l_item_function := agent dynamic_grid_item_function
 				l_row := 1
 			until
 				l_row > l_row_count
 			loop
 				l_grid_item := l_item_function.item ([1, l_row])
-				l_width := l_width.max (l_grid_item.required_width)
+				l_grid_row := l_grid.row (l_row)
+
+					-- Calculate subrow depth.				
+				l_subrow_depth := 0
+				l_parent_row := l_grid_row.parent_row
+				if l_parent_row /= Void then
+					l_subrow_depth := 1
+					l_parent_row := l_parent_row.parent_row
+					if l_parent_row /= Void then
+						l_subrow_depth := 2
+						if l_parent_row.parent_row /= Void then
+							l_subrow_depth := 3
+						end
+					end
+				end
+
+				l_width := l_width.max (l_grid_item.required_width + l_expand_pixmap_width + (l_subrow_depth) * l_subrow_indent)
 				l_row := l_row + 1
 			end
-			required_width_of_first_column := l_width
+			required_width_of_first_column := l_width + 40
 		end
 
 	required_width_of_first_column: INTEGER
@@ -382,6 +415,7 @@ feature{NONE} -- Implementation
 		do
 			create Result
 			Result.set_data (create {like row_type}.make (Current, a_feature, a_related_feature, a_row_type, is_for_caller))
+			Result.data.set_flag (flag)
 		ensure
 			result_attached: Result /= Void
 		end
@@ -399,6 +433,7 @@ feature{NONE} -- Implementation
 			l_row: EB_CLASS_BROWSER_CALLER_CALLEE_ROW
 			l_y: INTEGER
 			l_done: BOOLEAN
+			l_width: INTEGER
 		do
 			if version_count > 1 then
 				if a_y = 1 then
@@ -415,6 +450,12 @@ feature{NONE} -- Implementation
 				l_row := row_table.item (l_y)
 				if l_row /= Void then
 					Result := l_row.item (a_x)
+				end
+			end
+			if a_x > 1 and then Result /= Void then
+				l_width := Result.required_width
+				if grid.is_displayed and then grid.column (2).width < l_width then
+					grid.column (2).set_width (l_width + 10)
 				end
 			end
 		end

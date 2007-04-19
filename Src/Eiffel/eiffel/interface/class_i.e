@@ -53,11 +53,23 @@ feature -- Access
 	group: CONF_PHYSICAL_GROUP is
 			-- Group this class belongs to.
 		deferred
+		ensure
+			group_not_void: Result /= Void
 		end
 
 	options: CONF_OPTION is
 			-- Options of this class.
 		deferred
+		ensure
+			options_not_void: Result /= Void
+		end
+
+	target: CONF_TARGET is
+			-- Target in which current class is being defined.
+		do
+			Result := group.target
+		ensure
+			target_not_void: Result /= Void
 		end
 
 	config_class: CONF_CLASS is
@@ -203,6 +215,12 @@ feature -- Access
 			Result := options.is_full_class_checking
 		end
 
+	is_cat_call_detection: BOOLEAN is
+			-- Is cat-call detection enabled, i.e. all feature calls are checked for potential cat-calls?
+		do
+			Result := options.is_cat_call_detection
+		end
+
 	is_compiled: BOOLEAN is
 			-- Is the class already compiled ?
 		do
@@ -268,7 +286,6 @@ feature -- Access
 			end
 		end
 
-
 feature {NONE} -- Access
 
 	internal_namespace: STRING
@@ -295,27 +312,29 @@ feature -- Status report
 					-- We need to clone as the result maybe used for string operation and we do not
 					-- want it to change some internal data from Current.
 				l_namespace := options.namespace
-				l_local_namespace := options.local_namespace
-
 				if l_namespace /= Void then
 					l_namespace := l_namespace.twin
 				end
 
 				if
-					not System.use_all_cluster_as_namespace and then
-					not System.use_cluster_as_namespace
+					not target.setting_use_all_cluster_name_as_namespace and then
+					not target.setting_use_cluster_name_as_namespace
 				then
 						-- Simply use given namespace if any.
 					Result := l_namespace
 				else
-						-- Now either one or both of `System.use_cluster_as_namespace' or
-						-- `System.use_all_cluster_as_namespace' is True.
+						-- Now either one or both of `target.setting_use_cluster_name_as_namespace' or
+						-- `target.setting_use_all_cluster_name_as_namespace' is True.
 					if l_namespace /= Void then
 						Result := l_namespace
 					else
 						Result := ""
 					end
-					if (l_local_namespace = Void or else l_local_namespace.is_empty) and then system.use_cluster_as_namespace then
+					l_local_namespace := options.local_namespace
+					if
+						(l_local_namespace = Void or else l_local_namespace.is_empty) and then
+						target.setting_use_cluster_name_as_namespace
+					then
 							-- Only add cluster namespace if there's not local namespace set.
 						if not Result.is_empty then
 							Result.append_character ('.')
@@ -323,7 +342,7 @@ feature -- Status report
 						Result.append (group.name)
 					end
 
-					if System.use_all_cluster_as_namespace then
+					if target.setting_use_all_cluster_name_as_namespace then
 						l_path := path.twin
 						l_path.replace_substring_all ("/", ".")
 						Result.append (l_path)
@@ -533,7 +552,6 @@ feature {NONE} -- Implementation
 invariant
 	file_name_not_void: file_name /= Void
 	name_not_void: name /= Void
-	options_not_void: options /= Void
 	compiled_class_connection: is_compiled implies compiled_class.original_class = Current
 
 indexing

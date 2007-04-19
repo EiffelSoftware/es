@@ -70,8 +70,6 @@ feature {NONE} -- Initialization
 			l_app_imp: like app_implementation
 		do
 			Precursor {EV_PRIMITIVE_IMP}
-			disable_tabable_from
-			disable_tabable_to
 			l_app_imp := app_implementation
 			gdkpix := {EV_GTK_EXTERNALS}.gdk_pixmap_new (l_app_imp.default_gdk_window, 1, 1, Default_color_depth)
 
@@ -135,6 +133,15 @@ feature {NONE} -- Initialization
 					clear
 				end
 			end
+		end
+
+	init_from_pixel_buffer (a_pixel_buffer: EV_PIXEL_BUFFER) is
+			-- Initialize from `a_pixel_buffer'
+		local
+			l_pixel_buffer_imp: EV_PIXEL_BUFFER_IMP
+		do
+			l_pixel_buffer_imp ?= a_pixel_buffer.implementation
+			set_pixmap_from_pixbuf (l_pixel_buffer_imp.gdk_pixbuf)
 		end
 
 feature -- Drawing operations

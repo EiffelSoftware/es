@@ -9,7 +9,10 @@ class
 
 feature -- Access
 
-	name: STRING_GENERAL
+	target: EV_ABSTRACT_PICK_AND_DROPABLE
+		-- Target of PND menu item.
+
+	name: STRING_32
 		-- Name for PND menu item.
 
 	pixmap: EV_PIXMAP
@@ -35,6 +38,18 @@ feature -- Element Change
 			pixmap := a_pixmap
 		ensure
 			pixmap_assigned: pixmap = a_pixmap
+		end
+
+feature {EV_APPLICATION_I} -- Implementation
+
+	set_target (a_target: like target)
+			-- Set `target' to `a_target'.
+		require
+			a_target_not_void: a_target /= Void
+		do
+			target := a_target
+		ensure
+			target_assigned: target = a_target
 		end
 
 indexing

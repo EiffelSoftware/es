@@ -224,7 +224,9 @@ feature -- Size issues
 
 				if is_top_side_tab then
 					if is_enough_space then
-						Result := start_x_text_internal + l_width + padding_width
+							-- Crop the size if it exceeds the maximum tab header size
+						Result := (start_x_text_internal + l_width + padding_width).min
+									(internal_shared.Notebook_tab_maximum_size - close_width)
 					else
 						Result := current_total_width - close_width
 					end
@@ -286,14 +288,8 @@ feature -- Size issues
 
 	start_y_close: INTEGER is
 			-- Start y position of drawing a close button
-		local
-			l_platform: PLATFORM
 		do
 			Result :=(height / 2  - (internal_shared.icons.close.height - close_background_expand * 2) / 2).floor - 1
-			create l_platform
-			if l_platform.is_windows then
-				Result := Result - 2
-			end
 		end
 
 	close_rectangle: EV_RECTANGLE is

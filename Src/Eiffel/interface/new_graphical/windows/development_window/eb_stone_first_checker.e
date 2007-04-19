@@ -46,7 +46,7 @@ feature -- Command
 
 			if editor /= Void then
 				l_editors_manager.editor_switched_actions.block
-				editor.docking_content.set_focus
+				editor.docking_content.set_focus_no_maximzied (editor.docking_content.user_widget)
 				l_editors_manager.editor_switched_actions.resume
 			else
 				if l_editors_manager.editor_count = 0 then
@@ -92,8 +92,7 @@ feature -- Command
 				until
 					l_managed_main_formatters.after
 				loop
-					l_managed_main_formatters.item.set_displayer (l_editor_displayer)
---					l_managed_main_formatters.item.set_editor (l_editors_manager.current_editor)
+					l_managed_main_formatters.item.set_editor_displayer (l_editor_displayer)
 					l_managed_main_formatters.forth
 				end
 			end

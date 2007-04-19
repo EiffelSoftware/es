@@ -78,7 +78,7 @@ feature -- Execution
 				until
 					l_editors.after
 				loop
-					l_editors_manager.select_editor (l_editors.item)
+					l_editors_manager.select_editor (l_editors.item, True)
 						-- Save file
 					l_dev_win.save_cmd.execute
 
@@ -90,7 +90,7 @@ feature -- Execution
 					l_editors.forth
 				end
 				if l_editor /= Void then
-					l_editors_manager.select_editor (l_editor)
+					l_editors_manager.select_editor (l_editor, True)
 				end
 			end
 			l_dev_win.unlock_update
@@ -152,13 +152,15 @@ feature {NONE} -- Implementation
 	on_text_edited (directly_edited: BOOLEAN) is
 			-- make the command sensitive
 		do
-			enable_sensitive
+			if not is_recycled then
+				enable_sensitive
+			end
 		end
 
 	on_text_reset is
 			-- make the command insensitive
 		do
-			if not has_unsaved_file then
+			if not is_recycled and then not has_unsaved_file then
 				disable_sensitive
 			end
 		end
@@ -166,7 +168,7 @@ feature {NONE} -- Implementation
 	on_text_back_to_its_last_saved_state is
 			-- make the command insensitive
 		do
-			if not has_unsaved_file then
+			if not is_recycled and then not has_unsaved_file then
 				disable_sensitive
 			end
 		end

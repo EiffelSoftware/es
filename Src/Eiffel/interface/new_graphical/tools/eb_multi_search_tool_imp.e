@@ -20,6 +20,7 @@ inherit
 			pixel_buffer,
 			mini_toolbar,
 			build_mini_toolbar,
+			internal_recycle,
 			show
 		end
 
@@ -52,7 +53,7 @@ feature {NONE} -- Initialize
 			size := label_search.minimum_width
 
 			create keyword_field
-			keyword_field.set_minimum_width (Layout_constants.Dialog_unit_to_pixels (290))
+			keyword_field.set_minimum_width (Layout_constants.Dialog_unit_to_pixels (min_width_of_keyword_field))
 
 			create search_box
 			search_box.set_padding (1)
@@ -62,7 +63,6 @@ feature {NONE} -- Initialize
 			hbox.disable_item_expand (label_search)
 
 			hbox.extend (keyword_field)
-			hbox.disable_item_expand (keyword_field)
 			create cell
 			cell.set_minimum_width (3)
 			hbox.extend (cell)
@@ -74,7 +74,7 @@ feature {NONE} -- Initialize
 
 					-- Replace box
 			create replace_combo_box
-			replace_combo_box.set_minimum_width (Layout_constants.Dialog_unit_to_pixels (290))
+			replace_combo_box.set_minimum_width (Layout_constants.Dialog_unit_to_pixels (min_width_of_keyword_field))
 
 			create replace_check_button.make_with_text (Interface_names.l_Replace_with)
 
@@ -94,7 +94,6 @@ feature {NONE} -- Initialize
 			replace_check_button.hide
 			hbox.disable_item_expand (replace_check_button)
 			hbox.extend (replace_combo_box)
-			hbox.disable_item_expand (replace_combo_box)
 			size := label.width.max (size) + replace_combo_box.width
 
 			create cell
@@ -110,7 +109,6 @@ feature {NONE} -- Initialize
 			create option_frame.make_with_text (interface_names.l_Options)
 
 			option_and_replace_all_box.extend (option_frame)
-			option_and_replace_all_box.disable_item_expand (option_frame)
 			create hbox
 			create cell
 			cell.set_minimum_width (10)
@@ -143,9 +141,8 @@ feature {NONE} -- Initialize
 			hbox.disable_item_expand (vbox)
 
 			create cell
-			cell.set_minimum_width (80)
+			cell.set_minimum_width (10)
 			hbox.extend (cell)
-			hbox.disable_item_expand (cell)
 
 			create vbox
 			vbox.extend (use_regular_expression_button)
@@ -155,11 +152,15 @@ feature {NONE} -- Initialize
 			hbox.extend (vbox)
 			hbox.disable_item_expand (vbox)
 
+			create cell
+			cell.set_minimum_width (10)
+			hbox.extend (cell)
+
 			if option_frame.width < size then
 				-- If system font size very large, we don't set minimum widh to make sure text is displayed.
 				option_frame.set_minimum_width (size)
 			end
-			
+
 			create replace_all_click_button.make_with_text (interface_names.b_replace_all)
 
 			create vbox
@@ -280,10 +281,9 @@ feature {NONE} -- Initialize
 
 			create vbox
 			vbox.extend (scope_list)
-			scope_list.set_minimum_width (250)
+			scope_list.set_minimum_width (min_width_of_keyword_field)
 
 			scope.extend (vbox)
-			scope.disable_item_expand (vbox)
 
 			create cell
 			cell.set_minimum_width (3)
@@ -393,10 +393,14 @@ feature -- EB_TOOL
 		do
 			show
 			if currently_searched /= Void and then currently_searched.is_empty then
-				keyword_field.set_text (currently_searched)
+				if not keyword_field.is_destroyed and currently_searched /= Void and not currently_searched.has_code (('%R').natural_32_code) and keyword_field.is_editable then
+					keyword_field.set_text (currently_searched)
+				end
 			end
 			if currently_replacing /= Void and then not currently_replacing.is_empty then
-				replace_field.set_text (currently_replacing)
+				if not replace_field.is_destroyed and currently_replacing /= Void and not currently_replacing.has_code (('%R').natural_32_code) then
+					replace_field.set_text (currently_replacing)
+				end
 			end
 			keyword_field.set_focus
 		end
@@ -636,7 +640,7 @@ feature {NONE} -- Destroy behavior.
 			recycle_widgets
 			widget := Void
 			content := Void
-			develop_window := Void
+			Precursor {EB_TOOL}
 		end
 
 	recycle_widgets is
@@ -671,6 +675,8 @@ feature {NONE} -- Destroy behavior.
 		end
 
 feature {NONE} -- Implementation
+
+	min_width_of_keyword_field: INTEGER is 100
 
 	currently_searched: STRING is
 		deferred

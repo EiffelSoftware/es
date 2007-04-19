@@ -16,6 +16,7 @@ inherit
 			update_critical_stack_depth,
 			can_not_launch_system_message,
 			recycle,
+			clean_on_process_termination,
 			make_with_debugger
 		end
 
@@ -114,21 +115,13 @@ feature -- Execution
 			cwd_not_void: cwd /= Void
 			env_not_void: env /= Void
 		local
-			cmd: STRING
 			l_status: APPLICATION_STATUS
 			l_env_s8: STRING_8
 		do
 			ipc_engine.launch_ec_dbg
 			if ipc_engine.ec_dbg_launched then
-				cmd := app.twin
-				if args /= Void then
-					cmd.extend (' ')
-					cmd.append (args)
-				end
-					--| Do not double quote the path
-					--| since it will be done by ecdbgd
-					--| FIXME: we may want to change that ...
-				run_request.set_application_name (cmd)
+				run_request.set_application_name (app)
+				run_request.set_arguments (args)
 				run_request.set_working_directory (cwd)
 				if env /= Void then
 					fixme ("[
@@ -159,35 +152,9 @@ feature -- Execution
 			-- Send an interrupt to the application
 			-- which will stop at the next breakable line number
 		do
-			quit_request.make (Rqst_interrupt)
-			quit_request.send
+			ewb_request.make (Rqst_interrupt)
+			ewb_request.send
 		end
-
-	disable_assertion_check is
-			-- Send a message to the application to disable assertion checking
-		local
-			s: STRING
-		do
-			quit_request.make (Rqst_set_assertion_check)
-			quit_request.send_integer (0)
-			s := c_tread
-			if s /= Void and then s.is_boolean then
-				last_assertion_check := s.to_boolean
-			end
-		end
-
-	restore_assertion_check is
-			-- Send a message to the application to restore the previous assertion check status
-		local
-			s: STRING
-		do
-			quit_request.make (Rqst_set_assertion_check)
-			quit_request.send_integer (last_assertion_check.to_integer)
-			s := c_tread
-		end
-
-	last_assertion_check: BOOLEAN
-			-- Last assertion check value when it had been disabled by `disable_assertion_check'.
 
 	notify_newbreakpoint is
 			-- Send an interrupt to the application
@@ -195,15 +162,15 @@ feature -- Execution
 			-- in order to record the new breakpoint(s) before
 			-- automatically resuming its execution.
 		do
-			quit_request.make (Rqst_new_breakpoint)
-			quit_request.send
+			ewb_request.make (Rqst_new_breakpoint)
+			ewb_request.send
 		end
 
 	kill is
 			-- Ask the application to terminate itself.
 		do
-			quit_request.make (Rqst_kill)
-			quit_request.send
+			ewb_request.make (Rqst_kill)
+			ewb_request.send
 
 				-- Don't wait until the next event loop to
 				-- to process the actual termination of the application.
@@ -211,7 +178,7 @@ feature -- Execution
 				-- the application until the application is dead.
 			from
 			until
-				quit_request.recv_dead
+				ewb_request.recv_dead
 			loop
 				debug ("ipc")
 					print (generator + ".kill -> quit_request.recv_dead ? %N")
@@ -229,6 +196,7 @@ feature -- Execution
 			-- Process the termination of the executed
 			-- application. Also execute the `termination_command'.
 		do
+			Precursor {APPLICATION_EXECUTION}
 			release_all_objects
 		end
 
@@ -236,6 +204,21 @@ feature -- Execution
 			-- Request ipc engine end of debugging
 		do
 			Ipc_engine.end_of_debugging
+		end
+
+feature {NONE} -- Assertion change Implementation
+
+	impl_check_assert (b: BOOLEAN): BOOLEAN is
+			-- `check_assert (b)' on debuggee
+		local
+			s: STRING
+		do
+			ewb_request.make (Rqst_set_assertion_check)
+			ewb_request.send_integer (b.to_integer)
+			s := c_tread
+			if s /= Void and then s.is_boolean then
+				Result := s.to_boolean
+			end
 		end
 
 feature -- Change
@@ -360,7 +343,7 @@ feature {APPLICATION_STATUS}
 			create Result.make
 		end
 
-	quit_request: EWB_REQUEST is
+	ewb_request: EWB_REQUEST is
 		once
 			create Result.make (Rqst_quit)
 		end

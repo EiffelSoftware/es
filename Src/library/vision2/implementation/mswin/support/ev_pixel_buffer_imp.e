@@ -13,7 +13,8 @@ inherit
 	EV_PIXEL_BUFFER_I
 
 create
-	make
+	make,
+	make_with_pixmap
 
 feature {NONE} -- Initlization
 
@@ -32,7 +33,6 @@ feature {NONE} -- Initlization
 			else
 				create pixmap
 			end
-
 		ensure then
 			set: is_gdi_plus_installed implies initial_width = a_width
 			set: is_gdi_plus_installed implies initial_height = a_height
@@ -42,6 +42,25 @@ feature {NONE} -- Initlization
 			-- Creation method.
 		do
 			base_make (an_interface)
+		end
+
+	make_with_pixmap (a_pixmap: EV_PIXMAP) is
+			-- Creation method.
+		local
+			l_source_graphics: WEL_GDIP_GRAPHICS
+			l_source_dc: WEL_MEMORY_DC
+			l_drawable: EV_DRAWABLE_IMP
+		do
+			make_with_size (a_pixmap.width, a_pixmap.height)
+
+			create l_source_graphics.make_from_image (gdip_bitmap)
+
+			l_source_dc := l_source_graphics.dc
+
+			create {EV_PIXMAP_IMP_DRAWABLE} l_drawable.make_with_pixel_buffer (l_source_dc)
+			l_drawable.draw_pixmap (0, 0, a_pixmap)
+
+			l_source_graphics.release_dc (l_source_dc)
 		end
 
 	initialize is
@@ -81,6 +100,20 @@ feature -- Command
 				gdip_bitmap.load_image_from_file (a_file_name)
 			else
 				pixmap.set_with_named_file (a_file_name)
+			end
+		end
+
+	save_to_named_file (a_file_name: STRING) is
+			-- Save pixel datas to `a_file_name'
+		local
+			l_file_name: FILE_NAME
+		do
+			if is_gdi_plus_installed then
+				gdip_bitmap.save_image_to_file (a_file_name)
+			else
+				create l_file_name.make_from_string (a_file_name)
+				-- FIXIT: How to know the orignal format of `pixmap'? It's BMP or PNG.
+				pixmap.save_to_named_file (create {EV_PNG_FORMAT}, l_file_name)
 			end
 		end
 

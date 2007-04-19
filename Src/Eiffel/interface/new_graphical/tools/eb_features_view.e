@@ -119,10 +119,13 @@ feature -- Status setting
 					(stone /= Void and then not l_feature_comparer.same_feature (stone.e_feature, fst.e_feature))
 				then
 					set_last_stone (fst)
+					develop_window.tools.set_last_stone (stone)
 					history_manager.extend (fst)
 				end
 			else
-				do_all_in_list (formatters, agent (a_formatter: EB_FORMATTER) do a_formatter.reset_display end)
+				if new_stone = Void or else (not new_stone.is_valid) then
+					do_all_in_list (formatters, agent (a_formatter: EB_FORMATTER) do a_formatter.reset_display end)
+				end
 			end
 			if widget.is_displayed or else is_auto_hide then
 				force_last_stone

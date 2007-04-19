@@ -16,7 +16,11 @@ inherit
 		end
 create
 	default_create,
-	make_with_size
+	make_with_size,
+	make_with_pixmap
+
+convert
+	make_with_pixmap ({EV_PIXMAP})
 
 feature {NONE} -- Initialization
 
@@ -30,14 +34,33 @@ feature {NONE} -- Initialization
 			implementation.make_with_size (a_width, a_height)
 		end
 
+	make_with_pixmap (a_pixmap: EV_PIXMAP) is
+			-- Create with `a_pixmap''s image data.
+		require
+			not_void: a_pixmap /= Void
+		do
+			default_create
+			implementation.make_with_pixmap (a_pixmap)
+		end
+
 feature -- Command
 
 	set_with_named_file (a_file_name: STRING) is
 			-- Load pixel data from file `a_file_name'
 		require
+			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
 			not_locked: not is_locked
 		do
 			implementation.set_with_named_file (a_file_name)
+		end
+
+	save_to_named_file (a_file_name: STRING) is
+			-- Save pixel data to file `a_file_name'.
+		require
+			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
+			not_locked: not is_locked
+		do
+			implementation.save_to_named_file (a_file_name)
 		end
 
 	sub_pixmap (a_rect: EV_RECTANGLE): EV_PIXMAP is
@@ -108,6 +131,15 @@ feature -- Command
 			not_void: a_point /= Void
 		do
 			implementation.draw_text (a_text, a_font, a_point)
+		end
+
+	to_pixmap: EV_PIXMAP is
+			-- Convert to EV_PIXMAP.
+		local
+			l_rect: EV_RECTANGLE
+		do
+			create l_rect.make (0, 0, width, height)
+			Result := sub_pixmap (l_rect)
 		end
 
 feature -- Query
