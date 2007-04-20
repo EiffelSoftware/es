@@ -30,7 +30,9 @@ feature -- Access
 	pixmap: EV_PIXMAP is
 			-- Pixmap shown in `Current'
 		do
-			Result := internal_pixmap.interface
+			if internal_pixmap /= Void then
+				Result := internal_pixmap.interface.twin
+			end
 		end
 
 feature -- Element change

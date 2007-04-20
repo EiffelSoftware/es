@@ -158,7 +158,7 @@ feature -- internals
 					DataBrowserListViewColumnDesc columnDesc;
 			
 					columnDesc.propertyDesc.propertyID = 1;
-					columnDesc.propertyDesc.propertyType = kDataBrowserTextType;
+					columnDesc.propertyDesc.propertyType = kDataBrowserIconAndTextType; //kDataBrowserTextType;
 
 					columnDesc.headerBtnDesc.version = kDataBrowserListViewLatestHeaderDesc;
 					columnDesc.headerBtnDesc.minimumWidth = 100;
@@ -170,7 +170,7 @@ feature -- internals
 
 					columnDesc.headerBtnDesc.btnFontStyle.flags	= kDataBrowserListViewDefaultColumnFlags;
 					columnDesc.headerBtnDesc.btnFontStyle.just = teFlushDefault;
-					columnDesc.headerBtnDesc.btnContentInfo.contentType = kControlContentTextOnly; //kControlNoContent;
+					columnDesc.headerBtnDesc.btnContentInfo.contentType = kControlContentTextOnly; //kControlNoContent;			
 			
 					AddDataBrowserListViewColumn( $db_control, &columnDesc, kDataBrowserListViewAppendColumn);
 				}
@@ -212,7 +212,7 @@ feature -- internals
 					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
 					if node.icon_ref /= Void then
 						Result := set_data_browser_item_data_icon_external (a_itemdata, get_icon_ref(node.icon_ref))
-					--	io.output.put_string(Result.out + "  " + get_icon_ref(node.icon_ref).out + "%N")
+						io.output.put_string(Result.out + "  " + get_icon_ref(node.icon_ref).out + "%N")
 					--Result := set_data_browser_item_data_rgbcolor_external (a_itemdata, node.icon_ref)
 					end
 				end
@@ -227,6 +227,10 @@ feature -- internals
 		alias
 			"[
 				{
+					IconRef r;
+					GetIconRef(kOnSystemDisk, kSystemIconsCreator, kGenericFolderIcon, &r);
+					return r;
+				
 					UInt32              dataRGB[128 * 128] = { 0 };
 					UInt8               dataA[  128 * 128] = { 0 };
 					CGContextRef        cgContextRGB, cgContextA;

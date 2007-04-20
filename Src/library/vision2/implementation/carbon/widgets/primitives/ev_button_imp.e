@@ -87,6 +87,7 @@ feature {NONE} -- Initialization
 		local
 			target, h_ret: POINTER
 		do
+			pixmapable_imp_initialize
 			Precursor {EV_PRIMITIVE_IMP}
 			event_id := app_implementation.get_id (current)
 			target := get_control_event_target_external( c_object )
