@@ -214,7 +214,12 @@ feature -- Minimum size
 	minimum_width: INTEGER is
 			-- Minimum width that the widget may occupy.
 		do
-			Result := 200
+			if internal_minimum_width >= 0 then
+				Result := internal_minimum_width
+			else
+				Result := 200
+			end
+			--io.output.put_string(Result.out +"%N")
 		end
 
 feature {EV_TREE_NODE_IMP}
