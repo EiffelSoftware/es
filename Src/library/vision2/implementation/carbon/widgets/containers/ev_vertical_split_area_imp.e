@@ -34,10 +34,19 @@ feature {NONE} -- Implementation
 			bounds : CGRECT_STRUCT
 			bounds_size : CGSIZE_STRUCT
 			err : INTEGER
+			size : REAL_32
 		do
 			create bounds.make_new_unshared
 			create bounds_size.make_shared ( bounds.size )
 			err := hiview_get_bounds_external ( c_object, bounds.item )
+
+			size := bounds_size.height - splitter_width
+			if first /= void and then (( bounds_size.height - splitter_width ) * split_ratio).rounded < first.minimum_height then
+				split_ratio := first.minimum_height / size
+			end
+			if second /= void and then (( bounds_size.height - splitter_width) * (1-split_ratio)).rounded < second.minimum_height then
+				split_ratio := (1-second.minimum_height/size)
+			end
 
 			rect_a_size.set_width ( bounds_size.width )
 			rect_a_size.set_height ( ( (bounds_size.height - splitter_width) * split_ratio ).rounded )
@@ -128,6 +137,13 @@ feature {NONE} -- Implementation
 						-- Update ratio if mouse moved
 						if last_where.y /= where.y then
 							split_ratio := split_ratio - ( last_where.y -where.y ) / size
+
+							if first /= void and then (( bounds_size.height - splitter_width ) * split_ratio).rounded < first.minimum_height then
+								split_ratio := first.minimum_height / size
+							end
+							if second /= void and then (( bounds_size.height - splitter_width ) * (1-split_ratio)).rounded < second.minimum_height then
+								split_ratio := (1-second.minimum_height/size)
+							end
 						end
 
 						-- Update subview sizes if ratio changed

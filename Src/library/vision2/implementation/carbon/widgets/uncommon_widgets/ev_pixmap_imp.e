@@ -82,6 +82,14 @@ inherit
 		export
 			{NONE} all
 		end
+	CFURL_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+	CARBON_CF
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -168,6 +176,7 @@ feature -- Element change
 			url, provider : POINTER
 			ret : INTEGER
 			cf_filename, cf_dir: EV_CARBON_CF_STRING
+			c_name : C_STRING
 		do
 			create cf_filename.make_unshared_with_eiffel_string (file_name)
 			create cf_dir.make_unshared_with_eiffel_string ("./")
@@ -178,7 +187,10 @@ feature -- Element change
 				url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, cf_filename.item, null, cf_dir.item)
 
 			end
-
+			if url = null then
+				create c_name.make (file_name)
+				url := cfurlcreate_from_file_system_representation_external (null, c_name.item, c_name.count, 0)
+			end
 			if url /= null then
 				provider := cgdata_provider_create_with_url_external (url)
 				drawable := cgimage_create_with_pngdata_provider_external (provider, null, 1, kCGRenderingIntentDefault)
