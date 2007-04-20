@@ -86,10 +86,6 @@ inherit
 		export
 			{NONE} all
 		end
-	CARBON_CF
-		export
-			{NONE} all
-		end
 
 create
 	make
