@@ -25,7 +25,8 @@ inherit
 		redefine
 			interface,
 			initialize,
-			on_event
+			on_event,
+			child_has_resized
 		end
 
 	HIOBJECT_FUNCTIONS_EXTERNAL
@@ -271,6 +272,19 @@ feature {NONE} -- Implementation
 	splitter_rect_origin : CGPOINT_STRUCT
 
 feature {NONE} -- Implementation
+
+		child_has_resized (a_widget_imp: EV_WIDGET_IMP) is
+			--
+		do
+			calculate_rects
+			adjust_subviews
+			-- By default do nothing
+			if parent_imp /= void then
+				parent_imp.child_has_resized (current)
+			end
+
+
+		end
 
 	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
 			-- Feature that is called if an event occurs

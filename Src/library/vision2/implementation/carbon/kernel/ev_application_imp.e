@@ -349,7 +349,7 @@ feature {EV_CARBON_EVENTABLE} -- event handling
 				-- Give an id back (it will be recycled)
 			do
 				widget_list.force (void, a_id)
-				free_ids.put_right (a_id)
+				free_ids.extend (a_id)
 				--io.put_string ("Freed " + a_id.out + "%N")
 			end
 
