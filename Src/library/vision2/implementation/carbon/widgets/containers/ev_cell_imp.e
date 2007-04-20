@@ -54,7 +54,7 @@ feature -- initialization
 			rect.set_right (100)
 			rect.set_bottom (40)
 			rect.set_top (20)
-			ret := create_placard_control_external ( null, rect.item, $ptr )
+			ret := create_user_pane_control_external( null, rect.item,{CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $ptr )
 			set_c_object ( ptr )
 		end
 
