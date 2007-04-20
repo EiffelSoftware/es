@@ -41,6 +41,12 @@ inherit
 			text
 		end
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
+
 create
 	make
 
@@ -69,9 +75,8 @@ feature -- Status report
 	is_expanded: BOOLEAN is
 			-- is the item expanded?
 		do
+			Result := internal_is_expanded
 		end
-
-	l_exp: BOOLEAN
 
 feature -- Status setting
 
@@ -87,7 +92,28 @@ feature -- Status setting
 
 	set_expand (a_flag: BOOLEAN) is
 			-- Expand the item if `flag', collapse it otherwise.
+		local
+			ret: INTEGER
+			i: INTEGER
 		do
+			internal_is_expanded := a_flag
+			if a_flag = true then
+				ret := open_data_browser_container_external (parent_tree_imp.c_object, item_id)
+				-- Make sure all children are expanded if needed
+				from
+					i := 1
+				until
+					i >= count
+				loop
+					if i_th (i).is_expanded then
+						i_th (i).implementation.set_expand (true)
+
+					end
+					i := i + 1
+				end
+			else
+				ret := close_data_browser_container_external (parent_tree_imp.c_object, item_id)
+			end
 		end
 
 	set_text (a_text: STRING_GENERAL) is
@@ -192,6 +218,8 @@ feature {EV_ANY_I} -- Implementation
 
 feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 
+	internal_is_expanded: BOOLEAN
+
 --	add_item_and_children_to_parent_tree (a_parent_tree: EV_TREE_IMP; a_parent_node: EV_TREE_NODE_IMP; a_index: INTEGER)  is
 --			-- Used for setting items within parent tree
 --		local
@@ -287,8 +315,6 @@ feature {EV_TREE_IMP, EV_TREE_NODE_IMP} -- Implementation
 			pixmap_imp ?= a_pixmap.implementation
 
 			icon_ref := pixmap_imp.drawable
-
-			io.output.put_string ("PIXMAP for tree item%N")
 		end
 
 	pix_width, pix_height: INTEGER
@@ -357,6 +383,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_TREE_NODE;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_TREE_NODE_IMP
 

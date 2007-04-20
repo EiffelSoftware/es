@@ -133,7 +133,7 @@ feature -- Implementation
 	ensure_item_visible (an_item: EV_TREE_NODE) is
 
 		do
-
+			-- reveal_data_browser_item_external
 		end
 
 	set_to_drag_and_drop: BOOLEAN is
@@ -306,6 +306,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_TREE;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_TREE_IMP
 

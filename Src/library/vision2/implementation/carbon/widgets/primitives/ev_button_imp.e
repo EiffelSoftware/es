@@ -106,8 +106,6 @@ feature -- Access
 feature -- Status Setting
 
 
-
-
 	enable_default_push_button is
 			-- Set the style of the button corresponding
 			-- to the default push button.

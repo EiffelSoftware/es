@@ -386,8 +386,8 @@ feature -- Element change
 				no_overflow : err = noErr implies actual_size = a_rect.sizeof
 			end
 			if err /= 0 then
-				a_rect.set_top ( 0 ); a_rect.set_left ( 0 );
-				a_rect.set_bottom ( 0 ); a_rect.set_right ( 0 );
+				a_rect.set_top ( 0 ); a_rect.set_left ( 10 );
+				a_rect.set_bottom ( 0 ); a_rect.set_right ( 10 );
 			end
 
 			if tab_position = interface.tab_top then
@@ -506,7 +506,7 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 					
 					LayoutInfo.binding.left.toView = $a_tabcontrol;
 					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
-					LayoutInfo.binding.left.offset = 0;
+					LayoutInfo.binding.left.offset = 10;
 					
 					LayoutInfo.binding.right.toView = $a_tabcontrol;
 					LayoutInfo.binding.right.kind = kHILayoutBindRight;
