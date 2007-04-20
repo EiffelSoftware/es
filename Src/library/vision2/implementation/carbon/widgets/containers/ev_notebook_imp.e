@@ -506,7 +506,7 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 					
 					LayoutInfo.binding.left.toView = $a_tabcontrol;
 					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
-					LayoutInfo.binding.left.offset = 10;
+					LayoutInfo.binding.left.offset = 0;
 					
 					LayoutInfo.binding.right.toView = $a_tabcontrol;
 					LayoutInfo.binding.right.kind = kHILayoutBindRight;
