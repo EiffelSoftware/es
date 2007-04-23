@@ -106,6 +106,7 @@
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf" readonly="false"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf" readonly="false"/>
 		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf" readonly="false"/>
+		<override name="elks_overrides" location="${ISE_LIBRARY}\library\base\capture_replay\elks_overrides\" recursive="true"/>
 	</target>
 	<target name="batch" extends="common">
 		<root class="ES" feature="make"/>

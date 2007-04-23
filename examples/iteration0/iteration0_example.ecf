@@ -7,11 +7,6 @@
 		<setting name="console_application" value="true"/>
 		<external_include location="/home/stefan/ETH/Masterarbeit/capture_replay/examples/iteration0/C_Files/"/>
 		<external_object location="/home/stefan/ETH/Masterarbeit/capture_replay/examples/iteration0/C_Files/recorder.o"/>
-		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf">
-			<condition>
-				<platform value="vxworks"/>
-			</condition>
-		</precompile>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<cluster name="root_cluster" location=".\" recursive="true">
 			<file_rule>
@@ -20,6 +15,7 @@
 				<exclude>/CVS$</exclude>
 			</file_rule>
 		</cluster>
+		<override name="elks_overrides" location="$ISE_LIBRARY\library\base\capture_replay\elks_overrides\" recursive="true"/>
 	</target>
 	<target name="iteration0_example_dotnet" extends="iteration0_example">
 		<setting name="msil_generation" value="true"/>
