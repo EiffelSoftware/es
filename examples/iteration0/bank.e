@@ -6,11 +6,13 @@ indexing
 
 class
 	BANK
+
 inherit
-	ANY
+	OBSERVABLE
 		redefine
 			is_observed
 		end
+
 create
 	make
 

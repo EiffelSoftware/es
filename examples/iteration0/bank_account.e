@@ -6,8 +6,9 @@ indexing
 
 class
 	BANK_ACCOUNT
+	
 inherit
-	ANY
+	OBSERVABLE
 		redefine
 			is_observed
 		end
