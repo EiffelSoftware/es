@@ -196,6 +196,7 @@ feature -- internals
 			cfstring: EV_CARBON_CF_STRING
 			db: like Current
 			node: like db_item
+			multinode: EV_MULTI_COLUMN_LIST_ROW_IMP
 		do
 			Result := {CONTROLDEFINITIONS_ANON_ENUMS}.errDataBrowserPropertyNotSupported
 			if a_setvalue.to_boolean then
@@ -203,18 +204,31 @@ feature -- internals
 				-- Should not happen, since we don't support e.g. inline editing of the items!
 			else
 				-- Get Information (request from the control)
+				db := get_object_from_pointer (a_browser)
+				node := db.item_list.item (a_item)
 				if a_property = {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserItemIsContainerProperty then
-					db := get_object_from_pointer (a_browser)
-					node := db.item_list.item (a_item)
 					if node.child_array /= Void and then node.child_array.count /= 0 then
 						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 1)
 					else
 						Result := set_data_browser_item_data_boolean_value_external (a_itemdata, 0)
 					end
-				else
-					db := get_object_from_pointer (a_browser)
-					node := db.item_list.item (a_item)
+				else if a_property = 1 then
 					create cfstring.make_unshared_with_eiffel_string (node.text)
+					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
+					if node.icon_ref /= Void then
+						Result := set_data_browser_item_data_icon_external (a_itemdata, get_icon_ref(node.icon_ref))
+					end
+				else
+
+
+
+					multinode ?= node
+
+					if multinode /= Void then
+						create cfstring.make_unshared_with_eiffel_string (multinode.interface.i_th (a_property))
+					else
+						create cfstring.make_unshared_with_eiffel_string ("blub")
+					end
 					Result := set_data_browser_item_data_text_external (a_itemdata, cfstring.item)
 					if node.icon_ref /= Void then
 						Result := set_data_browser_item_data_icon_external (a_itemdata, get_icon_ref(node.icon_ref))
@@ -222,6 +236,7 @@ feature -- internals
 				end
 			end
 		end
+	end
 
 	get_icon_ref (img: POINTER) : POINTER is
 			--
