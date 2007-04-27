@@ -107,6 +107,8 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+
+
 	split_position: INTEGER is
 			-- Position from the left/top of the splitter from `Current'.
 		do

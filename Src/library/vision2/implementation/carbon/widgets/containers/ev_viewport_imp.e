@@ -25,7 +25,6 @@ inherit
 			make,
 			on_removed_item,
 			replace,
-			setup_automatic_layout,
 			setup_layout
 		end
 
@@ -73,16 +72,6 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
-
---	minimum_width: INTEGER is
---			-- Minimum width of widget.
---		do
---		end
---
---	minimum_height: INTEGER is
---			-- Minimum_height of widget.
---		do
---		end
 
 	x_offset: INTEGER is
 			-- Horizontal position of viewport relative to `item'.
@@ -135,6 +124,7 @@ feature -- Element change
 				size.set_height (1)
 				size.set_width (1)
 				ret := hiview_set_frame_external (container, rect.item)
+				setup_layout (w)
 
 			end
 			if v /= Void then
@@ -169,19 +159,24 @@ feature -- Element change
 				-- set the container size to at least the size of the viewport
 				-- Sets the child control's size to the container site minus some spacing
 		local
-			v_rect, c_rect : CGRECT_STRUCT
-			v_size, c_size : CGSIZE_STRUCT
+			v_rect, c_rect, child_rect : CGRECT_STRUCT
+			v_size, c_size, child_size : CGSIZE_STRUCT
 			a_point : CGPOINT_STRUCT
 			ret: INTEGER
 		do
 			-- Get initial positions right
 			create v_rect.make_new_unshared
 			create c_rect.make_new_unshared
+			create child_rect.make_new_unshared
+
 			create v_size.make_shared ( v_rect.size )
 			create c_size.make_shared ( c_rect.size )
+			create child_size.make_shared ( child_rect.size )
+
 
 			ret := hiview_get_frame_external (viewport, v_rect.item)
-			ret := hiview_get_frame_external (viewport, c_rect.item)
+			ret := hiview_get_frame_external (container, c_rect.item)
+			ret := hiview_get_frame_external (a_widget.c_object, child_rect.item)
 
 			if v_size.height > c_size.height then
 				c_size.set_height (v_size.height)
@@ -190,44 +185,49 @@ feature -- Element change
 				c_size.set_width (v_size.width)
 			end
 
+			child_size.set_width (c_size.width)
+			child_size.set_height (c_size.height)
+
+
 			ret := hiview_set_frame_external (container, c_rect.item)
+			ret := hiview_set_frame_external (a_widget.c_object, child_rect.item)
 		end
 
 
 
-		setup_automatic_layout (a_control, a_container: POINTER) is
-				-- Make the child follow it's parent when it's resized
-				-- we dont use this feature yet!!
-			external
-				"C inline use <Carbon/Carbon.h>"
-			alias
-				"[
-					{
-						HILayoutInfo LayoutInfo;
-						LayoutInfo.version = kHILayoutInfoVersionZero;
-						HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
-						
-						LayoutInfo.binding.left.toView = $a_container;
-						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
-						LayoutInfo.binding.left.offset = 20;
-						
-						LayoutInfo.binding.right.toView = $a_container;
-						LayoutInfo.binding.right.kind = kHILayoutBindRight;
-						LayoutInfo.binding.right.offset = 20;
-						
-						LayoutInfo.binding.top.toView = $a_container;
-						LayoutInfo.binding.top.kind = kHILayoutBindTop;
-						LayoutInfo.binding.top.offset = 20;
-						
-						LayoutInfo.binding.bottom.toView = $a_container;
-						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
-						LayoutInfo.binding.bottom.offset = 20;
-						
-						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
-						HIViewApplyLayout( $a_control );
-					}
-				]"
-			end
+--		setup_automatic_layout (a_control, a_container: POINTER) is
+--				-- Make the child follow it's parent when it's resized
+--				-- we dont use this feature yet!!
+--			external
+--				"C inline use <Carbon/Carbon.h>"
+--			alias
+--				"[
+--					{
+--						HILayoutInfo LayoutInfo;
+--						LayoutInfo.version = kHILayoutInfoVersionZero;
+--						HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
+--						
+--						LayoutInfo.binding.left.toView = $a_container;
+--						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+--						LayoutInfo.binding.left.offset = 20;
+--						
+--						LayoutInfo.binding.right.toView = $a_container;
+--						LayoutInfo.binding.right.kind = kHILayoutBindRight;
+--						LayoutInfo.binding.right.offset = 20;
+--						
+--						LayoutInfo.binding.top.toView = $a_container;
+--						LayoutInfo.binding.top.kind = kHILayoutBindTop;
+--						LayoutInfo.binding.top.offset = 20;
+--						
+--						LayoutInfo.binding.bottom.toView = $a_container;
+--						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+--						LayoutInfo.binding.bottom.offset = 20;
+--						
+--						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
+--						HIViewApplyLayout( $a_control );
+--					}
+--				]"
+--			end
 
 
 	block_resize_actions is

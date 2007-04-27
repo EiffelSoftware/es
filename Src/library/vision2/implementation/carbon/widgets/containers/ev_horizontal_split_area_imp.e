@@ -20,7 +20,9 @@ inherit
 
 	EV_SPLIT_AREA_IMP
 		redefine
-			interface
+			interface,
+			client_height,
+			client_width
 		end
 
 create
@@ -168,6 +170,22 @@ feature {NONE} -- Implementation
 
 			Result := [err, part]
 		end
+
+feature --access
+	client_width: INTEGER is
+			-- Width of the client area of container.
+			-- Redefined in children.
+		do
+			Result := width - child_offset_left - child_offset_right - splitter_width
+		end
+
+	client_height: INTEGER is
+			-- Height of the client area of container
+			-- Redefined in children.
+		do
+			Result := height - child_offset_top - child_offset_bottom
+		end
+
 
 feature {EV_ANY_I} -- Implementation
 

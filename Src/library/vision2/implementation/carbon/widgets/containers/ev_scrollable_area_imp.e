@@ -177,19 +177,6 @@ feature -- Element change
 		--	print (hiview_count_subviews_external (c_object).out + "%N")
 		end
 
---	dump_info (p: POINTER)
---		external
---			"C inline use <Files.h>"
---		alias
---			"[
---				{
---					FSSpec f;
---					FSMakeFSSpec (0, 0, "window_dump", &f);
---					DumpControlHirarchy (GetControlOwner_external ( $p ), f);
---				}
---			]"
---		end
-
 	show_vertical_scroll_bar is
 			-- Display vertical scroll bar.
 		do

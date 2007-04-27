@@ -70,10 +70,14 @@ feature {NONE} -- Initialization
 
 	initialize is
 			-- Initialize `Current'.
+		local
+			a_font: EV_FONT
 		do
 		--	set_style (Ev_frame_etched_in)
 			align_text_left
-			font.set_height (12)
+			create a_font.default_create
+			a_font.set_height (12)
+			set_font (a_font)
 			Precursor {EV_CELL_IMP}
 		end
 
@@ -82,11 +86,7 @@ feature -- layout information
 	child_offset_top: INTEGER is
 			--
 		do
-			if text.is_empty then
-				Result := 8
-			else
-				Result := 18
-			end
+			Result := child_offset_bottom + font.height
 		end
 
 feature -- Access
@@ -110,9 +110,7 @@ feature -- Element change
 		do
 			a := internal_minimum_width
 			if item /= void then
-				b := item.minimum_width.max (font.width * text.count)
-			else
-				b := (Precursor {EV_CELL_IMP}).max(font.width * text.count)
+				b := (item.minimum_width + child_offset_right + child_offset_left).max (font.width * text.count)
 			end
 			Result := a.max (b)
 
@@ -124,14 +122,14 @@ feature -- Element change
 		do
 			a := internal_minimum_height
 			if item /= void then
-				b := item.minimum_height + font.width * text.count + 5
-			else
-				b := (Precursor {EV_CELL_IMP})
+				b := item.minimum_height + child_offset_top + child_offset_bottom  --child_height + offset
 			end
 			Result := a.max (b)
 
 
 		end
+
+
 
 feature {EV_ANY_I} -- Implementation
 

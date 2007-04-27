@@ -20,7 +20,9 @@ inherit
 
 	EV_SPLIT_AREA_IMP
 		redefine
-			interface
+			interface,
+			client_height,
+			client_width
 		end
 
 create
@@ -163,6 +165,22 @@ feature {NONE} -- Implementation
 			err := set_event_parameter_external ( event, {CARBONEVENTS_ANON_ENUMS}.keventparamcontrolpart, {CARBONEVENTS_ANON_ENUMS}.typecontrolpartcode, 2, $last_part ) -- 2 = sizeof(INTEGER_16)
 
 			Result := [err, part]
+		end
+
+feature -- access
+
+	client_width: INTEGER is
+			-- Width of the client area of container.
+			-- Redefined in children.
+		do
+			Result := width - child_offset_left - child_offset_right
+		end
+
+	client_height: INTEGER is
+			-- Height of the client area of container
+			-- Redefined in children.
+		do
+			Result := height - child_offset_top - child_offset_bottom - splitter_width
 		end
 
 feature {EV_ANY_I} -- Implementation

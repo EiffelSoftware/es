@@ -51,14 +51,14 @@ feature -- Access
 			-- Width of the client area of container.
 			-- Redefined in children.
 		do
-			Result := width
+			Result := width - child_offset_left - child_offset_right
 		end
 
 	client_height: INTEGER is
 			-- Height of the client area of container
 			-- Redefined in children.
 		do
-			Result := height
+			Result := height - child_offset_top - child_offset_bottom
 		end
 
 	background_pixmap: EV_PIXMAP
@@ -92,15 +92,9 @@ feature -- Element change
 					view_added: ret = 0
 				end
 
---				create cfstring.make_unshared (hiview_copy_text_external (w.c_object))
---				print (cfstring.string + " " + w.generator +" attached to ")
---				create cfstring.make_unshared (hiview_copy_text_external (c_object))
---				print (cfstring.string + " " + generator + "%N")
-
 				setup_layout (w)
 
 				on_new_item (w)
---				print (current.height.out + " - " +  w.height.out + "%N")
 			end
 		end
 
@@ -124,16 +118,16 @@ feature -- Element change
 			create a_size.make_shared ( a_rect.size )
 			create a_point.make_shared ( a_rect.origin )
 
-			a_point.set_x (5)
+			a_point.set_x (child_offset_right)
 			a_point.set_y (child_offset_top)
-			a_size.set_width (width - 10)
-			a_size.set_height (height - 8 - child_offset_top)
+			a_size.set_width (width - (child_offset_right + child_offset_left))
+			a_size.set_height (height - child_offset_bottom - child_offset_top)
 			ret := hiview_set_frame_external (a_widget.c_object, a_rect.item)
 
-			setup_automatic_layout (a_widget.c_object, c_object)
+			setup_automatic_layout (a_widget.c_object, c_object, child_offset_top, child_offset_bottom, child_offset_right, child_offset_left)
 		end
 
-		setup_automatic_layout (a_control, a_container: POINTER) is
+		setup_automatic_layout (a_control, a_container: POINTER; offset_top, offset_bottom, offset_right, offset_left: INTEGER) is
 				-- Make the child follow it's parent when it's reszed
 			external
 				"C inline use <Carbon/Carbon.h>"
@@ -146,22 +140,25 @@ feature -- Element change
 						
 						LayoutInfo.binding.left.toView = $a_container;
 						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+						LayoutInfo.binding.left.offset = $offset_left;
 						
 						LayoutInfo.binding.right.toView = $a_container;
 						LayoutInfo.binding.right.kind = kHILayoutBindRight;
+						LayoutInfo.binding.right.offset = $offset_right;
 						
 						LayoutInfo.binding.top.toView = $a_container;
 						LayoutInfo.binding.top.kind = kHILayoutBindTop;
+						LayoutInfo.binding.top.offset = $offset_top;
 						
 						LayoutInfo.binding.bottom.toView = $a_container;
 						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+						LayoutInfo.binding.bottom.offset = $offset_bottom;
 						
 						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 						HIViewApplyLayout( $a_control );
 					}
 				]"
 			end
-
 feature -- Measurement
 
 	minimum_width: INTEGER is
@@ -187,6 +184,21 @@ feature -- Measurement
 				end
 			end
 		end
+
+	child_offset_bottom: INTEGER
+	do
+		Result := 5
+	end
+
+	child_offset_right: INTEGER
+	do
+		Result := 5
+	end
+
+	child_offset_left: INTEGER
+	do
+		Result := 5
+	end
 
 feature -- Status setting
 

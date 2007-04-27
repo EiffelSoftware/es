@@ -28,9 +28,9 @@ feature -- Access
 		do
 			if private_font = void then
 				create Result
-				-- Default create is standard gtk font
+				-- Default create is standard carbon font
 			else
-				Result := private_font.twin
+				Result := private_font--.twin
 			end
 		end
 
@@ -39,14 +39,15 @@ feature -- Status setting
 	set_font (a_font: EV_FONT) is
 			-- Assign `a_font' to `font'.
 		do
+			private_font := a_font
 		end
 
 feature {NONE} -- Implementation
 
-	fontable_widget: POINTER is
+	fontable_widget: POINTER  --is
 			-- Pointer to the widget that is fontable.
-		do
-		end
+	--	do
+	--	end
 
 	private_font: EV_FONT
 

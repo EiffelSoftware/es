@@ -66,44 +66,6 @@ create
 
 feature {NONE} -- Initialization
 
---	make (an_interface: like interface) is
-			-- Create a gtk entry.
---		local
---			ret: INTEGER
---			struct_ptr: POINTER
---			buffer: C_STRING
---			point : CGPOINT_STRUCT
---			size : CGSIZE_STRUCT
---			rect : CGRECT_STRUCT
---			a_string: C_STRING
---			ptr: POINTER
---			p_rect: RECT_STRUCT
---		do
---			base_make (an_interface)
-
---			create point.make_new_unshared
---			create rect.make_new_unshared
---			create size.make_new_unshared
-
---			size.set_height(18)
---			size.set_width (100)
---			point.set_x (0)
---			point.set_y (0)
---			rect.set_origin (point.item)
---			rect.set_size (size.item)
-
---			ret := create_edit_unicode_text_control_external (null,rect.item, null,0, NULL, $c_object)
---			ret := set_control_data_boolean (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontroledittextsinglelinetag, true)
-
---			ret := hiview_set_visible_external (c_object, 1)
---			ret := hiview_set_frame_external (c_object, rect.item)
-
---			event_id := app_implementation.get_id (current)  --getting an id from the application
-
---			entry_widget := c_object
-
---		end
-
 		make (an_interface: like interface) is
 			-- Create Textfield on a user_pane
 		local
@@ -139,12 +101,16 @@ feature {NONE} -- Initialization
 			-- create button box to hold label and pixmap.
 		local
 			target, h_ret: POINTER
+			a_font: EV_FONT
 		do
-			Precursor {EV_TEXT_COMPONENT_IMP}
+	--		Precursor {EV_TEXT_COMPONENT_IMP}
 			event_id := app_implementation.get_id (current)
 			target := get_control_event_target_external( entry_widget )
 			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.keventclasstextinput, {CARBONEVENTS_ANON_ENUMS}.keventtextinputunicodeforkeyevent )
 			expandable := false
+			create a_font.default_create
+			a_font.set_height (12)
+			set_font (a_font)
 		end
 
 feature {NONE}--binding
@@ -166,15 +132,11 @@ feature {NONE}--binding
 					
 					LayoutInfo.binding.right.toView = NULL;
 					LayoutInfo.binding.right.kind = kHILayoutBindRight;
-					LayoutInfo.binding.right.offset = 4;
+					LayoutInfo.binding.right.offset = 0;
 					
 					LayoutInfo.binding.top.toView = NULL;
 					LayoutInfo.binding.top.kind = kHILayoutBindTop;
 					LayoutInfo.binding.top.offset = 4;
-					
-				//	LayoutInfo.binding.bottom.toView = NULL;
-				//	LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
-				//	LayoutInfo.binding.bottom.offset = 4;
 					
 					HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 					HIViewApplyLayout( $a_control );
@@ -284,6 +246,8 @@ feature
 				if Result < 0 then
 					Result := 0
 				end
+				io.put_string ("Result height: " + Result.out)
+
 			end
 
 	minimum_width: INTEGER is

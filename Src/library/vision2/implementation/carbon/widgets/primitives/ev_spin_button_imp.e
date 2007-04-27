@@ -123,6 +123,7 @@ feature {NONE} -- Implementation
 			target := get_control_event_target_external( gauge_ptr )
 			h_ret := app_implementation.install_event_handler (event_id, target, {CARBONEVENTS_ANON_ENUMS}.kEventClassControl, {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown )
 			set_text (internal_value.out)
+			expandable := false
 
 		end
 
@@ -154,10 +155,6 @@ feature {NONE}--binding
 					LayoutInfo.binding.left.toView = NULL;
 					LayoutInfo.binding.left.kind = kHILayoutBindLeft;
 					LayoutInfo.binding.left.offset = 4;
-					
-			//		LayoutInfo.binding.right.toView = NULL;
-			//		LayoutInfo.binding.right.kind = kHILayoutBindRight;
-			//		LayoutInfo.binding.right.offset = 24;
 					
 					LayoutInfo.binding.top.toView = NULL;
 					LayoutInfo.binding.top.kind = kHILayoutBindTop;

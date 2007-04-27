@@ -79,9 +79,7 @@ feature -- Measurement
 		do
 			a := internal_minimum_width
 			if item /= void then
-				b := item.minimum_width +20
-			else
-				b := (Precursor {EV_CONTAINER_IMP} +20)
+				b := item.minimum_width + child_offset_right + child_offset_left
 			end
 			Result := a.max (b)
 
@@ -93,9 +91,7 @@ feature -- Measurement
 		do
 			a := internal_minimum_height
 			if item /= void then
-				b := item.minimum_height + 20
-			else
-				b := (Precursor {EV_CONTAINER_IMP} +20)
+				b := item.minimum_height + child_offset_top + child_offset_bottom
 			end
 			Result := a.max (b)
 
