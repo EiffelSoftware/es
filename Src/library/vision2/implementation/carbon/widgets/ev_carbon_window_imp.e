@@ -132,18 +132,27 @@ feature {NONE} -- Implementation
 
 	set_x_position (a_x: INTEGER) is
 			-- Set horizontal offset to parent to `a_x'.
+		local
+			a_rect: RECT_STRUCT
+			ret: INTEGER
 		do
+			positioned_by_user := True
+			move_window_external(c_object, a_x, x_position, 0)
 		end
 
 	set_y_position (a_y: INTEGER) is
 			-- Set vertical offset to parent to `a_y'.
 		do
+			positioned_by_user := True
+			move_window_external(c_object, y_position, a_y, 0)
 		end
 
 	set_position (a_x, a_y: INTEGER) is
 			-- Set horizontal offset to parent to `a_x'.
 			-- Set vertical offset to parent to `a_y'.
 		do
+			positioned_by_user := True
+			move_window_external(c_object, a_x, a_y, 0)
 		end
 
 	positioned_by_user: BOOLEAN
