@@ -201,11 +201,6 @@ feature {NONE}--binding
 					HIViewGetLayoutInfo( $left_control, &LayoutInfo );
 					
 					
-					// always allign to the box in y-direction
-		//			LayoutInfo.position.y.toView = NULL;
-		//			LayoutInfo.position.y.kind = kHILayoutPositionTop;
-		//			LayoutInfo.position.y.offset = 0.0;	
-					
 					if ( $right_control != NULL )
 					{
 						// Bind to right control (maintain padding)

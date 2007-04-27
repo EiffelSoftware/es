@@ -217,9 +217,9 @@ feature -- Implementation
 				w2_not_void : w2 /= Void
 			end
 			if is_homogeneous then
-				setup_binding( default_pointer, w2.c_object )
+				setup_binding( default_pointer, w2.c_object , child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
 			else
-				setup_binding( default_pointer, w2.c_object )
+				setup_binding( default_pointer, w2.c_object , child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
 			end
 
 
@@ -235,9 +235,9 @@ feature -- Implementation
 					w2_not_void : w2 /= Void
 				end
 				if is_homogeneous then
-					setup_binding( w1.c_object, w2.c_object )
+					setup_binding( w1.c_object, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
 				else
-					setup_binding( w1.c_object, w2.c_object )
+					setup_binding( w1.c_object, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
 				end
 
 				j := j + 1
@@ -247,7 +247,7 @@ feature -- Implementation
 		end
 
 
-		setup_binding ( left_control, right_control : POINTER ) is
+		setup_binding ( left_control, right_control: POINTER; left_of, right_of, bottom_of, top_of, a_padding: INTEGER ) is
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias

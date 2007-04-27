@@ -25,7 +25,11 @@ inherit
 			on_new_item,
 			on_removed_item,
 			on_event,
-			initialize
+			initialize,
+			child_offset_top,
+			child_offset_bottom,
+			child_offset_left,
+			child_offset_right
 		end
 
 feature -- Initialization
@@ -114,7 +118,7 @@ feature {NONE} -- Carbon implementation
 
 	expandable_item_count : INTEGER
 
-	setup_binding ( upper_control, lower_control : POINTER ) is
+	setup_binding ( upper_control, lower_control : POINTER; left_of, right_of, bottom_of, top_of, a_padding: INTEGER ) is
 			-- Setup Carbon Layout API
 		deferred
 		end
@@ -125,6 +129,27 @@ feature {NONE} -- Carbon implementation
 			at_least_one_child : count > 0
 		deferred
 		end
+feature --Meassurement
+
+	child_offset_bottom: INTEGER
+	do
+		Result := 2
+	end
+
+	child_offset_right: INTEGER
+	do
+		Result := 2
+	end
+
+	child_offset_left: INTEGER
+	do
+		Result := 2
+	end
+	child_offset_top: INTEGER
+	do
+		Result := 2
+	end
+
 
 feature -- Event handling
 

@@ -74,8 +74,8 @@ feature -- Measturement
 			b := b.max(i_th(i).minimum_width)
 			i := i + 1
 		end
-		b := b + (count-1)*padding
-		Result := a.max (b) + 5
+		b := b + child_offset_left + child_offset_right
+		Result := a.max (b)
 	end
 
 	minimum_height: INTEGER is
@@ -94,7 +94,7 @@ feature -- Measturement
 			i := i + 1
 		end
 		b := b + (count-1) * padding
-		Result := a.max (b) + 20
+		Result := a.max (b) + child_offset_bottom + child_offset_top
 	end
 
 feature -- Implementation
@@ -151,16 +151,16 @@ feature -- Implementation
 				expandable_height := count * initial_control_height
 				size_control_external ( c_object, width, expandable_height + (count-1)*padding )
 			else
-				size_control_external ( c_object, width, expandable_height + non_expandable_height + (count-1)*padding )
+				size_control_external ( c_object, width, expandable_height + non_expandable_height + (count-1)*padding +child_offset_bottom + child_offset_top)
 			end
 
 			if is_homogeneous then
-				control_height := ( height - (count-1)*padding ) / count
+				control_height := ( height - (count-1)*padding -child_offset_top - child_offset_bottom) / count
 			end
 
 			from
 				i := 1
-				last_y := -padding
+				last_y := -padding + child_offset_top
 			until
 				(i = 0) or (i = count + 1)
 			loop
@@ -191,7 +191,7 @@ feature -- Implementation
 				w2_not_void : w2 /= Void
 			end
 
-			setup_binding( default_pointer, w2.c_object )
+			setup_binding( default_pointer, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding )
 
 			from
 				j := 2
@@ -205,16 +205,40 @@ feature -- Implementation
 					w2_not_void : w2 /= Void
 				end
 
-				setup_binding( w1.c_object, w2.c_object )
+				setup_binding( w1.c_object, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
 
 				j := j + 1
+
 			end
+
+		--	setup_bottom_binding( w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
 
 			size_control_external ( c_object, width, old_height )
 		end
 
+		setup_bottom_binding ( lower_control : POINTER; left_of, right_of, bottom_of, top_of, a_padding: INTEGER ) is
+		external
+			"C inline use <Carbon/Carbon.h>"
+		alias
+			"[
+				{
+					HILayoutInfo LayoutInfo;
+					LayoutInfo.version = kHILayoutInfoVersionZero;
+					HIViewGetLayoutInfo( $lower_control, &LayoutInfo );
+					
+					LayoutInfo.binding.bottom.toView = NULL;
+					LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
+					LayoutInfo.binding.bottom.offset = $bottom_of;	
+					
+					HIViewSetLayoutInfo( $lower_control, &LayoutInfo );
+					HIViewApplyLayout( $lower_control );
 
-		setup_binding ( upper_control, lower_control : POINTER ) is
+											
+				}
+			]"
+		end
+
+		setup_binding ( upper_control, lower_control : POINTER; left_of, right_of, bottom_of, top_of, a_padding: INTEGER ) is
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -225,26 +249,38 @@ feature -- Implementation
 					HIViewGetLayoutInfo( $lower_control, &LayoutInfo );
 					
 					// always allign to the box in x-direction
-					LayoutInfo.position.x.toView = NULL;
-					LayoutInfo.position.x.kind = kHILayoutPositionLeft;
-					LayoutInfo.position.x.offset = 0.0;
+					//LayoutInfo.position.x.toView = NULL;
+					//LayoutInfo.position.x.kind = kHILayoutPositionLeft;
+					//LayoutInfo.position.x.offset = $left_of;
+				
+						LayoutInfo.binding.left.toView = NULL;
+						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
+						LayoutInfo.binding.left.offset = $left_of;
+						
+						LayoutInfo.binding.right.toView = NULL;
+						LayoutInfo.binding.right.kind = kHILayoutBindRight;
+						LayoutInfo.binding.right.offset = $right_of;
+				
 					
-					if ( $upper_control != NULL )
+					if ( $upper_control != NULL && $lower_control != NULL)
 					{
 						// Bind to upper control (maintain padding)
 						LayoutInfo.binding.top.toView = $upper_control;
 						LayoutInfo.binding.top.kind = kHILayoutBindBottom;
-						LayoutInfo.binding.top.offset = 0;
+						LayoutInfo.binding.top.offset = $a_padding;
 					}
-					else
+					else if ($upper_control != NULL)
 					{
 						// For topmost control
 						LayoutInfo.position.y.toView = NULL;
 						LayoutInfo.position.y.kind = kHILayoutPositionTop;
-						LayoutInfo.position.y.offset = 0.0;
+						LayoutInfo.position.y.offset = $top_of;
 					}
+					
+					
 					HIViewSetLayoutInfo( $lower_control, &LayoutInfo );
 					HIViewApplyLayout( $lower_control );
+									
 				}
 			]"
 		end
