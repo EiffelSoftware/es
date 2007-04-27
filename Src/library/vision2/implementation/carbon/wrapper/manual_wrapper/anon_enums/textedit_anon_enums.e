@@ -31,14 +31,14 @@ feature -- Carbon constants
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
-		"teJustForceLeft"
+		"teForceLeft"
 	end
 	
 	frozen teFlushDefault: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
-		"teJustFlushDefault"
+		"teFlushDefault"
 	end
 
 	frozen teCenter: INTEGER is
@@ -52,14 +52,14 @@ feature -- Carbon constants
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
-		"teJustFlushRight"
+		"teFlushRight"
 	end
 
 	frozen teFlushLeft: INTEGER is
 	external
 		"C inline use <Carbon/Carbon.h>"
 	alias
-		"teJustFlushLeft"
+		"teFlushLeft"
 	end
 	
 end
