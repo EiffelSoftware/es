@@ -189,7 +189,7 @@ feature -- Element Change
 	tooltip: STRING_32
 			-- Tooltip displayed on `Current'.
 
-feature {NONE} -- Implementation
+feature {ANY} -- Implementation
 
 	text: STRING_32 is
 			--

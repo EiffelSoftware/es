@@ -43,7 +43,7 @@ feature -- Creation
 			base_make (an_interface)
 
 			create rect.make_new_unshared
-			rect.set_right (100)
+			rect.set_right (300)
 			rect.set_bottom (100)
 			ret := create_data_browser_control_external (null, rect.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserListView, $ptr)
 			set_c_object (ptr)
@@ -59,7 +59,7 @@ feature -- Creation
 
 
 			do_ugly_things (c_object, get_set_item_data_dispatcher.c_dispatcher, item_notification_dispatcher.c_dispatcher)
-
+			create_list (1)
 			tree_list.extend ([current, c_object])
 
 			id_count := 1
@@ -140,8 +140,88 @@ feature -- settings
 
 feature -- internals
 
+	add_list_view_column (an_identity: INTEGER; a_type: INTEGER; a_minwidth: INTEGER; a_maxwidth: INTEGER; a_title_string: STRING): INTEGER is
+			-- Add a column to the list view of the data browser
+		local
+			ret: INTEGER
+			listviewcolumndesc: DATA_BROWSER_LIST_VIEW_COLUMN_DESC_STRUCT
+			listviewheaderdesc: DATA_BROWSER_LIST_VIEW_HEADER_DESC_STRUCT
+			tableviewcolumndesc: DATA_BROWSER_PROPERTY_DESC_STRUCT
+			cfstring: EV_CARBON_CF_STRING
+			fontstyle: CONTROL_FONT_STYLE_REC_STRUCT
+			fontinfo: CONTROL_BUTTON_CONTENT_INFO_STRUCT
+
+
+		do
+
+			create listviewcolumndesc.make_new_unshared
+
+			create tableviewcolumndesc.make_new_unshared
+			tableviewcolumndesc.set_propertyid (an_identity)
+			tableviewcolumndesc.set_propertytype (a_type)
+
+
+			listviewcolumndesc.set_propertydesc (tableviewcolumndesc.item)
+
+			create cfstring.make_unshared_with_eiffel_string (a_title_string)
+
+			create listviewheaderdesc.make_new_unshared
+			listviewheaderdesc.set_version ({CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowserlistviewlatestheaderdesc)
+			listviewheaderdesc.set_minimumwidth (a_minwidth)
+			listviewheaderdesc.set_maximumwidth (a_maxwidth)
+			listviewheaderdesc.set_titleoffset (0)
+			listviewheaderdesc.set_titlestring (cfstring.item)
+			listviewheaderdesc.set_initialorder (0)
+
+			create fontstyle.make_new_unshared
+			fontstyle.set_flags (64)
+			fontstyle.set_just (0)
+
+			listviewheaderdesc.set_btnfontstyle (fontstyle.item)
+
+
+			create fontinfo.make_new_unshared
+			fontinfo.set_contenttype (0)
+
+			listviewheaderdesc.set_btncontentinfo (fontinfo.item)
+
+			listviewcolumndesc.set_headerbtndesc (listviewheaderdesc.item)
+
+			ret := add_data_browser_list_view_column_external (c_object, listviewcolumndesc.item, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowserlistviewappendcolumn)
+			ret := set_data_browser_property_flags_external (c_object, an_identity , {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowserlistviewdefaultcolumnflags)
+		end
+
+	create_list (a_columns: INTEGER) is
+			-- Create the clist with `a_columns' columns.
+		require
+			a_columns_positive: a_columns > 0
+		local
+			i, ret: INTEGER
+		do
+			from
+				i := column_count + 1
+			until
+				i > a_columns
+			loop
+				ret := add_list_view_column (i, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowsertexttype, 100, 10000, "")
+				i := i + 1
+
+			end
+			ret := auto_size_data_browser_list_view_columns_external (c_object)
+		end
+
+		column_count: INTEGER is
+			-- Number of columns in the list.
+		local
+			ret, col_list: INTEGER
+		do
+			ret := get_data_browser_table_view_column_count_external (c_object, $col_list)
+			Result := col_list
+		end
+
 	do_ugly_things (db_control, a_item_data_dispatcher, a_item_notification_dispatcher: POINTER) is
 			-- move this to the application class or make it somehow unique
+
 		external
 			"C inline"
 		alias
@@ -160,25 +240,6 @@ feature -- internals
 
 					SetDataBrowserCallbacks ( $db_control, &dbCallbacks );
 
-					// Initialize a single column (ID 1) without name:
-					DataBrowserListViewColumnDesc columnDesc;
-			
-					columnDesc.propertyDesc.propertyID = 1;
-					columnDesc.propertyDesc.propertyType = kDataBrowserIconAndTextType; //kDataBrowserTextType;
-
-					columnDesc.headerBtnDesc.version = kDataBrowserListViewLatestHeaderDesc;
-					columnDesc.headerBtnDesc.minimumWidth = 100;
-					columnDesc.headerBtnDesc.maximumWidth = 400;
-					columnDesc.headerBtnDesc.titleOffset = 0;
-					columnDesc.headerBtnDesc.titleString = CFSTR("");
-
-					columnDesc.headerBtnDesc.initialOrder = kDataBrowserOrderUndefined;
-
-					columnDesc.headerBtnDesc.btnFontStyle.flags	= kDataBrowserListViewDefaultColumnFlags;
-					columnDesc.headerBtnDesc.btnFontStyle.just = teFlushDefault;
-					columnDesc.headerBtnDesc.btnContentInfo.contentType = kControlContentTextOnly; //kControlNoContent;			
-			
-					AddDataBrowserListViewColumn( $db_control, &columnDesc, kDataBrowserListViewAppendColumn);
 				}
 			]"
 		end
