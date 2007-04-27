@@ -23,7 +23,11 @@ inherit
 			interface,
 			replace,
 			minimum_width,
-			minimum_height
+			minimum_height,
+			child_offset_bottom,
+			child_offset_top,
+			child_offset_left,
+			child_offset_right
 		end
 
 	EV_DOCKABLE_TARGET_IMP
@@ -72,6 +76,26 @@ feature -- Element change
 			item := v
 		end
 feature -- Measurement
+
+	child_offset_bottom: INTEGER
+	do
+		Result := 0
+	end
+
+	child_offset_right: INTEGER
+	do
+		Result := 0
+	end
+
+	child_offset_left: INTEGER
+	do
+		Result := 0
+	end
+
+	child_offset_top: INTEGER
+	do
+		Result := 0
+	end
 
 	minimum_width: INTEGER is
 		local

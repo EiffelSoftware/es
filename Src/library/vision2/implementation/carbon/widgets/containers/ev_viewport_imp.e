@@ -25,7 +25,10 @@ inherit
 			make,
 			on_removed_item,
 			replace,
-			setup_layout
+			setup_layout,
+			child_has_resized,
+			minimum_width,
+			minimum_height
 		end
 
 	HIVIEW_FUNCTIONS_EXTERNAL
@@ -141,8 +144,8 @@ feature -- Element change
 				ret := hiview_set_frame_external (container, rect.item)
 				ret := hiview_add_subview_external ( container, w.c_object )
 
-				alligne_to_child_size (w.c_object, container )
-
+				--alligne_to_child_size (w.c_object, container )
+				setup_automatic_layout (w.c_object, container, 0, 0, 0, 0)
 				check
 					view_added: ret = 0
 				end
@@ -152,6 +155,12 @@ feature -- Element change
 				on_new_item (w)
 				item := v
 			end
+		end
+
+	child_has_resized (a_widget_imp: EV_WIDGET_IMP) is
+			--
+		do
+			setup_layout (a_widget_imp)
 		end
 
 	setup_layout (a_widget: EV_WIDGET_IMP) is
@@ -185,6 +194,17 @@ feature -- Element change
 				c_size.set_width (v_size.width)
 			end
 
+			if a_widget.minimum_height > c_size.height then
+				c_size.set_height (a_widget.minimum_height)
+			end
+
+			if a_widget.minimum_width > c_size.width then
+				c_size.set_width (a_widget.minimum_width)
+			end
+
+
+
+
 			child_size.set_width (c_size.width)
 			child_size.set_height (c_size.height)
 
@@ -192,43 +212,6 @@ feature -- Element change
 			ret := hiview_set_frame_external (container, c_rect.item)
 			ret := hiview_set_frame_external (a_widget.c_object, child_rect.item)
 		end
-
-
-
---		setup_automatic_layout (a_control, a_container: POINTER) is
---				-- Make the child follow it's parent when it's resized
---				-- we dont use this feature yet!!
---			external
---				"C inline use <Carbon/Carbon.h>"
---			alias
---				"[
---					{
---						HILayoutInfo LayoutInfo;
---						LayoutInfo.version = kHILayoutInfoVersionZero;
---						HIViewGetLayoutInfo ( $a_control, &LayoutInfo );
---						
---						LayoutInfo.binding.left.toView = $a_container;
---						LayoutInfo.binding.left.kind = kHILayoutBindLeft;
---						LayoutInfo.binding.left.offset = 20;
---						
---						LayoutInfo.binding.right.toView = $a_container;
---						LayoutInfo.binding.right.kind = kHILayoutBindRight;
---						LayoutInfo.binding.right.offset = 20;
---						
---						LayoutInfo.binding.top.toView = $a_container;
---						LayoutInfo.binding.top.kind = kHILayoutBindTop;
---						LayoutInfo.binding.top.offset = 20;
---						
---						LayoutInfo.binding.bottom.toView = $a_container;
---						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
---						LayoutInfo.binding.bottom.offset = 20;
---						
---						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
---						HIViewApplyLayout( $a_control );
---					}
---				]"
---			end
-
 
 	block_resize_actions is
 			-- Block any resize actions that may occur.
@@ -270,6 +253,34 @@ feature -- Element change
 		do
 			internal_set_item_size (-1, a_height)
 		end
+
+feature --meassures
+
+	minimum_height: INTEGER is
+		local
+			a,b: INTEGER
+		do
+			a := internal_minimum_height
+			if item /= void then
+				b := child_offset_top + child_offset_bottom
+			end
+			Result := a.max (b)
+
+		end
+
+	minimum_width: INTEGER is
+		local
+			a,b: INTEGER
+		do
+			a := internal_minimum_width
+			if item /= void then
+				b := child_offset_left + child_offset_right
+			end
+			Result := a.max (b)
+
+		end
+
+
 
 feature {NONE} -- Implementation
 
@@ -361,6 +372,7 @@ feature {NONE} -- Implementation
 			end
 			set_control_bounds_external (c_object,rect.item)
 		end
+
 	internal_set_container_size (a_height, a_width: INTEGER_32)
 		local
 			a_rect: CGRECT_STRUCT

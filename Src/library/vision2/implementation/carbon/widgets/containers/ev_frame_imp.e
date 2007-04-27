@@ -26,7 +26,10 @@ inherit
 			initialize,
 			child_offset_top,
 			minimum_height,
-			minimum_width
+			minimum_width,
+			child_offset_bottom,
+			child_offset_right,
+			child_offset_left
 		end
 
 	EV_FONTABLE_IMP
@@ -88,6 +91,20 @@ feature -- layout information
 		do
 			Result := child_offset_bottom + font.height
 		end
+	child_offset_bottom: INTEGER
+	do
+		Result := 5
+	end
+
+	child_offset_right: INTEGER
+	do
+		Result := 5
+	end
+
+	child_offset_left: INTEGER
+	do
+		Result := 5
+	end
 
 feature -- Access
 
