@@ -101,8 +101,14 @@ feature -- Creation
 			-- 2nd argument should be: {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserNoItem
 		end
 
-
 	selected_item_imp: like db_item
+
+	set_selected_item_imp (an_item: like db_item) is
+			--
+		do
+			selected_item_imp := an_item
+		end
+
 
 feature -- settings
 
@@ -162,7 +168,7 @@ feature -- internals
 
 					columnDesc.headerBtnDesc.version = kDataBrowserListViewLatestHeaderDesc;
 					columnDesc.headerBtnDesc.minimumWidth = 100;
-					columnDesc.headerBtnDesc.maximumWidth = 200;
+					columnDesc.headerBtnDesc.maximumWidth = 400;
 					columnDesc.headerBtnDesc.titleOffset = 0;
 					columnDesc.headerBtnDesc.titleString = CFSTR("");
 
@@ -337,8 +343,8 @@ feature -- internals
 				tree := get_object_from_pointer (a_browser)
 				node := tree.item_list.item (a_item)
 				node.select_actions.call ([])
-				selected_item_imp := node
-				call_selection_action_sequences
+				tree.set_selected_item_imp(node)
+				tree.call_selection_action_sequences
 --				selected := true
 			end
 		end

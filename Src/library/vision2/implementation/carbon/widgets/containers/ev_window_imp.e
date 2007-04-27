@@ -122,6 +122,7 @@ feature {NONE} -- Initialization
 
 			internal_is_border_enabled := True
 			user_can_resize := True
+			create title.make_empty
 			set_is_initialized (True)
 		end
 
