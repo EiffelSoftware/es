@@ -146,6 +146,12 @@
 			</match>
 			<wrapper type="default" />
 		</rule>
+		<rule>
+			<match>
+				<header name=".*Navigation.h"/>
+			</match>
+			<wrapper type="default" />
+		</rule>		
     	<rule>
 			<match/>
 			<wrapper type="none" />
