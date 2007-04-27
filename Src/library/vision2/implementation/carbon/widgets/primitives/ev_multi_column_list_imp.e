@@ -394,13 +394,13 @@ feature -- Element change
 		do
 			-- First transform 'an_alignment' into constants understandable by carbon
 			if an_alignment.is_left_aligned then
-				alignment := {TEXTEDIT_ANON_ENUMS}.teLeft -- teLeft
+				alignment := {TEXTEDIT_ANON_ENUMS}.teflushleft
 			elseif an_alignment.is_right_aligned then
-				alignment := -1 -- teRight
+				alignment := {TEXTEDIT_ANON_ENUMS}.teflushright 
 			elseif an_alignment.is_center_aligned then
-				alignment := 1 --teCenter
+				alignment := {TEXTEDIT_ANON_ENUMS}.tecenter
 			else
-				alignment := 0 -- teFlushDefault
+				alignment := {TEXTEDIT_ANON_ENUMS}.teflushdefault
 			end
 
 			-- Now get the listviewheader, extract btnfontstyle struct and modify its alignment, then set the modified listviewheader
