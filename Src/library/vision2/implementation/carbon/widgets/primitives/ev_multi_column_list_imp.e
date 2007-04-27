@@ -93,7 +93,7 @@ feature {NONE} -- Initialization
 			Precursor {EV_MULTI_COLUMN_LIST_I}
 			resize_model_if_needed (25)
 				-- Create our model with 25 columns to avoid recomputation each time the column count increases
-			create_list (2)
+
 
 			previous_selection := selected_items
 			initialize_pixmaps
@@ -160,13 +160,15 @@ feature {NONE} -- Implementation
 			i, ret: INTEGER
 		do
 			from
-				i := 0
+				i := column_count + 1
 			until
-				i >= a_columns
+				i > a_columns
 			loop
-				ret := add_list_view_column (i, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowsertexttype, 8, 20, 10, "")
+				ret := add_list_view_column (i, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowsertexttype, 100, 200, "")
 				i := i + 1
+
 			end
+			ret := auto_size_data_browser_list_view_columns_external (c_object)
 		end
 
 	on_pointer_motion (a_motion_tuple: TUPLE [INTEGER, INTEGER, DOUBLE, DOUBLE, DOUBLE, INTEGER, INTEGER]) is
@@ -200,8 +202,10 @@ feature -- Access
 	column_count: INTEGER is
 			-- Number of columns in the list.
 		local
-			col_list: POINTER
+			ret, col_list: INTEGER
 		do
+			ret := get_data_browser_table_view_column_count_external (c_object, $col_list)
+			Result := col_list
 		end
 
 	model_column_count: INTEGER is
@@ -303,7 +307,7 @@ feature -- Status setting
 		do
 		end
 
-	add_list_view_column (an_identity: INTEGER; a_type: INTEGER; a_flag: INTEGER; a_minwidth: INTEGER; a_maxwidth: INTEGER; a_title_string: STRING): INTEGER is
+	add_list_view_column (an_identity: INTEGER; a_type: INTEGER; a_minwidth: INTEGER; a_maxwidth: INTEGER; a_title_string: STRING): INTEGER is
 			-- Add a column to the list view of the data browser
 		local
 			ret: INTEGER
@@ -322,7 +326,7 @@ feature -- Status setting
 			create tableviewcolumndesc.make_new_unshared
 			tableviewcolumndesc.set_propertyid (an_identity)
 			tableviewcolumndesc.set_propertytype (a_type)
-			tableviewcolumndesc.set_propertyflags (a_flag)
+
 
 			listviewcolumndesc.set_propertydesc (tableviewcolumndesc.item)
 
@@ -358,25 +362,68 @@ feature -- Element change
 
 	column_title_changed (a_txt: STRING_GENERAL; a_column: INTEGER) is
 			-- Make `a_txt' the title of the column number.
-		do
 
+		local
+			ret: INTEGER_32
+			listviewheaderdesc: DATA_BROWSER_LIST_VIEW_HEADER_DESC_STRUCT
+			cfstring: EV_CARBON_CF_STRING
+		do
+			create cfstring.make_unshared_with_eiffel_string (a_txt)
+			create listviewheaderdesc.make_new_unshared
+			ret := get_data_browser_list_view_header_desc_external (c_object, a_column, listviewheaderdesc.item)
+			listviewheaderdesc.set_titlestring (cfstring.item)
+			ret := set_data_browser_list_view_header_desc_external (c_object, a_column, listviewheaderdesc.item)
 		end
 
 	column_width_changed (value: INTEGER; a_column: INTEGER) is
 			-- Make `value' the new width of the column number
 			-- `a_column'.
+		local
+			ret: INTEGER
 		do
+			ret := set_data_browser_table_view_named_column_width_external (c_object, a_column, value)
 		end
 
 	column_alignment_changed (an_alignment: EV_TEXT_ALIGNMENT; a_column: INTEGER) is
 			-- Set alignment of `a_column' to corresponding `alignment_code'.
+		local
+			ret, alignment: INTEGER_32
+			listviewheaderdesc: DATA_BROWSER_LIST_VIEW_HEADER_DESC_STRUCT
+			btnfontstyle: CONTROL_FONT_STYLE_REC_STRUCT
+			cfstring: EV_CARBON_CF_STRING
 		do
+			-- First transform 'an_alignment' into constants understandable by carbon
+			if an_alignment.is_left_aligned then
+				alignment := {TEXTEDIT_ANON_ENUMS}.teLeft -- teLeft
+			elseif an_alignment.is_right_aligned then
+				alignment := -1 -- teRight
+			elseif an_alignment.is_center_aligned then
+				alignment := 1 --teCenter
+			else
+				alignment := 0 -- teFlushDefault
+			end
 
+			-- Now get the listviewheader, extract btnfontstyle struct and modify its alignment, then set the modified listviewheader
+			create listviewheaderdesc.make_new_unshared
+			ret := get_data_browser_list_view_header_desc_external (c_object, a_column, listviewheaderdesc.item)
+
+			create btnfontstyle.make_unshared (listviewheaderdesc.btnfontstyle)
+			btnfontstyle.set_flags (64) -- kControlUseJustMask ( 0x0040 )
+			btnfontstyle.set_just (alignment)
+
+			listviewheaderdesc.set_btnfontstyle (btnfontstyle.item)
+
+			ret := set_data_browser_list_view_header_desc_external (c_object, a_column, listviewheaderdesc.item)
 		end
 
 	set_row_height (value: INTEGER) is
 			-- Make `value' the new height of all the rows.
+		require
+			positive_value: value >= 0
+		local
+			ret: INTEGER
 		do
+			ret := set_data_browser_table_view_row_height_external (c_object, value)
 		end
 
 	wipe_out is
