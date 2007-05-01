@@ -7,6 +7,9 @@ indexing
 class
 	ATM
 
+inherit
+	OBSERVABLE
+	
 create
 	make
 

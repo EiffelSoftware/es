@@ -7,6 +7,8 @@ indexing
 class
 	ATM_UI
 
+inherit
+	OBSERVABLE
 create
 	make
 
