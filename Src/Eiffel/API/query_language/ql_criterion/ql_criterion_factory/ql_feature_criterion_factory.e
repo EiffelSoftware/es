@@ -122,8 +122,8 @@ feature{NONE} -- Initialization
 			name_table.put (c_true, query_language_names.ql_cri_true)
 			name_table.put (c_name_is, query_language_names.ql_cri_name_is)
 			name_table.put (c_text_contain, query_language_names.ql_cri_text_contain)
-			name_table.put (c_ancestor_is, query_language_names.ql_cri_ancestor_is)
-			name_table.put (c_descendant_is, query_language_names.ql_cri_descendant_is)
+			name_table.put (c_ancestor_is, query_language_names.ql_cri_descendant_is)
+			name_table.put (c_descendant_is, query_language_names.ql_cri_ancestor_is)
 			name_table.put (c_implementors_of, query_language_names.ql_cri_implementors_of)
 			name_table.put (c_is_exported_to, query_language_names.ql_cri_is_exported_to)
 			name_table.put (c_callee_is, query_language_names.ql_cri_callee_is)
@@ -672,12 +672,12 @@ feature{NONE} -- Implementation
 			a_item_attached: a_item /= Void
 			a_item_valid: a_item.is_valid_domain_item
 		local
-			l_feature: E_FEATURE
+			l_e_feature: E_FEATURE
 		do
 			Result := a_item.is_real_feature
 			if Result then
-				l_feature := a_item.e_feature
-				Result := l_feature.has_precondition or l_feature.has_postcondition
+				l_e_feature := a_item.e_feature
+				Result := l_e_feature.has_precondition or l_e_feature.has_postcondition
 			end
 		end
 
@@ -1119,8 +1119,5 @@ indexing
                          Website http://www.eiffel.com
                          Customer support http://support.eiffel.com
                 ]"
-
-
-
 
 end

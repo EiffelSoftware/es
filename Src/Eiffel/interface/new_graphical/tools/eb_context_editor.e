@@ -99,7 +99,6 @@ feature {NONE} -- Initialization
 			Eiffel_project.manager.close_agents.extend (project_close_agent)
 			develop_window.window_manager.add_observer (Current)
 
-
 			create a_class_graph.make (Current)
 			create empty_world.make (a_class_graph, Current)
 			create world_cell.make_with_world_and_tool (empty_world, Current)
@@ -130,6 +129,15 @@ feature {NONE} -- Initialization
 
 			develop_window.editors_manager.add_edition_observer (Current)
 			area.key_press_actions.extend (agent on_key_pressed)
+
+			area.set_configurable_target_menu_mode
+			area.set_configurable_target_menu_handler (agent context_menu_handler)
+		end
+
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+			-- Context menu handler.
+		do
+			develop_window.menus.context_menu_factory.diagram_tool_menu (a_menu, a_target_list, a_source, a_pebble)
 		end
 
 	init_commands is
@@ -343,15 +351,15 @@ feature {NONE} -- Initialization
 			draw_commands.extend (zoom_in_cmd)
 
 			from
-				create drawing_toolbar
+				create drawing_toolbar.make
 				draw_commands.start
 			until
 				draw_commands.after
 			loop
 				if draw_commands.item /= Void then
-					drawing_toolbar.extend (draw_commands.item)
+					drawing_toolbar.extend (draw_commands.item.new_sd_toolbar_item (False))
 				else
-					drawing_toolbar.extend (create {EB_TOOLBARABLE_SEPARATOR})
+					drawing_toolbar.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 				end
 				draw_commands.forth
 			end
@@ -383,23 +391,22 @@ feature {NONE} -- Initialization
 			view_commands.extend (redo_cmd)
 
 			from
-				create view_toolbar
+				create view_toolbar.make
 				view_commands.start
 			until
 				view_commands.after
 			loop
 				if view_commands.item /= Void then
-					view_toolbar.extend (view_commands.item)
+					view_toolbar.extend (view_commands.item.new_sd_toolbar_item (False))
 				else
-					view_toolbar.extend (create {EB_TOOLBARABLE_SEPARATOR})
+					view_toolbar.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 				end
 				view_commands.forth
 			end
 
-			view_toolbar.update_toolbar
-			view_bar.extend (view_toolbar.widget)
+			view_toolbar.compute_minimum_size
+			view_bar.extend (view_toolbar)
 			view_bar.disable_item_expand (view_bar.last)
-
 
 			initialize_accelerators (draw_commands)
 			initialize_accelerators (view_commands)
@@ -411,9 +418,9 @@ feature {NONE} -- Initialization
 				extend_shortcut_table (delete_view_cmd.accelerator)
 			end
 
-			drawing_toolbar.update_toolbar
-			drawing_bar.extend (drawing_toolbar.widget)
-			drawing_bar.disable_item_expand (drawing_toolbar.widget)
+			drawing_toolbar.compute_minimum_size
+			drawing_bar.extend (drawing_toolbar)
+			drawing_bar.disable_item_expand (drawing_bar.last)
 
 			create zoom_cell
 
@@ -449,8 +456,6 @@ feature {NONE} -- Initialization
 			widget.extend (v_box)
 			widget.disable_item_expand (v_box)
 
-
-
 			create view_menu
 
 			create view_label.make_with_text (interface_names.l_view)
@@ -476,7 +481,6 @@ feature {NONE} -- Initialization
 			view_bar.disable_item_expand (view_menu)
 
 		end
-
 
 	show_view_menu is
 			-- Display "View" menu.
@@ -572,9 +576,10 @@ feature -- EB_TOOL features
 	build_mini_toolbar is
 			-- Redefine
 		do
-			create history_toolbar
-			history_toolbar.extend (history_manager.back_command.new_mini_toolbar_item)
-			history_toolbar.extend (history_manager.forth_command.new_mini_toolbar_item)
+			create history_toolbar.make
+			history_toolbar.extend (history_manager.back_command.new_mini_sd_toolbar_item)
+			history_toolbar.extend (history_manager.forth_command.new_mini_sd_toolbar_item)
+			history_toolbar.compute_minimum_size
 
 			create mini_toolbar
 			mini_toolbar.extend (address_manager.header_info)
@@ -658,7 +663,6 @@ feature -- Access
 
 	history: EB_HISTORY_DIALOG
 			-- History of undoable commands.
-
 
 	pointer_position: EV_COORDINATE is
 			-- Position of the screen pointer relative to `area'.
@@ -1098,7 +1102,6 @@ feature -- Element change
 				force_directed_layout.set_world (l_cluster_view)
 				graph := l_cluster_graph
 
-
 				if is_force_directed_used then
 					disable_force_directed
 				end
@@ -1198,7 +1201,6 @@ feature {EB_TOGGLE_UML_COMMAND} -- UML/BON toggle.
 			bon_cluster: BON_CLUSTER_DIAGRAM
 			f: RAW_FILE
 		do
-
 
 			if is_force_directed_used then
 				disable_force_directed
@@ -1320,9 +1322,9 @@ feature {NONE} -- Memory management
 					l_editors.forth
 				end
 			end
-			drawing_toolbar.recycle
+			drawing_toolbar.destroy
 			drawing_toolbar := Void
-			view_toolbar.recycle
+			view_toolbar.destroy
 			view_toolbar := Void
 			recycle_commands
 			world_cell.recycle
@@ -1584,7 +1586,7 @@ feature {NONE} -- Views
 			view_selector.set_text (world.current_view)
 		end
 
-feature {NONE} -- Commands
+feature -- Commands
 
 	view_selector: EV_TEXT_FIELD
 			-- Combo box that lets the user change views.
@@ -2041,8 +2043,8 @@ feature {NONE} -- Implementation
 			-- Was a class edited through the Diagram.
 			-- (Add remove feature, add remove inheritance link)
 
-	view_toolbar: EB_TOOLBAR
-	drawing_toolbar: EB_TOOLBAR
+	view_toolbar: SD_TOOL_BAR
+	drawing_toolbar: SD_TOOL_BAR
 			-- Part of toolbar that can be customized.
 
 	area: EV_DRAWING_AREA is
@@ -2353,7 +2355,7 @@ feature {NONE} -- Implementation for mini tool bar
 	mini_toolbar: EV_HORIZONTAL_BOX
 			-- Mini tool bar.
 
-	history_toolbar: EV_TOOL_BAR;
+	history_toolbar: SD_TOOL_BAR;
 			-- Toolbar containing the history commands.
 
 	window: EV_WINDOW is

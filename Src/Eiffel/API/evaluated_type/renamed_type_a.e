@@ -2,7 +2,7 @@ indexing
 	description: "[
 		Encapsulates a renaming of features together with a type.
 		
-		It is called extended type because it carries extensions with it.
+		It is called renamed type because it carries extensions with it.
 		The most prominent case where we use an instance of this class is the following:
 		G -> {A rename f as f_of_a end, B rename f as f_of_b end}
 		`A' together with its rename clause corresponds to one instance of this class.
@@ -13,14 +13,14 @@ indexing
 	revision: "$Revision$"
 
 class
-	EXTENDED_TYPE_A
+	RENAMED_TYPE_A
 
 inherit
 	COMPILER_EXPORTER
 
 	TYPE_A
 		redefine
-			renaming, is_extended, has_renaming, instantiated_in,
+			renaming, is_renamed_type, has_renaming, instantiated_in,
 			instantiation_in, has_associated_class,
 			to_type_set
 		end
@@ -37,7 +37,7 @@ feature -- Initialization
 		require
 			a_type_not_void: a_type /= Void
 			a_type_is_not_a_type_set: not a_type.is_type_set
-			a_type_is_not_extended: not a_type.is_extended
+			a_type_is_not_renamed: not a_type.is_renamed_type
 		do
 			type := a_type
 			renaming := a_renaming
@@ -69,7 +69,7 @@ feature {COMPILER_EXPORTER} -- Access
 		end
 
 	--| Martins 1/23/07: instantiation*
-	--| Should we return EXTENDED_TYPE_A?
+	--| Should we return RENAMED_TYPE_A?
 	--| Currently there seems no need for it and it might most likeley introduce bugs.
 
 	instantiated_in (a_class_type: TYPE_A): TYPE_A is
@@ -115,7 +115,7 @@ feature -- Setters
 		require
 			a_type_not_void: a_type /= Void
 			a_type_is_not_a_type_set: not a_type.is_type_set
-			a_type_is_not_extended: not a_type.is_extended
+			a_type_is_not_renamed: not a_type.is_renamed_type
 		do
 			type := a_type
 		ensure
@@ -135,10 +135,7 @@ feature -- Comparison
 	is_equivalent (other: like Current): BOOLEAN is
 			-- Is `other' equivalent to the current object ?
 		do
-			Result := type.is_equivalent (other)
-			if other.is_extended then
-
-			end
+			Result := type.is_equivalent (other.type)
 		end
 
 feature -- Visitor
@@ -146,7 +143,7 @@ feature -- Visitor
 	process (v: TYPE_A_VISITOR) is
 			-- Process current element.
 		do
-			v.process_extended_type_a (Current)
+			v.process_renamed_type_a (Current)
 		end
 
 feature -- Status
@@ -164,9 +161,9 @@ feature -- Status
 			Result := renaming /= Void and then not renaming.is_empty
 		end
 
-	is_extended: BOOLEAN is True
-		-- Is current type extended?
-		-- An extended type has currently the possibility to carry a renaming.
+	is_renamed_type: BOOLEAN is True
+		-- Is current an instance of RENAMED_TYPE_A?
+		-- An renamed type has the ability to carry a feature renaming.
 
 feature -- Output
 
@@ -200,7 +197,7 @@ feature -- Output
 
 invariant
 	type_is_not_a_type_set: not type.is_type_set
-	no_nested_extended_types: not type.is_extended
+	no_nested_renamed_types: not type.is_renamed_type
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
@@ -234,4 +231,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class EXTENDED_TYPE_A
+end -- class RENAMED_TYPE_A

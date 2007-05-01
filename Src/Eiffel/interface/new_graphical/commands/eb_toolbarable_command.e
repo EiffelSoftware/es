@@ -36,6 +36,11 @@ feature -- Access
 		do
 		end
 
+	mini_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command for mini toolbars.
+		do
+		end
+
 	tooltip: STRING_GENERAL is
 			-- Tooltip for the toolbar button.
 		deferred
@@ -86,6 +91,7 @@ feature -- Status setting
 			-- Set `is_sensitive' to True.
 		local
 			toolbar_items: like internal_managed_toolbar_items
+			sd_toolbar_items: like internal_managed_sd_toolbar_items
 		do
 			if not is_sensitive then
 				is_sensitive := True
@@ -100,6 +106,18 @@ feature -- Status setting
 						toolbar_items.forth
 					end
 				end
+
+				sd_toolbar_items := internal_managed_sd_toolbar_items
+				if sd_toolbar_items /= Void then
+					from
+						sd_toolbar_items.start
+					until
+						sd_toolbar_items.after
+					loop
+						sd_toolbar_items.item.enable_sensitive
+						sd_toolbar_items.forth
+					end
+				end
 			end
 		end
 
@@ -107,6 +125,7 @@ feature -- Status setting
 			-- Set `is_sensitive' to True.
 		local
 			toolbar_items: like internal_managed_toolbar_items
+			sd_toolbar_items: like internal_managed_sd_toolbar_items
 		do
 			if is_sensitive then
 				toolbar_items := internal_managed_toolbar_items
@@ -120,6 +139,19 @@ feature -- Status setting
 						toolbar_items.forth
 					end
 				end
+
+				sd_toolbar_items := internal_managed_sd_toolbar_items
+				if sd_toolbar_items /= Void then
+					from
+						sd_toolbar_items.start
+					until
+						sd_toolbar_items.after
+					loop
+						sd_toolbar_items.item.disable_sensitive
+						sd_toolbar_items.forth
+					end
+				end
+
 				is_sensitive := False
 			end
 		end
@@ -160,6 +192,31 @@ feature -- Basic operations
 		do
 			create Result.make (Current)
 			Result.set_pixmap (mini_pixmap)
+			if is_sensitive then
+				Result.enable_sensitive
+			else
+				Result.disable_sensitive
+			end
+			l_tt := tooltip.twin
+			if shortcut_available then
+				l_tt.append (opening_parenthesis)
+				l_tt.append (shortcut_string)
+				l_tt.append (closing_parenthesis)
+			end
+			Result.set_tooltip (l_tt)
+			Result.select_actions.extend (agent execute)
+		end
+
+	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON is
+			-- Create a new mini toolbar button for this command.
+		require
+			mini_pixmap_not_void: mini_pixmap /= Void
+		local
+			l_tt: like tooltip
+		do
+			create Result.make (Current)
+			Result.set_pixmap (mini_pixmap)
+			Result.set_pixel_buffer (mini_pixel_buffer)
 			if is_sensitive then
 				Result.enable_sensitive
 			else

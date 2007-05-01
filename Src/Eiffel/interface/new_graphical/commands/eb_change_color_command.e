@@ -11,7 +11,9 @@ class
 inherit
 	EB_CONTEXT_DIAGRAM_COMMAND
 		redefine
-			new_toolbar_item
+			new_toolbar_item,
+			new_sd_toolbar_item,
+			menu_name
 		end
 
 	BON_CONSTANTS
@@ -69,6 +71,17 @@ feature -- Access
 			Result.drop_actions.extend (agent execute_with_cluster_stone)
 		end
 
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+			-- Create a new toolbar button for this command.
+		do
+			Result := Precursor (display_text)
+			Result.select_actions.wipe_out
+			Result.select_actions.extend (agent execute)
+			Result.drop_actions.extend (agent execute_with_stone)
+			Result.drop_actions.extend (agent execute_with_list)
+			Result.drop_actions.extend (agent execute_with_cluster_stone)
+		end
+
 feature {NONE} -- Implementation
 
 	execute_with_cluster_stone (a_stone: CLUSTER_FIGURE_STONE) is
@@ -110,7 +123,6 @@ feature {NONE} -- Implementation
 				agent change_color_all (class_list, new_color_table),
 				agent change_color_all (class_list, old_color_table))
 		end
-
 
 	execute_with_stone (a_stone: CLASSI_FIGURE_STONE) is
 			-- Create a development window and process `a_stone'.
@@ -238,9 +250,9 @@ feature {NONE} -- Implementation
 	pixel_buffer: EV_PIXEL_BUFFER is
 			-- Pixel buffer representing the command.
 		do
-			-- Currently there is no pixel buffer for this command.
+			Result := pixmaps.icon_pixmaps.diagram_choose_color_icon_buffer
 		end
-		
+
 	tooltip: STRING_GENERAL is
 			-- Tooltip for the toolbar button.
 		do
@@ -251,14 +263,20 @@ feature {NONE} -- Implementation
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 
+	menu_name: STRING_GENERAL is
+			-- Name on corresponding menu items
+		do
+			Result := interface_names.m_change_color
+		end
+
 	change_color_dialog: EV_COLOR_DIALOG
 			-- Dialog that allows to choose a color.
 
 	default_colors: EV_STOCK_COLORS is
-		-- Eiffel Vision colors.
-	once
-		create Result
-	end
+			-- Eiffel Vision colors.
+		once
+			create Result
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

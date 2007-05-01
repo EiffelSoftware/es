@@ -66,7 +66,7 @@ feature -- Properties
 
 	pixel_buffer: EV_PIXEL_BUFFER is
 			-- Pixel buffer representation of the command.
-		once
+		do
 			inspect
 				flag
 			when {DEPEND_UNIT}.is_in_assignment_flag then
@@ -111,7 +111,6 @@ feature -- Properties
 		do
 			Result := preferences.class_browser_data.caller_sorting_order_preference
 		end
-
 
 feature {NONE} -- Properties
 

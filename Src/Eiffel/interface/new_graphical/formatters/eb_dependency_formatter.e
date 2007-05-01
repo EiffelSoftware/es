@@ -156,6 +156,17 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
+	veto_pebble_function (a_any: ANY): BOOLEAN is
+			-- Veto pebble function
+		local
+			l_stone: STONE
+		do
+			l_stone ?= a_any
+			if l_stone /= Void then
+				Result := l_stone.is_storable
+			end
+		end
+
 	reset_display is
 			-- Clear all graphical output.
 		do
@@ -331,6 +342,5 @@ indexing
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-
 
 end

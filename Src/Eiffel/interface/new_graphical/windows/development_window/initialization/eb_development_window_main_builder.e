@@ -98,6 +98,8 @@ feature -- Command
 
 			l_undo_cmd: EB_UNDO_COMMAND
 			l_redo_cmd: EB_REDO_COMMAND
+			l_editor_cut_cmd: EB_EDITOR_CUT_COMMAND
+			l_editor_copy_cmd: EB_EDITOR_COPY_COMMAND
 			l_editor_paste_cmd: EB_EDITOR_PASTE_COMMAND
 			l_new_cluster_cmd: EB_NEW_CLUSTER_COMMAND
 			l_new_library_cmd: EB_NEW_LIBRARY_COMMAND
@@ -123,6 +125,7 @@ feature -- Command
 			l_shortcut: SHORTCUT_PREFERENCE
 			l_lock_tool_bar_command: EB_LOCK_TOOL_BAR_COMMAND
 			l_lock_docking_command: EB_LOCK_DOCKING_COMMAND
+			l_lock_editor_docking_command: EB_LOCK_EDITOR_DOCKING_COMMAND
 		do
 			-- Directly call a un-redefine init_commands in EB_DEVELOPMENT_WINDOW
 			-- Non-docking Eiffel Studio was call Precursor
@@ -196,6 +199,14 @@ feature -- Command
 			create l_redo_cmd.make (develop_window)
 			develop_window.commands.set_redo_cmd (l_redo_cmd)
 			develop_window.commands.toolbarable_commands.extend (l_redo_cmd)
+
+			create l_editor_cut_cmd.make (develop_window)
+			develop_window.commands.set_editor_cut_cmd (l_editor_cut_cmd)
+			develop_window.commands.toolbarable_commands.extend (l_editor_cut_cmd)
+
+			create l_editor_copy_cmd.make (develop_window)
+			develop_window.commands.set_editor_copy_cmd (l_editor_copy_cmd)
+			develop_window.commands.toolbarable_commands.extend (l_editor_copy_cmd)
 
 			create l_editor_paste_cmd.make (develop_window)
 			develop_window.commands.set_editor_paste_cmd (l_editor_paste_cmd)
@@ -296,6 +307,9 @@ feature -- Command
 
 			create l_lock_docking_command.make (develop_window)
 			develop_window.commands.set_lock_docking_command (l_lock_docking_command)
+
+			create l_lock_editor_docking_command.make (develop_window)
+			develop_window.commands.set_lock_editor_docking_command (l_lock_editor_docking_command)
 
 			develop_window.commands.set_customized_formatter_command (create {EB_SETUP_CUSTOMIZED_FORMATTER_COMMAND})
 			develop_window.commands.set_customized_tool_command (create {EB_SETUP_CUSTOMIZED_TOOL_COMMAND})

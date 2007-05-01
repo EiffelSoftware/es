@@ -50,37 +50,40 @@ feature {NONE} -- Initialization
 	build_interface is
 			-- Build all the tool's widgets.
 		do
-			create widget.make
+			create widget.make (window.menus.context_menu_factory)
 			widget.associate_with_window (window)
 		end
 
 	build_mini_toolbar is
 			-- Build associated tool bar
 		local
-			sep: EV_TOOL_BAR_SEPARATOR
-			but: EV_TOOL_BAR_BUTTON
+			sep: SD_TOOL_BAR_SEPARATOR
+			but: SD_TOOL_BAR_BUTTON
 		do
 			create show_current_class_cluster_cmd.make
 			show_current_class_cluster_cmd.set_tooltip (Interface_names.e_Show_class_cluster)
 			show_current_class_cluster_cmd.set_mini_pixmap (pixmaps.mini_pixmaps.general_search_icon)
+			show_current_class_cluster_cmd.set_mini_pixel_buffer (pixmaps.mini_pixmaps.general_search_icon_buffer)
 			show_current_class_cluster_cmd.set_name ("Show_class_cluster")
 			show_current_class_cluster_cmd.add_agent (agent show_current_class_cluster)
 			show_current_class_cluster_cmd.set_menu_name (Interface_names.m_Show_class_cluster)
 
-			create mini_toolbar
-			mini_toolbar.extend (window.commands.new_cluster_cmd.new_mini_toolbar_item)
-			mini_toolbar.extend (window.commands.new_library_cmd.new_mini_toolbar_item)
+			create mini_toolbar.make
+			mini_toolbar.extend (window.commands.new_cluster_cmd.new_mini_sd_toolbar_item)
+			mini_toolbar.extend (window.commands.new_library_cmd.new_mini_sd_toolbar_item)
 			if eiffel_layout.default_il_environment.is_dotnet_installed then
-				mini_toolbar.extend (window.commands.new_assembly_cmd.new_mini_toolbar_item)
+				mini_toolbar.extend (window.commands.new_assembly_cmd.new_mini_sd_toolbar_item)
 			end
-			mini_toolbar.extend (window.commands.new_class_cmd.new_mini_toolbar_item)
-			mini_toolbar.extend (window.commands.delete_class_cluster_cmd.new_mini_toolbar_item)
-			create sep
+			mini_toolbar.extend (window.commands.new_class_cmd.new_mini_sd_toolbar_item)
+			mini_toolbar.extend (window.commands.delete_class_cluster_cmd.new_mini_sd_toolbar_item)
+			create sep.make
 			mini_toolbar.extend (sep)
-			but := show_current_class_cluster_cmd.new_mini_toolbar_item
+			but := show_current_class_cluster_cmd.new_mini_sd_toolbar_item
 			but.drop_actions.extend (agent show_class)
 			but.drop_actions.extend (agent show_group)
 			mini_toolbar.extend (but)
+
+			mini_toolbar.compute_minimum_size
 
 			widget.refresh
 			if not widget.is_empty and Workbench.is_already_compiled then
@@ -102,7 +105,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	mini_toolbar: EV_TOOL_BAR
+	mini_toolbar: SD_TOOL_BAR
 			-- Bar containing a button for a new cluster and class.
 
 	widget: EB_CLASSES_TREE
@@ -208,7 +211,7 @@ feature {NONE} -- Memory management
 			Precursor {EB_TOOL}
 		end
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
 	show_class (st: CLASSI_STONE) is
 			-- Display the class relative to `st' in the cluster tree.
@@ -227,6 +230,8 @@ feature {NONE} -- Implementation
 				content.set_focus
 			end
 		end
+
+feature {NONE} -- Implementation
 
 	show_current_class_cluster is
 			-- Highlight currently edited object in the cluster tree.

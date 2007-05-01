@@ -1,5 +1,9 @@
 indexing
-	description: "Objects that ..."
+	description: "[
+						This class maps new feature names onto old feature names.
+						It does this not by using strings but by using the `name_id' of each
+						feature which obtained by using an instance of the NAMES_HEAP class.
+					]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,9 +13,11 @@ class
 
 inherit
 	HASH_TABLE[INTEGER,INTEGER]
-	redefine
-		put
-	end
+		export
+			{NONE} force
+		redefine
+			put
+		end
 
 	SHARED_NAMES_HEAP
 		undefine
@@ -75,9 +81,9 @@ feature -- Access
 		--| Is Void if no error occured.
 
 	renamed (a_feature_id: INTEGER): INTEGER
-			-- Renames `a_feature_id' or leaves it unchanged if it is not renamed.
+			-- Renames `a_feature_id' into it's old name or leaves it unchanged if it is not renamed.
 			--| This feature calls `search' and is therefore not sideeffect free.
-			--! This feature can return -1 if it finds out that this feature has benn renamed into another name.
+			--| This feature can return -1 if it finds out that this `a_feature_id' has benn renamed into another name.
 		do
 				-- We're looking for f (a_feature_id)
 			search (a_feature_id)
@@ -100,6 +106,26 @@ feature -- Access
 			if_not_available_result_is_negative: (Result = -1) implies (has_item (a_feature_id) and not has (a_feature_id))
 		end
 
+		new_name (a_feature_id: INTEGER): INTEGER
+			-- Renames `a_feature_id' into it's new name or leaves it unchanged.
+		do
+				from
+					start
+				until
+					after or Result /= 0
+				loop
+					if item_for_iteration = a_feature_id then
+						Result := key_for_iteration
+					end
+					forth
+				end
+				if Result = 0 then
+						-- No new name found for this feature
+						-- Just keep the old one
+					Result := a_feature_id
+				end
+		end
+
 feature -- Status
 
 	is_feature_renamed_by_name_id	 (a_feature_name_id: INTEGER): BOOLEAN is
@@ -115,7 +141,7 @@ feature -- Status
 		end
 
 	has_error_report: BOOLEAN
-			-- Is renaming clause renaming clause valid?
+			-- Is the renaming clause in-valid?
 			--| Are there any features which are renamed multiple times?
 			--| Are there any features which are renamed to the same name?
 			--| Are there any non-existent features? (This is only the case

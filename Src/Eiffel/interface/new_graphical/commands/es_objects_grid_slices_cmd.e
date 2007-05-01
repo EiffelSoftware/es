@@ -13,6 +13,7 @@ inherit
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
 			mini_pixmap,
+			mini_pixel_buffer,
 			new_mini_toolbar_item
 		end
 
@@ -65,6 +66,12 @@ feature -- Access
 			-- Pixmap representing the command for mini toolbars.
 		do
 			Result := pixmaps.mini_pixmaps.debugger_set_sizes_icon
+		end
+
+	mini_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixmap representing the command for mini toolbars.
+		do
+			Result := pixmaps.mini_pixmaps.debugger_set_sizes_icon_buffer
 		end
 
 	tooltip: STRING_GENERAL is
@@ -168,7 +175,7 @@ feature -- Obsolete
 
 feature -- Inapplicable
 
-feature {EB_PRETTY_PRINT_DIALOG} -- Properties
+feature {NONE} -- Properties
 
 	slice_min: INTEGER
 			-- Minimum index of displayed attributes in special objects.

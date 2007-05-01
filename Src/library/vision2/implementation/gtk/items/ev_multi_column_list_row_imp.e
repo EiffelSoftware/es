@@ -129,7 +129,7 @@ feature -- PND
 		end
 
 	start_transport (
-        	a_x, a_y, a_button: INTEGER;
+        	a_x, a_y, a_button: INTEGER; a_press: BOOLEAN
         	a_x_tilt, a_y_tilt, a_pressure: DOUBLE;
         	a_screen_x, a_screen_y: INTEGER) is
 		do
@@ -293,17 +293,21 @@ feature {EV_MULTI_COLUMN_LIST_IMP} -- Implementation
 			pebble := Void
 		end
 
-	able_to_transport (a_button: INTEGER): BOOLEAN is
-			-- Is the row able to transport data with `a_button' click.
+	able_to_transport (a_button: INTEGER_32): BOOLEAN
+			-- Is `Current' able to initiate transport with `a_button'.
 		do
-			Result := is_transport_enabled and
-			((a_button = 1 and mode_is_drag_and_drop) or
-			(a_button = 3 and (mode_is_pick_and_drop or mode_is_target_menu)))
+			Result := (mode_is_drag_and_drop and then a_button = 1) or (mode_is_pick_and_drop and then a_button = 3 and then not mode_is_configurable_target_menu)
 		end
 
 	real_pointed_target: EV_PICK_AND_DROPABLE is
 		do
 			check do_not_call: False end
+		end
+
+	ready_for_pnd_menu (a_button: INTEGER_32; a_press: BOOLEAN): BOOLEAN
+			-- Will `Current' display a menu with button `a_button'.
+		do
+			Result := ((mode_is_target_menu or else mode_is_configurable_target_menu) and a_button = 3) and then not a_press
 		end
 
 feature {EV_ANY_I} -- Implementation

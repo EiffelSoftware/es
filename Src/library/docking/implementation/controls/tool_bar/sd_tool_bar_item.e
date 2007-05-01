@@ -52,10 +52,10 @@ feature -- Query
 
 	height: INTEGER is
 			-- Height of Current item
-		require
-			not_void: tool_bar /= Void
 		do
-			Result :=  tool_bar.row_height
+			if tool_bar /= Void then
+				Result :=  tool_bar.row_height
+			end
 		end
 
 	has_rectangle (a_rect: EV_RECTANGLE): BOOLEAN is
@@ -93,6 +93,15 @@ feature -- Query
 			end
 			Result := internal_drop_actions
 		end
+
+	pebble_function: FUNCTION [ANY, TUPLE, ANY]
+			-- Returns data to be transported by pick and drop mechanism.
+
+	accept_cursor: EV_POINTER_STYLE
+			-- Accept cursor for PND, maybe void.
+
+	deny_cursor: EV_POINTER_STYLE
+			-- Deny cursor for PND, maybe void.
 
 feature -- Properties
 
@@ -150,6 +159,9 @@ feature -- Properties
 			-- Set `pixmap'
 		do
 			pixmap := a_pixmap
+			if tool_bar /= Void then
+				tool_bar.need_calculate_size
+			end
 		end
 
 	pixel_buffer: EV_PIXEL_BUFFER
@@ -162,6 +174,9 @@ feature -- Properties
 			not_void: a_pixel_buffer /= Void
 		do
 			pixel_buffer := a_pixel_buffer
+			if tool_bar /= Void then
+				tool_bar.need_calculate_size
+			end
 		ensure
 			set: pixel_buffer = a_pixel_buffer
 		end
@@ -177,6 +192,31 @@ feature -- Properties
 			name := a_name
 		ensure
 			set: name = a_name
+		end
+
+	set_pebble_function (a_pebble: like pebble_function) is
+			-- Set `pebble_function' with `a_pebble'
+		do
+			pebble_function := a_pebble
+		ensure
+			set: pebble_function = a_pebble
+		end
+
+	set_accept_cursor (a_cursor: EV_POINTER_STYLE) is
+			-- Set `accept_cursor' with `a_cursor'
+		do
+			accept_cursor := a_cursor
+		ensure
+			set: accept_cursor = a_cursor
+		end
+
+	set_deny_cursor (a_cursor: EV_POINTER_STYLE) is
+			-- Set `deny_cursor' with `a_cursor'
+			-- FIXIT: set_deny_cursor not working correctly. I think it's a Vision2 set deny cursor bug during PND. Larry Apr. 27 2007.
+		do
+			deny_cursor := a_cursor
+		ensure
+			set: deny_cursor = a_cursor
 		end
 
 	set_data (a_data: ANY) is

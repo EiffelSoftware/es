@@ -68,18 +68,11 @@ feature {NONE}-- Initialization
 			editor_drawing_area.enable_pebble_positioning
 			editor_drawing_area.drop_actions.extend (agent resume_cursor_for_drop)
 
-
-			--editor_drawing_area.set_configurable_target_menu_mode
-			--editor_drawing_area.set_configurable_target_menu_handler (agent handle_context_menu)
-		end
-
-	handle_context_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
-		do
-			a_menu.extend (create {EV_MENU_ITEM}.make_with_text ("There are " + a_target_list.count.out + " targets for " + a_pebble.generating_type))
+			editor_drawing_area.set_configurable_target_menu_mode
+			editor_drawing_area.set_configurable_target_menu_handler (agent (dev_window.menus.context_menu_factory).editor_menu (?, ?, ?, ?, Current))
 		end
 
 feature -- Access
-
 	text_length: INTEGER is
 			-- Length of displayed text.
 		do
@@ -457,6 +450,8 @@ feature {EB_CLICKABLE_MARGIN}-- Process Vision2 Events
 			if not l_shortcuts.is_empty and then l_shortcuts.first /= Void then
 				l_shortcuts.first.apply
 				check_cursor_position
+			elseif ev_key.code = {EV_KEY_CONSTANTS}.key_menu and not dev_window.preferences.misc_data.is_pnd_mode then
+				editor_drawing_area.show_configurable_target_menu (0, 0)
 			else
 				Precursor {EB_CUSTOM_WIDGETTED_EDITOR} (ev_key)
 			end
@@ -503,7 +498,8 @@ feature {EB_CLICKABLE_MARGIN} -- Pick and drop
 						l_number > 0 and then
 						l_number <= number_of_lines and then
 						x_pos >= -left_margin_width + offset and then
-						x_pos < editor_viewport.width + offset
+						x_pos < editor_viewport.width + offset and then
+						(not dev_window.preferences.misc_data.is_pnd_mode implies not has_selection)
 					then
 						create cur.make_from_character_pos (1, 1, text_displayed)
 						position_cursor (cur, x_pos, y_pos)

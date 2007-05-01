@@ -12,6 +12,7 @@ inherit
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
 			mini_pixmap,
+			mini_pixel_buffer,
 			tooltext,
 			pixel_buffer
 		end
@@ -41,12 +42,34 @@ feature -- Basic operations
 			end
 		end
 
+	execute_stone (a_stone: CLUSTER_STONE) is
+			-- Pop up class wizard with location of `a_stone'.
+		local
+			dial: EB_CREATE_CLASS_DIALOG
+			wd: EB_WARNING_DIALOG
+		do
+			if Workbench.is_in_stable_state then
+				create dial.make_default (target)
+				dial.set_stone_when_finished
+				dial.call_stone (a_stone)
+			else
+				create wd.make_with_text (Warning_messages.w_Unsufficient_compilation (6))
+				wd.show_modal_to_window (target.window)
+			end
+		end
+
 feature -- Access
 
 	mini_pixmap: EV_PIXMAP is
 			-- Pixmap representing the command for mini toolbars.
 		once
 			Result := pixmaps.mini_pixmaps.new_class_icon
+		end
+
+	mini_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel buffer representing the command for mini toolbars.
+		once
+			Result := pixmaps.mini_pixmaps.new_class_icon_buffer
 		end
 
 feature {NONE} -- Implementation

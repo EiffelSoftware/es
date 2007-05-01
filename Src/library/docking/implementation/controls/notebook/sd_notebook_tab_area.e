@@ -29,6 +29,8 @@ feature {NONE}  -- Initlization
 		require
 			a_notebook_not_void: a_notebook /= Void
 			a_docking_manager_not_void: a_docking_manager /= Void
+		local
+			l_veto_function: FUNCTION [ANY, TUPLE [ANY], BOOLEAN]
 		do
 			default_create
 			create internal_shared
@@ -38,6 +40,11 @@ feature {NONE}  -- Initlization
 
 			if internal_docking_manager.tab_drop_actions.count > 0 then
 				drop_actions.extend (agent on_drop_actions)
+
+				l_veto_function := internal_docking_manager.tab_drop_actions.veto_pebble_function
+				if l_veto_function /= Void then
+					drop_actions.set_veto_pebble_function (l_veto_function)
+				end
 			end
 
 			create internal_tool_bar.make
@@ -444,6 +451,11 @@ feature {NONE}  -- Implementation functions
 			not_void: Result /= Void
 		end
 
+feature {SD_NOTEBOOK_TAB_BOX} -- Internal attributes
+
+	internal_notebook: SD_NOTEBOOK
+			-- Notebook which Current belong to.
+
 feature {NONE}  -- Implementation attributes
 
 	internal_one_not_enough_space: BOOLEAN
@@ -460,9 +472,6 @@ feature {NONE}  -- Implementation attributes
 
 	internal_tabs_not_shown: ARRAYED_LIST [SD_NOTEBOOK_TAB]
 			-- Tabs not shown which be not shown.
-
-	internal_notebook: SD_NOTEBOOK
-			-- Notebook which Current belong to.
 
 	internal_docking_manager: SD_DOCKING_MANAGER
 			-- Docking manager which Current belong to.

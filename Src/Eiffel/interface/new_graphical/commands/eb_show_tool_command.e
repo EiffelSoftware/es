@@ -20,11 +20,11 @@ inherit
 		redefine
 			new_toolbar_item,
 			new_sd_toolbar_item,
-			new_menu_item,
 			tooltext,
 			is_tooltext_important,
 			pixel_buffer,
-			mini_pixmap
+			mini_pixmap,
+			mini_pixel_buffer
 		end
 
 	SHARED_LOCALE
@@ -95,14 +95,17 @@ feature -- Access
 			Result := tool.content.pixmap
 		end
 
-	mini_pixmap: EV_PIXMAP
-			-- Mini pixmap		
-
 	pixel_buffer: EV_PIXEL_BUFFER is
 			-- Pixel buffer representing the command.
 		do
 			Result := tool.content.pixel_buffer
 		end
+
+	mini_pixmap: EV_PIXMAP
+			-- Mini pixmap		
+
+	mini_pixel_buffer: EV_PIXEL_BUFFER
+			-- Mini pixel buffer
 
 feature -- Execution
 
@@ -147,15 +150,6 @@ feature -- Basic operations
 			Result.select_actions.extend (agent update_sd_tooltip (Result))
 		end
 
-	new_menu_item: EB_COMMAND_MENU_ITEM is
-			-- Create a new menu entry for this command.
-		do
-				-- Create the menu item
-			create Result.make (Current)
-			initialize_menu_item (Result)
-			Result.select_actions.extend (agent execute)
-		end
-
 feature -- Element change
 
 	set_accelerator (a_accel: EV_ACCELERATOR) is
@@ -174,6 +168,14 @@ feature -- Element change
 			mini_pixmap := a_mini_pixmap
 		ensure
 			mini_pixmap_set: mini_pixmap = a_mini_pixmap
+		end
+
+	set_mini_pixel_buffer (a_mini_pixel_buffer: EV_PIXEL_BUFFER) is
+			-- Set `mini_pixel_buffer' with `a_mini_pixel_buffer'.
+		do
+			mini_pixel_buffer := a_mini_pixel_buffer
+		ensure
+			mini_pixmap_set: mini_pixel_buffer = a_mini_pixel_buffer
 		end
 
 feature -- Recyclable

@@ -463,7 +463,8 @@ feature -- Accelerator, focus label and menu name
 	m_Line_numbers: STRING_GENERAL is			do Result := locale.translate("Toggle &Line Numbers")	end
 	m_lock_tool_bar: STRING_GENERAL is			do Result := locale.translate ("Lock the Toolbars") end
 	m_lock_docking: STRING_GENERAL is			do Result := locale.translate ("Lock the Tools") end
-	f_match_case_question: STRING_GENERAL is			do Result := locale.translate("Match case?")	end
+	m_lock_docking_editor: STRING_GENERAL is	do Result := locale.translate ("Lock the Editors") end
+	f_match_case_question: STRING_GENERAL is	do Result := locale.translate("Match case?")	end
 	f_Melt: STRING_GENERAL is					do Result := locale.translate("Compile current project")	end
 	m_Melt_new: STRING_GENERAL is				do Result := locale.translate("&Compile")	end
 	m_New: STRING_GENERAL is					do Result := locale.translate("&New")	end
@@ -740,11 +741,27 @@ feature -- Menu mnenomics
 	m_Separate_stone: STRING_GENERAL is			do Result := locale.translate("Unlin&k Context Tool")	end
 	m_Tools: STRING_GENERAL is					do Result := locale.translate("&Tools")	end
 	m_Unify_stone: STRING_GENERAL is			do Result := locale.translate("Lin&k Context Tool")	end
-	m_View: STRING_GENERAL is					do Result := locale.translate("&View")	end
 
 	m_When_hits: STRING_GENERAL is				do Result := locale.translate("When Hits ...")	end
 	m_Window: STRING_GENERAL is					do Result := locale.translate("&Window")	end
 	m_Refactoring: STRING_GENERAL is			do Result := locale.translate("&Refactoring")	end
+
+feature -- Context menu
+
+	m_add_to: STRING_GENERAL is					do Result := locale.translate("&Add to")	end
+	m_add_subcluster: STRING_GENERAL is			do Result := locale.translate("Add &subcluster")	end
+	m_Assembly: STRING_GENERAL is				do Result := locale.translate ("Assembly") end
+	m_center_diagram: STRING_GENERAL is			do Result := locale.translate ("Center target in diagram") end
+	m_change_color: STRING_GENERAL is			do Result := locale.translate ("Change color") end
+	m_delete: STRING_GENERAL is					do Result := b_delete_command	end
+	m_include_all_classes: STRING_GENERAL is	do Result := locale.translate ("Include all classes") end
+	m_input_domain: STRING_GENERAL is			do Result := locale.translate("&Input domain") end
+	m_library: STRING_GENERAL is				do Result := locale.translate ("Library") end
+	m_Pick: STRING_GENERAL is					do Result := locale.translate("&Pick") end
+	m_remove_from_diagram: STRING_GENERAL		do Result := locale.translate ("&Remove from diagram") end
+	m_show_diagram_history: STRING_GENERAL is	do Result := locale.translate("&Show diagram history")	end
+	m_Show: STRING_GENERAL is					do Result := locale.translate("&Show")	end
+	m_View: STRING_GENERAL is					do Result := locale.translate("&View")	end
 
 feature -- Label texts
 
@@ -934,6 +951,7 @@ feature -- Label texts
 	l_Not_empty: STRING_GENERAL is				do Result := locale.translate("Generate default feature clauses")	end
 	l_no_break_point: STRING_GENERAL is				do Result := locale.translate("No breakpoints")	end
 	l_edit_project: STRING_GENERAL is			do Result := locale.translate("Edit Project")	end
+	l_edit_text: STRING_GENERAL is				do Result := locale.translate("Edit Text") end
 	l_eiffel_class: STRING_GENERAL is			do Result := locale.translate ("Eiffel Class") end
 	l_eiffel_cluster: STRING_GENERAL is			do Result := locale.translate ("Eiffel Cluster") end
 	l_Elements: STRING_GENERAL is				do Result := locale.translate("elements.")	end
@@ -1874,7 +1892,6 @@ feature -- Titles translation needless (Title Original) for preference strings.
 	to_Editor: STRING is						"Editor"
 	to_Debugging_tool: STRING is				"Debugging"
 
-
 	to_Output_tool: STRING is					"Output"
 	to_Diagram_tool: STRING is					"Diagram"
 	to_Class_tool: STRING is					"Class"
@@ -2183,5 +2200,4 @@ indexing
 		]"
 
 end -- class INTERFACE_NAMES
-
 

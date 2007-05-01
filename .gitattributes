@@ -155,6 +155,9 @@ Delivery/scripts/windows/install/content/eiffelenvision/Examples.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Libraries.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Libraries64.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Redist.wxs -text
+Delivery/scripts/windows/install/content/eiffelenvision/RegCompiler64.wxi -text
+Delivery/scripts/windows/install/content/eiffelenvision/RegCompiler86.wxi -text
+Delivery/scripts/windows/install/content/eiffelenvision/RegEiffelPackages.wxi -text
 Delivery/scripts/windows/install/content/eiffelenvision/Schema.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Snippets.wxs -text
 Delivery/scripts/windows/install/content/eiffelenvision/Specifications.wxs -text
@@ -197,6 +200,7 @@ Delivery/scripts/windows/install/interface/DialogFatalError.wxs -text
 Delivery/scripts/windows/install/interface/DialogFilesInUse.wxs -text
 Delivery/scripts/windows/install/interface/DialogMissingMsCompiler.wxs -text
 Delivery/scripts/windows/install/interface/DialogProgress.wxs -text
+Delivery/scripts/windows/install/interface/DialogRegister.wxs -text
 Delivery/scripts/windows/install/interface/DialogSelectFolder.wxs -text
 Delivery/scripts/windows/install/interface/DialogUserExit.wxs -text
 Delivery/scripts/windows/install/interface/DialogVerifyReadyInstall.wxs -text
@@ -206,6 +210,7 @@ Delivery/scripts/windows/install/interface/PromptBrowse.wxs -text
 Delivery/scripts/windows/install/interface/PromptCancelInstall.wxs -text
 Delivery/scripts/windows/install/interface/PromptCancelLicense.wxs -text
 Delivery/scripts/windows/install/interface/PromptError.wxs -text
+Delivery/scripts/windows/install/interface/PromptInvalidCdKey.wxs -text
 Delivery/scripts/windows/install/interface/PromptOutOfDiskSpace.wxs -text
 Delivery/scripts/windows/install/interface/PromptOutOfRollbackDiskSpace.wxs -text
 Delivery/scripts/windows/install/interface/PromptViewLicenseAgreement.wxs -text
@@ -282,6 +287,7 @@ Delivery/studio/help/errors/short/VTGD2 -text
 Delivery/studio/help/errors/short/VTGD3 -text
 Delivery/studio/help/errors/short/VTMC1 -text
 Delivery/studio/help/errors/short/VTMC2 -text
+Delivery/studio/help/errors/short/catcall -text
 Delivery/studio/lang/mo_files/de_CH.mo -text
 Delivery/studio/lang/mo_files/en.mo -text
 Delivery/studio/lang/mo_files/fr.mo -text
@@ -3033,6 +3039,9 @@ eweasel/tests/multicon029/Ace -text
 eweasel/tests/multicon030/Ace -text
 eweasel/tests/multicon031/Ace -text
 eweasel/tests/multicon032/Ace -text
+eweasel/tests/multicon033/Ace -text
+eweasel/tests/multicon034/Ace -text
+eweasel/tests/multicon035/Ace -text
 eweasel/tests/rdtp002/test -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
@@ -3378,6 +3387,8 @@ eweasel/tests/valid207/Ace -text
 eweasel/tests/valid208/Ace -text
 eweasel/tests/valid209/Ace -text
 eweasel/tests/valid210/Ace -text
+eweasel/tests/valid211/Ace -text
+eweasel/tests/valid212/Ace -text
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text

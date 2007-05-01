@@ -12,6 +12,7 @@ inherit
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
 			mini_pixmap,
+			mini_pixel_buffer,
 			tooltext
 		end
 
@@ -39,12 +40,35 @@ feature -- Basic operations
 			end
 		end
 
+	execute_stone (a_stone: CLUSTER_STONE) is
+			-- Pop cluster wizard initialized with location of `a_stone'.
+		require
+			a_stone_not_void: a_stone /= Void
+		local
+			dial: EB_CREATE_CLUSTER_DIALOG
+			wd: EB_WARNING_DIALOG
+		do
+			if Workbench.is_in_stable_state then
+				create dial.make_default (target)
+				dial.call_stone (a_stone)
+			else
+				create wd.make_with_text (Warning_messages.w_Unsufficient_compilation (6))
+				wd.show_modal_to_window (target.window)
+			end
+		end
+
 feature -- Access
 
 	mini_pixmap: EV_PIXMAP is
 			-- Pixmap representing the command for mini toolbars.
 		do
 			Result := pixmaps.mini_pixmaps.new_cluster_icon
+		end
+
+	mini_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixmap representing the command for mini toolbars.
+		do
+			Result := pixmaps.mini_pixmaps.new_cluster_icon_buffer
 		end
 
 feature {NONE} -- Implementation
@@ -122,5 +146,4 @@ indexing
 		]"
 
 end -- class EB_NEW_CLUSTER_COMMAND
-
 

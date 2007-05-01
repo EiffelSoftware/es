@@ -82,10 +82,10 @@ feature -- Query
 	redo_cmd: EB_REDO_COMMAND
 			-- Command to redo in the editor.
 
-	editor_cut_cmd: EB_ON_SELECTION_COMMAND
+	editor_cut_cmd: EB_EDITOR_CUT_COMMAND
 			-- Command to cut text in the editor.
 
-	editor_copy_cmd: EB_ON_SELECTION_COMMAND
+	editor_copy_cmd: EB_EDITOR_COPY_COMMAND
 			-- Command to copy text in the editor.
 
 	editor_paste_cmd: EB_EDITOR_PASTE_COMMAND
@@ -128,6 +128,9 @@ feature -- Query
 
 	lock_docking_command: EB_LOCK_DOCKING_COMMAND
 			-- Lock tools docking mechanism command
+
+	lock_editor_docking_command: EB_LOCK_EDITOR_DOCKING_COMMAND
+			-- Lock editors docking mechanims command
 
 	customized_formatter_command: EB_SETUP_CUSTOMIZED_FORMATTER_COMMAND
 			-- Command to setup customzied formatter
@@ -178,6 +181,22 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_TOOLBAR_BUILDER} -
 			new_tab_cmd := a_cmd
 		ensure
 			set: new_tab_cmd = a_cmd
+		end
+
+	set_editor_cut_cmd (a_cmd: like editor_cut_cmd) is
+			-- Set `editor_cut_cmd'
+		do
+			editor_cut_cmd := a_cmd
+		ensure
+			set: editor_cut_cmd = a_cmd
+		end
+
+	set_editor_copy_cmd (a_cmd: like editor_copy_cmd) is
+			-- Set `editor_copy_cmd'
+		do
+			editor_copy_cmd := a_cmd
+		ensure
+			set: editor_copy_cmd = a_cmd
 		end
 
 	set_shell_cmd (a_cmd: like shell_cmd) is
@@ -412,6 +431,14 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_TOOLBAR_BUILDER} -
 			set: lock_docking_command = a_cmd
 		end
 
+	set_lock_editor_docking_command (a_cmd: like lock_editor_docking_command) is
+			-- Set `lock_docking_command'
+		do
+			lock_editor_docking_command := a_cmd
+		ensure
+			set: lock_editor_docking_command = a_cmd
+		end
+
 	set_customized_formatter_command (a_cmd: like customized_formatter_command) is
 			-- Set `customized_formatter_command' with `a_cmd'.
 		do
@@ -442,11 +469,14 @@ feature -- Recycle
 			save_layout_as_command.recycle
 			open_layout_command.recycle
 			lock_docking_command.recycle
+			lock_editor_docking_command.recycle
 			lock_tool_bar_command.recycle
 			save_as_cmd.recycle
 
 			c_finalized_compilation_cmd.recycle
 			c_workbench_compilation_cmd.recycle
+			editor_cut_cmd.recycle
+			editor_copy_cmd.recycle
 			editor_paste_cmd.recycle
 			new_class_cmd.recycle
 			new_cluster_cmd.recycle
@@ -522,6 +552,7 @@ feature -- Recycle
 			toggle_stone_cmd := Void
 			delete_class_cluster_cmd := Void
 			print_cmd := Void
+
 			Precursor {EB_DEVELOPMENT_WINDOW_PART}
 		end
 

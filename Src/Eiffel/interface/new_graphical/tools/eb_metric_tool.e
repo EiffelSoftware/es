@@ -149,6 +149,7 @@ feature -- Actions
 		do
 			Precursor {EB_TOOL}
 			on_select
+			metric_notebook.set_focus
 		end
 
 	close is
@@ -574,7 +575,6 @@ feature{EB_METRIC_EVALUATION_PANEL} -- Title change
 invariant
 	notify_project_loaded_agent_attached: notify_project_loaded_agent /= Void
 	notify_project_unloaded_agent_attached: notify_project_unloaded_agent /= Void
-
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

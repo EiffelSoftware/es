@@ -73,12 +73,16 @@ feature -- Access
 					if (a_button = 1 and not mode_is_pick_and_drop) or
 						(a_button = 3 and mode_is_pick_and_drop) then
 						set_pnd_original_parent
-						start_transport (a_x, a_y, a_button, 0, 0, 0.5, a_screen_x,
+						start_transport (a_x, a_y, a_button, True, 0, 0, 0.5, a_screen_x,
 							a_screen_y)
-						if pebble /= Void then
-							pnd_original_parent.set_parent_source_true
-							pnd_original_parent.set_item_source (Current)
-							pnd_original_parent.set_item_source_true
+						if application_imp.pick_and_drop_source /= Void then
+							if pebble /= Void then
+								pnd_original_parent.set_parent_source_true
+								pnd_original_parent.set_item_source (Current)
+								pnd_original_parent.set_item_source_true
+							end
+						else
+							pnd_original_parent.set_parent_source_false
 						end
 					end
 				end
@@ -95,7 +99,7 @@ feature -- Access
 				if a_button = 1 then
 					pnd_original_parent.discard_press_event
 				end
-			else
+			elseif pnd_original_parent /= Void then
 				pnd_original_parent.set_parent_source_false
 				pnd_original_parent.set_item_source (Void)
 				pnd_original_parent.set_item_source_false

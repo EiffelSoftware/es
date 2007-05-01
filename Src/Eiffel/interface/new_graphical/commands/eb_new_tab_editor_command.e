@@ -59,7 +59,9 @@ feature -- Execution
 	execute is
 			-- Create new tab.
 		do
+			creating_empty_tab := True
 			execute_with_stone_content (Void, Void)
+			creating_empty_tab := False
 		end
 
 	execute_with_stone (a_stone: STONE) is
@@ -74,19 +76,21 @@ feature -- Execution
 			l_editor : EB_SMART_EDITOR
 		do
 			if is_sensitive then
-				l_editor := editors_manager.editor_with_stone (a_stone)
-				if l_editor = Void and a_content = Void then
-					editors_manager.create_editor
-					editors_manager.select_editor (editors_manager.last_created_editor, True)
-				elseif l_editor = Void and a_content /= Void then
-					editors_manager.create_editor_beside_content (a_stone, a_content)
-					editors_manager.select_editor (editors_manager.last_created_editor, True)
-				else
-					editors_manager.select_editor (l_editor, True)
-				end
+				if editors_manager.stone_acceptable (a_stone) or creating_empty_tab then
+					l_editor := editors_manager.editor_with_stone (a_stone)
+					if l_editor = Void and a_content = Void then
+						editors_manager.create_editor
+						editors_manager.select_editor (editors_manager.last_created_editor, True)
+					elseif l_editor = Void and a_content /= Void then
+						editors_manager.create_editor_beside_content (a_stone, a_content)
+						editors_manager.select_editor (editors_manager.last_created_editor, True)
+					else
+						editors_manager.select_editor (l_editor, True)
+					end
 
-				development_window.set_stone (a_stone)
-				development_window.address_manager.on_new_tab_command
+					development_window.set_stone (a_stone)
+					development_window.address_manager.on_new_tab_command
+				end
 			end
 		end
 
@@ -97,6 +101,7 @@ feature -- Items
 		do
 			Result := Precursor (display_text)
 			Result.drop_actions.extend (agent execute_with_stone)
+			Result.drop_actions.set_veto_pebble_function (agent editors_manager.stone_acceptable)
 		end
 
 	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
@@ -104,6 +109,7 @@ feature -- Items
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}(display_text)
 			Result.drop_actions.extend (agent execute_with_stone)
+			Result.drop_actions.set_veto_pebble_function (agent editors_manager.stone_acceptable)
 		end
 
 	new_mini_toolbar_item: EB_COMMAND_TOOL_BAR_BUTTON is
@@ -111,6 +117,7 @@ feature -- Items
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
 			Result.drop_actions.extend (agent execute_with_stone)
+			Result.drop_actions.set_veto_pebble_function (agent editors_manager.stone_acceptable)
 		end
 
 feature {NONE} -- Implementation
@@ -160,6 +167,9 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
+	creating_empty_tab: BOOLEAN
+			-- Creating empty tab?
+
 	editors_manager: EB_EDITORS_MANAGER is
 			-- Editors manager.
 		do
@@ -197,6 +207,5 @@ indexing
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-
 
 end

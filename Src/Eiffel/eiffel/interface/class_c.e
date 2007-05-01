@@ -528,7 +528,7 @@ feature -- Expanded rues validity
 			-- Pass 2 must be done on all the classes
 			-- (the creators must be up to date)
 		local
-			constraint_types: LIST[EXTENDED_TYPE_A]
+			constraint_types: LIST[RENAMED_TYPE_A]
 			l_formals: like generic_features
 			l_cursor: CURSOR
 			l_formal_dec: FORMAL_CONSTRAINT_AS
@@ -1898,28 +1898,12 @@ end
 			changed_features.put (feature_name_id)
 		end
 
-		-- MTNTODO: refactor to constraint before commit
-	constraint_fixed (i: INTEGER): TYPE_A is
-			-- I-th constraint of the class
-		require
-			generics_exists: is_generic
-			valid_index: generics.valid_index (i)
-			not_is_multi_constraint: not generics.i_th (i).has_multi_constraints
-		local
-			l_formal_dec: FORMAL_CONSTRAINT_AS
-		do
-			l_formal_dec ?= generics.i_th (i)
-			check l_formal_dec_not_void: l_formal_dec /= Void end
-			Result := l_formal_dec.constraint_type (Current).type
-		ensure
-			constraint_not_void: Result /= Void
-		end
-
 	constraint (i: INTEGER): TYPE_A is
 			-- I-th constraint of the class
 		require
 			generics_exists: is_generic
 			valid_index: generics.valid_index (i)
+			not_is_multi_constraint: not generics.i_th (i).has_multi_constraints
 		local
 			l_formal_dec: FORMAL_CONSTRAINT_AS
 		do
@@ -4067,5 +4051,4 @@ indexing
 		]"
 
 end -- class CLASS_C
-
 

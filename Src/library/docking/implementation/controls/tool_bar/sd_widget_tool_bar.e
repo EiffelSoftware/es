@@ -58,7 +58,12 @@ inherit
 			tooltip,
 			set_tooltip,
 			is_bridge_ok,
-			is_cloned
+			is_cloned,
+			drawer,
+			items_have_texts,
+			on_pointer_release,
+			initialize,
+			item_at_position
 		end
 
 	EV_FIXED
@@ -79,7 +84,8 @@ inherit
 			pointer_button_release_actions,
 			pointer_button_press_actions,
 			pointer_double_press_actions,
-			is_displayed
+			is_displayed,
+			initialize
 		select
 			implementation
 		end
@@ -94,16 +100,24 @@ feature {NONE} -- Initlization
 		require
 			not_void: a_tool_bar /= Void
 		do
-			default_create
+
 			create internal_shared
 
 			tool_bar := a_tool_bar
+
+			default_create
 
 			extend_fixed (tool_bar)
 
 			tool_bar.expose_actions.extend (agent on_tool_bar_expose_actions)
 		ensure
 			set: tool_bar = a_tool_bar
+		end
+
+	initialize is
+			-- Redefine
+		do
+			implementation.set_state_flag ({EV_ANY_I}.interface_is_initialized_flag, True)
 		end
 
 feature -- Properties
@@ -277,6 +291,12 @@ feature -- Query
 			Result := True
 		end
 
+	items_have_texts: BOOLEAN is
+			-- Redefine.
+		do
+			Result := tool_bar.items_have_texts
+		end
+
 feature {SD_TOOL_BAR_DRAWER_I, SD_TOOL_BAR_ZONE}
 
 	draw_pixmap (a_x, a_y: INTEGER; a_pixmap: EV_PIXMAP) is
@@ -385,6 +405,12 @@ feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR} -- Internal issu
 			Result := tool_bar.start_y
 		end
 
+	item_at_position (a_screen_x, a_screen_y: INTEGER_32): SD_TOOL_BAR_ITEM is
+			-- Redefine
+		do
+			Result := tool_bar.item_at_position (a_screen_x, a_screen_y)
+		end
+
 feature {NONE} -- Implementation
 
 	redraw_item (a_item: SD_TOOL_BAR_ITEM) is
@@ -400,6 +426,18 @@ feature {NONE} -- Implementation
 
 	tool_bar: SD_TOOL_BAR
 			-- Tool bar which decorated by Current.
+
+	drawer: SD_TOOL_BAR_DRAWER
+			-- Tool bar drawer.
+		do
+			Result := internal_shared.tool_bar_drawer
+			Result.set_tool_bar (tool_bar)
+		end
+
+	on_pointer_release (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32) is
+			-- Redefine
+		do
+		end
 
 	on_tool_bar_expose_actions (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
 			-- Handle tool bar expose actions.

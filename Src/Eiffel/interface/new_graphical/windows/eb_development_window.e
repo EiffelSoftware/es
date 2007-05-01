@@ -20,8 +20,6 @@ inherit
 			{EB_STONE_CHECKER, EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_PART, EB_ADDRESS_MANAGER}
 				Warning_messages, Interface_names,
 				init_commands, Pixmaps
-			{EB_DEVELOPMENT_WINDOW_COMMANDS, EB_TOOL, EB_STONE_CHECKER, EB_DEVELOPMENT_WINDOW_DIRECTOR}
-				Debugger_manager
 			{EB_STONE_FIRST_CHECKER}
 				Ev_application
 		redefine
@@ -78,9 +76,6 @@ inherit
 	PROJECT_CONTEXT
 
 	EB_SHARED_MANAGERS
-		export
-			{EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_PART} Refactoring_manager
-		end
 
 	EB_SHARED_GRAPHICAL_COMMANDS
 
@@ -222,7 +217,7 @@ feature -- Status setting
 	set_focus_to_main_editor is
 			-- Set focus to main current editor.
 		do
-			if editors_manager.current_editor /= Void then
+			if editors_manager /= Void and then editors_manager.current_editor /= Void then
 				editors_manager.select_editor (editors_manager.current_editor, True)
 			end
 		end
@@ -1786,7 +1781,6 @@ feature {NONE} -- Recycle
 			favorites_manager := Void
 			cluster_manager := Void
 
-
 			if editors_manager /= Void then
 				editors_manager.recycle
 				editors_manager := Void
@@ -1999,17 +1993,6 @@ feature {EB_DEVELOPMENT_WINDOW_MENU_BUILDER, EB_DEVELOPMENT_WINDOW_PART,
 			tools.features_tool.seek_item_in_feature_tool (a_feature)
 		end
 
-	select_all is
-			-- Select the whole text in the focused editor.
-		local
-			l_editor: EB_EDITOR
-		do
-			l_editor := ui.current_editor
-			if l_editor /= Void and then not l_editor.is_empty then
-				l_editor.select_all
-			end
-		end
-
 	search is
 			-- Search some text in the focused editor.
 		local
@@ -2093,22 +2076,6 @@ feature {EB_DEVELOPMENT_WINDOW_MENU_BUILDER, EB_DEVELOPMENT_WINDOW_PART,
 			end
 		end
 
-	cut_selection is
-			-- Cut the selection in the current editor.
-		do
-			if ui.current_editor /= Void then
-				ui.current_editor.cut_selection
-			end
-		end
-
-	copy_selection is
-			-- Cut the selection in the current editor.
-		do
-			if ui.current_editor /= Void then
-				ui.current_editor.copy_selection
-			end
-		end
-
 	toggle_formatting_marks is
 			-- Show/Hide formatting marks in the editor and update related menu item.
 		do
@@ -2123,6 +2090,37 @@ feature {EB_DEVELOPMENT_WINDOW_MENU_BUILDER, EB_DEVELOPMENT_WINDOW_PART,
 				menus.formatting_marks_command_menu_item.set_text (Interface_names.m_hide_formatting_marks)
 			else
 				menus.formatting_marks_command_menu_item.set_text(Interface_names.m_show_formatting_marks)
+			end
+		end
+
+feature -- Implementation: Editor commands
+
+	select_all is
+			-- Select the whole text in the focused editor.
+		local
+			l_editor: EB_EDITOR
+		do
+			l_editor := ui.current_editor
+			if l_editor /= Void and then not l_editor.is_empty then
+				l_editor.select_all
+			end
+		end
+
+feature {EB_ON_SELECTION_COMMAND} -- Commands
+
+	cut_selection is
+			-- Cut the selection in the current editor.
+		do
+			if ui.current_editor /= Void then
+				ui.current_editor.cut_selection
+			end
+		end
+
+	copy_selection is
+			-- Cut the selection in the current editor.
+		do
+			if ui.current_editor /= Void then
+				ui.current_editor.copy_selection
 			end
 		end
 

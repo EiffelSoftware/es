@@ -53,7 +53,6 @@ feature -- Status report
 	only_find_current_version: BOOLEAN
 			-- Only caller of current versions (not descendant versions) of features in `criterion_domain'?
 
-
 feature{QL_DOMAIN} -- Intrinsic domain
 
 	intrinsic_domain: QL_FEATURE_DOMAIN is
@@ -177,6 +176,7 @@ feature{NONE} -- Implementation
 			rid: INTEGER
 			l_feature_domain: like features_from_domain
 			l_feature: QL_FEATURE
+			l_e_feature: E_FEATURE
 		do
 			l_feature_domain := features_from_domain (criterion_domain)
 			if not l_feature_domain.is_empty then
@@ -187,12 +187,13 @@ feature{NONE} -- Implementation
 				loop
 					l_feature := l_feature_domain.item
 					if l_feature.is_real_feature then
+						l_e_feature := l_feature.e_feature
 						create descendants.make
-						rid := l_feature.e_feature.rout_id_set.item (1)
+						rid := l_e_feature.rout_id_set.item (1)
 						if not only_find_current_version then
-							record_descendants (descendants, l_feature.e_feature.associated_class)
+							record_descendants (descendants, l_e_feature.associated_class)
 						else
-							descendants.extend (l_feature.e_feature.associated_class)
+							descendants.extend (l_e_feature.associated_class)
 						end
 						from
 							create a_list.make (descendants.count)
@@ -279,7 +280,7 @@ feature{NONE} -- Evaluate
 			l_invariant_callee: like callee_list_for_invariant
 			l_user_data_list: like user_data_list
 			l_feature_list: like feature_list
-			l_feature: E_FEATURE
+			l_e_feature: E_FEATURE
 			l_current_domain: like source_domain
 		do
 			l_current_domain := source_domain
@@ -288,14 +289,14 @@ feature{NONE} -- Evaluate
 				l_feature_callee := callee_list_for_feature
 				l_user_data_list := user_data_list
 				l_feature_list := feature_list
-				l_feature := a_item.e_feature
-				check l_feature /= Void end
+				l_e_feature := a_item.e_feature
+				check l_e_feature /= Void end
 				from
 					l_feature_list.start
 				until
 					l_feature_list.after or Result
 				loop
-					if l_feature_list.item.same_as (l_feature) then
+					if l_feature_list.item.same_as (l_e_feature) then
 						a_item.set_data (query_feature_item (l_feature_callee.i_th (l_feature_list.index)))
 						Result := True
 					end
@@ -360,8 +361,5 @@ indexing
                          Website http://www.eiffel.com
                          Customer support http://support.eiffel.com
                 ]"
-
-
-
 
 end

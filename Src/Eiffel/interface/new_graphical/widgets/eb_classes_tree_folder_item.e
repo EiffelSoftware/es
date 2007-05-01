@@ -60,7 +60,6 @@ feature -- Initialization
 			expand_actions.extend (agent load)
 		end
 
-
 feature -- Status report
 
 	data: EB_SORTED_CLUSTER
@@ -128,6 +127,8 @@ feature -- Status setting
 --| FIXME XR: When clusters can be moved effectively, uncomment this line.
 --				drop_actions.extend (~on_cluster_drop)
 			end
+			set_configurable_target_menu_mode
+			set_configurable_target_menu_handler (agent context_menu_handler)
 			fake_load
 		ensure then
 			data = a_cluster
@@ -632,7 +633,6 @@ feature {NONE} -- Implementation
 		ensure
 			Result_not_void: Result /= Void
 		end
-
 
 	double_press_action (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER
 						 a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE

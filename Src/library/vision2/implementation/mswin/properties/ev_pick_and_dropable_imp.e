@@ -76,7 +76,7 @@ feature -- Status setting
 				Ev_pnd_start_transport
 			then
 				start_transport
-					(a_x, a_y, a_button, 0, 0, 0.5, a_screen_x, a_screen_y)
+					(a_x, a_y, a_button, True, 0, 0, 0.5, a_screen_x, a_screen_y)
 			when
 				Ev_pnd_end_transport
 			then
@@ -158,7 +158,7 @@ feature -- Status setting
 
 feature {EV_ANY_I} -- Implementation
 
-	start_transport (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt,
+	start_transport (a_x, a_y, a_button: INTEGER; a_press: BOOLEAN a_x_tilt, a_y_tilt,
 		a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
 			-- Initialize the pick/drag and drop mechanism.
 		local
@@ -176,20 +176,24 @@ feature {EV_ANY_I} -- Implementation
 				if pebble_function /= Void then
 					pebble := pebble_function.last_result
 				end
-				if pebble /= Void and not application_imp.drop_actions_executing then
+				if not application_imp.drop_actions_executing then
 					-- Note that we check there is not a pick and drop source currently executing.
 					-- If you drop on to a widget that is also a source and call `process_events' from the
 					-- `drop_actions', this causes the transport to start. The above check prevents this
 					-- from occurring.
 					if (mode_is_target_menu or mode_is_configurable_target_menu) and a_button = 3 then
-						if mode_is_configurable_target_menu then
+						if pebble /= Void and then mode_is_configurable_target_menu then
 							l_configure_agent := agent real_start_transport (a_x, a_y, a_button, a_x_tilt, a_y_tilt, a_pressure, a_screen_x, a_screen_y)
 						end
 						application_imp.create_target_menu (interface, pebble, l_configure_agent)
-					elseif mode_is_pick_and_drop and a_button = 3 then
-						real_start_transport (a_x, a_y, a_button, a_x_tilt,
-							a_y_tilt, a_pressure, a_screen_x, a_screen_y)
-					elseif mode_is_drag_and_drop and a_button = 1 then
+					elseif pebble /= Void and then mode_is_pick_and_drop and a_button = 3 then
+						if application_imp.ctrl_pressed and then drop_actions_internal /= Void and then drop_actions_internal.accepts_pebble (pebble) then
+							drop_actions_internal.call ([pebble])
+						else
+							real_start_transport (a_x, a_y, a_button, a_x_tilt,
+								a_y_tilt, a_pressure, a_screen_x, a_screen_y)
+						end
+					elseif pebble /= Void and then mode_is_drag_and_drop and a_button = 1 then
 						if not awaiting_movement then
 								-- Store arguments so they can be passed to
 								-- real_start_transport.

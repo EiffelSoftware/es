@@ -191,7 +191,7 @@ feature -- Output
 
 feature {COMPILER_EXPORTER} -- Primitives
 
-	generate_error_from_creation_constraint_list (a_context_class: CLASS_C; a_context_feature: FEATURE_I)
+	generate_error_from_creation_constraint_list (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_location_as: LOCATION_AS)
 			-- Generated a VTCG7 error if there are any constraint errors.
 			-- Otherwise it does nothing.
 		require
@@ -203,8 +203,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 						-- The feature listed in the creation constraint have
 						-- not been declared in the constraint class.			
 					create l_vtcg7
-					-- MTNTODO set some kind of location for this error!
-				--	l_vtcg7.set_location (Current.first_token (context.))
+					l_vtcg7.set_location (a_location_as)
 					l_vtcg7.set_class (a_context_class)
 					l_vtcg7.set_error_list (constraint_error_list)
 					l_vtcg7.set_parent_type (Current)
@@ -747,7 +746,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 							l_vtgd2.set_constraint (l_constraints)
 							Error_handler.insert_error (l_vtgd2)
 						else
-							-- MTNASK: this is because of the future checking... we do not need to convert anything because of the new expanded type handling, right?
+								-- MTNASK: this is because of the future checking: Do we need this future convert checking or not?
 								-- Check now for the validity of the creation constraint clause if
 								-- there is one which can be checked ,i.e. when `to_check' conforms
 								-- to `constraint_type'.
@@ -836,8 +835,6 @@ feature {COMPILER_EXPORTER} -- Primitives
 			formal_dec_as_not_void: formal_dec_as /= Void
 			creation_constraint_exists: formal_dec_as.has_creation_constraint
 			to_check_is_formal_implies_formal_type_not_void: to_check.conformance_type.is_formal implies formal_type /= Void
-		local
-			l_vtcg7: VTCG7
 		do
 			reset_constraint_error_list
 				-- We assume that we only get checks if the class is valid.
@@ -845,7 +842,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 			check is_valid: is_valid end
 			if is_valid and then context_class.is_valid and then to_check /= Void and then to_check.is_valid then
 				creation_constraint_check (formal_dec_as, constraint_type, context_class, to_check, i, formal_type)
-				generate_error_from_creation_constraint_list (context_class, a_context_feature)
+				generate_error_from_creation_constraint_list (context_class, a_context_feature, formal_dec_as.start_location )
 			end
 		end
 
@@ -864,7 +861,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 			is_valid: is_valid
 		local
 			formal_type_dec_as: FORMAL_CONSTRAINT_AS
-			formal_crc_list, crc_list: LINKED_LIST [TUPLE [type_item: EXTENDED_TYPE_A; feature_item: FEATURE_I]];
+			formal_crc_list, crc_list: LINKED_LIST [TUPLE [type_item: RENAMED_TYPE_A; feature_item: FEATURE_I]];
 			creators_table: HASH_TABLE [EXPORT_I, STRING]
 			matched: BOOLEAN
 			feat_tbl: FEATURE_TABLE

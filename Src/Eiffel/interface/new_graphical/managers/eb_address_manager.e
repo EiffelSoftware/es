@@ -375,7 +375,7 @@ feature -- Element change
 			l_but: SD_TOOL_BAR_BUTTON
 			l_cnt: INTEGER
 		do
-			create formatters_combo
+			create formatters_combo.make
 			known_formatters := new_formatters
 			from
 				l_cnt := 1
@@ -383,7 +383,6 @@ feature -- Element change
 				l_cnt > 5
 			loop
 				l_but := known_formatters.i_th (l_cnt).new_sd_button
-				l_but.drop_actions.set_veto_pebble_function (agent is_not_feature_stone (?))
 				tool_bar_items.extend (l_but)
 				l_cnt := l_cnt + 1
 			end
@@ -404,7 +403,7 @@ feature -- Element change
 	viewpoints: EV_HORIZONTAL_BOX
 			-- Viewpoints combo box
 
-	formatters_combo: EV_TOOL_BAR
+	formatters_combo: SD_TOOL_BAR
 			-- Tool bar containing class format option buttons.
 
 	disable_formatters is
@@ -2105,15 +2104,6 @@ feature {NONE} -- Implementation of the clickable labels for `header_info'
 
 	address_dialog: EV_POPUP_WINDOW
 			-- Window that pops up in the context tool to change the stone centering.
-
-	is_not_feature_stone (st: ANY): BOOLEAN is
-			-- Is `st' not a feature stone?
-		local
-			fst: FEATURE_STONE
-		do
-			fst ?= st
-			Result := fst = Void
-		end
 
 	set_mode (for_context_tool: BOOLEAN) is
 			-- Define `Current's execution mode (generated parent_windows are different).

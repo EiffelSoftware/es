@@ -114,6 +114,9 @@ feature {NONE}  -- Implementation
 		require
 			has: has (a_content)
 		do
+			-- LINKED_SET put_left is from LINKED_LIST, so it can't make sure one item per object instance in the set.
+			internal_clicked_list.prune_all (a_content)
+
 			internal_clicked_list.start
 			internal_clicked_list.put_left (a_content)
 		end
@@ -130,6 +133,12 @@ feature -- Command
 			-- Destory all underline objects
 		do
 			main_area_drop_actions.wipe_out
+		end
+
+	remove_from_clicked_list (a_content: SD_CONTENT) is
+			-- Remove `a_content' from `internal_clicked_list'
+		do
+			internal_clicked_list.prune_all (a_content)
 		end
 
 invariant
