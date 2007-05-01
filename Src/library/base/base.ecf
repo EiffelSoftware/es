@@ -25,7 +25,7 @@
 		<assembly name="mscorlib" location="$ISE_DOTNET_FRAMEWORK\mscorlib.dll"/>
 		<assembly name="system_" location="$ISE_DOTNET_FRAMEWORK\System.dll" prefix="SYSTEM_DLL_"/>
 		<assembly name="system_xml" location="$ISE_DOTNET_FRAMEWORK\System.Xml.dll" prefix="XML_"/>
-		<cluster name="capture_replay" location="capture_replay\own_classes\" recursive="true"/>
+<!--		<cluster name="capture_replay" location="capture_replay\own_classes\" recursive="true"/> -->
 		<cluster name="elks" location="elks\" recursive="true">
 			<option namespace="Base">
 			</option>

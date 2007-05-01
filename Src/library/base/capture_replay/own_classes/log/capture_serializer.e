@@ -26,8 +26,6 @@ feature -- Basic operations
 
 	write_incallret (the_result: ANY)
 			-- Write the INCALLRET event for result `the_result'.
-		require
-			the_result_not_void: the_result /= Void
 		deferred
 		end
 
@@ -42,8 +40,6 @@ feature -- Basic operations
 
 	write_outcallret(the_result: ANY)
 			-- Write the OUTCALLRET event for result `the_result'
-		require
-			the_result_not_void: the_result /= Void
 		deferred
 		end
 

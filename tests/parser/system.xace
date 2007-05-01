@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
-<system name="xserializer">
-	<root class="XSERIALIZER" creation="make"/>
+<system name="xparser">
+	<root class="XPARSER" creation="make"/>
 	<option name="console_application" value="true"/>
 	<option unless="${DEBUG}">
-		<option name="assertion" value="none"/>
+		<option name="assertion" value="all"/>
 		<option name="garbage_collector" value="none"/>
 		<option name="finalize" value="true"/>
 	</option>
@@ -35,4 +35,5 @@
 	<mount location="${GOBO}/library/string/library.xace"/>
 	<mount location="${GOBO}/library/kernel/library.xace"/>
 	<mount location="${GOBO}/library/kernel.xace"/>
+	<mount location="${GOBO}/library/regexp/library.xace"/>
 </system>

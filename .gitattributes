@@ -3389,6 +3389,9 @@ free_add_ons/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
 free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
+tests/parser/getest.cfg -text
+tests/parser/test_callrets.res -text
+tests/parser/test_calls.res -text
 tests/serializer/getest.cfg -text
 tests/serializer/test_calls.res -text
 tests/serializer/test_retcalls.res -text
