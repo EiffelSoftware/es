@@ -21,7 +21,11 @@ feature -- Initialization
 			atm: ATM
 			ui: ATM_UI
 			serializer: TEXT_SERIALIZER
+			test_performance: BOOLEAN
+			ptui: PERFORMANCE_TESTER_ATM_UI
 		do
+			test_performance := true
+
 			-- XXX hm... where is a good place to configure the recorder?
 			create serializer.make_on_textfile("run.log")
 			recorder.set_serializer (serializer)
@@ -30,7 +34,12 @@ feature -- Initialization
 			-- Initialize everything and start the UI...
 			create bank.make
 			atm := bank.atm
-			ui := atm.ui
+			if test_performance then
+				create {PERFORMANCE_TESTER_ATM_UI}ui.make(atm)
+				atm.set_ui (ui)
+			else
+				ui := atm.ui
+			end
 
 			ui.run
 			recorder.capture_methodbody_end (Void)

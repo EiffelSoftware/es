@@ -9,7 +9,7 @@ class
 
 inherit
 	OBSERVABLE
-	
+
 create
 	make
 
@@ -118,6 +118,15 @@ feature -- Element change
 			Result:= "100%% trustworthy%N"
 			recorder.capture_methodbody_end (Result)
 		end
+
+	set_ui(a_ui: ATM_UI) is
+			-- replace the ATM's UI.
+		require
+			a_ui_not_void: a_ui /= Void
+		do
+			the_ui := a_ui
+		end
+
 
 feature {NONE} -- Implementation
 

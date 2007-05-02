@@ -27,6 +27,20 @@ feature -- Access
 	serializer: CAPTURE_SERIALIZER
 			-- Serializer that is used for recording
 
+	debug_output: BOOLEAN
+			-- Is debug output enabled?
+
+feature -- Status change
+	set_debug_output(new_debug_output: BOOLEAN)
+			--set `debug_output'
+		require
+			new_debug_output_not_void: new_debug_output /= Void
+		do
+			debug_output := new_debug_output
+		ensure
+			new_debug_output_set: debug_output = new_debug_output
+		end
+
 feature -- Basic Operations
 
 	capture_methodbody_end (res: ANY)
@@ -37,7 +51,7 @@ feature -- Basic Operations
 		local
 			current_observed: BOOLEAN
 		do
-			print ("{REC}:MethodBodyEnd%N")
+			print_debug ("{REC}:MethodBodyEnd%N")
 			current_observed := observed_stack.item
 			observed_stack.remove
 			if current_observed /= observed_stack.item then
@@ -59,7 +73,7 @@ feature -- Basic Operations
 			arguments_not_void: arguments /= Void
 			serializer_not_void: serializer /= Void
 		do
-			print ("{REC}: MethodBodyStart: " + feature_name + "%N")
+			print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
 			if (target.is_observed /= observed_stack.item) then
 				if target.is_observed then
 					serializer.write_incall (feature_name, target, arguments)
@@ -78,6 +92,13 @@ feature -- Basic Operations
 
 feature {NONE} -- Implementation
 
+		print_debug(message: STRING)
+				-- Print a debug message if debug_output is enabled
+			do
+				if debug_output then
+					print("{REC}" +message)
+				end
+			end
 
 
 feature --test
