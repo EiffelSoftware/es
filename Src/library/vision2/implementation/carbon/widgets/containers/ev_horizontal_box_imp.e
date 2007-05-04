@@ -143,14 +143,10 @@ feature -- Implementation
 			size_control_external ( c_object, expandable_width + non_expandable_width + (count-1)*padding + child_offset_left + child_offset_right, height )
 
 			if is_homogeneous then
-				control_width := ( (width - (count-1) * padding - child_offset_left -child_offset_right)  / count ).rounded
+				control_width := ( (old_width - (count-1) * padding - child_offset_left -child_offset_right)  / count ).rounded
 			else
-				control_width := ( (width - non_expandable_width - expandable_width - (count-1) * padding - child_offset_left -child_offset_right) / expandable_item_count ).rounded
+				control_width := ( (old_width - non_expandable_width - expandable_width - (count-1) * padding - child_offset_left -child_offset_right) / expandable_item_count ).rounded
 			end
-
-
-
-
 
 			from
 				last_x := -padding + child_offset_right
@@ -186,31 +182,6 @@ feature -- Implementation
 				i := i + 1
 				w2 := w1
 			end
-
-			-- Bind control positions
-
-
-
-			from
-				j := 2
-			until
-				j > count
-			loop
-				w1 ?= i_th ( j - 1 ).implementation
-				w2 ?= i_th ( j ).implementation
-				check
-					w1_not_void : w1 /= Void
-					w2_not_void : w2 /= Void
-				end
-				if is_homogeneous then
-					setup_binding( w1.c_object, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
-				else
-					setup_binding( w1.c_object, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding)
-				end
-
-				j := j + 1
-			end
-
 			size_control_external ( c_object, old_width, height )
 		end
 
@@ -278,7 +249,6 @@ feature {NONE} -- Events
 				end
 				i := i + 1
 			end
-
 			control_height := height - child_offset_top - child_offset_bottom
 			if is_homogeneous then -- Make all control equally high
 				control_width := ((width - child_offset_left - child_offset_right - (count - 1) * padding)/ count).rounded

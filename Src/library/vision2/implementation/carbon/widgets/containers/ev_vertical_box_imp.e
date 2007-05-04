@@ -138,7 +138,7 @@ feature -- Implementation
 				else
 					non_expandable_height := non_expandable_height + w1.minimum_height
 				end
-				size_control_external ( w1.c_object, width - child_offset_left - child_offset_right, w1.minimum_height ) -- Set optimal size here, we need it later
+				--size_control_external ( w1.c_object, width - child_offset_left - child_offset_right, w1.minimum_height ) -- Set optimal size here, we need it later
 				-- Ueli:  I don't see, where we need this later....
 				i := i + 1
 			end
