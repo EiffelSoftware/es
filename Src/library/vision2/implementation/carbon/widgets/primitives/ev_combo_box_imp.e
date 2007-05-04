@@ -96,6 +96,7 @@ feature {NONE} -- Initialization
 			base_make (an_interface)
 			ret := hicombo_box_create_external ( rect.item, null, null, null, {HIVIEW_ANON_ENUMS}.kHIComboBoxStandardAttributes, $ptr )
 			set_c_object ( ptr )
+			entry_widget := ptr
 
 			show
 

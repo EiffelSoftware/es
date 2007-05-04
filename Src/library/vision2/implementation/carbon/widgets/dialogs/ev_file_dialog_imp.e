@@ -82,7 +82,7 @@ feature -- Access
 			then
 				create reply.make_new_unshared
 				ret := nav_dialog_get_reply_external (c_object, reply.item)
-				io.output.put_string(aecount_items_external (reply.selection).out + "%N")
+		--		io.output.put_string(aecount_items_external (reply.selection).out + "%N")
 			else
 				Result := ""
 			end

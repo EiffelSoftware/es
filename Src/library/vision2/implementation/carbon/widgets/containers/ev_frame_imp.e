@@ -93,17 +93,17 @@ feature -- layout information
 		end
 	child_offset_bottom: INTEGER
 	do
-		Result := 5
+		Result := 4
 	end
 
 	child_offset_right: INTEGER
 	do
-		Result := 5
+		Result := 4
 	end
 
 	child_offset_left: INTEGER
 	do
-		Result := 5
+		Result := 4
 	end
 
 feature -- Access

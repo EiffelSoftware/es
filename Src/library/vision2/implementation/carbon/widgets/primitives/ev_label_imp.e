@@ -97,7 +97,7 @@ feature
 	minimum_width: INTEGER is
 			do
 				--Result:= text.count * font.width
-				Result:= text.count * 2 +5
+				Result:= text.count * 8 +5
 			end
 
 feature -- status setting
