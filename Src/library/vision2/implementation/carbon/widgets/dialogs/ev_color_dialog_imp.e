@@ -47,8 +47,10 @@ feature {NONE} -- Initialization
 		alias
 			"[
 				{
-					NColorPickerInfo theColorInfo;
-					NPickColor (&theColorInfo);
+					ColorPickerInfo theColorInfo;
+					PickColor (&theColorInfo);
+//					NColorPickerInfo theColorInfo;
+//					NPickColor (&theColorInfo);
 				}
 			]"
 		end

@@ -15,10 +15,12 @@ inherit
 			interface,
 			initialize,
 			on_ok,
-			show_modal_to_window
+			show_modal_to_window,
+			show,
+			destroy
 		end
 
-	--NAVIGATION_FUNCTIONS_EXTERNAL
+	NAVIGATION_FUNCTIONS_EXTERNAL
 
 feature {NONE} -- Initialization
 
@@ -26,10 +28,20 @@ feature {NONE} -- Initialization
 			-- Create a window with a parent.
 		local
 			a_cs: EV_CARBON_CF_STRING
+			ret: INTEGER
+			options: NAV_DIALOG_CREATION_OPTIONS_STRUCT
+			in_type_list, in_event_proc, in_preview_proc, in_filter_proc: POINTER
 		do
 			base_make (an_interface)
 			a_cs := "Select file"
---			set_c_object (...)
+			create options.make_new_unshared
+			ret := nav_get_default_dialog_creation_options_external (options.item)
+
+			in_type_list := null
+			in_event_proc := null
+			in_preview_proc := null
+			in_filter_proc := null
+			ret := nav_create_choose_file_dialog_external (options.item, in_type_list, in_event_proc, in_preview_proc, in_filter_proc, null, $c_object)
 			create filters.make (0)
 		end
 
@@ -43,44 +55,38 @@ feature {NONE} -- Initialization
 
 			filter := "*.*"
 
---			a_cancel_button := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_dialog_add_button (c_object, {EV_GTK_DEPENDENT_EXTERNALS}.gtk_stock_cancel_enum, {EV_GTK_EXTERNALS}.gtk_response_cancel_enum)
---			a_ok_button := {EV_GTK_DEPENDENT_EXTERNALS}.gtk_dialog_add_button (c_object, {EV_GTK_DEPENDENT_EXTERNALS}.gtk_stock_ok_enum, {EV_GTK_EXTERNALS}.gtk_response_accept_enum)
-
---			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_file_chooser_set_local_only (c_object, True)
---			{EV_GTK_DEPENDENT_EXTERNALS}.gtk_dialog_set_default_response (c_object, {EV_GTK_EXTERNALS}.gtk_response_accept_enum)
-
---			real_signal_connect (
---				a_ok_button,
---				"clicked",
---				agent (App_implementation.gtk_marshal).file_dialog_on_ok_intermediary (c_object),
---				Void
---			)
---			real_signal_connect (
---				a_cancel_button,
---				"clicked",
---				agent (App_implementation.gtk_marshal).file_dialog_on_cancel_intermediary (c_object),
---				Void
---			)
 			enable_closeable
 --			set_start_directory (App_implementation.current_working_directory)
 			set_is_initialized (True)
 		end
+
+	show is
+			--
+		local
+			ret: INTEGER
+		do
+			ret := nav_dialog_run_external (c_object)
+		end
+
 
 feature -- Access
 
 	file_name: STRING_32 is
 			-- Full name of currently selected file including path.
 		local
-			a_cs: EV_CARBON_CF_STRING
+			ret: INTEGER
+			reply: NAV_REPLY_RECORD_STRUCT
 		do
 			if
 				selected_button /= Void and then selected_button.is_equal (internal_accept)
 			then
---				create a_cs.share_from_pointer ({EV_GTK_EXTERNALS}.gtk_file_chooser_get_filename (c_object))
-				Result := a_cs.string
+				create reply.make_new_unshared
+				ret := nav_dialog_get_reply_external (c_object, reply.item)
+				io.output.put_string(aecount_items_external (reply.selection).out + "%N")
 			else
 				Result := ""
 			end
+			Result := "/Users/danielfurrer/Pictures/Bilder/car.png"
 		end
 
 	filter: STRING_32
@@ -308,9 +314,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
+
+	destroy is
+			-- Clean up
+		do
+			nav_dialog_dispose_external (c_object)
+		end
+
+
+
 	interface: EV_FILE_DIALOG;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_FILE_DIALOG_IMP
 

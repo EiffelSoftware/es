@@ -16,8 +16,7 @@ inherit
 			internal_accept
 		redefine
 			interface,
-			initialize,
-			file_name
+			initialize
 		end
 
 create
@@ -36,14 +35,10 @@ feature {NONE} -- Access
 	multiple_selection_enabled: BOOLEAN
 		-- Is dialog enabled to select multiple files.
 
-	file_name: STRING_32 is
-			-- Retrieve file name selected by user.
-		do
-		end
-
 	file_names: ARRAYED_LIST [STRING_32] is
 			-- List of filenames selected by user
 		do
+			create Result.make_from_array (<<>>)
 		end
 
 feature {NONE} -- Setting

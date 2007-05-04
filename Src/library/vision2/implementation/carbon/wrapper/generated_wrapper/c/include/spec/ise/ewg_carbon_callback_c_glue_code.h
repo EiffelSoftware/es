@@ -870,6 +870,57 @@ Boolean call_edit_unicode_post_update_proc_ptr (void *a_function, UniCharArrayHa
 
 #include <Carbon/Carbon.h>
 
+typedef void (*nav_event_proc_ptr_eiffel_feature) (void *a_class, NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void *callBackUD);
+
+void* get_nav_event_proc_ptr_stub ();
+
+struct nav_event_proc_ptr_entry_struct
+{
+	void* a_class;
+	nav_event_proc_ptr_eiffel_feature feature;
+};
+
+void set_nav_event_proc_ptr_entry (void* a_class, void* a_feature);
+
+void call_nav_event_proc_ptr (void *a_function, NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void *callBackUD);
+
+
+#include <Carbon/Carbon.h>
+
+typedef Boolean (*nav_preview_proc_ptr_eiffel_feature) (void *a_class, NavCBRecPtr callBackParms, void *callBackUD);
+
+void* get_nav_preview_proc_ptr_stub ();
+
+struct nav_preview_proc_ptr_entry_struct
+{
+	void* a_class;
+	nav_preview_proc_ptr_eiffel_feature feature;
+};
+
+void set_nav_preview_proc_ptr_entry (void* a_class, void* a_feature);
+
+Boolean call_nav_preview_proc_ptr (void *a_function, NavCBRecPtr callBackParms, void *callBackUD);
+
+
+#include <Carbon/Carbon.h>
+
+typedef Boolean (*nav_object_filter_proc_ptr_eiffel_feature) (void *a_class, AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode);
+
+void* get_nav_object_filter_proc_ptr_stub ();
+
+struct nav_object_filter_proc_ptr_entry_struct
+{
+	void* a_class;
+	nav_object_filter_proc_ptr_eiffel_feature feature;
+};
+
+void set_nav_object_filter_proc_ptr_entry (void* a_class, void* a_feature);
+
+Boolean call_nav_object_filter_proc_ptr (void *a_function, AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode);
+
+
+#include <Carbon/Carbon.h>
+
 typedef CFComparisonResult (*cfcomparator_function_eiffel_feature) (void *a_class, void const *val1, void const *val2, void *context);
 
 void* get_cfcomparator_function_stub ();

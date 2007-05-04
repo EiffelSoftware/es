@@ -62,3 +62,18 @@
 #define ewg_union_macro_union_TXNBackgroundData_member_set_color(an_item, a_value) ((union TXNBackgroundData*)an_item)->color =  *(RGBColor*)a_value
 
 
+// glue code macros for union `union NavEventDataInfo'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_union_macro_sizeof_union_NavEventDataInfo sizeof (union NavEventDataInfo)
+
+#define ewg_union_macro_union_NavEventDataInfo_member_get_event(an_item) ((union NavEventDataInfo*)an_item)->event
+
+#define ewg_union_macro_union_NavEventDataInfo_member_set_event(an_item, a_value) ((union NavEventDataInfo*)an_item)->event =  (EventRecord*)a_value
+
+#define ewg_union_macro_union_NavEventDataInfo_member_get_param(an_item) ((union NavEventDataInfo*)an_item)->param
+
+#define ewg_union_macro_union_NavEventDataInfo_member_set_param(an_item, a_value) ((union NavEventDataInfo*)an_item)->param =  (void*)a_value
+
+

@@ -10175,6 +10175,306 @@ Boolean  ewg_function_InvokeEditUnicodePostUpdateUPP (UniCharArrayHandle uniText
 #define ewg_function_macro_CreateEditUnicodeTextControl(ewg_param_window, ewg_param_boundsRect, ewg_param_text, ewg_param_isPassword, ewg_param_style, ewg_param_outControl) CreateEditUnicodeTextControl ((WindowRef)ewg_param_window, (Rect const*)ewg_param_boundsRect, (CFStringRef)ewg_param_text, (Boolean)ewg_param_isPassword, (ControlFontStyleRec const*)ewg_param_style, (ControlRef*)ewg_param_outControl)
 
 OSStatus  ewg_function_CreateEditUnicodeTextControl (WindowRef window, Rect const *boundsRect, CFStringRef text, Boolean isPassword, ControlFontStyleRec const *style, ControlRef *outControl);
+// Wraps call to function 'NewNavEventUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewNavEventUPP(ewg_param_userRoutine) NewNavEventUPP ((NavEventProcPtr)ewg_param_userRoutine)
+
+NavEventUPP  ewg_function_NewNavEventUPP (NavEventProcPtr userRoutine);
+// Wraps call to function 'NewNavPreviewUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewNavPreviewUPP(ewg_param_userRoutine) NewNavPreviewUPP ((NavPreviewProcPtr)ewg_param_userRoutine)
+
+NavPreviewUPP  ewg_function_NewNavPreviewUPP (NavPreviewProcPtr userRoutine);
+// Wraps call to function 'NewNavObjectFilterUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewNavObjectFilterUPP(ewg_param_userRoutine) NewNavObjectFilterUPP ((NavObjectFilterProcPtr)ewg_param_userRoutine)
+
+NavObjectFilterUPP  ewg_function_NewNavObjectFilterUPP (NavObjectFilterProcPtr userRoutine);
+// Wraps call to function 'DisposeNavEventUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeNavEventUPP(ewg_param_userUPP) DisposeNavEventUPP ((NavEventUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeNavEventUPP (NavEventUPP userUPP);
+// Wraps call to function 'DisposeNavPreviewUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeNavPreviewUPP(ewg_param_userUPP) DisposeNavPreviewUPP ((NavPreviewUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeNavPreviewUPP (NavPreviewUPP userUPP);
+// Wraps call to function 'DisposeNavObjectFilterUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeNavObjectFilterUPP(ewg_param_userUPP) DisposeNavObjectFilterUPP ((NavObjectFilterUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeNavObjectFilterUPP (NavObjectFilterUPP userUPP);
+// Wraps call to function 'InvokeNavEventUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeNavEventUPP(ewg_param_callBackSelector, ewg_param_callBackParms, ewg_param_callBackUD, ewg_param_userUPP) InvokeNavEventUPP ((NavEventCallbackMessage)ewg_param_callBackSelector, (NavCBRecPtr)ewg_param_callBackParms, (void*)ewg_param_callBackUD, (NavEventUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeNavEventUPP (NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void *callBackUD, NavEventUPP userUPP);
+// Wraps call to function 'InvokeNavPreviewUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeNavPreviewUPP(ewg_param_callBackParms, ewg_param_callBackUD, ewg_param_userUPP) InvokeNavPreviewUPP ((NavCBRecPtr)ewg_param_callBackParms, (void*)ewg_param_callBackUD, (NavPreviewUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeNavPreviewUPP (NavCBRecPtr callBackParms, void *callBackUD, NavPreviewUPP userUPP);
+// Wraps call to function 'InvokeNavObjectFilterUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeNavObjectFilterUPP(ewg_param_theItem, ewg_param_info, ewg_param_callBackUD, ewg_param_filterMode, ewg_param_userUPP) InvokeNavObjectFilterUPP ((AEDesc*)ewg_param_theItem, (void*)ewg_param_info, (void*)ewg_param_callBackUD, (NavFilterModes)ewg_param_filterMode, (NavObjectFilterUPP)ewg_param_userUPP)
+
+Boolean  ewg_function_InvokeNavObjectFilterUPP (AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode, NavObjectFilterUPP userUPP);
+// Wraps call to function 'NavLoad' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavLoad NavLoad ()
+
+OSErr  ewg_function_NavLoad (void);
+// Wraps call to function 'NavUnload' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavUnload NavUnload ()
+
+OSErr  ewg_function_NavUnload (void);
+// Wraps call to function 'NavLibraryVersion' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavLibraryVersion NavLibraryVersion ()
+
+UInt32  ewg_function_NavLibraryVersion (void);
+// Wraps call to function 'NavGetDefaultDialogOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavGetDefaultDialogOptions(ewg_param_dialogOptions) NavGetDefaultDialogOptions ((NavDialogOptions*)ewg_param_dialogOptions)
+
+OSErr  ewg_function_NavGetDefaultDialogOptions (NavDialogOptions *dialogOptions);
+// Wraps call to function 'NavGetFile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavGetFile(ewg_param_defaultLocation, ewg_param_reply, ewg_param_dialogOptions, ewg_param_eventProc, ewg_param_previewProc, ewg_param_filterProc, ewg_param_typeList, ewg_param_callBackUD) NavGetFile ((AEDesc*)ewg_param_defaultLocation, (NavReplyRecord*)ewg_param_reply, (NavDialogOptions*)ewg_param_dialogOptions, (NavEventUPP)ewg_param_eventProc, (NavPreviewUPP)ewg_param_previewProc, (NavObjectFilterUPP)ewg_param_filterProc, (NavTypeListHandle)ewg_param_typeList, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavGetFile (AEDesc *defaultLocation, NavReplyRecord *reply, NavDialogOptions *dialogOptions, NavEventUPP eventProc, NavPreviewUPP previewProc, NavObjectFilterUPP filterProc, NavTypeListHandle typeList, void *callBackUD);
+// Wraps call to function 'NavPutFile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavPutFile(ewg_param_defaultLocation, ewg_param_reply, ewg_param_dialogOptions, ewg_param_eventProc, ewg_param_fileType, ewg_param_fileCreator, ewg_param_callBackUD) NavPutFile ((AEDesc*)ewg_param_defaultLocation, (NavReplyRecord*)ewg_param_reply, (NavDialogOptions*)ewg_param_dialogOptions, (NavEventUPP)ewg_param_eventProc, (OSType)ewg_param_fileType, (OSType)ewg_param_fileCreator, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavPutFile (AEDesc *defaultLocation, NavReplyRecord *reply, NavDialogOptions *dialogOptions, NavEventUPP eventProc, OSType fileType, OSType fileCreator, void *callBackUD);
+// Wraps call to function 'NavAskSaveChanges' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavAskSaveChanges(ewg_param_dialogOptions, ewg_param_action, ewg_param_reply, ewg_param_eventProc, ewg_param_callBackUD) NavAskSaveChanges ((NavDialogOptions*)ewg_param_dialogOptions, (NavAskSaveChangesAction)ewg_param_action, (NavAskSaveChangesResult*)ewg_param_reply, (NavEventUPP)ewg_param_eventProc, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavAskSaveChanges (NavDialogOptions *dialogOptions, NavAskSaveChangesAction action, NavAskSaveChangesResult *reply, NavEventUPP eventProc, void *callBackUD);
+// Wraps call to function 'NavCustomAskSaveChanges' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCustomAskSaveChanges(ewg_param_dialogOptions, ewg_param_reply, ewg_param_eventProc, ewg_param_callBackUD) NavCustomAskSaveChanges ((NavDialogOptions*)ewg_param_dialogOptions, (NavAskSaveChangesResult*)ewg_param_reply, (NavEventUPP)ewg_param_eventProc, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavCustomAskSaveChanges (NavDialogOptions *dialogOptions, NavAskSaveChangesResult *reply, NavEventUPP eventProc, void *callBackUD);
+// Wraps call to function 'NavAskDiscardChanges' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavAskDiscardChanges(ewg_param_dialogOptions, ewg_param_reply, ewg_param_eventProc, ewg_param_callBackUD) NavAskDiscardChanges ((NavDialogOptions*)ewg_param_dialogOptions, (NavAskDiscardChangesResult*)ewg_param_reply, (NavEventUPP)ewg_param_eventProc, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavAskDiscardChanges (NavDialogOptions *dialogOptions, NavAskDiscardChangesResult *reply, NavEventUPP eventProc, void *callBackUD);
+// Wraps call to function 'NavChooseFile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavChooseFile(ewg_param_defaultLocation, ewg_param_reply, ewg_param_dialogOptions, ewg_param_eventProc, ewg_param_previewProc, ewg_param_filterProc, ewg_param_typeList, ewg_param_callBackUD) NavChooseFile ((AEDesc*)ewg_param_defaultLocation, (NavReplyRecord*)ewg_param_reply, (NavDialogOptions*)ewg_param_dialogOptions, (NavEventUPP)ewg_param_eventProc, (NavPreviewUPP)ewg_param_previewProc, (NavObjectFilterUPP)ewg_param_filterProc, (NavTypeListHandle)ewg_param_typeList, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavChooseFile (AEDesc *defaultLocation, NavReplyRecord *reply, NavDialogOptions *dialogOptions, NavEventUPP eventProc, NavPreviewUPP previewProc, NavObjectFilterUPP filterProc, NavTypeListHandle typeList, void *callBackUD);
+// Wraps call to function 'NavChooseFolder' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavChooseFolder(ewg_param_defaultLocation, ewg_param_reply, ewg_param_dialogOptions, ewg_param_eventProc, ewg_param_filterProc, ewg_param_callBackUD) NavChooseFolder ((AEDesc*)ewg_param_defaultLocation, (NavReplyRecord*)ewg_param_reply, (NavDialogOptions*)ewg_param_dialogOptions, (NavEventUPP)ewg_param_eventProc, (NavObjectFilterUPP)ewg_param_filterProc, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavChooseFolder (AEDesc *defaultLocation, NavReplyRecord *reply, NavDialogOptions *dialogOptions, NavEventUPP eventProc, NavObjectFilterUPP filterProc, void *callBackUD);
+// Wraps call to function 'NavChooseVolume' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavChooseVolume(ewg_param_defaultSelection, ewg_param_reply, ewg_param_dialogOptions, ewg_param_eventProc, ewg_param_filterProc, ewg_param_callBackUD) NavChooseVolume ((AEDesc*)ewg_param_defaultSelection, (NavReplyRecord*)ewg_param_reply, (NavDialogOptions*)ewg_param_dialogOptions, (NavEventUPP)ewg_param_eventProc, (NavObjectFilterUPP)ewg_param_filterProc, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavChooseVolume (AEDesc *defaultSelection, NavReplyRecord *reply, NavDialogOptions *dialogOptions, NavEventUPP eventProc, NavObjectFilterUPP filterProc, void *callBackUD);
+// Wraps call to function 'NavChooseObject' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavChooseObject(ewg_param_defaultLocation, ewg_param_reply, ewg_param_dialogOptions, ewg_param_eventProc, ewg_param_filterProc, ewg_param_callBackUD) NavChooseObject ((AEDesc*)ewg_param_defaultLocation, (NavReplyRecord*)ewg_param_reply, (NavDialogOptions*)ewg_param_dialogOptions, (NavEventUPP)ewg_param_eventProc, (NavObjectFilterUPP)ewg_param_filterProc, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavChooseObject (AEDesc *defaultLocation, NavReplyRecord *reply, NavDialogOptions *dialogOptions, NavEventUPP eventProc, NavObjectFilterUPP filterProc, void *callBackUD);
+// Wraps call to function 'NavNewFolder' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavNewFolder(ewg_param_defaultLocation, ewg_param_reply, ewg_param_dialogOptions, ewg_param_eventProc, ewg_param_callBackUD) NavNewFolder ((AEDesc*)ewg_param_defaultLocation, (NavReplyRecord*)ewg_param_reply, (NavDialogOptions*)ewg_param_dialogOptions, (NavEventUPP)ewg_param_eventProc, (void*)ewg_param_callBackUD)
+
+OSErr  ewg_function_NavNewFolder (AEDesc *defaultLocation, NavReplyRecord *reply, NavDialogOptions *dialogOptions, NavEventUPP eventProc, void *callBackUD);
+// Wraps call to function 'NavTranslateFile' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavTranslateFile(ewg_param_reply, ewg_param_howToTranslate) NavTranslateFile ((NavReplyRecord*)ewg_param_reply, (NavTranslationOptions)ewg_param_howToTranslate)
+
+OSErr  ewg_function_NavTranslateFile (NavReplyRecord *reply, NavTranslationOptions howToTranslate);
+// Wraps call to function 'NavCompleteSave' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCompleteSave(ewg_param_reply, ewg_param_howToTranslate) NavCompleteSave ((NavReplyRecord*)ewg_param_reply, (NavTranslationOptions)ewg_param_howToTranslate)
+
+OSErr  ewg_function_NavCompleteSave (NavReplyRecord *reply, NavTranslationOptions howToTranslate);
+// Wraps call to function 'NavCustomControl' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCustomControl(ewg_param_dialog, ewg_param_selector, ewg_param_parms) NavCustomControl ((NavDialogRef)ewg_param_dialog, (NavCustomControlMessage)ewg_param_selector, (void*)ewg_param_parms)
+
+OSErr  ewg_function_NavCustomControl (NavDialogRef dialog, NavCustomControlMessage selector, void *parms);
+// Wraps call to function 'NavCreatePreview' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreatePreview(ewg_param_theObject, ewg_param_previewDataType, ewg_param_previewData, ewg_param_previewDataSize) NavCreatePreview ((AEDesc*)ewg_param_theObject, (OSType)ewg_param_previewDataType, (void const*)ewg_param_previewData, (Size)ewg_param_previewDataSize)
+
+OSErr  ewg_function_NavCreatePreview (AEDesc *theObject, OSType previewDataType, void const *previewData, Size previewDataSize);
+// Wraps call to function 'NavDisposeReply' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDisposeReply(ewg_param_reply) NavDisposeReply ((NavReplyRecord*)ewg_param_reply)
+
+OSErr  ewg_function_NavDisposeReply (NavReplyRecord *reply);
+// Wraps call to function 'NavServicesCanRun' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavServicesCanRun NavServicesCanRun ()
+
+Boolean  ewg_function_NavServicesCanRun (void);
+// Wraps call to function 'NavGetDefaultDialogCreationOptions' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavGetDefaultDialogCreationOptions(ewg_param_outOptions) NavGetDefaultDialogCreationOptions ((NavDialogCreationOptions*)ewg_param_outOptions)
+
+OSStatus  ewg_function_NavGetDefaultDialogCreationOptions (NavDialogCreationOptions *outOptions);
+// Wraps call to function 'NavCreateGetFileDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateGetFileDialog(ewg_param_inOptions, ewg_param_inTypeList, ewg_param_inEventProc, ewg_param_inPreviewProc, ewg_param_inFilterProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateGetFileDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavTypeListHandle)ewg_param_inTypeList, (NavEventUPP)ewg_param_inEventProc, (NavPreviewUPP)ewg_param_inPreviewProc, (NavObjectFilterUPP)ewg_param_inFilterProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateGetFileDialog (NavDialogCreationOptions const *inOptions, NavTypeListHandle inTypeList, NavEventUPP inEventProc, NavPreviewUPP inPreviewProc, NavObjectFilterUPP inFilterProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreatePutFileDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreatePutFileDialog(ewg_param_inOptions, ewg_param_inFileType, ewg_param_inFileCreator, ewg_param_inEventProc, ewg_param_inClientData, ewg_param_outDialog) NavCreatePutFileDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (OSType)ewg_param_inFileType, (OSType)ewg_param_inFileCreator, (NavEventUPP)ewg_param_inEventProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreatePutFileDialog (NavDialogCreationOptions const *inOptions, OSType inFileType, OSType inFileCreator, NavEventUPP inEventProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateAskReviewDocumentsDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateAskReviewDocumentsDialog(ewg_param_inOptions, ewg_param_inDocumentCount, ewg_param_inEventProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateAskReviewDocumentsDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (UInt32)ewg_param_inDocumentCount, (NavEventUPP)ewg_param_inEventProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateAskReviewDocumentsDialog (NavDialogCreationOptions const *inOptions, UInt32 inDocumentCount, NavEventUPP inEventProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateAskSaveChangesDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateAskSaveChangesDialog(ewg_param_inOptions, ewg_param_inAction, ewg_param_inEventProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateAskSaveChangesDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavAskSaveChangesAction)ewg_param_inAction, (NavEventUPP)ewg_param_inEventProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateAskSaveChangesDialog (NavDialogCreationOptions const *inOptions, NavAskSaveChangesAction inAction, NavEventUPP inEventProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateAskDiscardChangesDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateAskDiscardChangesDialog(ewg_param_inOptions, ewg_param_inEventProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateAskDiscardChangesDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavEventUPP)ewg_param_inEventProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateAskDiscardChangesDialog (NavDialogCreationOptions const *inOptions, NavEventUPP inEventProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateChooseFileDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateChooseFileDialog(ewg_param_inOptions, ewg_param_inTypeList, ewg_param_inEventProc, ewg_param_inPreviewProc, ewg_param_inFilterProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateChooseFileDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavTypeListHandle)ewg_param_inTypeList, (NavEventUPP)ewg_param_inEventProc, (NavPreviewUPP)ewg_param_inPreviewProc, (NavObjectFilterUPP)ewg_param_inFilterProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateChooseFileDialog (NavDialogCreationOptions const *inOptions, NavTypeListHandle inTypeList, NavEventUPP inEventProc, NavPreviewUPP inPreviewProc, NavObjectFilterUPP inFilterProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateChooseFolderDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateChooseFolderDialog(ewg_param_inOptions, ewg_param_inEventProc, ewg_param_inFilterProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateChooseFolderDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavEventUPP)ewg_param_inEventProc, (NavObjectFilterUPP)ewg_param_inFilterProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateChooseFolderDialog (NavDialogCreationOptions const *inOptions, NavEventUPP inEventProc, NavObjectFilterUPP inFilterProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateChooseVolumeDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateChooseVolumeDialog(ewg_param_inOptions, ewg_param_inEventProc, ewg_param_inFilterProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateChooseVolumeDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavEventUPP)ewg_param_inEventProc, (NavObjectFilterUPP)ewg_param_inFilterProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateChooseVolumeDialog (NavDialogCreationOptions const *inOptions, NavEventUPP inEventProc, NavObjectFilterUPP inFilterProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateChooseObjectDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateChooseObjectDialog(ewg_param_inOptions, ewg_param_inEventProc, ewg_param_inPreviewProc, ewg_param_inFilterProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateChooseObjectDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavEventUPP)ewg_param_inEventProc, (NavPreviewUPP)ewg_param_inPreviewProc, (NavObjectFilterUPP)ewg_param_inFilterProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateChooseObjectDialog (NavDialogCreationOptions const *inOptions, NavEventUPP inEventProc, NavPreviewUPP inPreviewProc, NavObjectFilterUPP inFilterProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavCreateNewFolderDialog' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavCreateNewFolderDialog(ewg_param_inOptions, ewg_param_inEventProc, ewg_param_inClientData, ewg_param_outDialog) NavCreateNewFolderDialog ((NavDialogCreationOptions const*)ewg_param_inOptions, (NavEventUPP)ewg_param_inEventProc, (void*)ewg_param_inClientData, (NavDialogRef*)ewg_param_outDialog)
+
+OSStatus  ewg_function_NavCreateNewFolderDialog (NavDialogCreationOptions const *inOptions, NavEventUPP inEventProc, void *inClientData, NavDialogRef *outDialog);
+// Wraps call to function 'NavDialogRun' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogRun(ewg_param_inDialog) NavDialogRun ((NavDialogRef)ewg_param_inDialog)
+
+OSStatus  ewg_function_NavDialogRun (NavDialogRef inDialog);
+// Wraps call to function 'NavDialogDispose' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogDispose(ewg_param_inDialog) NavDialogDispose ((NavDialogRef)ewg_param_inDialog)
+
+void  ewg_function_NavDialogDispose (NavDialogRef inDialog);
+// Wraps call to function 'NavDialogGetWindow' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogGetWindow(ewg_param_inDialog) NavDialogGetWindow ((NavDialogRef)ewg_param_inDialog)
+
+WindowRef  ewg_function_NavDialogGetWindow (NavDialogRef inDialog);
+// Wraps call to function 'NavDialogGetUserAction' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogGetUserAction(ewg_param_inDialog) NavDialogGetUserAction ((NavDialogRef)ewg_param_inDialog)
+
+NavUserAction  ewg_function_NavDialogGetUserAction (NavDialogRef inDialog);
+// Wraps call to function 'NavDialogGetReply' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogGetReply(ewg_param_inDialog, ewg_param_outReply) NavDialogGetReply ((NavDialogRef)ewg_param_inDialog, (NavReplyRecord*)ewg_param_outReply)
+
+OSStatus  ewg_function_NavDialogGetReply (NavDialogRef inDialog, NavReplyRecord *outReply);
+// Wraps call to function 'NavDialogGetSaveFileName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogGetSaveFileName(ewg_param_inPutFileDialog) NavDialogGetSaveFileName ((NavDialogRef)ewg_param_inPutFileDialog)
+
+CFStringRef  ewg_function_NavDialogGetSaveFileName (NavDialogRef inPutFileDialog);
+// Wraps call to function 'NavDialogSetSaveFileName' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogSetSaveFileName(ewg_param_inPutFileDialog, ewg_param_inFileName) NavDialogSetSaveFileName ((NavDialogRef)ewg_param_inPutFileDialog, (CFStringRef)ewg_param_inFileName)
+
+OSStatus  ewg_function_NavDialogSetSaveFileName (NavDialogRef inPutFileDialog, CFStringRef inFileName);
+// Wraps call to function 'NavDialogGetSaveFileExtensionHidden' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogGetSaveFileExtensionHidden(ewg_param_inPutFileDialog) NavDialogGetSaveFileExtensionHidden ((NavDialogRef)ewg_param_inPutFileDialog)
+
+Boolean  ewg_function_NavDialogGetSaveFileExtensionHidden (NavDialogRef inPutFileDialog);
+// Wraps call to function 'NavDialogSetSaveFileExtensionHidden' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogSetSaveFileExtensionHidden(ewg_param_inPutFileDialog, ewg_param_inHidden) NavDialogSetSaveFileExtensionHidden ((NavDialogRef)ewg_param_inPutFileDialog, (Boolean)ewg_param_inHidden)
+
+OSStatus  ewg_function_NavDialogSetSaveFileExtensionHidden (NavDialogRef inPutFileDialog, Boolean inHidden);
+// Wraps call to function 'NavDialogSetFilterTypeIdentifiers' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NavDialogSetFilterTypeIdentifiers(ewg_param_inGetFileDialog, ewg_param_inTypeIdentifiers) NavDialogSetFilterTypeIdentifiers ((NavDialogRef)ewg_param_inGetFileDialog, (CFArrayRef)ewg_param_inTypeIdentifiers)
+
+OSStatus  ewg_function_NavDialogSetFilterTypeIdentifiers (NavDialogRef inGetFileDialog, CFArrayRef inTypeIdentifiers);
 // Wraps call to function 'get_cgdata_provider_release_data_callback_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 
@@ -11093,6 +11393,60 @@ void  ewg_function_set_edit_unicode_post_update_proc_ptr_entry (void *a_class, v
 #define ewg_function_macro_call_edit_unicode_post_update_proc_ptr(ewg_param_a_function, ewg_param_uniText, ewg_param_uniTextLength, ewg_param_iStartOffset, ewg_param_iEndOffset, ewg_param_refcon) call_edit_unicode_post_update_proc_ptr ((void*)ewg_param_a_function, (UniCharArrayHandle)ewg_param_uniText, (UniCharCount)ewg_param_uniTextLength, (UniCharArrayOffset)ewg_param_iStartOffset, (UniCharArrayOffset)ewg_param_iEndOffset, (void*)ewg_param_refcon)
 
 Boolean  ewg_function_call_edit_unicode_post_update_proc_ptr (void *a_function, UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon);
+// Wraps call to function 'get_nav_event_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_nav_event_proc_ptr_stub get_nav_event_proc_ptr_stub ()
+
+void * ewg_function_get_nav_event_proc_ptr_stub (void);
+// Wraps call to function 'set_nav_event_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_nav_event_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_nav_event_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_nav_event_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_nav_event_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_nav_event_proc_ptr(ewg_param_a_function, ewg_param_callBackSelector, ewg_param_callBackParms, ewg_param_callBackUD) call_nav_event_proc_ptr ((void*)ewg_param_a_function, (NavEventCallbackMessage)ewg_param_callBackSelector, (NavCBRecPtr)ewg_param_callBackParms, (void*)ewg_param_callBackUD)
+
+void  ewg_function_call_nav_event_proc_ptr (void *a_function, NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void *callBackUD);
+// Wraps call to function 'get_nav_preview_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_nav_preview_proc_ptr_stub get_nav_preview_proc_ptr_stub ()
+
+void * ewg_function_get_nav_preview_proc_ptr_stub (void);
+// Wraps call to function 'set_nav_preview_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_nav_preview_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_nav_preview_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_nav_preview_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_nav_preview_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_nav_preview_proc_ptr(ewg_param_a_function, ewg_param_callBackParms, ewg_param_callBackUD) call_nav_preview_proc_ptr ((void*)ewg_param_a_function, (NavCBRecPtr)ewg_param_callBackParms, (void*)ewg_param_callBackUD)
+
+Boolean  ewg_function_call_nav_preview_proc_ptr (void *a_function, NavCBRecPtr callBackParms, void *callBackUD);
+// Wraps call to function 'get_nav_object_filter_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_nav_object_filter_proc_ptr_stub get_nav_object_filter_proc_ptr_stub ()
+
+void * ewg_function_get_nav_object_filter_proc_ptr_stub (void);
+// Wraps call to function 'set_nav_object_filter_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_nav_object_filter_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_nav_object_filter_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_nav_object_filter_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_nav_object_filter_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_nav_object_filter_proc_ptr(ewg_param_a_function, ewg_param_theItem, ewg_param_info, ewg_param_callBackUD, ewg_param_filterMode) call_nav_object_filter_proc_ptr ((void*)ewg_param_a_function, (AEDesc*)ewg_param_theItem, (void*)ewg_param_info, (void*)ewg_param_callBackUD, (NavFilterModes)ewg_param_filterMode)
+
+Boolean  ewg_function_call_nav_object_filter_proc_ptr (void *a_function, AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode);
 // Wraps call to function 'get_cfcomparator_function_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 

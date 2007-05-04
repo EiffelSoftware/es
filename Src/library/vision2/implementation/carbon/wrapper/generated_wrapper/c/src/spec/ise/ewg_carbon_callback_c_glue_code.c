@@ -1330,6 +1330,84 @@ Boolean call_edit_unicode_post_update_proc_ptr (void *a_function, UniCharArrayHa
 	return ((Boolean (*) (UniCharArrayHandle uniText, UniCharCount uniTextLength, UniCharArrayOffset iStartOffset, UniCharArrayOffset iEndOffset, void *refcon))a_function) (uniText, uniTextLength, iStartOffset, iEndOffset, refcon);
 }
 
+struct nav_event_proc_ptr_entry_struct nav_event_proc_ptr_entry = {NULL, NULL};
+
+void nav_event_proc_ptr_stub (NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void *callBackUD)
+{
+	if (nav_event_proc_ptr_entry.a_class != NULL && nav_event_proc_ptr_entry.feature != NULL)
+	{
+		nav_event_proc_ptr_entry.feature (eif_access(nav_event_proc_ptr_entry.a_class), callBackSelector, callBackParms, callBackUD);
+	}
+}
+
+void set_nav_event_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	nav_event_proc_ptr_entry.a_class = eif_adopt(a_class);
+	nav_event_proc_ptr_entry.feature = (nav_event_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_nav_event_proc_ptr_stub ()
+{
+	return (void*) nav_event_proc_ptr_stub;
+}
+
+void call_nav_event_proc_ptr (void *a_function, NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void *callBackUD)
+{
+	((void (*) (NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void *callBackUD))a_function) (callBackSelector, callBackParms, callBackUD);
+}
+
+struct nav_preview_proc_ptr_entry_struct nav_preview_proc_ptr_entry = {NULL, NULL};
+
+Boolean nav_preview_proc_ptr_stub (NavCBRecPtr callBackParms, void *callBackUD)
+{
+	if (nav_preview_proc_ptr_entry.a_class != NULL && nav_preview_proc_ptr_entry.feature != NULL)
+	{
+		return nav_preview_proc_ptr_entry.feature (eif_access(nav_preview_proc_ptr_entry.a_class), callBackParms, callBackUD);
+	}
+}
+
+void set_nav_preview_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	nav_preview_proc_ptr_entry.a_class = eif_adopt(a_class);
+	nav_preview_proc_ptr_entry.feature = (nav_preview_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_nav_preview_proc_ptr_stub ()
+{
+	return (void*) nav_preview_proc_ptr_stub;
+}
+
+Boolean call_nav_preview_proc_ptr (void *a_function, NavCBRecPtr callBackParms, void *callBackUD)
+{
+	return ((Boolean (*) (NavCBRecPtr callBackParms, void *callBackUD))a_function) (callBackParms, callBackUD);
+}
+
+struct nav_object_filter_proc_ptr_entry_struct nav_object_filter_proc_ptr_entry = {NULL, NULL};
+
+Boolean nav_object_filter_proc_ptr_stub (AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode)
+{
+	if (nav_object_filter_proc_ptr_entry.a_class != NULL && nav_object_filter_proc_ptr_entry.feature != NULL)
+	{
+		return nav_object_filter_proc_ptr_entry.feature (eif_access(nav_object_filter_proc_ptr_entry.a_class), theItem, info, callBackUD, filterMode);
+	}
+}
+
+void set_nav_object_filter_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	nav_object_filter_proc_ptr_entry.a_class = eif_adopt(a_class);
+	nav_object_filter_proc_ptr_entry.feature = (nav_object_filter_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_nav_object_filter_proc_ptr_stub ()
+{
+	return (void*) nav_object_filter_proc_ptr_stub;
+}
+
+Boolean call_nav_object_filter_proc_ptr (void *a_function, AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode)
+{
+	return ((Boolean (*) (AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode))a_function) (theItem, info, callBackUD, filterMode);
+}
+
 struct cfcomparator_function_entry_struct cfcomparator_function_entry = {NULL, NULL};
 
 CFComparisonResult cfcomparator_function_stub (void const *val1, void const *val2, void *context)

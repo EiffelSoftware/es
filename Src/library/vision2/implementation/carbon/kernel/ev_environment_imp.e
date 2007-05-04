@@ -41,11 +41,8 @@ feature -- Access
 			-- `Result' contains all supported image formats
 			-- on current platform, in the form of their three letter extension.
 			-- e.g. PNG, BMP, ICO
-		local
-			app_imp: EV_APPLICATION_IMP
 		once
-			app_imp ?= application.implementation
-		--	Result := app_imp.readable_pixbuf_formats.linear_representation
+			Result := create {ARRAYED_LIST [STRING_32]}.make_from_array (<<"PNG">>)
 			Result.compare_objects
 		end
 
@@ -75,18 +72,6 @@ feature -- Access
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2007, The Eiffel.Mac Team"
 end -- class EV_ENVIRONMENT_IMP
 

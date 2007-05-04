@@ -1665,6 +1665,230 @@
 #define ewg_struct_macro_struct_DataBrowserAccessibilityItemInfo_member_set_version(an_item, a_value) ((struct DataBrowserAccessibilityItemInfo*)an_item)->version =  (UInt32)a_value
 
 
+// glue code macros for struct `struct NavCBRec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavCBRec sizeof (struct NavCBRec)
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_version(an_item) ((struct NavCBRec*)an_item)->version
+
+#define ewg_struct_macro_struct_NavCBRec_member_set_version(an_item, a_value) ((struct NavCBRec*)an_item)->version =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_context(an_item) ((struct NavCBRec*)an_item)->context
+
+#define ewg_struct_macro_struct_NavCBRec_member_set_context(an_item, a_value) ((struct NavCBRec*)an_item)->context =  (NavDialogRef)a_value
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_window(an_item) ((struct NavCBRec*)an_item)->window
+
+#define ewg_struct_macro_struct_NavCBRec_member_set_window(an_item, a_value) ((struct NavCBRec*)an_item)->window =  (WindowRef)a_value
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_customRect(an_item) &((struct NavCBRec*)an_item)->customRect
+
+#define ewg_struct_macro_struct_NavCBRec_member_set_customRect(an_item, a_value) ((struct NavCBRec*)an_item)->customRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_previewRect(an_item) &((struct NavCBRec*)an_item)->previewRect
+
+#define ewg_struct_macro_struct_NavCBRec_member_set_previewRect(an_item, a_value) ((struct NavCBRec*)an_item)->previewRect =  *(Rect*)a_value
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_eventData(an_item) &((struct NavCBRec*)an_item)->eventData
+
+#define ewg_struct_macro_struct_NavCBRec_member_set_eventData(an_item, a_value) ((struct NavCBRec*)an_item)->eventData =  *(NavEventData*)a_value
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_userAction(an_item) ((struct NavCBRec*)an_item)->userAction
+
+#define ewg_struct_macro_struct_NavCBRec_member_set_userAction(an_item, a_value) ((struct NavCBRec*)an_item)->userAction =  (NavUserAction)a_value
+
+#define ewg_struct_macro_struct_NavCBRec_member_get_reserved(an_item) ((struct NavCBRec*)an_item)->reserved
+
+
+// glue code macros for struct `struct NavDialogOptions'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavDialogOptions sizeof (struct NavDialogOptions)
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_version(an_item) ((struct NavDialogOptions*)an_item)->version
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_set_version(an_item, a_value) ((struct NavDialogOptions*)an_item)->version =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_dialogOptionFlags(an_item) ((struct NavDialogOptions*)an_item)->dialogOptionFlags
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_set_dialogOptionFlags(an_item, a_value) ((struct NavDialogOptions*)an_item)->dialogOptionFlags =  (NavDialogOptionFlags)a_value
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_location(an_item) &((struct NavDialogOptions*)an_item)->location
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_set_location(an_item, a_value) ((struct NavDialogOptions*)an_item)->location =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_clientName(an_item) ((struct NavDialogOptions*)an_item)->clientName
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_windowTitle(an_item) ((struct NavDialogOptions*)an_item)->windowTitle
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_actionButtonLabel(an_item) ((struct NavDialogOptions*)an_item)->actionButtonLabel
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_cancelButtonLabel(an_item) ((struct NavDialogOptions*)an_item)->cancelButtonLabel
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_savedFileName(an_item) ((struct NavDialogOptions*)an_item)->savedFileName
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_message(an_item) ((struct NavDialogOptions*)an_item)->message
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_preferenceKey(an_item) ((struct NavDialogOptions*)an_item)->preferenceKey
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_set_preferenceKey(an_item, a_value) ((struct NavDialogOptions*)an_item)->preferenceKey =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_popupExtension(an_item) ((struct NavDialogOptions*)an_item)->popupExtension
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_set_popupExtension(an_item, a_value) ((struct NavDialogOptions*)an_item)->popupExtension =  (NavMenuItemSpecArrayHandle)a_value
+
+#define ewg_struct_macro_struct_NavDialogOptions_member_get_reserved(an_item) ((struct NavDialogOptions*)an_item)->reserved
+
+
+// glue code macros for struct `struct NavReplyRecord'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavReplyRecord sizeof (struct NavReplyRecord)
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_version(an_item) ((struct NavReplyRecord*)an_item)->version
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_version(an_item, a_value) ((struct NavReplyRecord*)an_item)->version =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_validRecord(an_item) ((struct NavReplyRecord*)an_item)->validRecord
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_validRecord(an_item, a_value) ((struct NavReplyRecord*)an_item)->validRecord =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_replacing(an_item) ((struct NavReplyRecord*)an_item)->replacing
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_replacing(an_item, a_value) ((struct NavReplyRecord*)an_item)->replacing =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_isStationery(an_item) ((struct NavReplyRecord*)an_item)->isStationery
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_isStationery(an_item, a_value) ((struct NavReplyRecord*)an_item)->isStationery =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_translationNeeded(an_item) ((struct NavReplyRecord*)an_item)->translationNeeded
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_translationNeeded(an_item, a_value) ((struct NavReplyRecord*)an_item)->translationNeeded =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_selection(an_item) &((struct NavReplyRecord*)an_item)->selection
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_selection(an_item, a_value) ((struct NavReplyRecord*)an_item)->selection =  *(AEDescList*)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_keyScript(an_item) ((struct NavReplyRecord*)an_item)->keyScript
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_keyScript(an_item, a_value) ((struct NavReplyRecord*)an_item)->keyScript =  (ScriptCode)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_fileTranslation(an_item) ((struct NavReplyRecord*)an_item)->fileTranslation
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_fileTranslation(an_item, a_value) ((struct NavReplyRecord*)an_item)->fileTranslation =  (FileTranslationSpecArrayHandle)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_reserved1(an_item) ((struct NavReplyRecord*)an_item)->reserved1
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_reserved1(an_item, a_value) ((struct NavReplyRecord*)an_item)->reserved1 =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_saveFileName(an_item) ((struct NavReplyRecord*)an_item)->saveFileName
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_saveFileName(an_item, a_value) ((struct NavReplyRecord*)an_item)->saveFileName =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_saveFileExtensionHidden(an_item) ((struct NavReplyRecord*)an_item)->saveFileExtensionHidden
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_saveFileExtensionHidden(an_item, a_value) ((struct NavReplyRecord*)an_item)->saveFileExtensionHidden =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_reserved2(an_item) ((struct NavReplyRecord*)an_item)->reserved2
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_set_reserved2(an_item, a_value) ((struct NavReplyRecord*)an_item)->reserved2 =  (UInt8)a_value
+
+#define ewg_struct_macro_struct_NavReplyRecord_member_get_reserved(an_item) ((struct NavReplyRecord*)an_item)->reserved
+
+
+// glue code macros for struct `struct NavTypeList'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavTypeList sizeof (struct NavTypeList)
+
+#define ewg_struct_macro_struct_NavTypeList_member_get_componentSignature(an_item) ((struct NavTypeList*)an_item)->componentSignature
+
+#define ewg_struct_macro_struct_NavTypeList_member_set_componentSignature(an_item, a_value) ((struct NavTypeList*)an_item)->componentSignature =  (OSType)a_value
+
+#define ewg_struct_macro_struct_NavTypeList_member_get_reserved(an_item) ((struct NavTypeList*)an_item)->reserved
+
+#define ewg_struct_macro_struct_NavTypeList_member_set_reserved(an_item, a_value) ((struct NavTypeList*)an_item)->reserved =  (short)a_value
+
+#define ewg_struct_macro_struct_NavTypeList_member_get_osTypeCount(an_item) ((struct NavTypeList*)an_item)->osTypeCount
+
+#define ewg_struct_macro_struct_NavTypeList_member_set_osTypeCount(an_item, a_value) ((struct NavTypeList*)an_item)->osTypeCount =  (short)a_value
+
+#define ewg_struct_macro_struct_NavTypeList_member_get_osType(an_item) ((struct NavTypeList*)an_item)->osType
+
+
+// glue code macros for struct `struct __NavDialog'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct___NavDialog 1
+
+
+// glue code macros for struct `struct NavDialogCreationOptions'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavDialogCreationOptions sizeof (struct NavDialogCreationOptions)
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_version(an_item) ((struct NavDialogCreationOptions*)an_item)->version
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_version(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->version =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_optionFlags(an_item) ((struct NavDialogCreationOptions*)an_item)->optionFlags
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_optionFlags(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->optionFlags =  (NavDialogOptionFlags)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_location(an_item) &((struct NavDialogCreationOptions*)an_item)->location
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_location(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->location =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_clientName(an_item) ((struct NavDialogCreationOptions*)an_item)->clientName
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_clientName(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->clientName =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_windowTitle(an_item) ((struct NavDialogCreationOptions*)an_item)->windowTitle
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_windowTitle(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->windowTitle =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_actionButtonLabel(an_item) ((struct NavDialogCreationOptions*)an_item)->actionButtonLabel
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_actionButtonLabel(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->actionButtonLabel =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_cancelButtonLabel(an_item) ((struct NavDialogCreationOptions*)an_item)->cancelButtonLabel
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_cancelButtonLabel(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->cancelButtonLabel =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_saveFileName(an_item) ((struct NavDialogCreationOptions*)an_item)->saveFileName
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_saveFileName(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->saveFileName =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_message(an_item) ((struct NavDialogCreationOptions*)an_item)->message
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_message(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->message =  (CFStringRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_preferenceKey(an_item) ((struct NavDialogCreationOptions*)an_item)->preferenceKey
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_preferenceKey(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->preferenceKey =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_popupExtension(an_item) ((struct NavDialogCreationOptions*)an_item)->popupExtension
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_popupExtension(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->popupExtension =  (CFArrayRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_modality(an_item) ((struct NavDialogCreationOptions*)an_item)->modality
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_modality(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->modality =  (WindowModality)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_parentWindow(an_item) ((struct NavDialogCreationOptions*)an_item)->parentWindow
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_set_parentWindow(an_item, a_value) ((struct NavDialogCreationOptions*)an_item)->parentWindow =  (WindowRef)a_value
+
+#define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_reserved(an_item) ((struct NavDialogCreationOptions*)an_item)->reserved
+
+
 // glue code macros for struct `struct __CFNull'
 
 #include<Carbon/Carbon.h>
@@ -2964,6 +3188,71 @@
 #define ewg_struct_macro_struct_DataBrowserAccessibilityItemInfoV1_member_set_columnIndex(an_item, a_value) ((struct DataBrowserAccessibilityItemInfoV1*)an_item)->columnIndex =  (DataBrowserTableViewColumnIndex)a_value
 
 
+// glue code macros for struct `struct NavFileOrFolderInfo'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavFileOrFolderInfo sizeof (struct NavFileOrFolderInfo)
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_get_version(an_item) ((struct NavFileOrFolderInfo*)an_item)->version
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_set_version(an_item, a_value) ((struct NavFileOrFolderInfo*)an_item)->version =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_get_isFolder(an_item) ((struct NavFileOrFolderInfo*)an_item)->isFolder
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_set_isFolder(an_item, a_value) ((struct NavFileOrFolderInfo*)an_item)->isFolder =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_get_visible(an_item) ((struct NavFileOrFolderInfo*)an_item)->visible
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_set_visible(an_item, a_value) ((struct NavFileOrFolderInfo*)an_item)->visible =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_get_creationDate(an_item) ((struct NavFileOrFolderInfo*)an_item)->creationDate
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_set_creationDate(an_item, a_value) ((struct NavFileOrFolderInfo*)an_item)->creationDate =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_get_modificationDate(an_item) ((struct NavFileOrFolderInfo*)an_item)->modificationDate
+
+#define ewg_struct_macro_struct_NavFileOrFolderInfo_member_set_modificationDate(an_item, a_value) ((struct NavFileOrFolderInfo*)an_item)->modificationDate =  (UInt32)a_value
+
+
+// glue code macros for struct `struct NavEventData'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavEventData sizeof (struct NavEventData)
+
+#define ewg_struct_macro_struct_NavEventData_member_get_eventDataParms(an_item) &((struct NavEventData*)an_item)->eventDataParms
+
+#define ewg_struct_macro_struct_NavEventData_member_set_eventDataParms(an_item, a_value) ((struct NavEventData*)an_item)->eventDataParms =  *(NavEventDataInfo*)a_value
+
+#define ewg_struct_macro_struct_NavEventData_member_get_itemHit(an_item) ((struct NavEventData*)an_item)->itemHit
+
+#define ewg_struct_macro_struct_NavEventData_member_set_itemHit(an_item, a_value) ((struct NavEventData*)an_item)->itemHit =  (SInt16)a_value
+
+
+// glue code macros for struct `struct NavMenuItemSpec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NavMenuItemSpec sizeof (struct NavMenuItemSpec)
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_get_version(an_item) ((struct NavMenuItemSpec*)an_item)->version
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_set_version(an_item, a_value) ((struct NavMenuItemSpec*)an_item)->version =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_get_menuCreator(an_item) ((struct NavMenuItemSpec*)an_item)->menuCreator
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_set_menuCreator(an_item, a_value) ((struct NavMenuItemSpec*)an_item)->menuCreator =  (OSType)a_value
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_get_menuType(an_item) ((struct NavMenuItemSpec*)an_item)->menuType
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_set_menuType(an_item, a_value) ((struct NavMenuItemSpec*)an_item)->menuType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_get_menuItemName(an_item) ((struct NavMenuItemSpec*)an_item)->menuItemName
+
+#define ewg_struct_macro_struct_NavMenuItemSpec_member_get_reserved(an_item) ((struct NavMenuItemSpec*)an_item)->reserved
+
+
 // glue code macros for struct `struct OpaqueAEDataStorageType'
 
 #include<Carbon/Carbon.h>
@@ -3094,6 +3383,29 @@
 #define ewg_struct_macro_struct_Pattern_member_get_pat(an_item) ((struct Pattern*)an_item)->pat
 
 
+// glue code macros for struct `struct FileTranslationSpec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_FileTranslationSpec sizeof (struct FileTranslationSpec)
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_get_componentSignature(an_item) ((struct FileTranslationSpec*)an_item)->componentSignature
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_set_componentSignature(an_item, a_value) ((struct FileTranslationSpec*)an_item)->componentSignature =  (OSType)a_value
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_get_translationSystemInfo(an_item) ((struct FileTranslationSpec*)an_item)->translationSystemInfo
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_set_translationSystemInfo(an_item, a_value) ((struct FileTranslationSpec*)an_item)->translationSystemInfo =  (void const*)a_value
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_get_src(an_item) &((struct FileTranslationSpec*)an_item)->src
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_set_src(an_item, a_value) ((struct FileTranslationSpec*)an_item)->src =  *(FileTypeSpec*)a_value
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_get_dst(an_item) &((struct FileTranslationSpec*)an_item)->dst
+
+#define ewg_struct_macro_struct_FileTranslationSpec_member_set_dst(an_item, a_value) ((struct FileTranslationSpec*)an_item)->dst =  *(FileTypeSpec*)a_value
+
+
 // glue code macros for struct `struct QElem'
 
 #include<Carbon/Carbon.h>
@@ -3201,5 +3513,32 @@
 #define ewg_struct_macro_struct_ColorTable_member_set_ctSize(an_item, a_value) ((struct ColorTable*)an_item)->ctSize =  (short)a_value
 
 #define ewg_struct_macro_struct_ColorTable_member_get_ctTable(an_item) ((struct ColorTable*)an_item)->ctTable
+
+
+// glue code macros for struct `struct FileTypeSpec'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_FileTypeSpec sizeof (struct FileTypeSpec)
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_get_format(an_item) ((struct FileTypeSpec*)an_item)->format
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_set_format(an_item, a_value) ((struct FileTypeSpec*)an_item)->format =  (FileType)a_value
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_get_hint(an_item) ((struct FileTypeSpec*)an_item)->hint
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_set_hint(an_item, a_value) ((struct FileTypeSpec*)an_item)->hint =  (long)a_value
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_get_flags(an_item) ((struct FileTypeSpec*)an_item)->flags
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_set_flags(an_item, a_value) ((struct FileTypeSpec*)an_item)->flags =  (TranslationAttributes)a_value
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_get_catInfoType(an_item) ((struct FileTypeSpec*)an_item)->catInfoType
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_set_catInfoType(an_item, a_value) ((struct FileTypeSpec*)an_item)->catInfoType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_get_catInfoCreator(an_item) ((struct FileTypeSpec*)an_item)->catInfoCreator
+
+#define ewg_struct_macro_struct_FileTypeSpec_member_set_catInfoCreator(an_item, a_value) ((struct FileTypeSpec*)an_item)->catInfoCreator =  (OSType)a_value
 
 

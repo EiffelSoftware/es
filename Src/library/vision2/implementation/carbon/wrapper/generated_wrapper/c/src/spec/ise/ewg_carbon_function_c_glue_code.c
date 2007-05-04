@@ -25520,6 +25520,756 @@ void* ewg_get_function_address_CreateEditUnicodeTextControl (void)
 	return (void*) CreateEditUnicodeTextControl;
 }
 
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewNavEventUPP'
+// For ise
+NavEventUPP  ewg_function_NewNavEventUPP (NavEventProcPtr ewg_userRoutine)
+{
+	return NewNavEventUPP ((NavEventProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewNavEventUPP'
+void* ewg_get_function_address_NewNavEventUPP (void)
+{
+	return (void*) NewNavEventUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewNavPreviewUPP'
+// For ise
+NavPreviewUPP  ewg_function_NewNavPreviewUPP (NavPreviewProcPtr ewg_userRoutine)
+{
+	return NewNavPreviewUPP ((NavPreviewProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewNavPreviewUPP'
+void* ewg_get_function_address_NewNavPreviewUPP (void)
+{
+	return (void*) NewNavPreviewUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewNavObjectFilterUPP'
+// For ise
+NavObjectFilterUPP  ewg_function_NewNavObjectFilterUPP (NavObjectFilterProcPtr ewg_userRoutine)
+{
+	return NewNavObjectFilterUPP ((NavObjectFilterProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewNavObjectFilterUPP'
+void* ewg_get_function_address_NewNavObjectFilterUPP (void)
+{
+	return (void*) NewNavObjectFilterUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeNavEventUPP'
+// For ise
+void  ewg_function_DisposeNavEventUPP (NavEventUPP ewg_userUPP)
+{
+	DisposeNavEventUPP ((NavEventUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeNavEventUPP'
+void* ewg_get_function_address_DisposeNavEventUPP (void)
+{
+	return (void*) DisposeNavEventUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeNavPreviewUPP'
+// For ise
+void  ewg_function_DisposeNavPreviewUPP (NavPreviewUPP ewg_userUPP)
+{
+	DisposeNavPreviewUPP ((NavPreviewUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeNavPreviewUPP'
+void* ewg_get_function_address_DisposeNavPreviewUPP (void)
+{
+	return (void*) DisposeNavPreviewUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeNavObjectFilterUPP'
+// For ise
+void  ewg_function_DisposeNavObjectFilterUPP (NavObjectFilterUPP ewg_userUPP)
+{
+	DisposeNavObjectFilterUPP ((NavObjectFilterUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeNavObjectFilterUPP'
+void* ewg_get_function_address_DisposeNavObjectFilterUPP (void)
+{
+	return (void*) DisposeNavObjectFilterUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeNavEventUPP'
+// For ise
+void  ewg_function_InvokeNavEventUPP (NavEventCallbackMessage ewg_callBackSelector, NavCBRecPtr ewg_callBackParms, void *ewg_callBackUD, NavEventUPP ewg_userUPP)
+{
+	InvokeNavEventUPP ((NavEventCallbackMessage)ewg_callBackSelector, (NavCBRecPtr)ewg_callBackParms, (void*)ewg_callBackUD, (NavEventUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeNavEventUPP'
+void* ewg_get_function_address_InvokeNavEventUPP (void)
+{
+	return (void*) InvokeNavEventUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeNavPreviewUPP'
+// For ise
+Boolean  ewg_function_InvokeNavPreviewUPP (NavCBRecPtr ewg_callBackParms, void *ewg_callBackUD, NavPreviewUPP ewg_userUPP)
+{
+	return InvokeNavPreviewUPP ((NavCBRecPtr)ewg_callBackParms, (void*)ewg_callBackUD, (NavPreviewUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeNavPreviewUPP'
+void* ewg_get_function_address_InvokeNavPreviewUPP (void)
+{
+	return (void*) InvokeNavPreviewUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeNavObjectFilterUPP'
+// For ise
+Boolean  ewg_function_InvokeNavObjectFilterUPP (AEDesc *ewg_theItem, void *ewg_info, void *ewg_callBackUD, NavFilterModes ewg_filterMode, NavObjectFilterUPP ewg_userUPP)
+{
+	return InvokeNavObjectFilterUPP ((AEDesc*)ewg_theItem, (void*)ewg_info, (void*)ewg_callBackUD, (NavFilterModes)ewg_filterMode, (NavObjectFilterUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeNavObjectFilterUPP'
+void* ewg_get_function_address_InvokeNavObjectFilterUPP (void)
+{
+	return (void*) InvokeNavObjectFilterUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavLoad'
+// For ise
+OSErr  ewg_function_NavLoad (void)
+{
+	return NavLoad ();
+}
+
+// Return address of function 'NavLoad'
+void* ewg_get_function_address_NavLoad (void)
+{
+	return (void*) NavLoad;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavUnload'
+// For ise
+OSErr  ewg_function_NavUnload (void)
+{
+	return NavUnload ();
+}
+
+// Return address of function 'NavUnload'
+void* ewg_get_function_address_NavUnload (void)
+{
+	return (void*) NavUnload;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavLibraryVersion'
+// For ise
+UInt32  ewg_function_NavLibraryVersion (void)
+{
+	return NavLibraryVersion ();
+}
+
+// Return address of function 'NavLibraryVersion'
+void* ewg_get_function_address_NavLibraryVersion (void)
+{
+	return (void*) NavLibraryVersion;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavGetDefaultDialogOptions'
+// For ise
+OSErr  ewg_function_NavGetDefaultDialogOptions (NavDialogOptions *ewg_dialogOptions)
+{
+	return NavGetDefaultDialogOptions ((NavDialogOptions*)ewg_dialogOptions);
+}
+
+// Return address of function 'NavGetDefaultDialogOptions'
+void* ewg_get_function_address_NavGetDefaultDialogOptions (void)
+{
+	return (void*) NavGetDefaultDialogOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavGetFile'
+// For ise
+OSErr  ewg_function_NavGetFile (AEDesc *ewg_defaultLocation, NavReplyRecord *ewg_reply, NavDialogOptions *ewg_dialogOptions, NavEventUPP ewg_eventProc, NavPreviewUPP ewg_previewProc, NavObjectFilterUPP ewg_filterProc, NavTypeListHandle ewg_typeList, void *ewg_callBackUD)
+{
+	return NavGetFile ((AEDesc*)ewg_defaultLocation, (NavReplyRecord*)ewg_reply, (NavDialogOptions*)ewg_dialogOptions, (NavEventUPP)ewg_eventProc, (NavPreviewUPP)ewg_previewProc, (NavObjectFilterUPP)ewg_filterProc, (NavTypeListHandle)ewg_typeList, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavGetFile'
+void* ewg_get_function_address_NavGetFile (void)
+{
+	return (void*) NavGetFile;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavPutFile'
+// For ise
+OSErr  ewg_function_NavPutFile (AEDesc *ewg_defaultLocation, NavReplyRecord *ewg_reply, NavDialogOptions *ewg_dialogOptions, NavEventUPP ewg_eventProc, OSType ewg_fileType, OSType ewg_fileCreator, void *ewg_callBackUD)
+{
+	return NavPutFile ((AEDesc*)ewg_defaultLocation, (NavReplyRecord*)ewg_reply, (NavDialogOptions*)ewg_dialogOptions, (NavEventUPP)ewg_eventProc, (OSType)ewg_fileType, (OSType)ewg_fileCreator, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavPutFile'
+void* ewg_get_function_address_NavPutFile (void)
+{
+	return (void*) NavPutFile;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavAskSaveChanges'
+// For ise
+OSErr  ewg_function_NavAskSaveChanges (NavDialogOptions *ewg_dialogOptions, NavAskSaveChangesAction ewg_action, NavAskSaveChangesResult *ewg_reply, NavEventUPP ewg_eventProc, void *ewg_callBackUD)
+{
+	return NavAskSaveChanges ((NavDialogOptions*)ewg_dialogOptions, (NavAskSaveChangesAction)ewg_action, (NavAskSaveChangesResult*)ewg_reply, (NavEventUPP)ewg_eventProc, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavAskSaveChanges'
+void* ewg_get_function_address_NavAskSaveChanges (void)
+{
+	return (void*) NavAskSaveChanges;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCustomAskSaveChanges'
+// For ise
+OSErr  ewg_function_NavCustomAskSaveChanges (NavDialogOptions *ewg_dialogOptions, NavAskSaveChangesResult *ewg_reply, NavEventUPP ewg_eventProc, void *ewg_callBackUD)
+{
+	return NavCustomAskSaveChanges ((NavDialogOptions*)ewg_dialogOptions, (NavAskSaveChangesResult*)ewg_reply, (NavEventUPP)ewg_eventProc, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavCustomAskSaveChanges'
+void* ewg_get_function_address_NavCustomAskSaveChanges (void)
+{
+	return (void*) NavCustomAskSaveChanges;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavAskDiscardChanges'
+// For ise
+OSErr  ewg_function_NavAskDiscardChanges (NavDialogOptions *ewg_dialogOptions, NavAskDiscardChangesResult *ewg_reply, NavEventUPP ewg_eventProc, void *ewg_callBackUD)
+{
+	return NavAskDiscardChanges ((NavDialogOptions*)ewg_dialogOptions, (NavAskDiscardChangesResult*)ewg_reply, (NavEventUPP)ewg_eventProc, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavAskDiscardChanges'
+void* ewg_get_function_address_NavAskDiscardChanges (void)
+{
+	return (void*) NavAskDiscardChanges;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavChooseFile'
+// For ise
+OSErr  ewg_function_NavChooseFile (AEDesc *ewg_defaultLocation, NavReplyRecord *ewg_reply, NavDialogOptions *ewg_dialogOptions, NavEventUPP ewg_eventProc, NavPreviewUPP ewg_previewProc, NavObjectFilterUPP ewg_filterProc, NavTypeListHandle ewg_typeList, void *ewg_callBackUD)
+{
+	return NavChooseFile ((AEDesc*)ewg_defaultLocation, (NavReplyRecord*)ewg_reply, (NavDialogOptions*)ewg_dialogOptions, (NavEventUPP)ewg_eventProc, (NavPreviewUPP)ewg_previewProc, (NavObjectFilterUPP)ewg_filterProc, (NavTypeListHandle)ewg_typeList, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavChooseFile'
+void* ewg_get_function_address_NavChooseFile (void)
+{
+	return (void*) NavChooseFile;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavChooseFolder'
+// For ise
+OSErr  ewg_function_NavChooseFolder (AEDesc *ewg_defaultLocation, NavReplyRecord *ewg_reply, NavDialogOptions *ewg_dialogOptions, NavEventUPP ewg_eventProc, NavObjectFilterUPP ewg_filterProc, void *ewg_callBackUD)
+{
+	return NavChooseFolder ((AEDesc*)ewg_defaultLocation, (NavReplyRecord*)ewg_reply, (NavDialogOptions*)ewg_dialogOptions, (NavEventUPP)ewg_eventProc, (NavObjectFilterUPP)ewg_filterProc, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavChooseFolder'
+void* ewg_get_function_address_NavChooseFolder (void)
+{
+	return (void*) NavChooseFolder;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavChooseVolume'
+// For ise
+OSErr  ewg_function_NavChooseVolume (AEDesc *ewg_defaultSelection, NavReplyRecord *ewg_reply, NavDialogOptions *ewg_dialogOptions, NavEventUPP ewg_eventProc, NavObjectFilterUPP ewg_filterProc, void *ewg_callBackUD)
+{
+	return NavChooseVolume ((AEDesc*)ewg_defaultSelection, (NavReplyRecord*)ewg_reply, (NavDialogOptions*)ewg_dialogOptions, (NavEventUPP)ewg_eventProc, (NavObjectFilterUPP)ewg_filterProc, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavChooseVolume'
+void* ewg_get_function_address_NavChooseVolume (void)
+{
+	return (void*) NavChooseVolume;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavChooseObject'
+// For ise
+OSErr  ewg_function_NavChooseObject (AEDesc *ewg_defaultLocation, NavReplyRecord *ewg_reply, NavDialogOptions *ewg_dialogOptions, NavEventUPP ewg_eventProc, NavObjectFilterUPP ewg_filterProc, void *ewg_callBackUD)
+{
+	return NavChooseObject ((AEDesc*)ewg_defaultLocation, (NavReplyRecord*)ewg_reply, (NavDialogOptions*)ewg_dialogOptions, (NavEventUPP)ewg_eventProc, (NavObjectFilterUPP)ewg_filterProc, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavChooseObject'
+void* ewg_get_function_address_NavChooseObject (void)
+{
+	return (void*) NavChooseObject;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavNewFolder'
+// For ise
+OSErr  ewg_function_NavNewFolder (AEDesc *ewg_defaultLocation, NavReplyRecord *ewg_reply, NavDialogOptions *ewg_dialogOptions, NavEventUPP ewg_eventProc, void *ewg_callBackUD)
+{
+	return NavNewFolder ((AEDesc*)ewg_defaultLocation, (NavReplyRecord*)ewg_reply, (NavDialogOptions*)ewg_dialogOptions, (NavEventUPP)ewg_eventProc, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'NavNewFolder'
+void* ewg_get_function_address_NavNewFolder (void)
+{
+	return (void*) NavNewFolder;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavTranslateFile'
+// For ise
+OSErr  ewg_function_NavTranslateFile (NavReplyRecord *ewg_reply, NavTranslationOptions ewg_howToTranslate)
+{
+	return NavTranslateFile ((NavReplyRecord*)ewg_reply, (NavTranslationOptions)ewg_howToTranslate);
+}
+
+// Return address of function 'NavTranslateFile'
+void* ewg_get_function_address_NavTranslateFile (void)
+{
+	return (void*) NavTranslateFile;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCompleteSave'
+// For ise
+OSErr  ewg_function_NavCompleteSave (NavReplyRecord *ewg_reply, NavTranslationOptions ewg_howToTranslate)
+{
+	return NavCompleteSave ((NavReplyRecord*)ewg_reply, (NavTranslationOptions)ewg_howToTranslate);
+}
+
+// Return address of function 'NavCompleteSave'
+void* ewg_get_function_address_NavCompleteSave (void)
+{
+	return (void*) NavCompleteSave;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCustomControl'
+// For ise
+OSErr  ewg_function_NavCustomControl (NavDialogRef ewg_dialog, NavCustomControlMessage ewg_selector, void *ewg_parms)
+{
+	return NavCustomControl ((NavDialogRef)ewg_dialog, (NavCustomControlMessage)ewg_selector, (void*)ewg_parms);
+}
+
+// Return address of function 'NavCustomControl'
+void* ewg_get_function_address_NavCustomControl (void)
+{
+	return (void*) NavCustomControl;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreatePreview'
+// For ise
+OSErr  ewg_function_NavCreatePreview (AEDesc *ewg_theObject, OSType ewg_previewDataType, void const *ewg_previewData, Size ewg_previewDataSize)
+{
+	return NavCreatePreview ((AEDesc*)ewg_theObject, (OSType)ewg_previewDataType, (void const*)ewg_previewData, (Size)ewg_previewDataSize);
+}
+
+// Return address of function 'NavCreatePreview'
+void* ewg_get_function_address_NavCreatePreview (void)
+{
+	return (void*) NavCreatePreview;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDisposeReply'
+// For ise
+OSErr  ewg_function_NavDisposeReply (NavReplyRecord *ewg_reply)
+{
+	return NavDisposeReply ((NavReplyRecord*)ewg_reply);
+}
+
+// Return address of function 'NavDisposeReply'
+void* ewg_get_function_address_NavDisposeReply (void)
+{
+	return (void*) NavDisposeReply;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavServicesCanRun'
+// For ise
+Boolean  ewg_function_NavServicesCanRun (void)
+{
+	return NavServicesCanRun ();
+}
+
+// Return address of function 'NavServicesCanRun'
+void* ewg_get_function_address_NavServicesCanRun (void)
+{
+	return (void*) NavServicesCanRun;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavGetDefaultDialogCreationOptions'
+// For ise
+OSStatus  ewg_function_NavGetDefaultDialogCreationOptions (NavDialogCreationOptions *ewg_outOptions)
+{
+	return NavGetDefaultDialogCreationOptions ((NavDialogCreationOptions*)ewg_outOptions);
+}
+
+// Return address of function 'NavGetDefaultDialogCreationOptions'
+void* ewg_get_function_address_NavGetDefaultDialogCreationOptions (void)
+{
+	return (void*) NavGetDefaultDialogCreationOptions;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateGetFileDialog'
+// For ise
+OSStatus  ewg_function_NavCreateGetFileDialog (NavDialogCreationOptions const *ewg_inOptions, NavTypeListHandle ewg_inTypeList, NavEventUPP ewg_inEventProc, NavPreviewUPP ewg_inPreviewProc, NavObjectFilterUPP ewg_inFilterProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateGetFileDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavTypeListHandle)ewg_inTypeList, (NavEventUPP)ewg_inEventProc, (NavPreviewUPP)ewg_inPreviewProc, (NavObjectFilterUPP)ewg_inFilterProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateGetFileDialog'
+void* ewg_get_function_address_NavCreateGetFileDialog (void)
+{
+	return (void*) NavCreateGetFileDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreatePutFileDialog'
+// For ise
+OSStatus  ewg_function_NavCreatePutFileDialog (NavDialogCreationOptions const *ewg_inOptions, OSType ewg_inFileType, OSType ewg_inFileCreator, NavEventUPP ewg_inEventProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreatePutFileDialog ((NavDialogCreationOptions const*)ewg_inOptions, (OSType)ewg_inFileType, (OSType)ewg_inFileCreator, (NavEventUPP)ewg_inEventProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreatePutFileDialog'
+void* ewg_get_function_address_NavCreatePutFileDialog (void)
+{
+	return (void*) NavCreatePutFileDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateAskReviewDocumentsDialog'
+// For ise
+OSStatus  ewg_function_NavCreateAskReviewDocumentsDialog (NavDialogCreationOptions const *ewg_inOptions, UInt32 ewg_inDocumentCount, NavEventUPP ewg_inEventProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateAskReviewDocumentsDialog ((NavDialogCreationOptions const*)ewg_inOptions, (UInt32)ewg_inDocumentCount, (NavEventUPP)ewg_inEventProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateAskReviewDocumentsDialog'
+void* ewg_get_function_address_NavCreateAskReviewDocumentsDialog (void)
+{
+	return (void*) NavCreateAskReviewDocumentsDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateAskSaveChangesDialog'
+// For ise
+OSStatus  ewg_function_NavCreateAskSaveChangesDialog (NavDialogCreationOptions const *ewg_inOptions, NavAskSaveChangesAction ewg_inAction, NavEventUPP ewg_inEventProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateAskSaveChangesDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavAskSaveChangesAction)ewg_inAction, (NavEventUPP)ewg_inEventProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateAskSaveChangesDialog'
+void* ewg_get_function_address_NavCreateAskSaveChangesDialog (void)
+{
+	return (void*) NavCreateAskSaveChangesDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateAskDiscardChangesDialog'
+// For ise
+OSStatus  ewg_function_NavCreateAskDiscardChangesDialog (NavDialogCreationOptions const *ewg_inOptions, NavEventUPP ewg_inEventProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateAskDiscardChangesDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavEventUPP)ewg_inEventProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateAskDiscardChangesDialog'
+void* ewg_get_function_address_NavCreateAskDiscardChangesDialog (void)
+{
+	return (void*) NavCreateAskDiscardChangesDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateChooseFileDialog'
+// For ise
+OSStatus  ewg_function_NavCreateChooseFileDialog (NavDialogCreationOptions const *ewg_inOptions, NavTypeListHandle ewg_inTypeList, NavEventUPP ewg_inEventProc, NavPreviewUPP ewg_inPreviewProc, NavObjectFilterUPP ewg_inFilterProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateChooseFileDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavTypeListHandle)ewg_inTypeList, (NavEventUPP)ewg_inEventProc, (NavPreviewUPP)ewg_inPreviewProc, (NavObjectFilterUPP)ewg_inFilterProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateChooseFileDialog'
+void* ewg_get_function_address_NavCreateChooseFileDialog (void)
+{
+	return (void*) NavCreateChooseFileDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateChooseFolderDialog'
+// For ise
+OSStatus  ewg_function_NavCreateChooseFolderDialog (NavDialogCreationOptions const *ewg_inOptions, NavEventUPP ewg_inEventProc, NavObjectFilterUPP ewg_inFilterProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateChooseFolderDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavEventUPP)ewg_inEventProc, (NavObjectFilterUPP)ewg_inFilterProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateChooseFolderDialog'
+void* ewg_get_function_address_NavCreateChooseFolderDialog (void)
+{
+	return (void*) NavCreateChooseFolderDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateChooseVolumeDialog'
+// For ise
+OSStatus  ewg_function_NavCreateChooseVolumeDialog (NavDialogCreationOptions const *ewg_inOptions, NavEventUPP ewg_inEventProc, NavObjectFilterUPP ewg_inFilterProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateChooseVolumeDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavEventUPP)ewg_inEventProc, (NavObjectFilterUPP)ewg_inFilterProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateChooseVolumeDialog'
+void* ewg_get_function_address_NavCreateChooseVolumeDialog (void)
+{
+	return (void*) NavCreateChooseVolumeDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateChooseObjectDialog'
+// For ise
+OSStatus  ewg_function_NavCreateChooseObjectDialog (NavDialogCreationOptions const *ewg_inOptions, NavEventUPP ewg_inEventProc, NavPreviewUPP ewg_inPreviewProc, NavObjectFilterUPP ewg_inFilterProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateChooseObjectDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavEventUPP)ewg_inEventProc, (NavPreviewUPP)ewg_inPreviewProc, (NavObjectFilterUPP)ewg_inFilterProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateChooseObjectDialog'
+void* ewg_get_function_address_NavCreateChooseObjectDialog (void)
+{
+	return (void*) NavCreateChooseObjectDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavCreateNewFolderDialog'
+// For ise
+OSStatus  ewg_function_NavCreateNewFolderDialog (NavDialogCreationOptions const *ewg_inOptions, NavEventUPP ewg_inEventProc, void *ewg_inClientData, NavDialogRef *ewg_outDialog)
+{
+	return NavCreateNewFolderDialog ((NavDialogCreationOptions const*)ewg_inOptions, (NavEventUPP)ewg_inEventProc, (void*)ewg_inClientData, (NavDialogRef*)ewg_outDialog);
+}
+
+// Return address of function 'NavCreateNewFolderDialog'
+void* ewg_get_function_address_NavCreateNewFolderDialog (void)
+{
+	return (void*) NavCreateNewFolderDialog;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogRun'
+// For ise
+OSStatus  ewg_function_NavDialogRun (NavDialogRef ewg_inDialog)
+{
+	return NavDialogRun ((NavDialogRef)ewg_inDialog);
+}
+
+// Return address of function 'NavDialogRun'
+void* ewg_get_function_address_NavDialogRun (void)
+{
+	return (void*) NavDialogRun;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogDispose'
+// For ise
+void  ewg_function_NavDialogDispose (NavDialogRef ewg_inDialog)
+{
+	NavDialogDispose ((NavDialogRef)ewg_inDialog);
+}
+
+// Return address of function 'NavDialogDispose'
+void* ewg_get_function_address_NavDialogDispose (void)
+{
+	return (void*) NavDialogDispose;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogGetWindow'
+// For ise
+WindowRef  ewg_function_NavDialogGetWindow (NavDialogRef ewg_inDialog)
+{
+	return NavDialogGetWindow ((NavDialogRef)ewg_inDialog);
+}
+
+// Return address of function 'NavDialogGetWindow'
+void* ewg_get_function_address_NavDialogGetWindow (void)
+{
+	return (void*) NavDialogGetWindow;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogGetUserAction'
+// For ise
+NavUserAction  ewg_function_NavDialogGetUserAction (NavDialogRef ewg_inDialog)
+{
+	return NavDialogGetUserAction ((NavDialogRef)ewg_inDialog);
+}
+
+// Return address of function 'NavDialogGetUserAction'
+void* ewg_get_function_address_NavDialogGetUserAction (void)
+{
+	return (void*) NavDialogGetUserAction;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogGetReply'
+// For ise
+OSStatus  ewg_function_NavDialogGetReply (NavDialogRef ewg_inDialog, NavReplyRecord *ewg_outReply)
+{
+	return NavDialogGetReply ((NavDialogRef)ewg_inDialog, (NavReplyRecord*)ewg_outReply);
+}
+
+// Return address of function 'NavDialogGetReply'
+void* ewg_get_function_address_NavDialogGetReply (void)
+{
+	return (void*) NavDialogGetReply;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogGetSaveFileName'
+// For ise
+CFStringRef  ewg_function_NavDialogGetSaveFileName (NavDialogRef ewg_inPutFileDialog)
+{
+	return NavDialogGetSaveFileName ((NavDialogRef)ewg_inPutFileDialog);
+}
+
+// Return address of function 'NavDialogGetSaveFileName'
+void* ewg_get_function_address_NavDialogGetSaveFileName (void)
+{
+	return (void*) NavDialogGetSaveFileName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogSetSaveFileName'
+// For ise
+OSStatus  ewg_function_NavDialogSetSaveFileName (NavDialogRef ewg_inPutFileDialog, CFStringRef ewg_inFileName)
+{
+	return NavDialogSetSaveFileName ((NavDialogRef)ewg_inPutFileDialog, (CFStringRef)ewg_inFileName);
+}
+
+// Return address of function 'NavDialogSetSaveFileName'
+void* ewg_get_function_address_NavDialogSetSaveFileName (void)
+{
+	return (void*) NavDialogSetSaveFileName;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogGetSaveFileExtensionHidden'
+// For ise
+Boolean  ewg_function_NavDialogGetSaveFileExtensionHidden (NavDialogRef ewg_inPutFileDialog)
+{
+	return NavDialogGetSaveFileExtensionHidden ((NavDialogRef)ewg_inPutFileDialog);
+}
+
+// Return address of function 'NavDialogGetSaveFileExtensionHidden'
+void* ewg_get_function_address_NavDialogGetSaveFileExtensionHidden (void)
+{
+	return (void*) NavDialogGetSaveFileExtensionHidden;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogSetSaveFileExtensionHidden'
+// For ise
+OSStatus  ewg_function_NavDialogSetSaveFileExtensionHidden (NavDialogRef ewg_inPutFileDialog, Boolean ewg_inHidden)
+{
+	return NavDialogSetSaveFileExtensionHidden ((NavDialogRef)ewg_inPutFileDialog, (Boolean)ewg_inHidden);
+}
+
+// Return address of function 'NavDialogSetSaveFileExtensionHidden'
+void* ewg_get_function_address_NavDialogSetSaveFileExtensionHidden (void)
+{
+	return (void*) NavDialogSetSaveFileExtensionHidden;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NavDialogSetFilterTypeIdentifiers'
+// For ise
+OSStatus  ewg_function_NavDialogSetFilterTypeIdentifiers (NavDialogRef ewg_inGetFileDialog, CFArrayRef ewg_inTypeIdentifiers)
+{
+	return NavDialogSetFilterTypeIdentifiers ((NavDialogRef)ewg_inGetFileDialog, (CFArrayRef)ewg_inTypeIdentifiers);
+}
+
+// Return address of function 'NavDialogSetFilterTypeIdentifiers'
+void* ewg_get_function_address_NavDialogSetFilterTypeIdentifiers (void)
+{
+	return (void*) NavDialogSetFilterTypeIdentifiers;
+}
+
 #include <ewg_carbon_callback_c_glue_code.h>
 
 // Wraps call to function 'get_cgdata_provider_release_data_callback_stub'
@@ -27813,6 +28563,141 @@ Boolean  ewg_function_call_edit_unicode_post_update_proc_ptr (void *ewg_a_functi
 void* ewg_get_function_address_call_edit_unicode_post_update_proc_ptr (void)
 {
 	return (void*) call_edit_unicode_post_update_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_nav_event_proc_ptr_stub'
+// For ise
+void * ewg_function_get_nav_event_proc_ptr_stub (void)
+{
+	return get_nav_event_proc_ptr_stub ();
+}
+
+// Return address of function 'get_nav_event_proc_ptr_stub'
+void* ewg_get_function_address_get_nav_event_proc_ptr_stub (void)
+{
+	return (void*) get_nav_event_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_nav_event_proc_ptr_entry'
+// For ise
+void  ewg_function_set_nav_event_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_nav_event_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_nav_event_proc_ptr_entry'
+void* ewg_get_function_address_set_nav_event_proc_ptr_entry (void)
+{
+	return (void*) set_nav_event_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_nav_event_proc_ptr'
+// For ise
+void  ewg_function_call_nav_event_proc_ptr (void *ewg_a_function, NavEventCallbackMessage ewg_callBackSelector, NavCBRecPtr ewg_callBackParms, void *ewg_callBackUD)
+{
+	call_nav_event_proc_ptr ((void*)ewg_a_function, (NavEventCallbackMessage)ewg_callBackSelector, (NavCBRecPtr)ewg_callBackParms, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'call_nav_event_proc_ptr'
+void* ewg_get_function_address_call_nav_event_proc_ptr (void)
+{
+	return (void*) call_nav_event_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_nav_preview_proc_ptr_stub'
+// For ise
+void * ewg_function_get_nav_preview_proc_ptr_stub (void)
+{
+	return get_nav_preview_proc_ptr_stub ();
+}
+
+// Return address of function 'get_nav_preview_proc_ptr_stub'
+void* ewg_get_function_address_get_nav_preview_proc_ptr_stub (void)
+{
+	return (void*) get_nav_preview_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_nav_preview_proc_ptr_entry'
+// For ise
+void  ewg_function_set_nav_preview_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_nav_preview_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_nav_preview_proc_ptr_entry'
+void* ewg_get_function_address_set_nav_preview_proc_ptr_entry (void)
+{
+	return (void*) set_nav_preview_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_nav_preview_proc_ptr'
+// For ise
+Boolean  ewg_function_call_nav_preview_proc_ptr (void *ewg_a_function, NavCBRecPtr ewg_callBackParms, void *ewg_callBackUD)
+{
+	return call_nav_preview_proc_ptr ((void*)ewg_a_function, (NavCBRecPtr)ewg_callBackParms, (void*)ewg_callBackUD);
+}
+
+// Return address of function 'call_nav_preview_proc_ptr'
+void* ewg_get_function_address_call_nav_preview_proc_ptr (void)
+{
+	return (void*) call_nav_preview_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_nav_object_filter_proc_ptr_stub'
+// For ise
+void * ewg_function_get_nav_object_filter_proc_ptr_stub (void)
+{
+	return get_nav_object_filter_proc_ptr_stub ();
+}
+
+// Return address of function 'get_nav_object_filter_proc_ptr_stub'
+void* ewg_get_function_address_get_nav_object_filter_proc_ptr_stub (void)
+{
+	return (void*) get_nav_object_filter_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_nav_object_filter_proc_ptr_entry'
+// For ise
+void  ewg_function_set_nav_object_filter_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_nav_object_filter_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_nav_object_filter_proc_ptr_entry'
+void* ewg_get_function_address_set_nav_object_filter_proc_ptr_entry (void)
+{
+	return (void*) set_nav_object_filter_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_nav_object_filter_proc_ptr'
+// For ise
+Boolean  ewg_function_call_nav_object_filter_proc_ptr (void *ewg_a_function, AEDesc *ewg_theItem, void *ewg_info, void *ewg_callBackUD, NavFilterModes ewg_filterMode)
+{
+	return call_nav_object_filter_proc_ptr ((void*)ewg_a_function, (AEDesc*)ewg_theItem, (void*)ewg_info, (void*)ewg_callBackUD, (NavFilterModes)ewg_filterMode);
+}
+
+// Return address of function 'call_nav_object_filter_proc_ptr'
+void* ewg_get_function_address_call_nav_object_filter_proc_ptr (void)
+{
+	return (void*) call_nav_object_filter_proc_ptr;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>
