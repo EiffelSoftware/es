@@ -51,15 +51,17 @@ feature {NONE} -- Implementation
 			ret: INTEGER
 			rect: RECT_STRUCT
 			ptr: POINTER
-			cfstring: EV_CARBON_CF_STRING
+			control_ptr : POINTER
 		do
 			base_make (an_interface)
 			create rect.make_new_unshared
 			rect.set_right (300)
 			rect.set_bottom (30)
-			create cfstring.make_unshared_with_eiffel_string ("NOT IMPLEMENTED :D")
-			ret := create_static_text_control_external( null, rect.item, cfstring.item, null, $ptr )
+			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $ptr )
 			set_c_object ( ptr )
+
+
+
 
 			event_id := app_implementation.get_id (current)
 		end
