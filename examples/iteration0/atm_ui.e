@@ -19,9 +19,15 @@ feature -- Access
 		require
 			an_atm_not_void: an_atm /= Void
 		do
-			recorder.capture_methodbody_start ("make", Current, [an_atm])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("make", Current, [an_atm])
+			end
+
+
 			atm := an_atm
-			recorder.capture_methodbody_end (Void)
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		end
 
 feature --Basic Operations
@@ -31,7 +37,10 @@ feature --Basic Operations
 		local
 			exit: BOOLEAN
 		do
-			recorder.capture_methodbody_start ("run", Current, [])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("run", Current, [])
+			end
+
 
 			from
 				exit := False
@@ -58,7 +67,10 @@ feature --Basic Operations
 					print("command not recognized")
 				end
 			end
+
+			if recorder.capture_replay then
 			recorder.capture_methodbody_end (Void)
+			end
 		end
 
 feature -- Basic operations
@@ -66,8 +78,14 @@ feature -- Basic operations
 	ping
 			-- Dummy feature without arguments and results (testing).
 		do
-			recorder.capture_methodbody_start ("ping", Current, [])
-			recorder.capture_methodbody_end (Void)
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("ping", Current, [])
+			end
+
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		end
 
 feature {NONE} -- Implementation

@@ -6,7 +6,7 @@ indexing
 
 class
 	BANK_ACCOUNT
-	
+
 inherit
 	OBSERVABLE
 		redefine
@@ -21,9 +21,15 @@ feature -- creation
 		require
 			a_name_not_void: a_name /= Void
 		do
-			recorder.capture_methodbody_start ("make", Current, [a_name])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("make", Current, [a_name])
+			end
+
 			the_name := a_name
-			recorder.capture_methodbody_end (Void)
+			
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		end
 
 feature -- Access
@@ -31,17 +37,28 @@ feature -- Access
 	name: STRING is
 			--Name of the account
 		do
-			recorder.capture_methodbody_start ("name", Current, [])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("name", Current, [])
+			end
+
 			Result := the_name
-			recorder.capture_methodbody_end (Result)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Result)
+			end
 		end
 
 	balance: REAL is
 			--Balance of the account
 		do
-			recorder.capture_methodbody_start ("balance", Current, [])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("balance", Current, [])
+			end
+
 			Result := the_balance
-			recorder.capture_methodbody_end (Result)
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Result)
+			end
 		end
 
 	is_observed: BOOLEAN is True
@@ -52,9 +69,15 @@ feature {BANK} -- Restricted
 		require
 			an_amount_reasonable: an_amount >= 0
 		do
-			recorder.capture_methodbody_start ("withdraw", Current, [an_amount])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("withdraw", Current, [an_amount])
+			end
+
 			the_balance := the_balance - an_amount
-			recorder.capture_methodbody_end (Void)
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
+
 		ensure
 			amount_withdrawn: balance = old balance - an_amount
 		end
@@ -65,9 +88,15 @@ feature {BANK} -- Restricted
 		require
 			an_amount_reasonable: an_amount >= 0
 		do
-			recorder.capture_methodbody_start ("deposit", Current, [an_amount])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("deposit", Current, [an_amount])
+			end
+
 			the_balance := the_balance + an_amount
-			recorder.capture_methodbody_end (Void)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		ensure
 			an_amount_deposited: balance = old balance + an_amount
 		end

@@ -2,7 +2,7 @@ indexing
 	description: "[
 				Common interface for events in the replay phase.
 				]"
-	author: ""
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 

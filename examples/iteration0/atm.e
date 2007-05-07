@@ -20,10 +20,16 @@ feature -- creation
 		require
 			a_bank_not_void: a_bank /= Void
 		do
-			recorder.capture_methodbody_start ("make", Current, [a_bank])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("make", Current, [a_bank])
+			end
+
 			the_bank := a_bank
 			create the_ui.make (Current)
-			recorder.capture_methodbody_end (Void)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		end
 
 feature -- Access
@@ -31,9 +37,15 @@ feature -- Access
 	ui: ATM_UI
 			-- UI of the ATM
 		do
-			recorder.capture_methodbody_start ("ui", Current, [])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("ui", Current, [])
+			end
+
 			Result := the_ui
-			recorder.capture_methodbody_end (Result)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Result)
+			end
 		ensure
 			result_not_void: ui /= Void
 		end
@@ -41,9 +53,15 @@ feature -- Access
 	last_operation_succeeded: BOOLEAN
 			-- Did the last operation succeed?
 		do
-			recorder.capture_methodbody_start ("last_operation_succeeded", Current,[])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("last_operation_succeeded", Current,[])
+			end
+
 			Result := success
-			recorder.capture_methodbody_end (Result)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Result)
+			end
 		end
 
 
@@ -56,7 +74,10 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			recorder.capture_methodbody_start ("deposit", Current, [account_name,amount])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("deposit", Current, [account_name,amount])
+			end
+
 			an_account := the_bank.account_for_name (account_name)
 
 			if an_account /= Void then
@@ -65,7 +86,10 @@ feature -- Element change
 			else
 				success := false
 			end
-			recorder.capture_methodbody_end (Void)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		end
 
 	withdraw (account_name:STRING; amount:REAL)
@@ -75,7 +99,10 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			recorder.capture_methodbody_start ("withdraw", Current, [account_name, amount])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("withdraw", Current, [account_name, amount])
+			end
+
 			an_account := the_bank.account_for_name (account_name)
 
 			if an_account /= Void then
@@ -84,7 +111,10 @@ feature -- Element change
 			else
 				success := False
 			end
-			recorder.capture_methodbody_end (Void)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		end
 
 	account_exists (account_name:STRING): BOOLEAN
@@ -92,9 +122,15 @@ feature -- Element change
 		require
 				account_name_not_void: account_name /= Void
 		do
-			recorder.capture_methodbody_start ("account_exists", Current, [account_name])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("account_exists", Current, [account_name])
+			end
+
 			Result := (the_bank.account_for_name (account_name) /= Void)
-			recorder.capture_methodbody_end (Result)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Result)
+			end
 		end
 
 	balance_for_account_name (account_name: STRING): REAL
@@ -104,19 +140,31 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			recorder.capture_methodbody_start ("balance_for_account_name", Current, [account_name])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("balance_for_account_name", Current, [account_name])
+			end
+
 			ui.ping
 			an_account:=the_bank.account_for_name (account_name)
 			Result := an_account.balance
-			recorder.capture_methodbody_end (Result)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Result)
+			end
 		end
 
 	authorization_key: STRING
 			--the (fake) authorization key
 		do
-			recorder.capture_methodbody_start ("authorization_key", Current, [])
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("authorization_key", Current, [])
+			end
+
 			Result:= "100%% trustworthy%N"
-			recorder.capture_methodbody_end (Result)
+
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Result)
+			end
 		end
 
 	set_ui(a_ui: ATM_UI) is
@@ -124,7 +172,15 @@ feature -- Element change
 		require
 			a_ui_not_void: a_ui /= Void
 		do
+			if recorder.capture_replay then
+				recorder.capture_methodbody_start ("set_ui", Current, [a_ui])
+			end
+
 			the_ui := a_ui
+			
+			if recorder.capture_replay then
+				recorder.capture_methodbody_end (Void)
+			end
 		end
 
 

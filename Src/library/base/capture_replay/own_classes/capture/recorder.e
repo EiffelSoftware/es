@@ -1,6 +1,8 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "[
+					Central recording instance for the capture-phase.
+				]"
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -30,18 +32,46 @@ feature -- Access
 	debug_output: BOOLEAN
 			-- Is debug output enabled?
 
+	capture_replay: BOOLEAN
+			-- Is Capture/Replay enabled?
+			-- This switch is installed to be able to make performance
+			-- measurements.
+	in_observed_part: BOOLEAN is
+			-- Is the program execution currently in the observed part?
+			do
+				Result := observed_stack.item
+			end
+
 feature -- Status change
 	set_debug_output(new_debug_output: BOOLEAN)
 			--set `debug_output'
-		require
-			new_debug_output_not_void: new_debug_output /= Void
 		do
 			debug_output := new_debug_output
 		ensure
 			new_debug_output_set: debug_output = new_debug_output
 		end
 
+	set_capture_replay(enabled: BOOLEAN)
+			-- set `capture_replay'
+		do
+			capture_replay := enabled
+		ensure
+			capture_replay_set: capture_replay = enabled
+		end
+
 feature -- Basic Operations
+
+	put_is_observed(current_is_observed: BOOLEAN)
+			-- Put is_observed onto `observed_stack'
+		do
+			observed_stack.put (current_is_observed)
+		end
+
+	remove_is_observed
+			-- Remove top item from `observed_stack'
+		do
+			observed_stack.remove
+		end
 
 	capture_methodbody_end (res: ANY)
 			--Hook for recording. Is to be placed at the end of a MethodBody
@@ -51,7 +81,7 @@ feature -- Basic Operations
 		local
 			current_observed: BOOLEAN
 		do
-			print_debug ("{REC}:MethodBodyEnd%N")
+--opt			print_debug ("{REC}:MethodBodyEnd%N")
 			current_observed := observed_stack.item
 			observed_stack.remove
 			if current_observed /= observed_stack.item then
@@ -73,7 +103,7 @@ feature -- Basic Operations
 			arguments_not_void: arguments /= Void
 			serializer_not_void: serializer /= Void
 		do
-			print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
+--opt			print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
 			if (target.is_observed /= observed_stack.item) then
 				if target.is_observed then
 					serializer.write_incall (feature_name, target, arguments)
@@ -92,13 +122,14 @@ feature -- Basic Operations
 
 feature {NONE} -- Implementation
 
-		print_debug(message: STRING)
-				-- Print a debug message if debug_output is enabled
-			do
-				if debug_output then
-					print("{REC}" +message)
-				end
-			end
+-- For optimization - purposes removed.
+--		print_debug(message: STRING)
+--				-- Print a debug message if debug_output is enabled
+--			do
+--				if debug_output then
+--					print("{REC}" +message)
+--				end
+--			end
 
 
 feature --test
@@ -160,7 +191,8 @@ feature --RUBBISH
 --		end
 
 invariant
-	invariant_clause: True
+	observed_stack_not_void: observed_stack /= Void
+	observed_stack_not_empty: not observed_stack.is_empty
 
 end -- class RECORDER
 

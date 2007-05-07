@@ -45,8 +45,6 @@ feature -- Creation
 
 	make_on_textfile(filename: STRING)
 			-- Create the Serializer on the textfile `filename'
-		local
-			f: PLAIN_TEXT_FILE
 		do
 			create {PLAIN_TEXT_FILE}file.make_open_write(filename)
 	  		create internal
