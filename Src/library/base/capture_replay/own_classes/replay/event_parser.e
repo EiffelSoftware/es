@@ -15,7 +15,13 @@ feature -- Access
 
 	after: BOOLEAN
 		do
-			Result :=input.end_of_input
+			if not input.end_of_input then -- make lookahead...
+				input.read_character
+				Result :=  input.end_of_input
+				input.unread_character (input.last_character)
+			else
+				Result := True
+			end
 		end
 
  	input: KI_TEXT_INPUT_STREAM

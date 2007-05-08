@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Objects that control the replay of a run."
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,6 +12,13 @@ inherit
 
 create
 	make
+
+-- Assumptions: event_factory.last_event always contains the event that is
+--				currently being treated. As soon as the treatment is finished
+--				the next event will be read.
+--				Thus every method handling an event can assume that the event it
+--				should treat is in event_factory.last_event.
+
 
 feature -- Initialization
 
@@ -100,7 +107,9 @@ feature -- Basic operations
 					check
 						right_event_read: outcallret /= Void
 					end
-					Result := resolver.resolve_entity(outcallret.return_value)
+					if outcallret.return_value /= Void then
+						Result := resolver.resolve_entity(outcallret.return_value)
+					end
 					event_factory.create_next_event
 				end
 			else
@@ -118,10 +127,18 @@ feature -- Basic operations
 		do
 			caller_is_observed := observed_stack.item
 
-			if (not target.is_observed) and caller_is_observed then
-				--OUTCALL
-				consume_outcall
-
+			if target.is_observed /= caller_is_observed then
+				--boudary cross
+				check_call(event_factory.last_event,feature_name,target,arguments)
+--				if target_is_observed then
+--					--INCALL
+--					
+--				else	
+--					--OUTCALL
+--					
+--				end
+				-- Consume event
+				event_factory.create_next_event
 			end
 			observed_stack.put (target.is_observed)
 		end
@@ -137,7 +154,7 @@ feature -- Basic operations
 				incall_event = Void
 			loop
 				handle_incall_event(incall_event)
-				event_factory.create_next_event
+	--			event_factory.create_next_event
 				incall_event ?= event_factory.last_event
 			end
 		end
@@ -152,17 +169,34 @@ feature -- Basic operations
 		end
 
 
-	consume_outcall is
+	check_call(event: EVENT; feature_name: STRING; target: ANY; arguments: TUPLE)
+			-- checks if the call event matches to what we actually have...
+		local
+			incall: INCALL_EVENT
+			call: CALL_EVENT
 		do
-
+			call ?= event
+			incall ?= event
+			check
+				event_is_call: call /= Void
+				right_call_type: target.is_observed implies incall /= Void
+				feature_name_correct: feature_name = call.feature_name
+				-- we could check, if the arguments conform, but probably this is too
+				-- expensive
+			end
 		end
 
+--	consume_outcall is
+--		do
 
-	consume_outcallret: ANY is
-			--
-		do
+--		end
 
-		end
+
+--	consume_outcallret: ANY is
+--			--
+--		do
+
+--		end
 
 
 	play is

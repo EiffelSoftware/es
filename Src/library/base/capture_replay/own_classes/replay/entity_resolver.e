@@ -40,15 +40,17 @@ feature -- Access
 			--
 		require
 			arguments_not_void: arguments /= Void
+		local
+			i: INTEGER
 		do
 			from
 				create {ARRAYED_LIST[ANY]}Result.make(arguments.count)
-				arguments.start
+				i := 1
 			until
-				arguments.after
+				i >arguments.count
 			loop
-				Result.put (resolve_entity(arguments.item))
-				arguments.forth
+				Result.put_i_th (resolve_entity(arguments @ i),i)
+				i := i + 1
 			end
 		end
 

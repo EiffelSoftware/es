@@ -39,7 +39,7 @@ feature -- Initialization
 		do
 			test_performance := False
 			capture_replay := True
-			replay_phase := False
+			replay_phase := True
 
 			if capture_replay then
 				if replay_phase then
@@ -59,7 +59,6 @@ feature -- Initialization
 					player.set_caller (caller)
 					player.set_event_factory (event_factory)
 					player.set_resolver (resolver)
-					player.play
 				else
 					create a_recorder.make
 					a_recorder ?= set_controller(a_recorder)
@@ -76,6 +75,10 @@ feature -- Initialization
 
 				controller.set_capture_replay_enabled (True)
 				controller.set_replay_phase (replay_phase)
+
+				if replay_phase then
+					player.play
+				end
 			end
 
 			if controller.is_capture_replay_enabled then
