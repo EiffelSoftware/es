@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 deferred class
-	TEST_LINE_BASED_SERIALIZER
+	TEST_TEXT_SERIALIZER
 
 inherit
 	TS_TEST_CASE
@@ -19,7 +19,7 @@ inherit
 
 
 feature -- Test Variables:
-		serializer: LINE_BASED_SERIALIZER
+		serializer: TEXT_SERIALIZER
 
 		example: EXAMPLE_CLASS
 

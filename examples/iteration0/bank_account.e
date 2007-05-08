@@ -20,15 +20,17 @@ feature -- creation
 			--
 		require
 			a_name_not_void: a_name /= Void
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("make", Current, [a_name])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("make", Current, [a_name])
 			end
-
-			the_name := a_name
-			
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				the_name := a_name
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result ?= controller.methodbody_end (Void)
 			end
 		end
 
@@ -37,27 +39,28 @@ feature -- Access
 	name: STRING is
 			--Name of the account
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("name", Current, [])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("name", Current, [])
 			end
-
-			Result := the_name
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				Result := the_name
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
 	balance: REAL is
 			--Balance of the account
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("balance", Current, [])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("balance", Current, [])
 			end
-
-			Result := the_balance
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				Result := the_balance
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
@@ -68,14 +71,17 @@ feature {BANK} -- Restricted
 			-- Withdraw 'an_amount'
 		require
 			an_amount_reasonable: an_amount >= 0
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("withdraw", Current, [an_amount])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("withdraw", Current, [an_amount])
 			end
-
-			the_balance := the_balance - an_amount
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				the_balance := the_balance - an_amount
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 
 		ensure
@@ -87,15 +93,17 @@ feature {BANK} -- Restricted
 			--Deposit 'an_amount'
 		require
 			an_amount_reasonable: an_amount >= 0
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("deposit", Current, [an_amount])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("deposit", Current, [an_amount])
 			end
-
-			the_balance := the_balance + an_amount
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				the_balance := the_balance + an_amount
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			an_amount_deposited: balance = old balance + an_amount

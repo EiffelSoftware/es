@@ -362,10 +362,21 @@ feature -- Basic operations
 		end
 
 feature -- Capture/Replay
-	recorder: RECORDER
-			-- Recorder for capturing events on the object
+
+	set_controller(a_controller: CONTROLLER): CONTROLLER
+			-- Set the Controller for capture/replay
+			-- (First execution sets the controller)
 		once
-			create Result.make
+			Result := a_controller
+		end
+
+	controller: CONTROLLER
+			-- Recorder for capturing events on the object
+			-- `set_controller' needs to be executed before this feature is called.
+		once
+		--	create {RECORDER}Result.make
+		--	create {PLAYER}Result.make
+			Result := set_controller(Void)
 		end
 
 	is_observed: BOOLEAN

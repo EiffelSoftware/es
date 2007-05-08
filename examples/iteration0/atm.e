@@ -19,16 +19,18 @@ feature -- creation
 			--'a_bank'.
 		require
 			a_bank_not_void: a_bank /= Void
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("make", Current, [a_bank])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("make", Current, [a_bank])
 			end
-
-			the_bank := a_bank
-			create the_ui.make (Current)
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				the_bank := a_bank
+				create the_ui.make (Current)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -37,14 +39,14 @@ feature -- Access
 	ui: ATM_UI
 			-- UI of the ATM
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("ui", Current, [])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("ui", Current, [])
 			end
-
-			Result := the_ui
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				Result := the_ui
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			result_not_void: ui /= Void
@@ -53,14 +55,14 @@ feature -- Access
 	last_operation_succeeded: BOOLEAN
 			-- Did the last operation succeed?
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("last_operation_succeeded", Current,[])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("last_operation_succeeded", Current,[])
 			end
-
-			Result := success
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				Result := success
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
@@ -73,22 +75,23 @@ feature -- Element change
 			account_exists: account_exists(account_name)
 		local
 			an_account: BANK_ACCOUNT
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("deposit", Current, [account_name,amount])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("deposit", Current, [account_name,amount])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+				an_account := the_bank.account_for_name (account_name)
 
-			an_account := the_bank.account_for_name (account_name)
-
-			if an_account /= Void then
-				the_bank.deposit (an_account, amount)
-				success := true
-			else
-				success := false
+				if an_account /= Void then
+					the_bank.deposit (an_account, amount)
+					success := true
+				else
+					success := false
+				end
 			end
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -98,22 +101,24 @@ feature -- Element change
 			account_exists: account_exists(account_name)
 		local
 			an_account: BANK_ACCOUNT
+
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("withdraw", Current, [account_name, amount])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("withdraw", Current, [account_name, amount])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+				an_account := the_bank.account_for_name (account_name)
 
-			an_account := the_bank.account_for_name (account_name)
-
-			if an_account /= Void then
-				the_bank.withdraw (an_account, amount)
-				success := True
-			else
-				success := False
+				if an_account /= Void then
+					the_bank.withdraw (an_account, amount)
+					success := True
+				else
+					success := False
+				end
 			end
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -122,14 +127,14 @@ feature -- Element change
 		require
 				account_name_not_void: account_name /= Void
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("account_exists", Current, [account_name])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("account_exists", Current, [account_name])
 			end
-
-			Result := (the_bank.account_for_name (account_name) /= Void)
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				Result := (the_bank.account_for_name (account_name) /= Void)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
@@ -140,30 +145,30 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("balance_for_account_name", Current, [account_name])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("balance_for_account_name", Current, [account_name])
 			end
-
-			ui.ping
-			an_account:=the_bank.account_for_name (account_name)
-			Result := an_account.balance
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				ui.ping
+				an_account:=the_bank.account_for_name (account_name)
+				Result := an_account.balance
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
 	authorization_key: STRING
 			--the (fake) authorization key
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("authorization_key", Current, [])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("authorization_key", Current, [])
 			end
-
-			Result:= "100%% trustworthy%N"
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				Result:= "100%% trustworthy%N"
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
@@ -171,15 +176,17 @@ feature -- Element change
 			-- replace the ATM's UI.
 		require
 			a_ui_not_void: a_ui /= Void
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("set_ui", Current, [a_ui])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("set_ui", Current, [a_ui])
 			end
-
-			the_ui := a_ui
-			
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				the_ui := a_ui
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result ?= controller.methodbody_end (Void)
 			end
 		end
 

@@ -9,13 +9,16 @@ indexing
 class
 	RECORDER
 
+inherit
+	CONTROLLER
+
 create
 	make
 
 feature --creation
 
 	make
-			-- Create the recorder.
+			-- Create the controller.
 		do
 			create observed_stack.make(200)
 			observed_stack.put (False)
@@ -23,19 +26,12 @@ feature --creation
 
 feature -- Access
 
-	observed_stack: ARRAYED_STACK [BOOLEAN]
-			--Stack of the is_observed Values (TODO find a better description...)
-
 	serializer: CAPTURE_SERIALIZER
 			-- Serializer that is used for recording
 
 	debug_output: BOOLEAN
 			-- Is debug output enabled?
 
-	capture_replay: BOOLEAN
-			-- Is Capture/Replay enabled?
-			-- This switch is installed to be able to make performance
-			-- measurements.
 	in_observed_part: BOOLEAN is
 			-- Is the program execution currently in the observed part?
 			do
@@ -51,33 +47,12 @@ feature -- Status change
 			new_debug_output_set: debug_output = new_debug_output
 		end
 
-	set_capture_replay(enabled: BOOLEAN)
-			-- set `capture_replay'
-		do
-			capture_replay := enabled
-		ensure
-			capture_replay_set: capture_replay = enabled
-		end
-
 feature -- Basic Operations
 
-	put_is_observed(current_is_observed: BOOLEAN)
-			-- Put is_observed onto `observed_stack'
-		do
-			observed_stack.put (current_is_observed)
-		end
-
-	remove_is_observed
-			-- Remove top item from `observed_stack'
-		do
-			observed_stack.remove
-		end
-
-	capture_methodbody_end (res: ANY)
-			--Hook for recording. Is to be placed at the end of a MethodBody
-			--'res' is the Result of the Method that should be instrumented.
-		require
-			serializer_not_void: serializer /= Void
+	methodbody_end (res: ANY): ANY
+			-- See comment in CONTROLLER
+--		require
+--			serializer_not_void: serializer /= Void
 		local
 			current_observed: BOOLEAN
 		do
@@ -91,17 +66,18 @@ feature -- Basic Operations
 					serializer.write_outcallret (res)
 				end
 			end
+			Result := res
 		end
 
-	capture_methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE)
+	methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE)
 			-- Hook for recording. Is to be placed before the methodbody is evaluated
 			-- 'target' is the object whose feature was called
 			-- 'arguments' are the arguments of the feature.
-		require
-			feature_name_not_void: feature_name /= Void
-			target_not_void: target /= Void
-			arguments_not_void: arguments /= Void
-			serializer_not_void: serializer /= Void
+--		require
+--			feature_name_not_void: feature_name /= Void
+--			target_not_void: target /= Void
+--			arguments_not_void: arguments /= Void
+--			serializer_not_void: serializer /= Void
 		do
 --opt			print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
 			if (target.is_observed /= observed_stack.item) then
@@ -165,7 +141,7 @@ feature --RUBBISH
 ---			--'stack_level'. Returns void if the Argument is an
 --			--expanded type.
 --		external
---			"C signature (EIF_INTEGER,EIF_INTEGER):EIF_REFERENCE use recorder.h"
+--			"C signature (EIF_INTEGER,EIF_INTEGER):EIF_REFERENCE use controller.h"
 --		alias
 --			"c_extract_argument"
 --		end

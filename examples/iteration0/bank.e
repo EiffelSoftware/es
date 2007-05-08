@@ -21,15 +21,19 @@ create
 feature --creation
 	make
 		-- Create a bank
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("make", Current, [])
 			end
-			recorder.capture_methodbody_start ("make", Current, [])
-			create the_account.make ("test")
-			create the_atm.make (Current)
-			if recorder.capture_replay then
+			if (not controller.is_replay_phase) or is_observed then
+				create the_account.make ("test")
+				create the_atm.make (Current)
 			end
-			recorder.capture_methodbody_end (Void)
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	is_observed: BOOLEAN is True
@@ -42,16 +46,16 @@ feature -- Access
 		require
 			name_not_void: name /= Void
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("account_for_name", Current, [name])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("account_for_name", Current, [name])
 			end
-
-			if name.is_equal ("test") then
-				Result := the_account
+			if (not controller.is_replay_phase) or is_observed then
+				if name.is_equal ("test") then
+					Result := the_account
+				end
 			end
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 
 		end
@@ -60,14 +64,14 @@ feature -- Access
 			-- ATM that is connected to this
 			-- bank
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("atm", Current, [])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("atm", Current, [])
 			end
-
-			Result := the_atm
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Result)
+			if (not controller.is_replay_phase) or is_observed then
+				Result := the_atm
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			result_not_void: Result /= Void
@@ -80,15 +84,18 @@ feature -- Basic Operations
 		require
 			an_account_not_void: an_account /= Void
 			amount_not_negative: amount >= 0
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("withdraw", Current, [an_account, amount])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("withdraw", Current, [an_account, amount])
 			end
-
-			an_account.withdraw (amount)
-			print (the_atm.authorization_key) -- to test outcalls ;)
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				an_account.withdraw (amount)
+				print (the_atm.authorization_key) -- to test outcalls ;)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -97,15 +104,18 @@ feature -- Basic Operations
 		require
 			an_account_not_void: an_account /= Void
 			amount_not_negative: amount >= 0
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("deposit", Current, [an_account, amount])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("deposit", Current, [an_account, amount])
 			end
-
-			an_account.deposit (amount)
-			print (the_atm.authorization_key) -- test outcalls...
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				an_account.deposit (amount)
+				print (the_atm.authorization_key) -- test outcalls...
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 

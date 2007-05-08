@@ -2,7 +2,7 @@
 	<target name="iteration0_example">
 		<root class="ROOT_CLASS" feature="make"/>
 		<option profile="false" warning="true">
-			<assertions precondition="true"/>
+			<assertions precondition="true" postcondition="true"/>
 		</option>
 		<setting name="console_application" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false"/>

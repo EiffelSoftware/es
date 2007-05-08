@@ -18,15 +18,17 @@ feature -- Access
 			-- Create a new ATM_UI for 'an_atm'.
 		require
 			an_atm_not_void: an_atm /= Void
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("make", Current, [an_atm])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("make", Current, [an_atm])
 			end
-
-
-			atm := an_atm
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			if (not controller.is_replay_phase) or is_observed then
+				atm := an_atm
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -36,40 +38,40 @@ feature --Basic Operations
 			-- Run the UI.
 		local
 			exit: BOOLEAN
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("run", Current, [])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("run", Current, [])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+				from
+					exit := False
+				until
+					exit
+				loop
+					print("ATM Main Menu. Your options: %N")
+					print("d deposit %N")
+					print("w withdraw %N")
+					print("q quit %N")
 
+					io.read_character
 
-			from
-				exit := False
-			until
-				exit
-			loop
-				print("ATM Main Menu. Your options: %N")
-				print("d deposit %N")
-				print("w withdraw %N")
-				print("q quit %N")
-
-				io.read_character
-
-				inspect
-					io.last_character
-				when 'd' then
-					deposit
-				when 'w' then
-					withdraw
-				when 'q' then
-					print ("exiting application")
-					exit := True
-				else
-					print("command not recognized")
+					inspect
+						io.last_character
+					when 'd' then
+						deposit
+					when 'w' then
+						withdraw
+					when 'q' then
+						print ("exiting application")
+						exit := True
+					else
+						print("command not recognized")
+					end
 				end
 			end
-
-			if recorder.capture_replay then
-			recorder.capture_methodbody_end (Void)
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -77,14 +79,17 @@ feature -- Basic operations
 
 	ping
 			-- Dummy feature without arguments and results (testing).
+		local
+			ignore_result: ANY
 		do
-			if recorder.capture_replay then
-				recorder.capture_methodbody_start ("ping", Current, [])
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("ping", Current, [])
 			end
+			if (not controller.is_replay_phase) or is_observed then
 
-
-			if recorder.capture_replay then
-				recorder.capture_methodbody_end (Void)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 

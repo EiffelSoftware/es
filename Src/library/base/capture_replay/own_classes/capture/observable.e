@@ -11,14 +11,6 @@ deferred class
 
 feature -- Access
 
-	the_recorder: RECORDER is
-			--XXX Returns the global recorder that is used for all objects
-			-- in a multi threading environment this would need to be replaced
-			-- by a recorder per thread.
-		once
-			create Result.make
-		end
-
 feature -- Measurement
 
 feature -- Status report

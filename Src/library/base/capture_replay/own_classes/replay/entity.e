@@ -40,6 +40,10 @@ feature -- Miscellaneous
 
 feature -- Basic operations
 
+	accept(resolver: ENTITY_RESOLVER): ANY is
+			-- Visitor for entity resolution.
+		deferred end
+
 feature -- Obsolete
 
 feature -- Inapplicable

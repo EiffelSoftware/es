@@ -1,34 +1,14 @@
 indexing
-	description: "[
-			Represents an entity of basic type for the replay phase.
-			]"
-	author: "Stefan Sieber"
+	description: "Objects that ..."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	BASIC_ENTITY
-
-
-inherit
-	ENTITY
-
-create
-	make
-
-feature -- Creation
-
-	make (a_type: STRING; a_value: STRING)
-
-		do
-			type := a_type
-			value := a_value
-		end
-
+deferred class
+	CALLER
 
 feature -- Access
 
-	value: STRING
 feature -- Measurement
 
 feature -- Status report
@@ -53,12 +33,9 @@ feature -- Miscellaneous
 
 feature -- Basic operations
 
-	accept(resolver: ENTITY_RESOLVER): ANY is
-			-- Resolve this entity
-		do
-			Result := resolver.resolve_basic_entity(Current)
-		end
-
+call (target: ANY; feature_name: STRING; arguments: LIST[ANY]) is
+		-- Call `target'.`feature_name'(`arguments')
+	deferred end
 
 feature -- Obsolete
 

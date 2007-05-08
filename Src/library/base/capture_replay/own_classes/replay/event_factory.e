@@ -18,6 +18,9 @@ feature -- Access
 
 	last_event: EVENT
 
+	after: BOOLEAN
+		--no event left.
+
 feature -- Basic operations
 
 
@@ -27,7 +30,14 @@ feature -- Basic operations
 			parser_not_void: parser /= Void
 			event_available: not parser.after
 		do
-			parser.parse_event
+			if not parser.after then
+				parser.parse_event
+				after := False
+			else
+				last_event := Void
+				after := True
+			end
+
 		end
 
 	handle_incall_event(target: ENTITY; feature_name: STRING; arguments: LIST[ENTITY])

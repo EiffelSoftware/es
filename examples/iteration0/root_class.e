@@ -17,44 +17,85 @@ feature -- Initialization
 	make is
 			-- Creation procedure.
 		local
+			a_recorder: RECORDER
+			a_player: PLAYER
+
 			bank: BANK
 			atm: ATM
 			ui: ATM_UI
 			serializer: TEXT_SERIALIZER
 			test_performance: BOOLEAN
-			ptui: PERFORMANCE_TESTER_ATM_UI
+			capture_replay: BOOLEAN
+			replay_phase: BOOLEAN
+
+			caller: EXAMPLE_CALLER
+			player: PLAYER
+			resolver: ENTITY_RESOLVER
+			event_factory: EVENT_FACTORY
+			parser: TEXT_EVENT_PARSER
+			input_file: KL_TEXT_INPUT_FILE
+
+			ignore_Result: ANY
 		do
-			test_performance := True
+			test_performance := False
+			capture_replay := True
+			replay_phase := False
 
-			-- XXX hm... where is a good place to configure the recorder?
-			create serializer.make_on_textfile("run.log")
-			recorder.set_serializer (serializer)
-			recorder.set_capture_replay(True)
+			if capture_replay then
+				if replay_phase then
+					create a_player.make
 
-			if recorder.capture_replay then
---				if recorder.in_observed_part /= is_observed then --boundary cross...
-					recorder.capture_methodbody_start ("make", Current, [])
---				end
---				recorder.put_is_observed(is_observed)
+					a_player ?= set_controller(a_player)
+
+					create caller
+					create resolver.make
+					create event_factory
+		        	create input_file.make("run.log")
+					input_file.open_read
+
+					create parser.make (input_file, event_factory)
+
+					player ?= controller
+					player.set_caller (caller)
+					player.set_event_factory (event_factory)
+					player.set_resolver (resolver)
+					player.play
+				else
+					create a_recorder.make
+					a_recorder ?= set_controller(a_recorder)
+					--capture phase
+
+					check
+						controller_is_recorder: a_recorder /= Void
+					end
+					 -- XXX hm... where is a good place to configure the controller?
+					create serializer.make_on_textfile("run.log")
+					a_recorder.set_serializer (serializer)
+					a_recorder.set_capture_replay_enabled(True)
+				end
+
+				controller.set_capture_replay_enabled (True)
+				controller.set_replay_phase (replay_phase)
 			end
 
-			-- Initialize everything and start the UI...
-			create bank.make
-			atm := bank.atm
-			if test_performance then
-				create {PERFORMANCE_TESTER_ATM_UI}ui.make(atm)
-				atm.set_ui (ui)
-			else
-				ui := atm.ui
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("make", Current, [])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+							-- Initialize everything and start the UI...
+				create bank.make
+				atm := bank.atm
+				if test_performance then
+					create {PERFORMANCE_TESTER_ATM_UI}ui.make(atm)
+					atm.set_ui (ui)
+				else
+					ui := atm.ui
+				end
 
-			ui.run
-
-			if recorder.capture_replay then
---				recorder.remove_is_observed
---				if recorder.in_observed_part /= is_observed then
-					recorder.capture_methodbody_end (Void)
---				end
+				ui.run
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
