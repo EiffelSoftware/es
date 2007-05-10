@@ -15,7 +15,11 @@
 				<exclude>/CVS$</exclude>
 			</file_rule>
 		</cluster>
-		<override name="elks_overrides" location="$ISE_LIBRARY\library\base\capture_replay\elks_overrides\" recursive="true"/>
+		<override name="elks_overrides" location="$ISE_LIBRARY\library\base\capture_replay\elks_overrides\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
+		</override>
 	</target>
 	<target name="iteration0_example_dotnet" extends="iteration0_example">
 		<setting name="msil_generation" value="true"/>

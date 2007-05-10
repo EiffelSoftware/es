@@ -22,14 +22,26 @@ create
 
 feature -- Initialization
 
-	make is
-		--
+
+		setup_on_text_file (filename: STRING; a_caller: CALLER)
+			--
+		local
+--			resolver: ENTITY_RESOLVER
+--			event_factory: EVENT_FACTORY
+			parser: TEXT_EVENT_PARSER
+			input_file: KL_TEXT_INPUT_FILE
 		do
-			create observed_stack.make(100)
-			observed_stack.put(False) --assume that we start in the unobserved space.
+			create resolver.make
+			create event_factory
+			create input_file.make (filename)
+			input_file.open_read
+			create parser.make (input_file, event_factory)
+
+			caller := a_caller
+
+			set_capture_replay_enabled(True)
+			is_replay_phase := True
 		end
-
-
 
 feature -- Access
 
@@ -92,6 +104,8 @@ feature -- Basic operations
 			callee_observed: BOOLEAN
 			outcallret: OUTCALLRET_EVENT
 		do
+			enter
+
 			callee_observed := observed_stack.item
 			observed_stack.remove
 
@@ -116,6 +130,7 @@ feature -- Basic operations
 				Result := res
 			end
 
+			leave
 		end
 
 	methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
@@ -125,6 +140,8 @@ feature -- Basic operations
 		local
 			caller_is_observed: BOOLEAN
 		do
+			enter
+
 			caller_is_observed := observed_stack.item
 
 			if target.is_observed /= caller_is_observed then
@@ -141,6 +158,8 @@ feature -- Basic operations
 				event_factory.create_next_event
 			end
 			observed_stack.put (target.is_observed)
+
+			leave
 		end
 
 	simulate_unobserved_body

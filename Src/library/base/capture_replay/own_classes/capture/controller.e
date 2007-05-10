@@ -7,12 +7,30 @@ indexing
 deferred class
 	CONTROLLER
 
+feature --Initialization
+
+	make
+			-- Create the controller.
+		local
+			ctrl: like Current
+		do
+			create observed_stack.make(200)
+			observed_stack.put (False)
+
+			set_capture_replay_enabled (False)
+			ctrl := set_controller(Current)
+		end
+
+
 feature -- Access
 
 	is_capture_replay_enabled: BOOLEAN
 			-- Is Capture/Replay enabled?
 			-- This switch is installed to be able to make performance
 			-- measurements.
+
+	is_capture_replay_enabled_original: BOOLEAN
+			-- is c/r really enabled? (not only temporary)
 
 	is_replay_phase: BOOLEAN
 			-- Is program currently running in replay phase?
@@ -30,6 +48,7 @@ feature -- Status setting
 			-- Set `is_capture_replay_enabled' to `enabled'
 		do
 			is_capture_replay_enabled := enabled
+			is_capture_replay_enabled_original := enabled
 		end
 
 	set_replay_phase(activated: BOOLEAN) is
@@ -75,6 +94,18 @@ feature -- Obsolete
 feature -- Inapplicable
 
 feature {NONE} -- Implementation
+
+		enter is
+				--
+			do
+				is_capture_replay_enabled := False
+			end
+
+		leave is
+				--
+			do
+				is_capture_replay_enabled := is_capture_replay_enabled_original
+			end
 
 invariant
 	invariant_clause: True -- Your invariant here

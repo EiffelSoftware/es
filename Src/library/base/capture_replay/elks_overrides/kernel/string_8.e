@@ -17,6 +17,7 @@ inherit
 		rename
 			append as append_string_general
 		redefine
+--			is_observed,
 			copy, is_equal, out, append_string_general
 		end
 
@@ -24,12 +25,14 @@ inherit
 		rename
 			item as item
 		redefine
+--			is_observed,
 			copy, is_equal, out, prune_all,
 			changeable_comparison_criterion
 		end
 
 	RESIZABLE [CHARACTER]
 		redefine
+--			is_observed,
 			copy, is_equal, out,
 			changeable_comparison_criterion
 		end
@@ -38,21 +41,25 @@ inherit
 		rename
 			item as item
 		redefine
+--			is_observed,
 			copy, is_equal, out,
 			item, infix "@", put, valid_index
 		end
 
 	MISMATCH_CORRECTOR
 		redefine
+--			is_observed,
 			copy, is_equal, out, correct_mismatch
 		end
 
 	OBSERVABLE -- SIES
 		redefine
+--			is_observed,
 			copy,
 			is_equal, --original implementation of string is ok, because it doesn't compare the object_id, too.
 			out --don't care
 		end
+
 
 create
 	make,
@@ -69,14 +76,27 @@ convert
 
 feature -- Initialization
 
+
+	Make_feature_name: STRING is "make"
+
 	make (n: INTEGER) is
 			-- Allocate space for at least `n' characters.
 		require
 			non_negative_size: n >= 0
+		local
+			ignore_result: ANY
 		do
-			count := 0
-			internal_hash_code := 0
-			make_area (n + 1)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start (Void, Current, [n]) --XXX
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				count := 0
+				internal_hash_code := 0
+				make_area (n + 1)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			empty_string: count = 0
 			area_allocated: capacity >= n
@@ -84,8 +104,18 @@ feature -- Initialization
 
 	make_empty is
 			-- Create empty string.
+		local
+			ignore_result: ANY
 		do
-			make (0)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("make_empty", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				make (0)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			empty: count = 0
 			area_allocated: capacity >= 0
@@ -95,9 +125,19 @@ feature -- Initialization
 			-- Create string of length `n' filled with `c'.
 		require
 			valid_count: n >= 0
+		local
+			ignore_result: ANY
 		do
-			make (n)
-			fill_character (c)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("make_filled", Current, [c,n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				make (n)
+				fill_character (c)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			count_set: count = n
 			area_allocated: capacity >= n
@@ -110,11 +150,21 @@ feature -- Initialization
 			-- to initialize a string-like object from a manifest string.)
 		require
 			string_exists: s /= Void
+		local
+			ignore_result: ANY
 		do
-			if Current /= s then
-				area := s.area.twin
-				count := s.count
-				internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("make_from_string", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if Current /= s then
+					area := s.area.twin
+					count := s.count
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			not_shared_implementation: Current /= s implies not shared_with (s)
@@ -127,17 +177,26 @@ feature -- Initialization
 		require
 			c_string_exists: c_string /= default_pointer
 		local
+			ignore_result: ANY
 			l_count: INTEGER
 		do
-			if area = Void then
-				c_string_provider.share_from_pointer (c_string)
-				l_count := c_string_provider.count
-				make_area (l_count + 1)
-				count := l_count
-				internal_hash_code := 0
-				c_string_provider.read_string_into (Current)
-			else
-				from_c (c_string)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("make_from_c", Current, [c_string])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if area = Void then
+					c_string_provider.share_from_pointer (c_string)
+					l_count := c_string_provider.count
+					make_area (l_count + 1)
+					count := l_count
+					internal_hash_code := 0
+					c_string_provider.read_string_into (Current)
+				else
+					from_c (c_string)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -146,16 +205,25 @@ feature -- Initialization
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
 		local
+			ignore_result: ANY
 			l_count: INTEGER
 		do
-			if a_system_string /= Void then
-				l_count := a_system_string.length
-				make_area (l_count + 1)
-				count := l_count
-				internal_hash_code := 0
-				dotnet_convertor.read_system_string_into (a_system_string, Current)
-			else
-				make (0)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("make_from_cil", Current, [a_system_string])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if a_system_string /= Void then
+					l_count := a_system_string.length
+					make_area (l_count + 1)
+					count := l_count
+					internal_hash_code := 0
+					dotnet_convertor.read_system_string_into (a_system_string, Current)
+				else
+					make (0)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -165,15 +233,24 @@ feature -- Initialization
 		require
 			c_string_exists: c_string /= default_pointer
 		local
+			ignore_result: ANY
 			l_count: INTEGER
 		do
-			c_string_provider.share_from_pointer (c_string)
-				-- Resize string in case it is not big enough
-			l_count := c_string_provider.count
-			resize (l_count + 1)
-			count := l_count
-			internal_hash_code := 0
-			c_string_provider.read_string_into (Current)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("from_c", Current, [c_string])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				c_string_provider.share_from_pointer (c_string)
+					-- Resize string in case it is not big enough
+				l_count := c_string_provider.count
+				resize (l_count + 1)
+				count := l_count
+				internal_hash_code := 0
+				c_string_provider.read_string_into (Current)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			no_zero_byte: not has ('%/0/')
 			-- characters: for all i in 1..count, item (i) equals
@@ -190,15 +267,24 @@ feature -- Initialization
 			start_position_big_enough: start_pos >= 1
 			end_position_big_enough: start_pos <= end_pos + 1
 		local
+			ignore_result: ANY
 			l_count: INTEGER
 		do
-			l_count := end_pos - start_pos + 1
-			c_string_provider.share_from_pointer_and_count (c_string + (start_pos - 1), l_count)
-				-- Resize string in case it is not big enough
-			resize (l_count + 1)
-			count := l_count
-			internal_hash_code := 0
-			c_string_provider.read_substring_into (Current, 1, l_count)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("from_c_substring", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_count := end_pos - start_pos + 1
+				c_string_provider.share_from_pointer_and_count (c_string + (start_pos - 1), l_count)
+					-- Resize string in case it is not big enough
+				resize (l_count + 1)
+				count := l_count
+				internal_hash_code := 0
+				c_string_provider.read_substring_into (Current, 1, l_count)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			valid_count: count = end_pos - start_pos + 1
 			-- characters: for all i in 1..count, item (i) equals
@@ -209,8 +295,16 @@ feature -- Initialization
 			-- Object of a type conforming to the type of `s',
 			-- initialized with attributes from `s'
 		do
-			Result := new_string (0)
-			Result.share (s)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("adapt", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := new_string (0)
+				Result.share (s)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			adapt_not_void: Result /= Void
 			shared_implementation: Result.shared_with (s)
@@ -222,8 +316,18 @@ feature -- Initialization
 			"Use `make' instead"
 		require
 			non_negative_size: n >= 0
+		local
+			ignore_result: ANY
 		do
-			make (n)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("remake", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				make (n)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			empty_string: count = 0
 			area_allocated: capacity >= n
@@ -233,15 +337,35 @@ feature -- Access
 
 	item, infix "@" (i: INTEGER): CHARACTER assign put is
 			-- Character at position `i'
+		local
+			ignore_result: ANY
 		do
-			Result := area.item (i - 1)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("item", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := area.item (i - 1)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 
 	code (i: INTEGER): NATURAL_32 is
 			-- Numeric code of character at position `i'
+		local
+			ignore_result: ANY
 		do
-			Result := area.item (i - 1).code.to_natural_32
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("code", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := area.item (i - 1).code.to_natural_32
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	item_code (i: INTEGER): INTEGER is
@@ -249,31 +373,52 @@ feature -- Access
 		require
 			index_small_enough: i <= count
 			index_large_enough: i > 0
+		local
+			ignore_result: ANY
 		do
-			Result := area.item (i - 1).code
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("item_code", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				Result := area.item (i - 1).code
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	hash_code: INTEGER is
 			-- Hash code value
 		local
+			ignore_result: ANY
 			i, nb: INTEGER
 			l_area: like area
 		do
-			Result := internal_hash_code
-			if Result = 0 then
-					-- The magic number `8388593' below is the greatest prime lower than
-					-- 2^23 so that this magic number shifted to the left does not exceed 2^31.
-				from
-					i := 0
-					nb := count
-					l_area := area
-				until
-					i = nb
-				loop
-					Result := ((Result \\ 8388593) |<< 8) + l_area.item (i).code
-					i := i + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("hash_code", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				Result := internal_hash_code
+				if Result = 0 then
+						-- The magic number `8388593' below is the greatest prime lower than
+						-- 2^23 so that this magic number shifted to the left does not exceed 2^31.
+					from
+						i := 0
+						nb := count
+						l_area := area
+					until
+						i = nb
+					loop
+						Result := ((Result \\ 8388593) |<< 8) + l_area.item (i).code
+						i := i + 1
+					end
+					internal_hash_code := Result
 				end
-				internal_hash_code := Result
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
@@ -286,7 +431,16 @@ feature -- Access
 	shared_with (other: STRING): BOOLEAN is
 			-- Does string share the text of `other'?
 		do
-			Result := (other /= Void) and then (area = other.area)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("shared_with", Current, [other])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				Result := (other /= Void) and then (area = other.area)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	index_of (c: CHARACTER; start_index: INTEGER): INTEGER is
@@ -299,20 +453,29 @@ feature -- Access
 			a: like area
 			i, nb: INTEGER
 		do
-			nb := count
-			if start_index <= nb then
-				from
-					i := start_index - 1
-					a := area
-				until
-					i = nb or else a.item (i) = c
-				loop
-					i := i + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("index_of", Current, [c,start_index])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				nb := count
+				if start_index <= nb then
+					from
+						i := start_index - 1
+						a := area
+					until
+						i = nb or else a.item (i) = c
+					loop
+						i := i + 1
+					end
+					if i < nb then
+							-- We add +1 due to the area starting at 0 and not at 1.
+						Result := i + 1
+					end
 				end
-				if i < nb then
-						-- We add +1 due to the area starting at 0 and not at 1.
-					Result := i + 1
-				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			valid_result: Result = 0 or (start_index <= Result and Result <= count)
@@ -332,16 +495,25 @@ feature -- Access
 			a: like area
 			i: INTEGER
 		do
-			from
-				i := start_index_from_end - 1
-				a := area
-			until
-				i < 0 or else a.item (i) = c
-			loop
-				i := i - 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("last_index_of", Current, [c,start_index_from_end])
 			end
-				-- We add +1 due to the area starting at 0 and not at 1.
-			Result := i + 1
+			if (not controller.is_replay_phase) or is_observed then
+
+				from
+					i := start_index_from_end - 1
+					a := area
+				until
+					i < 0 or else a.item (i) = c
+				loop
+					i := i - 1
+				end
+					-- We add +1 due to the area starting at 0 and not at 1.
+				Result := i + 1
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			last_index_of_non_negative: Result >= 0
 			correct_place: Result > 0 implies item (Result) = c
@@ -360,7 +532,15 @@ feature -- Access
 			end_pos_large_enough: end_pos >= start_pos
 			end_pos_small_enough: end_pos <= count
 		do
-			Result := string_searcher.substring_index (Current, other, start_pos, end_pos)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("substring_index_in_bounds", Current, [other,start_pos,end_pos])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := string_searcher.substring_index (Current, other, start_pos, end_pos)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			correct_place: Result > 0 implies
 				other.is_equal (substring (Result, Result + other.count - 1))
@@ -371,8 +551,16 @@ feature -- Access
 	string: STRING_8 is
 			-- New STRING having same character sequence as `Current'.
 		do
-			create Result.make (count)
-			Result.append (Current)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("string", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				create Result.make (count)
+				Result.append (Current)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			string_not_void: Result /= Void
 			string_type: Result.same_type (create {STRING_8}.make_empty)
@@ -384,10 +572,19 @@ feature -- Access
 	string_representation: STRING_8 is
 			-- Similar to `string' but only create a new object if `Current' is not of dynamic type {STRING_8}
 		do
-			if same_type (create {STRING_8}.make_empty) then
-				Result := Current
-			else
-				Result := string
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("string_representation", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				if same_type (create {STRING_8}.make_empty) then
+					Result := Current
+				else
+					Result := string
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			Result_not_void: Result /= Void
@@ -404,7 +601,16 @@ feature -- Access
 			other_not_void: other /= Void
 			valid_start_index: start_index >= 1 and start_index <= count + 1
 		do
-			Result := string_searcher.substring_index (Current, other, start_index, count)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("substring_index", Current, [other,start_index])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				Result := string_searcher.substring_index (Current, other, start_index, count)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			valid_result: Result = 0 or else
 				(start_index <= Result and Result <= count - other.count + 1)
@@ -427,15 +633,36 @@ feature -- Access
 			start_small_enough: start <= count
 			acceptable_fuzzy: fuzz <= other.count
 		do
-			Result := string_searcher.fuzzy_index (Current, other, start, count, fuzz)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("fuzzy_index", Current, [other,start,fuzz])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				Result := string_searcher.fuzzy_index (Current, other, start, count, fuzz)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 feature -- Measurement
 
+--	Capacity_feature_name: STRING is "capacity"
+
+--XXX problem with recursion...
 	capacity: INTEGER is
 			-- Allocated space
 		do
-			Result := area.count - 1
+--			if controller.is_capture_replay_enabled then
+--				controller.methodbody_start (Capacity_feature_name, Current, [])
+--			end
+--			if (not controller.is_replay_phase) or is_observed then
+
+				Result := area.count - 1
+--			end
+--			if controller.is_capture_replay_enabled then
+--				Result ?= controller.methodbody_end (Result)
+--			end
 		end
 
 	count: INTEGER
@@ -447,16 +674,25 @@ feature -- Measurement
 			i, nb: INTEGER
 			a: SPECIAL [CHARACTER]
 		do
-			from
-				nb := count
-				a := area
-			until
-				i = nb
-			loop
-				if a.item (i) = c then
-					Result := Result + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("occurences", Current, [c])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+
+				from
+					nb := count
+					a := area
+				until
+					i = nb
+				loop
+					if a.item (i) = c then
+						Result := Result + 1
+					end
+					i := i + 1
 				end
-				i := i + 1
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure then
 			zero_if_empty: count = 0 implies Result = 0
@@ -471,7 +707,15 @@ feature -- Measurement
 	index_set: INTEGER_INTERVAL is
 			-- Range of acceptable indexes
 		do
-			create Result.make (1, count)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("index_set", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				create Result.make (1, count)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure then
 			Result.count = count
 		end
@@ -484,13 +728,21 @@ feature -- Comparison
 		local
 			l_count: INTEGER
 		do
-			if other = Current then
-				Result := True
-			else
-				l_count := count
-				if l_count = other.count then
-					Result := str_strict_cmp (area, other.area, l_count) = 0
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("is_equal", Current, [other])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if other = Current then
+					Result := True
+				else
+					l_count := count
+					if l_count = other.count then
+						Result := str_strict_cmp (area, other.area, l_count) = 0
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
@@ -503,25 +755,33 @@ feature -- Comparison
 			l_area, l_other_area: like area
 			i, nb: INTEGER
 		do
-			if other = Current then
-				Result := True
-			else
-				nb := count
-				if nb = other.count then
-					from
-						l_area := area
-						l_other_area := other.area
-						Result := True
-					until
-						i = nb
-					loop
-						if l_area.item (i).as_lower /= l_other_area.item (i).as_lower then
-							Result := False
-							i := nb - 1 -- Jump out of loop
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("is_case_insensitive_equal", Current, [other])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if other = Current then
+					Result := True
+				else
+					nb := count
+					if nb = other.count then
+						from
+							l_area := area
+							l_other_area := other.area
+							Result := True
+						until
+							i = nb
+						loop
+							if l_area.item (i).as_lower /= l_other_area.item (i).as_lower then
+								Result := False
+								i := nb - 1 -- Jump out of loop
+							end
+							i := i + 1
 						end
-						i := i + 1
 					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			symmetric: Result implies other.is_case_insensitive_equal (Current)
@@ -537,40 +797,48 @@ feature -- Comparison
 			i, nb: INTEGER
 			l_area, l_other_area: like area
 		do
-			if other = Current then
-				Result := True
-			elseif other.count = count then
-				Result := True
-				nb := count
-				if same_type (other) then
-					from
-						l_area := area
-						l_other_area := other.area
-					until
-						i = nb
-					loop
-						if l_area.item (i) /= l_other_area.item (i) then
-							Result := False
-							i := nb -- Jump out of the loop.
-						else
-							i := i + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("same_string", Current, [other])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if other = Current then
+					Result := True
+				elseif other.count = count then
+					Result := True
+					nb := count
+					if same_type (other) then
+						from
+							l_area := area
+							l_other_area := other.area
+						until
+							i = nb
+						loop
+							if l_area.item (i) /= l_other_area.item (i) then
+								Result := False
+								i := nb -- Jump out of the loop.
+							else
+								i := i + 1
+							end
 						end
-					end
-				else
-					from
-						i := 1
-						nb := nb + 1
-					until
-						i = nb
-					loop
-						if item (i) /= other.item (i) then
-							Result := False
-							i := nb -- Jump out of the loop.
-						else
-							i := i + 1
+					else
+						from
+							i := 1
+							nb := nb + 1
+						until
+							i = nb
+						loop
+							if item (i) /= other.item (i) then
+								Result := False
+								i := nb -- Jump out of the loop.
+							else
+								i := i + 1
+							end
 						end
 					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			definition: Result = string.is_equal (other.string)
@@ -582,18 +850,26 @@ feature -- Comparison
 			other_count: INTEGER
 			current_count: INTEGER
 		do
-			if other /= Current then
-				other_count := other.count
-				current_count := count
-				if other_count = current_count then
-					Result := str_strict_cmp (other.area, area, other_count) > 0
-				else
-					if current_count < other_count then
-						Result := str_strict_cmp (other.area, area, current_count) >= 0
-					else
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("infix_st", Current, [other])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if other /= Current then
+					other_count := other.count
+					current_count := count
+					if other_count = current_count then
 						Result := str_strict_cmp (other.area, area, other_count) > 0
+					else
+						if current_count < other_count then
+							Result := str_strict_cmp (other.area, area, current_count) >= 0
+						else
+							Result := str_strict_cmp (other.area, area, other_count) > 0
+						end
 					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		end
 
@@ -614,16 +890,24 @@ feature -- Status report
 			i, nb: INTEGER
 			l_area: like area
 		do
-			nb := count
-			if nb > 0 then
-				from
-					l_area := area
-				until
-					i = nb or else (l_area.item (i) = c)
-				loop
-					i := i + 1
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("has", Current, [c])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				nb := count
+				if nb > 0 then
+					from
+						l_area := area
+					until
+						i = nb or else (l_area.item (i) = c)
+					loop
+						i := i + 1
+					end
+					Result := (i < nb)
 				end
-				Result := (i < nb)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure then
 			false_if_empty: count = 0 implies not Result
@@ -637,10 +921,18 @@ feature -- Status report
 		require
 			other_not_void: other /= Void
 		do
-			if other = Current then
-				Result := True
-			elseif other.count <= count then
-				Result := substring_index (other, 1) > 0
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("has_substring", Current, [other])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if other = Current then
+					Result := True
+				elseif other.count <= count then
+					Result := substring_index (other, 1) > 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			false_if_too_small: count < other.count implies not Result
@@ -657,19 +949,43 @@ feature -- Status report
 	prunable: BOOLEAN is
 			-- May items be removed? (Answer: yes.)
 		do
-			Result := True
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("prunable", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := True
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	valid_index (i: INTEGER): BOOLEAN is
 			-- Is `i' within the bounds of the string?
 		do
-			Result := (i > 0) and (i <= count)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("valid_index", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := (i > 0) and (i <= count)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	valid_code (v: NATURAL_32): BOOLEAN is
 			-- Is `v' a valid code for a CHARACTER_32?
 		do
-			Result := v <= {CHARACTER}.max_value.to_natural_32
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("valid_code", Current, [v])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := v <= {CHARACTER}.max_value.to_natural_32
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	changeable_comparison_criterion: BOOLEAN is False
@@ -677,7 +993,15 @@ feature -- Status report
 	is_number_sequence: BOOLEAN is
 			-- Does `Current' represent a number sequence?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_no_limitation)
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("is_number_sequence", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_no_limitation)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			syntax_and_range:
 				-- Result is true if and only if the following two
@@ -696,7 +1020,15 @@ feature -- Status report
 	is_real: BOOLEAN is
 			-- Does `Current' represent a REAL?
 		do
-			Result := is_double
+			if controller.is_capture_replay_enabled then
+					controller.methodbody_start ("is_real", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_double
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			syntax_and_range:
 				-- 'Result' is True if and only if the following two
@@ -724,8 +1056,16 @@ feature -- Status report
 	is_double: BOOLEAN is
 			-- Does `Current' represent a DOUBLE?
 		do
-			ctor_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_double)
-			Result := ctor_convertor.is_integral_double
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_double", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctor_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_double)
+				Result := ctor_convertor.is_integral_double
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			syntax_and_range:
 				-- 'Result' is True if and only if the following two
@@ -756,22 +1096,30 @@ feature -- Status report
 			nb: INTEGER
 			l_area: like area
 		do
-			nb := count
-			if nb = 4 then
-					-- Check if this is `true_constant'
-				l_area := area
-				Result := l_area.item (0).lower = 't' and then
-					l_area.item (1).lower = 'r' and then
-					l_area.item (2).lower = 'u' and then
-					l_area.item (3).lower = 'e'
-			elseif nb = 5 then
-					-- Check if this is `false_constant'
-				l_area := area
-				Result := l_area.item (0).lower = 'f' and then
-					l_area.item (1).lower = 'a' and then
-					l_area.item (2).lower = 'l' and then
-					l_area.item (3).lower = 's' and then
-					l_area.item (4).lower = 'e'
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_boolean", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				nb := count
+				if nb = 4 then
+						-- Check if this is `true_constant'
+					l_area := area
+					Result := l_area.item (0).lower = 't' and then
+						l_area.item (1).lower = 'r' and then
+						l_area.item (2).lower = 'u' and then
+						l_area.item (3).lower = 'e'
+				elseif nb = 5 then
+						-- Check if this is `false_constant'
+					l_area := area
+					Result := l_area.item (0).lower = 'f' and then
+						l_area.item (1).lower = 'a' and then
+						l_area.item (2).lower = 'l' and then
+						l_area.item (3).lower = 's' and then
+						l_area.item (4).lower = 'e'
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			is_boolean: Result = (true_constant.same_string (as_lower) or false_constant.same_string (as_lower))
@@ -780,50 +1128,114 @@ feature -- Status report
 	is_integer_8: BOOLEAN is
 			-- Does `Current' represent an INTEGER_8?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_8)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_integer_8", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_8)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	is_integer_16: BOOLEAN is
 			-- Does `Current' represent an INTEGER_16?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_16)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_integer_16", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_16)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	is_integer, is_integer_32: BOOLEAN is
 			-- Does `Current' represent an INTEGER?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_32)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_integer", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_32)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	is_integer_64: BOOLEAN is
 			-- Does `Current' represent an INTEGER_64?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_64)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_integer_64", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_integer_64)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	is_natural_8: BOOLEAN is
 			-- Does `Current' represent a NATURAL_8?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_8)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_natural_8", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_8)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	is_natural_16: BOOLEAN is
 			-- Does `Current' represent a NATURAL_16?
 
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_16)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_natural_16", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_16)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	is_natural, is_natural_32: BOOLEAN is
 			-- Does `Current' represent a NATURAL_32?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_32)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_natural", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_32)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	is_natural_64: BOOLEAN is
 			-- Does `Current' represent a NATURAL_64?
 		do
-			Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_64)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("is_natural_64", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := is_valid_integer_or_natural ({NUMERIC_INFORMATION}.type_natural_64)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 feature -- Element change
@@ -834,12 +1246,21 @@ feature -- Element change
 		require
 			argument_not_void: t /= Void
 		local
+			ignore_result: ANY
 			s: STRING
 		do
-			s := t.substring (n1, n2)
-			area := s.area
-			count := s.count
-			internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("set", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				s := t.substring (n1, n2)
+				area := s.area
+				count := s.count
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			is_substring: is_equal (t.substring (n1, n2))
 		end
@@ -848,27 +1269,36 @@ feature -- Element change
 			-- Reinitialize by copying the characters of `other'.
 			-- (This is also used by `twin'.)
 		local
+			ignore_result: ANY
 			old_area: like area
 			int_id: INTEGER -- SIES, taken from IDENTIFIED
 		do
-			int_id := internal_id -- SIES
-
-			if other /= Current then
-				old_area := area
-				standard_copy (other)
-					-- Note: <= is needed as all Eiffel string should have an
-					-- extra character to insert null character at the end.
-				if old_area = Void or else old_area.count <= count then
-					area := area.twin
-				else
-					old_area.copy_data (area, 0, 0, count)
-					area := old_area
-				end
-				internal_hash_code := 0
-
-			internal_id := int_id -- SIES
-			
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("copy", Current, [])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+				int_id := internal_id -- SIES
+
+				if other /= Current then
+					old_area := area
+					standard_copy (other)
+						-- Note: <= is needed as all Eiffel string should have an
+						-- extra character to insert null character at the end.
+					if old_area = Void or else old_area.count <= count then
+						area := area.twin
+					else
+						old_area.copy_data (area, 0, 0, count)
+						area := old_area
+					end
+					internal_hash_code := 0
+
+				internal_id := int_id -- SIES
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
+
 		ensure then
 			new_result_count: count = other.count
 			-- same_characters: For every `i' in 1..`count', `item' (`i') = `other'.`item' (`i')
@@ -885,19 +1315,28 @@ feature -- Element change
 			valid_index_pos: valid_index (index_pos)
 			enough_space: (count - index_pos) >= (end_pos - start_pos)
 		local
+			ignore_result: ANY
 			l_other_area, l_area: like area
 		do
-			l_other_area := other.area
-			l_area := area
-			if end_pos >= start_pos then
-				if l_area /= l_other_area then
-					l_area.copy_data (l_other_area, start_pos - 1, index_pos - 1,
-						end_pos - start_pos + 1)
-				else
-					l_area.overlapping_move (start_pos - 1, index_pos - 1,
-						end_pos - start_pos + 1)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("subcopy", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_other_area := other.area
+				l_area := area
+				if end_pos >= start_pos then
+					if l_area /= l_other_area then
+						l_area.copy_data (l_other_area, start_pos - 1, index_pos - 1,
+							end_pos - start_pos + 1)
+					else
+						l_area.overlapping_move (start_pos - 1, index_pos - 1,
+							end_pos - start_pos + 1)
+					end
+					internal_hash_code := 0
 				end
-				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			same_count: count = old count
@@ -915,31 +1354,40 @@ feature -- Element change
 			valid_end_index: end_index <= count
 			meaningfull_interval: start_index <= end_index + 1
 		local
+			ignore_result: ANY
 			new_size: INTEGER
 			diff: INTEGER
 			l_area: like area
 			s_count: INTEGER
 			old_count: INTEGER
 		do
-			s_count := s.count
-			old_count := count
-			diff := s_count - (end_index - start_index + 1)
-			new_size := diff + old_count
-			if diff > 0 then
-					-- We need to resize the string.
-				grow (new_size)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("replace_substring", Current, [s,start_index,end_index])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+				s_count := s.count
+				old_count := count
+				diff := s_count - (end_index - start_index + 1)
+				new_size := diff + old_count
+				if diff > 0 then
+						-- We need to resize the string.
+					grow (new_size)
+				end
 
-			l_area := area
-				--| We move the end of the string forward (if diff is > 0), backward (if diff < 0),
-				--| and nothing otherwise.
-			if diff /= 0 then
-				l_area.overlapping_move (end_index, end_index + diff, old_count - end_index)
+				l_area := area
+					--| We move the end of the string forward (if diff is > 0), backward (if diff < 0),
+					--| and nothing otherwise.
+				if diff /= 0 then
+					l_area.overlapping_move (end_index, end_index + diff, old_count - end_index)
+				end
+					--| Set new count
+				set_count (new_size)
+					--| We copy the substring.
+				l_area.copy_data (s.area, 0, start_index - 1, s_count)
 			end
-				--| Set new count
-			set_count (new_size)
-				--| We copy the substring.
-			l_area.copy_data (s.area, 0, start_index - 1, s_count)
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			new_count: count = old count + old s.count - end_index + start_index - 1
 			replaced: elks_checking implies
@@ -954,94 +1402,113 @@ feature -- Element change
 			new_exists: new /= Void
 			original_not_empty: not original.is_empty
 		local
+			ignore_result: ANY
 			l_first_pos, l_next_pos: INTEGER
 			l_orig_count, l_new_count, l_count: INTEGER
 			l_area, l_new_area: like area
 			l_offset: INTEGER
 			l_string_searcher: like string_searcher
 		do
-			if not is_empty then
-				l_count := count
-				l_string_searcher := string_searcher
-				l_string_searcher.initialize_deltas (original)
-				l_first_pos := l_string_searcher.substring_index_with_deltas (Current, original, 1, l_count)
-				if l_first_pos > 0 then
-					l_orig_count := original.count
-					l_new_count := new.count
-					if l_orig_count = l_new_count then
-							-- String will not be resized, simply perform character substitution
-						from
-							l_area := area
-							l_new_area := new.area
-						until
-							l_first_pos = 0
-						loop
-							l_area.copy_data (l_new_area, 0, l_first_pos - 1, l_new_count)
-							if l_first_pos + l_new_count <= l_count then
-								l_first_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_new_count, l_count)
-							else
-								l_first_pos := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("replace_substring_all", Current, [original,new])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if not is_empty then
+					l_count := count
+					l_string_searcher := string_searcher
+					l_string_searcher.initialize_deltas (original)
+					l_first_pos := l_string_searcher.substring_index_with_deltas (Current, original, 1, l_count)
+					if l_first_pos > 0 then
+						l_orig_count := original.count
+						l_new_count := new.count
+						if l_orig_count = l_new_count then
+								-- String will not be resized, simply perform character substitution
+							from
+								l_area := area
+								l_new_area := new.area
+							until
+								l_first_pos = 0
+							loop
+								l_area.copy_data (l_new_area, 0, l_first_pos - 1, l_new_count)
+								if l_first_pos + l_new_count <= l_count then
+									l_first_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_new_count, l_count)
+								else
+									l_first_pos := 0
+								end
 							end
-						end
-					elseif l_orig_count > l_new_count then
-							-- New string is smaller than previous string, we can optimize
-							-- substitution by only moving block between two occurrences of `orginal'.
-						from
-							l_next_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_orig_count, l_count)
-							l_area := area
-							l_new_area := new.area
-						until
-							l_next_pos = 0
-						loop
+						elseif l_orig_count > l_new_count then
+								-- New string is smaller than previous string, we can optimize
+								-- substitution by only moving block between two occurrences of `orginal'.
+							from
+								l_next_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_orig_count, l_count)
+								l_area := area
+								l_new_area := new.area
+							until
+								l_next_pos = 0
+							loop
+									-- Copy new string into Current
+								l_area.copy_data (l_new_area, 0, l_first_pos - 1 - l_offset, l_new_count)
+									-- Shift characters between `l_first_pos' and `l_next_pos'
+								l_area.overlapping_move (l_first_pos + l_orig_count - 1,
+									l_first_pos + l_new_count - 1 - l_offset, l_next_pos - l_first_pos - l_orig_count)
+								l_first_pos := l_next_pos
+								l_offset := l_offset + (l_orig_count - l_new_count)
+								if l_first_pos + l_new_count <= l_count then
+									l_next_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_orig_count, l_count)
+								else
+									l_next_pos := 0
+								end
+							end
+								-- Perform final substitution:
 								-- Copy new string into Current
 							l_area.copy_data (l_new_area, 0, l_first_pos - 1 - l_offset, l_new_count)
-								-- Shift characters between `l_first_pos' and `l_next_pos'
+								-- Shift characters between `l_first_pos' and the end of the string
 							l_area.overlapping_move (l_first_pos + l_orig_count - 1,
-								l_first_pos + l_new_count - 1 - l_offset, l_next_pos - l_first_pos - l_orig_count)
-							l_first_pos := l_next_pos
+								l_first_pos + l_new_count - 1 - l_offset, l_count + 1 - l_first_pos - l_orig_count)
+									-- Perform last substitution
 							l_offset := l_offset + (l_orig_count - l_new_count)
-							if l_first_pos + l_new_count <= l_count then
-								l_next_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_orig_count, l_count)
-							else
-								l_next_pos := 0
-							end
-						end
-							-- Perform final substitution:
-							-- Copy new string into Current
-						l_area.copy_data (l_new_area, 0, l_first_pos - 1 - l_offset, l_new_count)
-							-- Shift characters between `l_first_pos' and the end of the string
-						l_area.overlapping_move (l_first_pos + l_orig_count - 1,
-							l_first_pos + l_new_count - 1 - l_offset, l_count + 1 - l_first_pos - l_orig_count)
-								-- Perform last substitution
-						l_offset := l_offset + (l_orig_count - l_new_count)
 
-							-- Update `count'
-						set_count (l_count - l_offset)
-					else
-							-- Optimization is harder as we don't know how many times we need to resize
-							-- the string. For now, we do like we did in our previous implementation
-						from
-						until
-							l_first_pos = 0
-						loop
-							replace_substring (new, l_first_pos, l_first_pos + l_orig_count - 1)
-							l_count := count
-							if l_first_pos + l_new_count <= l_count then
-								l_first_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_new_count, l_count)
-							else
-								l_first_pos := 0
+								-- Update `count'
+							set_count (l_count - l_offset)
+						else
+								-- Optimization is harder as we don't know how many times we need to resize
+								-- the string. For now, we do like we did in our previous implementation
+							from
+							until
+								l_first_pos = 0
+							loop
+								replace_substring (new, l_first_pos, l_first_pos + l_orig_count - 1)
+								l_count := count
+								if l_first_pos + l_new_count <= l_count then
+									l_first_pos := l_string_searcher.substring_index_with_deltas (Current, original, l_first_pos + l_new_count, l_count)
+								else
+									l_first_pos := 0
+								end
 							end
 						end
+						internal_hash_code := 0
 					end
-					internal_hash_code := 0
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	replace_blank is
 			-- Replace all current characters with blanks.
+		local
+			ignore_result: ANY
 		do
-			fill_with (' ')
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("replace_blank", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				fill_with (' ')
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			same_size: (count = old count) and (capacity >= old capacity)
 			all_blank: elks_checking implies occurrences (' ') = count
@@ -1049,8 +1516,18 @@ feature -- Element change
 
 	fill_blank is
 			-- Fill with `capacity' blank characters.
+		local
+			ignore_result: ANY
 		do
-			fill_character (' ')
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("fill_blank", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				fill_character (' ')
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			filled: full
 			same_size: (count = capacity) and (capacity = old capacity)
@@ -1060,12 +1537,21 @@ feature -- Element change
 	fill_with (c: CHARACTER) is
 			-- Replace every character with `c'.
 		local
+			ignore_result: ANY
 			l_count: INTEGER
 		do
-			l_count := count
-			if l_count /= 0 then
-				area.fill_with (c, 0, count - 1)
-				internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("fill_with", Current, [c])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_count := count
+				if l_count /= 0 then
+					area.fill_with (c, 0, count - 1)
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			same_count: (count = old count) and (capacity >= old capacity)
@@ -1076,8 +1562,18 @@ feature -- Element change
 			-- Replace every character with `c'.
 		obsolete
 			"ELKS 2001: use `fill_with' instead'"
+		local
+			ignore_result: ANY
 		do
-			fill_with (c)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("replace_character", Current, [c])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				fill_with (c)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			same_count: (count = old count) and (capacity >= old capacity)
 			filled: elks_checking implies occurrences (c) = count
@@ -1086,13 +1582,22 @@ feature -- Element change
 	fill_character (c: CHARACTER) is
 			-- Fill with `capacity' characters all equal to `c'.
 		local
+			ignore_result: ANY
 			l_cap: like capacity
 		do
-			l_cap := capacity
-			if l_cap /= 0 then
-				area.fill_with (c, 0, l_cap - 1)
-				count := l_cap
-				internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("fill_character", Current, [c])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_cap := capacity
+				if l_cap /= 0 then
+					area.fill_with (c, 0, l_cap - 1)
+					count := l_cap
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			filled: full
@@ -1107,8 +1612,18 @@ feature -- Element change
 			"ELKS 2001: use `keep_head' instead'"
 		require
 			non_negative_argument: n >= 0
+		local
+			ignore_result: ANY
 		do
-			keep_head (n)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("head", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				keep_head (n)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			new_count: count = n.min (old count)
 			kept: elks_checking implies is_equal (old substring (1, n.min (count)))
@@ -1119,10 +1634,20 @@ feature -- Element change
 			-- do nothing if `n' >= `count'.
 		require
 			non_negative_argument: n >= 0
+		local
+			ignore_result: ANY
 		do
-			if n < count then
-				count := n
-				internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("keep_head", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if n < count then
+					count := n
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			new_count: count = n.min (old count)
@@ -1136,8 +1661,18 @@ feature -- Element change
 			"ELKS 2001: use `keep_tail' instead'"
 		require
 			non_negative_argument: n >= 0
+		local
+			ignore_result: ANY
 		do
-			keep_tail (n)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("tail", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				keep_tail (n)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			new_count: count = n.min (old count)
 			kept: elks_checking implies is_equal (old substring (count - n.min(count) + 1, count))
@@ -1149,13 +1684,22 @@ feature -- Element change
 		require
 			non_negative_argument: n >= 0
 		local
+			ignore_result: ANY
 			nb: like count
 		do
-			nb := count
-			if n < nb then
-				area.overlapping_move (nb - n, 0, n)
-				count := n
-				internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("keep_tail", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				nb := count
+				if n < nb then
+					area.overlapping_move (nb - n, 0, n)
+					count := n
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			new_count: count = n.min (old count)
@@ -1165,27 +1709,36 @@ feature -- Element change
 	left_adjust is
 			-- Remove leading whitespace.
 		local
+			ignore_result: ANY
 			nb, nb_space: INTEGER
 			l_area: like area
 		do
-				-- Compute number of spaces at the left of current string.
-			from
-				nb := count - 1
-				l_area := area
-			until
-				nb_space > nb or else not l_area.item (nb_space).is_space
-			loop
-				nb_space := nb_space + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("left_adjust", Current, [])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+					-- Compute number of spaces at the left of current string.
+				from
+					nb := count - 1
+					l_area := area
+				until
+					nb_space > nb or else not l_area.item (nb_space).is_space
+				loop
+					nb_space := nb_space + 1
+				end
 
-			if nb_space > 0 then
-					-- Set new count value.
-				nb := nb + 1 - nb_space
-					-- Shift characters to the left.
-				l_area.overlapping_move (nb_space, 0, nb)
-					-- Set new count.
-				count := nb
-				internal_hash_code := 0
+				if nb_space > 0 then
+						-- Set new count value.
+					nb := nb + 1 - nb_space
+						-- Shift characters to the left.
+					l_area.overlapping_move (nb_space, 0, nb)
+						-- Set new count.
+					count := nb
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			valid_count: count <= old count
@@ -1196,26 +1749,35 @@ feature -- Element change
 	right_adjust is
 			-- Remove trailing whitespace.
 		local
+			ignore_result: ANY
 			i, nb: INTEGER
 			nb_space: INTEGER
 			l_area: like area
 		do
-				-- Compute number of spaces at the right of current string.
-			from
-				nb := count - 1
-				i := nb
-				l_area := area
-			until
-				i < 0 or else not l_area.item (i).is_space
-			loop
-				nb_space := nb_space + 1
-				i := i - 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("right_adjust", Current, [])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+					-- Compute number of spaces at the right of current string.
+				from
+					nb := count - 1
+					i := nb
+					l_area := area
+				until
+					i < 0 or else not l_area.item (i).is_space
+				loop
+					nb_space := nb_space + 1
+					i := i - 1
+				end
 
-			if nb_space > 0 then
-					-- Set new count.
-				count := nb + 1 - nb_space
-				internal_hash_code := 0
+				if nb_space > 0 then
+						-- Set new count.
+					count := nb + 1 - nb_space
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			valid_count: count <= old count
@@ -1233,10 +1795,20 @@ feature -- Element change
 			-- will also affect `other', and conversely.
 		require
 			argument_not_void: other /= Void
+		local
+			ignore_result: ANY
 		do
-			area := other.area
-			count := other.count
-			internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("other", Current, [other])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				area := other.area
+				count := other.count
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			shared_count: other.count = count
 			shared_area: other.area = area
@@ -1244,9 +1816,19 @@ feature -- Element change
 
 	put (c: CHARACTER; i: INTEGER) is
 			-- Replace character at position `i' by `c'.
+		local
+			ignore_result: ANY
 		do
-			area.put (c, i - 1)
-			internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("put", Current, [c,i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				area.put (c, i - 1)
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure then
 			stable_count: count = old count
 			stable_before_i: elks_checking implies substring (1, i - 1).is_equal (old substring (1, i - 1))
@@ -1255,24 +1837,43 @@ feature -- Element change
 
 	put_code (v: NATURAL_32; i: INTEGER) is
 			-- Replace character at position `i' by character of code `v'.
+		local
+			ignore_result: ANY
 		do
-			area.put (v.to_character_8, i - 1)
-			internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("put_code", Current, [v,i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				area.put (v.to_character_8, i - 1)
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	precede, prepend_character (c: CHARACTER) is
 			-- Add `c' at front.
 		local
+			ignore_result: ANY
 			l_area: like area
 		do
-			if count = capacity then
-				resize (count + additional_space)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("precede", Current, [c])
 			end
-			l_area := area
-			l_area.overlapping_move (0, 1, count)
-			l_area.put (c, 0)
-			count := count + 1
-			internal_hash_code := 0
+			if (not controller.is_replay_phase) or is_observed then
+				if count = capacity then
+					resize (count + additional_space)
+				end
+				l_area := area
+				l_area.overlapping_move (0, 1, count)
+				l_area.put (c, 0)
+				count := count + 1
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			new_count: count = old count + 1
 		end
@@ -1281,8 +1882,18 @@ feature -- Element change
 			-- Prepend a copy of `s' at front.
 		require
 			argument_not_void: s /= Void
+		local
+			ignore_result: ANY
 		do
-			insert_string (s, 1)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prepend", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				insert_string (s, 1)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			new_count: count = old (count + s.count)
 			inserted: elks_checking implies string.is_equal (old (s.twin) + old substring (1, count))
@@ -1290,46 +1901,105 @@ feature -- Element change
 
 	prepend_boolean (b: BOOLEAN) is
 			-- Prepend the string representation of `b' at front.
+		local
+			ignore_result: ANY
 		do
-			prepend (b.out)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prepend_boolean", Current, [b])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				prepend (b.out)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	prepend_double (d: DOUBLE) is
 			-- Prepend the string representation of `d' at front.
+		local
+			ignore_result: ANY
 		do
-			prepend (d.out)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prepend_double", Current, [d])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				prepend (d.out)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	prepend_integer (i: INTEGER) is
 			-- Prepend the string representation of `i' at front.
+		local
+			ignore_result: ANY
 		do
-			prepend (i.out)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prepend_integer", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				prepend (i.out)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	prepend_real (r: REAL) is
 			-- Prepend the string representation of `r' at front.
+		local
+			ignore_result: ANY
 		do
-			prepend (r.out)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prepend_real", Current, [r])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				prepend (r.out)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	prepend_string (s: STRING) is
 			-- Prepend a copy of `s', if not void, at front.
+		local
+			ignore_result: ANY
 		do
-			if s /= Void then
-				prepend (s)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prepend_string", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if s /= Void then
+					prepend (s)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_string_general (s: STRING_GENERAL) is
 			-- Append a copy of `s' at end.
 		local
+			ignore_result: ANY
 			l_s8: STRING
 		do
-			if same_type (s) then
-				l_s8 ?= s
-				append (l_s8)
-			else
-				Precursor {STRING_GENERAL} (s)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_string_general", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if same_type (s) then
+					l_s8 ?= s
+					append (l_s8)
+				else
+					Precursor {STRING_GENERAL} (s)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -1338,18 +2008,27 @@ feature -- Element change
 		require
 			argument_not_void: s /= Void
 		local
+			ignore_result: ANY
 			l_count, l_s_count, l_new_size: INTEGER
 		do
-			l_s_count := s.count
-			if l_s_count > 0 then
-				l_count := count
-				l_new_size := l_s_count + l_count
-				if l_new_size > capacity then
-					resize (l_new_size + additional_space)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_s_count := s.count
+				if l_s_count > 0 then
+					l_count := count
+					l_new_size := l_s_count + l_count
+					if l_new_size > capacity then
+						resize (l_new_size + additional_space)
+					end
+					area.copy_data (s.area, 0, l_count, l_s_count)
+					count := l_new_size
+					internal_hash_code := 0
 				end
-				area.copy_data (s.area, 0, l_count, l_s_count)
-				count := l_new_size
-				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			new_count: count = old count + old s.count
@@ -1361,10 +2040,20 @@ feature -- Element change
 			-- Then return the Result.
 		require
 			argument_not_void: s /= Void
+		local
+			ignore_result: ANY
 		do
-			Result := new_string (count + s.count)
-			Result.append (Current)
-			Result.append (s)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("infix_plus", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := new_string (count + s.count)
+				Result.append (Current)
+				Result.append (s)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			Result_exists: Result /= Void
 			new_count: Result.count = count + s.count
@@ -1374,9 +2063,19 @@ feature -- Element change
 
 	append_string (s: STRING) is
 			-- Append a copy of `s', if not void, at end.
+		local
+			ignore_result: ANY
 		do
-			if s /= Void then
-				append (s)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_string", Current, [s])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if s /= Void then
+					append (s)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			appended: s /= Void implies
@@ -1386,383 +2085,486 @@ feature -- Element change
 	append_integer (i: INTEGER) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: INTEGER
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					if i < 0 then
-						append_character ('-')
-						l_starting_index := l_starting_index + 1
-							-- Special case for minimum integer value as negating it
-							-- as no effect.
-						if i = {INTEGER}.Min_value then
-							append_character ('8')
-							l_value := -(i // 10)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_integer", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						if i < 0 then
+							append_character ('-')
+							l_starting_index := l_starting_index + 1
+								-- Special case for minimum integer value as negating it
+								-- as no effect.
+							if i = {INTEGER}.Min_value then
+								append_character ('8')
+								l_value := -(i // 10)
+							else
+								l_value := -i
+							end
 						else
-							l_value := -i
+							l_value := i
 						end
-					else
-						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
 					end
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_integer_8 (i: INTEGER_8) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: INTEGER_8
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					if i < 0 then
-						append_character ('-')
-						l_starting_index := l_starting_index + 1
-							-- Special case for minimum integer value as negating it
-							-- as no effect.
-						if i = {INTEGER_8}.Min_value then
-							append_character ('8')
-							l_value := -(i // 10)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_integer_8", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						if i < 0 then
+							append_character ('-')
+							l_starting_index := l_starting_index + 1
+								-- Special case for minimum integer value as negating it
+								-- as no effect.
+							if i = {INTEGER_8}.Min_value then
+								append_character ('8')
+								l_value := -(i // 10)
+							else
+								l_value := -i
+							end
 						else
-							l_value := -i
+							l_value := i
 						end
-					else
-						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
 					end
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_integer_16 (i: INTEGER_16) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: INTEGER_16
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					if i < 0 then
-						append_character ('-')
-						l_starting_index := l_starting_index + 1
-							-- Special case for minimum integer value as negating it
-							-- as no effect.
-						if i = {INTEGER_16}.Min_value then
-							append_character ('8')
-							l_value := -(i // 10)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_integer_16", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						if i < 0 then
+							append_character ('-')
+							l_starting_index := l_starting_index + 1
+								-- Special case for minimum integer value as negating it
+								-- as no effect.
+							if i = {INTEGER_16}.Min_value then
+								append_character ('8')
+								l_value := -(i // 10)
+							else
+								l_value := -i
+							end
 						else
-							l_value := -i
+							l_value := i
 						end
-					else
-						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
 					end
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_integer_64 (i: INTEGER_64) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: INTEGER_64
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					if i < 0 then
-						append_character ('-')
-						l_starting_index := l_starting_index + 1
-							-- Special case for minimum integer value as negating it
-							-- as no effect.
-						if i = {INTEGER_64}.Min_value then
-							append_character ('8')
-							l_value := -(i // 10)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_integer_64", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						if i < 0 then
+							append_character ('-')
+							l_starting_index := l_starting_index + 1
+								-- Special case for minimum integer value as negating it
+								-- as no effect.
+							if i = {INTEGER_64}.Min_value then
+								append_character ('8')
+								l_value := -(i // 10)
+							else
+								l_value := -i
+							end
 						else
-							l_value := -i
+							l_value := i
 						end
-					else
-						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
 					end
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_natural_8 (i: NATURAL_8) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: NATURAL_8
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					l_value := i
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_natural_8", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
+					end
+
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_natural_16 (i: NATURAL_16) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: NATURAL_16
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					l_value := i
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_natural_16", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
+					end
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_natural_32 (i: NATURAL_32) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: NATURAL_32
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					l_value := i
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_natural_32", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
+					end
+
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_natural_64 (i: NATURAL_64) is
 			-- Append the string representation of `i' at end.
 		local
+			ignore_result: ANY
 			l_value: NATURAL_64
 			l_starting_index, l_ending_index: INTEGER
 			l_temp: CHARACTER
 			l_area: like area
 		do
-			if i = 0 then
-				append_character ('0')
-			else
-					-- Extract integer value digit by digit from right to left.
-				from
-					l_starting_index := count
-					l_value := i
-				until
-					l_value = 0
-				loop
-					append_character (((l_value \\ 10)+ 48).to_character_8)
-					l_value := l_value // 10
-				end
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_natural_64", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if i = 0 then
+					append_character ('0')
+				else
+						-- Extract integer value digit by digit from right to left.
+					from
+						l_starting_index := count
+						l_value := i
+					until
+						l_value = 0
+					loop
+						append_character (((l_value \\ 10)+ 48).to_character_8)
+						l_value := l_value // 10
+					end
 
-					-- Now put digits in correct order from left to right.
-				from
-					l_ending_index := count - 1
-					l_area := area
-				until
-					l_starting_index >= l_ending_index
-				loop
-					l_temp := l_area.item (l_starting_index)
-					l_area.put (l_area.item (l_ending_index), l_starting_index)
-					l_area.put (l_temp, l_ending_index)
-					l_ending_index := l_ending_index - 1
-					l_starting_index := l_starting_index + 1
+						-- Now put digits in correct order from left to right.
+					from
+						l_ending_index := count - 1
+						l_area := area
+					until
+						l_starting_index >= l_ending_index
+					loop
+						l_temp := l_area.item (l_starting_index)
+						l_area.put (l_area.item (l_ending_index), l_starting_index)
+						l_area.put (l_temp, l_ending_index)
+						l_ending_index := l_ending_index - 1
+						l_starting_index := l_starting_index + 1
+					end
 				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	append_real (r: REAL) is
 			-- Append the string representation of `r' at end.
+		local
+			ignore_result: ANY
 		do
-			append (r.out)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_real", Current, [r])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				append (r.out)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	append_double (d: DOUBLE) is
 			-- Append the string representation of `d' at end.
+		local
+			ignore_result: ANY
 		do
-			append (d.out)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_double", Current, [d])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				append (d.out)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	append_character, extend (c: CHARACTER) is
 			-- Append `c' at end.
 		local
+			ignore_result: ANY
 			current_count: INTEGER
 		do
-			current_count := count
-			if current_count = capacity then
-				resize (current_count + additional_space)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_character", Current, [c])
 			end
-			area.put (c, current_count)
-			count := current_count + 1
-			internal_hash_code := 0
+			if (not controller.is_replay_phase) or is_observed then
+				current_count := count
+				if current_count = capacity then
+					resize (current_count + additional_space)
+				end
+				area.put (c, current_count)
+				count := current_count + 1
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure then
 			item_inserted: item (count) = c
 			new_count: count = old count + 1
@@ -1771,8 +2573,18 @@ feature -- Element change
 
 	append_boolean (b: BOOLEAN) is
 			-- Append the string representation of `b' at end.
+		local
+			ignore_result: ANY
 		do
-			append (b.out)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("append_boolean", Current, [b])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				append (b.out)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	insert (s: STRING; i: INTEGER) is
@@ -1783,8 +2595,18 @@ feature -- Element change
 			string_exists: s /= Void
 			index_small_enough: i <= count + 1
 			index_large_enough: i > 0
+		local
+			ignore_result: ANY
 		do
-			insert_string (s, i)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("insert", Current, [s,i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				insert_string (s, i)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			inserted: elks_checking implies
 				(is_equal (old substring (1, i - 1) + old (s.twin) + old substring (i, count)))
@@ -1797,31 +2619,40 @@ feature -- Element change
 			string_exists: s /= Void
 			valid_insertion_index: 1 <= i and i <= count + 1
 		local
+			ignore_result: ANY
 			pos, new_size: INTEGER
 			l_s_count: INTEGER
 			l_area: like area
 		do
-				-- Insert `s' if `s' is not empty, otherwise is useless.
-			l_s_count := s.count
-			if l_s_count /= 0 then
-					-- Resize Current if necessary.
-				new_size := l_s_count + count
-				if new_size > capacity then
-					resize (new_size + additional_space)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("insert_string", Current, [s,i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+					-- Insert `s' if `s' is not empty, otherwise is useless.
+				l_s_count := s.count
+				if l_s_count /= 0 then
+						-- Resize Current if necessary.
+					new_size := l_s_count + count
+					if new_size > capacity then
+						resize (new_size + additional_space)
+					end
+
+						-- Perform all operations using a zero based arrays.
+					l_area := area
+					pos := i - 1
+
+						-- First shift from `s.count' position all characters starting at index `pos'.
+					l_area.overlapping_move (pos, pos + l_s_count, count - pos)
+
+						-- Copy string `s' at index `pos'.
+					l_area.copy_data (s.area, 0, pos, l_s_count)
+
+					count := new_size
+					internal_hash_code := 0
 				end
-
-					-- Perform all operations using a zero based arrays.
-				l_area := area
-				pos := i - 1
-
-					-- First shift from `s.count' position all characters starting at index `pos'.
-				l_area.overlapping_move (pos, pos + l_s_count, count - pos)
-
-					-- Copy string `s' at index `pos'.
-				l_area.copy_data (s.area, 0, pos, l_s_count)
-
-				count := new_size
-				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			inserted: elks_checking implies
@@ -1834,27 +2665,36 @@ feature -- Element change
 		require
 			valid_insertion_index: 1 <= i and i <= count + 1
 		local
+			ignore_result: ANY
 			pos, new_size: INTEGER
 			l_area: like area
 		do
-				-- Resize Current if necessary.
-			new_size := 1 + count
-			if new_size > capacity then
-				resize (new_size + additional_space)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("insert_character", Current, [c,i])
 			end
+			if (not controller.is_replay_phase) or is_observed then
+					-- Resize Current if necessary.
+				new_size := 1 + count
+				if new_size > capacity then
+					resize (new_size + additional_space)
+				end
 
-				-- Perform all operations using a zero based arrays.
-			pos := i - 1
-			l_area := area
+					-- Perform all operations using a zero based arrays.
+				pos := i - 1
+				l_area := area
 
-				-- First shift from `s.count' position all characters starting at index `pos'.
-			l_area.overlapping_move (pos, pos + 1, count - pos)
+					-- First shift from `s.count' position all characters starting at index `pos'.
+				l_area.overlapping_move (pos, pos + 1, count - pos)
 
-				-- Insert new character
-			l_area.put (c, pos)
+					-- Insert new character
+				l_area.put (c, pos)
 
-			count := new_size
-			internal_hash_code := 0
+				count := new_size
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			one_more_character: count = old count + 1
 			inserted: item (i) = c
@@ -1867,14 +2707,23 @@ feature -- Removal
 	remove (i: INTEGER) is
 			-- Remove `i'-th character.
 		local
+			ignore_result: ANY
 			l_count: INTEGER
 		do
-			l_count := count
-				-- Shift characters to the left.
-			area.overlapping_move (i, i - 1, l_count - i)
-				-- Update content.
-			count := l_count - 1
-			internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("remove", Current, [i])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_count := count
+					-- Shift characters to the left.
+				area.overlapping_move (i, i - 1, l_count - i)
+					-- Update content.
+				count := l_count - 1
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	remove_head (n: INTEGER) is
@@ -1882,12 +2731,22 @@ feature -- Removal
 			-- if `n' > `count', remove all.
 		require
 			n_non_negative: n >= 0
+		local
+			ignore_result: ANY
 		do
-			if n > count then
-				count := 0
-				internal_hash_code := 0
-			else
-				keep_tail (count - n)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("remove_head", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if n > count then
+					count := 0
+					internal_hash_code := 0
+				else
+					keep_tail (count - n)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			removed: elks_checking implies is_equal (old substring (n.min (count) + 1, count))
@@ -1901,13 +2760,22 @@ feature -- Removal
 			valid_end_index: end_index <= count
 			meaningful_interval: start_index <= end_index + 1
 		local
+			ignore_result: ANY
 			l_count, nb_removed: INTEGER
 		do
-			nb_removed := end_index - start_index + 1
-			if nb_removed > 0 then
-				l_count := count
-				area.overlapping_move (start_index + nb_removed - 1, start_index - 1, l_count - end_index)
-				count := l_count - nb_removed
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("remove_substring", Current, [start_index,end_index])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				nb_removed := end_index - start_index + 1
+				if nb_removed > 0 then
+					l_count := count
+					area.overlapping_move (start_index + nb_removed - 1, start_index - 1, l_count - end_index)
+					count := l_count - nb_removed
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			removed: elks_checking implies
@@ -1920,14 +2788,23 @@ feature -- Removal
 		require
 			n_non_negative: n >= 0
 		local
+			ignore_result: ANY
 			l_count: INTEGER
 		do
-			l_count := count
-			if n > l_count then
-				count := 0
-				internal_hash_code := 0
-			else
-				keep_head (l_count - n)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("remove_tail", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_count := count
+				if n > l_count then
+					count := 0
+					internal_hash_code := 0
+				else
+					keep_head (l_count - n)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			removed: elks_checking implies is_equal (old substring (1, count - n.min (count)))
@@ -1938,17 +2815,26 @@ feature -- Removal
 		require else
 			True
 		local
+			ignore_result: ANY
 			counter: INTEGER
 		do
-			from
-				counter := 1
-			until
-				counter > count or else (item (counter) = c)
-			loop
-				counter := counter + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prune", Current, [c])
 			end
-			if counter <= count then
-				remove (counter)
+			if (not controller.is_replay_phase) or is_observed then
+				from
+					counter := 1
+				until
+					counter > count or else (item (counter) = c)
+				loop
+					counter := counter + 1
+				end
+				if counter <= count then
+					remove (counter)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -1957,27 +2843,36 @@ feature -- Removal
 		require else
 			True
 		local
+			ignore_result: ANY
 			i, j, nb: INTEGER
 			l_area: like area
 			l_char: CHARACTER
 		do
-				-- Traverse string and shift characters to the left
-				-- each time we find an occurrence of `c'.
-			from
-				l_area := area
-				nb := count
-			until
-				i = nb
-			loop
-				l_char := l_area.item (i)
-				if l_char /= c then
-					l_area.put (l_char, j)
-					j := j + 1
-				end
-				i := i + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prune_all", Current, [c])
 			end
-			count := j
-			internal_hash_code := 0
+			if (not controller.is_replay_phase) or is_observed then
+					-- Traverse string and shift characters to the left
+					-- each time we find an occurrence of `c'.
+				from
+					l_area := area
+					nb := count
+				until
+					i = nb
+				loop
+					l_char := l_area.item (i)
+					if l_char /= c then
+						l_area.put (l_char, j)
+						j := j + 1
+					end
+					i := i + 1
+				end
+				count := j
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure then
 			changed_count: count = (old count) - (old occurrences (c))
 			-- removed: For every `i' in 1..`count', `item' (`i') /= `c'
@@ -1985,32 +2880,62 @@ feature -- Removal
 
 	prune_all_leading (c: CHARACTER) is
 			-- Remove all leading occurrences of `c'.
+		local
+			ignore_result: ANY
 		do
-			from
-			until
-				is_empty or else item (1) /= c
-			loop
-				remove (1)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prune_all_leading", Current, [c])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				from
+				until
+					is_empty or else item (1) /= c
+				loop
+					remove (1)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	prune_all_trailing (c: CHARACTER) is
 			-- Remove all trailing occurrences of `c'.
+		local
+			ignore_result: ANY
 		do
-			from
-			until
-				is_empty or else item (count) /= c
-			loop
-				remove (count)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("prune_all_trailing", Current, [c])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				from
+				until
+					is_empty or else item (count) /= c
+				loop
+					remove (count)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	wipe_out is
 			-- Remove all characters.
+		local
+			ignore_result: ANY
 		do
-			create area.make (1)
-			count := 0
-			internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("wipe_out", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				create area.make (1)
+				count := 0
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure then
 			is_empty: count = 0
 			empty_capacity: capacity = 0
@@ -2018,9 +2943,19 @@ feature -- Removal
 
 	clear_all is
 			-- Reset all characters.
+		local
+			ignore_result: ANY
 		do
-			count := 0
-			internal_hash_code := 0
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("clear_all", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				count := 0
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			is_empty: count = 0
 			same_capacity: capacity = old capacity
@@ -2030,8 +2965,18 @@ feature -- Resizing
 
 	adapt_size is
 			-- Adapt the size to accommodate `count' characters.
+		local
+			ignore_result: ANY
 		do
-			resize (count)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("adapt_size", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				resize (count)
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		end
 
 	resize (newsize: INTEGER) is
@@ -2039,19 +2984,38 @@ feature -- Resizing
 			-- at least `newsize' characters.
 			-- Do not lose any previously entered character.
 		local
+			ignore_result: ANY
 			area_count: INTEGER
 		do
-			area_count := area.count
-			if newsize >= area_count then
-				area := area.aliased_resized_area (newsize + 1)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("resize", Current, [newsize])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				area_count := area.count
+				if newsize >= area_count then
+					area := area.aliased_resized_area (newsize + 1)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	grow (newsize: INTEGER) is
 			-- Ensure that the capacity is at least `newsize'.
+		local
+			ignore_result: ANY
 		do
-			if newsize > capacity then
-				resize (newsize)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("grow", Current, [newsize])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if newsize > capacity then
+					resize (newsize)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -2059,149 +3023,195 @@ feature -- Conversion
 
 	as_lower: like Current is
 			-- New object with all letters in lower case.
+		local
+			ignore_result: ANY
 		do
-			Result := twin
-			Result.to_lower
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("as_lower", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := twin
+				Result.to_lower
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
 			length: Result.count = count
 			anchor: count > 0 implies Result.item (1) = item (1).as_lower
-			recurse: count > 1 implies Result.substring (2, count).
-				is_equal (substring (2, count).as_lower)
+			recurse: count > 1 implies Result.substring (2, count).is_equal (substring (2, count).as_lower)
 		end
 
 	as_upper: like Current is
 			-- New object with all letters in upper case
+		local
+			ignore_result: ANY
 		do
-			Result := twin
-			Result.to_upper
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("as_upper", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := twin
+				Result.to_upper
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure
-			length: Result.count = count
-			anchor: count > 0 implies Result.item (1) = item (1).as_upper
-			recurse: count > 1 implies Result.substring (2, count).
-				is_equal (substring (2, count).as_upper)
+				length: Result.count = count
+				anchor: count > 0 implies Result.item (1) = item (1).as_upper
+				recurse: count > 1 implies Result.substring (2, count).
+					is_equal (substring (2, count).as_upper)
 		end
 
 	left_justify is
 			-- Left justify Current using `count' as witdth.
 		local
+			ignore_result: ANY
 			i, nb: INTEGER
 			l_area: like area
 		do
-				-- Remove leading white spaces.
-			nb := count
-			left_adjust
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("left_justify", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+					-- Remove leading white spaces.
+				nb := count
+				left_adjust
 
-				-- Get new count
-			i := count
-			if i < nb then
-					-- `left_adjust' did remove some characters, so we need to add
-					-- some white spaces at the end of the string.
-				from
-					l_area := area
-				until
-					i = nb
-				loop
-					l_area.put (' ', i)
-					i := i + 1
+					-- Get new count
+				i := count
+				if i < nb then
+						-- `left_adjust' did remove some characters, so we need to add
+						-- some white spaces at the end of the string.
+					from
+						l_area := area
+					until
+						i = nb
+					loop
+						l_area.put (' ', i)
+						i := i + 1
+					end
+						-- Restore `count'
+					count := nb
+					internal_hash_code := 0
 				end
-					-- Restore `count'
-				count := nb
-				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	center_justify is
 			-- Center justify Current using `count' as width.
 		local
+			ignore_result: ANY
 			i, nb, l_offset: INTEGER
 			left_nb_space, right_nb_space: INTEGER
 			l_area: like area
 		do
-				-- Compute number of spaces at the left of current string.
-			from
-				nb := count
-				l_area := area
-			until
-				left_nb_space = nb or else not l_area.item (left_nb_space).is_space
-			loop
-				left_nb_space := left_nb_space + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("center_justify", Current, [])
 			end
-
-				-- Compute number of spaces at the right of current string.
-			from
-				i := nb - 1
-				l_area := area
-			until
-				i = -1 or else not l_area.item (i).is_space
-			loop
-				right_nb_space := right_nb_space + 1
-				i := i - 1
-			end
-
-				-- We encourage that more spaces will be put to the left, when
-				-- number of spaces is not even.
-			l_offset := left_nb_space + right_nb_space
-			if l_offset \\ 2 = 0 then
-				l_offset := left_nb_space - l_offset // 2
-			else
-				l_offset := left_nb_space - l_offset // 2 - 1
-			end
-			if l_offset = 0 then
-					-- Nothing to be done.
-			else
-					-- Shift characters to the right or left (depending on sign of
-					-- `l_offset' by `l_offset' position.
-				l_area.move_data (left_nb_space, left_nb_space - l_offset,
-					nb - left_nb_space - right_nb_space)
-
-				if l_offset < 0 then
-						-- Fill left part with spaces.
-					l_area.fill_with (' ', left_nb_space, left_nb_space - l_offset - 1)
-				else
-						-- Fill right part with spaces.
-					l_area.fill_with (' ', nb - right_nb_space - l_offset, nb - 1)
+			if (not controller.is_replay_phase) or is_observed then
+					-- Compute number of spaces at the left of current string.
+				from
+					nb := count
+					l_area := area
+				until
+					left_nb_space = nb or else not l_area.item (left_nb_space).is_space
+				loop
+					left_nb_space := left_nb_space + 1
 				end
-				internal_hash_code := 0
+
+					-- Compute number of spaces at the right of current string.
+				from
+					i := nb - 1
+					l_area := area
+				until
+					i = -1 or else not l_area.item (i).is_space
+				loop
+					right_nb_space := right_nb_space + 1
+					i := i - 1
+				end
+
+					-- We encourage that more spaces will be put to the left, when
+					-- number of spaces is not even.
+				l_offset := left_nb_space + right_nb_space
+				if l_offset \\ 2 = 0 then
+					l_offset := left_nb_space - l_offset // 2
+				else
+					l_offset := left_nb_space - l_offset // 2 - 1
+				end
+				if l_offset = 0 then
+						-- Nothing to be done.
+				else
+						-- Shift characters to the right or left (depending on sign of
+						-- `l_offset' by `l_offset' position.
+					l_area.move_data (left_nb_space, left_nb_space - l_offset,
+						nb - left_nb_space - right_nb_space)
+
+					if l_offset < 0 then
+							-- Fill left part with spaces.
+						l_area.fill_with (' ', left_nb_space, left_nb_space - l_offset - 1)
+					else
+							-- Fill right part with spaces.
+						l_area.fill_with (' ', nb - right_nb_space - l_offset, nb - 1)
+					end
+					internal_hash_code := 0
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	right_justify is
 			-- Right justify Current using `count' as width.
 		local
+			ignore_result: ANY
 			i, nb: INTEGER
 			nb_space: INTEGER
 			l_area: like area
 		do
-			nb := count
-			right_adjust
-			i := count
-			nb_space := nb - i
-			if nb_space > 0 then
-					-- Shift characters to the right.
-				from
-					l_area := area
-				variant
-					i + 1
-				until
-					i = 0
-				loop
-					i := i - 1
-					l_area.put (l_area.item (i), i + nb_space)
-				end
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("right_justify", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				nb := count
+				right_adjust
+				i := count
+				nb_space := nb - i
+				if nb_space > 0 then
+						-- Shift characters to the right.
+					from
+						l_area := area
+					variant
+						i + 1
+					until
+						i = 0
+					loop
+						i := i - 1
+						l_area.put (l_area.item (i), i + nb_space)
+					end
 
-					-- Fill left part with spaces.
-				from
-				variant
-					nb_space + 1
-				until
-					nb_space = 0
-				loop
-					nb_space := nb_space - 1
-					l_area.put (' ', nb_space)
+						-- Fill left part with spaces.
+					from
+					variant
+						nb_space + 1
+					until
+						nb_space = 0
+					loop
+						nb_space := nb_space - 1
+						l_area.put (' ', nb_space)
+					end
+						-- Restore `count'
+					count := nb
+					internal_hash_code := 0
 				end
-					-- Restore `count'
-				count := nb
-				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			same_count: count = old count
@@ -2219,46 +3229,64 @@ feature -- Conversion
 			pivot_not_space: pivot /= ' '
 			not_empty: not is_empty
 		local
+			ignore_result: ANY
 			l_index_of_pivot, l_new_size: INTEGER
 			l_area: like area
 		do
-			l_index_of_pivot := index_of (pivot, 1)
-			if l_index_of_pivot /= 0 then
-				if l_index_of_pivot < position then
-						-- We need to resize Current so that we can shift Current by
-						-- `l_index_of_pivot - position'.
-					l_new_size := count + position - l_index_of_pivot
-					grow (l_new_size)
-					l_area := area
-					l_area.move_data (0, position - l_index_of_pivot, count)
-					l_area.fill_with (' ', 0, position - l_index_of_pivot - 1)
-					count := l_new_size
-				else
-						-- Simply shift content to the left and reset trailing with spaces.
-					l_area := area
-					l_area.move_data (l_index_of_pivot - position, 0, count - l_index_of_pivot + position)
-					l_area.fill_with (' ', count - l_index_of_pivot + position, count - 1)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("character_justify", Current, [pivot,position])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_index_of_pivot := index_of (pivot, 1)
+				if l_index_of_pivot /= 0 then
+					if l_index_of_pivot < position then
+							-- We need to resize Current so that we can shift Current by
+							-- `l_index_of_pivot - position'.
+						l_new_size := count + position - l_index_of_pivot
+						grow (l_new_size)
+						l_area := area
+						l_area.move_data (0, position - l_index_of_pivot, count)
+						l_area.fill_with (' ', 0, position - l_index_of_pivot - 1)
+						count := l_new_size
+					else
+							-- Simply shift content to the left and reset trailing with spaces.
+						l_area := area
+						l_area.move_data (l_index_of_pivot - position, 0, count - l_index_of_pivot + position)
+						l_area.fill_with (' ', count - l_index_of_pivot + position, count - 1)
+					end
+					internal_hash_code := 0
 				end
-				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
 	to_lower is
 			-- Convert to lower case.
 		local
+			ignore_result: ANY
 			i: INTEGER
 			a: like area
 		do
-			from
-				i := count - 1
-				a := area
-			until
-				i < 0
-			loop
-				a.put (a.item (i).lower, i)
-				i := i - 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_lower", Current, [])
 			end
-			internal_hash_code := 0
+			if (not controller.is_replay_phase) or is_observed then
+				from
+					i := count - 1
+					a := area
+				until
+					i < 0
+				loop
+					a.put (a.item (i).lower, i)
+					i := i - 1
+				end
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			length_end_content: elks_checking implies is_equal (old as_lower)
 		end
@@ -2266,19 +3294,28 @@ feature -- Conversion
 	to_upper is
 			-- Convert to upper case.
 		local
+			ignore_result: ANY
 			i: INTEGER
 			a: like area
 		do
-			from
-				i := count - 1
-				a := area
-			until
-				i < 0
-			loop
-				a.put (a.item (i).upper, i)
-				i := i - 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_upper", Current, [])
 			end
-			internal_hash_code := 0
+			if (not controller.is_replay_phase) or is_observed then
+				from
+					i := count - 1
+					a := area
+				until
+					i < 0
+				loop
+					a.put (a.item (i).upper, i)
+					i := i - 1
+				end
+				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
+			end
 		ensure
 			length_end_content: elks_checking implies is_equal (old as_upper)
 		end
@@ -2288,8 +3325,16 @@ feature -- Conversion
 		require
 			is_integer_8: is_integer_8
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_8)
-			Result := ctoi_convertor.parsed_integer_8
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_integer_8", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_8)
+				Result := ctoi_convertor.parsed_integer_8
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_integer_16: INTEGER_16 is
@@ -2297,8 +3342,16 @@ feature -- Conversion
 		require
 			is_integer_16: is_integer_16
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_16)
-			Result := ctoi_convertor.parsed_integer_16
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_integer_16", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_16)
+				Result := ctoi_convertor.parsed_integer_16
+				end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_integer, to_integer_32: INTEGER is
@@ -2306,8 +3359,16 @@ feature -- Conversion
 		require
 			is_integer: is_integer_32
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_32)
-			Result := ctoi_convertor.parsed_integer
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_integer", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_32)
+				Result := ctoi_convertor.parsed_integer
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_integer_64: INTEGER_64 is
@@ -2315,8 +3376,16 @@ feature -- Conversion
 		require
 			is_integer_64: is_integer_64
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_64)
-			Result := ctoi_convertor.parsed_integer_64
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_integer_64", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_integer_64)
+				Result := ctoi_convertor.parsed_integer_64
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_natural_8: NATURAL_8 is
@@ -2324,8 +3393,16 @@ feature -- Conversion
 		require
 			is_natural_8: is_natural_8
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_8)
-			Result := ctoi_convertor.parsed_natural_8
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_natural_8", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_8)
+				Result := ctoi_convertor.parsed_natural_8
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_natural_16: NATURAL_16 is
@@ -2333,8 +3410,16 @@ feature -- Conversion
 		require
 			is_natural_16: is_natural_16
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_16)
-			Result := ctoi_convertor.parsed_natural_16
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_natural_16", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_16)
+				Result := ctoi_convertor.parsed_natural_16
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_natural, to_natural_32: NATURAL_32 is
@@ -2342,8 +3427,16 @@ feature -- Conversion
 		require
 			is_natural: is_natural
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_32)
-			Result := ctoi_convertor.parsed_natural_32
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_natural", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_32)
+				Result := ctoi_convertor.parsed_natural_32
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_natural_64: NATURAL_64 is
@@ -2351,8 +3444,16 @@ feature -- Conversion
 		require
 			is_natural_64: is_natural_64
 		do
-			ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_64)
-			Result := ctoi_convertor.parsed_natural_64
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_natural_64", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctoi_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_natural_64)
+				Result := ctoi_convertor.parsed_natural_64
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_real: REAL is
@@ -2360,8 +3461,18 @@ feature -- Conversion
 			-- for example, when applied to "123.0", will yield 123.0
 		require
 			represents_a_real: is_real
+		local
+			ignore_result: ANY
 		do
-			Result := to_double
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_real", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := to_double
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_double: DOUBLE is
@@ -2370,8 +3481,16 @@ feature -- Conversion
 		require
 			represents_a_double: is_double
 		do
-			ctor_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_double)
-			Result := ctor_convertor.parsed_double
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_double", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				ctor_convertor.parse_string_with_type (Current, {NUMERIC_INFORMATION}.type_double)
+				Result := ctor_convertor.parsed_double
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	to_boolean: BOOLEAN is
@@ -2381,9 +3500,17 @@ feature -- Conversion
 		require
 			is_boolean: is_boolean
 		do
-			check true_constant.count = 4 end
-			if count = 4 then
-				Result := True
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_boolean", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				check true_constant.count = 4 end
+				if count = 4 then
+					Result := True
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			to_boolean: (Result = true_constant.same_string (as_lower)) or
@@ -2396,16 +3523,24 @@ feature -- Conversion
 			temp: ARRAYED_LIST [CHARACTER]
 			i: INTEGER
 		do
-			create temp.make (capacity)
-			from
-				i := 1
-			until
-				i > count
-			loop
-				temp.extend (item (i))
-				i := i + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("linear_representation", Current, [])
 			end
-			Result := temp
+			if (not controller.is_replay_phase) or is_observed then
+				create temp.make (capacity)
+				from
+					i := 1
+				until
+					i > count
+				loop
+					temp.extend (item (i))
+					i := i + 1
+				end
+				Result := temp
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	split (a_separator: CHARACTER): LIST [STRING] is
@@ -2415,40 +3550,48 @@ feature -- Conversion
 			part: STRING
 			i, j, c: INTEGER
 		do
-			c := count
-				-- Worse case allocation: every character is a separator
-			create l_list.make (c + 1)
-			if c > 0 then
-				from
-					i := 1
-				until
-					i > c
-				loop
-					j := index_of (a_separator, i)
-					if j = 0 then
-							-- No separator was found, we will
-							-- simply create a list with a copy of
-							-- Current in it.
-						j := c + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("split", Current, [a_separator])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				c := count
+					-- Worse case allocation: every character is a separator
+				create l_list.make (c + 1)
+				if c > 0 then
+					from
+						i := 1
+					until
+						i > c
+					loop
+						j := index_of (a_separator, i)
+						if j = 0 then
+								-- No separator was found, we will
+								-- simply create a list with a copy of
+								-- Current in it.
+							j := c + 1
+						end
+						part := substring (i, j - 1)
+						l_list.extend (part)
+						i := j + 1
 					end
-					part := substring (i, j - 1)
-					l_list.extend (part)
-					i := j + 1
-				end
-				if j = c then
-					check
-						last_character_is_a_separator: item (j) = a_separator
+					if j = c then
+						check
+							last_character_is_a_separator: item (j) = a_separator
+						end
+							-- A separator was found at the end of the string
+						l_list.extend ("")
 					end
-						-- A separator was found at the end of the string
+				else
+						-- Extend empty string, since Current is empty.
 					l_list.extend ("")
 				end
-			else
-					-- Extend empty string, since Current is empty.
-				l_list.extend ("")
+				Result := l_list
+				check
+					l_list.count = occurrences (a_separator) + 1
+				end
 			end
-			Result := l_list
-			check
-				l_list.count = occurrences (a_separator) + 1
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			Result /= Void
@@ -2462,18 +3605,34 @@ feature -- Conversion
 		local
 			l_area: like area
 		do
-			l_area := area
-			l_area.put ('%U', count)
-			Result := l_area
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("to_c", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				l_area := area
+				l_area.put ('%U', count)
+				Result := l_area
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		end
 
 	mirrored: like Current is
 			-- Mirror image of string;
 			-- Result for "Hello world" is "dlrow olleH".
 		do
-			Result := twin
-			if count > 0 then
-				Result.mirror
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("mirrored", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				Result := twin
+				if count > 0 then
+					Result.mirror
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure
 			same_count: Result.count = count
@@ -2484,24 +3643,33 @@ feature -- Conversion
 			-- Reverse the order of characters.
 			-- "Hello world" -> "dlrow olleH".
 		local
+			ignore_result: ANY
 			a: like area
 			c: CHARACTER
 			i, j: INTEGER
 		do
-			if count > 0 then
-				from
-					i := count - 1
-					a := area
-				until
-					i <= j
-				loop
-					c := a.item (i)
-					a.put (a.item (j), i)
-					a.put (c, j)
-					i := i - 1
-					j := j + 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("mirror", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if count > 0 then
+					from
+						i := count - 1
+						a := area
+					until
+						i <= j
+					loop
+						c := a.item (i)
+						a.put (a.item (j), i)
+						a.put (c, j)
+						i := i - 1
+						j := j + 1
+					end
+					internal_hash_code := 0
 				end
-				internal_hash_code := 0
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		ensure
 			same_count: count = old count
@@ -2514,12 +3682,20 @@ feature -- Duplication
 			-- Copy of substring containing all characters at indices
 			-- between `start_index' and `end_index'
 		do
-			if (1 <= start_index) and (start_index <= end_index) and (end_index <= count) then
-				Result := new_string (end_index - start_index + 1)
-				Result.area.copy_data (area, start_index - 1, 0, end_index - start_index + 1)
-				Result.set_count (end_index - start_index + 1)
-			else
-				Result := new_string (0)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("substring", Current, [start_index,end_index])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				if (1 <= start_index) and (start_index <= end_index) and (end_index <= count) then
+					Result := new_string (end_index - start_index + 1)
+					Result.area.copy_data (area, start_index - 1, 0, end_index - start_index + 1)
+					Result.set_count (end_index - start_index + 1)
+				else
+					Result := new_string (0)
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
 			end
 		ensure then
 			first_item: Result.count > 0 implies Result.item (1) = item (start_index)
@@ -2533,18 +3709,27 @@ feature -- Duplication
 		require
 			meaningful_multiplier: n >= 1
 		local
+			ignore_result: ANY
 			s: like Current
 			i: INTEGER
 		do
-			s := twin
-			grow (n * count)
-			from
-				i := n
-			until
-				i = 1
-			loop
-				append (s)
-				i := i - 1
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("multiply", Current, [n])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				s := twin
+				grow (n * count)
+				from
+					i := n
+				until
+					i = 1
+				loop
+					append (s)
+					i := i - 1
+				end
+			end
+			if controller.is_capture_replay_enabled then
+				ignore_result := controller.methodbody_end (Void)
 			end
 		end
 
@@ -2553,8 +3738,16 @@ feature -- Output
 	out: STRING is
 			-- Printable representation
 		do
-			create Result.make (count)
-			Result.append (Current)
+			if controller.is_capture_replay_enabled then
+				controller.methodbody_start ("out", Current, [])
+			end
+			if (not controller.is_replay_phase) or is_observed then
+				create Result.make (count)
+				Result.append (Current)
+			end
+			if controller.is_capture_replay_enabled then
+				Result ?= controller.methodbody_end (Result)
+			end
 		ensure then
 			out_not_void: Result /= Void
 			same_items: same_type ("") implies Result.same_string (Current)
@@ -2562,11 +3755,24 @@ feature -- Output
 
 feature {STRING_HANDLER} -- Implementation
 
+--	Set_count_feature_name: STRING is "set_count"
+-- assume that this is only called from inside...
+
 	frozen set_count (number: INTEGER) is
 			-- Set `count' to `number' of characters.
+		local
+			ignore_result: ANY
 		do
-			count := number
-			internal_hash_code := 0
+--			if controller.is_capture_replay_enabled then
+--				controller.methodbody_start (Set_count_feature_name, Current, [number])
+--			end
+--			if (not controller.is_replay_phase) or is_observed then
+				count := number
+				internal_hash_code := 0
+--			end
+--			if controller.is_capture_replay_enabled then
+--				ignore_result := controller.methodbody_end (Void)
+--			end
 		end
 
 feature {NONE} -- Empty string implementation

@@ -15,14 +15,16 @@ inherit
 create
 	make
 
-feature --creation
-
-	make
-			-- Create the controller.
+feature -- Initialization
+	setup_on_text_serializer (filename: STRING) is
+			--
 		do
-			create observed_stack.make(200)
-			observed_stack.put (False)
+			create {TEXT_SERIALIZER}serializer.make_on_textfile (filename)
+
+			set_capture_replay_enabled(True)
 		end
+
+
 
 feature -- Access
 
@@ -56,7 +58,8 @@ feature -- Basic Operations
 		local
 			current_observed: BOOLEAN
 		do
---opt			print_debug ("{REC}:MethodBodyEnd%N")
+			enter
+
 			current_observed := observed_stack.item
 			observed_stack.remove
 			if current_observed /= observed_stack.item then
@@ -67,6 +70,8 @@ feature -- Basic Operations
 				end
 			end
 			Result := res
+
+			leave
 		end
 
 	methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE)
@@ -79,6 +84,8 @@ feature -- Basic Operations
 --			arguments_not_void: arguments /= Void
 --			serializer_not_void: serializer /= Void
 		do
+			enter
+
 --opt			print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
 			if (target.is_observed /= observed_stack.item) then
 				if target.is_observed then
@@ -88,6 +95,8 @@ feature -- Basic Operations
 				end
 			end
 			observed_stack.put (target.is_observed)
+
+			leave
 		end
 
 	set_serializer(a_serializer: CAPTURE_SERIALIZER)
@@ -97,6 +106,7 @@ feature -- Basic Operations
 		end
 
 feature {NONE} -- Implementation
+
 
 -- For optimization - purposes removed.
 --		print_debug(message: STRING)
