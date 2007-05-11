@@ -9,21 +9,21 @@ feature {ANY}
 			Result := a_value = kcglinecapbutt or a_value = kcglinecapround or a_value = kcglinecapsquare
 		end
 
-	kcglinecapbutt: INTEGER is
+	 frozen kcglinecapbutt: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGLineCapButt"
 		end
 
-	kcglinecapround: INTEGER is
+	 frozen kcglinecapround: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGLineCapRound"
 		end
 
-	kcglinecapsquare: INTEGER is
+	 frozen kcglinecapsquare: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

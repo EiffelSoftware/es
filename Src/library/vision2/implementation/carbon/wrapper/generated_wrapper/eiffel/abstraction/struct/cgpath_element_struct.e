@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_type: INTEGER is
-		obsolete "Use `type' instead."
-			-- Access member `type'
-		require
-			exists: exists
-		do
-			Result := get_type_external (item)
-		ensure
-			result_correct: Result = get_type_external (item)
-		end
 
 	type: INTEGER is
 			-- Access member `type'
@@ -78,17 +67,6 @@ feature {ANY} -- Member Access
 			set_points_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = points
-		end
-
-	get_points: POINTER is
-		obsolete "Use `points' instead."
-			-- Access member `points'
-		require
-			exists: exists
-		do
-			Result := get_points_external (item)
-		ensure
-			result_correct: Result = get_points_external (item)
 		end
 
 	points: POINTER is

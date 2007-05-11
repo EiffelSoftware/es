@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_hmmresid: INTEGER is
-		obsolete "Use `hmmresid' instead."
-			-- Access member `hmmResID'
-		require
-			exists: exists
-		do
-			Result := get_hmmresid_external (item)
-		ensure
-			result_correct: Result = get_hmmresid_external (item)
-		end
 
 	hmmresid: INTEGER is
 			-- Access member `hmmResID'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_hmmresid_external (item, a_value)
 		ensure
 			a_value_set: a_value = hmmresid
-		end
-
-	get_hmmindex: INTEGER is
-		obsolete "Use `hmmindex' instead."
-			-- Access member `hmmIndex'
-		require
-			exists: exists
-		do
-			Result := get_hmmindex_external (item)
-		ensure
-			result_correct: Result = get_hmmindex_external (item)
 		end
 
 	hmmindex: INTEGER is

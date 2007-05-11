@@ -9,21 +9,21 @@ feature {ANY}
 			Result := a_value = kcglinejoinmiter or a_value = kcglinejoinround or a_value = kcglinejoinbevel
 		end
 
-	kcglinejoinmiter: INTEGER is
+	 frozen kcglinejoinmiter: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGLineJoinMiter"
 		end
 
-	kcglinejoinround: INTEGER is
+	 frozen kcglinejoinround: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGLineJoinRound"
 		end
 
-	kcglinejoinbevel: INTEGER is
+	 frozen kcglinejoinbevel: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

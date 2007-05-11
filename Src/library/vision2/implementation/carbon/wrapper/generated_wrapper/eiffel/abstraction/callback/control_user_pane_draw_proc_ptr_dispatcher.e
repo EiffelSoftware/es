@@ -9,7 +9,7 @@ inherit
 	EWG_CARBON_CALLBACK_C_GLUE_CODE_FUNCTIONS_EXTERNAL
 		export {NONE} all end
 
-creation
+create
 
 	make
 

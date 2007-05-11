@@ -3,14 +3,14 @@
 class MACHELP_FUNCTIONS_EXTERNAL
 
 feature
-	new_hmcontrol_content_upp_external (userroutine: POINTER): POINTER is
+	frozen new_hmcontrol_content_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMControlContentProcPtr):HMControlContentUPP"
 		alias
 			"ewg_function_macro_NewHMControlContentUPP"
 		end
 
-	new_hmcontrol_content_upp_address_external: POINTER is
+	frozen new_hmcontrol_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMControlContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) NewHMControlContentUPP"
 		end
 
-	new_hmwindow_content_upp_external (userroutine: POINTER): POINTER is
+	frozen new_hmwindow_content_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMWindowContentProcPtr):HMWindowContentUPP"
 		alias
 			"ewg_function_macro_NewHMWindowContentUPP"
 		end
 
-	new_hmwindow_content_upp_address_external: POINTER is
+	frozen new_hmwindow_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMWindowContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) NewHMWindowContentUPP"
 		end
 
-	new_hmmenu_title_content_upp_external (userroutine: POINTER): POINTER is
+	frozen new_hmmenu_title_content_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMMenuTitleContentProcPtr):HMMenuTitleContentUPP"
 		alias
 			"ewg_function_macro_NewHMMenuTitleContentUPP"
 		end
 
-	new_hmmenu_title_content_upp_address_external: POINTER is
+	frozen new_hmmenu_title_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMMenuTitleContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) NewHMMenuTitleContentUPP"
 		end
 
-	new_hmmenu_item_content_upp_external (userroutine: POINTER): POINTER is
+	frozen new_hmmenu_item_content_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMMenuItemContentProcPtr):HMMenuItemContentUPP"
 		alias
 			"ewg_function_macro_NewHMMenuItemContentUPP"
 		end
 
-	new_hmmenu_item_content_upp_address_external: POINTER is
+	frozen new_hmmenu_item_content_upp_address_external: POINTER is
 			-- Address of C function `NewHMMenuItemContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) NewHMMenuItemContentUPP"
 		end
 
-	dispose_hmcontrol_content_upp_external (userupp: POINTER) is
+	frozen dispose_hmcontrol_content_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMControlContentUPP)"
 		alias
 			"ewg_function_macro_DisposeHMControlContentUPP"
 		end
 
-	dispose_hmcontrol_content_upp_address_external: POINTER is
+	frozen dispose_hmcontrol_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMControlContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) DisposeHMControlContentUPP"
 		end
 
-	dispose_hmwindow_content_upp_external (userupp: POINTER) is
+	frozen dispose_hmwindow_content_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMWindowContentUPP)"
 		alias
 			"ewg_function_macro_DisposeHMWindowContentUPP"
 		end
 
-	dispose_hmwindow_content_upp_address_external: POINTER is
+	frozen dispose_hmwindow_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMWindowContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) DisposeHMWindowContentUPP"
 		end
 
-	dispose_hmmenu_title_content_upp_external (userupp: POINTER) is
+	frozen dispose_hmmenu_title_content_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMMenuTitleContentUPP)"
 		alias
 			"ewg_function_macro_DisposeHMMenuTitleContentUPP"
 		end
 
-	dispose_hmmenu_title_content_upp_address_external: POINTER is
+	frozen dispose_hmmenu_title_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMMenuTitleContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) DisposeHMMenuTitleContentUPP"
 		end
 
-	dispose_hmmenu_item_content_upp_external (userupp: POINTER) is
+	frozen dispose_hmmenu_item_content_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMMenuItemContentUPP)"
 		alias
 			"ewg_function_macro_DisposeHMMenuItemContentUPP"
 		end
 
-	dispose_hmmenu_item_content_upp_address_external: POINTER is
+	frozen dispose_hmmenu_item_content_upp_address_external: POINTER is
 			-- Address of C function `DisposeHMMenuItemContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) DisposeHMMenuItemContentUPP"
 		end
 
-	invoke_hmcontrol_content_upp_external (incontrol: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_hmcontrol_content_upp_external (incontrol: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr, HMControlContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeHMControlContentUPP"
 		end
 
-	invoke_hmcontrol_content_upp_address_external: POINTER is
+	frozen invoke_hmcontrol_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMControlContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) InvokeHMControlContentUPP"
 		end
 
-	invoke_hmwindow_content_upp_external (inwindow: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_hmwindow_content_upp_external (inwindow: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr, HMWindowContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeHMWindowContentUPP"
 		end
 
-	invoke_hmwindow_content_upp_address_external: POINTER is
+	frozen invoke_hmwindow_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMWindowContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) InvokeHMWindowContentUPP"
 		end
 
-	invoke_hmmenu_title_content_upp_external (inmenu: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_hmmenu_title_content_upp_external (inmenu: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr, HMMenuTitleContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeHMMenuTitleContentUPP"
 		end
 
-	invoke_hmmenu_title_content_upp_address_external: POINTER is
+	frozen invoke_hmmenu_title_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMMenuTitleContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) InvokeHMMenuTitleContentUPP"
 		end
 
-	invoke_hmmenu_item_content_upp_external (intrackingdata: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
+	frozen invoke_hmmenu_item_content_upp_external (intrackingdata: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuTrackingData const*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr, HMMenuItemContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeHMMenuItemContentUPP"
 		end
 
-	invoke_hmmenu_item_content_upp_address_external: POINTER is
+	frozen invoke_hmmenu_item_content_upp_address_external: POINTER is
 			-- Address of C function `InvokeHMMenuItemContentUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) InvokeHMMenuItemContentUPP"
 		end
 
-	hmget_help_menu_external (outhelpmenu: POINTER; outfirstcustomitemindex: POINTER): INTEGER is
+	frozen hmget_help_menu_external (outhelpmenu: POINTER; outfirstcustomitemindex: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef*, MenuItemIndex*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetHelpMenu"
 		end
 
-	hmget_help_menu_address_external: POINTER is
+	frozen hmget_help_menu_address_external: POINTER is
 			-- Address of C function `HMGetHelpMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) HMGetHelpMenu"
 		end
 
-	hmset_control_help_content_external (incontrol: POINTER; incontent: POINTER): INTEGER is
+	frozen hmset_control_help_content_external (incontrol: POINTER; incontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, HMHelpContentRec const*):OSStatus"
 		alias
 			"ewg_function_macro_HMSetControlHelpContent"
 		end
 
-	hmset_control_help_content_address_external: POINTER is
+	frozen hmset_control_help_content_address_external: POINTER is
 			-- Address of C function `HMSetControlHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) HMSetControlHelpContent"
 		end
 
-	hmget_control_help_content_external (incontrol: POINTER; outcontent: POINTER): INTEGER is
+	frozen hmget_control_help_content_external (incontrol: POINTER; outcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, HMHelpContentRec*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetControlHelpContent"
 		end
 
-	hmget_control_help_content_address_external: POINTER is
+	frozen hmget_control_help_content_address_external: POINTER is
 			-- Address of C function `HMGetControlHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) HMGetControlHelpContent"
 		end
 
-	hmset_window_help_content_external (inwindow: POINTER; incontent: POINTER): INTEGER is
+	frozen hmset_window_help_content_external (inwindow: POINTER; incontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HMHelpContentRec const*):OSStatus"
 		alias
 			"ewg_function_macro_HMSetWindowHelpContent"
 		end
 
-	hmset_window_help_content_address_external: POINTER is
+	frozen hmset_window_help_content_address_external: POINTER is
 			-- Address of C function `HMSetWindowHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) HMSetWindowHelpContent"
 		end
 
-	hmget_window_help_content_external (inwindow: POINTER; outcontent: POINTER): INTEGER is
+	frozen hmget_window_help_content_external (inwindow: POINTER; outcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HMHelpContentRec*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetWindowHelpContent"
 		end
 
-	hmget_window_help_content_address_external: POINTER is
+	frozen hmget_window_help_content_address_external: POINTER is
 			-- Address of C function `HMGetWindowHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) HMGetWindowHelpContent"
 		end
 
-	hmset_menu_item_help_content_external (inmenu: POINTER; initem: INTEGER; incontent: POINTER): INTEGER is
+	frozen hmset_menu_item_help_content_external (inmenu: POINTER; initem: INTEGER; incontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, HMHelpContentRec const*):OSStatus"
 		alias
 			"ewg_function_macro_HMSetMenuItemHelpContent"
 		end
 
-	hmset_menu_item_help_content_address_external: POINTER is
+	frozen hmset_menu_item_help_content_address_external: POINTER is
 			-- Address of C function `HMSetMenuItemHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) HMSetMenuItemHelpContent"
 		end
 
-	hmget_menu_item_help_content_external (inmenu: POINTER; initem: INTEGER; outcontent: POINTER): INTEGER is
+	frozen hmget_menu_item_help_content_external (inmenu: POINTER; initem: INTEGER; outcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, MenuItemIndex, HMHelpContentRec*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetMenuItemHelpContent"
 		end
 
-	hmget_menu_item_help_content_address_external: POINTER is
+	frozen hmget_menu_item_help_content_address_external: POINTER is
 			-- Address of C function `HMGetMenuItemHelpContent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) HMGetMenuItemHelpContent"
 		end
 
-	hminstall_control_content_callback_external (incontrol: POINTER; incontentupp: POINTER): INTEGER is
+	frozen hminstall_control_content_callback_external (incontrol: POINTER; incontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, HMControlContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_HMInstallControlContentCallback"
 		end
 
-	hminstall_control_content_callback_address_external: POINTER is
+	frozen hminstall_control_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallControlContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) HMInstallControlContentCallback"
 		end
 
-	hminstall_window_content_callback_external (inwindow: POINTER; incontentupp: POINTER): INTEGER is
+	frozen hminstall_window_content_callback_external (inwindow: POINTER; incontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HMWindowContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_HMInstallWindowContentCallback"
 		end
 
-	hminstall_window_content_callback_address_external: POINTER is
+	frozen hminstall_window_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallWindowContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) HMInstallWindowContentCallback"
 		end
 
-	hminstall_menu_title_content_callback_external (inmenu: POINTER; incontentupp: POINTER): INTEGER is
+	frozen hminstall_menu_title_content_callback_external (inmenu: POINTER; incontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, HMMenuTitleContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_HMInstallMenuTitleContentCallback"
 		end
 
-	hminstall_menu_title_content_callback_address_external: POINTER is
+	frozen hminstall_menu_title_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallMenuTitleContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) HMInstallMenuTitleContentCallback"
 		end
 
-	hminstall_menu_item_content_callback_external (inmenu: POINTER; incontentupp: POINTER): INTEGER is
+	frozen hminstall_menu_item_content_callback_external (inmenu: POINTER; incontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, HMMenuItemContentUPP):OSStatus"
 		alias
 			"ewg_function_macro_HMInstallMenuItemContentCallback"
 		end
 
-	hminstall_menu_item_content_callback_address_external: POINTER is
+	frozen hminstall_menu_item_content_callback_address_external: POINTER is
 			-- Address of C function `HMInstallMenuItemContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) HMInstallMenuItemContentCallback"
 		end
 
-	hmget_control_content_callback_external (incontrol: POINTER; outcontentupp: POINTER): INTEGER is
+	frozen hmget_control_content_callback_external (incontrol: POINTER; outcontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, HMControlContentUPP*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetControlContentCallback"
 		end
 
-	hmget_control_content_callback_address_external: POINTER is
+	frozen hmget_control_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetControlContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) HMGetControlContentCallback"
 		end
 
-	hmget_window_content_callback_external (inwindow: POINTER; outcontentupp: POINTER): INTEGER is
+	frozen hmget_window_content_callback_external (inwindow: POINTER; outcontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HMWindowContentUPP*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetWindowContentCallback"
 		end
 
-	hmget_window_content_callback_address_external: POINTER is
+	frozen hmget_window_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetWindowContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) HMGetWindowContentCallback"
 		end
 
-	hmget_menu_title_content_callback_external (inmenu: POINTER; outcontentupp: POINTER): INTEGER is
+	frozen hmget_menu_title_content_callback_external (inmenu: POINTER; outcontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, HMMenuTitleContentUPP*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetMenuTitleContentCallback"
 		end
 
-	hmget_menu_title_content_callback_address_external: POINTER is
+	frozen hmget_menu_title_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetMenuTitleContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) HMGetMenuTitleContentCallback"
 		end
 
-	hmget_menu_item_content_callback_external (inmenu: POINTER; outcontentupp: POINTER): INTEGER is
+	frozen hmget_menu_item_content_callback_external (inmenu: POINTER; outcontentupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, HMMenuItemContentUPP*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetMenuItemContentCallback"
 		end
 
-	hmget_menu_item_content_callback_address_external: POINTER is
+	frozen hmget_menu_item_content_callback_address_external: POINTER is
 			-- Address of C function `HMGetMenuItemContentCallback'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) HMGetMenuItemContentCallback"
 		end
 
-	hmare_help_tags_displayed_external: INTEGER is
+	frozen hmare_help_tags_displayed_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_HMAreHelpTagsDisplayed"
 		end
 
-	hmare_help_tags_displayed_address_external: POINTER is
+	frozen hmare_help_tags_displayed_address_external: POINTER is
 			-- Address of C function `HMAreHelpTagsDisplayed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) HMAreHelpTagsDisplayed"
 		end
 
-	hmset_help_tags_displayed_external (indisplaytags: INTEGER): INTEGER is
+	frozen hmset_help_tags_displayed_external (indisplaytags: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HMSetHelpTagsDisplayed"
 		end
 
-	hmset_help_tags_displayed_address_external: POINTER is
+	frozen hmset_help_tags_displayed_address_external: POINTER is
 			-- Address of C function `HMSetHelpTagsDisplayed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) HMSetHelpTagsDisplayed"
 		end
 
-	hmset_tag_delay_external (indelay: INTEGER): INTEGER is
+	frozen hmset_tag_delay_external (indelay: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Duration):OSStatus"
 		alias
 			"ewg_function_macro_HMSetTagDelay"
 		end
 
-	hmset_tag_delay_address_external: POINTER is
+	frozen hmset_tag_delay_address_external: POINTER is
 			-- Address of C function `HMSetTagDelay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) HMSetTagDelay"
 		end
 
-	hmget_tag_delay_external (outdelay: POINTER): INTEGER is
+	frozen hmget_tag_delay_external (outdelay: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Duration*):OSStatus"
 		alias
 			"ewg_function_macro_HMGetTagDelay"
 		end
 
-	hmget_tag_delay_address_external: POINTER is
+	frozen hmget_tag_delay_address_external: POINTER is
 			-- Address of C function `HMGetTagDelay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) HMGetTagDelay"
 		end
 
-	hmset_menu_help_from_balloon_rsrc_external (inmenu: POINTER; inhmnursrcid: INTEGER): INTEGER is
+	frozen hmset_menu_help_from_balloon_rsrc_external (inmenu: POINTER; inhmnursrcid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, SInt16):OSStatus"
 		alias
 			"ewg_function_macro_HMSetMenuHelpFromBalloonRsrc"
 		end
 
-	hmset_menu_help_from_balloon_rsrc_address_external: POINTER is
+	frozen hmset_menu_help_from_balloon_rsrc_address_external: POINTER is
 			-- Address of C function `HMSetMenuHelpFromBalloonRsrc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) HMSetMenuHelpFromBalloonRsrc"
 		end
 
-	hmset_dialog_help_from_balloon_rsrc_external (indialog: POINTER; inhdlgrsrcid: INTEGER; initemstart: INTEGER): INTEGER is
+	frozen hmset_dialog_help_from_balloon_rsrc_external (indialog: POINTER; inhdlgrsrcid: INTEGER; initemstart: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (DialogRef, SInt16, SInt16):OSStatus"
 		alias
 			"ewg_function_macro_HMSetDialogHelpFromBalloonRsrc"
 		end
 
-	hmset_dialog_help_from_balloon_rsrc_address_external: POINTER is
+	frozen hmset_dialog_help_from_balloon_rsrc_address_external: POINTER is
 			-- Address of C function `HMSetDialogHelpFromBalloonRsrc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) HMSetDialogHelpFromBalloonRsrc"
 		end
 
-	hmdisplay_tag_external (incontent: POINTER): INTEGER is
+	frozen hmdisplay_tag_external (incontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HMHelpContentRec const*):OSStatus"
 		alias
 			"ewg_function_macro_HMDisplayTag"
 		end
 
-	hmdisplay_tag_address_external: POINTER is
+	frozen hmdisplay_tag_address_external: POINTER is
 			-- Address of C function `HMDisplayTag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) HMDisplayTag"
 		end
 
-	hmhide_tag_external: INTEGER is
+	frozen hmhide_tag_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_HMHideTag"
 		end
 
-	hmhide_tag_address_external: POINTER is
+	frozen hmhide_tag_address_external: POINTER is
 			-- Address of C function `HMHideTag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) HMHideTag"
 		end
 
-	hmhide_tag_with_options_external (inoptions: INTEGER): INTEGER is
+	frozen hmhide_tag_with_options_external (inoptions: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (OptionBits):OSStatus"
 		alias
 			"ewg_function_macro_HMHideTagWithOptions"
 		end
 
-	hmhide_tag_with_options_address_external: POINTER is
+	frozen hmhide_tag_with_options_address_external: POINTER is
 			-- Address of C function `HMHideTagWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

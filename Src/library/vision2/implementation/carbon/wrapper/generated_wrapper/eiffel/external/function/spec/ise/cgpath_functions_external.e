@@ -3,14 +3,14 @@
 class CGPATH_FUNCTIONS_EXTERNAL
 
 feature
-	cgpath_get_type_id_external: INTEGER is
+	frozen cgpath_get_type_id_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :CFTypeID"
 		alias
 			"ewg_function_macro_CGPathGetTypeID"
 		end
 
-	cgpath_get_type_id_address_external: POINTER is
+	frozen cgpath_get_type_id_address_external: POINTER is
 			-- Address of C function `CGPathGetTypeID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) CGPathGetTypeID"
 		end
 
-	cgpath_create_mutable_external: POINTER is
+	frozen cgpath_create_mutable_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :CGMutablePathRef"
 		alias
 			"ewg_function_macro_CGPathCreateMutable"
 		end
 
-	cgpath_create_mutable_address_external: POINTER is
+	frozen cgpath_create_mutable_address_external: POINTER is
 			-- Address of C function `CGPathCreateMutable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) CGPathCreateMutable"
 		end
 
-	cgpath_create_copy_external (path: POINTER): POINTER is
+	frozen cgpath_create_copy_external (path: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef):CGPathRef"
 		alias
 			"ewg_function_macro_CGPathCreateCopy"
 		end
 
-	cgpath_create_copy_address_external: POINTER is
+	frozen cgpath_create_copy_address_external: POINTER is
 			-- Address of C function `CGPathCreateCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) CGPathCreateCopy"
 		end
 
-	cgpath_create_mutable_copy_external (path: POINTER): POINTER is
+	frozen cgpath_create_mutable_copy_external (path: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef):CGMutablePathRef"
 		alias
 			"ewg_function_macro_CGPathCreateMutableCopy"
 		end
 
-	cgpath_create_mutable_copy_address_external: POINTER is
+	frozen cgpath_create_mutable_copy_address_external: POINTER is
 			-- Address of C function `CGPathCreateMutableCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) CGPathCreateMutableCopy"
 		end
 
-	cgpath_retain_external (path: POINTER): POINTER is
+	frozen cgpath_retain_external (path: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef):CGPathRef"
 		alias
 			"ewg_function_macro_CGPathRetain"
 		end
 
-	cgpath_retain_address_external: POINTER is
+	frozen cgpath_retain_address_external: POINTER is
 			-- Address of C function `CGPathRetain'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) CGPathRetain"
 		end
 
-	cgpath_release_external (path: POINTER) is
+	frozen cgpath_release_external (path: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef)"
 		alias
 			"ewg_function_macro_CGPathRelease"
 		end
 
-	cgpath_release_address_external: POINTER is
+	frozen cgpath_release_address_external: POINTER is
 			-- Address of C function `CGPathRelease'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) CGPathRelease"
 		end
 
-	cgpath_equal_to_path_external (path1: POINTER; path2: POINTER): INTEGER is
+	frozen cgpath_equal_to_path_external (path1: POINTER; path2: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef, CGPathRef):_Bool"
 		alias
 			"ewg_function_macro_CGPathEqualToPath"
 		end
 
-	cgpath_equal_to_path_address_external: POINTER is
+	frozen cgpath_equal_to_path_address_external: POINTER is
 			-- Address of C function `CGPathEqualToPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) CGPathEqualToPath"
 		end
 
-	cgpath_move_to_point_external (path: POINTER; m: POINTER; x: REAL; y: REAL) is
+	frozen cgpath_move_to_point_external (path: POINTER; m: POINTER; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, float, float)"
 		alias
 			"ewg_function_macro_CGPathMoveToPoint"
 		end
 
-	cgpath_move_to_point_address_external: POINTER is
+	frozen cgpath_move_to_point_address_external: POINTER is
 			-- Address of C function `CGPathMoveToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) CGPathMoveToPoint"
 		end
 
-	cgpath_add_line_to_point_external (path: POINTER; m: POINTER; x: REAL; y: REAL) is
+	frozen cgpath_add_line_to_point_external (path: POINTER; m: POINTER; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, float, float)"
 		alias
 			"ewg_function_macro_CGPathAddLineToPoint"
 		end
 
-	cgpath_add_line_to_point_address_external: POINTER is
+	frozen cgpath_add_line_to_point_address_external: POINTER is
 			-- Address of C function `CGPathAddLineToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) CGPathAddLineToPoint"
 		end
 
-	cgpath_add_quad_curve_to_point_external (path: POINTER; m: POINTER; cpx: REAL; cpy: REAL; x: REAL; y: REAL) is
+	frozen cgpath_add_quad_curve_to_point_external (path: POINTER; m: POINTER; cpx: REAL; cpy: REAL; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGPathAddQuadCurveToPoint"
 		end
 
-	cgpath_add_quad_curve_to_point_address_external: POINTER is
+	frozen cgpath_add_quad_curve_to_point_address_external: POINTER is
 			-- Address of C function `CGPathAddQuadCurveToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) CGPathAddQuadCurveToPoint"
 		end
 
-	cgpath_add_curve_to_point_external (path: POINTER; m: POINTER; cp1x: REAL; cp1y: REAL; cp2x: REAL; cp2y: REAL; x: REAL; y: REAL) is
+	frozen cgpath_add_curve_to_point_external (path: POINTER; m: POINTER; cp1x: REAL; cp1y: REAL; cp2x: REAL; cp2y: REAL; x: REAL; y: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, float, float, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGPathAddCurveToPoint"
 		end
 
-	cgpath_add_curve_to_point_address_external: POINTER is
+	frozen cgpath_add_curve_to_point_address_external: POINTER is
 			-- Address of C function `CGPathAddCurveToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CGPathAddCurveToPoint"
 		end
 
-	cgpath_close_subpath_external (path: POINTER) is
+	frozen cgpath_close_subpath_external (path: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef)"
 		alias
 			"ewg_function_macro_CGPathCloseSubpath"
 		end
 
-	cgpath_close_subpath_address_external: POINTER is
+	frozen cgpath_close_subpath_address_external: POINTER is
 			-- Address of C function `CGPathCloseSubpath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CGPathCloseSubpath"
 		end
 
-	cgpath_add_rect_external (path: POINTER; m: POINTER; rect: POINTER) is
+	frozen cgpath_add_rect_external (path: POINTER; m: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, CGRect*)"
 		alias
 			"ewg_function_macro_CGPathAddRect"
 		end
 
-	cgpath_add_rect_address_external: POINTER is
+	frozen cgpath_add_rect_address_external: POINTER is
 			-- Address of C function `CGPathAddRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) CGPathAddRect"
 		end
 
-	cgpath_add_rects_external (path: POINTER; m: POINTER; rects: POINTER; count: INTEGER) is
+	frozen cgpath_add_rects_external (path: POINTER; m: POINTER; rects: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, void*, size_t)"
 		alias
 			"ewg_function_macro_CGPathAddRects"
 		end
 
-	cgpath_add_rects_address_external: POINTER is
+	frozen cgpath_add_rects_address_external: POINTER is
 			-- Address of C function `CGPathAddRects'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) CGPathAddRects"
 		end
 
-	cgpath_add_lines_external (path: POINTER; m: POINTER; points: POINTER; count: INTEGER) is
+	frozen cgpath_add_lines_external (path: POINTER; m: POINTER; points: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, void*, size_t)"
 		alias
 			"ewg_function_macro_CGPathAddLines"
 		end
 
-	cgpath_add_lines_address_external: POINTER is
+	frozen cgpath_add_lines_address_external: POINTER is
 			-- Address of C function `CGPathAddLines'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CGPathAddLines"
 		end
 
-	cgpath_add_ellipse_in_rect_external (path: POINTER; m: POINTER; rect: POINTER) is
+	frozen cgpath_add_ellipse_in_rect_external (path: POINTER; m: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, CGRect*)"
 		alias
 			"ewg_function_macro_CGPathAddEllipseInRect"
 		end
 
-	cgpath_add_ellipse_in_rect_address_external: POINTER is
+	frozen cgpath_add_ellipse_in_rect_address_external: POINTER is
 			-- Address of C function `CGPathAddEllipseInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) CGPathAddEllipseInRect"
 		end
 
-	cgpath_add_arc_external (path: POINTER; m: POINTER; x: REAL; y: REAL; radius: REAL; startangle: REAL; endangle: REAL; clockwise: INTEGER) is
+	frozen cgpath_add_arc_external (path: POINTER; m: POINTER; x: REAL; y: REAL; radius: REAL; startangle: REAL; endangle: REAL; clockwise: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, float, float, float, float, float, _Bool)"
 		alias
 			"ewg_function_macro_CGPathAddArc"
 		end
 
-	cgpath_add_arc_address_external: POINTER is
+	frozen cgpath_add_arc_address_external: POINTER is
 			-- Address of C function `CGPathAddArc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CGPathAddArc"
 		end
 
-	cgpath_add_arc_to_point_external (path: POINTER; m: POINTER; x1: REAL; y1: REAL; x2: REAL; y2: REAL; radius: REAL) is
+	frozen cgpath_add_arc_to_point_external (path: POINTER; m: POINTER; x1: REAL; y1: REAL; x2: REAL; y2: REAL; radius: REAL) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, float, float, float, float, float)"
 		alias
 			"ewg_function_macro_CGPathAddArcToPoint"
 		end
 
-	cgpath_add_arc_to_point_address_external: POINTER is
+	frozen cgpath_add_arc_to_point_address_external: POINTER is
 			-- Address of C function `CGPathAddArcToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) CGPathAddArcToPoint"
 		end
 
-	cgpath_add_path_external (path1: POINTER; m: POINTER; path2: POINTER) is
+	frozen cgpath_add_path_external (path1: POINTER; m: POINTER; path2: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGMutablePathRef, CGAffineTransform const*, CGPathRef)"
 		alias
 			"ewg_function_macro_CGPathAddPath"
 		end
 
-	cgpath_add_path_address_external: POINTER is
+	frozen cgpath_add_path_address_external: POINTER is
 			-- Address of C function `CGPathAddPath'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) CGPathAddPath"
 		end
 
-	cgpath_is_empty_external (path: POINTER): INTEGER is
+	frozen cgpath_is_empty_external (path: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef):_Bool"
 		alias
 			"ewg_function_macro_CGPathIsEmpty"
 		end
 
-	cgpath_is_empty_address_external: POINTER is
+	frozen cgpath_is_empty_address_external: POINTER is
 			-- Address of C function `CGPathIsEmpty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) CGPathIsEmpty"
 		end
 
-	cgpath_is_rect_external (path: POINTER; rect: POINTER): INTEGER is
+	frozen cgpath_is_rect_external (path: POINTER; rect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef, CGRect*):_Bool"
 		alias
 			"ewg_function_macro_CGPathIsRect"
 		end
 
-	cgpath_is_rect_address_external: POINTER is
+	frozen cgpath_is_rect_address_external: POINTER is
 			-- Address of C function `CGPathIsRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CGPathIsRect"
 		end
 
-	cgpath_get_current_point_external (path: POINTER): POINTER is
+	frozen cgpath_get_current_point_external (path: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef):CGPoint*"
 		alias
-			"ewg_function_CGPathGetCurrentPoint()"
+			"ewg_function_CGPathGetCurrentPoint"
 		end
 
-	cgpath_get_current_point_address_external: POINTER is
+	frozen cgpath_get_current_point_address_external: POINTER is
 			-- Address of C function `CGPathGetCurrentPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) CGPathGetCurrentPoint"
 		end
 
-	cgpath_get_bounding_box_external (path: POINTER): POINTER is
+	frozen cgpath_get_bounding_box_external (path: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef):CGRect*"
 		alias
-			"ewg_function_CGPathGetBoundingBox()"
+			"ewg_function_CGPathGetBoundingBox"
 		end
 
-	cgpath_get_bounding_box_address_external: POINTER is
+	frozen cgpath_get_bounding_box_address_external: POINTER is
 			-- Address of C function `CGPathGetBoundingBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) CGPathGetBoundingBox"
 		end
 
-	cgpath_contains_point_external (path: POINTER; m: POINTER; point: POINTER; eofill: INTEGER): INTEGER is
+	frozen cgpath_contains_point_external (path: POINTER; m: POINTER; point: POINTER; eofill: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef, CGAffineTransform const*, CGPoint*, _Bool):_Bool"
 		alias
 			"ewg_function_macro_CGPathContainsPoint"
 		end
 
-	cgpath_contains_point_address_external: POINTER is
+	frozen cgpath_contains_point_address_external: POINTER is
 			-- Address of C function `CGPathContainsPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) CGPathContainsPoint"
 		end
 
-	cgpath_apply_external (path: POINTER; info: POINTER; function: POINTER) is
+	frozen cgpath_apply_external (path: POINTER; info: POINTER; function: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPathRef, void*, CGPathApplierFunction)"
 		alias
 			"ewg_function_macro_CGPathApply"
 		end
 
-	cgpath_apply_address_external: POINTER is
+	frozen cgpath_apply_address_external: POINTER is
 			-- Address of C function `CGPathApply'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

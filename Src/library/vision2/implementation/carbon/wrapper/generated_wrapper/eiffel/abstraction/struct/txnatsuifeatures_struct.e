@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_featurecount: INTEGER is
-		obsolete "Use `featurecount' instead."
-			-- Access member `featureCount'
-		require
-			exists: exists
-		do
-			Result := get_featurecount_external (item)
-		ensure
-			result_correct: Result = get_featurecount_external (item)
-		end
 
 	featurecount: INTEGER is
 			-- Access member `featureCount'
@@ -58,17 +47,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = featurecount
 		end
 
-	get_featuretypes: POINTER is
-		obsolete "Use `featuretypes' instead."
-			-- Access member `featureTypes'
-		require
-			exists: exists
-		do
-			Result := get_featuretypes_external (item)
-		ensure
-			result_correct: Result = get_featuretypes_external (item)
-		end
-
 	featuretypes: POINTER is
 			-- Access member `featureTypes'
 		require
@@ -87,17 +65,6 @@ feature {ANY} -- Member Access
 			set_featuretypes_external (item, a_value)
 		ensure
 			a_value_set: a_value = featuretypes
-		end
-
-	get_featureselectors: POINTER is
-		obsolete "Use `featureselectors' instead."
-			-- Access member `featureSelectors'
-		require
-			exists: exists
-		do
-			Result := get_featureselectors_external (item)
-		ensure
-			result_correct: Result = get_featureselectors_external (item)
 		end
 
 	featureselectors: POINTER is

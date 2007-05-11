@@ -9,35 +9,35 @@ feature {ANY}
 			Result := a_value = kcgrenderingintentdefault or a_value = kcgrenderingintentabsolutecolorimetric or a_value = kcgrenderingintentrelativecolorimetric or a_value = kcgrenderingintentperceptual or a_value = kcgrenderingintentsaturation
 		end
 
-	kcgrenderingintentdefault: INTEGER is
+	 frozen kcgrenderingintentdefault: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGRenderingIntentDefault"
 		end
 
-	kcgrenderingintentabsolutecolorimetric: INTEGER is
+	 frozen kcgrenderingintentabsolutecolorimetric: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGRenderingIntentAbsoluteColorimetric"
 		end
 
-	kcgrenderingintentrelativecolorimetric: INTEGER is
+	 frozen kcgrenderingintentrelativecolorimetric: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGRenderingIntentRelativeColorimetric"
 		end
 
-	kcgrenderingintentperceptual: INTEGER is
+	 frozen kcgrenderingintentperceptual: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGRenderingIntentPerceptual"
 		end
 
-	kcgrenderingintentsaturation: INTEGER is
+	 frozen kcgrenderingintentsaturation: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

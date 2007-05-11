@@ -989,57 +989,6 @@ Boolean call_nav_object_filter_proc_ptr (void *a_function, AEDesc *theItem, void
 
 #include <Carbon/Carbon.h>
 
-typedef void (*color_changed_proc_ptr_eiffel_feature) (void *a_class, long userData, PMColor *newColor);
-
-void* get_color_changed_proc_ptr_stub ();
-
-struct color_changed_proc_ptr_entry_struct
-{
-	void* a_class;
-	color_changed_proc_ptr_eiffel_feature feature;
-};
-
-void set_color_changed_proc_ptr_entry (void* a_class, void* a_feature);
-
-void call_color_changed_proc_ptr (void *a_function, long userData, PMColor *newColor);
-
-
-#include <Carbon/Carbon.h>
-
-typedef void (*ncolor_changed_proc_ptr_eiffel_feature) (void *a_class, long userData, NPMColor *newColor);
-
-void* get_ncolor_changed_proc_ptr_stub ();
-
-struct ncolor_changed_proc_ptr_entry_struct
-{
-	void* a_class;
-	ncolor_changed_proc_ptr_eiffel_feature feature;
-};
-
-void set_ncolor_changed_proc_ptr_entry (void* a_class, void* a_feature);
-
-void call_ncolor_changed_proc_ptr (void *a_function, long userData, NPMColor *newColor);
-
-
-#include <Carbon/Carbon.h>
-
-typedef Boolean (*user_event_proc_ptr_eiffel_feature) (void *a_class, EventRecord *event);
-
-void* get_user_event_proc_ptr_stub ();
-
-struct user_event_proc_ptr_entry_struct
-{
-	void* a_class;
-	user_event_proc_ptr_eiffel_feature feature;
-};
-
-void set_user_event_proc_ptr_entry (void* a_class, void* a_feature);
-
-Boolean call_user_event_proc_ptr (void *a_function, EventRecord *event);
-
-
-#include <Carbon/Carbon.h>
-
 typedef CFComparisonResult (*cfcomparator_function_eiffel_feature) (void *a_class, void const *val1, void const *val2, void *context);
 
 void* get_cfcomparator_function_stub ();

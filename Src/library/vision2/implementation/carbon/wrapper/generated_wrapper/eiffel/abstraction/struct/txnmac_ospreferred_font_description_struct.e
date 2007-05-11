@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {NONE} -- Implementation
+feature {ANY} -- Access
 
 	sizeof: INTEGER is
 		do
@@ -26,17 +26,6 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY} -- Member Access
-
-	get_fontid: INTEGER is
-		obsolete "Use `fontid' instead."
-			-- Access member `fontID'
-		require
-			exists: exists
-		do
-			Result := get_fontid_external (item)
-		ensure
-			result_correct: Result = get_fontid_external (item)
-		end
 
 	fontid: INTEGER is
 			-- Access member `fontID'
@@ -56,17 +45,6 @@ feature {ANY} -- Member Access
 			set_fontid_external (item, a_value)
 		ensure
 			a_value_set: a_value = fontid
-		end
-
-	get_pointsize: INTEGER is
-		obsolete "Use `pointsize' instead."
-			-- Access member `pointSize'
-		require
-			exists: exists
-		do
-			Result := get_pointsize_external (item)
-		ensure
-			result_correct: Result = get_pointsize_external (item)
 		end
 
 	pointsize: INTEGER is
@@ -89,17 +67,6 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = pointsize
 		end
 
-	get_encoding: INTEGER is
-		obsolete "Use `encoding' instead."
-			-- Access member `encoding'
-		require
-			exists: exists
-		do
-			Result := get_encoding_external (item)
-		ensure
-			result_correct: Result = get_encoding_external (item)
-		end
-
 	encoding: INTEGER is
 			-- Access member `encoding'
 		require
@@ -118,17 +85,6 @@ feature {ANY} -- Member Access
 			set_encoding_external (item, a_value)
 		ensure
 			a_value_set: a_value = encoding
-		end
-
-	get_fontstyle: INTEGER is
-		obsolete "Use `fontstyle' instead."
-			-- Access member `fontStyle'
-		require
-			exists: exists
-		do
-			Result := get_fontstyle_external (item)
-		ensure
-			result_correct: Result = get_fontstyle_external (item)
 		end
 
 	fontstyle: INTEGER is

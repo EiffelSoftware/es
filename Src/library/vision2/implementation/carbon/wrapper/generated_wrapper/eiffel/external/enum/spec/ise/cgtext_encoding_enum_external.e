@@ -9,14 +9,14 @@ feature {ANY}
 			Result := a_value = kcgencodingfontspecific or a_value = kcgencodingmacroman
 		end
 
-	kcgencodingfontspecific: INTEGER is
+	 frozen kcgencodingfontspecific: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGEncodingFontSpecific"
 		end
 
-	kcgencodingmacroman: INTEGER is
+	 frozen kcgencodingmacroman: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

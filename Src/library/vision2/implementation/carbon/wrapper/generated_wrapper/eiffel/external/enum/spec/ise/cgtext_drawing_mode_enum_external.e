@@ -9,56 +9,56 @@ feature {ANY}
 			Result := a_value = kcgtextfill or a_value = kcgtextstroke or a_value = kcgtextfillstroke or a_value = kcgtextinvisible or a_value = kcgtextfillclip or a_value = kcgtextstrokeclip or a_value = kcgtextfillstrokeclip or a_value = kcgtextclip
 		end
 
-	kcgtextfill: INTEGER is
+	 frozen kcgtextfill: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGTextFill"
 		end
 
-	kcgtextstroke: INTEGER is
+	 frozen kcgtextstroke: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGTextStroke"
 		end
 
-	kcgtextfillstroke: INTEGER is
+	 frozen kcgtextfillstroke: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGTextFillStroke"
 		end
 
-	kcgtextinvisible: INTEGER is
+	 frozen kcgtextinvisible: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGTextInvisible"
 		end
 
-	kcgtextfillclip: INTEGER is
+	 frozen kcgtextfillclip: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGTextFillClip"
 		end
 
-	kcgtextstrokeclip: INTEGER is
+	 frozen kcgtextstrokeclip: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGTextStrokeClip"
 		end
 
-	kcgtextfillstrokeclip: INTEGER is
+	 frozen kcgtextfillstrokeclip: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGTextFillStrokeClip"
 		end
 
-	kcgtextclip: INTEGER is
+	 frozen kcgtextclip: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

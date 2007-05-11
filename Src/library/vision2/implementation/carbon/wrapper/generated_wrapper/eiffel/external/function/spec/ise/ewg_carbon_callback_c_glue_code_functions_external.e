@@ -3,14 +3,14 @@
 class EWG_CARBON_CALLBACK_C_GLUE_CODE_FUNCTIONS_EXTERNAL
 
 feature
-	get_cgdata_provider_release_data_callback_stub_external: POINTER is
+	frozen get_cgdata_provider_release_data_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cgdata_provider_release_data_callback_stub"
 		end
 
-	get_cgdata_provider_release_data_callback_stub_address_external: POINTER is
+	frozen get_cgdata_provider_release_data_callback_stub_address_external: POINTER is
 			-- Address of C function `get_cgdata_provider_release_data_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) get_cgdata_provider_release_data_callback_stub"
 		end
 
-	set_cgdata_provider_release_data_callback_entry_external (a_class: CGDATA_PROVIDER_RELEASE_DATA_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cgdata_provider_release_data_callback_entry_external (a_class: CGDATA_PROVIDER_RELEASE_DATA_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cgdata_provider_release_data_callback_entry"
 		end
 
-	set_cgdata_provider_release_data_callback_entry_address_external: POINTER is
+	frozen set_cgdata_provider_release_data_callback_entry_address_external: POINTER is
 			-- Address of C function `set_cgdata_provider_release_data_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) set_cgdata_provider_release_data_callback_entry"
 		end
 
-	call_cgdata_provider_release_data_callback_external (a_function: POINTER; info: POINTER; data: POINTER; size: INTEGER) is
+	frozen call_cgdata_provider_release_data_callback_external (a_function: POINTER; info: POINTER; data: POINTER; size: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void const*, size_t)"
 		alias
 			"ewg_function_macro_call_cgdata_provider_release_data_callback"
 		end
 
-	call_cgdata_provider_release_data_callback_address_external: POINTER is
+	frozen call_cgdata_provider_release_data_callback_address_external: POINTER is
 			-- Address of C function `call_cgdata_provider_release_data_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) call_cgdata_provider_release_data_callback"
 		end
 
-	get_cgpath_applier_function_stub_external: POINTER is
+	frozen get_cgpath_applier_function_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cgpath_applier_function_stub"
 		end
 
-	get_cgpath_applier_function_stub_address_external: POINTER is
+	frozen get_cgpath_applier_function_stub_address_external: POINTER is
 			-- Address of C function `get_cgpath_applier_function_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) get_cgpath_applier_function_stub"
 		end
 
-	set_cgpath_applier_function_entry_external (a_class: CGPATH_APPLIER_FUNCTION_DISPATCHER; a_feature: POINTER) is
+	frozen set_cgpath_applier_function_entry_external (a_class: CGPATH_APPLIER_FUNCTION_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cgpath_applier_function_entry"
 		end
 
-	set_cgpath_applier_function_entry_address_external: POINTER is
+	frozen set_cgpath_applier_function_entry_address_external: POINTER is
 			-- Address of C function `set_cgpath_applier_function_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) set_cgpath_applier_function_entry"
 		end
 
-	call_cgpath_applier_function_external (a_function: POINTER; info: POINTER; element: POINTER) is
+	frozen call_cgpath_applier_function_external (a_function: POINTER; info: POINTER; element: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, CGPathElement const*)"
 		alias
 			"ewg_function_macro_call_cgpath_applier_function"
 		end
 
-	call_cgpath_applier_function_address_external: POINTER is
+	frozen call_cgpath_applier_function_address_external: POINTER is
 			-- Address of C function `call_cgpath_applier_function'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -93,194 +93,14 @@ feature
 			"(void*) call_cgpath_applier_function"
 		end
 
-	get_aecoerce_desc_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_aecoerce_desc_proc_ptr_stub"
-		end
-
-	get_aecoerce_desc_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_aecoerce_desc_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_aecoerce_desc_proc_ptr_stub"
-		end
-
-	set_aecoerce_desc_proc_ptr_entry_external (a_class: AECOERCE_DESC_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_aecoerce_desc_proc_ptr_entry"
-		end
-
-	set_aecoerce_desc_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_aecoerce_desc_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_aecoerce_desc_proc_ptr_entry"
-		end
-
-	call_aecoerce_desc_proc_ptr_external (a_function: POINTER; fromdesc: POINTER; totype: INTEGER; handlerrefcon: INTEGER; todesc: POINTER): INTEGER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, AEDesc const*, DescType, long, AEDesc*):OSErr"
-		alias
-			"ewg_function_macro_call_aecoerce_desc_proc_ptr"
-		end
-
-	call_aecoerce_desc_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_aecoerce_desc_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_aecoerce_desc_proc_ptr"
-		end
-
-	get_aecoerce_ptr_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_aecoerce_ptr_proc_ptr_stub"
-		end
-
-	get_aecoerce_ptr_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_aecoerce_ptr_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_aecoerce_ptr_proc_ptr_stub"
-		end
-
-	set_aecoerce_ptr_proc_ptr_entry_external (a_class: AECOERCE_PTR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_aecoerce_ptr_proc_ptr_entry"
-		end
-
-	set_aecoerce_ptr_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_aecoerce_ptr_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_aecoerce_ptr_proc_ptr_entry"
-		end
-
-	call_aecoerce_ptr_proc_ptr_external (a_function: POINTER; typecode: INTEGER; dataptr: POINTER; datasize: INTEGER; totype: INTEGER; handlerrefcon: INTEGER; a_result: POINTER): INTEGER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, DescType, void const*, Size, DescType, long, AEDesc*):OSErr"
-		alias
-			"ewg_function_macro_call_aecoerce_ptr_proc_ptr"
-		end
-
-	call_aecoerce_ptr_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_aecoerce_ptr_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_aecoerce_ptr_proc_ptr"
-		end
-
-	get_aedispose_external_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_aedispose_external_proc_ptr_stub"
-		end
-
-	get_aedispose_external_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_aedispose_external_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_aedispose_external_proc_ptr_stub"
-		end
-
-	set_aedispose_external_proc_ptr_entry_external (a_class: AEDISPOSE_EXTERNAL_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_aedispose_external_proc_ptr_entry"
-		end
-
-	set_aedispose_external_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_aedispose_external_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_aedispose_external_proc_ptr_entry"
-		end
-
-	call_aedispose_external_proc_ptr_external (a_function: POINTER; dataptr: POINTER; datalength: INTEGER; refcon: INTEGER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*, Size, long)"
-		alias
-			"ewg_function_macro_call_aedispose_external_proc_ptr"
-		end
-
-	call_aedispose_external_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_aedispose_external_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_aedispose_external_proc_ptr"
-		end
-
-	get_aeevent_handler_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_aeevent_handler_proc_ptr_stub"
-		end
-
-	get_aeevent_handler_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_aeevent_handler_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_aeevent_handler_proc_ptr_stub"
-		end
-
-	set_aeevent_handler_proc_ptr_entry_external (a_class: AEEVENT_HANDLER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_aeevent_handler_proc_ptr_entry"
-		end
-
-	set_aeevent_handler_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_aeevent_handler_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_aeevent_handler_proc_ptr_entry"
-		end
-
-	call_aeevent_handler_proc_ptr_external (a_function: POINTER; theappleevent: POINTER; reply: POINTER; handlerrefcon: INTEGER): INTEGER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, AppleEvent const*, AppleEvent*, long):OSErr"
-		alias
-			"ewg_function_macro_call_aeevent_handler_proc_ptr"
-		end
-
-	call_aeevent_handler_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_aeevent_handler_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_aeevent_handler_proc_ptr"
-		end
-
-	get_aeremote_process_resolver_callback_stub_external: POINTER is
+	frozen get_aeremote_process_resolver_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_aeremote_process_resolver_callback_stub"
 		end
 
-	get_aeremote_process_resolver_callback_stub_address_external: POINTER is
+	frozen get_aeremote_process_resolver_callback_stub_address_external: POINTER is
 			-- Address of C function `get_aeremote_process_resolver_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -288,14 +108,14 @@ feature
 			"(void*) get_aeremote_process_resolver_callback_stub"
 		end
 
-	set_aeremote_process_resolver_callback_entry_external (a_class: AEREMOTE_PROCESS_RESOLVER_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_aeremote_process_resolver_callback_entry_external (a_class: AEREMOTE_PROCESS_RESOLVER_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_aeremote_process_resolver_callback_entry"
 		end
 
-	set_aeremote_process_resolver_callback_entry_address_external: POINTER is
+	frozen set_aeremote_process_resolver_callback_entry_address_external: POINTER is
 			-- Address of C function `set_aeremote_process_resolver_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -303,14 +123,14 @@ feature
 			"(void*) set_aeremote_process_resolver_callback_entry"
 		end
 
-	call_aeremote_process_resolver_callback_external (a_function: POINTER; ref: POINTER; info: POINTER) is
+	frozen call_aeremote_process_resolver_callback_external (a_function: POINTER; ref: POINTER; info: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, AERemoteProcessResolverRef, void*)"
 		alias
 			"ewg_function_macro_call_aeremote_process_resolver_callback"
 		end
 
-	call_aeremote_process_resolver_callback_address_external: POINTER is
+	frozen call_aeremote_process_resolver_callback_address_external: POINTER is
 			-- Address of C function `call_aeremote_process_resolver_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -318,14 +138,14 @@ feature
 			"(void*) call_aeremote_process_resolver_callback"
 		end
 
-	get_event_comparator_proc_ptr_stub_external: POINTER is
+	frozen get_event_comparator_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_event_comparator_proc_ptr_stub"
 		end
 
-	get_event_comparator_proc_ptr_stub_address_external: POINTER is
+	frozen get_event_comparator_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_event_comparator_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -333,14 +153,14 @@ feature
 			"(void*) get_event_comparator_proc_ptr_stub"
 		end
 
-	set_event_comparator_proc_ptr_entry_external (a_class: EVENT_COMPARATOR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_event_comparator_proc_ptr_entry_external (a_class: EVENT_COMPARATOR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_event_comparator_proc_ptr_entry"
 		end
 
-	set_event_comparator_proc_ptr_entry_address_external: POINTER is
+	frozen set_event_comparator_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_event_comparator_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -348,14 +168,14 @@ feature
 			"(void*) set_event_comparator_proc_ptr_entry"
 		end
 
-	call_event_comparator_proc_ptr_external (a_function: POINTER; inevent: POINTER; incomparedata: POINTER): INTEGER is
+	frozen call_event_comparator_proc_ptr_external (a_function: POINTER; inevent: POINTER; incomparedata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, EventRef, void*):Boolean"
 		alias
 			"ewg_function_macro_call_event_comparator_proc_ptr"
 		end
 
-	call_event_comparator_proc_ptr_address_external: POINTER is
+	frozen call_event_comparator_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_event_comparator_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -363,14 +183,14 @@ feature
 			"(void*) call_event_comparator_proc_ptr"
 		end
 
-	get_event_loop_timer_proc_ptr_stub_external: POINTER is
+	frozen get_event_loop_timer_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_event_loop_timer_proc_ptr_stub"
 		end
 
-	get_event_loop_timer_proc_ptr_stub_address_external: POINTER is
+	frozen get_event_loop_timer_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_event_loop_timer_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -378,14 +198,14 @@ feature
 			"(void*) get_event_loop_timer_proc_ptr_stub"
 		end
 
-	set_event_loop_timer_proc_ptr_entry_external (a_class: EVENT_LOOP_TIMER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_event_loop_timer_proc_ptr_entry_external (a_class: EVENT_LOOP_TIMER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_event_loop_timer_proc_ptr_entry"
 		end
 
-	set_event_loop_timer_proc_ptr_entry_address_external: POINTER is
+	frozen set_event_loop_timer_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_event_loop_timer_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -393,14 +213,14 @@ feature
 			"(void*) set_event_loop_timer_proc_ptr_entry"
 		end
 
-	call_event_loop_timer_proc_ptr_external (a_function: POINTER; intimer: POINTER; inuserdata: POINTER) is
+	frozen call_event_loop_timer_proc_ptr_external (a_function: POINTER; intimer: POINTER; inuserdata: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, EventLoopTimerRef, void*)"
 		alias
 			"ewg_function_macro_call_event_loop_timer_proc_ptr"
 		end
 
-	call_event_loop_timer_proc_ptr_address_external: POINTER is
+	frozen call_event_loop_timer_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_event_loop_timer_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -408,14 +228,14 @@ feature
 			"(void*) call_event_loop_timer_proc_ptr"
 		end
 
-	get_event_loop_idle_timer_proc_ptr_stub_external: POINTER is
+	frozen get_event_loop_idle_timer_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_event_loop_idle_timer_proc_ptr_stub"
 		end
 
-	get_event_loop_idle_timer_proc_ptr_stub_address_external: POINTER is
+	frozen get_event_loop_idle_timer_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_event_loop_idle_timer_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -423,14 +243,14 @@ feature
 			"(void*) get_event_loop_idle_timer_proc_ptr_stub"
 		end
 
-	set_event_loop_idle_timer_proc_ptr_entry_external (a_class: EVENT_LOOP_IDLE_TIMER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_event_loop_idle_timer_proc_ptr_entry_external (a_class: EVENT_LOOP_IDLE_TIMER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_event_loop_idle_timer_proc_ptr_entry"
 		end
 
-	set_event_loop_idle_timer_proc_ptr_entry_address_external: POINTER is
+	frozen set_event_loop_idle_timer_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_event_loop_idle_timer_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -438,14 +258,14 @@ feature
 			"(void*) set_event_loop_idle_timer_proc_ptr_entry"
 		end
 
-	call_event_loop_idle_timer_proc_ptr_external (a_function: POINTER; intimer: POINTER; instate: INTEGER; inuserdata: POINTER) is
+	frozen call_event_loop_idle_timer_proc_ptr_external (a_function: POINTER; intimer: POINTER; instate: INTEGER; inuserdata: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, EventLoopTimerRef, EventLoopIdleTimerMessage, void*)"
 		alias
 			"ewg_function_macro_call_event_loop_idle_timer_proc_ptr"
 		end
 
-	call_event_loop_idle_timer_proc_ptr_address_external: POINTER is
+	frozen call_event_loop_idle_timer_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_event_loop_idle_timer_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -453,14 +273,14 @@ feature
 			"(void*) call_event_loop_idle_timer_proc_ptr"
 		end
 
-	get_event_handler_proc_ptr_stub_external: POINTER is
+	frozen get_event_handler_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_event_handler_proc_ptr_stub"
 		end
 
-	get_event_handler_proc_ptr_stub_address_external: POINTER is
+	frozen get_event_handler_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_event_handler_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -468,14 +288,14 @@ feature
 			"(void*) get_event_handler_proc_ptr_stub"
 		end
 
-	set_event_handler_proc_ptr_entry_external (a_class: EVENT_HANDLER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_event_handler_proc_ptr_entry_external (a_class: EVENT_HANDLER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_event_handler_proc_ptr_entry"
 		end
 
-	set_event_handler_proc_ptr_entry_address_external: POINTER is
+	frozen set_event_handler_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_event_handler_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -483,14 +303,14 @@ feature
 			"(void*) set_event_handler_proc_ptr_entry"
 		end
 
-	call_event_handler_proc_ptr_external (a_function: POINTER; inhandlercallref: POINTER; inevent: POINTER; inuserdata: POINTER): INTEGER is
+	frozen call_event_handler_proc_ptr_external (a_function: POINTER; inhandlercallref: POINTER; inevent: POINTER; inuserdata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, EventHandlerCallRef, EventRef, void*):OSStatus"
 		alias
 			"ewg_function_macro_call_event_handler_proc_ptr"
 		end
 
-	call_event_handler_proc_ptr_address_external: POINTER is
+	frozen call_event_handler_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_event_handler_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -498,14 +318,14 @@ feature
 			"(void*) call_event_handler_proc_ptr"
 		end
 
-	get_menu_def_proc_ptr_stub_external: POINTER is
+	frozen get_menu_def_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_menu_def_proc_ptr_stub"
 		end
 
-	get_menu_def_proc_ptr_stub_address_external: POINTER is
+	frozen get_menu_def_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_menu_def_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -513,14 +333,14 @@ feature
 			"(void*) get_menu_def_proc_ptr_stub"
 		end
 
-	set_menu_def_proc_ptr_entry_external (a_class: MENU_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_menu_def_proc_ptr_entry_external (a_class: MENU_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_menu_def_proc_ptr_entry"
 		end
 
-	set_menu_def_proc_ptr_entry_address_external: POINTER is
+	frozen set_menu_def_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_menu_def_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -528,14 +348,14 @@ feature
 			"(void*) set_menu_def_proc_ptr_entry"
 		end
 
-	call_menu_def_proc_ptr_external (a_function: POINTER; message: INTEGER; themenu: POINTER; menurect: POINTER; hitpt: POINTER; whichitem: POINTER) is
+	frozen call_menu_def_proc_ptr_external (a_function: POINTER; message: INTEGER; themenu: POINTER; menurect: POINTER; hitpt: POINTER; whichitem: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, short, MenuRef, Rect*, Point*, short*)"
 		alias
 			"ewg_function_macro_call_menu_def_proc_ptr"
 		end
 
-	call_menu_def_proc_ptr_address_external: POINTER is
+	frozen call_menu_def_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_menu_def_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -543,14 +363,14 @@ feature
 			"(void*) call_menu_def_proc_ptr"
 		end
 
-	get_control_action_proc_ptr_stub_external: POINTER is
+	frozen get_control_action_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_action_proc_ptr_stub"
 		end
 
-	get_control_action_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_action_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_action_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -558,14 +378,14 @@ feature
 			"(void*) get_control_action_proc_ptr_stub"
 		end
 
-	set_control_action_proc_ptr_entry_external (a_class: CONTROL_ACTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_action_proc_ptr_entry_external (a_class: CONTROL_ACTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_action_proc_ptr_entry"
 		end
 
-	set_control_action_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_action_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_action_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -573,14 +393,14 @@ feature
 			"(void*) set_control_action_proc_ptr_entry"
 		end
 
-	call_control_action_proc_ptr_external (a_function: POINTER; thecontrol: POINTER; partcode: INTEGER) is
+	frozen call_control_action_proc_ptr_external (a_function: POINTER; thecontrol: POINTER; partcode: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, ControlPartCode)"
 		alias
 			"ewg_function_macro_call_control_action_proc_ptr"
 		end
 
-	call_control_action_proc_ptr_address_external: POINTER is
+	frozen call_control_action_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_action_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -588,14 +408,14 @@ feature
 			"(void*) call_control_action_proc_ptr"
 		end
 
-	get_control_def_proc_ptr_stub_external: POINTER is
+	frozen get_control_def_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_def_proc_ptr_stub"
 		end
 
-	get_control_def_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_def_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_def_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -603,14 +423,14 @@ feature
 			"(void*) get_control_def_proc_ptr_stub"
 		end
 
-	set_control_def_proc_ptr_entry_external (a_class: CONTROL_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_def_proc_ptr_entry_external (a_class: CONTROL_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_def_proc_ptr_entry"
 		end
 
-	set_control_def_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_def_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_def_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -618,14 +438,14 @@ feature
 			"(void*) set_control_def_proc_ptr_entry"
 		end
 
-	call_control_def_proc_ptr_external (a_function: POINTER; varcode: INTEGER; thecontrol: POINTER; message: INTEGER; param: INTEGER): INTEGER is
+	frozen call_control_def_proc_ptr_external (a_function: POINTER; varcode: INTEGER; thecontrol: POINTER; message: INTEGER; param: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, SInt16, ControlRef, ControlDefProcMessage, SInt32):SInt32"
 		alias
 			"ewg_function_macro_call_control_def_proc_ptr"
 		end
 
-	call_control_def_proc_ptr_address_external: POINTER is
+	frozen call_control_def_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_def_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -633,14 +453,14 @@ feature
 			"(void*) call_control_def_proc_ptr"
 		end
 
-	get_control_key_filter_proc_ptr_stub_external: POINTER is
+	frozen get_control_key_filter_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_key_filter_proc_ptr_stub"
 		end
 
-	get_control_key_filter_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_key_filter_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_key_filter_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -648,14 +468,14 @@ feature
 			"(void*) get_control_key_filter_proc_ptr_stub"
 		end
 
-	set_control_key_filter_proc_ptr_entry_external (a_class: CONTROL_KEY_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_key_filter_proc_ptr_entry_external (a_class: CONTROL_KEY_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_key_filter_proc_ptr_entry"
 		end
 
-	set_control_key_filter_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_key_filter_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_key_filter_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -663,14 +483,14 @@ feature
 			"(void*) set_control_key_filter_proc_ptr_entry"
 		end
 
-	call_control_key_filter_proc_ptr_external (a_function: POINTER; thecontrol: POINTER; keycode: POINTER; charcode: POINTER; modifiers: POINTER): INTEGER is
+	frozen call_control_key_filter_proc_ptr_external (a_function: POINTER; thecontrol: POINTER; keycode: POINTER; charcode: POINTER; modifiers: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, SInt16*, SInt16*, EventModifiers*):ControlKeyFilterResult"
 		alias
 			"ewg_function_macro_call_control_key_filter_proc_ptr"
 		end
 
-	call_control_key_filter_proc_ptr_address_external: POINTER is
+	frozen call_control_key_filter_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_key_filter_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -678,14 +498,14 @@ feature
 			"(void*) call_control_key_filter_proc_ptr"
 		end
 
-	get_control_cntlto_collection_proc_ptr_stub_external: POINTER is
+	frozen get_control_cntlto_collection_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_cntlto_collection_proc_ptr_stub"
 		end
 
-	get_control_cntlto_collection_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_cntlto_collection_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_cntlto_collection_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -693,14 +513,14 @@ feature
 			"(void*) get_control_cntlto_collection_proc_ptr_stub"
 		end
 
-	set_control_cntlto_collection_proc_ptr_entry_external (a_class: CONTROL_CNTLTO_COLLECTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_cntlto_collection_proc_ptr_entry_external (a_class: CONTROL_CNTLTO_COLLECTION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_cntlto_collection_proc_ptr_entry"
 		end
 
-	set_control_cntlto_collection_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_cntlto_collection_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_cntlto_collection_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -708,14 +528,14 @@ feature
 			"(void*) set_control_cntlto_collection_proc_ptr_entry"
 		end
 
-	call_control_cntlto_collection_proc_ptr_external (a_function: POINTER; bounds: POINTER; value: INTEGER; visible: INTEGER; max: INTEGER; min: INTEGER; procid: INTEGER; refcon: INTEGER; title: POINTER; collection: POINTER): INTEGER is
+	frozen call_control_cntlto_collection_proc_ptr_external (a_function: POINTER; bounds: POINTER; value: INTEGER; visible: INTEGER; max: INTEGER; min: INTEGER; procid: INTEGER; refcon: INTEGER; title: POINTER; collection: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, Rect const*, SInt16, Boolean, SInt16, SInt16, SInt16, SInt32, ConstStr255Param, Collection):OSStatus"
 		alias
 			"ewg_function_macro_call_control_cntlto_collection_proc_ptr"
 		end
 
-	call_control_cntlto_collection_proc_ptr_address_external: POINTER is
+	frozen call_control_cntlto_collection_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_cntlto_collection_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -723,14 +543,14 @@ feature
 			"(void*) call_control_cntlto_collection_proc_ptr"
 		end
 
-	get_control_color_proc_ptr_stub_external: POINTER is
+	frozen get_control_color_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_color_proc_ptr_stub"
 		end
 
-	get_control_color_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_color_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_color_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -738,14 +558,14 @@ feature
 			"(void*) get_control_color_proc_ptr_stub"
 		end
 
-	set_control_color_proc_ptr_entry_external (a_class: CONTROL_COLOR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_color_proc_ptr_entry_external (a_class: CONTROL_COLOR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_color_proc_ptr_entry"
 		end
 
-	set_control_color_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_color_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_color_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -753,14 +573,14 @@ feature
 			"(void*) set_control_color_proc_ptr_entry"
 		end
 
-	call_control_color_proc_ptr_external (a_function: POINTER; incontrol: POINTER; inmessage: INTEGER; indrawdepth: INTEGER; indrawincolor: INTEGER): INTEGER is
+	frozen call_control_color_proc_ptr_external (a_function: POINTER; incontrol: POINTER; inmessage: INTEGER; indrawdepth: INTEGER; indrawincolor: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, SInt16, SInt16, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_call_control_color_proc_ptr"
 		end
 
-	call_control_color_proc_ptr_address_external: POINTER is
+	frozen call_control_color_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_color_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -768,14 +588,14 @@ feature
 			"(void*) call_control_color_proc_ptr"
 		end
 
-	get_window_def_proc_ptr_stub_external: POINTER is
+	frozen get_window_def_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_window_def_proc_ptr_stub"
 		end
 
-	get_window_def_proc_ptr_stub_address_external: POINTER is
+	frozen get_window_def_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_window_def_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -783,14 +603,14 @@ feature
 			"(void*) get_window_def_proc_ptr_stub"
 		end
 
-	set_window_def_proc_ptr_entry_external (a_class: WINDOW_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_window_def_proc_ptr_entry_external (a_class: WINDOW_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_window_def_proc_ptr_entry"
 		end
 
-	set_window_def_proc_ptr_entry_address_external: POINTER is
+	frozen set_window_def_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_window_def_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -798,14 +618,14 @@ feature
 			"(void*) set_window_def_proc_ptr_entry"
 		end
 
-	call_window_def_proc_ptr_external (a_function: POINTER; varcode: INTEGER; window: POINTER; message: INTEGER; param: INTEGER): INTEGER is
+	frozen call_window_def_proc_ptr_external (a_function: POINTER; varcode: INTEGER; window: POINTER; message: INTEGER; param: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, short, WindowRef, short, long):long"
 		alias
 			"ewg_function_macro_call_window_def_proc_ptr"
 		end
 
-	call_window_def_proc_ptr_address_external: POINTER is
+	frozen call_window_def_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_window_def_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -813,14 +633,14 @@ feature
 			"(void*) call_window_def_proc_ptr"
 		end
 
-	get_window_paint_proc_ptr_stub_external: POINTER is
+	frozen get_window_paint_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_window_paint_proc_ptr_stub"
 		end
 
-	get_window_paint_proc_ptr_stub_address_external: POINTER is
+	frozen get_window_paint_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_window_paint_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -828,14 +648,14 @@ feature
 			"(void*) get_window_paint_proc_ptr_stub"
 		end
 
-	set_window_paint_proc_ptr_entry_external (a_class: WINDOW_PAINT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_window_paint_proc_ptr_entry_external (a_class: WINDOW_PAINT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_window_paint_proc_ptr_entry"
 		end
 
-	set_window_paint_proc_ptr_entry_address_external: POINTER is
+	frozen set_window_paint_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_window_paint_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -843,14 +663,14 @@ feature
 			"(void*) set_window_paint_proc_ptr_entry"
 		end
 
-	call_window_paint_proc_ptr_external (a_function: POINTER; device: POINTER; qdcontext: POINTER; window: POINTER; inclientpaintrgn: POINTER; outsystempaintrgn: POINTER; refcon: POINTER): INTEGER is
+	frozen call_window_paint_proc_ptr_external (a_function: POINTER; device: POINTER; qdcontext: POINTER; window: POINTER; inclientpaintrgn: POINTER; outsystempaintrgn: POINTER; refcon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, GDHandle, GrafPtr, WindowRef, RgnHandle, RgnHandle, void*):OSStatus"
 		alias
 			"ewg_function_macro_call_window_paint_proc_ptr"
 		end
 
-	call_window_paint_proc_ptr_address_external: POINTER is
+	frozen call_window_paint_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_window_paint_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -858,14 +678,14 @@ feature
 			"(void*) call_window_paint_proc_ptr"
 		end
 
-	get_txnfind_proc_ptr_stub_external: POINTER is
+	frozen get_txnfind_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_txnfind_proc_ptr_stub"
 		end
 
-	get_txnfind_proc_ptr_stub_address_external: POINTER is
+	frozen get_txnfind_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_txnfind_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -873,14 +693,14 @@ feature
 			"(void*) get_txnfind_proc_ptr_stub"
 		end
 
-	set_txnfind_proc_ptr_entry_external (a_class: TXNFIND_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_txnfind_proc_ptr_entry_external (a_class: TXNFIND_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_txnfind_proc_ptr_entry"
 		end
 
-	set_txnfind_proc_ptr_entry_address_external: POINTER is
+	frozen set_txnfind_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_txnfind_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -888,14 +708,14 @@ feature
 			"(void*) set_txnfind_proc_ptr_entry"
 		end
 
-	call_txnfind_proc_ptr_external (a_function: POINTER; matchdata: POINTER; idatatype: INTEGER; imatchoptions: INTEGER; isearchtextptr: POINTER; encoding: INTEGER; absstartoffset: INTEGER; searchtextlength: INTEGER; ostartmatch: POINTER; oendmatch: POINTER; ofound: POINTER; refcon: INTEGER): INTEGER is
+	frozen call_txnfind_proc_ptr_external (a_function: POINTER; matchdata: POINTER; idatatype: INTEGER; imatchoptions: INTEGER; isearchtextptr: POINTER; encoding: INTEGER; absstartoffset: INTEGER; searchtextlength: INTEGER; ostartmatch: POINTER; oendmatch: POINTER; ofound: POINTER; refcon: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, TXNMatchTextRecord const*, TXNDataType, TXNMatchOptions, void const*, TextEncoding, TXNOffset, ByteCount, TXNOffset*, TXNOffset*, Boolean*, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_call_txnfind_proc_ptr"
 		end
 
-	call_txnfind_proc_ptr_address_external: POINTER is
+	frozen call_txnfind_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_txnfind_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -903,14 +723,14 @@ feature
 			"(void*) call_txnfind_proc_ptr"
 		end
 
-	get_txnaction_name_mapper_proc_ptr_stub_external: POINTER is
+	frozen get_txnaction_name_mapper_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_txnaction_name_mapper_proc_ptr_stub"
 		end
 
-	get_txnaction_name_mapper_proc_ptr_stub_address_external: POINTER is
+	frozen get_txnaction_name_mapper_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_txnaction_name_mapper_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -918,14 +738,14 @@ feature
 			"(void*) get_txnaction_name_mapper_proc_ptr_stub"
 		end
 
-	set_txnaction_name_mapper_proc_ptr_entry_external (a_class: TXNACTION_NAME_MAPPER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_txnaction_name_mapper_proc_ptr_entry_external (a_class: TXNACTION_NAME_MAPPER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_txnaction_name_mapper_proc_ptr_entry"
 		end
 
-	set_txnaction_name_mapper_proc_ptr_entry_address_external: POINTER is
+	frozen set_txnaction_name_mapper_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_txnaction_name_mapper_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -933,14 +753,14 @@ feature
 			"(void*) set_txnaction_name_mapper_proc_ptr_entry"
 		end
 
-	call_txnaction_name_mapper_proc_ptr_external (a_function: POINTER; actionname: POINTER; commandid: INTEGER; inuserdata: POINTER): POINTER is
+	frozen call_txnaction_name_mapper_proc_ptr_external (a_function: POINTER; actionname: POINTER; commandid: INTEGER; inuserdata: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, CFStringRef, UInt32, void*):CFStringRef"
 		alias
 			"ewg_function_macro_call_txnaction_name_mapper_proc_ptr"
 		end
 
-	call_txnaction_name_mapper_proc_ptr_address_external: POINTER is
+	frozen call_txnaction_name_mapper_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_txnaction_name_mapper_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -948,14 +768,14 @@ feature
 			"(void*) call_txnaction_name_mapper_proc_ptr"
 		end
 
-	get_txncontextual_menu_setup_proc_ptr_stub_external: POINTER is
+	frozen get_txncontextual_menu_setup_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_txncontextual_menu_setup_proc_ptr_stub"
 		end
 
-	get_txncontextual_menu_setup_proc_ptr_stub_address_external: POINTER is
+	frozen get_txncontextual_menu_setup_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_txncontextual_menu_setup_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -963,14 +783,14 @@ feature
 			"(void*) get_txncontextual_menu_setup_proc_ptr_stub"
 		end
 
-	set_txncontextual_menu_setup_proc_ptr_entry_external (a_class: TXNCONTEXTUAL_MENU_SETUP_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_txncontextual_menu_setup_proc_ptr_entry_external (a_class: TXNCONTEXTUAL_MENU_SETUP_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_txncontextual_menu_setup_proc_ptr_entry"
 		end
 
-	set_txncontextual_menu_setup_proc_ptr_entry_address_external: POINTER is
+	frozen set_txncontextual_menu_setup_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_txncontextual_menu_setup_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -978,14 +798,14 @@ feature
 			"(void*) set_txncontextual_menu_setup_proc_ptr_entry"
 		end
 
-	call_txncontextual_menu_setup_proc_ptr_external (a_function: POINTER; icontextualmenu: POINTER; object: POINTER; inuserdata: POINTER) is
+	frozen call_txncontextual_menu_setup_proc_ptr_external (a_function: POINTER; icontextualmenu: POINTER; object: POINTER; inuserdata: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, MenuRef, TXNObject, void*)"
 		alias
 			"ewg_function_macro_call_txncontextual_menu_setup_proc_ptr"
 		end
 
-	call_txncontextual_menu_setup_proc_ptr_address_external: POINTER is
+	frozen call_txncontextual_menu_setup_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_txncontextual_menu_setup_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -993,14 +813,14 @@ feature
 			"(void*) call_txncontextual_menu_setup_proc_ptr"
 		end
 
-	get_txnscroll_info_proc_ptr_stub_external: POINTER is
+	frozen get_txnscroll_info_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_txnscroll_info_proc_ptr_stub"
 		end
 
-	get_txnscroll_info_proc_ptr_stub_address_external: POINTER is
+	frozen get_txnscroll_info_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_txnscroll_info_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1008,14 +828,14 @@ feature
 			"(void*) get_txnscroll_info_proc_ptr_stub"
 		end
 
-	set_txnscroll_info_proc_ptr_entry_external (a_class: TXNSCROLL_INFO_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_txnscroll_info_proc_ptr_entry_external (a_class: TXNSCROLL_INFO_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_txnscroll_info_proc_ptr_entry"
 		end
 
-	set_txnscroll_info_proc_ptr_entry_address_external: POINTER is
+	frozen set_txnscroll_info_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_txnscroll_info_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1023,14 +843,14 @@ feature
 			"(void*) set_txnscroll_info_proc_ptr_entry"
 		end
 
-	call_txnscroll_info_proc_ptr_external (a_function: POINTER; ivalue: INTEGER; imaximumvalue: INTEGER; iscrollbarorientation: INTEGER; irefcon: INTEGER) is
+	frozen call_txnscroll_info_proc_ptr_external (a_function: POINTER; ivalue: INTEGER; imaximumvalue: INTEGER; iscrollbarorientation: INTEGER; irefcon: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, SInt32, SInt32, TXNScrollBarOrientation, SInt32)"
 		alias
 			"ewg_function_macro_call_txnscroll_info_proc_ptr"
 		end
 
-	call_txnscroll_info_proc_ptr_address_external: POINTER is
+	frozen call_txnscroll_info_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_txnscroll_info_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1038,14 +858,14 @@ feature
 			"(void*) call_txnscroll_info_proc_ptr"
 		end
 
-	get_txnaction_key_mapper_proc_ptr_stub_external: POINTER is
+	frozen get_txnaction_key_mapper_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_txnaction_key_mapper_proc_ptr_stub"
 		end
 
-	get_txnaction_key_mapper_proc_ptr_stub_address_external: POINTER is
+	frozen get_txnaction_key_mapper_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_txnaction_key_mapper_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1053,14 +873,14 @@ feature
 			"(void*) get_txnaction_key_mapper_proc_ptr_stub"
 		end
 
-	set_txnaction_key_mapper_proc_ptr_entry_external (a_class: TXNACTION_KEY_MAPPER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_txnaction_key_mapper_proc_ptr_entry_external (a_class: TXNACTION_KEY_MAPPER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_txnaction_key_mapper_proc_ptr_entry"
 		end
 
-	set_txnaction_key_mapper_proc_ptr_entry_address_external: POINTER is
+	frozen set_txnaction_key_mapper_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_txnaction_key_mapper_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1068,14 +888,14 @@ feature
 			"(void*) set_txnaction_key_mapper_proc_ptr_entry"
 		end
 
-	call_txnaction_key_mapper_proc_ptr_external (a_function: POINTER; actionkey: INTEGER; commandid: INTEGER): POINTER is
+	frozen call_txnaction_key_mapper_proc_ptr_external (a_function: POINTER; actionkey: INTEGER; commandid: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, TXNActionKey, UInt32):CFStringRef"
 		alias
 			"ewg_function_macro_call_txnaction_key_mapper_proc_ptr"
 		end
 
-	call_txnaction_key_mapper_proc_ptr_address_external: POINTER is
+	frozen call_txnaction_key_mapper_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_txnaction_key_mapper_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1083,14 +903,14 @@ feature
 			"(void*) call_txnaction_key_mapper_proc_ptr"
 		end
 
-	get_hmcontrol_content_proc_ptr_stub_external: POINTER is
+	frozen get_hmcontrol_content_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_hmcontrol_content_proc_ptr_stub"
 		end
 
-	get_hmcontrol_content_proc_ptr_stub_address_external: POINTER is
+	frozen get_hmcontrol_content_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_hmcontrol_content_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1098,14 +918,14 @@ feature
 			"(void*) get_hmcontrol_content_proc_ptr_stub"
 		end
 
-	set_hmcontrol_content_proc_ptr_entry_external (a_class: HMCONTROL_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_hmcontrol_content_proc_ptr_entry_external (a_class: HMCONTROL_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_hmcontrol_content_proc_ptr_entry"
 		end
 
-	set_hmcontrol_content_proc_ptr_entry_address_external: POINTER is
+	frozen set_hmcontrol_content_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_hmcontrol_content_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1113,14 +933,14 @@ feature
 			"(void*) set_hmcontrol_content_proc_ptr_entry"
 		end
 
-	call_hmcontrol_content_proc_ptr_external (a_function: POINTER; incontrol: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+	frozen call_hmcontrol_content_proc_ptr_external (a_function: POINTER; incontrol: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, Point*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
 		alias
 			"ewg_function_macro_call_hmcontrol_content_proc_ptr"
 		end
 
-	call_hmcontrol_content_proc_ptr_address_external: POINTER is
+	frozen call_hmcontrol_content_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_hmcontrol_content_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1128,14 +948,14 @@ feature
 			"(void*) call_hmcontrol_content_proc_ptr"
 		end
 
-	get_hmwindow_content_proc_ptr_stub_external: POINTER is
+	frozen get_hmwindow_content_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_hmwindow_content_proc_ptr_stub"
 		end
 
-	get_hmwindow_content_proc_ptr_stub_address_external: POINTER is
+	frozen get_hmwindow_content_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_hmwindow_content_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1143,14 +963,14 @@ feature
 			"(void*) get_hmwindow_content_proc_ptr_stub"
 		end
 
-	set_hmwindow_content_proc_ptr_entry_external (a_class: HMWINDOW_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_hmwindow_content_proc_ptr_entry_external (a_class: HMWINDOW_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_hmwindow_content_proc_ptr_entry"
 		end
 
-	set_hmwindow_content_proc_ptr_entry_address_external: POINTER is
+	frozen set_hmwindow_content_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_hmwindow_content_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1158,14 +978,14 @@ feature
 			"(void*) set_hmwindow_content_proc_ptr_entry"
 		end
 
-	call_hmwindow_content_proc_ptr_external (a_function: POINTER; inwindow: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+	frozen call_hmwindow_content_proc_ptr_external (a_function: POINTER; inwindow: POINTER; inglobalmouse: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, WindowRef, Point*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
 		alias
 			"ewg_function_macro_call_hmwindow_content_proc_ptr"
 		end
 
-	call_hmwindow_content_proc_ptr_address_external: POINTER is
+	frozen call_hmwindow_content_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_hmwindow_content_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1173,14 +993,14 @@ feature
 			"(void*) call_hmwindow_content_proc_ptr"
 		end
 
-	get_hmmenu_title_content_proc_ptr_stub_external: POINTER is
+	frozen get_hmmenu_title_content_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_hmmenu_title_content_proc_ptr_stub"
 		end
 
-	get_hmmenu_title_content_proc_ptr_stub_address_external: POINTER is
+	frozen get_hmmenu_title_content_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_hmmenu_title_content_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1188,14 +1008,14 @@ feature
 			"(void*) get_hmmenu_title_content_proc_ptr_stub"
 		end
 
-	set_hmmenu_title_content_proc_ptr_entry_external (a_class: HMMENU_TITLE_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_hmmenu_title_content_proc_ptr_entry_external (a_class: HMMENU_TITLE_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_hmmenu_title_content_proc_ptr_entry"
 		end
 
-	set_hmmenu_title_content_proc_ptr_entry_address_external: POINTER is
+	frozen set_hmmenu_title_content_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_hmmenu_title_content_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1203,14 +1023,14 @@ feature
 			"(void*) set_hmmenu_title_content_proc_ptr_entry"
 		end
 
-	call_hmmenu_title_content_proc_ptr_external (a_function: POINTER; inmenu: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+	frozen call_hmmenu_title_content_proc_ptr_external (a_function: POINTER; inmenu: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, MenuRef, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
 		alias
 			"ewg_function_macro_call_hmmenu_title_content_proc_ptr"
 		end
 
-	call_hmmenu_title_content_proc_ptr_address_external: POINTER is
+	frozen call_hmmenu_title_content_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_hmmenu_title_content_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1218,14 +1038,14 @@ feature
 			"(void*) call_hmmenu_title_content_proc_ptr"
 		end
 
-	get_hmmenu_item_content_proc_ptr_stub_external: POINTER is
+	frozen get_hmmenu_item_content_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_hmmenu_item_content_proc_ptr_stub"
 		end
 
-	get_hmmenu_item_content_proc_ptr_stub_address_external: POINTER is
+	frozen get_hmmenu_item_content_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_hmmenu_item_content_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1233,14 +1053,14 @@ feature
 			"(void*) get_hmmenu_item_content_proc_ptr_stub"
 		end
 
-	set_hmmenu_item_content_proc_ptr_entry_external (a_class: HMMENU_ITEM_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_hmmenu_item_content_proc_ptr_entry_external (a_class: HMMENU_ITEM_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_hmmenu_item_content_proc_ptr_entry"
 		end
 
-	set_hmmenu_item_content_proc_ptr_entry_address_external: POINTER is
+	frozen set_hmmenu_item_content_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_hmmenu_item_content_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1248,14 +1068,14 @@ feature
 			"(void*) set_hmmenu_item_content_proc_ptr_entry"
 		end
 
-	call_hmmenu_item_content_proc_ptr_external (a_function: POINTER; intrackingdata: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
+	frozen call_hmmenu_item_content_proc_ptr_external (a_function: POINTER; intrackingdata: POINTER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, MenuTrackingData const*, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr):OSStatus"
 		alias
 			"ewg_function_macro_call_hmmenu_item_content_proc_ptr"
 		end
 
-	call_hmmenu_item_content_proc_ptr_address_external: POINTER is
+	frozen call_hmmenu_item_content_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_hmmenu_item_content_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1263,14 +1083,14 @@ feature
 			"(void*) call_hmmenu_item_content_proc_ptr"
 		end
 
-	get_control_user_pane_draw_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_draw_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_draw_proc_ptr_stub"
 		end
 
-	get_control_user_pane_draw_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_draw_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_draw_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1278,14 +1098,14 @@ feature
 			"(void*) get_control_user_pane_draw_proc_ptr_stub"
 		end
 
-	set_control_user_pane_draw_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_DRAW_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_draw_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_DRAW_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_draw_proc_ptr_entry"
 		end
 
-	set_control_user_pane_draw_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_draw_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_draw_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1293,14 +1113,14 @@ feature
 			"(void*) set_control_user_pane_draw_proc_ptr_entry"
 		end
 
-	call_control_user_pane_draw_proc_ptr_external (a_function: POINTER; control: POINTER; part: INTEGER) is
+	frozen call_control_user_pane_draw_proc_ptr_external (a_function: POINTER; control: POINTER; part: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, SInt16)"
 		alias
 			"ewg_function_macro_call_control_user_pane_draw_proc_ptr"
 		end
 
-	call_control_user_pane_draw_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_draw_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_draw_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1308,14 +1128,14 @@ feature
 			"(void*) call_control_user_pane_draw_proc_ptr"
 		end
 
-	get_control_user_pane_hit_test_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_hit_test_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_hit_test_proc_ptr_stub"
 		end
 
-	get_control_user_pane_hit_test_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_hit_test_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_hit_test_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1323,14 +1143,14 @@ feature
 			"(void*) get_control_user_pane_hit_test_proc_ptr_stub"
 		end
 
-	set_control_user_pane_hit_test_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_HIT_TEST_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_hit_test_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_HIT_TEST_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_hit_test_proc_ptr_entry"
 		end
 
-	set_control_user_pane_hit_test_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_hit_test_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_hit_test_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1338,14 +1158,14 @@ feature
 			"(void*) set_control_user_pane_hit_test_proc_ptr_entry"
 		end
 
-	call_control_user_pane_hit_test_proc_ptr_external (a_function: POINTER; control: POINTER; where: POINTER): INTEGER is
+	frozen call_control_user_pane_hit_test_proc_ptr_external (a_function: POINTER; control: POINTER; where: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, Point*):ControlPartCode"
 		alias
 			"ewg_function_macro_call_control_user_pane_hit_test_proc_ptr"
 		end
 
-	call_control_user_pane_hit_test_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_hit_test_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_hit_test_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1353,14 +1173,14 @@ feature
 			"(void*) call_control_user_pane_hit_test_proc_ptr"
 		end
 
-	get_control_user_pane_tracking_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_tracking_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_tracking_proc_ptr_stub"
 		end
 
-	get_control_user_pane_tracking_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_tracking_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_tracking_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1368,14 +1188,14 @@ feature
 			"(void*) get_control_user_pane_tracking_proc_ptr_stub"
 		end
 
-	set_control_user_pane_tracking_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_TRACKING_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_tracking_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_TRACKING_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_tracking_proc_ptr_entry"
 		end
 
-	set_control_user_pane_tracking_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_tracking_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_tracking_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1383,14 +1203,14 @@ feature
 			"(void*) set_control_user_pane_tracking_proc_ptr_entry"
 		end
 
-	call_control_user_pane_tracking_proc_ptr_external (a_function: POINTER; control: POINTER; startpt: POINTER; actionproc: POINTER): INTEGER is
+	frozen call_control_user_pane_tracking_proc_ptr_external (a_function: POINTER; control: POINTER; startpt: POINTER; actionproc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, Point*, ControlActionUPP):ControlPartCode"
 		alias
 			"ewg_function_macro_call_control_user_pane_tracking_proc_ptr"
 		end
 
-	call_control_user_pane_tracking_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_tracking_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_tracking_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1398,14 +1218,14 @@ feature
 			"(void*) call_control_user_pane_tracking_proc_ptr"
 		end
 
-	get_control_user_pane_idle_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_idle_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_idle_proc_ptr_stub"
 		end
 
-	get_control_user_pane_idle_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_idle_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_idle_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1413,14 +1233,14 @@ feature
 			"(void*) get_control_user_pane_idle_proc_ptr_stub"
 		end
 
-	set_control_user_pane_idle_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_IDLE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_idle_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_IDLE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_idle_proc_ptr_entry"
 		end
 
-	set_control_user_pane_idle_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_idle_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_idle_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1428,14 +1248,14 @@ feature
 			"(void*) set_control_user_pane_idle_proc_ptr_entry"
 		end
 
-	call_control_user_pane_idle_proc_ptr_external (a_function: POINTER; control: POINTER) is
+	frozen call_control_user_pane_idle_proc_ptr_external (a_function: POINTER; control: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef)"
 		alias
 			"ewg_function_macro_call_control_user_pane_idle_proc_ptr"
 		end
 
-	call_control_user_pane_idle_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_idle_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_idle_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1443,14 +1263,14 @@ feature
 			"(void*) call_control_user_pane_idle_proc_ptr"
 		end
 
-	get_control_user_pane_key_down_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_key_down_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_key_down_proc_ptr_stub"
 		end
 
-	get_control_user_pane_key_down_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_key_down_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_key_down_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1458,14 +1278,14 @@ feature
 			"(void*) get_control_user_pane_key_down_proc_ptr_stub"
 		end
 
-	set_control_user_pane_key_down_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_KEY_DOWN_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_key_down_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_KEY_DOWN_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_key_down_proc_ptr_entry"
 		end
 
-	set_control_user_pane_key_down_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_key_down_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_key_down_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1473,14 +1293,14 @@ feature
 			"(void*) set_control_user_pane_key_down_proc_ptr_entry"
 		end
 
-	call_control_user_pane_key_down_proc_ptr_external (a_function: POINTER; control: POINTER; keycode: INTEGER; charcode: INTEGER; modifiers: INTEGER): INTEGER is
+	frozen call_control_user_pane_key_down_proc_ptr_external (a_function: POINTER; control: POINTER; keycode: INTEGER; charcode: INTEGER; modifiers: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, SInt16, SInt16, SInt16):ControlPartCode"
 		alias
 			"ewg_function_macro_call_control_user_pane_key_down_proc_ptr"
 		end
 
-	call_control_user_pane_key_down_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_key_down_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_key_down_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1488,14 +1308,14 @@ feature
 			"(void*) call_control_user_pane_key_down_proc_ptr"
 		end
 
-	get_control_user_pane_activate_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_activate_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_activate_proc_ptr_stub"
 		end
 
-	get_control_user_pane_activate_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_activate_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_activate_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1503,14 +1323,14 @@ feature
 			"(void*) get_control_user_pane_activate_proc_ptr_stub"
 		end
 
-	set_control_user_pane_activate_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_ACTIVATE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_activate_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_ACTIVATE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_activate_proc_ptr_entry"
 		end
 
-	set_control_user_pane_activate_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_activate_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_activate_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1518,14 +1338,14 @@ feature
 			"(void*) set_control_user_pane_activate_proc_ptr_entry"
 		end
 
-	call_control_user_pane_activate_proc_ptr_external (a_function: POINTER; control: POINTER; activating: INTEGER) is
+	frozen call_control_user_pane_activate_proc_ptr_external (a_function: POINTER; control: POINTER; activating: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, Boolean)"
 		alias
 			"ewg_function_macro_call_control_user_pane_activate_proc_ptr"
 		end
 
-	call_control_user_pane_activate_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_activate_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_activate_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1533,14 +1353,14 @@ feature
 			"(void*) call_control_user_pane_activate_proc_ptr"
 		end
 
-	get_control_user_pane_focus_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_focus_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_focus_proc_ptr_stub"
 		end
 
-	get_control_user_pane_focus_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_focus_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_focus_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1548,14 +1368,14 @@ feature
 			"(void*) get_control_user_pane_focus_proc_ptr_stub"
 		end
 
-	set_control_user_pane_focus_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_FOCUS_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_focus_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_FOCUS_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_focus_proc_ptr_entry"
 		end
 
-	set_control_user_pane_focus_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_focus_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_focus_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1563,14 +1383,14 @@ feature
 			"(void*) set_control_user_pane_focus_proc_ptr_entry"
 		end
 
-	call_control_user_pane_focus_proc_ptr_external (a_function: POINTER; control: POINTER; action: INTEGER): INTEGER is
+	frozen call_control_user_pane_focus_proc_ptr_external (a_function: POINTER; control: POINTER; action: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, ControlFocusPart):ControlPartCode"
 		alias
 			"ewg_function_macro_call_control_user_pane_focus_proc_ptr"
 		end
 
-	call_control_user_pane_focus_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_focus_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_focus_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1578,14 +1398,14 @@ feature
 			"(void*) call_control_user_pane_focus_proc_ptr"
 		end
 
-	get_control_user_pane_background_proc_ptr_stub_external: POINTER is
+	frozen get_control_user_pane_background_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_control_user_pane_background_proc_ptr_stub"
 		end
 
-	get_control_user_pane_background_proc_ptr_stub_address_external: POINTER is
+	frozen get_control_user_pane_background_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_control_user_pane_background_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1593,14 +1413,14 @@ feature
 			"(void*) get_control_user_pane_background_proc_ptr_stub"
 		end
 
-	set_control_user_pane_background_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_BACKGROUND_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_control_user_pane_background_proc_ptr_entry_external (a_class: CONTROL_USER_PANE_BACKGROUND_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_control_user_pane_background_proc_ptr_entry"
 		end
 
-	set_control_user_pane_background_proc_ptr_entry_address_external: POINTER is
+	frozen set_control_user_pane_background_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_control_user_pane_background_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1608,14 +1428,14 @@ feature
 			"(void*) set_control_user_pane_background_proc_ptr_entry"
 		end
 
-	call_control_user_pane_background_proc_ptr_external (a_function: POINTER; control: POINTER; info: POINTER) is
+	frozen call_control_user_pane_background_proc_ptr_external (a_function: POINTER; control: POINTER; info: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, ControlBackgroundPtr)"
 		alias
 			"ewg_function_macro_call_control_user_pane_background_proc_ptr"
 		end
 
-	call_control_user_pane_background_proc_ptr_address_external: POINTER is
+	frozen call_control_user_pane_background_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_control_user_pane_background_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1623,14 +1443,14 @@ feature
 			"(void*) call_control_user_pane_background_proc_ptr"
 		end
 
-	get_data_browser_item_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_proc_ptr_stub"
 		end
 
-	get_data_browser_item_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1638,14 +1458,14 @@ feature
 			"(void*) get_data_browser_item_proc_ptr_stub"
 		end
 
-	set_data_browser_item_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_proc_ptr_entry"
 		end
 
-	set_data_browser_item_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1653,14 +1473,14 @@ feature
 			"(void*) set_data_browser_item_proc_ptr_entry"
 		end
 
-	call_data_browser_item_proc_ptr_external (a_function: POINTER; item: INTEGER; state: INTEGER; clientdata: POINTER) is
+	frozen call_data_browser_item_proc_ptr_external (a_function: POINTER; item: INTEGER; state: INTEGER; clientdata: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, DataBrowserItemID, DataBrowserItemState, void*)"
 		alias
 			"ewg_function_macro_call_data_browser_item_proc_ptr"
 		end
 
-	call_data_browser_item_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1668,14 +1488,14 @@ feature
 			"(void*) call_data_browser_item_proc_ptr"
 		end
 
-	get_data_browser_item_data_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_data_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_data_proc_ptr_stub"
 		end
 
-	get_data_browser_item_data_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_data_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_data_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1683,14 +1503,14 @@ feature
 			"(void*) get_data_browser_item_data_proc_ptr_stub"
 		end
 
-	set_data_browser_item_data_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_DATA_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_data_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_DATA_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_data_proc_ptr_entry"
 		end
 
-	set_data_browser_item_data_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_data_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_data_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1698,14 +1518,14 @@ feature
 			"(void*) set_data_browser_item_data_proc_ptr_entry"
 		end
 
-	call_data_browser_item_data_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; itemdata: POINTER; setvalue: INTEGER): INTEGER is
+	frozen call_data_browser_item_data_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; itemdata: POINTER; setvalue: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserItemDataRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_call_data_browser_item_data_proc_ptr"
 		end
 
-	call_data_browser_item_data_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_data_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_data_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1713,14 +1533,14 @@ feature
 			"(void*) call_data_browser_item_data_proc_ptr"
 		end
 
-	get_data_browser_item_compare_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_compare_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_compare_proc_ptr_stub"
 		end
 
-	get_data_browser_item_compare_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_compare_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_compare_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1728,14 +1548,14 @@ feature
 			"(void*) get_data_browser_item_compare_proc_ptr_stub"
 		end
 
-	set_data_browser_item_compare_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_COMPARE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_compare_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_COMPARE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_compare_proc_ptr_entry"
 		end
 
-	set_data_browser_item_compare_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_compare_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_compare_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1743,14 +1563,14 @@ feature
 			"(void*) set_data_browser_item_compare_proc_ptr_entry"
 		end
 
-	call_data_browser_item_compare_proc_ptr_external (a_function: POINTER; browser: POINTER; itemone: INTEGER; itemtwo: INTEGER; sortproperty: INTEGER): INTEGER is
+	frozen call_data_browser_item_compare_proc_ptr_external (a_function: POINTER; browser: POINTER; itemone: INTEGER; itemtwo: INTEGER; sortproperty: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserItemID, DataBrowserPropertyID):Boolean"
 		alias
 			"ewg_function_macro_call_data_browser_item_compare_proc_ptr"
 		end
 
-	call_data_browser_item_compare_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_compare_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_compare_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1758,14 +1578,14 @@ feature
 			"(void*) call_data_browser_item_compare_proc_ptr"
 		end
 
-	get_data_browser_item_notification_with_item_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_notification_with_item_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_notification_with_item_proc_ptr_stub"
 		end
 
-	get_data_browser_item_notification_with_item_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_notification_with_item_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_notification_with_item_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1773,14 +1593,14 @@ feature
 			"(void*) get_data_browser_item_notification_with_item_proc_ptr_stub"
 		end
 
-	set_data_browser_item_notification_with_item_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_NOTIFICATION_WITH_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_notification_with_item_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_NOTIFICATION_WITH_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_notification_with_item_proc_ptr_entry"
 		end
 
-	set_data_browser_item_notification_with_item_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_notification_with_item_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_notification_with_item_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1788,14 +1608,14 @@ feature
 			"(void*) set_data_browser_item_notification_with_item_proc_ptr_entry"
 		end
 
-	call_data_browser_item_notification_with_item_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; message: INTEGER; itemdata: POINTER) is
+	frozen call_data_browser_item_notification_with_item_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; message: INTEGER; itemdata: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserItemNotification, DataBrowserItemDataRef)"
 		alias
 			"ewg_function_macro_call_data_browser_item_notification_with_item_proc_ptr"
 		end
 
-	call_data_browser_item_notification_with_item_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_notification_with_item_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_notification_with_item_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1803,14 +1623,14 @@ feature
 			"(void*) call_data_browser_item_notification_with_item_proc_ptr"
 		end
 
-	get_data_browser_item_notification_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_notification_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_notification_proc_ptr_stub"
 		end
 
-	get_data_browser_item_notification_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_notification_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_notification_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1818,14 +1638,14 @@ feature
 			"(void*) get_data_browser_item_notification_proc_ptr_stub"
 		end
 
-	set_data_browser_item_notification_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_NOTIFICATION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_notification_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_NOTIFICATION_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_notification_proc_ptr_entry"
 		end
 
-	set_data_browser_item_notification_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_notification_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_notification_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1833,14 +1653,14 @@ feature
 			"(void*) set_data_browser_item_notification_proc_ptr_entry"
 		end
 
-	call_data_browser_item_notification_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; message: INTEGER) is
+	frozen call_data_browser_item_notification_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; message: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserItemNotification)"
 		alias
 			"ewg_function_macro_call_data_browser_item_notification_proc_ptr"
 		end
 
-	call_data_browser_item_notification_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_notification_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_notification_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1848,14 +1668,14 @@ feature
 			"(void*) call_data_browser_item_notification_proc_ptr"
 		end
 
-	get_data_browser_add_drag_item_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_add_drag_item_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_add_drag_item_proc_ptr_stub"
 		end
 
-	get_data_browser_add_drag_item_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_add_drag_item_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_add_drag_item_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1863,14 +1683,14 @@ feature
 			"(void*) get_data_browser_add_drag_item_proc_ptr_stub"
 		end
 
-	set_data_browser_add_drag_item_proc_ptr_entry_external (a_class: DATA_BROWSER_ADD_DRAG_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_add_drag_item_proc_ptr_entry_external (a_class: DATA_BROWSER_ADD_DRAG_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_add_drag_item_proc_ptr_entry"
 		end
 
-	set_data_browser_add_drag_item_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_add_drag_item_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_add_drag_item_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1878,14 +1698,14 @@ feature
 			"(void*) set_data_browser_add_drag_item_proc_ptr_entry"
 		end
 
-	call_data_browser_add_drag_item_proc_ptr_external (a_function: POINTER; browser: POINTER; thedrag: POINTER; item: INTEGER; itemref: POINTER): INTEGER is
+	frozen call_data_browser_add_drag_item_proc_ptr_external (a_function: POINTER; browser: POINTER; thedrag: POINTER; item: INTEGER; itemref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DragReference, DataBrowserItemID, ItemReference*):Boolean"
 		alias
 			"ewg_function_macro_call_data_browser_add_drag_item_proc_ptr"
 		end
 
-	call_data_browser_add_drag_item_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_add_drag_item_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_add_drag_item_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1893,14 +1713,14 @@ feature
 			"(void*) call_data_browser_add_drag_item_proc_ptr"
 		end
 
-	get_data_browser_accept_drag_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_accept_drag_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_accept_drag_proc_ptr_stub"
 		end
 
-	get_data_browser_accept_drag_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_accept_drag_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_accept_drag_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1908,14 +1728,14 @@ feature
 			"(void*) get_data_browser_accept_drag_proc_ptr_stub"
 		end
 
-	set_data_browser_accept_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_ACCEPT_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_accept_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_ACCEPT_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_accept_drag_proc_ptr_entry"
 		end
 
-	set_data_browser_accept_drag_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_accept_drag_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_accept_drag_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1923,14 +1743,14 @@ feature
 			"(void*) set_data_browser_accept_drag_proc_ptr_entry"
 		end
 
-	call_data_browser_accept_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; thedrag: POINTER; item: INTEGER): INTEGER is
+	frozen call_data_browser_accept_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; thedrag: POINTER; item: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DragReference, DataBrowserItemID):Boolean"
 		alias
 			"ewg_function_macro_call_data_browser_accept_drag_proc_ptr"
 		end
 
-	call_data_browser_accept_drag_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_accept_drag_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_accept_drag_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1938,14 +1758,14 @@ feature
 			"(void*) call_data_browser_accept_drag_proc_ptr"
 		end
 
-	get_data_browser_post_process_drag_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_post_process_drag_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_post_process_drag_proc_ptr_stub"
 		end
 
-	get_data_browser_post_process_drag_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_post_process_drag_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_post_process_drag_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1953,14 +1773,14 @@ feature
 			"(void*) get_data_browser_post_process_drag_proc_ptr_stub"
 		end
 
-	set_data_browser_post_process_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_POST_PROCESS_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_post_process_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_POST_PROCESS_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_post_process_drag_proc_ptr_entry"
 		end
 
-	set_data_browser_post_process_drag_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_post_process_drag_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_post_process_drag_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1968,14 +1788,14 @@ feature
 			"(void*) set_data_browser_post_process_drag_proc_ptr_entry"
 		end
 
-	call_data_browser_post_process_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; thedrag: POINTER; trackdragresult: INTEGER) is
+	frozen call_data_browser_post_process_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; thedrag: POINTER; trackdragresult: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DragReference, OSStatus)"
 		alias
 			"ewg_function_macro_call_data_browser_post_process_drag_proc_ptr"
 		end
 
-	call_data_browser_post_process_drag_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_post_process_drag_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_post_process_drag_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1983,14 +1803,14 @@ feature
 			"(void*) call_data_browser_post_process_drag_proc_ptr"
 		end
 
-	get_data_browser_get_contextual_menu_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_get_contextual_menu_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_get_contextual_menu_proc_ptr_stub"
 		end
 
-	get_data_browser_get_contextual_menu_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_get_contextual_menu_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_get_contextual_menu_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -1998,14 +1818,14 @@ feature
 			"(void*) get_data_browser_get_contextual_menu_proc_ptr_stub"
 		end
 
-	set_data_browser_get_contextual_menu_proc_ptr_entry_external (a_class: DATA_BROWSER_GET_CONTEXTUAL_MENU_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_get_contextual_menu_proc_ptr_entry_external (a_class: DATA_BROWSER_GET_CONTEXTUAL_MENU_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_get_contextual_menu_proc_ptr_entry"
 		end
 
-	set_data_browser_get_contextual_menu_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_get_contextual_menu_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_get_contextual_menu_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2013,14 +1833,14 @@ feature
 			"(void*) set_data_browser_get_contextual_menu_proc_ptr_entry"
 		end
 
-	call_data_browser_get_contextual_menu_proc_ptr_external (a_function: POINTER; browser: POINTER; menu: POINTER; helptype: POINTER; helpitemstring: POINTER; selection: POINTER) is
+	frozen call_data_browser_get_contextual_menu_proc_ptr_external (a_function: POINTER; browser: POINTER; menu: POINTER; helptype: POINTER; helpitemstring: POINTER; selection: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, MenuRef*, UInt32*, CFStringRef*, AEDesc*)"
 		alias
 			"ewg_function_macro_call_data_browser_get_contextual_menu_proc_ptr"
 		end
 
-	call_data_browser_get_contextual_menu_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_get_contextual_menu_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_get_contextual_menu_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2028,14 +1848,14 @@ feature
 			"(void*) call_data_browser_get_contextual_menu_proc_ptr"
 		end
 
-	get_data_browser_select_contextual_menu_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_select_contextual_menu_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_select_contextual_menu_proc_ptr_stub"
 		end
 
-	get_data_browser_select_contextual_menu_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_select_contextual_menu_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_select_contextual_menu_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2043,14 +1863,14 @@ feature
 			"(void*) get_data_browser_select_contextual_menu_proc_ptr_stub"
 		end
 
-	set_data_browser_select_contextual_menu_proc_ptr_entry_external (a_class: DATA_BROWSER_SELECT_CONTEXTUAL_MENU_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_select_contextual_menu_proc_ptr_entry_external (a_class: DATA_BROWSER_SELECT_CONTEXTUAL_MENU_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_select_contextual_menu_proc_ptr_entry"
 		end
 
-	set_data_browser_select_contextual_menu_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_select_contextual_menu_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_select_contextual_menu_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2058,14 +1878,14 @@ feature
 			"(void*) set_data_browser_select_contextual_menu_proc_ptr_entry"
 		end
 
-	call_data_browser_select_contextual_menu_proc_ptr_external (a_function: POINTER; browser: POINTER; menu: POINTER; selectiontype: INTEGER; menuid: INTEGER; menuitem: INTEGER) is
+	frozen call_data_browser_select_contextual_menu_proc_ptr_external (a_function: POINTER; browser: POINTER; menu: POINTER; selectiontype: INTEGER; menuid: INTEGER; menuitem: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, MenuRef, UInt32, SInt16, MenuItemIndex)"
 		alias
 			"ewg_function_macro_call_data_browser_select_contextual_menu_proc_ptr"
 		end
 
-	call_data_browser_select_contextual_menu_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_select_contextual_menu_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_select_contextual_menu_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2073,14 +1893,14 @@ feature
 			"(void*) call_data_browser_select_contextual_menu_proc_ptr"
 		end
 
-	get_data_browser_item_help_content_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_help_content_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_help_content_proc_ptr_stub"
 		end
 
-	get_data_browser_item_help_content_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_help_content_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_help_content_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2088,14 +1908,14 @@ feature
 			"(void*) get_data_browser_item_help_content_proc_ptr_stub"
 		end
 
-	set_data_browser_item_help_content_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_HELP_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_help_content_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_HELP_CONTENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_help_content_proc_ptr_entry"
 		end
 
-	set_data_browser_item_help_content_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_help_content_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_help_content_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2103,14 +1923,14 @@ feature
 			"(void*) set_data_browser_item_help_content_proc_ptr_entry"
 		end
 
-	call_data_browser_item_help_content_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER) is
+	frozen call_data_browser_item_help_content_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; inrequest: INTEGER; outcontentprovided: POINTER; iohelpcontent: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, HMContentRequest, HMContentProvidedType*, HMHelpContentPtr)"
 		alias
 			"ewg_function_macro_call_data_browser_item_help_content_proc_ptr"
 		end
 
-	call_data_browser_item_help_content_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_help_content_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_help_content_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2118,14 +1938,14 @@ feature
 			"(void*) call_data_browser_item_help_content_proc_ptr"
 		end
 
-	get_data_browser_draw_item_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_draw_item_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_draw_item_proc_ptr_stub"
 		end
 
-	get_data_browser_draw_item_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_draw_item_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_draw_item_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2133,14 +1953,14 @@ feature
 			"(void*) get_data_browser_draw_item_proc_ptr_stub"
 		end
 
-	set_data_browser_draw_item_proc_ptr_entry_external (a_class: DATA_BROWSER_DRAW_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_draw_item_proc_ptr_entry_external (a_class: DATA_BROWSER_DRAW_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_draw_item_proc_ptr_entry"
 		end
 
-	set_data_browser_draw_item_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_draw_item_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_draw_item_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2148,14 +1968,14 @@ feature
 			"(void*) set_data_browser_draw_item_proc_ptr_entry"
 		end
 
-	call_data_browser_draw_item_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; itemstate: INTEGER; therect: POINTER; gddepth: INTEGER; colordevice: INTEGER) is
+	frozen call_data_browser_draw_item_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; itemstate: INTEGER; therect: POINTER; gddepth: INTEGER; colordevice: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserItemState, Rect const*, SInt16, Boolean)"
 		alias
 			"ewg_function_macro_call_data_browser_draw_item_proc_ptr"
 		end
 
-	call_data_browser_draw_item_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_draw_item_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_draw_item_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2163,14 +1983,14 @@ feature
 			"(void*) call_data_browser_draw_item_proc_ptr"
 		end
 
-	get_data_browser_edit_item_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_edit_item_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_edit_item_proc_ptr_stub"
 		end
 
-	get_data_browser_edit_item_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_edit_item_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_edit_item_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2178,14 +1998,14 @@ feature
 			"(void*) get_data_browser_edit_item_proc_ptr_stub"
 		end
 
-	set_data_browser_edit_item_proc_ptr_entry_external (a_class: DATA_BROWSER_EDIT_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_edit_item_proc_ptr_entry_external (a_class: DATA_BROWSER_EDIT_ITEM_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_edit_item_proc_ptr_entry"
 		end
 
-	set_data_browser_edit_item_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_edit_item_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_edit_item_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2193,14 +2013,14 @@ feature
 			"(void*) set_data_browser_edit_item_proc_ptr_entry"
 		end
 
-	call_data_browser_edit_item_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; thestring: POINTER; maxedittextrect: POINTER; shrinktofit: POINTER): INTEGER is
+	frozen call_data_browser_edit_item_proc_ptr_external (a_function: POINTER; browser: POINTER; item: INTEGER; property: INTEGER; thestring: POINTER; maxedittextrect: POINTER; shrinktofit: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, CFStringRef, Rect*, Boolean*):Boolean"
 		alias
 			"ewg_function_macro_call_data_browser_edit_item_proc_ptr"
 		end
 
-	call_data_browser_edit_item_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_edit_item_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_edit_item_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2208,14 +2028,14 @@ feature
 			"(void*) call_data_browser_edit_item_proc_ptr"
 		end
 
-	get_data_browser_hit_test_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_hit_test_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_hit_test_proc_ptr_stub"
 		end
 
-	get_data_browser_hit_test_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_hit_test_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_hit_test_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2223,14 +2043,14 @@ feature
 			"(void*) get_data_browser_hit_test_proc_ptr_stub"
 		end
 
-	set_data_browser_hit_test_proc_ptr_entry_external (a_class: DATA_BROWSER_HIT_TEST_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_hit_test_proc_ptr_entry_external (a_class: DATA_BROWSER_HIT_TEST_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_hit_test_proc_ptr_entry"
 		end
 
-	set_data_browser_hit_test_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_hit_test_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_hit_test_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2238,14 +2058,14 @@ feature
 			"(void*) set_data_browser_hit_test_proc_ptr_entry"
 		end
 
-	call_data_browser_hit_test_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; mouserect: POINTER): INTEGER is
+	frozen call_data_browser_hit_test_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; mouserect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, Rect const*):Boolean"
 		alias
 			"ewg_function_macro_call_data_browser_hit_test_proc_ptr"
 		end
 
-	call_data_browser_hit_test_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_hit_test_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_hit_test_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2253,14 +2073,14 @@ feature
 			"(void*) call_data_browser_hit_test_proc_ptr"
 		end
 
-	get_data_browser_tracking_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_tracking_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_tracking_proc_ptr_stub"
 		end
 
-	get_data_browser_tracking_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_tracking_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_tracking_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2268,14 +2088,14 @@ feature
 			"(void*) get_data_browser_tracking_proc_ptr_stub"
 		end
 
-	set_data_browser_tracking_proc_ptr_entry_external (a_class: DATA_BROWSER_TRACKING_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_tracking_proc_ptr_entry_external (a_class: DATA_BROWSER_TRACKING_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_tracking_proc_ptr_entry"
 		end
 
-	set_data_browser_tracking_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_tracking_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_tracking_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2283,14 +2103,14 @@ feature
 			"(void*) set_data_browser_tracking_proc_ptr_entry"
 		end
 
-	call_data_browser_tracking_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; startpt: POINTER; modifiers: INTEGER): INTEGER is
+	frozen call_data_browser_tracking_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; startpt: POINTER; modifiers: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, Point*, EventModifiers):DataBrowserTrackingResult"
 		alias
 			"ewg_function_macro_call_data_browser_tracking_proc_ptr"
 		end
 
-	call_data_browser_tracking_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_tracking_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_tracking_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2298,14 +2118,14 @@ feature
 			"(void*) call_data_browser_tracking_proc_ptr"
 		end
 
-	get_data_browser_item_drag_rgn_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_drag_rgn_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_drag_rgn_proc_ptr_stub"
 		end
 
-	get_data_browser_item_drag_rgn_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_drag_rgn_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_drag_rgn_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2313,14 +2133,14 @@ feature
 			"(void*) get_data_browser_item_drag_rgn_proc_ptr_stub"
 		end
 
-	set_data_browser_item_drag_rgn_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_DRAG_RGN_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_drag_rgn_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_DRAG_RGN_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_drag_rgn_proc_ptr_entry"
 		end
 
-	set_data_browser_item_drag_rgn_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_drag_rgn_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_drag_rgn_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2328,14 +2148,14 @@ feature
 			"(void*) set_data_browser_item_drag_rgn_proc_ptr_entry"
 		end
 
-	call_data_browser_item_drag_rgn_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; dragrgn: POINTER) is
+	frozen call_data_browser_item_drag_rgn_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; dragrgn: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, RgnHandle)"
 		alias
 			"ewg_function_macro_call_data_browser_item_drag_rgn_proc_ptr"
 		end
 
-	call_data_browser_item_drag_rgn_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_drag_rgn_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_drag_rgn_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2343,14 +2163,14 @@ feature
 			"(void*) call_data_browser_item_drag_rgn_proc_ptr"
 		end
 
-	get_data_browser_item_accept_drag_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_accept_drag_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_accept_drag_proc_ptr_stub"
 		end
 
-	get_data_browser_item_accept_drag_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_accept_drag_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_accept_drag_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2358,14 +2178,14 @@ feature
 			"(void*) get_data_browser_item_accept_drag_proc_ptr_stub"
 		end
 
-	set_data_browser_item_accept_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_ACCEPT_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_accept_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_ACCEPT_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_accept_drag_proc_ptr_entry"
 		end
 
-	set_data_browser_item_accept_drag_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_accept_drag_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_accept_drag_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2373,14 +2193,14 @@ feature
 			"(void*) set_data_browser_item_accept_drag_proc_ptr_entry"
 		end
 
-	call_data_browser_item_accept_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; thedrag: POINTER): INTEGER is
+	frozen call_data_browser_item_accept_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; therect: POINTER; thedrag: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, Rect const*, DragReference):DataBrowserDragFlags"
 		alias
 			"ewg_function_macro_call_data_browser_item_accept_drag_proc_ptr"
 		end
 
-	call_data_browser_item_accept_drag_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_accept_drag_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_accept_drag_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2388,14 +2208,14 @@ feature
 			"(void*) call_data_browser_item_accept_drag_proc_ptr"
 		end
 
-	get_data_browser_item_receive_drag_proc_ptr_stub_external: POINTER is
+	frozen get_data_browser_item_receive_drag_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_data_browser_item_receive_drag_proc_ptr_stub"
 		end
 
-	get_data_browser_item_receive_drag_proc_ptr_stub_address_external: POINTER is
+	frozen get_data_browser_item_receive_drag_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_data_browser_item_receive_drag_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2403,14 +2223,14 @@ feature
 			"(void*) get_data_browser_item_receive_drag_proc_ptr_stub"
 		end
 
-	set_data_browser_item_receive_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_RECEIVE_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_data_browser_item_receive_drag_proc_ptr_entry_external (a_class: DATA_BROWSER_ITEM_RECEIVE_DRAG_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_data_browser_item_receive_drag_proc_ptr_entry"
 		end
 
-	set_data_browser_item_receive_drag_proc_ptr_entry_address_external: POINTER is
+	frozen set_data_browser_item_receive_drag_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_data_browser_item_receive_drag_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2418,14 +2238,14 @@ feature
 			"(void*) set_data_browser_item_receive_drag_proc_ptr_entry"
 		end
 
-	call_data_browser_item_receive_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; dragflags: INTEGER; thedrag: POINTER): INTEGER is
+	frozen call_data_browser_item_receive_drag_proc_ptr_external (a_function: POINTER; browser: POINTER; itemid: INTEGER; property: INTEGER; dragflags: INTEGER; thedrag: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ControlRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserDragFlags, DragReference):Boolean"
 		alias
 			"ewg_function_macro_call_data_browser_item_receive_drag_proc_ptr"
 		end
 
-	call_data_browser_item_receive_drag_proc_ptr_address_external: POINTER is
+	frozen call_data_browser_item_receive_drag_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_data_browser_item_receive_drag_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2433,14 +2253,14 @@ feature
 			"(void*) call_data_browser_item_receive_drag_proc_ptr"
 		end
 
-	get_edit_unicode_post_update_proc_ptr_stub_external: POINTER is
+	frozen get_edit_unicode_post_update_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_edit_unicode_post_update_proc_ptr_stub"
 		end
 
-	get_edit_unicode_post_update_proc_ptr_stub_address_external: POINTER is
+	frozen get_edit_unicode_post_update_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_edit_unicode_post_update_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2448,14 +2268,14 @@ feature
 			"(void*) get_edit_unicode_post_update_proc_ptr_stub"
 		end
 
-	set_edit_unicode_post_update_proc_ptr_entry_external (a_class: EDIT_UNICODE_POST_UPDATE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_edit_unicode_post_update_proc_ptr_entry_external (a_class: EDIT_UNICODE_POST_UPDATE_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_edit_unicode_post_update_proc_ptr_entry"
 		end
 
-	set_edit_unicode_post_update_proc_ptr_entry_address_external: POINTER is
+	frozen set_edit_unicode_post_update_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_edit_unicode_post_update_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2463,14 +2283,14 @@ feature
 			"(void*) set_edit_unicode_post_update_proc_ptr_entry"
 		end
 
-	call_edit_unicode_post_update_proc_ptr_external (a_function: POINTER; unitext: POINTER; unitextlength: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER; refcon: POINTER): INTEGER is
+	frozen call_edit_unicode_post_update_proc_ptr_external (a_function: POINTER; unitext: POINTER; unitextlength: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER; refcon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, UniCharArrayHandle, UniCharCount, UniCharArrayOffset, UniCharArrayOffset, void*):Boolean"
 		alias
 			"ewg_function_macro_call_edit_unicode_post_update_proc_ptr"
 		end
 
-	call_edit_unicode_post_update_proc_ptr_address_external: POINTER is
+	frozen call_edit_unicode_post_update_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_edit_unicode_post_update_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2478,284 +2298,14 @@ feature
 			"(void*) call_edit_unicode_post_update_proc_ptr"
 		end
 
-	get_nav_event_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_nav_event_proc_ptr_stub"
-		end
-
-	get_nav_event_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_nav_event_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_nav_event_proc_ptr_stub"
-		end
-
-	set_nav_event_proc_ptr_entry_external (a_class: NAV_EVENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_nav_event_proc_ptr_entry"
-		end
-
-	set_nav_event_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_nav_event_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_nav_event_proc_ptr_entry"
-		end
-
-	call_nav_event_proc_ptr_external (a_function: POINTER; callbackselector: INTEGER; callbackparms: POINTER; callbackud: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, NavEventCallbackMessage, NavCBRecPtr, void*)"
-		alias
-			"ewg_function_macro_call_nav_event_proc_ptr"
-		end
-
-	call_nav_event_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_nav_event_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_nav_event_proc_ptr"
-		end
-
-	get_nav_preview_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_nav_preview_proc_ptr_stub"
-		end
-
-	get_nav_preview_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_nav_preview_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_nav_preview_proc_ptr_stub"
-		end
-
-	set_nav_preview_proc_ptr_entry_external (a_class: NAV_PREVIEW_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_nav_preview_proc_ptr_entry"
-		end
-
-	set_nav_preview_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_nav_preview_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_nav_preview_proc_ptr_entry"
-		end
-
-	call_nav_preview_proc_ptr_external (a_function: POINTER; callbackparms: POINTER; callbackud: POINTER): INTEGER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, NavCBRecPtr, void*):Boolean"
-		alias
-			"ewg_function_macro_call_nav_preview_proc_ptr"
-		end
-
-	call_nav_preview_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_nav_preview_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_nav_preview_proc_ptr"
-		end
-
-	get_nav_object_filter_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_nav_object_filter_proc_ptr_stub"
-		end
-
-	get_nav_object_filter_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_nav_object_filter_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_nav_object_filter_proc_ptr_stub"
-		end
-
-	set_nav_object_filter_proc_ptr_entry_external (a_class: NAV_OBJECT_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_nav_object_filter_proc_ptr_entry"
-		end
-
-	set_nav_object_filter_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_nav_object_filter_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_nav_object_filter_proc_ptr_entry"
-		end
-
-	call_nav_object_filter_proc_ptr_external (a_function: POINTER; theitem: POINTER; info: POINTER; callbackud: POINTER; filtermode: INTEGER): INTEGER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, AEDesc*, void*, void*, NavFilterModes):Boolean"
-		alias
-			"ewg_function_macro_call_nav_object_filter_proc_ptr"
-		end
-
-	call_nav_object_filter_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_nav_object_filter_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_nav_object_filter_proc_ptr"
-		end
-
-	get_color_changed_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_color_changed_proc_ptr_stub"
-		end
-
-	get_color_changed_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_color_changed_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_color_changed_proc_ptr_stub"
-		end
-
-	set_color_changed_proc_ptr_entry_external (a_class: COLOR_CHANGED_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_color_changed_proc_ptr_entry"
-		end
-
-	set_color_changed_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_color_changed_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_color_changed_proc_ptr_entry"
-		end
-
-	call_color_changed_proc_ptr_external (a_function: POINTER; userdata: INTEGER; newcolor: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, long, PMColor*)"
-		alias
-			"ewg_function_macro_call_color_changed_proc_ptr"
-		end
-
-	call_color_changed_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_color_changed_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_color_changed_proc_ptr"
-		end
-
-	get_ncolor_changed_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_ncolor_changed_proc_ptr_stub"
-		end
-
-	get_ncolor_changed_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_ncolor_changed_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_ncolor_changed_proc_ptr_stub"
-		end
-
-	set_ncolor_changed_proc_ptr_entry_external (a_class: NCOLOR_CHANGED_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_ncolor_changed_proc_ptr_entry"
-		end
-
-	set_ncolor_changed_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_ncolor_changed_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_ncolor_changed_proc_ptr_entry"
-		end
-
-	call_ncolor_changed_proc_ptr_external (a_function: POINTER; userdata: INTEGER; newcolor: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, long, NPMColor*)"
-		alias
-			"ewg_function_macro_call_ncolor_changed_proc_ptr"
-		end
-
-	call_ncolor_changed_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_ncolor_changed_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_ncolor_changed_proc_ptr"
-		end
-
-	get_user_event_proc_ptr_stub_external: POINTER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
-		alias
-			"ewg_function_macro_get_user_event_proc_ptr_stub"
-		end
-
-	get_user_event_proc_ptr_stub_address_external: POINTER is
-			-- Address of C function `get_user_event_proc_ptr_stub'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) get_user_event_proc_ptr_stub"
-		end
-
-	set_user_event_proc_ptr_entry_external (a_class: USER_EVENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
-		alias
-			"ewg_function_macro_set_user_event_proc_ptr_entry"
-		end
-
-	set_user_event_proc_ptr_entry_address_external: POINTER is
-			-- Address of C function `set_user_event_proc_ptr_entry'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) set_user_event_proc_ptr_entry"
-		end
-
-	call_user_event_proc_ptr_external (a_function: POINTER; event: POINTER): INTEGER is
-		external
-			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, EventRecord*):Boolean"
-		alias
-			"ewg_function_macro_call_user_event_proc_ptr"
-		end
-
-	call_user_event_proc_ptr_address_external: POINTER is
-			-- Address of C function `call_user_event_proc_ptr'
-		external
-			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
-		alias
-			"(void*) call_user_event_proc_ptr"
-		end
-
-	get_cfcomparator_function_stub_external: POINTER is
+	frozen get_cfcomparator_function_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfcomparator_function_stub"
 		end
 
-	get_cfcomparator_function_stub_address_external: POINTER is
+	frozen get_cfcomparator_function_stub_address_external: POINTER is
 			-- Address of C function `get_cfcomparator_function_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2763,14 +2313,14 @@ feature
 			"(void*) get_cfcomparator_function_stub"
 		end
 
-	set_cfcomparator_function_entry_external (a_class: CFCOMPARATOR_FUNCTION_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfcomparator_function_entry_external (a_class: CFCOMPARATOR_FUNCTION_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfcomparator_function_entry"
 		end
 
-	set_cfcomparator_function_entry_address_external: POINTER is
+	frozen set_cfcomparator_function_entry_address_external: POINTER is
 			-- Address of C function `set_cfcomparator_function_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2778,14 +2328,14 @@ feature
 			"(void*) set_cfcomparator_function_entry"
 		end
 
-	call_cfcomparator_function_external (a_function: POINTER; val1: POINTER; val2: POINTER; context: POINTER): INTEGER is
+	frozen call_cfcomparator_function_external (a_function: POINTER; val1: POINTER; val2: POINTER; context: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*, void const*, void*):CFComparisonResult"
 		alias
 			"ewg_function_macro_call_cfcomparator_function"
 		end
 
-	call_cfcomparator_function_address_external: POINTER is
+	frozen call_cfcomparator_function_address_external: POINTER is
 			-- Address of C function `call_cfcomparator_function'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2793,14 +2343,14 @@ feature
 			"(void*) call_cfcomparator_function"
 		end
 
-	get_cfallocator_retain_call_back_stub_external: POINTER is
+	frozen get_cfallocator_retain_call_back_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfallocator_retain_call_back_stub"
 		end
 
-	get_cfallocator_retain_call_back_stub_address_external: POINTER is
+	frozen get_cfallocator_retain_call_back_stub_address_external: POINTER is
 			-- Address of C function `get_cfallocator_retain_call_back_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2808,14 +2358,14 @@ feature
 			"(void*) get_cfallocator_retain_call_back_stub"
 		end
 
-	set_cfallocator_retain_call_back_entry_external (a_class: CFALLOCATOR_RETAIN_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfallocator_retain_call_back_entry_external (a_class: CFALLOCATOR_RETAIN_CALL_BACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfallocator_retain_call_back_entry"
 		end
 
-	set_cfallocator_retain_call_back_entry_address_external: POINTER is
+	frozen set_cfallocator_retain_call_back_entry_address_external: POINTER is
 			-- Address of C function `set_cfallocator_retain_call_back_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2823,14 +2373,14 @@ feature
 			"(void*) set_cfallocator_retain_call_back_entry"
 		end
 
-	call_cfallocator_retain_call_back_external (a_function: POINTER; info: POINTER): POINTER is
+	frozen call_cfallocator_retain_call_back_external (a_function: POINTER; info: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*):void const*"
 		alias
 			"ewg_function_macro_call_cfallocator_retain_call_back"
 		end
 
-	call_cfallocator_retain_call_back_address_external: POINTER is
+	frozen call_cfallocator_retain_call_back_address_external: POINTER is
 			-- Address of C function `call_cfallocator_retain_call_back'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2838,14 +2388,14 @@ feature
 			"(void*) call_cfallocator_retain_call_back"
 		end
 
-	get_cfallocator_release_call_back_stub_external: POINTER is
+	frozen get_cfallocator_release_call_back_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfallocator_release_call_back_stub"
 		end
 
-	get_cfallocator_release_call_back_stub_address_external: POINTER is
+	frozen get_cfallocator_release_call_back_stub_address_external: POINTER is
 			-- Address of C function `get_cfallocator_release_call_back_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2853,14 +2403,14 @@ feature
 			"(void*) get_cfallocator_release_call_back_stub"
 		end
 
-	set_cfallocator_release_call_back_entry_external (a_class: CFALLOCATOR_RELEASE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfallocator_release_call_back_entry_external (a_class: CFALLOCATOR_RELEASE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfallocator_release_call_back_entry"
 		end
 
-	set_cfallocator_release_call_back_entry_address_external: POINTER is
+	frozen set_cfallocator_release_call_back_entry_address_external: POINTER is
 			-- Address of C function `set_cfallocator_release_call_back_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2868,14 +2418,14 @@ feature
 			"(void*) set_cfallocator_release_call_back_entry"
 		end
 
-	call_cfallocator_release_call_back_external (a_function: POINTER; info: POINTER) is
+	frozen call_cfallocator_release_call_back_external (a_function: POINTER; info: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*)"
 		alias
 			"ewg_function_macro_call_cfallocator_release_call_back"
 		end
 
-	call_cfallocator_release_call_back_address_external: POINTER is
+	frozen call_cfallocator_release_call_back_address_external: POINTER is
 			-- Address of C function `call_cfallocator_release_call_back'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2883,14 +2433,14 @@ feature
 			"(void*) call_cfallocator_release_call_back"
 		end
 
-	get_cfallocator_copy_description_call_back_stub_external: POINTER is
+	frozen get_cfallocator_copy_description_call_back_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfallocator_copy_description_call_back_stub"
 		end
 
-	get_cfallocator_copy_description_call_back_stub_address_external: POINTER is
+	frozen get_cfallocator_copy_description_call_back_stub_address_external: POINTER is
 			-- Address of C function `get_cfallocator_copy_description_call_back_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2898,14 +2448,14 @@ feature
 			"(void*) get_cfallocator_copy_description_call_back_stub"
 		end
 
-	set_cfallocator_copy_description_call_back_entry_external (a_class: CFALLOCATOR_COPY_DESCRIPTION_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfallocator_copy_description_call_back_entry_external (a_class: CFALLOCATOR_COPY_DESCRIPTION_CALL_BACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfallocator_copy_description_call_back_entry"
 		end
 
-	set_cfallocator_copy_description_call_back_entry_address_external: POINTER is
+	frozen set_cfallocator_copy_description_call_back_entry_address_external: POINTER is
 			-- Address of C function `set_cfallocator_copy_description_call_back_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2913,14 +2463,14 @@ feature
 			"(void*) set_cfallocator_copy_description_call_back_entry"
 		end
 
-	call_cfallocator_copy_description_call_back_external (a_function: POINTER; info: POINTER): POINTER is
+	frozen call_cfallocator_copy_description_call_back_external (a_function: POINTER; info: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void const*):CFStringRef"
 		alias
 			"ewg_function_macro_call_cfallocator_copy_description_call_back"
 		end
 
-	call_cfallocator_copy_description_call_back_address_external: POINTER is
+	frozen call_cfallocator_copy_description_call_back_address_external: POINTER is
 			-- Address of C function `call_cfallocator_copy_description_call_back'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2928,14 +2478,14 @@ feature
 			"(void*) call_cfallocator_copy_description_call_back"
 		end
 
-	get_cfallocator_allocate_call_back_stub_external: POINTER is
+	frozen get_cfallocator_allocate_call_back_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfallocator_allocate_call_back_stub"
 		end
 
-	get_cfallocator_allocate_call_back_stub_address_external: POINTER is
+	frozen get_cfallocator_allocate_call_back_stub_address_external: POINTER is
 			-- Address of C function `get_cfallocator_allocate_call_back_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2943,14 +2493,14 @@ feature
 			"(void*) get_cfallocator_allocate_call_back_stub"
 		end
 
-	set_cfallocator_allocate_call_back_entry_external (a_class: CFALLOCATOR_ALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfallocator_allocate_call_back_entry_external (a_class: CFALLOCATOR_ALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfallocator_allocate_call_back_entry"
 		end
 
-	set_cfallocator_allocate_call_back_entry_address_external: POINTER is
+	frozen set_cfallocator_allocate_call_back_entry_address_external: POINTER is
 			-- Address of C function `set_cfallocator_allocate_call_back_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2958,14 +2508,14 @@ feature
 			"(void*) set_cfallocator_allocate_call_back_entry"
 		end
 
-	call_cfallocator_allocate_call_back_external (a_function: POINTER; allocsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
+	frozen call_cfallocator_allocate_call_back_external (a_function: POINTER; allocsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, CFIndex, CFOptionFlags, void*):void*"
 		alias
 			"ewg_function_macro_call_cfallocator_allocate_call_back"
 		end
 
-	call_cfallocator_allocate_call_back_address_external: POINTER is
+	frozen call_cfallocator_allocate_call_back_address_external: POINTER is
 			-- Address of C function `call_cfallocator_allocate_call_back'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2973,14 +2523,14 @@ feature
 			"(void*) call_cfallocator_allocate_call_back"
 		end
 
-	get_cfallocator_reallocate_call_back_stub_external: POINTER is
+	frozen get_cfallocator_reallocate_call_back_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfallocator_reallocate_call_back_stub"
 		end
 
-	get_cfallocator_reallocate_call_back_stub_address_external: POINTER is
+	frozen get_cfallocator_reallocate_call_back_stub_address_external: POINTER is
 			-- Address of C function `get_cfallocator_reallocate_call_back_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -2988,14 +2538,14 @@ feature
 			"(void*) get_cfallocator_reallocate_call_back_stub"
 		end
 
-	set_cfallocator_reallocate_call_back_entry_external (a_class: CFALLOCATOR_REALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfallocator_reallocate_call_back_entry_external (a_class: CFALLOCATOR_REALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfallocator_reallocate_call_back_entry"
 		end
 
-	set_cfallocator_reallocate_call_back_entry_address_external: POINTER is
+	frozen set_cfallocator_reallocate_call_back_entry_address_external: POINTER is
 			-- Address of C function `set_cfallocator_reallocate_call_back_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3003,14 +2553,14 @@ feature
 			"(void*) set_cfallocator_reallocate_call_back_entry"
 		end
 
-	call_cfallocator_reallocate_call_back_external (a_function: POINTER; ptr: POINTER; newsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
+	frozen call_cfallocator_reallocate_call_back_external (a_function: POINTER; ptr: POINTER; newsize: INTEGER; hint: INTEGER; info: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, CFIndex, CFOptionFlags, void*):void*"
 		alias
 			"ewg_function_macro_call_cfallocator_reallocate_call_back"
 		end
 
-	call_cfallocator_reallocate_call_back_address_external: POINTER is
+	frozen call_cfallocator_reallocate_call_back_address_external: POINTER is
 			-- Address of C function `call_cfallocator_reallocate_call_back'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3018,14 +2568,14 @@ feature
 			"(void*) call_cfallocator_reallocate_call_back"
 		end
 
-	get_cfallocator_deallocate_call_back_stub_external: POINTER is
+	frozen get_cfallocator_deallocate_call_back_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfallocator_deallocate_call_back_stub"
 		end
 
-	get_cfallocator_deallocate_call_back_stub_address_external: POINTER is
+	frozen get_cfallocator_deallocate_call_back_stub_address_external: POINTER is
 			-- Address of C function `get_cfallocator_deallocate_call_back_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3033,14 +2583,14 @@ feature
 			"(void*) get_cfallocator_deallocate_call_back_stub"
 		end
 
-	set_cfallocator_deallocate_call_back_entry_external (a_class: CFALLOCATOR_DEALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfallocator_deallocate_call_back_entry_external (a_class: CFALLOCATOR_DEALLOCATE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfallocator_deallocate_call_back_entry"
 		end
 
-	set_cfallocator_deallocate_call_back_entry_address_external: POINTER is
+	frozen set_cfallocator_deallocate_call_back_entry_address_external: POINTER is
 			-- Address of C function `set_cfallocator_deallocate_call_back_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3048,14 +2598,14 @@ feature
 			"(void*) set_cfallocator_deallocate_call_back_entry"
 		end
 
-	call_cfallocator_deallocate_call_back_external (a_function: POINTER; ptr: POINTER; info: POINTER) is
+	frozen call_cfallocator_deallocate_call_back_external (a_function: POINTER; ptr: POINTER; info: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void*)"
 		alias
 			"ewg_function_macro_call_cfallocator_deallocate_call_back"
 		end
 
-	call_cfallocator_deallocate_call_back_address_external: POINTER is
+	frozen call_cfallocator_deallocate_call_back_address_external: POINTER is
 			-- Address of C function `call_cfallocator_deallocate_call_back'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3063,14 +2613,14 @@ feature
 			"(void*) call_cfallocator_deallocate_call_back"
 		end
 
-	get_cfallocator_preferred_size_call_back_stub_external: POINTER is
+	frozen get_cfallocator_preferred_size_call_back_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfallocator_preferred_size_call_back_stub"
 		end
 
-	get_cfallocator_preferred_size_call_back_stub_address_external: POINTER is
+	frozen get_cfallocator_preferred_size_call_back_stub_address_external: POINTER is
 			-- Address of C function `get_cfallocator_preferred_size_call_back_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3078,14 +2628,14 @@ feature
 			"(void*) get_cfallocator_preferred_size_call_back_stub"
 		end
 
-	set_cfallocator_preferred_size_call_back_entry_external (a_class: CFALLOCATOR_PREFERRED_SIZE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfallocator_preferred_size_call_back_entry_external (a_class: CFALLOCATOR_PREFERRED_SIZE_CALL_BACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfallocator_preferred_size_call_back_entry"
 		end
 
-	set_cfallocator_preferred_size_call_back_entry_address_external: POINTER is
+	frozen set_cfallocator_preferred_size_call_back_entry_address_external: POINTER is
 			-- Address of C function `set_cfallocator_preferred_size_call_back_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3093,14 +2643,14 @@ feature
 			"(void*) set_cfallocator_preferred_size_call_back_entry"
 		end
 
-	call_cfallocator_preferred_size_call_back_external (a_function: POINTER; size: INTEGER; hint: INTEGER; info: POINTER): INTEGER is
+	frozen call_cfallocator_preferred_size_call_back_external (a_function: POINTER; size: INTEGER; hint: INTEGER; info: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, CFIndex, CFOptionFlags, void*):CFIndex"
 		alias
 			"ewg_function_macro_call_cfallocator_preferred_size_call_back"
 		end
 
-	call_cfallocator_preferred_size_call_back_address_external: POINTER is
+	frozen call_cfallocator_preferred_size_call_back_address_external: POINTER is
 			-- Address of C function `call_cfallocator_preferred_size_call_back'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3108,14 +2658,14 @@ feature
 			"(void*) call_cfallocator_preferred_size_call_back"
 		end
 
-	get_cgdata_provider_get_bytes_callback_stub_external: POINTER is
+	frozen get_cgdata_provider_get_bytes_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cgdata_provider_get_bytes_callback_stub"
 		end
 
-	get_cgdata_provider_get_bytes_callback_stub_address_external: POINTER is
+	frozen get_cgdata_provider_get_bytes_callback_stub_address_external: POINTER is
 			-- Address of C function `get_cgdata_provider_get_bytes_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3123,14 +2673,14 @@ feature
 			"(void*) get_cgdata_provider_get_bytes_callback_stub"
 		end
 
-	set_cgdata_provider_get_bytes_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cgdata_provider_get_bytes_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cgdata_provider_get_bytes_callback_entry"
 		end
 
-	set_cgdata_provider_get_bytes_callback_entry_address_external: POINTER is
+	frozen set_cgdata_provider_get_bytes_callback_entry_address_external: POINTER is
 			-- Address of C function `set_cgdata_provider_get_bytes_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3138,14 +2688,14 @@ feature
 			"(void*) set_cgdata_provider_get_bytes_callback_entry"
 		end
 
-	call_cgdata_provider_get_bytes_callback_external (a_function: POINTER; info: POINTER; buffer: POINTER; count: INTEGER): INTEGER is
+	frozen call_cgdata_provider_get_bytes_callback_external (a_function: POINTER; info: POINTER; buffer: POINTER; count: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void*, size_t):size_t"
 		alias
 			"ewg_function_macro_call_cgdata_provider_get_bytes_callback"
 		end
 
-	call_cgdata_provider_get_bytes_callback_address_external: POINTER is
+	frozen call_cgdata_provider_get_bytes_callback_address_external: POINTER is
 			-- Address of C function `call_cgdata_provider_get_bytes_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3153,14 +2703,14 @@ feature
 			"(void*) call_cgdata_provider_get_bytes_callback"
 		end
 
-	get_cgdata_provider_skip_bytes_callback_stub_external: POINTER is
+	frozen get_cgdata_provider_skip_bytes_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cgdata_provider_skip_bytes_callback_stub"
 		end
 
-	get_cgdata_provider_skip_bytes_callback_stub_address_external: POINTER is
+	frozen get_cgdata_provider_skip_bytes_callback_stub_address_external: POINTER is
 			-- Address of C function `get_cgdata_provider_skip_bytes_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3168,14 +2718,14 @@ feature
 			"(void*) get_cgdata_provider_skip_bytes_callback_stub"
 		end
 
-	set_cgdata_provider_skip_bytes_callback_entry_external (a_class: CGDATA_PROVIDER_SKIP_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cgdata_provider_skip_bytes_callback_entry_external (a_class: CGDATA_PROVIDER_SKIP_BYTES_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cgdata_provider_skip_bytes_callback_entry"
 		end
 
-	set_cgdata_provider_skip_bytes_callback_entry_address_external: POINTER is
+	frozen set_cgdata_provider_skip_bytes_callback_entry_address_external: POINTER is
 			-- Address of C function `set_cgdata_provider_skip_bytes_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3183,14 +2733,14 @@ feature
 			"(void*) set_cgdata_provider_skip_bytes_callback_entry"
 		end
 
-	call_cgdata_provider_skip_bytes_callback_external (a_function: POINTER; info: POINTER; count: INTEGER) is
+	frozen call_cgdata_provider_skip_bytes_callback_external (a_function: POINTER; info: POINTER; count: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, size_t)"
 		alias
 			"ewg_function_macro_call_cgdata_provider_skip_bytes_callback"
 		end
 
-	call_cgdata_provider_skip_bytes_callback_address_external: POINTER is
+	frozen call_cgdata_provider_skip_bytes_callback_address_external: POINTER is
 			-- Address of C function `call_cgdata_provider_skip_bytes_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3198,14 +2748,14 @@ feature
 			"(void*) call_cgdata_provider_skip_bytes_callback"
 		end
 
-	get_wsclient_context_release_call_back_proc_ptr_stub_external: POINTER is
+	frozen get_wsclient_context_release_call_back_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_wsclient_context_release_call_back_proc_ptr_stub"
 		end
 
-	get_wsclient_context_release_call_back_proc_ptr_stub_address_external: POINTER is
+	frozen get_wsclient_context_release_call_back_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_wsclient_context_release_call_back_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3213,14 +2763,14 @@ feature
 			"(void*) get_wsclient_context_release_call_back_proc_ptr_stub"
 		end
 
-	set_wsclient_context_release_call_back_proc_ptr_entry_external (a_class: WSCLIENT_CONTEXT_RELEASE_CALL_BACK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_wsclient_context_release_call_back_proc_ptr_entry_external (a_class: WSCLIENT_CONTEXT_RELEASE_CALL_BACK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_wsclient_context_release_call_back_proc_ptr_entry"
 		end
 
-	set_wsclient_context_release_call_back_proc_ptr_entry_address_external: POINTER is
+	frozen set_wsclient_context_release_call_back_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_wsclient_context_release_call_back_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3228,14 +2778,14 @@ feature
 			"(void*) set_wsclient_context_release_call_back_proc_ptr_entry"
 		end
 
-	call_wsclient_context_release_call_back_proc_ptr_external (a_function: POINTER; info: POINTER) is
+	frozen call_wsclient_context_release_call_back_proc_ptr_external (a_function: POINTER; info: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_call_wsclient_context_release_call_back_proc_ptr"
 		end
 
-	call_wsclient_context_release_call_back_proc_ptr_address_external: POINTER is
+	frozen call_wsclient_context_release_call_back_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_wsclient_context_release_call_back_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3243,14 +2793,14 @@ feature
 			"(void*) call_wsclient_context_release_call_back_proc_ptr"
 		end
 
-	get_cgdata_provider_get_byte_pointer_callback_stub_external: POINTER is
+	frozen get_cgdata_provider_get_byte_pointer_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cgdata_provider_get_byte_pointer_callback_stub"
 		end
 
-	get_cgdata_provider_get_byte_pointer_callback_stub_address_external: POINTER is
+	frozen get_cgdata_provider_get_byte_pointer_callback_stub_address_external: POINTER is
 			-- Address of C function `get_cgdata_provider_get_byte_pointer_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3258,14 +2808,14 @@ feature
 			"(void*) get_cgdata_provider_get_byte_pointer_callback_stub"
 		end
 
-	set_cgdata_provider_get_byte_pointer_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cgdata_provider_get_byte_pointer_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cgdata_provider_get_byte_pointer_callback_entry"
 		end
 
-	set_cgdata_provider_get_byte_pointer_callback_entry_address_external: POINTER is
+	frozen set_cgdata_provider_get_byte_pointer_callback_entry_address_external: POINTER is
 			-- Address of C function `set_cgdata_provider_get_byte_pointer_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3273,14 +2823,14 @@ feature
 			"(void*) set_cgdata_provider_get_byte_pointer_callback_entry"
 		end
 
-	call_cgdata_provider_get_byte_pointer_callback_external (a_function: POINTER; info: POINTER): POINTER is
+	frozen call_cgdata_provider_get_byte_pointer_callback_external (a_function: POINTER; info: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*):void const*"
 		alias
 			"ewg_function_macro_call_cgdata_provider_get_byte_pointer_callback"
 		end
 
-	call_cgdata_provider_get_byte_pointer_callback_address_external: POINTER is
+	frozen call_cgdata_provider_get_byte_pointer_callback_address_external: POINTER is
 			-- Address of C function `call_cgdata_provider_get_byte_pointer_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3288,14 +2838,14 @@ feature
 			"(void*) call_cgdata_provider_get_byte_pointer_callback"
 		end
 
-	get_cgdata_provider_release_byte_pointer_callback_stub_external: POINTER is
+	frozen get_cgdata_provider_release_byte_pointer_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cgdata_provider_release_byte_pointer_callback_stub"
 		end
 
-	get_cgdata_provider_release_byte_pointer_callback_stub_address_external: POINTER is
+	frozen get_cgdata_provider_release_byte_pointer_callback_stub_address_external: POINTER is
 			-- Address of C function `get_cgdata_provider_release_byte_pointer_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3303,14 +2853,14 @@ feature
 			"(void*) get_cgdata_provider_release_byte_pointer_callback_stub"
 		end
 
-	set_cgdata_provider_release_byte_pointer_callback_entry_external (a_class: CGDATA_PROVIDER_RELEASE_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cgdata_provider_release_byte_pointer_callback_entry_external (a_class: CGDATA_PROVIDER_RELEASE_BYTE_POINTER_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cgdata_provider_release_byte_pointer_callback_entry"
 		end
 
-	set_cgdata_provider_release_byte_pointer_callback_entry_address_external: POINTER is
+	frozen set_cgdata_provider_release_byte_pointer_callback_entry_address_external: POINTER is
 			-- Address of C function `set_cgdata_provider_release_byte_pointer_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3318,14 +2868,14 @@ feature
 			"(void*) set_cgdata_provider_release_byte_pointer_callback_entry"
 		end
 
-	call_cgdata_provider_release_byte_pointer_callback_external (a_function: POINTER; info: POINTER; a_pointer: POINTER) is
+	frozen call_cgdata_provider_release_byte_pointer_callback_external (a_function: POINTER; info: POINTER; a_pointer: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void const*)"
 		alias
 			"ewg_function_macro_call_cgdata_provider_release_byte_pointer_callback"
 		end
 
-	call_cgdata_provider_release_byte_pointer_callback_address_external: POINTER is
+	frozen call_cgdata_provider_release_byte_pointer_callback_address_external: POINTER is
 			-- Address of C function `call_cgdata_provider_release_byte_pointer_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3333,14 +2883,14 @@ feature
 			"(void*) call_cgdata_provider_release_byte_pointer_callback"
 		end
 
-	get_cgdata_provider_get_bytes_at_offset_callback_stub_external: POINTER is
+	frozen get_cgdata_provider_get_bytes_at_offset_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cgdata_provider_get_bytes_at_offset_callback_stub"
 		end
 
-	get_cgdata_provider_get_bytes_at_offset_callback_stub_address_external: POINTER is
+	frozen get_cgdata_provider_get_bytes_at_offset_callback_stub_address_external: POINTER is
 			-- Address of C function `get_cgdata_provider_get_bytes_at_offset_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3348,14 +2898,14 @@ feature
 			"(void*) get_cgdata_provider_get_bytes_at_offset_callback_stub"
 		end
 
-	set_cgdata_provider_get_bytes_at_offset_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTES_AT_OFFSET_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_cgdata_provider_get_bytes_at_offset_callback_entry_external (a_class: CGDATA_PROVIDER_GET_BYTES_AT_OFFSET_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cgdata_provider_get_bytes_at_offset_callback_entry"
 		end
 
-	set_cgdata_provider_get_bytes_at_offset_callback_entry_address_external: POINTER is
+	frozen set_cgdata_provider_get_bytes_at_offset_callback_entry_address_external: POINTER is
 			-- Address of C function `set_cgdata_provider_get_bytes_at_offset_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3363,14 +2913,14 @@ feature
 			"(void*) set_cgdata_provider_get_bytes_at_offset_callback_entry"
 		end
 
-	call_cgdata_provider_get_bytes_at_offset_callback_external (a_function: POINTER; info: POINTER; buffer: POINTER; offset: INTEGER; count: INTEGER): INTEGER is
+	frozen call_cgdata_provider_get_bytes_at_offset_callback_external (a_function: POINTER; info: POINTER; buffer: POINTER; offset: INTEGER; count: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, void*, size_t, size_t):size_t"
 		alias
 			"ewg_function_macro_call_cgdata_provider_get_bytes_at_offset_callback"
 		end
 
-	call_cgdata_provider_get_bytes_at_offset_callback_address_external: POINTER is
+	frozen call_cgdata_provider_get_bytes_at_offset_callback_address_external: POINTER is
 			-- Address of C function `call_cgdata_provider_get_bytes_at_offset_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3378,14 +2928,14 @@ feature
 			"(void*) call_cgdata_provider_get_bytes_at_offset_callback"
 		end
 
-	get_cfrag_term_procedure_stub_external: POINTER is
+	frozen get_cfrag_term_procedure_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_cfrag_term_procedure_stub"
 		end
 
-	get_cfrag_term_procedure_stub_address_external: POINTER is
+	frozen get_cfrag_term_procedure_stub_address_external: POINTER is
 			-- Address of C function `get_cfrag_term_procedure_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3393,14 +2943,14 @@ feature
 			"(void*) get_cfrag_term_procedure_stub"
 		end
 
-	set_cfrag_term_procedure_entry_external (a_class: CFRAG_TERM_PROCEDURE_DISPATCHER; a_feature: POINTER) is
+	frozen set_cfrag_term_procedure_entry_external (a_class: CFRAG_TERM_PROCEDURE_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_cfrag_term_procedure_entry"
 		end
 
-	set_cfrag_term_procedure_entry_address_external: POINTER is
+	frozen set_cfrag_term_procedure_entry_address_external: POINTER is
 			-- Address of C function `set_cfrag_term_procedure_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3408,14 +2958,14 @@ feature
 			"(void*) set_cfrag_term_procedure_entry"
 		end
 
-	call_cfrag_term_procedure_external (a_function: POINTER) is
+	frozen call_cfrag_term_procedure_external (a_function: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*)"
 		alias
 			"ewg_function_macro_call_cfrag_term_procedure"
 		end
 
-	call_cfrag_term_procedure_address_external: POINTER is
+	frozen call_cfrag_term_procedure_address_external: POINTER is
 			-- Address of C function `call_cfrag_term_procedure'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3423,14 +2973,14 @@ feature
 			"(void*) call_cfrag_term_procedure"
 		end
 
-	get_get_next_event_filter_proc_ptr_stub_external: POINTER is
+	frozen get_get_next_event_filter_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_get_next_event_filter_proc_ptr_stub"
 		end
 
-	get_get_next_event_filter_proc_ptr_stub_address_external: POINTER is
+	frozen get_get_next_event_filter_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_get_next_event_filter_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3438,14 +2988,14 @@ feature
 			"(void*) get_get_next_event_filter_proc_ptr_stub"
 		end
 
-	set_get_next_event_filter_proc_ptr_entry_external (a_class: GET_NEXT_EVENT_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_get_next_event_filter_proc_ptr_entry_external (a_class: GET_NEXT_EVENT_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_get_next_event_filter_proc_ptr_entry"
 		end
 
-	set_get_next_event_filter_proc_ptr_entry_address_external: POINTER is
+	frozen set_get_next_event_filter_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_get_next_event_filter_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3453,14 +3003,14 @@ feature
 			"(void*) set_get_next_event_filter_proc_ptr_entry"
 		end
 
-	call_get_next_event_filter_proc_ptr_external (a_function: POINTER; theevent: POINTER; a_result: POINTER) is
+	frozen call_get_next_event_filter_proc_ptr_external (a_function: POINTER; theevent: POINTER; a_result: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, EventRecord*, Boolean*)"
 		alias
 			"ewg_function_macro_call_get_next_event_filter_proc_ptr"
 		end
 
-	call_get_next_event_filter_proc_ptr_address_external: POINTER is
+	frozen call_get_next_event_filter_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_get_next_event_filter_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3468,14 +3018,14 @@ feature
 			"(void*) call_get_next_event_filter_proc_ptr"
 		end
 
-	get_menu_bar_def_proc_ptr_stub_external: POINTER is
+	frozen get_menu_bar_def_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_menu_bar_def_proc_ptr_stub"
 		end
 
-	get_menu_bar_def_proc_ptr_stub_address_external: POINTER is
+	frozen get_menu_bar_def_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_menu_bar_def_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3483,14 +3033,14 @@ feature
 			"(void*) get_menu_bar_def_proc_ptr_stub"
 		end
 
-	set_menu_bar_def_proc_ptr_entry_external (a_class: MENU_BAR_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_menu_bar_def_proc_ptr_entry_external (a_class: MENU_BAR_DEF_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_menu_bar_def_proc_ptr_entry"
 		end
 
-	set_menu_bar_def_proc_ptr_entry_address_external: POINTER is
+	frozen set_menu_bar_def_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_menu_bar_def_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3498,14 +3048,14 @@ feature
 			"(void*) set_menu_bar_def_proc_ptr_entry"
 		end
 
-	call_menu_bar_def_proc_ptr_external (a_function: POINTER; selector: INTEGER; message: INTEGER; parameter1: INTEGER; parameter2: INTEGER): INTEGER is
+	frozen call_menu_bar_def_proc_ptr_external (a_function: POINTER; selector: INTEGER; message: INTEGER; parameter1: INTEGER; parameter2: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, short, short, short, long):long"
 		alias
 			"ewg_function_macro_call_menu_bar_def_proc_ptr"
 		end
 
-	call_menu_bar_def_proc_ptr_address_external: POINTER is
+	frozen call_menu_bar_def_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_menu_bar_def_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3513,14 +3063,14 @@ feature
 			"(void*) call_menu_bar_def_proc_ptr"
 		end
 
-	get_mbar_hook_proc_ptr_stub_external: POINTER is
+	frozen get_mbar_hook_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_mbar_hook_proc_ptr_stub"
 		end
 
-	get_mbar_hook_proc_ptr_stub_address_external: POINTER is
+	frozen get_mbar_hook_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_mbar_hook_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3528,14 +3078,14 @@ feature
 			"(void*) get_mbar_hook_proc_ptr_stub"
 		end
 
-	set_mbar_hook_proc_ptr_entry_external (a_class: MBAR_HOOK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_mbar_hook_proc_ptr_entry_external (a_class: MBAR_HOOK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_mbar_hook_proc_ptr_entry"
 		end
 
-	set_mbar_hook_proc_ptr_entry_address_external: POINTER is
+	frozen set_mbar_hook_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_mbar_hook_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3543,14 +3093,14 @@ feature
 			"(void*) set_mbar_hook_proc_ptr_entry"
 		end
 
-	call_mbar_hook_proc_ptr_external (a_function: POINTER; menurect: POINTER): INTEGER is
+	frozen call_mbar_hook_proc_ptr_external (a_function: POINTER; menurect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, Rect*):short"
 		alias
 			"ewg_function_macro_call_mbar_hook_proc_ptr"
 		end
 
-	call_mbar_hook_proc_ptr_address_external: POINTER is
+	frozen call_mbar_hook_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_mbar_hook_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3558,14 +3108,14 @@ feature
 			"(void*) call_mbar_hook_proc_ptr"
 		end
 
-	get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub_external: POINTER is
+	frozen get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub"
 		end
 
-	get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub_address_external: POINTER is
+	frozen get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub_address_external: POINTER is
 			-- Address of C function `get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3573,14 +3123,14 @@ feature
 			"(void*) get_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_stub"
 		end
 
-	set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_external (a_class: SINT32_VOIDP_CFUUIDBYTES_VOIDPP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_external (a_class: SINT32_VOIDP_CFUUIDBYTES_VOIDPP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry"
 		end
 
-	set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_address_external: POINTER is
+	frozen set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry_address_external: POINTER is
 			-- Address of C function `set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3588,14 +3138,14 @@ feature
 			"(void*) set_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_entry"
 		end
 
-	call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_external (a_function: POINTER; thispointer: POINTER; iid: POINTER; ppv: POINTER): INTEGER is
+	frozen call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_external (a_function: POINTER; thispointer: POINTER; iid: POINTER; ppv: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, CFUUIDBytes*, void**):SInt32"
 		alias
 			"ewg_function_macro_call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback"
 		end
 
-	call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_address_external: POINTER is
+	frozen call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback_address_external: POINTER is
 			-- Address of C function `call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3603,14 +3153,14 @@ feature
 			"(void*) call_sint32_voidp_cfuuidbytes_voidpp_anonymous_callback"
 		end
 
-	get_uint32_voidp_anonymous_callback_stub_external: POINTER is
+	frozen get_uint32_voidp_anonymous_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_uint32_voidp_anonymous_callback_stub"
 		end
 
-	get_uint32_voidp_anonymous_callback_stub_address_external: POINTER is
+	frozen get_uint32_voidp_anonymous_callback_stub_address_external: POINTER is
 			-- Address of C function `get_uint32_voidp_anonymous_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3618,14 +3168,14 @@ feature
 			"(void*) get_uint32_voidp_anonymous_callback_stub"
 		end
 
-	set_uint32_voidp_anonymous_callback_entry_external (a_class: UINT32_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_uint32_voidp_anonymous_callback_entry_external (a_class: UINT32_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_uint32_voidp_anonymous_callback_entry"
 		end
 
-	set_uint32_voidp_anonymous_callback_entry_address_external: POINTER is
+	frozen set_uint32_voidp_anonymous_callback_entry_address_external: POINTER is
 			-- Address of C function `set_uint32_voidp_anonymous_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3633,14 +3183,14 @@ feature
 			"(void*) set_uint32_voidp_anonymous_callback_entry"
 		end
 
-	call_uint32_voidp_anonymous_callback_external (a_function: POINTER; thispointer: POINTER): INTEGER is
+	frozen call_uint32_voidp_anonymous_callback_external (a_function: POINTER; thispointer: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*):UInt32"
 		alias
 			"ewg_function_macro_call_uint32_voidp_anonymous_callback"
 		end
 
-	call_uint32_voidp_anonymous_callback_address_external: POINTER is
+	frozen call_uint32_voidp_anonymous_callback_address_external: POINTER is
 			-- Address of C function `call_uint32_voidp_anonymous_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3648,14 +3198,14 @@ feature
 			"(void*) call_uint32_voidp_anonymous_callback"
 		end
 
-	get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub_external: POINTER is
+	frozen get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub"
 		end
 
-	get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub_address_external: POINTER is
+	frozen get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub_address_external: POINTER is
 			-- Address of C function `get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3663,14 +3213,14 @@ feature
 			"(void*) get_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_stub"
 		end
 
-	set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_external (a_class: OSSTATUS_VOIDP_AEDESCCONSTP_AEDESCLISTP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_external (a_class: OSSTATUS_VOIDP_AEDESCCONSTP_AEDESCLISTP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry"
 		end
 
-	set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_address_external: POINTER is
+	frozen set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry_address_external: POINTER is
 			-- Address of C function `set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3678,14 +3228,14 @@ feature
 			"(void*) set_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_entry"
 		end
 
-	call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; outcommandpairs: POINTER): INTEGER is
+	frozen call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; outcommandpairs: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, AEDesc const*, AEDescList*):OSStatus"
 		alias
 			"ewg_function_macro_call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback"
 		end
 
-	call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_address_external: POINTER is
+	frozen call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback_address_external: POINTER is
 			-- Address of C function `call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3693,14 +3243,14 @@ feature
 			"(void*) call_osstatus_voidp_aedescconstp_aedesclistp_anonymous_callback"
 		end
 
-	get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub_external: POINTER is
+	frozen get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub"
 		end
 
-	get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub_address_external: POINTER is
+	frozen get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub_address_external: POINTER is
 			-- Address of C function `get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3708,14 +3258,14 @@ feature
 			"(void*) get_osstatus_voidp_aedescp_sint32_anonymous_callback_stub"
 		end
 
-	set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry_external (a_class: OSSTATUS_VOIDP_AEDESCP_SINT32_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry_external (a_class: OSSTATUS_VOIDP_AEDESCP_SINT32_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry"
 		end
 
-	set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry_address_external: POINTER is
+	frozen set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry_address_external: POINTER is
 			-- Address of C function `set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3723,14 +3273,14 @@ feature
 			"(void*) set_osstatus_voidp_aedescp_sint32_anonymous_callback_entry"
 		end
 
-	call_osstatus_voidp_aedescp_sint32_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; incommandid: INTEGER): INTEGER is
+	frozen call_osstatus_voidp_aedescp_sint32_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER; incontext: POINTER; incommandid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*, AEDesc*, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_call_osstatus_voidp_aedescp_sint32_anonymous_callback"
 		end
 
-	call_osstatus_voidp_aedescp_sint32_anonymous_callback_address_external: POINTER is
+	frozen call_osstatus_voidp_aedescp_sint32_anonymous_callback_address_external: POINTER is
 			-- Address of C function `call_osstatus_voidp_aedescp_sint32_anonymous_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3738,14 +3288,14 @@ feature
 			"(void*) call_osstatus_voidp_aedescp_sint32_anonymous_callback"
 		end
 
-	get_void_voidp_anonymous_callback_stub_external: POINTER is
+	frozen get_void_voidp_anonymous_callback_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_void_voidp_anonymous_callback_stub"
 		end
 
-	get_void_voidp_anonymous_callback_stub_address_external: POINTER is
+	frozen get_void_voidp_anonymous_callback_stub_address_external: POINTER is
 			-- Address of C function `get_void_voidp_anonymous_callback_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3753,14 +3303,14 @@ feature
 			"(void*) get_void_voidp_anonymous_callback_stub"
 		end
 
-	set_void_voidp_anonymous_callback_entry_external (a_class: VOID_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
+	frozen set_void_voidp_anonymous_callback_entry_external (a_class: VOID_VOIDP_ANONYMOUS_CALLBACK_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_void_voidp_anonymous_callback_entry"
 		end
 
-	set_void_voidp_anonymous_callback_entry_address_external: POINTER is
+	frozen set_void_voidp_anonymous_callback_entry_address_external: POINTER is
 			-- Address of C function `set_void_voidp_anonymous_callback_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3768,14 +3318,14 @@ feature
 			"(void*) set_void_voidp_anonymous_callback_entry"
 		end
 
-	call_void_voidp_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER) is
+	frozen call_void_voidp_anonymous_callback_external (a_function: POINTER; thisinstance: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_call_void_voidp_anonymous_callback"
 		end
 
-	call_void_voidp_anonymous_callback_address_external: POINTER is
+	frozen call_void_voidp_anonymous_callback_address_external: POINTER is
 			-- Address of C function `call_void_voidp_anonymous_callback'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3783,14 +3333,14 @@ feature
 			"(void*) call_void_voidp_anonymous_callback"
 		end
 
-	get_desk_hook_proc_ptr_stub_external: POINTER is
+	frozen get_desk_hook_proc_ptr_stub_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :void*"
 		alias
 			"ewg_function_macro_get_desk_hook_proc_ptr_stub"
 		end
 
-	get_desk_hook_proc_ptr_stub_address_external: POINTER is
+	frozen get_desk_hook_proc_ptr_stub_address_external: POINTER is
 			-- Address of C function `get_desk_hook_proc_ptr_stub'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3798,14 +3348,14 @@ feature
 			"(void*) get_desk_hook_proc_ptr_stub"
 		end
 
-	set_desk_hook_proc_ptr_entry_external (a_class: DESK_HOOK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+	frozen set_desk_hook_proc_ptr_entry_external (a_class: DESK_HOOK_PROC_PTR_DISPATCHER; a_feature: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, void*)"
 		alias
 			"ewg_function_macro_set_desk_hook_proc_ptr_entry"
 		end
 
-	set_desk_hook_proc_ptr_entry_address_external: POINTER is
+	frozen set_desk_hook_proc_ptr_entry_address_external: POINTER is
 			-- Address of C function `set_desk_hook_proc_ptr_entry'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
@@ -3813,14 +3363,14 @@ feature
 			"(void*) set_desk_hook_proc_ptr_entry"
 		end
 
-	call_desk_hook_proc_ptr_external (a_function: POINTER; mouseclick: INTEGER; theevent: POINTER) is
+	frozen call_desk_hook_proc_ptr_external (a_function: POINTER; mouseclick: INTEGER; theevent: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, Boolean, EventRecord*)"
 		alias
 			"ewg_function_macro_call_desk_hook_proc_ptr"
 		end
 
-	call_desk_hook_proc_ptr_address_external: POINTER is
+	frozen call_desk_hook_proc_ptr_address_external: POINTER is
 			-- Address of C function `call_desk_hook_proc_ptr'
 		external
 			"C [macro <ewg_carbon_callback_c_glue_code.h>]: void*"
