@@ -23,8 +23,10 @@ inherit
 		redefine
 			interface,
 			make,
+			bounds_changed,
 			minimum_width,
-			minimum_height
+			minimum_height,
+			layout
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -101,7 +103,7 @@ feature -- Implementation
 
 	dummy_control : POINTER
 
-	carbon_arrange_children is
+	layout is
 			-- Setup positioning constraints for all children
 		local
 			w1, w2 : EV_WIDGET_IMP
@@ -117,6 +119,9 @@ feature -- Implementation
 			expandable_height : INTEGER
 			last_y : INTEGER
 			i: INTEGER
+			ratio : DOUBLE
+			min_height, min_width: INTEGER
+			w : EV_CONTAINER_IMP
 		do
 			-- Setup rect
 			create a_rect.make_new_unshared
@@ -126,6 +131,7 @@ feature -- Implementation
 			-- Calculate height of all controls
 			from
 				i := 1
+				min_width := 0
 			until
 				(i = 0) or (i = count + 1)
 			loop
@@ -138,32 +144,38 @@ feature -- Implementation
 				else
 					non_expandable_height := non_expandable_height + w1.minimum_height
 				end
+				min_width := min_width.max (w1.minimum_width)
 				--size_control_external ( w1.c_object, width - child_offset_left - child_offset_right, w1.minimum_height ) -- Set optimal size here, we need it later
 				-- Ueli:  I don't see, where we need this later....
+				size_control_external ( w1.c_object, width - child_offset_left - child_offset_right, 1)
 				i := i + 1
 			end
 
+			min_height :=  expandable_height + non_expandable_height + (count-1)*padding +child_offset_bottom + child_offset_top
+
 			-- Set height of userpane so that it can accomodate all widgets + padding. We reset this change at the end of the feature
 			old_height := height -- save old height
-			size_control_external ( c_object, width, expandable_height + non_expandable_height + (count-1)*padding +child_offset_bottom + child_offset_top)
+			--size_control_external ( c_object, width, min_height)
 
 
 
 			if is_homogeneous then
-				control_height := (old_height -child_offset_top - child_offset_bottom - (count-1)*padding) / count
+				control_height := ((old_height - child_offset_top - child_offset_bottom - (count-1)*padding) / count).rounded
 			else
-				control_height := ( (old_height - non_expandable_height - expandable_height - child_offset_top - child_offset_bottom - (count-1)*padding) / expandable_item_count ).rounded
+				control_height := ( (old_height - min_height) / expandable_item_count ).rounded
+			end
+
+			if (old_height < min_height) then
+				ratio :=  (old_height - child_offset_top - child_offset_bottom - (count-1)*padding) / (min_height - child_offset_top - child_offset_bottom - (count-1)*padding)
 			end
 
 
 			--set the child recs and binding
-
-			w2 ?= i_th ( 1 ).implementation
-			check
-				w2_not_void : w2 /= Void
-			end
-
-			setup_binding( default_pointer, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding )
+			--w2 ?= i_th ( 1 ).implementation
+			--check
+			--	w2_not_void : w2 /= Void
+			--end
+			--setup_binding( default_pointer, w2.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding )
 			from
 				i := 1
 				last_y := -padding + child_offset_top
@@ -175,31 +187,32 @@ feature -- Implementation
 						w1_not_void : w1 /= Void
 					end
 
-
 					--calculate rect
 					a_point.set_x ( child_offset_right )
 					a_point.set_y ( last_y + padding )
 					a_size.set_width ( width - child_offset_left - child_offset_right )
 
-					if w1.expandable  then
-						a_size.set_height ( w1.minimum_height + control_height )
-					elseif is_homogeneous then
+
+					if is_homogeneous then
 						a_size.set_height ( control_height )
+					elseif (old_height < min_height) then
+						a_size.set_height (( w1.minimum_height.to_double * ratio).rounded )
+					elseif w1.expandable  then
+						a_size.set_height ( w1.minimum_height + control_height )
 					else
 						a_size.set_height ( w1.minimum_height )
 					end
 
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
-					setup_binding( w2.c_object, w1.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding )
-
+				--	setup_binding( w2.c_object, w1.c_object, child_offset_left, child_offset_right, child_offset_bottom, child_offset_top, padding )
 
 					last_y := (a_point.y + a_size.height + padding).rounded
 					i := i + 1
-					w2 := w1
+				--	w2 := w1
 			end
 
-			size_control_external ( c_object, width, old_height )
 			--reset original height
+			--size_control_external ( c_object, width, old_height )
 		end
 
 
@@ -240,9 +253,9 @@ feature -- Implementation
 						LayoutInfo.position.x.kind = kHILayoutPositionLeft;
 						LayoutInfo.position.x.offset = $left_of;
 						
-					//	LayoutInfo.binding.right.toView = NULL;
-					//	LayoutInfo.binding.right.kind = kHILayoutBindRight;
-					//	LayoutInfo.binding.right.offset = $right_of;
+						LayoutInfo.binding.right.toView = NULL;
+						LayoutInfo.binding.right.kind = kHILayoutBindRight;
+						LayoutInfo.binding.right.offset = $right_of;
 				
 					
 					if ( $upper_control != NULL && $lower_control != NULL)
@@ -270,69 +283,16 @@ feature -- Implementation
 
 feature {NONE} -- Events
 
+
+
 	bounds_changed ( options : NATURAL_32; original_bounds, current_bounds : CGRECT_STRUCT ) is
 			-- Handler for the bounds changed event
-		local
-			w_imp : EV_WIDGET_IMP
-			control_width, control_height :INTEGER
-			expandable_height, non_expandable_height : INTEGER
-			but : EV_BUTTON_IMP
-			i : INTEGER
 		do
-			-- Calculate height of all controls
-			from
-				i := 1
-			until
-				(i = 0) or (i = count + 1)
-			loop
-				w_imp ?= i_th(i).implementation
-				check
-					w_imp_not_void : w_imp /= Void
-				end
-				if w_imp.expandable then
-					expandable_height := expandable_height + w_imp.minimum_height
-				else
-					non_expandable_height := non_expandable_height + w_imp.minimum_height
-				end
-				i := i + 1
-			end
-
-			control_width := width - child_offset_left - child_offset_right
-
-			if is_homogeneous then -- Make all control equally high
-				control_height := ((height - child_offset_bottom - child_offset_top - (count-1) * padding)/ count).rounded
-				from
-					i := 1
-				until
-					(i = 0) or (i = count + 1)
-				loop
-					w_imp ?= i_th(i).implementation
-					check
-						w_imp_not_void : w_imp /= Void
-					end
-					size_control_external (	w_imp.c_object, control_width, control_height )
-					i := i + 1
-				end
-			else
-				control_height := ( (height - non_expandable_height - expandable_height - child_offset_top - child_offset_bottom - (count-1)*padding) / expandable_item_count ).rounded
-				from
-					i := 1
-				until
-					(i = 0) or (i = count + 1)
-				loop
-					w_imp ?= i_th(i).implementation
-					check
-						w_imp_not_void : w_imp /= Void
-					end
-					if w_imp.expandable then
-						size_control_external ( w_imp.c_object, control_width, w_imp.minimum_height + control_height )
-					else
-						size_control_external ( w_imp.c_object, control_width, w_imp.minimum_height )
-					end
-					i := i + 1
-				end
+			if count > 0 then
+				layout
 			end
 		end
+
 
 feature {EV_ANY_I} -- Implementation
 

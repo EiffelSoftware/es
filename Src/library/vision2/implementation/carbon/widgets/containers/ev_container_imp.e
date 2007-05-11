@@ -25,7 +25,8 @@ inherit
 			destroy,
 			set_parent_imp,
 			minimum_width,
-			minimum_height
+			minimum_height,
+			on_event
 		end
 
 	EV_CONTAINER_ACTION_SEQUENCES_IMP
@@ -40,9 +41,14 @@ inherit
 feature {NONE} -- Initialization
 
 	initialize is
-			-- Create `shared_pointer' for radio groups.
+			-- Initialize `Current'
+		local
+			target, h_ret: POINTER
 		do
 			Precursor {EV_WIDGET_IMP}
+			event_id := app_implementation.get_id (current)
+			target := get_control_event_target_external( c_object )
+			--h_ret := app_implementation.install_event_handler ( event_id, target, {CARBONEVENTS_ANON_ENUMS}.keventclasscontrol, {CARBONEVENTS_ANON_ENUMS}.keventcontrolboundschanged )
 		end
 
 feature -- Access
@@ -127,6 +133,20 @@ feature -- Element change
 			setup_automatic_layout (a_widget.c_object, c_object, child_offset_top, child_offset_bottom, child_offset_right, child_offset_left)
 		end
 
+		update_minimum_size is
+				local
+					w: EV_CONTAINER_IMP
+				do
+					if parent /= void then
+						w ?= parent.implementation
+						check
+							has_implementation: w /= void
+						end
+						w.update_minimum_size
+					end
+				end
+
+
 		setup_automatic_layout (a_control, a_container: POINTER; offset_top, offset_bottom, offset_right, offset_left: INTEGER) is
 				-- Make the child follow it's parent when it's reszed
 			external
@@ -153,6 +173,15 @@ feature -- Element change
 						LayoutInfo.binding.bottom.toView = $a_container;
 						LayoutInfo.binding.bottom.kind = kHILayoutBindBottom;
 						LayoutInfo.binding.bottom.offset = $offset_bottom;
+						
+					//	LayoutInfo.scale.x.toView = $a_container;
+					//	LayoutInfo.scale.x.kind = kHILayoutScaleAbsolute;
+					//	LayoutInfo.scale.x.ratio = 1.0;
+						
+					//	LayoutInfo.scale.y.toView = $a_container;
+					//	LayoutInfo.scale.y.kind = kHILayoutScaleAbsolute;
+					//	LayoutInfo.scale.y.ratio = 1.0;
+						
 						
 						HIViewSetLayoutInfo( $a_control, &LayoutInfo );
 						HIViewApplyLayout( $a_control );
@@ -311,6 +340,61 @@ feature {EV_WIDGET_IMP} -- Implementation
 				internal_set_background_pixmap (background_pixmap)
 			end
 		end
+
+	bounds_changed ( options : NATURAL_32; original_bounds, current_bounds : CGRECT_STRUCT ) is
+			-- Handler for the bounds changed event
+		local
+			a_rect : CGRECT_STRUCT
+			a_size : CGSIZE_STRUCT
+			a_point : CGPOINT_STRUCT
+			ret: INTEGER
+			current_size: CGSIZE_STRUCT
+			w: EV_WIDGET_IMP
+		do
+			if not interface.is_empty then
+				w ?= interface.item.implementation
+				check
+					item_has_implementation: w /= Void
+				end
+				-- Get initial positions right
+				create a_rect.make_new_unshared
+				create a_size.make_shared ( a_rect.size )
+				create a_point.make_shared ( a_rect.origin )
+				create current_size.make_unshared (current_bounds.size)
+
+				a_point.set_x (child_offset_right)
+				a_point.set_y (child_offset_top)
+				a_size.set_width (width - (child_offset_right + child_offset_left))
+				a_size.set_height (height - child_offset_bottom - child_offset_top)
+				ret := hiview_set_frame_external (w.c_object, a_rect.item)
+			end
+		end
+
+	on_event (a_inhandlercallref, a_inevent, a_inuserdata: POINTER ) : INTEGER is
+			-- Called when a Carbon event arrives
+		local
+			event_class, event_kind : INTEGER_32
+			actual_type, actual_size : NATURAL_32
+			prev_rect, cur_rect :CGRECT_STRUCT
+			attributes : NATURAL_32
+			err : INTEGER
+		do
+			event_class := get_event_class_external (a_inevent)
+			event_kind := get_event_kind_external (a_inevent)
+
+			if event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl and event_kind =  {CARBONEVENTS_ANON_ENUMS}.keventcontrolboundschanged then
+				create prev_rect.make_new_unshared
+				create cur_rect.make_new_unshared
+				err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamattributes, {AEDATA_MODEL_ANON_ENUMS}.typeWildCard, $actual_type, 4, $actual_size, $attributes ) -- 4 = sizeof(INTEGER_32)
+				err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamoriginalbounds, {CARBONEVENTS_ANON_ENUMS}.typehirect, $actual_type, prev_rect.sizeof, $actual_size, prev_rect.item )
+				err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcurrentbounds, {CARBONEVENTS_ANON_ENUMS}.typehirect, $actual_type, cur_rect.sizeof, $actual_size, cur_rect.item )
+				bounds_changed ( attributes, prev_rect, cur_rect )
+				Result := noErr -- Event handled
+			else
+				Result := Precursor(a_inhandlercallref, a_inevent, a_inuserdata)
+			end
+		end
+
 
 feature {EV_ANY_I} -- Implementation
 

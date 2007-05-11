@@ -187,27 +187,25 @@ feature -- Element change
 			ret := hiview_get_frame_external (container, c_rect.item)
 			ret := hiview_get_frame_external (a_widget.c_object, child_rect.item)
 
-			if v_size.height > c_size.height then
-				c_size.set_height (v_size.height)
-			end
-			if v_size.width > c_size.width then
-				c_size.set_width (v_size.width)
-			end
+			--if v_size.height.max(a_widget.minimum_height) > c_size.height then
+				c_size.set_height (v_size.height.max(a_widget.minimum_height))
+			--end
+			--if v_size.width.max(a_widget.minimum_width) > c_size.width then
+				c_size.set_width (v_size.width.max(a_widget.minimum_width))
+			--end
 
-			if a_widget.minimum_height > c_size.height then
-				c_size.set_height (a_widget.minimum_height)
-			end
+			--if a_widget.minimum_height > c_size.height then
+			--	c_size.set_height (a_widget.minimum_height)
+			--end
 
-			if a_widget.minimum_width > c_size.width then
-				c_size.set_width (a_widget.minimum_width)
-			end
-
+			--if a_widget.minimum_width > c_size.width then
+			--	c_size.set_width (a_widget.minimum_width)
+			--end
 
 
 
 			child_size.set_width (c_size.width)
 			child_size.set_height (c_size.height)
-
 
 			ret := hiview_set_frame_external (container, c_rect.item)
 			ret := hiview_set_frame_external (a_widget.c_object, child_rect.item)

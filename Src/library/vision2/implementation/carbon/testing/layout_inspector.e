@@ -134,14 +134,16 @@ feature {NONE} -- Implementation
 			--
 		local
 			any: EV_ANY_IMP
+			w: EV_CARBON_WIDGET_IMP
 		do
+			w ?= a_widget.implementation
 			selected_widget := a_widget
 			info_label.set_text (
 				"Relative Position: " + a_widget.x_position.out + "x" + a_widget.y_position.out + "%N" +
 				"Screen Position: " + a_widget.screen_x.out + "x" + a_widget.screen_y.out + "%N" +
 				"%N" +
 				"Minimum Size: " + a_widget.minimum_width.out + "x" + a_widget.minimum_height.out + "%N" +
-				"Actual Size: "+ a_widget.width.out + "x" + a_widget.height.out + "%N" )
+				"Actual Size: "+ a_widget.width.out + "x" + a_widget.height.out + "%N" + "Expandable: " + w.expandable.out )
 		end
 
 	selected_widget: EV_WIDGET

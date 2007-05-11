@@ -145,7 +145,7 @@ feature {EV_ANY_I, EV_INTERMEDIARY_ROUTINES} -- Implementation
 		do
 		end
 
-feature {EV_BOX_IMP} --Box specific
+feature --{EV_BOX_IMP} --Box specific
 
 	expandable : BOOLEAN
 
@@ -189,7 +189,7 @@ feature -- Status report
 	is_displayed: BOOLEAN is
 			-- Is `Current' visible on the screen?
 		do
-			
+
 		end
 
 indexing

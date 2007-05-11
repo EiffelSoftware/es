@@ -29,7 +29,8 @@ inherit
 			child_offset_top,
 			child_offset_bottom,
 			child_offset_left,
-			child_offset_right
+			child_offset_right,
+			update_minimum_size
 		end
 
 feature -- Initialization
@@ -54,7 +55,7 @@ feature -- Access
 			-- Width of border around container in pixels.
 
 	padding: INTEGER
-			-- Space between children in pixels.		
+			-- Space between children in pixels.	
 
 feature {EV_ANY, EV_ANY_I} -- Status report
 
@@ -123,11 +124,29 @@ feature {NONE} -- Carbon implementation
 		deferred
 		end
 
+	layout is
+		deferred
+		end
+
+
+
+feature {EV_BOX_IMP}
 	carbon_arrange_children is
 			-- Setup positioning constraints for all children
 		require
 			at_least_one_child : count > 0
-		deferred
+		local
+			w: EV_BOX_IMP
+		do
+			layout
+			if parent /= void then
+				w ?= parent.implementation
+				if w /= void then
+					w.carbon_arrange_children
+				end
+
+			end
+
 		end
 feature --Meassurement
 
@@ -178,11 +197,6 @@ feature -- Event handling
 			end
 		end
 
-	bounds_changed ( options : NATURAL_32; original_bounds, current_bounds : CGRECT_STRUCT ) is
-			-- Handler for the bounds changed event
-		deferred
-		end
-
 	on_new_item (an_item_imp: EV_WIDGET_IMP) is
 			-- Called after a new item is added
 		do
@@ -203,6 +217,12 @@ feature -- Event handling
 				carbon_arrange_children
 			end
 		end
+
+	update_minimum_size is
+			do
+				carbon_arrange_children
+			end
+
 
 
 feature {EV_ANY_I, EV_ANY} -- Implementation

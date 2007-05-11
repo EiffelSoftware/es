@@ -21,7 +21,8 @@ inherit
 
 	EV_CONTAINER_IMP
 		undefine
-			replace
+			replace,
+			bounds_changed
 		redefine
 			interface,
 			initialize,

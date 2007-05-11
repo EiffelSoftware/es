@@ -79,22 +79,22 @@ feature -- Measurement
 
 	child_offset_bottom: INTEGER
 	do
-		Result := 0
+		Result := 2
 	end
 
 	child_offset_right: INTEGER
 	do
-		Result := 0
+		Result := 2
 	end
 
 	child_offset_left: INTEGER
 	do
-		Result := 0
+		Result := 2
 	end
 
 	child_offset_top: INTEGER
 	do
-		Result := 0
+		Result := 2
 	end
 
 	minimum_width: INTEGER is
