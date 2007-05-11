@@ -42,7 +42,17 @@ feature {NONE} -- Implementation
 
 	remove_i_th (i: INTEGER) is
 			-- Remove item at `i'-th position.
+		local
+			imp: EV_ITEM_IMP
+			item_ptr: POINTER
+			ret: INTEGER
 		do
+			child_array.go_i_th (i)
+			imp ?= child_array.i_th (i).implementation
+			item_ptr := imp.c_object
+			ret := hiview_remove_from_superview_external (item_ptr)
+			child_array.remove
+			imp.set_item_parent_imp (Void)
 		end
 
 	make (an_interface: like interface) is
