@@ -94,3 +94,70 @@
 #define ewg_union_macro_union_NavEventDataInfo_member_set_param(an_item, a_value) ((union NavEventDataInfo*)an_item)->param =  (void*)a_value
 
 
+// glue code macros for union `union CMColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_union_macro_sizeof_union_CMColor sizeof (union CMColor)
+
+#define ewg_union_macro_union_CMColor_member_get_rgb(an_item) &((union CMColor*)an_item)->rgb
+
+#define ewg_union_macro_union_CMColor_member_set_rgb(an_item, a_value) ((union CMColor*)an_item)->rgb =  *(CMRGBColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_hsv(an_item) &((union CMColor*)an_item)->hsv
+
+#define ewg_union_macro_union_CMColor_member_set_hsv(an_item, a_value) ((union CMColor*)an_item)->hsv =  *(CMHSVColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_hls(an_item) &((union CMColor*)an_item)->hls
+
+#define ewg_union_macro_union_CMColor_member_set_hls(an_item, a_value) ((union CMColor*)an_item)->hls =  *(CMHLSColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_XYZ(an_item) &((union CMColor*)an_item)->XYZ
+
+#define ewg_union_macro_union_CMColor_member_set_XYZ(an_item, a_value) ((union CMColor*)an_item)->XYZ =  *(CMXYZColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_Lab(an_item) &((union CMColor*)an_item)->Lab
+
+#define ewg_union_macro_union_CMColor_member_set_Lab(an_item, a_value) ((union CMColor*)an_item)->Lab =  *(CMLabColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_Luv(an_item) &((union CMColor*)an_item)->Luv
+
+#define ewg_union_macro_union_CMColor_member_set_Luv(an_item, a_value) ((union CMColor*)an_item)->Luv =  *(CMLuvColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_Yxy(an_item) &((union CMColor*)an_item)->Yxy
+
+#define ewg_union_macro_union_CMColor_member_set_Yxy(an_item, a_value) ((union CMColor*)an_item)->Yxy =  *(CMYxyColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_cmyk(an_item) &((union CMColor*)an_item)->cmyk
+
+#define ewg_union_macro_union_CMColor_member_set_cmyk(an_item, a_value) ((union CMColor*)an_item)->cmyk =  *(CMCMYKColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_cmy(an_item) &((union CMColor*)an_item)->cmy
+
+#define ewg_union_macro_union_CMColor_member_set_cmy(an_item, a_value) ((union CMColor*)an_item)->cmy =  *(CMCMYColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_gray(an_item) &((union CMColor*)an_item)->gray
+
+#define ewg_union_macro_union_CMColor_member_set_gray(an_item, a_value) ((union CMColor*)an_item)->gray =  *(CMGrayColor*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_mc5(an_item) &((union CMColor*)an_item)->mc5
+
+#define ewg_union_macro_union_CMColor_member_set_mc5(an_item, a_value) ((union CMColor*)an_item)->mc5 =  *(CMMultichannel5Color*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_mc6(an_item) &((union CMColor*)an_item)->mc6
+
+#define ewg_union_macro_union_CMColor_member_set_mc6(an_item, a_value) ((union CMColor*)an_item)->mc6 =  *(CMMultichannel6Color*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_mc7(an_item) &((union CMColor*)an_item)->mc7
+
+#define ewg_union_macro_union_CMColor_member_set_mc7(an_item, a_value) ((union CMColor*)an_item)->mc7 =  *(CMMultichannel7Color*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_mc8(an_item) &((union CMColor*)an_item)->mc8
+
+#define ewg_union_macro_union_CMColor_member_set_mc8(an_item, a_value) ((union CMColor*)an_item)->mc8 =  *(CMMultichannel8Color*)a_value
+
+#define ewg_union_macro_union_CMColor_member_get_namedColor(an_item) &((union CMColor*)an_item)->namedColor
+
+#define ewg_union_macro_union_CMColor_member_set_namedColor(an_item, a_value) ((union CMColor*)an_item)->namedColor =  *(CMNamedColor*)a_value
+
+

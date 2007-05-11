@@ -1889,6 +1889,207 @@
 #define ewg_struct_macro_struct_NavDialogCreationOptions_member_get_reserved(an_item) ((struct NavDialogCreationOptions*)an_item)->reserved
 
 
+// glue code macros for struct `struct CMYColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMYColor sizeof (struct CMYColor)
+
+#define ewg_struct_macro_struct_CMYColor_member_get_cyan(an_item) ((struct CMYColor*)an_item)->cyan
+
+#define ewg_struct_macro_struct_CMYColor_member_set_cyan(an_item, a_value) ((struct CMYColor*)an_item)->cyan =  (SmallFract)a_value
+
+#define ewg_struct_macro_struct_CMYColor_member_get_magenta(an_item) ((struct CMYColor*)an_item)->magenta
+
+#define ewg_struct_macro_struct_CMYColor_member_set_magenta(an_item, a_value) ((struct CMYColor*)an_item)->magenta =  (SmallFract)a_value
+
+#define ewg_struct_macro_struct_CMYColor_member_get_yellow(an_item) ((struct CMYColor*)an_item)->yellow
+
+#define ewg_struct_macro_struct_CMYColor_member_set_yellow(an_item, a_value) ((struct CMYColor*)an_item)->yellow =  (SmallFract)a_value
+
+
+// glue code macros for struct `struct HSLColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_HSLColor sizeof (struct HSLColor)
+
+#define ewg_struct_macro_struct_HSLColor_member_get_hue(an_item) ((struct HSLColor*)an_item)->hue
+
+#define ewg_struct_macro_struct_HSLColor_member_set_hue(an_item, a_value) ((struct HSLColor*)an_item)->hue =  (SmallFract)a_value
+
+#define ewg_struct_macro_struct_HSLColor_member_get_saturation(an_item) ((struct HSLColor*)an_item)->saturation
+
+#define ewg_struct_macro_struct_HSLColor_member_set_saturation(an_item, a_value) ((struct HSLColor*)an_item)->saturation =  (SmallFract)a_value
+
+#define ewg_struct_macro_struct_HSLColor_member_get_lightness(an_item) ((struct HSLColor*)an_item)->lightness
+
+#define ewg_struct_macro_struct_HSLColor_member_set_lightness(an_item, a_value) ((struct HSLColor*)an_item)->lightness =  (SmallFract)a_value
+
+
+// glue code macros for struct `struct HSVColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_HSVColor sizeof (struct HSVColor)
+
+#define ewg_struct_macro_struct_HSVColor_member_get_hue(an_item) ((struct HSVColor*)an_item)->hue
+
+#define ewg_struct_macro_struct_HSVColor_member_set_hue(an_item, a_value) ((struct HSVColor*)an_item)->hue =  (SmallFract)a_value
+
+#define ewg_struct_macro_struct_HSVColor_member_get_saturation(an_item) ((struct HSVColor*)an_item)->saturation
+
+#define ewg_struct_macro_struct_HSVColor_member_set_saturation(an_item, a_value) ((struct HSVColor*)an_item)->saturation =  (SmallFract)a_value
+
+#define ewg_struct_macro_struct_HSVColor_member_get_value(an_item) ((struct HSVColor*)an_item)->value
+
+#define ewg_struct_macro_struct_HSVColor_member_set_value(an_item, a_value) ((struct HSVColor*)an_item)->value =  (SmallFract)a_value
+
+
+// glue code macros for struct `struct ColorPickerInfo'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_ColorPickerInfo sizeof (struct ColorPickerInfo)
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_theColor(an_item) &((struct ColorPickerInfo*)an_item)->theColor
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_theColor(an_item, a_value) ((struct ColorPickerInfo*)an_item)->theColor =  *(PMColor*)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_dstProfile(an_item) ((struct ColorPickerInfo*)an_item)->dstProfile
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_dstProfile(an_item, a_value) ((struct ColorPickerInfo*)an_item)->dstProfile =  (CMProfileHandle)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_flags(an_item) ((struct ColorPickerInfo*)an_item)->flags
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_flags(an_item, a_value) ((struct ColorPickerInfo*)an_item)->flags =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_placeWhere(an_item) ((struct ColorPickerInfo*)an_item)->placeWhere
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_placeWhere(an_item, a_value) ((struct ColorPickerInfo*)an_item)->placeWhere =  (DialogPlacementSpec)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_dialogOrigin(an_item) &((struct ColorPickerInfo*)an_item)->dialogOrigin
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_dialogOrigin(an_item, a_value) ((struct ColorPickerInfo*)an_item)->dialogOrigin =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_pickerType(an_item) ((struct ColorPickerInfo*)an_item)->pickerType
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_pickerType(an_item, a_value) ((struct ColorPickerInfo*)an_item)->pickerType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_eventProc(an_item) ((struct ColorPickerInfo*)an_item)->eventProc
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_eventProc(an_item, a_value) ((struct ColorPickerInfo*)an_item)->eventProc =  (UserEventUPP)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_colorProc(an_item) ((struct ColorPickerInfo*)an_item)->colorProc
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_colorProc(an_item, a_value) ((struct ColorPickerInfo*)an_item)->colorProc =  (ColorChangedUPP)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_colorProcData(an_item) ((struct ColorPickerInfo*)an_item)->colorProcData
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_colorProcData(an_item, a_value) ((struct ColorPickerInfo*)an_item)->colorProcData =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_prompt(an_item) ((struct ColorPickerInfo*)an_item)->prompt
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_mInfo(an_item) &((struct ColorPickerInfo*)an_item)->mInfo
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_mInfo(an_item, a_value) ((struct ColorPickerInfo*)an_item)->mInfo =  *(PickerMenuItemInfo*)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_newColorChosen(an_item) ((struct ColorPickerInfo*)an_item)->newColorChosen
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_newColorChosen(an_item, a_value) ((struct ColorPickerInfo*)an_item)->newColorChosen =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_get_filler(an_item) ((struct ColorPickerInfo*)an_item)->filler
+
+#define ewg_struct_macro_struct_ColorPickerInfo_member_set_filler(an_item, a_value) ((struct ColorPickerInfo*)an_item)->filler =  (SInt8)a_value
+
+
+// glue code macros for struct `struct NColorPickerInfo'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NColorPickerInfo sizeof (struct NColorPickerInfo)
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_theColor(an_item) &((struct NColorPickerInfo*)an_item)->theColor
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_theColor(an_item, a_value) ((struct NColorPickerInfo*)an_item)->theColor =  *(NPMColor*)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_dstProfile(an_item) ((struct NColorPickerInfo*)an_item)->dstProfile
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_dstProfile(an_item, a_value) ((struct NColorPickerInfo*)an_item)->dstProfile =  (CMProfileRef)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_flags(an_item) ((struct NColorPickerInfo*)an_item)->flags
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_flags(an_item, a_value) ((struct NColorPickerInfo*)an_item)->flags =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_placeWhere(an_item) ((struct NColorPickerInfo*)an_item)->placeWhere
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_placeWhere(an_item, a_value) ((struct NColorPickerInfo*)an_item)->placeWhere =  (DialogPlacementSpec)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_dialogOrigin(an_item) &((struct NColorPickerInfo*)an_item)->dialogOrigin
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_dialogOrigin(an_item, a_value) ((struct NColorPickerInfo*)an_item)->dialogOrigin =  *(Point*)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_pickerType(an_item) ((struct NColorPickerInfo*)an_item)->pickerType
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_pickerType(an_item, a_value) ((struct NColorPickerInfo*)an_item)->pickerType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_eventProc(an_item) ((struct NColorPickerInfo*)an_item)->eventProc
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_eventProc(an_item, a_value) ((struct NColorPickerInfo*)an_item)->eventProc =  (UserEventUPP)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_colorProc(an_item) ((struct NColorPickerInfo*)an_item)->colorProc
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_colorProc(an_item, a_value) ((struct NColorPickerInfo*)an_item)->colorProc =  (NColorChangedUPP)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_colorProcData(an_item) ((struct NColorPickerInfo*)an_item)->colorProcData
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_colorProcData(an_item, a_value) ((struct NColorPickerInfo*)an_item)->colorProcData =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_prompt(an_item) ((struct NColorPickerInfo*)an_item)->prompt
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_mInfo(an_item) &((struct NColorPickerInfo*)an_item)->mInfo
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_mInfo(an_item, a_value) ((struct NColorPickerInfo*)an_item)->mInfo =  *(PickerMenuItemInfo*)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_newColorChosen(an_item) ((struct NColorPickerInfo*)an_item)->newColorChosen
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_newColorChosen(an_item, a_value) ((struct NColorPickerInfo*)an_item)->newColorChosen =  (Boolean)a_value
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_get_reserved(an_item) ((struct NColorPickerInfo*)an_item)->reserved
+
+#define ewg_struct_macro_struct_NColorPickerInfo_member_set_reserved(an_item, a_value) ((struct NColorPickerInfo*)an_item)->reserved =  (UInt8)a_value
+
+
+// glue code macros for struct `struct PMColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_PMColor sizeof (struct PMColor)
+
+#define ewg_struct_macro_struct_PMColor_member_get_profile(an_item) ((struct PMColor*)an_item)->profile
+
+#define ewg_struct_macro_struct_PMColor_member_set_profile(an_item, a_value) ((struct PMColor*)an_item)->profile =  (CMProfileHandle)a_value
+
+#define ewg_struct_macro_struct_PMColor_member_get_color(an_item) &((struct PMColor*)an_item)->color
+
+#define ewg_struct_macro_struct_PMColor_member_set_color(an_item, a_value) ((struct PMColor*)an_item)->color =  *(CMColor*)a_value
+
+
+// glue code macros for struct `struct NPMColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_NPMColor sizeof (struct NPMColor)
+
+#define ewg_struct_macro_struct_NPMColor_member_get_profile(an_item) ((struct NPMColor*)an_item)->profile
+
+#define ewg_struct_macro_struct_NPMColor_member_set_profile(an_item, a_value) ((struct NPMColor*)an_item)->profile =  (CMProfileRef)a_value
+
+#define ewg_struct_macro_struct_NPMColor_member_get_color(an_item) &((struct NPMColor*)an_item)->color
+
+#define ewg_struct_macro_struct_NPMColor_member_set_color(an_item, a_value) ((struct NPMColor*)an_item)->color =  *(CMColor*)a_value
+
+
 // glue code macros for struct `struct __CFNull'
 
 #include<Carbon/Carbon.h>
@@ -3275,6 +3476,44 @@
 #define ewg_struct_macro_struct_NavMenuItemSpec_member_get_reserved(an_item) ((struct NavMenuItemSpec*)an_item)->reserved
 
 
+// glue code macros for struct `struct OpaquePicker'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaquePicker 1
+
+
+// glue code macros for struct `struct PickerMenuItemInfo'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_PickerMenuItemInfo sizeof (struct PickerMenuItemInfo)
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_get_editMenuID(an_item) ((struct PickerMenuItemInfo*)an_item)->editMenuID
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_set_editMenuID(an_item, a_value) ((struct PickerMenuItemInfo*)an_item)->editMenuID =  (short)a_value
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_get_cutItem(an_item) ((struct PickerMenuItemInfo*)an_item)->cutItem
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_set_cutItem(an_item, a_value) ((struct PickerMenuItemInfo*)an_item)->cutItem =  (short)a_value
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_get_copyItem(an_item) ((struct PickerMenuItemInfo*)an_item)->copyItem
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_set_copyItem(an_item, a_value) ((struct PickerMenuItemInfo*)an_item)->copyItem =  (short)a_value
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_get_pasteItem(an_item) ((struct PickerMenuItemInfo*)an_item)->pasteItem
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_set_pasteItem(an_item, a_value) ((struct PickerMenuItemInfo*)an_item)->pasteItem =  (short)a_value
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_get_clearItem(an_item) ((struct PickerMenuItemInfo*)an_item)->clearItem
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_set_clearItem(an_item, a_value) ((struct PickerMenuItemInfo*)an_item)->clearItem =  (short)a_value
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_get_undoItem(an_item) ((struct PickerMenuItemInfo*)an_item)->undoItem
+
+#define ewg_struct_macro_struct_PickerMenuItemInfo_member_set_undoItem(an_item, a_value) ((struct PickerMenuItemInfo*)an_item)->undoItem =  (short)a_value
+
+
 // glue code macros for struct `struct ITab'
 
 #include<Carbon/Carbon.h>
@@ -3421,6 +3660,38 @@
 #define ewg_struct_macro_struct_FileTranslationSpec_member_set_dst(an_item, a_value) ((struct FileTranslationSpec*)an_item)->dst =  *(FileTypeSpec*)a_value
 
 
+// glue code macros for struct `struct CMProfile'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMProfile sizeof (struct CMProfile)
+
+#define ewg_struct_macro_struct_CMProfile_member_get_header(an_item) &((struct CMProfile*)an_item)->header
+
+#define ewg_struct_macro_struct_CMProfile_member_set_header(an_item, a_value) ((struct CMProfile*)an_item)->header =  *(CMHeader*)a_value
+
+#define ewg_struct_macro_struct_CMProfile_member_get_profile(an_item) &((struct CMProfile*)an_item)->profile
+
+#define ewg_struct_macro_struct_CMProfile_member_set_profile(an_item, a_value) ((struct CMProfile*)an_item)->profile =  *(CMProfileChromaticities*)a_value
+
+#define ewg_struct_macro_struct_CMProfile_member_get_response(an_item) &((struct CMProfile*)an_item)->response
+
+#define ewg_struct_macro_struct_CMProfile_member_set_response(an_item, a_value) ((struct CMProfile*)an_item)->response =  *(CMProfileResponse*)a_value
+
+#define ewg_struct_macro_struct_CMProfile_member_get_profileName(an_item) &((struct CMProfile*)an_item)->profileName
+
+#define ewg_struct_macro_struct_CMProfile_member_set_profileName(an_item, a_value) ((struct CMProfile*)an_item)->profileName =  *(CMIString*)a_value
+
+#define ewg_struct_macro_struct_CMProfile_member_get_customData(an_item) ((struct CMProfile*)an_item)->customData
+
+
+// glue code macros for struct `struct OpaqueCMProfileRef'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueCMProfileRef 1
+
+
 // glue code macros for struct `struct QElem'
 
 #include<Carbon/Carbon.h>
@@ -3555,5 +3826,354 @@
 #define ewg_struct_macro_struct_FileTypeSpec_member_get_catInfoCreator(an_item) ((struct FileTypeSpec*)an_item)->catInfoCreator
 
 #define ewg_struct_macro_struct_FileTypeSpec_member_set_catInfoCreator(an_item, a_value) ((struct FileTypeSpec*)an_item)->catInfoCreator =  (OSType)a_value
+
+
+// glue code macros for struct `struct CMHeader'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMHeader sizeof (struct CMHeader)
+
+#define ewg_struct_macro_struct_CMHeader_member_get_size(an_item) ((struct CMHeader*)an_item)->size
+
+#define ewg_struct_macro_struct_CMHeader_member_set_size(an_item, a_value) ((struct CMHeader*)an_item)->size =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_CMMType(an_item) ((struct CMHeader*)an_item)->CMMType
+
+#define ewg_struct_macro_struct_CMHeader_member_set_CMMType(an_item, a_value) ((struct CMHeader*)an_item)->CMMType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_applProfileVersion(an_item) ((struct CMHeader*)an_item)->applProfileVersion
+
+#define ewg_struct_macro_struct_CMHeader_member_set_applProfileVersion(an_item, a_value) ((struct CMHeader*)an_item)->applProfileVersion =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_dataType(an_item) ((struct CMHeader*)an_item)->dataType
+
+#define ewg_struct_macro_struct_CMHeader_member_set_dataType(an_item, a_value) ((struct CMHeader*)an_item)->dataType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_deviceType(an_item) ((struct CMHeader*)an_item)->deviceType
+
+#define ewg_struct_macro_struct_CMHeader_member_set_deviceType(an_item, a_value) ((struct CMHeader*)an_item)->deviceType =  (OSType)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_deviceManufacturer(an_item) ((struct CMHeader*)an_item)->deviceManufacturer
+
+#define ewg_struct_macro_struct_CMHeader_member_set_deviceManufacturer(an_item, a_value) ((struct CMHeader*)an_item)->deviceManufacturer =  (OSType)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_deviceModel(an_item) ((struct CMHeader*)an_item)->deviceModel
+
+#define ewg_struct_macro_struct_CMHeader_member_set_deviceModel(an_item, a_value) ((struct CMHeader*)an_item)->deviceModel =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_deviceAttributes(an_item) ((struct CMHeader*)an_item)->deviceAttributes
+
+#define ewg_struct_macro_struct_CMHeader_member_get_profileNameOffset(an_item) ((struct CMHeader*)an_item)->profileNameOffset
+
+#define ewg_struct_macro_struct_CMHeader_member_set_profileNameOffset(an_item, a_value) ((struct CMHeader*)an_item)->profileNameOffset =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_customDataOffset(an_item) ((struct CMHeader*)an_item)->customDataOffset
+
+#define ewg_struct_macro_struct_CMHeader_member_set_customDataOffset(an_item, a_value) ((struct CMHeader*)an_item)->customDataOffset =  (UInt32)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_flags(an_item) ((struct CMHeader*)an_item)->flags
+
+#define ewg_struct_macro_struct_CMHeader_member_set_flags(an_item, a_value) ((struct CMHeader*)an_item)->flags =  (CMMatchFlag)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_options(an_item) ((struct CMHeader*)an_item)->options
+
+#define ewg_struct_macro_struct_CMHeader_member_set_options(an_item, a_value) ((struct CMHeader*)an_item)->options =  (CMMatchOption)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_white(an_item) &((struct CMHeader*)an_item)->white
+
+#define ewg_struct_macro_struct_CMHeader_member_set_white(an_item, a_value) ((struct CMHeader*)an_item)->white =  *(CMXYZColor*)a_value
+
+#define ewg_struct_macro_struct_CMHeader_member_get_black(an_item) &((struct CMHeader*)an_item)->black
+
+#define ewg_struct_macro_struct_CMHeader_member_set_black(an_item, a_value) ((struct CMHeader*)an_item)->black =  *(CMXYZColor*)a_value
+
+
+// glue code macros for struct `struct CMProfileChromaticities'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMProfileChromaticities sizeof (struct CMProfileChromaticities)
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_get_red(an_item) &((struct CMProfileChromaticities*)an_item)->red
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_set_red(an_item, a_value) ((struct CMProfileChromaticities*)an_item)->red =  *(CMXYZColor*)a_value
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_get_green(an_item) &((struct CMProfileChromaticities*)an_item)->green
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_set_green(an_item, a_value) ((struct CMProfileChromaticities*)an_item)->green =  *(CMXYZColor*)a_value
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_get_blue(an_item) &((struct CMProfileChromaticities*)an_item)->blue
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_set_blue(an_item, a_value) ((struct CMProfileChromaticities*)an_item)->blue =  *(CMXYZColor*)a_value
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_get_cyan(an_item) &((struct CMProfileChromaticities*)an_item)->cyan
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_set_cyan(an_item, a_value) ((struct CMProfileChromaticities*)an_item)->cyan =  *(CMXYZColor*)a_value
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_get_magenta(an_item) &((struct CMProfileChromaticities*)an_item)->magenta
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_set_magenta(an_item, a_value) ((struct CMProfileChromaticities*)an_item)->magenta =  *(CMXYZColor*)a_value
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_get_yellow(an_item) &((struct CMProfileChromaticities*)an_item)->yellow
+
+#define ewg_struct_macro_struct_CMProfileChromaticities_member_set_yellow(an_item, a_value) ((struct CMProfileChromaticities*)an_item)->yellow =  *(CMXYZColor*)a_value
+
+
+// glue code macros for struct `struct CMProfileResponse'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMProfileResponse sizeof (struct CMProfileResponse)
+
+#define ewg_struct_macro_struct_CMProfileResponse_member_get_counts(an_item) ((struct CMProfileResponse*)an_item)->counts
+
+#define ewg_struct_macro_struct_CMProfileResponse_member_get_data(an_item) ((struct CMProfileResponse*)an_item)->data
+
+
+// glue code macros for struct `struct CMIString'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMIString sizeof (struct CMIString)
+
+#define ewg_struct_macro_struct_CMIString_member_get_theScript(an_item) ((struct CMIString*)an_item)->theScript
+
+#define ewg_struct_macro_struct_CMIString_member_set_theScript(an_item, a_value) ((struct CMIString*)an_item)->theScript =  (ScriptCode)a_value
+
+#define ewg_struct_macro_struct_CMIString_member_get_theString(an_item) ((struct CMIString*)an_item)->theString
+
+
+// glue code macros for struct `struct CMRGBColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMRGBColor sizeof (struct CMRGBColor)
+
+#define ewg_struct_macro_struct_CMRGBColor_member_get_red(an_item) ((struct CMRGBColor*)an_item)->red
+
+#define ewg_struct_macro_struct_CMRGBColor_member_set_red(an_item, a_value) ((struct CMRGBColor*)an_item)->red =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMRGBColor_member_get_green(an_item) ((struct CMRGBColor*)an_item)->green
+
+#define ewg_struct_macro_struct_CMRGBColor_member_set_green(an_item, a_value) ((struct CMRGBColor*)an_item)->green =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMRGBColor_member_get_blue(an_item) ((struct CMRGBColor*)an_item)->blue
+
+#define ewg_struct_macro_struct_CMRGBColor_member_set_blue(an_item, a_value) ((struct CMRGBColor*)an_item)->blue =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMHSVColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMHSVColor sizeof (struct CMHSVColor)
+
+#define ewg_struct_macro_struct_CMHSVColor_member_get_hue(an_item) ((struct CMHSVColor*)an_item)->hue
+
+#define ewg_struct_macro_struct_CMHSVColor_member_set_hue(an_item, a_value) ((struct CMHSVColor*)an_item)->hue =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMHSVColor_member_get_saturation(an_item) ((struct CMHSVColor*)an_item)->saturation
+
+#define ewg_struct_macro_struct_CMHSVColor_member_set_saturation(an_item, a_value) ((struct CMHSVColor*)an_item)->saturation =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMHSVColor_member_get_value(an_item) ((struct CMHSVColor*)an_item)->value
+
+#define ewg_struct_macro_struct_CMHSVColor_member_set_value(an_item, a_value) ((struct CMHSVColor*)an_item)->value =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMHLSColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMHLSColor sizeof (struct CMHLSColor)
+
+#define ewg_struct_macro_struct_CMHLSColor_member_get_hue(an_item) ((struct CMHLSColor*)an_item)->hue
+
+#define ewg_struct_macro_struct_CMHLSColor_member_set_hue(an_item, a_value) ((struct CMHLSColor*)an_item)->hue =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMHLSColor_member_get_lightness(an_item) ((struct CMHLSColor*)an_item)->lightness
+
+#define ewg_struct_macro_struct_CMHLSColor_member_set_lightness(an_item, a_value) ((struct CMHLSColor*)an_item)->lightness =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMHLSColor_member_get_saturation(an_item) ((struct CMHLSColor*)an_item)->saturation
+
+#define ewg_struct_macro_struct_CMHLSColor_member_set_saturation(an_item, a_value) ((struct CMHLSColor*)an_item)->saturation =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMXYZColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMXYZColor sizeof (struct CMXYZColor)
+
+#define ewg_struct_macro_struct_CMXYZColor_member_get_X(an_item) ((struct CMXYZColor*)an_item)->X
+
+#define ewg_struct_macro_struct_CMXYZColor_member_set_X(an_item, a_value) ((struct CMXYZColor*)an_item)->X =  (CMXYZComponent)a_value
+
+#define ewg_struct_macro_struct_CMXYZColor_member_get_Y(an_item) ((struct CMXYZColor*)an_item)->Y
+
+#define ewg_struct_macro_struct_CMXYZColor_member_set_Y(an_item, a_value) ((struct CMXYZColor*)an_item)->Y =  (CMXYZComponent)a_value
+
+#define ewg_struct_macro_struct_CMXYZColor_member_get_Z(an_item) ((struct CMXYZColor*)an_item)->Z
+
+#define ewg_struct_macro_struct_CMXYZColor_member_set_Z(an_item, a_value) ((struct CMXYZColor*)an_item)->Z =  (CMXYZComponent)a_value
+
+
+// glue code macros for struct `struct CMLabColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMLabColor sizeof (struct CMLabColor)
+
+#define ewg_struct_macro_struct_CMLabColor_member_get_L(an_item) ((struct CMLabColor*)an_item)->L
+
+#define ewg_struct_macro_struct_CMLabColor_member_set_L(an_item, a_value) ((struct CMLabColor*)an_item)->L =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMLabColor_member_get_a(an_item) ((struct CMLabColor*)an_item)->a
+
+#define ewg_struct_macro_struct_CMLabColor_member_set_a(an_item, a_value) ((struct CMLabColor*)an_item)->a =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMLabColor_member_get_b(an_item) ((struct CMLabColor*)an_item)->b
+
+#define ewg_struct_macro_struct_CMLabColor_member_set_b(an_item, a_value) ((struct CMLabColor*)an_item)->b =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMLuvColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMLuvColor sizeof (struct CMLuvColor)
+
+#define ewg_struct_macro_struct_CMLuvColor_member_get_L(an_item) ((struct CMLuvColor*)an_item)->L
+
+#define ewg_struct_macro_struct_CMLuvColor_member_set_L(an_item, a_value) ((struct CMLuvColor*)an_item)->L =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMLuvColor_member_get_u(an_item) ((struct CMLuvColor*)an_item)->u
+
+#define ewg_struct_macro_struct_CMLuvColor_member_set_u(an_item, a_value) ((struct CMLuvColor*)an_item)->u =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMLuvColor_member_get_v(an_item) ((struct CMLuvColor*)an_item)->v
+
+#define ewg_struct_macro_struct_CMLuvColor_member_set_v(an_item, a_value) ((struct CMLuvColor*)an_item)->v =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMYxyColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMYxyColor sizeof (struct CMYxyColor)
+
+#define ewg_struct_macro_struct_CMYxyColor_member_get_capY(an_item) ((struct CMYxyColor*)an_item)->capY
+
+#define ewg_struct_macro_struct_CMYxyColor_member_set_capY(an_item, a_value) ((struct CMYxyColor*)an_item)->capY =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMYxyColor_member_get_x(an_item) ((struct CMYxyColor*)an_item)->x
+
+#define ewg_struct_macro_struct_CMYxyColor_member_set_x(an_item, a_value) ((struct CMYxyColor*)an_item)->x =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMYxyColor_member_get_y(an_item) ((struct CMYxyColor*)an_item)->y
+
+#define ewg_struct_macro_struct_CMYxyColor_member_set_y(an_item, a_value) ((struct CMYxyColor*)an_item)->y =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMCMYKColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMCMYKColor sizeof (struct CMCMYKColor)
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_get_cyan(an_item) ((struct CMCMYKColor*)an_item)->cyan
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_set_cyan(an_item, a_value) ((struct CMCMYKColor*)an_item)->cyan =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_get_magenta(an_item) ((struct CMCMYKColor*)an_item)->magenta
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_set_magenta(an_item, a_value) ((struct CMCMYKColor*)an_item)->magenta =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_get_yellow(an_item) ((struct CMCMYKColor*)an_item)->yellow
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_set_yellow(an_item, a_value) ((struct CMCMYKColor*)an_item)->yellow =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_get_black(an_item) ((struct CMCMYKColor*)an_item)->black
+
+#define ewg_struct_macro_struct_CMCMYKColor_member_set_black(an_item, a_value) ((struct CMCMYKColor*)an_item)->black =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMCMYColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMCMYColor sizeof (struct CMCMYColor)
+
+#define ewg_struct_macro_struct_CMCMYColor_member_get_cyan(an_item) ((struct CMCMYColor*)an_item)->cyan
+
+#define ewg_struct_macro_struct_CMCMYColor_member_set_cyan(an_item, a_value) ((struct CMCMYColor*)an_item)->cyan =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMCMYColor_member_get_magenta(an_item) ((struct CMCMYColor*)an_item)->magenta
+
+#define ewg_struct_macro_struct_CMCMYColor_member_set_magenta(an_item, a_value) ((struct CMCMYColor*)an_item)->magenta =  (UInt16)a_value
+
+#define ewg_struct_macro_struct_CMCMYColor_member_get_yellow(an_item) ((struct CMCMYColor*)an_item)->yellow
+
+#define ewg_struct_macro_struct_CMCMYColor_member_set_yellow(an_item, a_value) ((struct CMCMYColor*)an_item)->yellow =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMGrayColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMGrayColor sizeof (struct CMGrayColor)
+
+#define ewg_struct_macro_struct_CMGrayColor_member_get_gray(an_item) ((struct CMGrayColor*)an_item)->gray
+
+#define ewg_struct_macro_struct_CMGrayColor_member_set_gray(an_item, a_value) ((struct CMGrayColor*)an_item)->gray =  (UInt16)a_value
+
+
+// glue code macros for struct `struct CMMultichannel5Color'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMMultichannel5Color sizeof (struct CMMultichannel5Color)
+
+#define ewg_struct_macro_struct_CMMultichannel5Color_member_get_components(an_item) ((struct CMMultichannel5Color*)an_item)->components
+
+
+// glue code macros for struct `struct CMMultichannel6Color'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMMultichannel6Color sizeof (struct CMMultichannel6Color)
+
+#define ewg_struct_macro_struct_CMMultichannel6Color_member_get_components(an_item) ((struct CMMultichannel6Color*)an_item)->components
+
+
+// glue code macros for struct `struct CMMultichannel7Color'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMMultichannel7Color sizeof (struct CMMultichannel7Color)
+
+#define ewg_struct_macro_struct_CMMultichannel7Color_member_get_components(an_item) ((struct CMMultichannel7Color*)an_item)->components
+
+
+// glue code macros for struct `struct CMMultichannel8Color'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMMultichannel8Color sizeof (struct CMMultichannel8Color)
+
+#define ewg_struct_macro_struct_CMMultichannel8Color_member_get_components(an_item) ((struct CMMultichannel8Color*)an_item)->components
+
+
+// glue code macros for struct `struct CMNamedColor'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_CMNamedColor sizeof (struct CMNamedColor)
+
+#define ewg_struct_macro_struct_CMNamedColor_member_get_namedColorIndex(an_item) ((struct CMNamedColor*)an_item)->namedColorIndex
+
+#define ewg_struct_macro_struct_CMNamedColor_member_set_namedColorIndex(an_item, a_value) ((struct CMNamedColor*)an_item)->namedColorIndex =  (UInt32)a_value
 
 

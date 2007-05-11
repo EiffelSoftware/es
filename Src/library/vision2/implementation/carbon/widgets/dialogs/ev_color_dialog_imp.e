@@ -1,5 +1,5 @@
 indexing
-	description: "EiffelVision color selection dialog."
+	description: "EiffelVision color selection dialog. Carbon implementation."
 
 class
 	EV_COLOR_DIALOG_IMP
@@ -15,6 +15,11 @@ inherit
 			interface,
 			initialize,
 			show
+		end
+
+	COLORPICKER_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
 		end
 
 create
@@ -42,25 +47,34 @@ feature {NONE} -- Initialization
 
 	show is
 			--
-		external
-			"C inline use <Carbon/Carbon.h>"
-		alias
-			"[
-				{
-					ColorPickerInfo theColorInfo;
-					PickColor (&theColorInfo);
-//					NColorPickerInfo theColorInfo;
-//					NPickColor (&theColorInfo);
-				}
-			]"
+		local
+			ret: INTEGER
+			color_picker_info: COLOR_PICKER_INFO_STRUCT
+			npm_color: NPMCOLOR_STRUCT
+			cm_color: CMCOLOR_UNION
+			cmrgb_color: CMRGBCOLOR_STRUCT
+			ev_color: EV_COLOR
+		do
+			create color_picker_info.make_new_unshared
+			ret := npick_color_external (color_picker_info.item)
+			if color_picker_info.newcolorchosen.to_boolean then
+				create npm_color.make_unshared (color_picker_info.thecolor)
+				create cm_color.make_unshared (npm_color.color)
+				create cmrgb_color.make_unshared (cm_color.rgb)
+				create ev_color.make_with_8_bit_rgb (cmrgb_color.red, cmrgb_color.green, cmrgb_color.blue)
+				set_color (ev_color)
+				on_ok
+			else
+				on_cancel
+			end
 		end
-
 
 feature -- Access
 
 	color: EV_COLOR is
 			-- Currently selected color.
 		do
+			Result := internal_set_color
 		end
 
 feature -- Element change
@@ -68,6 +82,7 @@ feature -- Element change
 	set_color (a_color: EV_COLOR) is
 			-- Set `color' to `a_color'.
 		do
+			internal_set_color := a_color
 		end
 
 feature {NONE} -- Implementation
@@ -75,16 +90,12 @@ feature {NONE} -- Implementation
 	internal_set_color: EV_COLOR
 		-- Color explicitly set with `set_color'.
 
-feature {NONE} -- Externals
-
-
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_COLOR_DIALOG;
 
 indexing
-	copyright:	"Copyright (c) 2006: The ETH Eiffel.Mac Team"
-
+	copyright:	"Copyright (c) 2006-2007: The Eiffel.Mac Team"
 
 end -- class EV_COLOR_DIALOG_IMP
 
