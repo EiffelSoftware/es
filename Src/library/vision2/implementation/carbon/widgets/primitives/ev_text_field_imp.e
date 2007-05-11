@@ -246,7 +246,7 @@ feature
 				if Result < 0 then
 					Result := 0
 				end
-				io.put_string ("Result height: " + Result.out)
+				--io.put_string ("Result height: " + Result.out)
 
 			end
 
