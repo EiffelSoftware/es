@@ -330,6 +330,21 @@
 #define ewg_struct_macro_sizeof_struct_CGPDFDocument 1
 
 
+// glue code macros for struct `struct AEDesc'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_AEDesc sizeof (struct AEDesc)
+
+#define ewg_struct_macro_struct_AEDesc_member_get_descriptorType(an_item) ((struct AEDesc*)an_item)->descriptorType
+
+#define ewg_struct_macro_struct_AEDesc_member_set_descriptorType(an_item, a_value) ((struct AEDesc*)an_item)->descriptorType =  (DescType)a_value
+
+#define ewg_struct_macro_struct_AEDesc_member_get_dataHandle(an_item) ((struct AEDesc*)an_item)->dataHandle
+
+#define ewg_struct_macro_struct_AEDesc_member_set_dataHandle(an_item, a_value) ((struct AEDesc*)an_item)->dataHandle =  (AEDataStorage)a_value
+
+
 // glue code macros for struct `struct AERemoteProcessResolver'
 
 #include<Carbon/Carbon.h>
@@ -875,21 +890,6 @@
 #define ewg_struct_macro_struct_MenuItemDataRec_member_get_cmdVirtualKey(an_item) ((struct MenuItemDataRec*)an_item)->cmdVirtualKey
 
 #define ewg_struct_macro_struct_MenuItemDataRec_member_set_cmdVirtualKey(an_item, a_value) ((struct MenuItemDataRec*)an_item)->cmdVirtualKey =  (UInt16)a_value
-
-
-// glue code macros for struct `struct AEDesc'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_AEDesc sizeof (struct AEDesc)
-
-#define ewg_struct_macro_struct_AEDesc_member_get_descriptorType(an_item) ((struct AEDesc*)an_item)->descriptorType
-
-#define ewg_struct_macro_struct_AEDesc_member_set_descriptorType(an_item, a_value) ((struct AEDesc*)an_item)->descriptorType =  (DescType)a_value
-
-#define ewg_struct_macro_struct_AEDesc_member_get_dataHandle(an_item) ((struct AEDesc*)an_item)->dataHandle
-
-#define ewg_struct_macro_struct_AEDesc_member_set_dataHandle(an_item, a_value) ((struct AEDesc*)an_item)->dataHandle =  (AEDataStorage)a_value
 
 
 // glue code macros for struct `struct OpaqueControlRef'
@@ -1938,6 +1938,28 @@
 #define ewg_struct_macro_struct_CGPathElement_member_get_points(an_item) ((struct CGPathElement*)an_item)->points
 
 #define ewg_struct_macro_struct_CGPathElement_member_set_points(an_item, a_value) ((struct CGPathElement*)an_item)->points =  (CGPoint*)a_value
+
+
+// glue code macros for struct `struct OpaqueAEDataStorageType'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_OpaqueAEDataStorageType 1
+
+
+// glue code macros for struct `struct AEKeyDesc'
+
+#include<Carbon/Carbon.h>
+
+#define ewg_struct_macro_sizeof_struct_AEKeyDesc sizeof (struct AEKeyDesc)
+
+#define ewg_struct_macro_struct_AEKeyDesc_member_get_descKey(an_item) ((struct AEKeyDesc*)an_item)->descKey
+
+#define ewg_struct_macro_struct_AEKeyDesc_member_set_descKey(an_item, a_value) ((struct AEKeyDesc*)an_item)->descKey =  (AEKeyword)a_value
+
+#define ewg_struct_macro_struct_AEKeyDesc_member_get_descContent(an_item) &((struct AEKeyDesc*)an_item)->descContent
+
+#define ewg_struct_macro_struct_AEKeyDesc_member_set_descContent(an_item, a_value) ((struct AEKeyDesc*)an_item)->descContent =  *(AEDesc*)a_value
 
 
 // glue code macros for struct `struct AppParameters'
@@ -3251,13 +3273,6 @@
 #define ewg_struct_macro_struct_NavMenuItemSpec_member_get_menuItemName(an_item) ((struct NavMenuItemSpec*)an_item)->menuItemName
 
 #define ewg_struct_macro_struct_NavMenuItemSpec_member_get_reserved(an_item) ((struct NavMenuItemSpec*)an_item)->reserved
-
-
-// glue code macros for struct `struct OpaqueAEDataStorageType'
-
-#include<Carbon/Carbon.h>
-
-#define ewg_struct_macro_sizeof_struct_OpaqueAEDataStorageType 1
 
 
 // glue code macros for struct `struct ITab'

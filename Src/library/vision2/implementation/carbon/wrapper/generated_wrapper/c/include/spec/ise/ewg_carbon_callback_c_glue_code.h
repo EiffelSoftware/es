@@ -37,6 +37,74 @@ void call_cgpath_applier_function (void *a_function, void *info, CGPathElement c
 
 #include <Carbon/Carbon.h>
 
+typedef OSErr (*aecoerce_desc_proc_ptr_eiffel_feature) (void *a_class, AEDesc const *fromDesc, DescType toType, long handlerRefcon, AEDesc *toDesc);
+
+void* get_aecoerce_desc_proc_ptr_stub ();
+
+struct aecoerce_desc_proc_ptr_entry_struct
+{
+	void* a_class;
+	aecoerce_desc_proc_ptr_eiffel_feature feature;
+};
+
+void set_aecoerce_desc_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSErr call_aecoerce_desc_proc_ptr (void *a_function, AEDesc const *fromDesc, DescType toType, long handlerRefcon, AEDesc *toDesc);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSErr (*aecoerce_ptr_proc_ptr_eiffel_feature) (void *a_class, DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, long handlerRefcon, AEDesc *result);
+
+void* get_aecoerce_ptr_proc_ptr_stub ();
+
+struct aecoerce_ptr_proc_ptr_entry_struct
+{
+	void* a_class;
+	aecoerce_ptr_proc_ptr_eiffel_feature feature;
+};
+
+void set_aecoerce_ptr_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSErr call_aecoerce_ptr_proc_ptr (void *a_function, DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, long handlerRefcon, AEDesc *result);
+
+
+#include <Carbon/Carbon.h>
+
+typedef void (*aedispose_external_proc_ptr_eiffel_feature) (void *a_class, void const *dataPtr, Size dataLength, long refcon);
+
+void* get_aedispose_external_proc_ptr_stub ();
+
+struct aedispose_external_proc_ptr_entry_struct
+{
+	void* a_class;
+	aedispose_external_proc_ptr_eiffel_feature feature;
+};
+
+void set_aedispose_external_proc_ptr_entry (void* a_class, void* a_feature);
+
+void call_aedispose_external_proc_ptr (void *a_function, void const *dataPtr, Size dataLength, long refcon);
+
+
+#include <Carbon/Carbon.h>
+
+typedef OSErr (*aeevent_handler_proc_ptr_eiffel_feature) (void *a_class, AppleEvent const *theAppleEvent, AppleEvent *reply, long handlerRefcon);
+
+void* get_aeevent_handler_proc_ptr_stub ();
+
+struct aeevent_handler_proc_ptr_entry_struct
+{
+	void* a_class;
+	aeevent_handler_proc_ptr_eiffel_feature feature;
+};
+
+void set_aeevent_handler_proc_ptr_entry (void* a_class, void* a_feature);
+
+OSErr call_aeevent_handler_proc_ptr (void *a_function, AppleEvent const *theAppleEvent, AppleEvent *reply, long handlerRefcon);
+
+
+#include <Carbon/Carbon.h>
+
 typedef void (*aeremote_process_resolver_callback_eiffel_feature) (void *a_class, AERemoteProcessResolverRef ref, void *info);
 
 void* get_aeremote_process_resolver_callback_stub ();

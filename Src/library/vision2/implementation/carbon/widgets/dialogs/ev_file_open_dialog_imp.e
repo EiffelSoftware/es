@@ -63,6 +63,6 @@ feature {NONE} -- Implementation
 	interface: EV_FILE_OPEN_DIALOG;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_FILE_OPEN_DIALOG_IMP
 

@@ -54,7 +54,17 @@ feature -- Status setting
 	show_modal_to_window (a_window: EV_WINDOW) is
 			-- Show `Current' modal with respect to `a_window'.
 		do
+			selected_button := Void
+
 			show
+
+			if selected_button /= Void then
+				if selected_button.is_equal (internal_accept) then
+					interface.ok_actions.call (Void)
+				elseif selected_button.is_equal (ev_cancel) then
+					interface.cancel_actions.call (Void)
+				end
+			end
 		end
 
 	set_title (a_title: STRING_GENERAL) is
@@ -100,15 +110,18 @@ feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
 	on_ok is
 			-- Close window and call action sequence.
 		do
+			user_clicked_ok := True
+			selected_button := internal_accept
 		end
 
 	on_cancel is
 			-- Close window and call action sequence.
 		do
+			selected_button := ev_cancel
 		end
 
 indexing
-	copyright:	"Copyright (c) 2006, The ETH Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The ETH Eiffel.Mac Team"
 
 end -- class EV_STANDARD_DIALOG_IMP
 

@@ -6005,6 +6005,786 @@ void* ewg_get_function_address_CGContextConvertRectToUserSpace (void)
 
 #include <Carbon/Carbon.h>
 
+// Wraps call to function 'NewAECoerceDescUPP'
+// For ise
+AECoerceDescUPP  ewg_function_NewAECoerceDescUPP (AECoerceDescProcPtr ewg_userRoutine)
+{
+	return NewAECoerceDescUPP ((AECoerceDescProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewAECoerceDescUPP'
+void* ewg_get_function_address_NewAECoerceDescUPP (void)
+{
+	return (void*) NewAECoerceDescUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewAECoercePtrUPP'
+// For ise
+AECoercePtrUPP  ewg_function_NewAECoercePtrUPP (AECoercePtrProcPtr ewg_userRoutine)
+{
+	return NewAECoercePtrUPP ((AECoercePtrProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewAECoercePtrUPP'
+void* ewg_get_function_address_NewAECoercePtrUPP (void)
+{
+	return (void*) NewAECoercePtrUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeAECoerceDescUPP'
+// For ise
+void  ewg_function_DisposeAECoerceDescUPP (AECoerceDescUPP ewg_userUPP)
+{
+	DisposeAECoerceDescUPP ((AECoerceDescUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeAECoerceDescUPP'
+void* ewg_get_function_address_DisposeAECoerceDescUPP (void)
+{
+	return (void*) DisposeAECoerceDescUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeAECoercePtrUPP'
+// For ise
+void  ewg_function_DisposeAECoercePtrUPP (AECoercePtrUPP ewg_userUPP)
+{
+	DisposeAECoercePtrUPP ((AECoercePtrUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeAECoercePtrUPP'
+void* ewg_get_function_address_DisposeAECoercePtrUPP (void)
+{
+	return (void*) DisposeAECoercePtrUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeAECoerceDescUPP'
+// For ise
+OSErr  ewg_function_InvokeAECoerceDescUPP (AEDesc const *ewg_fromDesc, DescType ewg_toType, long ewg_handlerRefcon, AEDesc *ewg_toDesc, AECoerceDescUPP ewg_userUPP)
+{
+	return InvokeAECoerceDescUPP ((AEDesc const*)ewg_fromDesc, (DescType)ewg_toType, (long)ewg_handlerRefcon, (AEDesc*)ewg_toDesc, (AECoerceDescUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeAECoerceDescUPP'
+void* ewg_get_function_address_InvokeAECoerceDescUPP (void)
+{
+	return (void*) InvokeAECoerceDescUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeAECoercePtrUPP'
+// For ise
+OSErr  ewg_function_InvokeAECoercePtrUPP (DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize, DescType ewg_toType, long ewg_handlerRefcon, AEDesc *ewg_result, AECoercePtrUPP ewg_userUPP)
+{
+	return InvokeAECoercePtrUPP ((DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize, (DescType)ewg_toType, (long)ewg_handlerRefcon, (AEDesc*)ewg_result, (AECoercePtrUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeAECoercePtrUPP'
+void* ewg_get_function_address_InvokeAECoercePtrUPP (void)
+{
+	return (void*) InvokeAECoercePtrUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEInstallCoercionHandler'
+// For ise
+OSErr  ewg_function_AEInstallCoercionHandler (DescType ewg_fromType, DescType ewg_toType, AECoercionHandlerUPP ewg_handler, long ewg_handlerRefcon, Boolean ewg_fromTypeIsDesc, Boolean ewg_isSysHandler)
+{
+	return AEInstallCoercionHandler ((DescType)ewg_fromType, (DescType)ewg_toType, (AECoercionHandlerUPP)ewg_handler, (long)ewg_handlerRefcon, (Boolean)ewg_fromTypeIsDesc, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AEInstallCoercionHandler'
+void* ewg_get_function_address_AEInstallCoercionHandler (void)
+{
+	return (void*) AEInstallCoercionHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AERemoveCoercionHandler'
+// For ise
+OSErr  ewg_function_AERemoveCoercionHandler (DescType ewg_fromType, DescType ewg_toType, AECoercionHandlerUPP ewg_handler, Boolean ewg_isSysHandler)
+{
+	return AERemoveCoercionHandler ((DescType)ewg_fromType, (DescType)ewg_toType, (AECoercionHandlerUPP)ewg_handler, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AERemoveCoercionHandler'
+void* ewg_get_function_address_AERemoveCoercionHandler (void)
+{
+	return (void*) AERemoveCoercionHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetCoercionHandler'
+// For ise
+OSErr  ewg_function_AEGetCoercionHandler (DescType ewg_fromType, DescType ewg_toType, AECoercionHandlerUPP *ewg_handler, long *ewg_handlerRefcon, Boolean *ewg_fromTypeIsDesc, Boolean ewg_isSysHandler)
+{
+	return AEGetCoercionHandler ((DescType)ewg_fromType, (DescType)ewg_toType, (AECoercionHandlerUPP*)ewg_handler, (long*)ewg_handlerRefcon, (Boolean*)ewg_fromTypeIsDesc, (Boolean)ewg_isSysHandler);
+}
+
+// Return address of function 'AEGetCoercionHandler'
+void* ewg_get_function_address_AEGetCoercionHandler (void)
+{
+	return (void*) AEGetCoercionHandler;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECoercePtr'
+// For ise
+OSErr  ewg_function_AECoercePtr (DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize, DescType ewg_toType, AEDesc *ewg_result)
+{
+	return AECoercePtr ((DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize, (DescType)ewg_toType, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AECoercePtr'
+void* ewg_get_function_address_AECoercePtr (void)
+{
+	return (void*) AECoercePtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECoerceDesc'
+// For ise
+OSErr  ewg_function_AECoerceDesc (AEDesc const *ewg_theAEDesc, DescType ewg_toType, AEDesc *ewg_result)
+{
+	return AECoerceDesc ((AEDesc const*)ewg_theAEDesc, (DescType)ewg_toType, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AECoerceDesc'
+void* ewg_get_function_address_AECoerceDesc (void)
+{
+	return (void*) AECoerceDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEInitializeDesc'
+// For ise
+void  ewg_function_AEInitializeDesc (AEDesc *ewg_desc)
+{
+	AEInitializeDesc ((AEDesc*)ewg_desc);
+}
+
+// Return address of function 'AEInitializeDesc'
+void* ewg_get_function_address_AEInitializeDesc (void)
+{
+	return (void*) AEInitializeDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECreateDesc'
+// For ise
+OSErr  ewg_function_AECreateDesc (DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize, AEDesc *ewg_result)
+{
+	return AECreateDesc ((DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AECreateDesc'
+void* ewg_get_function_address_AECreateDesc (void)
+{
+	return (void*) AECreateDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEDisposeDesc'
+// For ise
+OSErr  ewg_function_AEDisposeDesc (AEDesc *ewg_theAEDesc)
+{
+	return AEDisposeDesc ((AEDesc*)ewg_theAEDesc);
+}
+
+// Return address of function 'AEDisposeDesc'
+void* ewg_get_function_address_AEDisposeDesc (void)
+{
+	return (void*) AEDisposeDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEDuplicateDesc'
+// For ise
+OSErr  ewg_function_AEDuplicateDesc (AEDesc const *ewg_theAEDesc, AEDesc *ewg_result)
+{
+	return AEDuplicateDesc ((AEDesc const*)ewg_theAEDesc, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AEDuplicateDesc'
+void* ewg_get_function_address_AEDuplicateDesc (void)
+{
+	return (void*) AEDuplicateDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECreateDescFromExternalPtr'
+// For ise
+OSStatus  ewg_function_AECreateDescFromExternalPtr (OSType ewg_descriptorType, void const *ewg_dataPtr, Size ewg_dataLength, AEDisposeExternalUPP ewg_disposeCallback, long ewg_disposeRefcon, AEDesc *ewg_theDesc)
+{
+	return AECreateDescFromExternalPtr ((OSType)ewg_descriptorType, (void const*)ewg_dataPtr, (Size)ewg_dataLength, (AEDisposeExternalUPP)ewg_disposeCallback, (long)ewg_disposeRefcon, (AEDesc*)ewg_theDesc);
+}
+
+// Return address of function 'AECreateDescFromExternalPtr'
+void* ewg_get_function_address_AECreateDescFromExternalPtr (void)
+{
+	return (void*) AECreateDescFromExternalPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECreateList'
+// For ise
+OSErr  ewg_function_AECreateList (void const *ewg_factoringPtr, Size ewg_factoredSize, Boolean ewg_isRecord, AEDescList *ewg_resultList)
+{
+	return AECreateList ((void const*)ewg_factoringPtr, (Size)ewg_factoredSize, (Boolean)ewg_isRecord, (AEDescList*)ewg_resultList);
+}
+
+// Return address of function 'AECreateList'
+void* ewg_get_function_address_AECreateList (void)
+{
+	return (void*) AECreateList;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECountItems'
+// For ise
+OSErr  ewg_function_AECountItems (AEDescList const *ewg_theAEDescList, long *ewg_theCount)
+{
+	return AECountItems ((AEDescList const*)ewg_theAEDescList, (long*)ewg_theCount);
+}
+
+// Return address of function 'AECountItems'
+void* ewg_get_function_address_AECountItems (void)
+{
+	return (void*) AECountItems;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEPutPtr'
+// For ise
+OSErr  ewg_function_AEPutPtr (AEDescList *ewg_theAEDescList, long ewg_index, DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize)
+{
+	return AEPutPtr ((AEDescList*)ewg_theAEDescList, (long)ewg_index, (DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize);
+}
+
+// Return address of function 'AEPutPtr'
+void* ewg_get_function_address_AEPutPtr (void)
+{
+	return (void*) AEPutPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEPutDesc'
+// For ise
+OSErr  ewg_function_AEPutDesc (AEDescList *ewg_theAEDescList, long ewg_index, AEDesc const *ewg_theAEDesc)
+{
+	return AEPutDesc ((AEDescList*)ewg_theAEDescList, (long)ewg_index, (AEDesc const*)ewg_theAEDesc);
+}
+
+// Return address of function 'AEPutDesc'
+void* ewg_get_function_address_AEPutDesc (void)
+{
+	return (void*) AEPutDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetNthPtr'
+// For ise
+OSErr  ewg_function_AEGetNthPtr (AEDescList const *ewg_theAEDescList, long ewg_index, DescType ewg_desiredType, AEKeyword *ewg_theAEKeyword, DescType *ewg_typeCode, void *ewg_dataPtr, Size ewg_maximumSize, Size *ewg_actualSize)
+{
+	return AEGetNthPtr ((AEDescList const*)ewg_theAEDescList, (long)ewg_index, (DescType)ewg_desiredType, (AEKeyword*)ewg_theAEKeyword, (DescType*)ewg_typeCode, (void*)ewg_dataPtr, (Size)ewg_maximumSize, (Size*)ewg_actualSize);
+}
+
+// Return address of function 'AEGetNthPtr'
+void* ewg_get_function_address_AEGetNthPtr (void)
+{
+	return (void*) AEGetNthPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetNthDesc'
+// For ise
+OSErr  ewg_function_AEGetNthDesc (AEDescList const *ewg_theAEDescList, long ewg_index, DescType ewg_desiredType, AEKeyword *ewg_theAEKeyword, AEDesc *ewg_result)
+{
+	return AEGetNthDesc ((AEDescList const*)ewg_theAEDescList, (long)ewg_index, (DescType)ewg_desiredType, (AEKeyword*)ewg_theAEKeyword, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AEGetNthDesc'
+void* ewg_get_function_address_AEGetNthDesc (void)
+{
+	return (void*) AEGetNthDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AESizeOfNthItem'
+// For ise
+OSErr  ewg_function_AESizeOfNthItem (AEDescList const *ewg_theAEDescList, long ewg_index, DescType *ewg_typeCode, Size *ewg_dataSize)
+{
+	return AESizeOfNthItem ((AEDescList const*)ewg_theAEDescList, (long)ewg_index, (DescType*)ewg_typeCode, (Size*)ewg_dataSize);
+}
+
+// Return address of function 'AESizeOfNthItem'
+void* ewg_get_function_address_AESizeOfNthItem (void)
+{
+	return (void*) AESizeOfNthItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetArray'
+// For ise
+OSErr  ewg_function_AEGetArray (AEDescList const *ewg_theAEDescList, AEArrayType ewg_arrayType, AEArrayDataPointer ewg_arrayPtr, Size ewg_maximumSize, DescType *ewg_itemType, Size *ewg_itemSize, long *ewg_itemCount)
+{
+	return AEGetArray ((AEDescList const*)ewg_theAEDescList, (AEArrayType)ewg_arrayType, (AEArrayDataPointer)ewg_arrayPtr, (Size)ewg_maximumSize, (DescType*)ewg_itemType, (Size*)ewg_itemSize, (long*)ewg_itemCount);
+}
+
+// Return address of function 'AEGetArray'
+void* ewg_get_function_address_AEGetArray (void)
+{
+	return (void*) AEGetArray;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEPutArray'
+// For ise
+OSErr  ewg_function_AEPutArray (AEDescList *ewg_theAEDescList, AEArrayType ewg_arrayType, AEArrayData const *ewg_arrayPtr, DescType ewg_itemType, Size ewg_itemSize, long ewg_itemCount)
+{
+	return AEPutArray ((AEDescList*)ewg_theAEDescList, (AEArrayType)ewg_arrayType, (AEArrayData const*)ewg_arrayPtr, (DescType)ewg_itemType, (Size)ewg_itemSize, (long)ewg_itemCount);
+}
+
+// Return address of function 'AEPutArray'
+void* ewg_get_function_address_AEPutArray (void)
+{
+	return (void*) AEPutArray;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEDeleteItem'
+// For ise
+OSErr  ewg_function_AEDeleteItem (AEDescList *ewg_theAEDescList, long ewg_index)
+{
+	return AEDeleteItem ((AEDescList*)ewg_theAEDescList, (long)ewg_index);
+}
+
+// Return address of function 'AEDeleteItem'
+void* ewg_get_function_address_AEDeleteItem (void)
+{
+	return (void*) AEDeleteItem;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECheckIsRecord'
+// For ise
+Boolean  ewg_function_AECheckIsRecord (AEDesc const *ewg_theDesc)
+{
+	return AECheckIsRecord ((AEDesc const*)ewg_theDesc);
+}
+
+// Return address of function 'AECheckIsRecord'
+void* ewg_get_function_address_AECheckIsRecord (void)
+{
+	return (void*) AECheckIsRecord;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AECreateAppleEvent'
+// For ise
+OSErr  ewg_function_AECreateAppleEvent (AEEventClass ewg_theAEEventClass, AEEventID ewg_theAEEventID, AEAddressDesc const *ewg_target, AEReturnID ewg_returnID, AETransactionID ewg_transactionID, AppleEvent *ewg_result)
+{
+	return AECreateAppleEvent ((AEEventClass)ewg_theAEEventClass, (AEEventID)ewg_theAEEventID, (AEAddressDesc const*)ewg_target, (AEReturnID)ewg_returnID, (AETransactionID)ewg_transactionID, (AppleEvent*)ewg_result);
+}
+
+// Return address of function 'AECreateAppleEvent'
+void* ewg_get_function_address_AECreateAppleEvent (void)
+{
+	return (void*) AECreateAppleEvent;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEPutParamPtr'
+// For ise
+OSErr  ewg_function_AEPutParamPtr (AppleEvent *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize)
+{
+	return AEPutParamPtr ((AppleEvent*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize);
+}
+
+// Return address of function 'AEPutParamPtr'
+void* ewg_get_function_address_AEPutParamPtr (void)
+{
+	return (void*) AEPutParamPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEPutParamDesc'
+// For ise
+OSErr  ewg_function_AEPutParamDesc (AppleEvent *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, AEDesc const *ewg_theAEDesc)
+{
+	return AEPutParamDesc ((AppleEvent*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (AEDesc const*)ewg_theAEDesc);
+}
+
+// Return address of function 'AEPutParamDesc'
+void* ewg_get_function_address_AEPutParamDesc (void)
+{
+	return (void*) AEPutParamDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetParamPtr'
+// For ise
+OSErr  ewg_function_AEGetParamPtr (AppleEvent const *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType ewg_desiredType, DescType *ewg_actualType, void *ewg_dataPtr, Size ewg_maximumSize, Size *ewg_actualSize)
+{
+	return AEGetParamPtr ((AppleEvent const*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType)ewg_desiredType, (DescType*)ewg_actualType, (void*)ewg_dataPtr, (Size)ewg_maximumSize, (Size*)ewg_actualSize);
+}
+
+// Return address of function 'AEGetParamPtr'
+void* ewg_get_function_address_AEGetParamPtr (void)
+{
+	return (void*) AEGetParamPtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetParamDesc'
+// For ise
+OSErr  ewg_function_AEGetParamDesc (AppleEvent const *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType ewg_desiredType, AEDesc *ewg_result)
+{
+	return AEGetParamDesc ((AppleEvent const*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType)ewg_desiredType, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AEGetParamDesc'
+void* ewg_get_function_address_AEGetParamDesc (void)
+{
+	return (void*) AEGetParamDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AESizeOfParam'
+// For ise
+OSErr  ewg_function_AESizeOfParam (AppleEvent const *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType *ewg_typeCode, Size *ewg_dataSize)
+{
+	return AESizeOfParam ((AppleEvent const*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType*)ewg_typeCode, (Size*)ewg_dataSize);
+}
+
+// Return address of function 'AESizeOfParam'
+void* ewg_get_function_address_AESizeOfParam (void)
+{
+	return (void*) AESizeOfParam;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEDeleteParam'
+// For ise
+OSErr  ewg_function_AEDeleteParam (AppleEvent *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword)
+{
+	return AEDeleteParam ((AppleEvent*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword);
+}
+
+// Return address of function 'AEDeleteParam'
+void* ewg_get_function_address_AEDeleteParam (void)
+{
+	return (void*) AEDeleteParam;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetAttributePtr'
+// For ise
+OSErr  ewg_function_AEGetAttributePtr (AppleEvent const *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType ewg_desiredType, DescType *ewg_typeCode, void *ewg_dataPtr, Size ewg_maximumSize, Size *ewg_actualSize)
+{
+	return AEGetAttributePtr ((AppleEvent const*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType)ewg_desiredType, (DescType*)ewg_typeCode, (void*)ewg_dataPtr, (Size)ewg_maximumSize, (Size*)ewg_actualSize);
+}
+
+// Return address of function 'AEGetAttributePtr'
+void* ewg_get_function_address_AEGetAttributePtr (void)
+{
+	return (void*) AEGetAttributePtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetAttributeDesc'
+// For ise
+OSErr  ewg_function_AEGetAttributeDesc (AppleEvent const *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType ewg_desiredType, AEDesc *ewg_result)
+{
+	return AEGetAttributeDesc ((AppleEvent const*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType)ewg_desiredType, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AEGetAttributeDesc'
+void* ewg_get_function_address_AEGetAttributeDesc (void)
+{
+	return (void*) AEGetAttributeDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AESizeOfAttribute'
+// For ise
+OSErr  ewg_function_AESizeOfAttribute (AppleEvent const *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType *ewg_typeCode, Size *ewg_dataSize)
+{
+	return AESizeOfAttribute ((AppleEvent const*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType*)ewg_typeCode, (Size*)ewg_dataSize);
+}
+
+// Return address of function 'AESizeOfAttribute'
+void* ewg_get_function_address_AESizeOfAttribute (void)
+{
+	return (void*) AESizeOfAttribute;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEPutAttributePtr'
+// For ise
+OSErr  ewg_function_AEPutAttributePtr (AppleEvent *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize)
+{
+	return AEPutAttributePtr ((AppleEvent*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize);
+}
+
+// Return address of function 'AEPutAttributePtr'
+void* ewg_get_function_address_AEPutAttributePtr (void)
+{
+	return (void*) AEPutAttributePtr;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEPutAttributeDesc'
+// For ise
+OSErr  ewg_function_AEPutAttributeDesc (AppleEvent *ewg_theAppleEvent, AEKeyword ewg_theAEKeyword, AEDesc const *ewg_theAEDesc)
+{
+	return AEPutAttributeDesc ((AppleEvent*)ewg_theAppleEvent, (AEKeyword)ewg_theAEKeyword, (AEDesc const*)ewg_theAEDesc);
+}
+
+// Return address of function 'AEPutAttributeDesc'
+void* ewg_get_function_address_AEPutAttributeDesc (void)
+{
+	return (void*) AEPutAttributeDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AESizeOfFlattenedDesc'
+// For ise
+Size  ewg_function_AESizeOfFlattenedDesc (AEDesc const *ewg_theAEDesc)
+{
+	return AESizeOfFlattenedDesc ((AEDesc const*)ewg_theAEDesc);
+}
+
+// Return address of function 'AESizeOfFlattenedDesc'
+void* ewg_get_function_address_AESizeOfFlattenedDesc (void)
+{
+	return (void*) AESizeOfFlattenedDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEFlattenDesc'
+// For ise
+OSStatus  ewg_function_AEFlattenDesc (AEDesc const *ewg_theAEDesc, Ptr ewg_buffer, Size ewg_bufferSize, Size *ewg_actualSize)
+{
+	return AEFlattenDesc ((AEDesc const*)ewg_theAEDesc, (Ptr)ewg_buffer, (Size)ewg_bufferSize, (Size*)ewg_actualSize);
+}
+
+// Return address of function 'AEFlattenDesc'
+void* ewg_get_function_address_AEFlattenDesc (void)
+{
+	return (void*) AEFlattenDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEUnflattenDesc'
+// For ise
+OSStatus  ewg_function_AEUnflattenDesc (void const *ewg_buffer, AEDesc *ewg_result)
+{
+	return AEUnflattenDesc ((void const*)ewg_buffer, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'AEUnflattenDesc'
+void* ewg_get_function_address_AEUnflattenDesc (void)
+{
+	return (void*) AEUnflattenDesc;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetDescData'
+// For ise
+OSErr  ewg_function_AEGetDescData (AEDesc const *ewg_theAEDesc, void *ewg_dataPtr, Size ewg_maximumSize)
+{
+	return AEGetDescData ((AEDesc const*)ewg_theAEDesc, (void*)ewg_dataPtr, (Size)ewg_maximumSize);
+}
+
+// Return address of function 'AEGetDescData'
+void* ewg_get_function_address_AEGetDescData (void)
+{
+	return (void*) AEGetDescData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetDescDataSize'
+// For ise
+Size  ewg_function_AEGetDescDataSize (AEDesc const *ewg_theAEDesc)
+{
+	return AEGetDescDataSize ((AEDesc const*)ewg_theAEDesc);
+}
+
+// Return address of function 'AEGetDescDataSize'
+void* ewg_get_function_address_AEGetDescDataSize (void)
+{
+	return (void*) AEGetDescDataSize;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEReplaceDescData'
+// For ise
+OSErr  ewg_function_AEReplaceDescData (DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize, AEDesc *ewg_theAEDesc)
+{
+	return AEReplaceDescData ((DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize, (AEDesc*)ewg_theAEDesc);
+}
+
+// Return address of function 'AEReplaceDescData'
+void* ewg_get_function_address_AEReplaceDescData (void)
+{
+	return (void*) AEReplaceDescData;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'AEGetDescDataRange'
+// For ise
+OSStatus  ewg_function_AEGetDescDataRange (AEDesc const *ewg_dataDesc, void *ewg_buffer, Size ewg_offset, Size ewg_length)
+{
+	return AEGetDescDataRange ((AEDesc const*)ewg_dataDesc, (void*)ewg_buffer, (Size)ewg_offset, (Size)ewg_length);
+}
+
+// Return address of function 'AEGetDescDataRange'
+void* ewg_get_function_address_AEGetDescDataRange (void)
+{
+	return (void*) AEGetDescDataRange;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewAEDisposeExternalUPP'
+// For ise
+AEDisposeExternalUPP  ewg_function_NewAEDisposeExternalUPP (AEDisposeExternalProcPtr ewg_userRoutine)
+{
+	return NewAEDisposeExternalUPP ((AEDisposeExternalProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewAEDisposeExternalUPP'
+void* ewg_get_function_address_NewAEDisposeExternalUPP (void)
+{
+	return (void*) NewAEDisposeExternalUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewAEEventHandlerUPP'
+// For ise
+AEEventHandlerUPP  ewg_function_NewAEEventHandlerUPP (AEEventHandlerProcPtr ewg_userRoutine)
+{
+	return NewAEEventHandlerUPP ((AEEventHandlerProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewAEEventHandlerUPP'
+void* ewg_get_function_address_NewAEEventHandlerUPP (void)
+{
+	return (void*) NewAEEventHandlerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeAEDisposeExternalUPP'
+// For ise
+void  ewg_function_DisposeAEDisposeExternalUPP (AEDisposeExternalUPP ewg_userUPP)
+{
+	DisposeAEDisposeExternalUPP ((AEDisposeExternalUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeAEDisposeExternalUPP'
+void* ewg_get_function_address_DisposeAEDisposeExternalUPP (void)
+{
+	return (void*) DisposeAEDisposeExternalUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeAEEventHandlerUPP'
+// For ise
+void  ewg_function_DisposeAEEventHandlerUPP (AEEventHandlerUPP ewg_userUPP)
+{
+	DisposeAEEventHandlerUPP ((AEEventHandlerUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeAEEventHandlerUPP'
+void* ewg_get_function_address_DisposeAEEventHandlerUPP (void)
+{
+	return (void*) DisposeAEEventHandlerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeAEDisposeExternalUPP'
+// For ise
+void  ewg_function_InvokeAEDisposeExternalUPP (void const *ewg_dataPtr, Size ewg_dataLength, long ewg_refcon, AEDisposeExternalUPP ewg_userUPP)
+{
+	InvokeAEDisposeExternalUPP ((void const*)ewg_dataPtr, (Size)ewg_dataLength, (long)ewg_refcon, (AEDisposeExternalUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeAEDisposeExternalUPP'
+void* ewg_get_function_address_InvokeAEDisposeExternalUPP (void)
+{
+	return (void*) InvokeAEDisposeExternalUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeAEEventHandlerUPP'
+// For ise
+OSErr  ewg_function_InvokeAEEventHandlerUPP (AppleEvent const *ewg_theAppleEvent, AppleEvent *ewg_reply, long ewg_handlerRefcon, AEEventHandlerUPP ewg_userUPP)
+{
+	return InvokeAEEventHandlerUPP ((AppleEvent const*)ewg_theAppleEvent, (AppleEvent*)ewg_reply, (long)ewg_handlerRefcon, (AEEventHandlerUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeAEEventHandlerUPP'
+void* ewg_get_function_address_InvokeAEEventHandlerUPP (void)
+{
+	return (void*) InvokeAEEventHandlerUPP;
+}
+
+#include <Carbon/Carbon.h>
+
 // Wraps call to function 'AEInstallEventHandler'
 // For ise
 OSErr  ewg_function_AEInstallEventHandler (AEEventClass ewg_theAEEventClass, AEEventID ewg_theAEEventID, AEEventHandlerUPP ewg_handler, long ewg_handlerRefcon, Boolean ewg_isSysHandler)
@@ -26358,6 +27138,186 @@ void  ewg_function_call_cgpath_applier_function (void *ewg_a_function, void *ewg
 void* ewg_get_function_address_call_cgpath_applier_function (void)
 {
 	return (void*) call_cgpath_applier_function;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_aecoerce_desc_proc_ptr_stub'
+// For ise
+void * ewg_function_get_aecoerce_desc_proc_ptr_stub (void)
+{
+	return get_aecoerce_desc_proc_ptr_stub ();
+}
+
+// Return address of function 'get_aecoerce_desc_proc_ptr_stub'
+void* ewg_get_function_address_get_aecoerce_desc_proc_ptr_stub (void)
+{
+	return (void*) get_aecoerce_desc_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_aecoerce_desc_proc_ptr_entry'
+// For ise
+void  ewg_function_set_aecoerce_desc_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_aecoerce_desc_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_aecoerce_desc_proc_ptr_entry'
+void* ewg_get_function_address_set_aecoerce_desc_proc_ptr_entry (void)
+{
+	return (void*) set_aecoerce_desc_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_aecoerce_desc_proc_ptr'
+// For ise
+OSErr  ewg_function_call_aecoerce_desc_proc_ptr (void *ewg_a_function, AEDesc const *ewg_fromDesc, DescType ewg_toType, long ewg_handlerRefcon, AEDesc *ewg_toDesc)
+{
+	return call_aecoerce_desc_proc_ptr ((void*)ewg_a_function, (AEDesc const*)ewg_fromDesc, (DescType)ewg_toType, (long)ewg_handlerRefcon, (AEDesc*)ewg_toDesc);
+}
+
+// Return address of function 'call_aecoerce_desc_proc_ptr'
+void* ewg_get_function_address_call_aecoerce_desc_proc_ptr (void)
+{
+	return (void*) call_aecoerce_desc_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_aecoerce_ptr_proc_ptr_stub'
+// For ise
+void * ewg_function_get_aecoerce_ptr_proc_ptr_stub (void)
+{
+	return get_aecoerce_ptr_proc_ptr_stub ();
+}
+
+// Return address of function 'get_aecoerce_ptr_proc_ptr_stub'
+void* ewg_get_function_address_get_aecoerce_ptr_proc_ptr_stub (void)
+{
+	return (void*) get_aecoerce_ptr_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_aecoerce_ptr_proc_ptr_entry'
+// For ise
+void  ewg_function_set_aecoerce_ptr_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_aecoerce_ptr_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_aecoerce_ptr_proc_ptr_entry'
+void* ewg_get_function_address_set_aecoerce_ptr_proc_ptr_entry (void)
+{
+	return (void*) set_aecoerce_ptr_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_aecoerce_ptr_proc_ptr'
+// For ise
+OSErr  ewg_function_call_aecoerce_ptr_proc_ptr (void *ewg_a_function, DescType ewg_typeCode, void const *ewg_dataPtr, Size ewg_dataSize, DescType ewg_toType, long ewg_handlerRefcon, AEDesc *ewg_result)
+{
+	return call_aecoerce_ptr_proc_ptr ((void*)ewg_a_function, (DescType)ewg_typeCode, (void const*)ewg_dataPtr, (Size)ewg_dataSize, (DescType)ewg_toType, (long)ewg_handlerRefcon, (AEDesc*)ewg_result);
+}
+
+// Return address of function 'call_aecoerce_ptr_proc_ptr'
+void* ewg_get_function_address_call_aecoerce_ptr_proc_ptr (void)
+{
+	return (void*) call_aecoerce_ptr_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_aedispose_external_proc_ptr_stub'
+// For ise
+void * ewg_function_get_aedispose_external_proc_ptr_stub (void)
+{
+	return get_aedispose_external_proc_ptr_stub ();
+}
+
+// Return address of function 'get_aedispose_external_proc_ptr_stub'
+void* ewg_get_function_address_get_aedispose_external_proc_ptr_stub (void)
+{
+	return (void*) get_aedispose_external_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_aedispose_external_proc_ptr_entry'
+// For ise
+void  ewg_function_set_aedispose_external_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_aedispose_external_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_aedispose_external_proc_ptr_entry'
+void* ewg_get_function_address_set_aedispose_external_proc_ptr_entry (void)
+{
+	return (void*) set_aedispose_external_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_aedispose_external_proc_ptr'
+// For ise
+void  ewg_function_call_aedispose_external_proc_ptr (void *ewg_a_function, void const *ewg_dataPtr, Size ewg_dataLength, long ewg_refcon)
+{
+	call_aedispose_external_proc_ptr ((void*)ewg_a_function, (void const*)ewg_dataPtr, (Size)ewg_dataLength, (long)ewg_refcon);
+}
+
+// Return address of function 'call_aedispose_external_proc_ptr'
+void* ewg_get_function_address_call_aedispose_external_proc_ptr (void)
+{
+	return (void*) call_aedispose_external_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_aeevent_handler_proc_ptr_stub'
+// For ise
+void * ewg_function_get_aeevent_handler_proc_ptr_stub (void)
+{
+	return get_aeevent_handler_proc_ptr_stub ();
+}
+
+// Return address of function 'get_aeevent_handler_proc_ptr_stub'
+void* ewg_get_function_address_get_aeevent_handler_proc_ptr_stub (void)
+{
+	return (void*) get_aeevent_handler_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_aeevent_handler_proc_ptr_entry'
+// For ise
+void  ewg_function_set_aeevent_handler_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_aeevent_handler_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_aeevent_handler_proc_ptr_entry'
+void* ewg_get_function_address_set_aeevent_handler_proc_ptr_entry (void)
+{
+	return (void*) set_aeevent_handler_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_aeevent_handler_proc_ptr'
+// For ise
+OSErr  ewg_function_call_aeevent_handler_proc_ptr (void *ewg_a_function, AppleEvent const *ewg_theAppleEvent, AppleEvent *ewg_reply, long ewg_handlerRefcon)
+{
+	return call_aeevent_handler_proc_ptr ((void*)ewg_a_function, (AppleEvent const*)ewg_theAppleEvent, (AppleEvent*)ewg_reply, (long)ewg_handlerRefcon);
+}
+
+// Return address of function 'call_aeevent_handler_proc_ptr'
+void* ewg_get_function_address_call_aeevent_handler_proc_ptr (void)
+{
+	return (void*) call_aeevent_handler_proc_ptr;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>

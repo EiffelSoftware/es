@@ -182,7 +182,7 @@ feature {NONE} -- implementation
 				if event_kind = {CARBONEVENTS_ANON_ENUMS}.kEventMouseDown and event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
 					select_actions.call (void)
 					Result := noErr -- event handled
-					io.put_string ("Actions in queue" + select_actions.count.out)
+					--io.put_string ("Actions in queue" + select_actions.count.out)
 				else
 					Result := {CARBON_EVENTS_CORE_ANON_ENUMS}.eventnothandlederr
 				end

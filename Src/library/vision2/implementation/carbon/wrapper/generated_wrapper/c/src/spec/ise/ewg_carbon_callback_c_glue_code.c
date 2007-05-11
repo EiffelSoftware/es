@@ -56,6 +56,110 @@ void call_cgpath_applier_function (void *a_function, void *info, CGPathElement c
 	((void (*) (void *info, CGPathElement const *element))a_function) (info, element);
 }
 
+struct aecoerce_desc_proc_ptr_entry_struct aecoerce_desc_proc_ptr_entry = {NULL, NULL};
+
+OSErr aecoerce_desc_proc_ptr_stub (AEDesc const *fromDesc, DescType toType, long handlerRefcon, AEDesc *toDesc)
+{
+	if (aecoerce_desc_proc_ptr_entry.a_class != NULL && aecoerce_desc_proc_ptr_entry.feature != NULL)
+	{
+		return aecoerce_desc_proc_ptr_entry.feature (eif_access(aecoerce_desc_proc_ptr_entry.a_class), fromDesc, toType, handlerRefcon, toDesc);
+	}
+}
+
+void set_aecoerce_desc_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	aecoerce_desc_proc_ptr_entry.a_class = eif_adopt(a_class);
+	aecoerce_desc_proc_ptr_entry.feature = (aecoerce_desc_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_aecoerce_desc_proc_ptr_stub ()
+{
+	return (void*) aecoerce_desc_proc_ptr_stub;
+}
+
+OSErr call_aecoerce_desc_proc_ptr (void *a_function, AEDesc const *fromDesc, DescType toType, long handlerRefcon, AEDesc *toDesc)
+{
+	return ((OSErr (*) (AEDesc const *fromDesc, DescType toType, long handlerRefcon, AEDesc *toDesc))a_function) (fromDesc, toType, handlerRefcon, toDesc);
+}
+
+struct aecoerce_ptr_proc_ptr_entry_struct aecoerce_ptr_proc_ptr_entry = {NULL, NULL};
+
+OSErr aecoerce_ptr_proc_ptr_stub (DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, long handlerRefcon, AEDesc *result)
+{
+	if (aecoerce_ptr_proc_ptr_entry.a_class != NULL && aecoerce_ptr_proc_ptr_entry.feature != NULL)
+	{
+		return aecoerce_ptr_proc_ptr_entry.feature (eif_access(aecoerce_ptr_proc_ptr_entry.a_class), typeCode, dataPtr, dataSize, toType, handlerRefcon, result);
+	}
+}
+
+void set_aecoerce_ptr_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	aecoerce_ptr_proc_ptr_entry.a_class = eif_adopt(a_class);
+	aecoerce_ptr_proc_ptr_entry.feature = (aecoerce_ptr_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_aecoerce_ptr_proc_ptr_stub ()
+{
+	return (void*) aecoerce_ptr_proc_ptr_stub;
+}
+
+OSErr call_aecoerce_ptr_proc_ptr (void *a_function, DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, long handlerRefcon, AEDesc *result)
+{
+	return ((OSErr (*) (DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, long handlerRefcon, AEDesc *result))a_function) (typeCode, dataPtr, dataSize, toType, handlerRefcon, result);
+}
+
+struct aedispose_external_proc_ptr_entry_struct aedispose_external_proc_ptr_entry = {NULL, NULL};
+
+void aedispose_external_proc_ptr_stub (void const *dataPtr, Size dataLength, long refcon)
+{
+	if (aedispose_external_proc_ptr_entry.a_class != NULL && aedispose_external_proc_ptr_entry.feature != NULL)
+	{
+		aedispose_external_proc_ptr_entry.feature (eif_access(aedispose_external_proc_ptr_entry.a_class), dataPtr, dataLength, refcon);
+	}
+}
+
+void set_aedispose_external_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	aedispose_external_proc_ptr_entry.a_class = eif_adopt(a_class);
+	aedispose_external_proc_ptr_entry.feature = (aedispose_external_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_aedispose_external_proc_ptr_stub ()
+{
+	return (void*) aedispose_external_proc_ptr_stub;
+}
+
+void call_aedispose_external_proc_ptr (void *a_function, void const *dataPtr, Size dataLength, long refcon)
+{
+	((void (*) (void const *dataPtr, Size dataLength, long refcon))a_function) (dataPtr, dataLength, refcon);
+}
+
+struct aeevent_handler_proc_ptr_entry_struct aeevent_handler_proc_ptr_entry = {NULL, NULL};
+
+OSErr aeevent_handler_proc_ptr_stub (AppleEvent const *theAppleEvent, AppleEvent *reply, long handlerRefcon)
+{
+	if (aeevent_handler_proc_ptr_entry.a_class != NULL && aeevent_handler_proc_ptr_entry.feature != NULL)
+	{
+		return aeevent_handler_proc_ptr_entry.feature (eif_access(aeevent_handler_proc_ptr_entry.a_class), theAppleEvent, reply, handlerRefcon);
+	}
+}
+
+void set_aeevent_handler_proc_ptr_entry (void* a_class, void* a_feature)
+{
+	aeevent_handler_proc_ptr_entry.a_class = eif_adopt(a_class);
+	aeevent_handler_proc_ptr_entry.feature = (aeevent_handler_proc_ptr_eiffel_feature) a_feature;
+}
+
+void* get_aeevent_handler_proc_ptr_stub ()
+{
+	return (void*) aeevent_handler_proc_ptr_stub;
+}
+
+OSErr call_aeevent_handler_proc_ptr (void *a_function, AppleEvent const *theAppleEvent, AppleEvent *reply, long handlerRefcon)
+{
+	return ((OSErr (*) (AppleEvent const *theAppleEvent, AppleEvent *reply, long handlerRefcon))a_function) (theAppleEvent, reply, handlerRefcon);
+}
+
 struct aeremote_process_resolver_callback_entry_struct aeremote_process_resolver_callback_entry = {NULL, NULL};
 
 void aeremote_process_resolver_callback_stub (AERemoteProcessResolverRef ref, void *info)

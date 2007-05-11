@@ -2369,6 +2369,318 @@ CGRect * ewg_function_CGContextConvertRectToDeviceSpace (CGContextRef c, CGRect 
 #define ewg_function_macro_CGContextConvertRectToUserSpace(ewg_param_c, ewg_param_rect) CGContextConvertRectToUserSpace ((CGContextRef)ewg_param_c, *(CGRect*)ewg_param_rect)
 
 CGRect * ewg_function_CGContextConvertRectToUserSpace (CGContextRef c, CGRect *rect);
+// Wraps call to function 'NewAECoerceDescUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewAECoerceDescUPP(ewg_param_userRoutine) NewAECoerceDescUPP ((AECoerceDescProcPtr)ewg_param_userRoutine)
+
+AECoerceDescUPP  ewg_function_NewAECoerceDescUPP (AECoerceDescProcPtr userRoutine);
+// Wraps call to function 'NewAECoercePtrUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewAECoercePtrUPP(ewg_param_userRoutine) NewAECoercePtrUPP ((AECoercePtrProcPtr)ewg_param_userRoutine)
+
+AECoercePtrUPP  ewg_function_NewAECoercePtrUPP (AECoercePtrProcPtr userRoutine);
+// Wraps call to function 'DisposeAECoerceDescUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeAECoerceDescUPP(ewg_param_userUPP) DisposeAECoerceDescUPP ((AECoerceDescUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeAECoerceDescUPP (AECoerceDescUPP userUPP);
+// Wraps call to function 'DisposeAECoercePtrUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeAECoercePtrUPP(ewg_param_userUPP) DisposeAECoercePtrUPP ((AECoercePtrUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeAECoercePtrUPP (AECoercePtrUPP userUPP);
+// Wraps call to function 'InvokeAECoerceDescUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeAECoerceDescUPP(ewg_param_fromDesc, ewg_param_toType, ewg_param_handlerRefcon, ewg_param_toDesc, ewg_param_userUPP) InvokeAECoerceDescUPP ((AEDesc const*)ewg_param_fromDesc, (DescType)ewg_param_toType, (long)ewg_param_handlerRefcon, (AEDesc*)ewg_param_toDesc, (AECoerceDescUPP)ewg_param_userUPP)
+
+OSErr  ewg_function_InvokeAECoerceDescUPP (AEDesc const *fromDesc, DescType toType, long handlerRefcon, AEDesc *toDesc, AECoerceDescUPP userUPP);
+// Wraps call to function 'InvokeAECoercePtrUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeAECoercePtrUPP(ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize, ewg_param_toType, ewg_param_handlerRefcon, ewg_param_result, ewg_param_userUPP) InvokeAECoercePtrUPP ((DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize, (DescType)ewg_param_toType, (long)ewg_param_handlerRefcon, (AEDesc*)ewg_param_result, (AECoercePtrUPP)ewg_param_userUPP)
+
+OSErr  ewg_function_InvokeAECoercePtrUPP (DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, long handlerRefcon, AEDesc *result, AECoercePtrUPP userUPP);
+// Wraps call to function 'AEInstallCoercionHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEInstallCoercionHandler(ewg_param_fromType, ewg_param_toType, ewg_param_handler, ewg_param_handlerRefcon, ewg_param_fromTypeIsDesc, ewg_param_isSysHandler) AEInstallCoercionHandler ((DescType)ewg_param_fromType, (DescType)ewg_param_toType, (AECoercionHandlerUPP)ewg_param_handler, (long)ewg_param_handlerRefcon, (Boolean)ewg_param_fromTypeIsDesc, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AEInstallCoercionHandler (DescType fromType, DescType toType, AECoercionHandlerUPP handler, long handlerRefcon, Boolean fromTypeIsDesc, Boolean isSysHandler);
+// Wraps call to function 'AERemoveCoercionHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AERemoveCoercionHandler(ewg_param_fromType, ewg_param_toType, ewg_param_handler, ewg_param_isSysHandler) AERemoveCoercionHandler ((DescType)ewg_param_fromType, (DescType)ewg_param_toType, (AECoercionHandlerUPP)ewg_param_handler, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AERemoveCoercionHandler (DescType fromType, DescType toType, AECoercionHandlerUPP handler, Boolean isSysHandler);
+// Wraps call to function 'AEGetCoercionHandler' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetCoercionHandler(ewg_param_fromType, ewg_param_toType, ewg_param_handler, ewg_param_handlerRefcon, ewg_param_fromTypeIsDesc, ewg_param_isSysHandler) AEGetCoercionHandler ((DescType)ewg_param_fromType, (DescType)ewg_param_toType, (AECoercionHandlerUPP*)ewg_param_handler, (long*)ewg_param_handlerRefcon, (Boolean*)ewg_param_fromTypeIsDesc, (Boolean)ewg_param_isSysHandler)
+
+OSErr  ewg_function_AEGetCoercionHandler (DescType fromType, DescType toType, AECoercionHandlerUPP *handler, long *handlerRefcon, Boolean *fromTypeIsDesc, Boolean isSysHandler);
+// Wraps call to function 'AECoercePtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECoercePtr(ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize, ewg_param_toType, ewg_param_result) AECoercePtr ((DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize, (DescType)ewg_param_toType, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_AECoercePtr (DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, AEDesc *result);
+// Wraps call to function 'AECoerceDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECoerceDesc(ewg_param_theAEDesc, ewg_param_toType, ewg_param_result) AECoerceDesc ((AEDesc const*)ewg_param_theAEDesc, (DescType)ewg_param_toType, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_AECoerceDesc (AEDesc const *theAEDesc, DescType toType, AEDesc *result);
+// Wraps call to function 'AEInitializeDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEInitializeDesc(ewg_param_desc) AEInitializeDesc ((AEDesc*)ewg_param_desc)
+
+void  ewg_function_AEInitializeDesc (AEDesc *desc);
+// Wraps call to function 'AECreateDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECreateDesc(ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize, ewg_param_result) AECreateDesc ((DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_AECreateDesc (DescType typeCode, void const *dataPtr, Size dataSize, AEDesc *result);
+// Wraps call to function 'AEDisposeDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEDisposeDesc(ewg_param_theAEDesc) AEDisposeDesc ((AEDesc*)ewg_param_theAEDesc)
+
+OSErr  ewg_function_AEDisposeDesc (AEDesc *theAEDesc);
+// Wraps call to function 'AEDuplicateDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEDuplicateDesc(ewg_param_theAEDesc, ewg_param_result) AEDuplicateDesc ((AEDesc const*)ewg_param_theAEDesc, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_AEDuplicateDesc (AEDesc const *theAEDesc, AEDesc *result);
+// Wraps call to function 'AECreateDescFromExternalPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECreateDescFromExternalPtr(ewg_param_descriptorType, ewg_param_dataPtr, ewg_param_dataLength, ewg_param_disposeCallback, ewg_param_disposeRefcon, ewg_param_theDesc) AECreateDescFromExternalPtr ((OSType)ewg_param_descriptorType, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataLength, (AEDisposeExternalUPP)ewg_param_disposeCallback, (long)ewg_param_disposeRefcon, (AEDesc*)ewg_param_theDesc)
+
+OSStatus  ewg_function_AECreateDescFromExternalPtr (OSType descriptorType, void const *dataPtr, Size dataLength, AEDisposeExternalUPP disposeCallback, long disposeRefcon, AEDesc *theDesc);
+// Wraps call to function 'AECreateList' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECreateList(ewg_param_factoringPtr, ewg_param_factoredSize, ewg_param_isRecord, ewg_param_resultList) AECreateList ((void const*)ewg_param_factoringPtr, (Size)ewg_param_factoredSize, (Boolean)ewg_param_isRecord, (AEDescList*)ewg_param_resultList)
+
+OSErr  ewg_function_AECreateList (void const *factoringPtr, Size factoredSize, Boolean isRecord, AEDescList *resultList);
+// Wraps call to function 'AECountItems' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECountItems(ewg_param_theAEDescList, ewg_param_theCount) AECountItems ((AEDescList const*)ewg_param_theAEDescList, (long*)ewg_param_theCount)
+
+OSErr  ewg_function_AECountItems (AEDescList const *theAEDescList, long *theCount);
+// Wraps call to function 'AEPutPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEPutPtr(ewg_param_theAEDescList, ewg_param_index, ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize) AEPutPtr ((AEDescList*)ewg_param_theAEDescList, (long)ewg_param_index, (DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize)
+
+OSErr  ewg_function_AEPutPtr (AEDescList *theAEDescList, long index, DescType typeCode, void const *dataPtr, Size dataSize);
+// Wraps call to function 'AEPutDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEPutDesc(ewg_param_theAEDescList, ewg_param_index, ewg_param_theAEDesc) AEPutDesc ((AEDescList*)ewg_param_theAEDescList, (long)ewg_param_index, (AEDesc const*)ewg_param_theAEDesc)
+
+OSErr  ewg_function_AEPutDesc (AEDescList *theAEDescList, long index, AEDesc const *theAEDesc);
+// Wraps call to function 'AEGetNthPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetNthPtr(ewg_param_theAEDescList, ewg_param_index, ewg_param_desiredType, ewg_param_theAEKeyword, ewg_param_typeCode, ewg_param_dataPtr, ewg_param_maximumSize, ewg_param_actualSize) AEGetNthPtr ((AEDescList const*)ewg_param_theAEDescList, (long)ewg_param_index, (DescType)ewg_param_desiredType, (AEKeyword*)ewg_param_theAEKeyword, (DescType*)ewg_param_typeCode, (void*)ewg_param_dataPtr, (Size)ewg_param_maximumSize, (Size*)ewg_param_actualSize)
+
+OSErr  ewg_function_AEGetNthPtr (AEDescList const *theAEDescList, long index, DescType desiredType, AEKeyword *theAEKeyword, DescType *typeCode, void *dataPtr, Size maximumSize, Size *actualSize);
+// Wraps call to function 'AEGetNthDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetNthDesc(ewg_param_theAEDescList, ewg_param_index, ewg_param_desiredType, ewg_param_theAEKeyword, ewg_param_result) AEGetNthDesc ((AEDescList const*)ewg_param_theAEDescList, (long)ewg_param_index, (DescType)ewg_param_desiredType, (AEKeyword*)ewg_param_theAEKeyword, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_AEGetNthDesc (AEDescList const *theAEDescList, long index, DescType desiredType, AEKeyword *theAEKeyword, AEDesc *result);
+// Wraps call to function 'AESizeOfNthItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AESizeOfNthItem(ewg_param_theAEDescList, ewg_param_index, ewg_param_typeCode, ewg_param_dataSize) AESizeOfNthItem ((AEDescList const*)ewg_param_theAEDescList, (long)ewg_param_index, (DescType*)ewg_param_typeCode, (Size*)ewg_param_dataSize)
+
+OSErr  ewg_function_AESizeOfNthItem (AEDescList const *theAEDescList, long index, DescType *typeCode, Size *dataSize);
+// Wraps call to function 'AEGetArray' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetArray(ewg_param_theAEDescList, ewg_param_arrayType, ewg_param_arrayPtr, ewg_param_maximumSize, ewg_param_itemType, ewg_param_itemSize, ewg_param_itemCount) AEGetArray ((AEDescList const*)ewg_param_theAEDescList, (AEArrayType)ewg_param_arrayType, (AEArrayDataPointer)ewg_param_arrayPtr, (Size)ewg_param_maximumSize, (DescType*)ewg_param_itemType, (Size*)ewg_param_itemSize, (long*)ewg_param_itemCount)
+
+OSErr  ewg_function_AEGetArray (AEDescList const *theAEDescList, AEArrayType arrayType, AEArrayDataPointer arrayPtr, Size maximumSize, DescType *itemType, Size *itemSize, long *itemCount);
+// Wraps call to function 'AEPutArray' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEPutArray(ewg_param_theAEDescList, ewg_param_arrayType, ewg_param_arrayPtr, ewg_param_itemType, ewg_param_itemSize, ewg_param_itemCount) AEPutArray ((AEDescList*)ewg_param_theAEDescList, (AEArrayType)ewg_param_arrayType, (AEArrayData const*)ewg_param_arrayPtr, (DescType)ewg_param_itemType, (Size)ewg_param_itemSize, (long)ewg_param_itemCount)
+
+OSErr  ewg_function_AEPutArray (AEDescList *theAEDescList, AEArrayType arrayType, AEArrayData const *arrayPtr, DescType itemType, Size itemSize, long itemCount);
+// Wraps call to function 'AEDeleteItem' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEDeleteItem(ewg_param_theAEDescList, ewg_param_index) AEDeleteItem ((AEDescList*)ewg_param_theAEDescList, (long)ewg_param_index)
+
+OSErr  ewg_function_AEDeleteItem (AEDescList *theAEDescList, long index);
+// Wraps call to function 'AECheckIsRecord' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECheckIsRecord(ewg_param_theDesc) AECheckIsRecord ((AEDesc const*)ewg_param_theDesc)
+
+Boolean  ewg_function_AECheckIsRecord (AEDesc const *theDesc);
+// Wraps call to function 'AECreateAppleEvent' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AECreateAppleEvent(ewg_param_theAEEventClass, ewg_param_theAEEventID, ewg_param_target, ewg_param_returnID, ewg_param_transactionID, ewg_param_result) AECreateAppleEvent ((AEEventClass)ewg_param_theAEEventClass, (AEEventID)ewg_param_theAEEventID, (AEAddressDesc const*)ewg_param_target, (AEReturnID)ewg_param_returnID, (AETransactionID)ewg_param_transactionID, (AppleEvent*)ewg_param_result)
+
+OSErr  ewg_function_AECreateAppleEvent (AEEventClass theAEEventClass, AEEventID theAEEventID, AEAddressDesc const *target, AEReturnID returnID, AETransactionID transactionID, AppleEvent *result);
+// Wraps call to function 'AEPutParamPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEPutParamPtr(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize) AEPutParamPtr ((AppleEvent*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize)
+
+OSErr  ewg_function_AEPutParamPtr (AppleEvent *theAppleEvent, AEKeyword theAEKeyword, DescType typeCode, void const *dataPtr, Size dataSize);
+// Wraps call to function 'AEPutParamDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEPutParamDesc(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_theAEDesc) AEPutParamDesc ((AppleEvent*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (AEDesc const*)ewg_param_theAEDesc)
+
+OSErr  ewg_function_AEPutParamDesc (AppleEvent *theAppleEvent, AEKeyword theAEKeyword, AEDesc const *theAEDesc);
+// Wraps call to function 'AEGetParamPtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetParamPtr(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_desiredType, ewg_param_actualType, ewg_param_dataPtr, ewg_param_maximumSize, ewg_param_actualSize) AEGetParamPtr ((AppleEvent const*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType)ewg_param_desiredType, (DescType*)ewg_param_actualType, (void*)ewg_param_dataPtr, (Size)ewg_param_maximumSize, (Size*)ewg_param_actualSize)
+
+OSErr  ewg_function_AEGetParamPtr (AppleEvent const *theAppleEvent, AEKeyword theAEKeyword, DescType desiredType, DescType *actualType, void *dataPtr, Size maximumSize, Size *actualSize);
+// Wraps call to function 'AEGetParamDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetParamDesc(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_desiredType, ewg_param_result) AEGetParamDesc ((AppleEvent const*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType)ewg_param_desiredType, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_AEGetParamDesc (AppleEvent const *theAppleEvent, AEKeyword theAEKeyword, DescType desiredType, AEDesc *result);
+// Wraps call to function 'AESizeOfParam' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AESizeOfParam(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_typeCode, ewg_param_dataSize) AESizeOfParam ((AppleEvent const*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType*)ewg_param_typeCode, (Size*)ewg_param_dataSize)
+
+OSErr  ewg_function_AESizeOfParam (AppleEvent const *theAppleEvent, AEKeyword theAEKeyword, DescType *typeCode, Size *dataSize);
+// Wraps call to function 'AEDeleteParam' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEDeleteParam(ewg_param_theAppleEvent, ewg_param_theAEKeyword) AEDeleteParam ((AppleEvent*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword)
+
+OSErr  ewg_function_AEDeleteParam (AppleEvent *theAppleEvent, AEKeyword theAEKeyword);
+// Wraps call to function 'AEGetAttributePtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetAttributePtr(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_desiredType, ewg_param_typeCode, ewg_param_dataPtr, ewg_param_maximumSize, ewg_param_actualSize) AEGetAttributePtr ((AppleEvent const*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType)ewg_param_desiredType, (DescType*)ewg_param_typeCode, (void*)ewg_param_dataPtr, (Size)ewg_param_maximumSize, (Size*)ewg_param_actualSize)
+
+OSErr  ewg_function_AEGetAttributePtr (AppleEvent const *theAppleEvent, AEKeyword theAEKeyword, DescType desiredType, DescType *typeCode, void *dataPtr, Size maximumSize, Size *actualSize);
+// Wraps call to function 'AEGetAttributeDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetAttributeDesc(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_desiredType, ewg_param_result) AEGetAttributeDesc ((AppleEvent const*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType)ewg_param_desiredType, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_AEGetAttributeDesc (AppleEvent const *theAppleEvent, AEKeyword theAEKeyword, DescType desiredType, AEDesc *result);
+// Wraps call to function 'AESizeOfAttribute' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AESizeOfAttribute(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_typeCode, ewg_param_dataSize) AESizeOfAttribute ((AppleEvent const*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType*)ewg_param_typeCode, (Size*)ewg_param_dataSize)
+
+OSErr  ewg_function_AESizeOfAttribute (AppleEvent const *theAppleEvent, AEKeyword theAEKeyword, DescType *typeCode, Size *dataSize);
+// Wraps call to function 'AEPutAttributePtr' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEPutAttributePtr(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize) AEPutAttributePtr ((AppleEvent*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize)
+
+OSErr  ewg_function_AEPutAttributePtr (AppleEvent *theAppleEvent, AEKeyword theAEKeyword, DescType typeCode, void const *dataPtr, Size dataSize);
+// Wraps call to function 'AEPutAttributeDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEPutAttributeDesc(ewg_param_theAppleEvent, ewg_param_theAEKeyword, ewg_param_theAEDesc) AEPutAttributeDesc ((AppleEvent*)ewg_param_theAppleEvent, (AEKeyword)ewg_param_theAEKeyword, (AEDesc const*)ewg_param_theAEDesc)
+
+OSErr  ewg_function_AEPutAttributeDesc (AppleEvent *theAppleEvent, AEKeyword theAEKeyword, AEDesc const *theAEDesc);
+// Wraps call to function 'AESizeOfFlattenedDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AESizeOfFlattenedDesc(ewg_param_theAEDesc) AESizeOfFlattenedDesc ((AEDesc const*)ewg_param_theAEDesc)
+
+Size  ewg_function_AESizeOfFlattenedDesc (AEDesc const *theAEDesc);
+// Wraps call to function 'AEFlattenDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEFlattenDesc(ewg_param_theAEDesc, ewg_param_buffer, ewg_param_bufferSize, ewg_param_actualSize) AEFlattenDesc ((AEDesc const*)ewg_param_theAEDesc, (Ptr)ewg_param_buffer, (Size)ewg_param_bufferSize, (Size*)ewg_param_actualSize)
+
+OSStatus  ewg_function_AEFlattenDesc (AEDesc const *theAEDesc, Ptr buffer, Size bufferSize, Size *actualSize);
+// Wraps call to function 'AEUnflattenDesc' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEUnflattenDesc(ewg_param_buffer, ewg_param_result) AEUnflattenDesc ((void const*)ewg_param_buffer, (AEDesc*)ewg_param_result)
+
+OSStatus  ewg_function_AEUnflattenDesc (void const *buffer, AEDesc *result);
+// Wraps call to function 'AEGetDescData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetDescData(ewg_param_theAEDesc, ewg_param_dataPtr, ewg_param_maximumSize) AEGetDescData ((AEDesc const*)ewg_param_theAEDesc, (void*)ewg_param_dataPtr, (Size)ewg_param_maximumSize)
+
+OSErr  ewg_function_AEGetDescData (AEDesc const *theAEDesc, void *dataPtr, Size maximumSize);
+// Wraps call to function 'AEGetDescDataSize' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetDescDataSize(ewg_param_theAEDesc) AEGetDescDataSize ((AEDesc const*)ewg_param_theAEDesc)
+
+Size  ewg_function_AEGetDescDataSize (AEDesc const *theAEDesc);
+// Wraps call to function 'AEReplaceDescData' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEReplaceDescData(ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize, ewg_param_theAEDesc) AEReplaceDescData ((DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize, (AEDesc*)ewg_param_theAEDesc)
+
+OSErr  ewg_function_AEReplaceDescData (DescType typeCode, void const *dataPtr, Size dataSize, AEDesc *theAEDesc);
+// Wraps call to function 'AEGetDescDataRange' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_AEGetDescDataRange(ewg_param_dataDesc, ewg_param_buffer, ewg_param_offset, ewg_param_length) AEGetDescDataRange ((AEDesc const*)ewg_param_dataDesc, (void*)ewg_param_buffer, (Size)ewg_param_offset, (Size)ewg_param_length)
+
+OSStatus  ewg_function_AEGetDescDataRange (AEDesc const *dataDesc, void *buffer, Size offset, Size length);
+// Wraps call to function 'NewAEDisposeExternalUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewAEDisposeExternalUPP(ewg_param_userRoutine) NewAEDisposeExternalUPP ((AEDisposeExternalProcPtr)ewg_param_userRoutine)
+
+AEDisposeExternalUPP  ewg_function_NewAEDisposeExternalUPP (AEDisposeExternalProcPtr userRoutine);
+// Wraps call to function 'NewAEEventHandlerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_NewAEEventHandlerUPP(ewg_param_userRoutine) NewAEEventHandlerUPP ((AEEventHandlerProcPtr)ewg_param_userRoutine)
+
+AEEventHandlerUPP  ewg_function_NewAEEventHandlerUPP (AEEventHandlerProcPtr userRoutine);
+// Wraps call to function 'DisposeAEDisposeExternalUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeAEDisposeExternalUPP(ewg_param_userUPP) DisposeAEDisposeExternalUPP ((AEDisposeExternalUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeAEDisposeExternalUPP (AEDisposeExternalUPP userUPP);
+// Wraps call to function 'DisposeAEEventHandlerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_DisposeAEEventHandlerUPP(ewg_param_userUPP) DisposeAEEventHandlerUPP ((AEEventHandlerUPP)ewg_param_userUPP)
+
+void  ewg_function_DisposeAEEventHandlerUPP (AEEventHandlerUPP userUPP);
+// Wraps call to function 'InvokeAEDisposeExternalUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeAEDisposeExternalUPP(ewg_param_dataPtr, ewg_param_dataLength, ewg_param_refcon, ewg_param_userUPP) InvokeAEDisposeExternalUPP ((void const*)ewg_param_dataPtr, (Size)ewg_param_dataLength, (long)ewg_param_refcon, (AEDisposeExternalUPP)ewg_param_userUPP)
+
+void  ewg_function_InvokeAEDisposeExternalUPP (void const *dataPtr, Size dataLength, long refcon, AEDisposeExternalUPP userUPP);
+// Wraps call to function 'InvokeAEEventHandlerUPP' in a macro
+#include <Carbon/Carbon.h>
+
+#define ewg_function_macro_InvokeAEEventHandlerUPP(ewg_param_theAppleEvent, ewg_param_reply, ewg_param_handlerRefcon, ewg_param_userUPP) InvokeAEEventHandlerUPP ((AppleEvent const*)ewg_param_theAppleEvent, (AppleEvent*)ewg_param_reply, (long)ewg_param_handlerRefcon, (AEEventHandlerUPP)ewg_param_userUPP)
+
+OSErr  ewg_function_InvokeAEEventHandlerUPP (AppleEvent const *theAppleEvent, AppleEvent *reply, long handlerRefcon, AEEventHandlerUPP userUPP);
 // Wraps call to function 'AEInstallEventHandler' in a macro
 #include <Carbon/Carbon.h>
 
@@ -10511,6 +10823,78 @@ void  ewg_function_set_cgpath_applier_function_entry (void *a_class, void *a_fea
 #define ewg_function_macro_call_cgpath_applier_function(ewg_param_a_function, ewg_param_info, ewg_param_element) call_cgpath_applier_function ((void*)ewg_param_a_function, (void*)ewg_param_info, (CGPathElement const*)ewg_param_element)
 
 void  ewg_function_call_cgpath_applier_function (void *a_function, void *info, CGPathElement const *element);
+// Wraps call to function 'get_aecoerce_desc_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_aecoerce_desc_proc_ptr_stub get_aecoerce_desc_proc_ptr_stub ()
+
+void * ewg_function_get_aecoerce_desc_proc_ptr_stub (void);
+// Wraps call to function 'set_aecoerce_desc_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_aecoerce_desc_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_aecoerce_desc_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_aecoerce_desc_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_aecoerce_desc_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_aecoerce_desc_proc_ptr(ewg_param_a_function, ewg_param_fromDesc, ewg_param_toType, ewg_param_handlerRefcon, ewg_param_toDesc) call_aecoerce_desc_proc_ptr ((void*)ewg_param_a_function, (AEDesc const*)ewg_param_fromDesc, (DescType)ewg_param_toType, (long)ewg_param_handlerRefcon, (AEDesc*)ewg_param_toDesc)
+
+OSErr  ewg_function_call_aecoerce_desc_proc_ptr (void *a_function, AEDesc const *fromDesc, DescType toType, long handlerRefcon, AEDesc *toDesc);
+// Wraps call to function 'get_aecoerce_ptr_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_aecoerce_ptr_proc_ptr_stub get_aecoerce_ptr_proc_ptr_stub ()
+
+void * ewg_function_get_aecoerce_ptr_proc_ptr_stub (void);
+// Wraps call to function 'set_aecoerce_ptr_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_aecoerce_ptr_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_aecoerce_ptr_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_aecoerce_ptr_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_aecoerce_ptr_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_aecoerce_ptr_proc_ptr(ewg_param_a_function, ewg_param_typeCode, ewg_param_dataPtr, ewg_param_dataSize, ewg_param_toType, ewg_param_handlerRefcon, ewg_param_result) call_aecoerce_ptr_proc_ptr ((void*)ewg_param_a_function, (DescType)ewg_param_typeCode, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataSize, (DescType)ewg_param_toType, (long)ewg_param_handlerRefcon, (AEDesc*)ewg_param_result)
+
+OSErr  ewg_function_call_aecoerce_ptr_proc_ptr (void *a_function, DescType typeCode, void const *dataPtr, Size dataSize, DescType toType, long handlerRefcon, AEDesc *result);
+// Wraps call to function 'get_aedispose_external_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_aedispose_external_proc_ptr_stub get_aedispose_external_proc_ptr_stub ()
+
+void * ewg_function_get_aedispose_external_proc_ptr_stub (void);
+// Wraps call to function 'set_aedispose_external_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_aedispose_external_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_aedispose_external_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_aedispose_external_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_aedispose_external_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_aedispose_external_proc_ptr(ewg_param_a_function, ewg_param_dataPtr, ewg_param_dataLength, ewg_param_refcon) call_aedispose_external_proc_ptr ((void*)ewg_param_a_function, (void const*)ewg_param_dataPtr, (Size)ewg_param_dataLength, (long)ewg_param_refcon)
+
+void  ewg_function_call_aedispose_external_proc_ptr (void *a_function, void const *dataPtr, Size dataLength, long refcon);
+// Wraps call to function 'get_aeevent_handler_proc_ptr_stub' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_get_aeevent_handler_proc_ptr_stub get_aeevent_handler_proc_ptr_stub ()
+
+void * ewg_function_get_aeevent_handler_proc_ptr_stub (void);
+// Wraps call to function 'set_aeevent_handler_proc_ptr_entry' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_set_aeevent_handler_proc_ptr_entry(ewg_param_a_class, ewg_param_a_feature) set_aeevent_handler_proc_ptr_entry ((void*)ewg_param_a_class, (void*)ewg_param_a_feature)
+
+void  ewg_function_set_aeevent_handler_proc_ptr_entry (void *a_class, void *a_feature);
+// Wraps call to function 'call_aeevent_handler_proc_ptr' in a macro
+#include <ewg_carbon_callback_c_glue_code.h>
+
+#define ewg_function_macro_call_aeevent_handler_proc_ptr(ewg_param_a_function, ewg_param_theAppleEvent, ewg_param_reply, ewg_param_handlerRefcon) call_aeevent_handler_proc_ptr ((void*)ewg_param_a_function, (AppleEvent const*)ewg_param_theAppleEvent, (AppleEvent*)ewg_param_reply, (long)ewg_param_handlerRefcon)
+
+OSErr  ewg_function_call_aeevent_handler_proc_ptr (void *a_function, AppleEvent const *theAppleEvent, AppleEvent *reply, long handlerRefcon);
 // Wraps call to function 'get_aeremote_process_resolver_callback_stub' in a macro
 #include <ewg_carbon_callback_c_glue_code.h>
 

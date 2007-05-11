@@ -14,13 +14,26 @@ inherit
 		redefine
 			interface,
 			initialize,
-			on_ok,
 			show_modal_to_window,
 			show,
 			destroy
 		end
 
+
 	NAVIGATION_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
+	AEDATAMODEL_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
+	CFURL_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
 
@@ -61,11 +74,19 @@ feature {NONE} -- Initialization
 		end
 
 	show is
-			--
+			-- Run the created Dialog
 		local
 			ret: INTEGER
+			reply: NAV_REPLY_RECORD_STRUCT
 		do
 			ret := nav_dialog_run_external (c_object)
+			create reply.make_new_unshared
+			ret := nav_dialog_get_reply_external (c_object, reply.item)
+			if reply.validrecord.to_boolean then
+				on_ok
+			else
+				on_cancel
+			end
 		end
 
 
@@ -76,17 +97,30 @@ feature -- Access
 		local
 			ret: INTEGER
 			reply: NAV_REPLY_RECORD_STRUCT
+			i: INTEGER
+			res_type, keyword: INTEGER
+			data_ptr: FSREF_STRUCT
+			cfurl: CFURL_STRUCT
+			actual_size: INTEGER
+			path: EV_CARBON_CF_STRING
 		do
 			if
 				selected_button /= Void and then selected_button.is_equal (internal_accept)
 			then
 				create reply.make_new_unshared
 				ret := nav_dialog_get_reply_external (c_object, reply.item)
-		--		io.output.put_string(aecount_items_external (reply.selection).out + "%N")
+				ret := aecount_items_external (reply.selection, $i)
+				check
+					one_file_selected: i = 1
+				end
+				create data_ptr.make_new_unshared
+				ret := aeget_nth_ptr_external (reply.selection, 1, {AEDATA_MODEL_ANON_ENUMS}.typeFSRef, $keyword, $res_type, data_ptr.item, 40, $actual_size)
+				create cfurl.make_unshared (cfurlcreate_from_fsref_external (null, data_ptr.item))
+				create path.make_unshared (cfurlcopy_path_external (cfurl.item))
+				Result := path.string
 			else
 				Result := ""
 			end
-			Result := "/Users/danielfurrer/Pictures/Bilder/car.png"
 		end
 
 	filter: STRING_32
@@ -207,29 +241,6 @@ feature -- Element change
 --				c_object,
 --				a_cs.item
 --			)
-		end
-
-feature {EV_INTERMEDIARY_ROUTINES} -- Implementation
-
-	on_ok is
-			-- The user has requested that the dialog be activated.
-		local
-			temp_filename: STRING_32
-			temp_file: RAW_FILE
-			a_filename: POINTER
-			a_cs: EV_CARBON_CF_STRING
-		do
-			create temp_filename.make (0)
---			a_filename := {EV_GTK_EXTERNALS}.gtk_file_chooser_get_filename (c_object)
-			if a_filename /= NULL then
-				create a_cs.make_shared (a_filename)
-				temp_filename := a_cs.string
-				create temp_file.make (temp_filename.as_string_8)
-				if (not temp_file.exists or else not temp_file.is_directory) and not
-						temp_filename.item (temp_filename.count).is_equal ('/') then
-					Precursor {EV_STANDARD_DIALOG_IMP}
-				end
-			end
 		end
 
 feature {NONE} -- Implementation
