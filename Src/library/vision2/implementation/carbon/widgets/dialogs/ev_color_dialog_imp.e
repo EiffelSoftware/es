@@ -60,6 +60,7 @@ feature {NONE} -- Initialization
 			if color_picker_info.newcolorchosen.to_boolean then
 				create npm_color.make_unshared (color_picker_info.thecolor)
 				create cm_color.make_unshared (npm_color.color)
+				-- TODO: We may need to do a color space conversion here to a RGB profile. See http://www.mactech.com/articles/develop/issue_19/068-084_Holland_final.html
 				create cmrgb_color.make_unshared (cm_color.rgb)
 				create ev_color.make_with_8_bit_rgb (cmrgb_color.red, cmrgb_color.green, cmrgb_color.blue)
 				set_color (ev_color)

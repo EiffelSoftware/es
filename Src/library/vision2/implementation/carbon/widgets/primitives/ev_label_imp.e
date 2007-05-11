@@ -82,7 +82,7 @@ feature -- Access
 			angle := a_angle
 		end
 
-feature
+feature -- Minimum size
 
 	minimum_height: INTEGER is
 			local
@@ -97,7 +97,8 @@ feature
 	minimum_width: INTEGER is
 			do
 				--Result:= text.count * font.width
-				Result:= text.count * 8 +5
+
+				Result:= text.split ('%N').first.count * 8 + 5 -- Currently we take the width of 
 			end
 
 feature -- status setting
