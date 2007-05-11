@@ -166,8 +166,21 @@ feature -- Status report
 	selected_item: EV_LIST_ITEM is
 			-- Item which is currently selected, for a multiple
 			-- selection.
+		local
+			ptr: POINTER
+			str: EV_CARBON_CF_STRING
 		do
-
+			create str.make_unshared (hiview_copy_text_external (c_object))
+			from
+				start
+			until
+				off
+			loop
+				if item.text.is_equal (str.string) then
+					Result := item
+				end
+				forth
+			end
 		end
 
 	selected_items: ARRAYED_LIST [EV_LIST_ITEM] is
